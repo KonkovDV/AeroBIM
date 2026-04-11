@@ -1,0 +1,27 @@
+# AeroBIM local development stack
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      AEROBIM_ENV: development
+      AEROBIM_HOST: "0.0.0.0"
+      AEROBIM_PORT: "8080"
+      AEROBIM_DEBUG: "true"
+      AEROBIM_STORAGE_DIR: /data/reports
+      AEROBIM_CORS_ORIGINS: "http://localhost:3000,http://localhost:5173"
+    volumes:
+      - reports-data:/data/reports
+      - ./samples:/data/samples:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  reports-data:
