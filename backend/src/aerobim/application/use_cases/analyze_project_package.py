@@ -8,6 +8,7 @@ from uuid import uuid4
 from aerobim.domain.models import (
     ComparisonOperator,
     DrawingAnnotation,
+    DrawingSource,
     FindingCategory,
     ParsedRequirement,
     RuleScope,
@@ -27,7 +28,11 @@ from aerobim.domain.ports import (
     NarrativeRuleSynthesizer,
     RemarkGenerator,
     RequirementExtractor,
+    VisionDrawingAnalyzer,
 )
+
+_VISION_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
+_VISION_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
 
 
 class AnalyzeProjectPackageUseCase:
@@ -40,6 +45,7 @@ class AnalyzeProjectPackageUseCase:
         remark_generator: RemarkGenerator,
         audit_report_store: AuditReportStore,
         ids_validator: IdsValidator | None = None,
+        vision_drawing_analyzer: VisionDrawingAnalyzer | None = None,
         tolerance: ToleranceConfig | None = None,
         clash_detector: ClashDetector | None = None,
     ) -> None:
@@ -48,6 +54,7 @@ class AnalyzeProjectPackageUseCase:
         self._drawing_analyzer = drawing_analyzer
         self._ifc_validator = ifc_validator
         self._ids_validator = ids_validator
+        self._vision_drawing_analyzer = vision_drawing_analyzer
         self._remark_generator = remark_generator
         self._audit_report_store = audit_report_store
         self._tolerance = tolerance or ToleranceConfig()
@@ -134,8 +141,40 @@ class AnalyzeProjectPackageUseCase:
     def _collect_drawing_annotations(self, request: ValidationRequest) -> list[DrawingAnnotation]:
         annotations: list[DrawingAnnotation] = []
         for drawing_source in request.drawing_sources:
-            annotations.extend(self._drawing_analyzer.analyze(drawing_source))
+            if self._has_structured_drawing_input(drawing_source):
+                annotations.extend(self._drawing_analyzer.analyze(drawing_source))
+            if self._is_vision_drawing_source(drawing_source):
+                annotations.extend(self._collect_vision_annotations(drawing_source))
         return annotations
+
+    def _collect_vision_annotations(
+        self,
+        drawing_source: DrawingSource,
+    ) -> list[DrawingAnnotation]:
+        if drawing_source.path is None:
+            raise ValueError("Vision drawing analysis requires a drawing file path")
+        if self._vision_drawing_analyzer is None:
+            raise RuntimeError(
+                "Vision drawing analysis requested but no vision drawing analyzer is configured"
+            )
+        return self._vision_drawing_analyzer.analyze_image(
+            drawing_source.path,
+            sheet_id=drawing_source.sheet_id,
+        )
+
+    def _has_structured_drawing_input(self, drawing_source: DrawingSource) -> bool:
+        if drawing_source.text.strip():
+            return True
+        if drawing_source.path is None:
+            return False
+        return drawing_source.path.suffix.lower() not in _VISION_DRAWING_SUFFIXES
+
+    def _is_vision_drawing_source(self, drawing_source: DrawingSource) -> bool:
+        if drawing_source.format and drawing_source.format.lower() in _VISION_DRAWING_FORMATS:
+            return True
+        if drawing_source.path is None:
+            return False
+        return drawing_source.path.suffix.lower() in _VISION_DRAWING_SUFFIXES
 
     def _detect_cross_document_contradictions(
         self,
