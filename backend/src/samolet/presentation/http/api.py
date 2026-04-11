@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re as _re
 from dataclasses import asdict
 from pathlib import Path
 from uuid import uuid4
@@ -10,15 +11,21 @@ from samolet.core.di.container import Container
 from samolet.core.di.tokens import Tokens
 from samolet.domain.models import DrawingSource, RequirementSource, SourceKind, ValidationRequest
 
+_REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
+
 
 def create_http_app(container: Container):
     try:
         from fastapi import FastAPI, HTTPException
+        from fastapi.middleware.cors import CORSMiddleware
         from pydantic import BaseModel, Field
     except ModuleNotFoundError as exc:
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc
 
+    from samolet.presentation.http.correlation import add_correlation_middleware
+
     settings = container.resolve(Tokens.SETTINGS)
+    logger = container.resolve(Tokens.LOGGER)
     validate_use_case = container.resolve(Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE)
     analyze_use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
     audit_store = container.resolve(Tokens.AUDIT_REPORT_STORE)
@@ -47,7 +54,16 @@ def create_http_app(container: Container):
         calculation_path: str | None = None
         drawings: list[DrawingPayload] = Field(default_factory=list)
 
-    app = FastAPI(title="samolet-backend", version="0.1.0")
+    app = FastAPI(title="samolet-backend", version="0.2.0")
+
+    # -- Middleware stack (order matters: outermost first) --
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"] if settings.debug else [],
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
+    )
+    add_correlation_middleware(app)
 
     @app.get("/health")
     def health() -> dict[str, object]:
@@ -58,14 +74,12 @@ def create_http_app(container: Container):
         }
 
     def _resolve_safe_path(user_path: str) -> Path:
-        base = settings.storage_dir.parent.resolve()
+        """Resolve user-supplied path strictly within storage_dir."""
+        base = settings.storage_dir.resolve()
         resolved = (base / user_path).resolve()
         if not resolved.is_relative_to(base):
             raise HTTPException(status_code=400, detail="Path escapes storage boundary")
         return resolved
-
-    import re as _re
-    _REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
 
     def _validate_report_id(report_id: str) -> None:
         if not _REPORT_ID_RE.match(report_id):
@@ -85,12 +99,14 @@ def create_http_app(container: Container):
 
     @app.post("/v1/validate/ifc")
     def validate_ifc(payload: ValidateIfcRequest) -> dict[str, object]:
+        request_id = payload.request_id or uuid4().hex
+        logger.info("validate_ifc started", request_id=request_id, ifc_path=payload.ifc_path)
         try:
             ifc_resolved = _resolve_safe_path(payload.ifc_path)
 
             report = validate_use_case.execute(
                 ValidationRequest(
-                    request_id=payload.request_id or uuid4().hex,
+                    request_id=request_id,
                     ifc_path=ifc_resolved,
                     requirement_source=_build_requirement_source(
                         payload.requirement_text,
@@ -101,12 +117,22 @@ def create_http_app(container: Container):
                 )
             )
         except FileNotFoundError as exc:
+            logger.warning("validate_ifc file not found", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except ValueError as exc:
+            logger.warning("validate_ifc bad request", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         except RuntimeError as exc:
+            logger.error("validate_ifc runtime error", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=503, detail=str(exc)) from exc
 
+        logger.info(
+            "validate_ifc completed",
+            request_id=request_id,
+            report_id=report.report_id,
+            passed=report.summary.passed,
+            issues=report.summary.issue_count,
+        )
         return asdict(report)
 
     @app.post("/v1/analyze/project-package")
