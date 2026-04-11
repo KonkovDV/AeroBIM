@@ -1,11 +1,12 @@
 # pyright: reportUnusedFunction=false, reportUnknownVariableType=false
 
-from __future__ import annotations
-
 import re as _re
 from dataclasses import asdict
 from pathlib import Path
+from typing import Annotated
 from uuid import uuid4
+
+from pydantic import BaseModel, Field
 
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
@@ -14,11 +15,38 @@ from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, 
 _REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
 
 
+class ValidateIfcRequest(BaseModel):
+    request_id: str | None = None
+    ifc_path: str
+    requirement_text: str = Field(default="", max_length=50_000)
+    requirement_path: str | None = None
+    ids_path: str | None = None
+
+
+class DrawingPayload(BaseModel):
+    text: str = Field(default="", max_length=50_000)
+    path: str | None = None
+    sheet_id: str | None = None
+    format: str | None = None
+
+
+class AnalyzeProjectPackageRequest(BaseModel):
+    request_id: str | None = None
+    ifc_path: str
+    requirement_text: str = Field(default="", max_length=50_000)
+    requirement_path: str | None = None
+    ids_path: str | None = None
+    technical_spec_text: str = Field(default="", max_length=50_000)
+    technical_spec_path: str | None = None
+    calculation_text: str = Field(default="", max_length=50_000)
+    calculation_path: str | None = None
+    drawings: list[DrawingPayload] = Field(default_factory=list)
+
+
 def create_http_app(container: Container):
     try:
-        from fastapi import FastAPI, HTTPException
+        from fastapi import Body, FastAPI, HTTPException
         from fastapi.middleware.cors import CORSMiddleware
-        from pydantic import BaseModel, Field
     except ModuleNotFoundError as exc:
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc
 
@@ -29,30 +57,6 @@ def create_http_app(container: Container):
     validate_use_case = container.resolve(Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE)
     analyze_use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
     audit_store = container.resolve(Tokens.AUDIT_REPORT_STORE)
-
-    class ValidateIfcRequest(BaseModel):
-        request_id: str | None = None
-        ifc_path: str
-        requirement_text: str = Field(default="", max_length=50_000)
-        requirement_path: str | None = None
-        ids_path: str | None = None
-
-    class DrawingPayload(BaseModel):
-        text: str = Field(default="", max_length=50_000)
-        path: str | None = None
-        sheet_id: str | None = None
-        format: str | None = None
-
-    class AnalyzeProjectPackageRequest(BaseModel):
-        request_id: str | None = None
-        ifc_path: str
-        requirement_text: str = Field(default="", max_length=50_000)
-        requirement_path: str | None = None
-        technical_spec_text: str = Field(default="", max_length=50_000)
-        technical_spec_path: str | None = None
-        calculation_text: str = Field(default="", max_length=50_000)
-        calculation_path: str | None = None
-        drawings: list[DrawingPayload] = Field(default_factory=list)
 
     app = FastAPI(title="aerobim-backend", version="0.2.0")
 
@@ -98,7 +102,7 @@ def create_http_app(container: Container):
         )
 
     @app.post("/v1/validate/ifc")
-    def validate_ifc(payload: ValidateIfcRequest) -> dict[str, object]:
+    def validate_ifc(payload: Annotated[ValidateIfcRequest, Body()]) -> dict[str, object]:
         request_id = payload.request_id or uuid4().hex
         logger.info("validate_ifc started", request_id=request_id, ifc_path=payload.ifc_path)
         try:
@@ -136,7 +140,9 @@ def create_http_app(container: Container):
         return asdict(report)
 
     @app.post("/v1/analyze/project-package")
-    def analyze_project_package(payload: AnalyzeProjectPackageRequest) -> dict[str, object]:
+    def analyze_project_package(
+        payload: Annotated[AnalyzeProjectPackageRequest, Body()],
+    ) -> dict[str, object]:
         try:
             ifc_resolved = _resolve_safe_path(payload.ifc_path)
             report = analyze_use_case.execute(
@@ -148,6 +154,7 @@ def create_http_app(container: Container):
                         payload.requirement_path,
                         SourceKind.STRUCTURED_TEXT,
                     ),
+                    ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
                     technical_spec_source=_build_requirement_source(
                         payload.technical_spec_text,
                         payload.technical_spec_path,

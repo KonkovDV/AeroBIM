@@ -94,6 +94,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             narrative_rule_synthesizer=current.resolve(Tokens.NARRATIVE_RULE_SYNTHESIZER),
             drawing_analyzer=current.resolve(Tokens.DRAWING_ANALYZER),
             ifc_validator=current.resolve(Tokens.IFC_VALIDATOR),
+            ids_validator=current.resolve(Tokens.IDS_VALIDATOR),
             remark_generator=current.resolve(Tokens.REMARK_GENERATOR),
             audit_report_store=current.resolve(Tokens.AUDIT_REPORT_STORE),
             tolerance=tolerance,

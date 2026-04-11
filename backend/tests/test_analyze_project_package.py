@@ -11,6 +11,7 @@ from aerobim.domain.models import (
     ComparisonOperator,
     DrawingAnnotation,
     DrawingSource,
+    FindingCategory,
     ParsedRequirement,
     ProblemZone,
     RequirementSource,
@@ -90,6 +91,24 @@ class FakeValidator:
         ]
 
 
+class FakeIdsValidator:
+    def validate(self, _ids_path: Path, _ifc_path: Path) -> list[ValidationIssue]:
+        return [
+            ValidationIssue(
+                rule_id="IDS-001",
+                severity=Severity.WARNING,
+                message="IDS mismatch",
+                category=FindingCategory.IDS_VALIDATION,
+                element_guid="ids-element-guid",
+            )
+        ]
+
+
+class NoOpIdsValidator:
+    def validate(self, _ids_path: Path, _ifc_path: Path) -> list[ValidationIssue]:
+        return []
+
+
 class FakeStore:
     def __init__(self) -> None:
         self.saved_report_id: str | None = None
@@ -136,6 +155,82 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         self.assertEqual(len(report.drawing_annotations), 1)
         self.assertTrue(all(issue.remark is not None for issue in report.issues))
         self.assertEqual(store.saved_report_id, report.report_id)
+
+    def test_execute_merges_ids_issues_into_multimodal_report(self) -> None:
+        store = FakeStore()
+        use_case = AnalyzeProjectPackageUseCase(
+            requirement_extractor=FakeExtractor(),
+            narrative_rule_synthesizer=FakeSynthesizer(),
+            drawing_analyzer=FakeDrawingAnalyzer(),
+            ifc_validator=FakeValidator(),
+            ids_validator=FakeIdsValidator(),
+            remark_generator=TemplateRemarkGenerator(),
+            audit_report_store=store,
+        )
+
+        report = use_case.execute(
+            ValidationRequest(
+                request_id="req-ids-multimodal",
+                ifc_path=Path("sample.ifc"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
+                technical_spec_source=RequirementSource(
+                    text="Лист A-101: толщина WALL-01 не менее 200 мм",
+                    source_kind=SourceKind.TECHNICAL_SPECIFICATION,
+                ),
+                drawing_sources=(
+                    DrawingSource(text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50"),
+                ),
+                ids_path=Path("rules.ids"),
+            )
+        )
+
+        ids_issues = [
+            issue for issue in report.issues if issue.category == FindingCategory.IDS_VALIDATION
+        ]
+        self.assertEqual(len(ids_issues), 1)
+        self.assertEqual(report.summary.issue_count, 3)
+        self.assertEqual(report.summary.warning_count, 1)
+        self.assertEqual(report.summary.generated_remark_count, 3)
+
+    def test_execute_accepts_ids_only_validation_path(self) -> None:
+        class EmptyExtractor:
+            def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class EmptySynthesizer:
+            def synthesize(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpDrawingAnalyzer:
+            def analyze(self, _source: DrawingSource) -> list[DrawingAnnotation]:
+                return []
+
+        store = FakeStore()
+        use_case = AnalyzeProjectPackageUseCase(
+            requirement_extractor=EmptyExtractor(),
+            narrative_rule_synthesizer=EmptySynthesizer(),
+            drawing_analyzer=NoOpDrawingAnalyzer(),
+            ifc_validator=FakeValidator(),
+            ids_validator=FakeIdsValidator(),
+            remark_generator=TemplateRemarkGenerator(),
+            audit_report_store=store,
+        )
+
+        report = use_case.execute(
+            ValidationRequest(
+                request_id="req-ids-only",
+                ifc_path=Path("sample.ifc"),
+                requirement_source=RequirementSource(text=""),
+                ids_path=Path("rules.ids"),
+            )
+        )
+
+        self.assertEqual(report.summary.requirement_count, 0)
+        self.assertEqual(report.summary.issue_count, 1)
+        self.assertEqual(report.summary.warning_count, 1)
+        self.assertEqual(report.issues[0].category, FindingCategory.IDS_VALIDATION)
 
 
 class CalculationSourceTests(unittest.TestCase):

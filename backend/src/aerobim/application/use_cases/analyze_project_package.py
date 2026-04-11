@@ -22,6 +22,7 @@ from aerobim.domain.ports import (
     AuditReportStore,
     ClashDetector,
     DrawingAnalyzer,
+    IdsValidator,
     IfcValidator,
     NarrativeRuleSynthesizer,
     RemarkGenerator,
@@ -38,6 +39,7 @@ class AnalyzeProjectPackageUseCase:
         ifc_validator: IfcValidator,
         remark_generator: RemarkGenerator,
         audit_report_store: AuditReportStore,
+        ids_validator: IdsValidator | None = None,
         tolerance: ToleranceConfig | None = None,
         clash_detector: ClashDetector | None = None,
     ) -> None:
@@ -45,6 +47,7 @@ class AnalyzeProjectPackageUseCase:
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
         self._drawing_analyzer = drawing_analyzer
         self._ifc_validator = ifc_validator
+        self._ids_validator = ids_validator
         self._remark_generator = remark_generator
         self._audit_report_store = audit_report_store
         self._tolerance = tolerance or ToleranceConfig()
@@ -56,13 +59,18 @@ class AnalyzeProjectPackageUseCase:
         )
         synthesized_requirements = self._collect_synthesized_requirements(request)
         requirements = tuple([*structured_requirements, *synthesized_requirements])
-        if not requirements:
+        ids_issues = tuple(self._collect_ids_issues(request))
+        if not requirements and request.ids_path is None:
             raise ValueError(
                 "No requirements were extracted or synthesized from the provided sources"
             )
 
         drawing_annotations = tuple(self._collect_drawing_annotations(request))
-        ifc_issues = tuple(self._ifc_validator.validate(request.ifc_path, requirements))
+        ifc_issues = (
+            tuple(self._ifc_validator.validate(request.ifc_path, requirements))
+            if requirements
+            else ()
+        )
         drawing_issues = tuple(
             self._validate_drawing_annotations(requirements, drawing_annotations)
         )
@@ -71,7 +79,9 @@ class AnalyzeProjectPackageUseCase:
             self._clash_detector.detect(request.ifc_path) if self._clash_detector else []
         )
         issues_with_remarks = tuple(
-            self._attach_remarks([*ifc_issues, *drawing_issues, *cross_document_issues])
+            self._attach_remarks(
+                [*ifc_issues, *drawing_issues, *cross_document_issues, *ids_issues]
+            )
         )
 
         severity_counts = Counter(issue.severity for issue in issues_with_remarks)
@@ -101,6 +111,13 @@ class AnalyzeProjectPackageUseCase:
         )
         self._audit_report_store.save(report)
         return report
+
+    def _collect_ids_issues(self, request: ValidationRequest) -> list[ValidationIssue]:
+        if request.ids_path is None:
+            return []
+        if self._ids_validator is None:
+            raise RuntimeError("IDS validation requested but no ids validator is configured")
+        return self._ids_validator.validate(request.ids_path, request.ifc_path)
 
     def _collect_synthesized_requirements(
         self, request: ValidationRequest
