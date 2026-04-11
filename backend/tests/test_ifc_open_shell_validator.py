@@ -287,6 +287,36 @@ class IfcOpenShellValidatorUnitNormalizationTests(unittest.TestCase):
 
         self.assertEqual(issues, [])
 
+    def test_observed_value_reported_in_requirement_unit(self) -> None:
+        """When a mismatch fires, observed_value is converted to the requirement's unit.
+
+        Model uses mm; requirement says m.  Raw observed = 200 mm.
+        Expected in report: "0.2" (metres), NOT "200.0".
+        """
+        wall = _FakeElement(1, "g1", "W1")
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Qto_WallBaseQuantities": {"Width": 200.0}}},
+            unit_scales={"LENGTHUNIT": 0.001, "AREAUNIT": 1e-6, "VOLUMEUNIT": 1e-9},
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-1",
+                ifc_entity="IFCWALL",
+                property_set="Qto_WallBaseQuantities",
+                property_name="Width",
+                operator=ComparisonOperator.LESS_OR_EQUAL,
+                expected_value="0.15",
+                unit="m",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        self.assertEqual(len(issues), 1)
+        self.assertAlmostEqual(float(issues[0].observed_value), 0.2, places=4)
+
 
 if __name__ == "__main__":
     unittest.main()
