@@ -18,19 +18,23 @@ class _NullLogger:
 
 def _make_test_container():
     """Build a container backed by InMemoryAuditStore for fast HTTP tests."""
-    from samolet.core.config.settings import Settings
-    from samolet.core.di.container import Container, Lifecycle
-    from samolet.core.di.tokens import Tokens
-    from samolet.infrastructure.adapters.docling_requirement_extractor import StructuredRequirementExtractor
-    from samolet.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
-    from samolet.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
-    from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
-    from samolet.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
-    from samolet.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
-    from samolet.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
-    from samolet.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
-
     import tempfile
+
+    from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+    from aerobim.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
+    from aerobim.core.config.settings import Settings
+    from aerobim.core.di.container import Container, Lifecycle
+    from aerobim.core.di.tokens import Tokens
+    from aerobim.infrastructure.adapters.docling_requirement_extractor import (
+        StructuredRequirementExtractor,
+    )
+    from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
+    from aerobim.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
+    from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+    from aerobim.infrastructure.adapters.structured_drawing_analyzer import (
+        StructuredDrawingAnalyzer,
+    )
+    from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 
     tmp = tempfile.mkdtemp()
     settings = Settings(
@@ -40,6 +44,7 @@ def _make_test_container():
         port=8080,
         storage_dir=Path(tmp),
         debug=True,
+        cors_origins=("http://localhost:3000", "http://localhost:5173"),
     )
     settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
@@ -85,7 +90,7 @@ class ApiSecurityTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError:
             raise unittest.SkipTest("FastAPI/httpx not installed")
-        from samolet.presentation.http.api import create_http_app
+        from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
         app = create_http_app(container)
@@ -129,7 +134,7 @@ class ApiReportEndpointTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError:
             raise unittest.SkipTest("FastAPI/httpx not installed")
-        from samolet.presentation.http.api import create_http_app
+        from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
         app = create_http_app(container)
@@ -169,7 +174,7 @@ class ApiHtmlExportTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError:
             raise unittest.SkipTest("FastAPI/httpx not installed")
-        from samolet.presentation.http.api import create_http_app
+        from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
         app = create_http_app(container)
@@ -207,7 +212,7 @@ class ApiHtmlExportTests(unittest.TestCase):
 
     def test_html_export_escapes_special_characters(self) -> None:
         """Ensure XSS-safe rendering of user-controlled data."""
-        from samolet.presentation.http.api import _esc
+        from aerobim.presentation.http.api import _esc
 
         self.assertEqual(_esc('<script>alert("xss")</script>'), '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;')
         self.assertEqual(_esc("A & B"), "A &amp; B")
@@ -222,7 +227,7 @@ class ApiMalformedInputTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError:
             raise unittest.SkipTest("FastAPI/httpx not installed")
-        from samolet.presentation.http.api import create_http_app
+        from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
         app = create_http_app(container)

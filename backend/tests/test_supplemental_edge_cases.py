@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 class FilesystemStoreResilienceTests(unittest.TestCase):
     def test_get_returns_none_for_corrupt_json(self) -> None:
-        from samolet.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+        from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
         with tempfile.TemporaryDirectory() as tmp:
             store = FilesystemAuditStore(Path(tmp))
@@ -36,7 +36,7 @@ class FilesystemStoreResilienceTests(unittest.TestCase):
             self.assertIsNone(result, "Corrupt JSON should return None, not raise")
 
     def test_get_returns_none_for_missing_keys(self) -> None:
-        from samolet.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+        from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
         with tempfile.TemporaryDirectory() as tmp:
             store = FilesystemAuditStore(Path(tmp))
@@ -49,8 +49,11 @@ class FilesystemStoreResilienceTests(unittest.TestCase):
             self.assertIsNone(result, "Missing keys should return None, not KeyError")
 
     def test_list_reports_skips_corrupt_files(self) -> None:
-        from samolet.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore, FilesystemAuditStore as FS
-        from samolet.domain.models import ValidationReport, ValidationSummary
+        from aerobim.domain.models import ValidationReport, ValidationSummary
+        from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+        from aerobim.infrastructure.adapters.filesystem_audit_store import (
+            FilesystemAuditStore as FS,
+        )
 
         with tempfile.TemporaryDirectory() as tmp:
             store = FilesystemAuditStore(Path(tmp))
@@ -82,10 +85,17 @@ class FilesystemStoreResilienceTests(unittest.TestCase):
 
 class ValidateWithIdsPathTests(unittest.TestCase):
     def test_ids_issues_combined_with_requirement_issues(self) -> None:
-        from samolet.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
-        from samolet.domain.models import (
-            ParsedRequirement, RequirementSource, Severity,
-            ValidationIssue, ValidationReport, ValidationRequest, ValidationSummary,
+        from aerobim.application.use_cases.validate_ifc_against_ids import (
+            ValidateIfcAgainstIdsUseCase,
+        )
+        from aerobim.domain.models import (
+            ParsedRequirement,
+            RequirementSource,
+            Severity,
+            ValidationIssue,
+            ValidationReport,
+            ValidationRequest,
+            ValidationSummary,
         )
 
         class StubExtractor:
@@ -132,8 +142,10 @@ class ValidateWithIdsPathTests(unittest.TestCase):
         self.assertFalse(report.summary.passed)
 
     def test_no_requirements_and_no_ids_raises(self) -> None:
-        from samolet.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
-        from samolet.domain.models import RequirementSource, ValidationRequest
+        from aerobim.application.use_cases.validate_ifc_against_ids import (
+            ValidateIfcAgainstIdsUseCase,
+        )
+        from aerobim.domain.models import RequirementSource, ValidationRequest
 
         class EmptyExtractor:
             def extract(self, _src):
@@ -169,45 +181,47 @@ class CompareValuesTests(unittest.TestCase):
     """Test the _compare_values helper in AnalyzeProjectPackageUseCase."""
 
     def _make_uc(self, tolerance=None):
-        from samolet.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase as UC
-        from samolet.domain.models import ToleranceConfig
+        from aerobim.application.use_cases.analyze_project_package import (
+            AnalyzeProjectPackageUseCase as UC,
+        )
+        from aerobim.domain.models import ToleranceConfig
         uc = UC.__new__(UC)
         uc._tolerance = tolerance or ToleranceConfig()
         return uc
 
     def test_lte_operator(self) -> None:
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("100", "200", ComparisonOperator.LESS_OR_EQUAL))
         self.assertTrue(uc._compare_values("200", "200", ComparisonOperator.LESS_OR_EQUAL))
         self.assertFalse(uc._compare_values("300", "200", ComparisonOperator.LESS_OR_EQUAL))
 
     def test_gte_operator(self) -> None:
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("200", "100", ComparisonOperator.GREATER_OR_EQUAL))
         self.assertFalse(uc._compare_values("50", "100", ComparisonOperator.GREATER_OR_EQUAL))
 
     def test_equals_operator(self) -> None:
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("REI60", "REI60", ComparisonOperator.EQUALS))
         self.assertFalse(uc._compare_values("REI90", "REI60", ComparisonOperator.EQUALS))
 
     def test_exists_operator(self) -> None:
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("anything", None, ComparisonOperator.EXISTS))
         self.assertFalse(uc._compare_values(None, None, ComparisonOperator.EXISTS))
 
     def test_non_numeric_gte_falls_back_to_string_equality(self) -> None:
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("abc", "abc", ComparisonOperator.GREATER_OR_EQUAL))
         self.assertFalse(uc._compare_values("abc", "xyz", ComparisonOperator.GREATER_OR_EQUAL))
 
     def test_none_observed_returns_false(self) -> None:
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertFalse(uc._compare_values(None, "100", ComparisonOperator.EQUALS))
 
@@ -215,7 +229,7 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_fuzzy_equals_within_length_epsilon(self) -> None:
         """200.0005 ≈ 200.0 within default length_epsilon=0.001 mm."""
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("200.0005", "200.0", ComparisonOperator.EQUALS, unit="mm")
@@ -223,7 +237,7 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_fuzzy_equals_outside_length_epsilon(self) -> None:
         """200.5 ≠ 200.0 — well outside 0.001 epsilon."""
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertFalse(
             uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm")
@@ -231,7 +245,7 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_fuzzy_gte_within_epsilon_boundary(self) -> None:
         """199.9995 is within ε of 200.0 for GTE (passes with tolerance)."""
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("199.9995", "200.0", ComparisonOperator.GREATER_OR_EQUAL, unit="mm")
@@ -239,7 +253,7 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_fuzzy_lte_within_epsilon_boundary(self) -> None:
         """200.0005 is within ε of 200.0 for LTE (passes with tolerance)."""
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("200.0005", "200.0", ComparisonOperator.LESS_OR_EQUAL, unit="mm")
@@ -247,7 +261,7 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_fuzzy_area_unit(self) -> None:
         """42.005 ≈ 42.0 within area_epsilon=0.01 m²."""
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("42.005", "42.0", ComparisonOperator.EQUALS, unit="м2")
@@ -258,7 +272,7 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_fuzzy_custom_tolerance(self) -> None:
         """Custom tolerance: 1.0 epsilon makes 200.5 ≈ 200.0."""
-        from samolet.domain.models import ComparisonOperator, ToleranceConfig
+        from aerobim.domain.models import ComparisonOperator, ToleranceConfig
         custom = ToleranceConfig(length_epsilon=1.0)
         uc = self._make_uc(tolerance=custom)
         self.assertTrue(
@@ -267,7 +281,7 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_no_unit_uses_default_epsilon(self) -> None:
         """Without unit, default_epsilon=1e-6 applies."""
-        from samolet.domain.models import ComparisonOperator
+        from aerobim.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("42.0000005", "42.0", ComparisonOperator.EQUALS)
@@ -298,7 +312,7 @@ class ApiCorsAndCorrelationTests(unittest.TestCase):
         spec.loader.exec_module(mod)  # type: ignore[union-attr]
         container = mod._make_test_container()
 
-        from samolet.presentation.http.api import create_http_app
+        from aerobim.presentation.http.api import create_http_app
         app = create_http_app(container)
         cls.client = TestClient(app)
 
@@ -331,8 +345,15 @@ class ApiCorsAndCorrelationTests(unittest.TestCase):
 
 class DrawingDimensionPatternTests(unittest.TestCase):
     def test_drawing_dimension_russian(self) -> None:
-        from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
-        from samolet.domain.models import RequirementSource, RuleScope, SourceKind, ComparisonOperator
+        from aerobim.domain.models import (
+            ComparisonOperator,
+            RequirementSource,
+            RuleScope,
+            SourceKind,
+        )
+        from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
+            NarrativeRuleSynthesizer,
+        )
 
         synthesizer = NarrativeRuleSynthesizer()
         source = RequirementSource(
@@ -348,8 +369,10 @@ class DrawingDimensionPatternTests(unittest.TestCase):
         self.assertEqual(result[0].unit, "мм")
 
     def test_drawing_dimension_english(self) -> None:
-        from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
-        from samolet.domain.models import RequirementSource, RuleScope, SourceKind
+        from aerobim.domain.models import RequirementSource, RuleScope, SourceKind
+        from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
+            NarrativeRuleSynthesizer,
+        )
 
         synthesizer = NarrativeRuleSynthesizer()
         source = RequirementSource(
@@ -368,32 +391,32 @@ class DrawingDimensionPatternTests(unittest.TestCase):
 
 class ToleranceConfigTests(unittest.TestCase):
     def test_default_values(self) -> None:
-        from samolet.domain.models import ToleranceConfig
+        from aerobim.domain.models import ToleranceConfig
         tc = ToleranceConfig()
         self.assertEqual(tc.length_epsilon, 0.001)
         self.assertEqual(tc.area_epsilon, 0.01)
         self.assertEqual(tc.default_epsilon, 1e-6)
 
     def test_epsilon_for_length_units(self) -> None:
-        from samolet.domain.models import ToleranceConfig
+        from aerobim.domain.models import ToleranceConfig
         tc = ToleranceConfig()
         for unit in ("mm", "мм", "m", "м", "cm", "см"):
             self.assertEqual(tc.epsilon_for_unit(unit), 0.001, f"Failed for unit={unit}")
 
     def test_epsilon_for_area_units(self) -> None:
-        from samolet.domain.models import ToleranceConfig
+        from aerobim.domain.models import ToleranceConfig
         tc = ToleranceConfig()
         for unit in ("m2", "м2", "sqm", "sq.m", "m²", "м²"):
             self.assertEqual(tc.epsilon_for_unit(unit), 0.01, f"Failed for unit={unit}")
 
     def test_epsilon_for_unknown_unit(self) -> None:
-        from samolet.domain.models import ToleranceConfig
+        from aerobim.domain.models import ToleranceConfig
         tc = ToleranceConfig()
         self.assertEqual(tc.epsilon_for_unit("kg"), 1e-6)
         self.assertEqual(tc.epsilon_for_unit(None), 1e-6)
 
     def test_custom_epsilon(self) -> None:
-        from samolet.domain.models import ToleranceConfig
+        from aerobim.domain.models import ToleranceConfig
         tc = ToleranceConfig(length_epsilon=0.5, area_epsilon=1.0, default_epsilon=0.01)
         self.assertEqual(tc.epsilon_for_unit("mm"), 0.5)
         self.assertEqual(tc.epsilon_for_unit("m2"), 1.0)
@@ -407,7 +430,8 @@ class ToleranceConfigTests(unittest.TestCase):
 class VlmDrawingAnalyzerContractTests(unittest.TestCase):
     def test_stub_returns_empty_for_existing_file(self) -> None:
         import tempfile
-        from samolet.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+
+        from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
 
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
             tmp.write(b"\x89PNG\r\n\x1a\n")  # minimal PNG header
@@ -421,7 +445,7 @@ class VlmDrawingAnalyzerContractTests(unittest.TestCase):
             tmp_path.unlink()
 
     def test_stub_raises_for_missing_file(self) -> None:
-        from samolet.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+        from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
 
         analyzer = VlmDrawingAnalyzer()
         with self.assertRaises(FileNotFoundError):
@@ -429,8 +453,8 @@ class VlmDrawingAnalyzerContractTests(unittest.TestCase):
 
     def test_port_protocol_compliance(self) -> None:
         """VlmDrawingAnalyzer satisfies VisionDrawingAnalyzer protocol."""
-        from samolet.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
-        from samolet.domain.ports import VisionDrawingAnalyzer
+        from aerobim.domain.ports import VisionDrawingAnalyzer
+        from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
 
         analyzer = VlmDrawingAnalyzer()
         # Protocol structural check: must have analyze_image method
@@ -440,7 +464,7 @@ class VlmDrawingAnalyzerContractTests(unittest.TestCase):
         # For older versions, structural check above suffices
 
     def test_token_registered_in_bootstrap(self) -> None:
-        from samolet.core.di.tokens import Tokens
+        from aerobim.core.di.tokens import Tokens
         self.assertTrue(hasattr(Tokens, "VISION_DRAWING_ANALYZER"))
 
 
