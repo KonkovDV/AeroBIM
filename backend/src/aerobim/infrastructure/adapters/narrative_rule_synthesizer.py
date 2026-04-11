@@ -81,7 +81,9 @@ class NarrativeRuleSynthesizer:
                         target_ref=drawing_dimension_match.group("target"),
                         property_name="thickness",
                         operator=ComparisonOperator.GREATER_OR_EQUAL,
-                        expected_value=self._normalize_number(drawing_dimension_match.group("value")),
+                        expected_value=self._normalize_number(
+                            drawing_dimension_match.group("value")
+                        ),
                         unit=drawing_dimension_match.group("unit"),
                         source=str(source.path) if source.path else source.source_kind.value,
                         source_kind=source.source_kind,

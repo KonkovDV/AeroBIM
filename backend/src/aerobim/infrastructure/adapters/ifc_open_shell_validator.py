@@ -48,7 +48,9 @@ class IfcOpenShellValidator:
             matching_elements = list(model.by_type(requirement.ifc_entity))
             if requirement.target_ref:
                 matching_elements = [
-                    element for element in matching_elements if self._matches_target_ref(element, requirement.target_ref)
+                    element
+                    for element in matching_elements
+                    if self._matches_target_ref(element, requirement.target_ref)
                 ]
 
             if not matching_elements:

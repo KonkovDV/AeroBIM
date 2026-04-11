@@ -18,14 +18,16 @@ class TemplateRemarkGenerator:
         if issue.category is FindingCategory.DRAWING_VALIDATION:
             title = f"Замечание по чертежу: {issue.rule_id}"
             body = (
-                f"Проблемная зона на чертеже {location_text}: показатель {field_name} имеет значение "
+                f"Проблемная зона на чертеже {location_text}: "
+                f"показатель {field_name} имеет значение "
                 f"{observed_text}, тогда как {expected_text}."
             )
             return GeneratedRemark(title=title, body=body)
 
         title = f"Замечание по модели: {issue.rule_id}"
         body = (
-            f"Для {issue.ifc_entity or 'элемента'} {location_text} поле {field_name} имеет значение "
+            f"Для {issue.ifc_entity or 'элемента'} {location_text} "
+            f"поле {field_name} имеет значение "
             f"{observed_text}, тогда как {expected_text}."
         )
         return GeneratedRemark(title=title, body=body)

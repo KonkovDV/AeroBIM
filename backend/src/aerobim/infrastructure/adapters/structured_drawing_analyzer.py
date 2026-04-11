@@ -27,10 +27,13 @@ class StructuredDrawingAnalyzer:
             parts = [part.strip() for part in normalized.split("|")]
             if len(parts) < 6:
                 raise ValueError(
-                    f"Malformed drawing annotation at line {line_number}: expected at least 6 pipe-separated columns"
+                    "Malformed drawing annotation at line "
+                    f"{line_number}: expected at least 6 pipe-separated columns"
                 )
 
-            annotation_id, sheet_id, target_ref, measure_name, observed_value, unit, *zone_parts = parts
+            annotation_id, sheet_id, target_ref, measure_name, observed_value, unit, *zone_parts = (
+                parts
+            )
             problem_zone = self._build_problem_zone(sheet_id or source.sheet_id, zone_parts)
             annotations.append(
                 DrawingAnnotation(
@@ -82,7 +85,9 @@ class StructuredDrawingAnalyzer:
 
         return annotations
 
-    def _build_problem_zone(self, sheet_id: str | None, zone_parts: list[str]) -> ProblemZone | None:
+    def _build_problem_zone(
+        self, sheet_id: str | None, zone_parts: list[str]
+    ) -> ProblemZone | None:
         if len(zone_parts) < 5:
             return None
 

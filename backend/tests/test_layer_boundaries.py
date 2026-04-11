@@ -87,7 +87,9 @@ _VIOLATIONS = _build_violation_cases()
 @pytest.mark.parametrize(
     "layer,filepath,imported,violated_layer",
     _VIOLATIONS,
-    ids=[f"{v[0]}:{Path(v[1]).name}→{v[3]}" for v in _VIOLATIONS] if _VIOLATIONS else ["no_violations"],
+    ids=[f"{v[0]}:{Path(v[1]).name}→{v[3]}" for v in _VIOLATIONS]
+    if _VIOLATIONS
+    else ["no_violations"],
 )
 def test_no_layer_violations(layer: str, filepath: str, imported: str, violated_layer: str) -> None:
     pytest.fail(
@@ -143,6 +145,6 @@ def test_all_di_tokens_registered() -> None:
     bootstrap_src = bootstrap_path.read_text(encoding="utf-8")
 
     for token in token_values:
-        assert f'Tokens.{token.upper().replace(" ", "_")}' in bootstrap_src or token in bootstrap_src, (
-            f"Token '{token}' not found in bootstrap.py"
-        )
+        assert (
+            f"Tokens.{token.upper().replace(' ', '_')}" in bootstrap_src or token in bootstrap_src
+        ), f"Token '{token}' not found in bootstrap.py"

@@ -64,13 +64,17 @@ class FakeDrawingAnalyzer:
                 measure_name="thickness",
                 observed_value="150",
                 unit="mm",
-                problem_zone=ProblemZone(sheet_id="A-101", page_number=1, x=10, y=20, width=100, height=50),
+                problem_zone=ProblemZone(
+                    sheet_id="A-101", page_number=1, x=10, y=20, width=100, height=50
+                ),
             )
         ]
 
 
 class FakeValidator:
-    def validate(self, _ifc_path: Path, _requirements: list[ParsedRequirement]) -> list[ValidationIssue]:
+    def validate(
+        self, _ifc_path: Path, _requirements: list[ParsedRequirement]
+    ) -> list[ValidationIssue]:
         return [
             ValidationIssue(
                 rule_id="REQ-001",
@@ -111,12 +115,16 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             ValidationRequest(
                 request_id="req-001",
                 ifc_path=Path("sample.ifc"),
-                requirement_source=RequirementSource(text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
                 technical_spec_source=RequirementSource(
                     text="Лист A-101: толщина WALL-01 не менее 200 мм",
                     source_kind=SourceKind.TECHNICAL_SPECIFICATION,
                 ),
-                drawing_sources=(DrawingSource(text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50"),),
+                drawing_sources=(
+                    DrawingSource(text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50"),
+                ),
             )
         )
 
@@ -133,7 +141,9 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 class CalculationSourceTests(unittest.TestCase):
     """Tests that calculation_source feeds into synthesized requirements."""
 
-    CALC_FIXTURE = Path(__file__).resolve().parents[2] / "samples" / "calculations" / "area-requirement.txt"
+    CALC_FIXTURE = (
+        Path(__file__).resolve().parents[2] / "samples" / "calculations" / "area-requirement.txt"
+    )
 
     def test_calculation_text_produces_synthesized_requirements(self) -> None:
         from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
@@ -142,7 +152,10 @@ class CalculationSourceTests(unittest.TestCase):
 
         synthesizer = RealSynthesizer()
         source = RequirementSource(
-            text="Помещение ГОС-001: площадь не менее 25 м2\nWall ГОС-002 fire rating должна быть REI90",
+            text=(
+                "Помещение ГОС-001: площадь не менее 25 м2\n"
+                "Wall ГОС-002 fire rating должна быть REI90"
+            ),
             source_kind=SourceKind.CALCULATION,
         )
         rules = synthesizer.synthesize(source)
@@ -187,7 +200,9 @@ class CalculationSourceTests(unittest.TestCase):
             ValidationRequest(
                 request_id="req-calc",
                 ifc_path=Path("sample.ifc"),
-                requirement_source=RequirementSource(text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
                 calculation_source=RequirementSource(
                     text="Помещение ГОС-001: площадь не менее 25 м2",
                     source_kind=SourceKind.CALCULATION,
@@ -195,7 +210,11 @@ class CalculationSourceTests(unittest.TestCase):
             )
         )
 
-        self.assertGreater(report.summary.requirement_count, 1, "Should include synthesized requirement from calculation")
+        self.assertGreater(
+            report.summary.requirement_count,
+            1,
+            "Should include synthesized requirement from calculation",
+        )
         self.assertEqual(store.saved_report_id, report.report_id)
 
 

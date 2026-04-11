@@ -39,7 +39,8 @@ class StructuredRequirementExtractorTests(unittest.TestCase):
         requirements = extractor.extract(
             RequirementSource(
                 text=(
-                    "REQ-AREA-001|ifc-quantity|IFCSPACE|ROOM-101|Qto_SpaceBaseQuantities|NetFloorArea|gte|42|m2|Area from TZ\n"
+                    "REQ-AREA-001|ifc-quantity|IFCSPACE|ROOM-101|"
+                    "Qto_SpaceBaseQuantities|NetFloorArea|gte|42|m2|Area from TZ\n"
                 )
             )
         )

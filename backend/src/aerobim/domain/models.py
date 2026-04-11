@@ -187,13 +187,17 @@ class ToleranceConfig:
     controls the ε-band used by comparison operators.
 
     Defaults:
-      - length_epsilon:  1 mm  = 0.001 m  (ISO 1101 general tolerance)
-      - area_epsilon:    0.01 m²           (sub-centimetre precision)
-      - default_epsilon: 1e-6              (dimensionless / fallback)
+      - length_epsilon:          1 mm  = 0.001 m  (ISO 1101 general tolerance)
+      - imperial_length_epsilon: 0.003           (small feet/inch tolerance band)
+      - area_epsilon:            0.01 m²         (sub-centimetre precision)
+      - angle_epsilon:           0.1             (degrees/radians project-level band)
+      - default_epsilon:         1e-6            (dimensionless / fallback)
     """
 
     length_epsilon: float = 0.001
+    imperial_length_epsilon: float = 0.003
     area_epsilon: float = 0.01
+    angle_epsilon: float = 0.1
     default_epsilon: float = 1e-6
 
     def epsilon_for_unit(self, unit: str | None) -> float:
@@ -203,6 +207,10 @@ class ToleranceConfig:
         normalised = unit.strip().lower()
         if normalised in {"m", "м", "mm", "мм", "cm", "см"}:
             return self.length_epsilon
+        if normalised in {"ft", "feet", "foot", "in", "inch", "inches"}:
+            return self.imperial_length_epsilon
         if normalised in {"m2", "м2", "sqm", "sq.m", "m²", "м²"}:
             return self.area_epsilon
+        if normalised in {"deg", "degree", "degrees", "°", "rad", "radian", "radians"}:
+            return self.angle_epsilon
         return self.default_epsilon
