@@ -52,7 +52,7 @@ python -m aerobim.main
 |---|---|---|
 | `GET` | `/health` | Readiness probe |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements + IDS |
-| `POST` | `/v1/analyze/project-package` | Multimodal validation (spec + calc + drawing + IFC) |
+| `POST` | `/v1/analyze/project-package` | Multimodal validation (spec + calc + drawing + IDS + IFC) |
 | `GET` | `/v1/reports` | List persisted reports |
 | `GET` | `/v1/reports/{id}` | Get report by ID |
 | `GET` | `/v1/reports/{id}/export/json` | Download JSON export |

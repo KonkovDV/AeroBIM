@@ -304,5 +304,129 @@ class ApiMalformedInputTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
 
+class ApiAnalyzeProjectPackageIdsTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        import tempfile
+
+        from aerobim.core.config.settings import Settings
+        from aerobim.core.di.container import Container, Lifecycle
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.domain.models import (
+            FindingCategory,
+            Severity,
+            ValidationIssue,
+            ValidationReport,
+            ValidationSummary,
+        )
+        from aerobim.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
+        from aerobim.presentation.http.api import create_http_app
+
+        class _NoOpValidateUseCase:
+            def execute(self, _request):
+                return ValidationReport(
+                    report_id="0" * 32,
+                    request_id="noop",
+                    ifc_path=Path("noop.ifc"),
+                    created_at="2026-04-11T00:00:00+00:00",
+                    requirements=(),
+                    issues=(),
+                    summary=ValidationSummary(
+                        requirement_count=0,
+                        issue_count=0,
+                        error_count=0,
+                        warning_count=0,
+                        passed=True,
+                    ),
+                )
+
+        class _RecordingAnalyzeUseCase:
+            def __init__(self) -> None:
+                self.last_request = None
+
+            def execute(self, request):
+                self.last_request = request
+                return ValidationReport(
+                    report_id="1" * 32,
+                    request_id=request.request_id,
+                    ifc_path=request.ifc_path,
+                    created_at="2026-04-11T00:00:00+00:00",
+                    requirements=(),
+                    issues=(
+                        ValidationIssue(
+                            rule_id="IDS-API-001",
+                            severity=Severity.WARNING,
+                            message="IDS propagated through API",
+                            category=FindingCategory.IDS_VALIDATION,
+                        ),
+                    ),
+                    summary=ValidationSummary(
+                        requirement_count=0,
+                        issue_count=1,
+                        error_count=0,
+                        warning_count=1,
+                        passed=True,
+                    ),
+                )
+
+        temp_dir = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(temp_dir.cleanup)
+        settings = Settings(
+            application_name="test",
+            environment="test",
+            host="127.0.0.1",
+            port=8080,
+            storage_dir=Path(temp_dir.name),
+            debug=True,
+            cors_origins=("http://localhost:3000", "http://localhost:5173"),
+        )
+        settings.storage_dir.mkdir(parents=True, exist_ok=True)
+
+        store = InMemoryAuditStore()
+        container = Container()
+        cls.analyze_use_case = _RecordingAnalyzeUseCase()
+        container.register(Tokens.SETTINGS, lambda _: settings)
+        container.register(Tokens.LOGGER, lambda _: _NullLogger(), lifecycle=Lifecycle.SINGLETON)
+        container.register(
+            Tokens.AUDIT_REPORT_STORE,
+            lambda _: store,
+            lifecycle=Lifecycle.SINGLETON,
+        )
+        container.register(
+            Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE,
+            lambda _: _NoOpValidateUseCase(),
+            lifecycle=Lifecycle.SINGLETON,
+        )
+        container.register(
+            Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE,
+            lambda _: cls.analyze_use_case,
+            lifecycle=Lifecycle.SINGLETON,
+        )
+
+        app = create_http_app(container)
+        cls.client = TestClient(app)
+
+    def test_analyze_project_package_accepts_ids_path(self) -> None:
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": "models/model.ifc",
+                "ids_path": "rules/project.ids",
+                "requirement_text": "",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["summary"]["warning_count"], 1)
+        assert self.analyze_use_case.last_request is not None
+        self.assertEqual(self.analyze_use_case.last_request.ids_path.name, "project.ids")
+        self.assertEqual(self.analyze_use_case.last_request.ifc_path.name, "model.ifc")
+
+
 if __name__ == "__main__":
     unittest.main()
