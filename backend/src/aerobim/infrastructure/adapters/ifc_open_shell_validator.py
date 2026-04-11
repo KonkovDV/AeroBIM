@@ -120,6 +120,9 @@ class IfcOpenShellValidator:
 
                 property_found = True
                 if not self._matches_requirement(observed_value, requirement, unit_scales):
+                    reported_observed = self._normalize_observed_for_report(
+                        observed_value, requirement.unit, unit_scales
+                    )
                     issues.append(
                         ValidationIssue(
                             rule_id=requirement.rule_id,
@@ -135,7 +138,7 @@ class IfcOpenShellValidator:
                             property_name=requirement.property_name,
                             operator=requirement.operator,
                             expected_value=requirement.expected_value,
-                            observed_value=str(observed_value),
+                            observed_value=reported_observed,
                             unit=requirement.unit,
                             element_guid=self._extract_guid(element),
                         )
@@ -245,6 +248,25 @@ class IfcOpenShellValidator:
         ifc_unit_type, expected_to_si = mapping
         ifc_to_si = unit_scales.get(ifc_unit_type, 1.0)
         return observed * ifc_to_si, expected * expected_to_si
+
+    def _normalize_observed_for_report(
+        self,
+        observed_value: Any,
+        unit: str | None,
+        unit_scales: dict[str, float],
+    ) -> str:
+        """Convert *observed_value* to the requirement's unit for human-readable reports."""
+        number = self._to_float(observed_value)
+        if number is None or unit is None:
+            return str(observed_value)
+        mapping = _UNIT_TO_SI_FACTOR.get(unit.strip().lower())
+        if mapping is None:
+            return str(observed_value)
+        ifc_unit_type, expected_to_si = mapping
+        if expected_to_si == 0:
+            return str(observed_value)
+        ifc_to_si = unit_scales.get(ifc_unit_type, 1.0)
+        return str(number * ifc_to_si / expected_to_si)
 
     def _extract_guid(self, element: Any) -> str | None:
         global_id = getattr(element, "GlobalId", None)
