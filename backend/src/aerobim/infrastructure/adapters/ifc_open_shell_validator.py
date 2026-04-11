@@ -16,6 +16,35 @@ from aerobim.domain.models import (
     ValidationIssue,
 )
 
+# Maps requirement unit string → (IFC unit type, factor to convert that unit to SI).
+_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
+    # length → metres
+    "m": ("LENGTHUNIT", 1.0),
+    "м": ("LENGTHUNIT", 1.0),
+    "mm": ("LENGTHUNIT", 0.001),
+    "мм": ("LENGTHUNIT", 0.001),
+    "cm": ("LENGTHUNIT", 0.01),
+    "см": ("LENGTHUNIT", 0.01),
+    "ft": ("LENGTHUNIT", 0.3048),
+    "feet": ("LENGTHUNIT", 0.3048),
+    "foot": ("LENGTHUNIT", 0.3048),
+    "in": ("LENGTHUNIT", 0.0254),
+    "inch": ("LENGTHUNIT", 0.0254),
+    "inches": ("LENGTHUNIT", 0.0254),
+    # area → m²
+    "m2": ("AREAUNIT", 1.0),
+    "м2": ("AREAUNIT", 1.0),
+    "m²": ("AREAUNIT", 1.0),
+    "м²": ("AREAUNIT", 1.0),
+    "sqm": ("AREAUNIT", 1.0),
+    "sq.m": ("AREAUNIT", 1.0),
+    # volume → m³
+    "m3": ("VOLUMEUNIT", 1.0),
+    "м3": ("VOLUMEUNIT", 1.0),
+    "m³": ("VOLUMEUNIT", 1.0),
+    "м³": ("VOLUMEUNIT", 1.0),
+}
+
 
 class IfcOpenShellValidator:
     def __init__(self, tolerance: ToleranceConfig | None = None) -> None:
@@ -36,6 +65,7 @@ class IfcOpenShellValidator:
             raise RuntimeError("Install ifcopenshell to run IFC validation") from exc
 
         model = ifcopenshell.open(str(ifc_path))
+        unit_scales = self._get_unit_scales(model)
         issues: list[ValidationIssue] = []
         entity_cache: dict[str, tuple[Any, ...]] = {}
         target_cache: dict[tuple[str, str], tuple[Any, ...]] = {}
@@ -89,7 +119,7 @@ class IfcOpenShellValidator:
                     continue
 
                 property_found = True
-                if not self._matches_requirement(observed_value, requirement):
+                if not self._matches_requirement(observed_value, requirement, unit_scales):
                     issues.append(
                         ValidationIssue(
                             rule_id=requirement.rule_id,
@@ -186,6 +216,36 @@ class IfcOpenShellValidator:
 
         return ("object", id(element))
 
+    def _get_unit_scales(self, model: Any) -> dict[str, float]:
+        """Extract SI conversion factors from the IFC model's ``UnitsInContext``."""
+        try:
+            from ifcopenshell.util.unit import calculate_unit_scale
+
+            return {
+                "LENGTHUNIT": calculate_unit_scale(model, "LENGTHUNIT"),
+                "AREAUNIT": calculate_unit_scale(model, "AREAUNIT"),
+                "VOLUMEUNIT": calculate_unit_scale(model, "VOLUMEUNIT"),
+            }
+        except Exception:  # noqa: BLE001
+            return {"LENGTHUNIT": 1.0, "AREAUNIT": 1.0, "VOLUMEUNIT": 1.0}
+
+    def _normalize_pair(
+        self,
+        observed: float,
+        expected: float,
+        unit: str | None,
+        unit_scales: dict[str, float],
+    ) -> tuple[float, float]:
+        """Convert *observed* (IFC project units) and *expected* to SI."""
+        if unit is None:
+            return observed, expected
+        mapping = _UNIT_TO_SI_FACTOR.get(unit.strip().lower())
+        if mapping is None:
+            return observed, expected
+        ifc_unit_type, expected_to_si = mapping
+        ifc_to_si = unit_scales.get(ifc_unit_type, 1.0)
+        return observed * ifc_to_si, expected * expected_to_si
+
     def _extract_guid(self, element: Any) -> str | None:
         global_id = getattr(element, "GlobalId", None)
         return str(global_id) if global_id else None
@@ -198,7 +258,12 @@ class IfcOpenShellValidator:
                 return True
         return False
 
-    def _matches_requirement(self, observed_value: Any, requirement: ParsedRequirement) -> bool:
+    def _matches_requirement(
+        self,
+        observed_value: Any,
+        requirement: ParsedRequirement,
+        unit_scales: dict[str, float],
+    ) -> bool:
         if requirement.operator is ComparisonOperator.EXISTS:
             return observed_value is not None
 
@@ -209,13 +274,16 @@ class IfcOpenShellValidator:
         expected_number = self._to_float(requirement.expected_value)
 
         if observed_number is not None and expected_number is not None:
+            obs_si, exp_si = self._normalize_pair(
+                observed_number, expected_number, requirement.unit, unit_scales
+            )
             eps = self._tolerance.epsilon_for_unit(requirement.unit)
             if requirement.operator is ComparisonOperator.GREATER_OR_EQUAL:
-                return observed_number >= expected_number - eps
+                return obs_si >= exp_si - eps
             if requirement.operator is ComparisonOperator.LESS_OR_EQUAL:
-                return observed_number <= expected_number + eps
+                return obs_si <= exp_si + eps
             # EQUALS: tolerance band |obs - exp| <= ε
-            return abs(observed_number - expected_number) <= eps
+            return abs(obs_si - exp_si) <= eps
 
         # Non-numeric fallback: exact string comparison
         return str(observed_value) == requirement.expected_value
