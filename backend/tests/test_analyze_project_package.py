@@ -109,6 +109,33 @@ class NoOpIdsValidator:
         return []
 
 
+class FakeVisionDrawingAnalyzer:
+    def analyze_image(
+        self,
+        _image_path: Path,
+        sheet_id: str | None = None,
+    ) -> list[DrawingAnnotation]:
+        return [
+            DrawingAnnotation(
+                annotation_id="VLM-ANN-001",
+                sheet_id=sheet_id or "IMG-001",
+                target_ref="WALL-IMG-01",
+                measure_name="thickness",
+                observed_value="220",
+                unit="mm",
+                problem_zone=ProblemZone(
+                    sheet_id=sheet_id or "IMG-001",
+                    page_number=1,
+                    x=5,
+                    y=10,
+                    width=50,
+                    height=20,
+                ),
+                source="vision-analyzer",
+            )
+        ]
+
+
 class FakeStore:
     def __init__(self) -> None:
         self.saved_report_id: str | None = None
@@ -231,6 +258,106 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         self.assertEqual(report.summary.issue_count, 1)
         self.assertEqual(report.summary.warning_count, 1)
         self.assertEqual(report.issues[0].category, FindingCategory.IDS_VALIDATION)
+
+    def test_execute_routes_pdf_drawings_to_vision_analyzer(self) -> None:
+        class ExplodingStructuredAnalyzer:
+            def analyze(self, _source: DrawingSource) -> list[DrawingAnnotation]:
+                raise AssertionError(
+                    "Structured analyzer should not be used for pure PDF/image input"
+                )
+
+        class NoOpExtractor:
+            def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpSynthesizer:
+            def synthesize(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpValidator:
+            def validate(
+                self,
+                _ifc_path: Path,
+                _requirements: list[ParsedRequirement],
+            ) -> list[ValidationIssue]:
+                return []
+
+        store = FakeStore()
+        use_case = AnalyzeProjectPackageUseCase(
+            requirement_extractor=NoOpExtractor(),
+            narrative_rule_synthesizer=NoOpSynthesizer(),
+            drawing_analyzer=ExplodingStructuredAnalyzer(),
+            ifc_validator=NoOpValidator(),
+            ids_validator=FakeIdsValidator(),
+            vision_drawing_analyzer=FakeVisionDrawingAnalyzer(),
+            remark_generator=TemplateRemarkGenerator(),
+            audit_report_store=store,
+        )
+
+        report = use_case.execute(
+            ValidationRequest(
+                request_id="req-vision-pdf",
+                ifc_path=Path("sample.ifc"),
+                requirement_source=RequirementSource(text=""),
+                ids_path=Path("rules.ids"),
+                drawing_sources=(
+                    DrawingSource(
+                        text="",
+                        path=Path("sheet-a101.pdf"),
+                        sheet_id="A-101",
+                        format="pdf",
+                    ),
+                ),
+            )
+        )
+
+        self.assertEqual(report.summary.drawing_annotation_count, 1)
+        self.assertEqual(report.drawing_annotations[0].source, "vision-analyzer")
+        self.assertEqual(report.drawing_annotations[0].sheet_id, "A-101")
+
+    def test_execute_merges_structured_and_vision_annotations(self) -> None:
+        store = FakeStore()
+        use_case = AnalyzeProjectPackageUseCase(
+            requirement_extractor=FakeExtractor(),
+            narrative_rule_synthesizer=FakeSynthesizer(),
+            drawing_analyzer=FakeDrawingAnalyzer(),
+            ifc_validator=FakeValidator(),
+            ids_validator=FakeIdsValidator(),
+            vision_drawing_analyzer=FakeVisionDrawingAnalyzer(),
+            remark_generator=TemplateRemarkGenerator(),
+            audit_report_store=store,
+        )
+
+        report = use_case.execute(
+            ValidationRequest(
+                request_id="req-vision-merge",
+                ifc_path=Path("sample.ifc"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
+                technical_spec_source=RequirementSource(
+                    text="Лист A-101: толщина WALL-01 не менее 200 мм",
+                    source_kind=SourceKind.TECHNICAL_SPECIFICATION,
+                ),
+                ids_path=Path("rules.ids"),
+                drawing_sources=(
+                    DrawingSource(
+                        text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50",
+                        path=Path("sheet-a101.pdf"),
+                        sheet_id="A-101",
+                        format="pdf",
+                    ),
+                ),
+            )
+        )
+
+        self.assertEqual(report.summary.drawing_annotation_count, 2)
+        sources = {annotation.source for annotation in report.drawing_annotations}
+        self.assertIn("vision-analyzer", sources)
+        self.assertIn("drawing-text", sources)
+        target_refs = {annotation.target_ref for annotation in report.drawing_annotations}
+        self.assertIn("WALL-01", target_refs)
+        self.assertIn("WALL-IMG-01", target_refs)
 
 
 class CalculationSourceTests(unittest.TestCase):
