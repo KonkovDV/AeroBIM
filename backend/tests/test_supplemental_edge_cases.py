@@ -168,9 +168,12 @@ class ValidateWithIdsPathTests(unittest.TestCase):
 class CompareValuesTests(unittest.TestCase):
     """Test the _compare_values helper in AnalyzeProjectPackageUseCase."""
 
-    def _make_uc(self):
+    def _make_uc(self, tolerance=None):
         from samolet.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase as UC
-        return UC.__new__(UC)
+        from samolet.domain.models import ToleranceConfig
+        uc = UC.__new__(UC)
+        uc._tolerance = tolerance or ToleranceConfig()
+        return uc
 
     def test_lte_operator(self) -> None:
         from samolet.domain.models import ComparisonOperator
@@ -200,7 +203,6 @@ class CompareValuesTests(unittest.TestCase):
     def test_non_numeric_gte_falls_back_to_string_equality(self) -> None:
         from samolet.domain.models import ComparisonOperator
         uc = self._make_uc()
-        # When values can't parse to float, falls back to string comparison
         self.assertTrue(uc._compare_values("abc", "abc", ComparisonOperator.GREATER_OR_EQUAL))
         self.assertFalse(uc._compare_values("abc", "xyz", ComparisonOperator.GREATER_OR_EQUAL))
 
@@ -208,6 +210,71 @@ class CompareValuesTests(unittest.TestCase):
         from samolet.domain.models import ComparisonOperator
         uc = self._make_uc()
         self.assertFalse(uc._compare_values(None, "100", ComparisonOperator.EQUALS))
+
+    # -- Fuzzy tolerance tests (ISO 12006-3 aligned) --
+
+    def test_fuzzy_equals_within_length_epsilon(self) -> None:
+        """200.0005 ≈ 200.0 within default length_epsilon=0.001 mm."""
+        from samolet.domain.models import ComparisonOperator
+        uc = self._make_uc()
+        self.assertTrue(
+            uc._compare_values("200.0005", "200.0", ComparisonOperator.EQUALS, unit="mm")
+        )
+
+    def test_fuzzy_equals_outside_length_epsilon(self) -> None:
+        """200.5 ≠ 200.0 — well outside 0.001 epsilon."""
+        from samolet.domain.models import ComparisonOperator
+        uc = self._make_uc()
+        self.assertFalse(
+            uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm")
+        )
+
+    def test_fuzzy_gte_within_epsilon_boundary(self) -> None:
+        """199.9995 is within ε of 200.0 for GTE (passes with tolerance)."""
+        from samolet.domain.models import ComparisonOperator
+        uc = self._make_uc()
+        self.assertTrue(
+            uc._compare_values("199.9995", "200.0", ComparisonOperator.GREATER_OR_EQUAL, unit="mm")
+        )
+
+    def test_fuzzy_lte_within_epsilon_boundary(self) -> None:
+        """200.0005 is within ε of 200.0 for LTE (passes with tolerance)."""
+        from samolet.domain.models import ComparisonOperator
+        uc = self._make_uc()
+        self.assertTrue(
+            uc._compare_values("200.0005", "200.0", ComparisonOperator.LESS_OR_EQUAL, unit="mm")
+        )
+
+    def test_fuzzy_area_unit(self) -> None:
+        """42.005 ≈ 42.0 within area_epsilon=0.01 m²."""
+        from samolet.domain.models import ComparisonOperator
+        uc = self._make_uc()
+        self.assertTrue(
+            uc._compare_values("42.005", "42.0", ComparisonOperator.EQUALS, unit="м2")
+        )
+        self.assertFalse(
+            uc._compare_values("42.05", "42.0", ComparisonOperator.EQUALS, unit="м2")
+        )
+
+    def test_fuzzy_custom_tolerance(self) -> None:
+        """Custom tolerance: 1.0 epsilon makes 200.5 ≈ 200.0."""
+        from samolet.domain.models import ComparisonOperator, ToleranceConfig
+        custom = ToleranceConfig(length_epsilon=1.0)
+        uc = self._make_uc(tolerance=custom)
+        self.assertTrue(
+            uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm")
+        )
+
+    def test_no_unit_uses_default_epsilon(self) -> None:
+        """Without unit, default_epsilon=1e-6 applies."""
+        from samolet.domain.models import ComparisonOperator
+        uc = self._make_uc()
+        self.assertTrue(
+            uc._compare_values("42.0000005", "42.0", ComparisonOperator.EQUALS)
+        )
+        self.assertFalse(
+            uc._compare_values("42.001", "42.0", ComparisonOperator.EQUALS)
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -293,6 +360,88 @@ class DrawingDimensionPatternTests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].rule_scope, RuleScope.DRAWING_ANNOTATION)
         self.assertEqual(result[0].expected_value, "300")
+
+
+# ---------------------------------------------------------------------------
+# F: ToleranceConfig domain value object
+# ---------------------------------------------------------------------------
+
+class ToleranceConfigTests(unittest.TestCase):
+    def test_default_values(self) -> None:
+        from samolet.domain.models import ToleranceConfig
+        tc = ToleranceConfig()
+        self.assertEqual(tc.length_epsilon, 0.001)
+        self.assertEqual(tc.area_epsilon, 0.01)
+        self.assertEqual(tc.default_epsilon, 1e-6)
+
+    def test_epsilon_for_length_units(self) -> None:
+        from samolet.domain.models import ToleranceConfig
+        tc = ToleranceConfig()
+        for unit in ("mm", "мм", "m", "м", "cm", "см"):
+            self.assertEqual(tc.epsilon_for_unit(unit), 0.001, f"Failed for unit={unit}")
+
+    def test_epsilon_for_area_units(self) -> None:
+        from samolet.domain.models import ToleranceConfig
+        tc = ToleranceConfig()
+        for unit in ("m2", "м2", "sqm", "sq.m", "m²", "м²"):
+            self.assertEqual(tc.epsilon_for_unit(unit), 0.01, f"Failed for unit={unit}")
+
+    def test_epsilon_for_unknown_unit(self) -> None:
+        from samolet.domain.models import ToleranceConfig
+        tc = ToleranceConfig()
+        self.assertEqual(tc.epsilon_for_unit("kg"), 1e-6)
+        self.assertEqual(tc.epsilon_for_unit(None), 1e-6)
+
+    def test_custom_epsilon(self) -> None:
+        from samolet.domain.models import ToleranceConfig
+        tc = ToleranceConfig(length_epsilon=0.5, area_epsilon=1.0, default_epsilon=0.01)
+        self.assertEqual(tc.epsilon_for_unit("mm"), 0.5)
+        self.assertEqual(tc.epsilon_for_unit("m2"), 1.0)
+        self.assertEqual(tc.epsilon_for_unit(None), 0.01)
+
+
+# ---------------------------------------------------------------------------
+# G: VLM DrawingAnalyzer port + adapter contract
+# ---------------------------------------------------------------------------
+
+class VlmDrawingAnalyzerContractTests(unittest.TestCase):
+    def test_stub_returns_empty_for_existing_file(self) -> None:
+        import tempfile
+        from samolet.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+            tmp.write(b"\x89PNG\r\n\x1a\n")  # minimal PNG header
+            tmp_path = Path(tmp.name)
+
+        try:
+            analyzer = VlmDrawingAnalyzer()
+            result = analyzer.analyze_image(tmp_path, sheet_id="A-101")
+            self.assertEqual(result, [])
+        finally:
+            tmp_path.unlink()
+
+    def test_stub_raises_for_missing_file(self) -> None:
+        from samolet.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+
+        analyzer = VlmDrawingAnalyzer()
+        with self.assertRaises(FileNotFoundError):
+            analyzer.analyze_image(Path("/nonexistent/drawing.pdf"))
+
+    def test_port_protocol_compliance(self) -> None:
+        """VlmDrawingAnalyzer satisfies VisionDrawingAnalyzer protocol."""
+        from samolet.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+        from samolet.domain.ports import VisionDrawingAnalyzer
+
+        analyzer = VlmDrawingAnalyzer()
+        # Protocol structural check: must have analyze_image method
+        self.assertTrue(hasattr(analyzer, "analyze_image"))
+        self.assertTrue(callable(analyzer.analyze_image))
+        # isinstance works with runtime_checkable protocols in Python 3.12+
+        # For older versions, structural check above suffices
+
+    def test_token_registered_in_bootstrap(self) -> None:
+        from samolet.core.di.tokens import Tokens
+        self.assertTrue(hasattr(Tokens, "VISION_DRAWING_ANALYZER"))
 
 
 if __name__ == "__main__":

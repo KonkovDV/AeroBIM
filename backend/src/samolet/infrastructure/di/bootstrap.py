@@ -14,6 +14,7 @@ from samolet.infrastructure.adapters.json_structured_logger import JsonStructure
 from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 from samolet.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from samolet.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
+from samolet.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
 
 
 def bootstrap_container(settings: Settings | None = None) -> Container:
@@ -40,6 +41,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.DRAWING_ANALYZER,
         lambda _container: StructuredDrawingAnalyzer(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.VISION_DRAWING_ANALYZER,
+        lambda _container: VlmDrawingAnalyzer(),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
