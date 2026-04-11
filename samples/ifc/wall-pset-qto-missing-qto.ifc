@@ -1,0 +1,18 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition[DesignTransferView]'),'2;1');
+FILE_NAME('/dev/null','2026-04-10T16:37:13+03:00',(''),(''),'IfcOpenShell 0.8.4.post1','IfcOpenShell 0.8.4.post1','Nobody');
+FILE_SCHEMA(('IFC4'));
+ENDSEC;
+DATA;
+#1=IFCPROJECT('1dw9uNhNz0KPmmBbYzNX_M',$,'Pset-only Fixture',$,$,$,$,$,#5);
+#2=IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.);
+#3=IFCSIUNIT(*,.AREAUNIT.,$,.SQUARE_METRE.);
+#4=IFCSIUNIT(*,.VOLUMEUNIT.,$,.CUBIC_METRE.);
+#5=IFCUNITASSIGNMENT((#2,#3,#4));
+#6=IFCWALL('2uH2k$DU9DyfJJ$8PWgKHh',$,'Wall P-only',$,$,$,$,$,$);
+#7=IFCPROPERTYSET('1o94YBPxT1sQS9GbqY6GMr',$,'Pset_WallCommon',$,(#9));
+#8=IFCRELDEFINESBYPROPERTIES('1RcmJx2$fEzvGNV7r6Hyxx',$,$,$,(#6),#7);
+#9=IFCPROPERTYSINGLEVALUE('FireRating',$,IFCLABEL('REI60'),$);
+ENDSEC;
+END-ISO-10303-21;

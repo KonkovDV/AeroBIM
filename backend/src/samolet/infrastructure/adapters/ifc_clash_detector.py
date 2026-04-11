@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from samolet.domain.ports import ClashResult
+from samolet.domain.models import ClashResult
 
 
 class IfcClashDetector:

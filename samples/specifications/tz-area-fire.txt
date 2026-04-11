@@ -1,0 +1,2 @@
+Room LivingRoom площадь area не менее 18.5 м2
+Wall IfcWall fire rating must be REI60

@@ -1,5 +1,6 @@
 class Tokens:
     SETTINGS = "settings"
+    LOGGER = "logger"
     REQUIREMENT_EXTRACTOR = "requirement_extractor"
     NARRATIVE_RULE_SYNTHESIZER = "narrative_rule_synthesizer"
     DRAWING_ANALYZER = "drawing_analyzer"

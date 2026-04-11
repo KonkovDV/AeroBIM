@@ -8,6 +8,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 
+class _NullLogger:
+    """Silent logger for tests — satisfies StructuredLogger protocol."""
+    def info(self, message: str, **context: object) -> None: pass
+    def warning(self, message: str, **context: object) -> None: pass
+    def error(self, message: str, **context: object) -> None: pass
+    def debug(self, message: str, **context: object) -> None: pass
+
+
 def _make_test_container():
     """Build a container backed by InMemoryAuditStore for fast HTTP tests."""
     from samolet.core.config.settings import Settings
@@ -38,6 +46,7 @@ def _make_test_container():
     store = InMemoryAuditStore()
     container = Container()
     container.register(Tokens.SETTINGS, lambda _: settings)
+    container.register(Tokens.LOGGER, lambda _: _NullLogger(), lifecycle=Lifecycle.SINGLETON)
     container.register(Tokens.REQUIREMENT_EXTRACTOR, lambda _: StructuredRequirementExtractor(), lifecycle=Lifecycle.SINGLETON)
     container.register(Tokens.NARRATIVE_RULE_SYNTHESIZER, lambda _: NarrativeRuleSynthesizer(), lifecycle=Lifecycle.SINGLETON)
     container.register(Tokens.DRAWING_ANALYZER, lambda _: StructuredDrawingAnalyzer(), lifecycle=Lifecycle.SINGLETON)

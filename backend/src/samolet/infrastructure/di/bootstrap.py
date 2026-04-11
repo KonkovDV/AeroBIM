@@ -10,6 +10,7 @@ from samolet.infrastructure.adapters.filesystem_audit_store import FilesystemAud
 from samolet.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from samolet.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
 from samolet.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+from samolet.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 from samolet.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from samolet.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
@@ -21,6 +22,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     runtime_settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
     container.register(Tokens.SETTINGS, lambda _container: runtime_settings)
+    container.register(
+        Tokens.LOGGER,
+        lambda _container: JsonStructuredLogger(name="samolet"),
+        lifecycle=Lifecycle.SINGLETON,
+    )
     container.register(
         Tokens.REQUIREMENT_EXTRACTOR,
         lambda _container: StructuredRequirementExtractor(),

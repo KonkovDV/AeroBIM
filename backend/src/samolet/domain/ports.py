@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
 from samolet.domain.models import (
+    ClashResult,
     DrawingAnnotation,
     DrawingSource,
     GeneratedRemark,
@@ -51,17 +51,6 @@ class AuditReportStore(Protocol):
     def get(self, report_id: str) -> ValidationReport | None: ...
 
     def list_reports(self) -> list[ReportSummaryEntry]: ...
-
-
-@dataclass(frozen=True)
-class ClashResult:
-    """A single spatial clash between two IFC elements."""
-
-    element_a_guid: str
-    element_b_guid: str
-    clash_type: str  # "hard" | "clearance"
-    distance: float  # penetration depth or clearance gap (metres)
-    description: str
 
 
 class ClashDetector(Protocol):
