@@ -3,21 +3,21 @@ title: "MicroPhoenix Extraction Dossier"
 status: active
 version: "0.3.0"
 last_updated: "2026-04-08"
-tags: [samolet, extraction, architecture, explanation]
+tags: [aerobim, extraction, architecture, explanation]
 ---
 
 # MicroPhoenix Extraction Dossier
 
 ## Extraction Principle
 
-`Samolet` does not clone MicroPhoenix. It extracts the subset of MicroPhoenix that creates durable architectural leverage for a BIM QA product.
+`AeroBIM` does not clone MicroPhoenix. It extracts the subset of MicroPhoenix that creates durable architectural leverage for a BIM QA product.
 
 The extraction rule is:
 
 - keep patterns that improve modularity, traceability, and replaceability;
 - reject patterns that belong to the original AI platform but do not accelerate BIM validation MVP value.
 
-The working decision ladder for `Samolet` is:
+The working decision ladder for `AeroBIM` is:
 
 - `adopt` when the MicroPhoenix pattern can transfer directly with minimal adaptation;
 - `adapt` when the idea is sound but must be translated to a Python-first and product-narrow runtime;
@@ -37,11 +37,11 @@ The following patterns were verified from the live repository and treated as ext
 
 ## Extracted Patterns
 
-| MicroPhoenix Surface | Extract Into Samolet | Why |
+| MicroPhoenix Surface | Extract Into AeroBIM | Why |
 |---|---|---|
-| `src/core/di/container.ts` | `backend/src/samolet/core/di/container.py` | explicit runtime composition without reflection magic |
-| `src/core/di/DI_TOKENS.ts` | `backend/src/samolet/core/di/tokens.py` | token registry as SSOT for replaceable services |
-| `src/infrastructure/di/bootstrap.ts` | `backend/src/samolet/infrastructure/di/bootstrap.py` | single composition root and module binding point |
+| `src/core/di/container.ts` | `backend/src/aerobim/core/di/container.py` | explicit runtime composition without reflection magic |
+| `src/core/di/DI_TOKENS.ts` | `backend/src/aerobim/core/di/tokens.py` | token registry as SSOT for replaceable services |
+| `src/infrastructure/di/bootstrap.ts` | `backend/src/aerobim/infrastructure/di/bootstrap.py` | single composition root and module binding point |
 | `04-REFERENCE/architecture.md` | `core -> domain -> application -> infrastructure -> presentation` | preserve dependency direction and clean boundaries |
 | thin entry chain | `main.py -> bootstrap -> http app` | keep startup deterministic and inspectable |
 | port/adapter discipline | domain protocols + infra adapters | isolate IfcOpenShell, IfcTester, Docling, storage |
@@ -54,7 +54,7 @@ The first pass extracted the architecture spine. The second pass extracts the de
 
 New seams should land as complete units, not as aspirational interfaces.
 
-For `Samolet`, that means:
+For `AeroBIM`, that means:
 
 - domain port or model;
 - adapter;
@@ -66,7 +66,7 @@ For `Samolet`, that means:
 
 Completion is defined by the outcome, not by the number of edited files.
 
-For `Samolet`, every meaningful change should be checked against:
+For `AeroBIM`, every meaningful change should be checked against:
 
 - `truths` — what must be true for the feature to exist;
 - `artifacts` — which files and contracts must exist;
@@ -76,7 +76,7 @@ For `Samolet`, every meaningful change should be checked against:
 
 MicroPhoenix treats fake infrastructure as a source of architectural drift.
 
-For `Samolet`, this becomes:
+For `AeroBIM`, this becomes:
 
 - do not pretend a validator validates if it only parses;
 - do not pretend a report store persists if it is only a placeholder;
@@ -86,7 +86,7 @@ For `Samolet`, this becomes:
 
 MicroPhoenix uses explicit closure rails instead of informal "looks done" decisions.
 
-For `Samolet`, the extracted idea is smaller but still strict:
+For `AeroBIM`, the extracted idea is smaller but still strict:
 
 - docs-only work closes through diagnostics and workspace docs closure;
 - runtime work closes through targeted tests, sample-pack checks, and goal-backward verification.
@@ -95,7 +95,7 @@ For `Samolet`, the extracted idea is smaller but still strict:
 
 MicroPhoenix donor extraction is explicit about not inventing new abstractions before checking what already exists.
 
-For `Samolet`, that means:
+For `AeroBIM`, that means:
 
 - check current repo surfaces first;
 - check authoritative external standards second;
@@ -114,7 +114,7 @@ For `Samolet`, that means:
 
 ## Conceptual Translation Table
 
-| MicroPhoenix Idea | Samolet Translation |
+| MicroPhoenix Idea | AeroBIM Translation |
 |---|---|
 | domain ports | Python `Protocol` contracts |
 | DI token registry | typed string token constants |
@@ -123,7 +123,7 @@ For `Samolet`, that means:
 | presentation boundary | HTTP API now, viewer/plugin later |
 | request context | explicit `request_id` and later contextvars-based propagation |
 
-## Bounded Contexts In Samolet
+## Bounded Contexts In AeroBIM
 
 ### Validation Core
 
@@ -145,7 +145,7 @@ Owns Revit / BIM-tool roundtrip only.
 
 ## Decision 1: Python-First Backend
 
-MicroPhoenix is TypeScript-first, but `Samolet` should be Python-first because the target validation ecosystem is strongest there.
+MicroPhoenix is TypeScript-first, but `AeroBIM` should be Python-first because the target validation ecosystem is strongest there.
 
 This is not a rejection of MicroPhoenix. It is a faithful translation of the same architectural shape into a better-suited runtime.
 
@@ -153,7 +153,7 @@ This is not a rejection of MicroPhoenix. It is a faithful translation of the sam
 
 MicroPhoenix contains many subsystems because it is a platform.
 
-`Samolet` starts with one narrow project-package use case:
+`AeroBIM` starts with one narrow project-package use case:
 
 - normalize structured and narrative requirements;
 - reconcile them with drawing evidence;
@@ -170,7 +170,7 @@ The domain must not know which vendor or library performs the work.
 
 ## Decision 4: Delivery Discipline Is Part Of The Extraction
 
-`Samolet` does not only extract folder structure. It also extracts the engineering posture around it.
+`AeroBIM` does not only extract folder structure. It also extracts the engineering posture around it.
 
 That posture includes:
 

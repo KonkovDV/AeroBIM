@@ -16,7 +16,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from samolet.domain.models import (
+from aerobim.domain.models import (
     ComparisonOperator,
     FindingCategory,
     RequirementSource,
@@ -26,14 +26,13 @@ from samolet.domain.models import (
     ValidationIssue,
 )
 
-
 # ---------------------------------------------------------------------------
 # A: Structured Logger
 # ---------------------------------------------------------------------------
 
 class StructuredLoggerTests(unittest.TestCase):
     def test_json_output_format(self) -> None:
-        from samolet.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
+        from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 
         logger = JsonStructuredLogger(name="test-json-format", level=logging.DEBUG)
         # Capture stderr output
@@ -53,7 +52,7 @@ class StructuredLoggerTests(unittest.TestCase):
         self.assertIn("timestamp", parsed)
 
     def test_error_level(self) -> None:
-        from samolet.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
+        from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 
         logger = JsonStructuredLogger(name="test-error-level", level=logging.DEBUG)
         import io
@@ -75,7 +74,9 @@ class StructuredLoggerTests(unittest.TestCase):
 
 class NarrativeSynthesizerEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
-        from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+        from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
+            NarrativeRuleSynthesizer,
+        )
         self.synthesizer = NarrativeRuleSynthesizer()
 
     def test_empty_source_returns_no_rules(self) -> None:
@@ -149,30 +150,32 @@ class NarrativeSynthesizerEdgeCaseTests(unittest.TestCase):
 
 class DrawingAnalyzerEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
-        from samolet.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
+        from aerobim.infrastructure.adapters.structured_drawing_analyzer import (
+            StructuredDrawingAnalyzer,
+        )
         self.analyzer = StructuredDrawingAnalyzer()
 
     def test_malformed_text_too_few_columns(self) -> None:
-        from samolet.domain.models import DrawingSource
+        from aerobim.domain.models import DrawingSource
         source = DrawingSource(text="col1|col2|col3")
         with self.assertRaises(ValueError) as ctx:
             self.analyzer.analyze(source)
         self.assertIn("Malformed drawing annotation", str(ctx.exception))
 
     def test_empty_text_returns_empty(self) -> None:
-        from samolet.domain.models import DrawingSource
+        from aerobim.domain.models import DrawingSource
         source = DrawingSource(text="")
         result = self.analyzer.analyze(source)
         self.assertEqual(result, [])
 
     def test_comment_lines_skipped(self) -> None:
-        from samolet.domain.models import DrawingSource
+        from aerobim.domain.models import DrawingSource
         source = DrawingSource(text="# This is a comment\n\n")
         result = self.analyzer.analyze(source)
         self.assertEqual(result, [])
 
     def test_json_non_list_raises(self) -> None:
-        from samolet.domain.models import DrawingSource
+        from aerobim.domain.models import DrawingSource
         source = DrawingSource(text='{"not": "a list"}', path=Path("test.json"))
         with self.assertRaises(ValueError) as ctx:
             self.analyzer.analyze(source)
@@ -185,7 +188,9 @@ class DrawingAnalyzerEdgeCaseTests(unittest.TestCase):
 
 class RemarkGeneratorEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
-        from samolet.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
+        from aerobim.infrastructure.adapters.template_remark_generator import (
+            TemplateRemarkGenerator,
+        )
         self.generator = TemplateRemarkGenerator()
 
     def test_ifc_remark_gte_operator(self) -> None:
@@ -207,7 +212,7 @@ class RemarkGeneratorEdgeCaseTests(unittest.TestCase):
         self.assertIn("25", remark.body)
 
     def test_drawing_remark(self) -> None:
-        from samolet.domain.models import ProblemZone
+        from aerobim.domain.models import ProblemZone
         issue = ValidationIssue(
             rule_id="DWG-001",
             severity=Severity.WARNING,
@@ -251,7 +256,7 @@ class RemarkGeneratorEdgeCaseTests(unittest.TestCase):
 
 class CorrelationTests(unittest.TestCase):
     def test_get_correlation_id_default_empty(self) -> None:
-        from samolet.presentation.http.correlation import get_correlation_id
+        from aerobim.presentation.http.correlation import get_correlation_id
         # Outside a request context, should return empty string
         cid = get_correlation_id()
         self.assertEqual(cid, "")
@@ -265,12 +270,12 @@ class CorrelationTests(unittest.TestCase):
 
         app = FastAPI()
 
-        from samolet.presentation.http.correlation import add_correlation_middleware, HEADER_NAME
+        from aerobim.presentation.http.correlation import HEADER_NAME, add_correlation_middleware
         add_correlation_middleware(app)
 
         @app.get("/test")
         def test_endpoint() -> dict[str, str]:
-            from samolet.presentation.http.correlation import get_correlation_id
+            from aerobim.presentation.http.correlation import get_correlation_id
             return {"cid": get_correlation_id()}
 
         client = TestClient(app)
@@ -293,7 +298,9 @@ class CorrelationTests(unittest.TestCase):
 
 class RequirementExtractorEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
-        from samolet.infrastructure.adapters.docling_requirement_extractor import StructuredRequirementExtractor
+        from aerobim.infrastructure.adapters.docling_requirement_extractor import (
+            StructuredRequirementExtractor,
+        )
         self.extractor = StructuredRequirementExtractor()
 
     def test_malformed_row_raises(self) -> None:

@@ -6,14 +6,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from samolet.domain.models import FindingCategory, Severity, ValidationIssue
+from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
 
 class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
     """Tests for IDS result-to-domain mapping without requiring ifcopenshell."""
 
     def test_extract_guid_reads_globalid_from_entity_instance_like_object(self) -> None:
-        from samolet.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 
         class FakeEntity:
             GlobalId = "2hJQkZ0zj1XBp0001"
@@ -26,7 +26,7 @@ class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
         )
 
     def test_map_results_extracts_failed_entities(self) -> None:
-        from samolet.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 
         validator = IfcTesterIdsValidator()
         fake_results = {
@@ -61,7 +61,7 @@ class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
         self.assertEqual(issues[0].element_guid, "2hJQkZ0zj1XBp0001")
 
     def test_map_results_skips_passing_specs(self) -> None:
-        from samolet.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 
         validator = IfcTesterIdsValidator()
         fake_results = {
@@ -78,14 +78,14 @@ class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
         self.assertEqual(len(issues), 0)
 
     def test_map_results_handles_empty_specifications(self) -> None:
-        from samolet.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 
         validator = IfcTesterIdsValidator()
         issues = validator._map_results({"specifications": []})
         self.assertEqual(len(issues), 0)
 
     def test_map_results_multiple_failed_entities(self) -> None:
-        from samolet.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 
         validator = IfcTesterIdsValidator()
         fake_results = {

@@ -3,10 +3,19 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "samolet-backend"
+name = "aerobim-backend"
 version = "0.1.0"
-description = "OpenBIM IFC/IDS quality backend extracted from MicroPhoenix architectural patterns"
+description = "AeroBIM backend for cross-modal IFC, IDS, drawing, and specification validation"
 requires-python = ">=3.12"
+license = { text = "MIT" }
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Framework :: FastAPI",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = [
   "fastapi>=0.115,<1.0",
   "uvicorn[standard]>=0.32,<1.0",
@@ -14,6 +23,11 @@ dependencies = [
   "ifctester>=0.8.4",
   "starlette>=0.41",
 ]
+
+[project.urls]
+Homepage = "https://github.com/KonkovDV/AeroBIM"
+Repository = "https://github.com/KonkovDV/AeroBIM"
+Issues = "https://github.com/KonkovDV/AeroBIM/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -24,6 +38,9 @@ dev = [
 ]
 clash = [
   "ifcclash>=0.8.4",
+]
+docling = [
+  "docling>=2.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -38,3 +55,6 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.format]
+quote-style = "double"

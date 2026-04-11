@@ -1,16 +1,16 @@
 ---
-title: "Samolet Documentation Map"
+title: "AeroBIM Documentation Map"
 status: active
 version: "0.1.0"
 last_updated: "2026-04-08"
-tags: [samolet, documentation, navigation, reference]
+tags: [aerobim, documentation, navigation, reference]
 ---
 
-# Samolet Documentation Map
+# AeroBIM Documentation Map
 
 ## Purpose
 
-This file is the local documentation router for `Samolet`.
+This file is the local documentation router for `AeroBIM`.
 
 Use it to find the current active documents quickly instead of treating the whole folder as a flat archive.
 

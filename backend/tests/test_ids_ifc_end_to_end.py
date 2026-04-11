@@ -4,11 +4,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from samolet.core.config.settings import Settings
-from samolet.core.di.tokens import Tokens
-from samolet.domain.models import FindingCategory, RequirementSource, ValidationRequest
-from samolet.infrastructure.di.bootstrap import bootstrap_container
-
+from aerobim.core.config.settings import Settings
+from aerobim.core.di.tokens import Tokens
+from aerobim.domain.models import FindingCategory, RequirementSource, ValidationRequest
+from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SAMPLES_DIR = REPO_ROOT / "samples"
@@ -27,7 +26,7 @@ class RealIdsIfcEndToEndTests(unittest.TestCase):
         temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(temp_dir.cleanup)
         settings = Settings(
-            application_name="samolet-test",
+            application_name="aerobim-test",
             environment="test",
             host="127.0.0.1",
             port=8080,

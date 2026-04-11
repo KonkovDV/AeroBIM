@@ -3,7 +3,7 @@ title: "OpenBIM Landscape, Algorithms, Protocols, And Competitive Frame"
 status: active
 version: "0.2.0"
 last_updated: "2026-04-08"
-tags: [samolet, landscape, reference, openbim]
+tags: [aerobim, landscape, reference, openbim]
 ---
 
 # OpenBIM Landscape, Algorithms, Protocols, And Competitive Frame
@@ -12,7 +12,7 @@ tags: [samolet, landscape, reference, openbim]
 
 ## IFC
 
-IFC is the canonical vendor-neutral data model for the built environment and remains the core exchange format for `Samolet`.
+IFC is the canonical vendor-neutral data model for the built environment and remains the core exchange format for `AeroBIM`.
 
 Key implications for the product:
 
@@ -22,7 +22,7 @@ Key implications for the product:
 
 ## IDS
 
-IDS is the most important requirement-expression standard for the first `Samolet` release.
+IDS is the most important requirement-expression standard for the first `AeroBIM` release.
 
 Why it matters:
 
@@ -32,7 +32,7 @@ Why it matters:
 
 Product implication:
 
-`Samolet` should treat IDS as a first-class input, not a later add-on.
+`AeroBIM` should treat IDS as a first-class input, not a later add-on.
 
 ## bSDD
 
@@ -46,7 +46,7 @@ Why it matters:
 
 Product implication:
 
-`Samolet` should treat bSDD as a terminology and enrichment adapter, not as the primary rule language.
+`AeroBIM` should treat bSDD as a terminology and enrichment adapter, not as the primary rule language.
 
 ## BCF
 
@@ -60,7 +60,7 @@ Why it matters:
 
 Product implication:
 
-`Samolet` findings should be mappable to BCF topics, even before full BCF API support lands.
+`AeroBIM` findings should be mappable to BCF topics, even before full BCF API support lands.
 
 ## SHACL
 
@@ -68,13 +68,13 @@ SHACL is a W3C Recommendation for validating RDF graphs against shapes.
 
 Why it matters:
 
-- it is relevant if `Samolet` later materializes requirements, classifications, or graph-shaped provenance into RDF;
+- it is relevant if `AeroBIM` later materializes requirements, classifications, or graph-shaped provenance into RDF;
 - it can express graph constraints and validation reports in semantic-data workflows;
 - it is useful for a semantic overlay, not for native IFC/IDS execution.
 
 Product implication:
 
-`Samolet` should not treat SHACL as the primary MVP validation language. For the first release, IFC plus IDS stay primary; SHACL remains an optional semantic extension surface.
+`AeroBIM` should not treat SHACL as the primary MVP validation language. For the first release, IFC plus IDS stay primary; SHACL remains an optional semantic extension surface.
 
 ## OpenCDE / buildingSMART APIs
 
@@ -87,7 +87,7 @@ Why it matters:
 
 Product implication:
 
-`Samolet` should keep interop surfaces adapter-driven from day one.
+`AeroBIM` should keep interop surfaces adapter-driven from day one.
 
 ## External OSS Stack
 
@@ -101,7 +101,7 @@ What it provides:
 - Python and C++ surfaces;
 - surrounding utilities for BCF, diffing, clash, testing, FM, and more.
 
-Why it fits `Samolet`:
+Why it fits `AeroBIM`:
 
 - it is the deepest open-source IFC substrate available;
 - it keeps the core validation kernel out of proprietary runtime lock-in.
@@ -116,7 +116,7 @@ What it provides:
 - validate IFC against IDS;
 - output reports to console, JSON, HTML, ODS, and BCF.
 
-Why it fits `Samolet`:
+Why it fits `AeroBIM`:
 
 - it can serve as the standards-aligned validation engine while the broader product workflow remains product-specific.
 
@@ -130,7 +130,7 @@ What it provides:
 - support for IFC2x3, IFC4, and IFC4x3 in xBimEssentials;
 - an IDS validation library through `Xbim.IDS.Validator`.
 
-Why it fits `Samolet`:
+Why it fits `AeroBIM`:
 
 - it is the natural .NET-side counterpart for thin authoring-tool integrations;
 - it can support plugin-side read, lookup, and issue-context workflows without moving core validation into Revit.
@@ -152,7 +152,7 @@ What it provides:
 Why it matters:
 
 - it is useful as a benchmark and potential interop/storage adapter;
-- it shows what a model-centric IFC backend can look like if `Samolet` later grows beyond report-centric persistence.
+- it shows what a model-centric IFC backend can look like if `AeroBIM` later grows beyond report-centric persistence.
 
 Constraint to remember:
 
@@ -169,10 +169,10 @@ What it provides:
 - structured export formats;
 - local execution path for sensitive environments.
 
-Why it fits `Samolet`:
+Why it fits `AeroBIM`:
 
 - narrative requirement packs and annexes often arrive as PDFs, DOCX, and mixed office documents;
-- `Samolet` needs a deterministic preprocessing step before rule normalization.
+- `AeroBIM` needs a deterministic preprocessing step before rule normalization.
 
 ## web-ifc
 
@@ -184,7 +184,7 @@ What it provides:
 - WASM-based runtime;
 - direct geometry and property access.
 
-Why it fits `Samolet`:
+Why it fits `AeroBIM`:
 
 - it enables a browser review surface without requiring a heavyweight proprietary viewer;
 - it is a strong default for issue lookup and object navigation in the review UI.
@@ -202,7 +202,7 @@ What it provides:
 Why it matters:
 
 - it is a serious alternative to building the full viewer stack around raw `web-ifc` primitives;
-- it is especially relevant if `Samolet` needs large-model performance, federated scenes, and rich viewer plugins.
+- it is especially relevant if `AeroBIM` needs large-model performance, federated scenes, and rich viewer plugins.
 
 Constraint to remember:
 
@@ -308,7 +308,7 @@ Atomic steps:
 
 Complexity note:
 
-`Samolet` should avoid hard asymptotic performance claims in its architecture package until they are backed by benchmark packs on representative IFC and IDS datasets.
+`AeroBIM` should avoid hard asymptotic performance claims in its architecture package until they are backed by benchmark packs on representative IFC and IDS datasets.
 
 ## Competitive Landscape
 
@@ -348,9 +348,9 @@ Takeaway:
 
 This is the benchmark for issue roundtrip and authoring-side usability.
 
-## Samolet Positioning
+## AeroBIM Positioning
 
-`Samolet` should not try to out-Solibri Solibri or out-Navisworks Navisworks.
+`AeroBIM` should not try to out-Solibri Solibri or out-Navisworks Navisworks.
 
 The differentiated position is:
 

@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from samolet.core.di.container import Container, Lifecycle
+from aerobim.core.di.container import Container, Lifecycle
 
 
 class ContainerTests(unittest.TestCase):

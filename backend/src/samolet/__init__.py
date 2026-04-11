@@ -1,1 +1,0 @@
-"""Samolet backend package."""

@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from samolet.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
-from samolet.domain.models import (
+from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.domain.models import (
     ComparisonOperator,
     DrawingAnnotation,
     DrawingSource,
@@ -21,7 +21,7 @@ from samolet.domain.models import (
     ValidationReport,
     ValidationRequest,
 )
-from samolet.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
+from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 
 
 class FakeExtractor:
@@ -136,7 +136,9 @@ class CalculationSourceTests(unittest.TestCase):
     CALC_FIXTURE = Path(__file__).resolve().parents[2] / "samples" / "calculations" / "area-requirement.txt"
 
     def test_calculation_text_produces_synthesized_requirements(self) -> None:
-        from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer as RealSynthesizer
+        from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
+            NarrativeRuleSynthesizer as RealSynthesizer,
+        )
 
         synthesizer = RealSynthesizer()
         source = RequirementSource(
@@ -150,7 +152,9 @@ class CalculationSourceTests(unittest.TestCase):
         self.assertIn("fire-rating", rule_ids_lower)
 
     def test_calculation_fixture_file_produces_area_requirement(self) -> None:
-        from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer as RealSynthesizer
+        from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
+            NarrativeRuleSynthesizer as RealSynthesizer,
+        )
 
         if not self.CALC_FIXTURE.exists():
             self.skipTest("Calculation fixture not found")

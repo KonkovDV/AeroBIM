@@ -1,12 +1,12 @@
 ---
-title: "Samolet Strategy And Delivery Plan"
+title: "AeroBIM Strategy And Delivery Plan"
 status: active
 version: "0.2.0"
 last_updated: "2026-04-08"
-tags: [samolet, strategy, explanation]
+tags: [aerobim, strategy, explanation]
 ---
 
-# Samolet Strategy And Delivery Plan
+# AeroBIM Strategy And Delivery Plan
 
 ## Goal
 
@@ -47,7 +47,7 @@ For the first meaningful product milestone to be considered successful, the foll
 
 ## Architectural Direction
 
-`Samolet` keeps the MicroPhoenix architectural spine and removes the surrounding platform complexity.
+`AeroBIM` keeps the MicroPhoenix architectural spine and removes the surrounding platform complexity.
 
 ### Canonical Layers
 

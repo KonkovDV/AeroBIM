@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from samolet.domain.models import ComparisonOperator, RequirementSource, RuleScope, SourceKind
-from samolet.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+from aerobim.domain.models import ComparisonOperator, RequirementSource, RuleScope, SourceKind
+from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 
 
 class NarrativeRuleSynthesizerTests(unittest.TestCase):

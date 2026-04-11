@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest a new capability or improvement for AeroBIM
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What workflow or validation gap should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the expected behavior or API.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: BIM context
+      description: Relevant IFC entities, IDS rules, drawings, or review workflows.
