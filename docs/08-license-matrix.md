@@ -1,6 +1,6 @@
 # Open-Source License Matrix
 
-Dependencies used by the Samolet BIM Compliance Engine, with license compatibility assessment.
+Dependencies used by the AeroBIM BIM Compliance Engine, with license compatibility assessment.
 
 | Package | License | Category | Constraints |
 |---|---|---|---|

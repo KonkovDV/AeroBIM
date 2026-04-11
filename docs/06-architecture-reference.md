@@ -1,20 +1,20 @@
 ---
-title: "Samolet Architecture Reference"
+title: "AeroBIM Architecture Reference"
 status: active
 version: "0.3.0"
 last_updated: "2026-04-08"
-tags: [samolet, architecture, reference]
+tags: [aerobim, architecture, reference]
 ---
 
-# Samolet Architecture Reference
+# AeroBIM Architecture Reference
 
 ## Purpose
 
-This document is the canonical architecture reference for `Samolet` at the current phase. It converts the strategy, landscape research, and corrected fact-check audit into one implementation-oriented source of truth.
+This document is the canonical architecture reference for `AeroBIM` at the current phase. It converts the strategy, landscape research, and corrected fact-check audit into one implementation-oriented source of truth.
 
 ## Product Definition
 
-`Samolet` is an intelligent documentation and BIM quality kernel for construction projects.
+`AeroBIM` is an intelligent documentation and BIM quality kernel for construction projects.
 
 The product is meant to:
 
@@ -61,7 +61,7 @@ Treat SHACL as an optional semantic extension layer for RDF-backed knowledge gra
 
 ## Layer Model
 
-`Samolet` keeps the extracted MicroPhoenix spine:
+`AeroBIM` keeps the extracted MicroPhoenix spine:
 
 1. `core`
 2. `domain`

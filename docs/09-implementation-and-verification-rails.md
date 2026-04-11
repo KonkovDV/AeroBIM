@@ -1,16 +1,16 @@
 ---
-title: "Samolet Implementation And Verification Rails"
+title: "AeroBIM Implementation And Verification Rails"
 status: active
 version: "0.1.0"
 last_updated: "2026-04-08"
-tags: [samolet, how-to, verification, delivery]
+tags: [aerobim, how-to, verification, delivery]
 ---
 
-# Samolet Implementation And Verification Rails
+# AeroBIM Implementation And Verification Rails
 
 ## Purpose
 
-This document captures the operational discipline `Samolet` borrows from MicroPhoenix without copying the whole platform process model.
+This document captures the operational discipline `AeroBIM` borrows from MicroPhoenix without copying the whole platform process model.
 
 The goal is simple: keep delivery small, explicit, and verifiable.
 
@@ -26,7 +26,7 @@ A feature is complete only when:
 
 ## Smallest Safe Delivery Unit
 
-For `Samolet`, the smallest safe unit is not just a file. It is a narrow vertical slice:
+For `AeroBIM`, the smallest safe unit is not just a file. It is a narrow vertical slice:
 
 1. domain contract or model
 2. infrastructure adapter or persistence implementation
@@ -63,7 +63,7 @@ Use the decision ladder:
 
 When a change touches business behavior, start from the domain-facing contract or invariant.
 
-For `Samolet`, this usually means starting from:
+For `AeroBIM`, this usually means starting from:
 
 - requirement model;
 - validation finding model;
@@ -74,7 +74,7 @@ Do not let adapters define product semantics by accident.
 
 ## Anti-Stub Rule
 
-`Samolet` should inherit the donor's anti-stub posture in a product-appropriate form.
+`AeroBIM` should inherit the donor's anti-stub posture in a product-appropriate form.
 
 That means:
 
@@ -85,7 +85,7 @@ That means:
 
 ## AI And CV Provenance Rule
 
-If `Samolet` uses AI, NLP, or CV in any path, the adapter must still emit explicit normalized contracts:
+If `AeroBIM` uses AI, NLP, or CV in any path, the adapter must still emit explicit normalized contracts:
 
 - narrative sources must become `ParsedRequirement` objects with source provenance;
 - drawing evidence must become `DrawingAnnotation` objects with optional problem zones;
@@ -151,7 +151,7 @@ Current minimum rail:
 
 ### Future Local Rail
 
-As `Samolet` matures, it should gain its own local verification entrypoints for:
+As `AeroBIM` matures, it should gain its own local verification entrypoints for:
 
 - backend tests and type checks;
 - frontend checks;
@@ -202,6 +202,6 @@ At minimum, decide whether the change affects:
 
 ## What This Document Deliberately Does Not Do
 
-It does not copy the full MicroPhoenix 4-phase protocol, multi-agent operating model, or MCP-specific governance into `Samolet`.
+It does not copy the full MicroPhoenix 4-phase protocol, multi-agent operating model, or MCP-specific governance into `AeroBIM`.
 
 The extracted value here is the disciplined subset that improves a small BIM QA product without importing donor-scale process overhead.

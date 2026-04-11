@@ -3,7 +3,7 @@ title: "Atomic Backlog"
 status: active
 version: "0.2.0"
 last_updated: "2026-04-08"
-tags: [samolet, backlog, reference, delivery]
+tags: [aerobim, backlog, reference, delivery]
 ---
 
 # Atomic Backlog
