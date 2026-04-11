@@ -12,6 +12,7 @@ from samolet.domain.models import (
     ParsedRequirement,
     RuleScope,
     Severity,
+    ToleranceConfig,
     ValidationIssue,
     ValidationReport,
     ValidationRequest,
@@ -36,6 +37,7 @@ class AnalyzeProjectPackageUseCase:
         ifc_validator: IfcValidator,
         remark_generator: RemarkGenerator,
         audit_report_store: AuditReportStore,
+        tolerance: ToleranceConfig | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -43,6 +45,7 @@ class AnalyzeProjectPackageUseCase:
         self._ifc_validator = ifc_validator
         self._remark_generator = remark_generator
         self._audit_report_store = audit_report_store
+        self._tolerance = tolerance or ToleranceConfig()
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         structured_requirements = list(self._requirement_extractor.extract(request.requirement_source))
@@ -183,7 +186,12 @@ class AnalyzeProjectPackageUseCase:
                 continue
 
             for annotation in matching_annotations:
-                if self._compare_values(annotation.observed_value, requirement.expected_value, requirement.operator):
+                if self._compare_values(
+                    annotation.observed_value,
+                    requirement.expected_value,
+                    requirement.operator,
+                    unit=requirement.unit or annotation.unit,
+                ):
                     continue
                 issues.append(
                     ValidationIssue(
@@ -244,21 +252,35 @@ class AnalyzeProjectPackageUseCase:
         observed_value: str | None,
         expected_value: str | None,
         operator: ComparisonOperator,
+        unit: str | None = None,
     ) -> bool:
+        """Compare observed vs expected using fuzzy ε-tolerance for numerics.
+
+        ISO 12006-3 aligned: exact float equality is replaced with
+        ``abs(a - b) <= ε`` where ε depends on the measurement unit.
+        This eliminates false positives from millimetre-level rounding
+        differences that are inevitable in real BIM data.
+        """
         if operator is ComparisonOperator.EXISTS:
             return observed_value is not None
         if observed_value is None or expected_value is None:
             return False
 
-        if operator in {ComparisonOperator.GREATER_OR_EQUAL, ComparisonOperator.LESS_OR_EQUAL}:
-            observed_number = self._to_float(observed_value)
-            expected_number = self._to_float(expected_value)
-            if observed_number is None or expected_number is None:
-                return observed_value == expected_value
-            if operator is ComparisonOperator.GREATER_OR_EQUAL:
-                return observed_number >= expected_number
-            return observed_number <= expected_number
+        observed_number = self._to_float(observed_value)
+        expected_number = self._to_float(expected_value)
 
+        if observed_number is not None and expected_number is not None:
+            eps = self._tolerance.epsilon_for_unit(unit)
+            if operator is ComparisonOperator.GREATER_OR_EQUAL:
+                return observed_number >= expected_number - eps
+            if operator is ComparisonOperator.LESS_OR_EQUAL:
+                return observed_number <= expected_number + eps
+            # EQUALS with tolerance band
+            return abs(observed_number - expected_number) <= eps
+
+        # Non-numeric fallback: exact string comparison
+        if operator in {ComparisonOperator.GREATER_OR_EQUAL, ComparisonOperator.LESS_OR_EQUAL}:
+            return observed_value == expected_value
         return observed_value == expected_value
 
     def _to_float(self, raw: str) -> float | None:

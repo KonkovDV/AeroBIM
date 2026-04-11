@@ -4,6 +4,7 @@ class Tokens:
     REQUIREMENT_EXTRACTOR = "requirement_extractor"
     NARRATIVE_RULE_SYNTHESIZER = "narrative_rule_synthesizer"
     DRAWING_ANALYZER = "drawing_analyzer"
+    VISION_DRAWING_ANALYZER = "vision_drawing_analyzer"
     IFC_VALIDATOR = "ifc_validator"
     IDS_VALIDATOR = "ids_validator"
     CLASH_DETECTOR = "clash_detector"

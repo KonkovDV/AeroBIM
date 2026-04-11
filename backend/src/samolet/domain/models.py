@@ -175,3 +175,33 @@ class ClashResult:
     clash_type: str  # "hard" | "clearance"
     distance: float  # penetration depth or clearance gap (metres)
     description: str
+
+
+@dataclass(frozen=True)
+class ToleranceConfig:
+    """ISO 12006-3 aligned dimensional tolerance for numeric comparisons.
+
+    In construction, exact float equality is meaningless due to measurement
+    precision, rounding, and coordinate system differences.  This config
+    controls the ε-band used by comparison operators.
+
+    Defaults:
+      - length_epsilon:  1 mm  = 0.001 m  (ISO 1101 general tolerance)
+      - area_epsilon:    0.01 m²           (sub-centimetre precision)
+      - default_epsilon: 1e-6              (dimensionless / fallback)
+    """
+
+    length_epsilon: float = 0.001
+    area_epsilon: float = 0.01
+    default_epsilon: float = 1e-6
+
+    def epsilon_for_unit(self, unit: str | None) -> float:
+        """Return the appropriate ε based on the measurement unit."""
+        if unit is None:
+            return self.default_epsilon
+        normalised = unit.strip().lower()
+        if normalised in {"m", "м", "mm", "мм", "cm", "см"}:
+            return self.length_epsilon
+        if normalised in {"m2", "м2", "sqm", "sq.m", "m²", "м²"}:
+            return self.area_epsilon
+        return self.default_epsilon
