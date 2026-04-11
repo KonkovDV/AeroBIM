@@ -1,0 +1,18 @@
+[
+  {
+    "annotation_id": "DWG-ANN-001",
+    "sheet_id": "A-101",
+    "target_ref": "W-EXT-01",
+    "measure_name": "thickness",
+    "observed_value": "250",
+    "unit": "mm"
+  },
+  {
+    "annotation_id": "DWG-ANN-002",
+    "sheet_id": "A-101",
+    "target_ref": "W-INT-03",
+    "measure_name": "thickness",
+    "observed_value": "100",
+    "unit": "mm"
+  }
+]
