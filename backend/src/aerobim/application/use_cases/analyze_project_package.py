@@ -51,20 +51,28 @@ class AnalyzeProjectPackageUseCase:
         self._clash_detector = clash_detector
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
-        structured_requirements = list(self._requirement_extractor.extract(request.requirement_source))
+        structured_requirements = list(
+            self._requirement_extractor.extract(request.requirement_source)
+        )
         synthesized_requirements = self._collect_synthesized_requirements(request)
         requirements = tuple([*structured_requirements, *synthesized_requirements])
         if not requirements:
-            raise ValueError("No requirements were extracted or synthesized from the provided sources")
+            raise ValueError(
+                "No requirements were extracted or synthesized from the provided sources"
+            )
 
         drawing_annotations = tuple(self._collect_drawing_annotations(request))
         ifc_issues = tuple(self._ifc_validator.validate(request.ifc_path, requirements))
-        drawing_issues = tuple(self._validate_drawing_annotations(requirements, drawing_annotations))
+        drawing_issues = tuple(
+            self._validate_drawing_annotations(requirements, drawing_annotations)
+        )
         cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
         clash_results = tuple(
             self._clash_detector.detect(request.ifc_path) if self._clash_detector else []
         )
-        issues_with_remarks = tuple(self._attach_remarks([*ifc_issues, *drawing_issues, *cross_document_issues]))
+        issues_with_remarks = tuple(
+            self._attach_remarks([*ifc_issues, *drawing_issues, *cross_document_issues])
+        )
 
         severity_counts = Counter(issue.severity for issue in issues_with_remarks)
         error_count = severity_counts[Severity.ERROR]
@@ -84,7 +92,9 @@ class AnalyzeProjectPackageUseCase:
                 warning_count=warning_count,
                 passed=error_count == 0,
                 drawing_annotation_count=len(drawing_annotations),
-                generated_remark_count=sum(1 for issue in issues_with_remarks if issue.remark is not None),
+                generated_remark_count=sum(
+                    1 for issue in issues_with_remarks if issue.remark is not None
+                ),
             ),
             drawing_annotations=drawing_annotations,
             clash_results=clash_results,
@@ -92,7 +102,9 @@ class AnalyzeProjectPackageUseCase:
         self._audit_report_store.save(report)
         return report
 
-    def _collect_synthesized_requirements(self, request: ValidationRequest) -> list[ParsedRequirement]:
+    def _collect_synthesized_requirements(
+        self, request: ValidationRequest
+    ) -> list[ParsedRequirement]:
         synthesized: list[ParsedRequirement] = []
         for source in (request.technical_spec_source, request.calculation_source):
             if source is None:
@@ -166,7 +178,9 @@ class AnalyzeProjectPackageUseCase:
     ) -> list[ValidationIssue]:
         issues: list[ValidationIssue] = []
         drawing_requirements = [
-            requirement for requirement in requirements if requirement.rule_scope is RuleScope.DRAWING_ANNOTATION
+            requirement
+            for requirement in requirements
+            if requirement.rule_scope is RuleScope.DRAWING_ANNOTATION
         ]
 
         for requirement in drawing_requirements:
@@ -243,10 +257,18 @@ class AnalyzeProjectPackageUseCase:
             )
         return enriched
 
-    def _matches_annotation(self, requirement: ParsedRequirement, annotation: DrawingAnnotation) -> bool:
-        if requirement.target_ref and requirement.target_ref.lower() != annotation.target_ref.lower():
+    def _matches_annotation(
+        self, requirement: ParsedRequirement, annotation: DrawingAnnotation
+    ) -> bool:
+        if (
+            requirement.target_ref
+            and requirement.target_ref.lower() != annotation.target_ref.lower()
+        ):
             return False
-        if requirement.property_name and requirement.property_name.lower() != annotation.measure_name.lower():
+        if (
+            requirement.property_name
+            and requirement.property_name.lower() != annotation.measure_name.lower()
+        ):
             return False
         if requirement.instructions and requirement.instructions.startswith("sheet="):
             expected_sheet = requirement.instructions.split("=", maxsplit=1)[1].strip().lower()

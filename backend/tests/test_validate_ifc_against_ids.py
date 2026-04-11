@@ -33,7 +33,9 @@ class FakeExtractor:
 
 
 class FakeValidator:
-    def validate(self, _ifc_path: Path, requirements: list[ParsedRequirement]) -> list[ValidationIssue]:
+    def validate(
+        self, _ifc_path: Path, requirements: list[ParsedRequirement]
+    ) -> list[ValidationIssue]:
         requirement = requirements[0]
         return [
             ValidationIssue(
@@ -68,7 +70,9 @@ class ValidateIfcAgainstIdsUseCaseTests(unittest.TestCase):
             ValidationRequest(
                 request_id="req-001",
                 ifc_path=Path("sample.ifc"),
-                requirement_source=RequirementSource(text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
             )
         )
 
