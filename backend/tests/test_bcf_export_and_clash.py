@@ -202,7 +202,7 @@ class ClashDetectorPortTests(unittest.TestCase):
         self.assertIsInstance(results, list)
 
     def test_clash_result_dataclass_fields(self) -> None:
-        from samolet.domain.ports import ClashResult
+        from samolet.domain.models import ClashResult
 
         result = ClashResult(
             element_a_guid="abc",

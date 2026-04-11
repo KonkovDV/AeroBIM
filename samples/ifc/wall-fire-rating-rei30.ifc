@@ -1,0 +1,18 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition[DesignTransferView]'),'2;1');
+FILE_NAME('/dev/null','2026-04-10T12:27:50+03:00',(''),(''),'IfcOpenShell 0.8.4.post1','IfcOpenShell 0.8.4.post1','Nobody');
+FILE_SCHEMA(('IFC4'));
+ENDSEC;
+DATA;
+#1=IFCPROJECT('1uhKoeiwL3OPlOtKywdH6i',$,'Samolet Fixture Project',$,$,$,$,$,#5);
+#2=IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.);
+#3=IFCSIUNIT(*,.AREAUNIT.,$,.SQUARE_METRE.);
+#4=IFCSIUNIT(*,.VOLUMEUNIT.,$,.CUBIC_METRE.);
+#5=IFCUNITASSIGNMENT((#2,#3,#4));
+#6=IFCWALL('3A3MaxbJ53Zea6BnKmxL$n',$,'Fixture Wall',$,$,$,$,$,$);
+#7=IFCPROPERTYSET('3aMe_lCjv6lws0SLymXx95',$,'Pset_WallCommon',$,(#9));
+#8=IFCRELDEFINESBYPROPERTIES('3kftPE0$n26BVAq9ZQXEPF',$,$,$,(#6),#7);
+#9=IFCPROPERTYSINGLEVALUE('FireRating',$,IFCLABEL('REI30'),$);
+ENDSEC;
+END-ISO-10303-21;

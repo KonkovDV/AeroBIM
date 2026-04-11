@@ -1,0 +1,2 @@
+# annotation_id|sheet_id|target_ref|measure_name|observed_value|unit|page|x|y|width|height
+ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50

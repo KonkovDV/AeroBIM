@@ -1,0 +1,2 @@
+Помещение ROOM-101 должно иметь площадь не менее 42 м2.
+IFCWALL fire rating must be REI60.
