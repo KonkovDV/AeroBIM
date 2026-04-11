@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
+from aerobim.domain.models import FindingCategory, Severity
 
 
 class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):

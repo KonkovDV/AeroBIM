@@ -7,11 +7,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.domain.models import ReportSummaryEntry, ValidationReport
+from aerobim.domain.models import ValidationReport
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
 
-def _make_report(report_id: str = "rpt-001", passed: bool = True, issue_count: int = 0) -> ValidationReport:
+def _make_report(
+    report_id: str = "rpt-001", passed: bool = True, issue_count: int = 0
+) -> ValidationReport:
     from aerobim.domain.models import ValidationSummary
 
     return ValidationReport(

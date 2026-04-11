@@ -15,9 +15,7 @@ class StructuredDrawingAnalyzerTests(unittest.TestCase):
         analyzer = StructuredDrawingAnalyzer()
 
         annotations = analyzer.analyze(
-            DrawingSource(
-                text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50"
-            )
+            DrawingSource(text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50")
         )
 
         self.assertEqual(len(annotations), 1)

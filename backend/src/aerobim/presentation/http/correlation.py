@@ -10,9 +10,7 @@ from __future__ import annotations
 import contextvars
 from uuid import uuid4
 
-_correlation_id: contextvars.ContextVar[str] = contextvars.ContextVar(
-    "correlation_id", default=""
-)
+_correlation_id: contextvars.ContextVar[str] = contextvars.ContextVar("correlation_id", default="")
 
 HEADER_NAME = "X-Request-ID"
 
