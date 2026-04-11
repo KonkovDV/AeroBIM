@@ -1,12 +1,12 @@
 ---
-title: "Samolet Fact-Check And Corrected Architecture Audit"
+title: "AeroBIM Fact-Check And Corrected Architecture Audit"
 status: active
 version: "0.3.0"
 last_updated: "2026-04-10"
-tags: [samolet, audit, evidence, architecture]
+tags: [aerobim, audit, evidence, architecture]
 ---
 
-# Samolet Fact-Check And Corrected Architecture Audit
+# AeroBIM Fact-Check And Corrected Architecture Audit
 
 Date: 2026-04-10
 
@@ -132,7 +132,7 @@ BIMcollab remains the benchmark for BCF-centric issue lifecycle, open collaborat
 ### Nested Repository Boundary
 
 **Verdict: CONFIRMED.**
-`c:\plans\samolet` is an isolated nested Git repository and should be treated as its own product boundary.
+`c:\plans\aerobim` is an isolated nested Git repository and should be treated as its own product boundary.
 
 ### Backend Layering
 
@@ -140,7 +140,7 @@ BIMcollab remains the benchmark for BCF-centric issue lifecycle, open collaborat
 The current backend structure matches the intended five-layer split:
 
 ```text
-backend/src/samolet/
+backend/src/aerobim/
   core/
   domain/
   application/

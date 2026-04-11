@@ -1,12 +1,12 @@
 ---
-title: "Samolet Project Skeleton"
+title: "AeroBIM Project Skeleton"
 status: active
 version: "0.3.0"
 last_updated: "2026-04-10"
-tags: [samolet, skeleton, reference]
+tags: [aerobim, skeleton, reference]
 ---
 
-# Samolet Project Skeleton
+# AeroBIM Project Skeleton
 
 ## Intent
 
@@ -21,7 +21,7 @@ The skeleton is deliberately conservative:
 ## Current Top-Level Layout
 
 ```text
-samolet/
+aerobim/
 ├── backend/
 ├── clients/
 │   └── revit-plugin/
@@ -44,7 +44,7 @@ backend/
 ├── pyproject.toml
 ├── pyrightconfig.json
 ├── src/
-│   └── samolet/
+│   └── aerobim/
 │       ├── core/
 │       ├── domain/
 │       ├── application/

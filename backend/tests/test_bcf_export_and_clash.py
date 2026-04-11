@@ -6,11 +6,11 @@ import io
 import tempfile
 import unittest
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
-from samolet.domain.models import (
+from aerobim.domain.models import (
     FindingCategory,
     GeneratedRemark,
     Severity,
@@ -40,7 +40,7 @@ def _make_report(
         report_id=uuid4().hex,
         request_id="req-bcf-test",
         ifc_path=Path("test.ifc"),
-        created_at=datetime.now(tz=timezone.utc).isoformat(),
+        created_at=datetime.now(tz=UTC).isoformat(),
         requirements=(),
         issues=issues,
         summary=ValidationSummary(
@@ -55,7 +55,7 @@ def _make_report(
 
 class BcfExportTests(unittest.TestCase):
     def test_bcf_archive_is_valid_zip(self) -> None:
-        from samolet.infrastructure.adapters.bcf_report_exporter import export_bcf
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
         report = _make_report(issue_count=2)
         bcf_bytes = export_bcf(report)
@@ -70,7 +70,7 @@ class BcfExportTests(unittest.TestCase):
             self.assertEqual(len(markup_files), 2)
 
     def test_bcf_version_contains_2_1(self) -> None:
-        from samolet.infrastructure.adapters.bcf_report_exporter import export_bcf
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
         report = _make_report(issue_count=1)
         bcf_bytes = export_bcf(report)
@@ -80,7 +80,7 @@ class BcfExportTests(unittest.TestCase):
             self.assertIn("2.1", version_xml)
 
     def test_bcf_markup_contains_topic_elements(self) -> None:
-        from samolet.infrastructure.adapters.bcf_report_exporter import export_bcf
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
         report = _make_report(issue_count=1, with_guid=True)
         bcf_bytes = export_bcf(report)
@@ -95,7 +95,7 @@ class BcfExportTests(unittest.TestCase):
             self.assertIn("guid-0", markup_xml)
 
     def test_bcf_only_includes_errors(self) -> None:
-        from samolet.infrastructure.adapters.bcf_report_exporter import export_bcf
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
         report = _make_report(issue_count=3, severity=Severity.WARNING)
         bcf_bytes = export_bcf(report)
@@ -105,7 +105,7 @@ class BcfExportTests(unittest.TestCase):
             self.assertEqual(len(markup_files), 0, "Warnings should not produce BCF topics")
 
     def test_bcf_empty_report_produces_version_only(self) -> None:
-        from samolet.infrastructure.adapters.bcf_report_exporter import export_bcf
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
         report = _make_report(issue_count=0)
         bcf_bytes = export_bcf(report)
@@ -125,7 +125,7 @@ class BcfApiExportTests(unittest.TestCase):
         import importlib.util
         import sys
         sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-        from samolet.presentation.http.api import create_http_app
+        from aerobim.presentation.http.api import create_http_app
 
         # Load _make_test_container from test_api_security via file path
         spec = importlib.util.spec_from_file_location(
@@ -162,9 +162,9 @@ class BcfApiExportTests(unittest.TestCase):
 
 class ClashDetectorPortTests(unittest.TestCase):
     def test_clash_detector_registered_in_container(self) -> None:
-        from samolet.core.config.settings import Settings
-        from samolet.core.di.tokens import Tokens
-        from samolet.infrastructure.di.bootstrap import bootstrap_container
+        from aerobim.core.config.settings import Settings
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
         tmp = tempfile.mkdtemp()
         settings = Settings(
@@ -182,7 +182,7 @@ class ClashDetectorPortTests(unittest.TestCase):
         self.assertTrue(hasattr(clash_detector, "detect"))
 
     def test_clash_detector_raises_on_missing_file(self) -> None:
-        from samolet.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
         detector = IfcClashDetector()
         with self.assertRaises(FileNotFoundError):
@@ -190,7 +190,7 @@ class ClashDetectorPortTests(unittest.TestCase):
 
     def test_clash_detector_graceful_without_ifcclash(self) -> None:
         """When ifcclash is not installed, detect() returns empty list."""
-        from samolet.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
         detector = IfcClashDetector()
         # Use one of our real IFC fixtures
@@ -202,7 +202,7 @@ class ClashDetectorPortTests(unittest.TestCase):
         self.assertIsInstance(results, list)
 
     def test_clash_result_dataclass_fields(self) -> None:
-        from samolet.domain.models import ClashResult
+        from aerobim.domain.models import ClashResult
 
         result = ClashResult(
             element_a_guid="abc",

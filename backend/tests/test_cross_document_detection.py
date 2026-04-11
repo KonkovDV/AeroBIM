@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from samolet.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
-from samolet.domain.models import (
+from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.domain.models import (
     DrawingAnnotation,
     DrawingSource,
     FindingCategory,
@@ -19,7 +19,7 @@ from samolet.domain.models import (
     ValidationReport,
     ValidationRequest,
 )
-from samolet.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
+from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 
 
 class ConflictExtractor:

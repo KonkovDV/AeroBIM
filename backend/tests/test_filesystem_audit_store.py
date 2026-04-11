@@ -7,12 +7,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from samolet.domain.models import ReportSummaryEntry, ValidationReport
-from samolet.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+from aerobim.domain.models import ReportSummaryEntry, ValidationReport
+from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
 
 def _make_report(report_id: str = "rpt-001", passed: bool = True, issue_count: int = 0) -> ValidationReport:
-    from samolet.domain.models import ValidationSummary
+    from aerobim.domain.models import ValidationSummary
 
     return ValidationReport(
         report_id=report_id,

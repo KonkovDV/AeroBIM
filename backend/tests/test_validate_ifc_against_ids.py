@@ -8,13 +8,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from samolet.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
-from samolet.domain.models import (
+from aerobim.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
+from aerobim.domain.models import (
     ParsedRequirement,
     RequirementSource,
     Severity,
-    ValidationReport,
     ValidationIssue,
+    ValidationReport,
     ValidationRequest,
 )
 
