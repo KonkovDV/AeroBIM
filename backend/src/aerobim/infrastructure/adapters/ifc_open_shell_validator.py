@@ -37,6 +37,9 @@ class IfcOpenShellValidator:
 
         model = ifcopenshell.open(str(ifc_path))
         issues: list[ValidationIssue] = []
+        entity_cache: dict[str, tuple[Any, ...]] = {}
+        target_cache: dict[tuple[str, str], tuple[Any, ...]] = {}
+        pset_cache: dict[object, dict[str, Any]] = {}
 
         for requirement in requirements:
             if requirement.rule_scope is RuleScope.DRAWING_ANNOTATION:
@@ -45,13 +48,13 @@ class IfcOpenShellValidator:
             if not requirement.ifc_entity:
                 continue
 
-            matching_elements = list(model.by_type(requirement.ifc_entity))
-            if requirement.target_ref:
-                matching_elements = [
-                    element
-                    for element in matching_elements
-                    if self._matches_target_ref(element, requirement.target_ref)
-                ]
+            matching_elements = self._get_matching_elements(
+                model,
+                requirement.ifc_entity,
+                requirement.target_ref,
+                entity_cache,
+                target_cache,
+            )
 
             if not matching_elements:
                 issues.append(
@@ -76,7 +79,7 @@ class IfcOpenShellValidator:
 
             property_found = False
             for element in matching_elements:
-                properties = get_psets(element)
+                properties = self._get_element_psets(element, get_psets, pset_cache)
                 property_group = properties.get(requirement.property_set)
                 if not isinstance(property_group, dict):
                     continue
@@ -129,6 +132,59 @@ class IfcOpenShellValidator:
                 )
 
         return issues
+
+    def _get_matching_elements(
+        self,
+        model: Any,
+        ifc_entity: str,
+        target_ref: str | None,
+        entity_cache: dict[str, tuple[Any, ...]],
+        target_cache: dict[tuple[str, str], tuple[Any, ...]],
+    ) -> list[Any]:
+        entity_key = ifc_entity.strip().upper()
+        elements = entity_cache.get(entity_key)
+        if elements is None:
+            elements = tuple(model.by_type(ifc_entity))
+            entity_cache[entity_key] = elements
+
+        if not target_ref:
+            return list(elements)
+
+        target_key = (entity_key, target_ref.strip().lower())
+        filtered_elements = target_cache.get(target_key)
+        if filtered_elements is None:
+            filtered_elements = tuple(
+                element for element in elements if self._matches_target_ref(element, target_ref)
+            )
+            target_cache[target_key] = filtered_elements
+        return list(filtered_elements)
+
+    def _get_element_psets(
+        self,
+        element: Any,
+        get_psets: Any,
+        pset_cache: dict[object, dict[str, Any]],
+    ) -> dict[str, Any]:
+        cache_key = self._element_cache_key(element)
+        properties = pset_cache.get(cache_key)
+        if properties is None:
+            properties = get_psets(element)
+            pset_cache[cache_key] = properties
+        return properties
+
+    def _element_cache_key(self, element: Any) -> object:
+        element_id = getattr(element, "id", None)
+        if callable(element_id):
+            try:
+                return ("id", element_id())
+            except TypeError:
+                pass
+
+        global_id = getattr(element, "GlobalId", None)
+        if global_id is not None:
+            return ("guid", str(global_id))
+
+        return ("object", id(element))
 
     def _extract_guid(self, element: Any) -> str | None:
         global_id = getattr(element, "GlobalId", None)
