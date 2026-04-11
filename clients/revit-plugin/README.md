@@ -13,7 +13,7 @@ It should not own validation logic. It should:
 
 If the plugin becomes the main runtime, the product collapses into a vendor-specific tool.
 
-`Samolet` keeps validation and report truth in the backend. The Revit add-in is only one delivery and remediation surface.
+`AeroBIM` keeps validation and report truth in the backend. The Revit add-in is only one delivery and remediation surface.
 
 ## First Plugin Milestones
 
