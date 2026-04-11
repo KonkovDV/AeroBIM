@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from aerobim.domain.models import ParsedRequirement
+from aerobim.domain.models import ComparisonOperator, ParsedRequirement
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
 
 
@@ -48,8 +48,14 @@ class IfcOpenShellValidatorCachingTests(unittest.TestCase):
         self,
         model: _FakeModel,
         psets_by_element_id: dict[int, dict[str, dict[str, object]]],
+        unit_scales: dict[str, float] | None = None,
     ):
         pset_calls: dict[int, int] = {}
+        scales = unit_scales or {
+            "LENGTHUNIT": 1.0,
+            "AREAUNIT": 1.0,
+            "VOLUMEUNIT": 1.0,
+        }
 
         def get_psets(element: _FakeElement) -> dict[str, dict[str, object]]:
             element_id = element.id()
@@ -63,10 +69,16 @@ class IfcOpenShellValidatorCachingTests(unittest.TestCase):
         element_module = types.ModuleType("ifcopenshell.util.element")
         element_module.get_psets = get_psets
 
+        unit_module = types.ModuleType("ifcopenshell.util.unit")
+        unit_module.calculate_unit_scale = lambda _model, unit_type="LENGTHUNIT": scales.get(
+            unit_type, 1.0
+        )
+
         patched_modules = {
             "ifcopenshell": ifcopenshell_module,
             "ifcopenshell.util": util_module,
             "ifcopenshell.util.element": element_module,
+            "ifcopenshell.util.unit": unit_module,
         }
         return pset_calls, patch.dict(sys.modules, patched_modules)
 
@@ -156,6 +168,124 @@ class IfcOpenShellValidatorCachingTests(unittest.TestCase):
         self.assertEqual(model.by_type_calls, ["IFCWALL"])
         self.assertEqual(validator.target_ref_checks, 2)
         self.assertEqual(pset_calls, {1: 1})
+
+
+class IfcOpenShellValidatorUnitNormalizationTests(unittest.TestCase):
+    """Tests proving that numeric IFC values are normalized to SI before comparison."""
+
+    def _install_fake_ifcopenshell(
+        self,
+        model: _FakeModel,
+        psets_by_element_id: dict[int, dict[str, dict[str, object]]],
+        unit_scales: dict[str, float],
+    ):
+        def get_psets(element: _FakeElement) -> dict[str, dict[str, object]]:
+            return psets_by_element_id[element.id()]
+
+        ifcopenshell_module = types.ModuleType("ifcopenshell")
+        ifcopenshell_module.open = lambda _path: model
+
+        util_module = types.ModuleType("ifcopenshell.util")
+        element_module = types.ModuleType("ifcopenshell.util.element")
+        element_module.get_psets = get_psets
+
+        unit_module = types.ModuleType("ifcopenshell.util.unit")
+        unit_module.calculate_unit_scale = lambda _model, unit_type="LENGTHUNIT": unit_scales.get(
+            unit_type, 1.0
+        )
+
+        patched_modules = {
+            "ifcopenshell": ifcopenshell_module,
+            "ifcopenshell.util": util_module,
+            "ifcopenshell.util.element": element_module,
+            "ifcopenshell.util.unit": unit_module,
+        }
+        return patch.dict(sys.modules, patched_modules)
+
+    def test_mm_model_normalizes_observed_to_si(self) -> None:
+        """Model stores width in mm; requirement expects metres.
+
+        Without normalization: 200 <= 0.25 → false issue.
+        With normalization:    0.2 <= 0.25 → correct pass.
+        """
+        wall = _FakeElement(1, "g1", "W1")
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Qto_WallBaseQuantities": {"Width": 200.0}}},
+            unit_scales={"LENGTHUNIT": 0.001, "AREAUNIT": 1e-6, "VOLUMEUNIT": 1e-9},
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-1",
+                ifc_entity="IFCWALL",
+                property_set="Qto_WallBaseQuantities",
+                property_name="Width",
+                operator=ComparisonOperator.LESS_OR_EQUAL,
+                expected_value="0.25",
+                unit="m",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        self.assertEqual(issues, [], "200 mm = 0.2 m should pass <= 0.25 m")
+
+    def test_imperial_model_catches_false_positive(self) -> None:
+        """Model stores area in sq ft; requirement expects m².
+
+        Without normalization: 269.1 >= 30 → false pass.
+        With normalization:    25.0 >= 30  → correct failure.
+        """
+        wall = _FakeElement(1, "g1", "W1")
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Qto_SpaceBaseQuantities": {"NetFloorArea": 269.098}}},
+            unit_scales={
+                "LENGTHUNIT": 0.3048,
+                "AREAUNIT": 0.092903,
+                "VOLUMEUNIT": 0.028317,
+            },
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-1",
+                ifc_entity="IFCWALL",
+                property_set="Qto_SpaceBaseQuantities",
+                property_name="NetFloorArea",
+                operator=ComparisonOperator.GREATER_OR_EQUAL,
+                expected_value="30",
+                unit="m2",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        self.assertEqual(len(issues), 1, "25 m² < 30 m² should produce a failure")
+
+    def test_string_properties_unaffected_by_unit_scales(self) -> None:
+        """Non-numeric properties like FireRating are never scaled."""
+        wall = _FakeElement(1, "g1", "W1")
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Pset_WallCommon": {"FireRating": "REI60"}}},
+            unit_scales={"LENGTHUNIT": 0.001, "AREAUNIT": 1e-6, "VOLUMEUNIT": 1e-9},
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-1",
+                ifc_entity="IFCWALL",
+                property_set="Pset_WallCommon",
+                property_name="FireRating",
+                expected_value="REI60",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        self.assertEqual(issues, [])
 
 
 if __name__ == "__main__":
