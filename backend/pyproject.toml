@@ -17,7 +17,7 @@ classifiers = [
   "Topic :: Software Development :: Quality Assurance",
 ]
 dependencies = [
-  "fastapi>=0.115,<1.0",
+  "fastapi>=0.135.3,<1.0",
   "uvicorn[standard]>=0.32,<1.0",
   "ifcopenshell>=0.8.4",
   "ifctester>=0.8.4",
