@@ -6,13 +6,13 @@ import io
 import tempfile
 import unittest
 import zipfile
-from datetime import UTC, datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
 from aerobim.domain.models import (
+    ClashResult,
     FindingCategory,
-    GeneratedRemark,
     Severity,
     ValidationIssue,
     ValidationReport,
@@ -49,6 +49,29 @@ def _make_report(
             error_count=issue_count if severity == Severity.ERROR else 0,
             warning_count=issue_count if severity == Severity.WARNING else 0,
             passed=severity != Severity.ERROR,
+        ),
+    )
+
+
+def _make_report_with_clash() -> ValidationReport:
+    report = _make_report(issue_count=1, with_guid=True)
+    return ValidationReport(
+        report_id=report.report_id,
+        request_id=report.request_id,
+        ifc_path=report.ifc_path,
+        created_at=report.created_at,
+        requirements=report.requirements,
+        issues=report.issues,
+        summary=report.summary,
+        drawing_annotations=report.drawing_annotations,
+        clash_results=(
+            ClashResult(
+                element_a_guid="clash-a-guid",
+                element_b_guid="clash-b-guid",
+                clash_type="hard",
+                distance=0.015,
+                description="Hard clash between wall and pipe",
+            ),
         ),
     )
 
@@ -94,6 +117,35 @@ class BcfExportTests(unittest.TestCase):
             self.assertIn("IDS-TestRule-0", markup_xml)
             self.assertIn("guid-0", markup_xml)
 
+    def test_bcf_markup_references_viewpoint_file(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1, with_guid=True)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            viewpoint_files = [n for n in zf.namelist() if n.endswith("/viewpoint.bcfv")]
+            self.assertEqual(len(markup_files), 1)
+            self.assertEqual(len(viewpoint_files), 1)
+            markup_xml = zf.read(markup_files[0]).decode("utf-8")
+            self.assertIn("<Viewpoints>", markup_xml)
+            self.assertIn("viewpoint.bcfv", markup_xml)
+
+    def test_bcf_viewpoint_contains_camera_and_selected_guid(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1, with_guid=True)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            viewpoint_files = [n for n in zf.namelist() if n.endswith("/viewpoint.bcfv")]
+            self.assertEqual(len(viewpoint_files), 1)
+            viewpoint_xml = zf.read(viewpoint_files[0]).decode("utf-8")
+            self.assertIn("<OrthogonalCamera>", viewpoint_xml)
+            self.assertIn("<Selection>", viewpoint_xml)
+            self.assertIn('IfcGuid="guid-0"', viewpoint_xml)
+
     def test_bcf_only_includes_errors(self) -> None:
         from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
@@ -114,16 +166,36 @@ class BcfExportTests(unittest.TestCase):
             names = zf.namelist()
             self.assertEqual(names, ["bcf.version"])
 
+    def test_bcf_exports_clash_results_as_additional_topics(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report_with_clash()
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            viewpoint_files = [n for n in zf.namelist() if n.endswith("/viewpoint.bcfv")]
+            self.assertEqual(len(markup_files), 2)
+            self.assertEqual(len(viewpoint_files), 2)
+            combined_markup = "\n".join(zf.read(name).decode("utf-8") for name in markup_files)
+            self.assertIn("Hard clash between wall and pipe", combined_markup)
+            combined_viewpoints = "\n".join(
+                zf.read(name).decode("utf-8") for name in viewpoint_files
+            )
+            self.assertIn('IfcGuid="clash-a-guid"', combined_viewpoints)
+            self.assertIn('IfcGuid="clash-b-guid"', combined_viewpoints)
+
 
 class BcfApiExportTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         try:
             from fastapi.testclient import TestClient
-        except ModuleNotFoundError:
-            raise unittest.SkipTest("FastAPI/httpx not installed")
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
         import importlib.util
         import sys
+
         sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
         from aerobim.presentation.http.api import create_http_app
 
@@ -194,7 +266,9 @@ class ClashDetectorPortTests(unittest.TestCase):
 
         detector = IfcClashDetector()
         # Use one of our real IFC fixtures
-        ifc_path = Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
         if not ifc_path.exists():
             self.skipTest("IFC fixture not available")
         results = detector.detect(ifc_path)

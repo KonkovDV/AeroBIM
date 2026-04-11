@@ -249,14 +249,17 @@ td.warning{{color:#b58900}}
 <h1>Validation Report</h1>
 <div class="summary {status_class}">
 <strong>{status_label}</strong> &mdash;
-{summary['issue_count']} issue(s),
-{summary['error_count']} error(s),
-{summary['warning_count']} warning(s),
-{summary['requirement_count']} requirement(s)
+{summary["issue_count"]} issue(s),
+{summary["error_count"]} error(s),
+{summary["warning_count"]} warning(s),
+{summary["requirement_count"]} requirement(s)
 </div>
 <table><thead><tr><th>Rule</th><th>Severity</th><th>Message</th><th>Element GUID</th></tr></thead>
 <tbody>{issues_rows}</tbody></table>
-<p style="margin-top:2em;font-size:.85em;color:#888">Report ID: {_esc(report_id)} &middot; Created: {_esc(data.get('created_at', ''))}</p>
+<p style="margin-top:2em;font-size:.85em;color:#888">
+Report ID: {_esc(report_id)} &middot;
+Created: {_esc(data.get("created_at", ""))}
+</p>
 </body></html>"""
         return HTMLResponse(
             content=html,

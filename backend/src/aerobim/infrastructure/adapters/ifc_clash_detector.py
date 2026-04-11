@@ -49,13 +49,16 @@ class IfcClashDetector:
         results: list[ClashResult] = []
         for clash_set_result in clasher.clash_sets:
             for clash in clash_set_result.get("clashes", {}).values():
+                description = (
+                    f"Hard clash between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}"
+                )
                 results.append(
                     ClashResult(
                         element_a_guid=clash.get("a_global_id", ""),
                         element_b_guid=clash.get("b_global_id", ""),
                         clash_type="hard",
                         distance=clash.get("distance", 0.0),
-                        description=f"Hard clash between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}",
+                        description=description,
                     )
                 )
         return results
