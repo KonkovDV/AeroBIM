@@ -73,7 +73,9 @@ class FilesystemAuditStore:
             request_id=data["request_id"],
             ifc_path=Path(data["ifc_path"]),
             created_at=data["created_at"],
-            requirements=tuple(self._reconstruct_requirement(r) for r in data.get("requirements", [])),
+            requirements=tuple(
+                self._reconstruct_requirement(r) for r in data.get("requirements", [])
+            ),
             issues=tuple(self._reconstruct_issue(i) for i in data.get("issues", [])),
             summary=self._reconstruct_summary(data.get("summary", {})),
             drawing_annotations=tuple(
@@ -85,15 +87,21 @@ class FilesystemAuditStore:
         return ParsedRequirement(
             rule_id=data["rule_id"],
             ifc_entity=data.get("ifc_entity"),
-            rule_scope=RuleScope(data["rule_scope"]) if data.get("rule_scope") else RuleScope.IFC_PROPERTY,
+            rule_scope=RuleScope(data["rule_scope"])
+            if data.get("rule_scope")
+            else RuleScope.IFC_PROPERTY,
             target_ref=data.get("target_ref"),
             property_set=data.get("property_set"),
             property_name=data.get("property_name"),
-            operator=ComparisonOperator(data["operator"]) if data.get("operator") else ComparisonOperator.EQUALS,
+            operator=ComparisonOperator(data["operator"])
+            if data.get("operator")
+            else ComparisonOperator.EQUALS,
             expected_value=data.get("expected_value"),
             unit=data.get("unit"),
             source=data.get("source", ""),
-            source_kind=SourceKind(data["source_kind"]) if data.get("source_kind") else SourceKind.STRUCTURED_TEXT,
+            source_kind=SourceKind(data["source_kind"])
+            if data.get("source_kind")
+            else SourceKind.STRUCTURED_TEXT,
             evidence_text=data.get("evidence_text"),
             instructions=data.get("instructions"),
             evidence_modality=data.get("evidence_modality"),
@@ -107,7 +115,9 @@ class FilesystemAuditStore:
             severity=Severity(data["severity"]),
             message=data["message"],
             ifc_entity=data.get("ifc_entity"),
-            category=FindingCategory(data["category"]) if data.get("category") else FindingCategory.IFC_VALIDATION,
+            category=FindingCategory(data["category"])
+            if data.get("category")
+            else FindingCategory.IFC_VALIDATION,
             target_ref=data.get("target_ref"),
             property_set=data.get("property_set"),
             property_name=data.get("property_name"),

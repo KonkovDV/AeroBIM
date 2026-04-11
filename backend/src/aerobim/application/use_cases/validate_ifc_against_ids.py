@@ -27,7 +27,11 @@ class ValidateIfcAgainstIdsUseCase:
         if not requirements and not getattr(request, "ids_path", None):
             raise ValueError("No requirements were extracted from the provided source")
 
-        issues_list = list(self._ifc_validator.validate(request.ifc_path, requirements)) if requirements else []
+        issues_list = (
+            list(self._ifc_validator.validate(request.ifc_path, requirements))
+            if requirements
+            else []
+        )
 
         ids_path: Path | None = getattr(request, "ids_path", None)
         if ids_path is not None and self._ids_validator is not None:

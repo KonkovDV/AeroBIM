@@ -1,3 +1,5 @@
+# pyright: reportMissingImports=false, reportUnknownVariableType=false, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownParameterType=false, reportMissingParameterType=false, reportUnusedImport=false
+
 """Supplemental edge-case tests covering remaining audit-identified gaps.
 
 A: FilesystemAuditStore malformed JSON resilience
@@ -9,7 +11,6 @@ E: Drawing dimension pattern in NarrativeRuleSynthesizer
 
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 import unittest
@@ -21,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 # ---------------------------------------------------------------------------
 # A: FilesystemAuditStore — malformed JSON resilience
 # ---------------------------------------------------------------------------
+
 
 class FilesystemStoreResilienceTests(unittest.TestCase):
     def test_get_returns_none_for_corrupt_json(self) -> None:
@@ -51,25 +53,27 @@ class FilesystemStoreResilienceTests(unittest.TestCase):
     def test_list_reports_skips_corrupt_files(self) -> None:
         from aerobim.domain.models import ValidationReport, ValidationSummary
         from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
-        from aerobim.infrastructure.adapters.filesystem_audit_store import (
-            FilesystemAuditStore as FS,
-        )
 
         with tempfile.TemporaryDirectory() as tmp:
             store = FilesystemAuditStore(Path(tmp))
             # Save one valid report
-            store.save(ValidationReport(
-                report_id="good",
-                request_id="req",
-                ifc_path=Path("x.ifc"),
-                created_at="2026-01-01T00:00:00Z",
-                requirements=(),
-                issues=(),
-                summary=ValidationSummary(
-                    requirement_count=0, issue_count=0,
-                    error_count=0, warning_count=0, passed=True,
-                ),
-            ))
+            store.save(
+                ValidationReport(
+                    report_id="good",
+                    request_id="req",
+                    ifc_path=Path("x.ifc"),
+                    created_at="2026-01-01T00:00:00Z",
+                    requirements=(),
+                    issues=(),
+                    summary=ValidationSummary(
+                        requirement_count=0,
+                        issue_count=0,
+                        error_count=0,
+                        warning_count=0,
+                        passed=True,
+                    ),
+                )
+            )
             # Write a corrupt file next to it
             reports_dir = Path(tmp) / "reports"
             (reports_dir / "corrupt.json").write_text("{invalid", encoding="utf-8")
@@ -83,6 +87,7 @@ class FilesystemStoreResilienceTests(unittest.TestCase):
 # B: ValidateIfcAgainstIdsUseCase — IDS + requirement combined path
 # ---------------------------------------------------------------------------
 
+
 class ValidateWithIdsPathTests(unittest.TestCase):
     def test_ids_issues_combined_with_requirement_issues(self) -> None:
         from aerobim.application.use_cases.validate_ifc_against_ids import (
@@ -93,30 +98,38 @@ class ValidateWithIdsPathTests(unittest.TestCase):
             RequirementSource,
             Severity,
             ValidationIssue,
-            ValidationReport,
             ValidationRequest,
-            ValidationSummary,
         )
 
         class StubExtractor:
             def extract(self, _src):
-                return [ParsedRequirement(rule_id="R1", ifc_entity="IFCWALL",
-                                          property_set="Pset_WallCommon",
-                                          property_name="FireRating",
-                                          expected_value="REI60")]
+                return [
+                    ParsedRequirement(
+                        rule_id="R1",
+                        ifc_entity="IFCWALL",
+                        property_set="Pset_WallCommon",
+                        property_name="FireRating",
+                        expected_value="REI60",
+                    )
+                ]
 
         class StubIfcValidator:
             def validate(self, _path, _reqs):
-                return [ValidationIssue(rule_id="R1", severity=Severity.ERROR,
-                                        message="IFC mismatch")]
+                return [
+                    ValidationIssue(rule_id="R1", severity=Severity.ERROR, message="IFC mismatch")
+                ]
 
         class StubIdsValidator:
             def validate(self, _ids_path, _ifc_path):
-                return [ValidationIssue(rule_id="IDS-1", severity=Severity.WARNING,
-                                        message="IDS violation")]
+                return [
+                    ValidationIssue(
+                        rule_id="IDS-1", severity=Severity.WARNING, message="IDS violation"
+                    )
+                ]
 
         class StubStore:
             saved = None
+
             def save(self, report):
                 self.saved = report
                 return report.report_id
@@ -129,12 +142,16 @@ class ValidateWithIdsPathTests(unittest.TestCase):
             ids_validator=StubIdsValidator(),
         )
 
-        report = uc.execute(ValidationRequest(
-            request_id="req-ids",
-            ifc_path=Path("model.ifc"),
-            requirement_source=RequirementSource(text="R1|IFCWALL|Pset_WallCommon|FireRating|REI60"),
-            ids_path=Path("rules.ids"),
-        ))
+        report = uc.execute(
+            ValidationRequest(
+                request_id="req-ids",
+                ifc_path=Path("model.ifc"),
+                requirement_source=RequirementSource(
+                    text="R1|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
+                ids_path=Path("rules.ids"),
+            )
+        )
 
         self.assertEqual(report.summary.issue_count, 2, "Should combine IFC + IDS issues")
         self.assertEqual(report.summary.error_count, 1)
@@ -166,16 +183,19 @@ class ValidateWithIdsPathTests(unittest.TestCase):
         )
 
         with self.assertRaises(ValueError):
-            uc.execute(ValidationRequest(
-                request_id="empty",
-                ifc_path=Path("model.ifc"),
-                requirement_source=RequirementSource(text=""),
-            ))
+            uc.execute(
+                ValidationRequest(
+                    request_id="empty",
+                    ifc_path=Path("model.ifc"),
+                    requirement_source=RequirementSource(text=""),
+                )
+            )
 
 
 # ---------------------------------------------------------------------------
 # C: AnalyzeProjectPackageUseCase — cross-document + drawing validation
 # ---------------------------------------------------------------------------
+
 
 class CompareValuesTests(unittest.TestCase):
     """Test the _compare_values helper in AnalyzeProjectPackageUseCase."""
@@ -185,12 +205,14 @@ class CompareValuesTests(unittest.TestCase):
             AnalyzeProjectPackageUseCase as UC,
         )
         from aerobim.domain.models import ToleranceConfig
+
         uc = UC.__new__(UC)
         uc._tolerance = tolerance or ToleranceConfig()
         return uc
 
     def test_lte_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("100", "200", ComparisonOperator.LESS_OR_EQUAL))
         self.assertTrue(uc._compare_values("200", "200", ComparisonOperator.LESS_OR_EQUAL))
@@ -198,30 +220,35 @@ class CompareValuesTests(unittest.TestCase):
 
     def test_gte_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("200", "100", ComparisonOperator.GREATER_OR_EQUAL))
         self.assertFalse(uc._compare_values("50", "100", ComparisonOperator.GREATER_OR_EQUAL))
 
     def test_equals_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("REI60", "REI60", ComparisonOperator.EQUALS))
         self.assertFalse(uc._compare_values("REI90", "REI60", ComparisonOperator.EQUALS))
 
     def test_exists_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("anything", None, ComparisonOperator.EXISTS))
         self.assertFalse(uc._compare_values(None, None, ComparisonOperator.EXISTS))
 
     def test_non_numeric_gte_falls_back_to_string_equality(self) -> None:
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(uc._compare_values("abc", "abc", ComparisonOperator.GREATER_OR_EQUAL))
         self.assertFalse(uc._compare_values("abc", "xyz", ComparisonOperator.GREATER_OR_EQUAL))
 
     def test_none_observed_returns_false(self) -> None:
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertFalse(uc._compare_values(None, "100", ComparisonOperator.EQUALS))
 
@@ -230,6 +257,7 @@ class CompareValuesTests(unittest.TestCase):
     def test_fuzzy_equals_within_length_epsilon(self) -> None:
         """200.0005 ≈ 200.0 within default length_epsilon=0.001 mm."""
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("200.0005", "200.0", ComparisonOperator.EQUALS, unit="mm")
@@ -238,14 +266,14 @@ class CompareValuesTests(unittest.TestCase):
     def test_fuzzy_equals_outside_length_epsilon(self) -> None:
         """200.5 ≠ 200.0 — well outside 0.001 epsilon."""
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
-        self.assertFalse(
-            uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm")
-        )
+        self.assertFalse(uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm"))
 
     def test_fuzzy_gte_within_epsilon_boundary(self) -> None:
         """199.9995 is within ε of 200.0 for GTE (passes with tolerance)."""
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("199.9995", "200.0", ComparisonOperator.GREATER_OR_EQUAL, unit="mm")
@@ -254,6 +282,7 @@ class CompareValuesTests(unittest.TestCase):
     def test_fuzzy_lte_within_epsilon_boundary(self) -> None:
         """200.0005 is within ε of 200.0 for LTE (passes with tolerance)."""
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
         self.assertTrue(
             uc._compare_values("200.0005", "200.0", ComparisonOperator.LESS_OR_EQUAL, unit="mm")
@@ -262,48 +291,43 @@ class CompareValuesTests(unittest.TestCase):
     def test_fuzzy_area_unit(self) -> None:
         """42.005 ≈ 42.0 within area_epsilon=0.01 m²."""
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
-        self.assertTrue(
-            uc._compare_values("42.005", "42.0", ComparisonOperator.EQUALS, unit="м2")
-        )
-        self.assertFalse(
-            uc._compare_values("42.05", "42.0", ComparisonOperator.EQUALS, unit="м2")
-        )
+        self.assertTrue(uc._compare_values("42.005", "42.0", ComparisonOperator.EQUALS, unit="м2"))
+        self.assertFalse(uc._compare_values("42.05", "42.0", ComparisonOperator.EQUALS, unit="м2"))
 
     def test_fuzzy_custom_tolerance(self) -> None:
         """Custom tolerance: 1.0 epsilon makes 200.5 ≈ 200.0."""
         from aerobim.domain.models import ComparisonOperator, ToleranceConfig
+
         custom = ToleranceConfig(length_epsilon=1.0)
         uc = self._make_uc(tolerance=custom)
-        self.assertTrue(
-            uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm")
-        )
+        self.assertTrue(uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm"))
 
     def test_no_unit_uses_default_epsilon(self) -> None:
         """Without unit, default_epsilon=1e-6 applies."""
         from aerobim.domain.models import ComparisonOperator
+
         uc = self._make_uc()
-        self.assertTrue(
-            uc._compare_values("42.0000005", "42.0", ComparisonOperator.EQUALS)
-        )
-        self.assertFalse(
-            uc._compare_values("42.001", "42.0", ComparisonOperator.EQUALS)
-        )
+        self.assertTrue(uc._compare_values("42.0000005", "42.0", ComparisonOperator.EQUALS))
+        self.assertFalse(uc._compare_values("42.001", "42.0", ComparisonOperator.EQUALS))
 
 
 # ---------------------------------------------------------------------------
 # D: API CORS + correlation integration
 # ---------------------------------------------------------------------------
 
+
 class ApiCorsAndCorrelationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         try:
             from fastapi.testclient import TestClient
-        except ModuleNotFoundError:
-            raise unittest.SkipTest("FastAPI/httpx not installed")
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
 
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "test_api_security",
             Path(__file__).resolve().parent / "test_api_security.py",
@@ -313,6 +337,7 @@ class ApiCorsAndCorrelationTests(unittest.TestCase):
         container = mod._make_test_container()
 
         from aerobim.presentation.http.api import create_http_app
+
         app = create_http_app(container)
         cls.client = TestClient(app)
 
@@ -342,6 +367,7 @@ class ApiCorsAndCorrelationTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 # E: Narrative synthesizer — drawing dimension pattern
 # ---------------------------------------------------------------------------
+
 
 class DrawingDimensionPatternTests(unittest.TestCase):
     def test_drawing_dimension_russian(self) -> None:
@@ -389,9 +415,11 @@ class DrawingDimensionPatternTests(unittest.TestCase):
 # F: ToleranceConfig domain value object
 # ---------------------------------------------------------------------------
 
+
 class ToleranceConfigTests(unittest.TestCase):
     def test_default_values(self) -> None:
         from aerobim.domain.models import ToleranceConfig
+
         tc = ToleranceConfig()
         self.assertEqual(tc.length_epsilon, 0.001)
         self.assertEqual(tc.area_epsilon, 0.01)
@@ -399,33 +427,52 @@ class ToleranceConfigTests(unittest.TestCase):
 
     def test_epsilon_for_length_units(self) -> None:
         from aerobim.domain.models import ToleranceConfig
+
         tc = ToleranceConfig()
         for unit in ("mm", "мм", "m", "м", "cm", "см"):
             self.assertEqual(tc.epsilon_for_unit(unit), 0.001, f"Failed for unit={unit}")
 
     def test_epsilon_for_area_units(self) -> None:
         from aerobim.domain.models import ToleranceConfig
+
         tc = ToleranceConfig()
         for unit in ("m2", "м2", "sqm", "sq.m", "m²", "м²"):
             self.assertEqual(tc.epsilon_for_unit(unit), 0.01, f"Failed for unit={unit}")
 
     def test_epsilon_for_unknown_unit(self) -> None:
         from aerobim.domain.models import ToleranceConfig
+
         tc = ToleranceConfig()
         self.assertEqual(tc.epsilon_for_unit("kg"), 1e-6)
         self.assertEqual(tc.epsilon_for_unit(None), 1e-6)
 
     def test_custom_epsilon(self) -> None:
         from aerobim.domain.models import ToleranceConfig
+
         tc = ToleranceConfig(length_epsilon=0.5, area_epsilon=1.0, default_epsilon=0.01)
         self.assertEqual(tc.epsilon_for_unit("mm"), 0.5)
         self.assertEqual(tc.epsilon_for_unit("m2"), 1.0)
         self.assertEqual(tc.epsilon_for_unit(None), 0.01)
 
+    def test_epsilon_for_imperial_length_units(self) -> None:
+        from aerobim.domain.models import ToleranceConfig
+
+        tc = ToleranceConfig(imperial_length_epsilon=0.003)
+        for unit in ("ft", "feet", "foot", "in", "inch", "inches"):
+            self.assertEqual(tc.epsilon_for_unit(unit), 0.003, f"Failed for unit={unit}")
+
+    def test_epsilon_for_angle_units(self) -> None:
+        from aerobim.domain.models import ToleranceConfig
+
+        tc = ToleranceConfig(angle_epsilon=0.25)
+        for unit in ("deg", "degree", "degrees", "°", "rad", "radian", "radians"):
+            self.assertEqual(tc.epsilon_for_unit(unit), 0.25, f"Failed for unit={unit}")
+
 
 # ---------------------------------------------------------------------------
 # G: VLM DrawingAnalyzer port + adapter contract
 # ---------------------------------------------------------------------------
+
 
 class VlmDrawingAnalyzerContractTests(unittest.TestCase):
     def test_stub_returns_empty_for_existing_file(self) -> None:
@@ -453,7 +500,6 @@ class VlmDrawingAnalyzerContractTests(unittest.TestCase):
 
     def test_port_protocol_compliance(self) -> None:
         """VlmDrawingAnalyzer satisfies VisionDrawingAnalyzer protocol."""
-        from aerobim.domain.ports import VisionDrawingAnalyzer
         from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
 
         analyzer = VlmDrawingAnalyzer()
@@ -465,6 +511,7 @@ class VlmDrawingAnalyzerContractTests(unittest.TestCase):
 
     def test_token_registered_in_bootstrap(self) -> None:
         from aerobim.core.di.tokens import Tokens
+
         self.assertTrue(hasattr(Tokens, "VISION_DRAWING_ANALYZER"))
 
 

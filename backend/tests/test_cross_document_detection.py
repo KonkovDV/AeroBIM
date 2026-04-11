@@ -98,7 +98,9 @@ class CrossDocumentContradictionTests(unittest.TestCase):
         )
 
         cross_issues = [i for i in report.issues if i.category == FindingCategory.CROSS_DOCUMENT]
-        self.assertGreaterEqual(len(cross_issues), 1, "Expected at least one cross-document contradiction")
+        self.assertGreaterEqual(
+            len(cross_issues), 1, "Expected at least one cross-document contradiction"
+        )
 
         issue = cross_issues[0]
         self.assertEqual(issue.severity, Severity.WARNING)

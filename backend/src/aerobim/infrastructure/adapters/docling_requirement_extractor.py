@@ -51,7 +51,8 @@ class StructuredRequirementExtractor:
 
             if len(parts) < 5:
                 raise ValueError(
-                    f"Malformed requirement at line {line_number}: expected at least 5 pipe-separated columns"
+                    "Malformed requirement at line "
+                    f"{line_number}: expected at least 5 pipe-separated columns"
                 )
 
             rule_id, ifc_entity, property_set, property_name, expected_value, *rest = parts
@@ -84,7 +85,17 @@ class StructuredRequirementExtractor:
         if len(parts) < 8:
             raise ValueError("Extended requirement rows require at least 8 pipe-separated columns")
 
-        rule_id, scope_token, ifc_entity, target_ref, property_set, property_name, operator_token, expected_value, *rest = parts
+        (
+            rule_id,
+            scope_token,
+            ifc_entity,
+            target_ref,
+            property_set,
+            property_name,
+            operator_token,
+            expected_value,
+            *rest,
+        ) = parts
         unit = rest[0] if rest else None
         evidence_text = rest[1] if len(rest) > 1 else None
         instructions = rest[2] if len(rest) > 2 else None

@@ -30,6 +30,7 @@ from aerobim.domain.models import (
 # A: Structured Logger
 # ---------------------------------------------------------------------------
 
+
 class StructuredLoggerTests(unittest.TestCase):
     def test_json_output_format(self) -> None:
         from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
@@ -37,6 +38,7 @@ class StructuredLoggerTests(unittest.TestCase):
         logger = JsonStructuredLogger(name="test-json-format", level=logging.DEBUG)
         # Capture stderr output
         import io
+
         handler = logger._logger.handlers[0]
         stream = io.StringIO()
         handler.stream = stream  # type: ignore[attr-defined]
@@ -56,6 +58,7 @@ class StructuredLoggerTests(unittest.TestCase):
 
         logger = JsonStructuredLogger(name="test-error-level", level=logging.DEBUG)
         import io
+
         handler = logger._logger.handlers[0]
         stream = io.StringIO()
         handler.stream = stream  # type: ignore[attr-defined]
@@ -72,11 +75,13 @@ class StructuredLoggerTests(unittest.TestCase):
 # B: Narrative Rule Synthesizer — multi-pattern and edge cases
 # ---------------------------------------------------------------------------
 
+
 class NarrativeSynthesizerEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
         from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
             NarrativeRuleSynthesizer,
         )
+
         self.synthesizer = NarrativeRuleSynthesizer()
 
     def test_empty_source_returns_no_rules(self) -> None:
@@ -118,7 +123,9 @@ class NarrativeSynthesizerEdgeCaseTests(unittest.TestCase):
             source_kind=SourceKind.TECHNICAL_SPECIFICATION,
         )
         result = self.synthesizer.synthesize(source)
-        self.assertEqual(len(result), 2, "Should extract area + fire rating, skip comment and unmatched")
+        self.assertEqual(
+            len(result), 2, "Should extract area + fire rating, skip comment and unmatched"
+        )
 
     def test_area_pattern_english(self) -> None:
         source = RequirementSource(
@@ -148,15 +155,18 @@ class NarrativeSynthesizerEdgeCaseTests(unittest.TestCase):
 # C: Drawing Analyzer — malformed input & edge cases
 # ---------------------------------------------------------------------------
 
+
 class DrawingAnalyzerEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
         from aerobim.infrastructure.adapters.structured_drawing_analyzer import (
             StructuredDrawingAnalyzer,
         )
+
         self.analyzer = StructuredDrawingAnalyzer()
 
     def test_malformed_text_too_few_columns(self) -> None:
         from aerobim.domain.models import DrawingSource
+
         source = DrawingSource(text="col1|col2|col3")
         with self.assertRaises(ValueError) as ctx:
             self.analyzer.analyze(source)
@@ -164,18 +174,21 @@ class DrawingAnalyzerEdgeCaseTests(unittest.TestCase):
 
     def test_empty_text_returns_empty(self) -> None:
         from aerobim.domain.models import DrawingSource
+
         source = DrawingSource(text="")
         result = self.analyzer.analyze(source)
         self.assertEqual(result, [])
 
     def test_comment_lines_skipped(self) -> None:
         from aerobim.domain.models import DrawingSource
+
         source = DrawingSource(text="# This is a comment\n\n")
         result = self.analyzer.analyze(source)
         self.assertEqual(result, [])
 
     def test_json_non_list_raises(self) -> None:
         from aerobim.domain.models import DrawingSource
+
         source = DrawingSource(text='{"not": "a list"}', path=Path("test.json"))
         with self.assertRaises(ValueError) as ctx:
             self.analyzer.analyze(source)
@@ -186,11 +199,13 @@ class DrawingAnalyzerEdgeCaseTests(unittest.TestCase):
 # D: Template Remark Generator — all branches
 # ---------------------------------------------------------------------------
 
+
 class RemarkGeneratorEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
         from aerobim.infrastructure.adapters.template_remark_generator import (
             TemplateRemarkGenerator,
         )
+
         self.generator = TemplateRemarkGenerator()
 
     def test_ifc_remark_gte_operator(self) -> None:
@@ -213,6 +228,7 @@ class RemarkGeneratorEdgeCaseTests(unittest.TestCase):
 
     def test_drawing_remark(self) -> None:
         from aerobim.domain.models import ProblemZone
+
         issue = ValidationIssue(
             rule_id="DWG-001",
             severity=Severity.WARNING,
@@ -254,9 +270,11 @@ class RemarkGeneratorEdgeCaseTests(unittest.TestCase):
 # E: Correlation middleware
 # ---------------------------------------------------------------------------
 
+
 class CorrelationTests(unittest.TestCase):
     def test_get_correlation_id_default_empty(self) -> None:
         from aerobim.presentation.http.correlation import get_correlation_id
+
         # Outside a request context, should return empty string
         cid = get_correlation_id()
         self.assertEqual(cid, "")
@@ -271,11 +289,13 @@ class CorrelationTests(unittest.TestCase):
         app = FastAPI()
 
         from aerobim.presentation.http.correlation import HEADER_NAME, add_correlation_middleware
+
         add_correlation_middleware(app)
 
         @app.get("/test")
         def test_endpoint() -> dict[str, str]:
             from aerobim.presentation.http.correlation import get_correlation_id
+
             return {"cid": get_correlation_id()}
 
         client = TestClient(app)
@@ -296,15 +316,19 @@ class CorrelationTests(unittest.TestCase):
 # F: Requirement extractor edge cases
 # ---------------------------------------------------------------------------
 
+
 class RequirementExtractorEdgeCaseTests(unittest.TestCase):
     def setUp(self) -> None:
         from aerobim.infrastructure.adapters.docling_requirement_extractor import (
             StructuredRequirementExtractor,
         )
+
         self.extractor = StructuredRequirementExtractor()
 
     def test_malformed_row_raises(self) -> None:
-        source = RequirementSource(text="only|three|columns", source_kind=SourceKind.STRUCTURED_TEXT)
+        source = RequirementSource(
+            text="only|three|columns", source_kind=SourceKind.STRUCTURED_TEXT
+        )
         with self.assertRaises(ValueError) as ctx:
             self.extractor.extract(source)
         self.assertIn("Malformed requirement", str(ctx.exception))

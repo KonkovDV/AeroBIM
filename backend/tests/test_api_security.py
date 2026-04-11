@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 import unittest
-from dataclasses import asdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -10,10 +9,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 class _NullLogger:
     """Silent logger for tests — satisfies StructuredLogger protocol."""
-    def info(self, message: str, **context: object) -> None: pass
-    def warning(self, message: str, **context: object) -> None: pass
-    def error(self, message: str, **context: object) -> None: pass
-    def debug(self, message: str, **context: object) -> None: pass
+
+    def info(self, message: str, **context: object) -> None:
+        pass
+
+    def warning(self, message: str, **context: object) -> None:
+        pass
+
+    def error(self, message: str, **context: object) -> None:
+        pass
+
+    def debug(self, message: str, **context: object) -> None:
+        pass
 
 
 def _make_test_container():
@@ -52,12 +59,28 @@ def _make_test_container():
     container = Container()
     container.register(Tokens.SETTINGS, lambda _: settings)
     container.register(Tokens.LOGGER, lambda _: _NullLogger(), lifecycle=Lifecycle.SINGLETON)
-    container.register(Tokens.REQUIREMENT_EXTRACTOR, lambda _: StructuredRequirementExtractor(), lifecycle=Lifecycle.SINGLETON)
-    container.register(Tokens.NARRATIVE_RULE_SYNTHESIZER, lambda _: NarrativeRuleSynthesizer(), lifecycle=Lifecycle.SINGLETON)
-    container.register(Tokens.DRAWING_ANALYZER, lambda _: StructuredDrawingAnalyzer(), lifecycle=Lifecycle.SINGLETON)
-    container.register(Tokens.IFC_VALIDATOR, lambda _: IfcOpenShellValidator(), lifecycle=Lifecycle.SINGLETON)
+    container.register(
+        Tokens.REQUIREMENT_EXTRACTOR,
+        lambda _: StructuredRequirementExtractor(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.NARRATIVE_RULE_SYNTHESIZER,
+        lambda _: NarrativeRuleSynthesizer(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.DRAWING_ANALYZER,
+        lambda _: StructuredDrawingAnalyzer(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.IFC_VALIDATOR, lambda _: IfcOpenShellValidator(), lifecycle=Lifecycle.SINGLETON
+    )
     container.register(Tokens.IDS_VALIDATOR, lambda _: None, lifecycle=Lifecycle.SINGLETON)
-    container.register(Tokens.REMARK_GENERATOR, lambda _: TemplateRemarkGenerator(), lifecycle=Lifecycle.SINGLETON)
+    container.register(
+        Tokens.REMARK_GENERATOR, lambda _: TemplateRemarkGenerator(), lifecycle=Lifecycle.SINGLETON
+    )
     container.register(Tokens.AUDIT_REPORT_STORE, lambda _: store, lifecycle=Lifecycle.SINGLETON)
     container.register(
         Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE,
@@ -88,8 +111,8 @@ class ApiSecurityTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         try:
             from fastapi.testclient import TestClient
-        except ModuleNotFoundError:
-            raise unittest.SkipTest("FastAPI/httpx not installed")
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
         from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
@@ -132,8 +155,8 @@ class ApiReportEndpointTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         try:
             from fastapi.testclient import TestClient
-        except ModuleNotFoundError:
-            raise unittest.SkipTest("FastAPI/httpx not installed")
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
         from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
@@ -172,15 +195,17 @@ class ApiHtmlExportTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         try:
             from fastapi.testclient import TestClient
-        except ModuleNotFoundError:
-            raise unittest.SkipTest("FastAPI/httpx not installed")
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
         from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
         app = create_http_app(container)
         cls.client = TestClient(app)
 
-    def _create_report(self, requirement_text: str = "SAM-001|IFCWALL|Pset_WallCommon|FireRating|eq|REI60") -> str:
+    def _create_report(
+        self, requirement_text: str = "SAM-001|IFCWALL|Pset_WallCommon|FireRating|eq|REI60"
+    ) -> str:
         """Create a report through the API and return its report_id."""
         response = self.client.post(
             "/v1/validate/ifc",
@@ -214,7 +239,10 @@ class ApiHtmlExportTests(unittest.TestCase):
         """Ensure XSS-safe rendering of user-controlled data."""
         from aerobim.presentation.http.api import _esc
 
-        self.assertEqual(_esc('<script>alert("xss")</script>'), '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;')
+        self.assertEqual(
+            _esc('<script>alert("xss")</script>'),
+            "&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;",
+        )
         self.assertEqual(_esc("A & B"), "A &amp; B")
 
 
@@ -225,8 +253,8 @@ class ApiMalformedInputTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         try:
             from fastapi.testclient import TestClient
-        except ModuleNotFoundError:
-            raise unittest.SkipTest("FastAPI/httpx not installed")
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
         from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
@@ -266,6 +294,7 @@ class ApiMalformedInputTests(unittest.TestCase):
 
     def test_report_id_not_found_returns_404(self) -> None:
         import uuid
+
         valid_but_missing_id = uuid.uuid4().hex
         response = self.client.get(f"/v1/reports/{valid_but_missing_id}")
         self.assertEqual(response.status_code, 404)
