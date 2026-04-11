@@ -164,3 +164,14 @@ class ReportSummaryEntry:
     created_at: str
     passed: bool
     issue_count: int
+
+
+@dataclass(frozen=True)
+class ClashResult:
+    """A single spatial clash between two IFC elements."""
+
+    element_a_guid: str
+    element_b_guid: str
+    clash_type: str  # "hard" | "clearance"
+    distance: float  # penetration depth or clearance gap (metres)
+    description: str
