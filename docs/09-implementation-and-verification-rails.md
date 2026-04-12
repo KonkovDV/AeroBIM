@@ -149,12 +149,23 @@ Current minimum rail:
 3. fixture or sample-pack verification when relevant
 4. broader closure when the blast radius justifies it
 
+### Frontend Code Lane
+
+Use when the browser review shell changes.
+
+Current minimum rail:
+
+1. changed-file diagnostics
+2. `npm install` when dependencies change
+3. `npm run build`
+4. runtime smoke against a persisted report when report-selection, issue-detail, provenance, or export behavior changes
+
 ### Future Local Rail
 
 As `AeroBIM` matures, it should gain its own local verification entrypoints for:
 
 - backend tests and type checks;
-- frontend checks;
+- frontend smoke and regression checks beyond build-only confidence;
 - fixture-pack regression;
 - report export regression.
 
