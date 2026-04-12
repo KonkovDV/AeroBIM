@@ -197,6 +197,7 @@ class BcfApiExportTests(unittest.TestCase):
         import sys
 
         sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+        from aerobim.core.di.tokens import Tokens
         from aerobim.presentation.http.api import create_http_app
 
         # Load _make_test_container from test_api_security via file path
@@ -209,21 +210,16 @@ class BcfApiExportTests(unittest.TestCase):
         container = mod._make_test_container()
         app = create_http_app(container)
         cls.client = TestClient(app)
+        cls.store = container.resolve(Tokens.AUDIT_REPORT_STORE)
 
     def test_bcf_export_nonexistent_report_returns_404(self) -> None:
         response = self.client.get("/v1/reports/00000000000000000000000000000000/export/bcf")
         self.assertEqual(response.status_code, 404)
 
     def test_bcf_export_returns_zip_content(self) -> None:
-        # Create a report first
-        resp = self.client.post(
-            "/v1/validate/ifc",
-            json={"ifc_path": "nonexistent.ifc", "requirement_text": ""},
-        )
-        if resp.status_code != 200:
-            self.skipTest("Cannot create report for BCF export test")
-
-        report_id = resp.json()["report_id"]
+        report = _make_report(issue_count=1, with_guid=True)
+        self.store.save(report)
+        report_id = report.report_id
         bcf_resp = self.client.get(f"/v1/reports/{report_id}/export/bcf")
         self.assertEqual(bcf_resp.status_code, 200)
         self.assertIn("bcfzip", bcf_resp.headers.get("content-type", ""))
