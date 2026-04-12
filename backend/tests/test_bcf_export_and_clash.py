@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import io
+import sys
 import tempfile
+import types
 import unittest
 import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import patch
 from uuid import uuid4
 
 from aerobim.domain.models import (
@@ -270,6 +273,59 @@ class ClashDetectorPortTests(unittest.TestCase):
         results = detector.detect(ifc_path)
         # ifcclash not installed → returns empty list (graceful fallback)
         self.assertIsInstance(results, list)
+
+    def test_clash_detector_cleans_temporary_output_directory(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        tracked_dir = Path(tempfile.mkdtemp(prefix="aerobim-clash-test-")) / "tracked-output"
+        tracked_dir.mkdir(parents=True, exist_ok=True)
+
+        fake_package = types.ModuleType("ifcclash")
+        fake_submodule = types.ModuleType("ifcclash.ifcclash")
+
+        class _FakeClashSettings:
+            def __init__(self) -> None:
+                self.output = ""
+
+        class _FakeClasher:
+            def __init__(self, settings: _FakeClashSettings) -> None:
+                self.settings = settings
+                self.clash_sets: list[dict[str, object]] = []
+
+            def clash(self) -> None:
+                self.clash_sets = [{"clashes": {}}]
+
+        fake_submodule.ClashSettings = _FakeClashSettings
+        fake_submodule.Clasher = _FakeClasher
+        fake_package.ifcclash = fake_submodule
+
+        try:
+            with patch("tempfile.TemporaryDirectory") as temp_dir_factory:
+                temp_dir_factory.return_value.__enter__.return_value = str(tracked_dir)
+                temp_dir_factory.return_value.__exit__.side_effect = (
+                    lambda exc_type, exc, tb: tracked_dir.rmdir()
+                )
+
+                with patch.dict(
+                    sys.modules,
+                    {
+                        "ifcclash": fake_package,
+                        "ifcclash.ifcclash": fake_submodule,
+                    },
+                ):
+                    detector.detect(ifc_path)
+
+            self.assertFalse(tracked_dir.exists())
+        finally:
+            if tracked_dir.exists():
+                tracked_dir.rmdir()
 
     def test_clash_result_dataclass_fields(self) -> None:
         from aerobim.domain.models import ClashResult

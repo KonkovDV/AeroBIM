@@ -1,12 +1,12 @@
-# Frontend Source Placeholder
+# Frontend Source Tree
 
-This directory is reserved for the future review UI source tree.
+Active runtime source for the AeroBIM review shell.
 
-Do not treat it as active runtime yet.
+Top-level files:
 
-Expected future contents:
-
-- application shell;
-- report and issue views;
-- viewer adapters;
-- API client boundary.
+- `App.tsx` — application shell and interaction flow;
+- `components/IfcViewerPanel.tsx` — lazy-loaded spatial review panel;
+- `styles.css` — visual system and responsive layout;
+- `lib/api.ts` — browser-side report API client;
+- `lib/ifc-scene.ts` — raw `web-ifc + Three.js` scene controller;
+- `lib/types.ts` — shared browser response types.

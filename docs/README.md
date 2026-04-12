@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Documentation Map"
 status: active
-version: "0.1.0"
-last_updated: "2026-04-08"
+version: "0.2.0"
+last_updated: "2026-04-12"
 tags: [aerobim, documentation, navigation, reference]
 ---
 
@@ -17,14 +17,15 @@ Use it to find the current active documents quickly instead of treating the whol
 ## Recommended Reading Order
 
 1. `06-architecture-reference.md` — canonical architecture reference.
-2. `02-microphoenix-extraction.md` — why the project extracts only a subset of MicroPhoenix.
-3. `08-microphoenix-adoption-matrix.md` — exact keep/adapt/defer/reject decisions.
-4. `09-implementation-and-verification-rails.md` — how work should be delivered and verified.
-5. `04-atomic-backlog.md` — execution-ready backlog.
-6. `03-openbim-landscape.md` — standards, tooling, and competitor frame.
-7. `05-fact-check-audit.md` — evidence and corrected audit notes.
-8. `07-project-skeleton.md` — current filesystem skeleton and placeholder surfaces.
-9. `01-strategy-and-plan.md` — product thesis and phased plan.
+2. `05-fact-check-audit.md` — verified standards and repository-state evidence.
+3. `10-academic-audit-and-recommendations-ru.md` — current academic-level assessment and recommendations.
+4. `11-rebaseline-execution-plan.md` — phased work plan and launched tranche.
+5. `08-microphoenix-adoption-matrix.md` — exact keep/adapt/defer/reject decisions.
+6. `09-implementation-and-verification-rails.md` — how work should be delivered and verified.
+7. `04-atomic-backlog.md` — execution-ready backlog.
+8. `03-openbim-landscape.md` — standards, tooling, and competitor frame.
+9. `07-project-skeleton.md` — current filesystem skeleton and active vs placeholder surfaces.
+10. `01-strategy-and-plan.md` — product thesis and phased plan.
 
 ## Document Modes
 
@@ -39,10 +40,12 @@ Use it to find the current active documents quickly instead of treating the whol
 | `07-project-skeleton.md` | reference | directory structure and placeholder policy |
 | `08-microphoenix-adoption-matrix.md` | reference | exact extraction decisions from MicroPhoenix |
 | `09-implementation-and-verification-rails.md` | how-to | operational build and verification discipline |
+| `10-academic-audit-and-recommendations-ru.md` | explanation + evidence | current academic audit and prioritised recommendations |
+| `11-rebaseline-execution-plan.md` | how-to | current phased execution plan and tranche tracking |
 
 ## Rules For Future Docs Work
 
 - update the authority source before mirrors or summaries;
 - preserve fact-check evidence separately from the active architectural reference;
 - do not add speculative runtime claims without either repo proof or authoritative external evidence;
-- keep frontend and Revit-plugin docs explicitly boundary-first until those runtimes exist.
+- keep frontend claims aligned with the active review shell and keep the Revit-plugin explicitly boundary-first until that runtime exists.

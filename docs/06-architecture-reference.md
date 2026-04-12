@@ -260,8 +260,10 @@ Keep the plugin transport-thin. APS evidence confirms useful translation paths f
 
 At the current phase, the canonical interpretation is:
 
-- backend validation scaffold exists and already exposes one multimodal project-package analysis path;
-- frontend and plugin are still docs-first boundaries;
-- the next meaningful milestone is replacing the local heuristic baselines with real IDS, CV, clash, and persistence adapters without changing the domain contracts.
+- backend validation kernel is live and already exposes `/v1/validate/ifc`, `/v1/analyze/project-package`, persisted reports, and JSON / HTML / BCF export paths;
+- frontend is now an active review shell for report list, issue detail, provenance inspection, export actions, and initial IFC GUID-driven spatial review;
+- ops docs are active and sufficient for standalone bootstrap and smoke execution;
+- the Revit plugin remains a boundary-first surface;
+- the next meaningful milestone is spatial review maturity beyond the first viewer tranche: 2D problem-zone overlays, richer clash-pair navigation, and stronger integration coverage for optional multimodal adapters without breaking current domain contracts.
 
 Operational extraction details live in `08-microphoenix-adoption-matrix.md` and `09-implementation-and-verification-rails.md`.

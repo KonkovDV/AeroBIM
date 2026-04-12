@@ -10,6 +10,7 @@ are deferred to a future iteration.
 
 from __future__ import annotations
 
+import tempfile
 from pathlib import Path
 
 from aerobim.domain.models import ClashResult
@@ -29,36 +30,35 @@ class IfcClashDetector:
 
     def _run_clash_detection(self, ifc_path: Path) -> list[ClashResult]:
         """Attempt IfcClash-based detection; raise ImportError if deps missing."""
-        import tempfile
-
         from ifcclash import ifcclash
 
-        settings = ifcclash.ClashSettings()
-        settings.output = str(Path(tempfile.mkdtemp()) / "clashes.json")
+        with tempfile.TemporaryDirectory(prefix="aerobim-ifcclash-") as temp_dir:
+            settings = ifcclash.ClashSettings()
+            settings.output = str(Path(temp_dir) / "clashes.json")
 
-        clash_set = {
-            "name": "All vs All",
-            "a": [str(ifc_path)],
-            "b": [str(ifc_path)],
-        }
+            clash_set = {
+                "name": "All vs All",
+                "a": [str(ifc_path)],
+                "b": [str(ifc_path)],
+            }
 
-        clasher = ifcclash.Clasher(settings)
-        clasher.clash_sets = [clash_set]
-        clasher.clash()
+            clasher = ifcclash.Clasher(settings)
+            clasher.clash_sets = [clash_set]
+            clasher.clash()
 
-        results: list[ClashResult] = []
-        for clash_set_result in clasher.clash_sets:
-            for clash in clash_set_result.get("clashes", {}).values():
-                description = (
-                    f"Hard clash between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}"
-                )
-                results.append(
-                    ClashResult(
-                        element_a_guid=clash.get("a_global_id", ""),
-                        element_b_guid=clash.get("b_global_id", ""),
-                        clash_type="hard",
-                        distance=clash.get("distance", 0.0),
-                        description=description,
+            results: list[ClashResult] = []
+            for clash_set_result in clasher.clash_sets:
+                for clash in clash_set_result.get("clashes", {}).values():
+                    description = (
+                        f"Hard clash between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}"
                     )
-                )
-        return results
+                    results.append(
+                        ClashResult(
+                            element_a_guid=clash.get("a_global_id", ""),
+                            element_b_guid=clash.get("b_global_id", ""),
+                            clash_type="hard",
+                            distance=clash.get("distance", 0.0),
+                            description=description,
+                        )
+                    )
+            return results
