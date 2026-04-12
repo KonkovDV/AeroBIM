@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Project Skeleton"
 status: active
-version: "0.3.0"
-last_updated: "2026-04-10"
+version: "0.4.0"
+last_updated: "2026-04-12"
 tags: [aerobim, skeleton, reference]
 ---
 
@@ -10,13 +10,7 @@ tags: [aerobim, skeleton, reference]
 
 ## Intent
 
-This file defines the project skeleton for the current phase.
-
-The skeleton is deliberately conservative:
-
-- keep existing backend scaffold intact;
-- expand runtime only through bounded ports and adapters;
-- add placeholder directories and boundary docs for surfaces not yet implemented.
+This file defines the current project skeleton and separates active runtime surfaces from boundary-first or placeholder surfaces.
 
 ## Current Top-Level Layout
 
@@ -35,7 +29,7 @@ aerobim/
 
 ### Status
 
-Already scaffolded.
+Active runtime.
 
 ### Canonical Layout
 
@@ -55,32 +49,34 @@ backend/
 
 ### Rule
 
-Backend business logic may expand only through explicit domain contracts, adapters, and sample-backed verification.
+Expand backend behavior only through explicit domain contracts, adapters, tests, and composition-root wiring.
 
 ## Frontend
 
 ### Status
 
-Docs-first boundary with placeholder directories already present.
+Active minimal runtime.
 
 ### Canonical Layout
 
 ```text
 frontend/
-├── README.md
 ├── public/
-└── src/
+├── src/
+├── package.json
+├── vite.config.ts
+└── tsconfig*.json
 ```
 
 ### Rule
 
-No viewer implementation yet. Use this space only for future review UI and viewer shells.
+The frontend currently owns review-shell concerns only: report list, issue detail, provenance, and export actions. It does not yet own a 3D viewer or 2D overlay workflow.
 
 ## Revit Plugin
 
 ### Status
 
-Docs-first boundary with placeholder directories already present.
+Docs-first boundary.
 
 ### Canonical Layout
 
@@ -94,13 +90,13 @@ clients/revit-plugin/
 
 ### Rule
 
-The plugin must stay thin. No validation logic should originate here.
+The plugin must stay thin. No validation truth should originate here.
 
 ## Samples
 
 ### Status
 
-Seed fixture packs are present for requirements, specifications, drawings, calculations, IDS, and IFC, while larger benchmark-grade packs still remain future work.
+Active seed fixture surface.
 
 ### Canonical Layout
 
@@ -116,44 +112,33 @@ samples/
 
 ### Rule
 
-These folders are the canonical home for representative project fixtures used by architecture review, regression, and benchmark rails.
+These folders are the canonical home for representative fixtures used by tests, runtime smoke, and future benchmark rails.
 
 ## Ops
 
 ### Status
 
-Placeholder operational surface is present.
+Active operational surface.
 
 ### Canonical Layout
 
 ```text
 ops/
-└── README.md
+├── README.md
+├── standalone-runbook.md
+├── environment-matrix.md
+├── storage-and-retention.md
+└── smoke-path.md
 ```
 
 ### Rule
 
-Keep deployment notes, environment guidance, and future runbooks here instead of scattering them into unrelated docs.
-
-## Immediate Skeleton Checklist
-
-1. Keep `docs/06-architecture-reference.md` as the canonical architecture entrypoint.
-2. Put sample IFC, IDS, and structured requirement packs into `samples/**` before expanding runtime logic.
-3. Add drawing, specification, and calculation packs alongside the IFC/IDS fixtures for multimodal regression.
-4. Keep frontend and Revit plugin docs-first until the validation/report core is usable.
-5. Avoid adding vendor-specific runtime assumptions into `domain` or `application`.
+Keep bootstrap, environment, retention, and smoke guidance here instead of scattering it across unrelated docs.
 
 ## Current Placeholder Surfaces
 
-- `frontend/src/README.md`
-- `frontend/public/README.md`
 - `clients/revit-plugin/src/README.md`
 - `clients/revit-plugin/docs/README.md`
 - `clients/revit-plugin/resources/README.md`
-- `samples/calculations/README.md`
-- `samples/drawings/README.md`
-- `samples/requirements/README.md`
-- `samples/specifications/README.md`
-- `ops/README.md`
 
-Most of these surfaces remain placeholders. The main exception is the backend runtime, which already contains the first multimodal analysis slice, plus seed IFC/IDS fixtures used by live end-to-end regression tests.
+These remain intentional placeholders. The backend, frontend, ops, and sample packs are active surfaces.

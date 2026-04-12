@@ -475,21 +475,27 @@ class ToleranceConfigTests(unittest.TestCase):
 
 
 class VlmDrawingAnalyzerContractTests(unittest.TestCase):
-    def test_stub_returns_empty_for_existing_file(self) -> None:
+    def test_blank_pdf_returns_empty_list(self) -> None:
         import tempfile
+
+        import pymupdf
 
         from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
 
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-            tmp.write(b"\x89PNG\r\n\x1a\n")  # minimal PNG header
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
             tmp_path = Path(tmp.name)
 
         try:
+            document = pymupdf.open()
+            document.new_page()
+            document.save(tmp_path)
+            document.close()
+
             analyzer = VlmDrawingAnalyzer()
             result = analyzer.analyze_image(tmp_path, sheet_id="A-101")
             self.assertEqual(result, [])
         finally:
-            tmp_path.unlink()
+            tmp_path.unlink(missing_ok=True)
 
     def test_stub_raises_for_missing_file(self) -> None:
         from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer

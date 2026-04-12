@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,vision]"
       - run: mypy src/aerobim --ignore-missing-imports
 
   test:
@@ -47,5 +47,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,vision]"
       - run: pytest tests -v --tb=short
