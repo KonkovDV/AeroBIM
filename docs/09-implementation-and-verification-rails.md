@@ -157,15 +157,16 @@ Current minimum rail:
 
 1. changed-file diagnostics
 2. `npm install` when dependencies change
-3. `npm run build`
-4. runtime smoke against a persisted report when report-selection, issue-detail, provenance, or export behavior changes
+3. `npm test` when component state or review-shell interaction logic changes
+4. `npm run build`
+5. runtime smoke against a persisted report when report-selection, issue-detail, provenance, or export behavior changes
 
 ### Future Local Rail
 
 As `AeroBIM` matures, it should gain its own local verification entrypoints for:
 
 - backend tests and type checks;
-- frontend smoke and regression checks beyond build-only confidence;
+- browser-level smoke beyond current component regression coverage;
 - fixture-pack regression;
 - report export regression.
 

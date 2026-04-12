@@ -27,6 +27,7 @@ Current scope:
 ```bash
 cd frontend
 npm install
+npm test
 npm run dev
 ```
 
@@ -40,5 +41,5 @@ VITE_AEROBIM_API_BASE_URL=http://localhost:8080
 
 ## Current Gaps
 
-- no automated frontend smoke harness yet beyond build + manual smoke;
+- no automated browser-level smoke harness yet beyond targeted component tests + manual smoke;
 - no authoring-tool roundtrip yet.
