@@ -42,8 +42,9 @@ curl -I http://127.0.0.1:8080/v1/reports/<report_id>/export/bcf
 7. Select a clash card and confirm the viewer highlights both clash elements.
 8. Select an issue with `problem_zone` evidence and confirm the 2D drawing overlay panel loads a persisted preview asset.
 9. Confirm the overlay rectangle lands on the rendered sheet/page region rather than on an empty panel.
-10. Toggle isolate mode and confirm only the selected issue element or clash pair remains visible.
-11. Trigger HTML, JSON, and BCF downloads.
+10. Switch the 2D panel to another persisted drawing asset and confirm the panel stays usable in browse mode even when the issue overlay is hidden.
+11. Toggle isolate mode and confirm only the selected issue element or clash pair remains visible.
+12. Trigger HTML, JSON, and BCF downloads.
 
 ## Docker Smoke
 
