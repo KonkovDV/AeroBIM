@@ -67,6 +67,7 @@ Initial tranche completed in the same session:
 - frontend `web-ifc + Three.js` viewer rail landed;
 - issue-to-element highlight / isolate flow landed;
 - clash-pair focus and generic multi-selection isolate flow landed;
+- drawing asset/page switching landed in the 2D evidence rail;
 - viewer runtime is lazy-loaded to avoid inflating the initial report-shell bundle.
 
 ### Goal
@@ -146,6 +147,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. add asset/page switching so a reviewer can move across multiple persisted drawing previews for the same report;
-2. add a fuller smoke path that proves report -> issue/clash -> 3D viewer -> 2D overlay -> provenance -> export against one persisted report;
-3. add broader integration coverage for persisted preview generation across PDF and raster evidence paths.
+1. add a fuller smoke path that proves report -> issue/clash -> 3D viewer -> 2D overlay -> provenance -> export against one persisted report;
+2. add broader integration coverage for persisted preview generation across PDF and raster evidence paths;
+3. add lightweight frontend regression coverage for the overlay switching and browse-mode states if the manual smoke path proves too fragile.
