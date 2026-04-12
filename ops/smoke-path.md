@@ -26,6 +26,7 @@ curl http://127.0.0.1:8080/v1/reports
 ```bash
 curl http://127.0.0.1:8080/v1/reports/<report_id>
 curl -I http://127.0.0.1:8080/v1/reports/<report_id>/source/ifc
+curl -I http://127.0.0.1:8080/v1/reports/<report_id>/drawing-assets/<asset_id>/preview
 curl -I http://127.0.0.1:8080/v1/reports/<report_id>/export/html
 curl -I http://127.0.0.1:8080/v1/reports/<report_id>/export/bcf
 ```
@@ -39,8 +40,10 @@ curl -I http://127.0.0.1:8080/v1/reports/<report_id>/export/bcf
 5. Confirm the IFC viewer loads the report-scoped model.
 6. Select an issue with `element_guid` and confirm the viewer highlights it.
 7. Select a clash card and confirm the viewer highlights both clash elements.
-8. Toggle isolate mode and confirm only the selected issue element or clash pair remains visible.
-9. Trigger HTML, JSON, and BCF downloads.
+8. Select an issue with `problem_zone` evidence and confirm the 2D drawing overlay panel loads a persisted preview asset.
+9. Confirm the overlay rectangle lands on the rendered sheet/page region rather than on an empty panel.
+10. Toggle isolate mode and confirm only the selected issue element or clash pair remains visible.
+11. Trigger HTML, JSON, and BCF downloads.
 
 ## Docker Smoke
 
@@ -57,6 +60,8 @@ The smoke path is complete only when:
 - report listing works;
 - at least one report detail resolves;
 - the report-scoped IFC source endpoint responds successfully;
+- the report-scoped drawing preview endpoint responds successfully for one persisted asset;
 - the frontend viewer loads one model and reacts to both issue and clash-pair selection;
+- the frontend 2D panel renders one persisted issue overlay on drawing evidence;
 - all three export endpoints respond successfully;
 - frontend renders list + issue + provenance for the same report.

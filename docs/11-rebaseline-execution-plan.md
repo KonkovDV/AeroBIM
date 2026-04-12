@@ -146,6 +146,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. add 2D evidence overlay rendering for drawing problem zones;
-2. add a frontend smoke path that proves report -> issue/clash -> viewer -> provenance -> export against one persisted report;
-3. design and land a persisted drawing-asset contract so 2D problem-zone overlays can be real rather than synthetic.
+1. add asset/page switching so a reviewer can move across multiple persisted drawing previews for the same report;
+2. add a fuller smoke path that proves report -> issue/clash -> 3D viewer -> 2D overlay -> provenance -> export against one persisted report;
+3. add broader integration coverage for persisted preview generation across PDF and raster evidence paths.

@@ -86,6 +86,18 @@ class DrawingAnnotation:
 
 
 @dataclass(frozen=True)
+class DrawingAsset:
+    asset_id: str
+    sheet_id: str
+    page_number: int | None = None
+    media_type: str = "image/png"
+    coordinate_width: float | None = None
+    coordinate_height: float | None = None
+    stored_filename: str | None = None
+    source_path: Path | None = None
+
+
+@dataclass(frozen=True)
 class ParsedRequirement:
     rule_id: str
     ifc_entity: str | None = None
@@ -155,6 +167,7 @@ class ValidationReport:
     issues: tuple[ValidationIssue, ...]
     summary: ValidationSummary
     drawing_annotations: tuple[DrawingAnnotation, ...] = ()
+    drawing_assets: tuple[DrawingAsset, ...] = ()
     clash_results: tuple[ClashResult, ...] = ()
 
 

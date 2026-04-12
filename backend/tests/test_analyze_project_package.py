@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -139,10 +140,17 @@ class FakeVisionDrawingAnalyzer:
 class FakeStore:
     def __init__(self) -> None:
         self.saved_report_id: str | None = None
+        self.report: ValidationReport | None = None
 
     def save(self, report: ValidationReport) -> str:
         self.saved_report_id = report.report_id
+        self.report = report
         return report.report_id
+
+    def get(self, report_id: str) -> ValidationReport | None:
+        if self.report is None or self.report.report_id != report_id:
+            return None
+        return self.report
 
 
 class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
@@ -314,6 +322,9 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         self.assertEqual(report.summary.drawing_annotation_count, 1)
         self.assertEqual(report.drawing_annotations[0].source, "vision-analyzer")
         self.assertEqual(report.drawing_annotations[0].sheet_id, "A-101")
+        self.assertEqual(len(report.drawing_assets), 1)
+        self.assertEqual(report.drawing_assets[0].sheet_id, "A-101")
+        self.assertEqual(report.drawing_assets[0].source_path, Path("sheet-a101.pdf"))
 
     def test_execute_merges_structured_and_vision_annotations(self) -> None:
         store = FakeStore()
@@ -358,6 +369,67 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         target_refs = {annotation.target_ref for annotation in report.drawing_annotations}
         self.assertIn("WALL-01", target_refs)
         self.assertIn("WALL-IMG-01", target_refs)
+
+    def test_execute_materializes_raster_drawing_asset_candidates(self) -> None:
+        class NoOpExtractor:
+            def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpSynthesizer:
+            def synthesize(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpStructuredAnalyzer:
+            def analyze(self, _source: DrawingSource) -> list[DrawingAnnotation]:
+                return []
+
+        class NoOpValidator:
+            def validate(
+                self,
+                _ifc_path: Path,
+                _requirements: list[ParsedRequirement],
+            ) -> list[ValidationIssue]:
+                return []
+
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+            image_path = Path(tmp.name)
+
+        try:
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=NoOpExtractor(),
+                narrative_rule_synthesizer=NoOpSynthesizer(),
+                drawing_analyzer=NoOpStructuredAnalyzer(),
+                ifc_validator=NoOpValidator(),
+                ids_validator=FakeIdsValidator(),
+                vision_drawing_analyzer=FakeVisionDrawingAnalyzer(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-raster-asset",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(text=""),
+                    ids_path=Path("rules.ids"),
+                    drawing_sources=(
+                        DrawingSource(
+                            text="",
+                            path=image_path,
+                            sheet_id="A-201",
+                            format="png",
+                        ),
+                    ),
+                )
+            )
+
+            self.assertEqual(len(report.drawing_assets), 1)
+            self.assertEqual(report.drawing_assets[0].sheet_id, "A-201")
+            self.assertEqual(report.drawing_assets[0].page_number, 1)
+            self.assertEqual(report.drawing_assets[0].source_path, image_path)
+        finally:
+            image_path.unlink(missing_ok=True)
 
 
 class CalculationSourceTests(unittest.TestCase):
