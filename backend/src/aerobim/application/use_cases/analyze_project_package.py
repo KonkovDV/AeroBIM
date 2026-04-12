@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from aerobim.domain.models import (
     ComparisonOperator,
+    DrawingAsset,
     DrawingAnnotation,
     DrawingSource,
     FindingCategory,
@@ -33,6 +34,7 @@ from aerobim.domain.ports import (
 
 _VISION_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _VISION_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
+_DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg"}
 _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "m": ("m", 1.0),
     "м": ("m", 1.0),
@@ -105,6 +107,7 @@ class AnalyzeProjectPackageUseCase:
         drawing_issues = tuple(
             self._validate_drawing_annotations(requirements, drawing_annotations)
         )
+        drawing_assets = tuple(self._collect_drawing_assets(request))
         cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
         clash_results = tuple(
             self._clash_detector.detect(request.ifc_path) if self._clash_detector else []
@@ -138,10 +141,12 @@ class AnalyzeProjectPackageUseCase:
                 ),
             ),
             drawing_annotations=drawing_annotations,
+            drawing_assets=drawing_assets,
             clash_results=clash_results,
         )
         self._audit_report_store.save(report)
-        return report
+        persisted_report = self._audit_report_store.get(report.report_id)
+        return persisted_report or report
 
     def _collect_ids_issues(self, request: ValidationRequest) -> list[ValidationIssue]:
         if request.ids_path is None:
@@ -170,6 +175,25 @@ class AnalyzeProjectPackageUseCase:
             if self._is_vision_drawing_source(drawing_source):
                 annotations.extend(self._collect_vision_annotations(drawing_source))
         return annotations
+
+    def _collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
+        assets: list[DrawingAsset] = []
+        for index, drawing_source in enumerate(request.drawing_sources, start=1):
+            if drawing_source.path is None:
+                continue
+            suffix = drawing_source.path.suffix.lower()
+            if suffix not in _DRAWING_ASSET_SUFFIXES:
+                continue
+            assets.append(
+                DrawingAsset(
+                    asset_id=f"drawing-{index:03d}",
+                    sheet_id=drawing_source.sheet_id or drawing_source.path.stem.upper(),
+                    page_number=1 if suffix != ".pdf" else None,
+                    media_type="application/pdf" if suffix == ".pdf" else "image/png",
+                    source_path=drawing_source.path,
+                )
+            )
+        return assets
 
     def _collect_vision_annotations(
         self,

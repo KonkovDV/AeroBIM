@@ -9,7 +9,7 @@ from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.domain.models import Severity, ValidationIssue, ValidationReport, ValidationSummary
+from aerobim.domain.models import DrawingAsset, Severity, ValidationIssue, ValidationReport, ValidationSummary
 
 
 class _NullLogger:
@@ -303,6 +303,85 @@ class ApiIfcSourceEndpointTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 409)
         self.assertIn("escapes storage boundary", response.json()["detail"])
+
+
+class ApiDrawingAssetPreviewEndpointTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.presentation.http.api import create_http_app
+
+        container = _make_test_container()
+        app = create_http_app(container)
+        cls.client = TestClient(app)
+        cls.store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+        cls.settings = container.resolve(Tokens.SETTINGS)
+
+    def _seed_report_with_drawing_asset(self) -> tuple[str, str, Path]:
+        report_id = uuid4().hex
+        asset_id = "drawing-001-page-001"
+        asset_dir = self.settings.storage_dir / "drawing-assets" / report_id
+        asset_dir.mkdir(parents=True, exist_ok=True)
+        preview_path = asset_dir / f"{asset_id}.png"
+        preview_path.write_bytes(b"\x89PNG\r\n\x1a\npreview")
+
+        report = ValidationReport(
+            report_id=report_id,
+            request_id="req-drawing-preview",
+            ifc_path=self.settings.storage_dir / "model.ifc",
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=0,
+                error_count=0,
+                warning_count=0,
+                passed=True,
+            ),
+            drawing_assets=(
+                DrawingAsset(
+                    asset_id=asset_id,
+                    sheet_id="A-101",
+                    page_number=1,
+                    media_type="image/png",
+                    coordinate_width=320,
+                    coordinate_height=200,
+                    stored_filename=preview_path.name,
+                ),
+            ),
+        )
+        self.store.save(report)
+        return report_id, asset_id, preview_path
+
+    def test_report_drawing_asset_preview_returns_bytes(self) -> None:
+        report_id, asset_id, preview_path = self._seed_report_with_drawing_asset()
+
+        response = self.client.get(f"/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, preview_path.read_bytes())
+        self.assertIn("image/png", response.headers.get("content-type", ""))
+
+    def test_report_drawing_asset_preview_returns_404_when_file_missing(self) -> None:
+        report_id, asset_id, preview_path = self._seed_report_with_drawing_asset()
+        preview_path.unlink()
+
+        response = self.client.get(f"/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("Drawing asset preview", response.json()["detail"])
+
+    def test_report_drawing_asset_preview_returns_404_when_asset_missing(self) -> None:
+        report_id, _asset_id, _preview_path = self._seed_report_with_drawing_asset()
+
+        response = self.client.get(f"/v1/reports/{report_id}/drawing-assets/missing-asset/preview")
+
+        self.assertEqual(response.status_code, 404)
 
 
 class ApiHtmlExportTests(unittest.TestCase):

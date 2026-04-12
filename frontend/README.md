@@ -10,6 +10,7 @@ Current scope:
 - report-scoped IFC loading through the backend;
 - initial 3D viewer with issue highlight / isolate by IFC GUID;
 - clash-pair focus and multi-selection isolate workflow in the viewer;
+- 2D issue overlay panel backed by persisted drawing preview assets;
 - provenance view for requirements, drawing annotations, and clashes.
 
 ## Stack
@@ -38,5 +39,5 @@ VITE_AEROBIM_API_BASE_URL=http://localhost:8080
 
 ## Current Gaps
 
-- no 2D raster/PDF overlay rendering yet;
+- no drawing-asset gallery or page picker yet beyond the asset matched to the active issue;
 - no authoring-tool roundtrip yet.
