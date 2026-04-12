@@ -6,6 +6,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from aerobim.domain.models import (
+    ClashResult,
     ComparisonOperator,
     DrawingAnnotation,
     FindingCategory,
@@ -81,6 +82,9 @@ class FilesystemAuditStore:
             drawing_annotations=tuple(
                 self._reconstruct_annotation(a) for a in data.get("drawing_annotations", [])
             ),
+            clash_results=tuple(
+                self._reconstruct_clash_result(c) for c in data.get("clash_results", [])
+            ),
         )
 
     def _reconstruct_requirement(self, data: dict) -> ParsedRequirement:
@@ -152,4 +156,13 @@ class FilesystemAuditStore:
             unit=data.get("unit"),
             problem_zone=ProblemZone(**problem_zone_data) if problem_zone_data else None,
             source=data.get("source", "drawing-text"),
+        )
+
+    def _reconstruct_clash_result(self, data: dict) -> ClashResult:
+        return ClashResult(
+            element_a_guid=data["element_a_guid"],
+            element_b_guid=data["element_b_guid"],
+            clash_type=data["clash_type"],
+            distance=data["distance"],
+            description=data["description"],
         )
