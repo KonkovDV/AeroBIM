@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
-import type { ValidationIssue, ValidationReport } from "../lib/types";
+import type { ValidationReport } from "../lib/types";
 import { fetchReportIfcSource } from "../lib/api";
 import { IfcSceneController } from "../lib/ifc-scene";
 
@@ -7,10 +7,19 @@ type ViewerStatus = "idle" | "initializing" | "loading" | "ready" | "error";
 
 interface IfcViewerPanelProps {
   report: ValidationReport | null;
-  activeIssue: ValidationIssue | null;
+  selectedGuids: string[];
+  selectionMode: "none" | "issue" | "clash";
+  selectionHeading: string;
+  selectionDetail: string;
 }
 
-export default function IfcViewerPanel({ report, activeIssue }: IfcViewerPanelProps) {
+export default function IfcViewerPanel({
+  report,
+  selectedGuids,
+  selectionMode,
+  selectionHeading,
+  selectionDetail,
+}: IfcViewerPanelProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const controllerRef = useRef<IfcSceneController | null>(null);
   const [viewerStatus, setViewerStatus] = useState<ViewerStatus>("idle");
@@ -18,14 +27,12 @@ export default function IfcViewerPanel({ report, activeIssue }: IfcViewerPanelPr
   const [controllerReady, setControllerReady] = useState(false);
   const [isolateSelection, setIsolateSelection] = useState(false);
 
-  const selectedGuid = activeIssue?.element_guid ?? null;
-
   const applySelection = useEffectEvent(() => {
     const controller = controllerRef.current;
     if (controller === null || !controllerReady) {
       return;
     }
-    controller.highlightGuid(selectedGuid);
+    controller.setSelectedGuids(selectedGuids);
     controller.setIsolateSelection(isolateSelection);
   });
 
@@ -106,10 +113,9 @@ export default function IfcViewerPanel({ report, activeIssue }: IfcViewerPanelPr
 
   useEffect(() => {
     applySelection();
-  }, [applySelection, isolateSelection, selectedGuid]);
+  }, [applySelection, isolateSelection, selectedGuids]);
 
-  const selectionLabel = selectedGuid ?? "No IFC GUID on the selected issue";
-  const canInteractWithSelection = viewerStatus === "ready" && selectedGuid !== null;
+  const canInteractWithSelection = viewerStatus === "ready" && selectedGuids.length > 0;
 
   return (
     <section className="panel viewer-panel">
@@ -141,7 +147,21 @@ export default function IfcViewerPanel({ report, activeIssue }: IfcViewerPanelPr
       <div className="viewer-meta">
         <span className={`viewer-status viewer-status-${viewerStatus}`}>{viewerStatus}</span>
         <span>{report ? `Report ${report.report_id.slice(0, 8)}` : "No report selected"}</span>
-        <span>{selectionLabel}</span>
+        <span>{selectionMode === "clash" ? "clash pair" : selectionMode === "issue" ? "issue focus" : "no selection"}</span>
+      </div>
+
+      <div className="viewer-selection-card">
+        <strong>{selectionHeading}</strong>
+        <p>{selectionDetail}</p>
+        {selectedGuids.length > 0 && (
+          <div className="viewer-selection-list">
+            {selectedGuids.map((guid, index) => (
+              <span key={guid} className="selection-badge selection-badge-active">
+                {selectionMode === "clash" ? `element ${index + 1}` : "element"} · {guid}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="viewer-stage">
@@ -169,7 +189,7 @@ export default function IfcViewerPanel({ report, activeIssue }: IfcViewerPanelPr
       </div>
 
       <p className="viewer-caption">
-        The viewer remains downstream of the persisted validation report. Selection is driven by the report issue `element_guid`, not by ad hoc browser-side model inspection.
+        The viewer remains downstream of the persisted validation report. Selection is driven by persisted IFC GUID evidence from either a single issue or a clash pair, not by ad hoc browser-side model inspection.
       </p>
     </section>
   );
