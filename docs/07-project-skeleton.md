@@ -70,7 +70,7 @@ frontend/
 
 ### Rule
 
-The frontend currently owns review-shell concerns only: report list, issue detail, provenance, and export actions. It does not yet own a 3D viewer or 2D overlay workflow.
+The frontend owns review-shell concerns only: report list, issue detail, provenance, export actions, IFC-guided 3D review, and persisted drawing-evidence overlays. It still does not own validation truth.
 
 ## Revit Plugin
 
