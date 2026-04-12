@@ -89,6 +89,23 @@ def create_http_app(container: Container):
         if not _REPORT_ID_RE.match(report_id):
             raise HTTPException(status_code=400, detail="Invalid report ID format")
 
+    def _resolve_report_ifc_path(report_id: str) -> Path:
+        report = audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+
+        candidate = report.ifc_path
+        base = settings.storage_dir.resolve()
+        resolved = candidate.resolve() if candidate.is_absolute() else (base / candidate).resolve()
+        if not resolved.is_relative_to(base):
+            raise HTTPException(
+                status_code=409,
+                detail="Stored IFC source escapes storage boundary",
+            )
+        if not resolved.exists():
+            raise HTTPException(status_code=404, detail=f"IFC source for report {report_id} not found")
+        return resolved
+
     def _build_requirement_source(
         text: str,
         path: str | None,
@@ -201,6 +218,18 @@ def create_http_app(container: Container):
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         return asdict(report)
+
+    @app.get("/v1/reports/{report_id}/source/ifc")
+    def get_report_ifc_source(report_id: str):  # noqa: ANN201
+        from fastapi.responses import FileResponse
+
+        _validate_report_id(report_id)
+        source_path = _resolve_report_ifc_path(report_id)
+        return FileResponse(
+            path=source_path,
+            media_type="application/octet-stream",
+            filename=f"{report_id}.ifc",
+        )
 
     @app.get("/v1/reports/{report_id}/export/json")
     def export_report_json(report_id: str):  # noqa: ANN201

@@ -1,28 +1,42 @@
-# Frontend Boundary
+# Frontend Review Shell
 
-The frontend is a separate bounded context.
+The frontend is now an active browser review surface for persisted AeroBIM reports.
 
-Its job is not to own validation semantics. Its job is to:
+Current scope:
 
-- load model and report data;
-- load drawing pages and 2D problem zones;
-- present findings and rule provenance;
-- navigate from issue to model object;
-- render bounding boxes or overlay hints for 2D evidence;
-- export or forward issues to external workflows.
+- report list with pass/fail and issue counts;
+- report summary and export actions;
+- issue detail panel with provenance fields;
+- report-scoped IFC loading through the backend;
+- initial 3D viewer with issue highlight / isolate by IFC GUID;
+- provenance view for requirements, drawing annotations, and clashes.
 
-## Planned Stack
+## Stack
 
-- React + TypeScript
+- React 19 + TypeScript
 - Vite
-- `web-ifc` as default browser IFC engine
-- optional APS Viewer adapter for enterprise mixed-format deployments
+- Three.js
+- web-ifc
+- CSS-only layout system for a lightweight standalone shell around the spatial review rail
 
-## First UI Milestones
+## Run
 
-1. report list
-2. issue detail panel
-3. element highlight / isolate workflow
-4. PDF/image layer with 2D bounding-box overlays
-5. requirement-to-finding navigation
-6. export actions
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Default API target: `http://localhost:8080`.
+
+Override with:
+
+```bash
+VITE_AEROBIM_API_BASE_URL=http://localhost:8080
+```
+
+## Current Gaps
+
+- no 2D raster/PDF overlay rendering yet;
+- no clash-pair dual-selection workflow yet;
+- no authoring-tool roundtrip yet.

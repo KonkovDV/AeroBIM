@@ -1,9 +1,5 @@
-# Frontend Public Assets Placeholder
+# Frontend Public Assets
 
-This directory is reserved for static browser assets.
+Reserved for static browser assets used by the review shell.
 
-Expected future contents:
-
-- icons and branding assets;
-- sample viewer assets;
-- static HTML shell fragments when needed.
+The current tranche does not require bundled assets yet; the UI is fully code-driven.
