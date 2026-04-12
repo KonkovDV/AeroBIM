@@ -149,4 +149,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. add a fuller smoke path that proves report -> issue/clash -> 3D viewer -> 2D overlay -> provenance -> export against one persisted report;
 2. add broader integration coverage for persisted preview generation across PDF and raster evidence paths;
-3. add lightweight frontend regression coverage for the overlay switching and browse-mode states if the manual smoke path proves too fragile.
+3. add browser-level smoke or trace coverage if the current component regression rail proves insufficient for full review-shell confidence.
