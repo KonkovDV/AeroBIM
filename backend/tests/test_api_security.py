@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import sys
 import unittest
+from datetime import UTC, datetime
 from pathlib import Path
+from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from aerobim.domain.models import Severity, ValidationIssue, ValidationReport, ValidationSummary
 
 
 class _NullLogger:
@@ -106,6 +110,31 @@ def _make_test_container():
     return container
 
 
+def _make_seed_report() -> ValidationReport:
+    return ValidationReport(
+        report_id=uuid4().hex,
+        request_id="req-http-test",
+        ifc_path=Path("seed.ifc"),
+        created_at=datetime.now(tz=UTC).isoformat(),
+        requirements=(),
+        issues=(
+            ValidationIssue(
+                rule_id="RULE-HTML-001",
+                severity=Severity.ERROR,
+                message='User-controlled <tag> & "quote" content',
+                element_guid="seed-guid",
+            ),
+        ),
+        summary=ValidationSummary(
+            requirement_count=0,
+            issue_count=1,
+            error_count=1,
+            warning_count=0,
+            passed=False,
+        ),
+    )
+
+
 class ApiSecurityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -197,43 +226,27 @@ class ApiHtmlExportTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.core.di.tokens import Tokens
         from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
         app = create_http_app(container)
         cls.client = TestClient(app)
+        cls.store = container.resolve(Tokens.AUDIT_REPORT_STORE)
 
-    def _create_report(
-        self, requirement_text: str = "SAM-001|IFCWALL|Pset_WallCommon|FireRating|eq|REI60"
-    ) -> str:
-        """Create a report through the API and return its report_id."""
-        response = self.client.post(
-            "/v1/validate/ifc",
-            json={
-                "ifc_path": "nonexistent.ifc",
-                "requirement_text": requirement_text,
-            },
-        )
-        # Report may fail because no IFC file exists; still creates a report entry on 200
-        if response.status_code == 200:
-            return response.json()["report_id"]
-        return ""
+    def _seed_report(self) -> str:
+        report = _make_seed_report()
+        self.store.save(report)
+        return report.report_id
 
     def test_html_export_returns_html_content_type(self) -> None:
-        # Use the validate endpoint to create a report first
-        resp = self.client.post(
-            "/v1/validate/ifc",
-            json={"ifc_path": "nonexistent.ifc", "requirement_text": ""},
-        )
-        if resp.status_code != 200:
-            self.skipTest("Cannot create report for HTML export test")
-
-        report_id = resp.json()["report_id"]
+        report_id = self._seed_report()
         html_resp = self.client.get(f"/v1/reports/{report_id}/export/html")
         self.assertEqual(html_resp.status_code, 200)
         self.assertIn("text/html", html_resp.headers.get("content-type", ""))
         self.assertIn("<!DOCTYPE html>", html_resp.text)
         self.assertIn("Validation Report", html_resp.text)
+        self.assertIn("seed-guid", html_resp.text)
 
     def test_html_export_escapes_special_characters(self) -> None:
         """Ensure XSS-safe rendering of user-controlled data."""
