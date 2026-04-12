@@ -84,18 +84,27 @@ def _build_violation_cases() -> list[tuple[str, str, str, str]]:
 _VIOLATIONS = _build_violation_cases()
 
 
-@pytest.mark.parametrize(
-    "layer,filepath,imported,violated_layer",
-    _VIOLATIONS,
-    ids=[f"{v[0]}:{Path(v[1]).name}→{v[3]}" for v in _VIOLATIONS]
-    if _VIOLATIONS
-    else ["no_violations"],
-)
-def test_no_layer_violations(layer: str, filepath: str, imported: str, violated_layer: str) -> None:
-    pytest.fail(
-        f"Layer violation: {layer}/{filepath} imports {imported} "
-        f"({violated_layer} layer). {layer} may only import from {_ALLOWED_IMPORTS[layer]}."
+if _VIOLATIONS:
+
+    @pytest.mark.parametrize(
+        "layer,filepath,imported,violated_layer",
+        _VIOLATIONS,
+        ids=[f"{v[0]}:{Path(v[1]).name}→{v[3]}" for v in _VIOLATIONS],
     )
+    def test_no_layer_violations(
+        layer: str,
+        filepath: str,
+        imported: str,
+        violated_layer: str,
+    ) -> None:
+        pytest.fail(
+            f"Layer violation: {layer}/{filepath} imports {imported} "
+            f"({violated_layer} layer). {layer} may only import from {_ALLOWED_IMPORTS[layer]}."
+        )
+else:
+
+    def test_no_layer_violations() -> None:
+        assert True
 
 
 def test_no_violations_found() -> None:
