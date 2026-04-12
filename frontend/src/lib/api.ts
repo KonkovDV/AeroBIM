@@ -36,6 +36,10 @@ export function buildReportIfcSourceUrl(reportId: string): string {
   return `${apiBaseUrl}/v1/reports/${reportId}/source/ifc`;
 }
 
+export function buildDrawingAssetPreviewUrl(reportId: string, assetId: string): string {
+  return `${apiBaseUrl}/v1/reports/${reportId}/drawing-assets/${assetId}/preview`;
+}
+
 export async function fetchReports(): Promise<ReportListResponse> {
   return readJson<ReportListResponse>(`${apiBaseUrl}/v1/reports`);
 }

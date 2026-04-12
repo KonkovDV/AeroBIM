@@ -70,6 +70,16 @@ export interface DrawingAnnotation {
   source: string;
 }
 
+export interface DrawingAsset {
+  asset_id: string;
+  sheet_id: string;
+  page_number: number | null;
+  media_type: string;
+  coordinate_width: number | null;
+  coordinate_height: number | null;
+  stored_filename: string | null;
+}
+
 export interface ClashResult {
   element_a_guid: string;
   element_b_guid: string;
@@ -97,5 +107,6 @@ export interface ValidationReport {
   issues: ValidationIssue[];
   summary: ValidationSummary;
   drawing_annotations: DrawingAnnotation[];
+  drawing_assets: DrawingAsset[];
   clash_results: ClashResult[];
 }

@@ -1,6 +1,7 @@
 import { Suspense, lazy, startTransition, useDeferredValue, useEffect, useState } from "react";
 import { buildExportUrl, fetchReport, fetchReports, getApiBaseUrl } from "./lib/api";
 import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
+import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 
@@ -345,6 +346,8 @@ export default function App() {
               <ViewerPlaceholder message="Select a persisted report to load its IFC source into the browser viewer." />
             )}
           </Suspense>
+
+          <DrawingEvidencePanel report={selectedReport} activeIssue={activeIssue} />
 
           <section className="panel provenance-panel">
             <div className="panel-header">
