@@ -13,6 +13,7 @@ from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, ValidationRequest
 
 _REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
+_DRAWING_ASSET_ID_RE = _re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 
 
 class ValidateIfcRequest(BaseModel):
@@ -105,6 +106,27 @@ def create_http_app(container: Container):
         if not resolved.exists():
             raise HTTPException(status_code=404, detail=f"IFC source for report {report_id} not found")
         return resolved
+
+    def _validate_drawing_asset_id(asset_id: str) -> None:
+        if not _DRAWING_ASSET_ID_RE.match(asset_id):
+            raise HTTPException(status_code=400, detail="Invalid drawing asset ID format")
+
+    def _resolve_report_drawing_asset_preview(report_id: str, asset_id: str):
+        report = audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+
+        drawing_asset = next((asset for asset in report.drawing_assets if asset.asset_id == asset_id), None)
+        if drawing_asset is None or not drawing_asset.stored_filename:
+            raise HTTPException(status_code=404, detail=f"Drawing asset {asset_id} not found")
+
+        asset_root = (settings.storage_dir / "drawing-assets" / report_id).resolve()
+        resolved = (asset_root / drawing_asset.stored_filename).resolve()
+        if not resolved.is_relative_to(asset_root):
+            raise HTTPException(status_code=409, detail="Stored drawing asset escapes storage boundary")
+        if not resolved.exists():
+            raise HTTPException(status_code=404, detail=f"Drawing asset preview for {asset_id} not found")
+        return drawing_asset, resolved
 
     def _build_requirement_source(
         text: str,
@@ -229,6 +251,19 @@ def create_http_app(container: Container):
             path=source_path,
             media_type="application/octet-stream",
             filename=f"{report_id}.ifc",
+        )
+
+    @app.get("/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
+    def get_report_drawing_asset_preview(report_id: str, asset_id: str):  # noqa: ANN201
+        from fastapi.responses import FileResponse
+
+        _validate_report_id(report_id)
+        _validate_drawing_asset_id(asset_id)
+        drawing_asset, preview_path = _resolve_report_drawing_asset_preview(report_id, asset_id)
+        return FileResponse(
+            path=preview_path,
+            media_type=drawing_asset.media_type,
+            filename=drawing_asset.stored_filename,
         )
 
     @app.get("/v1/reports/{report_id}/export/json")

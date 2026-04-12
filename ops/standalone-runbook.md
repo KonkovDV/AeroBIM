@@ -7,8 +7,9 @@ This runbook describes the smallest sound way to operate AeroBIM as a standalone
 ## Runtime Topology
 
 - `backend/` hosts the validation kernel and report/export APIs.
-- `frontend/` hosts the browser review shell for report inspection, export actions, and initial spatial review.
+- `frontend/` hosts the browser review shell for report inspection, export actions, 3D IFC review, and 2D evidence overlays.
 - persisted reports live under `AEROBIM_STORAGE_DIR/reports/*.json`.
+- persisted drawing previews live under `AEROBIM_STORAGE_DIR/drawing-assets/<report_id>/`.
 
 ## Prerequisites
 
@@ -71,8 +72,9 @@ The frontend remains an independent static/browser shell in this tranche. Run it
 3. submit a validation request or use fixture-driven report generation;
 4. confirm `GET /v1/reports` returns persisted report summaries;
 5. confirm `GET /v1/reports/{report_id}/source/ifc` returns the stored IFC source for one persisted report;
-6. start the frontend shell and confirm it resolves the API base URL;
-7. inspect issue provenance, spatial selection, and HTML/JSON/BCF export buttons.
+6. confirm `GET /v1/reports/{report_id}/drawing-assets/{asset_id}/preview` returns a stored drawing preview for one persisted report;
+7. start the frontend shell and confirm it resolves the API base URL;
+8. inspect issue provenance, 3D spatial selection, 2D overlay evidence, and HTML/JSON/BCF export buttons.
 
 ## Failure Modes
 
@@ -106,6 +108,16 @@ Checks:
 - the selected `report_id` still exists under `storage_dir/reports`;
 - the frontend API base URL points to the correct backend;
 - the backend process has read access to the storage directory.
+
+### Drawing preview overlay stays empty
+
+Symptom: the issue has `problem_zone` data, but the 2D evidence panel has no sheet preview.
+
+Checks:
+
+- the selected report contains `drawing_assets` in `GET /v1/reports/{report_id}`;
+- `GET /v1/reports/{report_id}/drawing-assets/{asset_id}/preview` returns `200`;
+- the issue `sheet_id` and `page_number` match one persisted drawing asset.
 
 ### IFC viewer fails to load a model
 

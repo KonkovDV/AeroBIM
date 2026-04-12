@@ -147,8 +147,6 @@ During this rebaseline a real infrastructure defect was confirmed in `IfcClashDe
 
 The remaining meaningful gaps are now product gaps, not architecture-foundation gaps:
 
-- no 2D problem-zone rendering yet;
-- no 2D drawing-asset contract yet for real problem-zone overlays;
 - no real integration test that exercises `ifcclash` against fixture geometry with the optional extra installed;
 - no benchmark/throughput rail or async job execution for larger models;
 - no project-level metadata or tenant-aware report indexing;
@@ -158,4 +156,4 @@ The remaining meaningful gaps are now product gaps, not architecture-foundation 
 
 The correct academic reading of the repository is now:
 
-`AeroBIM` is a deterministic multimodal BIM QA kernel with a live backend, a live persisted-report/export path, and an initial browser spatial-review rail. It is not yet a full coordination ecosystem.
+`AeroBIM` is a deterministic multimodal BIM QA kernel with a live backend, a live persisted-report/export path, a report-scoped drawing preview contract, and initial browser 3D/2D spatial-review rails. It is not yet a full coordination ecosystem.

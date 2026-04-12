@@ -22,6 +22,7 @@ AeroBIM validates building information models (IFC) against technical specificat
 | BCF 2.1 export | ✅ |
 | HTML / JSON report export | ✅ |
 | Browser IFC viewer (`web-ifc + Three.js`) | ✅ Initial tranche + clash-pair review |
+| 2D problem-zone overlay on persisted drawing evidence | ✅ Initial tranche |
 | Deterministic PDF / OCR drawing analysis baseline | ✅ |
 | Heavier VLM path (Qwen-VL / Florence-2) | 🔜 Planned |
 
@@ -62,6 +63,7 @@ python -m aerobim.main
 | `GET` | `/v1/reports` | List persisted reports |
 | `GET` | `/v1/reports/{id}` | Get report by ID |
 | `GET` | `/v1/reports/{id}/source/ifc` | Download the report-scoped IFC source for browser viewing |
+| `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | Download a report-scoped drawing preview for 2D evidence overlays |
 | `GET` | `/v1/reports/{id}/export/json` | Download JSON export |
 | `GET` | `/v1/reports/{id}/export/html` | Download HTML export |
 | `GET` | `/v1/reports/{id}/export/bcf` | Download BCF 2.1 ZIP |
@@ -103,7 +105,7 @@ aerobim/
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog
-├── frontend/                # Browser review shell with initial spatial viewer rail
+├── frontend/                # Browser review shell with 3D viewer + 2D evidence overlay rails
 ├── ops/                     # Standalone runbooks, env matrix, smoke path
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
 ├── .github/workflows/       # CI pipeline (lint, typecheck, test)
