@@ -14,7 +14,7 @@ from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAud
 def _make_report(
     report_id: str = "rpt-001", passed: bool = True, issue_count: int = 0
 ) -> ValidationReport:
-    from aerobim.domain.models import ValidationSummary
+    from aerobim.domain.models import ClashResult, ValidationSummary
 
     return ValidationReport(
         report_id=report_id,
@@ -29,6 +29,15 @@ def _make_report(
             error_count=issue_count,
             warning_count=0,
             passed=passed,
+        ),
+        clash_results=(
+            ClashResult(
+                element_a_guid="guid-a",
+                element_b_guid="guid-b",
+                clash_type="hard",
+                distance=0.015,
+                description="Hard clash between wall and pipe",
+            ),
         ),
     )
 
@@ -98,6 +107,22 @@ class FilesystemAuditStoreTests(unittest.TestCase):
 
             tmp_files = list((Path(tmp) / "reports").glob("*.tmp"))
             self.assertEqual(len(tmp_files), 0)
+
+    def test_save_and_get_preserve_clash_results(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemAuditStore(Path(tmp))
+            store.save(_make_report("rpt-clash"))
+
+            loaded = store.get("rpt-clash")
+            self.assertIsNotNone(loaded)
+            assert loaded is not None
+            self.assertEqual(len(loaded.clash_results), 1)
+            self.assertEqual(loaded.clash_results[0].element_a_guid, "guid-a")
+            self.assertEqual(loaded.clash_results[0].element_b_guid, "guid-b")
+            self.assertEqual(loaded.clash_results[0].clash_type, "hard")
+            self.assertAlmostEqual(loaded.clash_results[0].distance, 0.015)
 
 
 if __name__ == "__main__":
