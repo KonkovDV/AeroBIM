@@ -1,10 +1,10 @@
-# Ops Placeholder
+# AeroBIM Standalone Ops
 
-This directory is reserved for operational notes.
+Active standalone deployment and runtime guidance for AeroBIM.
 
-Expected future contents:
+Contents:
 
-- environment setup notes;
-- deployment topology notes;
-- storage and retention guidance;
-- incident or recovery runbooks.
+- `standalone-runbook.md` — end-to-end bootstrap and operating steps;
+- `environment-matrix.md` — backend/frontend environment contract;
+- `storage-and-retention.md` — persistence boundaries and cleanup policy;
+- `smoke-path.md` — narrow-first verification path for local and Docker runtime.

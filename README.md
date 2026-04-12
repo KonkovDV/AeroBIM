@@ -18,10 +18,12 @@ AeroBIM validates building information models (IFC) against technical specificat
 | Drawing annotation ↔ IFC cross-validation | ✅ |
 | ISO 12006-3 tolerance algebra (ε-band) | ✅ |
 | Narrative NLP → requirements (regex baseline) | ✅ |
-| Clash detection (IfcClash) | ✅ |
+| Clash detection (IfcClash, optional `.[clash]` extra) | ✅ |
 | BCF 2.1 export | ✅ |
 | HTML / JSON report export | ✅ |
-| VLM drawing analysis (Qwen-VL / Florence-2) | 🔜 Planned |
+| Browser IFC viewer (`web-ifc + Three.js`) | ✅ Initial tranche |
+| Deterministic PDF / OCR drawing analysis baseline | ✅ |
+| Heavier VLM path (Qwen-VL / Florence-2) | 🔜 Planned |
 
 ## Quick Start
 
@@ -36,7 +38,11 @@ source .venv/bin/activate  # Linux/macOS
 # .venv\Scripts\activate   # Windows
 
 # Install
-pip install -e ".[dev]"
+pip install -e ".[dev,vision]"
+
+# Optional extras
+# pip install -e ".[clash]"    # enable geometry clash detection
+# pip install -e ".[docling]"  # enable non-text document extraction
 
 # Run tests
 pytest tests -v
@@ -55,6 +61,7 @@ python -m aerobim.main
 | `POST` | `/v1/analyze/project-package` | Multimodal validation (spec + calc + drawing + IDS + IFC) |
 | `GET` | `/v1/reports` | List persisted reports |
 | `GET` | `/v1/reports/{id}` | Get report by ID |
+| `GET` | `/v1/reports/{id}/source/ifc` | Download the report-scoped IFC source for browser viewing |
 | `GET` | `/v1/reports/{id}/export/json` | Download JSON export |
 | `GET` | `/v1/reports/{id}/export/html` | Download HTML export |
 | `GET` | `/v1/reports/{id}/export/bcf` | Download BCF 2.1 ZIP |
@@ -96,8 +103,8 @@ aerobim/
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog
-├── frontend/                # Browser review UI (planned)
-├── ops/                     # Environment and runtime notes
+├── frontend/                # Browser review shell with initial spatial viewer rail
+├── ops/                     # Standalone runbooks, env matrix, smoke path
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
 ├── .github/workflows/       # CI pipeline (lint, typecheck, test)
 └── LICENSE                  # MIT
@@ -109,6 +116,10 @@ aerobim/
 - [MicroPhoenix Adoption Matrix](docs/08-microphoenix-adoption-matrix.md) — extraction decisions
 - [Implementation Rails](docs/09-implementation-and-verification-rails.md) — delivery and verification
 - [Academic Audit](docs/10-academic-audit-and-recommendations-ru.md) — L5 hyper-deep audit
+- [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased next-step plan and tranche status
+- [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
+- [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
+- [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist
 
 ## Extraction From MicroPhoenix
 
@@ -128,6 +139,8 @@ aerobim/
 
 - **Python 3.12+**, **FastAPI**, **Uvicorn**
 - **IfcOpenShell** / **IfcTester** / **IfcClash** (buildingSMART toolchain)
+- **web-ifc** + **Three.js** for browser-side IFC review
+- **PyMuPDF** + **RapidOCR** for deterministic PDF/OCR drawing extraction
 - **Docling** (optional, document parsing)
 - 5-layer Clean Architecture, constructor DI, Protocol ports
 

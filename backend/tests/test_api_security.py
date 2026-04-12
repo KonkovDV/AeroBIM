@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tempfile
 import sys
 import unittest
 from datetime import UTC, datetime
@@ -215,6 +216,93 @@ class ApiReportEndpointTests(unittest.TestCase):
     def test_export_html_nonexistent_report_returns_404(self) -> None:
         response = self.client.get("/v1/reports/00000000000000000000000000000000/export/html")
         self.assertEqual(response.status_code, 404)
+
+
+class ApiIfcSourceEndpointTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.presentation.http.api import create_http_app
+
+        container = _make_test_container()
+        app = create_http_app(container)
+        cls.client = TestClient(app)
+        cls.store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+        cls.settings = container.resolve(Tokens.SETTINGS)
+
+    def _seed_report_with_ifc_source(self, relative_path: str = "models/seed.ifc") -> tuple[str, Path]:
+        source_path = self.settings.storage_dir / relative_path
+        source_path.parent.mkdir(parents=True, exist_ok=True)
+        source_path.write_text("ISO-10303-21;\nEND-ISO-10303-21;\n", encoding="utf-8")
+
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-ifc-source",
+            ifc_path=source_path,
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=0,
+                error_count=0,
+                warning_count=0,
+                passed=True,
+            ),
+        )
+        self.store.save(report)
+        return report.report_id, source_path
+
+    def test_report_ifc_source_returns_file_bytes(self) -> None:
+        report_id, source_path = self._seed_report_with_ifc_source()
+
+        response = self.client.get(f"/v1/reports/{report_id}/source/ifc")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, source_path.read_bytes())
+        self.assertIn("attachment; filename=", response.headers.get("content-disposition", ""))
+
+    def test_report_ifc_source_returns_404_when_file_missing(self) -> None:
+        report_id, source_path = self._seed_report_with_ifc_source("models/missing.ifc")
+        source_path.unlink()
+
+        response = self.client.get(f"/v1/reports/{report_id}/source/ifc")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("IFC source", response.json()["detail"])
+
+    def test_report_ifc_source_rejects_paths_outside_storage_boundary(self) -> None:
+        outside_dir = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: outside_dir.exists() and outside_dir.rmdir())
+        outside_file = outside_dir / "outside.ifc"
+        outside_file.write_text("ISO-10303-21;\nEND-ISO-10303-21;\n", encoding="utf-8")
+        self.addCleanup(lambda: outside_file.exists() and outside_file.unlink())
+
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-ifc-outside",
+            ifc_path=outside_file,
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=0,
+                error_count=0,
+                warning_count=0,
+                passed=True,
+            ),
+        )
+        self.store.save(report)
+
+        response = self.client.get(f"/v1/reports/{report.report_id}/source/ifc")
+
+        self.assertEqual(response.status_code, 409)
+        self.assertIn("escapes storage boundary", response.json()["detail"])
 
 
 class ApiHtmlExportTests(unittest.TestCase):
