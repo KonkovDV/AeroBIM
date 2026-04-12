@@ -264,6 +264,6 @@ At the current phase, the canonical interpretation is:
 - frontend is now an active review shell for report list, issue detail, provenance inspection, export actions, and initial IFC GUID-driven spatial review;
 - ops docs are active and sufficient for standalone bootstrap and smoke execution;
 - the Revit plugin remains a boundary-first surface;
-- the next meaningful milestone is spatial review maturity beyond the first viewer tranche: 2D problem-zone overlays backed by a persisted drawing-asset contract, plus stronger integration coverage for optional multimodal adapters without breaking current domain contracts.
+- the next meaningful milestone is spatial review maturity beyond the initial viewer + overlay tranche: page/asset switching for richer drawing evidence review, plus stronger integration coverage for optional multimodal adapters without breaking current domain contracts.
 
 Operational extraction details live in `08-microphoenix-adoption-matrix.md` and `09-implementation-and-verification-rails.md`.
