@@ -21,7 +21,7 @@ AeroBIM validates building information models (IFC) against technical specificat
 | Clash detection (IfcClash, optional `.[clash]` extra) | ✅ |
 | BCF 2.1 export | ✅ |
 | HTML / JSON report export | ✅ |
-| Browser IFC viewer (`web-ifc + Three.js`) | ✅ Initial tranche |
+| Browser IFC viewer (`web-ifc + Three.js`) | ✅ Initial tranche + clash-pair review |
 | Deterministic PDF / OCR drawing analysis baseline | ✅ |
 | Heavier VLM path (Qwen-VL / Florence-2) | 🔜 Planned |
 
