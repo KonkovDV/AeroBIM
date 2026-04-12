@@ -87,14 +87,14 @@ The frontend is no longer docs-first only. It is now a real React/Vite review sh
 - report listing;
 - issue detail inspection;
 - report-scoped IFC loading;
-- initial issue-to-element highlight / isolate flow in the browser viewer;
+- issue-to-element and clash-pair highlight / isolate flow in the browser viewer;
+- persisted drawing preview browsing with 2D problem-zone overlays;
 - provenance inspection;
 - HTML / JSON / BCF export actions.
 
 What it still is not:
 
-- a 2D problem-zone overlay tool;
-- a richer clash-pair or multi-selection review surface;
+- a full persisted-report smoke harness for the full browser workflow;
 - a full authoring-side coordination surface.
 
 ### Ops Status
@@ -118,7 +118,7 @@ The authoring-side boundary remains intentionally thin and not yet implemented a
 | Deterministic PDF / OCR drawing extraction | ✅ LIVE BASELINE | PyMuPDF + RapidOCR path exists behind `VisionDrawingAnalyzer` |
 | Geometry clash detection | ✅ LIVE WITH OPTIONAL EXTRA | Real IfcClash path requires `.[clash]`; graceful empty fallback without the extra remains an intentional limitation |
 | JSON / HTML / BCF export | ✅ LIVE | Export endpoints and tests exist |
-| Browser review shell | ✅ LIVE + INITIAL 3D VIEWER | Report shell plus browser IFC selection for issue and clash evidence by GUID |
+| Browser review shell | ✅ LIVE + INITIAL 3D/2D REVIEW | Report shell plus browser IFC selection and persisted drawing-evidence overlays |
 | Thin Revit roundtrip | ❌ NOT YET | Boundary only |
 
 ## 4. Corrected Findings Versus Prior Documentation Drift
