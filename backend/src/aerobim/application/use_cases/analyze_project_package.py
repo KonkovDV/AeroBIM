@@ -33,6 +33,30 @@ from aerobim.domain.ports import (
 
 _VISION_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _VISION_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
+_CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
+    "m": ("m", 1.0),
+    "м": ("m", 1.0),
+    "mm": ("m", 0.001),
+    "мм": ("m", 0.001),
+    "cm": ("m", 0.01),
+    "см": ("m", 0.01),
+    "ft": ("m", 0.3048),
+    "feet": ("m", 0.3048),
+    "foot": ("m", 0.3048),
+    "in": ("m", 0.0254),
+    "inch": ("m", 0.0254),
+    "inches": ("m", 0.0254),
+    "m2": ("m2", 1.0),
+    "м2": ("m2", 1.0),
+    "m²": ("m2", 1.0),
+    "м²": ("m2", 1.0),
+    "sqm": ("m2", 1.0),
+    "sq.m": ("m2", 1.0),
+    "m3": ("m3", 1.0),
+    "м3": ("m3", 1.0),
+    "m³": ("m3", 1.0),
+    "м³": ("m3", 1.0),
+}
 
 
 class AnalyzeProjectPackageUseCase:
@@ -183,49 +207,116 @@ class AnalyzeProjectPackageUseCase:
         """Compare requirements from different sources for the same (entity, property).
 
         When two sources specify conflicting expected values for the same
-        IFC entity + property pair, emit a CROSS_DOCUMENT issue.
+        IFC entity + property pair, emit a CROSS_DOCUMENT issue.  Numeric
+        values are compared with ISO 12006-3 ε-tolerance so that rounding
+        differences (e.g. 3.0 m vs 3000 mm) do not produce false positives.
         """
         issues: list[ValidationIssue] = []
-        keyed: dict[tuple[str, str], list[ParsedRequirement]] = {}
+        keyed: dict[tuple[str, str, str], list[ParsedRequirement]] = {}
 
         for req in requirements:
             if not req.ifc_entity or not req.property_name:
                 continue
-            key = (req.ifc_entity.upper(), req.property_name.lower())
+            key = (
+                req.ifc_entity.upper(),
+                (req.property_set or "").lower(),
+                req.property_name.lower(),
+            )
             keyed.setdefault(key, []).append(req)
 
-        for (entity, prop), reqs in keyed.items():
+        for (entity, property_set, prop), reqs in keyed.items():
             if len(reqs) < 2:
                 continue
-            seen_values: dict[str, ParsedRequirement] = {}
+            seen: list[ParsedRequirement] = []
             for req in reqs:
                 if req.expected_value is None:
                     continue
-                val = req.expected_value.strip()
-                if val in seen_values:
-                    continue
-                for prev_val, prev_req in seen_values.items():
+                for prev_req in seen:
                     if prev_req.source_kind == req.source_kind:
                         continue
-                    issues.append(
-                        ValidationIssue(
-                            rule_id=f"CROSS-DOC-{entity}-{prop}",
-                            severity=Severity.WARNING,
-                            message=(
-                                f"Cross-document contradiction: {entity}.{prop} "
-                                f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
-                                f"but '{val}' (from {req.source_kind.value})"
-                            ),
-                            ifc_entity=entity,
-                            category=FindingCategory.CROSS_DOCUMENT,
-                            property_name=prop,
-                            expected_value=prev_val,
-                            observed_value=val,
+                    if self._values_conflict(
+                        prev_req.expected_value,
+                        prev_req.unit,
+                        req.expected_value,
+                        req.unit,
+                    ):
+                        prev_val = (prev_req.expected_value or "").strip()
+                        val = (req.expected_value or "").strip()
+                        property_label = (
+                            f"{entity}.{property_set}.{prop}"
+                            if property_set
+                            else f"{entity}.{prop}"
                         )
-                    )
-                seen_values[val] = req
+                        issues.append(
+                            ValidationIssue(
+                                rule_id=f"CROSS-DOC-{entity}-{prop}",
+                                severity=Severity.WARNING,
+                                message=(
+                                    f"Cross-document contradiction: {property_label} "
+                                    f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
+                                    f"but '{val}' (from {req.source_kind.value})"
+                                ),
+                                ifc_entity=entity,
+                                category=FindingCategory.CROSS_DOCUMENT,
+                                property_set=prev_req.property_set or req.property_set,
+                                property_name=prop,
+                                expected_value=prev_val,
+                                observed_value=val,
+                            )
+                        )
+                seen.append(req)
 
         return issues
+
+    def _values_conflict(
+        self,
+        value_a: str | None,
+        unit_a: str | None,
+        value_b: str | None,
+        unit_b: str | None,
+    ) -> bool:
+        """Return True when two expected values are materially different.
+
+        Numeric pairs are compared with ε-tolerance from ``ToleranceConfig``;
+        non-numeric pairs use case-insensitive string comparison.
+        """
+        if value_a is None or value_b is None:
+            return False
+        a_str = value_a.strip()
+        b_str = value_b.strip()
+        if a_str.lower() == b_str.lower():
+            return False
+
+        a_num = self._to_float(a_str)
+        b_num = self._to_float(b_str)
+        if a_num is not None and b_num is not None:
+            normalized_a = self._normalize_cross_document_numeric_value(a_num, unit_a)
+            normalized_b = self._normalize_cross_document_numeric_value(b_num, unit_b)
+            if normalized_a is not None and normalized_b is not None:
+                value_a_si, unit_a_si = normalized_a
+                value_b_si, unit_b_si = normalized_b
+                if unit_a_si != unit_b_si:
+                    return True
+                eps = self._tolerance.epsilon_for_unit(unit_a_si)
+                return abs(value_a_si - value_b_si) > eps
+
+            eps = self._tolerance.epsilon_for_unit(unit_a or unit_b)
+            return abs(a_num - b_num) > eps
+
+        return True
+
+    def _normalize_cross_document_numeric_value(
+        self,
+        value: float,
+        unit: str | None,
+    ) -> tuple[float, str] | None:
+        if unit is None:
+            return None
+        normalized = _CROSS_DOC_UNIT_TO_SI_FACTOR.get(unit.strip().lower())
+        if normalized is None:
+            return None
+        canonical_unit, factor = normalized
+        return value * factor, canonical_unit
 
     def _validate_drawing_annotations(
         self,
