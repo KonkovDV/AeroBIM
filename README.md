@@ -71,7 +71,7 @@ infrastructure/ Adapters: IfcOpenShell, IfcTester, Docling, IfcClash, BCF, files
 presentation/  FastAPI HTTP API, correlation middleware
 ```
 
-**9 domain ports** → **12 infrastructure adapters** → **14 DI tokens** — all wired in a single composition root (`bootstrap_container()`).
+**9 domain ports** → **12 infrastructure adapters** → **13 DI tokens** — all wired in a single composition root (`bootstrap_container()`).
 
 ## Configuration
 
@@ -92,7 +92,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 aerobim/
 ├── backend/                 # Python FastAPI backend (~1.9K LOC src, ~1.8K LOC tests)
 │   ├── src/aerobim/         # Source: core → domain → application → infrastructure → presentation
-│   ├── tests/               # 15 test modules (0.96:1 test/source LOC ratio)
+│   ├── tests/               # 16 test modules (backend suite currently 134 tests)
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog
