@@ -66,6 +66,7 @@ Initial tranche completed in the same session:
 - endpoint tests for source-path safety and availability passed;
 - frontend `web-ifc + Three.js` viewer rail landed;
 - issue-to-element highlight / isolate flow landed;
+- clash-pair focus and generic multi-selection isolate flow landed;
 - viewer runtime is lazy-loaded to avoid inflating the initial report-shell bundle.
 
 ### Goal
@@ -146,5 +147,5 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 ## Recommended Next Concrete Tranche
 
 1. add 2D evidence overlay rendering for drawing problem zones;
-2. extend the viewer from single-element review to clash-pair and richer multi-selection review;
-3. add a frontend smoke path that proves report -> issue -> viewer -> provenance -> export against one persisted report.
+2. add a frontend smoke path that proves report -> issue/clash -> viewer -> provenance -> export against one persisted report;
+3. design and land a persisted drawing-asset contract so 2D problem-zone overlays can be real rather than synthetic.

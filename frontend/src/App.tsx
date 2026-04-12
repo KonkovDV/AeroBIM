@@ -1,6 +1,6 @@
 import { Suspense, lazy, startTransition, useDeferredValue, useEffect, useState } from "react";
 import { buildExportUrl, fetchReport, fetchReports, getApiBaseUrl } from "./lib/api";
-import type { ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
+import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 
@@ -38,6 +38,41 @@ function findMatchingRequirements(report: ValidationReport, issue: ValidationIss
   return report.requirements.filter((requirement) => requirement.rule_id === issue.rule_id);
 }
 
+type ViewerFocus = {
+  mode: "none" | "issue" | "clash";
+  guids: string[];
+  heading: string;
+  detail: string;
+};
+
+function buildViewerFocus(activeIssue: ValidationIssue | null, activeClash: ClashResult | null): ViewerFocus {
+  if (activeClash !== null) {
+    const guids = [...new Set([activeClash.element_a_guid, activeClash.element_b_guid].filter((guid) => guid.length > 0))];
+    return {
+      mode: "clash",
+      guids,
+      heading: `${activeClash.clash_type} clash pair`,
+      detail: `${guids.length} selected IFC elements from the active clash review pair.`,
+    };
+  }
+
+  if (activeIssue?.element_guid) {
+    return {
+      mode: "issue",
+      guids: [activeIssue.element_guid],
+      heading: activeIssue.rule_id,
+      detail: `Single-element focus from the active issue GUID ${activeIssue.element_guid}.`,
+    };
+  }
+
+  return {
+    mode: "none",
+    guids: [],
+    heading: "No spatial selection",
+    detail: "Select an issue with IFC GUID evidence or a clash pair to drive the viewer selection.",
+  };
+}
+
 export default function App() {
   const [reports, setReports] = useState<ReportSummaryEntry[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
@@ -47,6 +82,7 @@ export default function App() {
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number>(0);
+  const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
 
   const deferredSearch = useDeferredValue(search);
@@ -98,6 +134,7 @@ export default function App() {
         setSelectedReport(report);
         setReportError(null);
         setSelectedIssueIndex(0);
+        setSelectedClashIndex(null);
       })
       .catch((error: unknown) => {
         if (cancelled) {
@@ -132,7 +169,12 @@ export default function App() {
     selectedReport && selectedReport.issues.length > 0
       ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
       : null;
+  const activeClash =
+    selectedReport && selectedClashIndex !== null && selectedReport.clash_results.length > 0
+      ? selectedReport.clash_results[Math.min(selectedClashIndex, selectedReport.clash_results.length - 1)]
+      : null;
   const matchingRequirements = selectedReport ? findMatchingRequirements(selectedReport, activeIssue) : [];
+  const viewerFocus = buildViewerFocus(activeIssue, activeClash);
 
   return (
     <div className="app-shell">
@@ -268,6 +310,7 @@ export default function App() {
                       onClick={() => {
                         startTransition(() => {
                           setSelectedIssueIndex(index);
+                          setSelectedClashIndex(null);
                         });
                       }}
                     >
@@ -291,7 +334,13 @@ export default function App() {
         <div className="side-stack">
           <Suspense fallback={<ViewerPlaceholder message="Loading the spatial review runtime…" />}>
             {selectedReport ? (
-              <IfcViewerPanel report={selectedReport} activeIssue={activeIssue} />
+              <IfcViewerPanel
+                report={selectedReport}
+                selectedGuids={viewerFocus.guids}
+                selectionMode={viewerFocus.mode}
+                selectionHeading={viewerFocus.heading}
+                selectionDetail={viewerFocus.detail}
+              />
             ) : (
               <ViewerPlaceholder message="Select a persisted report to load its IFC source into the browser viewer." />
             )}
@@ -377,15 +426,27 @@ export default function App() {
                   ) : (
                     <div className="collection-stack">
                       {selectedReport.clash_results.map((clash, index) => (
-                        <div key={`${clash.element_a_guid}-${clash.element_b_guid}-${index}`} className="collection-card">
-                          <strong>{clash.clash_type}</strong>
+                        <button
+                          key={`${clash.element_a_guid}-${clash.element_b_guid}-${index}`}
+                          type="button"
+                          className={`collection-card collection-card-button ${index === selectedClashIndex ? "active" : ""}`}
+                          onClick={() => {
+                            startTransition(() => {
+                              setSelectedClashIndex((current) => (current === index ? null : index));
+                            });
+                          }}
+                        >
+                          <div className="collection-card-row">
+                            <strong>{clash.clash_type}</strong>
+                            <span className="selection-badge">{index === selectedClashIndex ? "viewer focus" : "focus clash"}</span>
+                          </div>
                           <p>{clash.description}</p>
                           <div className="collection-meta">
                             <span>{clash.element_a_guid}</span>
                             <span>{clash.element_b_guid}</span>
                             <span>{clash.distance.toFixed(3)} m</span>
                           </div>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   )}

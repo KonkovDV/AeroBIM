@@ -31,7 +31,7 @@ export class IfcSceneController {
   private animationHandle: number | null = null;
   private ifcApi: IfcAPI | null = null;
   private modelId: number | null = null;
-  private highlightedExpressId: number | null = null;
+  private selectedExpressIds: number[] = [];
   private isolateSelection = false;
   private readonly expressMeshes = new Map<number, THREE.Mesh[]>();
 
@@ -111,7 +111,7 @@ export class IfcSceneController {
       this.ifcApi.CloseModel(this.modelId);
     }
     this.modelId = null;
-    this.highlightedExpressId = null;
+    this.selectedExpressIds = [];
     this.isolateSelection = false;
     this.expressMeshes.clear();
 
@@ -121,17 +121,27 @@ export class IfcSceneController {
     }
   }
 
-  highlightGuid(guid: string | null): void {
-    if (this.ifcApi === null || this.modelId === null || guid === null) {
-      this.highlightedExpressId = null;
+  setSelectedGuids(guids: readonly string[]): void {
+    if (this.ifcApi === null || this.modelId === null || guids.length === 0) {
+      this.selectedExpressIds = [];
       this.applySelectionState();
       return;
     }
-    const expressId = this.ifcApi.GetExpressIdFromGuid(this.modelId, guid);
-    this.highlightedExpressId = typeof expressId === "number" ? expressId : null;
+
+    const nextSelection: number[] = [];
+    const seen = new Set<number>();
+    for (const guid of guids) {
+      const expressId = this.ifcApi.GetExpressIdFromGuid(this.modelId, guid);
+      if (typeof expressId === "number" && expressId >= 0 && !seen.has(expressId)) {
+        seen.add(expressId);
+        nextSelection.push(expressId);
+      }
+    }
+
+    this.selectedExpressIds = nextSelection;
     this.applySelectionState();
-    if (this.highlightedExpressId !== null) {
-      this.frameExpressId(this.highlightedExpressId);
+    if (this.selectedExpressIds.length > 0) {
+      this.frameExpressIds(this.selectedExpressIds);
     }
   }
 
@@ -141,8 +151,8 @@ export class IfcSceneController {
   }
 
   resetView(): void {
-    if (this.highlightedExpressId !== null) {
-      this.frameExpressId(this.highlightedExpressId);
+    if (this.selectedExpressIds.length > 0) {
+      this.frameExpressIds(this.selectedExpressIds);
       return;
     }
     this.fitCameraToBox(new THREE.Box3().setFromObject(this.modelRoot));
@@ -237,22 +247,26 @@ export class IfcSceneController {
   }
 
   private applySelectionState(): void {
+    const selectedIds = new Set(this.selectedExpressIds);
+    const selectionPalette = ["#f59e0b", "#0f766e", "#2563eb", "#db2777"];
+
     for (const [expressId, meshes] of this.expressMeshes) {
-      const isSelected = this.highlightedExpressId !== null && expressId === this.highlightedExpressId;
+      const selectionIndex = this.selectedExpressIds.indexOf(expressId);
+      const isSelected = selectionIndex >= 0;
       for (const mesh of meshes) {
         const material = mesh.material as THREE.MeshStandardMaterial;
         const baseColor = mesh.userData.baseColor as THREE.Color;
         material.color.copy(baseColor);
-        material.emissive.set(isSelected ? "#f59e0b" : "#000000");
-        material.emissiveIntensity = isSelected ? 0.55 : 0;
-        mesh.visible = !this.isolateSelection || this.highlightedExpressId === null || isSelected;
+        material.emissive.set(isSelected ? selectionPalette[selectionIndex % selectionPalette.length] : "#000000");
+        material.emissiveIntensity = isSelected ? 0.6 : 0;
+        mesh.visible = !this.isolateSelection || selectedIds.size === 0 || isSelected;
       }
     }
   }
 
-  private frameExpressId(expressId: number): void {
-    const meshes = this.expressMeshes.get(expressId);
-    if (meshes === undefined || meshes.length === 0) {
+  private frameExpressIds(expressIds: readonly number[]): void {
+    const meshes = expressIds.flatMap((expressId) => this.expressMeshes.get(expressId) ?? []);
+    if (meshes.length === 0) {
       return;
     }
     this.fitCameraToBox(expandSelectionBox(meshes));

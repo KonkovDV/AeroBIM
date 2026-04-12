@@ -9,6 +9,7 @@ Current scope:
 - issue detail panel with provenance fields;
 - report-scoped IFC loading through the backend;
 - initial 3D viewer with issue highlight / isolate by IFC GUID;
+- clash-pair focus and multi-selection isolate workflow in the viewer;
 - provenance view for requirements, drawing annotations, and clashes.
 
 ## Stack
@@ -38,5 +39,4 @@ VITE_AEROBIM_API_BASE_URL=http://localhost:8080
 ## Current Gaps
 
 - no 2D raster/PDF overlay rendering yet;
-- no clash-pair dual-selection workflow yet;
 - no authoring-tool roundtrip yet.

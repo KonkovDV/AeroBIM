@@ -38,8 +38,9 @@ curl -I http://127.0.0.1:8080/v1/reports/<report_id>/export/bcf
 4. Select a report and confirm issue detail plus provenance panes populate.
 5. Confirm the IFC viewer loads the report-scoped model.
 6. Select an issue with `element_guid` and confirm the viewer highlights it.
-7. Toggle isolate mode and confirm only the selected element remains visible.
-8. Trigger HTML, JSON, and BCF downloads.
+7. Select a clash card and confirm the viewer highlights both clash elements.
+8. Toggle isolate mode and confirm only the selected issue element or clash pair remains visible.
+9. Trigger HTML, JSON, and BCF downloads.
 
 ## Docker Smoke
 
@@ -56,6 +57,6 @@ The smoke path is complete only when:
 - report listing works;
 - at least one report detail resolves;
 - the report-scoped IFC source endpoint responds successfully;
-- the frontend viewer loads one model and reacts to issue selection;
+- the frontend viewer loads one model and reacts to both issue and clash-pair selection;
 - all three export endpoints respond successfully;
 - frontend renders list + issue + provenance for the same report.

@@ -118,7 +118,7 @@ The authoring-side boundary remains intentionally thin and not yet implemented a
 | Deterministic PDF / OCR drawing extraction | ✅ LIVE BASELINE | PyMuPDF + RapidOCR path exists behind `VisionDrawingAnalyzer` |
 | Geometry clash detection | ✅ LIVE WITH OPTIONAL EXTRA | Real IfcClash path requires `.[clash]`; graceful empty fallback without the extra remains an intentional limitation |
 | JSON / HTML / BCF export | ✅ LIVE | Export endpoints and tests exist |
-| Browser review shell | ✅ LIVE + INITIAL 3D VIEWER | Report shell plus browser IFC selection by GUID |
+| Browser review shell | ✅ LIVE + INITIAL 3D VIEWER | Report shell plus browser IFC selection for issue and clash evidence by GUID |
 | Thin Revit roundtrip | ❌ NOT YET | Boundary only |
 
 ## 4. Corrected Findings Versus Prior Documentation Drift
@@ -148,7 +148,7 @@ During this rebaseline a real infrastructure defect was confirmed in `IfcClashDe
 The remaining meaningful gaps are now product gaps, not architecture-foundation gaps:
 
 - no 2D problem-zone rendering yet;
-- no richer clash-pair dual-selection workflow yet;
+- no 2D drawing-asset contract yet for real problem-zone overlays;
 - no real integration test that exercises `ifcclash` against fixture geometry with the optional extra installed;
 - no benchmark/throughput rail or async job execution for larger models;
 - no project-level metadata or tenant-aware report indexing;

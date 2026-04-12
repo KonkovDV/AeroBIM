@@ -98,7 +98,7 @@ Frontend не захватывает domain truth. Он работает как 
 
 ### 5.1. Spatial review gap
 
-Первый 3D rail уже появился: findings теперь можно связывать с IFC element GUID прямо в browser viewer. Но spatial review всё ещё неполный, потому что пока нет 2D problem-zone overlays и richer review interactions для нескольких элементов или clash pairs.
+Первый 3D rail уже появился: findings теперь можно связывать с IFC element GUID прямо в browser viewer, включая clash-pair focus и multi-selection isolate. Но spatial review всё ещё неполный, потому что пока нет 2D problem-zone overlays и persisted drawing-asset contract для реального page/image evidence.
 
 ### 5.2. Optional-capability transparency gap
 
