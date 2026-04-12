@@ -273,6 +273,33 @@ input {
   font-size: 0.82rem;
 }
 
+.drawing-evidence-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.drawing-evidence-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(24, 33, 46, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.drawing-evidence-chip:hover,
+.drawing-evidence-chip.active {
+  transform: translateY(-1px);
+  border-color: rgba(15, 118, 110, 0.35);
+  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.08);
+}
+
 .drawing-evidence-stage {
   position: relative;
   overflow: hidden;
