@@ -11,10 +11,12 @@ E: Drawing dimension pattern in NarrativeRuleSynthesizer
 
 from __future__ import annotations
 
+import os
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -360,8 +362,32 @@ class ApiCorsAndCorrelationTests(unittest.TestCase):
                 "Access-Control-Request-Method": "GET",
             },
         )
-        # In debug mode, allow_origins=["*"]
         self.assertIn("access-control-allow-origin", resp.headers)
+
+    def test_cors_preflight_health_allows_loopback_frontend_origin(self) -> None:
+        resp = self.client.options(
+            "/health",
+            headers={
+                "Origin": "http://127.0.0.1:5173",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+        self.assertEqual(resp.headers.get("access-control-allow-origin"), "http://127.0.0.1:5173")
+
+
+class SettingsEnvDefaultsTests(unittest.TestCase):
+    @patch.dict(os.environ, {}, clear=True)
+    def test_from_env_debug_defaults_include_localhost_and_loopback_frontend_origins(self) -> None:
+        from aerobim.core.config.settings import Settings
+
+        settings = Settings.from_env()
+
+        self.assertEqual(settings.host, "127.0.0.1")
+        self.assertTrue(settings.debug)
+        self.assertIn("http://localhost:5173", settings.cors_origins)
+        self.assertIn("http://127.0.0.1:5173", settings.cors_origins)
+        self.assertIn("http://localhost:3000", settings.cors_origins)
+        self.assertIn("http://127.0.0.1:3000", settings.cors_origins)
 
 
 # ---------------------------------------------------------------------------
