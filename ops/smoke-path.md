@@ -15,15 +15,21 @@ Note: the frontend repo now has App-level automated regression coverage for the 
 curl http://127.0.0.1:8080/health
 ```
 
-3. Verify empty or existing report index:
+3. Seed one deterministic persisted smoke report:
+
+```bash
+cd backend
+python -m aerobim.tools.seed_smoke_report
+```
+
+4. Verify empty or existing report index:
 
 ```bash
 curl http://127.0.0.1:8080/v1/reports
 ```
 
-4. Submit a validation payload or reuse a fixture-driven test path.
-5. Re-check `GET /v1/reports` and confirm `count` increased.
-6. Open a single report and verify export endpoints:
+5. Re-check `GET /v1/reports` and confirm the seeded report appears.
+6. Open the seeded report and verify source + preview + export endpoints:
 
 ```bash
 curl http://127.0.0.1:8080/v1/reports/<report_id>
@@ -37,7 +43,7 @@ curl -I http://127.0.0.1:8080/v1/reports/<report_id>/export/bcf
 
 1. Start the frontend dev server.
 2. Open `http://127.0.0.1:5173`.
-3. Confirm the shell renders the report list.
+3. Confirm the shell renders the seeded smoke report in the list.
 4. Select a report and confirm issue detail plus provenance panes populate.
 5. Confirm the IFC viewer loads the report-scoped model.
 6. Select an issue with `element_guid` and confirm the viewer highlights it.
@@ -64,6 +70,7 @@ The smoke path is complete only when:
 - at least one report detail resolves;
 - the report-scoped IFC source endpoint responds successfully;
 - the report-scoped drawing preview endpoint responds successfully for one persisted asset;
+- the deterministic smoke seeder can recreate the same live report payload on demand;
 - the frontend viewer loads one model and reacts to both issue and clash-pair selection;
 - the frontend 2D panel renders one persisted issue overlay on drawing evidence;
 - all three export endpoints respond successfully;
