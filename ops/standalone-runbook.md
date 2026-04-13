@@ -76,6 +76,8 @@ python -m aerobim.tools.run_live_review_smoke
 
 This one-command harness boots an isolated local stack, seeds the deterministic runtime review report, and emits browser screenshot plus Playwright trace artifacts.
 
+From the parent VS Code workspace, the same path is exposed as the `process: smoke:live-review` task.
+
 1. start the backend;
 2. validate `GET /health`;
 3. submit a validation request or use fixture-driven report generation;

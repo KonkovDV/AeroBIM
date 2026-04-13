@@ -151,4 +151,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. extend optional-adapter proof from pass/fail runtime evidence to richer fixture diversity if multimodal behavior starts drifting across document classes;
 2. promote viewer-specific browser assertions from the now-proven live harness into a more automated browser rail once the stack bootstrap can be made stable enough for repeatable local or CI execution;
-3. if the one-command live smoke path becomes a daily operator workflow, promote it from a Python tool into a first-class workspace task or release rail.
+3. if the new `process: smoke:live-review` task becomes part of release readiness, promote it from a workspace task into a first-class release rail or CI-compatible smoke stage.
