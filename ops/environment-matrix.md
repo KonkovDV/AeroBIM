@@ -30,6 +30,11 @@
 | backend full capability bench | `pip install -e ".[dev,vision,clash,docling]"` | full local capability set for integration and demo work |
 | frontend dev/build | `npm install` | browser review shell |
 
+Optional integration rail:
+
+- `backend/tests/test_optional_adapter_integrations.py` auto-skips unless `ifcclash` and/or `docling` are installed in the active backend environment.
+- first real runtime proof for both extras has been captured in the project backend venv with `.[clash,docling]` installed.
+
 ## Deployment Notes
 
 - Docker backend image now installs `.[vision]`, so PDF and raster drawing analysis are available in the containerized runtime.
