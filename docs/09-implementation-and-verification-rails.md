@@ -149,6 +149,16 @@ Current minimum rail:
 3. fixture or sample-pack verification when relevant
 4. broader closure when the blast radius justifies it
 
+Current optional-adapter confidence in this lane now includes:
+
+- `ifcclash` integration coverage that runs a real clash-engine path when `.[clash]` is installed and otherwise skips explicitly;
+- `docling` extraction coverage that runs a real PDF-to-requirement path when `.[docling]` is installed and otherwise skips explicitly.
+
+Current runtime-proof status:
+
+- the optional-adapter rail has now been executed in a `.[clash,docling]`-enabled backend environment;
+- the first real runtime proof for both extras is captured locally via `backend/tests/test_optional_adapter_integrations.py`.
+
 ### Frontend Code Lane
 
 Use when the browser review shell changes.
