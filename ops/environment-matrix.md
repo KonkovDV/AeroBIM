@@ -9,8 +9,8 @@
 | `AEROBIM_HOST` | `127.0.0.1` | no | Use `0.0.0.0` for Docker/container binding. |
 | `AEROBIM_PORT` | `8080` | no | HTTP listen port. |
 | `AEROBIM_STORAGE_DIR` | `var/reports` | no | Parent directory for persisted JSON reports. Runtime store writes to `reports/*.json` below this root. |
-| `AEROBIM_DEBUG` | `true` | no | Enables debug defaults including permissive localhost CORS fallback. |
-| `AEROBIM_CORS_ORIGINS` | empty | no | Comma-separated explicit frontend origins. In debug mode, empty falls back to `http://localhost:3000,http://localhost:5173`. |
+| `AEROBIM_DEBUG` | `true` | no | Enables debug defaults including permissive local frontend CORS fallback. |
+| `AEROBIM_CORS_ORIGINS` | empty | no | Comma-separated explicit frontend origins. In debug mode, empty falls back to `http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173`. |
 
 ## Frontend Variable
 

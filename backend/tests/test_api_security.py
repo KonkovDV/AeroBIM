@@ -12,6 +12,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from aerobim.domain.models import DrawingAsset, Severity, ValidationIssue, ValidationReport, ValidationSummary
 
 
+_TEST_CORS_ORIGINS = (
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+)
+
+
 class _NullLogger:
     """Silent logger for tests — satisfies StructuredLogger protocol."""
 
@@ -56,7 +64,7 @@ def _make_test_container():
         port=8080,
         storage_dir=Path(tmp),
         debug=True,
-        cors_origins=("http://localhost:3000", "http://localhost:5173"),
+        cors_origins=_TEST_CORS_ORIGINS,
     )
     settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
@@ -563,7 +571,7 @@ class ApiAnalyzeProjectPackageIdsTests(unittest.TestCase):
             port=8080,
             storage_dir=Path(temp_dir.name),
             debug=True,
-            cors_origins=("http://localhost:3000", "http://localhost:5173"),
+            cors_origins=_TEST_CORS_ORIGINS,
         )
         settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
