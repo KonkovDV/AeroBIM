@@ -149,6 +149,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. if manual seeded smoke becomes a frequent operator path, wrap backend startup + seeding + frontend dev + browser capture into a one-command workspace task or script rail;
-2. extend optional-adapter proof from pass/fail runtime evidence to richer fixture diversity if multimodal behavior starts drifting across document classes;
-3. promote viewer-specific browser assertions from the now-proven live harness into a more automated browser rail once the stack bootstrap can be made stable enough for repeatable local or CI execution.
+1. extend optional-adapter proof from pass/fail runtime evidence to richer fixture diversity if multimodal behavior starts drifting across document classes;
+2. promote viewer-specific browser assertions from the now-proven live harness into a more automated browser rail once the stack bootstrap can be made stable enough for repeatable local or CI execution;
+3. if the one-command live smoke path becomes a daily operator workflow, promote it from a Python tool into a first-class workspace task or release rail.

@@ -6,6 +6,17 @@ Provide a narrow-first runtime check for the standalone stack.
 
 Note: the frontend repo now has App-level automated regression coverage for the same review-shell chain. The steps below remain the runtime verification path against a live persisted backend report.
 
+## One-Command Live Smoke
+
+For the smallest fully automated local runtime proof, run:
+
+```bash
+cd backend
+python -m aerobim.tools.run_live_review_smoke
+```
+
+The command boots an isolated backend/frontend pair, seeds the deterministic report, captures browser artifacts, and prints a JSON payload with the seeded report and screenshot/trace paths.
+
 ## Local Backend Smoke
 
 1. Start the backend.
