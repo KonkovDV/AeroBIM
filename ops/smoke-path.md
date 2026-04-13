@@ -17,6 +17,8 @@ python -m aerobim.tools.run_live_review_smoke
 
 The command boots an isolated backend/frontend pair, seeds the deterministic report, captures browser artifacts, and prints a JSON payload with the seeded report and screenshot/trace paths.
 
+Inside the parent VS Code workspace, the same rail is now available as the `process: smoke:live-review` task.
+
 ## Local Backend Smoke
 
 1. Start the backend.
