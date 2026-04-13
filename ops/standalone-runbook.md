@@ -76,6 +76,7 @@ The frontend remains an independent static/browser shell in this tranche. Run it
 7. confirm `GET /v1/reports/{report_id}/drawing-assets/{asset_id}/preview` returns a stored drawing preview for that seeded report;
 8. start the frontend shell and confirm it resolves the API base URL;
 9. inspect issue provenance, 3D spatial selection, 2D overlay evidence, and HTML/JSON/BCF export buttons against the seeded runtime report.
+10. if browser-level artifacts are needed, run `cd frontend && npm run smoke:browser` to capture live screenshots and a Playwright trace zip against the seeded report; if Vite starts on a fallback port, pass it explicitly with `--base-url`.
 
 ## Failure Modes
 
@@ -99,6 +100,7 @@ Checks:
 - backend is reachable at the configured API base URL;
 - `AEROBIM_STORAGE_DIR/reports` contains JSON files;
 - `GET /v1/reports` returns `count > 0`.
+- if the browser is running on `127.0.0.1:5173`, either keep backend debug defaults enabled or include that origin explicitly in `AEROBIM_CORS_ORIGINS`.
 
 ### Export download returns 404
 
