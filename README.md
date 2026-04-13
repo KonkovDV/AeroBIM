@@ -51,6 +51,9 @@ pytest tests -v
 # Seed one deterministic runtime smoke report
 python -m aerobim.tools.seed_smoke_report
 
+# Or run the full live review smoke chain in one command
+python -m aerobim.tools.run_live_review_smoke
+
 # Start server
 python -m aerobim.main
 # → http://127.0.0.1:8080/health

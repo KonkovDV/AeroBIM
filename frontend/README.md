@@ -32,6 +32,12 @@ npm run dev
 npm run smoke:browser
 ```
 
+For a fully automated local live smoke that boots backend + seeding + frontend + browser capture in one command, run from `backend/`:
+
+```bash
+python -m aerobim.tools.run_live_review_smoke
+```
+
 Default API target: `http://localhost:8080`.
 
 Override with:
@@ -42,7 +48,6 @@ VITE_AEROBIM_API_BASE_URL=http://localhost:8080
 
 ## Current Gaps
 
-- no one-command browser harness that boots backend + seeding + frontend automatically yet;
 - no authoring-tool roundtrip yet.
 
 ## Browser Smoke Capture
