@@ -48,6 +48,9 @@ pip install -e ".[dev,vision]"
 # Run tests
 pytest tests -v
 
+# Seed one deterministic runtime smoke report
+python -m aerobim.tools.seed_smoke_report
+
 # Start server
 python -m aerobim.main
 # → http://127.0.0.1:8080/health
@@ -121,7 +124,7 @@ aerobim/
 - [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased next-step plan and tranche status
 - [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
 - [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
-- [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist
+- [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path
 
 ## Extraction From MicroPhoenix
 
