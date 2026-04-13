@@ -4,6 +4,8 @@
 
 Provide a narrow-first runtime check for the standalone stack.
 
+Note: the frontend repo now has App-level automated regression coverage for the same review-shell chain. The steps below remain the runtime verification path against a live persisted backend report.
+
 ## Local Backend Smoke
 
 1. Start the backend.
