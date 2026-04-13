@@ -74,7 +74,7 @@ cd backend
 python -m aerobim.tools.run_live_review_smoke
 ```
 
-This one-command harness boots an isolated local stack, seeds the deterministic runtime review report, and emits browser screenshot plus Playwright trace artifacts.
+This one-command harness boots an isolated local stack, seeds the deterministic runtime review report, verifies core browser review state, and emits screenshot plus Playwright trace artifacts.
 
 From the parent VS Code workspace, the same path is exposed as the `process: smoke:live-review` task.
 
