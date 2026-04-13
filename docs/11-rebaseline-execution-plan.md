@@ -96,8 +96,8 @@ Increase evidence quality without replacing typed contracts.
 
 ### Deliverables
 
-1. integration tests for real `ifcclash` geometry runs when the extra is installed;
-2. integration tests for Docling-backed non-text requirement extraction;
+1. integration tests for real `ifcclash` geometry runs when the extra is installed. Coverage rail landed and first runtime proof is captured in an extra-enabled environment.
+2. integration tests for Docling-backed non-text requirement extraction. Coverage rail landed and first runtime proof is captured in an extra-enabled environment.
 3. optional heavier vision/VLM adapter behind the existing `VisionDrawingAnalyzer` port;
 4. confidence/calibration rules for mixed drawing evidence sources.
 
@@ -149,6 +149,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. add optional-adapter integration coverage for `ifcclash` and `docling` paths when the extras are installed;
-2. add browser-level trace or screenshot coverage if the current App-level smoke rail plus seeded manual smoke still proves insufficient for review-shell confidence;
-3. if manual seeded smoke becomes a frequent operator path, wrap it in a one-command workspace task or script rail.
+1. add browser-level trace or screenshot coverage if the current App-level smoke rail plus seeded manual smoke still proves insufficient for review-shell confidence;
+2. if manual seeded smoke becomes a frequent operator path, wrap it in a one-command workspace task or script rail;
+3. extend optional-adapter proof from pass/fail runtime evidence to richer fixture diversity if multimodal behavior starts drifting across document classes.

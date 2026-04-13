@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from aerobim.domain.models import (
@@ -139,7 +140,20 @@ class StructuredRequirementExtractor:
 
         converter = DocumentConverter()
         result = converter.convert(str(source_path))
-        return result.document.export_to_markdown()
+        return self._normalize_docling_markdown(result.document.export_to_markdown())
+
+    def _normalize_docling_markdown(self, markdown: str) -> str:
+        normalized_lines: list[str] = []
+        for line in markdown.splitlines():
+            stripped = line.strip()
+            if not stripped:
+                normalized_lines.append("")
+                continue
+            stripped = re.sub(r"^#+\s*", "", stripped)
+            stripped = re.sub(r"^[-*+]\s*", "", stripped)
+            stripped = stripped.replace(r"\_", "_")
+            normalized_lines.append(stripped)
+        return "\n".join(normalized_lines)
 
 
 DoclingRequirementExtractor = StructuredRequirementExtractor

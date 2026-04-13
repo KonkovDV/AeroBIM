@@ -10,6 +10,7 @@ are deferred to a future iteration.
 
 from __future__ import annotations
 
+import logging
 import tempfile
 from pathlib import Path
 
@@ -34,12 +35,15 @@ class IfcClashDetector:
 
         with tempfile.TemporaryDirectory(prefix="aerobim-ifcclash-") as temp_dir:
             settings = ifcclash.ClashSettings()
+            settings.logger = logging.getLogger(__name__)
             settings.output = str(Path(temp_dir) / "clashes.json")
 
             clash_set = {
-                "name": "All vs All",
-                "a": [str(ifc_path)],
-                "b": [str(ifc_path)],
+                "name": "Internal hard clashes",
+                "mode": "intersection",
+                "check_all": False,
+                "tolerance": 0.0,
+                "a": [{"file": str(ifc_path)}],
             }
 
             clasher = ifcclash.Clasher(settings)
