@@ -161,12 +161,17 @@ Current minimum rail:
 4. `npm run build`
 5. runtime smoke against a persisted report when report-selection, issue-detail, provenance, or export behavior changes
 
+Current automated confidence in this lane now includes:
+
+- component regression around `DrawingEvidencePanel` browse and issue-match states;
+- App-level smoke coverage for report load, issue selection, clash focus, export links, provenance, and 2D overlay rendering against mocked persisted report data.
+
 ### Future Local Rail
 
 As `AeroBIM` matures, it should gain its own local verification entrypoints for:
 
 - backend tests and type checks;
-- browser-level smoke beyond current component regression coverage;
+- real browser/runtime smoke against a live persisted report beyond current App-level regression coverage;
 - fixture-pack regression;
 - report export regression.
 
