@@ -59,7 +59,7 @@ cd frontend
 npm run smoke:browser
 ```
 
-The script captures:
+The script now verifies live export-link wiring, issue-overlay presence, and clash-focus state before it captures:
 
 - `artifacts/browser-smoke/review-shell-issue.png`
 - `artifacts/browser-smoke/review-shell-clash.png`
