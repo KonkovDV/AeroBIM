@@ -163,6 +163,46 @@ describe("App", () => {
     expect(within(viewer).getByText(/Single-element focus from the active issue GUID guid-issue-1/i)).toBeTruthy();
   });
 
+  it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {
+    const { container } = render(<App />);
+
+    const firstImage = await screen.findByRole("img", { name: /drawing evidence preview for a-102/i });
+    Object.defineProperty(firstImage, "naturalWidth", { configurable: true, value: 640 });
+    Object.defineProperty(firstImage, "naturalHeight", { configurable: true, value: 400 });
+    fireEvent.load(firstImage);
+
+    const htmlLink = screen.getByRole("link", { name: "HTML" }) as HTMLAnchorElement;
+    const jsonLink = screen.getByRole("link", { name: "JSON" }) as HTMLAnchorElement;
+    const bcfLink = screen.getByRole("link", { name: "BCF" }) as HTMLAnchorElement;
+
+    expect(htmlLink.href).toContain("/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/html");
+    expect(jsonLink.href).toContain("/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/json");
+    expect(bcfLink.href).toContain("/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/bcf");
+    const drawingEvidencePanel = container.querySelector(".drawing-evidence-panel") as HTMLElement;
+    const activeIssueBlock = screen.getByText("Active issue").closest(".detail-block") as HTMLElement;
+    expect(within(drawingEvidencePanel).getAllByText("A-102 · page 2").length).toBeGreaterThanOrEqual(2);
+    expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
+    expect(within(activeIssueBlock).getByText("WALL-01")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
+    const secondImage = await screen.findByRole("img", { name: /drawing evidence preview for a-101/i });
+    Object.defineProperty(secondImage, "naturalWidth", { configurable: true, value: 640 });
+    Object.defineProperty(secondImage, "naturalHeight", { configurable: true, value: 400 });
+    fireEvent.load(secondImage);
+
+    const viewerAfterIssueSwitch = await screen.findByTestId("viewer-stub");
+    const activeIssueBlockAfterSwitch = screen.getByText("Active issue").closest(".detail-block") as HTMLElement;
+    expect(within(viewerAfterIssueSwitch).getByText("No spatial selection")).toBeTruthy();
+    expect(within(activeIssueBlockAfterSwitch).getByText("SLAB-02")).toBeTruthy();
+    expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: /Hard clash between pipe and beam/i }));
+
+    const viewerAfterClashSwitch = await screen.findByTestId("viewer-stub");
+    expect(within(viewerAfterClashSwitch).getByText(/hard clash pair/i)).toBeTruthy();
+    expect(within(viewerAfterClashSwitch).getByText(/pipe-guid-a,beam-guid-b/i)).toBeTruthy();
+  });
+
   it("switches the 2d evidence panel when another issue is selected", async () => {
     render(<App />);
 

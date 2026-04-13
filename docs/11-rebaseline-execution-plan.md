@@ -68,6 +68,7 @@ Initial tranche completed in the same session:
 - issue-to-element highlight / isolate flow landed;
 - clash-pair focus and generic multi-selection isolate flow landed;
 - drawing asset/page switching landed in the 2D evidence rail;
+- App-level smoke regression now covers report -> issue/clash -> viewer -> 2D overlay -> provenance -> export over mocked persisted report data;
 - viewer runtime is lazy-loaded to avoid inflating the initial report-shell bundle.
 
 ### Goal
@@ -147,6 +148,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. add a fuller smoke path that proves report -> issue/clash -> 3D viewer -> 2D overlay -> provenance -> export against one persisted report;
-2. add broader integration coverage for persisted preview generation across PDF and raster evidence paths;
-3. add browser-level smoke or trace coverage if the current component regression rail proves insufficient for full review-shell confidence.
+1. add a real runtime smoke path that proves report -> issue/clash -> 3D viewer -> 2D overlay -> provenance -> export against one persisted backend report rather than mocked API data;
+2. add optional-adapter integration coverage for `ifcclash` and `docling` paths when the extras are installed;
+3. add browser-level trace or screenshot coverage if the current App-level smoke rail still proves insufficient for review-shell confidence.
