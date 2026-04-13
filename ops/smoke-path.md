@@ -15,7 +15,7 @@ cd backend
 python -m aerobim.tools.run_live_review_smoke
 ```
 
-The command boots an isolated backend/frontend pair, seeds the deterministic report, captures browser artifacts, and prints a JSON payload with the seeded report and screenshot/trace paths.
+The command boots an isolated backend/frontend pair, seeds the deterministic report, verifies core review-shell DOM state, captures browser artifacts, and prints a JSON payload with the seeded report, smoke checks, and screenshot/trace paths.
 
 Inside the parent VS Code workspace, the same rail is now available as the `process: smoke:live-review` task.
 
@@ -92,6 +92,6 @@ The smoke path is complete only when:
 - the deterministic smoke seeder can recreate the same live report payload on demand;
 - the frontend viewer loads one model and reacts to both issue and clash-pair selection;
 - the frontend 2D panel renders one persisted issue overlay on drawing evidence;
-- the browser smoke harness emits at least one full-page screenshot plus one Playwright trace zip against the seeded live stack;
+- the browser smoke harness verifies export-link wiring, one rendered issue overlay, and clash focus state before it emits at least one full-page screenshot plus one Playwright trace zip against the seeded live stack;
 - all three export endpoints respond successfully;
 - frontend renders list + issue + provenance for the same report.
