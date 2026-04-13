@@ -5,6 +5,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+_DEBUG_CORS_ORIGINS = (
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+)
+
+
 def _read_int(name: str, default: int) -> int:
     raw = os.getenv(name)
     if raw is None:
@@ -36,7 +44,7 @@ class Settings:
         if raw_origins:
             origins = tuple(o.strip() for o in raw_origins.split(",") if o.strip())
         elif debug:
-            origins = ("http://localhost:3000", "http://localhost:5173")
+            origins = _DEBUG_CORS_ORIGINS
         else:
             origins = ()
         return cls(

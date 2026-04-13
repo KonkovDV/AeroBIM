@@ -53,6 +53,12 @@ curl -I http://127.0.0.1:8080/v1/reports/<report_id>/export/bcf
 10. Switch the 2D panel to another persisted drawing asset and confirm the panel stays usable in browse mode even when the issue overlay is hidden.
 11. Toggle isolate mode and confirm only the selected issue element or clash pair remains visible.
 12. Trigger HTML, JSON, and BCF downloads.
+13. Capture browser-level smoke artifacts:
+
+```bash
+cd frontend
+npm run smoke:browser
+```
 
 ## Docker Smoke
 
@@ -73,5 +79,6 @@ The smoke path is complete only when:
 - the deterministic smoke seeder can recreate the same live report payload on demand;
 - the frontend viewer loads one model and reacts to both issue and clash-pair selection;
 - the frontend 2D panel renders one persisted issue overlay on drawing evidence;
+- the browser smoke harness emits at least one full-page screenshot plus one Playwright trace zip against the seeded live stack;
 - all three export endpoints respond successfully;
 - frontend renders list + issue + provenance for the same report.
