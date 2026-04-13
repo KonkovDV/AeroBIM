@@ -70,11 +70,12 @@ The frontend remains an independent static/browser shell in this tranche. Run it
 1. start the backend;
 2. validate `GET /health`;
 3. submit a validation request or use fixture-driven report generation;
-4. confirm `GET /v1/reports` returns persisted report summaries;
-5. confirm `GET /v1/reports/{report_id}/source/ifc` returns the stored IFC source for one persisted report;
-6. confirm `GET /v1/reports/{report_id}/drawing-assets/{asset_id}/preview` returns a stored drawing preview for one persisted report;
-7. start the frontend shell and confirm it resolves the API base URL;
-8. inspect issue provenance, 3D spatial selection, 2D overlay evidence, and HTML/JSON/BCF export buttons.
+4. for deterministic runtime smoke, run `python -m aerobim.tools.seed_smoke_report` inside `backend/`;
+5. confirm `GET /v1/reports` returns the seeded persisted report summary;
+6. confirm `GET /v1/reports/{report_id}/source/ifc` returns the stored IFC source for that seeded report;
+7. confirm `GET /v1/reports/{report_id}/drawing-assets/{asset_id}/preview` returns a stored drawing preview for that seeded report;
+8. start the frontend shell and confirm it resolves the API base URL;
+9. inspect issue provenance, 3D spatial selection, 2D overlay evidence, and HTML/JSON/BCF export buttons against the seeded runtime report.
 
 ## Failure Modes
 
