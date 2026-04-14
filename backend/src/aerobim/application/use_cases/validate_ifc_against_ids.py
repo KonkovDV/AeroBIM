@@ -57,6 +57,8 @@ class ValidateIfcAgainstIdsUseCase:
                 warning_count=warning_count,
                 passed=error_count == 0,
             ),
+            project_name=request.project_name,
+            discipline=request.discipline,
         )
         self._audit_report_store.save(report)
         return report
