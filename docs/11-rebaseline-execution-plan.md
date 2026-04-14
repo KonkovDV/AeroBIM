@@ -153,6 +153,12 @@ Seventh tranche completed in the same session:
 - persisted filters are applied before the initial `/v1/reports` load on startup;
 - frontend regression coverage now includes startup behavior for persisted filters.
 
+Eighth tranche completed in the same session:
+
+- report filters now sync to URL query params (`project`, `discipline`, `status`) for shareable links;
+- URL filter values take precedence over localStorage on startup;
+- frontend regression coverage now includes URL-over-localStorage precedence and URL sync behavior.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -196,4 +202,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. add at least one genuinely larger stress-oriented benchmark pack so the throughput rail spans both profile diversity and model size;
 2. evaluate promoting the one-command live review smoke rail into CI or release-readiness gates once browser/runtime bootstrap constraints are stable enough for non-flaky automation;
-3. consider richer operator workflows on top of the new frontend filters, such as shareable presets or report-group views, only if real review volume justifies them.
+3. consider richer operator workflows on top of the new frontend filters, such as report-group views, only if real review volume justifies them.

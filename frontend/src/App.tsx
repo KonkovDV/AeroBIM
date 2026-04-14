@@ -12,6 +12,27 @@ type PersistedReportFilters = {
   status: "all" | "passed" | "failed";
 };
 
+function normalizeStatus(value: string | null | undefined): "all" | "passed" | "failed" {
+  return value === "passed" || value === "failed" ? value : "all";
+}
+
+function readUrlReportFilters(): Partial<PersistedReportFilters> {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const project = params.get("project")?.trim();
+  const discipline = params.get("discipline")?.trim();
+  const status = params.get("status");
+
+  return {
+    project: project && project.length > 0 ? project : undefined,
+    discipline: discipline && discipline.length > 0 ? discipline : undefined,
+    status: status ? normalizeStatus(status) : undefined,
+  };
+}
+
 function readPersistedReportFilters(): PersistedReportFilters {
   if (typeof window === "undefined") {
     return { project: "", discipline: "", status: "all" };
@@ -26,11 +47,22 @@ function readPersistedReportFilters(): PersistedReportFilters {
     return {
       project: typeof parsed.project === "string" ? parsed.project : "",
       discipline: typeof parsed.discipline === "string" ? parsed.discipline : "",
-      status: parsed.status === "passed" || parsed.status === "failed" ? parsed.status : "all",
+      status: normalizeStatus(parsed.status),
     };
   } catch {
     return { project: "", discipline: "", status: "all" };
   }
+}
+
+function initialReportFilters(): PersistedReportFilters {
+  const persisted = readPersistedReportFilters();
+  const fromUrl = readUrlReportFilters();
+
+  return {
+    project: fromUrl.project ?? persisted.project,
+    discipline: fromUrl.discipline ?? persisted.discipline,
+    status: fromUrl.status ?? persisted.status,
+  };
 }
 
 function persistReportFilters(filters: PersistedReportFilters): void {
@@ -39,6 +71,33 @@ function persistReportFilters(filters: PersistedReportFilters): void {
   }
 
   window.localStorage.setItem(REPORT_FILTERS_STORAGE_KEY, JSON.stringify(filters));
+}
+
+function syncReportFiltersToUrl(filters: PersistedReportFilters): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  if (filters.project.trim()) {
+    url.searchParams.set("project", filters.project.trim());
+  } else {
+    url.searchParams.delete("project");
+  }
+
+  if (filters.discipline.trim()) {
+    url.searchParams.set("discipline", filters.discipline.trim());
+  } else {
+    url.searchParams.delete("discipline");
+  }
+
+  if (filters.status !== "all") {
+    url.searchParams.set("status", filters.status);
+  } else {
+    url.searchParams.delete("status");
+  }
+
+  window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
 }
 
 function ViewerPlaceholder({ message }: { message: string }) {
@@ -111,7 +170,7 @@ function buildViewerFocus(activeIssue: ValidationIssue | null, activeClash: Clas
 }
 
 export default function App() {
-  const persistedFilters = readPersistedReportFilters();
+  const persistedFilters = initialReportFilters();
   const [reports, setReports] = useState<ReportSummaryEntry[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState<string | null>(null);
@@ -132,11 +191,13 @@ export default function App() {
   const deferredStatusFilter = useDeferredValue(statusFilter);
 
   useEffect(() => {
-    persistReportFilters({
+    const currentFilters = {
       project: projectFilter,
       discipline: disciplineFilter,
       status: statusFilter,
-    });
+    };
+    persistReportFilters(currentFilters);
+    syncReportFiltersToUrl(currentFilters);
   }, [projectFilter, disciplineFilter, statusFilter]);
 
   useEffect(() => {
