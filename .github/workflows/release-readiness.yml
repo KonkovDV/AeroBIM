@@ -1,0 +1,87 @@
+name: Release Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_live_smoke:
+        description: "Run the optional live review smoke job"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark-rails:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend dependencies
+        run: pip install -e ".[dev,vision]"
+      - name: Run baseline benchmark pack
+        run: |
+          mkdir -p ../artifacts/release-readiness
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-baseline.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --storage-dir ./var/reports-ci-benchmark-baseline \
+            > ../artifacts/release-readiness/benchmark-baseline.json
+      - name: Run fire-compliance benchmark pack
+        run: |
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-fire-compliance.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --storage-dir ./var/reports-ci-benchmark-fire \
+            > ../artifacts/release-readiness/benchmark-fire-compliance.json
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-readiness-benchmark-artifacts
+          path: artifacts/release-readiness/benchmark-*.json
+
+  live-review-smoke:
+    if: ${{ inputs.run_live_smoke }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Create backend virtualenv for smoke harness
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -e ".[dev,vision]"
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+      - name: Run live review smoke harness
+        run: |
+          mkdir -p ../artifacts/release-readiness
+          .venv/bin/python -m aerobim.tools.run_live_review_smoke \
+            --storage-dir ./var/reports-ci-live-smoke \
+            --output-dir ../frontend/artifacts/browser-smoke-ci \
+            > ../artifacts/release-readiness/live-review-smoke.json
+      - name: Upload live smoke artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-readiness-live-smoke-artifacts
+          path: |
+            artifacts/release-readiness/live-review-smoke.json
+            frontend/artifacts/browser-smoke-ci/**
