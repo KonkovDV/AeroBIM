@@ -49,3 +49,20 @@ jobs:
           python-version: "3.12"
       - run: pip install -e ".[dev,vision]"
       - run: pytest tests -v --tb=short
+
+  benchmark-smoke:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev,vision]"
+      - name: Run baseline benchmark pack
+        run: python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
+      - name: Run fire-compliance benchmark pack
+        run: python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-fire-compliance.json --iterations 1 --warmup-iterations 0
