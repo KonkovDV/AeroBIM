@@ -116,7 +116,7 @@ aerobim/
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog
-├── frontend/                # Browser review shell with 3D viewer, 2D evidence overlay rails, and metadata-aware report index
+├── frontend/                # Browser review shell with 3D viewer, 2D evidence overlay rails, and server-backed report filters
 ├── ops/                     # Standalone runbooks, env matrix, smoke path
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
 ├── .github/workflows/       # CI pipeline (lint, typecheck, test)

@@ -1,5 +1,11 @@
 import type { ReportListResponse, ValidationReport } from "./types";
 
+export type ReportListFilters = {
+  project?: string;
+  discipline?: string;
+  passed?: boolean;
+};
+
 const apiBaseUrl = (import.meta.env.VITE_AEROBIM_API_BASE_URL as string | undefined)?.replace(/\/$/, "") ?? "http://localhost:8080";
 
 async function readJson<T>(url: string): Promise<T> {
@@ -40,8 +46,20 @@ export function buildDrawingAssetPreviewUrl(reportId: string, assetId: string): 
   return `${apiBaseUrl}/v1/reports/${reportId}/drawing-assets/${assetId}/preview`;
 }
 
-export async function fetchReports(): Promise<ReportListResponse> {
-  return readJson<ReportListResponse>(`${apiBaseUrl}/v1/reports`);
+export async function fetchReports(filters: ReportListFilters = {}): Promise<ReportListResponse> {
+  const query = new URLSearchParams();
+  if (filters.project) {
+    query.set("project", filters.project);
+  }
+  if (filters.discipline) {
+    query.set("discipline", filters.discipline);
+  }
+  if (filters.passed !== undefined) {
+    query.set("passed", String(filters.passed));
+  }
+  const queryString = query.toString();
+  const url = queryString ? `${apiBaseUrl}/v1/reports?${queryString}` : `${apiBaseUrl}/v1/reports`;
+  return readJson<ReportListResponse>(url);
 }
 
 export async function fetchReport(reportId: string): Promise<ValidationReport> {
