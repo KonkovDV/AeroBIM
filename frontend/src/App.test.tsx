@@ -189,6 +189,7 @@ function toReportSummary(report: ValidationReport): MockReportSummary {
 
 describe("App", () => {
   beforeEach(() => {
+    window.history.replaceState({}, "", "/");
     window.localStorage.clear();
     const report = buildReport();
     fetchReportsMock.mockReset();
@@ -280,6 +281,32 @@ describe("App", () => {
     expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("hospital");
     expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("mech");
     expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
+  });
+
+  it("prefers URL filters over localStorage and keeps URL in sync", async () => {
+    window.localStorage.setItem(
+      REPORT_FILTERS_STORAGE_KEY,
+      JSON.stringify({ project: "residential", discipline: "architecture", status: "failed" }),
+    );
+    window.history.replaceState({}, "", "/?project=hospital&discipline=mech&status=passed");
+    fetchReportsMock.mockResolvedValue({ reports: [], count: 0 });
+
+    render(<App />);
+
+    expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
+    expect(fetchReportsMock).toHaveBeenCalledWith({
+      project: "hospital",
+      discipline: "mech",
+      passed: true,
+    });
+
+    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "tower" } });
+    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "arch" } });
+    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "failed" } });
+
+    expect(window.location.search).toContain("project=tower");
+    expect(window.location.search).toContain("discipline=arch");
+    expect(window.location.search).toContain("status=failed");
   });
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {

@@ -7,6 +7,7 @@ Current scope:
 - report list with pass/fail and issue counts;
 - server-backed project, discipline, and pass/fail filters on the persisted report index;
 - report filter values persist locally between browser sessions;
+- report filters are also reflected in URL query params for shareable deep links;
 - local report search within the already filtered result set;
 - report summary and export actions;
 - issue detail panel with provenance fields;
