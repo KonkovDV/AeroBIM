@@ -263,6 +263,32 @@ describe("App", () => {
     expect(await screen.findByText("Hospital beta issue")).toBeTruthy();
   });
 
+  it("groups report cards by project when grouping mode is enabled", async () => {
+    const firstReport = buildReport();
+    const secondReport = buildSecondReport();
+    fetchReportsMock.mockResolvedValue({
+      reports: [toReportSummary(firstReport), toReportSummary(secondReport)],
+      count: 2,
+    });
+    fetchReportMock.mockImplementation(async (reportId: string) => {
+      return reportId === secondReport.report_id ? secondReport : firstReport;
+    });
+
+    render(<App />);
+
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    expect(screen.getByText("Hospital Beta")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Group by project" }));
+
+    expect(await screen.findByText("Residential Tower Alpha (1)")).toBeTruthy();
+    expect(screen.getByText("Hospital Beta (1)")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ungroup reports" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: /bbbbbbbb/i }));
+    expect(await screen.findByText("Hospital beta issue")).toBeTruthy();
+  });
+
   it("loads persisted report filters from localStorage on startup", async () => {
     window.localStorage.setItem(
       REPORT_FILTERS_STORAGE_KEY,
