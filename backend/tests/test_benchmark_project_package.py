@@ -12,6 +12,23 @@ from aerobim.domain.models import ValidationReport, ValidationSummary
 
 
 class BenchmarkProjectPackageToolTests(unittest.TestCase):
+    def test_repository_benchmark_manifests_load_with_real_fixtures(self) -> None:
+        from aerobim.tools.benchmark_project_package import load_benchmark_pack
+
+        repo_root = Path(__file__).resolve().parents[2]
+        manifests = [
+            repo_root / "samples" / "benchmarks" / "project-package-baseline.json",
+            repo_root / "samples" / "benchmarks" / "project-package-fire-compliance.json",
+        ]
+
+        for manifest_path in manifests:
+            benchmark_pack = load_benchmark_pack(manifest_path, repo_root_path=repo_root)
+            self.assertTrue(benchmark_pack.pack_id)
+            self.assertTrue(benchmark_pack.request.ifc_path.exists())
+            self.assertIsNotNone(benchmark_pack.request.requirement_source.path)
+            assert benchmark_pack.request.requirement_source.path is not None
+            self.assertTrue(benchmark_pack.request.requirement_source.path.exists())
+
     def test_load_benchmark_pack_builds_request_relative_to_repo_root(self) -> None:
         from aerobim.tools.benchmark_project_package import load_benchmark_pack
 
