@@ -55,9 +55,11 @@ class FakeValidator:
 class FakeStore:
     def __init__(self) -> None:
         self.saved_report_id: str | None = None
+        self.report: ValidationReport | None = None
 
     def save(self, report: ValidationReport) -> str:
         self.saved_report_id = report.report_id
+        self.report = report
         return report.report_id
 
 
@@ -81,6 +83,28 @@ class ValidateIfcAgainstIdsUseCaseTests(unittest.TestCase):
         self.assertEqual(report.summary.error_count, 1)
         self.assertFalse(report.summary.passed)
         self.assertEqual(store.saved_report_id, report.report_id)
+
+    def test_execute_copies_project_metadata_into_report(self) -> None:
+        store = FakeStore()
+        use_case = ValidateIfcAgainstIdsUseCase(FakeExtractor(), FakeValidator(), store)
+
+        report = use_case.execute(
+            ValidationRequest(
+                request_id="req-meta",
+                ifc_path=Path("sample.ifc"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
+                project_name="Residential Tower Alpha",
+                discipline="architecture",
+            )
+        )
+
+        self.assertEqual(report.project_name, "Residential Tower Alpha")
+        self.assertEqual(report.discipline, "architecture")
+        assert store.report is not None
+        self.assertEqual(store.report.project_name, "Residential Tower Alpha")
+        self.assertEqual(store.report.discipline, "architecture")
 
 
 if __name__ == "__main__":

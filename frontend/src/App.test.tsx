@@ -96,6 +96,8 @@ function buildReport(): ValidationReport {
     request_id: "req-001",
     ifc_path: "var/reports/model.ifc",
     created_at: "2026-04-13T09:00:00Z",
+    project_name: "Residential Tower Alpha",
+    discipline: "architecture",
     requirements: [],
     issues: [
       buildIssue({}),
@@ -146,6 +148,8 @@ describe("App", () => {
           created_at: report.created_at,
           passed: report.summary.passed,
           issue_count: report.summary.issue_count,
+          project_name: report.project_name,
+          discipline: report.discipline,
         },
       ],
       count: 1,
@@ -161,6 +165,17 @@ describe("App", () => {
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
     expect(within(viewer).getByText("issue")).toBeTruthy();
     expect(within(viewer).getByText(/Single-element focus from the active issue GUID guid-issue-1/i)).toBeTruthy();
+  });
+
+  it("searches the report index by project and discipline metadata", async () => {
+    render(<App />);
+
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "arch" } });
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "mechanical" } });
+    expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
   });
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {

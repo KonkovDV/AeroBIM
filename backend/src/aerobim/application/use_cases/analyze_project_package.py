@@ -143,6 +143,8 @@ class AnalyzeProjectPackageUseCase:
             drawing_annotations=drawing_annotations,
             drawing_assets=drawing_assets,
             clash_results=clash_results,
+            project_name=request.project_name,
+            discipline=request.discipline,
         )
         self._audit_report_store.save(report)
         persisted_report = self._audit_report_store.get(report.report_id)

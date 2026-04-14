@@ -22,6 +22,8 @@ class InMemoryAuditStore:
                 created_at=r.created_at,
                 passed=r.summary.passed,
                 issue_count=r.summary.issue_count,
+                project_name=r.project_name,
+                discipline=r.discipline,
             )
             for r in self._reports.values()
         ]

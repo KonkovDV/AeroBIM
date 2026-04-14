@@ -195,11 +195,40 @@ class ApiReportEndpointTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.core.di.tokens import Tokens
         from aerobim.presentation.http.api import create_http_app
 
         container = _make_test_container()
         app = create_http_app(container)
         cls.client = TestClient(app)
+        cls.store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+
+    def _seed_report_summary(
+        self,
+        report_id: str,
+        *,
+        passed: bool,
+        project_name: str | None,
+        discipline: str | None,
+    ) -> None:
+        report = ValidationReport(
+            report_id=report_id,
+            request_id=f"req-{report_id}",
+            ifc_path=Path("seed.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            project_name=project_name,
+            discipline=discipline,
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=0 if passed else 2,
+                error_count=0 if passed else 2,
+                warning_count=0,
+                passed=passed,
+            ),
+        )
+        self.store.save(report)
 
     def test_list_reports_empty(self) -> None:
         response = self.client.get("/v1/reports")
@@ -207,6 +236,35 @@ class ApiReportEndpointTests(unittest.TestCase):
         data = response.json()
         self.assertIn("reports", data)
         self.assertIn("count", data)
+
+    def test_list_reports_filters_by_project_discipline_and_passed(self) -> None:
+        self._seed_report_summary(
+            "a" * 32,
+            passed=True,
+            project_name="Residential Tower Alpha",
+            discipline="architecture",
+        )
+        self._seed_report_summary(
+            "b" * 32,
+            passed=False,
+            project_name="Residential Tower Alpha",
+            discipline="structure",
+        )
+        self._seed_report_summary(
+            "c" * 32,
+            passed=False,
+            project_name="Hospital Beta",
+            discipline="mechanical",
+        )
+
+        response = self.client.get("/v1/reports?project=tower&discipline=arch&passed=true")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["reports"][0]["report_id"], "a" * 32)
+        self.assertEqual(data["reports"][0]["project_name"], "Residential Tower Alpha")
+        self.assertEqual(data["reports"][0]["discipline"], "architecture")
 
     def test_get_report_invalid_id_format_returns_400(self) -> None:
         response = self.client.get("/v1/reports/not-a-uuid-format")

@@ -155,6 +155,8 @@ class ValidationRequest:
     drawing_sources: tuple[DrawingSource, ...] = ()
     ids_path: Path | None = None
     origin: str = "api"
+    project_name: str | None = None
+    discipline: str | None = None
 
 
 @dataclass(frozen=True)
@@ -169,6 +171,8 @@ class ValidationReport:
     drawing_annotations: tuple[DrawingAnnotation, ...] = ()
     drawing_assets: tuple[DrawingAsset, ...] = ()
     clash_results: tuple[ClashResult, ...] = ()
+    project_name: str | None = None
+    discipline: str | None = None
 
 
 @dataclass(frozen=True)
@@ -178,6 +182,8 @@ class ReportSummaryEntry:
     created_at: str
     passed: bool
     issue_count: int
+    project_name: str | None = None
+    discipline: str | None = None
 
 
 @dataclass(frozen=True)
