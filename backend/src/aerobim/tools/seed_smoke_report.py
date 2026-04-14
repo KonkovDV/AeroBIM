@@ -179,6 +179,8 @@ def seed_smoke_report(storage_dir: Path, source_ifc_path: Path | None = None) ->
                 description="Smoke seed clash pair for runtime review.",
             ),
         ),
+        project_name="Smoke Demo Project",
+        discipline="architecture",
     )
 
     store = FilesystemAuditStore(storage_dir)
@@ -191,6 +193,8 @@ def build_cli_payload(report: ValidationReport) -> dict[str, object]:
     return {
         "report_id": report.report_id,
         "request_id": report.request_id,
+        "project_name": report.project_name,
+        "discipline": report.discipline,
         "ifc_path": str(report.ifc_path),
         "drawing_asset_ids": [asset.asset_id for asset in report.drawing_assets],
         "issue_rule_ids": [issue.rule_id for issue in report.issues],
