@@ -186,6 +186,25 @@ class ReportSummaryEntry:
     discipline: str | None = None
 
 
+class JobStatus(StrEnum):
+    QUEUED = "queued"
+    RUNNING = "running"
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+
+
+@dataclass(frozen=True)
+class AnalyzeProjectPackageJob:
+    job_id: str
+    request_id: str
+    status: JobStatus
+    created_at: str
+    started_at: str | None = None
+    completed_at: str | None = None
+    report_id: str | None = None
+    error_message: str | None = None
+
+
 @dataclass(frozen=True)
 class ClashResult:
     """A single spatial clash between two IFC elements."""

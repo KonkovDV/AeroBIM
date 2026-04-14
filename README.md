@@ -66,6 +66,8 @@ python -m aerobim.main
 | `GET` | `/health` | Readiness probe |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements + IDS |
 | `POST` | `/v1/analyze/project-package` | Multimodal validation (spec + calc + drawing + IDS + IFC) |
+| `POST` | `/v1/analyze/project-package/submit` | Accept a same-process background analysis job for larger packages |
+| `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll async project-package job status |
 | `GET` | `/v1/reports` | List persisted reports with optional `project`, `discipline`, and `passed` filters |
 | `GET` | `/v1/reports/{id}` | Get report by ID |
 | `GET` | `/v1/reports/{id}/source/ifc` | Download the report-scoped IFC source for browser viewing |

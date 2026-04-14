@@ -50,7 +50,7 @@ class AnalyzeProjectPackageRequest(BaseModel):
 
 def create_http_app(container: Container):
     try:
-        from fastapi import Body, FastAPI, HTTPException
+        from fastapi import BackgroundTasks, Body, FastAPI, HTTPException
         from fastapi.middleware.cors import CORSMiddleware
     except ModuleNotFoundError as exc:
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc
@@ -93,6 +93,10 @@ def create_http_app(container: Container):
     def _validate_report_id(report_id: str) -> None:
         if not _REPORT_ID_RE.match(report_id):
             raise HTTPException(status_code=400, detail="Invalid report ID format")
+
+    def _validate_job_id(job_id: str) -> None:
+        if not _REPORT_ID_RE.match(job_id):
+            raise HTTPException(status_code=400, detail="Invalid job ID format")
 
     def _resolve_report_ifc_path(report_id: str) -> Path:
         report = audit_store.get(report_id)
@@ -144,6 +148,50 @@ def create_http_app(container: Container):
             source_id=f"{source_kind.value}-input",
         )
 
+    def _build_project_package_request(payload: AnalyzeProjectPackageRequest) -> ValidationRequest:
+        return ValidationRequest(
+            request_id=payload.request_id or uuid4().hex,
+            ifc_path=_resolve_safe_path(payload.ifc_path),
+            requirement_source=_build_requirement_source(
+                payload.requirement_text,
+                payload.requirement_path,
+                SourceKind.STRUCTURED_TEXT,
+            ),
+            ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
+            technical_spec_source=_build_requirement_source(
+                payload.technical_spec_text,
+                payload.technical_spec_path,
+                SourceKind.TECHNICAL_SPECIFICATION,
+            )
+            if payload.technical_spec_text or payload.technical_spec_path
+            else None,
+            calculation_source=_build_requirement_source(
+                payload.calculation_text,
+                payload.calculation_path,
+                SourceKind.CALCULATION,
+            )
+            if payload.calculation_text or payload.calculation_path
+            else None,
+            drawing_sources=tuple(
+                DrawingSource(
+                    text=drawing.text,
+                    path=_resolve_safe_path(drawing.path) if drawing.path else None,
+                    sheet_id=drawing.sheet_id,
+                    format=drawing.format,
+                )
+                for drawing in payload.drawings
+            ),
+            project_name=payload.project_name,
+            discipline=payload.discipline,
+        )
+
+    def _serialize_analyze_project_package_job(job) -> dict[str, object]:
+        payload = asdict(job)
+        payload["status"] = job.status.value
+        payload["status_url"] = f"/v1/analyze/project-package/jobs/{job.job_id}"
+        payload["report_url"] = f"/v1/reports/{job.report_id}" if job.report_id else None
+        return payload
+
     @app.post("/v1/validate/ifc")
     def validate_ifc(payload: Annotated[ValidateIfcRequest, Body()]) -> dict[str, object]:
         request_id = payload.request_id or uuid4().hex
@@ -189,44 +237,8 @@ def create_http_app(container: Container):
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
     ) -> dict[str, object]:
         try:
-            ifc_resolved = _resolve_safe_path(payload.ifc_path)
-            report = analyze_use_case.execute(
-                ValidationRequest(
-                    request_id=payload.request_id or uuid4().hex,
-                    ifc_path=ifc_resolved,
-                    requirement_source=_build_requirement_source(
-                        payload.requirement_text,
-                        payload.requirement_path,
-                        SourceKind.STRUCTURED_TEXT,
-                    ),
-                    ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
-                    technical_spec_source=_build_requirement_source(
-                        payload.technical_spec_text,
-                        payload.technical_spec_path,
-                        SourceKind.TECHNICAL_SPECIFICATION,
-                    )
-                    if payload.technical_spec_text or payload.technical_spec_path
-                    else None,
-                    calculation_source=_build_requirement_source(
-                        payload.calculation_text,
-                        payload.calculation_path,
-                        SourceKind.CALCULATION,
-                    )
-                    if payload.calculation_text or payload.calculation_path
-                    else None,
-                    drawing_sources=tuple(
-                        DrawingSource(
-                            text=drawing.text,
-                            path=_resolve_safe_path(drawing.path) if drawing.path else None,
-                            sheet_id=drawing.sheet_id,
-                            format=drawing.format,
-                        )
-                        for drawing in payload.drawings
-                    ),
-                    project_name=payload.project_name,
-                    discipline=payload.discipline,
-                )
-            )
+            request = _build_project_package_request(payload)
+            report = analyze_use_case.execute(request)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except ValueError as exc:
@@ -235,6 +247,33 @@ def create_http_app(container: Container):
             raise HTTPException(status_code=503, detail=str(exc)) from exc
 
         return asdict(report)
+
+    @app.post("/v1/analyze/project-package/submit", status_code=202)
+    def submit_analyze_project_package(
+        payload: Annotated[AnalyzeProjectPackageRequest, Body()],
+        background_tasks: BackgroundTasks,
+    ) -> dict[str, object]:
+        try:
+            request = _build_project_package_request(payload)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+        submit_job_use_case = container.resolve(Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE)
+        job_runner = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER)
+        job = submit_job_use_case.execute(request)
+        background_tasks.add_task(job_runner.run, job.job_id, request)
+        return _serialize_analyze_project_package_job(job)
+
+    @app.get("/v1/analyze/project-package/jobs/{job_id}")
+    def get_analyze_project_package_job(job_id: str) -> dict[str, object]:
+        _validate_job_id(job_id)
+        get_job_status_use_case = container.resolve(Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE)
+        job = get_job_status_use_case.execute(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail=f"Analyze project-package job {job_id} not found")
+        return _serialize_analyze_project_package_job(job)
 
     @app.get("/v1/reports")
     def list_reports(
