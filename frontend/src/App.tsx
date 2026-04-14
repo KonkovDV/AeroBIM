@@ -181,6 +181,7 @@ export default function App() {
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number>(0);
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [groupByProject, setGroupByProject] = useState(false);
   const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
   const [disciplineFilter, setDisciplineFilter] = useState(persistedFilters.discipline);
   const [statusFilter, setStatusFilter] = useState<"all" | "passed" | "failed">(persistedFilters.status);
@@ -290,6 +291,47 @@ export default function App() {
     );
   });
 
+  const groupedReports = filteredReports.reduce((groups, report) => {
+    const key = report.project_name?.trim() || "Unspecified project";
+    const existing = groups.get(key);
+    if (existing) {
+      existing.push(report);
+    } else {
+      groups.set(key, [report]);
+    }
+    return groups;
+  }, new Map<string, ReportSummaryEntry[]>());
+
+  const renderReportCard = (report: ReportSummaryEntry) => {
+    const isActive = report.report_id === selectedReportId;
+    return (
+      <button
+        key={report.report_id}
+        type="button"
+        className={`report-card ${isActive ? "active" : ""}`}
+        onClick={() => {
+          startTransition(() => {
+            setSelectedReportId(report.report_id);
+          });
+        }}
+      >
+        <div className="report-card-row">
+          <strong>{report.report_id.slice(0, 8)}</strong>
+          <span className={`status-pill ${report.passed ? "pass" : "fail"}`}>
+            {report.passed ? "Pass" : "Fail"}
+          </span>
+        </div>
+        <div className="report-card-meta">
+          {report.project_name && <span>{report.project_name}</span>}
+          {report.discipline && <span>{report.discipline}</span>}
+          <span>Request {report.request_id}</span>
+          <span>{report.issue_count} issues</span>
+        </div>
+        <span className="report-card-time">{formatTimestamp(report.created_at)}</span>
+      </button>
+    );
+  };
+
   const activeIssue =
     selectedReport && selectedReport.issues.length > 0
       ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
@@ -369,43 +411,35 @@ export default function App() {
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search loaded reports"
             />
+            <button
+              type="button"
+              className={`toolbar-button report-group-toggle ${groupByProject ? "active" : ""}`}
+              onClick={() => setGroupByProject((current) => !current)}
+            >
+              {groupByProject ? "Ungroup reports" : "Group by project"}
+            </button>
           </div>
 
           {reportsLoading ? (
             <div className="panel-empty">Loading reports…</div>
           ) : filteredReports.length === 0 ? (
             <div className="panel-empty">No persisted reports match the current query.</div>
+          ) : groupByProject ? (
+            <div className="report-groups">
+              {Array.from(groupedReports.entries()).map(([projectName, projectReports]) => (
+                <section key={projectName} className="report-group">
+                  <h3 className="report-group-title">
+                    {projectName} ({projectReports.length})
+                  </h3>
+                  <div className="report-list">
+                    {projectReports.map((report) => renderReportCard(report))}
+                  </div>
+                </section>
+              ))}
+            </div>
           ) : (
             <div className="report-list">
-              {filteredReports.map((report) => {
-                const isActive = report.report_id === selectedReportId;
-                return (
-                  <button
-                    key={report.report_id}
-                    type="button"
-                    className={`report-card ${isActive ? "active" : ""}`}
-                    onClick={() => {
-                      startTransition(() => {
-                        setSelectedReportId(report.report_id);
-                      });
-                    }}
-                  >
-                    <div className="report-card-row">
-                      <strong>{report.report_id.slice(0, 8)}</strong>
-                      <span className={`status-pill ${report.passed ? "pass" : "fail"}`}>
-                        {report.passed ? "Pass" : "Fail"}
-                      </span>
-                    </div>
-                    <div className="report-card-meta">
-                      {report.project_name && <span>{report.project_name}</span>}
-                      {report.discipline && <span>{report.discipline}</span>}
-                      <span>Request {report.request_id}</span>
-                      <span>{report.issue_count} issues</span>
-                    </div>
-                    <span className="report-card-time">{formatTimestamp(report.created_at)}</span>
-                  </button>
-                );
-              })}
+              {filteredReports.map((report) => renderReportCard(report))}
             </div>
           )}
         </section>

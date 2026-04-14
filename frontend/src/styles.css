@@ -179,6 +179,37 @@ input {
   width: min(220px, 100%);
 }
 
+.toolbar-button {
+  border: 1px solid rgba(24, 33, 46, 0.12);
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.report-group-toggle.active {
+  background: rgba(15, 118, 110, 0.16);
+  border-color: rgba(15, 118, 110, 0.5);
+}
+
+.report-groups {
+  display: grid;
+  gap: 12px;
+}
+
+.report-group {
+  padding: 12px;
+  border: 1px solid rgba(24, 33, 46, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.54);
+}
+
+.report-group-title {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
 .filter-select {
   appearance: none;
   cursor: pointer;
@@ -659,7 +690,8 @@ input {
 
   .filter-input,
   .filter-select,
-  .report-search-input {
+  .report-search-input,
+  .toolbar-button {
     width: 100%;
   }
 
