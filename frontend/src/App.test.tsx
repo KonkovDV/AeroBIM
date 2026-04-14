@@ -39,6 +39,7 @@ vi.mock("./components/IfcViewerPanel", () => ({
 }));
 
 import App from "./App";
+const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
 
 type MockReportSummary = {
   report_id: string;
@@ -188,6 +189,7 @@ function toReportSummary(report: ValidationReport): MockReportSummary {
 
 describe("App", () => {
   beforeEach(() => {
+    window.localStorage.clear();
     const report = buildReport();
     fetchReportsMock.mockReset();
     fetchReportMock.mockReset();
@@ -258,6 +260,26 @@ describe("App", () => {
       passed: true,
     });
     expect(await screen.findByText("Hospital beta issue")).toBeTruthy();
+  });
+
+  it("loads persisted report filters from localStorage on startup", async () => {
+    window.localStorage.setItem(
+      REPORT_FILTERS_STORAGE_KEY,
+      JSON.stringify({ project: "hospital", discipline: "mech", status: "passed" }),
+    );
+    fetchReportsMock.mockResolvedValue({ reports: [], count: 0 });
+
+    render(<App />);
+
+    expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
+    expect(fetchReportsMock).toHaveBeenCalledWith({
+      project: "hospital",
+      discipline: "mech",
+      passed: true,
+    });
+    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("hospital");
+    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("mech");
+    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
   });
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {

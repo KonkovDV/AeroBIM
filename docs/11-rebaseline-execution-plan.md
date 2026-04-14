@@ -147,6 +147,12 @@ Sixth tranche completed in the same session:
 - `.github/workflows/ci.yml` now includes a dedicated `benchmark-smoke` job;
 - CI now executes both canonical benchmark packs (`project-package-baseline` and `project-package-fire-compliance`) with deterministic single-iteration smoke settings.
 
+Seventh tranche completed in the same session:
+
+- frontend report filters are now persisted locally between browser sessions;
+- persisted filters are applied before the initial `/v1/reports` load on startup;
+- frontend regression coverage now includes startup behavior for persisted filters.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -190,4 +196,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. add at least one genuinely larger stress-oriented benchmark pack so the throughput rail spans both profile diversity and model size;
 2. evaluate promoting the one-command live review smoke rail into CI or release-readiness gates once browser/runtime bootstrap constraints are stable enough for non-flaky automation;
-3. consider richer operator workflows on top of the new frontend filters, such as saved filter presets or report-group views, only if real review volume justifies them.
+3. consider richer operator workflows on top of the new frontend filters, such as shareable presets or report-group views, only if real review volume justifies them.
