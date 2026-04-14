@@ -5,6 +5,7 @@ The frontend is now an active browser review surface for persisted AeroBIM repor
 Current scope:
 
 - report list with pass/fail and issue counts;
+- project/disciplines metadata on persisted report cards plus metadata-aware search;
 - report summary and export actions;
 - issue detail panel with provenance fields;
 - report-scoped IFC loading through the backend;

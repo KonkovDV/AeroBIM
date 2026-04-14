@@ -162,7 +162,9 @@ export default function App() {
     }
     return (
       report.report_id.toLowerCase().includes(normalizedQuery) ||
-      report.request_id.toLowerCase().includes(normalizedQuery)
+      report.request_id.toLowerCase().includes(normalizedQuery) ||
+      (report.project_name ?? "").toLowerCase().includes(normalizedQuery) ||
+      (report.discipline ?? "").toLowerCase().includes(normalizedQuery)
     );
   });
 
@@ -242,6 +244,8 @@ export default function App() {
                       </span>
                     </div>
                     <div className="report-card-meta">
+                      {report.project_name && <span>{report.project_name}</span>}
+                      {report.discipline && <span>{report.discipline}</span>}
                       <span>Request {report.request_id}</span>
                       <span>{report.issue_count} issues</span>
                     </div>

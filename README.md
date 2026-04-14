@@ -66,7 +66,7 @@ python -m aerobim.main
 | `GET` | `/health` | Readiness probe |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements + IDS |
 | `POST` | `/v1/analyze/project-package` | Multimodal validation (spec + calc + drawing + IDS + IFC) |
-| `GET` | `/v1/reports` | List persisted reports |
+| `GET` | `/v1/reports` | List persisted reports with optional `project`, `discipline`, and `passed` filters |
 | `GET` | `/v1/reports/{id}` | Get report by ID |
 | `GET` | `/v1/reports/{id}/source/ifc` | Download the report-scoped IFC source for browser viewing |
 | `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | Download a report-scoped drawing preview for 2D evidence overlays |
@@ -111,7 +111,7 @@ aerobim/
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog
-├── frontend/                # Browser review shell with 3D viewer + 2D evidence overlay rails
+├── frontend/                # Browser review shell with 3D viewer, 2D evidence overlay rails, and metadata-aware report index
 ├── ops/                     # Standalone runbooks, env matrix, smoke path
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
 ├── .github/workflows/       # CI pipeline (lint, typecheck, test)
