@@ -54,6 +54,9 @@ python -m aerobim.tools.seed_smoke_report
 # Or run the full live review smoke chain in one command
 python -m aerobim.tools.run_live_review_smoke
 
+# Or run the baseline throughput rail against the representative benchmark pack
+python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
+
 # Start server
 python -m aerobim.main
 # → http://127.0.0.1:8080/health
@@ -130,6 +133,7 @@ aerobim/
 - [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
 - [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
 - [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path
+- [Benchmark Packs](samples/benchmarks/README.md) — manifest-backed throughput rail for representative project-package fixtures
 
 ## Extraction From MicroPhoenix
 
