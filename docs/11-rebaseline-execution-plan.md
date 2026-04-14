@@ -118,6 +118,12 @@ Initial tranche completed in the same session:
 - `/v1/reports` now supports queryable `project`, `discipline`, and `passed` filters;
 - the frontend report index now displays project/disciplines metadata and includes those fields in the existing search flow.
 
+Second tranche completed in the same session:
+
+- `POST /v1/analyze/project-package/submit` now accepts same-process background jobs for larger packages;
+- `GET /v1/analyze/project-package/jobs/{job_id}` now exposes async status polling with `queued/running/succeeded/failed` states;
+- the first Wave 3 async runner stays intentionally in-memory and same-process, without introducing an external queue.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.

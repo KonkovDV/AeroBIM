@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.application.use_cases.analyze_project_package_jobs import (
+    AnalyzeProjectPackageJobRunner,
+    GetAnalyzeProjectPackageJobStatusUseCase,
+    SubmitAnalyzeProjectPackageJobUseCase,
+)
 from aerobim.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container, Lifecycle
@@ -13,6 +18,9 @@ from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAud
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
 from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store import (
+    InMemoryAnalyzeProjectPackageJobStore,
+)
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
@@ -78,6 +86,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE,
+        lambda _container: InMemoryAnalyzeProjectPackageJobStore(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE,
         lambda current: ValidateIfcAgainstIdsUseCase(
             requirement_extractor=current.resolve(Tokens.REQUIREMENT_EXTRACTOR),
@@ -100,6 +113,29 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             audit_report_store=current.resolve(Tokens.AUDIT_REPORT_STORE),
             tolerance=tolerance,
             clash_detector=current.resolve(Tokens.CLASH_DETECTOR),
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE,
+        lambda current: SubmitAnalyzeProjectPackageJobUseCase(
+            current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE,
+        lambda current: GetAnalyzeProjectPackageJobStatusUseCase(
+            current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER,
+        lambda current: AnalyzeProjectPackageJobRunner(
+            analyze_use_case=current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE),
+            job_store=current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE),
+            logger=current.resolve(Tokens.LOGGER),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
