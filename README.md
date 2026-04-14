@@ -122,7 +122,7 @@ aerobim/
 ├── frontend/                # Browser review shell with 3D viewer, 2D evidence overlay rails, and server-backed report filters
 ├── ops/                     # Standalone runbooks, env matrix, smoke path
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
-├── .github/workflows/       # CI pipeline (lint, typecheck, test)
+├── .github/workflows/       # CI pipeline (lint, typecheck, test, benchmark-smoke)
 └── LICENSE                  # MIT
 ```
 
@@ -137,6 +137,12 @@ aerobim/
 - [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
 - [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path
 - [Benchmark Packs](samples/benchmarks/README.md) — manifest-backed throughput rail for representative project-package fixtures
+
+## Release Readiness
+
+Use the manual GitHub Actions workflow `.github/workflows/release-readiness.yml` when preparing a release candidate.
+
+It runs benchmark rails by default and can optionally run the full live review smoke harness with browser artifacts.
 
 ## Extraction From MicroPhoenix
 
