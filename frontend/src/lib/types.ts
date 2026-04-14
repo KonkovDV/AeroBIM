@@ -4,6 +4,8 @@ export interface ReportSummaryEntry {
   created_at: string;
   passed: boolean;
   issue_count: number;
+  project_name?: string | null;
+  discipline?: string | null;
 }
 
 export interface ReportListResponse {
@@ -103,6 +105,8 @@ export interface ValidationReport {
   request_id: string;
   ifc_path: string;
   created_at: string;
+  project_name?: string | null;
+  discipline?: string | null;
   requirements: ParsedRequirement[];
   issues: ValidationIssue[];
   summary: ValidationSummary;

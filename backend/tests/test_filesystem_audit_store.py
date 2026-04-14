@@ -12,7 +12,11 @@ from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAud
 
 
 def _make_report(
-    report_id: str = "rpt-001", passed: bool = True, issue_count: int = 0
+    report_id: str = "rpt-001",
+    passed: bool = True,
+    issue_count: int = 0,
+    project_name: str | None = None,
+    discipline: str | None = None,
 ) -> ValidationReport:
     from aerobim.domain.models import ClashResult, ValidationSummary
 
@@ -21,6 +25,8 @@ def _make_report(
         request_id="req-001",
         ifc_path=Path("sample.ifc"),
         created_at="2026-04-09T12:00:00Z",
+        project_name=project_name,
+        discipline=discipline,
         requirements=(),
         issues=(),
         summary=ValidationSummary(
@@ -61,6 +67,25 @@ class FilesystemAuditStoreTests(unittest.TestCase):
             self.assertEqual(loaded.created_at, "2026-04-09T12:00:00Z")
             self.assertTrue(loaded.summary.passed)
 
+    def test_save_and_get_roundtrip_preserves_metadata(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemAuditStore(Path(tmp))
+            report = _make_report(
+                "rpt-metadata",
+                project_name="Residential Tower Alpha",
+                discipline="mechanical",
+            )
+
+            store.save(report)
+            loaded = store.get("rpt-metadata")
+
+            self.assertIsNotNone(loaded)
+            assert loaded is not None
+            self.assertEqual(loaded.project_name, "Residential Tower Alpha")
+            self.assertEqual(loaded.discipline, "mechanical")
+
     def test_get_nonexistent_returns_none(self) -> None:
         import tempfile
 
@@ -84,6 +109,24 @@ class FilesystemAuditStoreTests(unittest.TestCase):
             failed_entry = next(e for e in entries if e.report_id == "rpt-b")
             self.assertFalse(failed_entry.passed)
             self.assertEqual(failed_entry.issue_count, 3)
+
+    def test_list_reports_returns_metadata_in_summaries(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemAuditStore(Path(tmp))
+            store.save(
+                _make_report(
+                    "rpt-meta-summary",
+                    project_name="Residential Tower Alpha",
+                    discipline="architecture",
+                )
+            )
+
+            entries = store.list_reports()
+            self.assertEqual(len(entries), 1)
+            self.assertEqual(entries[0].project_name, "Residential Tower Alpha")
+            self.assertEqual(entries[0].discipline, "architecture")
 
     def test_atomic_write_produces_json_file(self) -> None:
         import tempfile

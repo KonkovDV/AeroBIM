@@ -108,6 +108,16 @@ Increase evidence quality without replacing typed contracts.
 
 ## Wave 3 — Operational Scale
 
+### Status
+
+Started on 2026-04-14.
+
+Initial tranche completed in the same session:
+
+- persisted reports now carry `project_name` and `discipline` metadata;
+- `/v1/reports` now supports queryable `project`, `discipline`, and `passed` filters;
+- the frontend report index now displays project/disciplines metadata and includes those fields in the existing search flow.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.

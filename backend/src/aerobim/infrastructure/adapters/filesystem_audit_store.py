@@ -57,6 +57,8 @@ class FilesystemAuditStore:
             drawing_annotations=report.drawing_annotations,
             drawing_assets=drawing_assets,
             clash_results=report.clash_results,
+            project_name=report.project_name,
+            discipline=report.discipline,
         )
 
     def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
@@ -181,6 +183,8 @@ class FilesystemAuditStore:
                         created_at=data["created_at"],
                         passed=summary.get("passed", False),
                         issue_count=summary.get("issue_count", 0),
+                        project_name=data.get("project_name"),
+                        discipline=data.get("discipline"),
                     )
                 )
             except (json.JSONDecodeError, KeyError):
@@ -207,6 +211,8 @@ class FilesystemAuditStore:
             clash_results=tuple(
                 self._reconstruct_clash_result(c) for c in data.get("clash_results", [])
             ),
+            project_name=data.get("project_name"),
+            discipline=data.get("discipline"),
         )
 
     def _reconstruct_requirement(self, data: dict) -> ParsedRequirement:

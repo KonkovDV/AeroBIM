@@ -22,6 +22,8 @@ class ValidateIfcRequest(BaseModel):
     requirement_text: str = Field(default="", max_length=50_000)
     requirement_path: str | None = None
     ids_path: str | None = None
+    project_name: str | None = None
+    discipline: str | None = None
 
 
 class DrawingPayload(BaseModel):
@@ -42,6 +44,8 @@ class AnalyzeProjectPackageRequest(BaseModel):
     calculation_text: str = Field(default="", max_length=50_000)
     calculation_path: str | None = None
     drawings: list[DrawingPayload] = Field(default_factory=list)
+    project_name: str | None = None
+    discipline: str | None = None
 
 
 def create_http_app(container: Container):
@@ -157,6 +161,8 @@ def create_http_app(container: Container):
                         SourceKind.STRUCTURED_TEXT,
                     ),
                     ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
+                    project_name=payload.project_name,
+                    discipline=payload.discipline,
                 )
             )
         except FileNotFoundError as exc:
@@ -217,6 +223,8 @@ def create_http_app(container: Container):
                         )
                         for drawing in payload.drawings
                     ),
+                    project_name=payload.project_name,
+                    discipline=payload.discipline,
                 )
             )
         except FileNotFoundError as exc:
@@ -229,8 +237,28 @@ def create_http_app(container: Container):
         return asdict(report)
 
     @app.get("/v1/reports")
-    def list_reports() -> dict[str, object]:
+    def list_reports(
+        project: str | None = None,
+        discipline: str | None = None,
+        passed: bool | None = None,
+    ) -> dict[str, object]:
         entries = audit_store.list_reports()
+        if project:
+            normalized_project = project.strip().lower()
+            entries = [
+                entry
+                for entry in entries
+                if normalized_project in (entry.project_name or "").lower()
+            ]
+        if discipline:
+            normalized_discipline = discipline.strip().lower()
+            entries = [
+                entry
+                for entry in entries
+                if normalized_discipline in (entry.discipline or "").lower()
+            ]
+        if passed is not None:
+            entries = [entry for entry in entries if entry.passed is passed]
         return {"reports": [asdict(e) for e in entries], "count": len(entries)}
 
     @app.get("/v1/reports/{report_id}")

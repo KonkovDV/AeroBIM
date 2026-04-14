@@ -191,6 +191,39 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         self.assertTrue(all(issue.remark is not None for issue in report.issues))
         self.assertEqual(store.saved_report_id, report.report_id)
 
+    def test_execute_copies_project_metadata_into_report(self) -> None:
+        store = FakeStore()
+        use_case = AnalyzeProjectPackageUseCase(
+            requirement_extractor=FakeExtractor(),
+            narrative_rule_synthesizer=FakeSynthesizer(),
+            drawing_analyzer=FakeDrawingAnalyzer(),
+            ifc_validator=FakeValidator(),
+            remark_generator=TemplateRemarkGenerator(),
+            audit_report_store=store,
+        )
+
+        report = use_case.execute(
+            ValidationRequest(
+                request_id="req-metadata",
+                ifc_path=Path("sample.ifc"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
+                technical_spec_source=RequirementSource(
+                    text="Лист A-101: толщина WALL-01 не менее 200 мм",
+                    source_kind=SourceKind.TECHNICAL_SPECIFICATION,
+                ),
+                project_name="Residential Tower Alpha",
+                discipline="structure",
+            )
+        )
+
+        self.assertEqual(report.project_name, "Residential Tower Alpha")
+        self.assertEqual(report.discipline, "structure")
+        assert store.report is not None
+        self.assertEqual(store.report.project_name, "Residential Tower Alpha")
+        self.assertEqual(store.report.discipline, "structure")
+
     def test_execute_merges_ids_issues_into_multimodal_report(self) -> None:
         store = FakeStore()
         use_case = AnalyzeProjectPackageUseCase(
