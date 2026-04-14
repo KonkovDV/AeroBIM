@@ -67,10 +67,18 @@ class NoOpValidator:
 class FakeStore:
     def __init__(self) -> None:
         self.saved_report_id: str | None = None
+        self._reports: dict[str, ValidationReport] = {}
 
     def save(self, report: ValidationReport) -> str:
         self.saved_report_id = report.report_id
+        self._reports[report.report_id] = report
         return report.report_id
+
+    def get(self, report_id: str) -> ValidationReport | None:
+        return self._reports.get(report_id)
+
+    def list_reports(self) -> list:
+        return []
 
 
 class CrossDocumentContradictionTests(unittest.TestCase):
