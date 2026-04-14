@@ -674,5 +674,211 @@ class ApiAnalyzeProjectPackageIdsTests(unittest.TestCase):
         self.assertEqual(self.analyze_use_case.last_request.ifc_path.name, "model.ifc")
 
 
+def _make_async_job_test_client(analyze_use_case):
+    from fastapi.testclient import TestClient
+
+    import tempfile
+
+    from aerobim.application.use_cases.analyze_project_package_jobs import (
+        AnalyzeProjectPackageJobRunner,
+        GetAnalyzeProjectPackageJobStatusUseCase,
+        SubmitAnalyzeProjectPackageJobUseCase,
+    )
+    from aerobim.core.config.settings import Settings
+    from aerobim.core.di.container import Container, Lifecycle
+    from aerobim.core.di.tokens import Tokens
+    from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store import (
+        InMemoryAnalyzeProjectPackageJobStore,
+    )
+    from aerobim.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
+    from aerobim.presentation.http.api import create_http_app
+
+    class _NoOpValidateUseCase:
+        def execute(self, _request):
+            return ValidationReport(
+                report_id="0" * 32,
+                request_id="noop",
+                ifc_path=Path("noop.ifc"),
+                created_at="2026-04-11T00:00:00+00:00",
+                requirements=(),
+                issues=(),
+                summary=ValidationSummary(
+                    requirement_count=0,
+                    issue_count=0,
+                    error_count=0,
+                    warning_count=0,
+                    passed=True,
+                ),
+            )
+
+    temp_dir = tempfile.TemporaryDirectory()
+    settings = Settings(
+        application_name="test",
+        environment="test",
+        host="127.0.0.1",
+        port=8080,
+        storage_dir=Path(temp_dir.name),
+        debug=True,
+        cors_origins=_TEST_CORS_ORIGINS,
+    )
+    settings.storage_dir.mkdir(parents=True, exist_ok=True)
+
+    audit_store = InMemoryAuditStore()
+    job_store = InMemoryAnalyzeProjectPackageJobStore()
+    container = Container()
+    container.register(Tokens.SETTINGS, lambda _: settings)
+    container.register(Tokens.LOGGER, lambda _: _NullLogger(), lifecycle=Lifecycle.SINGLETON)
+    container.register(Tokens.AUDIT_REPORT_STORE, lambda _: audit_store, lifecycle=Lifecycle.SINGLETON)
+    container.register(
+        Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE,
+        lambda _: _NoOpValidateUseCase(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE,
+        lambda _: analyze_use_case,
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE,
+        lambda _: job_store,
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE,
+        lambda current: SubmitAnalyzeProjectPackageJobUseCase(
+            current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE,
+        lambda current: GetAnalyzeProjectPackageJobStatusUseCase(
+            current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER,
+        lambda current: AnalyzeProjectPackageJobRunner(
+            analyze_use_case=current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE),
+            job_store=current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE),
+            logger=current.resolve(Tokens.LOGGER),
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+
+    app = create_http_app(container)
+    client = TestClient(app)
+    return client, temp_dir
+
+
+class ApiAnalyzeProjectPackageJobTests(unittest.TestCase):
+    def test_submit_job_returns_202_and_status_endpoint_reports_success(self) -> None:
+        class _SucceedingAnalyzeUseCase:
+            def __init__(self) -> None:
+                self.last_request = None
+
+            def execute(self, request):
+                self.last_request = request
+                return ValidationReport(
+                    report_id="2" * 32,
+                    request_id=request.request_id,
+                    ifc_path=request.ifc_path,
+                    created_at="2026-04-14T12:00:00+00:00",
+                    project_name=request.project_name,
+                    discipline=request.discipline,
+                    requirements=(),
+                    issues=(),
+                    summary=ValidationSummary(
+                        requirement_count=0,
+                        issue_count=0,
+                        error_count=0,
+                        warning_count=0,
+                        passed=True,
+                    ),
+                )
+
+        analyze_use_case = _SucceedingAnalyzeUseCase()
+        client, temp_dir = _make_async_job_test_client(analyze_use_case)
+        self.addCleanup(temp_dir.cleanup)
+
+        response = client.post(
+            "/v1/analyze/project-package/submit",
+            json={
+                "ifc_path": "models/model.ifc",
+                "requirement_text": "REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "discipline": "architecture",
+            },
+        )
+
+        self.assertEqual(response.status_code, 202)
+        payload = response.json()
+        self.assertEqual(payload["request_id"], payload["request_id"])
+        self.assertIn("job_id", payload)
+        self.assertEqual(payload["status_url"], f"/v1/analyze/project-package/jobs/{payload['job_id']}")
+
+        status_response = client.get(payload["status_url"])
+        self.assertEqual(status_response.status_code, 200)
+        status_payload = status_response.json()
+        self.assertEqual(status_payload["status"], "succeeded")
+        self.assertEqual(status_payload["report_id"], "2" * 32)
+        self.assertEqual(status_payload["report_url"], f"/v1/reports/{'2' * 32}")
+        self.assertEqual(analyze_use_case.last_request.project_name, "Residential Tower Alpha")
+        self.assertEqual(analyze_use_case.last_request.discipline, "architecture")
+
+    def test_submit_job_surfaces_failed_status_when_background_run_raises(self) -> None:
+        class _FailingAnalyzeUseCase:
+            def execute(self, _request):
+                raise ValueError("No requirements were extracted or synthesized from the provided sources")
+
+        client, temp_dir = _make_async_job_test_client(_FailingAnalyzeUseCase())
+        self.addCleanup(temp_dir.cleanup)
+
+        response = client.post(
+            "/v1/analyze/project-package/submit",
+            json={
+                "ifc_path": "models/model.ifc",
+                "requirement_text": "REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+            },
+        )
+
+        self.assertEqual(response.status_code, 202)
+        status_response = client.get(response.json()["status_url"])
+        self.assertEqual(status_response.status_code, 200)
+        status_payload = status_response.json()
+        self.assertEqual(status_payload["status"], "failed")
+        self.assertIn("No requirements", status_payload["error_message"])
+        self.assertIsNone(status_payload["report_id"])
+
+    def test_get_unknown_async_job_returns_404(self) -> None:
+        class _SucceedingAnalyzeUseCase:
+            def execute(self, request):
+                return ValidationReport(
+                    report_id="2" * 32,
+                    request_id=request.request_id,
+                    ifc_path=request.ifc_path,
+                    created_at="2026-04-14T12:00:00+00:00",
+                    requirements=(),
+                    issues=(),
+                    summary=ValidationSummary(
+                        requirement_count=0,
+                        issue_count=0,
+                        error_count=0,
+                        warning_count=0,
+                        passed=True,
+                    ),
+                )
+
+        client, temp_dir = _make_async_job_test_client(_SucceedingAnalyzeUseCase())
+        self.addCleanup(temp_dir.cleanup)
+
+        response = client.get(f"/v1/analyze/project-package/jobs/{'f' * 32}")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("not found", response.json()["detail"].lower())
+
+
 if __name__ == "__main__":
     unittest.main()

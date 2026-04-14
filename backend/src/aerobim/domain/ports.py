@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Protocol
 
 from aerobim.domain.models import (
+    AnalyzeProjectPackageJob,
     ClashResult,
     DrawingAnnotation,
     DrawingSource,
@@ -72,6 +73,18 @@ class AuditReportStore(Protocol):
     def get(self, report_id: str) -> ValidationReport | None: ...
 
     def list_reports(self) -> list[ReportSummaryEntry]: ...
+
+
+class AnalyzeProjectPackageJobStore(Protocol):
+    def create(self, job: AnalyzeProjectPackageJob) -> str: ...
+
+    def get(self, job_id: str) -> AnalyzeProjectPackageJob | None: ...
+
+    def mark_running(self, job_id: str) -> AnalyzeProjectPackageJob | None: ...
+
+    def mark_succeeded(self, job_id: str, report_id: str) -> AnalyzeProjectPackageJob | None: ...
+
+    def mark_failed(self, job_id: str, error_message: str) -> AnalyzeProjectPackageJob | None: ...
 
 
 class ClashDetector(Protocol):
