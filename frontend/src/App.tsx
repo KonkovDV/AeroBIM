@@ -4,6 +4,42 @@ import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssu
 import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
+const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
+
+type PersistedReportFilters = {
+  project: string;
+  discipline: string;
+  status: "all" | "passed" | "failed";
+};
+
+function readPersistedReportFilters(): PersistedReportFilters {
+  if (typeof window === "undefined") {
+    return { project: "", discipline: "", status: "all" };
+  }
+
+  try {
+    const raw = window.localStorage.getItem(REPORT_FILTERS_STORAGE_KEY);
+    if (!raw) {
+      return { project: "", discipline: "", status: "all" };
+    }
+    const parsed = JSON.parse(raw) as Partial<PersistedReportFilters>;
+    return {
+      project: typeof parsed.project === "string" ? parsed.project : "",
+      discipline: typeof parsed.discipline === "string" ? parsed.discipline : "",
+      status: parsed.status === "passed" || parsed.status === "failed" ? parsed.status : "all",
+    };
+  } catch {
+    return { project: "", discipline: "", status: "all" };
+  }
+}
+
+function persistReportFilters(filters: PersistedReportFilters): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(REPORT_FILTERS_STORAGE_KEY, JSON.stringify(filters));
+}
 
 function ViewerPlaceholder({ message }: { message: string }) {
   return (
@@ -75,6 +111,7 @@ function buildViewerFocus(activeIssue: ValidationIssue | null, activeClash: Clas
 }
 
 export default function App() {
+  const persistedFilters = readPersistedReportFilters();
   const [reports, setReports] = useState<ReportSummaryEntry[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState<string | null>(null);
@@ -85,14 +122,22 @@ export default function App() {
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number>(0);
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
-  const [projectFilter, setProjectFilter] = useState("");
-  const [disciplineFilter, setDisciplineFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "passed" | "failed">("all");
+  const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
+  const [disciplineFilter, setDisciplineFilter] = useState(persistedFilters.discipline);
+  const [statusFilter, setStatusFilter] = useState<"all" | "passed" | "failed">(persistedFilters.status);
 
   const deferredSearch = useDeferredValue(search);
   const deferredProjectFilter = useDeferredValue(projectFilter);
   const deferredDisciplineFilter = useDeferredValue(disciplineFilter);
   const deferredStatusFilter = useDeferredValue(statusFilter);
+
+  useEffect(() => {
+    persistReportFilters({
+      project: projectFilter,
+      discipline: disciplineFilter,
+      status: statusFilter,
+    });
+  }, [projectFilter, disciplineFilter, statusFilter]);
 
   useEffect(() => {
     let cancelled = false;
