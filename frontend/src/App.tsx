@@ -85,22 +85,40 @@ export default function App() {
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number>(0);
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [projectFilter, setProjectFilter] = useState("");
+  const [disciplineFilter, setDisciplineFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "passed" | "failed">("all");
 
   const deferredSearch = useDeferredValue(search);
+  const deferredProjectFilter = useDeferredValue(projectFilter);
+  const deferredDisciplineFilter = useDeferredValue(disciplineFilter);
+  const deferredStatusFilter = useDeferredValue(statusFilter);
 
   useEffect(() => {
     let cancelled = false;
     setReportsLoading(true);
-    fetchReports()
+    fetchReports({
+      project: deferredProjectFilter.trim() || undefined,
+      discipline: deferredDisciplineFilter.trim() || undefined,
+      passed:
+        deferredStatusFilter === "passed"
+          ? true
+          : deferredStatusFilter === "failed"
+            ? false
+            : undefined,
+    })
       .then((response) => {
         if (cancelled) {
           return;
         }
         setReports(response.reports);
         setReportsError(null);
-        if (response.reports.length > 0) {
-          setSelectedReportId((current) => current ?? response.reports[0].report_id);
-        }
+        setSelectedReportId((current) => {
+          if (current && response.reports.some((report) => report.report_id === current)) {
+            return current;
+          }
+          return response.reports[0]?.report_id ?? null;
+        });
       })
       .catch((error: unknown) => {
         if (cancelled) {
@@ -117,7 +135,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [deferredProjectFilter, deferredDisciplineFilter, deferredStatusFilter]);
 
   useEffect(() => {
     if (selectedReportId === null) {
@@ -162,9 +180,7 @@ export default function App() {
     }
     return (
       report.report_id.toLowerCase().includes(normalizedQuery) ||
-      report.request_id.toLowerCase().includes(normalizedQuery) ||
-      (report.project_name ?? "").toLowerCase().includes(normalizedQuery) ||
-      (report.discipline ?? "").toLowerCase().includes(normalizedQuery)
+      report.request_id.toLowerCase().includes(normalizedQuery)
     );
   });
 
@@ -209,12 +225,43 @@ export default function App() {
               <p className="panel-kicker">Index</p>
               <h2>Report list</h2>
             </div>
+          </div>
+
+          <div className="report-toolbar">
+            <div className="report-filters" aria-label="Report list filters">
+              <input
+                className="search-input filter-input"
+                type="search"
+                aria-label="Project filter"
+                value={projectFilter}
+                onChange={(event) => setProjectFilter(event.target.value)}
+                placeholder="Filter by project"
+              />
+              <input
+                className="search-input filter-input"
+                type="search"
+                aria-label="Discipline filter"
+                value={disciplineFilter}
+                onChange={(event) => setDisciplineFilter(event.target.value)}
+                placeholder="Filter by discipline"
+              />
+              <select
+                className="search-input filter-select"
+                aria-label="Status filter"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value as "all" | "passed" | "failed")}
+              >
+                <option value="all">All statuses</option>
+                <option value="passed">Passed only</option>
+                <option value="failed">Failed only</option>
+              </select>
+            </div>
             <input
-              className="search-input"
+              className="search-input report-search-input"
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by report or request id"
+              placeholder="Search loaded reports"
             />
           </div>
 
