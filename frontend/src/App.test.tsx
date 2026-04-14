@@ -40,6 +40,16 @@ vi.mock("./components/IfcViewerPanel", () => ({
 
 import App from "./App";
 
+type MockReportSummary = {
+  report_id: string;
+  request_id: string;
+  created_at: string;
+  passed: boolean;
+  issue_count: number;
+  project_name?: string | null;
+  discipline?: string | null;
+};
+
 function buildDrawingAsset(overrides: Partial<DrawingAsset>): DrawingAsset {
   return {
     asset_id: overrides.asset_id ?? "drawing-001-page-001",
@@ -135,23 +145,54 @@ function buildReport(): ValidationReport {
   };
 }
 
+function buildSecondReport(): ValidationReport {
+  return {
+    ...buildReport(),
+    report_id: "b".repeat(32),
+    request_id: "req-002",
+    created_at: "2026-04-14T09:00:00Z",
+    project_name: "Hospital Beta",
+    discipline: "mechanical",
+    summary: {
+      requirement_count: 0,
+      issue_count: 1,
+      error_count: 0,
+      warning_count: 1,
+      passed: true,
+      drawing_annotation_count: 1,
+      generated_remark_count: 0,
+    },
+    issues: [
+      buildIssue({
+        rule_id: "DRAW-BETA-001",
+        severity: "warning",
+        message: "Hospital beta issue",
+        target_ref: "MECH-01",
+        element_guid: "guid-beta-1",
+      }),
+    ],
+  };
+}
+
+function toReportSummary(report: ValidationReport): MockReportSummary {
+  return {
+    report_id: report.report_id,
+    request_id: report.request_id,
+    created_at: report.created_at,
+    passed: report.summary.passed,
+    issue_count: report.summary.issue_count,
+    project_name: report.project_name,
+    discipline: report.discipline,
+  };
+}
+
 describe("App", () => {
   beforeEach(() => {
     const report = buildReport();
     fetchReportsMock.mockReset();
     fetchReportMock.mockReset();
     fetchReportsMock.mockResolvedValue({
-      reports: [
-        {
-          report_id: report.report_id,
-          request_id: report.request_id,
-          created_at: report.created_at,
-          passed: report.summary.passed,
-          issue_count: report.summary.issue_count,
-          project_name: report.project_name,
-          discipline: report.discipline,
-        },
-      ],
+      reports: [toReportSummary(report)],
       count: 1,
     });
     fetchReportMock.mockResolvedValue(report);
@@ -167,15 +208,56 @@ describe("App", () => {
     expect(within(viewer).getByText(/Single-element focus from the active issue GUID guid-issue-1/i)).toBeTruthy();
   });
 
-  it("searches the report index by project and discipline metadata", async () => {
+  it("searches the loaded report set by report and request id", async () => {
     render(<App />);
 
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "arch" } });
+    fireEvent.change(screen.getByPlaceholderText("Search loaded reports"), { target: { value: "req-001" } });
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
 
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "mechanical" } });
+    fireEvent.change(screen.getByPlaceholderText("Search loaded reports"), { target: { value: "req-999" } });
     expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
+  });
+
+  it("forwards project, discipline, and status filters to the backend list API", async () => {
+    const firstReport = buildReport();
+    const secondReport = buildSecondReport();
+    fetchReportsMock.mockImplementation(async (filters?: { project?: string; discipline?: string; passed?: boolean }) => {
+      let reports = [firstReport, secondReport].map(toReportSummary);
+
+      if (filters?.project) {
+        reports = reports.filter((report) => (report.project_name ?? "").toLowerCase().includes(filters.project!.toLowerCase()));
+      }
+      if (filters?.discipline) {
+        reports = reports.filter((report) => (report.discipline ?? "").toLowerCase().includes(filters.discipline!.toLowerCase()));
+      }
+      if (filters?.passed !== undefined) {
+        reports = reports.filter((report) => report.passed === filters.passed);
+      }
+
+      return { reports, count: reports.length };
+    });
+    fetchReportMock.mockImplementation(async (reportId: string) => {
+      return reportId === secondReport.report_id ? secondReport : firstReport;
+    });
+
+    render(<App />);
+
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    expect(screen.getByText("Hospital Beta")).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
+    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "mech" } });
+    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "passed" } });
+
+    expect(await screen.findByText("Hospital Beta")).toBeTruthy();
+    expect(screen.queryByText("Residential Tower Alpha")).toBeNull();
+    expect(fetchReportsMock).toHaveBeenLastCalledWith({
+      project: "hospital",
+      discipline: "mech",
+      passed: true,
+    });
+    expect(await screen.findByText("Hospital beta issue")).toBeTruthy();
   });
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {
