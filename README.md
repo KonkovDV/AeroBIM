@@ -57,6 +57,9 @@ python -m aerobim.tools.run_live_review_smoke
 # Or run the baseline throughput rail against the representative benchmark pack
 python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
 
+# Or run the second fire-compliance benchmark profile explicitly
+python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-fire-compliance.json --iterations 1 --warmup-iterations 0
+
 # Start server
 python -m aerobim.main
 # → http://127.0.0.1:8080/health

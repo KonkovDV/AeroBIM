@@ -1,0 +1,12 @@
+{
+  "pack_id": "project-package-fire-compliance",
+  "description": "Smaller fire-compliance benchmark pack over wall fire-rating fixtures for a second throughput profile.",
+  "project_name": "Fire Retrofit Gamma",
+  "discipline": "fire-safety",
+  "request": {
+    "ifc_path": "samples/ifc/wall-fire-rating-rei30.ifc",
+    "requirement_path": "samples/requirements/wall-basic.txt",
+    "ids_path": "samples/ids/wall-fire-rating.ids",
+    "technical_spec_path": "samples/specifications/room-area-spec.txt"
+  }
+}
