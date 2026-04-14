@@ -159,6 +159,12 @@ Current runtime-proof status:
 - the optional-adapter rail has now been executed in a `.[clash,docling]`-enabled backend environment;
 - the first real runtime proof for both extras is captured locally via `backend/tests/test_optional_adapter_integrations.py`.
 
+Current benchmark-proof status:
+
+- `backend/src/aerobim/tools/benchmark_project_package.py` now runs the real `AnalyzeProjectPackageUseCase` against a manifest-backed fixture pack;
+- `samples/benchmarks/project-package-baseline.json` is the first canonical throughput pack;
+- the benchmark rail emits machine-readable JSON so future packs can be compared without scraping logs.
+
 ### Frontend Code Lane
 
 Use when the browser review shell changes.
