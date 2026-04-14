@@ -82,6 +82,7 @@ From the parent VS Code workspace, the same path is exposed as the `process: smo
 2. validate `GET /health`;
 3. submit a validation request or use fixture-driven report generation;
 	for larger project packages, you can use `POST /v1/analyze/project-package/submit` and poll `GET /v1/analyze/project-package/jobs/{job_id}` until a `report_id` is present;
+3a. for a repeatable local throughput baseline, run `python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0` and inspect the emitted JSON timing summary;
 4. for deterministic runtime smoke, run `python -m aerobim.tools.seed_smoke_report` inside `backend/`;
 5. confirm `GET /v1/reports` returns the seeded persisted report summary;
 6. confirm `GET /v1/reports/{report_id}/source/ifc` returns the stored IFC source for that seeded report;
@@ -113,6 +114,16 @@ Checks:
 - `AEROBIM_STORAGE_DIR/reports` contains JSON files;
 - `GET /v1/reports` returns `count > 0`.
 - if the browser is running on `127.0.0.1:5173`, either keep backend debug defaults enabled or include that origin explicitly in `AEROBIM_CORS_ORIGINS`.
+
+### Benchmark rail fails before producing JSON output
+
+Symptom: `python -m aerobim.tools.benchmark_project_package` exits with a fixture-path or dependency error.
+
+Checks:
+
+- the referenced benchmark manifest exists under `samples/benchmarks/`;
+- all fixture paths inside the manifest still resolve under `samples/`;
+- the backend virtual environment includes the same extras needed by the selected pack.
 
 ### Export download returns 404
 

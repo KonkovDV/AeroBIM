@@ -124,6 +124,12 @@ Second tranche completed in the same session:
 - `GET /v1/analyze/project-package/jobs/{job_id}` now exposes async status polling with `queued/running/succeeded/failed` states;
 - the first Wave 3 async runner stays intentionally in-memory and same-process, without introducing an external queue.
 
+Third tranche completed in the same session:
+
+- `samples/benchmarks/project-package-baseline.json` now defines a representative benchmark pack for multimodal project-package validation;
+- `python -m aerobim.tools.benchmark_project_package` now executes the real `AnalyzeProjectPackageUseCase` over that pack and emits JSON timings plus throughput summary;
+- the first fixture-backed benchmark proof is now captured locally against the baseline pack.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -165,6 +171,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. extend optional-adapter proof from pass/fail runtime evidence to richer fixture diversity if multimodal behavior starts drifting across document classes;
-2. promote viewer-specific browser assertions from the now-proven live harness into a more automated browser rail once the stack bootstrap can be made stable enough for repeatable local or CI execution;
-3. if the new `process: smoke:live-review` task becomes part of release readiness, promote it from a workspace task into a first-class release rail or CI-compatible smoke stage.
+1. add at least one larger or discipline-diverse benchmark pack so throughput comparisons are not anchored to a single baseline fixture mix;
+2. promote benchmark and live-smoke rails from local runtime proofs into a repeatable CI or release-readiness stage when the stack bootstrap becomes stable enough;
+3. lift backend report-index filters into richer operator-facing frontend controls instead of keeping them backend-only plus client-side search.
