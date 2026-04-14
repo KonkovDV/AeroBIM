@@ -144,9 +144,8 @@ Fifth tranche completed in the same session:
 
 Sixth tranche completed in the same session:
 
-- `.github/workflows/release-readiness.yml` now promotes benchmark rails into a repeatable manual CI stage;
-- the same workflow can optionally run the full live review smoke harness and publish browser/runtime artifacts;
-- release-readiness evidence is now storable as GitHub Actions artifacts instead of local-only terminal output.
+- `.github/workflows/ci.yml` now includes a dedicated `benchmark-smoke` job;
+- CI now executes both canonical benchmark packs (`project-package-baseline` and `project-package-fire-compliance`) with deterministic single-iteration smoke settings.
 
 ### Goal
 
@@ -190,5 +189,5 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 ## Recommended Next Concrete Tranche
 
 1. add at least one genuinely larger stress-oriented benchmark pack so the throughput rail spans both profile diversity and model size;
-2. consider richer operator workflows on top of the new frontend filters, such as saved filter presets or report-group views, only if real review volume justifies them;
-3. introduce benchmark budget thresholds only after several release-readiness runs establish stable baselines.
+2. evaluate promoting the one-command live review smoke rail into CI or release-readiness gates once browser/runtime bootstrap constraints are stable enough for non-flaky automation;
+3. consider richer operator workflows on top of the new frontend filters, such as saved filter presets or report-group views, only if real review volume justifies them.
