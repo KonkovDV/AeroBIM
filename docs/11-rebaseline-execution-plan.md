@@ -130,6 +130,12 @@ Third tranche completed in the same session:
 - `python -m aerobim.tools.benchmark_project_package` now executes the real `AnalyzeProjectPackageUseCase` over that pack and emits JSON timings plus throughput summary;
 - the first fixture-backed benchmark proof is now captured locally against the baseline pack.
 
+Fourth tranche completed in the same session:
+
+- the frontend report index now exposes explicit `project`, `discipline`, and pass/fail controls instead of keeping those semantics backend-only;
+- `frontend/src/lib/api.ts` now forwards report filter query params to `/v1/reports`;
+- the report shell keeps local text search, but only within the already server-filtered result set.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -173,4 +179,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. add at least one larger or discipline-diverse benchmark pack so throughput comparisons are not anchored to a single baseline fixture mix;
 2. promote benchmark and live-smoke rails from local runtime proofs into a repeatable CI or release-readiness stage when the stack bootstrap becomes stable enough;
-3. lift backend report-index filters into richer operator-facing frontend controls instead of keeping them backend-only plus client-side search.
+3. consider richer operator workflows on top of the new frontend filters, such as saved filter presets or report-group views, only if real review volume justifies them.
