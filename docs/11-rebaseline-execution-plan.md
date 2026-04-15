@@ -201,6 +201,12 @@ Fifteenth tranche completed in the same session:
 - benchmark runs in CI now use explicit per-pack storage directories to reduce cross-pack state ambiguity;
 - baseline data collection for future threshold gates can now use stored CI artifacts instead of parsing console output.
 
+Sixteenth tranche completed in the same session:
+
+- report presets now support JSON export/import in the frontend toolbar for cross-browser transfer;
+- preset import merges by normalized preset name (update existing or append new) instead of blind duplication;
+- frontend regression coverage now includes preset JSON copy/import flow alongside existing preset lifecycle checks.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
