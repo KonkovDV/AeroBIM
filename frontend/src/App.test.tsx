@@ -40,6 +40,7 @@ vi.mock("./components/IfcViewerPanel", () => ({
 
 import App from "./App";
 const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
+const REPORT_FILTER_PRESETS_STORAGE_KEY = "aerobim-report-filter-presets-v1";
 
 type MockReportSummary = {
   report_id: string;
@@ -333,6 +334,43 @@ describe("App", () => {
     expect(window.location.search).toContain("project=tower");
     expect(window.location.search).toContain("discipline=arch");
     expect(window.location.search).toContain("status=failed");
+  });
+
+  it("loads, applies, saves, and removes filter presets", async () => {
+    window.localStorage.setItem(
+      REPORT_FILTER_PRESETS_STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: "preset-1",
+          name: "Hospital Passed",
+          filters: { project: "hospital", discipline: "mech", status: "passed" },
+        },
+      ]),
+    );
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Hospital Passed" }));
+
+    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("hospital");
+    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("mech");
+    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
+
+    fireEvent.change(screen.getByLabelText("Preset name"), { target: { value: "Tower Failed" } });
+    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "tower" } });
+    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "arch" } });
+    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "failed" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save preset" }));
+
+    expect(screen.getByRole("button", { name: "Tower Failed" })).toBeTruthy();
+    const savedPresetsRaw = window.localStorage.getItem(REPORT_FILTER_PRESETS_STORAGE_KEY);
+    expect(savedPresetsRaw).not.toBeNull();
+    const savedPresets = JSON.parse(savedPresetsRaw ?? "[]") as Array<{ name: string }>;
+    expect(savedPresets.some((preset) => preset.name === "Tower Failed")).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove preset Tower Failed" }));
+    expect(screen.queryByRole("button", { name: "Tower Failed" })).toBeNull();
   });
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {

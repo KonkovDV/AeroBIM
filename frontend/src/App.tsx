@@ -5,11 +5,18 @@ import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
+const REPORT_FILTER_PRESETS_STORAGE_KEY = "aerobim-report-filter-presets-v1";
 
 type PersistedReportFilters = {
   project: string;
   discipline: string;
   status: "all" | "passed" | "failed";
+};
+
+type ReportFilterPreset = {
+  id: string;
+  name: string;
+  filters: PersistedReportFilters;
 };
 
 function normalizeStatus(value: string | null | undefined): "all" | "passed" | "failed" {
@@ -71,6 +78,44 @@ function persistReportFilters(filters: PersistedReportFilters): void {
   }
 
   window.localStorage.setItem(REPORT_FILTERS_STORAGE_KEY, JSON.stringify(filters));
+}
+
+function readPersistedFilterPresets(): ReportFilterPreset[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(REPORT_FILTER_PRESETS_STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
+    const parsed = JSON.parse(raw) as Array<Partial<ReportFilterPreset>>;
+    return parsed
+      .filter((preset) => typeof preset.name === "string" && typeof preset.id === "string" && preset.filters)
+      .map((preset) => {
+        const filters = preset.filters as Partial<PersistedReportFilters>;
+        return {
+          id: preset.id as string,
+          name: preset.name as string,
+          filters: {
+            project: typeof filters.project === "string" ? filters.project : "",
+            discipline: typeof filters.discipline === "string" ? filters.discipline : "",
+            status: normalizeStatus(filters.status),
+          },
+        };
+      });
+  } catch {
+    return [];
+  }
+}
+
+function persistFilterPresets(presets: ReportFilterPreset[]): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(REPORT_FILTER_PRESETS_STORAGE_KEY, JSON.stringify(presets));
 }
 
 function syncReportFiltersToUrl(filters: PersistedReportFilters): void {
@@ -182,6 +227,8 @@ export default function App() {
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [groupByProject, setGroupByProject] = useState(false);
+  const [presetNameDraft, setPresetNameDraft] = useState("");
+  const [filterPresets, setFilterPresets] = useState<ReportFilterPreset[]>(readPersistedFilterPresets());
   const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
   const [disciplineFilter, setDisciplineFilter] = useState(persistedFilters.discipline);
   const [statusFilter, setStatusFilter] = useState<"all" | "passed" | "failed">(persistedFilters.status);
@@ -200,6 +247,10 @@ export default function App() {
     persistReportFilters(currentFilters);
     syncReportFiltersToUrl(currentFilters);
   }, [projectFilter, disciplineFilter, statusFilter]);
+
+  useEffect(() => {
+    persistFilterPresets(filterPresets);
+  }, [filterPresets]);
 
   useEffect(() => {
     let cancelled = false;
@@ -332,6 +383,52 @@ export default function App() {
     );
   };
 
+  const saveCurrentPreset = () => {
+    const name = presetNameDraft.trim();
+    if (!name) {
+      return;
+    }
+
+    const currentFilters: PersistedReportFilters = {
+      project: projectFilter,
+      discipline: disciplineFilter,
+      status: statusFilter,
+    };
+
+    setFilterPresets((current) => {
+      const existingIndex = current.findIndex((preset) => preset.name.toLowerCase() === name.toLowerCase());
+      if (existingIndex >= 0) {
+        const updated = [...current];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          name,
+          filters: currentFilters,
+        };
+        return updated;
+      }
+
+      return [
+        ...current,
+        {
+          id: `preset-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          name,
+          filters: currentFilters,
+        },
+      ];
+    });
+    setPresetNameDraft("");
+  };
+
+  const applyPreset = (preset: ReportFilterPreset) => {
+    setProjectFilter(preset.filters.project);
+    setDisciplineFilter(preset.filters.discipline);
+    setStatusFilter(preset.filters.status);
+  };
+
+  const removePreset = (presetId: string) => {
+    setFilterPresets((current) => current.filter((preset) => preset.id !== presetId));
+  };
+
   const activeIssue =
     selectedReport && selectedReport.issues.length > 0
       ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
@@ -418,6 +515,44 @@ export default function App() {
             >
               {groupByProject ? "Ungroup reports" : "Group by project"}
             </button>
+          </div>
+
+          <div className="report-presets" aria-label="Report filter presets">
+            <input
+              className="search-input preset-name-input"
+              type="text"
+              aria-label="Preset name"
+              value={presetNameDraft}
+              onChange={(event) => setPresetNameDraft(event.target.value)}
+              placeholder="Preset name"
+            />
+            <button
+              type="button"
+              className="toolbar-button"
+              onClick={saveCurrentPreset}
+              disabled={!presetNameDraft.trim()}
+            >
+              Save preset
+            </button>
+            {filterPresets.map((preset) => (
+              <div key={preset.id} className="preset-chip">
+                <button
+                  type="button"
+                  className="toolbar-button preset-apply"
+                  onClick={() => applyPreset(preset)}
+                >
+                  {preset.name}
+                </button>
+                <button
+                  type="button"
+                  className="toolbar-button preset-remove"
+                  aria-label={`Remove preset ${preset.name}`}
+                  onClick={() => removePreset(preset.id)}
+                >
+                  x
+                </button>
+              </div>
+            ))}
           </div>
 
           {reportsLoading ? (
