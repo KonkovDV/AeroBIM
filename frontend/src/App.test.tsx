@@ -8,6 +8,8 @@ const { fetchReportsMock, fetchReportMock } = vi.hoisted(() => ({
 }));
 
 const clipboardWriteTextMock = vi.fn();
+const createObjectURLMock = vi.fn();
+const revokeObjectURLMock = vi.fn();
 
 vi.mock("./lib/api", async () => {
   const actual = await vi.importActual<typeof import("./lib/api")>("./lib/api");
@@ -202,6 +204,17 @@ describe("App", () => {
     });
     clipboardWriteTextMock.mockReset();
     clipboardWriteTextMock.mockResolvedValue(undefined);
+    createObjectURLMock.mockReset();
+    createObjectURLMock.mockReturnValue("blob:mock-preset-json");
+    revokeObjectURLMock.mockReset();
+    Object.defineProperty(window.URL, "createObjectURL", {
+      configurable: true,
+      value: createObjectURLMock,
+    });
+    Object.defineProperty(window.URL, "revokeObjectURL", {
+      configurable: true,
+      value: revokeObjectURLMock,
+    });
     const report = buildReport();
     fetchReportsMock.mockReset();
     fetchReportMock.mockReset();
@@ -446,6 +459,51 @@ describe("App", () => {
     expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("tower");
     expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("arch");
     expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("failed");
+  });
+
+  it("downloads and imports presets through JSON file flow", async () => {
+    window.localStorage.setItem(
+      REPORT_FILTER_PRESETS_STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: "preset-1",
+          name: "Hospital Passed",
+          filters: { project: "hospital", discipline: "mech", status: "passed" },
+        },
+      ]),
+    );
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Download presets JSON" }));
+
+    expect(await screen.findByText("Preset JSON downloaded")).toBeTruthy();
+    expect(createObjectURLMock).toHaveBeenCalledTimes(1);
+    expect(revokeObjectURLMock).toHaveBeenCalledTimes(1);
+
+    const upload = screen.getByLabelText("Import presets file") as HTMLInputElement;
+    const file = new File(
+      [
+        JSON.stringify([
+          {
+            name: "Campus Passed",
+            filters: { project: "campus", discipline: "structure", status: "passed" },
+          },
+        ]),
+      ],
+      "presets.json",
+      { type: "application/json" },
+    );
+    fireEvent.change(upload, { target: { files: [file] } });
+
+    expect(await screen.findByText("Preset JSON imported")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Campus Passed" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Campus Passed" }));
+    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("campus");
+    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("structure");
+    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
   });
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {
