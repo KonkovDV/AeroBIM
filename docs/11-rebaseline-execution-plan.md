@@ -219,6 +219,12 @@ Eighteenth tranche completed in the same session:
 - benchmark summary is appended to the GitHub Actions job summary for quick operator review;
 - benchmark summary markdown is published with JSON artifacts to support threshold design.
 
+Nineteenth tranche completed in the same session:
+
+- release-readiness now includes a policy switch (`require_live_smoke_gate`) to enforce live-smoke execution when needed;
+- workflow runs now fail fast if gate policy is required but `run_live_smoke` is disabled;
+- operators can keep smoke optional by default while still enabling strict release-gate runs on demand.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -260,6 +266,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. evaluate when optional live smoke should become a required release gate after collecting enough stable CI runs;
+1. decide the policy boundary for flipping `require_live_smoke_gate` from optional to default based on stability evidence from several release-readiness runs;
 2. consider richer operator workflows on top of the new frontend filters, such as externally stored or role-scoped shared bookmarks, only if real review volume justifies them;
 3. introduce benchmark budget thresholds only after several CI benchmark-smoke summary snapshots establish stable pack-by-pack baselines.
