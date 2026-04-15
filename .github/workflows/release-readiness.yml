@@ -3,6 +3,14 @@ name: Release Readiness
 on:
   workflow_dispatch:
     inputs:
+      benchmark_iterations:
+        description: "Measured iterations per benchmark pack"
+        required: false
+        default: "1"
+      benchmark_warmup_iterations:
+        description: "Warmup iterations per benchmark pack"
+        required: false
+        default: "0"
       run_live_smoke:
         description: "Run the optional live review smoke job"
         required: true
@@ -30,18 +38,28 @@ jobs:
           mkdir -p ../artifacts/release-readiness
           python -m aerobim.tools.benchmark_project_package \
             --pack ../samples/benchmarks/project-package-baseline.json \
-            --iterations 1 \
-            --warmup-iterations 0 \
+            --iterations "${{ inputs.benchmark_iterations }}" \
+            --warmup-iterations "${{ inputs.benchmark_warmup_iterations }}" \
             --storage-dir ./var/reports-ci-benchmark-baseline \
             > ../artifacts/release-readiness/benchmark-baseline.json
       - name: Run fire-compliance benchmark pack
         run: |
           python -m aerobim.tools.benchmark_project_package \
             --pack ../samples/benchmarks/project-package-fire-compliance.json \
-            --iterations 1 \
-            --warmup-iterations 0 \
+            --iterations "${{ inputs.benchmark_iterations }}" \
+            --warmup-iterations "${{ inputs.benchmark_warmup_iterations }}" \
             --storage-dir ./var/reports-ci-benchmark-fire \
             > ../artifacts/release-readiness/benchmark-fire-compliance.json
+      - name: Run stress multisource benchmark pack
+        run: |
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-stress-multisource.json \
+            --iterations "${{ inputs.benchmark_iterations }}" \
+            --warmup-iterations "${{ inputs.benchmark_warmup_iterations }}" \
+            --storage-dir ./var/reports-ci-benchmark-stress \
+            > ../artifacts/release-readiness/benchmark-stress-multisource.json
+      - name: Verify benchmark helper tests
+        run: pytest tests/test_benchmark_project_package.py -v --tb=short
       - name: Upload benchmark artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -51,6 +69,7 @@ jobs:
   live-review-smoke:
     if: ${{ inputs.run_live_smoke }}
     runs-on: ubuntu-latest
+    needs: benchmark-rails
     defaults:
       run:
         working-directory: backend
