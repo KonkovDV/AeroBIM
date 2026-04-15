@@ -207,6 +207,12 @@ Sixteenth tranche completed in the same session:
 - preset import merges by normalized preset name (update existing or append new) instead of blind duplication;
 - frontend regression coverage now includes preset JSON copy/import flow alongside existing preset lifecycle checks.
 
+Seventeenth tranche completed in the same session:
+
+- report preset transfer now includes explicit file download/import controls in the frontend toolbar;
+- import flow now shares the same merge behavior for pasted JSON and uploaded files;
+- frontend regression coverage now includes the file-based preset transfer path.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
