@@ -14,6 +14,7 @@ type PersistedReportFilters = {
 };
 
 type ShareLinkState = "idle" | "copied" | "failed";
+type PresetTransferState = "idle" | "exported" | "imported" | "failed";
 
 type ReportFilterPreset = {
   id: string;
@@ -243,6 +244,8 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [groupByProject, setGroupByProject] = useState(false);
   const [shareLinkState, setShareLinkState] = useState<ShareLinkState>("idle");
+  const [presetTransferState, setPresetTransferState] = useState<PresetTransferState>("idle");
+  const [presetTransferDraft, setPresetTransferDraft] = useState("");
   const [presetNameDraft, setPresetNameDraft] = useState("");
   const [filterPresets, setFilterPresets] = useState<ReportFilterPreset[]>(readPersistedFilterPresets());
   const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
@@ -446,6 +449,91 @@ export default function App() {
     setFilterPresets((current) => current.filter((preset) => preset.id !== presetId));
   };
 
+  const copyPresetPayload = async () => {
+    if (typeof window === "undefined" || !window.navigator.clipboard) {
+      setPresetTransferState("failed");
+      return;
+    }
+
+    const payload = filterPresets.map((preset) => ({
+      name: preset.name,
+      filters: preset.filters,
+    }));
+
+    try {
+      await window.navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+      setPresetTransferState("exported");
+    } catch {
+      setPresetTransferState("failed");
+    }
+  };
+
+  const importPresetPayload = () => {
+    const raw = presetTransferDraft.trim();
+    if (!raw) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as Array<{
+        name?: unknown;
+        filters?: Partial<PersistedReportFilters>;
+      }>;
+
+      if (!Array.isArray(parsed)) {
+        throw new Error("Preset payload must be an array");
+      }
+
+      const normalized = parsed
+        .filter((entry) => typeof entry.name === "string" && entry.filters)
+        .map((entry) => {
+          const filters = entry.filters as Partial<PersistedReportFilters>;
+          return {
+            name: (entry.name as string).trim(),
+            filters: {
+              project: typeof filters.project === "string" ? filters.project : "",
+              discipline: typeof filters.discipline === "string" ? filters.discipline : "",
+              status: normalizeStatus(filters.status),
+            },
+          };
+        })
+        .filter((entry) => entry.name.length > 0);
+
+      if (normalized.length === 0) {
+        throw new Error("Preset payload has no valid entries");
+      }
+
+      setFilterPresets((current) => {
+        const merged = [...current];
+
+        normalized.forEach((incoming) => {
+          const existingIndex = merged.findIndex((preset) => preset.name.toLowerCase() === incoming.name.toLowerCase());
+          if (existingIndex >= 0) {
+            merged[existingIndex] = {
+              ...merged[existingIndex],
+              name: incoming.name,
+              filters: incoming.filters,
+            };
+            return;
+          }
+
+          merged.push({
+            id: `preset-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            name: incoming.name,
+            filters: incoming.filters,
+          });
+        });
+
+        return merged;
+      });
+
+      setPresetTransferDraft("");
+      setPresetTransferState("imported");
+    } catch {
+      setPresetTransferState("failed");
+    }
+  };
+
   const copyShareLink = async () => {
     if (typeof window === "undefined" || !window.navigator.clipboard) {
       setShareLinkState("failed");
@@ -586,6 +674,45 @@ export default function App() {
             >
               Save preset
             </button>
+            <button
+              type="button"
+              className="toolbar-button"
+              aria-label="Copy presets JSON"
+              onClick={() => {
+                void copyPresetPayload();
+              }}
+              disabled={filterPresets.length === 0}
+            >
+              Copy presets JSON
+            </button>
+            <textarea
+              className="preset-import-input"
+              aria-label="Preset import payload"
+              value={presetTransferDraft}
+              onChange={(event) => {
+                setPresetTransferDraft(event.target.value);
+                setPresetTransferState("idle");
+              }}
+              placeholder='Paste preset JSON (e.g. [{"name":"Hospital","filters":{...}}])'
+            />
+            <button
+              type="button"
+              className="toolbar-button"
+              aria-label="Import presets JSON"
+              onClick={importPresetPayload}
+              disabled={!presetTransferDraft.trim()}
+            >
+              Import presets JSON
+            </button>
+            {presetTransferState !== "idle" && (
+              <span className={`preset-transfer-status preset-transfer-status-${presetTransferState}`}>
+                {presetTransferState === "exported"
+                  ? "Preset JSON copied"
+                  : presetTransferState === "imported"
+                    ? "Preset JSON imported"
+                    : "Preset transfer failed"}
+              </span>
+            )}
             {filterPresets.map((preset) => (
               <div key={preset.id} className="preset-chip">
                 <button

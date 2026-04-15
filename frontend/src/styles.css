@@ -197,6 +197,39 @@ input {
   gap: 12px;
 }
 
+.report-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.preset-import-input {
+  min-width: min(100%, 440px);
+  min-height: 72px;
+  border: 1px solid rgba(24, 33, 46, 0.1);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.85);
+  resize: vertical;
+}
+
+.preset-transfer-status {
+  align-self: center;
+  font-size: 0.78rem;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.preset-transfer-status-exported,
+.preset-transfer-status-imported {
+  color: var(--pass);
+}
+
+.preset-transfer-status-failed {
+  color: var(--danger);
+}
+
 .report-group {
   padding: 12px;
   border: 1px solid rgba(24, 33, 46, 0.08);
@@ -707,6 +740,11 @@ input {
   .report-search-input,
   .toolbar-button {
     width: 100%;
+  }
+
+  .preset-import-input {
+    width: 100%;
+    min-width: 100%;
   }
 
   .share-link-status {
