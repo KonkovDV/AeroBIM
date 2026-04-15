@@ -147,6 +147,7 @@ Use the manual GitHub Actions workflow `.github/workflows/release-readiness.yml`
 
 It runs benchmark rails by default and can optionally run the full live review smoke harness with browser artifacts.
 The live-smoke path now installs Playwright and Chromium inside the workflow job so browser capture is reproducible in CI.
+Main CI benchmark-smoke runs now also emit a compact benchmark summary table in workflow output and artifacts.
 
 ## Extraction From MicroPhoenix
 

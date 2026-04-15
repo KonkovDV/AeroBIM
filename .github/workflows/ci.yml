@@ -88,8 +88,55 @@ jobs:
             --warmup-iterations 0 \
             --storage-dir ./var/reports-ci-smoke-stress \
             > ../artifacts/ci-benchmark-smoke/project-package-stress-multisource.json
+      - name: Build benchmark-smoke summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          artifact_dir = Path("../artifacts/ci-benchmark-smoke")
+          packs = [
+            "project-package-baseline.json",
+            "project-package-fire-compliance.json",
+            "project-package-stress-multisource.json",
+          ]
+
+          lines = [
+            "## Benchmark Smoke Summary",
+            "",
+            "| Pack | Avg ms | Reports/s | Issues | Requirements |",
+            "|---|---:|---:|---:|---:|",
+          ]
+
+          for pack_file in packs:
+            payload = json.loads((artifact_dir / pack_file).read_text(encoding="utf-8"))
+            summary = payload.get("summary", {})
+            measured = payload.get("measured_runs", [])
+            first_run = measured[0] if measured else {}
+            lines.append(
+              "| {pack} | {avg} | {rps} | {issues} | {requirements} |".format(
+                pack=payload.get("pack_id", pack_file),
+                avg=summary.get("avg_ms", "n/a"),
+                rps=summary.get("reports_per_second", "n/a"),
+                issues=first_run.get("issue_count", "n/a"),
+                requirements=first_run.get("requirement_count", "n/a"),
+              )
+            )
+
+          summary_markdown = "\n".join(lines) + "\n"
+          summary_path = artifact_dir / "benchmark-summary.md"
+          summary_path.write_text(summary_markdown, encoding="utf-8")
+
+          github_step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          if github_step_summary:
+            with open(github_step_summary, "a", encoding="utf-8") as handle:
+              handle.write(summary_markdown)
+          PY
       - name: Upload benchmark-smoke artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ci-benchmark-smoke-artifacts
-          path: artifacts/ci-benchmark-smoke/*.json
+          path: |
+            artifacts/ci-benchmark-smoke/*.json
+            artifacts/ci-benchmark-smoke/benchmark-summary.md
