@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClashResult, DrawingAsset, ValidationIssue, ValidationReport } from "./lib/types";
 
@@ -401,6 +401,53 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Tower Failed" })).toBeNull();
   });
 
+  it("exports and imports presets as JSON payload", async () => {
+    window.localStorage.setItem(
+      REPORT_FILTER_PRESETS_STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: "preset-1",
+          name: "Hospital Passed",
+          filters: { project: "hospital", discipline: "mech", status: "passed" },
+        },
+      ]),
+    );
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Copy presets JSON" }));
+
+    expect(await screen.findByText("Preset JSON copied")).toBeTruthy();
+    expect(clipboardWriteTextMock).toHaveBeenCalledTimes(1);
+    const exportedPayload = String(clipboardWriteTextMock.mock.calls[0][0]);
+    expect(exportedPayload).toContain("Hospital Passed");
+
+    fireEvent.change(screen.getByLabelText("Preset import payload"), {
+      target: {
+        value: JSON.stringify([
+          {
+            name: "Tower Failed",
+            filters: {
+              project: "tower",
+              discipline: "arch",
+              status: "failed",
+            },
+          },
+        ]),
+      },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Import presets JSON" }));
+
+    expect(await screen.findByText("Preset JSON imported")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Tower Failed" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Tower Failed" }));
+    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("tower");
+    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("arch");
+    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("failed");
+  });
+
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {
     const { container } = render(<App />);
 
@@ -419,7 +466,9 @@ describe("App", () => {
     const drawingEvidencePanel = container.querySelector(".drawing-evidence-panel") as HTMLElement;
     const activeIssueBlock = screen.getByText("Active issue").closest(".detail-block") as HTMLElement;
     expect(within(drawingEvidencePanel).getAllByText("A-102 · page 2").length).toBeGreaterThanOrEqual(2);
-    expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
+    await waitFor(() => {
+      expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
+    });
     expect(within(activeIssueBlock).getByText("WALL-01")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
