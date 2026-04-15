@@ -122,7 +122,7 @@ aerobim/
 ├── frontend/                # Browser review shell with 3D viewer, 2D evidence overlay rails, and server-backed report filters
 ├── ops/                     # Standalone runbooks, env matrix, smoke path
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
-├── .github/workflows/       # CI pipeline (lint, typecheck, test, benchmark-smoke)
+├── .github/workflows/       # CI pipeline (lint, typecheck, test, benchmark-smoke) + manual release-readiness gates
 └── LICENSE                  # MIT
 ```
 
