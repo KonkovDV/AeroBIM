@@ -60,6 +60,9 @@ python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterat
 # Or run the second fire-compliance benchmark profile explicitly
 python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-fire-compliance.json --iterations 1 --warmup-iterations 0
 
+# Or run the stress multisource benchmark profile explicitly
+python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-stress-multisource.json --iterations 1 --warmup-iterations 0
+
 # Start server
 python -m aerobim.main
 # → http://127.0.0.1:8080/health
@@ -115,7 +118,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 aerobim/
 ├── backend/                 # Python FastAPI backend (~1.9K LOC src, ~1.8K LOC tests)
 │   ├── src/aerobim/         # Source: core → domain → application → infrastructure → presentation
-│   ├── tests/               # 16 test modules (backend suite currently 134 tests)
+│   ├── tests/               # 23 test modules (backend suite currently 171 tests + optional skips)
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog

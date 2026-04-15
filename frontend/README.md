@@ -10,6 +10,7 @@ Current scope:
 - report filters are also reflected in URL query params for shareable deep links;
 - report index can be grouped by project for higher-volume triage;
 - report filters can be saved as reusable local presets;
+- report filter presets can be exported/imported as JSON payloads;
 - current filter state can be copied as a shareable link directly from the toolbar;
 - local report search within the already filtered result set;
 - report summary and export actions;
