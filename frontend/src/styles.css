@@ -215,6 +215,18 @@ input {
   resize: vertical;
 }
 
+.preset-file-upload {
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-file-upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .preset-transfer-status {
   align-self: center;
   font-size: 0.78rem;
