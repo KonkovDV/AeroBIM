@@ -165,6 +165,12 @@ Ninth tranche completed in the same session:
 - grouped mode preserves existing report selection and detail loading behavior;
 - frontend regression coverage now includes grouped-mode rendering and selection flow.
 
+Tenth tranche completed in the same session:
+
+- frontend report filters can now be saved as reusable local presets;
+- preset lifecycle is covered in regression tests (load, apply, save, remove);
+- presets compose cleanly with existing URL-sync and grouped-view behavior.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -208,4 +214,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. add at least one genuinely larger stress-oriented benchmark pack so the throughput rail spans both profile diversity and model size;
 2. evaluate promoting the one-command live review smoke rail into CI or release-readiness gates once browser/runtime bootstrap constraints are stable enough for non-flaky automation;
-3. consider richer operator workflows on top of the new frontend filters, such as saved presets or team-shared filter bookmarks, only if real review volume justifies them.
+3. consider richer operator workflows on top of the new frontend filters, such as team-shared filter bookmarks, only if real review volume justifies them.
