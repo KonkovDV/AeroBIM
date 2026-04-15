@@ -7,6 +7,8 @@ const { fetchReportsMock, fetchReportMock } = vi.hoisted(() => ({
   fetchReportMock: vi.fn(),
 }));
 
+const clipboardWriteTextMock = vi.fn();
+
 vi.mock("./lib/api", async () => {
   const actual = await vi.importActual<typeof import("./lib/api")>("./lib/api");
   return {
@@ -192,6 +194,14 @@ describe("App", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
     window.localStorage.clear();
+    Object.defineProperty(window.navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: clipboardWriteTextMock,
+      },
+    });
+    clipboardWriteTextMock.mockReset();
+    clipboardWriteTextMock.mockResolvedValue(undefined);
     const report = buildReport();
     fetchReportsMock.mockReset();
     fetchReportMock.mockReset();
@@ -334,6 +344,24 @@ describe("App", () => {
     expect(window.location.search).toContain("project=tower");
     expect(window.location.search).toContain("discipline=arch");
     expect(window.location.search).toContain("status=failed");
+  });
+
+  it("copies the current filter state as a share link", async () => {
+    render(<App />);
+
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
+    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "mech" } });
+    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "passed" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy share link" }));
+
+    expect(await screen.findByText("Link copied")).toBeTruthy();
+    expect(clipboardWriteTextMock).toHaveBeenCalledTimes(1);
+    const copiedLink = String(clipboardWriteTextMock.mock.calls[0][0]);
+    expect(copiedLink).toContain("project=hospital");
+    expect(copiedLink).toContain("discipline=mech");
+    expect(copiedLink).toContain("status=passed");
   });
 
   it("loads, applies, saves, and removes filter presets", async () => {
