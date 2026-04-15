@@ -13,6 +13,8 @@ type PersistedReportFilters = {
   status: "all" | "passed" | "failed";
 };
 
+type ShareLinkState = "idle" | "copied" | "failed";
+
 type ReportFilterPreset = {
   id: string;
   name: string;
@@ -118,12 +120,7 @@ function persistFilterPresets(presets: ReportFilterPreset[]): void {
   window.localStorage.setItem(REPORT_FILTER_PRESETS_STORAGE_KEY, JSON.stringify(presets));
 }
 
-function syncReportFiltersToUrl(filters: PersistedReportFilters): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  const url = new URL(window.location.href);
+function withReportFilters(url: URL, filters: PersistedReportFilters): URL {
   if (filters.project.trim()) {
     url.searchParams.set("project", filters.project.trim());
   } else {
@@ -142,7 +139,25 @@ function syncReportFiltersToUrl(filters: PersistedReportFilters): void {
     url.searchParams.delete("status");
   }
 
+  return url;
+}
+
+function syncReportFiltersToUrl(filters: PersistedReportFilters): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const url = withReportFilters(new URL(window.location.href), filters);
+
   window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+}
+
+function buildReportFilterShareLink(filters: PersistedReportFilters): string {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return withReportFilters(new URL(window.location.href), filters).toString();
 }
 
 function ViewerPlaceholder({ message }: { message: string }) {
@@ -227,6 +242,7 @@ export default function App() {
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [groupByProject, setGroupByProject] = useState(false);
+  const [shareLinkState, setShareLinkState] = useState<ShareLinkState>("idle");
   const [presetNameDraft, setPresetNameDraft] = useState("");
   const [filterPresets, setFilterPresets] = useState<ReportFilterPreset[]>(readPersistedFilterPresets());
   const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
@@ -246,6 +262,7 @@ export default function App() {
     };
     persistReportFilters(currentFilters);
     syncReportFiltersToUrl(currentFilters);
+    setShareLinkState("idle");
   }, [projectFilter, disciplineFilter, statusFilter]);
 
   useEffect(() => {
@@ -429,6 +446,26 @@ export default function App() {
     setFilterPresets((current) => current.filter((preset) => preset.id !== presetId));
   };
 
+  const copyShareLink = async () => {
+    if (typeof window === "undefined" || !window.navigator.clipboard) {
+      setShareLinkState("failed");
+      return;
+    }
+
+    const link = buildReportFilterShareLink({
+      project: projectFilter,
+      discipline: disciplineFilter,
+      status: statusFilter,
+    });
+
+    try {
+      await window.navigator.clipboard.writeText(link);
+      setShareLinkState("copied");
+    } catch {
+      setShareLinkState("failed");
+    }
+  };
+
   const activeIssue =
     selectedReport && selectedReport.issues.length > 0
       ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
@@ -515,6 +552,21 @@ export default function App() {
             >
               {groupByProject ? "Ungroup reports" : "Group by project"}
             </button>
+            <button
+              type="button"
+              className="toolbar-button"
+              aria-label="Copy share link"
+              onClick={() => {
+                void copyShareLink();
+              }}
+            >
+              Copy share link
+            </button>
+            {shareLinkState !== "idle" && (
+              <span className={`share-link-status share-link-status-${shareLinkState}`}>
+                {shareLinkState === "copied" ? "Link copied" : "Copy failed"}
+              </span>
+            )}
           </div>
 
           <div className="report-presets" aria-label="Report filter presets">

@@ -210,6 +210,20 @@ input {
   color: var(--muted);
 }
 
+.share-link-status {
+  align-self: center;
+  font-size: 0.78rem;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.share-link-status-copied {
+  color: var(--pass);
+}
+
+.share-link-status-failed {
+  color: var(--danger);
+}
+
 .filter-select {
   appearance: none;
   cursor: pointer;
@@ -693,6 +707,10 @@ input {
   .report-search-input,
   .toolbar-button {
     width: 100%;
+  }
+
+  .share-link-status {
+    align-self: flex-start;
   }
 
   .summary-grid,
