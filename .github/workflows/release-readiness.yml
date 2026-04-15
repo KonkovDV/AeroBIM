@@ -16,13 +16,30 @@ on:
         required: true
         type: boolean
         default: false
+      require_live_smoke_gate:
+        description: "Fail the workflow unless live smoke is enabled for this run"
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 jobs:
+  live-smoke-policy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate live-smoke gate policy
+        run: |
+          if [ "${{ inputs.require_live_smoke_gate }}" = "true" ] && [ "${{ inputs.run_live_smoke }}" != "true" ]; then
+            echo "Live-smoke gate is required, but run_live_smoke=false."
+            echo "Re-run workflow with run_live_smoke=true or disable require_live_smoke_gate."
+            exit 1
+          fi
+
   benchmark-rails:
     runs-on: ubuntu-latest
+    needs: live-smoke-policy-check
     defaults:
       run:
         working-directory: backend
