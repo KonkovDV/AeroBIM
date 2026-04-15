@@ -189,6 +189,12 @@ Thirteenth tranche completed in the same session:
 - CI now installs Chromium before running browser smoke capture;
 - optional live smoke gate is less environment-dependent and more reproducible.
 
+Fourteenth tranche completed in the same session:
+
+- `.github/workflows/release-readiness.yml` now executes all three benchmark packs (baseline, fire-compliance, stress-multisource);
+- benchmark iterations and warmups are now configurable via manual workflow inputs;
+- release-readiness now verifies benchmark helper tests and runs live smoke only after benchmark rails complete.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
