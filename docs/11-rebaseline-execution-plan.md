@@ -177,6 +177,18 @@ Eleventh tranche completed in the same session:
 - benchmark regression tests now load all three canonical benchmark manifests (baseline, fire-compliance, stress-multisource);
 - CI `benchmark-smoke` now executes all three packs with deterministic single-iteration settings.
 
+Twelfth tranche completed in the same session:
+
+- report toolbar now exposes a direct `Copy share link` action;
+- copied links include current `project`, `discipline`, and `status` filter state;
+- frontend regression coverage now includes clipboard share-link behavior for active filter state.
+
+Thirteenth tranche completed in the same session:
+
+- release-readiness live smoke job now bootstraps Playwright runtime explicitly;
+- CI now installs Chromium before running browser smoke capture;
+- optional live smoke gate is less environment-dependent and more reproducible.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -218,6 +230,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. evaluate promoting the one-command live review smoke rail into CI or release-readiness gates once browser/runtime bootstrap constraints are stable enough for non-flaky automation;
-2. consider richer operator workflows on top of the new frontend filters, such as team-shared filter bookmarks, only if real review volume justifies them;
+1. evaluate when optional live smoke should become a required release gate after collecting enough stable CI runs;
+2. consider richer operator workflows on top of the new frontend filters, such as externally stored or role-scoped shared bookmarks, only if real review volume justifies them;
 3. introduce benchmark budget thresholds only after several CI benchmark-smoke runs establish stable pack-by-pack baselines.
