@@ -66,3 +66,5 @@ jobs:
         run: python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
       - name: Run fire-compliance benchmark pack
         run: python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-fire-compliance.json --iterations 1 --warmup-iterations 0
+      - name: Run stress multisource benchmark pack
+        run: python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-stress-multisource.json --iterations 1 --warmup-iterations 0
