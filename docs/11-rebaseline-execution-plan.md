@@ -195,6 +195,12 @@ Fourteenth tranche completed in the same session:
 - benchmark iterations and warmups are now configurable via manual workflow inputs;
 - release-readiness now verifies benchmark helper tests and runs live smoke only after benchmark rails complete.
 
+Fifteenth tranche completed in the same session:
+
+- CI `benchmark-smoke` now persists JSON outputs for all three benchmark packs as workflow artifacts;
+- benchmark runs in CI now use explicit per-pack storage directories to reduce cross-pack state ambiguity;
+- baseline data collection for future threshold gates can now use stored CI artifacts instead of parsing console output.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -238,4 +244,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. evaluate when optional live smoke should become a required release gate after collecting enough stable CI runs;
 2. consider richer operator workflows on top of the new frontend filters, such as externally stored or role-scoped shared bookmarks, only if real review volume justifies them;
-3. introduce benchmark budget thresholds only after several CI benchmark-smoke runs establish stable pack-by-pack baselines.
+3. introduce benchmark budget thresholds only after several CI benchmark-smoke artifact snapshots establish stable pack-by-pack baselines.
