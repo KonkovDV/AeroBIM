@@ -1,0 +1,25 @@
+{
+  "pack_id": "project-package-stress-multisource",
+  "description": "Stress-oriented multimodal benchmark pack with expanded rule set and dual drawing sources.",
+  "project_name": "Stress Tower Delta",
+  "discipline": "architecture-structure",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "requirement_path": "samples/requirements/multimodal-stress-rules.txt",
+    "ids_path": "samples/ids/walls-multi-entity.ids",
+    "technical_spec_path": "samples/specifications/tz-area-fire.txt",
+    "calculation_path": "samples/calculations/area-requirement.txt",
+    "drawings": [
+      {
+        "path": "samples/drawings/room-thickness-annotations.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      },
+      {
+        "path": "samples/drawings/wall-thickness.json",
+        "sheet_id": "A-201",
+        "format": "json"
+      }
+    ]
+  }
+}

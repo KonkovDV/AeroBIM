@@ -171,6 +171,12 @@ Tenth tranche completed in the same session:
 - preset lifecycle is covered in regression tests (load, apply, save, remove);
 - presets compose cleanly with existing URL-sync and grouped-view behavior.
 
+Eleventh tranche completed in the same session:
+
+- `samples/benchmarks/project-package-stress-multisource.json` now adds a genuinely heavier multimodal stress profile with expanded requirements and dual drawing sources;
+- benchmark regression tests now load all three canonical benchmark manifests (baseline, fire-compliance, stress-multisource);
+- CI `benchmark-smoke` now executes all three packs with deterministic single-iteration settings.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -212,6 +218,6 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 ## Recommended Next Concrete Tranche
 
-1. add at least one genuinely larger stress-oriented benchmark pack so the throughput rail spans both profile diversity and model size;
-2. evaluate promoting the one-command live review smoke rail into CI or release-readiness gates once browser/runtime bootstrap constraints are stable enough for non-flaky automation;
-3. consider richer operator workflows on top of the new frontend filters, such as team-shared filter bookmarks, only if real review volume justifies them.
+1. evaluate promoting the one-command live review smoke rail into CI or release-readiness gates once browser/runtime bootstrap constraints are stable enough for non-flaky automation;
+2. consider richer operator workflows on top of the new frontend filters, such as team-shared filter bookmarks, only if real review volume justifies them;
+3. introduce benchmark budget thresholds only after several CI benchmark-smoke runs establish stable pack-by-pack baselines.

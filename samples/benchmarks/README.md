@@ -8,6 +8,7 @@ Current packs:
 
 - `project-package-baseline.json` — multimodal baseline pack with IFC, IDS, narrative, calculation, and drawing inputs.
 - `project-package-fire-compliance.json` — smaller fire-compliance profile for a second throughput comparison point.
+- `project-package-stress-multisource.json` — stress-oriented profile with expanded requirement set plus dual drawing sources.
 
 Run the current baseline rail from `backend/`:
 
@@ -19,4 +20,10 @@ Run the alternate pack explicitly:
 
 ```bash
 python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-fire-compliance.json
+```
+
+Run the stress multisource pack:
+
+```bash
+python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-stress-multisource.json
 ```
