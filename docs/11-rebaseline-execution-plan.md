@@ -213,6 +213,12 @@ Seventeenth tranche completed in the same session:
 - import flow now shares the same merge behavior for pasted JSON and uploaded files;
 - frontend regression coverage now includes the file-based preset transfer path.
 
+Eighteenth tranche completed in the same session:
+
+- CI `benchmark-smoke` now generates a markdown summary table from per-pack JSON outputs;
+- benchmark summary is appended to the GitHub Actions job summary for quick operator review;
+- benchmark summary markdown is published with JSON artifacts to support threshold design.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -256,4 +262,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. evaluate when optional live smoke should become a required release gate after collecting enough stable CI runs;
 2. consider richer operator workflows on top of the new frontend filters, such as externally stored or role-scoped shared bookmarks, only if real review volume justifies them;
-3. introduce benchmark budget thresholds only after several CI benchmark-smoke artifact snapshots establish stable pack-by-pack baselines.
+3. introduce benchmark budget thresholds only after several CI benchmark-smoke summary snapshots establish stable pack-by-pack baselines.
