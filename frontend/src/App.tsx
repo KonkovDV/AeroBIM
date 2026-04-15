@@ -14,7 +14,7 @@ type PersistedReportFilters = {
 };
 
 type ShareLinkState = "idle" | "copied" | "failed";
-type PresetTransferState = "idle" | "exported" | "imported" | "failed";
+type PresetTransferState = "idle" | "exported" | "downloaded" | "imported" | "failed";
 
 type ReportFilterPreset = {
   id: string;
@@ -449,29 +449,10 @@ export default function App() {
     setFilterPresets((current) => current.filter((preset) => preset.id !== presetId));
   };
 
-  const copyPresetPayload = async () => {
-    if (typeof window === "undefined" || !window.navigator.clipboard) {
-      setPresetTransferState("failed");
-      return;
-    }
-
-    const payload = filterPresets.map((preset) => ({
-      name: preset.name,
-      filters: preset.filters,
-    }));
-
-    try {
-      await window.navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      setPresetTransferState("exported");
-    } catch {
-      setPresetTransferState("failed");
-    }
-  };
-
-  const importPresetPayload = () => {
-    const raw = presetTransferDraft.trim();
+  const mergePresetPayload = (rawPayload: string): boolean => {
+    const raw = rawPayload.trim();
     if (!raw) {
-      return;
+      return false;
     }
 
     try {
@@ -527,10 +508,93 @@ export default function App() {
         return merged;
       });
 
-      setPresetTransferDraft("");
-      setPresetTransferState("imported");
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const copyPresetPayload = async () => {
+    if (typeof window === "undefined" || !window.navigator.clipboard) {
+      setPresetTransferState("failed");
+      return;
+    }
+
+    const payload = filterPresets.map((preset) => ({
+      name: preset.name,
+      filters: preset.filters,
+    }));
+
+    try {
+      await window.navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+      setPresetTransferState("exported");
     } catch {
       setPresetTransferState("failed");
+    }
+  };
+
+  const downloadPresetPayload = () => {
+    if (typeof window === "undefined" || filterPresets.length === 0) {
+      setPresetTransferState("failed");
+      return;
+    }
+
+    try {
+      const payload = filterPresets.map((preset) => ({
+        name: preset.name,
+        filters: preset.filters,
+      }));
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json",
+      });
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = "aerobim-report-filter-presets.json";
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(objectUrl);
+      setPresetTransferState("downloaded");
+    } catch {
+      setPresetTransferState("failed");
+    }
+  };
+
+  const importPresetPayload = () => {
+    if (!presetTransferDraft.trim()) {
+      return;
+    }
+
+    const imported = mergePresetPayload(presetTransferDraft);
+    if (imported) {
+      setPresetTransferDraft("");
+      setPresetTransferState("imported");
+      return;
+    }
+
+    setPresetTransferState("failed");
+  };
+
+  const importPresetFile = async (event: { target: HTMLInputElement }) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      const raw = await file.text();
+      setPresetTransferDraft(raw);
+      const imported = mergePresetPayload(raw);
+      if (imported) {
+        setPresetTransferState("imported");
+      } else {
+        setPresetTransferState("failed");
+      }
+    } catch {
+      setPresetTransferState("failed");
+    } finally {
+      event.target.value = "";
     }
   };
 
@@ -685,6 +749,26 @@ export default function App() {
             >
               Copy presets JSON
             </button>
+            <button
+              type="button"
+              className="toolbar-button"
+              aria-label="Download presets JSON"
+              onClick={downloadPresetPayload}
+              disabled={filterPresets.length === 0}
+            >
+              Download presets JSON
+            </button>
+            <label className="toolbar-button preset-file-upload" aria-label="Import presets file label">
+              Import presets file
+              <input
+                type="file"
+                accept=".json,application/json"
+                aria-label="Import presets file"
+                onChange={(event) => {
+                  void importPresetFile(event);
+                }}
+              />
+            </label>
             <textarea
               className="preset-import-input"
               aria-label="Preset import payload"
@@ -708,6 +792,8 @@ export default function App() {
               <span className={`preset-transfer-status preset-transfer-status-${presetTransferState}`}>
                 {presetTransferState === "exported"
                   ? "Preset JSON copied"
+                  : presetTransferState === "downloaded"
+                    ? "Preset JSON downloaded"
                   : presetTransferState === "imported"
                     ? "Preset JSON imported"
                     : "Preset transfer failed"}
