@@ -255,6 +255,12 @@ Twenty-fourth tranche completed in the same session:
 - backend now emits cross-document warnings when OpenRebar contract id is unexpected, fallback master solver usage is detected, project context diverges, or provenance digest mismatches;
 - regression coverage now includes OpenRebar provenance checks in use-case and API security paths.
 
+Twenty-fifth tranche completed in the same session:
+
+- OpenRebar provenance checks now also warn when the optimization master strategy does not indicate a HiGHS-backed path;
+- `analyze project package` now supports optional `reinforcement_waste_warning_threshold_percent` to flag high-waste reinforcement snapshots;
+- API/use-case/BCF regression rails were extended so new strategy and waste warnings remain exportable and test-guarded.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
