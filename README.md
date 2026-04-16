@@ -75,6 +75,7 @@ python -m aerobim.main
 | `GET` | `/health` | Readiness probe |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements + IDS |
 | `POST` | `/v1/analyze/project-package` | Multimodal validation (spec + calc + drawing + IDS + IFC) |
+| `POST` | `/v1/analyze/project-package/reinforcement-digest` | Build OpenRebar provenance digest from canonical report |
 | `POST` | `/v1/analyze/project-package/submit` | Accept a same-process background analysis job for larger packages |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll async project-package job status |
 | `GET` | `/v1/reports` | List persisted reports with optional `project`, `discipline`, and `passed` filters |
@@ -91,6 +92,8 @@ python -m aerobim.main
 - `reinforcement_source_digest`: expected SHA-256 digest for report provenance fingerprint checks.
 - `reinforcement_waste_warning_threshold_percent`: optional waste threshold (percent) for coordination warnings.
 - `reinforcement_provenance_mode`: `advisory` (default) or `enforced` to escalate OpenRebar provenance warnings into blocking errors.
+
+Use `/v1/analyze/project-package/reinforcement-digest` to generate `reinforcement_source_digest` directly from a stored OpenRebar report before calling project-package analysis.
 
 When provided, AeroBIM adds cross-document warnings if:
 

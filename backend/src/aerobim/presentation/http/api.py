@@ -1,5 +1,6 @@
 # pyright: reportUnusedFunction=false, reportUnknownVariableType=false
 
+import json
 import re as _re
 from dataclasses import asdict
 from pathlib import Path
@@ -8,6 +9,9 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from aerobim.application.use_cases.analyze_project_package import (
+    build_openrebar_provenance_digest,
+)
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, ValidationRequest
@@ -54,6 +58,10 @@ class AnalyzeProjectPackageRequest(BaseModel):
     reinforcement_provenance_mode: Literal["advisory", "enforced"] = "advisory"
     project_name: str | None = None
     discipline: str | None = None
+
+
+class OpenRebarDigestRequest(BaseModel):
+    reinforcement_report_path: str
 
 
 def create_http_app(container: Container):
@@ -155,6 +163,19 @@ def create_http_app(container: Container):
             source_kind=source_kind,
             source_id=f"{source_kind.value}-input",
         )
+
+    def _load_openrebar_report_payload(report_path: Path) -> dict[str, object]:
+        if not report_path.exists():
+            raise FileNotFoundError(report_path)
+        try:
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"Invalid OpenRebar reinforcement report JSON: {report_path}"
+            ) from exc
+        if not isinstance(payload, dict):
+            raise ValueError("OpenRebar reinforcement report must be a JSON object")
+        return payload
 
     def _build_project_package_request(payload: AnalyzeProjectPackageRequest) -> ValidationRequest:
         reinforcement_source_digest = (
@@ -268,6 +289,29 @@ def create_http_app(container: Container):
             raise HTTPException(status_code=503, detail=str(exc)) from exc
 
         return asdict(report)
+
+    @app.post("/v1/analyze/project-package/reinforcement-digest")
+    def analyze_project_package_reinforcement_digest(
+        payload: Annotated[OpenRebarDigestRequest, Body()],
+    ) -> dict[str, object]:
+        try:
+            report_path = _resolve_safe_path(payload.reinforcement_report_path)
+            report_payload = _load_openrebar_report_payload(report_path)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+        metadata_payload = report_payload.get("metadata")
+        metadata = metadata_payload if isinstance(metadata_payload, dict) else {}
+        return {
+            "reinforcement_report_path": str(report_path),
+            "provenance_digest": build_openrebar_provenance_digest(report_payload),
+            "contract_id": report_payload.get("contractId"),
+            "schema_version": report_payload.get("schemaVersion"),
+            "project_code": metadata.get("projectCode"),
+            "slab_id": metadata.get("slabId"),
+        }
 
     @app.post("/v1/analyze/project-package/submit", status_code=202)
     def submit_analyze_project_package(
