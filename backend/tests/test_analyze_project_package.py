@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -151,6 +152,86 @@ class FakeStore:
         if self.report is None or self.report.report_id != report_id:
             return None
         return self.report
+
+
+def _build_openrebar_report_payload(*, fallback_used: bool) -> dict[str, object]:
+    return {
+        "contractId": "OpenRebar.reinforcement.report.v1",
+        "schemaVersion": "1.0.0",
+        "generatedAtUtc": "2026-04-16T00:00:00Z",
+        "metadata": {
+            "projectCode": "Residential Tower Alpha",
+            "slabId": "SLAB-03",
+            "sourceSystem": "OpenRebar",
+            "targetSystem": "AeroBIM",
+            "countryCode": "RU",
+            "designCode": "SP63",
+            "normativeProfileId": "ru.sp63.2018",
+            "normativeTablesVersion": "v1",
+        },
+        "normativeProfile": {
+            "profileId": "ru.sp63.2018",
+            "jurisdiction": "RU",
+            "designCode": "SP63",
+            "tablesVersion": "v1",
+        },
+        "analysisProvenance": {
+            "geometry": {
+                "decompositionAlgorithm": "grid-scan",
+                "rectangularShortcutFillRatio": 0.9,
+                "minRectangleAreaMm2": 1000.0,
+                "samplingResolutionPerAxis": 64,
+                "cellCoverageInclusionThreshold": 0.5,
+            },
+            "optimization": {
+                "optimizerId": "column-generation",
+                "masterProblemStrategy": "restricted-master-lp-highs",
+                "pricingStrategy": "bounded-knapsack-dp",
+                "integerizationStrategy": "repair-ffd",
+                "demandAggregationPrecisionMm": 0.1,
+                "qualityFloor": "production",
+                "anyFallbackMasterSolverUsed": fallback_used,
+            },
+        },
+        "isolineFileName": "floor-03.dxf",
+        "isolineFileFormat": "dxf",
+        "slab": {
+            "concreteClass": "B25",
+            "thicknessMm": 200,
+            "coverMm": 25,
+            "effectiveDepthMm": 175,
+            "areaMm2": 1_000_000,
+            "openingCount": 0,
+            "boundingBox": {
+                "minX": 0,
+                "minY": 0,
+                "maxX": 1000,
+                "maxY": 1000,
+                "width": 1000,
+                "height": 1000,
+            },
+        },
+        "zones": [],
+        "optimizationByDiameter": [],
+        "placement": {
+            "requested": False,
+            "executed": False,
+            "success": True,
+            "totalRebarsPlaced": 0,
+            "totalTagsCreated": 0,
+            "totalBendingDetails": 0,
+            "warnings": [],
+            "errors": [],
+        },
+        "summary": {
+            "parsedZoneCount": 0,
+            "classifiedZoneCount": 0,
+            "totalRebarSegments": 0,
+            "totalWastePercent": 0.0,
+            "totalWasteMm": 0.0,
+            "totalMassKg": 0.0,
+        },
+    }
 
 
 class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
@@ -463,6 +544,117 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             self.assertEqual(report.drawing_assets[0].source_path, image_path)
         finally:
             image_path.unlink(missing_ok=True)
+
+    def test_execute_warns_when_openrebar_fallback_solver_was_used(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(_build_openrebar_report_payload(fallback_used=True)),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=FakeExtractor(),
+                narrative_rule_synthesizer=FakeSynthesizer(),
+                drawing_analyzer=FakeDrawingAnalyzer(),
+                ifc_validator=FakeValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-fallback",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(
+                        text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                    ),
+                    reinforcement_report_path=report_path,
+                    project_name="Residential Tower Alpha",
+                )
+            )
+
+            fallback_warnings = [
+                issue
+                for issue in report.issues
+                if issue.rule_id == "OPENREBAR-OPT-FALLBACK"
+            ]
+            self.assertEqual(len(fallback_warnings), 1)
+            self.assertEqual(fallback_warnings[0].severity, Severity.WARNING)
+            self.assertEqual(
+                fallback_warnings[0].category,
+                FindingCategory.CROSS_DOCUMENT,
+            )
+
+    def test_execute_warns_when_openrebar_digest_mismatch_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(_build_openrebar_report_payload(fallback_used=False)),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=FakeExtractor(),
+                narrative_rule_synthesizer=FakeSynthesizer(),
+                drawing_analyzer=FakeDrawingAnalyzer(),
+                ifc_validator=FakeValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-digest",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(
+                        text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                    ),
+                    reinforcement_report_path=report_path,
+                    reinforcement_source_digest="0" * 64,
+                    project_name="Residential Tower Alpha",
+                )
+            )
+
+            digest_warnings = [
+                issue
+                for issue in report.issues
+                if issue.rule_id == "OPENREBAR-PROVENANCE-DIGEST"
+            ]
+            self.assertEqual(len(digest_warnings), 1)
+            self.assertEqual(digest_warnings[0].severity, Severity.WARNING)
+            self.assertEqual(digest_warnings[0].expected_value, "0" * 64)
+            self.assertIsNotNone(digest_warnings[0].observed_value)
+            self.assertEqual(len(digest_warnings[0].observed_value or ""), 64)
+
+    def test_execute_raises_for_invalid_openrebar_report_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text("{invalid-json", encoding="utf-8")
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=FakeExtractor(),
+                narrative_rule_synthesizer=FakeSynthesizer(),
+                drawing_analyzer=FakeDrawingAnalyzer(),
+                ifc_validator=FakeValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            with self.assertRaises(ValueError):
+                use_case.execute(
+                    ValidationRequest(
+                        request_id="req-openrebar-invalid-json",
+                        ifc_path=Path("sample.ifc"),
+                        requirement_source=RequirementSource(
+                            text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                        ),
+                        reinforcement_report_path=report_path,
+                    )
+                )
 
 
 class CalculationSourceTests(unittest.TestCase):

@@ -179,6 +179,18 @@ class ApiSecurityTests(unittest.TestCase):
         self.assertGreaterEqual(response.status_code, 400)
         self.assertLess(response.status_code, 500)
 
+    def test_path_traversal_reinforcement_report_rejected(self) -> None:
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": "model.ifc",
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "reinforcement_report_path": "../../outside/openrebar.result.json",
+            },
+        )
+        self.assertGreaterEqual(response.status_code, 400)
+        self.assertLess(response.status_code, 500)
+
     def test_health_returns_ok(self) -> None:
         response = self.client.get("/health")
         self.assertEqual(response.status_code, 200)
