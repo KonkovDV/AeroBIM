@@ -156,6 +156,7 @@ class ValidationRequest:
     ids_path: Path | None = None
     reinforcement_report_path: Path | None = None
     reinforcement_source_digest: str | None = None
+    reinforcement_waste_warning_threshold_percent: float | None = None
     origin: str = "api"
     project_name: str | None = None
     discipline: str | None = None

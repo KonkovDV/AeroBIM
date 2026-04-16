@@ -46,6 +46,11 @@ class AnalyzeProjectPackageRequest(BaseModel):
     drawings: list[DrawingPayload] = Field(default_factory=list)
     reinforcement_report_path: str | None = None
     reinforcement_source_digest: str | None = Field(default=None, max_length=128)
+    reinforcement_waste_warning_threshold_percent: float | None = Field(
+        default=None,
+        ge=0,
+        le=100,
+    )
     project_name: str | None = None
     discipline: str | None = None
 
@@ -192,6 +197,9 @@ def create_http_app(container: Container):
             if payload.reinforcement_report_path
             else None,
             reinforcement_source_digest=reinforcement_source_digest,
+            reinforcement_waste_warning_threshold_percent=(
+                payload.reinforcement_waste_warning_threshold_percent
+            ),
             project_name=payload.project_name,
             discipline=payload.discipline,
         )
