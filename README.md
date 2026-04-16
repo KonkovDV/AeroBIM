@@ -85,6 +85,18 @@ python -m aerobim.main
 | `GET` | `/v1/reports/{id}/export/html` | Download HTML export |
 | `GET` | `/v1/reports/{id}/export/bcf` | Download BCF 2.1 ZIP |
 
+`POST /v1/analyze/project-package` also supports optional OpenRebar provenance fields:
+
+- `reinforcement_report_path`: path (inside `AEROBIM_STORAGE_DIR`) to an OpenRebar canonical `*.result.json` report;
+- `reinforcement_source_digest`: expected SHA-256 digest for report provenance fingerprint checks.
+
+When provided, AeroBIM adds cross-document warnings if:
+
+- OpenRebar report contract ID is unexpected;
+- OpenRebar optimizer indicates fallback master solver usage;
+- project context mismatches (`project_name` vs `metadata.projectCode`);
+- supplied provenance digest does not match report fingerprint.
+
 ## Architecture
 
 Five-layer Clean Architecture with strict inward dependency direction:

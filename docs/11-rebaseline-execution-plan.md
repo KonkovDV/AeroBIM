@@ -249,6 +249,12 @@ Twenty-third tranche completed in the same session:
 - smoke payload now includes `checks.presets` metadata for deterministic scope-verification evidence in CI artifacts;
 - frontend smoke runbook/docs now explicitly mention preset-scope verification as part of the capture rail.
 
+Twenty-fourth tranche completed in the same session:
+
+- `analyze project package` now supports optional OpenRebar reinforcement provenance inputs (`reinforcement_report_path`, `reinforcement_source_digest`);
+- backend now emits cross-document warnings when OpenRebar contract id is unexpected, fallback master solver usage is detected, project context diverges, or provenance digest mismatches;
+- regression coverage now includes OpenRebar provenance checks in use-case and API security paths.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.

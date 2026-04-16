@@ -82,6 +82,7 @@ From the parent VS Code workspace, the same path is exposed as the `process: smo
 2. validate `GET /health`;
 3. submit a validation request or use fixture-driven report generation;
 	for larger project packages, you can use `POST /v1/analyze/project-package/submit` and poll `GET /v1/analyze/project-package/jobs/{job_id}` until a `report_id` is present;
+3a. if an OpenRebar reinforcement `*.result.json` is available, include `reinforcement_report_path` (and optionally `reinforcement_source_digest`) in the project-package payload to enable cross-document provenance warnings;
 3a. for a repeatable local throughput baseline, run `python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0` and inspect the emitted JSON timing summary;
 4. for deterministic runtime smoke, run `python -m aerobim.tools.seed_smoke_report` inside `backend/`;
 5. confirm `GET /v1/reports` returns the seeded persisted report summary;
