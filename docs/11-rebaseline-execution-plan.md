@@ -267,6 +267,12 @@ Twenty-sixth tranche completed in the same session:
 - in `enforced` mode, OpenRebar provenance warnings are escalated into errors and can fail report pass status deterministically;
 - use-case and HTTP regression rails now include explicit enforced-mode coverage alongside full backend audit replay (`190 passed`).
 
+Twenty-seventh tranche completed in the same session:
+
+- backend now exposes `POST /v1/analyze/project-package/reinforcement-digest` to compute OpenRebar provenance digest from canonical reports inside storage boundary;
+- operator docs now describe digest generation flow before project-package analysis, reducing manual hash handling drift;
+- API regression coverage now includes digest endpoint success path and path-traversal rejection.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.

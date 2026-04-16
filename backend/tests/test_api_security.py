@@ -529,6 +529,36 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertEqual(len(fallback_issues), 1)
         self.assertEqual(fallback_issues[0].get("severity"), "error")
 
+    def test_reinforcement_digest_endpoint_returns_expected_digest(self) -> None:
+        from aerobim.application.use_cases.analyze_project_package import (
+            build_openrebar_provenance_digest,
+        )
+
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=False)
+        report_abs_path = self.settings.storage_dir / reinforcement_report_path
+        payload = json.loads(report_abs_path.read_text(encoding="utf-8"))
+        expected_digest = build_openrebar_provenance_digest(payload)
+
+        response = self.client.post(
+            "/v1/analyze/project-package/reinforcement-digest",
+            json={"reinforcement_report_path": reinforcement_report_path},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body.get("provenance_digest"), expected_digest)
+        self.assertEqual(body.get("contract_id"), "OpenRebar.reinforcement.report.v1")
+        self.assertEqual(body.get("project_code"), "Residential Tower Alpha")
+        self.assertEqual(body.get("slab_id"), "SLAB-03")
+
+    def test_reinforcement_digest_endpoint_rejects_path_traversal(self) -> None:
+        response = self.client.post(
+            "/v1/analyze/project-package/reinforcement-digest",
+            json={"reinforcement_report_path": "../../outside/openrebar.result.json"},
+        )
+
+        self.assertEqual(response.status_code, 400)
+
 
 class ApiIfcSourceEndpointTests(unittest.TestCase):
     @classmethod
