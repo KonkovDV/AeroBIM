@@ -324,6 +324,22 @@ class AnalyzeProjectPackageUseCase:
                         observed_value=observed_digest,
                     )
                 )
+        else:
+            issues.append(
+                ValidationIssue(
+                    rule_id="OPENREBAR-PROVENANCE-REFERENCE-MISSING",
+                    severity=Severity.WARNING,
+                    message=(
+                        "OpenRebar reference digest is missing; stale reinforcement "
+                        "detection is disabled for this run."
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    target_ref=slab_id,
+                    property_name="reinforcementSourceDigest",
+                    expected_value="provided",
+                    observed_value=observed_digest,
+                )
+            )
 
         threshold = request.reinforcement_waste_warning_threshold_percent
         if threshold is not None:
