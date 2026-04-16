@@ -89,13 +89,16 @@ python -m aerobim.main
 
 - `reinforcement_report_path`: path (inside `AEROBIM_STORAGE_DIR`) to an OpenRebar canonical `*.result.json` report;
 - `reinforcement_source_digest`: expected SHA-256 digest for report provenance fingerprint checks.
+- `reinforcement_waste_warning_threshold_percent`: optional waste threshold (percent) for coordination warnings.
 
 When provided, AeroBIM adds cross-document warnings if:
 
 - OpenRebar report contract ID is unexpected;
 - OpenRebar optimizer indicates fallback master solver usage;
+- OpenRebar master-problem strategy does not indicate a HiGHS-backed path;
 - project context mismatches (`project_name` vs `metadata.projectCode`);
 - supplied provenance digest does not match report fingerprint.
+- reported `summary.totalWastePercent` exceeds the configured warning threshold.
 
 ## Architecture
 
