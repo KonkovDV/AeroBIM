@@ -273,6 +273,12 @@ Twenty-seventh tranche completed in the same session:
 - operator docs now describe digest generation flow before project-package analysis, reducing manual hash handling drift;
 - API regression coverage now includes digest endpoint success path and path-traversal rejection.
 
+Twenty-eighth tranche completed in the same session:
+
+- backend now includes a shell-friendly tool `python -m aerobim.tools.openrebar_provenance_digest` for deterministic digest generation outside HTTP flows;
+- tool output mirrors digest endpoint payload shape (digest + contract/schema/project/slab metadata) to keep operator automation consistent;
+- dedicated tool-level tests now guard invalid JSON/non-object payload behavior.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
