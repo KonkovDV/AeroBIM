@@ -237,6 +237,12 @@ Twenty-first tranche completed in the same session:
 - threshold profile path is now configurable per workflow run for controlled policy experiments;
 - threshold evaluation outputs are now attached to release-readiness artifacts alongside benchmark payloads.
 
+Twenty-second tranche completed in the same session:
+
+- frontend presets now carry explicit scope (`local` or `team`) in storage and transfer payloads;
+- preset save flow now lets operators choose scope up front instead of implicit local-only behavior;
+- JSON preset import defaults missing scope to `team` to mark externally shared presets explicitly.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -279,5 +285,5 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 ## Recommended Next Concrete Tranche
 
 1. decide the policy boundary for flipping `require_live_smoke_gate` from optional to default based on stability evidence from several release-readiness runs;
-2. consider richer operator workflows on top of the new frontend filters, such as externally stored or role-scoped shared bookmarks, only if real review volume justifies them;
+2. consider richer operator workflows on top of the new frontend filters, such as externally stored role-scoped collections with explicit ownership metadata, only if real review volume justifies them;
 3. define promotion criteria for release-readiness threshold mode (`advisory` → `enforced`) based on observed pack stability windows.
