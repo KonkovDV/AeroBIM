@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 import sys
 import unittest
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
@@ -294,6 +295,163 @@ class ApiReportEndpointTests(unittest.TestCase):
     def test_export_html_nonexistent_report_returns_404(self) -> None:
         response = self.client.get("/v1/reports/00000000000000000000000000000000/export/html")
         self.assertEqual(response.status_code, 404)
+
+
+class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.presentation.http.api import create_http_app
+
+        container = _make_test_container()
+        app = create_http_app(container)
+        cls.client = TestClient(app)
+        cls.settings = container.resolve(Tokens.SETTINGS)
+
+    def _write_openrebar_report_fixture(self, *, fallback_used: bool) -> str:
+        fixture_dir = self.settings.storage_dir / "fixtures"
+        fixture_dir.mkdir(parents=True, exist_ok=True)
+        report_path = fixture_dir / "openrebar.result.json"
+        report_path.write_text(
+            json.dumps(
+                {
+                    "contractId": "OpenRebar.reinforcement.report.v1",
+                    "schemaVersion": "1.0.0",
+                    "generatedAtUtc": "2026-04-16T00:00:00Z",
+                    "metadata": {
+                        "projectCode": "Residential Tower Alpha",
+                        "slabId": "SLAB-03",
+                        "sourceSystem": "OpenRebar",
+                        "targetSystem": "AeroBIM",
+                        "countryCode": "RU",
+                        "designCode": "SP63",
+                        "normativeProfileId": "ru.sp63.2018",
+                        "normativeTablesVersion": "v1",
+                    },
+                    "normativeProfile": {
+                        "profileId": "ru.sp63.2018",
+                        "jurisdiction": "RU",
+                        "designCode": "SP63",
+                        "tablesVersion": "v1",
+                    },
+                    "analysisProvenance": {
+                        "geometry": {
+                            "decompositionAlgorithm": "grid-scan",
+                            "rectangularShortcutFillRatio": 0.9,
+                            "minRectangleAreaMm2": 1000.0,
+                            "samplingResolutionPerAxis": 64,
+                            "cellCoverageInclusionThreshold": 0.5,
+                        },
+                        "optimization": {
+                            "optimizerId": "column-generation",
+                            "masterProblemStrategy": "restricted-master-lp-highs",
+                            "pricingStrategy": "bounded-knapsack-dp",
+                            "integerizationStrategy": "repair-ffd",
+                            "demandAggregationPrecisionMm": 0.1,
+                            "qualityFloor": "production",
+                            "anyFallbackMasterSolverUsed": fallback_used,
+                        },
+                    },
+                    "isolineFileName": "floor-03.dxf",
+                    "isolineFileFormat": "dxf",
+                    "slab": {
+                        "concreteClass": "B25",
+                        "thicknessMm": 200,
+                        "coverMm": 25,
+                        "effectiveDepthMm": 175,
+                        "areaMm2": 1_000_000,
+                        "openingCount": 0,
+                        "boundingBox": {
+                            "minX": 0,
+                            "minY": 0,
+                            "maxX": 1000,
+                            "maxY": 1000,
+                            "width": 1000,
+                            "height": 1000,
+                        },
+                    },
+                    "zones": [],
+                    "optimizationByDiameter": [],
+                    "placement": {
+                        "requested": False,
+                        "executed": False,
+                        "success": True,
+                        "totalRebarsPlaced": 0,
+                        "totalTagsCreated": 0,
+                        "totalBendingDetails": 0,
+                        "warnings": [],
+                        "errors": [],
+                    },
+                    "summary": {
+                        "parsedZoneCount": 0,
+                        "classifiedZoneCount": 0,
+                        "totalRebarSegments": 0,
+                        "totalWastePercent": 0.0,
+                        "totalWasteMm": 0.0,
+                        "totalMassKg": 0.0,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        return str(Path("fixtures") / "openrebar.result.json")
+
+    def _write_ifc_fixture(self) -> str:
+        # Use a known-valid IFC sample from repository fixtures but keep API path inside storage boundary.
+        source_fixture = (
+            Path(__file__).resolve().parents[2]
+            / "samples"
+            / "ifc"
+            / "wall-fire-rating-rei60.ifc"
+        )
+        fixture_dir = self.settings.storage_dir / "fixtures"
+        fixture_dir.mkdir(parents=True, exist_ok=True)
+        target_fixture = fixture_dir / "wall-fire-rating-rei60.ifc"
+        target_fixture.write_bytes(source_fixture.read_bytes())
+        return str(Path("fixtures") / "wall-fire-rating-rei60.ifc")
+
+    def test_analyze_project_package_includes_openrebar_fallback_warning(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=True)
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_report_path": reinforcement_report_path,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        issue_ids = {issue["rule_id"] for issue in payload.get("issues", [])}
+        self.assertIn("OPENREBAR-OPT-FALLBACK", issue_ids)
+
+    def test_analyze_project_package_includes_openrebar_digest_warning(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=False)
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_report_path": reinforcement_report_path,
+                "reinforcement_source_digest": "0" * 64,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        issue_ids = {issue["rule_id"] for issue in payload.get("issues", [])}
+        self.assertIn("OPENREBAR-PROVENANCE-DIGEST", issue_ids)
 
 
 class ApiIfcSourceEndpointTests(unittest.TestCase):
