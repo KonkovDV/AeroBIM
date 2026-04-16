@@ -149,6 +149,7 @@ It runs benchmark rails by default and can optionally run the full live review s
 The live-smoke path now installs Playwright and Chromium inside the workflow job so browser capture is reproducible in CI.
 Main CI benchmark-smoke runs now also emit a compact benchmark summary table in workflow output and artifacts.
 When needed, `require_live_smoke_gate=true` enforces live-smoke execution as a mandatory policy gate for that release-readiness run.
+CI benchmark-smoke now also runs advisory threshold evaluation from `samples/benchmarks/benchmark-thresholds.json` and publishes the threshold summary alongside benchmark artifacts.
 
 ## Extraction From MicroPhoenix
 
