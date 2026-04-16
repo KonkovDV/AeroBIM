@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from datetime import UTC, datetime
 import hashlib
 import json
@@ -62,6 +62,27 @@ _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "m³": ("m3", 1.0),
     "м³": ("m3", 1.0),
 }
+
+
+def build_openrebar_provenance_digest(report_payload: Mapping[str, object]) -> str:
+    canonical_payload = {
+        "contractId": report_payload.get("contractId"),
+        "schemaVersion": report_payload.get("schemaVersion"),
+        "generatedAtUtc": report_payload.get("generatedAtUtc"),
+        "isolineFileName": report_payload.get("isolineFileName"),
+        "isolineFileFormat": report_payload.get("isolineFileFormat"),
+        "metadata": report_payload.get("metadata"),
+        "normativeProfile": report_payload.get("normativeProfile"),
+        "analysisProvenance": report_payload.get("analysisProvenance"),
+        "summary": report_payload.get("summary"),
+    }
+    normalized = json.dumps(
+        canonical_payload,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
 class AnalyzeProjectPackageUseCase:
@@ -284,7 +305,7 @@ class AnalyzeProjectPackageUseCase:
                     )
                 )
 
-        observed_digest = self._build_openrebar_provenance_digest(report_payload)
+        observed_digest = build_openrebar_provenance_digest(report_payload)
         if request.reinforcement_source_digest:
             expected_digest = request.reinforcement_source_digest.strip().lower()
             if expected_digest and expected_digest != observed_digest:
@@ -352,29 +373,6 @@ class AnalyzeProjectPackageUseCase:
                 )
 
         return issues
-
-    def _build_openrebar_provenance_digest(
-        self,
-        report_payload: dict[str, object],
-    ) -> str:
-        canonical_payload = {
-            "contractId": report_payload.get("contractId"),
-            "schemaVersion": report_payload.get("schemaVersion"),
-            "generatedAtUtc": report_payload.get("generatedAtUtc"),
-            "isolineFileName": report_payload.get("isolineFileName"),
-            "isolineFileFormat": report_payload.get("isolineFileFormat"),
-            "metadata": report_payload.get("metadata"),
-            "normativeProfile": report_payload.get("normativeProfile"),
-            "analysisProvenance": report_payload.get("analysisProvenance"),
-            "summary": report_payload.get("summary"),
-        }
-        normalized = json.dumps(
-            canonical_payload,
-            ensure_ascii=False,
-            separators=(",", ":"),
-            sort_keys=True,
-        )
-        return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
     def _apply_openrebar_provenance_policy(
         self,

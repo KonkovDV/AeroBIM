@@ -85,7 +85,8 @@ From the parent VS Code workspace, the same path is exposed as the `process: smo
 3a. if an OpenRebar reinforcement `*.result.json` is available, include `reinforcement_report_path` (and optionally `reinforcement_source_digest`) in the project-package payload to enable cross-document provenance warnings;
 3b. if release policy requires a waste guardrail, also pass `reinforcement_waste_warning_threshold_percent` to flag high-waste reinforcement snapshots during review;
 3c. if OpenRebar provenance drift must block release candidates, set `reinforcement_provenance_mode=enforced` to escalate those warnings into errors;
-3d. for a repeatable local throughput baseline, run `python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0` and inspect the emitted JSON timing summary;
+3d. if digest must be generated deterministically in AeroBIM, call `POST /v1/analyze/project-package/reinforcement-digest` with `reinforcement_report_path` and reuse returned `provenance_digest` as `reinforcement_source_digest`;
+3e. for a repeatable local throughput baseline, run `python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0` and inspect the emitted JSON timing summary;
 4. for deterministic runtime smoke, run `python -m aerobim.tools.seed_smoke_report` inside `backend/`;
 5. confirm `GET /v1/reports` returns the seeded persisted report summary;
 6. confirm `GET /v1/reports/{report_id}/source/ifc` returns the stored IFC source for that seeded report;
