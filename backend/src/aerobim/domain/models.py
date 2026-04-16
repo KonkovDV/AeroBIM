@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
+from typing import Literal
 
 
 class Severity(StrEnum):
@@ -157,6 +158,7 @@ class ValidationRequest:
     reinforcement_report_path: Path | None = None
     reinforcement_source_digest: str | None = None
     reinforcement_waste_warning_threshold_percent: float | None = None
+    reinforcement_provenance_mode: Literal["advisory", "enforced"] = "advisory"
     origin: str = "api"
     project_name: str | None = None
     discipline: str | None = None

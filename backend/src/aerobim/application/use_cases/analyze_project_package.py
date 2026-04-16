@@ -113,7 +113,10 @@ class AnalyzeProjectPackageUseCase:
         drawing_assets = tuple(self._collect_drawing_assets(request))
         cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
         reinforcement_provenance_issues = tuple(
-            self._collect_openrebar_provenance_issues(request)
+            self._apply_openrebar_provenance_policy(
+                self._collect_openrebar_provenance_issues(request),
+                request.reinforcement_provenance_mode,
+            )
         )
         clash_results = tuple(
             self._clash_detector.detect(request.ifc_path) if self._clash_detector else []
@@ -372,6 +375,42 @@ class AnalyzeProjectPackageUseCase:
             sort_keys=True,
         )
         return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+    def _apply_openrebar_provenance_policy(
+        self,
+        issues: Sequence[ValidationIssue],
+        mode: str,
+    ) -> list[ValidationIssue]:
+        if mode != "enforced":
+            return list(issues)
+
+        escalated: list[ValidationIssue] = []
+        for issue in issues:
+            if issue.severity != Severity.WARNING:
+                escalated.append(issue)
+                continue
+
+            escalated.append(
+                ValidationIssue(
+                    rule_id=issue.rule_id,
+                    severity=Severity.ERROR,
+                    message=issue.message,
+                    ifc_entity=issue.ifc_entity,
+                    category=issue.category,
+                    target_ref=issue.target_ref,
+                    property_set=issue.property_set,
+                    property_name=issue.property_name,
+                    operator=issue.operator,
+                    expected_value=issue.expected_value,
+                    observed_value=issue.observed_value,
+                    unit=issue.unit,
+                    element_guid=issue.element_guid,
+                    problem_zone=issue.problem_zone,
+                    remark=issue.remark,
+                )
+            )
+
+        return escalated
 
     def _collect_synthesized_requirements(
         self, request: ValidationRequest

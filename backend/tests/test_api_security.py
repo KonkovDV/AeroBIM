@@ -504,6 +504,31 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         issue_ids = {issue["rule_id"] for issue in payload.get("issues", [])}
         self.assertIn("OPENREBAR-WASTE-THRESHOLD", issue_ids)
 
+    def test_analyze_project_package_enforced_mode_escalates_openrebar_warning(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=True)
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_report_path": reinforcement_report_path,
+                "reinforcement_provenance_mode": "enforced",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        fallback_issues = [
+            issue
+            for issue in payload.get("issues", [])
+            if issue.get("rule_id") == "OPENREBAR-OPT-FALLBACK"
+        ]
+        self.assertEqual(len(fallback_issues), 1)
+        self.assertEqual(fallback_issues[0].get("severity"), "error")
+
 
 class ApiIfcSourceEndpointTests(unittest.TestCase):
     @classmethod

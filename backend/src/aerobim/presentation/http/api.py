@@ -3,7 +3,7 @@
 import re as _re
 from dataclasses import asdict
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -51,6 +51,7 @@ class AnalyzeProjectPackageRequest(BaseModel):
         ge=0,
         le=100,
     )
+    reinforcement_provenance_mode: Literal["advisory", "enforced"] = "advisory"
     project_name: str | None = None
     discipline: str | None = None
 
@@ -200,6 +201,7 @@ def create_http_app(container: Container):
             reinforcement_waste_warning_threshold_percent=(
                 payload.reinforcement_waste_warning_threshold_percent
             ),
+            reinforcement_provenance_mode=payload.reinforcement_provenance_mode,
             project_name=payload.project_name,
             discipline=payload.discipline,
         )
