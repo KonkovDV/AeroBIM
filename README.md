@@ -95,6 +95,10 @@ python -m aerobim.main
 
 Use `/v1/analyze/project-package/reinforcement-digest` to generate `reinforcement_source_digest` directly from a stored OpenRebar report before calling project-package analysis.
 
+For offline or CI shell workflows, use:
+
+`python -m aerobim.tools.openrebar_provenance_digest <path-to-openrebar-result.json>`
+
 When provided, AeroBIM adds cross-document warnings if:
 
 - OpenRebar report contract ID is unexpected;
