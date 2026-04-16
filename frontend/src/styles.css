@@ -215,6 +215,10 @@ input {
   resize: vertical;
 }
 
+.preset-scope-select {
+  width: min(180px, 100%);
+}
+
 .preset-file-upload {
   position: relative;
   overflow: hidden;
@@ -240,6 +244,35 @@ input {
 
 .preset-transfer-status-failed {
   color: var(--danger);
+}
+
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preset-scope-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-family: "IBM Plex Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.preset-scope-local {
+  background: rgba(24, 33, 46, 0.08);
+  color: var(--text);
+}
+
+.preset-scope-team {
+  background: rgba(15, 118, 110, 0.14);
+  color: var(--accent-strong);
 }
 
 .report-group {
