@@ -133,6 +133,15 @@ jobs:
             with open(github_step_summary, "a", encoding="utf-8") as handle:
               handle.write(summary_markdown)
           PY
+      - name: Evaluate benchmark thresholds (advisory)
+        run: |
+          python -m aerobim.tools.benchmark_threshold_gate \
+            --artifact-dir ../artifacts/ci-benchmark-smoke \
+            --threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
+            --mode advisory \
+            --markdown-output ../artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md \
+            > ../artifacts/ci-benchmark-smoke/benchmark-threshold-evaluation.json
+          cat ../artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark-smoke artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -140,3 +149,4 @@ jobs:
           path: |
             artifacts/ci-benchmark-smoke/*.json
             artifacts/ci-benchmark-smoke/benchmark-summary.md
+            artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md

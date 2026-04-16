@@ -1,0 +1,18 @@
+{
+  "profile_id": "benchmark-thresholds-v1",
+  "description": "Initial advisory benchmark thresholds to seed pack-by-pack baseline governance before enforced gating.",
+  "packs": {
+    "project-package-baseline": {
+      "max_avg_ms": 10000.0,
+      "min_reports_per_second": 0.08
+    },
+    "project-package-fire-compliance": {
+      "max_avg_ms": 8000.0,
+      "min_reports_per_second": 0.1
+    },
+    "project-package-stress-multisource": {
+      "max_avg_ms": 15000.0,
+      "min_reports_per_second": 0.05
+    }
+  }
+}
