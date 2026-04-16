@@ -243,6 +243,12 @@ Twenty-second tranche completed in the same session:
 - preset save flow now lets operators choose scope up front instead of implicit local-only behavior;
 - JSON preset import defaults missing scope to `team` to mark externally shared presets explicitly.
 
+Twenty-third tranche completed in the same session:
+
+- frontend browser smoke now verifies preset save flow with explicit `team` scope before screenshot/trace capture;
+- smoke payload now includes `checks.presets` metadata for deterministic scope-verification evidence in CI artifacts;
+- frontend smoke runbook/docs now explicitly mention preset-scope verification as part of the capture rail.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
