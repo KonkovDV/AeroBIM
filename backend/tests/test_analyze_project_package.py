@@ -787,6 +787,47 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             self.assertEqual(fallback_issues[0].severity, Severity.ERROR)
             self.assertFalse(report.summary.passed)
 
+    def test_execute_warns_when_openrebar_report_provided_without_reference_digest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(_build_openrebar_report_payload(fallback_used=False)),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=FakeExtractor(),
+                narrative_rule_synthesizer=FakeSynthesizer(),
+                drawing_analyzer=FakeDrawingAnalyzer(),
+                ifc_validator=FakeValidator(),
+                ids_validator=NoOpIdsValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-no-digest",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(
+                        text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                    ),
+                    reinforcement_report_path=report_path,
+                    reinforcement_source_digest=None,
+                    project_name="Residential Tower Alpha",
+                )
+            )
+
+            missing_digest_issues = [
+                issue
+                for issue in report.issues
+                if issue.rule_id == "OPENREBAR-PROVENANCE-REFERENCE-MISSING"
+            ]
+            self.assertEqual(len(missing_digest_issues), 1)
+            self.assertEqual(missing_digest_issues[0].severity, Severity.WARNING)
+            self.assertEqual(missing_digest_issues[0].expected_value, "provided")
+
     def test_execute_raises_for_invalid_openrebar_report_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             report_path = Path(tmp_dir) / "openrebar.result.json"
