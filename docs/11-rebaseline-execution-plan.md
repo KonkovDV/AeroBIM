@@ -261,6 +261,12 @@ Twenty-fifth tranche completed in the same session:
 - `analyze project package` now supports optional `reinforcement_waste_warning_threshold_percent` to flag high-waste reinforcement snapshots;
 - API/use-case/BCF regression rails were extended so new strategy and waste warnings remain exportable and test-guarded.
 
+Twenty-sixth tranche completed in the same session:
+
+- OpenRebar provenance checks now support explicit policy mode (`advisory`/`enforced`) at project-package request level;
+- in `enforced` mode, OpenRebar provenance warnings are escalated into errors and can fail report pass status deterministically;
+- use-case and HTTP regression rails now include explicit enforced-mode coverage alongside full backend audit replay (`190 passed`).
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.

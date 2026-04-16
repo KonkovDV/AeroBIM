@@ -727,6 +727,66 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             self.assertEqual(threshold_warnings[0].expected_value, "<= 10")
             self.assertEqual(threshold_warnings[0].observed_value, "12.7")
 
+    def test_execute_escalates_openrebar_warnings_when_mode_enforced(self) -> None:
+        class NoOpExtractor:
+            def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpSynthesizer:
+            def synthesize(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpDrawingAnalyzer:
+            def analyze(self, _source: DrawingSource) -> list[DrawingAnnotation]:
+                return []
+
+        class NoOpValidator:
+            def validate(
+                self,
+                _ifc_path: Path,
+                _requirements: list[ParsedRequirement],
+            ) -> list[ValidationIssue]:
+                return []
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(_build_openrebar_report_payload(fallback_used=True)),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=NoOpExtractor(),
+                narrative_rule_synthesizer=NoOpSynthesizer(),
+                drawing_analyzer=NoOpDrawingAnalyzer(),
+                ifc_validator=NoOpValidator(),
+                ids_validator=NoOpIdsValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-enforced",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(text=""),
+                    ids_path=Path("rules.ids"),
+                    reinforcement_report_path=report_path,
+                    reinforcement_provenance_mode="enforced",
+                    project_name="Residential Tower Alpha",
+                )
+            )
+
+            fallback_issues = [
+                issue
+                for issue in report.issues
+                if issue.rule_id == "OPENREBAR-OPT-FALLBACK"
+            ]
+            self.assertEqual(len(fallback_issues), 1)
+            self.assertEqual(fallback_issues[0].severity, Severity.ERROR)
+            self.assertFalse(report.summary.passed)
+
     def test_execute_raises_for_invalid_openrebar_report_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             report_path = Path(tmp_dir) / "openrebar.result.json"
