@@ -312,7 +312,13 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         cls.client = TestClient(app)
         cls.settings = container.resolve(Tokens.SETTINGS)
 
-    def _write_openrebar_report_fixture(self, *, fallback_used: bool) -> str:
+    def _write_openrebar_report_fixture(
+        self,
+        *,
+        fallback_used: bool,
+        master_problem_strategy: str = "restricted-master-lp-highs",
+        total_waste_percent: float = 0.0,
+    ) -> str:
         fixture_dir = self.settings.storage_dir / "fixtures"
         fixture_dir.mkdir(parents=True, exist_ok=True)
         report_path = fixture_dir / "openrebar.result.json"
@@ -348,7 +354,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
                         },
                         "optimization": {
                             "optimizerId": "column-generation",
-                            "masterProblemStrategy": "restricted-master-lp-highs",
+                            "masterProblemStrategy": master_problem_strategy,
                             "pricingStrategy": "bounded-knapsack-dp",
                             "integerizationStrategy": "repair-ffd",
                             "demandAggregationPrecisionMm": 0.1,
@@ -390,7 +396,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
                         "parsedZoneCount": 0,
                         "classifiedZoneCount": 0,
                         "totalRebarSegments": 0,
-                        "totalWastePercent": 0.0,
+                        "totalWastePercent": total_waste_percent,
                         "totalWasteMm": 0.0,
                         "totalMassKg": 0.0,
                     },
@@ -452,6 +458,51 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         payload = response.json()
         issue_ids = {issue["rule_id"] for issue in payload.get("issues", [])}
         self.assertIn("OPENREBAR-PROVENANCE-DIGEST", issue_ids)
+
+    def test_analyze_project_package_includes_openrebar_strategy_warning(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(
+            fallback_used=False,
+            master_problem_strategy="restricted-master-lp-coordinate-descent",
+        )
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_report_path": reinforcement_report_path,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        issue_ids = {issue["rule_id"] for issue in payload.get("issues", [])}
+        self.assertIn("OPENREBAR-OPT-STRATEGY", issue_ids)
+
+    def test_analyze_project_package_includes_openrebar_waste_threshold_warning(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(
+            fallback_used=False,
+            total_waste_percent=12.7,
+        )
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_report_path": reinforcement_report_path,
+                "reinforcement_waste_warning_threshold_percent": 10.0,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        issue_ids = {issue["rule_id"] for issue in payload.get("issues", [])}
+        self.assertIn("OPENREBAR-WASTE-THRESHOLD", issue_ids)
 
 
 class ApiIfcSourceEndpointTests(unittest.TestCase):

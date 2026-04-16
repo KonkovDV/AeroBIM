@@ -154,7 +154,12 @@ class FakeStore:
         return self.report
 
 
-def _build_openrebar_report_payload(*, fallback_used: bool) -> dict[str, object]:
+def _build_openrebar_report_payload(
+    *,
+    fallback_used: bool,
+    master_problem_strategy: str = "restricted-master-lp-highs",
+    total_waste_percent: float = 0.0,
+) -> dict[str, object]:
     return {
         "contractId": "OpenRebar.reinforcement.report.v1",
         "schemaVersion": "1.0.0",
@@ -185,7 +190,7 @@ def _build_openrebar_report_payload(*, fallback_used: bool) -> dict[str, object]
             },
             "optimization": {
                 "optimizerId": "column-generation",
-                "masterProblemStrategy": "restricted-master-lp-highs",
+                "masterProblemStrategy": master_problem_strategy,
                 "pricingStrategy": "bounded-knapsack-dp",
                 "integerizationStrategy": "repair-ffd",
                 "demandAggregationPrecisionMm": 0.1,
@@ -227,7 +232,7 @@ def _build_openrebar_report_payload(*, fallback_used: bool) -> dict[str, object]
             "parsedZoneCount": 0,
             "classifiedZoneCount": 0,
             "totalRebarSegments": 0,
-            "totalWastePercent": 0.0,
+            "totalWastePercent": total_waste_percent,
             "totalWasteMm": 0.0,
             "totalMassKg": 0.0,
         },
@@ -587,6 +592,53 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                 FindingCategory.CROSS_DOCUMENT,
             )
 
+    def test_execute_warns_when_openrebar_master_strategy_is_not_highs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(
+                    _build_openrebar_report_payload(
+                        fallback_used=False,
+                        master_problem_strategy="restricted-master-lp-coordinate-descent",
+                    )
+                ),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=FakeExtractor(),
+                narrative_rule_synthesizer=FakeSynthesizer(),
+                drawing_analyzer=FakeDrawingAnalyzer(),
+                ifc_validator=FakeValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-strategy",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(
+                        text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                    ),
+                    reinforcement_report_path=report_path,
+                    project_name="Residential Tower Alpha",
+                )
+            )
+
+            strategy_warnings = [
+                issue
+                for issue in report.issues
+                if issue.rule_id == "OPENREBAR-OPT-STRATEGY"
+            ]
+            self.assertEqual(len(strategy_warnings), 1)
+            self.assertEqual(strategy_warnings[0].severity, Severity.WARNING)
+            self.assertIn(
+                "coordinate-descent",
+                strategy_warnings[0].observed_value or "",
+            )
+
     def test_execute_warns_when_openrebar_digest_mismatch_detected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             report_path = Path(tmp_dir) / "openrebar.result.json"
@@ -628,6 +680,52 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             self.assertEqual(digest_warnings[0].expected_value, "0" * 64)
             self.assertIsNotNone(digest_warnings[0].observed_value)
             self.assertEqual(len(digest_warnings[0].observed_value or ""), 64)
+
+    def test_execute_warns_when_openrebar_total_waste_exceeds_threshold(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(
+                    _build_openrebar_report_payload(
+                        fallback_used=False,
+                        total_waste_percent=12.7,
+                    )
+                ),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=FakeExtractor(),
+                narrative_rule_synthesizer=FakeSynthesizer(),
+                drawing_analyzer=FakeDrawingAnalyzer(),
+                ifc_validator=FakeValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-waste-threshold",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(
+                        text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                    ),
+                    reinforcement_report_path=report_path,
+                    reinforcement_waste_warning_threshold_percent=10.0,
+                    project_name="Residential Tower Alpha",
+                )
+            )
+
+            threshold_warnings = [
+                issue
+                for issue in report.issues
+                if issue.rule_id == "OPENREBAR-WASTE-THRESHOLD"
+            ]
+            self.assertEqual(len(threshold_warnings), 1)
+            self.assertEqual(threshold_warnings[0].severity, Severity.WARNING)
+            self.assertEqual(threshold_warnings[0].expected_value, "<= 10")
+            self.assertEqual(threshold_warnings[0].observed_value, "12.7")
 
     def test_execute_raises_for_invalid_openrebar_report_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

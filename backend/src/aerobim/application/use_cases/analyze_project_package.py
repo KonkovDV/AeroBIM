@@ -223,6 +223,9 @@ class AnalyzeProjectPackageUseCase:
             optimization_node if isinstance(optimization_node, dict) else {}
         )
         fallback_solver_used = optimization_payload.get("anyFallbackMasterSolverUsed")
+        master_problem_strategy = str(
+            optimization_payload.get("masterProblemStrategy", "")
+        ).strip()
 
         if fallback_solver_used is True:
             issues.append(
@@ -240,6 +243,23 @@ class AnalyzeProjectPackageUseCase:
                     ),
                     expected_value="false",
                     observed_value="true",
+                )
+            )
+
+        if "highs" not in master_problem_strategy.lower():
+            issues.append(
+                ValidationIssue(
+                    rule_id="OPENREBAR-OPT-STRATEGY",
+                    severity=Severity.WARNING,
+                    message=(
+                        "OpenRebar optimization master strategy does not indicate "
+                        "HiGHS-backed solving."
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    target_ref=slab_id,
+                    property_name="analysisProvenance.optimization.masterProblemStrategy",
+                    expected_value="contains: highs",
+                    observed_value=master_problem_strategy or "<missing>",
                 )
             )
 
@@ -278,6 +298,53 @@ class AnalyzeProjectPackageUseCase:
                         property_name="reinforcementSourceDigest",
                         expected_value=expected_digest,
                         observed_value=observed_digest,
+                    )
+                )
+
+        threshold = request.reinforcement_waste_warning_threshold_percent
+        if threshold is not None:
+            summary_payload = report_payload.get("summary")
+            summary_dict = summary_payload if isinstance(summary_payload, dict) else {}
+            raw_total_waste = summary_dict.get("totalWastePercent")
+            total_waste = (
+                float(raw_total_waste)
+                if isinstance(raw_total_waste, (int, float))
+                else self._to_float(str(raw_total_waste))
+                if raw_total_waste is not None
+                else None
+            )
+
+            if total_waste is None:
+                issues.append(
+                    ValidationIssue(
+                        rule_id="OPENREBAR-WASTE-METRIC-MISSING",
+                        severity=Severity.WARNING,
+                        message=(
+                            "OpenRebar report summary does not contain a parseable "
+                            "totalWastePercent value."
+                        ),
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        target_ref=slab_id,
+                        property_name="summary.totalWastePercent",
+                        expected_value="numeric",
+                        observed_value="<missing>",
+                    )
+                )
+            elif total_waste > threshold:
+                issues.append(
+                    ValidationIssue(
+                        rule_id="OPENREBAR-WASTE-THRESHOLD",
+                        severity=Severity.WARNING,
+                        message=(
+                            "OpenRebar total waste exceeds the configured AeroBIM "
+                            "warning threshold."
+                        ),
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        target_ref=slab_id,
+                        property_name="summary.totalWastePercent",
+                        expected_value=f"<= {threshold:g}",
+                        observed_value=f"{total_waste:g}",
+                        unit="%",
                     )
                 )
 
