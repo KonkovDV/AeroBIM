@@ -225,6 +225,12 @@ Nineteenth tranche completed in the same session:
 - workflow runs now fail fast if gate policy is required but `run_live_smoke` is disabled;
 - operators can keep smoke optional by default while still enabling strict release-gate runs on demand.
 
+Twentieth tranche completed in the same session:
+
+- CI `benchmark-smoke` now evaluates per-pack performance against `samples/benchmarks/benchmark-thresholds.json` in advisory mode;
+- threshold evaluation summary is appended to workflow output and published as an artifact;
+- baseline threshold governance now has a deterministic machine-readable profile instead of ad hoc interpretation.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -268,4 +274,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. decide the policy boundary for flipping `require_live_smoke_gate` from optional to default based on stability evidence from several release-readiness runs;
 2. consider richer operator workflows on top of the new frontend filters, such as externally stored or role-scoped shared bookmarks, only if real review volume justifies them;
-3. introduce benchmark budget thresholds only after several CI benchmark-smoke summary snapshots establish stable pack-by-pack baselines.
+3. evolve threshold mode from advisory to enforced only after several CI benchmark-smoke threshold summaries remain stable across all packs.
