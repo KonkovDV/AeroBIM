@@ -145,6 +145,31 @@ async function assertIssueReviewState(page) {
   };
 }
 
+async function assertPresetScopeState(page) {
+  const presetName = "Smoke Team Preset";
+
+  await page.getByLabel("Preset name").fill(presetName);
+  await page.getByLabel("Preset scope").selectOption("team");
+  await page.getByRole("button", { name: "Save preset" }).click();
+
+  const presetChip = page
+    .locator(".preset-chip")
+    .filter({ has: page.getByRole("button", { name: presetName }) })
+    .first();
+  await presetChip.waitFor({ state: "visible", timeout: 30_000 });
+
+  const scopeBadge = presetChip.locator(".preset-scope-badge").first();
+  const scopeText = (await scopeBadge.textContent())?.trim().toLowerCase();
+  if (scopeText !== "team") {
+    throw new Error(`Expected preset scope badge to be team, got: ${scopeText ?? "<empty>"}`);
+  }
+
+  return {
+    presetName,
+    scope: scopeText,
+  };
+}
+
 async function assertClashReviewState(page, clashCard) {
   if (!(await clashCard.count())) {
     return {
@@ -202,6 +227,7 @@ async function main() {
       timeout: 30_000,
     });
     const issueChecks = await assertIssueReviewState(page);
+    const presetChecks = await assertPresetScopeState(page);
     await page.screenshot({ path: issueScreenshotPath, fullPage: true });
 
     const clashCard = page.locator(".collection-card-button").first();
@@ -224,6 +250,7 @@ async function main() {
           {
             issue: issueChecks,
             clash: clashChecks,
+            presets: presetChecks,
           },
         ),
         null,
