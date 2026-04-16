@@ -11,6 +11,18 @@ on:
         description: "Warmup iterations per benchmark pack"
         required: false
         default: "0"
+      benchmark_threshold_mode:
+        description: "Threshold gate mode for benchmark evaluation"
+        required: true
+        type: choice
+        default: advisory
+        options:
+          - advisory
+          - enforced
+      benchmark_threshold_profile:
+        description: "Path (relative to backend/) to threshold profile JSON"
+        required: false
+        default: "../samples/benchmarks/benchmark-thresholds.json"
       run_live_smoke:
         description: "Run the optional live review smoke job"
         required: true
@@ -77,11 +89,23 @@ jobs:
             > ../artifacts/release-readiness/benchmark-stress-multisource.json
       - name: Verify benchmark helper tests
         run: pytest tests/test_benchmark_project_package.py -v --tb=short
+      - name: Evaluate release benchmark thresholds
+        run: |
+          python -m aerobim.tools.benchmark_threshold_gate \
+            --artifact-dir ../artifacts/release-readiness \
+            --threshold-profile "${{ inputs.benchmark_threshold_profile }}" \
+            --mode "${{ inputs.benchmark_threshold_mode }}" \
+            --markdown-output ../artifacts/release-readiness/benchmark-threshold-summary.md \
+            > ../artifacts/release-readiness/benchmark-threshold-evaluation.json
+          cat ../artifacts/release-readiness/benchmark-threshold-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark artifacts
         uses: actions/upload-artifact@v4
         with:
           name: release-readiness-benchmark-artifacts
-          path: artifacts/release-readiness/benchmark-*.json
+          path: |
+            artifacts/release-readiness/benchmark-*.json
+            artifacts/release-readiness/benchmark-threshold-evaluation.json
+            artifacts/release-readiness/benchmark-threshold-summary.md
 
   live-review-smoke:
     if: ${{ inputs.run_live_smoke }}
