@@ -169,6 +169,41 @@ class BcfExportTests(unittest.TestCase):
             names = zf.namelist()
             self.assertEqual(names, ["bcf.version"])
 
+    def test_bcf_exports_openrebar_cross_document_warning(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-openrebar-warning",
+            ifc_path=Path("test.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(
+                ValidationIssue(
+                    rule_id="OPENREBAR-PROVENANCE-DIGEST",
+                    severity=Severity.WARNING,
+                    message="OpenRebar provenance digest mismatch",
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    target_ref="SLAB-03",
+                ),
+            ),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=1,
+                error_count=0,
+                warning_count=1,
+                passed=True,
+            ),
+        )
+
+        bcf_bytes = export_bcf(report)
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            self.assertEqual(len(markup_files), 1)
+            markup_xml = zf.read(markup_files[0]).decode("utf-8")
+            self.assertIn("OPENREBAR-PROVENANCE-DIGEST", markup_xml)
+            self.assertIn("CoordinationWarning", markup_xml)
+
     def test_bcf_exports_clash_results_as_additional_topics(self) -> None:
         from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
@@ -273,6 +308,21 @@ class ClashDetectorPortTests(unittest.TestCase):
         results = detector.detect(ifc_path)
         # ifcclash not installed → returns empty list (graceful fallback)
         self.assertIsInstance(results, list)
+
+    def test_clash_detector_runtime_failure_falls_back_to_empty(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        with patch.object(detector, "_run_clash_detection", side_effect=AssertionError("geom init failed")):
+            results = detector.detect(ifc_path)
+
+        self.assertEqual(results, [])
 
     def test_clash_detector_cleans_temporary_output_directory(self) -> None:
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
