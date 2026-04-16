@@ -26,7 +26,13 @@ from dataclasses import dataclass
 from uuid import uuid4
 from xml.etree.ElementTree import Element, SubElement, tostring
 
-from aerobim.domain.models import ClashResult, Severity, ValidationReport
+from aerobim.domain.models import (
+    ClashResult,
+    FindingCategory,
+    Severity,
+    ValidationIssue,
+    ValidationReport,
+)
 
 _BCF_MARKUP_NS = "http://www.buildingsmart-tech.org/bcf/markup/2.1"
 _BCF_VERSION_NS = "http://www.buildingsmart-tech.org/bcf/version/2.1"
@@ -72,10 +78,16 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
     topics: list[_BcfTopicPayload] = []
 
     for issue in report.issues:
-        if issue.severity != Severity.ERROR:
+        if not _should_export_issue_as_bcf_topic(issue):
             continue
-        reference_links = tuple(link for link in (issue.element_guid,) if link)
-        selected_guids = reference_links
+
+        reference_links = tuple(
+            link for link in (issue.element_guid, issue.target_ref) if link
+        )
+        selected_guids = (issue.element_guid,) if issue.element_guid else ()
+        topic_type = (
+            "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
+        )
         topics.append(
             _BcfTopicPayload(
                 topic_guid=str(uuid4()),
@@ -86,7 +98,7 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
                 creation_author="aerobim-backend",
                 reference_links=reference_links,
                 selected_guids=selected_guids,
-                topic_type="Error",
+                topic_type=topic_type,
             )
         )
 
@@ -94,6 +106,20 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
         topics.append(_clash_topic_payload(report, clash, index))
 
     return topics
+
+
+def _should_export_issue_as_bcf_topic(issue: ValidationIssue) -> bool:
+    if issue.severity == Severity.ERROR:
+        return True
+
+    # OpenRebar cross-document warnings are actionable coordination findings.
+    if issue.severity != Severity.WARNING:
+        return False
+
+    rule_id = (issue.rule_id or "").upper()
+    return issue.category == FindingCategory.CROSS_DOCUMENT and rule_id.startswith(
+        "OPENREBAR-"
+    )
 
 
 def _clash_topic_payload(
