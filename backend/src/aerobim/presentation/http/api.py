@@ -44,6 +44,8 @@ class AnalyzeProjectPackageRequest(BaseModel):
     calculation_text: str = Field(default="", max_length=50_000)
     calculation_path: str | None = None
     drawings: list[DrawingPayload] = Field(default_factory=list)
+    reinforcement_report_path: str | None = None
+    reinforcement_source_digest: str | None = Field(default=None, max_length=128)
     project_name: str | None = None
     discipline: str | None = None
 
@@ -149,6 +151,11 @@ def create_http_app(container: Container):
         )
 
     def _build_project_package_request(payload: AnalyzeProjectPackageRequest) -> ValidationRequest:
+        reinforcement_source_digest = (
+            payload.reinforcement_source_digest.strip().lower()
+            if payload.reinforcement_source_digest
+            else None
+        )
         return ValidationRequest(
             request_id=payload.request_id or uuid4().hex,
             ifc_path=_resolve_safe_path(payload.ifc_path),
@@ -181,6 +188,10 @@ def create_http_app(container: Container):
                 )
                 for drawing in payload.drawings
             ),
+            reinforcement_report_path=_resolve_safe_path(payload.reinforcement_report_path)
+            if payload.reinforcement_report_path
+            else None,
+            reinforcement_source_digest=reinforcement_source_digest,
             project_name=payload.project_name,
             discipline=payload.discipline,
         )

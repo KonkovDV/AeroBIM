@@ -154,6 +154,8 @@ class ValidationRequest:
     calculation_source: RequirementSource | None = None
     drawing_sources: tuple[DrawingSource, ...] = ()
     ids_path: Path | None = None
+    reinforcement_report_path: Path | None = None
+    reinforcement_source_digest: str | None = None
     origin: str = "api"
     project_name: str | None = None
     discipline: str | None = None
