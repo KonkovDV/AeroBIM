@@ -231,6 +231,12 @@ Twentieth tranche completed in the same session:
 - threshold evaluation summary is appended to workflow output and published as an artifact;
 - baseline threshold governance now has a deterministic machine-readable profile instead of ad hoc interpretation.
 
+Twenty-first tranche completed in the same session:
+
+- release-readiness benchmark rails now evaluate thresholds with configurable mode (`advisory` or `enforced`);
+- threshold profile path is now configurable per workflow run for controlled policy experiments;
+- threshold evaluation outputs are now attached to release-readiness artifacts alongside benchmark payloads.
+
 ### Goal
 
 Make reports operationally manageable, not just persistable.
@@ -274,4 +280,4 @@ Add a thin Revit-side client only after the server-side kernel and review surfac
 
 1. decide the policy boundary for flipping `require_live_smoke_gate` from optional to default based on stability evidence from several release-readiness runs;
 2. consider richer operator workflows on top of the new frontend filters, such as externally stored or role-scoped shared bookmarks, only if real review volume justifies them;
-3. evolve threshold mode from advisory to enforced only after several CI benchmark-smoke threshold summaries remain stable across all packs.
+3. define promotion criteria for release-readiness threshold mode (`advisory` → `enforced`) based on observed pack stability windows.
