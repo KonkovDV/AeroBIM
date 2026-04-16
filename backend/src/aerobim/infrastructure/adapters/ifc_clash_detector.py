@@ -28,6 +28,11 @@ class IfcClashDetector:
             return self._run_clash_detection(ifc_path)
         except ImportError:
             return []
+        except Exception:
+            # IfcClash can fail at runtime when optional geometry engines or
+            # native dependencies are partially available. Keep clash detection
+            # as a non-blocking capability for the broader validation pipeline.
+            return []
 
     def _run_clash_detection(self, ifc_path: Path) -> list[ClashResult]:
         """Attempt IfcClash-based detection; raise ImportError if deps missing."""
