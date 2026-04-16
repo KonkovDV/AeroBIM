@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
+import hashlib
+import json
 from uuid import uuid4
 
 from aerobim.domain.models import (
@@ -35,6 +37,7 @@ from aerobim.domain.ports import (
 _VISION_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _VISION_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
 _DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg"}
+_OPENREBAR_REPORT_CONTRACT_ID = "OpenRebar.reinforcement.report.v1"
 _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "m": ("m", 1.0),
     "м": ("m", 1.0),
@@ -109,12 +112,21 @@ class AnalyzeProjectPackageUseCase:
         )
         drawing_assets = tuple(self._collect_drawing_assets(request))
         cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
+        reinforcement_provenance_issues = tuple(
+            self._collect_openrebar_provenance_issues(request)
+        )
         clash_results = tuple(
             self._clash_detector.detect(request.ifc_path) if self._clash_detector else []
         )
         issues_with_remarks = tuple(
             self._attach_remarks(
-                [*ifc_issues, *drawing_issues, *cross_document_issues, *ids_issues]
+                [
+                    *ifc_issues,
+                    *drawing_issues,
+                    *cross_document_issues,
+                    *reinforcement_provenance_issues,
+                    *ids_issues,
+                ]
             )
         )
 
@@ -156,6 +168,143 @@ class AnalyzeProjectPackageUseCase:
         if self._ids_validator is None:
             raise RuntimeError("IDS validation requested but no ids validator is configured")
         return self._ids_validator.validate(request.ids_path, request.ifc_path)
+
+    def _collect_openrebar_provenance_issues(
+        self,
+        request: ValidationRequest,
+    ) -> list[ValidationIssue]:
+        if request.reinforcement_report_path is None:
+            return []
+
+        report_path = request.reinforcement_report_path
+        if not report_path.exists():
+            raise FileNotFoundError(report_path)
+
+        try:
+            report_payload = json.loads(report_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"Invalid OpenRebar reinforcement report JSON: {report_path}"
+            ) from exc
+
+        if not isinstance(report_payload, dict):
+            raise ValueError(
+                "OpenRebar reinforcement report must be a JSON object"
+            )
+
+        issues: list[ValidationIssue] = []
+        contract_id = str(report_payload.get("contractId", "")).strip()
+        metadata = report_payload.get("metadata")
+        metadata_dict = metadata if isinstance(metadata, dict) else {}
+        project_code = str(metadata_dict.get("projectCode", "")).strip()
+        slab_id = str(metadata_dict.get("slabId", "")).strip() or None
+
+        if contract_id != _OPENREBAR_REPORT_CONTRACT_ID:
+            issues.append(
+                ValidationIssue(
+                    rule_id="OPENREBAR-CONTRACT",
+                    severity=Severity.WARNING,
+                    message=(
+                        "OpenRebar report contractId is unexpected; downstream "
+                        "integration guarantees may not hold."
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    target_ref=slab_id,
+                    property_name="contractId",
+                    expected_value=_OPENREBAR_REPORT_CONTRACT_ID,
+                    observed_value=contract_id or "<missing>",
+                )
+            )
+
+        optimization = report_payload.get("analysisProvenance")
+        optimization_dict = optimization if isinstance(optimization, dict) else {}
+        optimization_node = optimization_dict.get("optimization")
+        optimization_payload = (
+            optimization_node if isinstance(optimization_node, dict) else {}
+        )
+        fallback_solver_used = optimization_payload.get("anyFallbackMasterSolverUsed")
+
+        if fallback_solver_used is True:
+            issues.append(
+                ValidationIssue(
+                    rule_id="OPENREBAR-OPT-FALLBACK",
+                    severity=Severity.WARNING,
+                    message=(
+                        "OpenRebar optimization used a fallback master solver; "
+                        "waste metrics may deviate from the preferred HiGHS path."
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    target_ref=slab_id,
+                    property_name=(
+                        "analysisProvenance.optimization.anyFallbackMasterSolverUsed"
+                    ),
+                    expected_value="false",
+                    observed_value="true",
+                )
+            )
+
+        if request.project_name and project_code:
+            if request.project_name.strip().lower() != project_code.lower():
+                issues.append(
+                    ValidationIssue(
+                        rule_id="OPENREBAR-PROJECT-CODE",
+                        severity=Severity.WARNING,
+                        message=(
+                            "OpenRebar report projectCode differs from current "
+                            "AeroBIM project context."
+                        ),
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        target_ref=slab_id,
+                        property_name="metadata.projectCode",
+                        expected_value=request.project_name,
+                        observed_value=project_code,
+                    )
+                )
+
+        observed_digest = self._build_openrebar_provenance_digest(report_payload)
+        if request.reinforcement_source_digest:
+            expected_digest = request.reinforcement_source_digest.strip().lower()
+            if expected_digest and expected_digest != observed_digest:
+                issues.append(
+                    ValidationIssue(
+                        rule_id="OPENREBAR-PROVENANCE-DIGEST",
+                        severity=Severity.WARNING,
+                        message=(
+                            "OpenRebar provenance digest mismatch: reinforcement "
+                            "model may be stale relative to current source package."
+                        ),
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        target_ref=slab_id,
+                        property_name="reinforcementSourceDigest",
+                        expected_value=expected_digest,
+                        observed_value=observed_digest,
+                    )
+                )
+
+        return issues
+
+    def _build_openrebar_provenance_digest(
+        self,
+        report_payload: dict[str, object],
+    ) -> str:
+        canonical_payload = {
+            "contractId": report_payload.get("contractId"),
+            "schemaVersion": report_payload.get("schemaVersion"),
+            "generatedAtUtc": report_payload.get("generatedAtUtc"),
+            "isolineFileName": report_payload.get("isolineFileName"),
+            "isolineFileFormat": report_payload.get("isolineFileFormat"),
+            "metadata": report_payload.get("metadata"),
+            "normativeProfile": report_payload.get("normativeProfile"),
+            "analysisProvenance": report_payload.get("analysisProvenance"),
+            "summary": report_payload.get("summary"),
+        }
+        normalized = json.dumps(
+            canonical_payload,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        )
+        return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
     def _collect_synthesized_requirements(
         self, request: ValidationRequest
