@@ -399,16 +399,19 @@ describe("App", () => {
     expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
 
     fireEvent.change(screen.getByLabelText("Preset name"), { target: { value: "Tower Failed" } });
+    fireEvent.change(screen.getByLabelText("Preset scope"), { target: { value: "team" } });
     fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "tower" } });
     fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "arch" } });
     fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "failed" } });
     fireEvent.click(screen.getByRole("button", { name: "Save preset" }));
 
     expect(screen.getByRole("button", { name: "Tower Failed" })).toBeTruthy();
+    expect(screen.getByText("team")).toBeTruthy();
     const savedPresetsRaw = window.localStorage.getItem(REPORT_FILTER_PRESETS_STORAGE_KEY);
     expect(savedPresetsRaw).not.toBeNull();
-    const savedPresets = JSON.parse(savedPresetsRaw ?? "[]") as Array<{ name: string }>;
+    const savedPresets = JSON.parse(savedPresetsRaw ?? "[]") as Array<{ name: string; scope?: string }>;
     expect(savedPresets.some((preset) => preset.name === "Tower Failed")).toBe(true);
+    expect(savedPresets.some((preset) => preset.name === "Tower Failed" && preset.scope === "team")).toBe(true);
 
     fireEvent.click(screen.getByRole("button", { name: "Remove preset Tower Failed" }));
     expect(screen.queryByRole("button", { name: "Tower Failed" })).toBeNull();
@@ -454,6 +457,7 @@ describe("App", () => {
 
     expect(await screen.findByText("Preset JSON imported")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Tower Failed" })).toBeTruthy();
+    expect(screen.getByText("team")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Tower Failed" }));
     expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("tower");

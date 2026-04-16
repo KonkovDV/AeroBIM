@@ -13,17 +13,24 @@ type PersistedReportFilters = {
   status: "all" | "passed" | "failed";
 };
 
+type PresetScope = "local" | "team";
+
 type ShareLinkState = "idle" | "copied" | "failed";
 type PresetTransferState = "idle" | "exported" | "downloaded" | "imported" | "failed";
 
 type ReportFilterPreset = {
   id: string;
   name: string;
+  scope: PresetScope;
   filters: PersistedReportFilters;
 };
 
 function normalizeStatus(value: string | null | undefined): "all" | "passed" | "failed" {
   return value === "passed" || value === "failed" ? value : "all";
+}
+
+function normalizePresetScope(value: unknown, fallback: PresetScope = "local"): PresetScope {
+  return value === "team" || value === "local" ? value : fallback;
 }
 
 function readUrlReportFilters(): Partial<PersistedReportFilters> {
@@ -101,6 +108,7 @@ function readPersistedFilterPresets(): ReportFilterPreset[] {
         return {
           id: preset.id as string,
           name: preset.name as string,
+          scope: normalizePresetScope((preset as { scope?: unknown }).scope, "local"),
           filters: {
             project: typeof filters.project === "string" ? filters.project : "",
             discipline: typeof filters.discipline === "string" ? filters.discipline : "",
@@ -247,6 +255,7 @@ export default function App() {
   const [presetTransferState, setPresetTransferState] = useState<PresetTransferState>("idle");
   const [presetTransferDraft, setPresetTransferDraft] = useState("");
   const [presetNameDraft, setPresetNameDraft] = useState("");
+  const [presetScopeDraft, setPresetScopeDraft] = useState<PresetScope>("local");
   const [filterPresets, setFilterPresets] = useState<ReportFilterPreset[]>(readPersistedFilterPresets());
   const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
   const [disciplineFilter, setDisciplineFilter] = useState(persistedFilters.discipline);
@@ -422,6 +431,7 @@ export default function App() {
         updated[existingIndex] = {
           ...updated[existingIndex],
           name,
+          scope: presetScopeDraft,
           filters: currentFilters,
         };
         return updated;
@@ -432,6 +442,7 @@ export default function App() {
         {
           id: `preset-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           name,
+          scope: presetScopeDraft,
           filters: currentFilters,
         },
       ];
@@ -458,6 +469,7 @@ export default function App() {
     try {
       const parsed = JSON.parse(raw) as Array<{
         name?: unknown;
+        scope?: unknown;
         filters?: Partial<PersistedReportFilters>;
       }>;
 
@@ -471,6 +483,7 @@ export default function App() {
           const filters = entry.filters as Partial<PersistedReportFilters>;
           return {
             name: (entry.name as string).trim(),
+            scope: normalizePresetScope(entry.scope, "team"),
             filters: {
               project: typeof filters.project === "string" ? filters.project : "",
               discipline: typeof filters.discipline === "string" ? filters.discipline : "",
@@ -493,6 +506,7 @@ export default function App() {
             merged[existingIndex] = {
               ...merged[existingIndex],
               name: incoming.name,
+              scope: incoming.scope,
               filters: incoming.filters,
             };
             return;
@@ -501,6 +515,7 @@ export default function App() {
           merged.push({
             id: `preset-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             name: incoming.name,
+            scope: incoming.scope,
             filters: incoming.filters,
           });
         });
@@ -522,6 +537,7 @@ export default function App() {
 
     const payload = filterPresets.map((preset) => ({
       name: preset.name,
+      scope: preset.scope,
       filters: preset.filters,
     }));
 
@@ -542,6 +558,7 @@ export default function App() {
     try {
       const payload = filterPresets.map((preset) => ({
         name: preset.name,
+        scope: preset.scope,
         filters: preset.filters,
       }));
       const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -730,6 +747,15 @@ export default function App() {
               onChange={(event) => setPresetNameDraft(event.target.value)}
               placeholder="Preset name"
             />
+            <select
+              className="search-input preset-scope-select"
+              aria-label="Preset scope"
+              value={presetScopeDraft}
+              onChange={(event) => setPresetScopeDraft(event.target.value as PresetScope)}
+            >
+              <option value="local">Local scope</option>
+              <option value="team">Team scope</option>
+            </select>
             <button
               type="button"
               className="toolbar-button"
@@ -808,6 +834,7 @@ export default function App() {
                 >
                   {preset.name}
                 </button>
+                <span className={`preset-scope-badge preset-scope-${preset.scope}`}>{preset.scope}</span>
                 <button
                   type="button"
                   className="toolbar-button preset-remove"
