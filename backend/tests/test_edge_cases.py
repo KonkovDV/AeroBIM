@@ -91,7 +91,7 @@ class NarrativeSynthesizerEdgeCaseTests(unittest.TestCase):
 
     def test_area_pattern_extraction_russian(self) -> None:
         source = RequirementSource(
-            text="Помещение A101 площадь не менее 25 м2",
+            text="Помещение OpenRebar площадь не менее 25 м2",
             source_kind=SourceKind.TECHNICAL_SPECIFICATION,
         )
         result = self.synthesizer.synthesize(source)
