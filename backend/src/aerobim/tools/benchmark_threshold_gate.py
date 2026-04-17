@@ -66,9 +66,15 @@ def evaluate_thresholds(
         violations: list[str] = []
         if max_avg_ms is not None and avg_ms is not None and avg_ms > max_avg_ms:
             violations.append(f"avg_ms {avg_ms} exceeds max_avg_ms {max_avg_ms}")
-        if min_reports_per_second is not None and reports_per_second is not None and reports_per_second < min_reports_per_second:
+        if (
+            min_reports_per_second is not None
+            and reports_per_second is not None
+            and reports_per_second < min_reports_per_second
+        ):
             violations.append(
-                f"reports_per_second {reports_per_second} below min_reports_per_second {min_reports_per_second}"
+                "reports_per_second "
+                f"{reports_per_second} below min_reports_per_second "
+                f"{min_reports_per_second}"
             )
 
         status = "pass" if not violations else "failed"
@@ -155,11 +161,25 @@ def run_threshold_gate(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate benchmark-smoke outputs against a threshold profile")
-    parser.add_argument("--artifact-dir", type=Path, required=True, help="Directory containing benchmark JSON artifacts")
-    parser.add_argument("--threshold-profile", type=Path, required=True, help="Path to benchmark threshold profile JSON")
+    parser = argparse.ArgumentParser(
+        description="Evaluate benchmark-smoke outputs against a threshold profile"
+    )
+    parser.add_argument(
+        "--artifact-dir",
+        type=Path,
+        required=True,
+        help="Directory containing benchmark JSON artifacts",
+    )
+    parser.add_argument(
+        "--threshold-profile",
+        type=Path,
+        required=True,
+        help="Path to benchmark threshold profile JSON",
+    )
     parser.add_argument("--mode", choices=["advisory", "enforced"], default="advisory")
-    parser.add_argument("--markdown-output", type=Path, default=None, help="Optional path to write markdown summary")
+    parser.add_argument(
+        "--markdown-output", type=Path, default=None, help="Optional path to write markdown summary"
+    )
     args = parser.parse_args()
 
     payload = run_threshold_gate(args.artifact_dir, args.threshold_profile, args.mode)

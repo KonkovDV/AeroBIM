@@ -47,8 +47,12 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
             spec_path = root / "samples" / "specifications" / "spec.txt"
 
             ifc_path.write_text("ISO-10303-21;\nEND-ISO-10303-21;\n", encoding="utf-8")
-            requirement_path.write_text("REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60\n", encoding="utf-8")
-            drawing_path.write_text("ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50\n", encoding="utf-8")
+            requirement_path.write_text(
+                "REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60\n", encoding="utf-8"
+            )
+            drawing_path.write_text(
+                "ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50\n", encoding="utf-8"
+            )
             spec_path.write_text("Wall fire rating must be REI60\n", encoding="utf-8")
 
             manifest_path = root / "samples" / "benchmarks" / "baseline.json"
@@ -85,7 +89,9 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
             self.assertEqual(benchmark_pack.request.discipline, "architecture")
             self.assertTrue(benchmark_pack.request.ifc_path.samefile(ifc_path))
             assert benchmark_pack.request.requirement_source.path is not None
-            self.assertTrue(benchmark_pack.request.requirement_source.path.samefile(requirement_path))
+            self.assertTrue(
+                benchmark_pack.request.requirement_source.path.samefile(requirement_path)
+            )
             assert benchmark_pack.request.technical_spec_source is not None
             assert benchmark_pack.request.technical_spec_source.path is not None
             self.assertTrue(benchmark_pack.request.technical_spec_source.path.samefile(spec_path))
@@ -98,8 +104,18 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
 
         summary = summarize_benchmark_runs(
             [
-                {"elapsed_ms": 100.0, "report_id": "a" * 32, "issue_count": 1, "requirement_count": 2},
-                {"elapsed_ms": 300.0, "report_id": "b" * 32, "issue_count": 2, "requirement_count": 3},
+                {
+                    "elapsed_ms": 100.0,
+                    "report_id": "a" * 32,
+                    "issue_count": 1,
+                    "requirement_count": 2,
+                },
+                {
+                    "elapsed_ms": 300.0,
+                    "report_id": "b" * 32,
+                    "issue_count": 2,
+                    "requirement_count": 3,
+                },
             ]
         )
 
@@ -140,7 +156,9 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
         request = ValidationRequest(
             request_id="bench-001",
             ifc_path=Path("sample.ifc"),
-            requirement_source=RequirementSource(text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"),
+            requirement_source=RequirementSource(
+                text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+            ),
             project_name="Residential Tower Alpha",
             discipline="architecture",
         )

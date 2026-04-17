@@ -1,16 +1,16 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from datetime import UTC, datetime
-import hashlib
-import json
 from uuid import uuid4
 
 from aerobim.domain.models import (
     ComparisonOperator,
-    DrawingAsset,
     DrawingAnnotation,
+    DrawingAsset,
     DrawingSource,
     FindingCategory,
     ParsedRequirement,
@@ -207,14 +207,10 @@ class AnalyzeProjectPackageUseCase:
         try:
             report_payload = json.loads(report_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
-            raise ValueError(
-                f"Invalid OpenRebar reinforcement report JSON: {report_path}"
-            ) from exc
+            raise ValueError(f"Invalid OpenRebar reinforcement report JSON: {report_path}") from exc
 
         if not isinstance(report_payload, dict):
-            raise ValueError(
-                "OpenRebar reinforcement report must be a JSON object"
-            )
+            raise ValueError("OpenRebar reinforcement report must be a JSON object")
 
         issues: list[ValidationIssue] = []
         contract_id = str(report_payload.get("contractId", "")).strip()
@@ -243,13 +239,9 @@ class AnalyzeProjectPackageUseCase:
         optimization = report_payload.get("analysisProvenance")
         optimization_dict = optimization if isinstance(optimization, dict) else {}
         optimization_node = optimization_dict.get("optimization")
-        optimization_payload = (
-            optimization_node if isinstance(optimization_node, dict) else {}
-        )
+        optimization_payload = optimization_node if isinstance(optimization_node, dict) else {}
         fallback_solver_used = optimization_payload.get("anyFallbackMasterSolverUsed")
-        master_problem_strategy = str(
-            optimization_payload.get("masterProblemStrategy", "")
-        ).strip()
+        master_problem_strategy = str(optimization_payload.get("masterProblemStrategy", "")).strip()
 
         if fallback_solver_used is True:
             issues.append(
@@ -262,9 +254,7 @@ class AnalyzeProjectPackageUseCase:
                     ),
                     category=FindingCategory.CROSS_DOCUMENT,
                     target_ref=slab_id,
-                    property_name=(
-                        "analysisProvenance.optimization.anyFallbackMasterSolverUsed"
-                    ),
+                    property_name=("analysisProvenance.optimization.anyFallbackMasterSolverUsed"),
                     expected_value="false",
                     observed_value="true",
                 )
