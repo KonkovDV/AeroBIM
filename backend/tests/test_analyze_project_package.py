@@ -430,7 +430,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                 drawing_sources=(
                     DrawingSource(
                         text="",
-                        path=Path("sheet-a101.pdf"),
+                        path=Path("sheet-openrebar.pdf"),
                         sheet_id="A-101",
                         format="pdf",
                     ),
@@ -443,7 +443,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         self.assertEqual(report.drawing_annotations[0].sheet_id, "A-101")
         self.assertEqual(len(report.drawing_assets), 1)
         self.assertEqual(report.drawing_assets[0].sheet_id, "A-101")
-        self.assertEqual(report.drawing_assets[0].source_path, Path("sheet-a101.pdf"))
+        self.assertEqual(report.drawing_assets[0].source_path, Path("sheet-openrebar.pdf"))
 
     def test_execute_merges_structured_and_vision_annotations(self) -> None:
         store = FakeStore()
@@ -473,7 +473,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                 drawing_sources=(
                     DrawingSource(
                         text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50",
-                        path=Path("sheet-a101.pdf"),
+                        path=Path("sheet-openrebar.pdf"),
                         sheet_id="A-101",
                         format="pdf",
                     ),
