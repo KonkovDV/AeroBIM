@@ -10,7 +10,13 @@ import pymupdf
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
-from aerobim.domain.models import DrawingSource, ParsedRequirement, RequirementSource, ValidationRequest, ValidationIssue
+from aerobim.domain.models import (
+    DrawingSource,
+    ParsedRequirement,
+    RequirementSource,
+    ValidationIssue,
+    ValidationRequest,
+)
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
 
@@ -43,7 +49,9 @@ class _NoOpVisionDrawingAnalyzer:
 
 
 class _NoOpIfcValidator:
-    def validate(self, _ifc_path: Path, _requirements: list[ParsedRequirement]) -> list[ValidationIssue]:
+    def validate(
+        self, _ifc_path: Path, _requirements: list[ParsedRequirement]
+    ) -> list[ValidationIssue]:
         return []
 
 
@@ -106,7 +114,9 @@ class AnalyzeProjectPackageDrawingAssetIntegrationTests(unittest.TestCase):
                 self.assertIsNotNone(asset.stored_filename)
                 self.assertGreater(asset.coordinate_width or 0, 0)
                 self.assertGreater(asset.coordinate_height or 0, 0)
-                preview_path = storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+                preview_path = (
+                    storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+                )
                 self.assertTrue(preview_path.exists())
 
     def test_execute_persists_raster_drawing_asset_preview(self) -> None:
@@ -145,5 +155,7 @@ class AnalyzeProjectPackageDrawingAssetIntegrationTests(unittest.TestCase):
             self.assertEqual(asset.coordinate_height, 60)
             self.assertIsNone(asset.source_path)
             self.assertIsNotNone(asset.stored_filename)
-            preview_path = storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+            preview_path = (
+                storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+            )
             self.assertTrue(preview_path.exists())

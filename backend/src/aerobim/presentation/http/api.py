@@ -128,7 +128,9 @@ def create_http_app(container: Container):
                 detail="Stored IFC source escapes storage boundary",
             )
         if not resolved.exists():
-            raise HTTPException(status_code=404, detail=f"IFC source for report {report_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"IFC source for report {report_id} not found"
+            )
         return resolved
 
     def _validate_drawing_asset_id(asset_id: str) -> None:
@@ -140,16 +142,22 @@ def create_http_app(container: Container):
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
 
-        drawing_asset = next((asset for asset in report.drawing_assets if asset.asset_id == asset_id), None)
+        drawing_asset = next(
+            (asset for asset in report.drawing_assets if asset.asset_id == asset_id), None
+        )
         if drawing_asset is None or not drawing_asset.stored_filename:
             raise HTTPException(status_code=404, detail=f"Drawing asset {asset_id} not found")
 
         asset_root = (settings.storage_dir / "drawing-assets" / report_id).resolve()
         resolved = (asset_root / drawing_asset.stored_filename).resolve()
         if not resolved.is_relative_to(asset_root):
-            raise HTTPException(status_code=409, detail="Stored drawing asset escapes storage boundary")
+            raise HTTPException(
+                status_code=409, detail="Stored drawing asset escapes storage boundary"
+            )
         if not resolved.exists():
-            raise HTTPException(status_code=404, detail=f"Drawing asset preview for {asset_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Drawing asset preview for {asset_id} not found"
+            )
         return drawing_asset, resolved
 
     def _build_requirement_source(
@@ -170,9 +178,7 @@ def create_http_app(container: Container):
         try:
             payload = json.loads(report_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
-            raise ValueError(
-                f"Invalid OpenRebar reinforcement report JSON: {report_path}"
-            ) from exc
+            raise ValueError(f"Invalid OpenRebar reinforcement report JSON: {report_path}") from exc
         if not isinstance(payload, dict):
             raise ValueError("OpenRebar reinforcement report must be a JSON object")
         return payload
@@ -334,10 +340,14 @@ def create_http_app(container: Container):
     @app.get("/v1/analyze/project-package/jobs/{job_id}")
     def get_analyze_project_package_job(job_id: str) -> dict[str, object]:
         _validate_job_id(job_id)
-        get_job_status_use_case = container.resolve(Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE)
+        get_job_status_use_case = container.resolve(
+            Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
+        )
         job = get_job_status_use_case.execute(job_id)
         if job is None:
-            raise HTTPException(status_code=404, detail=f"Analyze project-package job {job_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Analyze project-package job {job_id} not found"
+            )
         return _serialize_analyze_project_package_job(job)
 
     @app.get("/v1/reports")

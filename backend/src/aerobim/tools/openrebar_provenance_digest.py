@@ -17,9 +17,7 @@ def compute_openrebar_provenance_digest(report_path: Path) -> dict[str, object]:
     try:
         payload = json.loads(resolved_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        raise ValueError(
-            f"Invalid OpenRebar reinforcement report JSON: {resolved_path}"
-        ) from exc
+        raise ValueError(f"Invalid OpenRebar reinforcement report JSON: {resolved_path}") from exc
 
     if not isinstance(payload, dict):
         raise ValueError("OpenRebar reinforcement report must be a JSON object")

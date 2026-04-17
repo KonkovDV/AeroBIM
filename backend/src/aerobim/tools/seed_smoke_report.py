@@ -57,7 +57,9 @@ def _extract_product_guids(ifc_path: Path) -> list[str]:
     guids = [getattr(entity, "GlobalId", "") for entity in model.by_type("IfcProduct")]
     materialized = [guid for guid in guids if guid]
     if len(materialized) < 2:
-        raise ValueError("Smoke report seeding requires an IFC fixture with at least two product GUIDs")
+        raise ValueError(
+            "Smoke report seeding requires an IFC fixture with at least two product GUIDs"
+        )
     return materialized
 
 
@@ -220,9 +222,15 @@ def build_cli_payload(report: ValidationReport) -> dict[str, object]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Seed a deterministic persisted report for AeroBIM runtime smoke")
-    parser.add_argument("--storage-dir", type=Path, default=None, help="Target AEROBIM storage directory")
-    parser.add_argument("--ifc-fixture", type=Path, default=None, help="Override the default IFC fixture path")
+    parser = argparse.ArgumentParser(
+        description="Seed a deterministic persisted report for AeroBIM runtime smoke"
+    )
+    parser.add_argument(
+        "--storage-dir", type=Path, default=None, help="Target AEROBIM storage directory"
+    )
+    parser.add_argument(
+        "--ifc-fixture", type=Path, default=None, help="Override the default IFC fixture path"
+    )
     args = parser.parse_args()
 
     report = seed_smoke_report(args.storage_dir or default_storage_dir(), args.ifc_fixture)

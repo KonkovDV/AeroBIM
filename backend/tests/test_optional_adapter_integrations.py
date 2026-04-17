@@ -25,7 +25,9 @@ def _has_optional_module(module_name: str) -> bool:
 
 def _build_geometric_ifc_fixture(target_path: Path) -> Path:
     model = ifcopenshell.api.run("project.create_file")
-    project = ifcopenshell.api.run("root.create_entity", model, ifc_class="IfcProject", name="Probe")
+    project = ifcopenshell.api.run(
+        "root.create_entity", model, ifc_class="IfcProject", name="Probe"
+    )
     length = ifcopenshell.api.run("unit.add_si_unit", model, unit_type="LENGTHUNIT", prefix="MILLI")
     area = ifcopenshell.api.run("unit.add_si_unit", model, unit_type="AREAUNIT")
     ifcopenshell.api.run("unit.assign_unit", model, units=[length, area])
@@ -41,15 +43,25 @@ def _build_geometric_ifc_fixture(target_path: Path) -> Path:
     )
 
     site = ifcopenshell.api.run("root.create_entity", model, ifc_class="IfcSite", name="Site")
-    building = ifcopenshell.api.run("root.create_entity", model, ifc_class="IfcBuilding", name="Building")
-    storey = ifcopenshell.api.run("root.create_entity", model, ifc_class="IfcBuildingStorey", name="Storey")
+    building = ifcopenshell.api.run(
+        "root.create_entity", model, ifc_class="IfcBuilding", name="Building"
+    )
+    storey = ifcopenshell.api.run(
+        "root.create_entity", model, ifc_class="IfcBuildingStorey", name="Storey"
+    )
     ifcopenshell.api.run("aggregate.assign_object", model, products=[site], relating_object=project)
-    ifcopenshell.api.run("aggregate.assign_object", model, products=[building], relating_object=site)
-    ifcopenshell.api.run("aggregate.assign_object", model, products=[storey], relating_object=building)
+    ifcopenshell.api.run(
+        "aggregate.assign_object", model, products=[building], relating_object=site
+    )
+    ifcopenshell.api.run(
+        "aggregate.assign_object", model, products=[storey], relating_object=building
+    )
 
     wall1 = ifcopenshell.api.run("root.create_entity", model, ifc_class="IfcWall", name="Wall-1")
     wall2 = ifcopenshell.api.run("root.create_entity", model, ifc_class="IfcWall", name="Wall-2")
-    ifcopenshell.api.run("spatial.assign_container", model, products=[wall1, wall2], relating_structure=storey)
+    ifcopenshell.api.run(
+        "spatial.assign_container", model, products=[wall1, wall2], relating_structure=storey
+    )
 
     rep1 = ifcopenshell.api.run(
         "geometry.create_2pt_wall",
@@ -62,7 +74,9 @@ def _build_geometric_ifc_fixture(target_path: Path) -> Path:
         height=3.0,
         thickness=0.2,
     )
-    ifcopenshell.api.run("geometry.assign_representation", model, product=wall1, representation=rep1)
+    ifcopenshell.api.run(
+        "geometry.assign_representation", model, product=wall1, representation=rep1
+    )
 
     rep2 = ifcopenshell.api.run(
         "geometry.create_2pt_wall",
@@ -75,7 +89,9 @@ def _build_geometric_ifc_fixture(target_path: Path) -> Path:
         height=3.0,
         thickness=0.2,
     )
-    ifcopenshell.api.run("geometry.assign_representation", model, product=wall2, representation=rep2)
+    ifcopenshell.api.run(
+        "geometry.assign_representation", model, product=wall2, representation=rep2
+    )
 
     model.write(str(target_path))
     return target_path
