@@ -140,7 +140,7 @@ jobs:
             --threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
             --mode advisory \
             --markdown-output ../artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md \
-            > ../artifacts/ci-benchmark-smoke/benchmark-threshold-evaluation.json
+            --output ../artifacts/ci-benchmark-smoke/benchmark-threshold-evaluation.json
           cat ../artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark-smoke artifacts
         uses: actions/upload-artifact@v4
