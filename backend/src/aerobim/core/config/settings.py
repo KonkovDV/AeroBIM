@@ -4,7 +4,6 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-
 _DEBUG_CORS_ORIGINS = (
     "http://localhost:3000",
     "http://localhost:5173",

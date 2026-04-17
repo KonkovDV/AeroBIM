@@ -319,7 +319,9 @@ class ClashDetectorPortTests(unittest.TestCase):
         if not ifc_path.exists():
             self.skipTest("IFC fixture not available")
 
-        with patch.object(detector, "_run_clash_detection", side_effect=AssertionError("geom init failed")):
+        with patch.object(
+            detector, "_run_clash_detection", side_effect=AssertionError("geom init failed")
+        ):
             results = detector.detect(ifc_path)
 
         self.assertEqual(results, [])
@@ -359,8 +361,8 @@ class ClashDetectorPortTests(unittest.TestCase):
         try:
             with patch("tempfile.TemporaryDirectory") as temp_dir_factory:
                 temp_dir_factory.return_value.__enter__.return_value = str(tracked_dir)
-                temp_dir_factory.return_value.__exit__.side_effect = (
-                    lambda exc_type, exc, tb: tracked_dir.rmdir()
+                temp_dir_factory.return_value.__exit__.side_effect = lambda exc_type, exc, tb: (
+                    tracked_dir.rmdir()
                 )
 
                 with patch.dict(

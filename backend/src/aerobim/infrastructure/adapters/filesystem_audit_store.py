@@ -9,8 +9,8 @@ from pathlib import Path
 from aerobim.domain.models import (
     ClashResult,
     ComparisonOperator,
-    DrawingAsset,
     DrawingAnnotation,
+    DrawingAsset,
     FindingCategory,
     GeneratedRemark,
     ParsedRequirement,
@@ -45,7 +45,9 @@ class FilesystemAuditStore:
         return report.report_id
 
     def _materialize_report(self, report: ValidationReport) -> ValidationReport:
-        drawing_assets = tuple(self._materialize_drawing_assets(report.report_id, report.drawing_assets))
+        drawing_assets = tuple(
+            self._materialize_drawing_assets(report.report_id, report.drawing_assets)
+        )
         return ValidationReport(
             report_id=report.report_id,
             request_id=report.request_id,
@@ -145,7 +147,9 @@ class FilesystemAuditStore:
                 )
         return persisted_assets
 
-    def _persist_raster_asset(self, report_asset_dir: Path, asset: DrawingAsset, source_path: Path, pymupdf_module) -> DrawingAsset:
+    def _persist_raster_asset(
+        self, report_asset_dir: Path, asset: DrawingAsset, source_path: Path, pymupdf_module
+    ) -> DrawingAsset:
         pix = pymupdf_module.Pixmap(str(source_path))
         stored_filename = f"{asset.asset_id}.png"
         target_path = report_asset_dir / stored_filename

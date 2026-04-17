@@ -59,7 +59,8 @@ class IfcClashDetector:
             for clash_set_result in clasher.clash_sets:
                 for clash in clash_set_result.get("clashes", {}).values():
                     description = (
-                        f"Hard clash between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}"
+                        f"Hard clash between {clash.get('a_name', '?')} and "
+                        f"{clash.get('b_name', '?')}"
                     )
                     results.append(
                         ClashResult(

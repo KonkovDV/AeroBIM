@@ -52,22 +52,28 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_CORS_ORIGINS"], "http://127.0.0.1:3000")
 
     def test_build_frontend_env_points_at_backend_base_url(self) -> None:
-        env = build_frontend_env(base_env={"PATH": "example"}, backend_base_url="http://127.0.0.1:8081")
+        env = build_frontend_env(
+            base_env={"PATH": "example"}, backend_base_url="http://127.0.0.1:8081"
+        )
 
         self.assertEqual(env["PATH"], "example")
         self.assertEqual(env["VITE_AEROBIM_API_BASE_URL"], "http://127.0.0.1:8081")
 
     def test_extract_json_payload_ignores_prefix_lines(self) -> None:
-        payload = extract_json_payload(
-            "prefix line\n> script banner\n{\n  \"trace\": \"artifact.zip\",\n  \"screenshots\": {\"issue\": \"a.png\"}\n}\n"
+        prefixed_payload = (
+            'prefix line\n> script banner\n{\n  "trace": "artifact.zip",\n'
+            '  "screenshots": {"issue": "a.png"}\n}\n'
         )
+        payload = extract_json_payload(prefixed_payload)
 
         self.assertEqual(payload["trace"], "artifact.zip")
         self.assertEqual(payload["screenshots"]["issue"], "a.png")
 
     @patch("aerobim.tools.run_live_review_smoke.urlopen")
     @patch("aerobim.tools.run_live_review_smoke.build_opener")
-    def test_open_http_url_bypasses_proxy_for_loopback_hosts(self, build_opener_mock: Mock, urlopen_mock: Mock) -> None:
+    def test_open_http_url_bypasses_proxy_for_loopback_hosts(
+        self, build_opener_mock: Mock, urlopen_mock: Mock
+    ) -> None:
         opener = Mock()
         build_opener_mock.return_value = opener
 
@@ -79,7 +85,9 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
 
     @patch("aerobim.tools.run_live_review_smoke.urlopen")
     @patch("aerobim.tools.run_live_review_smoke.build_opener")
-    def test_open_http_url_uses_default_urlopen_for_non_loopback_hosts(self, build_opener_mock: Mock, urlopen_mock: Mock) -> None:
+    def test_open_http_url_uses_default_urlopen_for_non_loopback_hosts(
+        self, build_opener_mock: Mock, urlopen_mock: Mock
+    ) -> None:
         open_http_url("http://example.test:8080/health", timeout=9)
 
         urlopen_mock.assert_called_once_with("http://example.test:8080/health", timeout=9)
