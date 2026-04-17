@@ -19,7 +19,7 @@ def load_threshold_profile(profile_path: Path) -> dict[str, object]:
 
 def load_benchmark_artifacts(artifact_dir: Path) -> dict[str, dict[str, object]]:
     payloads: dict[str, dict[str, object]] = {}
-    for artifact_path in sorted(artifact_dir.glob("*.json")):
+    for artifact_path in sorted(artifact_dir.glob("project-package-*.json")):
         raw = artifact_path.read_text(encoding="utf-8").strip()
         if not raw:
             raise ValueError(
@@ -191,6 +191,12 @@ def main() -> None:
     parser.add_argument(
         "--markdown-output", type=Path, default=None, help="Optional path to write markdown summary"
     )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Write JSON evaluation payload to this file instead of stdout",
+    )
     args = parser.parse_args()
 
     payload = run_threshold_gate(args.artifact_dir, args.threshold_profile, args.mode)
@@ -200,7 +206,14 @@ def main() -> None:
             encoding="utf-8",
         )
 
-    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    serialized = json.dumps(payload, ensure_ascii=False, indent=2)
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = args.output.with_suffix(".tmp")
+        tmp_path.write_text(serialized, encoding="utf-8")
+        tmp_path.replace(args.output)
+    else:
+        print(serialized)
 
     if args.mode == "enforced" and not payload["gate_passed"]:
         raise SystemExit(1)
