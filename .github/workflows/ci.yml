@@ -71,7 +71,7 @@ jobs:
             --iterations 1 \
             --warmup-iterations 0 \
             --storage-dir ./var/reports-ci-smoke-baseline \
-            > ../artifacts/ci-benchmark-smoke/project-package-baseline.json
+            --output ../artifacts/ci-benchmark-smoke/project-package-baseline.json
       - name: Run fire-compliance benchmark pack
         run: |
           python -m aerobim.tools.benchmark_project_package \
@@ -79,7 +79,7 @@ jobs:
             --iterations 1 \
             --warmup-iterations 0 \
             --storage-dir ./var/reports-ci-smoke-fire \
-            > ../artifacts/ci-benchmark-smoke/project-package-fire-compliance.json
+            --output ../artifacts/ci-benchmark-smoke/project-package-fire-compliance.json
       - name: Run stress multisource benchmark pack
         run: |
           python -m aerobim.tools.benchmark_project_package \
@@ -87,7 +87,7 @@ jobs:
             --iterations 1 \
             --warmup-iterations 0 \
             --storage-dir ./var/reports-ci-smoke-stress \
-            > ../artifacts/ci-benchmark-smoke/project-package-stress-multisource.json
+            --output ../artifacts/ci-benchmark-smoke/project-package-stress-multisource.json
       - name: Build benchmark-smoke summary
         run: |
           python - <<'PY'
