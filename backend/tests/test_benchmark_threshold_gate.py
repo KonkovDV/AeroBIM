@@ -48,7 +48,9 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                 },
             )
 
-            result = run_threshold_gate(artifact_dir=artifact_dir, profile_path=profile_path, mode="advisory")
+            result = run_threshold_gate(
+                artifact_dir=artifact_dir, profile_path=profile_path, mode="advisory"
+            )
 
             self.assertTrue(result["gate_passed"])
             checks = result["checks"]
@@ -87,8 +89,12 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                 },
             )
 
-            advisory = run_threshold_gate(artifact_dir=artifact_dir, profile_path=profile_path, mode="advisory")
-            enforced = run_threshold_gate(artifact_dir=artifact_dir, profile_path=profile_path, mode="enforced")
+            advisory = run_threshold_gate(
+                artifact_dir=artifact_dir, profile_path=profile_path, mode="advisory"
+            )
+            enforced = run_threshold_gate(
+                artifact_dir=artifact_dir, profile_path=profile_path, mode="enforced"
+            )
 
             self.assertTrue(advisory["has_failure"])
             self.assertTrue(advisory["gate_passed"])
@@ -119,7 +125,9 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                 },
             )
 
-            result = run_threshold_gate(artifact_dir=artifact_dir, profile_path=profile_path, mode="enforced")
+            result = run_threshold_gate(
+                artifact_dir=artifact_dir, profile_path=profile_path, mode="enforced"
+            )
 
             self.assertFalse(result["gate_passed"])
             checks = result["checks"]

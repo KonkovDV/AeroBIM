@@ -81,13 +81,9 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
         if not _should_export_issue_as_bcf_topic(issue):
             continue
 
-        reference_links = tuple(
-            link for link in (issue.element_guid, issue.target_ref) if link
-        )
+        reference_links = tuple(link for link in (issue.element_guid, issue.target_ref) if link)
         selected_guids = (issue.element_guid,) if issue.element_guid else ()
-        topic_type = (
-            "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
-        )
+        topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
         topics.append(
             _BcfTopicPayload(
                 topic_guid=str(uuid4()),
@@ -117,9 +113,7 @@ def _should_export_issue_as_bcf_topic(issue: ValidationIssue) -> bool:
         return False
 
     rule_id = (issue.rule_id or "").upper()
-    return issue.category == FindingCategory.CROSS_DOCUMENT and rule_id.startswith(
-        "OPENREBAR-"
-    )
+    return issue.category == FindingCategory.CROSS_DOCUMENT and rule_id.startswith("OPENREBAR-")
 
 
 def _clash_topic_payload(
