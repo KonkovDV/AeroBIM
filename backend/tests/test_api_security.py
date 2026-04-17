@@ -1,17 +1,22 @@
 from __future__ import annotations
 
-import tempfile
-import sys
-import unittest
 import json
+import sys
+import tempfile
+import unittest
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.domain.models import DrawingAsset, Severity, ValidationIssue, ValidationReport, ValidationSummary
-
+from aerobim.domain.models import (
+    DrawingAsset,
+    Severity,
+    ValidationIssue,
+    ValidationReport,
+    ValidationSummary,
+)
 
 _TEST_CORS_ORIGINS = (
     "http://localhost:3000",
@@ -407,12 +412,10 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         return str(Path("fixtures") / "openrebar.result.json")
 
     def _write_ifc_fixture(self) -> str:
-        # Use a known-valid IFC sample from repository fixtures but keep API path inside storage boundary.
+        # Use a known-valid IFC sample from repository fixtures while keeping
+        # API path resolution inside storage boundary.
         source_fixture = (
-            Path(__file__).resolve().parents[2]
-            / "samples"
-            / "ifc"
-            / "wall-fire-rating-rei60.ifc"
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
         )
         fixture_dir = self.settings.storage_dir / "fixtures"
         fixture_dir.mkdir(parents=True, exist_ok=True)
@@ -576,7 +579,9 @@ class ApiIfcSourceEndpointTests(unittest.TestCase):
         cls.store = container.resolve(Tokens.AUDIT_REPORT_STORE)
         cls.settings = container.resolve(Tokens.SETTINGS)
 
-    def _seed_report_with_ifc_source(self, relative_path: str = "models/seed.ifc") -> tuple[str, Path]:
+    def _seed_report_with_ifc_source(
+        self, relative_path: str = "models/seed.ifc"
+    ) -> tuple[str, Path]:
         source_path = self.settings.storage_dir / relative_path
         source_path.parent.mkdir(parents=True, exist_ok=True)
         source_path.write_text("ISO-10303-21;\nEND-ISO-10303-21;\n", encoding="utf-8")
@@ -951,9 +956,9 @@ class ApiAnalyzeProjectPackageIdsTests(unittest.TestCase):
 
 
 def _make_async_job_test_client(analyze_use_case):
-    from fastapi.testclient import TestClient
-
     import tempfile
+
+    from fastapi.testclient import TestClient
 
     from aerobim.application.use_cases.analyze_project_package_jobs import (
         AnalyzeProjectPackageJobRunner,
@@ -1004,7 +1009,9 @@ def _make_async_job_test_client(analyze_use_case):
     container = Container()
     container.register(Tokens.SETTINGS, lambda _: settings)
     container.register(Tokens.LOGGER, lambda _: _NullLogger(), lifecycle=Lifecycle.SINGLETON)
-    container.register(Tokens.AUDIT_REPORT_STORE, lambda _: audit_store, lifecycle=Lifecycle.SINGLETON)
+    container.register(
+        Tokens.AUDIT_REPORT_STORE, lambda _: audit_store, lifecycle=Lifecycle.SINGLETON
+    )
     container.register(
         Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE,
         lambda _: _NoOpValidateUseCase(),
@@ -1093,7 +1100,9 @@ class ApiAnalyzeProjectPackageJobTests(unittest.TestCase):
         payload = response.json()
         self.assertEqual(payload["request_id"], payload["request_id"])
         self.assertIn("job_id", payload)
-        self.assertEqual(payload["status_url"], f"/v1/analyze/project-package/jobs/{payload['job_id']}")
+        self.assertEqual(
+            payload["status_url"], f"/v1/analyze/project-package/jobs/{payload['job_id']}"
+        )
 
         status_response = client.get(payload["status_url"])
         self.assertEqual(status_response.status_code, 200)
@@ -1107,7 +1116,9 @@ class ApiAnalyzeProjectPackageJobTests(unittest.TestCase):
     def test_submit_job_surfaces_failed_status_when_background_run_raises(self) -> None:
         class _FailingAnalyzeUseCase:
             def execute(self, _request):
-                raise ValueError("No requirements were extracted or synthesized from the provided sources")
+                raise ValueError(
+                    "No requirements were extracted or synthesized from the provided sources"
+                )
 
         client, temp_dir = _make_async_job_test_client(_FailingAnalyzeUseCase())
         self.addCleanup(temp_dir.cleanup)

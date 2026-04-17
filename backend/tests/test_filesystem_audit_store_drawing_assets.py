@@ -62,7 +62,9 @@ class FilesystemAuditStoreDrawingAssetTests(unittest.TestCase):
             self.assertGreater(asset.coordinate_height or 0, 0)
             self.assertIsNone(asset.source_path)
             self.assertIsNotNone(asset.stored_filename)
-            preview_path = storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+            preview_path = (
+                storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+            )
             self.assertTrue(preview_path.exists())
 
     def test_save_materializes_raster_preview_asset(self) -> None:
@@ -113,5 +115,7 @@ class FilesystemAuditStoreDrawingAssetTests(unittest.TestCase):
             self.assertEqual(asset.coordinate_width, 120)
             self.assertEqual(asset.coordinate_height, 60)
             self.assertIsNotNone(asset.stored_filename)
-            preview_path = storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+            preview_path = (
+                storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+            )
             self.assertTrue(preview_path.exists())

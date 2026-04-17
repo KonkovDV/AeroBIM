@@ -5,11 +5,11 @@ import json
 import os
 import socket
 import subprocess
-import sys
 import time
+from collections.abc import Mapping
 from pathlib import Path
-from urllib.parse import urlparse
 from urllib.error import URLError
+from urllib.parse import urlparse
 from urllib.request import ProxyHandler, build_opener, urlopen
 
 from aerobim.tools.seed_smoke_report import build_cli_payload, repo_root, seed_smoke_report
@@ -60,7 +60,7 @@ def choose_available_port(host: str, preferred_ports: tuple[int, ...]) -> int:
 
 
 def build_backend_env(
-    base_env: dict[str, str],
+    base_env: Mapping[str, str],
     storage_dir: Path,
     port: int,
     frontend_origin: str,
@@ -73,7 +73,7 @@ def build_backend_env(
     return env
 
 
-def build_frontend_env(base_env: dict[str, str], backend_base_url: str) -> dict[str, str]:
+def build_frontend_env(base_env: Mapping[str, str], backend_base_url: str) -> dict[str, str]:
     env = dict(base_env)
     env["VITE_AEROBIM_API_BASE_URL"] = backend_base_url
     return env
@@ -107,7 +107,9 @@ def open_http_url(url: str, timeout: float = 5.0):
     return urlopen(url, timeout=timeout)
 
 
-def wait_for_http_ok(url: str, timeout_seconds: float = 60.0, poll_interval_seconds: float = 0.5) -> None:
+def wait_for_http_ok(
+    url: str, timeout_seconds: float = 60.0, poll_interval_seconds: float = 0.5
+) -> None:
     deadline = time.monotonic() + timeout_seconds
     last_error: Exception | None = None
 
@@ -152,7 +154,9 @@ def run_live_review_smoke(
     frontend_base_url = f"http://{host}:{selected_frontend_port}"
     frontend_origin = frontend_base_url
 
-    backend_env = build_backend_env(os.environ, target_storage_dir, selected_backend_port, frontend_origin)
+    backend_env = build_backend_env(
+        os.environ, target_storage_dir, selected_backend_port, frontend_origin
+    )
     frontend_env = build_frontend_env(os.environ, backend_base_url)
 
     backend_process: subprocess.Popen[str] | None = None
@@ -170,7 +174,16 @@ def run_live_review_smoke(
         report = seed_smoke_report(target_storage_dir)
 
         frontend_process = subprocess.Popen(
-            [npm_command(), "run", "dev", "--", "--host", host, "--port", str(selected_frontend_port)],
+            [
+                npm_command(),
+                "run",
+                "dev",
+                "--",
+                "--host",
+                host,
+                "--port",
+                str(selected_frontend_port),
+            ],
             cwd=frontend_dir(),
             env=frontend_env,
             text=True,
@@ -213,11 +226,22 @@ def run_live_review_smoke(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the full AeroBIM live review smoke chain")
-    parser.add_argument("--storage-dir", type=Path, default=None, help="Override the isolated storage directory")
-    parser.add_argument("--output-dir", type=Path, default=None, help="Override the browser artifact output directory")
-    parser.add_argument("--host", default=DEFAULT_HOST, help="Host used for the isolated backend/frontend stack")
+    parser.add_argument(
+        "--storage-dir", type=Path, default=None, help="Override the isolated storage directory"
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help="Override the browser artifact output directory",
+    )
+    parser.add_argument(
+        "--host", default=DEFAULT_HOST, help="Host used for the isolated backend/frontend stack"
+    )
     parser.add_argument("--backend-port", type=int, default=None, help="Override the backend port")
-    parser.add_argument("--frontend-port", type=int, default=None, help="Override the frontend port")
+    parser.add_argument(
+        "--frontend-port", type=int, default=None, help="Override the frontend port"
+    )
     args = parser.parse_args()
 
     payload = run_live_review_smoke(

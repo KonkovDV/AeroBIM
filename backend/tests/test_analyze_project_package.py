@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
-import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -581,9 +581,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             fallback_warnings = [
-                issue
-                for issue in report.issues
-                if issue.rule_id == "OPENREBAR-OPT-FALLBACK"
+                issue for issue in report.issues if issue.rule_id == "OPENREBAR-OPT-FALLBACK"
             ]
             self.assertEqual(len(fallback_warnings), 1)
             self.assertEqual(fallback_warnings[0].severity, Severity.WARNING)
@@ -628,9 +626,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             strategy_warnings = [
-                issue
-                for issue in report.issues
-                if issue.rule_id == "OPENREBAR-OPT-STRATEGY"
+                issue for issue in report.issues if issue.rule_id == "OPENREBAR-OPT-STRATEGY"
             ]
             self.assertEqual(len(strategy_warnings), 1)
             self.assertEqual(strategy_warnings[0].severity, Severity.WARNING)
@@ -671,9 +667,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             digest_warnings = [
-                issue
-                for issue in report.issues
-                if issue.rule_id == "OPENREBAR-PROVENANCE-DIGEST"
+                issue for issue in report.issues if issue.rule_id == "OPENREBAR-PROVENANCE-DIGEST"
             ]
             self.assertEqual(len(digest_warnings), 1)
             self.assertEqual(digest_warnings[0].severity, Severity.WARNING)
@@ -718,9 +712,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             threshold_warnings = [
-                issue
-                for issue in report.issues
-                if issue.rule_id == "OPENREBAR-WASTE-THRESHOLD"
+                issue for issue in report.issues if issue.rule_id == "OPENREBAR-WASTE-THRESHOLD"
             ]
             self.assertEqual(len(threshold_warnings), 1)
             self.assertEqual(threshold_warnings[0].severity, Severity.WARNING)
@@ -779,9 +771,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             fallback_issues = [
-                issue
-                for issue in report.issues
-                if issue.rule_id == "OPENREBAR-OPT-FALLBACK"
+                issue for issue in report.issues if issue.rule_id == "OPENREBAR-OPT-FALLBACK"
             ]
             self.assertEqual(len(fallback_issues), 1)
             self.assertEqual(fallback_issues[0].severity, Severity.ERROR)

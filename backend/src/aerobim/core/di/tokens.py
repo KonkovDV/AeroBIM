@@ -14,5 +14,7 @@ class Tokens:
     VALIDATE_IFC_AGAINST_IDS_USE_CASE = "validate_ifc_against_ids_use_case"
     ANALYZE_PROJECT_PACKAGE_USE_CASE = "analyze_project_package_use_case"
     SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE = "submit_analyze_project_package_job_use_case"
-    GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE = "get_analyze_project_package_job_status_use_case"
+    GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE = (
+        "get_analyze_project_package_job_status_use_case"
+    )
     ANALYZE_PROJECT_PACKAGE_JOB_RUNNER = "analyze_project_package_job_runner"
