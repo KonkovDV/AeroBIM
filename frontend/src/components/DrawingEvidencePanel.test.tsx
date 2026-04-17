@@ -62,7 +62,7 @@ function buildReport(): ValidationReport {
     },
     drawing_annotations: [],
     drawing_assets: [
-      buildDrawingAsset({ asset_id: "asset-a101", sheet_id: "A-101", page_number: 1, stored_filename: "asset-a101.png" }),
+      buildDrawingAsset({ asset_id: "asset-openrebar", sheet_id: "A-101", page_number: 1, stored_filename: "asset-openrebar.png" }),
       buildDrawingAsset({ asset_id: "asset-a102", sheet_id: "A-102", page_number: 2, stored_filename: "asset-a102.png" }),
     ],
     clash_results: [],
