@@ -260,6 +260,12 @@ def main() -> None:
         default=None,
         help="Optional storage directory for persisted benchmark reports",
     )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Write JSON result to this file instead of stdout (written only on success)",
+    )
     args = parser.parse_args()
 
     payload = benchmark_project_package(
@@ -268,7 +274,15 @@ def main() -> None:
         warmup_iterations=args.warmup_iterations,
         storage_dir=args.storage_dir,
     )
-    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    serialized = json.dumps(payload, ensure_ascii=False, indent=2)
+
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = args.output.with_suffix(".tmp")
+        tmp_path.write_text(serialized, encoding="utf-8")
+        tmp_path.replace(args.output)
+    else:
+        print(serialized)
 
 
 if __name__ == "__main__":

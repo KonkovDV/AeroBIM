@@ -20,7 +20,18 @@ def load_threshold_profile(profile_path: Path) -> dict[str, object]:
 def load_benchmark_artifacts(artifact_dir: Path) -> dict[str, dict[str, object]]:
     payloads: dict[str, dict[str, object]] = {}
     for artifact_path in sorted(artifact_dir.glob("*.json")):
-        payload = json.loads(artifact_path.read_text(encoding="utf-8"))
+        raw = artifact_path.read_text(encoding="utf-8").strip()
+        if not raw:
+            raise ValueError(
+                f"Benchmark artifact is empty — the benchmark pack that produced it likely "
+                f"failed before writing any output: {artifact_path}"
+            )
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Benchmark artifact contains invalid JSON: {artifact_path}") from exc
+        if not isinstance(payload, dict):
+            raise ValueError(f"Benchmark artifact must be a JSON object: {artifact_path}")
         pack_id = payload.get("pack_id")
         if isinstance(pack_id, str) and pack_id:
             payloads[pack_id] = payload
