@@ -68,7 +68,7 @@ class AnalyzeProjectPackageDrawingAssetIntegrationTests(unittest.TestCase):
     def test_execute_persists_multi_page_pdf_drawing_assets(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             storage_dir = Path(tmpdir)
-            pdf_path = storage_dir / "sheet-a101.pdf"
+            pdf_path = storage_dir / "sheet-openrebar.pdf"
 
             document = pymupdf.open()
             first_page = document.new_page(width=320, height=200)
