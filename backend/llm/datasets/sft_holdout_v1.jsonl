@@ -1,0 +1,1 @@
+{"id":"holdout-001","prompt":"Extract requirement: Ceiling finish must be gypsum board.","chosen":"REQ-004|IFCCOVERING|Pset_CoveringCommon|Finish|GypsumBoard","rejected":"Ceiling should look finished","label":"structured"}

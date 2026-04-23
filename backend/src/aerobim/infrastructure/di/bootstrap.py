@@ -87,7 +87,12 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     )
     container.register(
         Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE,
-        lambda _container: InMemoryAnalyzeProjectPackageJobStore(),
+        lambda current: InMemoryAnalyzeProjectPackageJobStore(
+            snapshot_path=(
+                current.resolve(Tokens.SETTINGS).storage_dir
+                / "analyze_project_package_jobs.snapshot.json"
+            )
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(

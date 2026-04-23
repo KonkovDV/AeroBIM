@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -15,6 +16,29 @@ def _as_float(value: object) -> float | None:
 
 def load_threshold_profile(profile_path: Path) -> dict[str, object]:
     return json.loads(profile_path.read_text(encoding="utf-8"))
+
+
+def resolve_threshold_packs(
+    threshold_profile: dict[str, object], mode: str
+) -> tuple[dict[str, object], str, str, str]:
+    profile_id = str(threshold_profile.get("profile_id") or "benchmark-thresholds")
+    profile_version = str(threshold_profile.get("profile_version") or "1.0.0")
+    profile_schema_version = str(threshold_profile.get("schema_version") or "1.0.0")
+
+    modes = threshold_profile.get("modes")
+    if isinstance(modes, dict):
+        selected_mode = modes.get(mode)
+        if not isinstance(selected_mode, dict):
+            raise ValueError(f"Threshold profile mode '{mode}' must be a JSON object")
+        profile_packs = selected_mode.get("packs")
+        if not isinstance(profile_packs, dict):
+            raise ValueError(f"Threshold profile mode '{mode}' must contain a packs object")
+        return profile_packs, profile_id, profile_version, profile_schema_version
+
+    profile_packs = threshold_profile.get("packs")
+    if not isinstance(profile_packs, dict):
+        raise ValueError("Threshold profile must contain a packs object")
+    return profile_packs, profile_id, profile_version, profile_schema_version
 
 
 def load_benchmark_artifacts(artifact_dir: Path) -> dict[str, dict[str, object]]:
@@ -40,12 +64,8 @@ def load_benchmark_artifacts(artifact_dir: Path) -> dict[str, dict[str, object]]
 
 def evaluate_thresholds(
     payloads: dict[str, dict[str, object]],
-    threshold_profile: dict[str, object],
+    profile_packs: dict[str, object],
 ) -> dict[str, object]:
-    profile_packs = threshold_profile.get("packs")
-    if not isinstance(profile_packs, dict):
-        raise ValueError("Threshold profile must contain a packs object")
-
     checks: list[dict[str, object]] = []
     has_failure = False
 
@@ -110,7 +130,9 @@ def evaluate_thresholds(
     }
 
 
-def render_markdown(evaluation: dict[str, object], mode: str, profile_path: Path) -> str:
+def render_markdown(
+    evaluation: dict[str, object], mode: str, profile_path: Path, profile_id: str, profile_version: str
+) -> str:
     checks = evaluation["checks"]
     assert isinstance(checks, list)
 
@@ -118,6 +140,8 @@ def render_markdown(evaluation: dict[str, object], mode: str, profile_path: Path
         "## Benchmark Threshold Advisory",
         "",
         f"Mode: `{mode}`",
+        f"Profile ID: `{profile_id}`",
+        f"Profile version: `{profile_version}`",
         f"Profile: `{profile_path.as_posix()}`",
         "",
         "| Pack | Status | Avg ms | Max avg ms | Reports/s | Min reports/s |",
@@ -156,17 +180,27 @@ def run_threshold_gate(
 
     payloads = load_benchmark_artifacts(artifact_dir)
     threshold_profile = load_threshold_profile(profile_path)
-    evaluation = evaluate_thresholds(payloads, threshold_profile)
+    profile_packs, profile_id, profile_version, profile_schema_version = resolve_threshold_packs(
+        threshold_profile, mode
+    )
+    evaluation = evaluate_thresholds(payloads, profile_packs)
 
     has_failure = bool(evaluation["has_failure"])
     gate_passed = not has_failure or mode == "advisory"
 
     return {
+        "artifact_type": "benchmark_threshold_evaluation",
+        "schema_version": "1.0.0",
+        "generated_at": datetime.now(tz=UTC).isoformat(),
+        "threshold_profile_id": profile_id,
+        "threshold_profile_version": profile_version,
+        "threshold_profile_schema_version": profile_schema_version,
         "mode": mode,
         "profile_path": str(profile_path),
         "artifact_dir": str(artifact_dir),
         "gate_passed": gate_passed,
         "has_failure": has_failure,
+        "packs_evaluated": len(profile_packs),
         **evaluation,
     }
 
@@ -202,7 +236,13 @@ def main() -> None:
     payload = run_threshold_gate(args.artifact_dir, args.threshold_profile, args.mode)
     if args.markdown_output is not None:
         args.markdown_output.write_text(
-            render_markdown(payload, args.mode, args.threshold_profile),
+            render_markdown(
+                payload,
+                args.mode,
+                args.threshold_profile,
+                str(payload.get("threshold_profile_id") or "benchmark-thresholds"),
+                str(payload.get("threshold_profile_version") or "1.0.0"),
+            ),
             encoding="utf-8",
         )
 

@@ -1,0 +1,2 @@
+{"id":"train-001","prompt":"Extract requirement from narrative text: Wall fire rating must be REI60.","chosen":"REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60","rejected":"Wall requirement exists","label":"structured"}
+{"id":"train-002","prompt":"Extract requirement from narrative text: Door width must be at least 900 mm.","chosen":"REQ-002|IFCDOOR|Pset_DoorCommon|Width|>=900mm","rejected":"Door width should be enough","label":"structured"}

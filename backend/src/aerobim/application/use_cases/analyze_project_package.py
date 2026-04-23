@@ -38,6 +38,17 @@ _VISION_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _VISION_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
 _DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg"}
 _OPENREBAR_REPORT_CONTRACT_ID = "OpenRebar.reinforcement.report.v1"
+_OPENREBAR_WARNING_SEVERITY_CLASS: dict[str, str] = {
+    "OPENREBAR-CONTRACT": "critical",
+    "OPENREBAR-PROVENANCE-DIGEST": "critical",
+    "OPENREBAR-PROVENANCE-REFERENCE-MISSING": "critical",
+    "OPENREBAR-OPT-FALLBACK": "major",
+    "OPENREBAR-OPT-STRATEGY": "major",
+    "OPENREBAR-WASTE-METRIC-MISSING": "major",
+    "OPENREBAR-WASTE-THRESHOLD": "major",
+    "OPENREBAR-PROJECT-CODE": "minor",
+}
+_OPENREBAR_ENFORCED_ESCALATION_CLASSES = {"critical", "major"}
 _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "m": ("m", 1.0),
     "м": ("m", 1.0),
@@ -391,6 +402,11 @@ class AnalyzeProjectPackageUseCase:
         escalated: list[ValidationIssue] = []
         for issue in issues:
             if issue.severity != Severity.WARNING:
+                escalated.append(issue)
+                continue
+
+            severity_class = _OPENREBAR_WARNING_SEVERITY_CLASS.get(issue.rule_id, "major")
+            if severity_class not in _OPENREBAR_ENFORCED_ESCALATION_CLASSES:
                 escalated.append(issue)
                 continue
 

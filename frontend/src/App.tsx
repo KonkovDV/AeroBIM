@@ -195,6 +195,11 @@ function formatTimestamp(value: string): string {
   return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
 }
 
+function reportSortWeight(report: ReportSummaryEntry): [number, string] {
+  const timestamp = Number.isNaN(Date.parse(report.created_at)) ? 0 : Date.parse(report.created_at);
+  return [-timestamp, report.report_id];
+}
+
 function findMatchingRequirements(report: ValidationReport, issue: ValidationIssue | null): ParsedRequirement[] {
   if (issue === null) {
     return report.requirements;
@@ -369,6 +374,13 @@ export default function App() {
       report.report_id.toLowerCase().includes(normalizedQuery) ||
       report.request_id.toLowerCase().includes(normalizedQuery)
     );
+  }).sort((left, right) => {
+    const [leftTs, leftId] = reportSortWeight(left);
+    const [rightTs, rightId] = reportSortWeight(right);
+    if (leftTs !== rightTs) {
+      return leftTs - rightTs;
+    }
+    return leftId.localeCompare(rightId);
   });
 
   const groupedReports = filteredReports.reduce((groups, report) => {

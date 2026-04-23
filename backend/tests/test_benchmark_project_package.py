@@ -25,6 +25,8 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
         for manifest_path in manifests:
             benchmark_pack = load_benchmark_pack(manifest_path, repo_root_path=repo_root)
             self.assertTrue(benchmark_pack.pack_id)
+            self.assertTrue(benchmark_pack.pack_version)
+            self.assertTrue(benchmark_pack.manifest_schema_version)
             self.assertTrue(benchmark_pack.request.ifc_path.exists())
             self.assertIsNotNone(benchmark_pack.request.requirement_source.path)
             assert benchmark_pack.request.requirement_source.path is not None
@@ -59,6 +61,8 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
             manifest_path.write_text(
                 json.dumps(
                     {
+                        "schema_version": "1.0.0",
+                        "pack_version": "1.2.3",
                         "pack_id": "baseline",
                         "description": "baseline pack",
                         "project_name": "Residential Tower Alpha",
@@ -85,6 +89,8 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
             benchmark_pack = load_benchmark_pack(manifest_path, repo_root_path=root)
 
             self.assertEqual(benchmark_pack.pack_id, "baseline")
+            self.assertEqual(benchmark_pack.pack_version, "1.2.3")
+            self.assertEqual(benchmark_pack.manifest_schema_version, "1.0.0")
             self.assertEqual(benchmark_pack.request.project_name, "Residential Tower Alpha")
             self.assertEqual(benchmark_pack.request.discipline, "architecture")
             self.assertTrue(benchmark_pack.request.ifc_path.samefile(ifc_path))
@@ -171,6 +177,29 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
         self.assertEqual(len(result["measured_runs"]), 2)
         self.assertEqual(result["measured_runs"][0]["project_name"], "Residential Tower Alpha")
         self.assertEqual(result["measured_runs"][0]["discipline"], "architecture")
+
+    def test_benchmark_project_package_emits_standardized_schema(self) -> None:
+        from aerobim.tools.benchmark_project_package import benchmark_project_package
+
+        repo_root = Path(__file__).resolve().parents[2]
+        pack_path = repo_root / "samples" / "benchmarks" / "project-package-baseline.json"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = benchmark_project_package(
+                pack_path=pack_path,
+                iterations=1,
+                warmup_iterations=0,
+                storage_dir=Path(tmp),
+            )
+
+        self.assertEqual(payload["artifact_type"], "benchmark_project_package")
+        self.assertEqual(payload["schema_version"], "1.0.0")
+        self.assertIn("generated_at", payload)
+        self.assertIn("benchmark_pack", payload)
+        benchmark_pack = payload["benchmark_pack"]
+        self.assertIsInstance(benchmark_pack, dict)
+        self.assertEqual(benchmark_pack["pack_id"], payload["pack_id"])
+        self.assertEqual(benchmark_pack["pack_version"], payload["pack_version"])
 
 
 if __name__ == "__main__":

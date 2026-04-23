@@ -1,4 +1,6 @@
 {
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
   "pack_id": "project-package-fire-compliance",
   "description": "Smaller fire-compliance benchmark pack over wall fire-rating fixtures for a second throughput profile.",
   "project_name": "Fire Retrofit Gamma",
