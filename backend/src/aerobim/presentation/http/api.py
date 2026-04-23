@@ -1,5 +1,6 @@
 # pyright: reportUnusedFunction=false, reportUnknownVariableType=false
 
+import hashlib
 import json
 import re as _re
 from dataclasses import asdict
@@ -49,6 +50,7 @@ class AnalyzeProjectPackageRequest(BaseModel):
     calculation_path: str | None = None
     drawings: list[DrawingPayload] = Field(default_factory=list)
     reinforcement_report_path: str | None = None
+    reinforcement_handoff_path: str | None = None
     reinforcement_source_digest: str | None = Field(default=None, max_length=128)
     reinforcement_waste_warning_threshold_percent: float | None = Field(
         default=None,
@@ -183,11 +185,71 @@ def create_http_app(container: Container):
             raise ValueError("OpenRebar reinforcement report must be a JSON object")
         return payload
 
-    def _build_project_package_request(payload: AnalyzeProjectPackageRequest) -> ValidationRequest:
+    def _load_openrebar_handoff_payload(handoff_path: Path) -> dict[str, object]:
+        if not handoff_path.exists():
+            raise FileNotFoundError(handoff_path)
+        try:
+            payload = json.loads(handoff_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Invalid OpenRebar handoff JSON: {handoff_path}") from exc
+        if not isinstance(payload, dict):
+            raise ValueError("OpenRebar handoff manifest must be a JSON object")
+        return payload
+
+    def _compute_file_sha256(file_path: Path) -> str:
+        hasher = hashlib.sha256()
+        with file_path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(8192), b""):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+
+    def _resolve_openrebar_provenance_inputs(
+        payload: AnalyzeProjectPackageRequest,
+    ) -> tuple[Path | None, str | None]:
+        if payload.reinforcement_handoff_path:
+            if payload.reinforcement_report_path or payload.reinforcement_source_digest:
+                raise ValueError(
+                    "reinforcement_handoff_path cannot be combined with "
+                    "reinforcement_report_path or reinforcement_source_digest"
+                )
+
+            handoff_path = _resolve_safe_path(payload.reinforcement_handoff_path)
+            handoff_payload = _load_openrebar_handoff_payload(handoff_path)
+            raw_report_path = handoff_payload.get("reinforcement_report_path")
+            if not isinstance(raw_report_path, str) or not raw_report_path.strip():
+                raise ValueError(
+                    "OpenRebar handoff manifest must define reinforcement_report_path"
+                )
+
+            report_path = _resolve_safe_path(raw_report_path.strip())
+            manifest_sha = handoff_payload.get("report_sha256")
+            if manifest_sha is not None:
+                if not isinstance(manifest_sha, str) or not manifest_sha.strip():
+                    raise ValueError(
+                        "OpenRebar handoff manifest report_sha256 must be a non-empty string"
+                    )
+                observed_sha = _compute_file_sha256(report_path)
+                if observed_sha != manifest_sha.strip().lower():
+                    raise ValueError("OpenRebar handoff report_sha256 mismatch")
+
+            report_payload = _load_openrebar_report_payload(report_path)
+            return report_path, build_openrebar_provenance_digest(report_payload)
+
+        reinforcement_report_path = (
+            _resolve_safe_path(payload.reinforcement_report_path)
+            if payload.reinforcement_report_path
+            else None
+        )
         reinforcement_source_digest = (
             payload.reinforcement_source_digest.strip().lower()
             if payload.reinforcement_source_digest
             else None
+        )
+        return reinforcement_report_path, reinforcement_source_digest
+
+    def _build_project_package_request(payload: AnalyzeProjectPackageRequest) -> ValidationRequest:
+        reinforcement_report_path, reinforcement_source_digest = (
+            _resolve_openrebar_provenance_inputs(payload)
         )
         return ValidationRequest(
             request_id=payload.request_id or uuid4().hex,
@@ -221,9 +283,7 @@ def create_http_app(container: Container):
                 )
                 for drawing in payload.drawings
             ),
-            reinforcement_report_path=_resolve_safe_path(payload.reinforcement_report_path)
-            if payload.reinforcement_report_path
-            else None,
+            reinforcement_report_path=reinforcement_report_path,
             reinforcement_source_digest=reinforcement_source_digest,
             reinforcement_waste_warning_threshold_percent=(
                 payload.reinforcement_waste_warning_threshold_percent
