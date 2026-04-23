@@ -14,6 +14,12 @@ Threshold profile:
 
 - `benchmark-thresholds.json` — initial advisory performance budget profile used by CI summary and threshold evaluation rails.
 
+Governance versioning:
+
+- Benchmark packs carry explicit `schema_version` and `pack_version` fields.
+- Threshold profile carries `schema_version`, `profile_id`, and `profile_version`.
+- Threshold profile defines separated `advisory` and `enforced` mode packs.
+
 Run the current baseline rail from `backend/`:
 
 ```bash
@@ -39,4 +45,13 @@ python -m aerobim.tools.benchmark_threshold_gate \
 	--artifact-dir ../artifacts/ci-benchmark-smoke \
 	--threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
 	--mode advisory
+```
+
+Evaluate collected benchmark artifacts against enforced thresholds:
+
+```bash
+python -m aerobim.tools.benchmark_threshold_gate \
+	--artifact-dir ../artifacts/ci-benchmark-smoke \
+	--threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
+	--mode enforced
 ```

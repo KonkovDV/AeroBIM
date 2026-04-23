@@ -1,0 +1,35 @@
+{
+  "iterations": 1,
+  "warmup_iterations": 0,
+  "measured_runs": [
+    {
+      "iteration": 1,
+      "request_id": "benchmark-project-package-fire-compliance-run-001",
+      "elapsed_ms": 538.598,
+      "report_id": "a55582e508fc456ba0a05df4bf236215",
+      "issue_count": 7,
+      "requirement_count": 5,
+      "project_name": "Fire Retrofit Gamma",
+      "discipline": "fire-safety"
+    }
+  ],
+  "summary": {
+    "min_ms": 538.598,
+    "max_ms": 538.598,
+    "avg_ms": 538.598,
+    "reports_per_second": 1.857
+  },
+  "artifact_type": "benchmark_project_package",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-18T17:44:48.531632+00:00",
+  "benchmark_pack": {
+    "pack_id": "project-package-fire-compliance",
+    "pack_version": "1.0.0",
+    "manifest_schema_version": "1.0.0",
+    "description": "Smaller fire-compliance benchmark pack over wall fire-rating fixtures for a second throughput profile."
+  },
+  "pack_id": "project-package-fire-compliance",
+  "pack_version": "1.0.0",
+  "description": "Smaller fire-compliance benchmark pack over wall fire-rating fixtures for a second throughput profile.",
+  "storage_dir": "C:\\plans\\samolet\\backend\\var\\reports-ci-smoke-fire"
+}

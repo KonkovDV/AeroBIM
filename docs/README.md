@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Documentation Map"
 status: active
-version: "0.2.0"
-last_updated: "2026-04-12"
+version: "0.2.1"
+last_updated: "2026-04-19"
 tags: [aerobim, documentation, navigation, reference]
 ---
 
@@ -20,12 +20,13 @@ Use it to find the current active documents quickly instead of treating the whol
 2. `05-fact-check-audit.md` — verified standards and repository-state evidence.
 3. `10-academic-audit-and-recommendations-ru.md` — current academic-level assessment and recommendations.
 4. `11-rebaseline-execution-plan.md` — phased work plan and launched tranche.
-5. `08-microphoenix-adoption-matrix.md` — exact keep/adapt/defer/reject decisions.
-6. `09-implementation-and-verification-rails.md` — how work should be delivered and verified.
-7. `04-atomic-backlog.md` — execution-ready backlog.
-8. `03-openbim-landscape.md` — standards, tooling, and competitor frame.
-9. `07-project-skeleton.md` — current filesystem skeleton and active vs placeholder surfaces.
-10. `01-strategy-and-plan.md` — product thesis and phased plan.
+5. `12-openrebar-provenance-decision-table.md` — advisory vs enforced escalation table for reinforcement provenance findings.
+6. `08-microphoenix-adoption-matrix.md` — exact keep/adapt/defer/reject decisions.
+7. `09-implementation-and-verification-rails.md` — how work should be delivered and verified.
+8. `04-atomic-backlog.md` — execution-ready backlog.
+9. `03-openbim-landscape.md` — standards, tooling, and competitor frame.
+10. `07-project-skeleton.md` — current filesystem skeleton and active vs placeholder surfaces.
+11. `01-strategy-and-plan.md` — product thesis and phased plan.
 
 ## Document Modes
 
@@ -42,6 +43,7 @@ Use it to find the current active documents quickly instead of treating the whol
 | `09-implementation-and-verification-rails.md` | how-to | operational build and verification discipline |
 | `10-academic-audit-and-recommendations-ru.md` | explanation + evidence | current academic audit and prioritised recommendations |
 | `11-rebaseline-execution-plan.md` | how-to | current phased execution plan and tranche tracking |
+| `12-openrebar-provenance-decision-table.md` | reference + how-to | enforced/advisory provenance severity policy for OpenRebar integration |
 
 ## Rules For Future Docs Work
 

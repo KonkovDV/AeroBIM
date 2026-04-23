@@ -1,4 +1,6 @@
 {
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
   "pack_id": "project-package-baseline",
   "description": "Baseline multimodal project-package benchmark over representative IFC, IDS, narrative, calculation, and drawing fixtures.",
   "project_name": "Benchmark Demo Project",

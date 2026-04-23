@@ -1,0 +1,92 @@
+{
+  "project": "AeroBIM",
+  "artifact_type": "aerobim_ft_scaffold_gate_report",
+  "generated_at": "2026-04-19T07:16:12.279372+00:00",
+  "version": "v1",
+  "command_bundle": [
+    "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe llm/train/smoke_train.py",
+    "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe llm/eval/smoke_eval.py",
+    "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe llm/serve/smoke_serve.py"
+  ],
+  "command_checks": [
+    {
+      "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe llm/train/smoke_train.py",
+      "passed": true,
+      "exit_code": 0,
+      "duration_ms": 57,
+      "output_summary": "{\n  \"status\": \"APPROVED\",\n  \"output\": \"C:\\\\plans\\\\samolet\\\\backend\\\\llm\\\\artifacts\\\\train\\\\smoke_train_report_v1.json\"\n}"
+    },
+    {
+      "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe llm/eval/smoke_eval.py",
+      "passed": true,
+      "exit_code": 0,
+      "duration_ms": 50,
+      "output_summary": "{\n  \"status\": \"APPROVED\",\n  \"output\": \"C:\\\\plans\\\\samolet\\\\backend\\\\llm\\\\artifacts\\\\eval\\\\smoke_eval_report_v1.json\"\n}"
+    },
+    {
+      "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe llm/serve/smoke_serve.py",
+      "passed": true,
+      "exit_code": 0,
+      "duration_ms": 652,
+      "output_summary": "{\n  \"status\": \"APPROVED\",\n  \"output\": \"C:\\\\plans\\\\samolet\\\\backend\\\\llm\\\\artifacts\\\\serve\\\\smoke_serve_report_v1.json\"\n}"
+    }
+  ],
+  "criteria": [
+    {
+      "name": "required_file:llm/configs/aerobim_spec_extraction_ft_config_v1.json",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\configs\\aerobim_spec_extraction_ft_config_v1.json"
+    },
+    {
+      "name": "required_file:llm/datasets/manifest_v1.json",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\datasets\\manifest_v1.json"
+    },
+    {
+      "name": "required_file:llm/datasets/split_policy_v1.md",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\datasets\\split_policy_v1.md"
+    },
+    {
+      "name": "required_file:llm/train/smoke_train.py",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\train\\smoke_train.py"
+    },
+    {
+      "name": "required_file:llm/eval/smoke_eval.py",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\eval\\smoke_eval.py"
+    },
+    {
+      "name": "required_file:llm/serve/smoke_serve.py",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\serve\\smoke_serve.py"
+    },
+    {
+      "name": "required_file:llm/README.md",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\README.md"
+    },
+    {
+      "name": "train_smoke_entrypoint",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\artifacts\\train\\smoke_train_report_v1.json"
+    },
+    {
+      "name": "eval_machine_readable_output",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\artifacts\\eval\\smoke_eval_report_v1.json"
+    },
+    {
+      "name": "serve_smoke_output",
+      "passed": true,
+      "details": "C:\\plans\\samolet\\backend\\llm\\artifacts\\serve\\smoke_serve_report_v1.json"
+    }
+  ],
+  "gate_passed": true,
+  "known_limits_non_claims": [
+    "Scaffold gate verifies train/eval/serve preconditions only.",
+    "No claim of production FT extraction quality.",
+    "No claim of deployment-grade serving readiness."
+  ]
+}

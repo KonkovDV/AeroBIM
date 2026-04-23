@@ -1,0 +1,35 @@
+{
+  "iterations": 1,
+  "warmup_iterations": 0,
+  "measured_runs": [
+    {
+      "iteration": 1,
+      "request_id": "benchmark-project-package-stress-multisource-run-001",
+      "elapsed_ms": 521.971,
+      "report_id": "88b9ca31f70c43af8a9ff0acf25de31c",
+      "issue_count": 30,
+      "requirement_count": 16,
+      "project_name": "Stress Tower Delta",
+      "discipline": "architecture-structure"
+    }
+  ],
+  "summary": {
+    "min_ms": 521.971,
+    "max_ms": 521.971,
+    "avg_ms": 521.971,
+    "reports_per_second": 1.916
+  },
+  "artifact_type": "benchmark_project_package",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-18T17:44:51.997809+00:00",
+  "benchmark_pack": {
+    "pack_id": "project-package-stress-multisource",
+    "pack_version": "1.0.0",
+    "manifest_schema_version": "1.0.0",
+    "description": "Stress-oriented multimodal benchmark pack with expanded rule set and dual drawing sources."
+  },
+  "pack_id": "project-package-stress-multisource",
+  "pack_version": "1.0.0",
+  "description": "Stress-oriented multimodal benchmark pack with expanded rule set and dual drawing sources.",
+  "storage_dir": "C:\\plans\\samolet\\backend\\var\\reports-ci-smoke-stress"
+}

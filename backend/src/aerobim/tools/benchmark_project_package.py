@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import dataclass, replace
+from datetime import UTC, datetime
 from pathlib import Path
 from statistics import mean
 from time import perf_counter
@@ -17,6 +18,8 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 @dataclass(frozen=True)
 class BenchmarkPack:
     pack_id: str
+    pack_version: str
+    manifest_schema_version: str
     description: str
     request: ValidationRequest
 
@@ -117,6 +120,8 @@ def load_benchmark_pack(manifest_path: Path, repo_root_path: Path | None = None)
         raise ValueError("Benchmark manifest must be a JSON object")
 
     manifest = cast(dict[str, object], manifest_payload)
+    pack_schema_version = str(manifest.get("schema_version") or "1.0.0")
+    pack_version = str(manifest.get("pack_version") or "1.0.0")
     raw_request = manifest.get("request")
     if not isinstance(raw_request, dict):
         raise ValueError("Benchmark manifest request must be a JSON object")
@@ -158,6 +163,8 @@ def load_benchmark_pack(manifest_path: Path, repo_root_path: Path | None = None)
 
     return BenchmarkPack(
         pack_id=str(manifest["pack_id"]),
+        pack_version=pack_version,
+        manifest_schema_version=pack_schema_version,
         description=str(manifest.get("description") or ""),
         request=request,
     )
@@ -235,7 +242,17 @@ def benchmark_project_package(
     container = bootstrap_container(settings)
     analyze_use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
     payload = run_benchmark(analyze_use_case, benchmark_pack.request, iterations, warmup_iterations)
+    payload["artifact_type"] = "benchmark_project_package"
+    payload["schema_version"] = "1.0.0"
+    payload["generated_at"] = datetime.now(tz=UTC).isoformat()
+    payload["benchmark_pack"] = {
+        "pack_id": benchmark_pack.pack_id,
+        "pack_version": benchmark_pack.pack_version,
+        "manifest_schema_version": benchmark_pack.manifest_schema_version,
+        "description": benchmark_pack.description,
+    }
     payload["pack_id"] = benchmark_pack.pack_id
+    payload["pack_version"] = benchmark_pack.pack_version
     payload["description"] = benchmark_pack.description
     payload["storage_dir"] = str(settings.storage_dir.resolve())
     return payload
