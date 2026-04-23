@@ -1,0 +1,35 @@
+{
+  "iterations": 1,
+  "warmup_iterations": 0,
+  "measured_runs": [
+    {
+      "iteration": 1,
+      "request_id": "benchmark-project-package-baseline-run-001",
+      "elapsed_ms": 501.997,
+      "report_id": "1ad1f97d242f42cca4a5b9ef652366fd",
+      "issue_count": 12,
+      "requirement_count": 5,
+      "project_name": "Benchmark Demo Project",
+      "discipline": "architecture"
+    }
+  ],
+  "summary": {
+    "min_ms": 501.997,
+    "max_ms": 501.997,
+    "avg_ms": 501.997,
+    "reports_per_second": 1.992
+  },
+  "artifact_type": "benchmark_project_package",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-18T17:42:27.174045+00:00",
+  "benchmark_pack": {
+    "pack_id": "project-package-baseline",
+    "pack_version": "1.0.0",
+    "manifest_schema_version": "1.0.0",
+    "description": "Baseline multimodal project-package benchmark over representative IFC, IDS, narrative, calculation, and drawing fixtures."
+  },
+  "pack_id": "project-package-baseline",
+  "pack_version": "1.0.0",
+  "description": "Baseline multimodal project-package benchmark over representative IFC, IDS, narrative, calculation, and drawing fixtures.",
+  "storage_dir": "C:\\plans\\samolet\\backend\\var\\reports-ci-smoke-baseline"
+}

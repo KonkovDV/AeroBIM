@@ -1,0 +1,43 @@
+{
+  "artifact_type": "benchmark_threshold_evaluation",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-18T17:49:07.639844+00:00",
+  "threshold_profile_id": "aerobim-benchmark-thresholds",
+  "threshold_profile_version": "1.0.0",
+  "threshold_profile_schema_version": "1.0.0",
+  "mode": "advisory",
+  "profile_path": "..\\samples\\benchmarks\\benchmark-thresholds.json",
+  "artifact_dir": "..\\artifacts\\ci-benchmark-smoke",
+  "gate_passed": true,
+  "has_failure": false,
+  "packs_evaluated": 3,
+  "checks": [
+    {
+      "pack_id": "project-package-baseline",
+      "status": "pass",
+      "avg_ms": 501.997,
+      "reports_per_second": 1.992,
+      "max_avg_ms": 10000.0,
+      "min_reports_per_second": 0.08,
+      "violations": []
+    },
+    {
+      "pack_id": "project-package-fire-compliance",
+      "status": "pass",
+      "avg_ms": 538.598,
+      "reports_per_second": 1.857,
+      "max_avg_ms": 8000.0,
+      "min_reports_per_second": 0.1,
+      "violations": []
+    },
+    {
+      "pack_id": "project-package-stress-multisource",
+      "status": "pass",
+      "avg_ms": 521.971,
+      "reports_per_second": 1.916,
+      "max_avg_ms": 15000.0,
+      "min_reports_per_second": 0.05,
+      "violations": []
+    }
+  ]
+}

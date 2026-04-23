@@ -1,0 +1,1 @@
+{"id":"val-001","prompt":"Extract requirement: Slab thickness must be 200 mm.","chosen":"REQ-003|IFCSLAB|Pset_SlabCommon|Thickness|200mm","rejected":"Slab should be thick","label":"structured"}
