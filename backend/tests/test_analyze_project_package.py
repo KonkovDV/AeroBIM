@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.application.use_cases.analyze_project_package import build_openrebar_provenance_digest
 from aerobim.domain.models import (
     ComparisonOperator,
     DrawingAnnotation,
@@ -775,6 +776,126 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             ]
             self.assertEqual(len(fallback_issues), 1)
             self.assertEqual(fallback_issues[0].severity, Severity.ERROR)
+            self.assertFalse(report.summary.passed)
+
+    def test_execute_keeps_minor_openrebar_warning_as_warning_when_mode_enforced(self) -> None:
+        class NoOpExtractor:
+            def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpSynthesizer:
+            def synthesize(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpDrawingAnalyzer:
+            def analyze(self, _source: DrawingSource) -> list[DrawingAnnotation]:
+                return []
+
+        class NoOpValidator:
+            def validate(
+                self,
+                _ifc_path: Path,
+                _requirements: list[ParsedRequirement],
+            ) -> list[ValidationIssue]:
+                return []
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            payload = _build_openrebar_report_payload(fallback_used=False)
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(payload),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=NoOpExtractor(),
+                narrative_rule_synthesizer=NoOpSynthesizer(),
+                drawing_analyzer=NoOpDrawingAnalyzer(),
+                ifc_validator=NoOpValidator(),
+                ids_validator=NoOpIdsValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-enforced-minor",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(text=""),
+                    ids_path=Path("rules.ids"),
+                    reinforcement_report_path=report_path,
+                    reinforcement_source_digest=build_openrebar_provenance_digest(payload),
+                    reinforcement_provenance_mode="enforced",
+                    project_name="Residential Tower Beta",
+                )
+            )
+
+            project_code_issues = [
+                issue for issue in report.issues if issue.rule_id == "OPENREBAR-PROJECT-CODE"
+            ]
+            self.assertEqual(len(project_code_issues), 1)
+            self.assertEqual(project_code_issues[0].severity, Severity.WARNING)
+            self.assertTrue(report.summary.passed)
+
+    def test_execute_escalates_critical_openrebar_warning_when_mode_enforced(self) -> None:
+        class NoOpExtractor:
+            def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpSynthesizer:
+            def synthesize(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return []
+
+        class NoOpDrawingAnalyzer:
+            def analyze(self, _source: DrawingSource) -> list[DrawingAnnotation]:
+                return []
+
+        class NoOpValidator:
+            def validate(
+                self,
+                _ifc_path: Path,
+                _requirements: list[ParsedRequirement],
+            ) -> list[ValidationIssue]:
+                return []
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            payload = _build_openrebar_report_payload(fallback_used=False)
+            report_path = Path(tmp_dir) / "openrebar.result.json"
+            report_path.write_text(
+                json.dumps(payload),
+                encoding="utf-8",
+            )
+
+            store = FakeStore()
+            use_case = AnalyzeProjectPackageUseCase(
+                requirement_extractor=NoOpExtractor(),
+                narrative_rule_synthesizer=NoOpSynthesizer(),
+                drawing_analyzer=NoOpDrawingAnalyzer(),
+                ifc_validator=NoOpValidator(),
+                ids_validator=NoOpIdsValidator(),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=store,
+            )
+
+            report = use_case.execute(
+                ValidationRequest(
+                    request_id="req-openrebar-enforced-critical",
+                    ifc_path=Path("sample.ifc"),
+                    requirement_source=RequirementSource(text=""),
+                    ids_path=Path("rules.ids"),
+                    reinforcement_report_path=report_path,
+                    reinforcement_source_digest="0" * 64,
+                    reinforcement_provenance_mode="enforced",
+                    project_name="Residential Tower Alpha",
+                )
+            )
+
+            digest_issues = [
+                issue for issue in report.issues if issue.rule_id == "OPENREBAR-PROVENANCE-DIGEST"
+            ]
+            self.assertEqual(len(digest_issues), 1)
+            self.assertEqual(digest_issues[0].severity, Severity.ERROR)
             self.assertFalse(report.summary.passed)
 
     def test_execute_warns_when_openrebar_report_provided_without_reference_digest(self) -> None:

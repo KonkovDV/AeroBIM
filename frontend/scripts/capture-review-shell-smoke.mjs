@@ -1,4 +1,6 @@
 import { mkdir } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
@@ -70,15 +72,36 @@ export function validateExportLinks(exportLinks) {
   };
 }
 
-function buildSmokePayload(options, artifactPaths, checks) {
+async function artifactMetadata(filePath) {
+  const fileBuffer = await readFile(filePath);
+  const fileStats = await stat(filePath);
+  return {
+    path: filePath,
+    size_bytes: fileStats.size,
+    sha256: createHash("sha256").update(fileBuffer).digest("hex"),
+  };
+}
+
+async function buildSmokePayload(options, artifactPaths, checks) {
+  const integrity = {
+    trace: await artifactMetadata(artifactPaths.tracePath),
+    issue: await artifactMetadata(artifactPaths.issueScreenshotPath),
+    clash:
+      artifactPaths.clashScreenshotPath !== null
+        ? await artifactMetadata(artifactPaths.clashScreenshotPath)
+        : null,
+  };
+
   return {
     baseUrl: options.baseUrl,
     reportPrefix: options.reportPrefix,
+    generatedAt: new Date().toISOString(),
     screenshots: {
       issue: artifactPaths.issueScreenshotPath,
       clash: artifactPaths.clashScreenshotPath,
     },
     trace: artifactPaths.tracePath,
+    artifact_integrity: integrity,
     checks,
   };
 }
@@ -233,8 +256,10 @@ async function main() {
     const clashCard = page.locator(".collection-card-button").first();
     await clickIfVisible(clashCard);
     const clashChecks = await assertClashReviewState(page, clashCard);
+    let capturedClashScreenshotPath = null;
     if (await clashCard.count()) {
       await page.screenshot({ path: clashScreenshotPath, fullPage: true });
+      capturedClashScreenshotPath = clashScreenshotPath;
     }
 
     await context.tracing.stop({ path: tracePath });
@@ -244,7 +269,7 @@ async function main() {
           options,
           {
             issueScreenshotPath,
-            clashScreenshotPath,
+            clashScreenshotPath: capturedClashScreenshotPath,
             tracePath,
           },
           {

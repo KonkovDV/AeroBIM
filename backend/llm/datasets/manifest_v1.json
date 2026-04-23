@@ -1,0 +1,24 @@
+{
+  "artifact_type": "aerobim_ft_dataset_manifest",
+  "version": "v1",
+  "generated_at": "2026-04-19T00:00:00Z",
+  "split_policy": "llm/datasets/split_policy_v1.md",
+  "splits": {
+    "train": {
+      "path": "llm/datasets/sft_train_v1.jsonl",
+      "expected_min_examples": 2
+    },
+    "val": {
+      "path": "llm/datasets/sft_val_v1.jsonl",
+      "expected_min_examples": 1
+    },
+    "holdout": {
+      "path": "llm/datasets/sft_holdout_v1.jsonl",
+      "expected_min_examples": 1
+    }
+  },
+  "leakage_guard": {
+    "cross_split_duplicate_keys_forbidden": true,
+    "holdout_never_used_for_training": true
+  }
+}

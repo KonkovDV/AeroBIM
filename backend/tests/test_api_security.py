@@ -205,6 +205,23 @@ class ApiSecurityTests(unittest.TestCase):
         self.assertIn("service", data)
         self.assertIn("environment", data)
 
+    def test_health_response_shape_locked(self) -> None:
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(set(payload.keys()), {"service", "environment", "status"})
+
+    def test_requirement_path_traversal_rejected(self) -> None:
+        response = self.client.post(
+            "/v1/validate/ifc",
+            json={
+                "ifc_path": "fixtures/model.ifc",
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "requirement_path": "../../outside/requirements.txt",
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
 
 class ApiReportEndpointTests(unittest.TestCase):
     @classmethod
@@ -254,6 +271,14 @@ class ApiReportEndpointTests(unittest.TestCase):
         data = response.json()
         self.assertIn("reports", data)
         self.assertIn("count", data)
+
+    def test_list_reports_response_shape_locked(self) -> None:
+        response = self.client.get("/v1/reports")
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(set(payload.keys()), {"reports", "count"})
+        self.assertIsInstance(payload["reports"], list)
+        self.assertIsInstance(payload["count"], int)
 
     def test_list_reports_filters_by_project_discipline_and_passed(self) -> None:
         self._seed_report_summary(
@@ -554,6 +579,26 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertEqual(body.get("project_code"), "Residential Tower Alpha")
         self.assertEqual(body.get("slab_id"), "SLAB-03")
 
+    def test_reinforcement_digest_response_shape_locked(self) -> None:
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=False)
+        response = self.client.post(
+            "/v1/analyze/project-package/reinforcement-digest",
+            json={"reinforcement_report_path": reinforcement_report_path},
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(
+            set(body.keys()),
+            {
+                "reinforcement_report_path",
+                "provenance_digest",
+                "contract_id",
+                "schema_version",
+                "project_code",
+                "slab_id",
+            },
+        )
+
     def test_reinforcement_digest_endpoint_rejects_path_traversal(self) -> None:
         response = self.client.post(
             "/v1/analyze/project-package/reinforcement-digest",
@@ -651,6 +696,10 @@ class ApiIfcSourceEndpointTests(unittest.TestCase):
         self.assertEqual(response.status_code, 409)
         self.assertIn("escapes storage boundary", response.json()["detail"])
 
+    def test_report_ifc_source_rejects_invalid_report_id_format(self) -> None:
+        response = self.client.get("/v1/reports/not-valid-id/source/ifc")
+        self.assertEqual(response.status_code, 400)
+
 
 class ApiDrawingAssetPreviewEndpointTests(unittest.TestCase):
     @classmethod
@@ -729,6 +778,31 @@ class ApiDrawingAssetPreviewEndpointTests(unittest.TestCase):
         response = self.client.get(f"/v1/reports/{report_id}/drawing-assets/missing-asset/preview")
 
         self.assertEqual(response.status_code, 404)
+
+    def test_report_drawing_asset_preview_rejects_invalid_asset_id_format(self) -> None:
+        report_id, _asset_id, _preview_path = self._seed_report_with_drawing_asset()
+        response = self.client.get(
+            f"/v1/reports/{report_id}/drawing-assets/invalid!asset/preview"
+        )
+        self.assertEqual(response.status_code, 400)
+
+
+class ApiJobEndpointTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.presentation.http.api import create_http_app
+
+        container = _make_test_container()
+        app = create_http_app(container)
+        cls.client = TestClient(app)
+
+    def test_get_job_rejects_invalid_job_id_format(self) -> None:
+        response = self.client.get("/v1/analyze/project-package/jobs/not-a-valid-id")
+        self.assertEqual(response.status_code, 400)
 
 
 class ApiHtmlExportTests(unittest.TestCase):

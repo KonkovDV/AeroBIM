@@ -1,0 +1,18 @@
+{
+  "artifact_type": "aerobim_ft_serve_smoke_report",
+  "generated_at": "2026-04-19T07:16:12.265857+00:00",
+  "status": "APPROVED",
+  "port": 54663,
+  "checks": [
+    {
+      "name": "health_endpoint",
+      "passed": true,
+      "details": "{\"status\": 200, \"body\": {\"status\": \"ok\", \"service\": \"aerobim-ft-smoke\"}}"
+    },
+    {
+      "name": "openai_completion_endpoint",
+      "passed": true,
+      "details": "{\"status\": 200, \"content\": \"AeroBIM FT serve smoke response\"}"
+    }
+  ]
+}
