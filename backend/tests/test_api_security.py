@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import sys
 import tempfile
 import unittest
@@ -436,6 +437,35 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         )
         return str(Path("fixtures") / "openrebar.result.json")
 
+    def _write_openrebar_handoff_fixture(
+        self,
+        *,
+        reinforcement_report_path: str,
+        report_sha256: str | None = None,
+    ) -> str:
+        fixture_dir = self.settings.storage_dir / "fixtures"
+        fixture_dir.mkdir(parents=True, exist_ok=True)
+        report_abs_path = self.settings.storage_dir / reinforcement_report_path
+        expected_sha = report_sha256 or hashlib.sha256(report_abs_path.read_bytes()).hexdigest()
+        handoff_path = fixture_dir / "openrebar.handoff.json"
+        handoff_path.write_text(
+            json.dumps(
+                {
+                    "handoff_type": "openrebar-aerobim-report-handoff.v1",
+                    "schema_version": "1.0.0",
+                    "generated_at_utc": "2026-04-22T00:00:00Z",
+                    "reinforcement_report_path": reinforcement_report_path,
+                    "report_sha256": expected_sha,
+                    "contract_id": "OpenRebar.reinforcement.report.v1",
+                    "report_schema_version": "1.0.0",
+                    "project_code": "Residential Tower Alpha",
+                    "slab_id": "SLAB-03",
+                }
+            ),
+            encoding="utf-8",
+        )
+        return str(Path("fixtures") / "openrebar.handoff.json")
+
     def _write_ifc_fixture(self) -> str:
         # Use a known-valid IFC sample from repository fixtures while keeping
         # API path resolution inside storage boundary.
@@ -486,6 +516,74 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         payload = response.json()
         issue_ids = {issue["rule_id"] for issue in payload.get("issues", [])}
         self.assertIn("OPENREBAR-PROVENANCE-DIGEST", issue_ids)
+
+    def test_analyze_project_package_accepts_openrebar_handoff_manifest(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=False)
+        reinforcement_handoff_path = self._write_openrebar_handoff_fixture(
+            reinforcement_report_path=reinforcement_report_path
+        )
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_handoff_path": reinforcement_handoff_path,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        openrebar_issue_ids = {
+            issue["rule_id"]
+            for issue in payload.get("issues", [])
+            if issue.get("rule_id", "").startswith("OPENREBAR-")
+        }
+        self.assertEqual(openrebar_issue_ids, set())
+
+    def test_analyze_project_package_rejects_openrebar_handoff_sha_mismatch(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=False)
+        reinforcement_handoff_path = self._write_openrebar_handoff_fixture(
+            reinforcement_report_path=reinforcement_report_path,
+            report_sha256="0" * 64,
+        )
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_handoff_path": reinforcement_handoff_path,
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("report_sha256 mismatch", response.json().get("detail", ""))
+
+    def test_analyze_project_package_rejects_conflicting_openrebar_inputs(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+        reinforcement_report_path = self._write_openrebar_report_fixture(fallback_used=False)
+        reinforcement_handoff_path = self._write_openrebar_handoff_fixture(
+            reinforcement_report_path=reinforcement_report_path
+        )
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Residential Tower Alpha",
+                "reinforcement_report_path": reinforcement_report_path,
+                "reinforcement_handoff_path": reinforcement_handoff_path,
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("cannot be combined", response.json().get("detail", ""))
 
     def test_analyze_project_package_includes_openrebar_strategy_warning(self) -> None:
         ifc_path = self._write_ifc_fixture()
