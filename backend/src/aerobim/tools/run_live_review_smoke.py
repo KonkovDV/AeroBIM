@@ -81,18 +81,22 @@ def build_frontend_env(base_env: Mapping[str, str], backend_base_url: str) -> di
 
 def extract_json_payload(raw_output: str) -> dict[str, object]:
     decoder = json.JSONDecoder()
+    candidate: dict[str, object] | None = None
     for index, char in enumerate(raw_output):
         if char != "{":
             continue
         try:
-            payload, end_index = decoder.raw_decode(raw_output[index:])
+            payload, _end_index = decoder.raw_decode(raw_output[index:])
         except json.JSONDecodeError:
             continue
-        if raw_output[index + end_index :].strip():
+        if not isinstance(payload, dict):
             continue
-        if isinstance(payload, dict):
-            return payload
-    raise ValueError("No JSON payload found in smoke command output")
+        if "trace" in payload and "screenshots" in payload:
+            candidate = payload
+
+    if candidate is None:
+        raise ValueError("No JSON payload found in smoke command output")
+    return candidate
 
 
 def npm_command() -> str:

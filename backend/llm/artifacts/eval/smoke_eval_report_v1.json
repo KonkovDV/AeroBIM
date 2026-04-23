@@ -1,0 +1,23 @@
+{
+  "artifact_type": "aerobim_ft_eval_smoke_report",
+  "generated_at": "2026-04-19T07:16:11.618281+00:00",
+  "status": "APPROVED",
+  "train_report_path": "C:\\plans\\samolet\\backend\\llm\\artifacts\\train\\smoke_train_report_v1.json",
+  "metrics": {
+    "schema_consistency": 0.79,
+    "field_completeness": 0.82,
+    "hallucination_guard": 0.82
+  },
+  "checks": [
+    {
+      "name": "train_smoke_approved",
+      "passed": true,
+      "details": "train_status=APPROVED"
+    },
+    {
+      "name": "metrics_threshold",
+      "passed": true,
+      "details": "{\"schema_consistency\": 0.79, \"field_completeness\": 0.82, \"hallucination_guard\": 0.82}"
+    }
+  ]
+}

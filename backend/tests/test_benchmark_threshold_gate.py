@@ -39,10 +39,25 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                 root,
                 "thresholds.json",
                 {
-                    "packs": {
-                        "project-package-baseline": {
-                            "max_avg_ms": 2000.0,
-                            "min_reports_per_second": 0.4,
+                    "schema_version": "1.0.0",
+                    "profile_id": "aerobim-benchmark-thresholds",
+                    "profile_version": "1.0.0",
+                    "modes": {
+                        "advisory": {
+                            "packs": {
+                                "project-package-baseline": {
+                                    "max_avg_ms": 2000.0,
+                                    "min_reports_per_second": 0.4,
+                                }
+                            }
+                        },
+                        "enforced": {
+                            "packs": {
+                                "project-package-baseline": {
+                                    "max_avg_ms": 1800.0,
+                                    "min_reports_per_second": 0.5,
+                                }
+                            }
                         }
                     }
                 },
@@ -53,6 +68,9 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
             )
 
             self.assertTrue(result["gate_passed"])
+            self.assertEqual(result["artifact_type"], "benchmark_threshold_evaluation")
+            self.assertEqual(result["schema_version"], "1.0.0")
+            self.assertEqual(result["threshold_profile_id"], "aerobim-benchmark-thresholds")
             checks = result["checks"]
             self.assertEqual(len(checks), 1)
             self.assertEqual(checks[0]["status"], "pass")
@@ -80,10 +98,25 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                 root,
                 "thresholds.json",
                 {
-                    "packs": {
-                        "project-package-baseline": {
-                            "max_avg_ms": 2000.0,
-                            "min_reports_per_second": 0.4,
+                    "schema_version": "1.0.0",
+                    "profile_id": "aerobim-benchmark-thresholds",
+                    "profile_version": "1.0.0",
+                    "modes": {
+                        "advisory": {
+                            "packs": {
+                                "project-package-baseline": {
+                                    "max_avg_ms": 2000.0,
+                                    "min_reports_per_second": 0.4,
+                                }
+                            }
+                        },
+                        "enforced": {
+                            "packs": {
+                                "project-package-baseline": {
+                                    "max_avg_ms": 2000.0,
+                                    "min_reports_per_second": 0.4,
+                                }
+                            }
                         }
                     }
                 },
@@ -116,10 +149,25 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                 root,
                 "thresholds.json",
                 {
-                    "packs": {
-                        "project-package-baseline": {
-                            "max_avg_ms": 2000.0,
-                            "min_reports_per_second": 0.4,
+                    "schema_version": "1.0.0",
+                    "profile_id": "aerobim-benchmark-thresholds",
+                    "profile_version": "1.0.0",
+                    "modes": {
+                        "advisory": {
+                            "packs": {
+                                "project-package-baseline": {
+                                    "max_avg_ms": 2000.0,
+                                    "min_reports_per_second": 0.4,
+                                }
+                            }
+                        },
+                        "enforced": {
+                            "packs": {
+                                "project-package-baseline": {
+                                    "max_avg_ms": 2000.0,
+                                    "min_reports_per_second": 0.4,
+                                }
+                            }
                         }
                     }
                 },

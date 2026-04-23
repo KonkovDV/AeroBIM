@@ -69,6 +69,18 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(payload["trace"], "artifact.zip")
         self.assertEqual(payload["screenshots"]["issue"], "a.png")
 
+    def test_extract_json_payload_ignores_suffix_lines(self) -> None:
+        mixed_payload = (
+            '{\n  "trace": "artifact.zip",\n  "screenshots": {"issue": "a.png"}\n}\n'
+            'browser warning line\n'
+            'another log line\n'
+        )
+
+        payload = extract_json_payload(mixed_payload)
+
+        self.assertEqual(payload["trace"], "artifact.zip")
+        self.assertEqual(payload["screenshots"]["issue"], "a.png")
+
     @patch("aerobim.tools.run_live_review_smoke.urlopen")
     @patch("aerobim.tools.run_live_review_smoke.build_opener")
     def test_open_http_url_bypasses_proxy_for_loopback_hosts(

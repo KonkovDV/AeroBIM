@@ -30,6 +30,11 @@ Homepage = "https://github.com/KonkovDV/AeroBIM"
 Repository = "https://github.com/KonkovDV/AeroBIM"
 Issues = "https://github.com/KonkovDV/AeroBIM/issues"
 
+[project.scripts]
+aerobim-export-runtime-baseline = "aerobim.tools.export_runtime_baseline:main"
+aerobim-export-api-contract-summary = "aerobim.tools.export_api_contract_summary:main"
+aerobim-verify-ft-scaffold-gate = "aerobim.tools.export_ft_scaffold_gate:main"
+
 [project.optional-dependencies]
 dev = [
   "pytest>=8.3,<9.0",
