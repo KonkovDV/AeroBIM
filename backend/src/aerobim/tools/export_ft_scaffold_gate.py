@@ -50,6 +50,13 @@ def run_command(command: list[str], cwd: Path) -> dict[str, Any]:
     }
 
 
+def _load_json_if_exists(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return payload if isinstance(payload, dict) else {}
+
+
 def build_ft_scaffold_gate_report(
     command_checks: list[dict[str, Any]],
     criteria: list[dict[str, Any]],
@@ -95,9 +102,9 @@ def export_ft_scaffold_gate(output_path: Path) -> dict[str, Any]:
     eval_report_path = root / "llm/artifacts/eval/smoke_eval_report_v1.json"
     serve_report_path = root / "llm/artifacts/serve/smoke_serve_report_v1.json"
 
-    train_report = json.loads(train_report_path.read_text(encoding="utf-8")) if train_report_path.exists() else {}
-    eval_report = json.loads(eval_report_path.read_text(encoding="utf-8")) if eval_report_path.exists() else {}
-    serve_report = json.loads(serve_report_path.read_text(encoding="utf-8")) if serve_report_path.exists() else {}
+    train_report = _load_json_if_exists(train_report_path)
+    eval_report = _load_json_if_exists(eval_report_path)
+    serve_report = _load_json_if_exists(serve_report_path)
 
     runtime_criteria = [
         {
@@ -134,7 +141,16 @@ def main() -> None:
     args = parser.parse_args()
 
     report = export_ft_scaffold_gate(args.output.resolve())
-    print(json.dumps({"gate_passed": report["gate_passed"], "output": str(args.output.resolve())}, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "gate_passed": report["gate_passed"],
+                "output": str(args.output.resolve()),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     raise SystemExit(0 if report["gate_passed"] else 1)
 
 

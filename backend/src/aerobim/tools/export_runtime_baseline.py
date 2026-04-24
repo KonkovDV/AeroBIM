@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import json
-import subprocess
-from datetime import datetime, timezone
 import importlib.util
+import json
+import os
+import subprocess
+from datetime import UTC, datetime
+
 
 def run_cmd(cmd):
     try:
@@ -52,7 +52,7 @@ def main():
     report = {
         "project": "AeroBIM",
         "artifact_type": "runtime_evidence_report",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "version": "v1",
         "optional_adapter_status": {
             "ifcclash": has_ifcclash,

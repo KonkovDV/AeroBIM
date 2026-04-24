@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
-from dataclasses import replace
+from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from threading import Lock
