@@ -58,8 +58,8 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                                     "min_reports_per_second": 0.5,
                                 }
                             }
-                        }
-                    }
+                        },
+                    },
                 },
             )
 
@@ -117,8 +117,8 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                                     "min_reports_per_second": 0.4,
                                 }
                             }
-                        }
-                    }
+                        },
+                    },
                 },
             )
 
@@ -168,8 +168,8 @@ class BenchmarkThresholdGateTests(unittest.TestCase):
                                     "min_reports_per_second": 0.4,
                                 }
                             }
-                        }
-                    }
+                        },
+                    },
                 },
             )
 

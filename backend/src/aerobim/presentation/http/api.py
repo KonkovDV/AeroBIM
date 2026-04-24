@@ -217,9 +217,7 @@ def create_http_app(container: Container):
             handoff_payload = _load_openrebar_handoff_payload(handoff_path)
             raw_report_path = handoff_payload.get("reinforcement_report_path")
             if not isinstance(raw_report_path, str) or not raw_report_path.strip():
-                raise ValueError(
-                    "OpenRebar handoff manifest must define reinforcement_report_path"
-                )
+                raise ValueError("OpenRebar handoff manifest must define reinforcement_report_path")
 
             report_path = _resolve_safe_path(raw_report_path.strip())
             manifest_sha = handoff_payload.get("report_sha256")
