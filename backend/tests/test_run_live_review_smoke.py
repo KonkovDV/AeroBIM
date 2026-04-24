@@ -72,8 +72,8 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
     def test_extract_json_payload_ignores_suffix_lines(self) -> None:
         mixed_payload = (
             '{\n  "trace": "artifact.zip",\n  "screenshots": {"issue": "a.png"}\n}\n'
-            'browser warning line\n'
-            'another log line\n'
+            "browser warning line\n"
+            "another log line\n"
         )
 
         payload = extract_json_payload(mixed_payload)

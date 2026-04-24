@@ -879,9 +879,7 @@ class ApiDrawingAssetPreviewEndpointTests(unittest.TestCase):
 
     def test_report_drawing_asset_preview_rejects_invalid_asset_id_format(self) -> None:
         report_id, _asset_id, _preview_path = self._seed_report_with_drawing_asset()
-        response = self.client.get(
-            f"/v1/reports/{report_id}/drawing-assets/invalid!asset/preview"
-        )
+        response = self.client.get(f"/v1/reports/{report_id}/drawing-assets/invalid!asset/preview")
         self.assertEqual(response.status_code, 400)
 
 

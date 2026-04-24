@@ -41,9 +41,7 @@ class InMemoryAnalyzeProjectPackageJobStore:
                     status=JobStatus(str(item["status"])),
                     created_at=str(item["created_at"]),
                     started_at=(str(item["started_at"]) if item.get("started_at") else None),
-                    completed_at=(
-                        str(item["completed_at"]) if item.get("completed_at") else None
-                    ),
+                    completed_at=(str(item["completed_at"]) if item.get("completed_at") else None),
                     report_id=str(item["report_id"]) if item.get("report_id") else None,
                     error_message=(
                         str(item["error_message"])
