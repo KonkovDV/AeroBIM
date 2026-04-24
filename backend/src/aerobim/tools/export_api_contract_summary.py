@@ -77,7 +77,10 @@ def _collect_contract_summary(app) -> dict[str, object]:
             if not isinstance(operation, dict):
                 continue
             responses = operation.get("responses", {})
-            response_codes = sorted(str(code) for code in responses.keys()) if isinstance(responses, dict) else []
+            if isinstance(responses, dict):
+                response_codes = sorted(str(code) for code in responses.keys())
+            else:
+                response_codes = []
             request_body_required = False
             if isinstance(operation.get("requestBody"), dict):
                 request_body_required = bool(operation["requestBody"].get("required", False))
