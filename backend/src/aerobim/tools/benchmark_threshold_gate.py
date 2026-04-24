@@ -131,7 +131,11 @@ def evaluate_thresholds(
 
 
 def render_markdown(
-    evaluation: dict[str, object], mode: str, profile_path: Path, profile_id: str, profile_version: str
+    evaluation: dict[str, object],
+    mode: str,
+    profile_path: Path,
+    profile_id: str,
+    profile_version: str,
 ) -> str:
     checks = evaluation["checks"]
     assert isinstance(checks, list)
