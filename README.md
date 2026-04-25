@@ -134,6 +134,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_STORAGE_DIR` | `var/reports` | Report persistence directory |
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
 | `AEROBIM_ENV` | `development` | Environment name |
+| `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Optional Bearer token required for all `/v1/*` endpoints |
 
 ## Project Structure
 
