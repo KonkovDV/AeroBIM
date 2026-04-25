@@ -130,6 +130,37 @@ If `ruff format --check` reports files to reformat, run:
 python -m ruff format src tests
 ```
 
+## Scientific Reporting Standard
+
+### Claim Boundary
+
+This README separates verified repository evidence from roadmap intent.
+
+- Verified capabilities are those backed by executable adapters, tests, API contracts, or persisted audit artifacts.
+- Roadmap lines (for example heavier VLM path and BCF API integration) are explicitly future work.
+- Throughput and benchmark observations are environment-sensitive and should be treated as bounded measurements, not universal performance guarantees.
+
+### Reproducibility Baseline
+
+Use this baseline before publishing claims derived from local runs:
+
+```bash
+cd backend
+python -m ruff format --check src tests
+python -m ruff check src tests
+python -m mypy src
+pytest tests -q
+python -m aerobim.tools.seed_smoke_report
+```
+
+For benchmark claims, publish benchmark pack path, CLI parameters, threshold mode, and produced artifacts.
+
+### Citation and Reuse
+
+- If no dedicated citation file is present, cite repository URL, commit SHA, and report artifact identifiers.
+- For cross-system claims (AeroBIM ↔ OpenRebar), include provenance digest and report contract version.
+- Keep methodological assumptions explicit when comparing regex baselines and heavier multimodal approaches.
+
 ## API Endpoints
 
 | Method | Path | Description |
