@@ -355,7 +355,7 @@ class AnalyzeProjectPackageUseCase:
             raw_total_waste = summary_dict.get("totalWastePercent")
             total_waste = (
                 float(raw_total_waste)
-                if isinstance(raw_total_waste, (int, float))
+                if isinstance(raw_total_waste, int | float)
                 else self._to_float(str(raw_total_waste))
                 if raw_total_waste is not None
                 else None

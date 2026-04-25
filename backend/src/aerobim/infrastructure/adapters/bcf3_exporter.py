@@ -90,9 +90,7 @@ def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
         if not _should_export(issue):
             continue
 
-        reference_links = tuple(
-            link for link in (issue.element_guid, issue.target_ref) if link
-        )
+        reference_links = tuple(link for link in (issue.element_guid, issue.target_ref) if link)
         selected_guids = (issue.element_guid,) if issue.element_guid else ()
         topic_type = "Error" if issue.severity == Severity.ERROR else "Warning"
         topics.append(
@@ -121,10 +119,7 @@ def _should_export(issue: ValidationIssue) -> bool:
     if issue.severity != Severity.WARNING:
         return False
     rule_id = (issue.rule_id or "").upper()
-    return (
-        issue.category == FindingCategory.CROSS_DOCUMENT
-        and rule_id.startswith("OPENREBAR-")
-    )
+    return issue.category == FindingCategory.CROSS_DOCUMENT and rule_id.startswith("OPENREBAR-")
 
 
 def _clash_topic(
@@ -218,6 +213,4 @@ def _vector(parent: Element, name: str, x: float, y: float, z: float) -> None:
 
 
 def _to_xml_str(element: Element) -> str:
-    return '<?xml version="1.0" encoding="UTF-8"?>\n' + tostring(
-        element, encoding="unicode"
-    )
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + tostring(element, encoding="unicode")
