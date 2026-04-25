@@ -161,6 +161,8 @@ S3/MinIO (binary artifacts: IFC, PDF, BCF).
 
 **Current evidence:** focused storage/API validation green (`61 passed` on the B.1 slice).
 
+**Operational hardening update (2026-04-25):** CI/local parity formatter gate is now codified and green for this slice (`ruff format --check src tests`), with documented recovery flow in `docs/15-local-quality-gate.md`.
+
 ### B.2 — Async Task Queue (Celery / arq)
 
 **Goal:** decouple heavy analysis from HTTP request cycle with a real task queue.

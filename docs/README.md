@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Documentation Map"
 status: active
-version: "0.2.2"
+version: "0.2.3"
 last_updated: "2026-04-25"
 tags: [aerobim, documentation, navigation, reference]
 ---
@@ -27,7 +27,8 @@ Use it to find the current active documents quickly instead of treating the whol
 9. `04-atomic-backlog.md` — execution-ready backlog.
 10. `03-openbim-landscape.md` — standards, tooling, and competitor frame.
 11. `07-project-skeleton.md` — current filesystem skeleton and active vs placeholder surfaces.
-12. `01-strategy-and-plan.md` — product thesis and phased plan.
+12. `15-local-quality-gate.md` — CI-parity local formatting/lint/type/test commands.
+13. `01-strategy-and-plan.md` — product thesis and phased plan.
 
 ## Document Modes
 
@@ -47,6 +48,7 @@ Use it to find the current active documents quickly instead of treating the whol
 | `12-openrebar-provenance-decision-table.md` | reference + how-to | enforced/advisory provenance severity policy for OpenRebar integration |
 | `13-academic-execution-plan-2026.md` | how-to + roadmap | standards-aligned execution plan with tranche status |
 | `14-enterprise-storage-foundation.md` | reference + how-to | B.1 storage foundation, env controls, rollout boundary |
+| `15-local-quality-gate.md` | how-to | CI-parity local quality commands and formatter recovery flow |
 
 ## Rules For Future Docs Work
 
