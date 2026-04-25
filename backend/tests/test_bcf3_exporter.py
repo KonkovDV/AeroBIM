@@ -310,7 +310,7 @@ class Bcf3HttpEndpointTests(unittest.TestCase):
         # Seed a report in the audit store
         store: InMemoryAuditStore = container.resolve(Tokens.AUDIT_REPORT_STORE)
         report = ValidationReport(
-               report_id="bcf3cafe1234567890abcdef12345678",
+            report_id="bcf3cafe1234567890abcdef12345678",
             request_id="req-bcf3-http",
             ifc_path=Path("test.ifc"),
             created_at=datetime.now(tz=UTC).isoformat(),
@@ -352,9 +352,7 @@ class Bcf3HttpEndpointTests(unittest.TestCase):
         self.assertIn("2.1", version_xml)
 
     def test_version_3_returns_bcf30_zip(self) -> None:
-        response = self._client.get(
-            f"/v1/reports/{self._report_id}/export/bcf?version=3"
-        )
+        response = self._client.get(f"/v1/reports/{self._report_id}/export/bcf?version=3")
         self.assertEqual(200, response.status_code)
         content = response.content
         self.assertTrue(zipfile.is_zipfile(io.BytesIO(content)))
@@ -363,18 +361,14 @@ class Bcf3HttpEndpointTests(unittest.TestCase):
         self.assertIn("3.0", version_xml)
 
     def test_version_30_alias_returns_bcf30_zip(self) -> None:
-        response = self._client.get(
-            f"/v1/reports/{self._report_id}/export/bcf?version=3.0"
-        )
+        response = self._client.get(f"/v1/reports/{self._report_id}/export/bcf?version=3.0")
         self.assertEqual(200, response.status_code)
         with zipfile.ZipFile(io.BytesIO(response.content)) as zf:
             version_xml = zf.read("bcf.version").decode("utf-8")
         self.assertIn("3.0", version_xml)
 
     def test_unknown_version_defaults_to_21(self) -> None:
-        response = self._client.get(
-            f"/v1/reports/{self._report_id}/export/bcf?version=99"
-        )
+        response = self._client.get(f"/v1/reports/{self._report_id}/export/bcf?version=99")
         self.assertEqual(200, response.status_code)
         with zipfile.ZipFile(io.BytesIO(response.content)) as zf:
             version_xml = zf.read("bcf.version").decode("utf-8")

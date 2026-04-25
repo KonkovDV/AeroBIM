@@ -62,9 +62,7 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
                 model = ifcopenshell.open(str(ifc_path))
                 ids_doc.validate(model)
 
-                failed_specs = [
-                    s for s in ids_doc.specifications if not s.status
-                ]
+                failed_specs = [s for s in ids_doc.specifications if not s.status]
                 self.assertEqual(
                     [],
                     failed_specs,
@@ -88,9 +86,7 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
                 try:
                     model = ifcopenshell.open(str(ifc_path))
                 except Exception as exc:  # noqa: BLE001
-                    self.fail(
-                        f"ifcopenshell.open() raised on {release_label}: {exc}"
-                    )
+                    self.fail(f"ifcopenshell.open() raised on {release_label}: {exc}")
                 walls = model.by_type("IfcWall")
                 self.assertGreater(
                     len(walls),

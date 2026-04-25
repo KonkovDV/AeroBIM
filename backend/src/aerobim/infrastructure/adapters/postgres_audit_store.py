@@ -26,9 +26,7 @@ class PostgresAuditStore:
             from sqlalchemy import Boolean, Column, Integer, MetaData, String, Table, text
             from sqlalchemy.ext.asyncio import create_async_engine
         except ModuleNotFoundError as exc:
-            raise RuntimeError(
-                "PostgresAuditStore requires SQLAlchemy enterprise extras."
-            ) from exc
+            raise RuntimeError("PostgresAuditStore requires SQLAlchemy enterprise extras.") from exc
 
         self._metadata = MetaData()
         self._reports = Table(
