@@ -43,7 +43,7 @@ class _NullLogger:
         pass
 
 
-def _make_test_container():
+def _make_test_container(api_bearer_token: str | None = None):
     """Build a container backed by InMemoryAuditStore for fast HTTP tests."""
     import tempfile
 
@@ -72,6 +72,7 @@ def _make_test_container():
         storage_dir=Path(tmp),
         debug=True,
         cors_origins=_TEST_CORS_ORIGINS,
+        api_bearer_token=api_bearer_token,
     )
     settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
@@ -222,6 +223,31 @@ class ApiSecurityTests(unittest.TestCase):
             },
         )
         self.assertEqual(response.status_code, 400)
+
+    def test_api_token_is_enforced_when_configured(self) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.presentation.http.api import create_http_app
+
+        secured_container = _make_test_container(api_bearer_token="test-token")
+        secured_client = TestClient(create_http_app(secured_container))
+
+        no_auth_response = secured_client.get("/v1/reports")
+        self.assertEqual(no_auth_response.status_code, 401)
+
+        wrong_auth_response = secured_client.get(
+            "/v1/reports",
+            headers={"Authorization": "Bearer wrong-token"},
+        )
+        self.assertEqual(wrong_auth_response.status_code, 401)
+
+        ok_response = secured_client.get(
+            "/v1/reports",
+            headers={"Authorization": "Bearer test-token"},
+        )
+        self.assertEqual(ok_response.status_code, 200)
 
 
 class ApiReportEndpointTests(unittest.TestCase):
@@ -987,6 +1013,16 @@ class ApiMalformedInputTests(unittest.TestCase):
 
     def test_analyze_missing_ifc_path_rejected(self) -> None:
         response = self.client.post("/v1/analyze/project-package", json={})
+        self.assertEqual(response.status_code, 422)
+
+    def test_analyze_too_many_drawings_rejected(self) -> None:
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": "model.ifc",
+                "drawings": [{"text": ""} for _ in range(65)],
+            },
+        )
         self.assertEqual(response.status_code, 422)
 
     def test_report_id_not_found_returns_404(self) -> None:
