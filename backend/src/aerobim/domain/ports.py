@@ -75,6 +75,22 @@ class AuditReportStore(Protocol):
     def list_reports(self) -> list[ReportSummaryEntry]: ...
 
 
+class ObjectStore(Protocol):
+    def put_bytes(
+        self,
+        key: str,
+        payload: bytes,
+        *,
+        content_type: str | None = None,
+    ) -> str: ...
+
+    def get_bytes(self, key: str) -> bytes | None: ...
+
+    def delete(self, key: str) -> None: ...
+
+    def presign_get(self, key: str, *, expires_in_seconds: int = 3600) -> str | None: ...
+
+
 class AnalyzeProjectPackageJobStore(Protocol):
     def create(self, job: AnalyzeProjectPackageJob) -> str: ...
 
