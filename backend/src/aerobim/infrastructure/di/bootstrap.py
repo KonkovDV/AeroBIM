@@ -22,7 +22,10 @@ from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store
     InMemoryAnalyzeProjectPackageJobStore,
 )
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
+from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
+from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
@@ -81,8 +84,13 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.OBJECT_STORE,
+        lambda current: _build_object_store(current.resolve(Tokens.SETTINGS)),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.AUDIT_REPORT_STORE,
-        lambda current: FilesystemAuditStore(current.resolve(Tokens.SETTINGS).storage_dir),
+        lambda current: _build_audit_report_store(current),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -146,3 +154,35 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     return container
+
+
+def _build_object_store(settings: Settings):
+    if settings.s3_bucket:
+        try:
+            return S3ObjectStore(
+                bucket=settings.s3_bucket,
+                region=settings.s3_region,
+                endpoint_url=settings.s3_endpoint_url,
+                access_key_id=settings.s3_access_key_id,
+                secret_access_key=settings.s3_secret_access_key,
+                prefix=settings.s3_prefix,
+            )
+        except RuntimeError:
+            return LocalObjectStore(settings.storage_dir)
+    return LocalObjectStore(settings.storage_dir)
+
+
+def _build_audit_report_store(current: Container):
+    settings = current.resolve(Tokens.SETTINGS)
+    object_store = current.resolve(Tokens.OBJECT_STORE)
+    payload_store = FilesystemAuditStore(
+        settings.storage_dir,
+        object_store=object_store,
+        report_ttl_days=settings.report_ttl_days,
+    )
+    if settings.db_url:
+        try:
+            return PostgresAuditStore(db_url=settings.db_url, payload_store=payload_store)
+        except RuntimeError:
+            return payload_store
+    return payload_store
