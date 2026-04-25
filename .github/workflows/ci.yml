@@ -160,3 +160,37 @@ jobs:
             artifacts/ci-benchmark-smoke/benchmark-summary.md
             artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md
             artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md
+
+  openapi-contract:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev,vision]"
+      - name: Export OpenAPI schema
+        run: python scripts/export_openapi.py ../artifacts/openapi.json
+      - name: Verify schema has expected paths
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          schema = json.loads(Path("../artifacts/openapi.json").read_text(encoding="utf-8"))
+          paths = set(schema.get("paths", {}).keys())
+          required = {"/health", "/v1/reports", "/v1/analyze/project-package"}
+          missing = required - paths
+          if missing:
+              raise SystemExit(f"OpenAPI schema is missing required paths: {missing}")
+          print(f"Schema OK — {len(paths)} paths present")
+          PY
+      - name: Upload OpenAPI schema artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-schema
+          path: artifacts/openapi.json

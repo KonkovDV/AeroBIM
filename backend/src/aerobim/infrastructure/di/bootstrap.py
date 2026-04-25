@@ -118,6 +118,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             audit_report_store=current.resolve(Tokens.AUDIT_REPORT_STORE),
             tolerance=tolerance,
             clash_detector=current.resolve(Tokens.CLASH_DETECTOR),
+            cross_doc_severity=current.resolve(Tokens.SETTINGS).cross_doc_contradiction_severity,
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
