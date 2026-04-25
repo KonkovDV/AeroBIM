@@ -133,6 +133,12 @@ python -m ruff format src tests
 - [docs/15-local-quality-gate.md](docs/15-local-quality-gate.md) — локальные CI-parity проверки форматирования/линта/типов/тестов
 - [ops/environment-matrix.md](ops/environment-matrix.md) — матрица окружения и dependency profiles
 
+## Governance
+
+- [Contributing](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
+- [Citation Metadata](CITATION.cff)
+
 ## Архитектура
 
 Пятислойная Clean Architecture с направлением зависимостей внутрь:
