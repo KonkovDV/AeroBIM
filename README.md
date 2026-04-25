@@ -272,6 +272,12 @@ aerobim/
 - [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path
 - [Benchmark Packs](samples/benchmarks/README.md) — manifest-backed throughput rail for representative project-package fixtures
 
+## Governance
+
+- [Contributing](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
+- [Citation Metadata](CITATION.cff)
+
 ## Release Readiness
 
 Use the manual GitHub Actions workflow `.github/workflows/release-readiness.yml` when preparing a release candidate.
