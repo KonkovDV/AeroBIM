@@ -9,6 +9,7 @@ from uuid import uuid4
 
 from aerobim.domain.models import (
     ComparisonOperator,
+    ConflictKind,
     DrawingAnnotation,
     DrawingAsset,
     DrawingSource,
@@ -109,6 +110,7 @@ class AnalyzeProjectPackageUseCase:
         vision_drawing_analyzer: VisionDrawingAnalyzer | None = None,
         tolerance: ToleranceConfig | None = None,
         clash_detector: ClashDetector | None = None,
+        cross_doc_severity: str = "warning",
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -120,6 +122,10 @@ class AnalyzeProjectPackageUseCase:
         self._audit_report_store = audit_report_store
         self._tolerance = tolerance or ToleranceConfig()
         self._clash_detector = clash_detector
+        _valid_severities = {"error", "warning", "info"}
+        self._cross_doc_severity = Severity(
+            cross_doc_severity if cross_doc_severity in _valid_severities else "warning"
+        )
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         structured_requirements = list(
@@ -511,6 +517,9 @@ class AnalyzeProjectPackageUseCase:
         IFC entity + property pair, emit a CROSS_DOCUMENT issue.  Numeric
         values are compared with ISO 12006-3 ε-tolerance so that rounding
         differences (e.g. 3.0 m vs 3000 mm) do not produce false positives.
+        The severity of emitted issues is controlled by ``self._cross_doc_severity``
+        (configurable via ``AEROBIM_CROSS_DOC_SEVERITY``).  The ``conflict_kind``
+        field classifies the nature of the conflict for downstream policy filtering.
         """
         issues: list[ValidationIssue] = []
         keyed: dict[tuple[str, str, str], list[ParsedRequirement]] = {}
@@ -548,10 +557,16 @@ class AnalyzeProjectPackageUseCase:
                             if property_set
                             else f"{entity}.{prop}"
                         )
+                        conflict_kind = self._classify_conflict_kind(
+                            prev_req.expected_value,
+                            prev_req.unit,
+                            req.expected_value,
+                            req.unit,
+                        )
                         issues.append(
                             ValidationIssue(
                                 rule_id=f"CROSS-DOC-{entity}-{prop}",
-                                severity=Severity.WARNING,
+                                severity=self._cross_doc_severity,
                                 message=(
                                     f"Cross-document contradiction: {property_label} "
                                     f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
@@ -563,11 +578,50 @@ class AnalyzeProjectPackageUseCase:
                                 property_name=prop,
                                 expected_value=prev_val,
                                 observed_value=val,
+                                conflict_kind=conflict_kind,
                             )
                         )
                 seen.append(req)
 
         return issues
+
+    def _classify_conflict_kind(
+        self,
+        value_a: str | None,
+        unit_a: str | None,
+        value_b: str | None,
+        unit_b: str | None,
+    ) -> ConflictKind:
+        """Classify a detected cross-document conflict into a ``ConflictKind``.
+
+        Decision order:
+        1. UNIT_MISMATCH — same dimensionality but inconsistent unit encoding.
+        2. HARD_CONFLICT — values differ after full SI normalisation.
+        3. AMBIGUOUS_MAPPING — non-numeric values with no unit context.
+        """
+        if value_a is None or value_b is None:
+            return ConflictKind.AMBIGUOUS_MAPPING
+
+        a_num = self._to_float(value_a.strip())
+        b_num = self._to_float(value_b.strip())
+
+        if a_num is not None and b_num is not None:
+            norm_a = self._normalize_cross_document_numeric_value(a_num, unit_a)
+            norm_b = self._normalize_cross_document_numeric_value(b_num, unit_b)
+            if norm_a is not None and norm_b is not None:
+                val_a_si, unit_a_si = norm_a
+                val_b_si, unit_b_si = norm_b
+                if unit_a_si != unit_b_si:
+                    return ConflictKind.UNIT_MISMATCH
+                # Same SI dimension — values differ beyond tolerance
+                return ConflictKind.HARD_CONFLICT
+            # One or both units unknown — numeric conflict without SI context
+            if unit_a and unit_b and unit_a.strip().lower() != unit_b.strip().lower():
+                return ConflictKind.UNIT_MISMATCH
+            return ConflictKind.HARD_CONFLICT
+
+        # Non-numeric conflict
+        return ConflictKind.HARD_CONFLICT
 
     def _values_conflict(
         self,
