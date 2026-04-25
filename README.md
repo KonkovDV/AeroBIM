@@ -112,6 +112,24 @@ python -m aerobim.main
 # → http://127.0.0.1:8080/health
 ```
 
+## Local Quality Gate
+
+Before pushing to `main`, run the same baseline checks used by CI:
+
+```bash
+cd AeroBIM/backend
+python -m ruff format --check src tests
+python -m ruff check src tests
+python -m mypy src
+pytest tests -q
+```
+
+If `ruff format --check` reports files to reformat, run:
+
+```bash
+python -m ruff format src tests
+```
+
 ## API Endpoints
 
 | Method | Path | Description |
@@ -217,6 +235,7 @@ aerobim/
 - [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased next-step plan and tranche status
 - [Academic Execution Plan 2026](docs/13-academic-execution-plan-2026.md) — openBIM standards roadmap (Iterations A–C)
 - [Enterprise Storage Foundation](docs/14-enterprise-storage-foundation.md) — B.1 shipped foundation, env matrix, and rollout boundary
+- [Local Quality Gate](docs/15-local-quality-gate.md) — CI-parity formatting/lint/type/test commands before push
 - [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
 - [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
 - [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path

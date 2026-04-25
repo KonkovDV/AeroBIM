@@ -9,7 +9,7 @@ from pathlib import Path
 def _as_float(value: object) -> float | None:
     if value is None:
         return None
-    if isinstance(value, (int, float)):
+    if isinstance(value, int | float):
         return float(value)
     return None
 

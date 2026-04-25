@@ -75,6 +75,24 @@ pytest tests -v
 python -m aerobim.main
 ```
 
+## Локальный quality-gate
+
+Перед push в `main` запускайте тот же минимальный набор проверок, что и в CI:
+
+```bash
+cd AeroBIM/backend
+python -m ruff format --check src tests
+python -m ruff check src tests
+python -m mypy src
+pytest tests -q
+```
+
+Если `ruff format --check` сообщает про неотформатированные файлы, примените:
+
+```bash
+python -m ruff format src tests
+```
+
 ## Основные API-paths
 
 | Метод | Path | Описание |
@@ -112,4 +130,5 @@ python -m aerobim.main
 - [docs/06-architecture-reference.md](docs/06-architecture-reference.md) — каноническая архитектура
 - [docs/13-academic-execution-plan-2026.md](docs/13-academic-execution-plan-2026.md) — план Iterations A–C
 - [docs/14-enterprise-storage-foundation.md](docs/14-enterprise-storage-foundation.md) — shipped foundation для B.1
+- [docs/15-local-quality-gate.md](docs/15-local-quality-gate.md) — локальные CI-parity проверки форматирования/линта/типов/тестов
 - [ops/environment-matrix.md](ops/environment-matrix.md) — матрица окружения и dependency profiles
