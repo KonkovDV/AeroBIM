@@ -595,16 +595,30 @@ Created: {_esc(data.get("created_at", ""))}
     def export_report_bcf(
         report_id: str,
         _auth: Annotated[None, Depends(_require_bearer_auth)],
+        version: str = "2.1",
     ):  # noqa: ANN201
-        from fastapi.responses import Response
+        """Export report as BCF ZIP.
 
-        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+        Query parameter ``version`` selects the BCF schema version:
+        - ``2.1`` (default) — stable BCF 2.1 export.
+        - ``3`` or ``3.0`` — experimental BCF 3.0 export (buildingSMART BCF 3.0).
+        """
+        from fastapi.responses import Response
 
         _validate_report_id(report_id)
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        bcf_bytes = export_bcf(report)
+
+        if version in {"3", "3.0"}:
+            from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
+
+            bcf_bytes = export_bcf3(report)
+        else:
+            from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+            bcf_bytes = export_bcf(report)
+
         return Response(
             content=bcf_bytes,
             media_type="application/x-bcfzip",
