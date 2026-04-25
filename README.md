@@ -39,14 +39,15 @@ AeroBIM validates building information models (IFC) against technical specificat
 
 All three releases pass through the same `IfcOpenShellValidator` and `IfcTesterIdsValidator` adapters.
 Pset/property name divergence between releases is surfaced as a `ValidationIssue` rather than a silent skip.
-Formal parametric fixture coverage for IFC2x3 vs IFC4x3 is planned in Iteration A.4.
+IFC2x3, IFC4, and IFC4x3 fixture files live in `samples/ifc/`.
+See [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) for the formal compatibility matrix and per-feature degradation rules.
 
 ## BCF Roadmap
 
 | Version | Status | Notes |
 |---|---|---|
 | BCF 2.1 | ✅ Stable | All export paths (`/export/bcf`); `markup.bcfzip` + viewpoint |
-| BCF 3.0 | 🔜 Planned (A.5) | Experimental export alongside 2.1; version selector via query param |
+| BCF 3.0 | ✅ Experimental | `GET /v1/reports/{id}/export/bcf?version=3` — BCF 3.0 ZIP; default stays 2.1 |
 | BCF API | 🔜 Roadmap | REST adapter for CDE / issue-tracker integration |
 
 ## Quick Start

@@ -102,37 +102,43 @@ of contractual strictness desired by the appointing party (cf. user audit §4.3,
 
 ### A.4 — IFC Release Compatibility Matrix
 
-**Goal:** formally declare which IFC releases are supported and what degrades.
+### A.4 — IFC Release Compatibility Matrix ✅ *Completed 2026-04-25*
 
-**Deliverables:**
-1. `docs/ifc-compatibility-matrix.md` — matrix: IFC2x3 / IFC4 / IFC4x3, per-feature
-   column (property sets, Pset naming, unit assignment, quantities, classification).
-2. Test fixtures in `samples/ifc/` with at least one IFC2x3 + one IFC4x3 file.
-3. Parametric pytest run over both fixtures to prove same rules work across releases
-   (or document known degradation per release).
+
+**What shipped:**
+- `docs/ifc-compatibility-matrix.md` — feature matrix: IFC2x3 / IFC4 / IFC4x3, per-feature
+  column (property sets, Qto naming, unit assignment, classification), degradation rules.
+- `samples/ifc/wall-pset-ifc2x3.ifc` — minimal IFC2x3 fixture with Pset_WallCommon
+  (FireRating=REI60) and BaseQuantities Pset (IFC2x3 naming for quantity sets).
+- `samples/ifc/wall-pset-ifc4x3.ifc` — minimal IFC4x3 fixture with Pset_WallCommon
+  and Qto_WallBaseQuantities.
+- `tests/test_ifc_release_compatibility.py` — 5 parametric tests: IfcOpenShell opens
+  all three releases, Pset_WallCommon.FireRating=REI60 confirmed in all, IDS validation
+  passes on all, schema header assertions. Tests skip gracefully if IfcOpenShell/IfcTester
+  not installed (offline environments).
+- 244 backend tests passing (30 new), mypy clean.
 
 **Rationale:** buildingSMART Compatibility Policy for ISO 16739-1 makes schema
 evolution a first-class concern; users need to know which checks apply to IFC2x3
 projects vs IFC4x3 (cf. user audit §3.2).
 
-### A.5 — BCF 3.0 Experimental Export
-
-**Goal:** begin BCF 3.0 support alongside stable 2.1, following the buildingSMART
-BCF 3.0 specification.
-
-**Deliverables:**
-1. `infrastructure/adapters/bcf3_exporter.py` — BCF 3.0 ZIP with updated
-   `bcf.version` (3.0), `markup.bcf` using BCF 3.0 schema (new `Topic.guid`,
-   `Comment` structure, `Viewpoint` references).
-2. New endpoint or accept-header variant: `GET /v1/reports/{id}/export/bcf?version=3`
-   (default stays 2.1 for backward compatibility).
-3. Regression tests for 3.0 export shape.
-
-**Rationale:** buildingSMART market survey and toolchain (Revit 2025+, Navisworks 2025,
-BIMcollab) increasingly default to BCF 3.0 for new projects (cf. user audit §3.3).
-
+### A.5 — BCF 3.0 Experimental Export ✅ *Completed 2026-04-25*
 ---
+**What shipped:**
+- `infrastructure/adapters/bcf3_exporter.py` — BCF 3.0 ZIP exporter: `bcf.version`
+  declares VersionId=3.0; `markup.bcf` uses BCF 3.0 structure (no XML namespace,
+  `<Header>`, `<Comments>`, `<Viewpoints>` with Guid attr); `viewpoint.bcfv` has
+  `Coloring` before `Visibility` (BCF 3.0 XSD order).
+- `GET /v1/reports/{id}/export/bcf?version=3` (or `?version=3.0`) — BCF 3.0 output;
+  default (`?version=2.1` or omitted) stays BCF 2.1 for backward compatibility.
+- `tests/test_bcf3_exporter.py` — 25 tests: archive structure, version declaration,
+  markup BCF 3.0 required fields, viewpoint element order, IFC GUID propagation,
+  clash export, HTTP endpoint version switching (2.1 default, 3 → 3.0, unknown → 2.1).
+- 244 backend tests passing, mypy clean.
 
+**Rationale:** buildingSMART toolchain (Revit 2025+, Navisworks 2025, BIMcollab)
+increasingly defaults to BCF 3.0; the `?version=3` opt-in minimises adoption friction
+while keeping 2.1 as the stable default (cf. user audit §3.3).
 ## Iteration B — Enterprise Infrastructure (1–2 months)
 
 ### B.1 — Postgres Report Index + S3-Compatible Artifact Store
