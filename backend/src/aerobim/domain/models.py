@@ -128,6 +128,7 @@ class DrawingAsset:
     coordinate_width: float | None = None
     coordinate_height: float | None = None
     stored_filename: str | None = None
+    object_key: str | None = None
     source_path: Path | None = None
 
 
@@ -209,6 +210,7 @@ class ValidationReport:
     requirements: tuple[ParsedRequirement, ...]
     issues: tuple[ValidationIssue, ...]
     summary: ValidationSummary
+    ifc_object_key: str | None = None
     drawing_annotations: tuple[DrawingAnnotation, ...] = ()
     drawing_assets: tuple[DrawingAsset, ...] = ()
     clash_results: tuple[ClashResult, ...] = ()

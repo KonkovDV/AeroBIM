@@ -69,7 +69,7 @@ class OpenRebarDigestRequest(BaseModel):
 
 def create_http_app(container: Container):
     try:
-        from fastapi import BackgroundTasks, Body, Depends, FastAPI, Header, HTTPException
+        from fastapi import BackgroundTasks, Body, Depends, FastAPI, Header, HTTPException, Response
         from fastapi.middleware.cors import CORSMiddleware
     except ModuleNotFoundError as exc:
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc
@@ -81,6 +81,9 @@ def create_http_app(container: Container):
     validate_use_case = container.resolve(Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE)
     analyze_use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
     audit_store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+    object_store = None
+    if container.is_registered(Tokens.OBJECT_STORE):
+        object_store = container.resolve(Tokens.OBJECT_STORE)
 
     app = FastAPI(title="aerobim-backend", version="0.2.0")
 
@@ -144,10 +147,18 @@ def create_http_app(container: Container):
         if not _REPORT_ID_RE.match(job_id):
             raise HTTPException(status_code=400, detail="Invalid job ID format")
 
-    def _resolve_report_ifc_path(report_id: str) -> Path:
+    def _resolve_report_ifc_source(report_id: str) -> tuple[str, bytes | Path]:
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+
+        if report.ifc_object_key and object_store is not None:
+            payload = object_store.get_bytes(report.ifc_object_key)
+            if payload is None:
+                raise HTTPException(
+                    status_code=404, detail=f"IFC source for report {report_id} not found"
+                )
+            return report.ifc_path.name, payload
 
         candidate = report.ifc_path
         base = settings.storage_dir.resolve()
@@ -161,7 +172,7 @@ def create_http_app(container: Container):
             raise HTTPException(
                 status_code=404, detail=f"IFC source for report {report_id} not found"
             )
-        return resolved
+        return report.ifc_path.name, resolved
 
     def _validate_drawing_asset_id(asset_id: str) -> None:
         if not _DRAWING_ASSET_ID_RE.match(asset_id):
@@ -177,6 +188,14 @@ def create_http_app(container: Container):
         )
         if drawing_asset is None or not drawing_asset.stored_filename:
             raise HTTPException(status_code=404, detail=f"Drawing asset {asset_id} not found")
+
+        if drawing_asset.object_key and object_store is not None:
+            payload = object_store.get_bytes(drawing_asset.object_key)
+            if payload is None:
+                raise HTTPException(
+                    status_code=404, detail=f"Drawing asset preview for {asset_id} not found"
+                )
+            return drawing_asset, payload
 
         asset_root = (settings.storage_dir / "drawing-assets" / report_id).resolve()
         resolved = (asset_root / drawing_asset.stored_filename).resolve()
@@ -490,11 +509,18 @@ def create_http_app(container: Container):
         from fastapi.responses import FileResponse
 
         _validate_report_id(report_id)
-        source_path = _resolve_report_ifc_path(report_id)
+        filename, source_payload = _resolve_report_ifc_source(report_id)
+        if isinstance(source_payload, bytes):
+            download_name = filename or f"{report_id}.ifc"
+            return Response(
+                content=source_payload,
+                media_type="application/octet-stream",
+                headers={"content-disposition": f'attachment; filename="{download_name}"'},
+            )
         return FileResponse(
-            path=source_path,
+            path=source_payload,
             media_type="application/octet-stream",
-            filename=f"{report_id}.ifc",
+            filename=filename or f"{report_id}.ifc",
         )
 
     @app.get("/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
@@ -507,9 +533,16 @@ def create_http_app(container: Container):
 
         _validate_report_id(report_id)
         _validate_drawing_asset_id(asset_id)
-        drawing_asset, preview_path = _resolve_report_drawing_asset_preview(report_id, asset_id)
+        drawing_asset, preview_payload = _resolve_report_drawing_asset_preview(report_id, asset_id)
+        if isinstance(preview_payload, bytes):
+            download_name = drawing_asset.stored_filename or f"{asset_id}.png"
+            return Response(
+                content=preview_payload,
+                media_type=drawing_asset.media_type,
+                headers={"content-disposition": f'attachment; filename="{download_name}"'},
+            )
         return FileResponse(
-            path=preview_path,
+            path=preview_payload,
             media_type=drawing_asset.media_type,
             filename=drawing_asset.stored_filename,
         )

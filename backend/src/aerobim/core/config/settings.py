@@ -19,6 +19,13 @@ def _read_int(name: str, default: int) -> int:
     return int(raw)
 
 
+def _read_optional_int(name: str) -> int | None:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return None
+    return int(raw)
+
+
 def _read_bool(name: str, default: bool) -> bool:
     raw = os.getenv(name)
     if raw is None:
@@ -37,6 +44,14 @@ class Settings:
     cors_origins: tuple[str, ...] = ()
     api_bearer_token: str | None = None
     cross_doc_contradiction_severity: str = "warning"
+    db_url: str | None = None
+    s3_endpoint_url: str | None = None
+    s3_bucket: str | None = None
+    s3_region: str = "us-east-1"
+    s3_access_key_id: str | None = None
+    s3_secret_access_key: str | None = None
+    s3_prefix: str = "aerobim"
+    report_ttl_days: int | None = None
     """Severity emitted for cross-document contradictions.
 
     Set to ``"error"`` to make all cross-document contradictions block delivery
@@ -69,4 +84,13 @@ class Settings:
             cors_origins=origins,
             api_bearer_token=(os.getenv("AEROBIM_API_BEARER_TOKEN") or "").strip() or None,
             cross_doc_contradiction_severity=cross_doc_severity,
+            db_url=(os.getenv("AEROBIM_DB_URL") or "").strip() or None,
+            s3_endpoint_url=(os.getenv("AEROBIM_S3_ENDPOINT_URL") or "").strip() or None,
+            s3_bucket=(os.getenv("AEROBIM_S3_BUCKET") or "").strip() or None,
+            s3_region=(os.getenv("AEROBIM_S3_REGION") or "us-east-1").strip() or "us-east-1",
+            s3_access_key_id=(os.getenv("AEROBIM_S3_ACCESS_KEY_ID") or "").strip() or None,
+            s3_secret_access_key=(os.getenv("AEROBIM_S3_SECRET_ACCESS_KEY") or "").strip()
+            or None,
+            s3_prefix=(os.getenv("AEROBIM_S3_PREFIX") or "aerobim").strip() or "aerobim",
+            report_ttl_days=_read_optional_int("AEROBIM_REPORT_TTL_DAYS"),
         )
