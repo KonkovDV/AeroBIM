@@ -138,6 +138,9 @@ python -m ruff format src tests
 - [Contributing](CONTRIBUTING.md)
 - [Security Policy](SECURITY.md)
 - [Citation Metadata](CITATION.cff)
+- [Support](SUPPORT.md)
+- [Maintainers](MAINTAINERS.md)
+- [Release Policy](RELEASE_POLICY.md)
 
 ## Архитектура
 
