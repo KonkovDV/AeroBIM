@@ -3,6 +3,7 @@
 import hashlib
 import json
 import re as _re
+import secrets
 from dataclasses import asdict
 from pathlib import Path
 from typing import Annotated, Literal
@@ -23,34 +24,34 @@ _DRAWING_ASSET_ID_RE = _re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 
 class ValidateIfcRequest(BaseModel):
     request_id: str | None = None
-    ifc_path: str
+    ifc_path: str = Field(max_length=2048)
     requirement_text: str = Field(default="", max_length=50_000)
-    requirement_path: str | None = None
-    ids_path: str | None = None
-    project_name: str | None = None
-    discipline: str | None = None
+    requirement_path: str | None = Field(default=None, max_length=2048)
+    ids_path: str | None = Field(default=None, max_length=2048)
+    project_name: str | None = Field(default=None, max_length=256)
+    discipline: str | None = Field(default=None, max_length=128)
 
 
 class DrawingPayload(BaseModel):
     text: str = Field(default="", max_length=50_000)
-    path: str | None = None
-    sheet_id: str | None = None
-    format: str | None = None
+    path: str | None = Field(default=None, max_length=2048)
+    sheet_id: str | None = Field(default=None, max_length=128)
+    format: str | None = Field(default=None, max_length=32)
 
 
 class AnalyzeProjectPackageRequest(BaseModel):
     request_id: str | None = None
-    ifc_path: str
+    ifc_path: str = Field(max_length=2048)
     requirement_text: str = Field(default="", max_length=50_000)
-    requirement_path: str | None = None
-    ids_path: str | None = None
+    requirement_path: str | None = Field(default=None, max_length=2048)
+    ids_path: str | None = Field(default=None, max_length=2048)
     technical_spec_text: str = Field(default="", max_length=50_000)
-    technical_spec_path: str | None = None
+    technical_spec_path: str | None = Field(default=None, max_length=2048)
     calculation_text: str = Field(default="", max_length=50_000)
-    calculation_path: str | None = None
-    drawings: list[DrawingPayload] = Field(default_factory=list)
-    reinforcement_report_path: str | None = None
-    reinforcement_handoff_path: str | None = None
+    calculation_path: str | None = Field(default=None, max_length=2048)
+    drawings: list[DrawingPayload] = Field(default_factory=list, max_length=64)
+    reinforcement_report_path: str | None = Field(default=None, max_length=2048)
+    reinforcement_handoff_path: str | None = Field(default=None, max_length=2048)
     reinforcement_source_digest: str | None = Field(default=None, max_length=128)
     reinforcement_waste_warning_threshold_percent: float | None = Field(
         default=None,
@@ -58,17 +59,17 @@ class AnalyzeProjectPackageRequest(BaseModel):
         le=100,
     )
     reinforcement_provenance_mode: Literal["advisory", "enforced"] = "advisory"
-    project_name: str | None = None
-    discipline: str | None = None
+    project_name: str | None = Field(default=None, max_length=256)
+    discipline: str | None = Field(default=None, max_length=128)
 
 
 class OpenRebarDigestRequest(BaseModel):
-    reinforcement_report_path: str
+    reinforcement_report_path: str = Field(max_length=2048)
 
 
 def create_http_app(container: Container):
     try:
-        from fastapi import BackgroundTasks, Body, FastAPI, HTTPException
+        from fastapi import BackgroundTasks, Body, Depends, FastAPI, Header, HTTPException
         from fastapi.middleware.cors import CORSMiddleware
     except ModuleNotFoundError as exc:
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc
@@ -107,6 +108,33 @@ def create_http_app(container: Container):
         if not resolved.is_relative_to(base):
             raise HTTPException(status_code=400, detail="Path escapes storage boundary")
         return resolved
+
+    def _require_bearer_auth(authorization: Annotated[str | None, Header()] = None) -> None:
+        configured_token = settings.api_bearer_token
+        if configured_token is None:
+            return
+
+        if not authorization:
+            raise HTTPException(
+                status_code=401,
+                detail="Missing Authorization header",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        scheme, _, token = authorization.partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid Authorization header format",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        if not secrets.compare_digest(token, configured_token):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid API token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     def _validate_report_id(report_id: str) -> None:
         if not _REPORT_ID_RE.match(report_id):
@@ -299,7 +327,10 @@ def create_http_app(container: Container):
         return payload
 
     @app.post("/v1/validate/ifc")
-    def validate_ifc(payload: Annotated[ValidateIfcRequest, Body()]) -> dict[str, object]:
+    def validate_ifc(
+        payload: Annotated[ValidateIfcRequest, Body()],
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
         request_id = payload.request_id or uuid4().hex
         logger.info("validate_ifc started", request_id=request_id, ifc_path=payload.ifc_path)
         try:
@@ -341,6 +372,7 @@ def create_http_app(container: Container):
     @app.post("/v1/analyze/project-package")
     def analyze_project_package(
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
             request = _build_project_package_request(payload)
@@ -357,6 +389,7 @@ def create_http_app(container: Container):
     @app.post("/v1/analyze/project-package/reinforcement-digest")
     def analyze_project_package_reinforcement_digest(
         payload: Annotated[OpenRebarDigestRequest, Body()],
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
             report_path = _resolve_safe_path(payload.reinforcement_report_path)
@@ -381,6 +414,7 @@ def create_http_app(container: Container):
     def submit_analyze_project_package(
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
         background_tasks: BackgroundTasks,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
             request = _build_project_package_request(payload)
@@ -396,7 +430,10 @@ def create_http_app(container: Container):
         return _serialize_analyze_project_package_job(job)
 
     @app.get("/v1/analyze/project-package/jobs/{job_id}")
-    def get_analyze_project_package_job(job_id: str) -> dict[str, object]:
+    def get_analyze_project_package_job(
+        job_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
         _validate_job_id(job_id)
         get_job_status_use_case = container.resolve(
             Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
@@ -413,6 +450,7 @@ def create_http_app(container: Container):
         project: str | None = None,
         discipline: str | None = None,
         passed: bool | None = None,
+        _auth: Annotated[None, Depends(_require_bearer_auth)] = None,
     ) -> dict[str, object]:
         entries = audit_store.list_reports()
         if project:
@@ -434,7 +472,10 @@ def create_http_app(container: Container):
         return {"reports": [asdict(e) for e in entries], "count": len(entries)}
 
     @app.get("/v1/reports/{report_id}")
-    def get_report(report_id: str) -> dict[str, object]:
+    def get_report(
+        report_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
         _validate_report_id(report_id)
         report = audit_store.get(report_id)
         if report is None:
@@ -442,7 +483,10 @@ def create_http_app(container: Container):
         return asdict(report)
 
     @app.get("/v1/reports/{report_id}/source/ifc")
-    def get_report_ifc_source(report_id: str):  # noqa: ANN201
+    def get_report_ifc_source(
+        report_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ):  # noqa: ANN201
         from fastapi.responses import FileResponse
 
         _validate_report_id(report_id)
@@ -454,7 +498,11 @@ def create_http_app(container: Container):
         )
 
     @app.get("/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
-    def get_report_drawing_asset_preview(report_id: str, asset_id: str):  # noqa: ANN201
+    def get_report_drawing_asset_preview(
+        report_id: str,
+        asset_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ):  # noqa: ANN201
         from fastapi.responses import FileResponse
 
         _validate_report_id(report_id)
@@ -467,7 +515,10 @@ def create_http_app(container: Container):
         )
 
     @app.get("/v1/reports/{report_id}/export/json")
-    def export_report_json(report_id: str):  # noqa: ANN201
+    def export_report_json(
+        report_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ):  # noqa: ANN201
         from fastapi.responses import JSONResponse
 
         _validate_report_id(report_id)
@@ -480,7 +531,10 @@ def create_http_app(container: Container):
         )
 
     @app.get("/v1/reports/{report_id}/export/html")
-    def export_report_html(report_id: str):  # noqa: ANN201
+    def export_report_html(
+        report_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ):  # noqa: ANN201
         from fastapi.responses import HTMLResponse
 
         _validate_report_id(report_id)
@@ -538,7 +592,10 @@ Created: {_esc(data.get("created_at", ""))}
         )
 
     @app.get("/v1/reports/{report_id}/export/bcf")
-    def export_report_bcf(report_id: str):  # noqa: ANN201
+    def export_report_bcf(
+        report_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ):  # noqa: ANN201
         from fastapi.responses import Response
 
         from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf

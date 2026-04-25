@@ -35,6 +35,7 @@ class Settings:
     storage_dir: Path
     debug: bool
     cors_origins: tuple[str, ...] = ()
+    api_bearer_token: str | None = None
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -54,4 +55,5 @@ class Settings:
             storage_dir=Path(os.getenv("AEROBIM_STORAGE_DIR", "var/reports")),
             debug=debug,
             cors_origins=origins,
+            api_bearer_token=(os.getenv("AEROBIM_API_BEARER_TOKEN") or "").strip() or None,
         )
