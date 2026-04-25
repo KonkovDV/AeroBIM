@@ -691,6 +691,7 @@
     "/v1/reports/{report_id}/export/bcf": {
       "get": {
         "summary": "Export Report Bcf",
+        "description": "Export report as BCF ZIP.\n\nQuery parameter ``version`` selects the BCF schema version:\n- ``2.1`` (default) — stable BCF 2.1 export.\n- ``3`` or ``3.0`` — experimental BCF 3.0 export (buildingSMART BCF 3.0).",
         "operationId": "export_report_bcf_v1_reports__report_id__export_bcf_get",
         "parameters": [
           {
@@ -700,6 +701,16 @@
             "schema": {
               "type": "string",
               "title": "Report Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2.1",
+              "title": "Version"
             }
           },
           {
