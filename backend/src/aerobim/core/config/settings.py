@@ -89,8 +89,7 @@ class Settings:
             s3_bucket=(os.getenv("AEROBIM_S3_BUCKET") or "").strip() or None,
             s3_region=(os.getenv("AEROBIM_S3_REGION") or "us-east-1").strip() or "us-east-1",
             s3_access_key_id=(os.getenv("AEROBIM_S3_ACCESS_KEY_ID") or "").strip() or None,
-            s3_secret_access_key=(os.getenv("AEROBIM_S3_SECRET_ACCESS_KEY") or "").strip()
-            or None,
+            s3_secret_access_key=(os.getenv("AEROBIM_S3_SECRET_ACCESS_KEY") or "").strip() or None,
             s3_prefix=(os.getenv("AEROBIM_S3_PREFIX") or "aerobim").strip() or "aerobim",
             report_ttl_days=_read_optional_int("AEROBIM_REPORT_TTL_DAYS"),
         )
