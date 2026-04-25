@@ -1,5 +1,7 @@
 # AeroBIM
 
+[Русская версия](README.ru.md)
+
 [![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -22,7 +24,8 @@ AeroBIM validates building information models (IFC) against technical specificat
 | Narrative NLP → requirements (regex baseline) | ✅ |
 | Clash detection (IfcClash, optional `.[clash]` extra) | ✅ |
 | BCF 2.1 export | ✅ |
-| BCF 3.0 export | 🔜 Planned (Iteration A.5) |
+| BCF 3.0 export | ✅ Experimental |
+| Enterprise storage foundation (ObjectStore + TTL + Postgres index hook) | ✅ Foundation |
 | HTML / JSON report export | ✅ |
 | Browser IFC viewer (`web-ifc + Three.js`) | ✅ Initial tranche + clash-pair review |
 | 2D problem-zone overlay on persisted drawing evidence | ✅ Initial tranche + asset switching |
@@ -50,6 +53,22 @@ See [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) for t
 | BCF 3.0 | ✅ Experimental | `GET /v1/reports/{id}/export/bcf?version=3` — BCF 3.0 ZIP; default stays 2.1 |
 | BCF API | 🔜 Roadmap | REST adapter for CDE / issue-tracker integration |
 
+## Enterprise Storage Foundation
+
+Iteration B.1 has started with a compatibility-first storage foundation:
+
+- `ObjectStore` domain port for binary artifacts (`put/get/delete/presign`);
+- `LocalObjectStore` for current local/runtime flows;
+- `S3ObjectStore` for S3/MinIO-compatible buckets via optional enterprise extras;
+- `PostgresAuditStore` foundation that adds a Postgres report-summary index while keeping full payload round-tripping on the existing JSON/object path;
+- `AEROBIM_REPORT_TTL_DAYS` retention knob for persisted report payloads.
+
+Current behaviour is intentionally safe-by-default:
+
+- without enterprise extras, AeroBIM keeps working with local storage;
+- when `AEROBIM_DB_URL` and enterprise dependencies are available, report summaries are indexed in Postgres;
+- IFC source binaries and persisted drawing previews are stored behind the `ObjectStore` abstraction, so S3/MinIO rollout no longer requires HTTP contract changes.
+
 ## Quick Start
 
 ```bash
@@ -68,6 +87,7 @@ pip install -e ".[dev,vision]"
 # Optional extras
 # pip install -e ".[clash]"    # enable geometry clash detection
 # pip install -e ".[docling]"  # enable non-text document extraction
+# pip install -e ".[enterprise]"  # enable S3/Postgres enterprise storage adapters
 
 # Run tests
 pytest tests -v
@@ -108,7 +128,7 @@ python -m aerobim.main
 | `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | Download a report-scoped drawing preview for 2D evidence overlays |
 | `GET` | `/v1/reports/{id}/export/json` | Download JSON export |
 | `GET` | `/v1/reports/{id}/export/html` | Download HTML export |
-| `GET` | `/v1/reports/{id}/export/bcf` | Download BCF 2.1 ZIP |
+| `GET` | `/v1/reports/{id}/export/bcf` | Download BCF 2.1 ZIP by default; use `?version=3` for BCF 3.0 |
 
 `POST /v1/analyze/project-package` also supports optional OpenRebar provenance fields:
 
@@ -144,6 +164,8 @@ infrastructure/ Adapters: IfcOpenShell, IfcTester, Docling, IfcClash, BCF, files
 presentation/  FastAPI HTTP API, correlation middleware
 ```
 
+Infrastructure now also includes an artifact `ObjectStore` seam plus an optional Postgres summary-index adapter for Iteration B.1.
+
 **9 domain ports** → **12 infrastructure adapters** → **13 DI tokens** — all wired in a single composition root (`bootstrap_container()`).
 
 ## Configuration
@@ -160,6 +182,14 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_ENV` | `development` | Environment name |
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Optional Bearer token required for all `/v1/*` endpoints |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
+| `AEROBIM_DB_URL` | *(unset)* | Optional Postgres URL for report summary indexing |
+| `AEROBIM_REPORT_TTL_DAYS` | *(unset)* | Optional TTL for persisted report payloads; unset means unlimited retention |
+| `AEROBIM_S3_BUCKET` | *(unset)* | Optional S3/MinIO bucket for object storage |
+| `AEROBIM_S3_ENDPOINT_URL` | *(unset)* | Optional MinIO/custom S3 endpoint |
+| `AEROBIM_S3_REGION` | `us-east-1` | Signing region for S3-compatible storage |
+| `AEROBIM_S3_ACCESS_KEY_ID` | *(unset)* | Optional access key for S3-compatible storage |
+| `AEROBIM_S3_SECRET_ACCESS_KEY` | *(unset)* | Optional secret key for S3-compatible storage |
+| `AEROBIM_S3_PREFIX` | `aerobim` | Prefix applied to object keys in S3-compatible storage |
 
 ## Project Structure
 
@@ -186,6 +216,7 @@ aerobim/
 - [Academic Audit](docs/10-academic-audit-and-recommendations-ru.md) — L5 hyper-deep audit
 - [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased next-step plan and tranche status
 - [Academic Execution Plan 2026](docs/13-academic-execution-plan-2026.md) — openBIM standards roadmap (Iterations A–C)
+- [Enterprise Storage Foundation](docs/14-enterprise-storage-foundation.md) — B.1 shipped foundation, env matrix, and rollout boundary
 - [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
 - [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
 - [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path

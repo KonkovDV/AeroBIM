@@ -9,6 +9,7 @@ class Tokens:
     IDS_VALIDATOR = "ids_validator"
     CLASH_DETECTOR = "clash_detector"
     REMARK_GENERATOR = "remark_generator"
+    OBJECT_STORE = "object_store"
     AUDIT_REPORT_STORE = "audit_report_store"
     ANALYZE_PROJECT_PACKAGE_JOB_STORE = "analyze_project_package_job_store"
     VALIDATE_IFC_AGAINST_IDS_USE_CASE = "validate_ifc_against_ids_use_case"
