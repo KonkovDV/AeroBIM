@@ -12,7 +12,6 @@ See docs/ifc-compatibility-matrix.md for the full compatibility statement.
 
 from __future__ import annotations
 
-import tempfile
 import unittest
 from pathlib import Path
 

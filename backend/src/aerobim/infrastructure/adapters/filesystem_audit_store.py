@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 from dataclasses import asdict
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from aerobim.domain.models import (
@@ -23,19 +24,30 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationSummary,
 )
+from aerobim.domain.ports import ObjectStore
+from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 
 
 class FilesystemAuditStore:
     """Persists validation reports as JSON files with atomic writes."""
 
-    def __init__(self, storage_dir: Path) -> None:
-        self._storage_dir = storage_dir
+    def __init__(
+        self,
+        storage_dir: Path,
+        *,
+        object_store: ObjectStore | None = None,
+        report_ttl_days: int | None = None,
+    ) -> None:
+        self._storage_dir = storage_dir.resolve()
         self._reports_dir = storage_dir / "reports"
         self._drawing_assets_dir = storage_dir / "drawing-assets"
+        self._object_store = object_store or LocalObjectStore(self._storage_dir)
+        self._report_ttl_days = report_ttl_days if report_ttl_days and report_ttl_days > 0 else None
         self._reports_dir.mkdir(parents=True, exist_ok=True)
         self._drawing_assets_dir.mkdir(parents=True, exist_ok=True)
 
     def save(self, report: ValidationReport) -> str:
+        self._prune_expired_reports()
         persisted_report = self._materialize_report(report)
         data = self._serialize_report(persisted_report)
         target = self._reports_dir / f"{report.report_id}.json"
@@ -45,6 +57,9 @@ class FilesystemAuditStore:
         return report.report_id
 
     def _materialize_report(self, report: ValidationReport) -> ValidationReport:
+        ifc_object_key = report.ifc_object_key or self._materialize_ifc_source(
+            report.report_id, report.ifc_path
+        )
         drawing_assets = tuple(
             self._materialize_drawing_assets(report.report_id, report.drawing_assets)
         )
@@ -52,6 +67,7 @@ class FilesystemAuditStore:
             report_id=report.report_id,
             request_id=report.request_id,
             ifc_path=report.ifc_path,
+            ifc_object_key=ifc_object_key,
             created_at=report.created_at,
             requirements=report.requirements,
             issues=report.issues,
@@ -66,6 +82,7 @@ class FilesystemAuditStore:
     def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
         data = asdict(report)
         data["ifc_path"] = str(report.ifc_path)
+        data["ifc_object_key"] = report.ifc_object_key
         data["drawing_assets"] = [
             {
                 "asset_id": asset.asset_id,
@@ -75,10 +92,22 @@ class FilesystemAuditStore:
                 "coordinate_width": asset.coordinate_width,
                 "coordinate_height": asset.coordinate_height,
                 "stored_filename": asset.stored_filename,
+                "object_key": asset.object_key,
             }
             for asset in report.drawing_assets
         ]
         return data
+
+    def _materialize_ifc_source(self, report_id: str, ifc_path: Path) -> str | None:
+        if not ifc_path.exists() or not ifc_path.is_file():
+            return None
+        object_key = f"ifc-sources/{report_id}/{ifc_path.name}"
+        self._object_store.put_bytes(
+            object_key,
+            ifc_path.read_bytes(),
+            content_type="application/octet-stream",
+        )
+        return object_key
 
     def _materialize_drawing_assets(
         self,
@@ -98,12 +127,12 @@ class FilesystemAuditStore:
             if asset.source_path is None:
                 persisted_assets.append(asset)
                 continue
-            persisted_assets.extend(self._persist_document_asset(report_asset_dir, asset))
+            persisted_assets.extend(self._persist_document_asset(report_id, asset))
         return persisted_assets
 
     def _persist_document_asset(
         self,
-        report_asset_dir: Path,
+        report_id: str,
         asset: DrawingAsset,
     ) -> list[DrawingAsset]:
         try:
@@ -120,7 +149,7 @@ class FilesystemAuditStore:
             raise FileNotFoundError(source_path)
 
         if source_path.suffix.lower() != ".pdf":
-            return [self._persist_raster_asset(report_asset_dir, asset, source_path, pymupdf)]
+            return [self._persist_raster_asset(report_id, asset, source_path, pymupdf)]
 
         persisted_assets: list[DrawingAsset] = []
         with pymupdf.open(source_path) as document:
@@ -132,8 +161,11 @@ class FilesystemAuditStore:
                 if document.page_count > 1 or asset.page_number is None:
                     persisted_asset_id = f"{asset.asset_id}-page-{page_index:03d}"
                 stored_filename = f"{persisted_asset_id}.png"
-                target_path = report_asset_dir / stored_filename
-                pix.save(target_path)
+                object_key = self._store_preview_bytes(
+                    report_id,
+                    stored_filename,
+                    pix.tobytes("png"),
+                )
                 persisted_assets.append(
                     DrawingAsset(
                         asset_id=persisted_asset_id,
@@ -143,17 +175,25 @@ class FilesystemAuditStore:
                         coordinate_width=float(page.rect.width),
                         coordinate_height=float(page.rect.height),
                         stored_filename=stored_filename,
+                        object_key=object_key,
                     )
                 )
         return persisted_assets
 
     def _persist_raster_asset(
-        self, report_asset_dir: Path, asset: DrawingAsset, source_path: Path, pymupdf_module
+        self,
+        report_id: str,
+        asset: DrawingAsset,
+        source_path: Path,
+        pymupdf_module,
     ) -> DrawingAsset:
         pix = pymupdf_module.Pixmap(str(source_path))
         stored_filename = f"{asset.asset_id}.png"
-        target_path = report_asset_dir / stored_filename
-        pix.save(target_path)
+        object_key = self._store_preview_bytes(
+            report_id,
+            stored_filename,
+            pix.tobytes("png"),
+        )
         return DrawingAsset(
             asset_id=asset.asset_id,
             sheet_id=asset.sheet_id,
@@ -162,23 +202,39 @@ class FilesystemAuditStore:
             coordinate_width=float(pix.width),
             coordinate_height=float(pix.height),
             stored_filename=stored_filename,
+            object_key=object_key,
         )
 
+    def _store_preview_bytes(self, report_id: str, stored_filename: str, payload: bytes) -> str:
+        object_key = f"drawing-assets/{report_id}/{stored_filename}"
+        self._object_store.put_bytes(object_key, payload, content_type="image/png")
+        return object_key
+
     def get(self, report_id: str) -> ValidationReport | None:
+        self._prune_expired_reports()
         target = self._reports_dir / f"{report_id}.json"
         if not target.exists():
             return None
         try:
             data = json.loads(target.read_text(encoding="utf-8"))
-            return self._reconstruct_report(data)
+            report = self._reconstruct_report(data)
+            if self._is_expired(report):
+                self._delete_report_files(report, target)
+                return None
+            return report
         except (json.JSONDecodeError, KeyError):
             return None
 
     def list_reports(self) -> list[ReportSummaryEntry]:
+        self._prune_expired_reports()
         entries: list[ReportSummaryEntry] = []
         for path in sorted(self._reports_dir.glob("*.json")):
             try:
                 data = json.loads(path.read_text(encoding="utf-8"))
+                report = self._reconstruct_report(data)
+                if self._is_expired(report):
+                    self._delete_report_files(report, path)
+                    continue
                 summary = data.get("summary", {})
                 entries.append(
                     ReportSummaryEntry(
@@ -200,6 +256,7 @@ class FilesystemAuditStore:
             report_id=data["report_id"],
             request_id=data["request_id"],
             ifc_path=Path(data["ifc_path"]),
+            ifc_object_key=data.get("ifc_object_key"),
             created_at=data["created_at"],
             requirements=tuple(
                 self._reconstruct_requirement(r) for r in data.get("requirements", [])
@@ -299,6 +356,7 @@ class FilesystemAuditStore:
             coordinate_width=data.get("coordinate_width"),
             coordinate_height=data.get("coordinate_height"),
             stored_filename=data.get("stored_filename"),
+            object_key=data.get("object_key"),
             source_path=Path(data["source_path"]) if data.get("source_path") else None,
         )
 
@@ -310,3 +368,41 @@ class FilesystemAuditStore:
             distance=data["distance"],
             description=data["description"],
         )
+
+    def _prune_expired_reports(self) -> None:
+        if self._report_ttl_days is None:
+            return
+        for path in sorted(self._reports_dir.glob("*.json")):
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+                report = self._reconstruct_report(data)
+            except (json.JSONDecodeError, KeyError):
+                continue
+            if self._is_expired(report):
+                self._delete_report_files(report, path)
+
+    def _is_expired(self, report: ValidationReport) -> bool:
+        if self._report_ttl_days is None:
+            return False
+        created_at = self._parse_created_at(report.created_at)
+        if created_at is None:
+            return False
+        return datetime.now(tz=UTC) - created_at > timedelta(days=self._report_ttl_days)
+
+    def _parse_created_at(self, value: str) -> datetime | None:
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+        if parsed.tzinfo is None:
+            return parsed.replace(tzinfo=UTC)
+        return parsed.astimezone(UTC)
+
+    def _delete_report_files(self, report: ValidationReport, report_path: Path) -> None:
+        if report.ifc_object_key:
+            self._object_store.delete(report.ifc_object_key)
+        for asset in report.drawing_assets:
+            if asset.object_key:
+                self._object_store.delete(asset.object_key)
+        if report_path.exists():
+            report_path.unlink()

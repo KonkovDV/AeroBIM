@@ -11,6 +11,14 @@
 | `AEROBIM_STORAGE_DIR` | `var/reports` | no | Parent directory for persisted JSON reports. Runtime store writes to `reports/*.json` below this root. |
 | `AEROBIM_DEBUG` | `true` | no | Enables debug defaults including permissive local frontend CORS fallback. |
 | `AEROBIM_CORS_ORIGINS` | empty | no | Comma-separated explicit frontend origins. In debug mode, empty falls back to `http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173`. |
+| `AEROBIM_DB_URL` | empty | no | Optional Postgres URL for report-summary indexing. |
+| `AEROBIM_REPORT_TTL_DAYS` | empty | no | Optional TTL for persisted report payloads; empty means unlimited retention. |
+| `AEROBIM_S3_BUCKET` | empty | no | Optional S3/MinIO bucket for binary artifacts. |
+| `AEROBIM_S3_ENDPOINT_URL` | empty | no | Custom S3-compatible endpoint, e.g. MinIO. |
+| `AEROBIM_S3_REGION` | `us-east-1` | no | Signing region for S3-compatible object storage. |
+| `AEROBIM_S3_ACCESS_KEY_ID` | empty | no | Access key for S3-compatible storage. |
+| `AEROBIM_S3_SECRET_ACCESS_KEY` | empty | no | Secret key for S3-compatible storage. |
+| `AEROBIM_S3_PREFIX` | `aerobim` | no | Prefix prepended to object keys in S3-compatible storage. |
 
 ## Frontend Variable
 
@@ -26,8 +34,9 @@
 | backend with OCR baseline | `pip install -e ".[vision]"` | PDF + raster deterministic drawing extraction |
 | backend with clash detection | `pip install -e ".[clash]"` | real IfcClash-backed geometry clash detection |
 | backend with Docling extraction | `pip install -e ".[docling]"` | non-text requirement extraction from office/PDF packages |
+| backend with enterprise storage | `pip install -e ".[enterprise]"` | optional S3/Postgres storage foundation |
 | backend full dev | `pip install -e ".[dev,vision]"` | local development, typing, tests, OCR baseline |
-| backend full capability bench | `pip install -e ".[dev,vision,clash,docling]"` | full local capability set for integration and demo work |
+| backend full capability bench | `pip install -e ".[dev,vision,clash,docling,enterprise]"` | full local capability set for integration and demo work |
 | frontend dev/build | `npm install` | browser review shell |
 
 Optional integration rail:

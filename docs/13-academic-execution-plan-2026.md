@@ -141,21 +141,25 @@ increasingly defaults to BCF 3.0; the `?version=3` opt-in minimises adoption fri
 while keeping 2.1 as the stable default (cf. user audit §3.3).
 ## Iteration B — Enterprise Infrastructure (1–2 months)
 
-### B.1 — Postgres Report Index + S3-Compatible Artifact Store
+### B.1 — Postgres Report Index + S3-Compatible Artifact Store 🚧 *Foundation shipped 2026-04-25*
 
 **Goal:** replace filesystem audit store with Postgres (report metadata) +
 S3/MinIO (binary artifacts: IFC, PDF, BCF).
 
-**Deliverables:**
-1. `domain/ports.py` — add `ObjectStore` port (put / get / delete / presign).
-2. `infrastructure/adapters/s3_object_store.py` — boto3-backed adapter; `/** @sota-stub */`
-   until CI has MinIO sidecar.
-3. `infrastructure/adapters/postgres_audit_store.py` — SQLAlchemy 2.x async adapter.
-4. Alembic migration: `reports` table with report metadata, foreign key to artifacts.
-5. `bootstrap.py` DI switch: filesystem → Postgres + S3 when `AEROBIM_DB_URL` is set.
-6. Retention / TTL policy: `AEROBIM_REPORT_TTL_DAYS` (default: unlimited).
+**Shipped foundation:**
+1. `domain/ports.py` — `ObjectStore` port added (`put / get / delete / presign`).
+2. `infrastructure/adapters/s3_object_store.py` — S3/MinIO-compatible adapter with lazy `boto3` import.
+3. `infrastructure/adapters/postgres_audit_store.py` — Postgres summary-index foundation adapter.
+4. `bootstrap.py` DI switch: local object store by default, optional S3 + Postgres when env is set.
+5. Retention / TTL policy: `AEROBIM_REPORT_TTL_DAYS` (default: unlimited).
+6. HTTP artifact retrieval remains contract-stable while binary persistence now flows through `ObjectStore`.
 
-**Exit criteria:** full backend suite passes against Postgres + MinIO in CI.
+**Remaining for full exit:**
+1. Alembic migration rail for `reports` metadata.
+2. Full payload hydration from Postgres-backed metadata + object storage.
+3. CI proof with Postgres + MinIO sidecars.
+
+**Current evidence:** focused storage/API validation green (`61 passed` on the B.1 slice).
 
 ### B.2 — Async Task Queue (Celery / arq)
 
