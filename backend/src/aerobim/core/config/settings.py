@@ -36,6 +36,14 @@ class Settings:
     debug: bool
     cors_origins: tuple[str, ...] = ()
     api_bearer_token: str | None = None
+    cross_doc_contradiction_severity: str = "warning"
+    """Severity emitted for cross-document contradictions.
+
+    Set to ``"error"`` to make all cross-document contradictions block delivery
+    (sets ``passed=False`` on the report).  Defaults to ``"warning"`` so that
+    contradictions are surfaced but non-blocking.  Accepted values: ``"error"``,
+    ``"warning"``, ``"info"``.
+    """
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -47,6 +55,10 @@ class Settings:
             origins = _DEBUG_CORS_ORIGINS
         else:
             origins = ()
+        raw_severity = (os.getenv("AEROBIM_CROSS_DOC_SEVERITY") or "warning").strip().lower()
+        cross_doc_severity = (
+            raw_severity if raw_severity in {"error", "warning", "info"} else "warning"
+        )
         return cls(
             application_name=os.getenv("AEROBIM_APP_NAME", "aerobim-backend"),
             environment=os.getenv("AEROBIM_ENV", "development"),
@@ -56,4 +68,5 @@ class Settings:
             debug=debug,
             cors_origins=origins,
             api_bearer_token=(os.getenv("AEROBIM_API_BEARER_TOKEN") or "").strip() or None,
+            cross_doc_contradiction_severity=cross_doc_severity,
         )

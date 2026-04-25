@@ -41,6 +41,39 @@ class FindingCategory(StrEnum):
     CROSS_DOCUMENT = "cross-document"
 
 
+class ConflictKind(StrEnum):
+    """Semantic classification of cross-document contradiction kind.
+
+    Distinguishes genuine conflicts from artefacts of unit encoding, lifecycle
+    stage, versioning, or ambiguous property mapping — so consumers can apply
+    appropriate policies per kind rather than treating all contradictions equally.
+    """
+
+    HARD_CONFLICT = "hard-conflict"
+    """Two sources specify materially different values for the same property
+    after unit normalisation, with no plausible non-conflicting interpretation."""
+
+    UNIT_MISMATCH = "unit-mismatch"
+    """Values appear to conflict but the primary driver is inconsistent or
+    ambiguous unit encoding between source documents."""
+
+    STAGE_MISMATCH = "stage-mismatch"
+    """Sources belong to different delivery stages (e.g. SD vs DD vs CD);
+    contradiction may be intentional progression rather than an error."""
+
+    VERSION_MISMATCH = "version-mismatch"
+    """Sources carry explicit revision/version markers that differ; the conflict
+    may resolve once both documents are updated to the same revision."""
+
+    SOFT_CONFLICT_WITHIN_TOLERANCE = "soft-conflict-within-tolerance"
+    """Numeric values differ but the difference falls within the configured
+    ε-tolerance — flagged for visibility but not blocking."""
+
+    AMBIGUOUS_MAPPING = "ambiguous-mapping"
+    """Property names or entity references are too ambiguous to determine whether
+    the two requirements address the same physical property."""
+
+
 @dataclass(frozen=True)
 class RequirementSource:
     text: str = ""
@@ -133,6 +166,9 @@ class ValidationIssue:
     element_guid: str | None = None
     problem_zone: ProblemZone | None = None
     remark: GeneratedRemark | None = None
+    conflict_kind: ConflictKind | None = None
+    """Populated for CROSS_DOCUMENT findings; classifies the nature of the
+    contradiction so consumers can apply severity policies per conflict class."""
 
 
 @dataclass(frozen=True)

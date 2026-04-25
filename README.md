@@ -15,16 +15,39 @@ AeroBIM validates building information models (IFC) against technical specificat
 | IFC property/quantity validation (IfcOpenShell) | ✅ |
 | IDS 1.0 spec validation (IfcTester) | ✅ |
 | Cross-document contradiction detection | ✅ |
+| Conflict taxonomy (`ConflictKind`: hard / unit-mismatch / ambiguous) | ✅ |
+| Configurable contradiction severity policy | ✅ |
 | Drawing annotation ↔ IFC cross-validation | ✅ |
 | ISO 12006-3 tolerance algebra (ε-band) | ✅ |
 | Narrative NLP → requirements (regex baseline) | ✅ |
 | Clash detection (IfcClash, optional `.[clash]` extra) | ✅ |
 | BCF 2.1 export | ✅ |
+| BCF 3.0 export | 🔜 Planned (Iteration A.5) |
 | HTML / JSON report export | ✅ |
 | Browser IFC viewer (`web-ifc + Three.js`) | ✅ Initial tranche + clash-pair review |
 | 2D problem-zone overlay on persisted drawing evidence | ✅ Initial tranche + asset switching |
 | Deterministic PDF / OCR drawing analysis baseline | ✅ |
 | Heavier VLM path (Qwen-VL / Florence-2) | 🔜 Planned |
+
+## IFC Release Compatibility
+
+| IFC Release | Schema | Validation Support | Notes |
+|---|---|---|---|
+| IFC2x3 | ISO 16739:2005 | ✅ Core | Most widely deployed; full property/quantity validation |
+| IFC4 (IFC4 ADD2) | ISO 16739-1:2018 | ✅ Core | Pset naming normalised; unit assignment via `IfcUnitAssignment` |
+| IFC4x3 | ISO 16739-1:2024 | ✅ Core | Alignment and infrastructure extensions; same validation kernel |
+
+All three releases pass through the same `IfcOpenShellValidator` and `IfcTesterIdsValidator` adapters.
+Pset/property name divergence between releases is surfaced as a `ValidationIssue` rather than a silent skip.
+Formal parametric fixture coverage for IFC2x3 vs IFC4x3 is planned in Iteration A.4.
+
+## BCF Roadmap
+
+| Version | Status | Notes |
+|---|---|---|
+| BCF 2.1 | ✅ Stable | All export paths (`/export/bcf`); `markup.bcfzip` + viewpoint |
+| BCF 3.0 | 🔜 Planned (A.5) | Experimental export alongside 2.1; version selector via query param |
+| BCF API | 🔜 Roadmap | REST adapter for CDE / issue-tracker integration |
 
 ## Quick Start
 
@@ -135,6 +158,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
 | `AEROBIM_ENV` | `development` | Environment name |
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Optional Bearer token required for all `/v1/*` endpoints |
+| `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 
 ## Project Structure
 
@@ -160,6 +184,7 @@ aerobim/
 - [Implementation Rails](docs/09-implementation-and-verification-rails.md) — delivery and verification
 - [Academic Audit](docs/10-academic-audit-and-recommendations-ru.md) — L5 hyper-deep audit
 - [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased next-step plan and tranche status
+- [Academic Execution Plan 2026](docs/13-academic-execution-plan-2026.md) — openBIM standards roadmap (Iterations A–C)
 - [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
 - [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
 - [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path
