@@ -132,3 +132,52 @@ python -m ruff format src tests
 - [docs/14-enterprise-storage-foundation.md](docs/14-enterprise-storage-foundation.md) — shipped foundation для B.1
 - [docs/15-local-quality-gate.md](docs/15-local-quality-gate.md) — локальные CI-parity проверки форматирования/линта/типов/тестов
 - [ops/environment-matrix.md](ops/environment-matrix.md) — матрица окружения и dependency profiles
+
+## Архитектура
+
+Пятислойная Clean Architecture с направлением зависимостей внутрь:
+
+```text
+core/           DI container, tokens, config
+domain/         Immutable models, Protocol ports, logging contract
+application/    Use case orchestration
+infrastructure/ External adapters (IFC/IDS/BCF/storage)
+presentation/   FastAPI HTTP API + middleware
+```
+
+Storage-слой уже использует абстракцию `ObjectStore`, поэтому локальное хранилище и S3/MinIO переключаются без изменения публичных API-paths.
+
+## Академический Стандарт Отчётности
+
+### Граница Утверждений
+
+Этот README разделяет подтверждённые факты и roadmap-намерения.
+
+- Подтверждёнными считаются возможности, которые имеют исполнимые адаптеры, тестовое покрытие, API-контракты или сохранённые артефакты отчётов.
+- Roadmap-пункты (например, более тяжёлый VLM-путь и BCF API) явно отмечаются как будущая работа.
+- Бенчмарк-метрики трактуются как контекстные измерения для конкретной среды, а не как универсальные гарантии.
+
+### Базовый Протокол Воспроизводимости
+
+Перед публикацией локальных выводов используйте минимальный набор:
+
+```bash
+cd backend
+python -m ruff format --check src tests
+python -m ruff check src tests
+python -m mypy src
+pytest tests -q
+python -m aerobim.tools.seed_smoke_report
+```
+
+Для benchmark-утверждений фиксируйте путь benchmark-pack, CLI-параметры, режим threshold-gate и пути к итоговым артефактам.
+
+### Цитирование И Переиспользование
+
+- Если отдельный citation-файл отсутствует, указывайте URL репозитория, commit SHA и идентификаторы отчётов/артефактов.
+- Для связки AeroBIM ↔ OpenRebar фиксируйте provenance digest и версию контракта отчёта.
+- При сравнении regex-baseline и более тяжёлых мультимодальных подходов явно описывайте ограничения методологии.
+
+## Лицензия
+
+[MIT](LICENSE)
