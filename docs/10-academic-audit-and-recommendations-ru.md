@@ -1,4 +1,4 @@
----
+﻿---
 title: "AeroBIM Academic Audit And Recommendations"
 status: active
 version: "0.5.0"
@@ -6,188 +6,156 @@ last_updated: "2026-04-12"
 tags: [aerobim, audit, explanation, evidence]
 ---
 
-# AeroBIM: Академический rebaseline-аудит и рекомендации
+# AeroBIM: академический аудит и рекомендации
 
 ## 1. Метод и границы исследования
 
-Этот аудит основан не на прежних narrative claims, а на повторной проверке текущего repository snapshot.
+Этот аудит основан на повторной проверке текущего состояния репозитория и исполнимых артефактов.
 
-Исследованы:
+Проверены:
 
-- активные docs поверхности `README.md`, `docs/**`, `ops/**`;
-- backend composition root, HTTP API, domain contracts, use cases и ключевые adapters;
-- тестовые и fixture surfaces под `backend/tests/` и `samples/**`;
-- внешний standards baseline: buildingSMART IDS, buildingSMART BCF, W3C SHACL, IfcOpenShell.
+- активные документационные поверхности `README.md`, `docs/**`, `ops/**`;
+- backend: корень композиции, HTTP API, доменные контракты, сценарии использования и ключевые адаптеры;
+- тестовые и fixture-поверхности в `backend/tests/` и `samples/**`;
+- внешний стандартный контур: buildingSMART IDS, buildingSMART BCF, W3C SHACL, IfcOpenShell.
 
-Цель аудита: определить, чем `AeroBIM` является уже сейчас, где реальные границы системы, какие architectural bets оказались верными, и какой следующий tranche даст наибольший product value без разрушения текущих контрактов.
+Цель аудита: зафиксировать, чем AeroBIM является уже сейчас, где находятся реальные границы системы, какие архитектурные решения подтверждены, и какой следующий этап даст наибольший практический эффект без ломки текущих контрактов.
 
 ## 2. Краткий вердикт
 
-`AeroBIM` больше не является docs-first концептом. На апрель 2026 это уже **рабочее детерминированное ядро BIM QA**, состоящее из:
+На апрель 2026 AeroBIM — это **рабочее детерминированное ядро BIM QA**:
 
 - Python backend с явной Clean Architecture;
-- live IFC + IDS validation path;
-- report persistence и export surfaces (`json`, `html`, `bcf`);
-- multimodal project-package flow с narrative, structured drawing и PDF/OCR baseline;
-- initial browser spatial review shell для отчётов, provenance и IFC-guided selection.
+- рабочий контур валидации IFC + IDS;
+- сохранение и экспорт отчётов (`json`, `html`, `bcf`);
+- мультимодальный путь проверки project package (narrative, structured drawing, PDF/OCR baseline);
+- начальная браузерная оболочка пространственного анализа для отчётов и IFC-элементов.
 
-При этом `AeroBIM` пока **не является полноценной review platform**. В нём ещё нет:
+При этом проект пока не является полноценной платформой координации BIM-ревью. Пока отсутствуют:
 
-- 2D problem-zone overlay surface;
-- richer clash-pair and multi-selection review ergonomics;
-- benchmark-grade performance rail;
-- project/tenant-aware operating model;
-- thin Revit roundtrip runtime.
+- полнофункциональные 2D overlay-зоны проблем;
+- развитая эргономика навигации по clash-парам и множественному выделению;
+- полноценный контур измерения производительности на больших наборах;
+- выраженная project/tenant operating model;
+- тонкий рабочий roundtrip-контур с Revit.
 
-Правильное позиционирование на текущей фазе: **deterministic multimodal BIM validation kernel with minimal review shell**, а не full-stack BIM coordination suite.
+Текущее позиционирование: **детерминированное мультимодальное ядро BIM-валидации с минимальной оболочкой проверки**.
 
 ## 3. Архитектурная оценка
 
-### 3.1. Что сделано правильно
+### 3.1 Что подтверждено как сильная сторона
 
-#### A. Clean Architecture здесь не декоративна, а рабочая
+#### A. Clean Architecture работает как практический механизм
 
-Пятислойная схема `core -> domain -> application -> infrastructure -> presentation` подтверждается кодом, а не только документацией. Domain ports и typed models действительно изолируют IfcOpenShell, IfcTester, PyMuPDF, RapidOCR, filesystem persistence и export logic.
+Пятислойная схема `core -> domain -> application -> infrastructure -> presentation` подтверждается кодом и тестами. Доменные порты и типизированные модели изолируют IfcOpenShell, IfcTester, PyMuPDF, RapidOCR, хранилище файлов и экспорт.
 
-Практическое следствие: более сильные adapters можно добавлять без переписывания application semantics. Это особенно важно для будущего перехода от deterministic PDF/OCR baseline к heavier VLM path.
+Следствие: усиление адаптеров возможно без переписывания прикладной семантики.
 
-#### B. Product truth задан через typed intermediate contracts
+#### B. Product truth задан через промежуточные типизированные контракты
 
-Это главная сильная сторона проекта.
-
-Вместо того чтобы превращать OCR, IDS, narrative parsing или exports в хаотичные side channels, система опирается на typed contracts:
+Ключевой плюс проекта — не «магия» вывода, а контракты:
 
 - `ParsedRequirement`
 - `DrawingAnnotation`
 - `ValidationIssue`
 - `ValidationReport`
 
-Такой подход академически более устойчив, чем LLM-first или viewer-first designs. Он задаёт строгую промежуточную семантику и удерживает provenance в продуктовой модели.
+Такой подход удерживает происхождение данных и предсказуемость логики.
 
-#### C. Правильный standards stack
+#### C. Стек стандартов выбран корректно
 
-Выбранный стек подтверждается официальными источниками:
+- IDS — машиночитаемый контракт обмена требованиями;
+- BCF — стандартный слой переноса замечаний;
+- SHACL — корректный кандидат на semantic overlay, но не замена IFC/IDS в текущем этапе;
+- IfcOpenShell — основной OSS-инструмент IFC-парсинга и геометрии.
 
-- IDS у buildingSMART остаётся machine-readable exchange-contract surface;
-- BCF остаётся стандартным issue-transport слоем для IFC-centric coordination;
-- SHACL остаётся корректным semantic-overlay кандидатом, но не заменой IFC/IDS на MVP-фазе;
-- IfcOpenShell остаётся canonical OSS IFC toolkit and geometry engine.
+#### D. Review-оболочка введена в правильной роли
 
-Это означает, что архитектурное ядро не упирается в vendor-specific gravity и не строится на слабом стандарте.
-
-#### D. Review shell появился вовремя и в правильной роли
-
-Frontend не захватывает domain truth. Он работает как inspection surface поверх persisted reports. Это зрелое решение: сначала стабилизируется report/provenance model, затем на неё навешивается review UX.
+Frontend работает как слой инспекции над сохранёнными отчётами и не захватывает доменную истину.
 
 ## 4. Что уже подтверждено как рабочее
 
 | Область | Статус | Комментарий |
 |---|---|---|
-| IFC property / quantity validation | ✅ | Live backend capability |
-| IDS validation | ✅ | Live adapter + sample-backed path |
-| Narrative rule synthesis | ✅ baseline | Deterministic, provenance-preserving |
-| Structured drawing validation | ✅ | Active through drawing contracts |
-| PDF / OCR drawing extraction | ✅ baseline | Live via PyMuPDF + RapidOCR |
-| Clash detection | ✅ with optional extra | Real path exists, but depends on `.[clash]` |
-| Report persistence | ✅ | Filesystem-backed live default |
-| JSON / HTML / BCF export | ✅ | Live endpoints and tests |
-| Browser review shell | ✅ initial spatial runtime | Report shell plus browser IFC viewer with GUID-driven selection |
-| Thin Revit client | ❌ | Boundary only |
+| IFC property / quantity validation | ✅ | Рабочая backend-возможность |
+| IDS validation | ✅ | Рабочий адаптер и путь по примерам |
+| Narrative rule synthesis | ✅ baseline | Детерминированно, с provenance |
+| Structured drawing validation | ✅ | Рабочий путь через drawing-контракты |
+| PDF / OCR drawing extraction | ✅ baseline | Рабочий путь на PyMuPDF + RapidOCR |
+| Clash detection | ✅ with optional extra | Требует `.[clash]` |
+| Report persistence | ✅ | Базово filesystem-backed |
+| JSON / HTML / BCF export | ✅ | Рабочие endpoint-ы и тесты |
+| Browser review shell | ✅ initial | Начальный пространственный runtime |
+| Thin Revit client | ❌ | На границе, не реализован |
 
 ## 5. Подтверждённые ограничения и product gaps
 
-### 5.1. Spatial review gap
+### 5.1 Spatial review gap
 
-Первый 3D rail уже появился: findings теперь можно связывать с IFC element GUID прямо в browser viewer, включая clash-pair focus и multi-selection isolate. Но spatial review всё ещё неполный, потому что пока нет 2D problem-zone overlays и persisted drawing-asset contract для реального page/image evidence.
+3D-путь уже есть: findings связываются с GUID IFC-элементов. Но обзор всё ещё неполный без 2D problem-zone overlay и устойчивого контракта drawing-asset для page/image evidence.
 
-### 5.2. Optional-capability transparency gap
+### 5.2 Прозрачность optional-возможностей
 
-`.[vision]` уже встроен в common development lane, но `.[clash]` и `.[docling]` остаются явными opt-in extras. Это нормально как техническое решение, но плохо, если не видно на уровне operator documentation и capability framing.
+`.[vision]` включён в базовый контур разработки, а `.[clash]` и `.[docling]` остаются opt-in extras. Это технически допустимо, но должно быть явно отражено в operator-документации и capability framing.
 
-Именно поэтому в этом tranche пришлось синхронизировать docs: система уже умеет больше, чем раньше, но и capability gating нужно описывать честнее.
+### 5.3 Benchmark и масштабирование
 
-### 5.3. Benchmark and scale gap
+Есть уверенность по корректности на fixture-наборах, но пока нет полноценного benchmark-контура для:
 
-На текущей фазе у проекта есть fixture-backed correctness confidence, но ещё нет полноценного benchmark rail для:
+- крупных IFC-моделей;
+- длительных мультимодальных задач;
+- стабильных измерений throughput/latency;
+- repeated pressure на экспорт и persistence.
 
-- large IFC models;
-- long-running multimodal jobs;
-- throughput and latency baselines;
-- repeated export and persistence pressure.
+### 5.4 Operating model gap
 
-Без этого нельзя делать серьёзные performance claims.
+Путь сохранения отчётов реализован, но ещё не оформлен продуктовый операционный контур: project-scoping, группировка отчётов, сегментация дисциплин, async job lifecycle, tenant isolation.
 
-### 5.4. Operating-model gap
+## 6. Что аудит показал по инженерному качеству
 
-Persisted report path уже есть, но пока почти нет product-level operational model для:
+В ходе повторной проверки был выявлен и исправлен инфраструктурный дефект: `IfcClashDetector` создавал временную директорию на каждый запуск без очистки.
 
-- project scoping;
-- report grouping;
-- discipline segmentation;
-- async job lifecycle;
-- tenant isolation.
+Исправление было узким и проверяемым:
 
-Это уже не архитектурный, а product-operations gap.
-
-## 6. Что показал rebaseline как инженерное качество
-
-Во время повторной проверки был найден и сразу закрыт один реальный infrastructure defect: `IfcClashDetector` создавал временную директорию на каждый запуск без cleanup. Это был типичный production bug класса resource leak. Исправление узкое, проверяемое и показательное:
-
-- реальный bug был найден из репозитория, а не из абстрактной теории;
-- bug исправлен без ломки API;
+- обнаружен реальный bug из кода, а не из предположений;
+- API-контракты не изменены;
 - добавлен regression test.
 
-Это хороший индикатор зрелости repo: сейчас там уже есть смысл не только обсуждать roadmap, но и запускать systematic hardening tranches.
+Это хороший индикатор зрелости репозитория: проект уже перешёл в фазу системного hardening-а, а не только обсуждения roadmap.
 
 ## 7. Приоритетные рекомендации
 
-### R1. Сделать review shell spatially actionable
+### R1. Сделать review-слой пространственно действенным
 
-Следующий главный tranche должен быть не про «ещё один parser», а про **пространственную навигацию по findings**.
+Следующий этап должен быть сфокусирован на навигации по findings:
 
-Минимальный sound path:
+1. 2D problem-zone overlay для drawing evidence.
+2. Улучшенная навигация по issue/clash поверх существующего `web-ifc + Three.js` пути.
+3. One-report smoke path, проверяющий полный UI flow на сохранённом отчёте.
+4. Интеграционные проверки report-scoped IFC source.
 
-1. 2D problem-zone overlay для drawing evidence;
-2. richer issue and clash navigation поверх уже добавленного `web-ifc + Three.js` rail;
-3. one-report smoke path, который проверяет полный UI flow поверх persisted report;
-4. integration coverage for the new report-scoped IFC source surface.
+### R2. Довести optional-адаптеры до операционной ясности
 
-Причина: backend kernel уже достаточно зрелый, чтобы bottleneck сместился из validation в review ergonomics.
+Нужно не столько срочно добавлять новые адаптеры, сколько сделать текущие capability boundaries прозрачными в docs/ops и покрыть optional-пути smoke/integration проверками.
 
-### R2. Довести optional adapters до operational clarity
+### R3. Усиливать мультимодальный контур, не ломая контракты
 
-Нужно не столько срочно добавлять новые adapters, сколько сделать уже существующие capability boundaries прозрачными:
+Любое усиление extraction (включая VLM-подходы) должно идти за существующими портами и сохранять `DrawingAnnotation`/`ProblemZone` как продуктовую истину.
 
-- `.[clash]` и `.[docling]` должны быть явно видны в active docs и ops surfaces;
-- для optional runtime paths нужны integration tests и smoke variants, а не только interface-level existence.
+### R4. Переходить от хранения отчётов к operating model
 
-### R3. Усилить multimodal evidence path, а не заменять его магией
+После усиления review-слоя следующий шаг — project metadata, queryable indices, async jobs, benchmark-pack и regression-рейл.
 
-Путь с heavier VLM имеет смысл, но только **поверх текущего typed contract**, а не вместо него. Правильная эволюция:
+### R5. Не перегружать платформу преждевременной «тяжёлой» оркестрацией
 
-- сохранить `DrawingAnnotation` и `ProblemZone` как product truth;
-- добавлять более сильный extraction engine за существующим port;
-- не переносить доверие в opaque model output.
+На текущей стадии нет практической необходимости в event sourcing, knowledge graph runtime и «толстой» plugin-архитектуре внутри AeroBIM.
 
-### R4. Перейти от report storage к operating model
+## 8. Заключение
 
-После spatial review следующая осмысленная ступень — сделать отчёты operationally useful:
+AeroBIM прошёл критический ранний этап и сохранил архитектурную дисциплину. У проекта есть корректный стандартный базис, типизированные доменные контракты, рабочий persistence/export путь и начальный spatial-review слой.
 
-- project metadata;
-- queryable indices;
-- async long-running jobs;
-- benchmark pack и regression rail.
-
-### R5. Не торопиться с тяжёлой platformization
-
-Сейчас нет оснований тащить в `AeroBIM` event sourcing, knowledge graph runtime, agentic orchestration или fat plugin architecture. На этой фазе они размоют фокус и увеличат surface area быстрее, чем реальную полезность.
-
-## 8. Академическое заключение
-
-С инженерной точки зрения `AeroBIM` уже прошёл самую сложную раннюю фазу: он не развалился в хаотичный набор adapters и не ушёл в viewer-first или LLM-first имитацию продукта. У него уже есть корректный standards baseline, typed domain contracts, реальный persistence/export path и начальный spatial review shell.
-
-Значит, дальнейшая работа должна строиться не вокруг «ещё одной общей архитектурной идеи», а вокруг последовательного перехода:
+Рациональная последовательность развития:
 
 **kernel -> spatial review -> operational scale -> authoring roundtrip**.
 
-Именно такой порядок даёт наибольшую product leverage при минимальном риске сломать текущую архитектурную дисциплину.
+Именно этот порядок даёт максимальный прикладной эффект при контролируемом инженерном риске.
