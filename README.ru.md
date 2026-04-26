@@ -1,8 +1,8 @@
-# AeroBIM
+﻿# AeroBIM
 
 [English version](README.md)
 
-Open-source платформа для **кросс-модальной семантической валидации BIM**.
+Платформа с открытым исходным кодом для **кросс-модальной семантической валидации BIM**.
 
 AeroBIM проверяет IFC-модели по техническим требованиям, 2D-чертежам, расчётным документам и IDS-пакетам в едином детерминированном конвейере с полной трассировкой происхождения данных и BCF-интероперабельностью.
 
@@ -17,10 +17,10 @@ AeroBIM проверяет IFC-модели по техническим треб
 | Настраиваемая severity-политика для противоречий | ✅ |
 | Проверка коллизий (`IfcClash`, опциональный extra `.[clash]`) | ✅ |
 | Экспорт BCF 2.1 | ✅ |
-| Экспорт BCF 3.0 | ✅ Experimental |
-| Foundation для enterprise storage (`ObjectStore` + TTL + Postgres index hook) | ✅ Foundation |
+| Экспорт BCF 3.0 | ✅ Экспериментально |
+| Базовый слой для корпоративного хранилища (`ObjectStore` + TTL + Postgres index hook) | ✅ Базовый слой |
 | HTML / JSON export | ✅ |
-| Браузерный IFC viewer (`web-ifc` + `Three.js`) | ✅ Начальный tranche |
+| Браузерный IFC viewer (`web-ifc` + `Three.js`) | ✅ Начальный этап |
 
 ## Совместимость IFC
 
@@ -37,24 +37,24 @@ AeroBIM проверяет IFC-модели по техническим треб
 | Версия | Статус | Примечание |
 |---|---|---|
 | BCF 2.1 | ✅ Stable | Основной export path |
-| BCF 3.0 | ✅ Experimental | `GET /v1/reports/{id}/export/bcf?version=3`, по умолчанию остаётся 2.1 |
-| BCF API | 🔜 Roadmap | CDE / issue-tracker integration |
+| BCF 3.0 | ✅ Экспериментально | `GET /v1/reports/{id}/export/bcf?version=3`, по умолчанию остаётся 2.1 |
+| BCF API | 🔜 План развития | Интеграция с CDE / трекерами задач |
 
-## Enterprise Storage Foundation
+## Базовый слой корпоративного хранилища
 
-В итерации B.1 уже shipped базовый совместимый storage-layer:
+В итерации B.1 уже поставлен базовый совместимый слой хранения:
 
 - доменный порт `ObjectStore` для бинарных артефактов (`put/get/delete/presign`);
-- `LocalObjectStore` для текущего локального runtime;
-- `S3ObjectStore` для S3/MinIO через optional enterprise extras;
-- `PostgresAuditStore` foundation для индекса метаданных отчётов в Postgres;
-- `AEROBIM_REPORT_TTL_DAYS` для retention/TTL persisted reports.
+- `LocalObjectStore` для текущего локального рабочего контура;
+- `S3ObjectStore` для S3/MinIO через опциональные enterprise-дополнения;
+- `PostgresAuditStore` как база для индекса метаданных отчётов в Postgres;
+- `AEROBIM_REPORT_TTL_DAYS` для хранения отчётов по TTL.
 
-Пока это именно foundation-step:
+Пока это именно базовый этап:
 
-- без enterprise extras система продолжает работать на локальном storage без изменения HTTP-контрактов;
-- при наличии `AEROBIM_DB_URL` и enterprise-зависимостей summaries индексируются в Postgres;
-- IFC-source и drawing previews уже вынесены за абстракцию `ObjectStore`, поэтому дальнейший переход на S3/MinIO не требует смены API paths.
+- без enterprise-дополнений система продолжает работать на локальном хранилище без изменения HTTP-контрактов;
+- при наличии `AEROBIM_DB_URL` и enterprise-зависимостей сводки индексируются в Postgres;
+- исходные IFC и превью чертежей уже вынесены за абстракцию `ObjectStore`, поэтому дальнейший переход на S3/MinIO не требует смены API-маршрутов.
 
 ## Быстрый старт
 
@@ -69,13 +69,13 @@ source .venv/bin/activate  # Linux/macOS
 pip install -e ".[dev,vision]"
 # pip install -e ".[clash]"       # clash detection
 # pip install -e ".[docling]"     # document extraction
-# pip install -e ".[enterprise]"  # S3/Postgres storage adapters
+# pip install -e ".[enterprise]"  # адаптеры хранения S3/Postgres
 
 pytest tests -v
 python -m aerobim.main
 ```
 
-## Локальный quality-gate
+## Локальный контур качества
 
 Перед push в `main` запускайте тот же минимальный набор проверок, что и в CI:
 
@@ -93,17 +93,17 @@ pytest tests -q
 python -m ruff format src tests
 ```
 
-## Основные API-paths
+## Основные API-маршруты
 
 | Метод | Path | Описание |
 |---|---|---|
-| `GET` | `/health` | Probe готовности |
+| `GET` | `/health` | Проверка готовности |
 | `POST` | `/v1/validate/ifc` | Валидация IFC по требованиям + IDS |
-| `POST` | `/v1/analyze/project-package` | Мультимодальная проверка project package |
-| `GET` | `/v1/reports` | Список persisted reports |
+| `POST` | `/v1/analyze/project-package` | Мультимодальная проверка пакета проекта |
+| `GET` | `/v1/reports` | Список сохранённых отчётов |
 | `GET` | `/v1/reports/{id}` | Получить отчёт |
-| `GET` | `/v1/reports/{id}/source/ifc` | Скачать IFC source, привязанный к отчёту |
-| `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | Скачать persisted drawing preview |
+| `GET` | `/v1/reports/{id}/source/ifc` | Скачать исходный IFC, привязанный к отчёту |
+| `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | Скачать сохранённое превью чертежа |
 | `GET` | `/v1/reports/{id}/export/bcf` | BCF 2.1 по умолчанию; `?version=3` включает BCF 3.0 |
 
 ## Конфигурация
@@ -114,13 +114,13 @@ python -m ruff format src tests
 |---|---|---|
 | `AEROBIM_STORAGE_DIR` | `var/reports` | Локальное корневое хранилище отчётов |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Политика severity для междокументных противоречий |
-| `AEROBIM_DB_URL` | *(unset)* | Postgres URL для summary index |
-| `AEROBIM_REPORT_TTL_DAYS` | *(unset)* | TTL persisted reports |
+| `AEROBIM_DB_URL` | *(unset)* | URL Postgres для индекса сводок |
+| `AEROBIM_REPORT_TTL_DAYS` | *(unset)* | TTL для сохранённых отчётов |
 | `AEROBIM_S3_BUCKET` | *(unset)* | S3/MinIO bucket |
-| `AEROBIM_S3_ENDPOINT_URL` | *(unset)* | Custom endpoint для MinIO/S3-compatible storage |
+| `AEROBIM_S3_ENDPOINT_URL` | *(unset)* | Пользовательский endpoint для MinIO/S3-совместимого хранилища |
 | `AEROBIM_S3_REGION` | `us-east-1` | Регион подписи |
-| `AEROBIM_S3_ACCESS_KEY_ID` | *(unset)* | Access key |
-| `AEROBIM_S3_SECRET_ACCESS_KEY` | *(unset)* | Secret key |
+| `AEROBIM_S3_ACCESS_KEY_ID` | *(unset)* | Ключ доступа |
+| `AEROBIM_S3_SECRET_ACCESS_KEY` | *(unset)* | Секретный ключ |
 | `AEROBIM_S3_PREFIX` | `aerobim` | Префикс object keys |
 
 Полный список: [backend/.env.example](backend/.env.example) и [ops/environment-matrix.md](ops/environment-matrix.md).
@@ -129,11 +129,11 @@ python -m ruff format src tests
 
 - [docs/06-architecture-reference.md](docs/06-architecture-reference.md) — каноническая архитектура
 - [docs/13-academic-execution-plan-2026.md](docs/13-academic-execution-plan-2026.md) — план Iterations A–C
-- [docs/14-enterprise-storage-foundation.md](docs/14-enterprise-storage-foundation.md) — shipped foundation для B.1
-- [docs/15-local-quality-gate.md](docs/15-local-quality-gate.md) — локальные CI-parity проверки форматирования/линта/типов/тестов
+- [docs/14-enterprise-storage-foundation.md](docs/14-enterprise-storage-foundation.md) — поставленный базовый слой для B.1
+- [docs/15-local-quality-gate.md](docs/15-local-quality-gate.md) — локальные проверки форматирования/линта/типов/тестов в паритете с CI
 - [ops/environment-matrix.md](ops/environment-matrix.md) — матрица окружения и dependency profiles
 
-## Governance
+## Управление проектом
 
 - [Contributing](CONTRIBUTING.md)
 - [Security Policy](SECURITY.md)
@@ -154,16 +154,16 @@ infrastructure/ External adapters (IFC/IDS/BCF/storage)
 presentation/   FastAPI HTTP API + middleware
 ```
 
-Storage-слой уже использует абстракцию `ObjectStore`, поэтому локальное хранилище и S3/MinIO переключаются без изменения публичных API-paths.
+Storage-слой уже использует абстракцию `ObjectStore`, поэтому локальное хранилище и S3/MinIO переключаются без изменения публичных API-маршрутов.
 
 ## Академический Стандарт Отчётности
 
 ### Граница Утверждений
 
-Этот README разделяет подтверждённые факты и roadmap-намерения.
+Этот README разделяет подтверждённые факты и плановые намерения.
 
 - Подтверждёнными считаются возможности, которые имеют исполнимые адаптеры, тестовое покрытие, API-контракты или сохранённые артефакты отчётов.
-- Roadmap-пункты (например, более тяжёлый VLM-путь и BCF API) явно отмечаются как будущая работа.
+- Пункты плана развития (например, более тяжёлый VLM-путь и BCF API) явно отмечаются как будущая работа.
 - Бенчмарк-метрики трактуются как контекстные измерения для конкретной среды, а не как универсальные гарантии.
 
 ### Базовый Протокол Воспроизводимости
@@ -179,14 +179,15 @@ pytest tests -q
 python -m aerobim.tools.seed_smoke_report
 ```
 
-Для benchmark-утверждений фиксируйте путь benchmark-pack, CLI-параметры, режим threshold-gate и пути к итоговым артефактам.
+Для утверждений по бенчмаркам фиксируйте путь набора бенчмарков, CLI-параметры, режим threshold-gate и пути к итоговым артефактам.
 
 ### Цитирование И Переиспользование
 
 - Если отдельный citation-файл отсутствует, указывайте URL репозитория, commit SHA и идентификаторы отчётов/артефактов.
 - Для связки AeroBIM ↔ OpenRebar фиксируйте provenance digest и версию контракта отчёта.
-- При сравнении regex-baseline и более тяжёлых мультимодальных подходов явно описывайте ограничения методологии.
+- При сравнении базового regex-подхода и более тяжёлых мультимодальных подходов явно описывайте ограничения методологии.
 
 ## Лицензия
 
 [MIT](LICENSE)
+
