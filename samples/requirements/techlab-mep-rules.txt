@@ -1,0 +1,6 @@
+# rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text
+REQ-MEP-001|ifc-property|IFCDUCTSEGMENT|ALL|Pset_DuctSegmentOccurrence|SystemType|eq|SupplyAir||Система приточной вентиляции
+REQ-MEP-002|ifc-property|IFCDUCTSEGMENT|ALL|Pset_DuctSegmentOccurrence|SystemType|eq|ReturnAir||Система вытяжной вентиляции
+REQ-MEP-003|ifc-property|IFCPIPESEGMENT|ALL|Pset_PipeSegmentOccurrence|SystemType|eq|DomesticColdWater||Холодное водоснабжение
+REQ-MEP-004|ifc-property|IFCPIPESEGMENT|ALL|Pset_PipeSegmentOccurrence|SystemType|eq|DomesticHotWater||Горячее водоснабжение
+REQ-MEP-005|ifc-property|IFCDUCTSEGMENT|ALL|Pset_DuctSegmentOccurrence|PressureClass|gte|Low||Класс давления воздуховодов

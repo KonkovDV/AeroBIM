@@ -924,9 +924,15 @@ export default function App() {
               </div>
 
               <div className="report-context">
-                <span>IFC: {selectedReport.ifc_path}</span>
+                <span>IFC: available via report source download</span>
                 <span>Created: {formatTimestamp(selectedReport.created_at)}</span>
                 <span>Request: {selectedReport.request_id}</span>
+                {selectedReport.stage && <span>Stage: {selectedReport.stage}</span>}
+                {selectedReport.revision && <span>Revision: {selectedReport.revision}</span>}
+                {selectedReport.doc_status && <span>Status: {selectedReport.doc_status}</span>}
+                {selectedReport.information_container_id && (
+                  <span>CDE: {selectedReport.information_container_id}</span>
+                )}
               </div>
 
               <div className="issue-list">

@@ -1,9 +1,9 @@
 ---
 title: "AeroBIM Academic Execution Plan 2026"
 status: active
-version: "1.0.0"
-last_updated: "2026-04-25"
-tags: [aerobim, plan, academic, openBIM, roadmap]
+version: "1.1.0"
+last_updated: "2026-05-20"
+tags: [aerobim, plan, academic, openBIM, roadmap, pilot]
 ---
 
 # AeroBIM Academic Execution Plan 2026
@@ -12,8 +12,27 @@ Formal roadmap derived from the April 2026 external academic audit of **KonkovDV
 Structured into three delivery iterations aligned with (A) production hygiene and current
 openBIM standards, (B) enterprise-scale infrastructure, and (C) research-grade validation.
 
+**H2 2026 priority:** Moscow pilot — see [`pilot-execution-runbook-2026.md`](pilot-execution-runbook-2026.md).
+
 References: `docs/10-academic-audit-and-recommendations-ru.md` (internal prior art),
 `docs/11-rebaseline-execution-plan.md` (active wave tracking).
+
+---
+
+## May 2026 status (pilot track)
+
+| Item | Status | Evidence |
+|---|---|---|
+| C.1 Typed `QuantityValue` + cross-doc SI compare | ✅ | `domain/quantity.py`, `test_academic_quantity_cross_doc.py` |
+| C.2 `ExternalEvidenceVerifier` port | ✅ | `openrebar_evidence_verifier.py`, DI wiring |
+| C.3 bSDD pilot mapper | ✅ | `bsdd_term_mapper.py`, `bsdd-pilot-terms.json` |
+| C.4 RU extraction benchmark (10 docs / 50 req) | ✅ | macro F1 ≈ **0.86**; architecture discipline **0.73** |
+| C.5 Publication benchmark report + CI release | ✅ | `generate_benchmark_report.py`, `academic-benchmark-release.yml` |
+| 2D drawing overlay contract | ✅ | `DrawingEvidencePanel`, `run_live_review_smoke` |
+| Pre-pilot replay + structural JSON gate | ✅ | `test_pilot_deterministic_replay.py` |
+| ConflictKind ops summary | ✅ | `summarize_conflict_breakdown.py` |
+
+Deferred until post-pilot unless customer blocks: B.1 full Postgres hydration, B.2 arq, B.3 OIDC.
 
 ---
 
@@ -35,17 +54,17 @@ References: `docs/10-academic-audit-and-recommendations-ru.md` (internal prior a
 
 | Gap | Standard / Reference | Priority |
 |---|---|---|
-| BCF version: only 2.1, no 3.0 | buildingSMART BCF 3.0 | P0 |
-| ISO 19650 lifecycle context (stage, CDE, EIR) | ISO 19650-1/-2 | P0 |
+| BCF version: only 2.1, no 3.0 | buildingSMART BCF 3.0 | P0 ✅ (3.0 opt-in) |
+| ISO 19650 lifecycle context (stage, CDE, EIR) | ISO 19650-1/-2 | P0 ✅ (optional API fields) |
 | Cross-doc conflict taxonomy (no `ConflictKind`) | internal — domain model | P1 ✅ |
 | Severity policy for contradictions (hardcoded WARNING) | internal — settings | P1 ✅ |
-| No typed quantity/unit abstraction | UCUM / ISO 80000 | P1 |
-| Provenance generalisation: OpenRebar-specific | internal — domain port | P1 |
-| Storage: in-memory + filesystem only | production infra | P1 |
-| AuthN: static Bearer only | OIDC / JWT RFC 7519 | P1 |
-| bSDD term normalisation not present | buildingSMART bSDD | P2 |
-| No precision/recall metrics for requirement extraction | NLP evaluation | P2 |
-| No open benchmark dataset protocol | reproducible research | P2 |
+| No typed quantity/unit abstraction | UCUM / ISO 80000 | P1 ✅ |
+| Provenance generalisation: OpenRebar-specific | internal — domain port | P1 ✅ |
+| Storage: in-memory + filesystem only | production infra | P1 🚧 foundation |
+| AuthN: static Bearer only | OIDC / JWT RFC 7519 | P1 (post-pilot) |
+| bSDD term normalisation not present | buildingSMART bSDD | P2 ✅ pilot dictionary |
+| No precision/recall metrics for requirement extraction | NLP evaluation | P2 ✅ CI gate ≥ 0.70 |
+| No open benchmark dataset protocol | reproducible research | P2 ✅ annotation protocol + ground truth |
 
 > ✅ = completed in the same session as this plan was created.
 
@@ -206,7 +225,7 @@ S3/MinIO (binary artifacts: IFC, PDF, BCF).
 
 ## Iteration C — Research-Grade Validation (3–6 months)
 
-### C.1 — Typed Quantity/Unit Abstraction
+### C.1 — Typed Quantity/Unit Abstraction ✅ *Completed 2026-05*
 
 **Goal:** replace string-based unit fields with `Quantity(value: Decimal, unit: Unit)`
 to eliminate unit-encoding divergence as a source of false contradictions.
@@ -221,7 +240,7 @@ to eliminate unit-encoding divergence as a source of false contradictions.
   string fallback otherwise.
 - Unit provenance: track origin (IDS, text, drawing, IFC unit assignment).
 
-### C.2 — Generalised External Evidence Provenance Port
+### C.2 — Generalised External Evidence Provenance Port ✅ *Completed 2026-05*
 
 **Goal:** lift OpenRebar provenance checks into a reusable `ExternalEvidenceProvenanceCheck`
 domain abstraction usable for any external calculation report.
@@ -236,7 +255,7 @@ domain abstraction usable for any external calculation report.
   as a concrete `ExternalEvidenceVerifier`.
 - Ready to accept structural calculation reports, energy analysis, fire-compliance reports.
 
-### C.3 — bSDD Term Normalisation
+### C.3 — bSDD Term Normalisation ✅ *Completed 2026-05 (pilot dictionary)*
 
 **Goal:** map property names extracted from text/IDS to buildingSMART bSDD URIs for
 terminology-stable cross-project rule portability.
@@ -247,9 +266,11 @@ terminology-stable cross-project rule portability.
 - `ParsedRequirement.bsdd_uri: str | None`.
 - Report HTML: "Terminology-normalised" badge on requirements with resolved URIs.
 
-### C.4 — Precision/Recall Benchmark Protocol
+### C.4 — Precision/Recall Benchmark Protocol ✅ *Completed 2026-05*
 
 **Goal:** establish formal NLP evaluation metrics for requirement extraction quality.
+
+**Shipped:** `russian-aec-ground-truth.json` (10 fixtures), per-discipline F1, CI enforced macro F1 ≥ 0.70 (current ≈ 0.86).
 
 **Design:**
 - `samples/benchmarks/annotation/` — manual ground-truth annotation format:
@@ -260,7 +281,7 @@ terminology-stable cross-project rule portability.
 - CI optional `benchmark-extraction-quality` job: advisory thresholds, publishes
   metrics as artifacts.
 
-### C.5 — Reproducible Benchmark Report (Publication-Grade)
+### C.5 — Reproducible Benchmark Report (Publication-Grade) ✅ *Completed 2026-05*
 
 **Goal:** produce a self-contained benchmark report suitable for supplementary material
 in a conference submission or arXiv preprint.

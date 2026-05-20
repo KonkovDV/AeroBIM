@@ -59,6 +59,10 @@ class ValidateIfcAgainstIdsUseCase:
             ),
             project_name=request.project_name,
             discipline=request.discipline,
+            stage=request.stage,
+            information_container_id=request.information_container_id,
+            revision=request.revision,
+            doc_status=request.doc_status,
         )
         self._audit_report_store.save(report)
         return report

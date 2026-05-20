@@ -21,16 +21,18 @@ AeroBIM validates building information models (IFC) against technical specificat
 | Configurable contradiction severity policy | ✅ |
 | Drawing annotation ↔ IFC cross-validation | ✅ |
 | ISO 12006-3 tolerance algebra (ε-band) | ✅ |
-| Narrative NLP → requirements (regex baseline) | ✅ |
+| Narrative text → requirements (deterministic regex; not in sign-off path) | ✅ |
+| Russian AEC extraction benchmark (10 docs, 50 requirements, CI F1 ≥ 0.70) | ✅ |
+| ISO 19650-lite context in reports (stage, revision, container) | ✅ |
 | Clash detection (IfcClash, optional `.[clash]` extra) | ✅ |
 | BCF 2.1 export | ✅ |
 | BCF 3.0 export | ✅ Experimental |
 | Enterprise storage foundation (ObjectStore + TTL + Postgres index hook) | ✅ Foundation |
 | HTML / JSON report export | ✅ |
-| Browser IFC viewer (`web-ifc + Three.js`) | ✅ Initial tranche + clash-pair review |
-| 2D problem-zone overlay on persisted drawing evidence | ✅ Initial tranche + asset switching |
-| Deterministic PDF / OCR drawing analysis baseline | ✅ |
-| Heavier VLM path (Qwen-VL / Florence-2) | 🔜 Planned |
+| Browser IFC viewer (`web-ifc` + Three.js`) | ✅ |
+| 2D problem-zone overlay on persisted drawing evidence | ✅ |
+| Deterministic PDF / OCR drawing analysis | ✅ |
+| Vision-language drawing analysis | 🔜 Planned |
 
 ## IFC Release Compatibility
 
@@ -90,7 +92,10 @@ pip install -e ".[dev,vision]"
 # pip install -e ".[enterprise]"  # enable S3/Postgres enterprise storage adapters
 
 # Run tests
-pytest tests -v
+pytest tests -q
+
+# Extraction quality gate (Russian AEC corpus)
+python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
 
 # Seed one deterministic runtime smoke report
 python -m aerobim.tools.seed_smoke_report
@@ -130,36 +135,26 @@ If `ruff format --check` reports files to reformat, run:
 python -m ruff format src tests
 ```
 
-## Scientific Reporting Standard
+## Benchmarks and Evidence
 
-### Claim Boundary
-
-This README separates verified repository evidence from roadmap intent.
-
-- Verified capabilities are those backed by executable adapters, tests, API contracts, or persisted audit artifacts.
-- Roadmap lines (for example heavier VLM path and BCF API integration) are explicitly future work.
-- Throughput and benchmark observations are environment-sensitive and should be treated as bounded measurements, not universal performance guarantees.
-
-### Reproducibility Baseline
-
-Use this baseline before publishing claims derived from local runs:
+Verified capabilities are backed by tests, API contracts, or persisted report artifacts. Planned work (VLM sign-off, BCF API) is listed separately in the capability table.
 
 ```bash
 cd backend
-python -m ruff format --check src tests
-python -m ruff check src tests
-python -m mypy src
-pytest tests -q
-python -m aerobim.tools.seed_smoke_report
+python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
+python -m aerobim.tools.run_ablation_study
+python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
+python -m aerobim.tools.export_runtime_baseline
 ```
 
-For benchmark claims, publish benchmark pack path, CLI parameters, threshold mode, and produced artifacts.
+| Topic | Document |
+|---|---|
+| Claim boundary (pilot / publication) | [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) |
+| Publication evidence pack | [docs/academic-publication-evidence-2026.md](docs/academic-publication-evidence-2026.md) |
+| Annotation protocol (RU corpus) | [docs/annotation-protocol-2026.md](docs/annotation-protocol-2026.md) |
+| Benchmark packs | [samples/benchmarks/README.md](samples/benchmarks/README.md) |
 
-### Citation and Reuse
-
-- If no dedicated citation file is present, cite repository URL, commit SHA, and report artifact identifiers.
-- For cross-system claims (AeroBIM ↔ OpenRebar), include provenance digest and report contract version.
-- Keep methodological assumptions explicit when comparing regex baselines and heavier multimodal approaches.
+Throughput and F1 figures are environment-specific; publish pack paths, CLI flags, and artifact files with any performance claim. Cite via [CITATION.cff](CITATION.cff) or [docs/CITATION.bib](docs/CITATION.bib).
 
 ## API Endpoints
 
@@ -246,7 +241,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 aerobim/
 ├── backend/                 # Python FastAPI backend (~1.9K LOC src, ~1.8K LOC tests)
 │   ├── src/aerobim/         # Source: core → domain → application → infrastructure → presentation
-│   ├── tests/               # 23 test modules (backend suite currently 171 tests + optional skips)
+│   ├── tests/               # Backend test suite (290+ tests; 2 optional skips without extras)
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog
@@ -262,19 +257,25 @@ aerobim/
 - [Architecture Reference](docs/06-architecture-reference.md) — canonical layer map and invariants
 - [MicroPhoenix Adoption Matrix](docs/08-microphoenix-adoption-matrix.md) — extraction decisions
 - [Implementation Rails](docs/09-implementation-and-verification-rails.md) — delivery and verification
-- [Academic Audit](docs/10-academic-audit-and-recommendations-ru.md) — L5 hyper-deep audit
-- [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased next-step plan and tranche status
-- [Academic Execution Plan 2026](docs/13-academic-execution-plan-2026.md) — openBIM standards roadmap (Iterations A–C)
-- [Enterprise Storage Foundation](docs/14-enterprise-storage-foundation.md) — B.1 shipped foundation, env matrix, and rollout boundary
+- [Technical Audit (RU)](docs/10-academic-audit-and-recommendations-ru.md) — architecture and standards review
+- [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased delivery status
+- [Standards Roadmap 2026](docs/13-academic-execution-plan-2026.md) — openBIM iterations A–C
+- [Enterprise Storage](docs/14-enterprise-storage-foundation.md) — ObjectStore and Postgres index
+- [Publication Evidence](docs/academic-publication-evidence-2026.md) — reproducibility commands
 - [Local Quality Gate](docs/15-local-quality-gate.md) — CI-parity formatting/lint/type/test commands before push
 - [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
 - [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
 - [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path
 - [Benchmark Packs](samples/benchmarks/README.md) — manifest-backed throughput rail for representative project-package fixtures
 
+## Git commits
+
+Do not commit through the Cursor agent with **Attribution** enabled — it can add `Co-authored-by: Cursor` to history. Turn off **Settings → Agent → Attribution**, then use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit (single author)**. See [docs/git-hygiene-2026.md](docs/git-hygiene-2026.md).
+
 ## Governance
 
 - [Contributing](CONTRIBUTING.md)
+- [Git hygiene](docs/git-hygiene-2026.md)
 - [Security Policy](SECURITY.md)
 - [Citation Metadata](CITATION.cff)
 - [Support](SUPPORT.md)
@@ -291,20 +292,6 @@ Main CI benchmark-smoke runs now also emit a compact benchmark summary table in 
 When needed, `require_live_smoke_gate=true` enforces live-smoke execution as a mandatory policy gate for that release-readiness run.
 CI benchmark-smoke now also runs advisory threshold evaluation from `samples/benchmarks/benchmark-thresholds.json` and publishes the threshold summary alongside benchmark artifacts.
 Release-readiness benchmark rails now support `benchmark_threshold_mode` (`advisory` or `enforced`) plus explicit threshold profile path selection.
-
-## Extraction From MicroPhoenix
-
-### Kept
-
-- `core → domain → application → infrastructure → presentation` layer discipline
-- Token-based DI without magic reflection
-- Explicit bootstrap composition root
-- Use-case orchestration over controller-heavy logic
-- Port/adapter seams for external libraries
-
-### Deferred
-
-- Multi-agent orchestration, event sourcing, MCP servers, vector-memory, knowledge-graph
 
 ## Stack
 

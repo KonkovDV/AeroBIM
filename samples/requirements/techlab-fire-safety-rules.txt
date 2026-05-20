@@ -1,0 +1,7 @@
+# rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text
+REQ-FIRE-001|ifc-property|IFCWALL|ALL|Pset_WallCommon|FireRating|eq|REI60||Противопожарные стены — REI60 по СП 2.13130.2020
+REQ-FIRE-002|ifc-property|IFCDOOR|ALL|Pset_DoorCommon|FireRating|eq|EI30||Двери эвакуационных выходов — EI30
+REQ-FIRE-003|ifc-property|IFCSLAB|ALL|Pset_SlabCommon|FireRating|eq|REI60||Перекрытия — REI60
+REQ-FIRE-004|ifc-property|IFCWINDOW|ALL|Pset_WindowCommon|FireRating|eq|E30||Окна в противопожарных преградах — E30
+REQ-FIRE-005|ifc-quantity|IFCSPACE|ALL|Qto_SpaceBaseQuantities|NetFloorArea|lte|150|m2|Площадь помещений для эвакуации не более 150 м2
+REQ-FIRE-006|ifc-property|IFCSTAIR|ALL|Pset_StairCommon|FireRating|eq|REI60||Лестничные клетки — REI60

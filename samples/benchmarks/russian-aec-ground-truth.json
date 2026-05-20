@@ -1,0 +1,281 @@
+{
+  "schema_version": "1.1.0",
+  "description": "Russian AEC fixture ground-truth for extraction quality benchmark (10 fixtures, 50 requirements)",
+  "fixtures": [
+    {
+      "fixture_id": "russian-wall-thermal",
+      "source_path": "samples/requirements/russian-fixture-wall-thermal.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "architecture",
+      "ground_truth_requirements": [
+        {
+          "rule_id": "R-WALL-THERMAL-01",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "ThermalTransmittance",
+          "expected_value": "3.5",
+          "unit": "m2K/W",
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-WALL-THERMAL-02",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "Thickness",
+          "expected_value": "380",
+          "unit": "mm",
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-WALL-THERMAL-03",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_MaterialCommon",
+          "property_name": "Density",
+          "expected_value": "80",
+          "unit": "kg/m3",
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-WALL-THERMAL-04",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_MaterialThermal",
+          "property_name": "ThermalConductivity",
+          "expected_value": "0.042",
+          "unit": "W/mK",
+          "operator": "LE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-WALL-THERMAL-05",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "FireRating",
+          "expected_value": "K0",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        }
+      ]
+    },
+    {
+      "fixture_id": "russian-column-load",
+      "source_path": "samples/requirements/russian-fixture-column-load.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "structure",
+      "ground_truth_requirements": [
+        {
+          "rule_id": "R-COL-LOAD-01",
+          "ifc_entity": "IfcColumn",
+          "property_set": "Pset_ConcreteElementGeneral",
+          "property_name": "ConcreteStrengthClass",
+          "expected_value": "C30/37",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-COL-LOAD-02",
+          "ifc_entity": "IfcColumn",
+          "property_set": "Pset_ColumnCommon",
+          "property_name": "LoadBearing",
+          "expected_value": "true",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-COL-LOAD-03",
+          "ifc_entity": "IfcColumn",
+          "property_set": "Pset_ReinforcementBarPitch",
+          "property_name": "BarDiameter",
+          "expected_value": "20",
+          "unit": "mm",
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-COL-LOAD-04",
+          "ifc_entity": "IfcColumn",
+          "property_set": "Pset_MaterialCommon",
+          "property_name": "Density",
+          "expected_value": "2500",
+          "unit": "kg/m3",
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-COL-LOAD-05",
+          "ifc_entity": "IfcColumn",
+          "property_set": "Pset_CoveringCommon",
+          "property_name": "CoveringThickness",
+          "expected_value": "40",
+          "unit": "mm",
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        }
+      ]
+    },
+    {
+      "fixture_id": "russian-fire-rating",
+      "source_path": "samples/requirements/russian-fixture-fire-rating.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "fire-safety",
+      "ground_truth_requirements": [
+        {
+          "rule_id": "R-FIRE-01",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "FireRating",
+          "expected_value": "REI180",
+          "unit": null,
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-FIRE-02",
+          "ifc_entity": "IfcDoor",
+          "property_set": "Pset_DoorCommon",
+          "property_name": "FireRating",
+          "expected_value": "EI30",
+          "unit": null,
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-FIRE-03",
+          "ifc_entity": "IfcSlab",
+          "property_set": "Pset_SlabCommon",
+          "property_name": "FireRating",
+          "expected_value": "REI120",
+          "unit": null,
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-FIRE-04",
+          "ifc_entity": "IfcWindow",
+          "property_set": "Pset_WindowCommon",
+          "property_name": "FireRating",
+          "expected_value": "E30",
+          "unit": null,
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "R-FIRE-05",
+          "ifc_entity": "IfcStair",
+          "property_set": "Pset_StairCommon",
+          "property_name": "FireRating",
+          "expected_value": "REI150",
+          "unit": null,
+          "operator": "GE",
+          "rule_scope": "ifc-property"
+        }
+      ]
+    },
+    {
+      "fixture_id": "russian-slab-span",
+      "source_path": "samples/requirements/russian-fixture-slab-span.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "structure",
+      "ground_truth_requirements": [
+        {"rule_id": "R-SLAB-01", "ifc_entity": "IfcSlab", "property_set": "Pset_SlabCommon", "property_name": "FireRating", "expected_value": "REI90", "unit": null, "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-SLAB-02", "ifc_entity": "IfcSlab", "property_set": "Pset_SlabCommon", "property_name": "Thickness", "expected_value": "200", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-SLAB-03", "ifc_entity": "IfcSlab", "property_set": "Pset_ConcreteElementGeneral", "property_name": "ConcreteStrengthClass", "expected_value": "C25/30", "unit": null, "operator": "EQ", "rule_scope": "ifc-property"},
+        {"rule_id": "R-SLAB-04", "ifc_entity": "IfcSlab", "property_set": "Pset_SlabCommon", "property_name": "LoadBearing", "expected_value": "5", "unit": "kN/m2", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-SLAB-05", "ifc_entity": "IfcSlab", "property_set": "Pset_CoveringCommon", "property_name": "CoveringThickness", "expected_value": "25", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"}
+      ]
+    },
+    {
+      "fixture_id": "russian-roof-thermal",
+      "source_path": "samples/requirements/russian-fixture-roof-thermal.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "architecture",
+      "ground_truth_requirements": [
+        {"rule_id": "R-ROOF-01", "ifc_entity": "IfcRoof", "property_set": "Pset_RoofCommon", "property_name": "ThermalTransmittance", "expected_value": "4.2", "unit": "m2K/W", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-ROOF-02", "ifc_entity": "IfcRoof", "property_set": "Pset_RoofCommon", "property_name": "Thickness", "expected_value": "150", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-ROOF-03", "ifc_entity": "IfcRoof", "property_set": "Pset_MaterialCommon", "property_name": "Density", "expected_value": "40", "unit": "kg/m3", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-ROOF-04", "ifc_entity": "IfcRoof", "property_set": "Pset_MaterialThermal", "property_name": "ThermalConductivity", "expected_value": "0.040", "unit": "W/mK", "operator": "LE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-ROOF-05", "ifc_entity": "IfcRoof", "property_set": "Pset_RoofCommon", "property_name": "CombustibilityClass", "expected_value": "K0", "unit": null, "operator": "EQ", "rule_scope": "ifc-property"}
+      ]
+    },
+    {
+      "fixture_id": "russian-foundation",
+      "source_path": "samples/requirements/russian-fixture-foundation.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "structure",
+      "ground_truth_requirements": [
+        {"rule_id": "R-FOUND-01", "ifc_entity": "IfcFooting", "property_set": "Pset_ConcreteElementGeneral", "property_name": "ConcreteStrengthClass", "expected_value": "C25/30", "unit": null, "operator": "EQ", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FOUND-02", "ifc_entity": "IfcFooting", "property_set": "Pset_FootingCommon", "property_name": "Thickness", "expected_value": "400", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FOUND-03", "ifc_entity": "IfcFooting", "property_set": "Pset_CoveringCommon", "property_name": "CoveringThickness", "expected_value": "50", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FOUND-04", "ifc_entity": "IfcFooting", "property_set": "Pset_MaterialCommon", "property_name": "Density", "expected_value": "2400", "unit": "kg/m3", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FOUND-05", "ifc_entity": "IfcFooting", "property_set": "Pset_ReinforcementBarPitch", "property_name": "BarDiameter", "expected_value": "16", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"}
+      ]
+    },
+    {
+      "fixture_id": "russian-facade-glazing",
+      "source_path": "samples/requirements/russian-fixture-facade-glazing.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "architecture",
+      "ground_truth_requirements": [
+        {"rule_id": "R-FACADE-01", "ifc_entity": "IfcWindow", "property_set": "Pset_WindowCommon", "property_name": "FireRating", "expected_value": "E30", "unit": null, "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FACADE-02", "ifc_entity": "IfcWindow", "property_set": "Pset_WindowCommon", "property_name": "Thickness", "expected_value": "32", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FACADE-03", "ifc_entity": "IfcWindow", "property_set": "Pset_WindowCommon", "property_name": "ThermalTransmittance", "expected_value": "0.75", "unit": "m2K/W", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FACADE-04", "ifc_entity": "IfcWindow", "property_set": "Pset_WindowCommon", "property_name": "CombustibilityClass", "expected_value": "K0", "unit": null, "operator": "EQ", "rule_scope": "ifc-property"},
+        {"rule_id": "R-FACADE-05", "ifc_entity": "IfcWindow", "property_set": "Pset_MaterialThermal", "property_name": "ThermalConductivity", "expected_value": "1.2", "unit": "W/mK", "operator": "LE", "rule_scope": "ifc-property"}
+      ]
+    },
+    {
+      "fixture_id": "russian-stair-evac",
+      "source_path": "samples/requirements/russian-fixture-stair-evac.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "fire-safety",
+      "ground_truth_requirements": [
+        {"rule_id": "R-STAIR-01", "ifc_entity": "IfcWall", "property_set": "Pset_WallCommon", "property_name": "FireRating", "expected_value": "REI150", "unit": null, "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-STAIR-02", "ifc_entity": "IfcDoor", "property_set": "Pset_DoorCommon", "property_name": "FireRating", "expected_value": "EI60", "unit": null, "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-STAIR-03", "ifc_entity": "IfcStair", "property_set": "Pset_StairCommon", "property_name": "Width", "expected_value": "1200", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-STAIR-04", "ifc_entity": "IfcStair", "property_set": "Pset_ConcreteElementGeneral", "property_name": "ConcreteStrengthClass", "expected_value": "C25/30", "unit": null, "operator": "EQ", "rule_scope": "ifc-property"},
+        {"rule_id": "R-STAIR-05", "ifc_entity": "IfcStair", "property_set": "Pset_CoveringCommon", "property_name": "CoveringThickness", "expected_value": "30", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"}
+      ]
+    },
+    {
+      "fixture_id": "russian-ventilation-space",
+      "source_path": "samples/requirements/russian-fixture-ventilation-space.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "mep",
+      "ground_truth_requirements": [
+        {"rule_id": "R-MEP-01", "ifc_entity": "IfcSpace", "property_set": "Pset_SpaceCommon", "property_name": "GrossFloorArea", "expected_value": "12", "unit": "m2", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-MEP-02", "ifc_entity": "IfcSpace", "property_set": "Pset_SpaceCommon", "property_name": "FireRating", "expected_value": "REI60", "unit": null, "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-MEP-03", "ifc_entity": "IfcSpace", "property_set": "Pset_SpaceCommon", "property_name": "Height", "expected_value": "2800", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-MEP-04", "ifc_entity": "IfcSpace", "property_set": "Pset_SpaceCommon", "property_name": "FireRating", "expected_value": "K0", "unit": null, "operator": "EQ", "rule_scope": "ifc-property"},
+        {"rule_id": "R-MEP-05", "ifc_entity": "IfcSpace", "property_set": "Pset_SpaceCommon", "property_name": "ThermalTransmittance", "expected_value": "3.0", "unit": "m2K/W", "operator": "GE", "rule_scope": "ifc-property"}
+      ]
+    },
+    {
+      "fixture_id": "russian-beam-steel",
+      "source_path": "samples/requirements/russian-fixture-beam-steel.txt",
+      "source_kind": "technical-specification",
+      "language": "ru",
+      "discipline": "structure",
+      "ground_truth_requirements": [
+        {"rule_id": "R-BEAM-01", "ifc_entity": "IfcBeam", "property_set": "Pset_BeamCommon", "property_name": "SteelGrade", "expected_value": "C345", "unit": null, "operator": "EQ", "rule_scope": "ifc-property"},
+        {"rule_id": "R-BEAM-02", "ifc_entity": "IfcBeam", "property_set": "Pset_BeamCommon", "property_name": "Height", "expected_value": "300", "unit": "mm", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-BEAM-03", "ifc_entity": "IfcBeam", "property_set": "Pset_BeamCommon", "property_name": "FireRating", "expected_value": "REI45", "unit": null, "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-BEAM-04", "ifc_entity": "IfcBeam", "property_set": "Pset_BeamCommon", "property_name": "CoatingThickness", "expected_value": "80", "unit": "um", "operator": "GE", "rule_scope": "ifc-property"},
+        {"rule_id": "R-BEAM-05", "ifc_entity": "IfcBeam", "property_set": "Pset_BeamCommon", "property_name": "LoadBearing", "expected_value": "15", "unit": "kN/m", "operator": "GE", "rule_scope": "ifc-property"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "presentation": {
+    "panel": "shared",
+    "reveal": "always",
+    "clear": true,
+    "close": false,
+    "showReuseMessage": false
+  },
+  "tasks": [
+    {
+      "label": "AeroBIM: backend quality gate",
+      "type": "shell",
+      "command": "python -m ruff format --check src tests; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m ruff check src tests; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m mypy src; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m pytest tests -q",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "AeroBIM: extraction quality",
+      "type": "shell",
+      "command": "python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "AeroBIM: benchmark report",
+      "type": "shell",
+      "command": "python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "AeroBIM: commit (single author, no Co-authored-by)",
+      "type": "shell",
+      "command": "powershell -ExecutionPolicy Bypass -File ../scripts/git_commit.ps1 -Message \"${input:commitMessage}\"",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "commitMessage",
+      "type": "promptString",
+      "description": "Conventional commit message (without Co-authored-by)",
+      "default": "docs: "
+    }
+  ]
+}

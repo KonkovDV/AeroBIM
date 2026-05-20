@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import DrawingEvidencePanel from "./DrawingEvidencePanel";
 import type { DrawingAsset, ValidationIssue, ValidationReport } from "../lib/types";
@@ -47,7 +47,6 @@ function buildReport(): ValidationReport {
   return {
     report_id: "r".repeat(32),
     request_id: "req-001",
-    ifc_path: "var/reports/model.ifc",
     created_at: "2026-04-12T12:00:00Z",
     requirements: [],
     issues: [],
@@ -91,5 +90,42 @@ describe("DrawingEvidencePanel", () => {
 
     expect(screen.getByRole("img", { name: /drawing evidence preview for a-101/i })).toBeTruthy();
     expect(screen.getByText(/plain drawing-preview mode/i)).toBeTruthy();
+  });
+
+  it("renders a problem-zone overlay rectangle after the preview image loads", async () => {
+    const { container } = render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
+    const image = screen.getByRole("img", { name: /drawing evidence preview for a-102/i });
+
+    Object.defineProperty(image, "naturalWidth", { configurable: true, value: 320 });
+    Object.defineProperty(image, "naturalHeight", { configurable: true, value: 200 });
+    fireEvent.load(image);
+
+    await waitFor(() => {
+      const overlay = container.querySelector(".drawing-evidence-rect");
+      expect(overlay).toBeTruthy();
+      expect((overlay as HTMLElement).style.width).not.toBe("");
+      expect((overlay as HTMLElement).style.height).not.toBe("");
+    });
+  });
+
+  it("explains missing overlay payload when problem zone lacks rectangle fields", () => {
+    render(
+      <DrawingEvidencePanel
+        report={buildReport()}
+        activeIssue={buildIssue({
+          problem_zone: {
+            sheet_id: "A-102",
+            page_number: 2,
+            x: null,
+            y: null,
+            width: null,
+            height: null,
+            element_guid: null,
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText(/does not yet have a complete rectangle payload/i)).toBeTruthy();
   });
 });
