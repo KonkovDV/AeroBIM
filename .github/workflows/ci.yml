@@ -88,6 +88,14 @@ jobs:
             --warmup-iterations 0 \
             --storage-dir ./var/reports-ci-smoke-stress \
             --output ../artifacts/ci-benchmark-smoke/project-package-stress-multisource.json
+      - name: Run pilot Moscow benchmark pack
+        run: |
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --storage-dir ./var/reports-ci-smoke-pilot-moscow \
+            --output ../artifacts/ci-benchmark-smoke/project-package-pilot-moscow-v1.json
       - name: Build benchmark-smoke summary
         run: |
           python - <<'PY'
@@ -160,6 +168,30 @@ jobs:
             artifacts/ci-benchmark-smoke/benchmark-summary.md
             artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md
             artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md
+
+  extraction-quality:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev,vision]"
+      - name: Evaluate Russian AEC extraction quality (advisory gate)
+        run: |
+          mkdir -p ../artifacts/extraction-quality
+          python -m aerobim.tools.evaluate_extraction \
+            --output ../artifacts/extraction-quality/russian-aec-extraction.json \
+            --min-macro-f1 0.70
+      - name: Upload extraction-quality artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extraction-quality-artifacts
+          path: artifacts/extraction-quality/*.json
 
   openapi-contract:
     runs-on: ubuntu-latest

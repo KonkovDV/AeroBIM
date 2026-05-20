@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use AeroBIM in research, compliance validation, or benchmarking, please cite it as below."
+message: "If you use AeroBIM in research or compliance validation, please cite the repository and commit SHA used for your run."
 title: "AeroBIM"
 type: software
 authors:
@@ -8,15 +8,19 @@ license: MIT
 repository-code: "https://github.com/KonkovDV/AeroBIM"
 url: "https://github.com/KonkovDV/AeroBIM"
 version: "0.1.0"
+date-released: 2026-05-20
 keywords:
   - bim
   - ifc
   - ids
   - bcf
   - validation
-  - digital-engineering
+  - openbim
+  - building-information-modeling
   - compliance
 abstract: >-
-  AeroBIM is an open-source cross-modal BIM validation platform that checks IFC
-  models against technical requirements, drawings, calculation documents, and IDS
-  packages in a deterministic pipeline with provenance-aware reporting.
+  AeroBIM is an open-source platform for deterministic cross-modal BIM validation.
+  It checks IFC models against technical requirements, drawings, calculation
+  documents, and IDS specifications in one pipeline with provenance-aware JSON,
+  HTML, and BCF exports. A reproducible Russian AEC extraction benchmark (10
+  fixtures, 50 requirements) is enforced in CI (macro F1 >= 0.70).

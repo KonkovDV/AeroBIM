@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from aerobim.application.use_cases.analyze_project_package import (
+from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
 )
 

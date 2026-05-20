@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.domain.models import (
+    ConflictKind,
     DrawingAnnotation,
     DrawingSource,
     FindingCategory,
@@ -112,6 +113,7 @@ class CrossDocumentContradictionTests(unittest.TestCase):
 
         issue = cross_issues[0]
         self.assertEqual(issue.severity, Severity.WARNING)
+        self.assertEqual(issue.conflict_kind, ConflictKind.HARD_CONFLICT)
         self.assertIn("contradiction", issue.message.lower())
         self.assertIn("REI60", issue.message)
         self.assertIn("REI90", issue.message)

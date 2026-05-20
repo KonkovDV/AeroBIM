@@ -4,6 +4,8 @@
 
 Provide a narrow-first runtime check for the standalone stack.
 
+For the Moscow pilot package, see [docs/pilot-package-playbook-2026.md](../docs/pilot-package-playbook-2026.md) and pre-pilot gates in [docs/pilot-pre-pilot-gates-2026.md](../docs/pilot-pre-pilot-gates-2026.md).
+
 Note: the frontend repo now has App-level automated regression coverage for the same review-shell chain. The steps below remain the runtime verification path against a live persisted backend report.
 
 ## One-Command Live Smoke
@@ -15,7 +17,7 @@ cd backend
 python -m aerobim.tools.run_live_review_smoke
 ```
 
-The command boots an isolated backend/frontend pair, seeds the deterministic report, verifies core review-shell DOM state, captures browser artifacts, and prints a JSON payload with the seeded report, smoke checks, and screenshot/trace paths.
+The command boots an isolated backend/frontend pair, seeds the deterministic report, verifies core review-shell DOM state (including **2D `ProblemZone` overlay** visibility — pilot wave P2.4), captures browser artifacts, and prints a JSON payload with the seeded report, smoke checks, and screenshot/trace paths.
 
 Inside the parent VS Code workspace, the same rail is now available as the `process: smoke:live-review` task.
 

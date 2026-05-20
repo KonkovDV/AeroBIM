@@ -12,11 +12,17 @@ from uuid import uuid4
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.domain.models import (
+    ConflictKind,
     DrawingAsset,
+    FindingCategory,
+    ParsedRequirement,
+    ProblemZone,
     Severity,
+    SourceKind,
     ValidationIssue,
     ValidationReport,
     ValidationSummary,
+    compute_issue_priority,
 )
 
 _TEST_CORS_ORIGINS = (
@@ -58,6 +64,7 @@ def _make_test_container(api_bearer_token: str | None = None):
     from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
     from aerobim.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
     from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+    from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
     from aerobim.infrastructure.adapters.structured_drawing_analyzer import (
         StructuredDrawingAnalyzer,
     )
@@ -121,6 +128,7 @@ def _make_test_container(api_bearer_token: str | None = None):
             ifc_validator=c.resolve(Tokens.IFC_VALIDATOR),
             remark_generator=c.resolve(Tokens.REMARK_GENERATOR),
             audit_report_store=c.resolve(Tokens.AUDIT_REPORT_STORE),
+            external_evidence_verifier=OpenRebarEvidenceVerifier(),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -345,6 +353,45 @@ class ApiReportEndpointTests(unittest.TestCase):
         response = self.client.get("/v1/reports/00000000000000000000000000000000")
         self.assertEqual(response.status_code, 404)
 
+    def test_get_report_hides_internal_storage_fields(self) -> None:
+        report_id = "d" * 32
+        report = ValidationReport(
+            report_id=report_id,
+            request_id=f"req-{report_id}",
+            ifc_path=Path("internal/model.ifc"),
+            ifc_object_key="aerobim/ifc-sources/report-1/model.ifc",
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=0,
+                error_count=0,
+                warning_count=0,
+                passed=True,
+            ),
+            drawing_assets=(
+                DrawingAsset(
+                    asset_id="asset-1",
+                    sheet_id="A-101",
+                    page_number=1,
+                    stored_filename="asset-1.png",
+                    object_key="aerobim/drawing-assets/report-1/asset-1.png",
+                    source_path=Path("internal/asset-1.png"),
+                ),
+            ),
+        )
+        self.store.save(report)
+
+        response = self.client.get(f"/v1/reports/{report_id}")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertNotIn("ifc_path", payload)
+        self.assertNotIn("ifc_object_key", payload)
+        self.assertNotIn("object_key", payload["drawing_assets"][0])
+        self.assertNotIn("source_path", payload["drawing_assets"][0])
+
     def test_export_nonexistent_report_returns_404(self) -> None:
         response = self.client.get("/v1/reports/00000000000000000000000000000000/export/json")
         self.assertEqual(response.status_code, 404)
@@ -503,6 +550,29 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         target_fixture = fixture_dir / "wall-fire-rating-rei60.ifc"
         target_fixture.write_bytes(source_fixture.read_bytes())
         return str(Path("fixtures") / "wall-fire-rating-rei60.ifc")
+
+    def test_analyze_project_package_persists_iso19650_context_fields(self) -> None:
+        ifc_path = self._write_ifc_fixture()
+
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": ifc_path,
+                "requirement_text": "SAM-001|IFCWALL|Pset_WallCommon|FireRating|REI60",
+                "project_name": "Pilot Moscow",
+                "stage": "S2",
+                "information_container_id": "cde-pilot-moscow-001",
+                "revision": "P-01",
+                "doc_status": "Shared",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload.get("stage"), "S2")
+        self.assertEqual(payload.get("information_container_id"), "cde-pilot-moscow-001")
+        self.assertEqual(payload.get("revision"), "P-01")
+        self.assertEqual(payload.get("doc_status"), "Shared")
 
     def test_analyze_project_package_includes_openrebar_fallback_warning(self) -> None:
         ifc_path = self._write_ifc_fixture()
@@ -682,7 +752,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertEqual(fallback_issues[0].get("severity"), "error")
 
     def test_reinforcement_digest_endpoint_returns_expected_digest(self) -> None:
-        from aerobim.application.use_cases.analyze_project_package import (
+        from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
             build_openrebar_provenance_digest,
         )
 
@@ -967,6 +1037,238 @@ class ApiHtmlExportTests(unittest.TestCase):
             "&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;",
         )
         self.assertEqual(_esc("A & B"), "A &amp; B")
+
+    def test_html_export_shows_priority_column_and_category_sections(self) -> None:
+        """Verify priority score and category grouping are present."""
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-html-rich",
+            ifc_path=Path("rich.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(
+                ValidationIssue(
+                    rule_id="RULE-HIGH-001",
+                    severity=Severity.ERROR,
+                    message="High priority issue",
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    element_guid="guid-high",
+                    expected_value="REI60",
+                    observed_value="REI30",
+                    unit="",
+                    conflict_kind=ConflictKind.HARD_CONFLICT,
+                    priority=55,
+                ),
+                ValidationIssue(
+                    rule_id="RULE-LOW-001",
+                    severity=Severity.INFO,
+                    message="Low priority issue",
+                    category=FindingCategory.IFC_VALIDATION,
+                    element_guid="guid-low",
+                    priority=10,
+                ),
+            ),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=2,
+                error_count=1,
+                warning_count=0,
+                passed=False,
+            ),
+        )
+        self.store.save(report)
+        html_resp = self.client.get(f"/v1/reports/{report.report_id}/export/html")
+        self.assertEqual(html_resp.status_code, 200)
+        text = html_resp.text
+        self.assertIn("Priority", text)
+        self.assertIn("55", text)
+        self.assertIn("Cross-Document Contradictions", text)
+        self.assertIn("IFC Model Validation", text)
+        self.assertIn("REI60", text)
+        self.assertIn("REI30", text)
+
+    def test_html_export_escapes_problem_zone_content(self) -> None:
+        """Verify problem zone coordinates and sheet are escaped."""
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-html-pz",
+            ifc_path=Path("pz.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(
+                ValidationIssue(
+                    rule_id="RULE-PZ-001",
+                    severity=Severity.WARNING,
+                    message="Zone issue",
+                    element_guid="guid-pz",
+                    problem_zone=ProblemZone(
+                        sheet_id="A-101 <script>",
+                        x=120.5,
+                        y=80.0,
+                    ),
+                    priority=25,
+                ),
+            ),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=1,
+                error_count=0,
+                warning_count=1,
+                passed=False,
+            ),
+        )
+        self.store.save(report)
+        html_resp = self.client.get(f"/v1/reports/{report.report_id}/export/html")
+        self.assertEqual(html_resp.status_code, 200)
+        text = html_resp.text
+        self.assertIn("A-101 &lt;script&gt;", text)
+        self.assertNotIn("<script>", text)
+
+
+class IssuePriorityScoringTests(unittest.TestCase):
+    """Tests for compute_issue_priority scoring matrix."""
+
+    def test_error_cross_document_hard_conflict_is_highest(self) -> None:
+        issue = ValidationIssue(
+            rule_id="R1",
+            severity=Severity.ERROR,
+            message="msg",
+            category=FindingCategory.CROSS_DOCUMENT,
+            conflict_kind=ConflictKind.HARD_CONFLICT,
+        )
+        self.assertEqual(compute_issue_priority(issue), 55)
+
+    def test_warning_ids_validation_no_conflict_is_mid(self) -> None:
+        issue = ValidationIssue(
+            rule_id="R2",
+            severity=Severity.WARNING,
+            message="msg",
+            category=FindingCategory.IDS_VALIDATION,
+        )
+        self.assertEqual(compute_issue_priority(issue), 30)
+
+    def test_info_ifc_validation_is_lowest(self) -> None:
+        issue = ValidationIssue(
+            rule_id="R3",
+            severity=Severity.INFO,
+            message="msg",
+            category=FindingCategory.IFC_VALIDATION,
+        )
+        self.assertEqual(compute_issue_priority(issue), 10)
+
+    def test_default_issue_is_zero(self) -> None:
+        issue = ValidationIssue(rule_id="R4", severity=Severity.INFO, message="msg")
+        self.assertEqual(compute_issue_priority(issue), 10)
+
+
+class ConfidenceScoringTests(unittest.TestCase):
+    """Tests for deterministic confidence scoring."""
+
+    def test_structured_text_full_columns_is_highest(self) -> None:
+        req = ParsedRequirement(
+            rule_id="R1",
+            ifc_entity="IfcWall",
+            property_set="Pset_WallCommon",
+            property_name="LoadBearing",
+            expected_value="true",
+            unit="m",
+            source_kind=SourceKind.STRUCTURED_TEXT,
+        )
+        from aerobim.application.services.confidence_scorer import score_confidence
+
+        self.assertAlmostEqual(score_confidence(req), 1.0, places=2)
+
+    def test_technical_specification_is_lower(self) -> None:
+        req = ParsedRequirement(
+            rule_id="R2",
+            expected_value="REI60",
+            source_kind=SourceKind.TECHNICAL_SPECIFICATION,
+        )
+        from aerobim.application.services.confidence_scorer import score_confidence
+
+        score = score_confidence(req)
+        self.assertLess(score, 0.85)
+        self.assertGreaterEqual(score, 0.5)
+
+    def test_drawing_annotation_without_value_is_lowest(self) -> None:
+        req = ParsedRequirement(
+            rule_id="R3",
+            source_kind=SourceKind.DRAWING,
+        )
+        from aerobim.application.services.confidence_scorer import score_confidence
+
+        score = score_confidence(req)
+        self.assertLess(score, 0.7)
+
+    def test_missing_expected_value_penalty_applies(self) -> None:
+        req = ParsedRequirement(
+            rule_id="R4",
+            ifc_entity="IfcWall",
+            property_set="Pset_WallCommon",
+            property_name="LoadBearing",
+            source_kind=SourceKind.STRUCTURED_TEXT,
+        )
+        from aerobim.application.services.confidence_scorer import score_confidence
+
+        score = score_confidence(req)
+        self.assertLess(score, 1.0)
+        self.assertGreaterEqual(score, 0.8)
+
+
+class MetadataPropagationTests(unittest.TestCase):
+    """Tests for source_id, evidence_modality, confidence roundtrip."""
+
+    def test_source_id_evidence_modality_confidence_roundtrip_through_store(self) -> None:
+        import tempfile
+
+        from aerobim.domain.models import (
+            ConflictKind,
+            FindingCategory,
+            Severity,
+            ValidationIssue,
+            ValidationReport,
+        )
+        from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemAuditStore(Path(tmp))
+            report = ValidationReport(
+                report_id="rpt-meta",
+                request_id="req-meta",
+                ifc_path=Path("sample.ifc"),
+                created_at="2026-04-09T12:00:00Z",
+                requirements=(),
+                issues=(
+                    ValidationIssue(
+                        rule_id="META-001",
+                        severity=Severity.WARNING,
+                        message="Meta test",
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        conflict_kind=ConflictKind.UNIT_MISMATCH,
+                        source_id="tz-v1",
+                        evidence_modality="technical-specification",
+                        confidence=0.85,
+                    ),
+                ),
+                summary=ValidationSummary(
+                    requirement_count=0,
+                    issue_count=0,
+                    error_count=0,
+                    warning_count=0,
+                    passed=True,
+                ),
+            )
+
+            store.save(report)
+            loaded = store.get("rpt-meta")
+
+            self.assertIsNotNone(loaded)
+            assert loaded is not None
+            self.assertEqual(len(loaded.issues), 1)
+            issue = loaded.issues[0]
+            self.assertEqual(issue.source_id, "tz-v1")
+            self.assertEqual(issue.evidence_modality, "technical-specification")
+            self.assertEqual(issue.confidence, 0.85)
 
 
 class ApiMalformedInputTests(unittest.TestCase):

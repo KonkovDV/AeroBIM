@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 import subprocess
+import sys
 from datetime import UTC, datetime
 
 
@@ -23,10 +24,12 @@ def run_cmd(cmd):
 def main():
     print("Generating AeroBIM runtime benchmark report v1...")
 
+    python = sys.executable
     commands = [
-        "python -m pytest tests -q",
-        "python -m aerobim.tools.seed_smoke_report",
-        "python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0",
+        f"{python} -m pytest tests -q",
+        f"{python} -m aerobim.tools.seed_smoke_report",
+        f"{python} -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0",
+        f"{python} -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70",
     ]
 
     gates = {}

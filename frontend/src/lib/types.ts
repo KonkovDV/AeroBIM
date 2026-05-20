@@ -59,6 +59,7 @@ export interface ValidationIssue {
     title: string;
     body: string;
   } | null;
+  conflict_kind?: string | null;
 }
 
 export interface DrawingAnnotation {
@@ -100,13 +101,18 @@ export interface ValidationSummary {
   generated_remark_count: number;
 }
 
+export type DocStatus = "WIP" | "Shared" | "Published" | "Archived";
+
 export interface ValidationReport {
   report_id: string;
   request_id: string;
-  ifc_path: string;
   created_at: string;
   project_name?: string | null;
   discipline?: string | null;
+  stage?: string | null;
+  information_container_id?: string | null;
+  revision?: string | null;
+  doc_status?: DocStatus | null;
   requirements: ParsedRequirement[];
   issues: ValidationIssue[];
   summary: ValidationSummary;
