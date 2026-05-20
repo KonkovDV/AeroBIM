@@ -1,0 +1,61 @@
+{
+  "project": "AeroBIM",
+  "artifact_type": "runtime_evidence_report",
+  "generated_at": "2026-05-20T21:12:07.253785+00:00",
+  "version": "v1",
+  "optional_adapter_status": {
+    "ifcclash": false,
+    "docling": false
+  },
+  "command_bundle": [
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m pytest tests -q",
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m aerobim.tools.seed_smoke_report",
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0",
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70"
+  ],
+  "metrics": {
+    "commands_passed": 4,
+    "commands_total": 4
+  },
+  "gates": {
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m pytest tests -q": {
+      "passed": true,
+      "details": "........................................................................ [ 24%]\n........................................................................ [ 48%]\n........................................................................ [ 73%]\n.........ss............................................................. [ 97%]\n......                                                                   [100%]\n292 passed, 2 skipped in 3.80s"
+    },
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m aerobim.tools.seed_smoke_report": {
+      "passed": true,
+      "details": "{\n  \"report_id\": \"99999999999999999999999999999999\",\n  \"request_id\": \"runtime-smoke-seed\",\n  \"project_name\": \"Smoke Demo Project\",\n  \"discipline\": \"architecture\",\n  \"ifc_path\": \"C:\\\\plans\\\\AeroBIM\\\\backend\\\\var\\\\reports\\\\models\\\\smoke-review.ifc\",\n  \"drawing_asset_ids\": [\n    \"smoke-drawing-page-001\",\n    \"smoke-drawing-page-002\"\n  ],\n  \"issue_rule_ids\": [\n    \"SMOKE-DRAW-001\"\n  ],\n  \"clash_pairs\": [\n    {\n      \"element_a_guid\": \"0aKrY0eXn00Qu9HBZ7Ao4t\",\n      \"element_b_guid\": \"1XYVUKGoDDbREfVxRKsHkl\"\n    }\n  ],\n  \"suggested_checks\": {\n    \"report\": \"/v1/reports/99999999999999999999999999999999\",\n    \"ifc_source\": \"/v1/reports/99999999999999999999999999999999/source/ifc\",\n    \"drawing_preview\": \"/v1/reports/99999999999999999999999999999999/drawing-assets/smoke-drawing-page-001/preview\",\n    \"html_export\": \"/v1/reports/99999999999999999999999999999999/export/html\",\n    \"bcf_export\": \"/v1/reports/99999999999999999999999999999999/export/bcf\"\n  }\n}"
+    },
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0": {
+      "passed": true,
+      "details": "{\n  \"iterations\": 1,\n  \"warmup_iterations\": 0,\n  \"measured_runs\": [\n    {\n      \"iteration\": 1,\n      \"request_id\": \"benchmark-project-package-baseline-run-001\",\n      \"elapsed_ms\": 472.237,\n      \"report_id\": \"77364c0d9573416db99440cbbcf58f25\",\n      \"issue_count\": 12,\n      \"requirement_count\": 5,\n      \"project_name\": \"Benchmark Demo Project\",\n      \"discipline\": \"architecture\"\n    }\n  ],\n  \"summary\": {\n    \"min_ms\": 472.237,\n    \"max_ms\": 472.237,\n    \"avg_ms\": 472.237,\n    \"reports_per_second\": 2.118\n  },\n  \"artifact_type\": \"benchmark_project_package\",\n  \"schema_version\": \"1.0.0\",\n  \"generated_at\": \"2026-05-20T21:12:07.105262+00:00\",\n  \"benchmark_pack\": {\n    \"pack_id\": \"project-package-baseline\",\n    \"pack_version\": \"1.0.0\",\n    \"manifest_schema_version\": \"1.0.0\",\n    \"description\": \"Baseline multimodal project-package benchmark over representative IFC, IDS, narrative, calculation, and drawing fixtures.\"\n  },\n  \"pack_id\": \"project-package-baseline\",\n  \"pack_version\": \"1.0.0\",\n  \"description\": \"Baseline multimodal project-package benchmark over representative IFC, IDS, narrative, calculation, and drawing fixtures.\",\n  \"storage_dir\": \"C:\\\\plans\\\\AeroBIM\\\\backend\\\\var\\\\reports\"\n}"
+    },
+    "C:\\plans\\AeroBIM\\backend\\.venv-pilot\\Scripts\\python.exe -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70": {
+      "passed": true,
+      "details": "{\n  \"artifact_type\": \"extraction_quality_report\",\n  \"manifest\": \"C:\\\\plans\\\\AeroBIM\\\\samples\\\\benchmarks\\\\russian-aec-ground-truth.json\",\n  \"macro_precision\": 0.86,\n  \"macro_recall\": 0.86,\n  \"macro_f1\": 0.8600000000000001,\n  \"micro_precision\": 0.86,\n  \"micro_recall\": 0.86,\n  \"micro_f1\": 0.8599999999999999,\n  \"per_discipline\": {\n    \"architecture\": {\n      \"fixture_count\": 3.0,\n      \"macro_precision\": 0.7333333333333334,\n      \"macro_recall\": 0.7333333333333334,\n      \"macro_f1\": 0.7333333333333334\n    },\n    \"fire-safety\": {\n      \"fixture_count\": 2.0,\n      \"macro_precision\": 0.8,\n      \"macro_recall\": 0.8,\n      \"macro_f1\": 0.8000000000000002\n    },\n    \"mep\": {\n      \"fixture_count\": 1.0,\n      \"macro_precision\": 0.8,\n      \"macro_recall\": 0.8,\n      \"macro_f1\": 0.8000000000000002\n    },\n    \"structure\": {\n      \"fixture_count\": 4.0,\n      \"macro_precision\": 1.0,\n      \"macro_recall\": 1.0,\n      \"macro_f1\": 1.0\n    }\n  },\n  \"fixtures\": [\n    {\n      \"fixture_id\": \"russian-wall-thermal\",\n      \"true_positives\": 4,\n      \"false_positives\": 1,\n      \"false_negatives\": 1,\n      \"precision\": 0.8,\n      \"recall\": 0.8,\n      \"f1_score\": 0.8000000000000002\n    },\n    {\n      \"fixture_id\": \"russian-column-load\",\n      \"true_positives\": 5,\n      \"false_positives\": 0,\n      \"false_negatives\": 0,\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1_score\": 1.0\n    },\n    {\n      \"fixture_id\": \"russian-fire-rating\",\n      \"true_positives\": 4,\n      \"false_positives\": 1,\n      \"false_negatives\": 1,\n      \"precision\": 0.8,\n      \"recall\": 0.8,\n      \"f1_score\": 0.8000000000000002\n    },\n    {\n      \"fixture_id\": \"russian-slab-span\",\n      \"true_positives\": 5,\n      \"false_positives\": 0,\n      \"false_negatives\": 0,\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1_score\": 1.0\n    },\n    {\n      \"fixture_id\": \"russian-roof-thermal\",\n      \"true_positives\": 3,\n      \"false_positives\": 2,\n      \"false_negatives\": 2,\n      \"precision\": 0.6,\n      \"recall\": 0.6,\n      \"f1_score\": 0.6\n    },\n    {\n      \"fixture_id\": \"russian-foundation\",\n      \"true_positives\": 5,\n      \"false_positives\": 0,\n      \"false_negatives\": 0,\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1_score\": 1.0\n    },\n    {\n      \"fixture_id\": \"russian-facade-glazing\",\n      \"true_positives\": 4,\n      \"false_positives\": 1,\n      \"false_negatives\": 1,\n      \"precision\": 0.8,\n      \"recall\": 0.8,\n      \"f1_score\": 0.8000000000000002\n    },\n    {\n      \"fixture_id\": \"russian-stair-evac\",\n      \"true_positives\": 4,\n      \"false_positives\": 1,\n      \"false_negatives\": 1,\n      \"precision\": 0.8,\n      \"recall\": 0.8,\n      \"f1_score\": 0.8000000000000002\n    },\n    {\n      \"fixture_id\": \"russian-ventilation-space\",\n      \"true_positives\": 4,\n      \"false_positives\": 1,\n      \"false_negatives\": 1,\n      \"precision\": 0.8,\n      \"recall\": 0.8,\n      \"f1_score\": 0.8000000000000002\n    },\n    {\n      \"fixture_id\": \"russian-beam-steel\",\n      \"true_positives\": 5,\n      \"false_positives\": 0,\n      \"false_negatives\": 0,\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1_score\": 1.0\n    }\n  ]\n}"
+    }
+  },
+  "implemented_vs_planned_note": {
+    "implemented": [
+      "API layer",
+      "IFC validation",
+      "benchmarks",
+      "seed smoke"
+    ],
+    "planned": [
+      "Integration with external models",
+      "Fine-tuning pipelines"
+    ],
+    "non_claims": [
+      "No FT models deployed yet",
+      "No production serving yet"
+    ]
+  },
+  "verification": {
+    "tests": [
+      "pytest tests -q"
+    ],
+    "preflight": "not applicable",
+    "status": "APPROVED"
+  }
+}

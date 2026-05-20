@@ -2,7 +2,7 @@
 title: "AeroBIM Post-Pilot Fork 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-05-20"
+last_updated: "2026-05-21"
 tags: [aerobim, pilot, roadmap]
 ---
 
@@ -11,6 +11,8 @@ tags: [aerobim, pilot, roadmap]
 Decision tree after the 8–12 week pilot completes.
 
 Use the filled template in [`post-pilot-go-no-go-memo-2026.md`](post-pilot-go-no-go-memo-2026.md) before choosing a branch.
+
+**November 2026 decision:** select exactly one primary branch (A, B, or C). Branch B may run in parallel with a narrow A tranche only if funding explicitly requires both.
 
 ## Go / no-go inputs
 
