@@ -64,7 +64,9 @@ def _make_test_container(api_bearer_token: str | None = None):
     from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
     from aerobim.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
     from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
-    from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
+    from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
+        OpenRebarEvidenceVerifier,
+    )
     from aerobim.infrastructure.adapters.structured_drawing_analyzer import (
         StructuredDrawingAnalyzer,
     )

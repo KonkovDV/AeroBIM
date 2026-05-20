@@ -17,7 +17,9 @@ class Iso19650ContextTests(unittest.TestCase):
         request = ValidationRequest(
             request_id="iso-req-001",
             ifc_path=Path("sample.ifc"),
-            requirement_source=RequirementSource(text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"),
+            requirement_source=RequirementSource(
+                text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+            ),
             stage="S2",
             information_container_id="cde-container-001",
             revision="P-01",
@@ -29,8 +31,9 @@ class Iso19650ContextTests(unittest.TestCase):
         self.assertEqual(request.doc_status, "Shared")
 
     def test_audit_store_roundtrips_iso_fields(self) -> None:
-        from aerobim.domain.models import ValidationReport, ValidationSummary
         from uuid import uuid4
+
+        from aerobim.domain.models import ValidationReport, ValidationSummary
 
         with tempfile.TemporaryDirectory() as tmp:
             storage_dir = Path(tmp)

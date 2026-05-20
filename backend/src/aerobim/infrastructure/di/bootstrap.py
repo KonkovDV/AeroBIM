@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
-from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.application.use_cases.analyze_project_package_jobs import (
     AnalyzeProjectPackageJobRunner,
     GetAnalyzeProjectPackageJobStatusUseCase,
@@ -25,6 +24,7 @@ from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
 from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
