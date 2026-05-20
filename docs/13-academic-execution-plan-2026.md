@@ -2,7 +2,7 @@
 title: "AeroBIM Academic Execution Plan 2026"
 status: active
 version: "1.1.0"
-last_updated: "2026-05-20"
+last_updated: "2026-05-21"
 tags: [aerobim, plan, academic, openBIM, roadmap, pilot]
 ---
 
@@ -31,6 +31,7 @@ References: `docs/10-academic-audit-and-recommendations-ru.md` (internal prior a
 | 2D drawing overlay contract | ✅ | `DrawingEvidencePanel`, `run_live_review_smoke` |
 | Pre-pilot replay + structural JSON gate | ✅ | `test_pilot_deterministic_replay.py` |
 | ConflictKind ops summary | ✅ | `summarize_conflict_breakdown.py` |
+| Repository hygiene + deep audit (May 2026) | ✅ | [`PROJECT-AUDIT-2026-05-20.md`](PROJECT-AUDIT-2026-05-20.md); FT scaffold removed; docs aligned to deterministic sign-off boundary |
 
 Deferred until post-pilot unless customer blocks: B.1 full Postgres hydration, B.2 arq, B.3 OIDC.
 

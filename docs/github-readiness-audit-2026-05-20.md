@@ -50,8 +50,8 @@ Fact-check of public claims against runnable evidence. Environment: Windows, Pyt
 
 1. [x] Tests green locally
 2. [x] Extraction gate green
-3. [x] No `Co-authored-by: Cursor` on HEAD commit
-4. [ ] `git push origin main` (maintainer)
+3. [x] No `Co-authored-by` trailers on HEAD commit
+4. [x] `git push origin main` (force-with-lease после rewrite авторов, HEAD `737a7d7`)
 5. [ ] Optional: `gh repo edit` for About + topics
 6. [ ] Tag `pilot-2026-pre` after gate sign-off ([`pilot-frozen-tag-protocol-2026.md`](pilot-frozen-tag-protocol-2026.md))
 
@@ -62,4 +62,4 @@ cd AeroBIM
 git push origin main
 ```
 
-Single-author commits: [`scripts/git_commit.ps1`](../scripts/git_commit.ps1), [`docs/git-hygiene-2026.md`](git-hygiene-2026.md).
+Single-author commits: [`scripts/git_commit.ps1`](../scripts/git_commit.ps1), [`docs/contributor-git-2026.md`](contributor-git-2026.md). Full audit: [`PROJECT-AUDIT-2026-05-20.md`](PROJECT-AUDIT-2026-05-20.md).

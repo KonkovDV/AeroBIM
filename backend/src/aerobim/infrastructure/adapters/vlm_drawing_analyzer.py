@@ -8,9 +8,8 @@ replacing the previous stub with a real baseline:
 - Extracted text is normalized into ``DrawingAnnotation`` records using
   deterministic regex/layout heuristics rather than a generative model.
 
-This is the bridge tranche before heavier VLM paths such as Qwen-VL or
-Florence-2.  The contract stays identical so downstream orchestration does not
-change when a stronger model lands later.
+Heavier vision adapters can replace the baseline without changing downstream
+orchestration; the port contract stays identical.
 """
 
 from __future__ import annotations
@@ -260,7 +259,7 @@ class VlmDrawingAnalyzer:
         measure_name: str,
     ) -> str:
         stable_hash = abs(hash((region.page_number, region.text, target_ref, measure_name)))
-        return f"VLM-{region.page_number:03d}-{stable_hash % 10_000_000:07d}"
+        return f"VIS-{region.page_number:03d}-{stable_hash % 10_000_000:07d}"
 
     def _make_problem_zone(self, sheet_id: str, region: _TextRegion) -> ProblemZone:
         return ProblemZone(

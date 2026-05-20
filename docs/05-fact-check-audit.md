@@ -39,7 +39,7 @@ SHACL remains a W3C Recommendation for RDF graph validation. It is suitable as a
 ### Nested Product Boundary
 
 **Verdict: CONFIRMED.**
-`c:\plans\samolet` is the product boundary being audited here and should be treated independently from the parent workspace.
+The **AeroBIM** repository root (`KonkovDV/AeroBIM`) is the product boundary; treat it independently from any parent monorepo workspace.
 
 ### Five-Layer Backend
 
@@ -113,7 +113,7 @@ The authoring-side boundary remains intentionally thin and not yet implemented a
 |---|---|---|
 | IFC property and quantity validation | ✅ LIVE | Backed by `IfcOpenShellValidator` and fixture-driven tests |
 | IDS validation | ✅ LIVE | Backed by `IfcTesterIdsValidator` and end-to-end samples |
-| Narrative rule synthesis | ✅ LIVE BASELINE | Deterministic regex-backed baseline, not LLM-first |
+| Narrative rule synthesis | ✅ LIVE BASELINE | Deterministic regex-backed baseline, not stochastic-model-first |
 | Structured drawing annotation validation | ✅ LIVE | Active through drawing contracts |
 | Deterministic PDF / OCR drawing extraction | ✅ LIVE BASELINE | PyMuPDF + RapidOCR path exists behind `VisionDrawingAnalyzer` |
 | Geometry clash detection | ✅ LIVE WITH OPTIONAL EXTRA | Real IfcClash path requires `.[clash]`; graceful empty fallback without the extra remains an intentional limitation |

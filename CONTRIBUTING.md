@@ -56,18 +56,17 @@ python -m ruff format src tests
 
 ## Git Commits (single author)
 
-Do **not** ask the IDE agent to run `git commit`. Cursor may append `Co-authored-by: Cursor <cursoragent@cursor.com>` and GitHub will list a second author.
+Do not commit through IDE assistants that inject `Co-authored-by:` trailers.
 
-1. Disable **Agent → Attribution** in Cursor Settings (commit and PR attribution OFF).
-2. Commit from your shell or the VS Code task **AeroBIM: commit (single author, no Co-authored-by)**.
-3. Or run:
+1. Commit from your shell or the VS Code task **AeroBIM: commit (single author)**.
+2. Or run:
 
 ```powershell
 cd AeroBIM
 powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "type: description"
 ```
 
-Details: [docs/git-hygiene-2026.md](docs/git-hygiene-2026.md).
+Details: [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
 
 ## Pull Request Checklist
 
