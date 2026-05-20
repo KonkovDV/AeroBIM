@@ -134,6 +134,8 @@ python -m aerobim.tools.export_runtime_baseline
 
 Не коммитьте через агента Cursor — отключите **Agent → Attribution** и используйте [scripts/git_commit.ps1](scripts/git_commit.ps1) или задачу VS Code **AeroBIM: commit**. Подробнее: [docs/git-hygiene-2026.md](docs/git-hygiene-2026.md).
 
+Перед push на GitHub: [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md). Метаданные репозитория: [.github/repository-metadata.md](.github/repository-metadata.md).
+
 ## Управление проектом
 
 - [Contributing](CONTRIBUTING.md)
