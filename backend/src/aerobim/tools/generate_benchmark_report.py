@@ -12,8 +12,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from aerobim.tools.benchmark_project_package import repo_root
-from aerobim.tools.evaluate_extraction import _evaluate_manifest
-from aerobim.tools.run_ablation_study import _default_packs, run_ablation
+from aerobim.tools.evaluate_extraction import ExtractionQualityReport, _evaluate_manifest
+from aerobim.tools.run_ablation_study import AblationStudyReport, _default_packs, run_ablation
 
 
 def _pip_freeze_hash() -> str:
@@ -43,8 +43,10 @@ def _ifc_release() -> str:
 def generate_report(output_dir: Path) -> dict[str, object]:
     repo = repo_root()
     manifest = repo / "samples" / "benchmarks" / "russian-aec-ground-truth.json"
-    extraction = _evaluate_manifest(manifest)
-    ablation = run_ablation(_default_packs(), output_dir / "ablation-study-report.json")
+    extraction: ExtractionQualityReport = _evaluate_manifest(manifest)
+    ablation: AblationStudyReport = run_ablation(
+        _default_packs(), output_dir / "ablation-study-report.json"
+    )
 
     generated_at = datetime.now(UTC).isoformat()
     env_block = {
@@ -88,14 +90,11 @@ def generate_report(output_dir: Path) -> dict[str, object]:
         "| Discipline | Fixtures | Macro F1 |",
         "|---|---:|---:|",
     ]
-    per_discipline = extraction.get("per_discipline", {})
-    if isinstance(per_discipline, dict):
-        for discipline, metrics in sorted(per_discipline.items()):
-            if isinstance(metrics, dict):
-                md_lines.append(
-                    f"| {discipline} | {int(metrics.get('fixture_count', 0))} | "
-                    f"{metrics.get('macro_f1', 0):.3f} |"
-                )
+    for discipline, metrics in sorted(extraction["per_discipline"].items()):
+        md_lines.append(
+            f"| {discipline} | {int(metrics.get('fixture_count', 0))} | "
+            f"{metrics.get('macro_f1', 0):.3f} |"
+        )
 
     md_lines.extend(
         [
@@ -106,12 +105,11 @@ def generate_report(output_dir: Path) -> dict[str, object]:
             "|---|---:|---:|---:|",
         ]
     )
-    for row in ablation.get("configurations", []):
-        if isinstance(row, dict):
-            md_lines.append(
-                f"| {row.get('ablation_mode', '?')} | {row.get('issue_count', 0)} | "
-                f"{row.get('requirement_count', 0)} | {row.get('cross_document_issues', 0)} |"
-            )
+    for row in ablation["configurations"]:
+        md_lines.append(
+            f"| {row.get('ablation_mode', '?')} | {row.get('issue_count', 0)} | "
+            f"{row.get('requirement_count', 0)} | {row.get('cross_document_issues', 0)} |"
+        )
 
     md_lines.extend(
         [

@@ -6,6 +6,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import TypedDict
 
 from aerobim.application.services.extraction_benchmark import evaluate_fixture
 from aerobim.domain.models import RequirementSource, SourceKind
@@ -13,6 +14,19 @@ from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+
+
+class ExtractionQualityReport(TypedDict):
+    artifact_type: str
+    manifest: str
+    macro_precision: float
+    macro_recall: float
+    macro_f1: float
+    micro_precision: float
+    micro_recall: float
+    micro_f1: float
+    per_discipline: dict[str, dict[str, float]]
+    fixtures: list[dict[str, float | int | str]]
 
 
 def _default_manifest_path() -> Path:
@@ -24,7 +38,7 @@ def _default_manifest_path() -> Path:
     )
 
 
-def _evaluate_manifest(manifest_path: Path) -> dict[str, object]:
+def _evaluate_manifest(manifest_path: Path) -> ExtractionQualityReport:
     with open(manifest_path, encoding="utf-8") as fh:
         manifest = json.load(fh)
 
@@ -151,7 +165,7 @@ def main(argv: list[str] | None = None) -> int:
         args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Wrote {args.output}", file=sys.stderr)
 
-    macro_f1 = float(payload["macro_f1"])
+    macro_f1 = payload["macro_f1"]
     if args.min_macro_f1 is not None and macro_f1 < args.min_macro_f1:
         print(
             f"macro_f1 {macro_f1:.3f} below threshold {args.min_macro_f1:.3f}",
