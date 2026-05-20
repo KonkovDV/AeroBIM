@@ -30,7 +30,7 @@ Priority order:
 3. **C.1** Typed `Quantity` to cut `UNIT_MISMATCH` noise
 4. **Wave 4** Revit thin client after BCF roundtrip is routine
 
-Defer: VLM sign-off, SHACL primary validation, event sourcing.
+Defer: stochastic vision sign-off, SHACL primary validation, event sourcing.
 
 ## Branch B — Research / publication (academic partnership)
 
@@ -53,10 +53,10 @@ Actions:
 
 - Archive pilot artifacts and KPI memo
 - Keep deterministic kernel and benchmark packs as open evidence
-- Do not expand VLM or enterprise scope without new sponsor
+- Do not expand stochastic-vision or enterprise scope without new sponsor
 
 ## Explicit non-goals (all branches)
 
-- Multi-agent orchestration platform
+- Multi-service orchestration platform (out of product scope)
 - Full CDE replacement
 - Autonomous engineering sign-off

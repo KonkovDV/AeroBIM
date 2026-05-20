@@ -32,12 +32,12 @@ class DrawingAnalyzer(Protocol):
 
 
 class VisionDrawingAnalyzer(Protocol):
-    """Domain port for VLM-based (Vision Language Model) drawing analysis.
+    """Domain port for optional raster drawing analysis (vision adapters).
 
     Unlike the text-based ``DrawingAnalyzer`` which parses structured
     pipe-delimited or JSON annotations, this port accepts raster/PDF
-    drawing images and returns semantic annotations extracted via a
-    vision model (e.g. Qwen-VL, Florence-2, PaddleOCR + layout).
+    drawing images and returns semantic annotations via computer-vision
+    adapters (layout + OCR baseline today; heavier models behind the port).
 
     Adapters may run inference locally (ONNX int8) or delegate to an
     external vision service.  The port intentionally mirrors the

@@ -29,7 +29,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "git commit failed" }
     $body = git log -1 --format="%B"
     if ($body -match "(?i)Co-authored-by:") {
-        throw "Commit still contains Co-authored-by; amend or disable Cursor Attribution."
+        throw "Commit still contains Co-authored-by; amend message or disable IDE commit attribution."
     }
     Write-Host "OK: $(git log -1 --oneline)"
 }

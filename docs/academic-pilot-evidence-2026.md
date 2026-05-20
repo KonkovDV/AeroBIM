@@ -16,8 +16,8 @@ AeroBIM implements a **deterministic, provenance-aware, multimodal BIM quality-a
 
 | Theme | Source (May 2026 baseline) | AeroBIM instantiation |
 |---|---|---|
-| Automated code checking (ACC) | Alnuzha et al., ITcon 2025 SLR — hybrid rule + ML | Rule-first narrative extraction; ML/FT deferred until P/R gated |
-| IFC reliability | IFC-QA benchmark — grounding failures dominate LLM-only paths | Deterministic IFC/IDS kernel; LLM outside sign-off |
+| Automated code checking (ACC) | Alnuzha et al., ITcon 2025 SLR — hybrid rule + ML | Rule-first narrative extraction; stochastic training deferred until P/R gated |
+| IFC reliability | IFC-QA benchmark — grounding failures dominate model-only paths | Deterministic IFC/IDS kernel; opaque models outside sign-off |
 | Delivery contracts | buildingSMART IDS 1.0 | First-class IDS validation via IfcTester |
 | Issue handoff | BCF 2.1 (default), BCF 3.0 opt-in | Export with GUID + viewpoint metadata |
 | Information management | ISO/DIS 19650-1:2026 (IM terminology) | Optional `stage`, `revision`, `doc_status`, `information_container_id` |
@@ -36,7 +36,7 @@ AeroBIM implements a **deterministic, provenance-aware, multimodal BIM quality-a
 
 ### Extraction metrics (deterministic baseline)
 
-Evaluated with `NarrativeRuleSynthesizer` + `russian_aec_narrative_patterns.py` (auditable regex inventory, no LLM).
+Evaluated with `NarrativeRuleSynthesizer` + `russian_aec_narrative_patterns.py` (auditable regex inventory, fully deterministic).
 
 Target gate: **macro F1 ≥ 0.70** (docs/13-academic-execution-plan-2026.md, Iteration C.4 advisory).
 
@@ -46,7 +46,7 @@ Observed baseline (2026-05-20, isolated venv): macro F1 ≈ **0.86** on the Russ
 
 - **Package:** `project-package-pilot-moscow-v1` — fire-safety + structure over shared IFC fixture
 - **Normative context:** RF BIM documentation pressure (PP RF №331) — pilot validates **workflow**, not entire code corpus
-- **Excluded from pilot sign-off:** VLM, FT models, full CDE, autonomous agents
+- **Excluded from pilot sign-off:** stochastic vision drawing analysis, model fine-tuning, full CDE, autonomous orchestration platforms
 
 ## Evidence claims (C2 — repository-verified)
 
@@ -73,5 +73,7 @@ See [pilot-claim-boundary-2026.md](pilot-claim-boundary-2026.md).
 ```
 AeroBIM (2026). Multimodal deterministic BIM validation kernel — pilot evidence bundle.
 Repository: https://github.com/KonkovDV/AeroBIM
+
+Deep audit (May 2026): [`PROJECT-AUDIT-2026-05-20.md`](PROJECT-AUDIT-2026-05-20.md).
 Evidence: aerobim_runtime_benchmark_report_v1.json, russian-aec-ground-truth.json
 ```
