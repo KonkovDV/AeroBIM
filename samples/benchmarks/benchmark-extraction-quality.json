@@ -14,7 +14,7 @@
       "ISO/DIS 19650-1:2026 information management"
     ],
     "non_claims": [
-      "No LLM inference in evaluation path",
+      "Deterministic evaluation path only",
       "Not a substitute for licensed engineering review"
     ]
   }

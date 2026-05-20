@@ -496,7 +496,7 @@ class ToleranceConfigTests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# G: VLM DrawingAnalyzer port + adapter contract
+# G: VisionDrawingAnalyzer port + adapter contract
 # ---------------------------------------------------------------------------
 
 

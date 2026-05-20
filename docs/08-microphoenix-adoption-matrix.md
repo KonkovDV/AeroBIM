@@ -32,13 +32,13 @@ It answers one question for each major MicroPhoenix idea: should `AeroBIM` adopt
 | Entry-chain discipline | `adapt` | `main.py -> bootstrap -> http app` | The chain stays explicit, but the runtime is Python-first instead of Node-first. |
 | Domain ports plus infrastructure adapters | `adopt` | Python `Protocol` contracts plus concrete adapters | This is the cleanest way to isolate IfcOpenShell, IfcTester, Docling, viewers, and future enterprise APIs. |
 | Application use-case orchestration | `adopt` | one use-case class per business workflow | The project needs orchestration, but not controller-centric business logic. |
-| LLM-assisted rule synthesis | `adapt` | narrative-rule-synthesizer port with deterministic fallback and future model-backed adapters | The competition task requires narrative TZ/calculation normalization, but the product still needs explicit DSL output and provenance. |
-| 2D drawing/CV analysis | `adapt` | drawing-analyzer port with structured baseline and future CV/VLM adapters | Multimodal checking is required, but the first implementation can start from structured annotations instead of pretending to be full CV already. |
-| Human-readable remark generation | `adapt` | remark-generator port with template baseline and future LLM enrichment | Reviewer-friendly remarks matter, but they must remain downstream of explicit findings rather than replacing them. |
+| Model-assisted rule synthesis | `adapt` | narrative-rule-synthesizer port with deterministic fallback and future model-backed adapters | The competition task requires narrative TZ/calculation normalization, but the product still needs explicit DSL output and provenance. |
+| 2D drawing/CV analysis | `adapt` | drawing-analyzer port with structured baseline and future CV adapters | Multimodal checking is required, but the first implementation can start from structured annotations instead of pretending to be full CV already. |
+| Human-readable remark generation | `adapt` | remark-generator port with template baseline and future template/model enrichment | Reviewer-friendly remarks matter, but they must remain downstream of explicit findings rather than replacing them. |
 | Request context and correlation discipline | `adapt` | explicit request and report provenance first; richer async context later | The idea transfers, but the current phase only needs durable request IDs and traceable report lineage. |
 | Event sourcing plus Outbox-first delivery | `defer` | report-centric persistence now; event-first architecture later if needed | The idea is structurally sound, but too heavy before the product has stable workflows and real throughput pressure. |
 | Typed event families | `defer` | start with stable domain report contracts; add typed events when async workflows deepen | Useful later for orchestration and auditability, but not required for the first validation kernel. |
-| Multi-agent orchestration | `reject` for MVP | none in the runtime core | It solves donor-platform problems, not the first-order problem of deterministic BIM validation and review. |
+| Multi-service orchestration | `reject` for MVP | none in the runtime core | It solves donor-platform problems, not the first-order problem of deterministic BIM validation and review. |
 | MCP server estate | `reject` for MVP runtime | none in runtime; docs may borrow discipline only | Internal developer tooling should not become the product runtime prematurely. |
 | Memory and knowledge-graph subsystems | `defer` | none in MVP runtime | Valuable only after real report volume, retrieval needs, or cross-project knowledge reuse appear. |
 | Anti-stub discipline | `adapt` | explicit provisional adapters, no silent fake completeness | The exact rule transfers, but should be phrased for Python and BIM adapters instead of TypeScript-only infrastructure. |
@@ -57,7 +57,7 @@ It answers one question for each major MicroPhoenix idea: should `AeroBIM` adopt
 - DI tokens and bootstrap;
 - use-case-oriented application layer;
 - port/adapter seams;
-- AI-ready ports for rule synthesis, drawing analysis, and remark generation;
+- Optional model-ready ports for rule synthesis, drawing analysis, and remark generation;
 - request and report provenance;
 - docs-first architecture references.
 
@@ -71,7 +71,7 @@ It answers one question for each major MicroPhoenix idea: should `AeroBIM` adopt
 ### Explicitly Rejected For MVP
 
 - donor platform complexity that does not accelerate IFC/IDS/report workflows;
-- runtime surfaces whose main value is internal agent tooling rather than product behavior.
+- runtime surfaces whose main value is internal IDE tooling rather than product behavior.
 
 ## Quality Bar For Future Extraction
 

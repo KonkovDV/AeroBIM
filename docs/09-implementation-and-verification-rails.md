@@ -80,12 +80,12 @@ That means:
 
 - a validator should either validate or clearly say that it does not yet validate;
 - a persistence adapter should either persist or be explicitly marked as provisional;
-- an AI or CV adapter should either emit explicit evidence-bearing outputs or clearly state that it is a limited baseline;
+- a stochastic or CV adapter should either emit explicit evidence-bearing outputs or clearly state that it is a limited baseline;
 - placeholder behavior must stay local and visible rather than pretending to be production-ready.
 
-## AI And CV Provenance Rule
+## Stochastic And CV Provenance Rule
 
-If `AeroBIM` uses AI, NLP, or CV in any path, the adapter must still emit explicit normalized contracts:
+If `AeroBIM` uses stochastic models, NLP, or CV in any path, the adapter must still emit explicit normalized contracts:
 
 - narrative sources must become `ParsedRequirement` objects with source provenance;
 - drawing evidence must become `DrawingAnnotation` objects with optional problem zones;
@@ -235,6 +235,6 @@ At minimum, decide whether the change affects:
 
 ## What This Document Deliberately Does Not Do
 
-It does not copy the full MicroPhoenix 4-phase protocol, multi-agent operating model, or MCP-specific governance into `AeroBIM`.
+It does not copy the full MicroPhoenix 4-phase protocol, multi-service operating model, or MCP-specific governance into `AeroBIM`.
 
 The extracted value here is the disciplined subset that improves a small BIM QA product without importing donor-scale process overhead.

@@ -168,11 +168,11 @@ Document extraction input only. It may help produce candidate rules, but it must
 
 ### Narrative Rule Synthesizer
 
-Use an infrastructure adapter to convert narrative TZ/calculation text into explicit normalized rules. The current baseline may be deterministic and heuristic; future LLM-backed adapters must still emit the same DSL with provenance.
+Use an infrastructure adapter to convert narrative TZ/calculation text into explicit normalized rules. The current baseline may be deterministic and heuristic; future model-backed adapters must still emit the same DSL with provenance.
 
 ### Drawing Analyzer
 
-Use an infrastructure adapter to translate 2D drawing evidence into structured annotations and bounding-box problem zones. The current baseline may start from structured fixtures; future CV/VLM adapters must preserve the same contract.
+Use an infrastructure adapter to translate 2D drawing evidence into structured annotations and bounding-box problem zones. The current baseline may start from structured fixtures; future computer-vision adapters must preserve the same contract.
 
 ### Remark Generator
 

@@ -105,7 +105,7 @@ For `AeroBIM`, that means:
 
 | MicroPhoenix Capability | Why It Is Excluded From MVP |
 |---|---|
-| multi-agent orchestration | valuable for AI platform work, not required for deterministic BIM QA kernel |
+| multi-service orchestration | valuable for platform work, not required for deterministic BIM QA kernel |
 | full event sourcing / outbox | too much operational weight before first validator is useful |
 | MCP server fleet | internal platform tooling, not first-order product runtime |
 | plugin marketplace | premature extensibility surface |

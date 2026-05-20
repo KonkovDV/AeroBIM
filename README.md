@@ -32,7 +32,7 @@ AeroBIM validates building information models (IFC) against technical specificat
 | Browser IFC viewer (`web-ifc` + Three.js`) | ✅ |
 | 2D problem-zone overlay on persisted drawing evidence | ✅ |
 | Deterministic PDF / OCR drawing analysis | ✅ |
-| Vision-language drawing analysis | 🔜 Planned |
+| Advanced raster drawing analysis (optional port) | 🔜 Planned |
 
 ## IFC Release Compatibility
 
@@ -137,7 +137,7 @@ python -m ruff format src tests
 
 ## Benchmarks and Evidence
 
-Verified capabilities are backed by tests, API contracts, or persisted report artifacts. Planned work (VLM sign-off, BCF API) is listed separately in the capability table.
+Verified capabilities are backed by tests, API contracts, or persisted report artifacts. Planned work (stochastic vision sign-off, BCF API) is listed separately in the capability table.
 
 ```bash
 cd backend
@@ -270,14 +270,14 @@ aerobim/
 
 ## Git commits
 
-Do not commit through the Cursor agent with **Attribution** enabled — it can add `Co-authored-by: Cursor` to history. Turn off **Settings → Agent → Attribution**, then use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit (single author)**. See [docs/git-hygiene-2026.md](docs/git-hygiene-2026.md).
+Use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit (single author)** so history stays single-author without `Co-authored-by` trailers. See [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
 
-**GitHub publication:** pre-push audit — [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md). Suggested repo About text — [.github/repository-metadata.md](.github/repository-metadata.md).
+**GitHub publication:** [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md), [docs/PROJECT-AUDIT-2026-05-20.md](docs/PROJECT-AUDIT-2026-05-20.md). Suggested repo About — [.github/repository-metadata.md](.github/repository-metadata.md).
 
 ## Governance
 
 - [Contributing](CONTRIBUTING.md)
-- [Git hygiene](docs/git-hygiene-2026.md)
+- [Contributor Git policy](docs/contributor-git-2026.md)
 - [Security Policy](SECURITY.md)
 - [Citation Metadata](CITATION.cff)
 - [Support](SUPPORT.md)

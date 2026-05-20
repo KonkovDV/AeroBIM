@@ -28,7 +28,7 @@ AeroBIM сверяет IFC-модели с техническими требов
 | Просмотр IFC в браузере (`web-ifc` + `Three.js`) | ✅ |
 | Наложение зон проблем на 2D-чертежи | ✅ |
 | Разбор PDF/OCR для чертежей | ✅ |
-| Распознавание чертежей на VLM | 🔜 В планах |
+| Расширенный анализ растровых чертежей (опциональный порт) | 🔜 В планах |
 
 ## Совместимость с IFC
 
@@ -132,14 +132,14 @@ python -m aerobim.tools.export_runtime_baseline
 
 ## Коммиты в Git
 
-Не коммитьте через агента Cursor — отключите **Agent → Attribution** и используйте [scripts/git_commit.ps1](scripts/git_commit.ps1) или задачу VS Code **AeroBIM: commit**. Подробнее: [docs/git-hygiene-2026.md](docs/git-hygiene-2026.md).
+Коммиты — через [scripts/git_commit.ps1](scripts/git_commit.ps1) или задачу VS Code **AeroBIM: commit** (один автор, без `Co-authored-by`). Подробнее: [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
 
 Перед push на GitHub: [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md). Метаданные репозитория: [.github/repository-metadata.md](.github/repository-metadata.md).
 
 ## Управление проектом
 
 - [Contributing](CONTRIBUTING.md)
-- [Git hygiene](docs/git-hygiene-2026.md)
+- [Политика Git для контрибьюторов](docs/contributor-git-2026.md)
 - [Security](SECURITY.md)
 - [Citation](CITATION.cff) · [BibTeX](docs/CITATION.bib)
 - [Support](SUPPORT.md) · [Maintainers](MAINTAINERS.md)
