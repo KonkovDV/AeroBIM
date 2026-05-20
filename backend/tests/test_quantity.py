@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
+from aerobim.domain.quantity import parse_quantity, si_compare
 
 
 class ParseQuantityTests(unittest.TestCase):

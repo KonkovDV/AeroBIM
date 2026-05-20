@@ -401,7 +401,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
     ),
     (
         re.compile(r"(?i)фундамент.*?диаметр\s+(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-footing-bar-{n:03d}",
             ifc_entity="IfcFooting",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -412,7 +412,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="mm",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
@@ -420,8 +420,10 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
         _column_bar_diameter,
     ),
     (
-        re.compile(r"(?i)защитный\s+слой\s+бетона\s+к\s+арматуре\s+фундамента\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
-        lambda m, s, n, l: ParsedRequirement(
+        re.compile(
+            r"(?i)защитный\s+слой\s+бетона\s+к\s+арматуре\s+фундамента\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"
+        ),
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-footing-cover-{n:03d}",
             ifc_entity="IfcFooting",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -432,11 +434,13 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="mm",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
-        re.compile(r"(?i)объёмный\s+вес\s+бетона\s+фундамента\s+не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*кг/м"),
+        re.compile(
+            r"(?i)объёмный\s+вес\s+бетона\s+фундамента\s+не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*кг/м"
+        ),
         _entity_density("IfcFooting", "Pset_MaterialCommon"),
     ),
     (
@@ -444,43 +448,45 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
         _column_concrete_density,
     ),
     (
-        re.compile(r"(?i)защитный\s+слой\s+бетона\s+к\s+арматуре\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
+        re.compile(
+            r"(?i)защитный\s+слой\s+бетона\s+к\s+арматуре\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"
+        ),
         _column_cover_thickness,
     ),
     (
         re.compile(r"(?i)стен[ыы].*?огнестойкост[ьи]\s+не\s+менее\s+(?P<rating>REI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcWall", property_set="Pset_WallCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcWall", property_set="Pset_WallCommon"
         ),
     ),
     (
         re.compile(r"(?i)двер[ьи].*?(?P<rating>EI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcDoor", property_set="Pset_DoorCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcDoor", property_set="Pset_DoorCommon"
         ),
     ),
     (
         re.compile(r"(?i)перекрыти[яе].*?(?P<rating>REI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcSlab", property_set="Pset_SlabCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcSlab", property_set="Pset_SlabCommon"
         ),
     ),
     (
         re.compile(r"(?i)окн[ао].*?(?P<rating>E\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcWindow", property_set="Pset_WindowCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcWindow", property_set="Pset_WindowCommon"
         ),
     ),
     (
         re.compile(r"(?i)лестничн[а-я]+.*?стен[ыы].*?(?P<rating>REI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcWall", property_set="Pset_WallCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcWall", property_set="Pset_WallCommon"
         ),
     ),
     (
         re.compile(r"(?i)плит[ыы].*?огнестойкост[ьи]\s+не\s+менее\s+(?P<rating>REI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcSlab", property_set="Pset_SlabCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcSlab", property_set="Pset_SlabCommon"
         ),
     ),
     (
@@ -493,7 +499,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
     ),
     (
         re.compile(r"(?i)нагрузка\s+не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*кН/м²"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-slab-load-{n:03d}",
             ifc_entity="IfcSlab",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -504,12 +510,14 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="kN/m2",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
-        re.compile(r"(?i)защитный\s+слой\s+бетона\s+к\s+арматуре\s+плиты\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
-        lambda m, s, n, l: ParsedRequirement(
+        re.compile(
+            r"(?i)защитный\s+слой\s+бетона\s+к\s+арматуре\s+плиты\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"
+        ),
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-slab-cover-{n:03d}",
             ifc_entity="IfcSlab",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -520,7 +528,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="mm",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
@@ -530,7 +538,9 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
         _entity_thermal_transmittance("IfcRoof", "Pset_RoofCommon"),
     ),
     (
-        re.compile(r"(?i)толщина\s+утеплителя\s+кровли\s*—\s*не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
+        re.compile(
+            r"(?i)толщина\s+утеплителя\s+кровли\s*—\s*не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*мм"
+        ),
         _entity_thickness("IfcRoof", "Pset_RoofCommon", pattern_hint="roof"),
     ),
     (
@@ -539,8 +549,8 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
     ),
     (
         re.compile(r"(?i)окна\s+фасадные.*?огнестойкость\s+стекла\s+(?P<rating>E\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcWindow", property_set="Pset_WindowCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcWindow", property_set="Pset_WindowCommon"
         ),
     ),
     (
@@ -555,13 +565,13 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
     ),
     (
         re.compile(r"(?i)двери\s+эвакуационные\s*—\s*(?P<rating>EI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcDoor", property_set="Pset_DoorCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcDoor", property_set="Pset_DoorCommon"
         ),
     ),
     (
         re.compile(r"(?i)ширина\s+марша\s+лестницы\s+не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-stair-width-{n:03d}",
             ifc_entity="IfcStair",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -572,7 +582,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="mm",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
@@ -580,8 +590,10 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
         _entity_concrete_class("IfcStair", "Pset_ConcreteElementGeneral"),
     ),
     (
-        re.compile(r"(?i)лестничн[а-я]+.*?защитный\s+слой\s+бетона.*?—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
-        lambda m, s, n, l: ParsedRequirement(
+        re.compile(
+            r"(?i)лестничн[а-я]+.*?защитный\s+слой\s+бетона.*?—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"
+        ),
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-stair-cover-{n:03d}",
             ifc_entity="IfcStair",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -592,12 +604,12 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="mm",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
         re.compile(r"(?i)площадь\s+не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*м²"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-space-area-{n:03d}",
             ifc_entity="IfcSpace",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -608,18 +620,18 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="m2",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
         re.compile(r"(?i)потолки\s+помещения.*?огнестойкость\s+не\s+менее\s+(?P<rating>REI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcSpace", property_set="Pset_SpaceCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcSpace", property_set="Pset_SpaceCommon"
         ),
     ),
     (
         re.compile(r"(?i)минимальная\s+высота\s+помещения\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-space-height-{n:03d}",
             ifc_entity="IfcSpace",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -630,7 +642,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="mm",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
@@ -641,7 +653,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
     ),
     (
         re.compile(r"(?i)класс\s+прочности\s+стали\s+(?P<value>[СC]\d+)"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-beam-steel-{n:03d}",
             ifc_entity="IfcBeam",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -651,12 +663,12 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             expected_value=m.group("value").upper().replace("С", "C"),
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
         re.compile(r"(?i)высота\s+балки\s*—\s*(?P<value>\d+(?:[.,]\d+)?)\s*мм"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-beam-height-{n:03d}",
             ifc_entity="IfcBeam",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -667,18 +679,18 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="mm",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
         re.compile(r"(?i)огнестойкость\s+балки\s*—\s*(?P<rating>REI\s*\d+)"),
-        lambda m, s, n, l: _fire_rating_entity(
-            m, s, n, l, ifc_entity="IfcBeam", property_set="Pset_BeamCommon"
+        lambda m, s, n, line: _fire_rating_entity(
+            m, s, n, line, ifc_entity="IfcBeam", property_set="Pset_BeamCommon"
         ),
     ),
     (
         re.compile(r"(?i)толщина\s+(?P<value>\d+(?:[.,]\d+)?)\s*мкм"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-beam-coating-{n:03d}",
             ifc_entity="IfcBeam",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -689,12 +701,12 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="um",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
     (
         re.compile(r"(?i)нагрузка\s+не\s+менее\s+(?P<value>\d+(?:[.,]\d+)?)\s*кН/м(?!\s*²)"),
-        lambda m, s, n, l: ParsedRequirement(
+        lambda m, s, n, line: ParsedRequirement(
             rule_id=f"ru-beam-load-{n:03d}",
             ifc_entity="IfcBeam",
             rule_scope=RuleScope.IFC_PROPERTY,
@@ -705,7 +717,7 @@ RUSSIAN_AEC_NARRATIVE_PATTERNS: list[tuple[re.Pattern[str], _RuleFactory]] = [
             unit="kN/m",
             source=str(s.path) if s.path else s.source_kind.value,
             source_kind=s.source_kind,
-            evidence_text=l,
+            evidence_text=line,
         ),
     ),
 ]

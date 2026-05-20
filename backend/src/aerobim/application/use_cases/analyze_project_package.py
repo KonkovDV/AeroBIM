@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import hashlib
-import json
 from collections import Counter
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 from uuid import uuid4
 
 from aerobim.application.services.confidence_scorer import score_confidence
-from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
 from aerobim.domain.models import (
     ComparisonOperator,
     ConflictKind,
@@ -38,6 +35,7 @@ from aerobim.domain.ports import (
     RequirementExtractor,
     VisionDrawingAnalyzer,
 )
+from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
 
 _VISION_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _VISION_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
@@ -124,12 +122,18 @@ class AnalyzeProjectPackageUseCase:
             self._requirement_extractor.extract(request.requirement_source)
         )
         structured_requirements = [
-            ParsedRequirement(**{k: v for k, v in req.__dict__.items() if k != "confidence"}, confidence=score_confidence(req))
+            ParsedRequirement(
+                **{k: v for k, v in req.__dict__.items() if k != "confidence"},
+                confidence=score_confidence(req),
+            )
             for req in structured_requirements
         ]
         synthesized_requirements = self._collect_synthesized_requirements(request)
         synthesized_requirements = [
-            ParsedRequirement(**{k: v for k, v in req.__dict__.items() if k != "confidence"}, confidence=score_confidence(req))
+            ParsedRequirement(
+                **{k: v for k, v in req.__dict__.items() if k != "confidence"},
+                confidence=score_confidence(req),
+            )
             for req in synthesized_requirements
         ]
         requirements = tuple([*structured_requirements, *synthesized_requirements])
@@ -451,7 +455,12 @@ class AnalyzeProjectPackageUseCase:
         q_a = self._resolve_quantity(value_a, unit_a, quantity_a)
         q_b = self._resolve_quantity(value_b, unit_b, quantity_b)
 
-        if q_a is not None and q_b is not None and q_a.si_value is not None and q_b.si_value is not None:
+        if (
+            q_a is not None
+            and q_b is not None
+            and q_a.si_value is not None
+            and q_b.si_value is not None
+        ):
             if q_a.ucum_code and q_b.ucum_code:
                 if q_a.dimension != q_b.dimension:
                     return ConflictKind.UNIT_MISMATCH

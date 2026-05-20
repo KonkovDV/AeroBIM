@@ -25,7 +25,7 @@ def _default_manifest_path() -> Path:
 
 
 def _evaluate_manifest(manifest_path: Path) -> dict[str, object]:
-    with open(manifest_path, "r", encoding="utf-8") as fh:
+    with open(manifest_path, encoding="utf-8") as fh:
         manifest = json.load(fh)
 
     structured_extractor = StructuredRequirementExtractor()
@@ -115,7 +115,9 @@ def _evaluate_manifest(manifest_path: Path) -> dict[str, object]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Evaluate requirement extraction quality (P/R/F1).")
+    parser = argparse.ArgumentParser(
+        description="Evaluate requirement extraction quality (P/R/F1)."
+    )
     parser.add_argument(
         "--manifest",
         type=Path,

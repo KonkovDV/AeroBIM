@@ -15,9 +15,9 @@ Scope: Russian AEC fixture evaluation (Phase 2).
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
 from aerobim.domain.models import ParsedRequirement
 
@@ -69,9 +69,12 @@ def _requirement_matches(
     ground_entity = _normalize_ifc_entity(ground_truth.get("ifc_entity"))
     if extracted_entity != ground_entity:
         return False
-    if (extracted.property_name or "").lower() != (ground_truth.get("property_name") or "").lower():
+    gt_property = (ground_truth.get("property_name") or "").lower()
+    if (extracted.property_name or "").lower() != gt_property:
         return False
-    if (extracted.expected_value or "").lower() != (ground_truth.get("expected_value") or "").lower():
+    if (extracted.expected_value or "").lower() != (
+        ground_truth.get("expected_value") or ""
+    ).lower():
         return False
     gt_property_set = ground_truth.get("property_set")
     if gt_property_set is not None:
@@ -141,7 +144,7 @@ def run_extraction_benchmark(
     iterable of ``ParsedRequirement`` instances (e.g. the structured
     requirement extractor).
     """
-    with open(ground_truth_path, "r", encoding="utf-8") as fh:
+    with open(ground_truth_path, encoding="utf-8") as fh:
         manifest = json.load(fh)
 
     fixture_results: list[ExtractionMetricResult] = []

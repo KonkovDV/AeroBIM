@@ -72,7 +72,9 @@ class AcademicQuantityCrossDocTests(unittest.TestCase):
                 "4.0",
                 "m",
                 quantity_a=q_mm,
-                quantity_b=QuantityValue(value=4.0, unit="m", ucum_code="m", dimension="length", si_value=4.0),
+                quantity_b=QuantityValue(
+                    value=4.0, unit="m", ucum_code="m", dimension="length", si_value=4.0
+                ),
             )
         )
 

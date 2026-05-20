@@ -31,7 +31,9 @@ class PilotPerformanceGuardrailTests(unittest.TestCase):
         avg_ms = float(summary.get("avg_ms", 0.0))
         # Advisory ceiling for CI/dev laptops — not a production SLA.
         self.assertGreater(avg_ms, 0.0)
-        self.assertLess(avg_ms, 120_000.0, f"pilot pack avg_ms {avg_ms} exceeded advisory 120s budget")
+        self.assertLess(
+            avg_ms, 120_000.0, f"pilot pack avg_ms {avg_ms} exceeded advisory 120s budget"
+        )
 
 
 if __name__ == "__main__":
