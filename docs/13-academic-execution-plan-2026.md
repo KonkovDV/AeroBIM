@@ -32,6 +32,7 @@ References: `docs/10-academic-audit-and-recommendations-ru.md` (internal prior a
 | Pre-pilot replay + structural JSON gate | ✅ | `test_pilot_deterministic_replay.py` |
 | ConflictKind ops summary | ✅ | `summarize_conflict_breakdown.py` |
 | Repository hygiene + deep audit (May 2026) | ✅ | [`PROJECT-AUDIT-2026-05-20.md`](PROJECT-AUDIT-2026-05-20.md); FT scaffold removed; docs aligned to deterministic sign-off boundary |
+| Pre-pilot gates 1–4 + evidence bundle | ✅ | [`pilot-pre-pilot-gates-2026.md`](pilot-pre-pilot-gates-2026.md), [`evidence/pre-pilot-gates-evidence-2026-05-21.md`](evidence/pre-pilot-gates-evidence-2026-05-21.md), tag `pilot-2026-pre` |
 
 Deferred until post-pilot unless customer blocks: B.1 full Postgres hydration, B.2 arq, B.3 OIDC.
 

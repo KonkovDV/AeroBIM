@@ -2,7 +2,7 @@
 title: "Pilot Frozen Tag Protocol 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-05-20"
+last_updated: "2026-05-21"
 tags: [aerobim, pilot, reproducibility]
 ---
 
@@ -31,6 +31,8 @@ Freeze a reproducible evidence line before customer-facing pilot weeks and befor
 | Conflict breakdown | `python -m aerobim.tools.summarize_conflict_breakdown` |
 
 Store generated files under `docs/evidence/` with the tag name in the filename when publishing case-study evidence.
+
+**Pre-pilot bundle (2026-05-21):** `pre-pilot-gates-evidence-2026-05-21.md`, `pre-pilot-extraction-2026-05-21.json`, `pre-pilot-runtime-baseline-2026-05-21.json`, `pre-pilot-conflict-breakdown-2026-05-21.json`, `pre-pilot-bcf-handoff-2026-05-21.json`, `benchmark-report-2026-05-20.*`.
 
 ## CI expectation
 

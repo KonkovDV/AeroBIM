@@ -24,11 +24,11 @@ Complete before pilot week 1:
 
 | Step | Record here |
 |---|---|
-| Coordination tool name + version | |
-| BCF version used (`2.1` default or `3.0` opt-in) | |
-| Import succeeded (topics + messages visible) | yes / no |
-| Sample screenshot path (internal, not in public repo) | |
-| Engineer TP/FP labeling process agreed | |
+| Coordination tool name + version | TBD pilot week 1 (repo: BCF 2.1 export verified — [`evidence/pre-pilot-bcf-handoff-2026-05-21.json`](evidence/pre-pilot-bcf-handoff-2026-05-21.json)) |
+| BCF version used (`2.1` default or `3.0` opt-in) | **2.1** (default for pre-pilot evidence) |
+| Import succeeded (topics + messages visible) | pending customer CDE |
+| Sample screenshot path (internal, not in public repo) | — |
+| Engineer TP/FP labeling process agreed | per [`pilot-kpi-protocol-2026.md`](pilot-kpi-protocol-2026.md) adjudication table |
 
 Export command:
 
@@ -46,7 +46,8 @@ curl -H "Authorization: Bearer $TOKEN" \
 | Confirmed findings rate | Engineer-confirmed BCF issues / total exported | TBD | ≥ 60% |
 | Traceability | Issues with element GUID + `source_id` | TBD | ≥ 90% |
 | Extraction macro F1 | RU corpus benchmark | ≥ 0.70 | ≥ 0.70 |
-| Deterministic replay | Identical issue signature across 2 runs | pass | pass |
+| Deterministic replay | Identical issue signature across 2 runs | pass (pre-pilot) | pass |
+| Pre-pilot cross-doc on fixture pack | Informational only | 0 issues | n/a |
 
 ## Качественная обратная связь (5–7 вопросов)
 

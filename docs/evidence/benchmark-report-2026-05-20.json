@@ -1,10 +1,10 @@
 {
   "artifact_type": "academic_benchmark_report",
-  "generated_at": "2026-05-20T19:30:46.653500+00:00",
+  "generated_at": "2026-05-20T21:14:15.151473+00:00",
   "environment": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python_version": "3.13.7",
-    "pip_freeze_hash": "4cf238f28d1b5662",
+    "pip_freeze_hash": "2c7d42fcfd1b146f",
     "ifc_release": "unknown"
   },
   "extraction_quality": {

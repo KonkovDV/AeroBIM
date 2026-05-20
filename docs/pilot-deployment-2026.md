@@ -2,7 +2,7 @@
 title: "AeroBIM Pilot Deployment 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-05-20"
+last_updated: "2026-05-21"
 tags: [aerobim, pilot, deployment]
 ---
 
@@ -45,6 +45,8 @@ python -m aerobim.tools.summarize_conflict_breakdown \
 | `ambiguous-mapping` | Manual review only; do not auto-block |
 
 Recommended pilot default: `AEROBIM_CROSS_DOC_SEVERITY=warning` until TP rate is confirmed in week 1–2.
+
+**Pre-pilot baseline (2026-05-21):** `project-package-pilot-moscow-v1` — 8 total issues, **0** cross-document on fixtures. Do not extrapolate to customer models. Evidence: [`evidence/pre-pilot-conflict-breakdown-2026-05-21.json`](evidence/pre-pilot-conflict-breakdown-2026-05-21.json). Gates sign-off: [`pilot-pre-pilot-gates-2026.md`](pilot-pre-pilot-gates-2026.md).
 
 ## Smoke after deploy
 

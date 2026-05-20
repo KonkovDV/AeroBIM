@@ -1,8 +1,8 @@
 ﻿---
 title: "AeroBIM Academic Audit And Recommendations"
 status: active
-version: "0.5.0"
-last_updated: "2026-05-20"
+version: "0.6.0"
+last_updated: "2026-05-21"
 tags: [aerobim, audit, explanation, evidence]
 ---
 
@@ -23,7 +23,7 @@ tags: [aerobim, audit, explanation, evidence]
 
 ## 2. Краткий вердикт
 
-На апрель 2026 AeroBIM — это **рабочее детерминированное ядро BIM QA**:
+На май 2026 (после pre-pilot evidence line) AeroBIM — это **рабочее детерминированное ядро BIM QA**:
 
 - Python backend с явной Clean Architecture;
 - рабочий контур валидации IFC + IDS;
