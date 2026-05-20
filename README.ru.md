@@ -123,6 +123,7 @@ python -m aerobim.tools.export_runtime_baseline
 
 ## Документация
 
+- [Старт пилота](docs/pilot-start-package-2026.md) — kickoff Москва, тег `pilot-2026-pre`
 - [Карта документации](docs/README.md)
 - [Архитектура](docs/06-architecture-reference.md)
 - [План исполнения 2026](docs/13-academic-execution-plan-2026.md)

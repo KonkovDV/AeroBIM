@@ -10,6 +10,8 @@ tags: [aerobim, pilot, operations]
 
 Operational rhythm for the Moscow pilot. KPI definitions: [`pilot-kpi-protocol-2026.md`](pilot-kpi-protocol-2026.md).
 
+**Kickoff package:** [`pilot-start-package-2026.md`](pilot-start-package-2026.md) (stakeholders + week 1 checklist).
+
 ## Before week 1
 
 1. Complete gates 1–5 in [`pilot-pre-pilot-gates-2026.md`](pilot-pre-pilot-gates-2026.md).

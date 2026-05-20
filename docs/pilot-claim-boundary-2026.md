@@ -2,13 +2,15 @@
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-05-20"
+last_updated: "2026-05-21"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
 # AeroBIM Pilot Claim Boundary
 
 This document separates **verified repository evidence** from **roadmap intent** for pilot and accelerator communications.
+
+**Stakeholder distribution:** share with [`pilot-start-package-2026.md`](pilot-start-package-2026.md) at pilot kickoff.
 
 ## Verified (may be claimed with evidence)
 

@@ -37,7 +37,16 @@ Frozen pre-pilot line: tag `pilot-2026-pre`. Reports: [`docs/evidence/benchmark-
 |---:|---:|---:|
 | RU narrative | 10 | 50 |
 
-Ablation configurations: A0 (IFC+IDS) → A3 (full pilot pack).
+Ablation configurations on frozen manifests (`pilot-2026-pre` evidence line):
+
+| Mode | Layers | Issues | Requirements | Cross-doc |
+|---|---|---:|---:|---:|
+| A0 | IFC + IDS only | 2 | 0 | 0 |
+| A1 | + narrative rules | 8 | 6 | 0 |
+| A2 | + cross-document | 17 | 11 | 3 |
+| A3 | Full pilot pack profile | 8 | 6 | 0 |
+
+Source: [`evidence/ablation-study-report.json`](evidence/ablation-study-report.json), [`evidence/benchmark-report-2026-05-20.md`](evidence/benchmark-report-2026-05-20.md). A2 isolates marginal value of cross-document detection on the ablation fixture set; pilot Moscow fixtures may differ.
 
 ## 5. Case study — Pilot Moscow
 

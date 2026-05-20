@@ -2,7 +2,7 @@
 title: "Pilot Weekly Log 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-05-20"
+last_updated: "2026-05-21"
 tags: [aerobim, pilot, kpi]
 ---
 
@@ -35,6 +35,63 @@ Optional extras smoke: not required for week 0; record `.[clash]` / `.[docling]`
 - [ ] Customer CDE BCF import + tool/version in case study
 - [ ] First production package ingest
 - [ ] Start TP/FP adjudication table
+
+---
+
+## Pilot calendar (8–12 weeks)
+
+| Week | Target window | Log section | Tag policy |
+|---:|---|---|---|
+| 1 | Customer ingest start | Week 1 below | stay on `pilot-2026-pre` unless hotfix |
+| 2–10 | Steady-state review | copy Week N template | `pilot-2026-wNN` only if issue signatures change materially |
+| 11–12 | KPI consolidation | fill case study | prepare `post-pilot-go-no-go-memo` |
+| End | November 2026 | — | optional `pilot-2026-final` |
+
+---
+
+## Week 1 — YYYY-MM-DD (customer ingest)
+
+| Field | Value |
+|---|---|
+| Package revision | |
+| Git tag / image digest | `pilot-2026-pre` or hotfix SHA |
+| Engineer reviewer | role only |
+
+### Runs
+
+| Run | Ingest time | First cross-doc issue | Total issues | BCF exported |
+|---|---|---|---|---:|
+| 1 | | | | |
+
+### Adjudication (TP / FP)
+
+| Discipline | TP | FP | Notes |
+|---|---:|---:|---|
+| Fire | | | |
+| Structure | | | |
+
+### ConflictKind snapshot
+
+Paste output of `summarize_conflict_breakdown` for **production** pack (not fixture-only).
+
+### Qualitative (1–5)
+
+| Question | Score | Comment |
+|---|---:|---|
+| BCF usable in CDE? | | |
+| False-positive burden | | |
+| 2D overlay helped locate issue? | | |
+
+### Optional extras (record skip or pass)
+
+| Extra | Installed? | Smoke result |
+|---|---|---|
+| `.[clash]` | yes/no | |
+| `.[docling]` | yes/no | |
+
+### Actions week 2
+
+- [ ] …
 
 ---
 
