@@ -2,7 +2,7 @@
 title: "AeroBIM Pre-Pilot Technical Gates 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-05-20"
+last_updated: "2026-05-21"
 tags: [aerobim, pilot, gates]
 ---
 
@@ -52,11 +52,11 @@ Run before customer-facing pilot week.
 
 | Gate | Owner | Date | Status | Evidence link |
 |---|---|---|---|---|
-| 1 Deterministic replay | | | pending | `pytest tests/test_pilot_deterministic_replay.py` |
-| 2 Evidence rail | | | pending | `pytest -q`, `export_runtime_baseline` |
-| 3 BCF handoff | | | pending | BCF ZIP + coordination tool import |
-| 4 FP budget policy | | | pending | `summarize_conflict_breakdown`, severity env |
-| 5 OpenRebar (if in scope) | | | n/a | digest + enforced mode |
+| 1 Deterministic replay | KonkovDV | 2026-05-21 | **pass** | [`evidence/pre-pilot-gates-evidence-2026-05-21.md`](evidence/pre-pilot-gates-evidence-2026-05-21.md) |
+| 2 Evidence rail | KonkovDV | 2026-05-21 | **pass** | [`evidence/pre-pilot-runtime-baseline-2026-05-21.json`](evidence/pre-pilot-runtime-baseline-2026-05-21.json) |
+| 3 BCF handoff | KonkovDV | 2026-05-21 | **pass (repo)** | [`evidence/pre-pilot-bcf-handoff-2026-05-21.json`](evidence/pre-pilot-bcf-handoff-2026-05-21.json); CDE import week 1 |
+| 4 FP budget policy | KonkovDV | 2026-05-21 | **pass** | [`evidence/pre-pilot-conflict-breakdown-2026-05-21.json`](evidence/pre-pilot-conflict-breakdown-2026-05-21.json); `AEROBIM_CROSS_DOC_SEVERITY=warning` |
+| 5 OpenRebar (if in scope) | — | — | n/a | out of Moscow pilot scope |
 
 Pilot may start when gates 1–3 pass and gate 4 has an agreed operator policy. Gate 5 applies only when reinforcement is in pilot scope.
 
@@ -66,5 +66,5 @@ Automated helpers:
 cd backend
 python -m pytest tests/test_pilot_deterministic_replay.py -q
 python -m aerobim.tools.export_runtime_baseline
-python -m aerobim.tools.summarize_conflict_breakdown --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json
+python -m aerobim.tools.summarize_conflict_breakdown --pack samples/benchmarks/project-package-pilot-moscow-v1.json
 ```

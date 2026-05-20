@@ -10,6 +10,16 @@ tags: [aerobim, pilot, decision]
 
 Fill at pilot end (target: November 2026). Decision tree: [`post-pilot-fork-2026.md`](post-pilot-fork-2026.md).
 
+## Readiness checklist (complete before November memo)
+
+| Prerequisite | Source |
+|---|---|
+| Pre-pilot gates 1–4 signed | [`pilot-pre-pilot-gates-2026.md`](pilot-pre-pilot-gates-2026.md) |
+| Frozen tag `pilot-2026-pre` | [`pilot-frozen-tag-protocol-2026.md`](pilot-frozen-tag-protocol-2026.md) |
+| Weekly logs W1–Wn filled | [`pilot-weekly-log-2026.md`](pilot-weekly-log-2026.md) |
+| Case study KPI table | [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md) |
+| Claim boundary respected | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) |
+
 ## Summary
 
 | Item | Value |

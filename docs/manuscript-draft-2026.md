@@ -31,7 +31,7 @@ Fragmented QA across IFC, specifications, and calculations delays sign-off. Aero
 
 ## 4. Benchmark
 
-See generated report: `docs/evidence/benchmark-report-*.md`.
+Frozen pre-pilot line: tag `pilot-2026-pre`. Reports: [`docs/evidence/benchmark-report-2026-05-20.md`](evidence/benchmark-report-2026-05-20.md), [`docs/evidence/pre-pilot-extraction-2026-05-21.json`](evidence/pre-pilot-extraction-2026-05-21.json).
 
 | Corpus | Documents | Requirements |
 |---:|---:|---:|
