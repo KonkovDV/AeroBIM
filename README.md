@@ -254,6 +254,7 @@ aerobim/
 
 ## Documentation
 
+- [Pilot start package](docs/pilot-start-package-2026.md) — Moscow pilot kickoff (tag `pilot-2026-pre`, gates, week 1)
 - [Architecture Reference](docs/06-architecture-reference.md) — canonical layer map and invariants
 - [MicroPhoenix Adoption Matrix](docs/08-microphoenix-adoption-matrix.md) — extraction decisions
 - [Implementation Rails](docs/09-implementation-and-verification-rails.md) — delivery and verification

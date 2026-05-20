@@ -34,6 +34,7 @@ Use it to find the current active documents quickly instead of treating the whol
 
 | File | Purpose |
 |---|---|
+| `pilot-start-package-2026.md` | Kickoff one-pager (tag, gates, week 1 actions) |
 | `pilot-claim-boundary-2026.md` | Verified vs planned claims for pilot communications |
 | `pilot-package-playbook-2026.md` | Moscow v1 input bundle and BCF checklist |
 | `pilot-pre-pilot-gates-2026.md` | Technical gates before customer pilot |
