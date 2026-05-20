@@ -9,15 +9,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
-from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
-    OpenRebarEvidenceVerifier,
-    build_openrebar_provenance_digest,
-)
-
-
-def _make_analyze_use_case(**kwargs) -> AnalyzeProjectPackageUseCase:
-    kwargs.setdefault("external_evidence_verifier", OpenRebarEvidenceVerifier())
-    return AnalyzeProjectPackageUseCase(**kwargs)
 from aerobim.domain.models import (
     ComparisonOperator,
     DrawingAnnotation,
@@ -33,7 +24,16 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationRequest,
 )
+from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
+    OpenRebarEvidenceVerifier,
+    build_openrebar_provenance_digest,
+)
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
+
+
+def _make_analyze_use_case(**kwargs) -> AnalyzeProjectPackageUseCase:
+    kwargs.setdefault("external_evidence_verifier", OpenRebarEvidenceVerifier())
+    return AnalyzeProjectPackageUseCase(**kwargs)
 
 
 class FakeExtractor:

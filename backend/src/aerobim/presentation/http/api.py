@@ -12,12 +12,12 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 from aerobim.application.services.loin_metadata_resolver import LoinMetadataResolver
-from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
-    build_openrebar_provenance_digest,
-)
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, ValidationRequest
+from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
+    build_openrebar_provenance_digest,
+)
 
 _REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
 _DRAWING_ASSET_ID_RE = _re.compile(r"^[A-Za-z0-9_-]{1,128}$")
@@ -627,6 +627,7 @@ def create_http_app(container: Container):
 
         # Group issues by category for expert reviewer workflow
         from collections import defaultdict
+
         category_issues: dict[str, list[dict]] = defaultdict(list)
         for issue in data.get("issues", ()):
             cat = issue.get("category", "ifc-validation")
@@ -648,8 +649,16 @@ def create_http_app(container: Container):
                     y = pz.get("y")
                     if sheet and x is not None and y is not None:
                         pz_html = f"<br><small class='pz'>Лист: {sheet} ({x:.1f}, {y:.1f})</small>"
-                ev_obs = f"<td>{_esc(obs)}{_esc(' ' + unit if unit and obs else '')}</td>" if obs else "<td>—</td>"
-                ev_exp = f"<td>{_esc(exp)}{_esc(' ' + unit if unit and exp else '')}</td>" if exp else "<td>—</td>"
+                ev_obs = (
+                    f"<td>{_esc(obs)}{_esc(' ' + unit if unit and obs else '')}</td>"
+                    if obs
+                    else "<td>—</td>"
+                )
+                ev_exp = (
+                    f"<td>{_esc(exp)}{_esc(' ' + unit if unit and exp else '')}</td>"
+                    if exp
+                    else "<td>—</td>"
+                )
                 pri = issue.get("priority", 0)
                 pri_class = "pri-high" if pri >= 45 else "pri-med" if pri >= 25 else "pri-low"
                 conf = issue.get("confidence")
@@ -744,7 +753,8 @@ td.pri-low{{color:var(--info)}}
 <h1>Validation Report</h1>
 <div class="summary {status_class}">
 <strong>{status_label}</strong> &mdash;
-{summary["issue_count"]} issue(s): {summary["error_count"]} error(s), {summary["warning_count"]} warning(s) &middot;
+{summary["issue_count"]} issue(s): {summary["error_count"]} error(s),
+{summary["warning_count"]} warning(s) &middot;
 {summary["requirement_count"]} requirement(s)
 </div>
 {iso_section}{category_sections}

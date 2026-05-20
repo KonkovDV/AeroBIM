@@ -22,7 +22,9 @@ def summarize_pack(pack_path: Path, repo_root: Path) -> dict[str, object]:
     request = replace(benchmark_pack.request, request_id="conflict-breakdown-001")
     report = analyze_use_case.execute(request)
 
-    cross_doc = [issue for issue in report.issues if issue.category == FindingCategory.CROSS_DOCUMENT]
+    cross_doc = [
+        issue for issue in report.issues if issue.category == FindingCategory.CROSS_DOCUMENT
+    ]
     breakdown = Counter(
         issue.conflict_kind.value if issue.conflict_kind is not None else "unset"
         for issue in cross_doc
@@ -37,7 +39,9 @@ def summarize_pack(pack_path: Path, repo_root: Path) -> dict[str, object]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Summarize ConflictKind counts for a benchmark pack")
+    parser = argparse.ArgumentParser(
+        description="Summarize ConflictKind counts for a benchmark pack"
+    )
     parser.add_argument(
         "--pack",
         type=Path,
