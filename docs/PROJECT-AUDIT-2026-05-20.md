@@ -44,7 +44,7 @@ tags: [aerobim, audit, fact-check, hygiene]
 | ID | Гэп | Серьёзность |
 |---|---|---|
 | G-01 | Таблицы sign-off в `pilot-pre-pilot-gates-2026.md` | **Закрыто** 2026-05-21 |
-| G-02 | Тег `pilot-2026-pre` не создан | Средняя — воспроизводимость |
+| G-02 | Тег `pilot-2026-pre` | **Закрыто** на `1a5c03e` |
 | G-03 | `docs/10-academic-audit-and-recommendations-ru.md` частично устарел (апрель): R1 overlay уже в коде | Низкая — обновить статус |
 | G-04 | 8 открытых Dependabot PR на GitHub | Низкая — зависимости |
 | G-05 | `gh` CLI не в CI; About/Topics вручную | Низкая — публикация |

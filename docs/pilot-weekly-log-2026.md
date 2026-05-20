@@ -15,7 +15,7 @@ Copy one section per pilot week. Keep customer identifiers out of the repo.
 | Field | Value |
 |---|---|
 | Package revision | `project-package-pilot-moscow-v1` (fixture) |
-| Git tag / image digest | `pilot-2026-pre` (pending push) |
+| Git tag / image digest | `pilot-2026-pre` @ `1a5c03e` |
 | Engineer reviewer | maintainer verification |
 
 ### Pre-pilot gates
