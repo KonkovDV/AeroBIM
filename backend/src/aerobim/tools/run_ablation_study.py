@@ -38,9 +38,7 @@ def run_ablation(pack_paths: list[Path], output: Path | None) -> dict[str, objec
         report = use_case.execute(request)
 
         conflict_counts = Counter(
-            issue.conflict_kind.value
-            for issue in report.issues
-            if issue.conflict_kind is not None
+            issue.conflict_kind.value for issue in report.issues if issue.conflict_kind is not None
         )
         category_counts = Counter(issue.category.value for issue in report.issues)
 

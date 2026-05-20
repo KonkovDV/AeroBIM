@@ -11,7 +11,13 @@ from typing import TypedDict, cast
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.models import DocStatus, DrawingSource, RequirementSource, SourceKind, ValidationRequest
+from aerobim.domain.models import (
+    DocStatus,
+    DrawingSource,
+    RequirementSource,
+    SourceKind,
+    ValidationRequest,
+)
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
 
@@ -183,7 +189,9 @@ def load_benchmark_pack(manifest_path: Path, repo_root_path: Path | None = None)
             manifest.get("information_container_id") or request_data.get("information_container_id")
         ),
         revision=_optional_string(manifest.get("revision") or request_data.get("revision")),
-        doc_status=_optional_doc_status(manifest.get("doc_status") or request_data.get("doc_status")),
+        doc_status=_optional_doc_status(
+            manifest.get("doc_status") or request_data.get("doc_status")
+        ),
     )
 
     return BenchmarkPack(
