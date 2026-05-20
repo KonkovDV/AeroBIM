@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-ablation-a3",
+  "description": "Ablation A3: full multimodal pilot pack (cross-doc, calculation, drawings).",
+  "ablation_mode": "A3",
+  "project_name": "Ablation A3 — Full pilot",
+  "discipline": "fire-safety+structure",
+  "stage": "S2",
+  "revision": "P-01",
+  "doc_status": "Shared",
+  "information_container_id": "cde-ablation-a3-001",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "requirement_path": "samples/requirements/techlab-fire-safety-rules.txt",
+    "ids_path": "samples/ids/wall-fire-rating.ids",
+    "technical_spec_path": "samples/specifications/techlab-tz.txt",
+    "calculation_path": "samples/calculations/techlab-area-calc.txt",
+    "drawings": [
+      {
+        "path": "samples/drawings/techlab-annotations.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      }
+    ]
+  }
+}

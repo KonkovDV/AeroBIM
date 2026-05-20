@@ -1,57 +1,47 @@
 # Benchmark Packs
 
-Store manifest-backed benchmark packs here for repeatable throughput and latency rails.
+Manifest-backed packs for repeatable latency rails, ablation studies, and publication artifacts.
 
-Each pack should reference representative fixtures under `samples/` and stay license-safe.
+Each pack references fixtures under `samples/` and stays license-safe.
 
-Current packs:
+## Project-package packs
 
-- `project-package-baseline.json` — multimodal baseline pack with IFC, IDS, narrative, calculation, and drawing inputs.
-- `project-package-fire-compliance.json` — smaller fire-compliance profile for a second throughput comparison point.
-- `project-package-stress-multisource.json` — stress-oriented profile with expanded requirement set plus dual drawing sources.
+| Pack | Role |
+|---|---|
+| `project-package-baseline.json` | Multimodal baseline (IFC, IDS, narrative, calculation, drawing) |
+| `project-package-fire-compliance.json` | Fire-compliance profile |
+| `project-package-stress-multisource.json` | Stress profile with expanded inputs |
+| `project-package-pilot-moscow-v1.json` | Pilot Moscow bundle |
+| `project-package-ablation-a0.json` | Ablation A0: IFC + IDS only |
+| `project-package-ablation-a1.json` | Ablation A1: + structured requirements |
+| `project-package-ablation-a2.json` | Ablation A2: + narrative specification |
+| `project-package-ablation-a3.json` | Ablation A3: full multimodal pack |
 
-Threshold profile:
+## Extraction quality
 
-- `benchmark-thresholds.json` — initial advisory performance budget profile used by CI summary and threshold evaluation rails.
+| Artifact | Role |
+|---|---|
+| `russian-aec-ground-truth.json` | 10 RU documents, 50 annotated requirements |
+| `benchmark-extraction-quality.json` | CI metadata for extraction gate |
+| `bsdd-pilot-terms.json` | Offline bSDD term map (pilot properties) |
+| `loin-rule-metadata.json` | LOIN purpose/milestone/actor per rule prefix |
 
-Governance versioning:
+Threshold profile: `benchmark-thresholds.json` (advisory and enforced modes).
 
-- Benchmark packs carry explicit `schema_version` and `pack_version` fields.
-- Threshold profile carries `schema_version`, `profile_id`, and `profile_version`.
-- Threshold profile defines separated `advisory` and `enforced` mode packs.
-
-Run the current baseline rail from `backend/`:
-
-```bash
-python -m aerobim.tools.benchmark_project_package
-```
-
-Run the alternate pack explicitly:
-
-```bash
-python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-fire-compliance.json
-```
-
-Run the stress multisource pack:
+## Commands (from `backend/`)
 
 ```bash
-python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-stress-multisource.json
+python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
+python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
+python -m aerobim.tools.run_ablation_study
+python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
 ```
 
-Evaluate collected benchmark artifacts against advisory thresholds:
+Threshold evaluation on CI artifacts:
 
 ```bash
 python -m aerobim.tools.benchmark_threshold_gate \
-	--artifact-dir ../artifacts/ci-benchmark-smoke \
-	--threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
-	--mode advisory
-```
-
-Evaluate collected benchmark artifacts against enforced thresholds:
-
-```bash
-python -m aerobim.tools.benchmark_threshold_gate \
-	--artifact-dir ../artifacts/ci-benchmark-smoke \
-	--threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
-	--mode enforced
+  --artifact-dir ../artifacts/ci-benchmark-smoke \
+  --threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
+  --mode advisory
 ```

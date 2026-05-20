@@ -81,4 +81,6 @@ class S3ObjectStore:
         normalised = key.strip().replace("\\", "/").lstrip("/")
         if not self._prefix:
             return normalised
+        if normalised == self._prefix or normalised.startswith(f"{self._prefix}/"):
+            return normalised
         return f"{self._prefix}/{normalised}"

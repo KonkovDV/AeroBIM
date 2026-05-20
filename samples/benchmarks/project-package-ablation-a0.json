@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-ablation-a0",
+  "description": "Ablation A0: IFC + IDS only (no structured requirements, narrative, calculation, or drawings).",
+  "ablation_mode": "A0",
+  "project_name": "Ablation A0 — IFC+IDS",
+  "discipline": "fire-safety",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "ids_path": "samples/ids/wall-fire-rating.ids"
+  }
+}

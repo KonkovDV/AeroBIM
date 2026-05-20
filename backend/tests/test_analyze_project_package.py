@@ -8,10 +8,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.application.use_cases.analyze_project_package import (
-    AnalyzeProjectPackageUseCase,
+from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
+    OpenRebarEvidenceVerifier,
     build_openrebar_provenance_digest,
 )
+
+
+def _make_analyze_use_case(**kwargs) -> AnalyzeProjectPackageUseCase:
+    kwargs.setdefault("external_evidence_verifier", OpenRebarEvidenceVerifier())
+    return AnalyzeProjectPackageUseCase(**kwargs)
 from aerobim.domain.models import (
     ComparisonOperator,
     DrawingAnnotation,
@@ -245,7 +251,7 @@ def _build_openrebar_report_payload(
 class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
     def test_execute_builds_multimodal_report_with_generated_remarks(self) -> None:
         store = FakeStore()
-        use_case = AnalyzeProjectPackageUseCase(
+        use_case = _make_analyze_use_case(
             requirement_extractor=FakeExtractor(),
             narrative_rule_synthesizer=FakeSynthesizer(),
             drawing_analyzer=FakeDrawingAnalyzer(),
@@ -282,7 +288,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 
     def test_execute_copies_project_metadata_into_report(self) -> None:
         store = FakeStore()
-        use_case = AnalyzeProjectPackageUseCase(
+        use_case = _make_analyze_use_case(
             requirement_extractor=FakeExtractor(),
             narrative_rule_synthesizer=FakeSynthesizer(),
             drawing_analyzer=FakeDrawingAnalyzer(),
@@ -315,7 +321,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 
     def test_execute_merges_ids_issues_into_multimodal_report(self) -> None:
         store = FakeStore()
-        use_case = AnalyzeProjectPackageUseCase(
+        use_case = _make_analyze_use_case(
             requirement_extractor=FakeExtractor(),
             narrative_rule_synthesizer=FakeSynthesizer(),
             drawing_analyzer=FakeDrawingAnalyzer(),
@@ -365,7 +371,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                 return []
 
         store = FakeStore()
-        use_case = AnalyzeProjectPackageUseCase(
+        use_case = _make_analyze_use_case(
             requirement_extractor=EmptyExtractor(),
             narrative_rule_synthesizer=EmptySynthesizer(),
             drawing_analyzer=NoOpDrawingAnalyzer(),
@@ -413,7 +419,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                 return []
 
         store = FakeStore()
-        use_case = AnalyzeProjectPackageUseCase(
+        use_case = _make_analyze_use_case(
             requirement_extractor=NoOpExtractor(),
             narrative_rule_synthesizer=NoOpSynthesizer(),
             drawing_analyzer=ExplodingStructuredAnalyzer(),
@@ -450,7 +456,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 
     def test_execute_merges_structured_and_vision_annotations(self) -> None:
         store = FakeStore()
-        use_case = AnalyzeProjectPackageUseCase(
+        use_case = _make_analyze_use_case(
             requirement_extractor=FakeExtractor(),
             narrative_rule_synthesizer=FakeSynthesizer(),
             drawing_analyzer=FakeDrawingAnalyzer(),
@@ -518,7 +524,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 
         try:
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=NoOpExtractor(),
                 narrative_rule_synthesizer=NoOpSynthesizer(),
                 drawing_analyzer=NoOpStructuredAnalyzer(),
@@ -562,7 +568,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=FakeExtractor(),
                 narrative_rule_synthesizer=FakeSynthesizer(),
                 drawing_analyzer=FakeDrawingAnalyzer(),
@@ -607,7 +613,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=FakeExtractor(),
                 narrative_rule_synthesizer=FakeSynthesizer(),
                 drawing_analyzer=FakeDrawingAnalyzer(),
@@ -647,7 +653,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=FakeExtractor(),
                 narrative_rule_synthesizer=FakeSynthesizer(),
                 drawing_analyzer=FakeDrawingAnalyzer(),
@@ -692,7 +698,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=FakeExtractor(),
                 narrative_rule_synthesizer=FakeSynthesizer(),
                 drawing_analyzer=FakeDrawingAnalyzer(),
@@ -751,7 +757,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=NoOpExtractor(),
                 narrative_rule_synthesizer=NoOpSynthesizer(),
                 drawing_analyzer=NoOpDrawingAnalyzer(),
@@ -810,7 +816,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=NoOpExtractor(),
                 narrative_rule_synthesizer=NoOpSynthesizer(),
                 drawing_analyzer=NoOpDrawingAnalyzer(),
@@ -870,7 +876,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=NoOpExtractor(),
                 narrative_rule_synthesizer=NoOpSynthesizer(),
                 drawing_analyzer=NoOpDrawingAnalyzer(),
@@ -909,7 +915,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             )
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=FakeExtractor(),
                 narrative_rule_synthesizer=FakeSynthesizer(),
                 drawing_analyzer=FakeDrawingAnalyzer(),
@@ -947,7 +953,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             report_path.write_text("{invalid-json", encoding="utf-8")
 
             store = FakeStore()
-            use_case = AnalyzeProjectPackageUseCase(
+            use_case = _make_analyze_use_case(
                 requirement_extractor=FakeExtractor(),
                 narrative_rule_synthesizer=FakeSynthesizer(),
                 drawing_analyzer=FakeDrawingAnalyzer(),
@@ -1018,7 +1024,7 @@ class CalculationSourceTests(unittest.TestCase):
     def test_calculation_source_in_multimodal_use_case(self) -> None:
         """calculation_source is processed end-to-end by AnalyzeProjectPackageUseCase."""
         store = FakeStore()
-        use_case = AnalyzeProjectPackageUseCase(
+        use_case = _make_analyze_use_case(
             requirement_extractor=FakeExtractor(),
             narrative_rule_synthesizer=FakeSynthesizer(),
             drawing_analyzer=FakeDrawingAnalyzer(),

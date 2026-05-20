@@ -110,7 +110,6 @@ function buildReport(): ValidationReport {
   return {
     report_id: "a".repeat(32),
     request_id: "req-001",
-    ifc_path: "var/reports/model.ifc",
     created_at: "2026-04-13T09:00:00Z",
     project_name: "Residential Tower Alpha",
     discipline: "architecture",

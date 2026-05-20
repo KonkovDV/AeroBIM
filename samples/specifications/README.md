@@ -1,5 +1,5 @@
-# Specification Samples Placeholder
+# Образцы технических заданий
 
-Store technical specification fixtures here.
+Фикстуры нарративных ТЗ для проверки извлечения требований и междокументной сверки.
 
-Use these files for narrative requirement extraction and provenance checks before wiring a model-backed LLM adapter.
+Контур подписания отчётов остаётся детерминированным (regex). Подключение моделей — только за отдельным gate по метрикам извлечения.

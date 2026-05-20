@@ -7,6 +7,8 @@ from collections.abc import Iterable, Mapping, Sequence
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from aerobim.application.services.confidence_scorer import score_confidence
+from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
 from aerobim.domain.models import (
     ComparisonOperator,
     ConflictKind,
@@ -22,11 +24,13 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationRequest,
     ValidationSummary,
+    compute_issue_priority,
 )
 from aerobim.domain.ports import (
     AuditReportStore,
     ClashDetector,
     DrawingAnalyzer,
+    ExternalEvidenceVerifier,
     IdsValidator,
     IfcValidator,
     NarrativeRuleSynthesizer,
@@ -76,25 +80,9 @@ _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
 }
 
 
-def build_openrebar_provenance_digest(report_payload: Mapping[str, object]) -> str:
-    canonical_payload = {
-        "contractId": report_payload.get("contractId"),
-        "schemaVersion": report_payload.get("schemaVersion"),
-        "generatedAtUtc": report_payload.get("generatedAtUtc"),
-        "isolineFileName": report_payload.get("isolineFileName"),
-        "isolineFileFormat": report_payload.get("isolineFileFormat"),
-        "metadata": report_payload.get("metadata"),
-        "normativeProfile": report_payload.get("normativeProfile"),
-        "analysisProvenance": report_payload.get("analysisProvenance"),
-        "summary": report_payload.get("summary"),
-    }
-    normalized = json.dumps(
-        canonical_payload,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    )
-    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+class _NullExternalEvidenceVerifier:
+    def verify(self, request: ValidationRequest) -> list[ValidationIssue]:
+        return []
 
 
 class AnalyzeProjectPackageUseCase:
@@ -111,6 +99,7 @@ class AnalyzeProjectPackageUseCase:
         tolerance: ToleranceConfig | None = None,
         clash_detector: ClashDetector | None = None,
         cross_doc_severity: str = "warning",
+        external_evidence_verifier: ExternalEvidenceVerifier | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -126,12 +115,23 @@ class AnalyzeProjectPackageUseCase:
         self._cross_doc_severity = Severity(
             cross_doc_severity if cross_doc_severity in _valid_severities else "warning"
         )
+        self._external_evidence_verifier = (
+            external_evidence_verifier or _NullExternalEvidenceVerifier()
+        )
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         structured_requirements = list(
             self._requirement_extractor.extract(request.requirement_source)
         )
+        structured_requirements = [
+            ParsedRequirement(**{k: v for k, v in req.__dict__.items() if k != "confidence"}, confidence=score_confidence(req))
+            for req in structured_requirements
+        ]
         synthesized_requirements = self._collect_synthesized_requirements(request)
+        synthesized_requirements = [
+            ParsedRequirement(**{k: v for k, v in req.__dict__.items() if k != "confidence"}, confidence=score_confidence(req))
+            for req in synthesized_requirements
+        ]
         requirements = tuple([*structured_requirements, *synthesized_requirements])
         ids_issues = tuple(self._collect_ids_issues(request))
         if not requirements and request.ids_path is None:
@@ -152,7 +152,7 @@ class AnalyzeProjectPackageUseCase:
         cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
         reinforcement_provenance_issues = tuple(
             self._apply_openrebar_provenance_policy(
-                self._collect_openrebar_provenance_issues(request),
+                self._external_evidence_verifier.verify(request),
                 request.reinforcement_provenance_mode,
             )
         )
@@ -170,8 +170,15 @@ class AnalyzeProjectPackageUseCase:
                 ]
             )
         )
+        prioritized_issues = tuple(
+            ValidationIssue(
+                **{k: v for k, v in issue.__dict__.items() if k != "priority"},
+                priority=compute_issue_priority(issue),
+            )
+            for issue in issues_with_remarks
+        )
 
-        severity_counts = Counter(issue.severity for issue in issues_with_remarks)
+        severity_counts = Counter(issue.severity for issue in prioritized_issues)
         error_count = severity_counts[Severity.ERROR]
         warning_count = severity_counts[Severity.WARNING]
 
@@ -181,16 +188,16 @@ class AnalyzeProjectPackageUseCase:
             ifc_path=request.ifc_path,
             created_at=datetime.now(tz=UTC).isoformat(),
             requirements=requirements,
-            issues=issues_with_remarks,
+            issues=prioritized_issues,
             summary=ValidationSummary(
                 requirement_count=len(requirements),
-                issue_count=len(issues_with_remarks),
+                issue_count=len(prioritized_issues),
                 error_count=error_count,
                 warning_count=warning_count,
                 passed=error_count == 0,
                 drawing_annotation_count=len(drawing_annotations),
                 generated_remark_count=sum(
-                    1 for issue in issues_with_remarks if issue.remark is not None
+                    1 for issue in prioritized_issues if issue.remark is not None
                 ),
             ),
             drawing_annotations=drawing_annotations,
@@ -198,6 +205,10 @@ class AnalyzeProjectPackageUseCase:
             clash_results=clash_results,
             project_name=request.project_name,
             discipline=request.discipline,
+            stage=request.stage,
+            information_container_id=request.information_container_id,
+            revision=request.revision,
+            doc_status=request.doc_status,
         )
         self._audit_report_store.save(report)
         persisted_report = self._audit_report_store.get(report.report_id)
@@ -209,193 +220,6 @@ class AnalyzeProjectPackageUseCase:
         if self._ids_validator is None:
             raise RuntimeError("IDS validation requested but no ids validator is configured")
         return self._ids_validator.validate(request.ids_path, request.ifc_path)
-
-    def _collect_openrebar_provenance_issues(
-        self,
-        request: ValidationRequest,
-    ) -> list[ValidationIssue]:
-        if request.reinforcement_report_path is None:
-            return []
-
-        report_path = request.reinforcement_report_path
-        if not report_path.exists():
-            raise FileNotFoundError(report_path)
-
-        try:
-            report_payload = json.loads(report_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            raise ValueError(f"Invalid OpenRebar reinforcement report JSON: {report_path}") from exc
-
-        if not isinstance(report_payload, dict):
-            raise ValueError("OpenRebar reinforcement report must be a JSON object")
-
-        issues: list[ValidationIssue] = []
-        contract_id = str(report_payload.get("contractId", "")).strip()
-        metadata = report_payload.get("metadata")
-        metadata_dict = metadata if isinstance(metadata, dict) else {}
-        project_code = str(metadata_dict.get("projectCode", "")).strip()
-        slab_id = str(metadata_dict.get("slabId", "")).strip() or None
-
-        if contract_id != _OPENREBAR_REPORT_CONTRACT_ID:
-            issues.append(
-                ValidationIssue(
-                    rule_id="OPENREBAR-CONTRACT",
-                    severity=Severity.WARNING,
-                    message=(
-                        "OpenRebar report contractId is unexpected; downstream "
-                        "integration guarantees may not hold."
-                    ),
-                    category=FindingCategory.CROSS_DOCUMENT,
-                    target_ref=slab_id,
-                    property_name="contractId",
-                    expected_value=_OPENREBAR_REPORT_CONTRACT_ID,
-                    observed_value=contract_id or "<missing>",
-                )
-            )
-
-        optimization = report_payload.get("analysisProvenance")
-        optimization_dict = optimization if isinstance(optimization, dict) else {}
-        optimization_node = optimization_dict.get("optimization")
-        optimization_payload = optimization_node if isinstance(optimization_node, dict) else {}
-        fallback_solver_used = optimization_payload.get("anyFallbackMasterSolverUsed")
-        master_problem_strategy = str(optimization_payload.get("masterProblemStrategy", "")).strip()
-
-        if fallback_solver_used is True:
-            issues.append(
-                ValidationIssue(
-                    rule_id="OPENREBAR-OPT-FALLBACK",
-                    severity=Severity.WARNING,
-                    message=(
-                        "OpenRebar optimization used a fallback master solver; "
-                        "waste metrics may deviate from the preferred HiGHS path."
-                    ),
-                    category=FindingCategory.CROSS_DOCUMENT,
-                    target_ref=slab_id,
-                    property_name=("analysisProvenance.optimization.anyFallbackMasterSolverUsed"),
-                    expected_value="false",
-                    observed_value="true",
-                )
-            )
-
-        if "highs" not in master_problem_strategy.lower():
-            issues.append(
-                ValidationIssue(
-                    rule_id="OPENREBAR-OPT-STRATEGY",
-                    severity=Severity.WARNING,
-                    message=(
-                        "OpenRebar optimization master strategy does not indicate "
-                        "HiGHS-backed solving."
-                    ),
-                    category=FindingCategory.CROSS_DOCUMENT,
-                    target_ref=slab_id,
-                    property_name="analysisProvenance.optimization.masterProblemStrategy",
-                    expected_value="contains: highs",
-                    observed_value=master_problem_strategy or "<missing>",
-                )
-            )
-
-        if request.project_name and project_code:
-            if request.project_name.strip().lower() != project_code.lower():
-                issues.append(
-                    ValidationIssue(
-                        rule_id="OPENREBAR-PROJECT-CODE",
-                        severity=Severity.WARNING,
-                        message=(
-                            "OpenRebar report projectCode differs from current "
-                            "AeroBIM project context."
-                        ),
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        target_ref=slab_id,
-                        property_name="metadata.projectCode",
-                        expected_value=request.project_name,
-                        observed_value=project_code,
-                    )
-                )
-
-        observed_digest = build_openrebar_provenance_digest(report_payload)
-        if request.reinforcement_source_digest:
-            expected_digest = request.reinforcement_source_digest.strip().lower()
-            if expected_digest and expected_digest != observed_digest:
-                issues.append(
-                    ValidationIssue(
-                        rule_id="OPENREBAR-PROVENANCE-DIGEST",
-                        severity=Severity.WARNING,
-                        message=(
-                            "OpenRebar provenance digest mismatch: reinforcement "
-                            "model may be stale relative to current source package."
-                        ),
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        target_ref=slab_id,
-                        property_name="reinforcementSourceDigest",
-                        expected_value=expected_digest,
-                        observed_value=observed_digest,
-                    )
-                )
-        else:
-            issues.append(
-                ValidationIssue(
-                    rule_id="OPENREBAR-PROVENANCE-REFERENCE-MISSING",
-                    severity=Severity.WARNING,
-                    message=(
-                        "OpenRebar reference digest is missing; stale reinforcement "
-                        "detection is disabled for this run."
-                    ),
-                    category=FindingCategory.CROSS_DOCUMENT,
-                    target_ref=slab_id,
-                    property_name="reinforcementSourceDigest",
-                    expected_value="provided",
-                    observed_value=observed_digest,
-                )
-            )
-
-        threshold = request.reinforcement_waste_warning_threshold_percent
-        if threshold is not None:
-            summary_payload = report_payload.get("summary")
-            summary_dict = summary_payload if isinstance(summary_payload, dict) else {}
-            raw_total_waste = summary_dict.get("totalWastePercent")
-            total_waste = (
-                float(raw_total_waste)
-                if isinstance(raw_total_waste, int | float)
-                else self._to_float(str(raw_total_waste))
-                if raw_total_waste is not None
-                else None
-            )
-
-            if total_waste is None:
-                issues.append(
-                    ValidationIssue(
-                        rule_id="OPENREBAR-WASTE-METRIC-MISSING",
-                        severity=Severity.WARNING,
-                        message=(
-                            "OpenRebar report summary does not contain a parseable "
-                            "totalWastePercent value."
-                        ),
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        target_ref=slab_id,
-                        property_name="summary.totalWastePercent",
-                        expected_value="numeric",
-                        observed_value="<missing>",
-                    )
-                )
-            elif total_waste > threshold:
-                issues.append(
-                    ValidationIssue(
-                        rule_id="OPENREBAR-WASTE-THRESHOLD",
-                        severity=Severity.WARNING,
-                        message=(
-                            "OpenRebar total waste exceeds the configured AeroBIM "
-                            "warning threshold."
-                        ),
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        target_ref=slab_id,
-                        property_name="summary.totalWastePercent",
-                        expected_value=f"<= {threshold:g}",
-                        observed_value=f"{total_waste:g}",
-                        unit="%",
-                    )
-                )
-
-        return issues
 
     def _apply_openrebar_provenance_policy(
         self,
@@ -549,6 +373,8 @@ class AnalyzeProjectPackageUseCase:
                         prev_req.unit,
                         req.expected_value,
                         req.unit,
+                        quantity_a=prev_req.quantity,
+                        quantity_b=req.quantity,
                     ):
                         prev_val = (prev_req.expected_value or "").strip()
                         val = (req.expected_value or "").strip()
@@ -562,6 +388,8 @@ class AnalyzeProjectPackageUseCase:
                             prev_req.unit,
                             req.expected_value,
                             req.unit,
+                            quantity_a=prev_req.quantity,
+                            quantity_b=req.quantity,
                         )
                         issues.append(
                             ValidationIssue(
@@ -585,12 +413,30 @@ class AnalyzeProjectPackageUseCase:
 
         return issues
 
+    def _resolve_quantity(
+        self,
+        value: str | None,
+        unit: str | None,
+        quantity: QuantityValue | None,
+    ) -> QuantityValue | None:
+        if quantity is not None and quantity.si_value is not None:
+            return quantity
+        if value is None:
+            return None
+        numeric = self._to_float(value.strip())
+        if numeric is None:
+            return None
+        return parse_quantity(numeric, unit or "")
+
     def _classify_conflict_kind(
         self,
         value_a: str | None,
         unit_a: str | None,
         value_b: str | None,
         unit_b: str | None,
+        *,
+        quantity_a: QuantityValue | None = None,
+        quantity_b: QuantityValue | None = None,
     ) -> ConflictKind:
         """Classify a detected cross-document conflict into a ``ConflictKind``.
 
@@ -602,25 +448,25 @@ class AnalyzeProjectPackageUseCase:
         if value_a is None or value_b is None:
             return ConflictKind.AMBIGUOUS_MAPPING
 
-        a_num = self._to_float(value_a.strip())
-        b_num = self._to_float(value_b.strip())
+        q_a = self._resolve_quantity(value_a, unit_a, quantity_a)
+        q_b = self._resolve_quantity(value_b, unit_b, quantity_b)
 
-        if a_num is not None and b_num is not None:
-            norm_a = self._normalize_cross_document_numeric_value(a_num, unit_a)
-            norm_b = self._normalize_cross_document_numeric_value(b_num, unit_b)
-            if norm_a is not None and norm_b is not None:
-                val_a_si, unit_a_si = norm_a
-                val_b_si, unit_b_si = norm_b
-                if unit_a_si != unit_b_si:
+        if q_a is not None and q_b is not None and q_a.si_value is not None and q_b.si_value is not None:
+            if q_a.ucum_code and q_b.ucum_code:
+                if q_a.dimension != q_b.dimension:
                     return ConflictKind.UNIT_MISMATCH
-                # Same SI dimension — values differ beyond tolerance
                 return ConflictKind.HARD_CONFLICT
-            # One or both units unknown — numeric conflict without SI context
             if unit_a and unit_b and unit_a.strip().lower() != unit_b.strip().lower():
                 return ConflictKind.UNIT_MISMATCH
             return ConflictKind.HARD_CONFLICT
 
-        # Non-numeric conflict
+        a_num = self._to_float(value_a.strip())
+        b_num = self._to_float(value_b.strip())
+        if a_num is not None and b_num is not None:
+            if unit_a and unit_b and unit_a.strip().lower() != unit_b.strip().lower():
+                return ConflictKind.UNIT_MISMATCH
+            return ConflictKind.HARD_CONFLICT
+
         return ConflictKind.HARD_CONFLICT
 
     def _values_conflict(
@@ -629,6 +475,9 @@ class AnalyzeProjectPackageUseCase:
         unit_a: str | None,
         value_b: str | None,
         unit_b: str | None,
+        *,
+        quantity_a: QuantityValue | None = None,
+        quantity_b: QuantityValue | None = None,
     ) -> bool:
         """Return True when two expected values are materially different.
 
@@ -642,20 +491,33 @@ class AnalyzeProjectPackageUseCase:
         if a_str.lower() == b_str.lower():
             return False
 
+        q_a = self._resolve_quantity(value_a, unit_a, quantity_a)
+        q_b = self._resolve_quantity(value_b, unit_b, quantity_b)
+        if (
+            q_a is not None
+            and q_b is not None
+            and q_a.si_value is not None
+            and q_b.si_value is not None
+            and q_a.ucum_code
+            and q_b.ucum_code
+        ):
+            if q_a.dimension != q_b.dimension:
+                return True
+            eps = self._tolerance.epsilon_for_unit(q_a.ucum_code)
+            return not si_compare(q_a, q_b, epsilon=eps)
+
         a_num = self._to_float(a_str)
         b_num = self._to_float(b_str)
         if a_num is not None and b_num is not None:
-            normalized_a = self._normalize_cross_document_numeric_value(a_num, unit_a)
-            normalized_b = self._normalize_cross_document_numeric_value(b_num, unit_b)
-            if normalized_a is not None and normalized_b is not None:
-                value_a_si, unit_a_si = normalized_a
-                value_b_si, unit_b_si = normalized_b
-                if unit_a_si != unit_b_si:
+            parsed_a = parse_quantity(a_num, unit_a or "")
+            parsed_b = parse_quantity(b_num, unit_b or "")
+            if parsed_a.ucum_code and parsed_b.ucum_code:
+                if parsed_a.dimension != parsed_b.dimension:
                     return True
-                eps = self._tolerance.epsilon_for_unit(unit_a_si)
-                return abs(value_a_si - value_b_si) > eps
+                eps = self._tolerance.epsilon_for_unit(parsed_a.ucum_code)
+                return not si_compare(parsed_a, parsed_b, epsilon=eps)
 
-            eps = self._tolerance.epsilon_for_unit(unit_a or unit_b)
+            eps = self._tolerance.epsilon_for_unit(unit_a or unit_b or "")
             return abs(a_num - b_num) > eps
 
         return True
@@ -704,6 +566,9 @@ class AnalyzeProjectPackageUseCase:
                         operator=requirement.operator,
                         expected_value=requirement.expected_value,
                         unit=requirement.unit,
+                        confidence=requirement.confidence,
+                        source_id=requirement.source,
+                        evidence_modality=requirement.evidence_modality,
                     )
                 )
                 continue
@@ -730,6 +595,9 @@ class AnalyzeProjectPackageUseCase:
                         observed_value=annotation.observed_value,
                         unit=requirement.unit or annotation.unit,
                         problem_zone=annotation.problem_zone,
+                        confidence=requirement.confidence,
+                        source_id=requirement.source,
+                        evidence_modality=requirement.evidence_modality,
                     )
                 )
 
@@ -755,6 +623,11 @@ class AnalyzeProjectPackageUseCase:
                     element_guid=issue.element_guid,
                     problem_zone=issue.problem_zone,
                     remark=self._remark_generator.generate(issue),
+                    conflict_kind=issue.conflict_kind,
+                    priority=issue.priority,
+                    source_id=issue.source_id,
+                    evidence_modality=issue.evidence_modality,
+                    confidence=issue.confidence,
                 )
             )
         return enriched
