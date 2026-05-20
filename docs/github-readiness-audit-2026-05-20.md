@@ -54,7 +54,7 @@ Fact-check of public claims against runnable evidence. Environment: Windows, Pyt
 4. [x] `git push origin main` (force-with-lease после rewrite авторов, HEAD `737a7d7`)
 5. [ ] Optional: `gh repo edit` for About + topics
 6. [x] Pre-pilot gates 1–4 signed off 2026-05-21 ([`pilot-pre-pilot-gates-2026.md`](pilot-pre-pilot-gates-2026.md))
-7. [ ] Tag `pilot-2026-pre` pushed ([`pilot-frozen-tag-protocol-2026.md`](pilot-frozen-tag-protocol-2026.md))
+7. [x] Tag `pilot-2026-pre` pushed on `1a5c03e` ([`pilot-frozen-tag-protocol-2026.md`](pilot-frozen-tag-protocol-2026.md))
 
 ## Maintainer push
 
