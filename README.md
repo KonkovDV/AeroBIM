@@ -272,6 +272,8 @@ aerobim/
 
 Do not commit through the Cursor agent with **Attribution** enabled — it can add `Co-authored-by: Cursor` to history. Turn off **Settings → Agent → Attribution**, then use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit (single author)**. See [docs/git-hygiene-2026.md](docs/git-hygiene-2026.md).
 
+**GitHub publication:** pre-push audit — [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md). Suggested repo About text — [.github/repository-metadata.md](.github/repository-metadata.md).
+
 ## Governance
 
 - [Contributing](CONTRIBUTING.md)
