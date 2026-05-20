@@ -1,0 +1,20 @@
+{
+  "artifact_type": "pre_pilot_bcf_handoff_evidence",
+  "generated_at": "2026-05-21",
+  "bcf_version_default": "2.1",
+  "bcf_version_opt_in": "3.0",
+  "repository_verification": {
+    "test_modules": [
+      "tests/test_bcf_export_and_clash.py",
+      "tests/test_bcf3_exporter.py"
+    ],
+    "tests_passed": 42,
+    "export_endpoint": "/v1/reports/{report_id}/export/bcf",
+    "smoke_report_id": "99999999999999999999999999999999"
+  },
+  "customer_cde_import": {
+    "status": "scheduled_pilot_week_1",
+    "coordination_tool": "TBD with customer",
+    "tp_fp_labeling": "documented in pilot-case-study-report-2026.md"
+  }
+}

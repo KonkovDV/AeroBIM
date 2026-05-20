@@ -4,7 +4,7 @@
 
 - Platform: `Windows-11-10.0.26200-SP0`
 - Python: `3.13.7`
-- pip freeze hash: `4cf238f28d1b5662`
+- pip freeze hash: `2c7d42fcfd1b146f`
 - ifcopenshell: `unknown`
 
 ## Extraction quality (RU corpus)
@@ -36,4 +36,4 @@
 
 Deterministic multimodal QA kernel with provenance — not full-code compliance.
 
-_Generated at 2026-05-20T19:30:46.653500+00:00_
+_Generated at 2026-05-20T21:14:15.151473+00:00_

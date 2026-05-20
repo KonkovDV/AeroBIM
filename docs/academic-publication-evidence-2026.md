@@ -29,6 +29,10 @@ status: active
 - Template: [`benchmark-report-template.md`](benchmark-report-template.md)
 - Citation: [`CITATION.bib`](CITATION.bib)
 
+## Frozen pre-pilot tag
+
+Tag **`pilot-2026-pre`** — evidence under [`evidence/`](evidence/) (`pre-pilot-*-2026-05-21.*`, `pre-pilot-gates-evidence-2026-05-21.md`). Macro F1 ≈ **0.86** on RU corpus.
+
 ## CI release
 
 Tag `v*` triggers [`.github/workflows/academic-benchmark-release.yml`](../.github/workflows/academic-benchmark-release.yml) (benchmark JSON, extraction quality, rendered MD).
@@ -39,4 +43,4 @@ Deterministic multimodal QA kernel with provenance — not full-code compliance 
 
 ## Prior pilot bundle
 
-See [`academic-pilot-evidence-2026.md`](academic-pilot-evidence-2026.md) for pre-publication pilot closure (F1 ≈ 0.83, APPROVED runtime).
+See [`academic-pilot-evidence-2026.md`](academic-pilot-evidence-2026.md) and [`evidence/pre-pilot-gates-evidence-2026-05-21.md`](evidence/pre-pilot-gates-evidence-2026-05-21.md) (F1 ≈ 0.86, APPROVED runtime).

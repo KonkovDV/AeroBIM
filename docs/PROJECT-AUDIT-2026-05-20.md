@@ -14,7 +14,7 @@ tags: [aerobim, audit, fact-check, hygiene]
 
 | Проверка | Результат |
 |---|---|
-| `pytest tests -q` | **294 passed**, 2 skipped |
+| `pytest tests -q` | **292 passed**, 2 skipped |
 | `ruff check src tests` | pass |
 | `mypy src/aerobim --ignore-missing-imports` | 63 files, pass |
 | `evaluate_extraction --min-macro-f1 0.70` | **PASS**, macro F1 = **0.86** |
@@ -43,7 +43,7 @@ tags: [aerobim, audit, fact-check, hygiene]
 
 | ID | Гэп | Серьёзность |
 |---|---|---|
-| G-01 | Таблицы sign-off в `pilot-pre-pilot-gates-2026.md` без дат/владельцев | Средняя — процесс |
+| G-01 | Таблицы sign-off в `pilot-pre-pilot-gates-2026.md` | **Закрыто** 2026-05-21 |
 | G-02 | Тег `pilot-2026-pre` не создан | Средняя — воспроизводимость |
 | G-03 | `docs/10-academic-audit-and-recommendations-ru.md` частично устарел (апрель): R1 overlay уже в коде | Низкая — обновить статус |
 | G-04 | 8 открытых Dependabot PR на GitHub | Низкая — зависимости |
