@@ -28,7 +28,7 @@ Build an isolated product that turns project requirements, drawings, calculation
 ### Out Of Scope For MVP
 
 - full digital twin platform;
-- autonomous multi-agent orchestration;
+- autonomous multi-service orchestration;
 - generic plugin marketplace;
 - enterprise data lake / knowledge graph;
 - full construction ERP scope.

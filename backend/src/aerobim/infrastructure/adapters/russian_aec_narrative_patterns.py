@@ -1,7 +1,7 @@
 """Deterministic Russian AEC narrative extractors for benchmark ground-truth alignment.
 
 Patterns are explicit and auditable (hybrid rule-based ACC per ITcon 2025 SLR).
-No LLM inference — suitable for pilot sign-off and extraction P/R evaluation.
+Deterministic patterns only — suitable for pilot sign-off and extraction P/R evaluation.
 """
 
 from __future__ import annotations

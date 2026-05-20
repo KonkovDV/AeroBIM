@@ -128,7 +128,7 @@ class FakeVisionDrawingAnalyzer:
     ) -> list[DrawingAnnotation]:
         return [
             DrawingAnnotation(
-                annotation_id="VLM-ANN-001",
+                annotation_id="VIS-ANN-001",
                 sheet_id=sheet_id or "IMG-001",
                 target_ref="WALL-IMG-01",
                 measure_name="thickness",

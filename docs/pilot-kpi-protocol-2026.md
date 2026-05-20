@@ -36,4 +36,4 @@ Agree with the customer **before** pilot start. AeroBIM supplies artifacts; the 
 ## Exclusions
 
 - No revenue or production SLA claims from repo evidence alone
-- No VLM-based metrics until extraction F1 gate is green in CI
+- No stochastic-vision metrics until extraction F1 gate is green in CI

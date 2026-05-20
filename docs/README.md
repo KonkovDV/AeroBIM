@@ -47,7 +47,8 @@ Use it to find the current active documents quickly instead of treating the whol
 | `benchmark-report-template.md` | ITcon-style supplementary report skeleton |
 | `manuscript-draft-2026.md` | Paper draft outline (method + case study) |
 | `CITATION.bib` | BibTeX entries for reuse |
-| `git-hygiene-2026.md` | Single-author commits; disable Cursor co-author |
+| `contributor-git-2026.md` | Single-author commits; no co-author trailers |
+| `PROJECT-AUDIT-2026-05-20.md` | Deep audit, fact-check, hygiene findings |
 | `github-readiness-audit-2026-05-20.md` | Pre-push fact-check and evidence table |
 | `pilot-execution-runbook-2026.md` | 8–12 week pilot weekly rhythm |
 | `pilot-weekly-log-2026.md` | Weekly KPI / TP-FP log template |
