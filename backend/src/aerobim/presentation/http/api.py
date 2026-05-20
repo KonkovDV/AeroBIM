@@ -6,7 +6,7 @@ import re as _re
 import secrets
 from dataclasses import asdict
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -169,7 +169,7 @@ def create_http_app(container: Container):
             "loin_actor": loin.actor,
         }
 
-    def _serialize_public_report(report) -> dict[str, object]:
+    def _serialize_public_report(report) -> dict[str, Any]:
         data = asdict(report)
         data.pop("ifc_path", None)
         data.pop("ifc_object_key", None)
@@ -620,8 +620,8 @@ def create_http_app(container: Container):
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        data = _serialize_public_report(report)
-        summary = data["summary"]
+        data: dict[str, Any] = _serialize_public_report(report)
+        summary: dict[str, Any] = data["summary"]
         status_class = "pass" if summary["passed"] else "fail"
         status_label = "PASSED" if summary["passed"] else "FAILED"
 
@@ -695,7 +695,7 @@ def create_http_app(container: Container):
             ("Doc status", data.get("doc_status")),
         ]
         iso_rows = "".join(
-            f"<tr><th>{_esc(label)}</th><td>{_esc(value or '—')}</td></tr>"
+            f"<tr><th>{_esc(label)}</th><td>{_esc(str(value))}</td></tr>"
             for label, value in iso_fields
             if value is not None
         )
@@ -760,9 +760,9 @@ td.pri-low{{color:var(--info)}}
 {iso_section}{category_sections}
 <p class="meta">
 Report ID: {_esc(report_id)} &middot;
-Project: {_esc(data.get("project_name") or "—")} &middot;
-Discipline: {_esc(data.get("discipline") or "—")} &middot;
-Created: {_esc(data.get("created_at", ""))}
+Project: {_esc(str(data.get("project_name") or "—"))} &middot;
+Discipline: {_esc(str(data.get("discipline") or "—"))} &middot;
+Created: {_esc(str(data.get("created_at") or ""))}
 </p>
 </body></html>"""
         return HTMLResponse(

@@ -8,12 +8,29 @@ import sys
 from collections import Counter
 from dataclasses import replace
 from pathlib import Path
+from typing import TypedDict
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import FindingCategory
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
+
+
+class AblationConfigurationRow(TypedDict):
+    pack_id: str
+    ablation_mode: str
+    issue_count: int
+    requirement_count: int
+    cross_document_issues: int
+    conflict_kind_breakdown: dict[str, int]
+    category_breakdown: dict[str, int]
+
+
+class AblationStudyReport(TypedDict):
+    artifact_type: str
+    pack_count: int
+    configurations: list[AblationConfigurationRow]
 
 
 def _default_packs() -> list[Path]:
@@ -26,12 +43,12 @@ def _default_packs() -> list[Path]:
     ]
 
 
-def run_ablation(pack_paths: list[Path], output: Path | None) -> dict[str, object]:
+def run_ablation(pack_paths: list[Path], output: Path | None) -> AblationStudyReport:
     repo = repo_root()
     container = bootstrap_container(Settings.from_env())
     use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
 
-    rows: list[dict[str, object]] = []
+    rows: list[AblationConfigurationRow] = []
     for pack_path in pack_paths:
         pack = load_benchmark_pack(pack_path, repo_root_path=repo)
         request = replace(pack.request, request_id=f"ablation-{pack.pack_id}")
@@ -45,8 +62,10 @@ def run_ablation(pack_paths: list[Path], output: Path | None) -> dict[str, objec
         rows.append(
             {
                 "pack_id": pack.pack_id,
-                "ablation_mode": json.loads(pack_path.read_text(encoding="utf-8")).get(
-                    "ablation_mode", pack.pack_id
+                "ablation_mode": str(
+                    json.loads(pack_path.read_text(encoding="utf-8")).get(
+                        "ablation_mode", pack.pack_id
+                    )
                 ),
                 "issue_count": len(report.issues),
                 "requirement_count": report.summary.requirement_count,
@@ -58,7 +77,7 @@ def run_ablation(pack_paths: list[Path], output: Path | None) -> dict[str, objec
             }
         )
 
-    payload: dict[str, object] = {
+    payload: AblationStudyReport = {
         "artifact_type": "ablation_study_report",
         "pack_count": len(rows),
         "configurations": rows,
