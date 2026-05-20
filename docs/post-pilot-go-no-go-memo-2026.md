@@ -24,9 +24,10 @@ Fill at pilot end (target: November 2026). Decision tree: [`post-pilot-fork-2026
 
 | Item | Value |
 |---|---|
-| Pilot window | YYYY-MM-DD → YYYY-MM-DD |
-| Frozen tag | `pilot-2026-…` |
-| Scope | fire + structure / other |
+| Pilot window | YYYY-MM-DD → YYYY-MM-DD (target end: 2026-11) |
+| Frozen tag | `pilot-2026-pre` @ `1a5c03e`; optional `pilot-2026-final` |
+| Scope | fire + structure (pilot default) |
+| Start package | [`pilot-start-package-2026.md`](pilot-start-package-2026.md) |
 
 ## KPI outcomes
 
@@ -45,7 +46,7 @@ Fill at pilot end (target: November 2026). Decision tree: [`post-pilot-fork-2026
 | Gates 1–3 held through pilot | | |
 | No evidence rail regressions on frozen tag | | |
 | 2D overlay smoke (`run_live_review_smoke`) | | |
-| Macro F1 ≥ 0.70 on frozen tag | | |
+| Macro F1 ≥ 0.70 on frozen tag | pre-pilot: **0.86** | re-run on final SHA |
 
 ## Decision
 

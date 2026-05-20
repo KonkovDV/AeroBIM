@@ -9,7 +9,16 @@ status: active
 
 Triage open PRs at https://github.com/KonkovDV/AeroBIM/pulls — prefer security patches and patch/minor dev-deps during pilot; defer major bumps until post-pilot unless CVE critical.
 
-Record merges in weekly log when applied.
+**Policy during pilot (2026-05-21):**
+
+| Class | Action |
+|---|---|
+| Security advisory | Merge after CI green on PR |
+| Patch/minor (dev tools) | Merge if no API break in AeroBIM |
+| Major version bumps | Defer to post-pilot fork decision |
+| Transitive only | Batch monthly |
+
+Record merges in [`pilot-weekly-log-2026.md`](../pilot-weekly-log-2026.md) when applied.
 
 ## GitHub About / Topics
 
