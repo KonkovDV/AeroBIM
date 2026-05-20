@@ -9,6 +9,10 @@ from aerobim.domain.models import (
     RequirementSource,
     RuleScope,
 )
+from aerobim.infrastructure.adapters.requirement_enrichment import enrich_requirements
+from aerobim.infrastructure.adapters.russian_aec_narrative_patterns import (
+    extract_russian_aec_requirements,
+)
 
 
 class NarrativeRuleSynthesizer:
@@ -27,7 +31,9 @@ class NarrativeRuleSynthesizer:
         if not raw_text and source.path is not None:
             raw_text = self._load_text(source.path)
 
-        requirements: list[ParsedRequirement] = []
+        requirements: list[ParsedRequirement] = list(
+            extract_russian_aec_requirements(source, raw_text)
+        )
         for line_number, line in enumerate(raw_text.splitlines(), start=1):
             normalized = line.strip()
             if not normalized:
@@ -93,7 +99,7 @@ class NarrativeRuleSynthesizer:
                     )
                 )
 
-        return requirements
+        return enrich_requirements(requirements)
 
     def _load_text(self, source_path: Path) -> str:
         if not source_path.exists():

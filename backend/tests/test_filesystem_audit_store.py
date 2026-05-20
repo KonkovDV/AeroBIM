@@ -167,6 +167,39 @@ class FilesystemAuditStoreTests(unittest.TestCase):
             self.assertEqual(loaded.clash_results[0].clash_type, "hard")
             self.assertAlmostEqual(loaded.clash_results[0].distance, 0.015)
 
+    def test_save_and_get_preserve_conflict_kind(self) -> None:
+        import tempfile
+
+        from aerobim.domain.models import ConflictKind, FindingCategory, Severity, ValidationIssue
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemAuditStore(Path(tmp))
+            report = ValidationReport(
+                report_id="rpt-conflict-kind",
+                request_id="req-conflict-kind",
+                ifc_path=Path("sample.ifc"),
+                created_at="2026-04-09T12:00:00Z",
+                requirements=(),
+                issues=(
+                    ValidationIssue(
+                        rule_id="CROSS-DOC-IFCWALL-FireRating",
+                        severity=Severity.WARNING,
+                        message="Cross-document contradiction",
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        conflict_kind=ConflictKind.UNIT_MISMATCH,
+                    ),
+                ),
+                summary=_make_report("ignored").summary,
+            )
+
+            store.save(report)
+            loaded = store.get("rpt-conflict-kind")
+
+            self.assertIsNotNone(loaded)
+            assert loaded is not None
+            self.assertEqual(len(loaded.issues), 1)
+            self.assertEqual(loaded.issues[0].conflict_kind, ConflictKind.UNIT_MISMATCH)
+
 
 if __name__ == "__main__":
     unittest.main()

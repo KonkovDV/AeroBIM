@@ -20,6 +20,7 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
             repo_root / "samples" / "benchmarks" / "project-package-baseline.json",
             repo_root / "samples" / "benchmarks" / "project-package-fire-compliance.json",
             repo_root / "samples" / "benchmarks" / "project-package-stress-multisource.json",
+            repo_root / "samples" / "benchmarks" / "project-package-pilot-moscow-v1.json",
         ]
 
         for manifest_path in manifests:

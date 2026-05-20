@@ -5,6 +5,7 @@ __pycache__/
 *.pyd
 *.egg-info/
 backend/.venv/
+backend/.venv-pilot/
 .venv/
 .pytest_cache/
 .mypy_cache/
@@ -25,6 +26,7 @@ frontend/artifacts/
 var/
 tmp/
 *.log
+backend/cache/
 
 # Build outputs
 bin/

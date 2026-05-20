@@ -10,6 +10,7 @@ from pathlib import Path
 from aerobim.domain.models import (
     ClashResult,
     ComparisonOperator,
+    ConflictKind,
     DrawingAnnotation,
     DrawingAsset,
     FindingCategory,
@@ -77,6 +78,10 @@ class FilesystemAuditStore:
             clash_results=report.clash_results,
             project_name=report.project_name,
             discipline=report.discipline,
+            stage=report.stage,
+            information_container_id=report.information_container_id,
+            revision=report.revision,
+            doc_status=report.doc_status,
         )
 
     def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
@@ -274,6 +279,10 @@ class FilesystemAuditStore:
             ),
             project_name=data.get("project_name"),
             discipline=data.get("discipline"),
+            stage=data.get("stage"),
+            information_container_id=data.get("information_container_id"),
+            revision=data.get("revision"),
+            doc_status=data.get("doc_status"),
         )
 
     def _reconstruct_requirement(self, data: dict) -> ParsedRequirement:
@@ -298,6 +307,7 @@ class FilesystemAuditStore:
             evidence_text=data.get("evidence_text"),
             instructions=data.get("instructions"),
             evidence_modality=data.get("evidence_modality"),
+            confidence=data.get("confidence"),
         )
 
     def _reconstruct_issue(self, data: dict) -> ValidationIssue:
@@ -321,6 +331,13 @@ class FilesystemAuditStore:
             element_guid=data.get("element_guid"),
             problem_zone=ProblemZone(**problem_zone_data) if problem_zone_data else None,
             remark=GeneratedRemark(**remark_data) if remark_data else None,
+            conflict_kind=ConflictKind(data["conflict_kind"])
+            if data.get("conflict_kind")
+            else None,
+            priority=data.get("priority", 0),
+            source_id=data.get("source_id"),
+            evidence_modality=data.get("evidence_modality"),
+            confidence=data.get("confidence"),
         )
 
     def _reconstruct_summary(self, data: dict) -> ValidationSummary:

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Extraction quality gate profile for Russian AEC ground-truth fixtures",
+  "manifest_path": "samples/benchmarks/russian-aec-ground-truth.json",
+  "thresholds": {
+    "macro_f1_advisory": 0.70,
+    "macro_f1_enforced": 0.75
+  },
+  "methodology": {
+    "approach": "hybrid rule-based narrative extraction",
+    "references": [
+      "ITcon 2025 automated code checking SLR",
+      "buildingSMART IDS 1.0",
+      "ISO/DIS 19650-1:2026 information management"
+    ],
+    "non_claims": [
+      "No LLM inference in evaluation path",
+      "Not a substitute for licensed engineering review"
+    ]
+  }
+}

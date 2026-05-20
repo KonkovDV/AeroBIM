@@ -11,7 +11,7 @@ from typing import TypedDict, cast
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, ValidationRequest
+from aerobim.domain.models import DocStatus, DrawingSource, RequirementSource, SourceKind, ValidationRequest
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
 
@@ -60,6 +60,15 @@ def _optional_string(value: object) -> str | None:
     if value is None:
         return None
     return str(value)
+
+
+def _optional_doc_status(value: object) -> DocStatus | None:
+    if value is None:
+        return None
+    normalized = str(value)
+    if normalized in {"WIP", "Shared", "Published", "Archived"}:
+        return cast(DocStatus, normalized)
+    return None
 
 
 def _load_optional_requirement_source(
@@ -127,18 +136,28 @@ def load_benchmark_pack(manifest_path: Path, repo_root_path: Path | None = None)
         raise ValueError("Benchmark manifest request must be a JSON object")
     request_data = cast(dict[str, object], raw_request)
 
-    requirement_path = _resolve_repo_path(str(request_data["requirement_path"]), resolved_repo_root)
     ifc_path = _resolve_repo_path(str(request_data["ifc_path"]), resolved_repo_root)
     ids_path_raw = request_data.get("ids_path")
 
-    request = ValidationRequest(
-        request_id=f"benchmark-{manifest['pack_id']}",
-        ifc_path=ifc_path,
-        requirement_source=RequirementSource(
+    requirement_source: RequirementSource | None = None
+    requirement_path_raw = request_data.get("requirement_path")
+    if requirement_path_raw is not None:
+        requirement_path = _resolve_repo_path(str(requirement_path_raw), resolved_repo_root)
+        requirement_source = RequirementSource(
             text=_read_text(requirement_path),
             path=requirement_path,
             source_kind=SourceKind.STRUCTURED_TEXT,
             source_id="benchmark-requirements",
+        )
+
+    request = ValidationRequest(
+        request_id=f"benchmark-{manifest['pack_id']}",
+        ifc_path=ifc_path,
+        requirement_source=requirement_source
+        or RequirementSource(
+            text="",
+            source_kind=SourceKind.STRUCTURED_TEXT,
+            source_id="benchmark-requirements-empty",
         ),
         technical_spec_source=_load_optional_requirement_source(
             request_data,
@@ -159,6 +178,12 @@ def load_benchmark_pack(manifest_path: Path, repo_root_path: Path | None = None)
         origin="benchmark",
         project_name=_optional_string(manifest.get("project_name")),
         discipline=_optional_string(manifest.get("discipline")),
+        stage=_optional_string(manifest.get("stage") or request_data.get("stage")),
+        information_container_id=_optional_string(
+            manifest.get("information_container_id") or request_data.get("information_container_id")
+        ),
+        revision=_optional_string(manifest.get("revision") or request_data.get("revision")),
+        doc_status=_optional_doc_status(manifest.get("doc_status") or request_data.get("doc_status")),
     )
 
     return BenchmarkPack(

@@ -54,6 +54,21 @@ If formatting fails:
 python -m ruff format src tests
 ```
 
+## Git Commits (single author)
+
+Do **not** ask the IDE agent to run `git commit`. Cursor may append `Co-authored-by: Cursor <cursoragent@cursor.com>` and GitHub will list a second author.
+
+1. Disable **Agent → Attribution** in Cursor Settings (commit and PR attribution OFF).
+2. Commit from your shell or the VS Code task **AeroBIM: commit (single author, no Co-authored-by)**.
+3. Or run:
+
+```powershell
+cd AeroBIM
+powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "type: description"
+```
+
+Details: [docs/git-hygiene-2026.md](docs/git-hygiene-2026.md).
+
 ## Pull Request Checklist
 
 1. Describe the problem and the decision, not only the code diff.

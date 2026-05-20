@@ -15,6 +15,7 @@ from aerobim.domain.models import (
     RequirementSource,
     ValidationIssue,
     ValidationReport,
+    ValidationRequest,
 )
 
 
@@ -101,6 +102,12 @@ class AnalyzeProjectPackageJobStore(Protocol):
     def mark_succeeded(self, job_id: str, report_id: str) -> AnalyzeProjectPackageJob | None: ...
 
     def mark_failed(self, job_id: str, error_message: str) -> AnalyzeProjectPackageJob | None: ...
+
+
+class ExternalEvidenceVerifier(Protocol):
+    """Port for third-party calculation / reinforcement evidence verification."""
+
+    def verify(self, request: ValidationRequest) -> list[ValidationIssue]: ...
 
 
 class ClashDetector(Protocol):

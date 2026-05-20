@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-ablation-a2",
+  "description": "Ablation A2: A1 + Russian narrative technical specification synthesis.",
+  "ablation_mode": "A2",
+  "project_name": "Ablation A2 — +Narrative",
+  "discipline": "fire-safety+structure",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "ids_path": "samples/ids/wall-fire-rating.ids",
+    "requirement_path": "samples/requirements/techlab-fire-safety-rules.txt",
+    "technical_spec_path": "samples/requirements/russian-fixture-fire-rating.txt"
+  }
+}

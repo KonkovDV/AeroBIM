@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-pilot-moscow-v1",
+  "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence.",
+  "project_name": "Пилот Москва — Жилой комплекс (огнестойкость + конструктив)",
+  "discipline": "fire-safety+structure",
+  "stage": "S2",
+  "revision": "P-01",
+  "doc_status": "Shared",
+  "information_container_id": "cde-pilot-moscow-001",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "requirement_path": "samples/requirements/techlab-fire-safety-rules.txt",
+    "ids_path": "samples/ids/wall-fire-rating.ids",
+    "technical_spec_path": "samples/specifications/techlab-tz.txt",
+    "calculation_path": "samples/calculations/techlab-area-calc.txt",
+    "drawings": [
+      {
+        "path": "samples/drawings/techlab-annotations.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      }
+    ]
+  }
+}

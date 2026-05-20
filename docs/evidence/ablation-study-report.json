@@ -1,0 +1,56 @@
+{
+  "artifact_type": "ablation_study_report",
+  "pack_count": 4,
+  "configurations": [
+    {
+      "pack_id": "project-package-ablation-a0",
+      "ablation_mode": "A0",
+      "issue_count": 2,
+      "requirement_count": 0,
+      "cross_document_issues": 0,
+      "conflict_kind_breakdown": {},
+      "category_breakdown": {
+        "ids-validation": 2
+      }
+    },
+    {
+      "pack_id": "project-package-ablation-a1",
+      "ablation_mode": "A1",
+      "issue_count": 8,
+      "requirement_count": 6,
+      "cross_document_issues": 0,
+      "conflict_kind_breakdown": {},
+      "category_breakdown": {
+        "ids-validation": 2,
+        "ifc-validation": 6
+      }
+    },
+    {
+      "pack_id": "project-package-ablation-a2",
+      "ablation_mode": "A2",
+      "issue_count": 17,
+      "requirement_count": 11,
+      "cross_document_issues": 3,
+      "conflict_kind_breakdown": {
+        "hard-conflict": 3
+      },
+      "category_breakdown": {
+        "cross-document": 3,
+        "ids-validation": 2,
+        "ifc-validation": 12
+      }
+    },
+    {
+      "pack_id": "project-package-ablation-a3",
+      "ablation_mode": "A3",
+      "issue_count": 8,
+      "requirement_count": 6,
+      "cross_document_issues": 0,
+      "conflict_kind_breakdown": {},
+      "category_breakdown": {
+        "ids-validation": 2,
+        "ifc-validation": 6
+      }
+    }
+  ]
+}

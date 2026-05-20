@@ -2,7 +2,7 @@
 title: "AeroBIM Academic Audit And Recommendations"
 status: active
 version: "0.5.0"
-last_updated: "2026-04-12"
+last_updated: "2026-05-20"
 tags: [aerobim, audit, explanation, evidence]
 ---
 
@@ -28,7 +28,7 @@ tags: [aerobim, audit, explanation, evidence]
 - Python backend с явной Clean Architecture;
 - рабочий контур валидации IFC + IDS;
 - сохранение и экспорт отчётов (`json`, `html`, `bcf`);
-- мультимодальный путь проверки project package (narrative, structured drawing, PDF/OCR baseline);
+- мультимодальный путь проверки пакета проекта (текст, структурированные чертежи, PDF/OCR);
 - начальная браузерная оболочка пространственного анализа для отчётов и IFC-элементов.
 
 При этом проект пока не является полноценной платформой координации BIM-ревью. Пока отсутствуют:
@@ -79,9 +79,9 @@ Frontend работает как слой инспекции над сохран
 |---|---|---|
 | IFC property / quantity validation | ✅ | Рабочая backend-возможность |
 | IDS validation | ✅ | Рабочий адаптер и путь по примерам |
-| Narrative rule synthesis | ✅ baseline | Детерминированно, с provenance |
+| Синтез правил из текста | ✅ | Детерминированные шаблоны, с provenance |
 | Structured drawing validation | ✅ | Рабочий путь через drawing-контракты |
-| PDF / OCR drawing extraction | ✅ baseline | Рабочий путь на PyMuPDF + RapidOCR |
+| Извлечение данных из PDF/OCR | ✅ | PyMuPDF + RapidOCR |
 | Clash detection | ✅ with optional extra | Требует `.[clash]` |
 | Report persistence | ✅ | Базово filesystem-backed |
 | JSON / HTML / BCF export | ✅ | Рабочие endpoint-ы и тесты |

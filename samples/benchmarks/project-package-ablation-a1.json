@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-ablation-a1",
+  "description": "Ablation A1: A0 + structured pipe-delimited requirements.",
+  "ablation_mode": "A1",
+  "project_name": "Ablation A1 — +Structured",
+  "discipline": "fire-safety",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "ids_path": "samples/ids/wall-fire-rating.ids",
+    "requirement_path": "samples/requirements/techlab-fire-safety-rules.txt"
+  }
+}

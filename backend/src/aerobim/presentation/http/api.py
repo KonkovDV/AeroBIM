@@ -11,7 +11,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-from aerobim.application.use_cases.analyze_project_package import (
+from aerobim.application.services.loin_metadata_resolver import LoinMetadataResolver
+from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
 )
 from aerobim.core.di.container import Container
@@ -20,6 +21,7 @@ from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, 
 
 _REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
 _DRAWING_ASSET_ID_RE = _re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+_LOIN_RESOLVER = LoinMetadataResolver()
 
 
 class ValidateIfcRequest(BaseModel):
@@ -30,6 +32,10 @@ class ValidateIfcRequest(BaseModel):
     ids_path: str | None = Field(default=None, max_length=2048)
     project_name: str | None = Field(default=None, max_length=256)
     discipline: str | None = Field(default=None, max_length=128)
+    stage: str | None = Field(default=None, max_length=64)
+    information_container_id: str | None = Field(default=None, max_length=256)
+    revision: str | None = Field(default=None, max_length=64)
+    doc_status: Literal["WIP", "Shared", "Published", "Archived"] | None = None
 
 
 class DrawingPayload(BaseModel):
@@ -61,6 +67,10 @@ class AnalyzeProjectPackageRequest(BaseModel):
     reinforcement_provenance_mode: Literal["advisory", "enforced"] = "advisory"
     project_name: str | None = Field(default=None, max_length=256)
     discipline: str | None = Field(default=None, max_length=128)
+    stage: str | None = Field(default=None, max_length=64)
+    information_container_id: str | None = Field(default=None, max_length=256)
+    revision: str | None = Field(default=None, max_length=64)
+    doc_status: Literal["WIP", "Shared", "Published", "Archived"] | None = None
 
 
 class OpenRebarDigestRequest(BaseModel):
@@ -146,6 +156,34 @@ def create_http_app(container: Container):
     def _validate_job_id(job_id: str) -> None:
         if not _REPORT_ID_RE.match(job_id):
             raise HTTPException(status_code=400, detail="Invalid job ID format")
+
+    def _enrich_issue_export(issue: dict[str, object]) -> dict[str, object]:
+        rule_id = str(issue.get("rule_id", ""))
+        loin = _LOIN_RESOLVER.resolve(rule_id)
+        if loin is None:
+            return issue
+        return {
+            **issue,
+            "loin_purpose": loin.purpose,
+            "loin_milestone": loin.milestone,
+            "loin_actor": loin.actor,
+        }
+
+    def _serialize_public_report(report) -> dict[str, object]:
+        data = asdict(report)
+        data.pop("ifc_path", None)
+        data.pop("ifc_object_key", None)
+        drawing_assets = []
+        for asset in data.get("drawing_assets", []):
+            asset.pop("object_key", None)
+            asset.pop("source_path", None)
+            drawing_assets.append(asset)
+        data["drawing_assets"] = drawing_assets
+        data["issues"] = [
+            _enrich_issue_export(issue) if isinstance(issue, dict) else issue
+            for issue in data.get("issues", ())
+        ]
+        return data
 
     def _resolve_report_ifc_source(report_id: str) -> tuple[str, bytes | Path]:
         report = audit_store.get(report_id)
@@ -336,6 +374,10 @@ def create_http_app(container: Container):
             reinforcement_provenance_mode=payload.reinforcement_provenance_mode,
             project_name=payload.project_name,
             discipline=payload.discipline,
+            stage=payload.stage,
+            information_container_id=payload.information_container_id,
+            revision=payload.revision,
+            doc_status=payload.doc_status,
         )
 
     def _serialize_analyze_project_package_job(job) -> dict[str, object]:
@@ -367,6 +409,10 @@ def create_http_app(container: Container):
                     ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
                     project_name=payload.project_name,
                     discipline=payload.discipline,
+                    stage=payload.stage,
+                    information_container_id=payload.information_container_id,
+                    revision=payload.revision,
+                    doc_status=payload.doc_status,
                 )
             )
         except FileNotFoundError as exc:
@@ -386,7 +432,7 @@ def create_http_app(container: Container):
             passed=report.summary.passed,
             issues=report.summary.issue_count,
         )
-        return asdict(report)
+        return _serialize_public_report(report)
 
     @app.post("/v1/analyze/project-package")
     def analyze_project_package(
@@ -403,7 +449,7 @@ def create_http_app(container: Container):
         except RuntimeError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
 
-        return asdict(report)
+        return _serialize_public_report(report)
 
     @app.post("/v1/analyze/project-package/reinforcement-digest")
     def analyze_project_package_reinforcement_digest(
@@ -499,7 +545,7 @@ def create_http_app(container: Container):
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        return asdict(report)
+        return _serialize_public_report(report)
 
     @app.get("/v1/reports/{report_id}/source/ifc")
     def get_report_ifc_source(
@@ -559,7 +605,7 @@ def create_http_app(container: Container):
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         return JSONResponse(
-            content=asdict(report),
+            content=_serialize_public_report(report),
             headers={"Content-Disposition": f'attachment; filename="{report_id}.json"'},
         )
 
@@ -574,48 +620,138 @@ def create_http_app(container: Container):
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        data = asdict(report)
+        data = _serialize_public_report(report)
         summary = data["summary"]
         status_class = "pass" if summary["passed"] else "fail"
         status_label = "PASSED" if summary["passed"] else "FAILED"
 
-        issues_rows = ""
+        # Group issues by category for expert reviewer workflow
+        from collections import defaultdict
+        category_issues: dict[str, list[dict]] = defaultdict(list)
         for issue in data.get("issues", ()):
-            sev = issue.get("severity", "")
-            issues_rows += (
-                f"<tr><td>{_esc(issue.get('rule_id', ''))}</td>"
-                f"<td class='{_esc(sev)}'>{_esc(sev)}</td>"
-                f"<td>{_esc(issue.get('message', ''))}</td>"
-                f"<td>{_esc(issue.get('element_guid') or '')}</td></tr>\n"
+            cat = issue.get("category", "ifc-validation")
+            category_issues[cat].append(issue)
+
+        def _build_issue_rows(issues: list[dict]) -> str:
+            rows = ""
+            sorted_issues = sorted(issues, key=lambda i: i.get("priority", 0), reverse=True)
+            for issue in sorted_issues:
+                sev = issue.get("severity", "")
+                exp = issue.get("expected_value", "")
+                obs = issue.get("observed_value", "")
+                unit = issue.get("unit", "")
+                pz = issue.get("problem_zone")
+                pz_html = ""
+                if pz:
+                    sheet = _esc(pz.get("sheet_id") or "")
+                    x = pz.get("x")
+                    y = pz.get("y")
+                    if sheet and x is not None and y is not None:
+                        pz_html = f"<br><small class='pz'>Лист: {sheet} ({x:.1f}, {y:.1f})</small>"
+                ev_obs = f"<td>{_esc(obs)}{_esc(' ' + unit if unit and obs else '')}</td>" if obs else "<td>—</td>"
+                ev_exp = f"<td>{_esc(exp)}{_esc(' ' + unit if unit and exp else '')}</td>" if exp else "<td>—</td>"
+                pri = issue.get("priority", 0)
+                pri_class = "pri-high" if pri >= 45 else "pri-med" if pri >= 25 else "pri-low"
+                conf = issue.get("confidence")
+                conf_display = f"{conf:.2f}" if conf is not None else "—"
+                loin_bits = []
+                for key, label in (
+                    ("loin_purpose", "purpose"),
+                    ("loin_milestone", "milestone"),
+                    ("loin_actor", "actor"),
+                ):
+                    value = issue.get(key)
+                    if value:
+                        loin_bits.append(f"{label}={_esc(str(value))}")
+                loin_html = (
+                    f"<br><small class='loin'>{' · '.join(loin_bits)}</small>" if loin_bits else ""
+                )
+                rows += (
+                    f"<tr><td class='sev {_esc(sev)}'>{_esc(sev)}</td>"
+                    f"<td class='{pri_class}'>{pri}</td>"
+                    f"<td>{conf_display}</td>"
+                    f"<td>{_esc(issue.get('rule_id', ''))}{loin_html}</td>"
+                    f"<td>{_esc(issue.get('message', ''))}</td>"
+                    f"{ev_exp}{ev_obs}"
+                    f"<td>{_esc(issue.get('element_guid') or '')}</td>"
+                    f"<td>{_esc(issue.get('target_ref') or '')}</td></tr>\n"
+                    f"<tr class='detail'><td colspan='9'>{pz_html}</td></tr>\n"
+                )
+            return rows
+
+        iso_fields = [
+            ("Stage", data.get("stage")),
+            ("CDE container", data.get("information_container_id")),
+            ("Revision", data.get("revision")),
+            ("Doc status", data.get("doc_status")),
+        ]
+        iso_rows = "".join(
+            f"<tr><th>{_esc(label)}</th><td>{_esc(value or '—')}</td></tr>"
+            for label, value in iso_fields
+            if value is not None
+        )
+        iso_section = ""
+        if iso_rows:
+            iso_section = (
+                "<section class='cat'><h2>ISO 19650 context</h2>"
+                "<table><tbody>"
+                f"{iso_rows}"
+                "</tbody></table></section>\n"
+            )
+
+        category_sections = ""
+        cat_labels = {
+            "ifc-validation": "IFC Model Validation",
+            "ids-validation": "IDS Requirement Validation",
+            "drawing-validation": "Drawing Annotation Validation",
+            "cross-document": "Cross-Document Contradictions",
+        }
+        for cat, issues in sorted(category_issues.items()):
+            label = cat_labels.get(cat, cat)
+            rows = _build_issue_rows(issues)
+            category_sections += (
+                f"<section class='cat'><h2>{label} ({len(issues)})</h2>"
+                f"<table><thead><tr><th>Severity</th><th>Priority</th><th>Confidence</th><th>Rule</th><th>Message</th>"
+                f"<th>Expected</th><th>Observed</th><th>GUID</th><th>Target</th></tr></thead>"
+                f"<tbody>{rows}</tbody></table></section>\n"
             )
 
         html = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<title>Report {_esc(report_id)}</title>
+<title>Validation Report {_esc(report_id)}</title>
 <style>
-body{{font-family:system-ui,sans-serif;margin:2em;color:#222}}
-h1{{font-size:1.4em}}
-.summary{{margin:1em 0;padding:1em;border-radius:6px}}
-.pass{{background:#d4edda;color:#155724}}
-.fail{{background:#f8d7da;color:#721c24}}
-table{{border-collapse:collapse;width:100%;margin-top:1em}}
-th,td{{border:1px solid #ccc;padding:.4em .8em;text-align:left}}
+:root{{--error:#c00;--warning:#b58900;--info:#555;--bg-pass:#d4edda;--bg-fail:#f8d7da}}
+body{{font-family:system-ui,sans-serif;margin:2em;color:#222;line-height:1.5}}
+h1{{font-size:1.5em;margin-bottom:.3em}}
+h2{{font-size:1.1em;margin:1.2em 0 .5em}}
+.summary{{margin:1em 0;padding:1em;border-radius:6px;font-size:1.05em}}
+.pass{{background:var(--bg-pass);color:#155724}}
+.fail{{background:var(--bg-fail);color:#721c24}}
+section.cat{{margin-top:1.5em}}
+table{{border-collapse:collapse;width:100%;margin-top:.5em;font-size:.95em}}
+th,td{{border:1px solid #ccc;padding:.4em .8em;text-align:left;vertical-align:top}}
 th{{background:#f5f5f5}}
-td.error{{color:#c00;font-weight:600}}
-td.warning{{color:#b58900}}
+td.error,td.sev.error{{color:var(--error);font-weight:600}}
+td.warning,td.sev.warning{{color:var(--warning);font-weight:600}}
+td.info{{color:var(--info)}}
+tr.detail td{{border-top:none;padding-top:0;color:#666;font-size:.85em}}
+small.pz{{color:#555}}
+.meta{{margin-top:2em;font-size:.85em;color:#888}}
+td.pri-high{{color:var(--error);font-weight:700}}
+td.pri-med{{color:var(--warning);font-weight:600}}
+td.pri-low{{color:var(--info)}}
 </style></head><body>
 <h1>Validation Report</h1>
 <div class="summary {status_class}">
 <strong>{status_label}</strong> &mdash;
-{summary["issue_count"]} issue(s),
-{summary["error_count"]} error(s),
-{summary["warning_count"]} warning(s),
+{summary["issue_count"]} issue(s): {summary["error_count"]} error(s), {summary["warning_count"]} warning(s) &middot;
 {summary["requirement_count"]} requirement(s)
 </div>
-<table><thead><tr><th>Rule</th><th>Severity</th><th>Message</th><th>Element GUID</th></tr></thead>
-<tbody>{issues_rows}</tbody></table>
-<p style="margin-top:2em;font-size:.85em;color:#888">
+{iso_section}{category_sections}
+<p class="meta">
 Report ID: {_esc(report_id)} &middot;
+Project: {_esc(data.get("project_name") or "—")} &middot;
+Discipline: {_esc(data.get("discipline") or "—")} &middot;
 Created: {_esc(data.get("created_at", ""))}
 </p>
 </body></html>"""

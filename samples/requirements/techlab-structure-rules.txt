@@ -1,0 +1,7 @@
+# rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text
+REQ-STR-001|ifc-property|IFCWALL|ALL|Pset_WallCommon|LoadBearing|eq|TRUE||Несущие стены — несущая способность
+REQ-STR-002|ifc-quantity|IFCWALL|ALL|Qto_WallBaseQuantities|Width|gte|200|mm|Толщина несущих стен — не менее 200 мм
+REQ-STR-003|ifc-property|IFCCOLUMN|ALL|Pset_ColumnCommon|LoadBearing|eq|TRUE||Колонны — несущие
+REQ-STR-004|ifc-property|IFCBEAM|ALL|Pset_BeamCommon|LoadBearing|eq|TRUE||Балки — несущие
+REQ-STR-005|ifc-property|IFCSLAB|ALL|Pset_SlabCommon|LoadBearing|eq|TRUE||Плиты перекрытия — несущие
+REQ-STR-006|ifc-quantity|IFCCOLUMN|ALL|Qto_ColumnBaseQuantities|GrossVolume|gte|0.1|m3|Объём колонн — не менее 0.1 м3

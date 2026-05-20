@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.application.use_cases.analyze_project_package_jobs import (
     AnalyzeProjectPackageJobRunner,
     GetAnalyzeProjectPackageJobStatusUseCase,
@@ -127,6 +128,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             tolerance=tolerance,
             clash_detector=current.resolve(Tokens.CLASH_DETECTOR),
             cross_doc_severity=current.resolve(Tokens.SETTINGS).cross_doc_contradiction_severity,
+            external_evidence_verifier=OpenRebarEvidenceVerifier(),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
