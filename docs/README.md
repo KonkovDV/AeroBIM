@@ -48,6 +48,7 @@ Use it to find the current active documents quickly instead of treating the whol
 | `manuscript-draft-2026.md` | Paper draft outline (method + case study) |
 | `CITATION.bib` | BibTeX entries for reuse |
 | `git-hygiene-2026.md` | Single-author commits; disable Cursor co-author |
+| `github-readiness-audit-2026-05-20.md` | Pre-push fact-check and evidence table |
 | `pilot-execution-runbook-2026.md` | 8–12 week pilot weekly rhythm |
 | `pilot-weekly-log-2026.md` | Weekly KPI / TP-FP log template |
 | `pilot-frozen-tag-protocol-2026.md` | Reproducible pilot release tags |
