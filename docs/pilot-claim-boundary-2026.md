@@ -64,5 +64,5 @@ Use an **isolated** virtual environment under `AeroBIM/backend/.venv-pilot`, not
 
 Keep aligned with:
 
-- [docs/startups/Novator/AEROBIM_APPLICATION_PACKET_2026.md](../docs/startups/Novator/AEROBIM_APPLICATION_PACKET_2026.md)
+- [partners/TECHLAB_SAMOLET_APPLICATION_2026.md](partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
 - [README.md](../README.md) Scientific Reporting Standard section

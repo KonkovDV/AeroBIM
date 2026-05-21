@@ -254,6 +254,7 @@ aerobim/
 
 ## Documentation
 
+- [Repository hygiene](docs/REPOSITORY-HYGIENE-2026.md) — what to commit vs gitignore vs CI artifacts
 - [Reproducibility (FAIR/CODE)](docs/REPRODUCIBILITY-2026.md) — frozen tag, commands, evidence manifest
 - [Pilot start package](docs/pilot-start-package-2026.md) — Moscow pilot kickoff (tag `pilot-2026-pre`, gates, week 1)
 - [Architecture Reference](docs/06-architecture-reference.md) — canonical layer map and invariants
