@@ -45,12 +45,13 @@ tags: [aerobim, audit, fact-check, hygiene]
 |---|---|---|
 | G-01 | Таблицы sign-off в `pilot-pre-pilot-gates-2026.md` | **Закрыто** 2026-05-21 |
 | G-02 | Тег `pilot-2026-pre` | **Закрыто** на `1a5c03e` |
-| G-03 | `docs/10-academic-audit-and-recommendations-ru.md` частично устарел (апрель): R1 overlay уже в коде | Низкая — обновить статус |
-| G-04 | 8 открытых Dependabot PR на GitHub | Низкая — зависимости |
-| G-05 | `gh` CLI не в CI; About/Topics вручную | Низкая — публикация |
+| G-03 | `docs/10-academic-audit-and-recommendations-ru.md` v0.6 (overlay/smoke shipped) | **Закрыто** |
+| G-04 | Dependabot PR triage | Политика в [`evidence/ops-hygiene-2026-05-21.md`](evidence/ops-hygiene-2026-05-21.md) |
+| G-05 | `gh` CLI / About/Topics | Ручной шаг; см. ops-hygiene |
 | G-06 | OIDC, arq/Redis, полный Postgres hydration — post-pilot | Ожидаемо по плану |
 | G-07 | Cross-doc на pilot fixture pack: 0 contradictions | Информационно — не overclaim на прод-данных |
-| G-08 | `.[clash]` / `.[docling]` opt-in — нужна явная ops-документация у заказчика | Средняя |
+| G-08 | `.[clash]` / `.[docling]` opt-in | **Закрыто** — [`optional-adapters-smoke-2026.md`](optional-adapters-smoke-2026.md) + weekly log |
+| G-09 | FAIR/CODE reproducibility SSOT | **Закрыто** — [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) |
 
 ## Рунглиш (инвентарь и политика)
 
@@ -65,17 +66,17 @@ tags: [aerobim, audit, fact-check, hygiene]
 | Утверждение | Факт |
 |---|---|
 | Macro F1 ≈ 0.86 | Подтверждено `evaluate_extraction` |
-| 290+ тестов | 294 passed |
+| 290+ тестов | 292 passed |
 | 2D overlay «planned» в старом аудите §5.1 | **Уже в коде** (май 2026) — аудит §10 нужно обновлять |
 | Fine-tuning production | **Нет** — только удалённый scaffold |
 | Vision-language sign-off | **Нет** — порт `VisionDrawingAnalyzer`, deterministic PDF/OCR baseline |
 
-## Рекомендации maintainer (после этой очистки)
+## Рекомендации maintainer (актуально на 2026-05-21)
 
-1. Закоммитить изменения через `scripts/git_commit.ps1`.
-2. Заполнить pre-pilot gate sign-off и создать тег `pilot-2026-pre`.
-3. Обновить `docs/10-academic-audit-and-recommendations-ru.md` (статус overlay/smoke).
-4. Триаж Dependabot PR.
+1. Pre-pilot gates и тег `pilot-2026-pre` — выполнено.
+2. Перед каждым push: [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md).
+3. Пилот week 1+: [`pilot-start-package-2026.md`](pilot-start-package-2026.md), [`pilot-weekly-log-2026.md`](pilot-weekly-log-2026.md).
+4. Ноябрь 2026: [`post-pilot-go-no-go-memo-2026.md`](post-pilot-go-no-go-memo-2026.md).
 
 ## Команды воспроизведения
 

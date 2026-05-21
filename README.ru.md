@@ -123,6 +123,7 @@ python -m aerobim.tools.export_runtime_baseline
 
 ## Документация
 
+- [Воспроизводимость (FAIR/CODE)](docs/REPRODUCIBILITY-2026.md) — тег, команды, manifest evidence
 - [Старт пилота](docs/pilot-start-package-2026.md) — kickoff Москва, тег `pilot-2026-pre`
 - [Карта документации](docs/README.md)
 - [Архитектура](docs/06-architecture-reference.md)

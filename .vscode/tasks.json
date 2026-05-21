@@ -31,6 +31,15 @@
       "problemMatcher": []
     },
     {
+      "label": "AeroBIM: pilot weekly checks",
+      "type": "shell",
+      "command": "python -m pytest tests -q; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m aerobim.tools.summarize_conflict_breakdown --pack samples/benchmarks/project-package-pilot-moscow-v1.json",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "AeroBIM: benchmark report",
       "type": "shell",
       "command": "python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence",

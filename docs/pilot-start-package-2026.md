@@ -14,9 +14,11 @@ Single entry point for customer-facing pilot kickoff. Distribute with [`pilot-cl
 
 | Item | Value |
 |---|---|
-| Git tag | `pilot-2026-pre` → commit `1a5c03e` |
+| Git tag (frozen metrics) | `pilot-2026-pre` → commit `1a5c03e` |
+| Rolling `main` | May include newer docs after `1a5c03e`; cite tag for frozen numbers |
 | Evidence | [`evidence/pre-pilot-gates-evidence-2026-05-21.md`](evidence/pre-pilot-gates-evidence-2026-05-21.md) |
-| Extraction macro F1 | **0.86** (gate ≥ 0.70) |
+| Reproducibility SSOT | [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) |
+| Extraction macro F1 | **0.86** (gate ≥ 0.70, frozen line) |
 | Tests | 292 passed (pre-pilot run) |
 
 ## Pre-pilot gates (complete)
