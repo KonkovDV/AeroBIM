@@ -27,7 +27,7 @@ Aligns with [Diataxis](https://diataxis.fr/) (one primary language per document)
 | Language | Examples |
 |----------|----------|
 | English | `README.md`, `docs/06-architecture-reference.md`, `docs/samolet-techlab-*.md`, `docs/pilot-*.md`, `docs/PROJECT-AUDIT-2026-05-20.md` |
-| Russian | `README.ru.md`, `docs/10-academic-audit-and-recommendations-ru.md`, `docs/contributor-git-ru.md` |
+| Russian | `README.ru.md`, `docs/archive/10-academic-audit-and-recommendations-ru.md`, `docs/contributor-git-ru.md`, `docs/pilot-case-study-report-ru.md` |
 
 ## Editing checklist
 

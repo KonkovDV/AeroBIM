@@ -36,7 +36,7 @@ Method: repository inspection, `pytest` / `ruff` / `mypy`, `evaluate_extraction`
 | H-02 | `reports/aerobim_ft_scaffold_gate_report_v1.json` with foreign paths | Removed |
 | H-03 | `docs/superpowers/` internal donor control-plane specs | Removed |
 | H-04 | IDE-branded git hygiene doc | Replaced by [`contributor-git-2026.md`](contributor-git-2026.md) |
-| H-05 | `docs/05-fact-check-audit.md` pointing at `c:\plans\samolet` | Corrected to AeroBIM repo |
+| H-05 | `docs/archive/05-fact-check-audit.md` (was root) pointing at `c:\plans\samolet` | Corrected to AeroBIM repo |
 | H-06 | Vendor model names in public docs | Replaced with deterministic / non-deterministic wording |
 | H-07 | `VlmDrawingAnalyzer` naming (legacy VLM label) | Renamed to `RasterDrawingAnalyzer` |
 | H-08 | Tracked `artifacts/ci-benchmark-smoke/` with stale machine paths | Untracked; CI-only per [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md) |
