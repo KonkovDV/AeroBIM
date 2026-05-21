@@ -1,7 +1,7 @@
 """Deterministic drawing analyzer baseline for raster and PDF inputs.
 
-Implements the ``VisionDrawingAnalyzer`` port using OCR and layout heuristics only
-(no generative or fine-tuned models in the sign-off path).
+Implements the ``RasterDrawingAnalyzer`` port using OCR and layout heuristics only
+(non-deterministic adapters are outside the pilot sign-off path).
 """
 
 from __future__ import annotations
@@ -58,7 +58,7 @@ class _TextRegion:
 
 
 class RasterDrawingAnalyzer:
-    """Infrastructure adapter implementing ``VisionDrawingAnalyzer`` port."""
+    """Infrastructure adapter implementing ``RasterDrawingAnalyzer`` port."""
 
     def __init__(
         self,

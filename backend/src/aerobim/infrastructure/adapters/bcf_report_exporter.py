@@ -84,11 +84,7 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
         reference_links = tuple(link for link in (issue.element_guid, issue.target_ref) if link)
         selected_guids = (issue.element_guid,) if issue.element_guid else ()
         topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
-        description = (
-            issue.remark.body
-            if issue.remark is not None
-            else (issue.message or "")
-        )
+        description = issue.remark.body if issue.remark is not None else (issue.message or "")
         title = issue.rule_id or "Validation Issue"
         if issue.priority:
             title = f"[P{issue.priority}] {title}"

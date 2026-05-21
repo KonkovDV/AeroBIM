@@ -23,7 +23,7 @@ tags: [aerobim, audit, explanation, evidence]
 
 ## 2. Краткий вердикт
 
-На май 2026 (после pre-pilot evidence line) AeroBIM — это **рабочее детерминированное ядро BIM QA**:
+На май 2026 (после линии доказательств до пилота) AeroBIM — это **рабочее детерминированное ядро BIM QA**:
 
 - Python backend с явной Clean Architecture;
 - рабочий контур валидации IFC + IDS;
@@ -84,7 +84,7 @@ Frontend работает как слой инспекции над сохран
 | Извлечение данных из PDF/OCR | ✅ | PyMuPDF + RapidOCR |
 | Clash detection | ✅ with optional extra | Требует `.[clash]` |
 | Report persistence | ✅ | Базово filesystem-backed |
-| JSON / HTML / BCF export | ✅ | Рабочие endpoint-ы и тесты |
+| JSON / HTML / BCF export | ✅ | Рабочие API и тесты |
 | Browser review shell | ✅ initial | Начальный пространственный runtime |
 | Thin Revit client | ❌ | На границе, не реализован |
 
@@ -92,7 +92,7 @@ Frontend работает как слой инспекции над сохран
 
 ### 5.1 Spatial review gap
 
-3D-путь уже есть: замечания связываются с GUID IFC-элементов. 2D overlay и контракт drawing-asset реализованы (`DrawingEvidencePanel`, live smoke); требуется усиление навигации и стабильности на больших пакетах.
+3D-путь уже есть: замечания связываются с GUID IFC-элементов. 2D overlay и контракт drawing-asset реализованы (`DrawingEvidencePanel`, дымовые проверки в CI); требуется усиление навигации и стабильности на больших пакетах.
 
 ### 5.2 Прозрачность optional-возможностей
 

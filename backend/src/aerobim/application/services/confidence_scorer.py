@@ -1,6 +1,6 @@
 """Deterministic confidence scoring for requirement extraction.
 
-No ML or external dependencies — rules are source-kind and completeness based,
+No statistical models or external dependencies — rules are source-kind and completeness based,
 so they are fully testable, explainable, and do not drift with fixture changes.
 """
 

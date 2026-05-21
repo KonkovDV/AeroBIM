@@ -496,7 +496,7 @@ class ToleranceConfigTests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# G: VisionDrawingAnalyzer port + adapter contract
+# G: RasterDrawingAnalyzer port + adapter contract
 # ---------------------------------------------------------------------------
 
 
@@ -531,7 +531,7 @@ class RasterDrawingAnalyzerContractTests(unittest.TestCase):
             analyzer.analyze_image(Path("/nonexistent/drawing.pdf"))
 
     def test_port_protocol_compliance(self) -> None:
-        """RasterDrawingAnalyzer satisfies VisionDrawingAnalyzer protocol."""
+        """Infrastructure RasterDrawingAnalyzer satisfies domain RasterDrawingAnalyzer port."""
         from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
         analyzer = RasterDrawingAnalyzer()
@@ -544,7 +544,7 @@ class RasterDrawingAnalyzerContractTests(unittest.TestCase):
     def test_token_registered_in_bootstrap(self) -> None:
         from aerobim.core.di.tokens import Tokens
 
-        self.assertTrue(hasattr(Tokens, "VISION_DRAWING_ANALYZER"))
+        self.assertTrue(hasattr(Tokens, "RASTER_DRAWING_ANALYZER"))
 
 
 if __name__ == "__main__":

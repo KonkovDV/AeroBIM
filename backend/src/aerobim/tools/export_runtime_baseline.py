@@ -62,8 +62,11 @@ def main():
         "gates": gates,
         "implemented_vs_planned_note": {
             "implemented": ["API layer", "IFC validation", "benchmarks", "seed smoke"],
-            "planned": ["Integration with external models", "Fine-tuning pipelines"],
-            "non_claims": ["No FT models deployed yet", "No production serving yet"],
+            "planned": [
+                "Optional non-deterministic drawing adapters",
+                "Enterprise storage hydration",
+            ],
+            "non_claims": ["No non-deterministic sign-off path", "No production serving yet"],
         },
         "verification": {
             "tests": ["pytest tests -q"],

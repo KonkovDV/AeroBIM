@@ -19,6 +19,7 @@ Dated, citeable verification snapshots for reviewers and pilot gates. Policy: [`
 | `benchmark-report-2026-05-20.md` | Historical benchmark (frozen line) |
 | `benchmark-report-2026-05-21.md` | Rolling refresh |
 | `pre-push-verification-2026-05-21.md` | Full verification lane |
+| `public-surface-factcheck-2026-05-21.md` | AI/runglish sweep + port rename evidence |
 
 ## Samolet / pilot
 

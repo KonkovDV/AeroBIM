@@ -30,8 +30,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 
 | Item | Status |
 |---|---|
-| Optional raster vision drawing path | Planned behind `VisionDrawingAnalyzer` port |
-| Learned-model text extraction training | Not in pilot sign-off path |
+| Optional raster/PDF drawing path (OCR baseline) | `RasterDrawingAnalyzer` port — deterministic today |
+| Non-deterministic text extraction training | Not in pilot sign-off path |
 | Full OIDC multi-tenant auth | Post-pilot (static bearer sufficient for pilot VM) |
 | arq/Redis async queue | Post-pilot (in-process jobs sufficient) |
 | BCF API / OpenCDE integration | Post-pilot |
@@ -42,7 +42,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 1. AeroBIM is **decision-support** for engineering QA, not a licensed-engineer replacement.
 2. AeroBIM does **not** assert full regulatory code compliance across all document types.
 3. AeroBIM does **not** claim to outperform Solibri globally — only a bounded open pilot path.
-4. Learned-model text extraction is **not** used for pilot sign-off; deterministic regex path meets F1 gates in CI.
+4. Non-deterministic text extraction is **not** used for pilot sign-off; deterministic regex path meets F1 gates in CI.
 
 ## Reproducibility baseline
 

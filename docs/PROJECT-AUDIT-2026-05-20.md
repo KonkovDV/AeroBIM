@@ -38,7 +38,7 @@ Method: repository inspection, `pytest` / `ruff` / `mypy`, `evaluate_extraction`
 | H-04 | IDE-branded git hygiene doc | Replaced by [`contributor-git-2026.md`](contributor-git-2026.md) |
 | H-05 | `docs/archive/05-fact-check-audit.md` (was root) pointing at `c:\plans\samolet` | Corrected to AeroBIM repo |
 | H-06 | Vendor model names in public docs | Replaced with deterministic / non-deterministic wording |
-| H-07 | `VlmDrawingAnalyzer` naming (legacy VLM label) | Renamed to `RasterDrawingAnalyzer` |
+| H-07 | Legacy `VlmDrawingAnalyzer` / `VisionDrawingAnalyzer` names | Renamed to `RasterDrawingAnalyzer` port + adapter |
 | H-08 | Tracked `artifacts/ci-benchmark-smoke/` with stale machine paths | Untracked; CI-only per [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md) |
 
 ## Open pilot gaps (non-blocking for CI)
@@ -62,13 +62,14 @@ Method: repository inspection, `pytest` / `ruff` / `mypy`, `evaluate_extraction`
 | Macro F1 ≈ 0.86 | Confirmed via `evaluate_extraction` |
 | 290+ tests | 292 passed |
 | 2D overlay “planned” in older audit §5.1 | Shipped May 2026 |
-| Fine-tuning in production sign-off | **No** |
-| Learned vision in sign-off | **No** — OCR/layout baseline via `RasterDrawingAnalyzer` |
+| Trained extraction in production sign-off | **No** |
+| Non-deterministic drawing in sign-off | **No** — OCR/layout baseline via `RasterDrawingAnalyzer` |
 
 ## Maintainer actions (2026-05-21)
 
 1. Pre-pilot gates and tag `pilot-2026-pre` — done.
 2. Before each push: [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md).
+3. Public surface sweep: [`evidence/public-surface-factcheck-2026-05-21.md`](evidence/public-surface-factcheck-2026-05-21.md).
 3. Pilot weeks: [`pilot-start-package-2026.md`](pilot-start-package-2026.md), [`pilot-weekly-log-2026.md`](pilot-weekly-log-2026.md).
 4. Post-pilot: [`post-pilot-go-no-go-memo-2026.md`](post-pilot-go-no-go-memo-2026.md).
 

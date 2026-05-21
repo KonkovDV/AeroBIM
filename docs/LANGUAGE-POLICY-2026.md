@@ -18,8 +18,8 @@ Aligns with [Diataxis](https://diataxis.fr/) (one primary language per document)
 | **English default** | README, CONTRIBUTING, architecture, pilot ops, Samolet alignment, evidence, and audits are **English**. |
 | **Russian parallel** | Files suffixed `-ru.md` or `README.ru.md` are **Russian only**. |
 | **Industry terms** | IFC, IDS, BCF, GUID, CDE, SLA, sign-off, fixture, benchmark, smoke, overlay, endpoint, pack — allowed in both languages. |
-| **Product voice** | Say **assistive automation** or **decision-support**; avoid “AI product”, vendor model names, or IDE branding in public docs. |
-| **Sign-off path** | Say **deterministic sign-off** or **non-deterministic (learned) path deferred**; avoid LLM/VLM/GPT labels in user-facing text. |
+| **Product voice** | Say **assistive automation** or **decision-support**; do not market as an “AI product”. No vendor model names or IDE branding in public docs. |
+| **Sign-off path** | Say **deterministic sign-off** or **non-deterministic adapters deferred**; port name `RasterDrawingAnalyzer` (OCR/layout baseline). |
 | **User-facing remarks** | Russian strings in `template_remark_generator.py` are intentional (customer locale), not documentation runglish. |
 
 ## File map

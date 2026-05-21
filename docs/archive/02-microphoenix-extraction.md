@@ -15,7 +15,7 @@ tags: [aerobim, extraction, architecture, explanation]
 The extraction rule is:
 
 - keep patterns that improve modularity, traceability, and replaceability;
-- reject patterns that belong to the original AI platform but do not accelerate BIM validation MVP value.
+- reject patterns that belong to the original donor platform but do not accelerate BIM validation MVP value.
 
 The working decision ladder for `AeroBIM` is:
 
