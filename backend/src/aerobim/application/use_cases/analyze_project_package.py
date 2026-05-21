@@ -97,6 +97,7 @@ class AnalyzeProjectPackageUseCase:
         tolerance: ToleranceConfig | None = None,
         clash_detector: ClashDetector | None = None,
         cross_doc_severity: str = "warning",
+        priority_profile: str = "default",
         external_evidence_verifier: ExternalEvidenceVerifier | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
@@ -112,6 +113,9 @@ class AnalyzeProjectPackageUseCase:
         _valid_severities = {"error", "warning", "info"}
         self._cross_doc_severity = Severity(
             cross_doc_severity if cross_doc_severity in _valid_severities else "warning"
+        )
+        self._priority_profile = (
+            priority_profile if priority_profile in {"default", "samolet"} else "default"
         )
         self._external_evidence_verifier = (
             external_evidence_verifier or _NullExternalEvidenceVerifier()
@@ -163,26 +167,23 @@ class AnalyzeProjectPackageUseCase:
         clash_results = tuple(
             self._clash_detector.detect(request.ifc_path) if self._clash_detector else []
         )
-        issues_with_remarks = tuple(
-            self._attach_remarks(
-                [
-                    *ifc_issues,
-                    *drawing_issues,
-                    *cross_document_issues,
-                    *reinforcement_provenance_issues,
-                    *ids_issues,
-                ]
-            )
-        )
+        raw_issues = [
+            *ifc_issues,
+            *drawing_issues,
+            *cross_document_issues,
+            *reinforcement_provenance_issues,
+            *ids_issues,
+        ]
         prioritized_issues = tuple(
             ValidationIssue(
                 **{k: v for k, v in issue.__dict__.items() if k != "priority"},
-                priority=compute_issue_priority(issue),
+                priority=compute_issue_priority(issue, profile=self._priority_profile),
             )
-            for issue in issues_with_remarks
+            for issue in raw_issues
         )
+        issues_with_remarks = tuple(self._attach_remarks(prioritized_issues))
 
-        severity_counts = Counter(issue.severity for issue in prioritized_issues)
+        severity_counts = Counter(issue.severity for issue in issues_with_remarks)
         error_count = severity_counts[Severity.ERROR]
         warning_count = severity_counts[Severity.WARNING]
 
@@ -192,16 +193,16 @@ class AnalyzeProjectPackageUseCase:
             ifc_path=request.ifc_path,
             created_at=datetime.now(tz=UTC).isoformat(),
             requirements=requirements,
-            issues=prioritized_issues,
+            issues=issues_with_remarks,
             summary=ValidationSummary(
                 requirement_count=len(requirements),
-                issue_count=len(prioritized_issues),
+                issue_count=len(issues_with_remarks),
                 error_count=error_count,
                 warning_count=warning_count,
                 passed=error_count == 0,
                 drawing_annotation_count=len(drawing_annotations),
                 generated_remark_count=sum(
-                    1 for issue in prioritized_issues if issue.remark is not None
+                    1 for issue in issues_with_remarks if issue.remark is not None
                 ),
             ),
             drawing_annotations=drawing_annotations,

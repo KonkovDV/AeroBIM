@@ -1,0 +1,79 @@
+{
+  "artifact_type": "samolet_typical_errors_mapping",
+  "schema_version": "1.0.0",
+  "catalog_id": "samolet-typical-errors-v1",
+  "patterns_total": 6,
+  "patterns_with_rule_match": 3,
+  "coverage_ratio": 0.5,
+  "known_rule_ids_count": 35,
+  "rows": [
+    {
+      "error_id": "SAM-TYP-001",
+      "title_ru": "Несоответствие огнестойкости стены ТЗ/расчёту и IFC",
+      "status": "covered",
+      "matched_rule_ids": [
+        "REQ-FIRE-001",
+        "REQ-FIRE-002",
+        "REQ-FIRE-003",
+        "REQ-FIRE-004",
+        "REQ-FIRE-005",
+        "REQ-FIRE-006"
+      ],
+      "maps_to_rule_prefix": "REQ-FIRE",
+      "maps_to_category": null
+    },
+    {
+      "error_id": "SAM-TYP-002",
+      "title_ru": "Расхождение площади квартиры между расчётом и ТЗ",
+      "status": "category-only",
+      "matched_rule_ids": [],
+      "maps_to_rule_prefix": null,
+      "maps_to_category": "CROSS_DOCUMENT"
+    },
+    {
+      "error_id": "SAM-TYP-003",
+      "title_ru": "Толщина несущей стены ниже минимума",
+      "status": "unmapped",
+      "matched_rule_ids": [],
+      "maps_to_rule_prefix": "REQ-STRUCT",
+      "maps_to_category": null
+    },
+    {
+      "error_id": "SAM-TYP-004",
+      "title_ru": "Превышение допустимой площади помещения для эвакуации",
+      "status": "covered",
+      "matched_rule_ids": [
+        "REQ-FIRE-001",
+        "REQ-FIRE-002",
+        "REQ-FIRE-003",
+        "REQ-FIRE-004",
+        "REQ-FIRE-005",
+        "REQ-FIRE-006"
+      ],
+      "maps_to_rule_prefix": "REQ-FIRE",
+      "maps_to_category": null
+    },
+    {
+      "error_id": "SAM-TYP-005",
+      "title_ru": "Расхождение аннотации чертежа с IFC-элементом",
+      "status": "category-only",
+      "matched_rule_ids": [],
+      "maps_to_rule_prefix": null,
+      "maps_to_category": "DRAWING_VALIDATION"
+    },
+    {
+      "error_id": "SAM-TYP-006",
+      "title_ru": "Отсутствие вентиляционного/водяного параметра в модели",
+      "status": "covered",
+      "matched_rule_ids": [
+        "REQ-MEP-001",
+        "REQ-MEP-002",
+        "REQ-MEP-003",
+        "REQ-MEP-004",
+        "REQ-MEP-005"
+      ],
+      "maps_to_rule_prefix": "REQ-MEP",
+      "maps_to_category": null
+    }
+  ]
+}

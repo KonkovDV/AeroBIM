@@ -191,24 +191,11 @@ class ValidationIssue:
     """Extraction confidence in [0.0, 1.0]. None means uncalibrated / legacy."""
 
 
-def compute_issue_priority(issue: ValidationIssue) -> int:
-    """Compute reviewer priority from severity, category, and conflict kind.
+def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> int:
+    """Compute reviewer priority (delegates to ``review_priority`` module)."""
+    from aerobim.domain.review_priority import compute_issue_priority as _score
 
-    Scoring:
-    - ERROR = 30, WARNING = 20, INFO = 10
-    - CROSS_DOCUMENT = +15, IDS_VALIDATION = +10,
-      DRAWING_VALIDATION = +5, IFC_VALIDATION = +0
-    - HARD_CONFLICT = +10, other conflict kinds = +0
-    """
-    sev_score = {"error": 30, "warning": 20, "info": 10}.get(issue.severity.value, 0)
-    cat_score = {
-        FindingCategory.CROSS_DOCUMENT: 15,
-        FindingCategory.IDS_VALIDATION: 10,
-        FindingCategory.DRAWING_VALIDATION: 5,
-        FindingCategory.IFC_VALIDATION: 0,
-    }.get(issue.category, 0)
-    conflict_score = 10 if issue.conflict_kind == ConflictKind.HARD_CONFLICT else 0
-    return sev_score + cat_score + conflict_score
+    return _score(issue, profile=profile)
 
 
 @dataclass(frozen=True)

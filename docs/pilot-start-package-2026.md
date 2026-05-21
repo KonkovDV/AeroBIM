@@ -8,7 +8,7 @@ tags: [aerobim, pilot, moscow, stakeholder]
 
 # Pilot Start Package (Moscow 2026)
 
-Single entry point for customer-facing pilot kickoff. Distribute with [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md).
+Single entry point for customer-facing pilot kickoff. Distribute with [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) and [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) when the customer is Samolet / TechLab.
 
 ## Frozen baseline
 

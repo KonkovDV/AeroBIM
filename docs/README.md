@@ -35,6 +35,12 @@ Use it to find the current active documents quickly instead of treating the whol
 | File | Purpose |
 |---|---|
 | `REPRODUCIBILITY-2026.md` | FAIR/CODE reproducibility SSOT, frozen tag, evidence manifest |
+| `samolet-techlab-alignment-2026.md` | Samolet TechLab requirements traceability + May 2026 openBIM anchors |
+| `samolet-techlab-scorecard-2026.md` | Score ladder 7.6 → 10 for jury / pilot |
+| `samolet-compliance-scorecard-2026.md` | Closure SSOT (R1–R15 sign-off) |
+| `samolet-pilot-intake-checklist-2026.md` | Week 1 joint intake |
+| `pilot-cde-handoff-2026.md` | CDE Scenario A/B |
+| `samolet-kpi-adjudication-template-2026.md` | Wave 2 TP/FP log |
 | `pilot-start-package-2026.md` | Kickoff one-pager (tag, gates, week 1 actions) |
 | `pilot-claim-boundary-2026.md` | Verified vs planned claims for pilot communications |
 | `pilot-package-playbook-2026.md` | Moscow v1 input bundle and BCF checklist |
