@@ -257,12 +257,10 @@ aerobim/
 - [Repository hygiene](docs/REPOSITORY-HYGIENE-2026.md) — what to commit vs gitignore vs CI artifacts
 - [Reproducibility (FAIR/CODE)](docs/REPRODUCIBILITY-2026.md) — frozen tag, commands, evidence manifest
 - [Pilot start package](docs/pilot-start-package-2026.md) — Moscow pilot kickoff (tag `pilot-2026-pre`, gates, week 1)
+- [Documentation map](docs/README.md) — Tier 0 / pilot / archive router
 - [Architecture Reference](docs/06-architecture-reference.md) — canonical layer map and invariants
-- [MicroPhoenix Adoption Matrix](docs/08-microphoenix-adoption-matrix.md) — extraction decisions
-- [Implementation Rails](docs/09-implementation-and-verification-rails.md) — delivery and verification
-- [Technical Audit (RU)](docs/10-academic-audit-and-recommendations-ru.md) — architecture and standards review
-- [Execution Plan](docs/11-rebaseline-execution-plan.md) — phased delivery status
 - [Standards Roadmap 2026](docs/13-academic-execution-plan-2026.md) — openBIM iterations A–C
+- [Archived docs](docs/archive/README.md) — MicroPhoenix extraction, rebaseline, April 2026 audits
 - [Enterprise Storage](docs/14-enterprise-storage-foundation.md) — ObjectStore and Postgres index
 - [Publication Evidence](docs/academic-publication-evidence-2026.md) — reproducibility commands
 - [Local Quality Gate](docs/15-local-quality-gate.md) — CI-parity formatting/lint/type/test commands before push
