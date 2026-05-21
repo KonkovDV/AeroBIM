@@ -18,7 +18,7 @@ AeroBIM implements a **deterministic, provenance-aware, multimodal BIM quality-a
 |---|---|---|
 | Automated code checking (ACC) | Alnuzha et al., ITcon 2025 SLR — hybrid rule + ML | Rule-first narrative extraction; stochastic training deferred until P/R gated |
 | IFC reliability | IFC-QA benchmark — grounding failures dominate model-only paths | Deterministic IFC/IDS kernel; opaque models outside sign-off |
-| Delivery contracts | buildingSMART IDS 1.0 | First-class IDS validation via IfcTester |
+| Delivery contracts | buildingSMART [IDS 1.0](https://github.com/buildingSMART/IDS/releases/tag/v1.0.0) (final 2024) | First-class IDS validation via IfcTester |
 | Issue handoff | BCF 2.1 (default), BCF 3.0 opt-in | Export with GUID + viewpoint metadata |
 | Information management | ISO/DIS 19650-1:2026 (IM terminology) | Optional `stage`, `revision`, `doc_status`, `information_container_id` |
 | LOIN | ISO 7817-1 (referenced in 19650 draft) | Documented per-check purpose/milestone/actor in pilot playbook |

@@ -56,7 +56,11 @@ Detailed KPI table: [`pilot-case-study-report-2026.md`](pilot-case-study-report-
 
 ## 6. Discussion
 
-Limits: regex maintenance, fixture scope, no fine-tuned model in sign-off path.
+Limits: regex maintenance; fixture-only cross-document counts on the Moscow pilot pack must not be extrapolated to production models; no fine-tuned or stochastic model in the sign-off path; decision-support only (not licensed engineering compliance).
+
+## Data availability
+
+Reproduce frozen metrics from tag `pilot-2026-pre` (commit `1a5c03e`) using [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md). Rolling `main` may add operator documentation without changing the frozen baseline commit.
 
 ## 7. Conclusion
 
