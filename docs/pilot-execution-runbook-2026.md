@@ -47,7 +47,7 @@ Browser review: [`ops/smoke-path.md`](../ops/smoke-path.md) steps 8–10 (2D ove
 
 - Disciplines: fire + structure only (Gate 4).
 - Severity: `AEROBIM_CROSS_DOC_SEVERITY` documented in deployment guide.
-- No stochastic vision sign-off path during pilot.
+- No learned-model drawing sign-off path during pilot.
 
 ## End of pilot
 

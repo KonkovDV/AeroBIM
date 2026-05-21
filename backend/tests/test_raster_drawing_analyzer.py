@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pymupdf
 
-from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
 
 class _FakeOcrResult:
@@ -23,7 +23,7 @@ class _FakeOcrEngine:
         return _FakeOcrResult()
 
 
-class VlmDrawingAnalyzerTests(unittest.TestCase):
+class RasterDrawingAnalyzerTests(unittest.TestCase):
     def test_pdf_blocks_are_converted_into_drawing_annotations(self) -> None:
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
             pdf_path = Path(tmp.name)
@@ -35,7 +35,7 @@ class VlmDrawingAnalyzerTests(unittest.TestCase):
             document.save(pdf_path)
             document.close()
 
-            analyzer = VlmDrawingAnalyzer()
+            analyzer = RasterDrawingAnalyzer()
             annotations = analyzer.analyze_image(pdf_path, sheet_id="A-101")
 
             self.assertEqual(len(annotations), 1)
@@ -45,7 +45,7 @@ class VlmDrawingAnalyzerTests(unittest.TestCase):
             self.assertEqual(annotation.measure_name, "thickness")
             self.assertEqual(annotation.observed_value, "250")
             self.assertEqual(annotation.unit, "mm")
-            self.assertEqual(annotation.source, "vision-analyzer")
+            self.assertEqual(annotation.source, "raster-drawing-analyzer")
             self.assertIsNotNone(annotation.problem_zone)
             self.assertEqual(annotation.problem_zone.page_number, 1)
             self.assertGreater(annotation.problem_zone.width, 0)
@@ -59,7 +59,7 @@ class VlmDrawingAnalyzerTests(unittest.TestCase):
             image_path = Path(tmp.name)
 
         try:
-            analyzer = VlmDrawingAnalyzer(ocr_engine_factory=_FakeOcrEngine)
+            analyzer = RasterDrawingAnalyzer(ocr_engine_factory=_FakeOcrEngine)
             annotations = analyzer.analyze_image(image_path, sheet_id="A-201")
 
             self.assertEqual(len(annotations), 1)

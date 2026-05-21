@@ -12,7 +12,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 
 ## 1. Customer mandate (plain language)
 
-**Samolet** (via Moscow Innovation Cluster **TechLab**) requests an **expert-assistant MVP** that:
+**Samolet** (via Moscow Innovation Cluster **TechLab**) requests a **reviewer-assist MVP** that:
 
 1. Ingests **2D drawings**, **BIM models**, **technical specifications**, and **calculations**.
 2. Cross-checks them against each other and **normative / project rules**.
@@ -122,9 +122,9 @@ $env:AEROBIM_PRIORITY_PROFILE = "samolet"
 
 | Term in task page | AeroBIM meaning | Default pilot |
 |-------------------|-----------------|---------------|
-| «Коллизии» (геометрия) | IfcClash / 3D interference | Opt-in `.[clash]` extra — enable if customer confirms |
-| «Логические расхождения» | `CROSS_DOCUMENT` + `ConflictKind` | Core sign-off path |
-| «Расхождения размеров/площадей» | Quantity algebra + cross-doc | Core |
+| Collisions (geometry; RU: «коллизии») | IfcClash / 3D interference | Opt-in `.[clash]` extra — enable if customer confirms |
+| Logical discrepancies (RU: «логические расхождения») | `CROSS_DOCUMENT` + `ConflictKind` | Core sign-off path |
+| Area / dimension mismatches (RU: «расхождения размеров/площадей») | Quantity algebra + cross-doc | Core |
 
 **Week 1 action:** record customer interpretation in [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md) and [`pilot-cde-handoff-2026.md`](pilot-cde-handoff-2026.md).
 

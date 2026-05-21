@@ -142,7 +142,7 @@ class FakeVisionDrawingAnalyzer:
                     width=50,
                     height=20,
                 ),
-                source="vision-analyzer",
+                source="raster-drawing-analyzer",
             )
         ]
 
@@ -448,7 +448,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         )
 
         self.assertEqual(report.summary.drawing_annotation_count, 1)
-        self.assertEqual(report.drawing_annotations[0].source, "vision-analyzer")
+        self.assertEqual(report.drawing_annotations[0].source, "raster-drawing-analyzer")
         self.assertEqual(report.drawing_annotations[0].sheet_id, "A-101")
         self.assertEqual(len(report.drawing_assets), 1)
         self.assertEqual(report.drawing_assets[0].sheet_id, "A-101")
@@ -492,7 +492,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 
         self.assertEqual(report.summary.drawing_annotation_count, 2)
         sources = {annotation.source for annotation in report.drawing_annotations}
-        self.assertIn("vision-analyzer", sources)
+        self.assertIn("raster-drawing-analyzer", sources)
         self.assertIn("drawing-text", sources)
         target_refs = {annotation.target_ref for annotation in report.drawing_annotations}
         self.assertIn("WALL-01", target_refs)

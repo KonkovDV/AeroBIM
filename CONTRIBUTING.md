@@ -56,7 +56,7 @@ python -m ruff format src tests
 
 ## Git Commits (single author)
 
-Do not commit through IDE assistants that inject `Co-authored-by:` trailers.
+Do not use commit flows that inject `Co-authored-by:` trailers (see [`docs/contributor-git-2026.md`](docs/contributor-git-2026.md)).
 
 1. Commit from your shell or the VS Code task **AeroBIM: commit (single author)**.
 2. Or run:

@@ -29,7 +29,7 @@ from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditSt
 from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
-from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
 
 def bootstrap_container(settings: Settings | None = None) -> Container:
@@ -60,7 +60,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     )
     container.register(
         Tokens.VISION_DRAWING_ANALYZER,
-        lambda _container: VlmDrawingAnalyzer(),
+        lambda _container: RasterDrawingAnalyzer(),
         lifecycle=Lifecycle.SINGLETON,
     )
     tolerance = ToleranceConfig()

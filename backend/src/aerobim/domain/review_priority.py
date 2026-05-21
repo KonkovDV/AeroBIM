@@ -1,4 +1,4 @@
-"""Reviewer priority scoring for expert-assistant workflows (incl. Samolet TechLab)."""
+"""Reviewer priority scoring for assistive QA workflows (incl. Samolet TechLab)."""
 
 from __future__ import annotations
 

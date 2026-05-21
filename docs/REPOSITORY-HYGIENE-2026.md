@@ -91,6 +91,10 @@ GitHub Actions generates `artifacts/ci-benchmark-smoke/` per run. **Do not track
 4. No customer data in `git add -A` — use [`contributor-git-2026.md`](contributor-git-2026.md).
 5. Do not move tag `pilot-2026-pre` without material-change protocol.
 
+## Language
+
+One language per file; see [`LANGUAGE-POLICY-2026.md`](LANGUAGE-POLICY-2026.md). No vendor model names or coding-agent branding in public docs.
+
 ## Related
 
 - [`evidence/README.md`](evidence/README.md) — evidence folder index

@@ -17,7 +17,7 @@ tags: [aerobim, techlab, samolet, application]
 
 **Project name:** AeroBIM
 
-**Short description:** AeroBIM validates IFC, IDS, specifications, calculations, and 2D evidence in one deterministic pipeline; prioritized remarks and BCF 2.1 export; expert-assistant (not replacement). MIT, 292 tests, macro F1 ≈ 0.86 on RU corpus.
+**Short description:** AeroBIM validates IFC, IDS, specifications, calculations, and 2D evidence in one deterministic pipeline; prioritized remarks and BCF 2.1 export; decision-support for reviewers (not replacement). MIT, 292 tests, macro F1 ≈ 0.86 on RU corpus.
 
 **Full description:** See repository README and [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) for traceability R1–R15.
 

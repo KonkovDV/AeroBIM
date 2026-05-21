@@ -41,7 +41,7 @@ Tag `v*` triggers [`.github/workflows/academic-benchmark-release.yml`](../.githu
 
 ## Claim boundary
 
-Deterministic multimodal QA kernel with provenance — not full-code compliance or stochastic-vision sign-off.
+Deterministic multimodal QA kernel with provenance — not full-code compliance or learned-model drawing sign-off.
 
 ## Prior pilot bundle
 

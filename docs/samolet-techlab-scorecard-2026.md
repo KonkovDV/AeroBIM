@@ -46,7 +46,7 @@ tags: [aerobim, samolet, techlab, scorecard]
 1. **Pain** — late design errors cost rework (Samolet quote).
 2. **Solution** — deterministic multimodal QA: IFC + IDS + TZ + calc + 2D → BCF.
 3. **Evidence** — 292 tests, F1 ≈ 0,86, pre-pilot gates, REPRODUCIBILITY SSOT.
-4. **AI stance** — expert-assistant; deterministic sign-off; CV/ML opt-in roadmap.
+4. **Product stance** — assistive automation (expert in the loop); deterministic sign-off; optional CV extras deferred.
 5. **Pilot** — one corpus, one CDE path, KPI memo (60% TP, 20% time, 30 min SLA).
 6. **Ask** — TechLab pilot budget + Samolet corpus + week-1 CDE import.
 
@@ -61,7 +61,7 @@ tags: [aerobim, samolet, techlab, scorecard]
 ## Claims for application form
 
 **Short (≤500 chars):**  
-AeroBIM — open multimodal BIM validation: IFC, IDS 1.0, specifications, calculations, and 2D evidence in one deterministic pipeline. Expert-assistant (not replacement). BCF 2.1 export, browser review, reproducible metrics (F1 ≥ 0.70). TechLab scope: adapt to Samolet document types, typical-error catalog, ≤30 min SLA on agreed package, CDE handoff.
+AeroBIM — open multimodal BIM validation: IFC, IDS 1.0, specifications, calculations, and 2D evidence in one deterministic pipeline. Decision-support for reviewers (not replacement). BCF 2.1 export, browser review, reproducible metrics (F1 ≥ 0.70). TechLab scope: adapt to Samolet document types, typical-error catalog, ≤30 min SLA on agreed package, CDE handoff.
 
 **Do not claim:** production rollout at Samolet, full SP/GOST automation, autonomous sign-off.
 

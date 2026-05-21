@@ -1,42 +1,44 @@
 ---
-title: "Гигиена Git — один автор коммита"
+title: "Git Hygiene — Single Author Commits"
 status: active
-version: "1.1.0"
-last_updated: "2026-05-20"
+version: "1.2.0"
+last_updated: "2026-05-21"
 ---
 
-# Гигиена Git (2026)
+# Git hygiene (2026)
 
-## Проблема
+Russian version: [`contributor-git-ru.md`](contributor-git-ru.md).
 
-Некоторые IDE при автоматических коммитах добавляют в сообщение трейлеры соавторства (`Co-authored-by:`). GitHub отображает их как второго автора в истории и в Contributors.
+## Problem
 
-## Рекомендуемый способ коммитов
+Some commit tools append `Co-authored-by:` trailers. GitHub then shows a second author in history and Contributors.
 
-Не поручайте коммит встроенному ассистенту IDE. Используйте локальный скрипт или задачу VS Code:
+## Recommended workflow
+
+Commit from your shell or the VS Code task **AeroBIM: commit (single author)** — not through automated commit attribution that adds co-author trailers.
 
 ```powershell
 cd AeroBIM
-powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: ваше сообщение"
+powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: your message"
 ```
 
-Скрипт:
+The script:
 
-- фиксирует автора `KonkovDV`;
-- отклоняет сообщения с `Co-authored-by:` до коммита;
-- проверяет итоговый коммит после записи.
+- sets author `KonkovDV`;
+- rejects messages containing `Co-authored-by:` before commit;
+- verifies the recorded commit body after write.
 
-## Проверка истории
+## History check
 
 ```powershell
 git log -20 --format="%B---" | Select-String "Co-authored-by"
 ```
 
-Пустой вывод — в последних 20 коммитах нет соавторских трейлеров.
+Empty output means no co-author trailers in the last 20 commits.
 
-## Очистка уже испорченной истории
+## Cleaning polluted history
 
-Если в прошлых коммитах уже есть `Co-authored-by`:
+If older commits already contain `Co-authored-by:`:
 
 ```powershell
 $env:FILTER_BRANCH_SQUELCH_WARNING = "1"
@@ -44,11 +46,11 @@ git filter-branch -f --msg-filter "python scripts/strip_coauthor_msgfilter.py" -
 git push --force-with-lease origin main
 ```
 
-Перед переписыванием истории согласуйте force-push с владельцем ветки.
+Coordinate force-push with the branch owner first.
 
-### Устаревший автор `KonkovaElena` / `test@example.com`
+### Legacy author `KonkovaElena` / `test@example.com`
 
-На `main` (2026-05-20) ранние коммиты переписаны на `KonkovDV <KonkovDV@users.noreply.github.com>`.
+On `main` (2026-05-20) early commits were rewritten to `KonkovDV <KonkovDV@users.noreply.github.com>`.
 
 ```bash
 bash scripts/rewrite-author-konkovdv.sh
@@ -56,6 +58,6 @@ git update-ref -d refs/original/refs/heads/main
 git push --force-with-lease origin main
 ```
 
-## CI и публикация
+## CI and publication
 
-**Tasks: AeroBIM: quality gate** → ручной коммит через `scripts/git_commit.ps1` → `git push`.
+**Tasks: AeroBIM: quality gate** → commit via `scripts/git_commit.ps1` → `git push`.

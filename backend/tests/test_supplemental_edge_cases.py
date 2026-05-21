@@ -500,13 +500,13 @@ class ToleranceConfigTests(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
-class VlmDrawingAnalyzerContractTests(unittest.TestCase):
+class RasterDrawingAnalyzerContractTests(unittest.TestCase):
     def test_blank_pdf_returns_empty_list(self) -> None:
         import tempfile
 
         import pymupdf
 
-        from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+        from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
             tmp_path = Path(tmp.name)
@@ -517,24 +517,24 @@ class VlmDrawingAnalyzerContractTests(unittest.TestCase):
             document.save(tmp_path)
             document.close()
 
-            analyzer = VlmDrawingAnalyzer()
+            analyzer = RasterDrawingAnalyzer()
             result = analyzer.analyze_image(tmp_path, sheet_id="A-101")
             self.assertEqual(result, [])
         finally:
             tmp_path.unlink(missing_ok=True)
 
     def test_stub_raises_for_missing_file(self) -> None:
-        from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+        from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
-        analyzer = VlmDrawingAnalyzer()
+        analyzer = RasterDrawingAnalyzer()
         with self.assertRaises(FileNotFoundError):
             analyzer.analyze_image(Path("/nonexistent/drawing.pdf"))
 
     def test_port_protocol_compliance(self) -> None:
-        """VlmDrawingAnalyzer satisfies VisionDrawingAnalyzer protocol."""
-        from aerobim.infrastructure.adapters.vlm_drawing_analyzer import VlmDrawingAnalyzer
+        """RasterDrawingAnalyzer satisfies VisionDrawingAnalyzer protocol."""
+        from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
-        analyzer = VlmDrawingAnalyzer()
+        analyzer = RasterDrawingAnalyzer()
         # Protocol structural check: must have analyze_image method
         self.assertTrue(hasattr(analyzer, "analyze_image"))
         self.assertTrue(callable(analyzer.analyze_image))
