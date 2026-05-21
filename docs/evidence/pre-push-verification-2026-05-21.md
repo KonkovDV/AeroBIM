@@ -50,3 +50,12 @@ cd AeroBIM\backend
 ## Tag policy
 
 Do **not** move tag `pilot-2026-pre` (frozen at `1a5c03e`). This verification run applies to rolling `main` documentation ahead of the tag.
+
+## Post-push CI (2026-05-21)
+
+| Field | Value |
+|---|---|
+| `main` HEAD | `078769a` |
+| Workflow | CI (`.github/workflows/ci.yml`) |
+| Conclusion | **success** |
+| Run | https://github.com/KonkovDV/AeroBIM/actions/runs/26208956218 |
