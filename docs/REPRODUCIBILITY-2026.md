@@ -105,7 +105,7 @@ Reference frameworks: [FAIR Software Checklist v0.2](https://fairsoftwarecheckli
 
 ## Explicit limits (do not overclaim)
 
-1. **Deterministic sign-off only** — no learned-model vision or fine-tuned extraction in pilot path.
+1. **Deterministic sign-off only** — no non-deterministic drawing adapters or trained extraction in pilot path.
 2. **Fixture corpus** — 10 RU narrative documents / 50 requirements; pilot Moscow pack may differ.
 3. **No customer data** in the public repository.
 4. **Decision-support** — not licensed engineering sign-off or full regulatory automation.

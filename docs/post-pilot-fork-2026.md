@@ -32,7 +32,7 @@ Priority order:
 3. **C.1** Typed `Quantity` to cut `UNIT_MISMATCH` noise
 4. **Wave 4** Revit thin client after BCF roundtrip is routine
 
-Defer: learned-model drawing sign-off, SHACL primary validation, event sourcing.
+Defer: non-deterministic drawing sign-off, SHACL primary validation, event sourcing.
 
 ## Branch B — Research / publication (academic partnership)
 
@@ -55,7 +55,7 @@ Actions:
 
 - Archive pilot artifacts and KPI memo
 - Keep deterministic kernel and benchmark packs as open evidence
-- Do not expand learned-model drawing or enterprise scope without new sponsor
+- Do not expand non-deterministic drawing or enterprise scope without new sponsor
 
 ## Explicit non-goals (all branches)
 

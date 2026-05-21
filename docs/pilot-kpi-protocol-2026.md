@@ -52,4 +52,4 @@ Fixture pass does **not** prove SLA on customer production packages — only on 
 ## Exclusions
 
 - No revenue or production SLA claims from repo evidence alone
-- No learned-model drawing metrics until extraction F1 gate is green in CI
+- No non-deterministic drawing metrics until extraction F1 gate is green in CI

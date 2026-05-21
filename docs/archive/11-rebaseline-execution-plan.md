@@ -98,7 +98,7 @@ Increase evidence quality without replacing typed contracts.
 
 1. integration tests for real `ifcclash` geometry runs when the extra is installed. Coverage rail landed and first runtime proof is captured in an extra-enabled environment.
 2. integration tests for Docling-backed non-text requirement extraction. Coverage rail landed and first runtime proof is captured in an extra-enabled environment.
-3. optional heavier vision adapter behind the existing `VisionDrawingAnalyzer` port;
+3. optional heavier raster adapter behind the existing `RasterDrawingAnalyzer` port;
 4. confidence/calibration rules for mixed drawing evidence sources.
 
 ### Exit Criteria

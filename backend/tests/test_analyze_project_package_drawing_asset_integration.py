@@ -43,7 +43,7 @@ class _NoOpDrawingAnalyzer:
         return []
 
 
-class _NoOpVisionDrawingAnalyzer:
+class _NoOpRasterDrawingAnalyzer:
     def analyze_image(self, _image_path: Path, sheet_id: str | None = None) -> list:
         return []
 
@@ -68,7 +68,7 @@ class AnalyzeProjectPackageDrawingAssetIntegrationTests(unittest.TestCase):
             drawing_analyzer=_NoOpDrawingAnalyzer(),
             ifc_validator=_NoOpIfcValidator(),
             ids_validator=None,
-            vision_drawing_analyzer=_NoOpVisionDrawingAnalyzer(),
+            raster_drawing_analyzer=_NoOpRasterDrawingAnalyzer(),
             remark_generator=_NoOpRemarkGenerator(),
             audit_report_store=FilesystemAuditStore(storage_dir),
         )

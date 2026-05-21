@@ -8,7 +8,7 @@ version: "1.0.0"
 
 ## 1. Hypothesis
 
-Deterministic multimodal validation (IFC + IDS + structured + narrative + cross-doc) yields auditable sign-off evidence with lower regression risk than opaque model-only QA for regulated AEC deliverables.
+Deterministic multimodal validation (IFC + IDS + structured + narrative + cross-doc) yields auditable sign-off evidence with lower regression risk than non-reproducible QA for regulated AEC deliverables.
 
 ## 2. Methods
 
@@ -56,7 +56,7 @@ See [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md).
 ## 6. Threats to validity
 
 - Fixture size and regex maintenance cost.
-- No stochastic vision-model sign-off in production path.
+- No non-deterministic drawing sign-off in production path.
 - Single-site pilot KPI (N=1) — illustrative only.
 
 ## 7. Reproducibility

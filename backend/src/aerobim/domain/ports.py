@@ -31,18 +31,13 @@ class DrawingAnalyzer(Protocol):
     def analyze(self, source: DrawingSource) -> list[DrawingAnnotation]: ...
 
 
-class VisionDrawingAnalyzer(Protocol):
-    """Domain port for optional raster drawing analysis (vision adapters).
+class RasterDrawingAnalyzer(Protocol):
+    """Domain port for optional raster/PDF drawing analysis (OCR + layout).
 
-    Unlike the text-based ``DrawingAnalyzer`` which parses structured
-    pipe-delimited or JSON annotations, this port accepts raster/PDF
-    drawing images and returns semantic annotations via computer-vision
-    adapters (layout + OCR baseline today; heavier models behind the port).
-
-    Adapters may run inference locally (ONNX int8) or delegate to an
-    external vision service.  The port intentionally mirrors the
-    ``DrawingAnnotation`` return type so that downstream use cases
-    can merge text-based and vision-based annotations transparently.
+    Unlike ``DrawingAnalyzer`` (structured text/JSON), this port accepts
+    raster or PDF inputs and returns ``DrawingAnnotation`` records via
+    deterministic OCR and layout heuristics. Non-deterministic adapters
+    may implement the same port but are outside the pilot sign-off path.
     """
 
     def analyze_image(

@@ -26,10 +26,10 @@ from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
+from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
-from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
 
 def bootstrap_container(settings: Settings | None = None) -> Container:
@@ -59,7 +59,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
-        Tokens.VISION_DRAWING_ANALYZER,
+        Tokens.RASTER_DRAWING_ANALYZER,
         lambda _container: RasterDrawingAnalyzer(),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -122,7 +122,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             drawing_analyzer=current.resolve(Tokens.DRAWING_ANALYZER),
             ifc_validator=current.resolve(Tokens.IFC_VALIDATOR),
             ids_validator=current.resolve(Tokens.IDS_VALIDATOR),
-            vision_drawing_analyzer=current.resolve(Tokens.VISION_DRAWING_ANALYZER),
+            raster_drawing_analyzer=current.resolve(Tokens.RASTER_DRAWING_ANALYZER),
             remark_generator=current.resolve(Tokens.REMARK_GENERATOR),
             audit_report_store=current.resolve(Tokens.AUDIT_REPORT_STORE),
             tolerance=tolerance,
