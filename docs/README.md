@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Documentation Map"
 status: active
-version: "0.3.0"
-last_updated: "2026-05-20"
+version: "0.4.0"
+last_updated: "2026-05-21"
 tags: [aerobim, documentation, navigation, reference]
 ---
 
@@ -10,9 +10,26 @@ tags: [aerobim, documentation, navigation, reference]
 
 ## Purpose
 
-This file is the local documentation router for `AeroBIM`.
+Router for `AeroBIM/docs/`. **What belongs in git vs local-only:** [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md). **Evidence index:** [`evidence/README.md`](evidence/README.md).
 
-Use it to find the current active documents quickly instead of treating the whole folder as a flat archive.
+## Tier 0 — SSOT (read first)
+
+| File | Role |
+|------|------|
+| `REPOSITORY-HYGIENE-2026.md` | Public vs gitignored vs CI artifacts |
+| `REPRODUCIBILITY-2026.md` | FAIR/CODE, frozen tag, evidence manifest |
+| `06-architecture-reference.md` | Technical architecture |
+| `pilot-claim-boundary-2026.md` | Verified vs planned claims |
+| `samolet-techlab-alignment-2026.md` | Samolet R1–R15 traceability |
+| `samolet-compliance-scorecard-2026.md` | Pilot closure sign-off |
+
+## Tier 1 — Active pilot / Samolet (2026)
+
+See table **Pilot and Publication** below.
+
+## Tier 2 — Archive / reference (numbered docs)
+
+Historical MicroPhoenix extraction and rebaseline plans (`01`–`15`). Still accurate as reference; superseded for day-to-day pilot work by Tier 0 + Samolet docs. Prefer `PROJECT-AUDIT-2026-05-20.md` over `10-academic-audit` for current audit state.
 
 ## Recommended Reading Order
 
@@ -34,6 +51,8 @@ Use it to find the current active documents quickly instead of treating the whol
 
 | File | Purpose |
 |---|---|
+| `LOCAL_OPERATOR_ARTIFACTS.md` | Gitignored NDA/CDE paths (operator only) |
+| `partners/TECHLAB_SAMOLET_APPLICATION_2026.md` | TechLab application texts (in-repo) |
 | `REPRODUCIBILITY-2026.md` | FAIR/CODE reproducibility SSOT, frozen tag, evidence manifest |
 | `samolet-techlab-alignment-2026.md` | Samolet TechLab requirements traceability + May 2026 openBIM anchors |
 | `samolet-techlab-scorecard-2026.md` | Score ladder 7.6 → 10 for jury / pilot |
