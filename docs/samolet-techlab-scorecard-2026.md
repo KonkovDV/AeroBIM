@@ -67,6 +67,6 @@ AeroBIM — open multimodal BIM validation: IFC, IDS 1.0, specifications, calcul
 
 ## Links
 
-- Application packet: [`../../docs/startups/techlab/AEROBIM_APPLICATION_PACKET_2026.md`](../../docs/startups/techlab/AEROBIM_APPLICATION_PACKET_2026.md)
+- Application packet: [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
 - Intake checklist: [`samolet-pilot-intake-checklist-2026.md`](samolet-pilot-intake-checklist-2026.md)
 - CDE handoff: [`pilot-cde-handoff-2026.md`](pilot-cde-handoff-2026.md)

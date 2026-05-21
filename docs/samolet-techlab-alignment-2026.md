@@ -116,7 +116,7 @@ $env:AEROBIM_PRIORITY_PROFILE = "samolet"
 | Limits | This doc §2 non-goals + claim boundary |
 | Data availability | [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) |
 | Case study | [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md) (KPI TBD) |
-| TechLab application | [`docs/startups/techlab/`](../docs/startups/techlab/) dossier (external to AeroBIM repo root) |
+| TechLab application | [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
 
 ## Clash policy (Samolet R5)
 
