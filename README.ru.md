@@ -134,7 +134,7 @@ python -m aerobim.tools.export_runtime_baseline
 
 ## Коммиты в Git
 
-Коммиты — через [scripts/git_commit.ps1](scripts/git_commit.ps1) или задачу VS Code **AeroBIM: commit** (один автор, без `Co-authored-by`). Подробнее: [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
+Коммиты — через [scripts/git_commit.ps1](scripts/git_commit.ps1) или задачу VS Code **AeroBIM: commit** (один автор, без `Co-authored-by`). Подробнее: [docs/contributor-git-ru.md](docs/contributor-git-ru.md).
 
 Перед push на GitHub: [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md). Метаданные репозитория: [.github/repository-metadata.md](.github/repository-metadata.md).
 

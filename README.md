@@ -137,7 +137,7 @@ python -m ruff format src tests
 
 ## Benchmarks and Evidence
 
-Verified capabilities are backed by tests, API contracts, or persisted report artifacts. Planned work (stochastic vision sign-off, BCF API) is listed separately in the capability table.
+Verified capabilities are backed by tests, API contracts, or persisted report artifacts. Planned work (learned-model drawing sign-off, BCF API) is listed separately in the capability table.
 
 ```bash
 cd backend
