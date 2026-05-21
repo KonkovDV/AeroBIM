@@ -10,12 +10,13 @@ tags: [aerobim, documentation, navigation, reference]
 
 ## Purpose
 
-Router for `AeroBIM/docs/`. **What belongs in git vs local-only:** [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md). **Evidence index:** [`evidence/README.md`](evidence/README.md).
+Router for `AeroBIM/docs/`. **Language policy:** [`LANGUAGE-POLICY-2026.md`](LANGUAGE-POLICY-2026.md). **What belongs in git vs local-only:** [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md). **Evidence index:** [`evidence/README.md`](evidence/README.md).
 
 ## Tier 0 — SSOT (read first)
 
 | File | Role |
 |------|------|
+| `LANGUAGE-POLICY-2026.md` | English vs Russian docs; no runglish |
 | `REPOSITORY-HYGIENE-2026.md` | Public vs gitignored vs CI artifacts |
 | `REPRODUCIBILITY-2026.md` | FAIR/CODE, frozen tag, evidence manifest |
 | `06-architecture-reference.md` | Technical architecture |

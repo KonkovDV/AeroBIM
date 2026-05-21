@@ -5,9 +5,9 @@ status: draft
 
 # Pilot Moscow — Case Study Report (Section 5)
 
-## Объём
+## Scope
 
-Иллюстративное кейс-стадио на одном пакете (N=1). Метрики анонимизированы; без логотипов заказчиков.
+Illustrative case study on one package (N=1). Metrics are anonymized; no customer logos.
 
 ## Protocol references
 
@@ -20,6 +20,8 @@ status: draft
 - Samolet alignment: [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md)
 - CDE handoff: [`pilot-cde-handoff-2026.md`](pilot-cde-handoff-2026.md)
 - Compliance scorecard: [`samolet-compliance-scorecard-2026.md`](samolet-compliance-scorecard-2026.md)
+
+Russian interview questions: [`pilot-case-study-report-ru.md`](pilot-case-study-report-ru.md).
 
 ## BCF handoff checklist (Gate 3)
 
@@ -55,14 +57,6 @@ curl -H "Authorization: Bearer $TOKEN" \
 | Package SLA (Samolet) | Wall-clock analyze, agreed pack | TBD | ≤ 30 min |
 | Review hours saved | Manual − assisted (same pack) | TBD | ≥ 20% |
 
-## Качественная обратная связь (5–7 вопросов)
+## Publication ethics
 
-1. Были ли междокументные замечания пригодны для работы без ручного поиска в IFC?
-2. Устраивал ли обмен через BCF в вашем CDE?
-3. Помогали ли поля ISO 19650-lite (стадия, ревизия) сократить переделки?
-4. Оцените долю ложных срабатываний (1–5) отдельно для разделов «пожар» и «конструктив».
-5. Готовы ли использовать инструмент на этапе внутренней проверки до экспертного подписания?
-
-## Этика публикации
-
-Только агрегированные метрики; без идентифицирующих данных проекта.
+Aggregate metrics only; no project-identifying data.

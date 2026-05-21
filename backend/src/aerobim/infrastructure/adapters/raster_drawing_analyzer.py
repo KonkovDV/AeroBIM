@@ -1,15 +1,7 @@
 """Deterministic drawing analyzer baseline for raster and PDF inputs.
 
-The adapter intentionally keeps the ``VisionDrawingAnalyzer`` port stable while
-replacing the previous stub with a real baseline:
-
-- PDF input uses PyMuPDF text blocks with page-level bounding boxes.
-- Raster input uses RapidOCR (ONNX Runtime) when available.
-- Extracted text is normalized into ``DrawingAnnotation`` records using
-  deterministic regex/layout heuristics rather than a generative model.
-
-Heavier vision adapters can replace the baseline without changing downstream
-orchestration; the port contract stays identical.
+Implements the ``VisionDrawingAnalyzer`` port using OCR and layout heuristics only
+(no generative or fine-tuned models in the sign-off path).
 """
 
 from __future__ import annotations
@@ -65,7 +57,7 @@ class _TextRegion:
     height: float
 
 
-class VlmDrawingAnalyzer:
+class RasterDrawingAnalyzer:
     """Infrastructure adapter implementing ``VisionDrawingAnalyzer`` port."""
 
     def __init__(
@@ -219,7 +211,7 @@ class VlmDrawingAnalyzer:
             observed_value=observed_value,
             unit=unit or None,
             problem_zone=self._make_problem_zone(sheet_id, region),
-            source="vision-analyzer",
+            source="raster-drawing-analyzer",
         )
 
     def _parse_regex_line(
@@ -245,7 +237,7 @@ class VlmDrawingAnalyzer:
                 observed_value=observed_value,
                 unit=unit,
                 problem_zone=self._make_problem_zone(sheet_id, region),
-                source="vision-analyzer",
+                source="raster-drawing-analyzer",
             )
         return None
 
