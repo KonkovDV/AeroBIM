@@ -1,0 +1,45 @@
+{
+  "artifact_type": "samolet_package_sla",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-05-21T07:01:28.852278+00:00",
+  "customer_reference": "https://i.moscow/techlab/samolet",
+  "sla_target_minutes": 30.0,
+  "sla_pass": true,
+  "max_minutes_observed": 0.0104,
+  "avg_minutes_observed": 0.0104,
+  "benchmark": {
+    "iterations": 1,
+    "warmup_iterations": 0,
+    "measured_runs": [
+      {
+        "iteration": 1,
+        "request_id": "benchmark-project-package-pilot-moscow-v1-run-001",
+        "elapsed_ms": 621.427,
+        "report_id": "bc87c4a4dd874deeae6c6cfe90d53358",
+        "issue_count": 8,
+        "requirement_count": 6,
+        "project_name": "Пилот Москва — Жилой комплекс (огнестойкость + конструктив)",
+        "discipline": "fire-safety+structure"
+      }
+    ],
+    "summary": {
+      "min_ms": 621.427,
+      "max_ms": 621.427,
+      "avg_ms": 621.427,
+      "reports_per_second": 1.609
+    },
+    "artifact_type": "benchmark_project_package",
+    "schema_version": "1.0.0",
+    "generated_at": "2026-05-21T07:01:28.852004+00:00",
+    "benchmark_pack": {
+      "pack_id": "project-package-pilot-moscow-v1",
+      "pack_version": "1.0.0",
+      "manifest_schema_version": "1.0.0",
+      "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence."
+    },
+    "pack_id": "project-package-pilot-moscow-v1",
+    "pack_version": "1.0.0",
+    "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence.",
+    "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+  }
+}

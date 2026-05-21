@@ -33,7 +33,7 @@
     {
       "label": "AeroBIM: pilot weekly checks",
       "type": "shell",
-      "command": "python -m pytest tests -q; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m aerobim.tools.summarize_conflict_breakdown --pack samples/benchmarks/project-package-pilot-moscow-v1.json",
+      "command": "$env:AEROBIM_PRIORITY_PROFILE='samolet'; python -m pytest tests -q; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m aerobim.tools.measure_package_sla --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json --max-minutes 30; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m aerobim.tools.map_typical_errors --output ../docs/evidence/samolet-typical-errors-mapping.json; python -m aerobim.tools.summarize_conflict_breakdown --pack samples/benchmarks/project-package-pilot-moscow-v1.json",
       "options": {
         "cwd": "${workspaceFolder}/backend"
       },

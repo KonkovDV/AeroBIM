@@ -34,7 +34,12 @@ python -m pytest tests -q
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
 # analyze pilot package (API or benchmark manifest)
 python -m aerobim.tools.summarize_conflict_breakdown --pack samples/benchmarks/project-package-pilot-moscow-v1.json
+export AEROBIM_PRIORITY_PROFILE=samolet   # Windows: $env:AEROBIM_PRIORITY_PROFILE='samolet'
+python -m aerobim.tools.measure_package_sla --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json --max-minutes 30
+python -m aerobim.tools.map_typical_errors --output ../docs/evidence/samolet-typical-errors-mapping.json
 ```
+
+Samolet intake: [`samolet-pilot-intake-checklist-2026.md`](samolet-pilot-intake-checklist-2026.md). Closure: [`samolet-compliance-scorecard-2026.md`](samolet-compliance-scorecard-2026.md).
 
 Browser review: [`ops/smoke-path.md`](../ops/smoke-path.md) steps 8–10 (2D overlay + exports).
 

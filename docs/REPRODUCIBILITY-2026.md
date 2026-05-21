@@ -78,6 +78,12 @@ Full publication rail: [`academic-publication-evidence-2026.md`](academic-public
 | [`evidence/benchmark-report-2026-05-21.md`](evidence/benchmark-report-2026-05-21.md) | Rolling-line benchmark refresh |
 | [`evidence/ablation-study-report.json`](evidence/ablation-study-report.json) | Multimodal ablation A0–A3 |
 | [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md) | Pre-commit verification lane |
+| [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | Samolet TechLab traceability matrix |
+| [`../samples/benchmarks/samolet-typical-errors-catalog.json`](../samples/benchmarks/samolet-typical-errors-catalog.json) | Typical error catalog scaffold |
+| [`samolet-techlab-scorecard-2026.md`](samolet-techlab-scorecard-2026.md) | Score ladder 7.6 → 10 |
+| [`samolet-compliance-scorecard-2026.md`](samolet-compliance-scorecard-2026.md) | Closure SSOT (sign-off) |
+| [`evidence/samolet-sla-pilot-moscow-2026-05-21.json`](evidence/samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA evidence |
+| Customer SLA | `docs/evidence/internal/samolet-sla-customer-*.json` (gitignored) |
 
 Corpus SSOT: [`annotation-protocol-2026.md`](annotation-protocol-2026.md), [`../samples/benchmarks/russian-aec-ground-truth.json`](../samples/benchmarks/russian-aec-ground-truth.json).
 

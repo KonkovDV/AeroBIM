@@ -169,6 +169,35 @@ jobs:
             artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md
             artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md
 
+  samolet-sla-smoke:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev,vision]"
+      - name: Samolet SLA smoke (pilot-moscow pack, 30 min gate)
+        env:
+          AEROBIM_PRIORITY_PROFILE: samolet
+        run: |
+          mkdir -p ../artifacts/samolet-sla-smoke
+          python -m aerobim.tools.measure_package_sla \
+            --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json \
+            --max-minutes 30 \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --output ../artifacts/samolet-sla-smoke/samolet-sla-pilot-moscow-ci.json
+      - name: Upload Samolet SLA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: samolet-sla-smoke-artifacts
+          path: artifacts/samolet-sla-smoke/*.json
+
   extraction-quality:
     runs-on: ubuntu-latest
     needs: test
