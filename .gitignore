@@ -25,6 +25,11 @@ frontend/artifacts/
 !.env.example
 var/
 tmp/
+
+# Samolet / customer pilot (never commit NDA corpus)
+samples/benchmarks/project-package-samolet-pilot-v1.json
+docs/evidence/internal/
+docs/evidence/samolet-sla-customer-*.json
 *.log
 backend/cache/
 

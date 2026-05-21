@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "catalog_id": "samolet-typical-errors-v1",
+  "description": "Scaffold catalog for Samolet TechLab intake. Replace examples with customer-confirmed patterns; map each to AeroBIM rule_id or cross-doc class.",
+  "source": "https://i.moscow/techlab/samolet",
+  "disciplines": ["fire-safety", "structure", "architecture", "mep"],
+  "patterns": [
+    {
+      "error_id": "SAM-TYP-001",
+      "discipline": "fire-safety",
+      "title_ru": "Несоответствие огнестойкости стены ТЗ/расчёту и IFC",
+      "pattern": "FireRating REI/EI mismatch between spec, calculation note, and IfcWall Pset",
+      "maps_to_rule_prefix": "REQ-FIRE",
+      "conflict_kind": "HARD_CONFLICT",
+      "severity_hint": "error",
+      "pilot_fixture": "techlab-fire-safety-rules.txt"
+    },
+    {
+      "error_id": "SAM-TYP-002",
+      "discipline": "architecture",
+      "title_ru": "Расхождение площади квартиры между расчётом и ТЗ",
+      "pattern": "Net/gross area contradiction across calculation sheet and technical specification",
+      "maps_to_category": "CROSS_DOCUMENT",
+      "conflict_kind": "HARD_CONFLICT",
+      "severity_hint": "warning",
+      "pilot_fixture": "techlab-area-calc.txt"
+    },
+    {
+      "error_id": "SAM-TYP-003",
+      "discipline": "structure",
+      "title_ru": "Толщина несущей стены ниже минимума",
+      "pattern": "Wall thickness < 200 mm vs structure rules",
+      "maps_to_rule_prefix": "REQ-STRUCT",
+      "conflict_kind": "HARD_CONFLICT",
+      "severity_hint": "error",
+      "pilot_fixture": "techlab-structure-rules.txt"
+    },
+    {
+      "error_id": "SAM-TYP-004",
+      "discipline": "fire-safety",
+      "title_ru": "Превышение допустимой площади помещения для эвакуации",
+      "pattern": "IfcSpace NetFloorArea > limit in fire rules",
+      "maps_to_rule_prefix": "REQ-FIRE",
+      "conflict_kind": "HARD_CONFLICT",
+      "severity_hint": "error",
+      "pilot_fixture": "techlab-fire-safety-rules.txt"
+    },
+    {
+      "error_id": "SAM-TYP-005",
+      "discipline": "architecture",
+      "title_ru": "Расхождение аннотации чертежа с IFC-элементом",
+      "pattern": "Drawing annotation target vs model GUID/property mismatch",
+      "maps_to_category": "DRAWING_VALIDATION",
+      "severity_hint": "warning",
+      "pilot_fixture": "techlab-annotations.txt"
+    },
+    {
+      "error_id": "SAM-TYP-006",
+      "discipline": "mep",
+      "title_ru": "Отсутствие вентиляционного/водяного параметра в модели",
+      "pattern": "Required MEP property missing on duct/pipe entity",
+      "maps_to_rule_prefix": "REQ-MEP",
+      "severity_hint": "warning",
+      "pilot_fixture": "techlab-mep-rules.txt",
+      "note": "Full MEP IFC fixture deferred until model with duct/pipe entities available"
+    }
+  ]
+}

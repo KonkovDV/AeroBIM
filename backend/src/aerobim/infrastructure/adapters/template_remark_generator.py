@@ -15,8 +15,19 @@ class TemplateRemarkGenerator:
         observed_text = self._build_observed_text(issue)
         location_text = self._build_location_text(issue)
 
+        priority_hint = f" [приоритет {issue.priority}]" if issue.priority else ""
+
+        if issue.category is FindingCategory.CROSS_DOCUMENT:
+            title = f"Междокументное расхождение: {issue.rule_id}{priority_hint}"
+            body = (
+                f"{issue.message or 'Обнаружено противоречие между источниками.'} "
+                f"Ожидание: {expected_text}. Факт: {observed_text}. "
+                f"Привязка: {location_text}."
+            )
+            return GeneratedRemark(title=title, body=body)
+
         if issue.category is FindingCategory.DRAWING_VALIDATION:
-            title = f"Замечание по чертежу: {issue.rule_id}"
+            title = f"Замечание по чертежу: {issue.rule_id}{priority_hint}"
             body = (
                 f"Проблемная зона на чертеже {location_text}: "
                 f"показатель {field_name} имеет значение "
@@ -24,7 +35,7 @@ class TemplateRemarkGenerator:
             )
             return GeneratedRemark(title=title, body=body)
 
-        title = f"Замечание по модели: {issue.rule_id}"
+        title = f"Замечание по модели: {issue.rule_id}{priority_hint}"
         body = (
             f"Для {issue.ifc_entity or 'элемента'} {location_text} "
             f"поле {field_name} имеет значение "

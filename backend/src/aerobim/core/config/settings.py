@@ -44,6 +44,8 @@ class Settings:
     cors_origins: tuple[str, ...] = ()
     api_bearer_token: str | None = None
     cross_doc_contradiction_severity: str = "warning"
+    priority_profile: str = "default"
+    """Reviewer priority profile: ``default`` or ``samolet`` (TechLab fire/cross-doc boost)."""
     db_url: str | None = None
     s3_endpoint_url: str | None = None
     s3_bucket: str | None = None
@@ -74,6 +76,8 @@ class Settings:
         cross_doc_severity = (
             raw_severity if raw_severity in {"error", "warning", "info"} else "warning"
         )
+        raw_profile = (os.getenv("AEROBIM_PRIORITY_PROFILE") or "default").strip().lower()
+        priority_profile = raw_profile if raw_profile in {"default", "samolet"} else "default"
         return cls(
             application_name=os.getenv("AEROBIM_APP_NAME", "aerobim-backend"),
             environment=os.getenv("AEROBIM_ENV", "development"),
@@ -84,6 +88,7 @@ class Settings:
             cors_origins=origins,
             api_bearer_token=(os.getenv("AEROBIM_API_BEARER_TOKEN") or "").strip() or None,
             cross_doc_contradiction_severity=cross_doc_severity,
+            priority_profile=priority_profile,
             db_url=(os.getenv("AEROBIM_DB_URL") or "").strip() or None,
             s3_endpoint_url=(os.getenv("AEROBIM_S3_ENDPOINT_URL") or "").strip() or None,
             s3_bucket=(os.getenv("AEROBIM_S3_BUCKET") or "").strip() or None,

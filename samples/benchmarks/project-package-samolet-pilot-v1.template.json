@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-samolet-pilot-v1",
+  "description": "TEMPLATE — copy to project-package-samolet-pilot-v1.json locally (gitignored). Fill paths after Samolet intake / NDA.",
+  "project_name": "Самолёт — пилотный корпус (заполнить)",
+  "discipline": "fire-safety+structure",
+  "stage": "S2",
+  "revision": "P-01",
+  "doc_status": "Shared",
+  "information_container_id": "cde-samolet-pilot-001",
+  "request": {
+    "ifc_path": "LOCAL_PATH/samples/ifc/<customer-model>.ifc",
+    "requirement_path": "LOCAL_PATH/samples/requirements/samolet-fire-safety-rules.txt",
+    "ids_path": "LOCAL_PATH/samples/ids/samolet-fire-rating.ids",
+    "technical_spec_path": "LOCAL_PATH/samples/specifications/<customer-tz>.txt",
+    "calculation_path": "LOCAL_PATH/samples/calculations/<customer-calc>.txt",
+    "drawings": [
+      {
+        "path": "LOCAL_PATH/samples/drawings/<customer-annotations>.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      }
+    ]
+  },
+  "_intake_notes": {
+    "nda_required": true,
+    "do_not_commit": "See .gitignore — project-package-samolet-pilot-v1.json",
+    "checklist": "docs/samolet-pilot-intake-checklist-2026.md"
+  }
+}

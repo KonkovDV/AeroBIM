@@ -128,6 +128,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             tolerance=tolerance,
             clash_detector=current.resolve(Tokens.CLASH_DETECTOR),
             cross_doc_severity=current.resolve(Tokens.SETTINGS).cross_doc_contradiction_severity,
+            priority_profile=current.resolve(Tokens.SETTINGS).priority_profile,
             external_evidence_verifier=OpenRebarEvidenceVerifier(),
         ),
         lifecycle=Lifecycle.SINGLETON,

@@ -23,6 +23,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 | OpenRebar provenance digest chain | Contract schema, digest endpoint, enforced mode |
 | ISO 19650-lite context fields on reports | Optional request/report fields, HTML export section |
 | Extraction quality metrics (RU fixtures) | `evaluate_extraction` tool, macro F1 ≥ 0.70 on ground truth, CI gate |
+| Samolet-style priority profile (optional) | `AEROBIM_PRIORITY_PROFILE=samolet` boosts fire/cross-doc triage |
+| Package SLA on pilot fixture pack | `measure_package_sla` — see `docs/evidence/samolet-sla-*.json` (fixture only) |
 
 ## Planned (do not claim as deployed)
 
