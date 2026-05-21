@@ -14,8 +14,8 @@ openBIM standards, (B) enterprise-scale infrastructure, and (C) research-grade v
 
 **H2 2026 priority:** Moscow pilot — see [`pilot-execution-runbook-2026.md`](pilot-execution-runbook-2026.md).
 
-References: `docs/10-academic-audit-and-recommendations-ru.md` (internal prior art),
-`docs/11-rebaseline-execution-plan.md` (active wave tracking).
+References: [`archive/10-academic-audit-and-recommendations-ru.md`](archive/10-academic-audit-and-recommendations-ru.md) (prior art),
+[`archive/11-rebaseline-execution-plan.md`](archive/11-rebaseline-execution-plan.md) (rebaseline snapshot).
 
 ---
 
