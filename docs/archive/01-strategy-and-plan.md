@@ -227,11 +227,11 @@ Use a strict intermediate representation first; add richer semantic extraction o
 
 ### Failure Mode
 
-The product claims AI/CV support but only hides brittle ad hoc parsing or silent placeholders.
+The product claims model-backed drawing support but only hides brittle ad hoc parsing or silent placeholders.
 
 ### Mitigation
 
-Keep AI and CV behind explicit adapters, preserve provenance, and label limited baselines honestly until real model-backed adapters land.
+Keep non-deterministic adapters behind explicit ports, preserve provenance, and label limited baselines honestly until audited adapters land.
 
 ## Risk 3: Viewer-Led Architecture
 

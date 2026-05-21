@@ -22,7 +22,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 6. Targets **≤ 30 minutes** analysis time on an **agreed document package** (not arbitrary production scale).
 7. Keeps the **human expert in the loop** — automation reduces manual volume, not accountability.
 
-**Program context:** applied AI track; applications until **2026-06-08**; paid pilot testing fund **2 000 000 ₽** (per task page); demo day autumn 2026.
+**Program context:** Moscow Innovation Cluster TechLab; applications until **2026-06-08**; paid pilot testing fund **2 000 000 ₽** (per task page); demo day autumn 2026.
 
 ## 2. World practice anchor (May 2026)
 

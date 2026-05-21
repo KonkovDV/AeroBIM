@@ -43,11 +43,11 @@
       "seed smoke"
     ],
     "planned": [
-      "Integration with external models",
-      "Fine-tuning pipelines"
+      "Optional non-deterministic drawing adapters",
+      "Enterprise storage hydration"
     ],
     "non_claims": [
-      "No FT models deployed yet",
+      "No non-deterministic sign-off path",
       "No production serving yet"
     ]
   },

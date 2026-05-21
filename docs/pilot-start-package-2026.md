@@ -50,7 +50,7 @@ cd AeroBIM\backend
 
 ## What we do not claim during pilot
 
-See [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md): no learned-model drawing sign-off, no full regulatory automation, no extrapolation from fixture-only cross-doc counts.
+See [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md): no non-deterministic drawing sign-off, no full regulatory automation, no extrapolation from fixture-only cross-doc counts.
 
 ## Support
 

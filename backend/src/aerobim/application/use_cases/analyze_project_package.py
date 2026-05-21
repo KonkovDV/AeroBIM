@@ -31,14 +31,14 @@ from aerobim.domain.ports import (
     IdsValidator,
     IfcValidator,
     NarrativeRuleSynthesizer,
+    RasterDrawingAnalyzer,
     RemarkGenerator,
     RequirementExtractor,
-    VisionDrawingAnalyzer,
 )
 from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
 
-_VISION_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
-_VISION_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
+_RASTER_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
+_RASTER_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
 _DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg"}
 _OPENREBAR_REPORT_CONTRACT_ID = "OpenRebar.reinforcement.report.v1"
 _OPENREBAR_WARNING_SEVERITY_CLASS: dict[str, str] = {
@@ -93,7 +93,7 @@ class AnalyzeProjectPackageUseCase:
         remark_generator: RemarkGenerator,
         audit_report_store: AuditReportStore,
         ids_validator: IdsValidator | None = None,
-        vision_drawing_analyzer: VisionDrawingAnalyzer | None = None,
+        raster_drawing_analyzer: RasterDrawingAnalyzer | None = None,
         tolerance: ToleranceConfig | None = None,
         clash_detector: ClashDetector | None = None,
         cross_doc_severity: str = "warning",
@@ -105,7 +105,7 @@ class AnalyzeProjectPackageUseCase:
         self._drawing_analyzer = drawing_analyzer
         self._ifc_validator = ifc_validator
         self._ids_validator = ids_validator
-        self._vision_drawing_analyzer = vision_drawing_analyzer
+        self._raster_drawing_analyzer = raster_drawing_analyzer
         self._remark_generator = remark_generator
         self._audit_report_store = audit_report_store
         self._tolerance = tolerance or ToleranceConfig()
@@ -284,8 +284,8 @@ class AnalyzeProjectPackageUseCase:
         for drawing_source in request.drawing_sources:
             if self._has_structured_drawing_input(drawing_source):
                 annotations.extend(self._drawing_analyzer.analyze(drawing_source))
-            if self._is_vision_drawing_source(drawing_source):
-                annotations.extend(self._collect_vision_annotations(drawing_source))
+            if self._is_raster_drawing_source(drawing_source):
+                annotations.extend(self._collect_raster_annotations(drawing_source))
         return annotations
 
     def _collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
@@ -307,17 +307,17 @@ class AnalyzeProjectPackageUseCase:
             )
         return assets
 
-    def _collect_vision_annotations(
+    def _collect_raster_annotations(
         self,
         drawing_source: DrawingSource,
     ) -> list[DrawingAnnotation]:
         if drawing_source.path is None:
-            raise ValueError("Vision drawing analysis requires a drawing file path")
-        if self._vision_drawing_analyzer is None:
+            raise ValueError("Raster drawing analysis requires a drawing file path")
+        if self._raster_drawing_analyzer is None:
             raise RuntimeError(
-                "Vision drawing analysis requested but no vision drawing analyzer is configured"
+                "Raster drawing analysis requested but no raster drawing analyzer is configured"
             )
-        return self._vision_drawing_analyzer.analyze_image(
+        return self._raster_drawing_analyzer.analyze_image(
             drawing_source.path,
             sheet_id=drawing_source.sheet_id,
         )
@@ -327,14 +327,14 @@ class AnalyzeProjectPackageUseCase:
             return True
         if drawing_source.path is None:
             return False
-        return drawing_source.path.suffix.lower() not in _VISION_DRAWING_SUFFIXES
+        return drawing_source.path.suffix.lower() not in _RASTER_DRAWING_SUFFIXES
 
-    def _is_vision_drawing_source(self, drawing_source: DrawingSource) -> bool:
-        if drawing_source.format and drawing_source.format.lower() in _VISION_DRAWING_FORMATS:
+    def _is_raster_drawing_source(self, drawing_source: DrawingSource) -> bool:
+        if drawing_source.format and drawing_source.format.lower() in _RASTER_DRAWING_FORMATS:
             return True
         if drawing_source.path is None:
             return False
-        return drawing_source.path.suffix.lower() in _VISION_DRAWING_SUFFIXES
+        return drawing_source.path.suffix.lower() in _RASTER_DRAWING_SUFFIXES
 
     def _detect_cross_document_contradictions(
         self,

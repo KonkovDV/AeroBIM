@@ -120,7 +120,7 @@ class NoOpIdsValidator:
         return []
 
 
-class FakeVisionDrawingAnalyzer:
+class FakeRasterDrawingAnalyzer:
     def analyze_image(
         self,
         _image_path: Path,
@@ -425,7 +425,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             drawing_analyzer=ExplodingStructuredAnalyzer(),
             ifc_validator=NoOpValidator(),
             ids_validator=FakeIdsValidator(),
-            vision_drawing_analyzer=FakeVisionDrawingAnalyzer(),
+            raster_drawing_analyzer=FakeRasterDrawingAnalyzer(),
             remark_generator=TemplateRemarkGenerator(),
             audit_report_store=store,
         )
@@ -462,7 +462,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
             drawing_analyzer=FakeDrawingAnalyzer(),
             ifc_validator=FakeValidator(),
             ids_validator=FakeIdsValidator(),
-            vision_drawing_analyzer=FakeVisionDrawingAnalyzer(),
+            raster_drawing_analyzer=FakeRasterDrawingAnalyzer(),
             remark_generator=TemplateRemarkGenerator(),
             audit_report_store=store,
         )
@@ -530,7 +530,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                 drawing_analyzer=NoOpStructuredAnalyzer(),
                 ifc_validator=NoOpValidator(),
                 ids_validator=FakeIdsValidator(),
-                vision_drawing_analyzer=FakeVisionDrawingAnalyzer(),
+                raster_drawing_analyzer=FakeRasterDrawingAnalyzer(),
                 remark_generator=TemplateRemarkGenerator(),
                 audit_report_store=store,
             )

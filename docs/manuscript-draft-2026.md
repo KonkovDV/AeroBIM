@@ -8,11 +8,11 @@ language: en
 
 ## Abstract
 
-We present AeroBIM, a reproducible deterministic kernel for cross-modal building information validation (IFC, IDS, narrative specifications, calculations, and drawing evidence) with explicit provenance and BCF export. On a curated Russian AEC extraction corpus (10 documents, 50 requirements), macro F1 ≥ 0.70 is enforced in CI. A multimodal ablation (A0–A3) quantifies the marginal value of narrative and cross-document layers. A Moscow pilot case study reports operational KPIs under a fixed claim boundary (no stochastic vision sign-off).
+We present AeroBIM, a reproducible deterministic kernel for cross-modal building information validation (IFC, IDS, narrative specifications, calculations, and drawing evidence) with explicit provenance and BCF export. On a curated Russian AEC extraction corpus (10 documents, 50 requirements), macro F1 ≥ 0.70 is enforced in CI. A multimodal ablation (A0–A3) quantifies the marginal value of narrative and cross-document layers. A Moscow pilot case study reports operational KPIs under a fixed claim boundary (no non-deterministic drawing sign-off).
 
 ## 1. Introduction
 
-Fragmented QA across IFC, specifications, and calculations delays sign-off. AeroBIM targets **auditable** contradiction detection rather than opaque model verdicts.
+Fragmented QA across IFC, specifications, and calculations delays sign-off. AeroBIM targets **auditable** contradiction detection rather than non-reproducible verdicts.
 
 ## 2. Related work
 
@@ -56,7 +56,7 @@ Detailed KPI table: [`pilot-case-study-report-2026.md`](pilot-case-study-report-
 
 ## 6. Discussion
 
-Limits: regex maintenance; fixture-only cross-document counts on the Moscow pilot pack must not be extrapolated to production models; no fine-tuned or stochastic model in the sign-off path; decision-support only (not licensed engineering compliance).
+Limits: regex maintenance; fixture-only cross-document counts on the Moscow pilot pack must not be extrapolated to production models; no trained or non-deterministic adapters in the sign-off path; decision-support only (not licensed engineering compliance).
 
 ## Data availability
 

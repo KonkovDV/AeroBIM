@@ -115,7 +115,7 @@ The authoring-side boundary remains intentionally thin and not yet implemented a
 | IDS validation | ✅ LIVE | Backed by `IfcTesterIdsValidator` and end-to-end samples |
 | Narrative rule synthesis | ✅ LIVE BASELINE | Deterministic regex-backed baseline, not stochastic-model-first |
 | Structured drawing annotation validation | ✅ LIVE | Active through drawing contracts |
-| Deterministic PDF / OCR drawing extraction | ✅ LIVE BASELINE | PyMuPDF + RapidOCR path exists behind `VisionDrawingAnalyzer` |
+| Deterministic PDF / OCR drawing extraction | ✅ LIVE BASELINE | PyMuPDF + RapidOCR path exists behind `RasterDrawingAnalyzer` port |
 | Geometry clash detection | ✅ LIVE WITH OPTIONAL EXTRA | Real IfcClash path requires `.[clash]`; graceful empty fallback without the extra remains an intentional limitation |
 | JSON / HTML / BCF export | ✅ LIVE | Export endpoints and tests exist |
 | Browser review shell | ✅ LIVE + INITIAL 3D/2D REVIEW | Report shell plus browser IFC selection and persisted drawing-evidence overlays |
