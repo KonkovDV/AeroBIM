@@ -5,6 +5,8 @@ status: active
 
 # Academic Publication Evidence (2026)
 
+Reproducibility SSOT: [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md). Latest pre-push lane: [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md).
+
 ## Evidence rail
 
 | Artifact | Command / path |

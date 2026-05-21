@@ -1,9 +1,10 @@
 cff-version: 1.2.0
-message: "If you use AeroBIM in research or compliance validation, please cite the repository and commit SHA used for your run."
+message: "If you use AeroBIM in research or compliance validation, cite this repository and the exact Git tag or commit SHA (e.g. pilot-2026-pre @ 1a5c03e for frozen pre-pilot metrics)."
 title: "AeroBIM"
 type: software
 authors:
-  - name: "AeroBIM Contributors"
+  - family-names: Konkov
+    given-names: D. V.
 license: MIT
 repository-code: "https://github.com/KonkovDV/AeroBIM"
 url: "https://github.com/KonkovDV/AeroBIM"
