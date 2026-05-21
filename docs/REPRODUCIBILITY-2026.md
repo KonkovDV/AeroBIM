@@ -15,7 +15,7 @@ Single source of truth for reviewers, pilot operators, and supplementary materia
 | Line | Git ref | Use when |
 |---|---|---|
 | **Frozen pre-pilot baseline** | tag `pilot-2026-pre` → commit `1a5c03e` | Citing metrics locked at pilot kickoff; comparing pilot weeks |
-| **Rolling documentation** | branch `main` @ `c9de52b` (2026-05-21) | Operator docs, weekly logs, [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md) |
+| **Rolling documentation** | branch `main` @ `44dd278` (2026-05-21) | Operator docs, weekly logs, [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md) |
 
 Metrics in [`pilot-start-package-2026.md`](pilot-start-package-2026.md) for extraction F1 and test counts refer to the **frozen** line unless a weekly log records a re-run on a newer SHA.
 
