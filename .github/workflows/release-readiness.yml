@@ -99,7 +99,7 @@ jobs:
             > ../artifacts/release-readiness/benchmark-threshold-evaluation.json
           cat ../artifacts/release-readiness/benchmark-threshold-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-readiness-benchmark-artifacts
           path: |
@@ -145,7 +145,7 @@ jobs:
             --output-dir ../frontend/artifacts/browser-smoke-ci \
             > ../artifacts/release-readiness/live-review-smoke.json
       - name: Upload live smoke artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-readiness-live-smoke-artifacts
           path: |

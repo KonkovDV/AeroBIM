@@ -160,7 +160,7 @@ jobs:
             --output ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-evaluation.json
           cat ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark-smoke artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ci-benchmark-smoke-artifacts
           path: |
@@ -193,7 +193,7 @@ jobs:
             --warmup-iterations 0 \
             --output ../artifacts/samolet-sla-smoke/samolet-sla-pilot-moscow-ci.json
       - name: Upload Samolet SLA artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: samolet-sla-smoke-artifacts
           path: artifacts/samolet-sla-smoke/*.json
@@ -217,7 +217,7 @@ jobs:
             --output ../artifacts/extraction-quality/russian-aec-extraction.json \
             --min-macro-f1 0.70
       - name: Upload extraction-quality artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: extraction-quality-artifacts
           path: artifacts/extraction-quality/*.json
@@ -251,7 +251,7 @@ jobs:
           print(f"Schema OK — {len(paths)} paths present")
           PY
       - name: Upload OpenAPI schema artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: openapi-schema
           path: artifacts/openapi.json
