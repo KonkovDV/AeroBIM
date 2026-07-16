@@ -38,8 +38,9 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | 2D problem-zone overlay | Available | fixture | — |
 | Deterministic PDF text (PyMuPDF) | Available | core | — |
 | Image OCR (RapidOCR) | Optional extra | optional-extra | `.[raster]`; zero-yield → FAILED when requested |
-| DWG/DXF native analysis | Missing | — | Explicit `MISSING` on honesty surface |
-| Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` |
+| DWG native analysis | Missing / Failed | — | Fail-closed without ODA; never OK |
+| DXF via CadModelIngestor | Not verified | — | Optional ezdxf; honesty never OK |
+| Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` (OCR degrade ≠ VLM) |
 | MEP system-aware clash | Not verified | — | DI-wired Unconfigured provider; not delivered |
 | Independent calculation *correctness* | Not implemented | — | OpenRebar path = **match/сверка**, not solver verification |
 | Frontend vitest review-shell | Green locally | release-readiness | **21** passed; not in main CI job |

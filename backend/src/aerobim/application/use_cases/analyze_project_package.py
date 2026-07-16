@@ -470,7 +470,7 @@ class AnalyzeProjectPackageUseCase:
                         severity=Severity.WARNING,
                         message=result.reason or "Native DWG ingest not configured",
                         category=FindingCategory.DRAWING_VALIDATION,
-                        source_id=str(source.path),
+                        source_id=source.path.name if source.path is not None else "cad",
                     )
                 )
             else:
@@ -480,7 +480,7 @@ class AnalyzeProjectPackageUseCase:
                         severity=Severity.WARNING,
                         message=result.reason or "DXF ingest failed",
                         category=FindingCategory.DRAWING_VALIDATION,
-                        source_id=str(source.path),
+                        source_id=source.path.name if source.path is not None else "cad",
                     )
                 )
 
@@ -590,18 +590,18 @@ class AnalyzeProjectPackageUseCase:
             }
             for i in issues
         )
+        evaluated_ok = any(i.rule_id == "AEROBIM-LOAD-OK" for i in issues)
         if mismatches:
             capability = CapabilityStatus(
                 CapabilityState.FAILED,
                 f"{len(mismatches)} load match failure(s)",
             )
-        elif unevaluated:
+        elif unevaluated or not evaluated_ok:
             capability = CapabilityStatus(
                 CapabilityState.NOT_VERIFIED,
                 "calculation source present but load сверка not evaluated (not OK)",
             )
         else:
-            # Empty issues ⇒ adapter evaluated ≥1 matching row with no mismatches.
             capability = CapabilityStatus(
                 CapabilityState.OK,
                 "calculation сверка evaluated (not correctness)",

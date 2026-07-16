@@ -8,7 +8,13 @@ freeze_sha: "8efbef8fa5191ef8d6d68841f54fb1e415ae1a9b"
 
 # Red Team Delta (2026-07-17)
 
-Atomic re-verification after P0 fail-closed remediation and the Post-P0 Evidence Wave.  
+> **Supersession (I0–I7):** For MEP DI wiring and post–I0–I7 honesty, prefer
+> `CRITICAL_BLOCKERS.md` RT-003, `RED_TEAM_DELTA_I0_I7_2026_07_17.md`,
+> `RED_TEAM_DELTA_I0_I7_PASS2_2026_07_17.md`, and Pass-3 report. MEP is
+> **DI-wired Unconfigured** (NOT VERIFIED / not delivered) — do not cite the
+> “not in bootstrap” cell below as current fact.
+
+Atomic re-verification after P0 fail-closed remediation and the Post-P0 Evidence Wave.
 **Does not supersede** the frozen pre-remediation narrative in `RED_TEAM_FULL_REPORT.md` (SHA `c0c4b2b`); that report remains historical.  
 **Operational SSOT for open/closed IDs:** `CRITICAL_BLOCKERS.md` + `CLAIMS_LOCK_2026_07_17.md`.
 

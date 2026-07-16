@@ -2,7 +2,8 @@
 
 Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` | `ADVISORY_ONLY` | `NOT_RUNTIME_CONNECTED` | `MISSING` | `BLOCKED_BY_CUSTOMER_DATA`
 
-Freeze: historical Red Team `c0c4b2b` (2026-07-16). **Operational refresh:** SHA `8efbef8` — see `RED_TEAM_DELTA_2026_07_17.md` (frontend vitest green; BCF T1 evidenced; CDE T2 still NOT_VERIFIED). Author: self.
+Freeze: historical Red Team `c0c4b2b` (2026-07-16). **Operational refresh:** SHA `8efbef8` — see `RED_TEAM_DELTA_2026_07_17.md`.  
+**I0–I7 supersession:** MEP row “not in bootstrap” is obsolete — DI-wired Unconfigured (`NOT_VERIFIED`). DXF via `CadModelIngestor` (ezdxf) is `NOT_VERIFIED` (never OK). See I0–I7 / PASS2 / PASS3 Red Team deltas. Author: self.
 
 | # | Требование ТЗ | Код | Runtime path | Тест / команда | Реальные данные | Статус | Риск |
 |---|---|---|---|---|---|---|---|

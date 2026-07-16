@@ -12,8 +12,8 @@ from aerobim.domain.quantity import parse_quantity, si_compare
 _LOAD_ROW = re.compile(
     r"(?P<id>[A-Za-zА-Яа-я0-9_.\-]+)\s*[|;]\s*"
     r"(?P<label>[^|;]+)\s*[|;]\s*"
-    r"(?P<expected>-?\d+(?:[.,]\d+)?)\s*"
-    r"(?P<unit>[A-Za-zА-Яа-я²³23/]+)?\s*[|;]\s*"
+    r"(?P<expected>-?\d+(?:[.,]\d+)?)\s*[|;]\s*"
+    r"(?P<unit>[A-Za-zА-Яа-я²³23/]*)\s*[|;]\s*"
     r"(?P<observed>-?\d+(?:[.,]\d+)?)",
     re.IGNORECASE,
 )
@@ -132,7 +132,9 @@ class SpreadsheetLoadEvidenceAdapter:
                 )
             else:
                 evaluated_ok += 1
-        if evaluated_ok == 0 and not any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues):
+        if any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues):
+            return issues
+        if evaluated_ok == 0:
             if not issues:
                 return [
                     ValidationIssue(
@@ -143,7 +145,17 @@ class SpreadsheetLoadEvidenceAdapter:
                         source_id=source_id,
                     )
                 ]
-        return issues
+            return issues
+        return [
+            ValidationIssue(
+                rule_id="AEROBIM-LOAD-OK",
+                severity=Severity.INFO,
+                message=f"Load сверка matched {evaluated_ok} row(s) (not correctness)",
+                category=FindingCategory.CROSS_DOCUMENT,
+                source_id=source_id,
+            ),
+            *issues,
+        ]
 
     def _verify_tabular(self, text: str, *, source_id: str) -> list[ValidationIssue]:
         issues: list[ValidationIssue] = []
@@ -194,4 +206,15 @@ class SpreadsheetLoadEvidenceAdapter:
                     source_id=source_id,
                 )
             ]
-        return issues
+        if any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues):
+            return issues
+        return [
+            ValidationIssue(
+                rule_id="AEROBIM-LOAD-OK",
+                severity=Severity.INFO,
+                message="Load сверка matched tabular row(s) (not correctness)",
+                category=FindingCategory.CROSS_DOCUMENT,
+                source_id=source_id,
+            ),
+            *issues,
+        ]

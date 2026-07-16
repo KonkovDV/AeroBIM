@@ -64,7 +64,7 @@ def load_customer_intake_gate_snapshot() -> dict[str, Any]:
             "claim_level": payload.get("claim_level", "unknown"),
             "true_gates": true_gates,
             "checkpoint": "NO_GO",
-            "source": str(path.as_posix()),
+            "source": "audit/evidence/customer-intake-gate.json",
         }
     return {
         "status": "MISSING_GATE_FILE",

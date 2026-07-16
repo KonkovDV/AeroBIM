@@ -67,6 +67,7 @@ class ConsistencyPortsTests(unittest.TestCase):
             )
             issues_ok = adapter.verify(ok)
             self.assertFalse(any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues_ok))
+            self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-OK" for i in issues_ok))
 
             bad = ValidationRequest(
                 request_id="r2",
