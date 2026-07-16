@@ -43,9 +43,7 @@ class SectionDiffAnalyzer(Protocol):
 
     def compare(self, pd_section_path: Path, rd_section_path: Path) -> list[ValidationIssue]: ...
 
-    def analyze(
-        self, pd_section_path: Path, rd_section_path: Path
-    ) -> SectionPairingReport:
+    def analyze(self, pd_section_path: Path, rd_section_path: Path) -> SectionPairingReport:
         """Compare a PD/RD pair and return findings plus coverage metadata.
 
         ``compare`` remains the minimal findings-only contract; ``analyze``

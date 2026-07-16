@@ -84,8 +84,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             tolerance=tolerance,
             severity=Severity(
                 runtime_settings.cross_doc_contradiction_severity
-                if runtime_settings.cross_doc_contradiction_severity
-                in {"error", "warning", "info"}
+                if runtime_settings.cross_doc_contradiction_severity in {"error", "warning", "info"}
                 else "warning"
             ),
         ),
@@ -166,9 +165,14 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     )
     bsi_service = _build_bsi_validation_service(runtime_settings)
     if bsi_service is not None:
+        registered_bsi = bsi_service
+
+        def _resolve_bsi(_container: Container):
+            return registered_bsi
+
         container.register(
             Tokens.BSI_VALIDATION_SERVICE,
-            lambda _container, service=bsi_service: service,
+            _resolve_bsi,
             lifecycle=Lifecycle.SINGLETON,
         )
     container.register(

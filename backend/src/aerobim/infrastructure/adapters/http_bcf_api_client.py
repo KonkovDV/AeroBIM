@@ -56,14 +56,12 @@ class HttpBcfApiClient:
 
         results: list[BcfApiTopicPushResult] = []
         for topic in collect_bcf_topics(report):
-            body = {
+            body: dict[str, object] = {
                 "guid": topic.topic_guid,
                 "title": topic.title,
                 "description": topic.description,
                 "topic_type": topic.topic_type,
-                "topic_status": topic.topic_status.lower()
-                if topic.topic_status
-                else "open",
+                "topic_status": topic.topic_status.lower() if topic.topic_status else "open",
                 "reference_links": list(topic.reference_links),
             }
             try:
@@ -107,10 +105,7 @@ class HttpBcfApiClient:
         )
 
     def _topics_url(self, project_id: str) -> str:
-        return (
-            f"{self._base_url}/bcf/{self._api_version}/projects/"
-            f"{project_id}/topics"
-        )
+        return f"{self._base_url}/bcf/{self._api_version}/projects/{project_id}/topics"
 
     @staticmethod
     def _default_http_post(

@@ -87,10 +87,7 @@ class TemplateRemarkGenerator:
 
         if issue.category is FindingCategory.SPATIAL:
             title = f"Spatial remark: {issue.rule_id}{priority_hint}"
-            body = (
-                f"{issue.message or 'Spatial conflict detected.'} "
-                f"Location: {location_text}."
-            )
+            body = f"{issue.message or 'Spatial conflict detected.'} Location: {location_text}."
             return GeneratedRemark(title=title, body=body)
 
         title = f"Model remark: {issue.rule_id}{priority_hint}"
@@ -105,8 +102,10 @@ class TemplateRemarkGenerator:
             return f"{issue.property_set}.{issue.property_name}"
         if issue.property_name:
             return issue.property_name
-        return issue.target_ref or issue.ifc_entity or (
-            "requirement" if self._locale == "en" else "требование"
+        return (
+            issue.target_ref
+            or issue.ifc_entity
+            or ("requirement" if self._locale == "en" else "требование")
         )
 
     def _build_expected_text_ru(self, issue: ValidationIssue) -> str:

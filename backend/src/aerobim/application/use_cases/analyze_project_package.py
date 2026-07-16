@@ -167,9 +167,7 @@ class AnalyzeProjectPackageUseCase:
             )
             for req in synthesized_requirements
         ]
-        norm_pack_requirements, norm_pack_capability = self._collect_norm_pack_requirements(
-            request
-        )
+        norm_pack_requirements, norm_pack_capability = self._collect_norm_pack_requirements(request)
         norm_pack_issues: list[ValidationIssue] = []
         if norm_pack_capability.status is CapabilityState.FAILED:
             norm_pack_issues.append(
@@ -318,9 +316,7 @@ class AnalyzeProjectPackageUseCase:
                 issues_from_clash_results(results, affects_pass=self._clash_affects_pass),
             )
         except ClashCapabilityError as exc:
-            state = (
-                CapabilityState.SKIPPED if exc.status == "skipped" else CapabilityState.FAILED
-            )
+            state = CapabilityState.SKIPPED if exc.status == "skipped" else CapabilityState.FAILED
             # FAILED clash engine is a sign-off blocker; SKIPPED (optional extra) is not.
             severity = Severity.ERROR if state == CapabilityState.FAILED else Severity.WARNING
             issue = ValidationIssue(
@@ -433,9 +429,7 @@ class AnalyzeProjectPackageUseCase:
             or CapabilityStatus(CapabilityState.SKIPPED, "PD/RD section pairing not requested"),
         )
 
-    def _submit_bsi_validation(
-        self, ifc_path
-    ) -> tuple[str | None, list[ValidationIssue]]:
+    def _submit_bsi_validation(self, ifc_path) -> tuple[str | None, list[ValidationIssue]]:
         if self._bsi_validation_service is None:
             return None, []
         try:
@@ -525,9 +519,7 @@ class AnalyzeProjectPackageUseCase:
                 source="env AEROBIM_NORM_RULE_PACK",
                 tolerant=True,
             )
-        return [], CapabilityStatus(
-            CapabilityState.SKIPPED, "norm rule packs not requested"
-        )
+        return [], CapabilityStatus(CapabilityState.SKIPPED, "norm rule packs not requested")
 
     def _load_norm_packs(
         self,
@@ -553,8 +545,7 @@ class AnalyzeProjectPackageUseCase:
                     raise
                 return [], CapabilityStatus(
                     CapabilityState.FAILED,
-                    f"configured norm rule pack unavailable via {source}: "
-                    f"{pack_path.name}: {exc}",
+                    f"configured norm rule pack unavailable via {source}: {pack_path.name}: {exc}",
                 )
             identity = (pack.pack_id, pack.version)
             if identity in seen_packs:
@@ -566,8 +557,7 @@ class AnalyzeProjectPackageUseCase:
             if pack.status is not RulePackStatus.APPROVED:
                 non_approved = True
             pack_refs.append(
-                f"{pack.pack_id}@{pack.version}[{pack.status.value}]"
-                f" sha256:{pack.sha256[:12]}"
+                f"{pack.pack_id}@{pack.version}[{pack.status.value}] sha256:{pack.sha256[:12]}"
             )
         reason = f"loaded {len(pack_refs)} rule pack(s) via {source}: {', '.join(pack_refs)}"
         if non_approved:
@@ -634,15 +624,15 @@ class AnalyzeProjectPackageUseCase:
                     asset_id=f"drawing-{index:03d}",
                     sheet_id=drawing_source.sheet_id or drawing_source.path.stem.upper(),
                     page_number=1 if suffix != ".pdf" else None,
-            media_type=(
-                "application/pdf"
-                if suffix == ".pdf"
-                else "image/webp"
-                if suffix == ".webp"
-                else "image/jpeg"
-                if suffix in {".jpg", ".jpeg"}
-                else "image/png"
-            ),
+                    media_type=(
+                        "application/pdf"
+                        if suffix == ".pdf"
+                        else "image/webp"
+                        if suffix == ".webp"
+                        else "image/jpeg"
+                        if suffix in {".jpg", ".jpeg"}
+                        else "image/png"
+                    ),
                     source_path=drawing_source.path,
                 )
             )
@@ -735,9 +725,7 @@ class AnalyzeProjectPackageUseCase:
                     prev_val = (prev_req.expected_value or "").strip()
                     val = (req.expected_value or "").strip()
                     property_label = (
-                        f"{entity}.{property_set}.{prop}"
-                        if property_set
-                        else f"{entity}.{prop}"
+                        f"{entity}.{property_set}.{prop}" if property_set else f"{entity}.{prop}"
                     )
                     if soft and not hard:
                         conflict_kind = ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE

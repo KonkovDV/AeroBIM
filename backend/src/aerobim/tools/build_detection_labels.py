@@ -218,8 +218,7 @@ def build_labels(
     ]
     payload["adjudication"] = adjudication
     payload["cases"] = [
-        {"case_id": case_id, "expected_findings": findings}
-        for case_id, findings in cases.items()
+        {"case_id": case_id, "expected_findings": findings} for case_id, findings in cases.items()
     ]
     return payload
 
@@ -231,9 +230,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--adjudication", type=Path, required=True, help="Input worksheet CSV")
     parser.add_argument("--output", type=Path, required=True, help="Output labels.json")
     parser.add_argument("--dataset-id", required=True)
-    parser.add_argument(
-        "--dataset-status", choices=sorted(_DATASET_STATUSES), default="draft"
-    )
+    parser.add_argument("--dataset-status", choices=sorted(_DATASET_STATUSES), default="draft")
     parser.add_argument("--scope-reference", default=None)
     parser.add_argument("--method", choices=sorted(_METHODS), default="consensus")
     parser.add_argument("--completed-at", default=None, help="Timezone-aware ISO 8601")

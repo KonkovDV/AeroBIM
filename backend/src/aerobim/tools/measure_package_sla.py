@@ -29,6 +29,8 @@ def measure_package_sla(
         storage_dir=None,
     )
     summary = payload["summary"]
+    if not isinstance(summary, dict):
+        raise TypeError("benchmark summary must be a dict")
     max_ms = float(summary["max_ms"])
     avg_ms = float(summary["avg_ms"])
     max_minutes_observed = round(max_ms / 60_000.0, 4)

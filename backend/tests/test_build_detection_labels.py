@@ -92,8 +92,7 @@ class ReconciliationTests(unittest.TestCase):
                 completed_at=None,
             )
         by_rule = {
-            f["rule_id"]: f["adjudication_status"]
-            for f in payload["cases"][0]["expected_findings"]
+            f["rule_id"]: f["adjudication_status"] for f in payload["cases"][0]["expected_findings"]
         }
         self.assertEqual(by_rule["R1"], "confirmed")
         self.assertEqual(by_rule["R2"], "excluded")
@@ -120,9 +119,7 @@ class ReconciliationTests(unittest.TestCase):
 
 class FailClosedTests(unittest.TestCase):
     def _rows(self, td: Path, *, two: bool = True, unresolved: bool = False):
-        body = (
-            "f1,C,cross-document,R1,T1,,,a,TP,,2026-07-11T10:00:00+03:00\n"
-        )
+        body = "f1,C,cross-document,R1,T1,,,a,TP,,2026-07-11T10:00:00+03:00\n"
         if two:
             verdict = "FP" if unresolved else "TP"
             body += f"f1,C,cross-document,R1,T1,,,b,{verdict},,2026-07-11T10:00:00+03:00\n"
@@ -133,8 +130,11 @@ class FailClosedTests(unittest.TestCase):
             rows = self._rows(Path(td), two=False)
             with self.assertRaisesRegex(AdjudicationError, ">=2 distinct adjudicator"):
                 build_labels(
-                    rows, dataset_id="EX", dataset_status="adjudicated",
-                    scope_reference="S", method="consensus",
+                    rows,
+                    dataset_id="EX",
+                    dataset_status="adjudicated",
+                    scope_reference="S",
+                    method="consensus",
                     completed_at="2026-07-11T12:00:00+03:00",
                 )
 
@@ -143,8 +143,11 @@ class FailClosedTests(unittest.TestCase):
             rows = self._rows(Path(td), two=True, unresolved=True)
             with self.assertRaisesRegex(AdjudicationError, "unresolved"):
                 build_labels(
-                    rows, dataset_id="EX", dataset_status="adjudicated",
-                    scope_reference="S", method="consensus",
+                    rows,
+                    dataset_id="EX",
+                    dataset_status="adjudicated",
+                    scope_reference="S",
+                    method="consensus",
                     completed_at="2026-07-11T12:00:00+03:00",
                 )
 
@@ -153,14 +156,20 @@ class FailClosedTests(unittest.TestCase):
             rows = self._rows(Path(td), two=True)
             with self.assertRaisesRegex(AdjudicationError, "scope_reference"):
                 build_labels(
-                    rows, dataset_id="EX", dataset_status="adjudicated",
-                    scope_reference=None, method="consensus",
+                    rows,
+                    dataset_id="EX",
+                    dataset_status="adjudicated",
+                    scope_reference=None,
+                    method="consensus",
                     completed_at="2026-07-11T12:00:00+03:00",
                 )
             with self.assertRaisesRegex(AdjudicationError, "completed_at"):
                 build_labels(
-                    rows, dataset_id="EX", dataset_status="adjudicated",
-                    scope_reference="S", method="consensus",
+                    rows,
+                    dataset_id="EX",
+                    dataset_status="adjudicated",
+                    scope_reference="S",
+                    method="consensus",
                     completed_at="2026-07-11T12:00:00",  # naive, no tz
                 )
 
@@ -202,12 +211,18 @@ class EndToEndHarnessTests(unittest.TestCase):
             labels_path = tmp / "labels.json"
             rc = main(
                 [
-                    "--adjudication", str(csv_path),
-                    "--output", str(labels_path),
-                    "--dataset-id", "CUST",
-                    "--dataset-status", "adjudicated",
-                    "--scope-reference", "SCOPE-MEMO",
-                    "--completed-at", "2026-07-11T12:00:00+03:00",
+                    "--adjudication",
+                    str(csv_path),
+                    "--output",
+                    str(labels_path),
+                    "--dataset-id",
+                    "CUST",
+                    "--dataset-status",
+                    "adjudicated",
+                    "--scope-reference",
+                    "SCOPE-MEMO",
+                    "--completed-at",
+                    "2026-07-11T12:00:00+03:00",
                 ]
             )
             self.assertEqual(rc, 0)
@@ -233,9 +248,7 @@ class EndToEndHarnessTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            report = evaluate_detection_precision(
-                labels_path, detections, require_publishable=True
-            )
+            report = evaluate_detection_precision(labels_path, detections, require_publishable=True)
         self.assertTrue(report["publishable_protocol_gate"])
         self.assertIsNone(report["warning"])
         self.assertEqual(report["micro"]["tp"], 1)

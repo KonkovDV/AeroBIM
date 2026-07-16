@@ -107,7 +107,7 @@ def _parse_bcf_version_id(version_xml: str) -> str:
         # Tolerate rare element form if an exporter emits it.
         for child in root:
             if child.tag.split("}")[-1].lower() == "versionid" and (child.text or "").strip():
-                observed = child.text.strip()
+                observed = (child.text or "").strip()
                 break
     if not observed:
         raise ValueError("bcf.version missing VersionId")
@@ -136,15 +136,12 @@ def _validate_bcf_zip(payload: bytes, *, requested_version: str) -> dict[str, An
         # Exporters may write "3.0" or "3"; normalize both sides.
         observed_norm = "3.0" if observed in {"3", "3.0"} else observed
         if observed_norm != expected:
-            raise ValueError(
-                f"BCF VersionId mismatch: requested {expected}, observed {observed}"
-            )
+            raise ValueError(f"BCF VersionId mismatch: requested {expected}, observed {observed}")
 
         markup = [name for name in names if _GUID_FOLDER_RE.match(name)]
         if not markup:
             raise ValueError(
-                "BCF ZIP missing GUID-folder markup.bcf topics "
-                "(expected {uuid}/markup.bcf)"
+                "BCF ZIP missing GUID-folder markup.bcf topics (expected {uuid}/markup.bcf)"
             )
 
         topic_count = 0
