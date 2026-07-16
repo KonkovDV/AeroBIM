@@ -16,12 +16,21 @@ from aerobim.domain.models import (
     RulePackStatus,
     RuleScope,
     SourceKind,
+    approval_status_from_pack,
 )
 from aerobim.domain.quantity import parse_quantity
 
 _MAX_PACK_BYTES = 2 * 1024 * 1024
 _MAX_RULES = 500
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_STATUS_ALIASES = {
+    "synthetic-template": RulePackStatus.SYNTHETIC_TEMPLATE,
+    "synthetic": RulePackStatus.SYNTHETIC_TEMPLATE,
+    "draft": RulePackStatus.DRAFT,
+    "approved": RulePackStatus.APPROVED,
+    "customer_approved": RulePackStatus.APPROVED,
+    "retired": RulePackStatus.RETIRED,
+}
 
 _OPERATOR_ALIASES = {
     "eq": ComparisonOperator.EQUALS,
@@ -64,8 +73,22 @@ class JsonNormRulePackLoader:
         typology = self._required_string(payload, "typology", max_length=128)
         status = self._parse_status(payload.get("status"))
         disciplines = self._parse_disciplines(payload.get("disciplines"))
-        approval_reference = self._parse_approval(payload.get("approval"), status)
-        rules = self._parse_rules(payload.get("rules"), pack_path, pack_id, version, status)
+        approval_reference = self._parse_approval(payload.get("approval"), status, payload)
+        pack_approval_status = approval_status_from_pack(status)
+        if pack_approval_status == "customer_approved" and not approval_reference:
+            raise ValueError(
+                "customer_approved norm rule packs require a non-empty approval_ref "
+                "(approval.scope_reference or pack-level approval_ref)"
+            )
+        rules = self._parse_rules(
+            payload.get("rules"),
+            pack_path,
+            pack_id,
+            version,
+            status,
+            approval_reference=approval_reference,
+            approval_status=pack_approval_status,
+        )
 
         return NormRulePack(
             pack_id=pack_id,
@@ -97,10 +120,18 @@ class JsonNormRulePackLoader:
         return pack_path.read_bytes()
 
     def _parse_status(self, raw: object) -> RulePackStatus:
+        key = str(raw).strip().lower().replace("_", "-") if raw is not None else ""
+        # Keep underscore form for customer_approved alias.
+        aliases = {
+            **_STATUS_ALIASES,
+            "customer-approved": RulePackStatus.APPROVED,
+        }
+        if key in aliases:
+            return aliases[key]
         try:
             return RulePackStatus(str(raw))
         except ValueError as exc:
-            allowed = ", ".join(status.value for status in RulePackStatus)
+            allowed = ", ".join(sorted({*RulePackStatus._value2member_map_, *_STATUS_ALIASES}))
             raise ValueError(
                 f"Unsupported norm rule pack status {raw!r}; expected one of {allowed}"
             ) from exc
@@ -118,10 +149,22 @@ class JsonNormRulePackLoader:
             values.append(normalized)
         return tuple(values)
 
-    def _parse_approval(self, raw: object, status: RulePackStatus) -> str | None:
+    def _parse_approval(
+        self,
+        raw: object,
+        status: RulePackStatus,
+        payload: dict[str, Any],
+    ) -> str | None:
+        pack_level_ref = self._optional_string(
+            payload.get("approval_ref"), "approval_ref", max_length=512
+        )
         if status is not RulePackStatus.APPROVED:
             if raw not in (None, {}):
-                raise ValueError("Only status='approved' may carry approval metadata")
+                raise ValueError(
+                    "Only status='approved'/'customer_approved' may carry approval metadata"
+                )
+            if pack_level_ref:
+                raise ValueError("approval_ref is only valid for customer_approved packs")
             return None
         if not isinstance(raw, dict):
             raise ValueError("Approved norm rule packs require an approval object")
@@ -134,7 +177,13 @@ class JsonNormRulePackLoader:
             raise ValueError("approval.approved_at must be an ISO 8601 datetime") from exc
         if parsed_at.tzinfo is None:
             raise ValueError("approval.approved_at must include an explicit timezone")
-        return f"{approved_by}; {approved_at}; {scope_reference}"
+        approval_ref = pack_level_ref or scope_reference
+        if not approval_ref:
+            raise ValueError(
+                "customer_approved packs require approval_ref "
+                "(pack-level approval_ref or approval.scope_reference)"
+            )
+        return f"{approved_by}; {approved_at}; {approval_ref}"
 
     def _parse_rules(
         self,
@@ -143,6 +192,9 @@ class JsonNormRulePackLoader:
         pack_id: str,
         version: str,
         status: RulePackStatus,
+        *,
+        approval_reference: str | None,
+        approval_status: str,
     ) -> tuple[ParsedRequirement, ...]:
         if not isinstance(raw, list) or not raw:
             raise ValueError("Norm rule pack rules must be a non-empty array")
@@ -161,6 +213,8 @@ class JsonNormRulePackLoader:
                 pack_id=pack_id,
                 version=version,
                 status=status,
+                approval_reference=approval_reference,
+                approval_status=approval_status,
             )
             if rule.rule_id in seen_rule_ids:
                 raise ValueError(f"Duplicate rule_id in norm rule pack: {rule.rule_id}")
@@ -177,6 +231,8 @@ class JsonNormRulePackLoader:
         pack_id: str,
         version: str,
         status: RulePackStatus,
+        approval_reference: str | None,
+        approval_status: str,
     ) -> ParsedRequirement:
         rule_id = self._required_identifier(payload, "rule_id", prefix=f"rules[{index}].")
         raw_scope = self._required_string(payload, "scope", prefix=f"rules[{index}].")
@@ -197,6 +253,18 @@ class JsonNormRulePackLoader:
             payload.get("property_name"), f"rules[{index}].property_name"
         )
         unit = self._optional_string(payload.get("unit"), f"rules[{index}].unit")
+        norm_source = self._optional_string(
+            payload.get("norm_source"), f"rules[{index}].norm_source", max_length=256
+        )
+        norm_edition = self._optional_string(
+            payload.get("norm_edition"), f"rules[{index}].norm_edition", max_length=128
+        )
+        norm_clause = self._optional_string(
+            payload.get("norm_clause"), f"rules[{index}].norm_clause", max_length=128
+        )
+        rule_approval_ref = self._optional_string(
+            payload.get("approval_ref"), f"rules[{index}].approval_ref", max_length=512
+        )
 
         if scope in {RuleScope.IFC_PROPERTY, RuleScope.IFC_QUANTITY} and not ifc_entity:
             raise ValueError(f"rules[{index}].ifc_entity is required for {scope.value}")
@@ -228,6 +296,14 @@ class JsonNormRulePackLoader:
         instructions = self._optional_string(
             payload.get("instructions"), f"rules[{index}].instructions", max_length=2000
         )
+        # Pack manifest is the authority for approval_status; default synthetic.
+        stamped_status = approval_status or "synthetic"
+        stamped_ref = rule_approval_ref or approval_reference
+        if stamped_status == "customer_approved" and not stamped_ref:
+            raise ValueError(
+                f"rules[{index}] customer_approved requires approval_ref "
+                "(rule-level or pack approval metadata)"
+            )
         source = f"{pack_path}#{pack_id}@{version}[{status.value}]"
         return ParsedRequirement(
             rule_id=rule_id,
@@ -246,6 +322,11 @@ class JsonNormRulePackLoader:
             evidence_modality="norm-rule-pack",
             confidence=1.0,
             quantity=quantity,
+            norm_source=norm_source,
+            norm_edition=norm_edition,
+            norm_clause=norm_clause,
+            approval_status=stamped_status,  # type: ignore[arg-type]
+            approval_ref=stamped_ref,
         )
 
     def _required_identifier(

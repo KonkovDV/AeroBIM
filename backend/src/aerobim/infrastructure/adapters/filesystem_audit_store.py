@@ -365,6 +365,11 @@ class FilesystemAuditStore:
             instructions=data.get("instructions"),
             evidence_modality=data.get("evidence_modality"),
             confidence=data.get("confidence"),
+            norm_source=data.get("norm_source"),
+            norm_edition=data.get("norm_edition"),
+            norm_clause=data.get("norm_clause"),
+            approval_status=data.get("approval_status"),
+            approval_ref=data.get("approval_ref"),
         )
 
     def _reconstruct_issue(self, data: dict) -> ValidationIssue:
@@ -395,6 +400,11 @@ class FilesystemAuditStore:
             source_id=data.get("source_id"),
             evidence_modality=data.get("evidence_modality"),
             confidence=data.get("confidence"),
+            norm_source=data.get("norm_source"),
+            norm_edition=data.get("norm_edition"),
+            norm_clause=data.get("norm_clause"),
+            approval_status=data.get("approval_status"),
+            approval_ref=data.get("approval_ref"),
         )
 
     def _reconstruct_summary(self, data: dict) -> ValidationSummary:

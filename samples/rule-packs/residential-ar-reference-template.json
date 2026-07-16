@@ -16,7 +16,12 @@
       "property_set": "Pset_ProjectCommon",
       "property_name": "Status",
       "operator": "exists",
-      "evidence_text": "Reference-template information completeness check; not a statutory norm."
+      "evidence_text": "Reference-template information completeness check; not a statutory norm.",
+      "norm_source": null,
+      "norm_edition": null,
+      "norm_clause": null,
+      "approval_status": "synthetic",
+      "approval_ref": null
     },
     {
       "rule_id": "SAM-AR-002",

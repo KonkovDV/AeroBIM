@@ -8,6 +8,7 @@ from typing import Literal
 from aerobim.domain.quantity import QuantityValue
 
 DocStatus = Literal["WIP", "Shared", "Published", "Archived"]
+NormApprovalStatus = Literal["synthetic", "draft", "customer_approved"]
 
 
 class Severity(StrEnum):
@@ -32,6 +33,16 @@ class RulePackStatus(StrEnum):
     DRAFT = "draft"
     APPROVED = "approved"
     RETIRED = "retired"
+
+
+def approval_status_from_pack(status: RulePackStatus) -> NormApprovalStatus:
+    """Map pack manifest status onto the jury-facing approval badge vocabulary."""
+
+    if status is RulePackStatus.APPROVED:
+        return "customer_approved"
+    if status is RulePackStatus.DRAFT:
+        return "draft"
+    return "synthetic"
 
 
 class RuleScope(StrEnum):
@@ -209,6 +220,16 @@ class ParsedRequirement:
     """Extraction confidence in [0.0, 1.0]. None means uncalibrated / legacy."""
     quantity: QuantityValue | None = None
     bsdd_uri: str | None = None
+    norm_source: str | None = None
+    """Human-readable norm identifier, e.g. ``СП 54.13330``."""
+    norm_edition: str | None = None
+    """Edition / year of the cited norm."""
+    norm_clause: str | None = None
+    """Clause / item reference inside the norm."""
+    approval_status: NormApprovalStatus | None = None
+    """Pack-level approval badge stamped onto each rule (default synthetic)."""
+    approval_ref: str | None = None
+    """Customer approval id / scope memo reference; required when customer_approved."""
 
 
 @dataclass(frozen=True)
@@ -263,6 +284,54 @@ class ValidationIssue:
     "drawing", "technical-specification"). Maps to ParsedRequirement.evidence_modality."""
     confidence: float | None = None
     """Extraction confidence in [0.0, 1.0]. None means uncalibrated / legacy."""
+    norm_source: str | None = None
+    norm_edition: str | None = None
+    norm_clause: str | None = None
+    approval_status: NormApprovalStatus | None = None
+    approval_ref: str | None = None
+
+
+def issue_from_requirement(
+    requirement: ParsedRequirement,
+    *,
+    severity: Severity,
+    message: str,
+    category: FindingCategory = FindingCategory.IFC_VALIDATION,
+    observed_value: str | None = None,
+    element_guid: str | None = None,
+    problem_zone: ProblemZone | None = None,
+    ifc_entity: str | None = None,
+    target_ref: str | None = None,
+    property_set: str | None = None,
+    property_name: str | None = None,
+    unit: str | None = None,
+) -> ValidationIssue:
+    """Build an issue that carries requirement→finding norm provenance."""
+
+    return ValidationIssue(
+        rule_id=requirement.rule_id,
+        severity=severity,
+        message=message,
+        ifc_entity=ifc_entity if ifc_entity is not None else requirement.ifc_entity,
+        category=category,
+        target_ref=target_ref if target_ref is not None else requirement.target_ref,
+        property_set=property_set if property_set is not None else requirement.property_set,
+        property_name=property_name if property_name is not None else requirement.property_name,
+        operator=requirement.operator,
+        expected_value=requirement.expected_value,
+        observed_value=observed_value,
+        unit=unit if unit is not None else requirement.unit,
+        element_guid=element_guid,
+        problem_zone=problem_zone,
+        source_id=requirement.source,
+        evidence_modality=requirement.evidence_modality,
+        confidence=requirement.confidence,
+        norm_source=requirement.norm_source,
+        norm_edition=requirement.norm_edition,
+        norm_clause=requirement.norm_clause,
+        approval_status=requirement.approval_status,
+        approval_ref=requirement.approval_ref,
+    )
 
 
 def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> int:

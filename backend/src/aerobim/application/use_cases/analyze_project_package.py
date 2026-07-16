@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Iterable, Sequence
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
@@ -30,6 +31,7 @@ from aerobim.domain.models import (
     ValidationRequest,
     ValidationSummary,
     compute_issue_priority,
+    issue_from_requirement,
 )
 from aerobim.domain.ports import (
     AuditReportStore,
@@ -559,6 +561,14 @@ class AnalyzeProjectPackageUseCase:
             pack_refs.append(
                 f"{pack.pack_id}@{pack.version}[{pack.status.value}] sha256:{pack.sha256[:12]}"
             )
+        # Ensure every norm-pack rule carries a pack-manifest approval badge.
+        stamped: list[ParsedRequirement] = []
+        for requirement in requirements:
+            if requirement.approval_status is None:
+                stamped.append(replace(requirement, approval_status="synthetic"))
+            else:
+                stamped.append(requirement)
+        requirements = stamped
         reason = f"loaded {len(pack_refs)} rule pack(s) via {source}: {', '.join(pack_refs)}"
         if non_approved:
             reason += "; advisory: non-approved pack(s) — not for deterministic sign-off"
@@ -945,20 +955,11 @@ class AnalyzeProjectPackageUseCase:
             ]
             if not matching_annotations:
                 issues.append(
-                    ValidationIssue(
-                        rule_id=requirement.rule_id,
+                    issue_from_requirement(
+                        requirement,
                         severity=Severity.ERROR,
                         message="No drawing annotations matched the normalized rule",
-                        ifc_entity=requirement.ifc_entity,
                         category=FindingCategory.DRAWING_VALIDATION,
-                        target_ref=requirement.target_ref,
-                        property_name=requirement.property_name,
-                        operator=requirement.operator,
-                        expected_value=requirement.expected_value,
-                        unit=requirement.unit,
-                        confidence=requirement.confidence,
-                        source_id=requirement.source,
-                        evidence_modality=requirement.evidence_modality,
                     )
                 )
                 continue
@@ -972,22 +973,15 @@ class AnalyzeProjectPackageUseCase:
                 ):
                     continue
                 issues.append(
-                    ValidationIssue(
-                        rule_id=requirement.rule_id,
+                    issue_from_requirement(
+                        requirement,
                         severity=Severity.ERROR,
                         message="Drawing annotation does not match the normalized rule",
-                        ifc_entity=requirement.ifc_entity,
                         category=FindingCategory.DRAWING_VALIDATION,
                         target_ref=annotation.target_ref,
-                        property_name=requirement.property_name,
-                        operator=requirement.operator,
-                        expected_value=requirement.expected_value,
                         observed_value=annotation.observed_value,
-                        unit=requirement.unit or annotation.unit,
                         problem_zone=annotation.problem_zone,
-                        confidence=requirement.confidence,
-                        source_id=requirement.source,
-                        evidence_modality=requirement.evidence_modality,
+                        unit=requirement.unit or annotation.unit,
                     )
                 )
 
@@ -996,30 +990,7 @@ class AnalyzeProjectPackageUseCase:
     def _attach_remarks(self, issues: Iterable[ValidationIssue]) -> list[ValidationIssue]:
         enriched: list[ValidationIssue] = []
         for issue in issues:
-            enriched.append(
-                ValidationIssue(
-                    rule_id=issue.rule_id,
-                    severity=issue.severity,
-                    message=issue.message,
-                    ifc_entity=issue.ifc_entity,
-                    category=issue.category,
-                    target_ref=issue.target_ref,
-                    property_set=issue.property_set,
-                    property_name=issue.property_name,
-                    operator=issue.operator,
-                    expected_value=issue.expected_value,
-                    observed_value=issue.observed_value,
-                    unit=issue.unit,
-                    element_guid=issue.element_guid,
-                    problem_zone=issue.problem_zone,
-                    remark=self._remark_generator.generate(issue),
-                    conflict_kind=issue.conflict_kind,
-                    priority=issue.priority,
-                    source_id=issue.source_id,
-                    evidence_modality=issue.evidence_modality,
-                    confidence=issue.confidence,
-                )
-            )
+            enriched.append(replace(issue, remark=self._remark_generator.generate(issue)))
         return enriched
 
     def _matches_annotation(

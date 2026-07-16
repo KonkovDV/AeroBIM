@@ -908,11 +908,29 @@ def create_http_app(container: Container):
                 loin_html = (
                     f"<br><small class='loin'>{' · '.join(loin_bits)}</small>" if loin_bits else ""
                 )
+                norm_bits: list[str] = []
+                approval = issue.get("approval_status")
+                if approval:
+                    norm_bits.append(f"badge={_esc(str(approval))}")
+                for key, label in (
+                    ("norm_source", "src"),
+                    ("norm_edition", "ed"),
+                    ("norm_clause", "§"),
+                    ("approval_ref", "ref"),
+                ):
+                    value = issue.get(key)
+                    if value:
+                        norm_bits.append(f"{label}={_esc(str(value))}")
+                norm_html = (
+                    f"<br><small class='norm-badge'>{' · '.join(norm_bits)}</small>"
+                    if norm_bits
+                    else ""
+                )
                 rows += (
                     f"<tr><td class='sev {_esc(sev)}'>{_esc(sev)}</td>"
                     f"<td class='{pri_class}'>{pri}</td>"
                     f"<td>{conf_display}</td>"
-                    f"<td>{_esc(issue.get('rule_id', ''))}{loin_html}</td>"
+                    f"<td>{_esc(issue.get('rule_id', ''))}{loin_html}{norm_html}</td>"
                     f"<td>{_esc(issue.get('message', ''))}</td>"
                     f"{ev_exp}{ev_obs}"
                     f"<td>{_esc(issue.get('element_guid') or '')}</td>"

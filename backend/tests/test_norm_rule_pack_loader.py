@@ -26,8 +26,54 @@ class JsonNormRulePackLoaderTests(unittest.TestCase):
         self.assertEqual(len(pack.sha256), 64)
         self.assertIsNone(pack.approval_reference)
         self.assertEqual(pack.rules[0].evidence_modality, "norm-rule-pack")
+        self.assertEqual(pack.rules[0].approval_status, "synthetic")
+        self.assertIsNone(pack.rules[0].approval_ref)
         self.assertEqual(pack.rules[-1].operator, ComparisonOperator.GREATER_OR_EQUAL)
         self.assertAlmostEqual(pack.rules[-1].quantity.si_value, 1.2)
+
+    def test_customer_approved_without_approval_ref_fails_closed(self) -> None:
+        payload = json.loads(REFERENCE_PACK.read_text(encoding="utf-8"))
+        payload["status"] = "customer_approved"
+        payload["approval"] = None
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "no-ref.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "require an approval object"):
+                self.loader.load(path)
+
+    def test_norm_provenance_reaches_validation_issue(self) -> None:
+        from aerobim.domain.models import (
+            FindingCategory,
+            ParsedRequirement,
+            Severity,
+            issue_from_requirement,
+        )
+
+        requirement = ParsedRequirement(
+            rule_id="SAM-AR-PROV",
+            ifc_entity="IFCWALL",
+            property_set="Pset_WallCommon",
+            property_name="FireRating",
+            expected_value="REI60",
+            norm_source="СП 54.13330",
+            norm_edition="2022",
+            norm_clause="7.1.2",
+            approval_status="synthetic",
+            approval_ref=None,
+            evidence_modality="norm-rule-pack",
+        )
+        issue = issue_from_requirement(
+            requirement,
+            severity=Severity.ERROR,
+            message="Property does not match",
+            category=FindingCategory.IFC_VALIDATION,
+            observed_value="REI30",
+        )
+        self.assertEqual(issue.norm_source, "СП 54.13330")
+        self.assertEqual(issue.norm_edition, "2022")
+        self.assertEqual(issue.norm_clause, "7.1.2")
+        self.assertEqual(issue.approval_status, "synthetic")
+        self.assertIsNone(issue.approval_ref)
 
     def test_duplicate_rule_id_is_rejected(self) -> None:
         payload = json.loads(REFERENCE_PACK.read_text(encoding="utf-8"))
