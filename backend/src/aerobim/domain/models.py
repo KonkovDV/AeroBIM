@@ -425,13 +425,42 @@ class ReviewEvent:
 
     event_id: str
     report_id: str
-    event_type: Literal["opened", "accepted", "rejected", "edited_remark", "triaged"]
+    event_type: Literal[
+        "opened",
+        "accepted",
+        "rejected",
+        "edited_remark",
+        "triaged",
+        "norm_rule_proposed",
+        "norm_rule_edited",
+    ]
     created_at: str
     issue_rule_id: str | None = None
     actor: str | None = None
     note: str | None = None
     latency_ms: int | None = None
     """Milliseconds from report open to this event when measurable."""
+    pack_id: str | None = None
+    """Optional norm-pack id for HITL rule-pack events (P0.3)."""
+    resulting_pack_version: str | None = None
+    target_approval_status: NormApprovalStatus | None = None
+    approval_ref: str | None = None
+    rule_diff_json: str | None = None
+    """JSON object describing the proposed/edited rule fields."""
+
+
+@dataclass(frozen=True)
+class NormPackVersionInfo:
+    """Immutable norm-pack version pointer (ObjectStore-backed)."""
+
+    pack_id: str
+    version: str
+    object_key: str
+    created_at: str
+    created_by: str | None = None
+    parent_version: str | None = None
+    approval_status: NormApprovalStatus | None = None
+    approval_ref: str | None = None
 
 
 class JobStatus(StrEnum):

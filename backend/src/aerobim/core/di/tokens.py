@@ -29,3 +29,5 @@ class Tokens:
     OIDC_TOKEN_VALIDATOR = "oidc_token_validator"
     BSI_VALIDATION_SERVICE = "bsi_validation_service"
     REVIEW_EVENT_STORE = "review_event_store"
+    NORM_RULE_PACK_VERSION_STORE = "norm_rule_pack_version_store"
+    APPLY_NORM_RULE_HITL_EVENT_USE_CASE = "apply_norm_rule_hitl_event_use_case"

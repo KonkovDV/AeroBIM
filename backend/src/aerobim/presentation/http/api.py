@@ -116,11 +116,29 @@ class PushBcfApiRequest(BaseModel):
 
 
 class ReviewEventRequest(BaseModel):
-    event_type: Literal["opened", "accepted", "rejected", "edited_remark", "triaged"]
+    event_type: Literal[
+        "opened",
+        "accepted",
+        "rejected",
+        "edited_remark",
+        "triaged",
+        "norm_rule_proposed",
+        "norm_rule_edited",
+    ]
     issue_rule_id: str | None = Field(default=None, max_length=256)
     actor: str | None = Field(default=None, max_length=128)
     note: str | None = Field(default=None, max_length=2000)
     latency_ms: int | None = Field(default=None, ge=0, le=86_400_000)
+
+
+class NormRuleHitlEventRequest(BaseModel):
+    event_type: Literal["norm_rule_proposed", "norm_rule_edited"]
+    base_pack_path: str = Field(min_length=1, max_length=512)
+    rule_diff: dict[str, object]
+    proposed_by: str | None = Field(default=None, max_length=128)
+    target_approval_status: Literal["synthetic", "draft", "customer_approved"] | None = None
+    approval_ref: str | None = Field(default=None, max_length=512)
+    report_id: str | None = Field(default=None, max_length=64)
 
 
 def create_http_app(container: Container):
@@ -754,6 +772,42 @@ def create_http_app(container: Container):
         )
         review_store.append(event)
         return {"event": asdict(event)}
+
+    @app.post("/v1/norm-packs/{pack_id}/rule-events")
+    def post_norm_rule_hitl_event(
+        pack_id: str,
+        payload: NormRuleHitlEventRequest,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        if not pack_id.strip() or len(pack_id) > 128:
+            raise HTTPException(status_code=400, detail="Invalid pack_id")
+        use_case = container.resolve(Tokens.APPLY_NORM_RULE_HITL_EVENT_USE_CASE)
+        base_path = _resolve_safe_path(payload.base_pack_path)
+        try:
+            record, event = use_case.execute(
+                pack_id=pack_id,
+                base_pack_path=base_path,
+                event_type=payload.event_type,
+                rule_diff=payload.rule_diff,
+                proposed_by=payload.proposed_by,
+                target_approval_status=payload.target_approval_status,
+                approval_ref=payload.approval_ref,
+                report_id=payload.report_id,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return {"version": asdict(record), "event": asdict(event)}
+
+    @app.get("/v1/norm-packs/{pack_id}/versions")
+    def list_norm_pack_versions(
+        pack_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        if not pack_id.strip() or len(pack_id) > 128:
+            raise HTTPException(status_code=400, detail="Invalid pack_id")
+        store = container.resolve(Tokens.NORM_RULE_PACK_VERSION_STORE)
+        versions = store.list_versions(pack_id)
+        return {"pack_id": pack_id, "versions": [asdict(item) for item in versions]}
 
     @app.get("/v1/reports/{report_id}/review-events")
     def list_review_events(
