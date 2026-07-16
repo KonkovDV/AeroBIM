@@ -36,6 +36,7 @@
     "docs/samolet-pilot-intake-checklist-2026.md",
     "audit/reports/CLAIMS_LOCK_2026_07_17.md",
     "docs/evidence/internal/cde-import-proof/STATUS.json",
+    "audit/evidence/cde-import-proof/STATUS.json",
     "backend/src/aerobim/tools/measure_adjudicator_agreement.py"
   ]
 }

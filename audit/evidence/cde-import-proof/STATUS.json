@@ -1,0 +1,20 @@
+{
+  "artifact_type": "cde_bcf_import_proof",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-17",
+  "status": "NOT_VERIFIED",
+  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-17.json",
+  "required_files": [
+    "import-log.txt",
+    "screenshot.png",
+    "hashes.json"
+  ],
+  "present_files": [],
+  "claim_allowed": false,
+  "forbidden_wording": [
+    "BCF ready for CDE",
+    "CDE interoperable",
+    "production BCF handoff"
+  ],
+  "allowed_wording": "BCF ZIP structural OK; CDE import not evidenced"
+}
