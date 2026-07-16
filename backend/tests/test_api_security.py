@@ -804,6 +804,19 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertIn("calculation_match", body["claim_labels"])
         self.assertIn("calculation_correctness", body["claim_labels"])
 
+    def test_system_capabilities_honesty_surface(self) -> None:
+        response = self.client.get("/v1/system/capabilities")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["artifact_type"], "system_capabilities")
+        honesty = body["honesty"]
+        self.assertEqual(honesty["dwg_dxf"]["status"], "missing")
+        self.assertEqual(honesty["cv_human_level"]["status"], "missing")
+        self.assertEqual(honesty["mep_system_clash"]["status"], "not_verified")
+        self.assertEqual(honesty["calculation_correctness"]["status"], "not_implemented")
+        self.assertIn("calculation_match", body["claim_boundary"])
+        self.assertIn("calculation_correctness", body["claim_boundary"])
+
     def test_reinforcement_digest_endpoint_rejects_path_traversal(self) -> None:
         response = self.client.post(
             "/v1/analyze/project-package/reinforcement-digest",

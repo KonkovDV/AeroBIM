@@ -8,6 +8,15 @@ tags: [aerobim, pilot, bcf, cde, samolet]
 
 # CDE / BCF handoff (Samolet 10/10 path)
 
+## Evidence ladder (July 2026)
+
+| Tier | Status | Artifact |
+|------|--------|----------|
+| T1 structural ZIP + dual consumers | **DONE** | [`../audit/evidence/bcf-structural-handoff-2026-07-17.json`](../audit/evidence/bcf-structural-handoff-2026-07-17.json) |
+| T2 independent CDE import | **NOT_VERIFIED** | [`evidence/internal/cde-import-proof/STATUS.json`](evidence/internal/cde-import-proof/STATUS.json) |
+
+Never claim “BCF ready for CDE” on T1 alone.
+
 ## Scenario A — BCF 2.1 ZIP (default, week 1)
 
 | Step | Action | Owner | Done |
@@ -15,7 +24,7 @@ tags: [aerobim, pilot, bcf, cde, samolet]
 | A1 | Export BCF 2.1 from AeroBIM API | Operator | [ ] |
 | A2 | Import ZIP into customer CDE | Samolet engineer | [ ] |
 | A3 | Verify topics + descriptions (remark body) visible | Joint | [ ] |
-| A4 | Store screenshot + date in `docs/evidence/internal/cde-import-proof/` | Operator | [ ] |
+| A4 | Store screenshot + date in `docs/evidence/internal/cde-import-proof/` and flip `STATUS.json` to `VERIFIED` | Operator | [ ] |
 
 Export:
 
