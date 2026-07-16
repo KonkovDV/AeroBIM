@@ -11,6 +11,7 @@ Mirhosseini et al. BRI 2026 hybrid determinism ≻ LLM for sign-off.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
+from pathlib import Path
 
 from aerobim.domain.compliance_agent import AgentRunResult, AgentToolStep
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
@@ -246,17 +247,18 @@ class ComplianceAgentOrchestrator:
         issues: list[ValidationIssue] = []
         if hits:
             top = hits[0]
+            evidence_label = Path(top.source_path).name or "norm-corpus"
             issues.append(
                 ValidationIssue(
                     rule_id="AEROBIM-AGENT-NORM-HIT",
                     severity=Severity.INFO,
                     message=(
                         f"[advisory] Norm corpus hit: {top.title} "
-                        f"(score={top.score:.2f}) @ {top.source_path}"
+                        f"(score={top.score:.2f}) @ {evidence_label} [unapproved/sample]"
                     ),
                     category=FindingCategory.CROSS_DOCUMENT,
                     source_id="compliance-agent",
-                    evidence_refs=(top.source_path,),
+                    evidence_refs=(evidence_label,),
                     confidence=min(1.0, top.score),
                     finding_id=f"agent-norm:{top.passage_id}",
                 )

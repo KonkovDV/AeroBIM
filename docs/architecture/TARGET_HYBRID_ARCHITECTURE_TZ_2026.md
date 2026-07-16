@@ -56,17 +56,20 @@ core/di/{tokens,container}.py     String-token DI
 |-------|----------------|----------|
 | **Core** | Settings, DI container, path jail | Adequate |
 | **Domain** | ~20 Protocols; findings provenance; honesty capabilities | Strong for IFC/IDS; weak for CV/NLP/DWG |
-| **Application** | Package analyze orchestrator; async jobs; sign-off policy | Strong deterministic path; no agent orchestrator |
-| **Infrastructure** | Real I/O adapters + optional extras | Strong openBIM; OCR optional; no VLM/RAG |
+| **Application** | Package analyze orchestrator; DeterminismGate; ComplianceAgent; async jobs; sign-off | Strong deterministic path; agent advisory-only |
+| **Infrastructure** | Real I/O adapters + optional extras | Strong openBIM; OCR optional; no product VLM |
 | **Presentation** | HTTP API + frontend review HITL | Adequate for expert assist templates |
 
 ### Contour ownership (SSOT)
 
 ```text
-INGESTION:     RequirementExtractor, DrawingAnalyzer, RasterDrawingAnalyzer, DocumentIdentity
+INGESTION:     RequirementExtractor, DrawingAnalyzer, RasterDrawingAnalyzer, DocumentIdentity,
+               CadModelIngestor, OfficeDocumentIngestor, MultimodalDrawingPipeline
 DETERMINISTIC: IfcValidator, IdsValidator, ClashDetector, NormRulePackLoader,
-               SectionDiffAnalyzer, ExternalEvidenceVerifier
-AI_ADVISORY:   IdsAssistDraftPort (stub), AdvisoryTextAssist (reserved name only)
+               SectionDiffAnalyzer, ExternalEvidenceVerifier, MepSystemGraphProvider,
+               QuantityConsistencyChecker, LoadEvidenceVerifier, LogicConsistencyAnalyzer
+AI_ADVISORY:   IdsAssistDraftPort (stub), RequirementToIdsCompiler, NormCorpusRetriever,
+               ComplianceAgentOrchestrator
 EVIDENCE:      AuditReportStore, ReviewEventStore, NormRulePackVersionStore,
                BcfApiClient, RemarkGenerator
 ```
