@@ -1,40 +1,60 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.application.use_cases.analyze_project_package_jobs import (
     AnalyzeProjectPackageJobRunner,
     GetAnalyzeProjectPackageJobStatusUseCase,
     SubmitAnalyzeProjectPackageJobUseCase,
 )
+from aerobim.application.use_cases.push_report_to_bcf_api import PushReportToBcfApiUseCase
 from aerobim.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container, Lifecycle
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.models import ToleranceConfig
+from aerobim.core.security.path_jail import resolve_storage_path
+from aerobim.domain.models import Severity, ToleranceConfig
+from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
+from aerobim.infrastructure.adapters.bsi_validation_service import (
+    HttpBsiValidationService,
+    LocalSchemaPackCertificate,
+)
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+from aerobim.infrastructure.adapters.filesystem_review_event_store import FilesystemReviewEventStore
+from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
 from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store import (
     InMemoryAnalyzeProjectPackageJobStore,
 )
+from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
+from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
+from aerobim.infrastructure.adapters.redis_analyze_project_package_job_store import (
+    RedisAnalyzeProjectPackageJobStore,
+)
 from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
+from aerobim.infrastructure.adapters.unconfigured_bcf_api_client import UnconfiguredBcfApiClient
+from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
+from aerobim.infrastructure.security.oidc_token_validator import OidcTokenValidator
 
 
 def bootstrap_container(settings: Settings | None = None) -> Container:
     container = Container()
     runtime_settings = settings or Settings.from_env()
+    runtime_settings.require_secure_auth()
     runtime_settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
     container.register(Tokens.SETTINGS, lambda _container: runtime_settings)
@@ -51,6 +71,24 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.NARRATIVE_RULE_SYNTHESIZER,
         lambda _container: NarrativeRuleSynthesizer(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.NORM_RULE_PACK_LOADER,
+        lambda _container: JsonNormRulePackLoader(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.SECTION_DIFF_ANALYZER,
+        lambda _container: JsonSectionDiffAnalyzer(
+            tolerance=tolerance,
+            severity=Severity(
+                runtime_settings.cross_doc_contradiction_severity
+                if runtime_settings.cross_doc_contradiction_severity
+                in {"error", "warning", "info"}
+                else "warning"
+            ),
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -75,13 +113,30 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.IFC_SCHEMA_VALIDATOR,
+        lambda _container: BasicIfcSchemaValidator(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.IDS_DOCUMENT_AUDITOR,
+        lambda _container: XmlIdsDocumentAuditor(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.CLASH_DETECTOR,
         lambda _container: IfcClashDetector(),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.EXTERNAL_EVIDENCE_VERIFIER,
+        lambda _container: OpenRebarEvidenceVerifier(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.REMARK_GENERATOR,
-        lambda _container: TemplateRemarkGenerator(),
+        lambda current: TemplateRemarkGenerator(
+            locale=current.resolve(Tokens.SETTINGS).remark_locale
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -96,11 +151,36 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     )
     container.register(
         Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE,
-        lambda current: InMemoryAnalyzeProjectPackageJobStore(
-            snapshot_path=(
-                current.resolve(Tokens.SETTINGS).storage_dir
-                / "analyze_project_package_jobs.snapshot.json"
-            )
+        lambda current: _build_job_store(current.resolve(Tokens.SETTINGS)),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.BCF_API_CLIENT,
+        lambda current: _build_bcf_api_client(current.resolve(Tokens.SETTINGS)),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.OIDC_TOKEN_VALIDATOR,
+        lambda current: _build_oidc_validator(current.resolve(Tokens.SETTINGS)),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    bsi_service = _build_bsi_validation_service(runtime_settings)
+    if bsi_service is not None:
+        container.register(
+            Tokens.BSI_VALIDATION_SERVICE,
+            lambda _container, service=bsi_service: service,
+            lifecycle=Lifecycle.SINGLETON,
+        )
+    container.register(
+        Tokens.REVIEW_EVENT_STORE,
+        lambda current: FilesystemReviewEventStore(current.resolve(Tokens.SETTINGS).storage_dir),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.PUSH_REPORT_TO_BCF_API_USE_CASE,
+        lambda current: PushReportToBcfApiUseCase(
+            audit_report_store=current.resolve(Tokens.AUDIT_REPORT_STORE),
+            bcf_api_client=current.resolve(Tokens.BCF_API_CLIENT),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -111,6 +191,8 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             ifc_validator=current.resolve(Tokens.IFC_VALIDATOR),
             audit_report_store=current.resolve(Tokens.AUDIT_REPORT_STORE),
             ids_validator=current.resolve(Tokens.IDS_VALIDATOR),
+            ifc_schema_validator=current.resolve(Tokens.IFC_SCHEMA_VALIDATOR),
+            ids_document_auditor=current.resolve(Tokens.IDS_DOCUMENT_AUDITOR),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -129,7 +211,20 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             clash_detector=current.resolve(Tokens.CLASH_DETECTOR),
             cross_doc_severity=current.resolve(Tokens.SETTINGS).cross_doc_contradiction_severity,
             priority_profile=current.resolve(Tokens.SETTINGS).priority_profile,
-            external_evidence_verifier=OpenRebarEvidenceVerifier(),
+            external_evidence_verifier=current.resolve(Tokens.EXTERNAL_EVIDENCE_VERIFIER),
+            clash_affects_pass=current.resolve(Tokens.SETTINGS).clash_affects_pass,
+            ifc_schema_validator=current.resolve(Tokens.IFC_SCHEMA_VALIDATOR),
+            ids_document_auditor=current.resolve(Tokens.IDS_DOCUMENT_AUDITOR),
+            bsi_validation_service=(
+                current.resolve(Tokens.BSI_VALIDATION_SERVICE)
+                if current.is_registered(Tokens.BSI_VALIDATION_SERVICE)
+                else None
+            ),
+            norm_rule_pack_loader=current.resolve(Tokens.NORM_RULE_PACK_LOADER),
+            section_diff_analyzer=current.resolve(Tokens.SECTION_DIFF_ANALYZER),
+            default_norm_rule_pack_path=_resolve_default_norm_pack_path(
+                current.resolve(Tokens.SETTINGS)
+            ),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -159,6 +254,18 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     return container
 
 
+def _resolve_default_norm_pack_path(settings: Settings) -> Path | None:
+    """Resolve the operator-configured default norm pack within the storage jail.
+
+    Existence is intentionally tolerated here: a configured-but-missing pack is
+    surfaced at analysis time as a FAILED ``norm_rule_packs`` capability (fail
+    closed, never a silent skip). Traversal/symlink/absolute paths still raise.
+    """
+    if not settings.norm_rule_pack_path:
+        return None
+    return resolve_storage_path(settings.norm_rule_pack_path, base=settings.storage_dir)
+
+
 def _build_object_store(settings: Settings):
     if settings.s3_bucket:
         try:
@@ -171,8 +278,54 @@ def _build_object_store(settings: Settings):
                 prefix=settings.s3_prefix,
             )
         except RuntimeError:
+            if not settings.is_dev_environment:
+                raise
             return LocalObjectStore(settings.storage_dir)
     return LocalObjectStore(settings.storage_dir)
+
+
+def _build_job_store(settings: Settings):
+    if settings.redis_url:
+        try:
+            return RedisAnalyzeProjectPackageJobStore(settings.redis_url)
+        except RuntimeError:
+            if not settings.is_dev_environment:
+                raise
+    return InMemoryAnalyzeProjectPackageJobStore(
+        snapshot_path=settings.storage_dir / "analyze_project_package_jobs.snapshot.json"
+    )
+
+
+def _build_bcf_api_client(settings: Settings):
+    if settings.bcf_api_base_url and settings.bcf_api_token:
+        return HttpBcfApiClient(
+            base_url=settings.bcf_api_base_url,
+            access_token=settings.bcf_api_token,
+            api_version=settings.bcf_api_version,
+        )
+    return UnconfiguredBcfApiClient()
+
+
+def _build_oidc_validator(settings: Settings) -> OidcTokenValidator | None:
+    if not settings.oidc_enabled:
+        return None
+    assert settings.oidc_issuer and settings.oidc_audience and settings.oidc_jwks_url
+    return OidcTokenValidator(
+        issuer=settings.oidc_issuer,
+        audience=settings.oidc_audience,
+        jwks_url=settings.oidc_jwks_url,
+    )
+
+
+def _build_bsi_validation_service(settings: Settings):
+    if settings.bsi_validation_url and settings.bsi_api_token:
+        return HttpBsiValidationService(
+            base_url=settings.bsi_validation_url,
+            api_token=settings.bsi_api_token,
+        )
+    if settings.bsi_local_cert:
+        return LocalSchemaPackCertificate()
+    return None
 
 
 def _build_audit_report_store(current: Container):

@@ -26,7 +26,7 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 cd backend
 python -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev,vision]"
+pip install -e ".[dev,raster]"
 ```
 
 Optional extras:

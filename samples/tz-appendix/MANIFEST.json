@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "tz-appendix-skeleton-2026-07",
+  "description": "Skeleton mapping TZ data appendices to AeroBIM sample fixtures (no NDA content).",
+  "appendices": [
+    {
+      "id": "01-project-docs",
+      "tz_label": "Проектная документация",
+      "status": "skeleton",
+      "entries": [
+        {
+          "path": "samples/specifications/techlab-tz.txt",
+          "role": "pd-spec-standin",
+          "expected_issue_classes": ["CROSS_DOCUMENT", "IFC_VALIDATION"]
+        },
+        {
+          "path": "samples/benchmarks/project-package-pilot-moscow-v1.json",
+          "role": "pd-package-manifest",
+          "expected_issue_classes": ["IDS_VALIDATION", "IFC_VALIDATION"]
+        }
+      ]
+    },
+    {
+      "id": "02-working-docs",
+      "tz_label": "Рабочая документация",
+      "status": "skeleton",
+      "entries": [
+        {
+          "path": "samples/drawings/techlab-annotations.txt",
+          "role": "rd-drawing-annotations",
+          "expected_issue_classes": ["DRAWING_VALIDATION"]
+        },
+        {
+          "path": "samples/drawings/wall-thickness.json",
+          "role": "rd-structured-drawing",
+          "expected_issue_classes": ["DRAWING_VALIDATION"]
+        }
+      ]
+    },
+    {
+      "id": "03-standards",
+      "tz_label": "Стандарты",
+      "status": "partial",
+      "entries": [
+        {
+          "path": "samples/ids/samolet-fire-rating.ids",
+          "role": "agreed-ids-pack",
+          "expected_issue_classes": ["IDS_VALIDATION"]
+        },
+        {
+          "path": "samples/ids/wall-fire-rating.ids",
+          "role": "agreed-ids-pack",
+          "expected_issue_classes": ["IDS_VALIDATION"]
+        }
+      ]
+    },
+    {
+      "id": "04-design-brief",
+      "tz_label": "Техническое задание на проектирование",
+      "status": "partial",
+      "entries": [
+        {
+          "path": "samples/specifications/tz-area-fire.txt",
+          "role": "design-brief-ru",
+          "language": "ru",
+          "expected_issue_classes": ["CROSS_DOCUMENT", "IFC_VALIDATION"]
+        },
+        {
+          "path": "samples/requirements/english-fixture-wall-fire.txt",
+          "role": "design-brief-en-structured",
+          "language": "en",
+          "expected_issue_classes": ["IFC_VALIDATION"]
+        }
+      ]
+    },
+    {
+      "id": "05-typical-errors",
+      "tz_label": "Набор типовых ошибок",
+      "status": "scaffold",
+      "entries": [
+        {
+          "path": "samples/benchmarks/samolet-typical-errors-catalog.json",
+          "role": "typical-errors-catalog",
+          "expected_issue_classes": ["CROSS_DOCUMENT", "IFC_VALIDATION", "SPATIAL"]
+        }
+      ]
+    },
+    {
+      "id": "06-calculations",
+      "tz_label": "Расчетные модели и результаты расчетов",
+      "status": "partial",
+      "entries": [
+        {
+          "path": "samples/calculations/techlab-area-calc.txt",
+          "role": "area-calc",
+          "expected_issue_classes": ["CROSS_DOCUMENT"]
+        },
+        {
+          "path": "samples/calculations/area-requirement.txt",
+          "role": "area-requirement",
+          "expected_issue_classes": ["CROSS_DOCUMENT"]
+        }
+      ]
+    }
+  ],
+  "intake": {
+    "checklist": "docs/samolet-pilot-intake-checklist-2026.md",
+    "note": "Replace skeleton pointers with customer corpus hashes after week-1 intake."
+  }
+}

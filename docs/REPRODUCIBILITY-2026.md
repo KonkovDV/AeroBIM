@@ -39,7 +39,7 @@ git checkout pilot-2026-pre   # frozen baseline; or main for latest docs
 
 cd backend
 python -m venv .venv-pilot
-.\.venv-pilot\Scripts\pip install -e ".[dev,vision]"
+.\.venv-pilot\Scripts\pip install -e ".[dev,raster]"
 
 .\.venv-pilot\Scripts\python.exe -m pytest tests -q
 .\.venv-pilot\Scripts\python.exe -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
@@ -57,7 +57,7 @@ git checkout pilot-2026-pre
 cd backend
 python3 -m venv .venv-pilot
 source .venv-pilot/bin/activate
-pip install -e ".[dev,vision]"
+pip install -e ".[dev,raster]"
 
 python -m pytest tests -q
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70

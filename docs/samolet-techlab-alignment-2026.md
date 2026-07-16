@@ -1,16 +1,25 @@
 ---
 title: "Samolet TechLab Alignment 2026 (Academic)"
 status: active
-version: "1.0.0"
-last_updated: "2026-05-21"
+version: "1.1.0"
+last_updated: "2026-07-10"
 tags: [aerobim, samolet, techlab, openBIM, academic, traceability]
 ---
 
-# Samolet × TechLab × AeroBIM — Academic Alignment (May 2026)
+# Samolet × TechLab × AeroBIM — Academic Alignment
 
-Single traceability document mapping **customer requirements** ([i.moscow/techlab/samolet](https://i.moscow/techlab/samolet), task **#07**) to **AeroBIM capabilities**, **openBIM standards**, and **pilot evidence**. Use with [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) and [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md).
+Single traceability document mapping **customer requirements** ([i.moscow/techlab/samolet](https://i.moscow/techlab/samolet), task **#07** — *Система автоматизированной верификации проектной и рабочей документации*) to **AeroBIM capabilities**, **openBIM standards**, and **pilot evidence**. Use with [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) and [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md).
 
-## 1. Customer mandate (plain language)
+**TZ Response Pack:** [`tz/README.md`](tz/README.md).  
+**Task 07 readiness memo:** [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md).  
+**What Samolet must supply:** [`partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md).  
+**Application packet:** [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md).
+
+## 1. Customer mandate (official task page)
+
+**Title:** Система автоматизированной верификации проектной и рабочей документации (Задача 07).  
+**Prize:** платное пилотное тестирование **2 000 000 ₽**.  
+**Direction:** прикладной ИИ · Competencies: BIM/CAD, Computer Vision/OCR, AI/ML · Stack: at team discretion.
 
 **Samolet** (via Moscow Innovation Cluster **TechLab**) requests a **reviewer-assist MVP** that:
 
@@ -22,9 +31,14 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 6. Targets **≤ 30 minutes** analysis time on an **agreed document package** (not arbitrary production scale).
 7. Keeps the **human expert in the loop** — automation reduces manual volume, not accountability.
 
-**Program context:** Moscow Innovation Cluster TechLab; applications until **2026-06-08**; paid pilot testing fund **2 000 000 ₽** (per task page); demo day autumn 2026.
+**Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site.
 
-## 2. World practice anchor (May 2026)
+**Resources named on task page:** PD/RD, BIM models, TZ and standards, typical-error set.  
+**Final product:** MVP of a documentation analysis system with error visualization and reports.
+
+**Program context:** Moscow Innovation Cluster TechLab; paid pilot fund **2 000 000 ₽**; experts: A. Gorelik, A. Khasanov (technological customer / project office).
+
+## 2. World practice anchor (2026)
 
 | Layer | Standard / practice | AeroBIM use |
 |---|---|---|
@@ -46,17 +60,17 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 | R1 | 2D drawings | Drawing evidence adapter, PDF/OCR baseline, 2D overlay UI | ✅ fixture | Vision-heavy path = planned, not pilot sign-off |
 | R2 | BIM models | IFC + IDS validators | ✅ | `pytest`, benchmark packs |
 | R3 | TZ + calculations | Narrative + structured requirements, cross-doc | ✅ | F1 gate ≥ 0.70 |
-| R4 | Match docs + norms | IDS + rules files + cross-document engine | ✅ partial | Norms = agreed rule sets, not all codes |
+| R4 | Match docs + norms | IDS + JSON norm packs + cross-doc + PD↔RD section scaffold | ✅ partial | Norms = agreed packs; customer approval still required |
 | R5 | Collisions / clashes | Cross-doc `ConflictKind`; optional IfcClash extra | ✅ / opt-in | Clarify 3D clash vs doc contradiction with customer |
 | R6 | Calculation / dimension / area errors | Quantity algebra + cross-doc | ✅ | Pilot pack informational 0 cross-doc on fixture |
 | R7 | Logic / missing elements | IDS + requirement operators (`exists`, bounds) | ✅ | |
 | R8 | Highlight problem zones | `problem_zone`, drawing overlay | ✅ | `run_live_review_smoke` |
 | R9 | Prioritize remarks | `compute_issue_priority`, Samolet profile (`AEROBIM_PRIORITY_PROFILE=samolet`) | ✅ | [`domain/review_priority.py`](../backend/src/aerobim/domain/review_priority.py) |
-| R10 | Designer comments | `TemplateRemarkGenerator` + BCF description | ✅ enhanced | Russian template strings |
+| R10 | Designer comments | `TemplateRemarkGenerator` (RU/EN) + HITL edit + BCF | ✅ | `AEROBIM_REMARK_LOCALE`; frontend remark editor |
 | R11 | Faster review | SLA tool + pilot KPI protocol | 🚧 measure | [`measure_package_sla`](../backend/src/aerobim/tools/measure_package_sla.py) |
 | R12 | Expert remains accountable | Claim boundary + adjudication KPI | ✅ | TP/FP by customer engineer |
-| R13 | MVP + visualization + reports | API + HTML + JSON + BCF + browser shell | ✅ | |
-| R14 | Typical error catalog | [`samolet-typical-errors-catalog.json`](../samples/benchmarks/samolet-typical-errors-catalog.json) | ✅ scaffold | Populate with Samolet corpus in intake |
+| R13 | MVP + visualization + reports | API + HTML + JSON + BCF + browser shell + upload | ✅ | `POST /v1/uploads` |
+| R14 | Typical error catalog | ≥20 patterns + mapping tool (`map_typical_errors`) | ✅ partial scaffold | Customer confirmation still 0; MEP system clash gap explicit |
 | R15 | ≤ 30 min package SLA | Benchmark rail on agreed pack | 🚧 | Must run on **customer** package for contract |
 
 ## 4. Recommended pilot scope (repeatable scenario)
@@ -95,7 +109,7 @@ Default benchmark pack: [`project-package-pilot-moscow-v1.json`](../samples/benc
 
 ```powershell
 cd AeroBIM\backend
-.\.venv-pilot\Scripts\pip install -e ".[dev,vision]"
+.\.venv-pilot\Scripts\pip install -e ".[dev,raster]"
 
 # Samolet priority profile (fire/structure/cross-doc boost)
 $env:AEROBIM_PRIORITY_PROFILE = "samolet"
@@ -141,3 +155,7 @@ $env:AEROBIM_PRIORITY_PROFILE = "samolet"
 ## 9. Citation
 
 When citing results for Samolet / TechLab, use frozen tag **`pilot-2026-pre`** for metrics and note Samolet-specific SLA runs separately in evidence filenames (`samolet-sla-*.json`).
+
+## Drawing AI posture (retained local SSOT)
+
+July 2026: [../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).

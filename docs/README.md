@@ -29,13 +29,24 @@ Router for `AeroBIM/docs/`.
 | `samolet-techlab-alignment-2026.md` | Samolet R1–R15 traceability |
 | `samolet-compliance-scorecard-2026.md` | Pilot closure sign-off |
 | `PROJECT-AUDIT-2026-05-20.md` | Repository audit (May 2026) |
+| `INDUSTRY_IMPROVEMENT_PLAN_2026_07.md` | **July 2026 industry-grade waves W0–W3** (soundness → openBIM → CDE) |
+| `evidence/P1_ENGINEERING_DELIVERY_2026_07_10.md` | **P1 delivery** — norm packs, section pairing, precision harness |
+| `evidence/TRACK_A1_SECTION_PAIRING_2026_07_11.md` | **Track A1** — canonical keys, multi-discipline PD↔RD |
+| `evidence/TRACK_A2_NORM_PACKS_2026_07_11.md` | **Track A2** — norm packs CI schema + env/manifest |
+| `evidence/TRACK_A3_INTAKE_PRECISION_2026_07_11.md` | **Track A3** — adjudication templates + intake runbook |
+| `evidence/TRACK_A5_DEMO_PATH_2026_07_11.md` | **Track A5** — upload→analyze→BCF demo path on fixture |
+| `partners/SAMOLET_TZ_REMAINING_TAILS_2026_07.md` | **Хвосты ТЗ Самолёта** — blockers vs engineering done |
+| `evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md` | **OCR/CV/NLP posture** — July 2026 vs “AI reads like a human” |
+| `tz/README.md` | **TZ Response Pack** — expert-assistant MVP (architecture/build/presentation TBD fills) |
+| `evidence/ACADEMIC_DEEP_AUDIT_2026_07_10.md` | Deep audit finding register (Jul 2026) |
+| `evidence/FULL_AUDIT_FACTCHECK_2026_07_10.md` | Public-surface fact-check (Jul 2026) |
 
 ## Tier 1 — Active engineering (numbered)
 
 | File | Role |
 |------|------|
 | `12-openrebar-provenance-decision-table.md` | OpenRebar severity policy |
-| `13-academic-execution-plan-2026.md` | Standards roadmap A–C + status |
+| `13-academic-execution-plan-2026.md` | Standards roadmap A–C + status (see also July W0–W3 plan) |
 | `14-enterprise-storage-foundation.md` | ObjectStore / Postgres foundation |
 | `15-local-quality-gate.md` | CI-parity local commands (contributors) |
 
@@ -44,8 +55,11 @@ Router for `AeroBIM/docs/`.
 | File | Purpose |
 |---|---|
 | `LOCAL_OPERATOR_ARTIFACTS.md` | Gitignored NDA/CDE paths |
-| `partners/TECHLAB_SAMOLET_APPLICATION_2026.md` | TechLab application texts |
-| `samolet-techlab-scorecard-2026.md` | Score ladder 7.6 → 10 |
+| `partners/TECHLAB_SAMOLET_APPLICATION_2026.md` | TechLab application texts (task #07) |
+| `partners/TECHLAB_TASK_07_READINESS_2026.md` | Official Task 07 mandate → AeroBIM readiness |
+| `partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md` | **Что нужно от Самолёта** (kickoff handoff, RU) |
+| `partners/SAMOLET_WHAT_WE_NEED_2026_07.md` | What Samolet must supply (EN SSOT) |
+| `samolet-techlab-scorecard-2026.md` | Score ladder → 10 |
 | `samolet-pilot-intake-checklist-2026.md` | Week 1 joint intake |
 | `pilot-cde-handoff-2026.md` | CDE Scenario A/B |
 | `samolet-kpi-adjudication-template-2026.md` | Wave 2 TP/FP log |
@@ -63,7 +77,12 @@ Router for `AeroBIM/docs/`.
 | `post-pilot-go-no-go-memo-2026.md` | Branch A/B/C decision |
 | `academic-pilot-evidence-2026.md` | Pilot evidence dossier |
 | `academic-publication-evidence-2026.md` | Publication bundle |
-| `annotation-protocol-2026.md` | RU extraction annotation rules |
+| `annotation-protocol-2026.md` | RU/EN extraction annotation + IAA rules |
+| `tz/TZ_COMPLIANCE_MATRIX_2026.md` | TZ ↔ AeroBIM compliance matrix |
+| `tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md` | TZ architecture TBD fill |
+| `tz/TZ_BUILD_AND_QUALITY_2026.md` | TZ build/quality TBD fill |
+| `tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md` | Demo script + slide outline |
+| `tz/TZ_ACCOMPANYING_DOCS_2026.md` | Accompanying docs checklist |
 | `benchmark-report-template.md` | Supplementary report skeleton |
 | `manuscript-draft-2026.md` | Paper draft outline |
 | `contributor-git-2026.md` / `contributor-git-ru.md` | Single-author commits |
@@ -82,7 +101,8 @@ Moved to [`archive/`](archive/): `01`–`05`, `07`–`11` (MicroPhoenix extracti
 2. [`15-local-quality-gate.md`](15-local-quality-gate.md)
 3. [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md)
 4. [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md)
-5. [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) (if working on Samolet pilot)
+5. [`tz/README.md`](tz/README.md) (if preparing the expert-assistant TZ)
+6. [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) (if working on Samolet pilot)
 
 ## Rules for future docs
 
@@ -90,3 +110,7 @@ Moved to [`archive/`](archive/): `01`–`05`, `07`–`11` (MicroPhoenix extracti
 - New historical material goes under `archive/`; do not grow the docs root with superseded plans.
 - One language per file — see [`LANGUAGE-POLICY-2026.md`](LANGUAGE-POLICY-2026.md).
 - No speculative runtime claims without repo proof or authoritative external evidence.
+
+## Drawing AI posture
+
+July 2026: [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).

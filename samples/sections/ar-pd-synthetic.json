@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "SYNTHETIC-AR-PD-001",
+  "project_id": "SYNTHETIC-RESIDENTIAL-DEMO",
+  "stage": "PD",
+  "discipline": "AR",
+  "section_code": "AR",
+  "revision": "P0",
+  "values": [
+    {
+      "key": "building.height",
+      "value": 30,
+      "unit": "m",
+      "target_ref": "BUILDING-01",
+      "source_ref": "PD-AR sheet 1",
+      "problem_zone": { "sheet_id": "PD-AR-001", "page_number": 1 }
+    },
+    {
+      "key": "apartment.area.total",
+      "value": 75,
+      "unit": "m2",
+      "target_ref": "APT-01",
+      "source_ref": "PD-AR room schedule",
+      "tolerance_si": 0.01,
+      "problem_zone": { "sheet_id": "PD-AR-002", "page_number": 2 }
+    },
+    {
+      "key": "wall.external.thickness",
+      "value": 250,
+      "unit": "mm",
+      "target_ref": "WALL-EXT-TYPE-A",
+      "source_ref": "PD-AR wall types"
+    },
+    {
+      "key": "door.clear.width",
+      "value": 0.9,
+      "unit": "m",
+      "target_ref": "DOOR-TYPE-D1",
+      "source_ref": "PD-AR door schedule",
+      "required_in_rd": true
+    },
+    {
+      "key": "facade.material",
+      "value": "brick",
+      "target_ref": "FACADE-TYPE-F1",
+      "source_ref": "PD-AR facade specification"
+    },
+    {
+      "key": "floor.count",
+      "value": 10,
+      "target_ref": "BUILDING-01",
+      "source_ref": "PD-AR general data"
+    },
+    {
+      "key": "railing.height",
+      "value": 1.2,
+      "unit": "m",
+      "target_ref": "RAILING-TYPE-R1",
+      "source_ref": "PD-AR railing schedule"
+    }
+  ]
+}

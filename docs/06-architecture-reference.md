@@ -172,7 +172,7 @@ Use an infrastructure adapter to convert narrative TZ/calculation text into expl
 
 ### Drawing Analyzer
 
-Use an infrastructure adapter to translate 2D drawing evidence into structured annotations and bounding-box problem zones. The current baseline may start from structured fixtures; future computer-vision adapters must preserve the same contract.
+Use an infrastructure adapter to translate 2D drawing evidence into structured annotations and bounding-box problem zones. The current baseline uses OCR and layout heuristics; future non-deterministic raster adapters must preserve the same contract.
 
 ### Remark Generator
 

@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Inter-annotator agreement worksheet template (Cohen's κ) for AeroBIM extraction corpora",
+  "protocol": "docs/annotation-protocol-2026.md#inter-annotator-agreement",
+  "annotators": ["A1", "A2"],
+  "labels": ["requirement_span", "ifc_entity", "property_name", "expected_value"],
+  "items": [
+    {
+      "item_id": "IAA-EN-WALL-01",
+      "fixture_id": "english-wall-fire",
+      "span_text": "FireRating|REI120",
+      "a1_label": null,
+      "a2_label": null,
+      "agreement": null
+    },
+    {
+      "item_id": "IAA-RU-WALL-01",
+      "fixture_id": "russian-wall-thermal",
+      "span_text": "сопротивление теплопередаче не менее R = 3,5",
+      "a1_label": null,
+      "a2_label": null,
+      "agreement": null
+    }
+  ],
+  "metrics": {
+    "cohens_kappa": null,
+    "percent_agreement": null,
+    "computed_at": null
+  }
+}

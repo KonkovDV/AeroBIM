@@ -1,0 +1,5 @@
+EN-SPACE-01|IFCSPACE|Qto_SpaceBaseQuantities|NetFloorArea|18.0
+EN-SPACE-02|IFCSPACE|Pset_SpaceCommon|FireRating|REI60
+EN-SPACE-03|IFCDOOR|Pset_DoorCommon|FireRating|EI30
+EN-SPACE-04|IFCDOOR|Qto_DoorBaseQuantities|Height|2100
+EN-SPACE-05|IFCDOOR|Qto_DoorBaseQuantities|Width|900

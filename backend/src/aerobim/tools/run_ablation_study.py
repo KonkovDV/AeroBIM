@@ -85,7 +85,34 @@ def run_ablation(pack_paths: list[Path], output: Path | None) -> AblationStudyRe
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        md_path = output.with_suffix(".md")
+        md_path.write_text(_to_markdown_table(payload), encoding="utf-8")
     return payload
+
+
+def _to_markdown_table(payload: AblationStudyReport) -> str:
+    lines = [
+        "# AeroBIM multimodal ablation study (paper table)",
+        "",
+        "| Mode | Pack | Requirements | Issues | Cross-doc | Category breakdown |",
+        "|------|------|-------------:|-------:|----------:|--------------------|",
+    ]
+    for row in payload["configurations"]:
+        cats = ", ".join(f"{k}={v}" for k, v in row["category_breakdown"].items()) or "—"
+        lines.append(
+            f"| {row['ablation_mode']} | `{row['pack_id']}` | {row['requirement_count']} | "
+            f"{row['issue_count']} | {row['cross_document_issues']} | {cats} |"
+        )
+    lines.extend(
+        [
+            "",
+            "Modes: **A0** IDS-only → **A1** + IFC properties → **A2** + cross-document → **A3** reduced multimodal.",
+            "",
+            f"Pack count: {payload['pack_count']}. Regenerate via `python -m aerobim.tools.run_ablation_study`.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
 
 
 def main(argv: list[str] | None = None) -> int:

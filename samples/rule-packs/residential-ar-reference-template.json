@@ -1,0 +1,198 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "SAMOLET-RESIDENTIAL-AR-REFERENCE",
+  "version": "0.1.0",
+  "title": "Residential AR acceptance-criteria reference template",
+  "typology": "residential-multifamily",
+  "disciplines": ["AR"],
+  "status": "synthetic-template",
+  "approval": null,
+  "customer_action_required": "Replace demo values and approve every criterion against the pilot scope memo before use as a sign-off pack.",
+  "rules": [
+    {
+      "rule_id": "SAM-AR-001",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcProject",
+      "property_set": "Pset_ProjectCommon",
+      "property_name": "Status",
+      "operator": "exists",
+      "evidence_text": "Reference-template information completeness check; not a statutory norm."
+    },
+    {
+      "rule_id": "SAM-AR-002",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcBuilding",
+      "property_set": "Pset_BuildingCommon",
+      "property_name": "BuildingID",
+      "operator": "exists",
+      "evidence_text": "Reference-template identification criterion; customer approval required."
+    },
+    {
+      "rule_id": "SAM-AR-003",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcBuildingStorey",
+      "property_set": "Pset_BuildingStoreyCommon",
+      "property_name": "Reference",
+      "operator": "exists",
+      "evidence_text": "Reference-template storey identification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-004",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcSpace",
+      "property_set": "Pset_SpaceCommon",
+      "property_name": "Reference",
+      "operator": "exists",
+      "evidence_text": "Reference-template room identification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-005",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcSpace",
+      "property_set": "Pset_SpaceCommon",
+      "property_name": "OccupancyType",
+      "operator": "exists",
+      "evidence_text": "Reference-template room function criterion."
+    },
+    {
+      "rule_id": "SAM-AR-006",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcSpace",
+      "property_set": "Pset_SpaceCommon",
+      "property_name": "IsExternal",
+      "operator": "exists",
+      "evidence_text": "Reference-template space classification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-007",
+      "scope": "ifc-quantity",
+      "ifc_entity": "IfcSpace",
+      "property_set": "Qto_SpaceBaseQuantities",
+      "property_name": "GrossFloorArea",
+      "operator": "exists",
+      "unit": "m2",
+      "evidence_text": "Reference-template gross-area availability criterion."
+    },
+    {
+      "rule_id": "SAM-AR-008",
+      "scope": "ifc-quantity",
+      "ifc_entity": "IfcSpace",
+      "property_set": "Qto_SpaceBaseQuantities",
+      "property_name": "NetFloorArea",
+      "operator": "exists",
+      "unit": "m2",
+      "evidence_text": "Reference-template net-area availability criterion."
+    },
+    {
+      "rule_id": "SAM-AR-009",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcWall",
+      "property_set": "Pset_WallCommon",
+      "property_name": "IsExternal",
+      "operator": "exists",
+      "evidence_text": "Reference-template wall classification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-010",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcWall",
+      "property_set": "Pset_WallCommon",
+      "property_name": "LoadBearing",
+      "operator": "exists",
+      "evidence_text": "Reference-template wall load-bearing classification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-011",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcWall",
+      "property_set": "Pset_WallCommon",
+      "property_name": "FireRating",
+      "operator": "exists",
+      "evidence_text": "Reference-template fire-rating availability criterion; no rating is asserted."
+    },
+    {
+      "rule_id": "SAM-AR-012",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcDoor",
+      "property_set": "Pset_DoorCommon",
+      "property_name": "FireRating",
+      "operator": "exists",
+      "evidence_text": "Reference-template door fire-rating availability criterion."
+    },
+    {
+      "rule_id": "SAM-AR-013",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcDoor",
+      "property_set": "Pset_DoorCommon",
+      "property_name": "IsExternal",
+      "operator": "exists",
+      "evidence_text": "Reference-template door classification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-014",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcDoor",
+      "property_set": "Pset_DoorCommon",
+      "property_name": "AccessibilityPerformance",
+      "operator": "exists",
+      "evidence_text": "Reference-template accessibility evidence criterion; customer scope required."
+    },
+    {
+      "rule_id": "SAM-AR-015",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcWindow",
+      "property_set": "Pset_WindowCommon",
+      "property_name": "IsExternal",
+      "operator": "exists",
+      "evidence_text": "Reference-template window classification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-016",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcWindow",
+      "property_set": "Pset_WindowCommon",
+      "property_name": "AcousticRating",
+      "operator": "exists",
+      "evidence_text": "Reference-template acoustic-rating availability criterion; no rating is asserted."
+    },
+    {
+      "rule_id": "SAM-AR-017",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcSlab",
+      "property_set": "Pset_SlabCommon",
+      "property_name": "LoadBearing",
+      "operator": "exists",
+      "evidence_text": "Reference-template slab classification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-018",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcSlab",
+      "property_set": "Pset_SlabCommon",
+      "property_name": "FireRating",
+      "operator": "exists",
+      "evidence_text": "Reference-template slab fire-rating availability criterion."
+    },
+    {
+      "rule_id": "SAM-AR-019",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcStair",
+      "property_set": "Pset_StairCommon",
+      "property_name": "IsExternal",
+      "operator": "exists",
+      "evidence_text": "Reference-template stair classification criterion."
+    },
+    {
+      "rule_id": "SAM-AR-020",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcRailing",
+      "property_set": "Pset_RailingCommon",
+      "property_name": "Height",
+      "operator": "gte",
+      "expected_value": 1.2,
+      "unit": "m",
+      "evidence_text": "Synthetic demo threshold only; it is not an SP/GOST claim.",
+      "instructions": "Replace with the customer-approved project criterion before pilot sign-off."
+    }
+  ]
+}

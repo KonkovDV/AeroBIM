@@ -17,22 +17,25 @@ AeroBIM validates building information models (IFC) against technical specificat
 | IFC property/quantity validation (IfcOpenShell) | ✅ |
 | IDS 1.0 spec validation (IfcTester) | ✅ |
 | Cross-document contradiction detection | ✅ |
-| Conflict taxonomy (`ConflictKind`: hard / unit-mismatch / ambiguous) | ✅ |
+| Conflict taxonomy (`ConflictKind`: hard / unit-mismatch / ambiguous assigned today) | ✅ subset |
 | Configurable contradiction severity policy | ✅ |
 | Drawing annotation ↔ IFC cross-validation | ✅ |
 | ISO 12006-3 tolerance algebra (ε-band) | ✅ |
 | Narrative text → requirements (deterministic regex; not in sign-off path) | ✅ |
 | Russian AEC extraction benchmark (10 docs, 50 requirements, CI F1 ≥ 0.70) | ✅ |
 | ISO 19650-lite context in reports (stage, revision, container) | ✅ |
-| Clash detection (IfcClash, optional `.[clash]` extra) | ✅ |
+| Clash detection (IfcClash, optional `.[clash]` extra) | ✅ with explicit `capabilities.clash`; install `.[clash]` for engine |
+| Report capability status (`ok`/`skipped`/`failed`) | ✅ FAILED capabilities force `summary.passed=false` |
 | BCF 2.1 export | ✅ |
 | BCF 3.0 export | ✅ Experimental |
 | Enterprise storage foundation (ObjectStore + TTL + Postgres index hook) | ✅ Foundation |
 | HTML / JSON report export | ✅ |
 | Browser IFC viewer (`web-ifc` + Three.js`) | ✅ |
 | 2D problem-zone overlay on persisted drawing evidence | ✅ |
-| Deterministic PDF / OCR drawing analysis | ✅ |
+| Deterministic PDF text extraction (PyMuPDF) | ✅ core dependency |
+| Image OCR drawing analysis (RapidOCR) | ✅ via optional `.[raster]` extra |
 | Advanced raster drawing analysis (optional port) | 🔜 Planned |
+| Frontend unit tests in main CI | ⚠️ Release-readiness / local only (see `frontend/`) |
 
 ## IFC Release Compatibility
 
@@ -53,7 +56,7 @@ See [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) for t
 |---|---|---|
 | BCF 2.1 | ✅ Stable | All export paths (`/export/bcf`); `markup.bcfzip` + viewpoint |
 | BCF 3.0 | ✅ Experimental | `GET /v1/reports/{id}/export/bcf?version=3` — BCF 3.0 ZIP; default stays 2.1 |
-| BCF API | 🔜 Roadmap | REST adapter for CDE / issue-tracker integration |
+| BCF API | ✅ Foundation | `POST /v1/reports/{id}/export/bcf-api/push` — OpenCDE BCF 3.0 topic push |
 
 ## Enterprise Storage Foundation
 
@@ -84,7 +87,7 @@ source .venv/bin/activate  # Linux/macOS
 # .venv\Scripts\activate   # Windows
 
 # Install
-pip install -e ".[dev,vision]"
+pip install -e ".[dev,raster]"
 
 # Optional extras
 # pip install -e ".[clash]"    # enable geometry clash detection
@@ -96,6 +99,10 @@ pytest tests -q
 
 # Extraction quality gate (Russian AEC corpus)
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
+python -m aerobim.tools.evaluate_detection_precision \
+  --labels ../samples/benchmarks/detection-precision/labels-synthetic.json \
+  --detections ../samples/benchmarks/detection-precision/detections-synthetic.json \
+  --min-precision 0.6 --min-recall 0.6 --min-f1 0.6
 
 # Seed one deterministic runtime smoke report
 python -m aerobim.tools.seed_smoke_report
@@ -166,8 +173,12 @@ Throughput and F1 figures are environment-specific; publish pack paths, CLI flag
 | `POST` | `/v1/analyze/project-package/reinforcement-digest` | Build OpenRebar provenance digest from canonical report |
 | `POST` | `/v1/analyze/project-package/submit` | Accept a same-process background analysis job for larger packages |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll async project-package job status |
+| `POST` | `/v1/uploads` | Multipart document ingest; returns storage-relative `path` for analyze |
 | `GET` | `/v1/reports` | List persisted reports with optional `project`, `discipline`, and `passed` filters |
 | `GET` | `/v1/reports/{id}` | Get report by ID |
+| `POST` | `/v1/reports/{id}/review-events` | Append HITL review telemetry (does not affect pass/fail) |
+| `GET` | `/v1/reports/{id}/review-events` | List review events for a report |
+| `GET` | `/v1/reports/{id}/review-kpi` | Aggregate triage/acceptance KPIs |
 | `GET` | `/v1/reports/{id}/source/ifc` | Download the report-scoped IFC source for browser viewing |
 | `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | Download a report-scoped drawing preview for 2D evidence overlays |
 | `GET` | `/v1/reports/{id}/export/json` | Download JSON export |
@@ -210,7 +221,8 @@ presentation/  FastAPI HTTP API, correlation middleware
 
 Infrastructure now also includes an artifact `ObjectStore` seam plus an optional Postgres summary-index adapter for Iteration B.1.
 
-**9 domain ports** → **12 infrastructure adapters** → **13 DI tokens** — all wired in a single composition root (`bootstrap_container()`).
+**20 domain ports** → **30 infrastructure adapters** → **28 DI tokens** — all wired in a single composition root (`bootstrap_container()`).
+Report payloads include an explicit `capabilities` object (`ok` / `skipped` / `failed`) so optional engines (clash, IDS, unit scale, raster, schema) cannot silently look like a clean PASS. **Any `FAILED` capability forces `summary.passed=false`.**
 
 ## Configuration
 
@@ -220,11 +232,14 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 |---|---|---|
 | `AEROBIM_HOST` | `127.0.0.1` | Bind address |
 | `AEROBIM_PORT` | `8080` | Bind port |
-| `AEROBIM_DEBUG` | `true` | Debug mode |
+| `AEROBIM_DEBUG` | `false` | Debug mode (also enables localhost CORS defaults when origins unset) |
 | `AEROBIM_STORAGE_DIR` | `var/reports` | Report persistence directory |
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
-| `AEROBIM_ENV` | `development` | Environment name |
-| `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Optional Bearer token required for all `/v1/*` endpoints |
+| `AEROBIM_ENV` | `development` | Environment name; non-dev requires bearer/OIDC (fail-closed) |
+| `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Bearer for `/v1/*`; required unless `AEROBIM_ALLOW_ANONYMOUS_DEV` |
+| `AEROBIM_ALLOW_ANONYMOUS_DEV` | `false` | Opt-in anonymous API in development/test only (`from_env`) |
+| `AEROBIM_CLASH_AFFECTS_PASS` | `false` | When `true`, hard clashes fail the report (`summary.passed`) |
+| `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC size (256 MiB, aligned with bSI Validation Service) |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_DB_URL` | *(unset)* | Optional Postgres URL for report summary indexing |
 | `AEROBIM_REPORT_TTL_DAYS` | *(unset)* | Optional TTL for persisted report payloads; unset means unlimited retention |
@@ -239,9 +254,9 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 
 ```text
 aerobim/
-├── backend/                 # Python FastAPI backend (~1.9K LOC src, ~1.8K LOC tests)
+├── backend/                 # Python FastAPI backend (~7.6K LOC src, ~7.0K LOC tests)
 │   ├── src/aerobim/         # Source: core → domain → application → infrastructure → presentation
-│   ├── tests/               # Backend test suite (290+ tests; 2 optional skips without extras)
+│   ├── tests/               # Backend test suite (340+ tests; optional skips without extras)
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
 ├── docs/                    # Architecture reference, extraction dossier, backlog

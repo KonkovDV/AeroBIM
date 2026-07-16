@@ -56,3 +56,13 @@ When reporting, include:
 - secret scanning and push protection enabled
 - code scanning (CodeQL or equivalent) enabled
 - protected default branch with pull-request review gates
+
+## Deployment Hardening (Wave 0–2)
+
+- Non-`development`/`test` environments **require** `AEROBIM_API_BEARER_TOKEN` and/or OIDC (`AEROBIM_OIDC_ISSUER` + audience + JWKS) at startup and on every `/v1/*` call (503/401 fail-closed).
+- OIDC JWT validation pins algorithms (RS256), and verifies `iss`, `aud`, and `exp` (2026 FastAPI/OIDC practice).
+- Storage path resolution rejects symlinks and path escapes under `AEROBIM_STORAGE_DIR`.
+- IFC inputs larger than `AEROBIM_MAX_IFC_BYTES` (default 256 MiB) are rejected with HTTP 413.
+- Optional validation engines publish `report.capabilities` so silent empty clash/IDS results cannot look like PASS.
+- Frontend sends `VITE_AEROBIM_API_BEARER_TOKEN` as `Authorization: Bearer …` for API and export downloads.
+- BCF API push uses OpenCDE Foundation Bearer tokens only; no proprietary hub protocol.

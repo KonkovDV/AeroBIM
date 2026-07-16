@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.0.0"
-last_updated: "2026-05-21"
+version: "1.1.0"
+last_updated: "2026-07-11"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -11,6 +11,17 @@ tags: [aerobim, pilot, claims, evidence]
 This document separates **verified repository evidence** from **roadmap intent** for pilot and accelerator communications.
 
 **Stakeholder distribution:** share with [`pilot-start-package-2026.md`](pilot-start-package-2026.md) at pilot kickoff.
+**TZ preparation SSOT:** [`tz/README.md`](tz/README.md).
+
+## TZ MVP scope (honest framing)
+
+| Scope | In MVP sign-off | Outside sign-off |
+|-------|-----------------|------------------|
+| Deterministic IFC/IDS/cross-doc/clash + OCR baseline + template remarks + HITL | Yes | — |
+| Multipart upload + remarks UI edit (P0) | Target for TZ demo | — |
+| CV layout models, LLM remarks/IDS, DWG entity CAD | — | Advisory / Phase 2+ |
+| “AI reads drawings like a human” / unsupervised VLM drawing literacy | — | **Out of pilot acceptance** (world evidence July 2026) |
+| Clash / inconsistency **>90%** accuracy | — | Only after labeled corpus adjudication |
 
 ## Verified (may be claimed with evidence)
 
@@ -25,6 +36,30 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Extraction quality metrics (RU fixtures) | `evaluate_extraction` tool, macro F1 ≥ 0.70 on ground truth, CI gate |
 | Samolet-style priority profile (optional) | `AEROBIM_PRIORITY_PROFILE=samolet` boosts fire/cross-doc triage |
 | Package SLA on pilot fixture pack | `measure_package_sla` — see `docs/evidence/samolet-sla-*.json` (fixture only) |
+| Fixture demo path upload→analyze→BCF structural smoke (Track A5) | `aerobim-run-demo-path` / `run_demo_path` + [`ops/demo-path-runbook-2026.md`](ops/demo-path-runbook-2026.md) |
+| Fail-closed API auth outside development | `AEROBIM_API_BEARER_TOKEN` and/or OIDC; frontend Bearer support |
+| Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,…}` ∈ ok/skipped/failed; **FAILED blocks `summary.passed`** |
+| JSON norm / rule-pack loader | `NormRulePackLoader` + residential AR reference template (synthetic-template only) |
+| Deterministic PD↔RD section pairing scaffold | `SectionDiffAnalyzer` on normalized section JSON (one discipline pair) |
+| Detection precision harness (exact TP/FP/FN) | `aerobim-evaluate-detection-precision` + synthetic contract fixture + protocol gate |
+| Typical-errors catalog scaffold ≥20 patterns | `samples/benchmarks/samolet-typical-errors-catalog.json` + mapping tool |
+| Schema-valid IFC pre-gate available | `BasicIfcSchemaValidator` + `capabilities.ifc_schema` |
+| IDS document audit before model check | `XmlIdsDocumentAuditor` + `AEROBIM-IDS-AUDIT` |
+| BCF API 3.0 topic push (OpenCDE) | `POST .../export/bcf-api/push` with hub Bearer token |
+| ISO 19650-lite CDE state on reports | `iso19650` block on public report JSON |
+| OIDC JWT alongside static bearer | `AEROBIM_OIDC_*` + enterprise `PyJWT` |
+| Optional bSI / local schema certificate id | `schema_validation_request_id` + `capabilities.ifc_schema.external_ref` |
+| Postgres/filesystem filtered report index | `GET /v1/reports?project=&discipline=&passed=` |
+| Revit thin-client deep-link helper | `clients/revit-plugin/scripts/export_and_open_report.py` + UI `?report=` |
+| HITL review events / KPI | `POST/GET .../review-events`, `GET .../review-kpi` |
+| LOIN information levels on issues | `loin_information_level` ∈ geometry/alphanumeric/documentation |
+| Spatial predicates separate from IDS | `FindingCategory.SPATIAL` + `SPATIAL-*` issues from clash results |
+| EN structured extraction corpus | `english-aec-ground-truth.json` (macro F1 1.0 on structured fixtures) |
+| Ablation paper table | `docs/evidence/ablation-study-paper-table-2026.md` |
+| TZ Response Pack (architecture/build/presentation TBD fills) | [`docs/tz/README.md`](tz/README.md) |
+| Multipart document upload | `POST /v1/uploads` → storage-relative path |
+| EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |
+| Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark`) |
 
 ## Planned (do not claim as deployed)
 
@@ -32,9 +67,17 @@ This document separates **verified repository evidence** from **roadmap intent**
 |---|---|
 | Optional raster/PDF drawing path (OCR baseline) | `RasterDrawingAnalyzer` port — deterministic today |
 | Non-deterministic text extraction training | Not in pilot sign-off path |
-| Full OIDC multi-tenant auth | Post-pilot (static bearer sufficient for pilot VM) |
-| arq/Redis async queue | Post-pilot (in-process jobs sufficient) |
-| BCF API / OpenCDE integration | Post-pilot |
+| Full OIDC multi-tenant auth | OIDC JWT validation available; full SSO/BFF still post-pilot |
+| arq/Redis async queue | Redis job store available when `AEROBIM_REDIS_URL` set; arq workers still post-pilot |
+| BCF API / OpenCDE integration | Topic push foundation live; full hub sync / Documents API post-pilot |
+| Live bSI Validation Service submit in pilot | Local cert / mocked client tested; live hub needs credentials |
+| LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |
+| True computer vision for drawings | Not implemented; OCR baseline ≠ CV |
+| Native DWG/DXF CAD entity parse | Missing — Phase 2 thin adapter |
+| Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
+| Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
+| Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |
+| System-aware MEP clash (routing/clearances) | Explicit gap `MEP-CLASH-001`; generic clash only |
 | Production rollout / confirmed revenue | Requires customer documents outside repo |
 
 ## Non-claims (explicit boundaries)
@@ -43,6 +86,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 2. AeroBIM does **not** assert full regulatory code compliance across all document types.
 3. AeroBIM does **not** claim to outperform Solibri globally — only a bounded open pilot path.
 4. Non-deterministic text extraction is **not** used for pilot sign-off; deterministic regex path meets F1 gates in CI.
+5. Optional LLM **IDS assist** (if enabled later) is **advisory only** and must never affect `summary.passed` without human-in-the-loop.
+6. TZ wording «точность >90%» is an **evaluation target**, not a verified product claim, until precision/recall is published from a labeled customer corpus.
 
 ## Reproducibility baseline
 
@@ -50,11 +95,15 @@ This document separates **verified repository evidence** from **roadmap intent**
 cd backend
 python -m venv .venv-pilot
 .venv-pilot\Scripts\activate   # Windows
-pip install -e ".[dev,vision]"
+pip install -e ".[dev,raster]"
 python -m ruff format --check src tests
 python -m ruff check src tests
 python -m mypy src
 pytest tests -q
+python -m aerobim.tools.evaluate_detection_precision \
+  --labels ../samples/benchmarks/detection-precision/labels-synthetic.json \
+  --detections ../samples/benchmarks/detection-precision/detections-synthetic.json \
+  --min-precision 0.6 --min-recall 0.6 --min-f1 0.6
 python -m aerobim.tools.export_runtime_baseline
 ```
 
@@ -66,3 +115,10 @@ Keep aligned with:
 
 - [partners/TECHLAB_SAMOLET_APPLICATION_2026.md](partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
 - [README.md](../README.md) Scientific Reporting Standard section
+- [rule-packs/README.md](rule-packs/README.md)
+- [section-pairing/README.md](section-pairing/README.md)
+- [evaluation/DETECTION_PRECISION_PROTOCOL_2026.md](evaluation/DETECTION_PRECISION_PROTOCOL_2026.md)
+- [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
+- [evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md](evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md)
+7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer”. See [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+8. General-purpose multimodal models must not be marketed as Task 07 sign-off for symbol counting or full PD/RD understanding.

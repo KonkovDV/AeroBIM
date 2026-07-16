@@ -17,11 +17,18 @@ class MapTypicalErrorsTests(unittest.TestCase):
             repo_root / "samples" / "requirements",
         )
         self.assertEqual(payload["artifact_type"], "samolet_typical_errors_mapping")
-        self.assertGreaterEqual(payload["patterns_with_rule_match"], 3)
+        self.assertEqual(payload["patterns_total"], 20)
+        self.assertGreaterEqual(payload["patterns_with_rule_match"], 8)
+        self.assertEqual(payload["patterns_with_explicit_gap"], 1)
+        self.assertEqual(payload["mapping_ratio"], 1.0)
+        self.assertEqual(payload["customer_confirmed_patterns"], 0)
         rows = payload["rows"]
         fire_row = next(r for r in rows if r["error_id"] == "SAM-TYP-001")
         self.assertEqual(fire_row["status"], "covered")
         self.assertTrue(fire_row["matched_rule_ids"])
+        mep_gap = next(r for r in rows if r["error_id"] == "SAM-TYP-020")
+        self.assertEqual(mep_gap["status"], "gap")
+        self.assertEqual(mep_gap["roadmap_ref"], "MEP-CLASH-001")
 
     def test_cli_writes_json(self) -> None:
         import tempfile

@@ -1,24 +1,39 @@
-# Revit Plugin Boundary
+# Revit thin client — package export + report deep-link
 
-The Revit client is intentionally thin.
+Boundary: **no validation logic in Revit**. The add-in (or this helper) only:
 
-It should not own validation logic. It should:
+1. assembles a project package (IFC + optional IDS/specs paths);
+2. calls AeroBIM `POST /v1/analyze/project-package`;
+3. opens the review UI with `?report={report_id}`.
 
-- authenticate to the backend;
-- fetch findings assigned to a project / model;
-- focus the author on affected elements;
-- push comments, approvals, and resolution state back.
+## Quick path (no Revit API required)
 
-## Why This Boundary Matters
+```powershell
+cd clients/revit-plugin
+python scripts/export_and_open_report.py `
+  --api-base http://127.0.0.1:8080 `
+  --ui-base http://127.0.0.1:5173 `
+  --ifc C:\models\pilot.ifc `
+  --ids C:\models\pilot.ids `
+  --project "Pilot Tower" `
+  --bearer $env:AEROBIM_API_BEARER_TOKEN
+```
 
-If the plugin becomes the main runtime, the product collapses into a vendor-specific tool.
+The script prints a deep-link URL and optionally opens the default browser.
 
-`AeroBIM` keeps validation and report truth in the backend. The Revit add-in is only one delivery and remediation surface.
+## Deep-link contract
 
-## First Plugin Milestones
+| Query param | Effect |
+|-------------|--------|
+| `report` | Select this report id in the review shell |
+| `project` / `discipline` / `status` | Existing list filters (optional) |
 
-1. sign-in and project binding
-2. issue list pull
-3. element focus / isolate
-4. status and comment pushback
-5. BCF-linked roundtrip where applicable
+## First plugin milestones (unchanged)
+
+1. sign-in and project binding  
+2. issue list pull  
+3. element focus / isolate  
+4. status and comment pushback  
+5. BCF-linked roundtrip where applicable  
+
+Validation and report truth stay in the backend.

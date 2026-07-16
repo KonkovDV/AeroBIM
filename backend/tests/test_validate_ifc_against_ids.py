@@ -106,6 +106,44 @@ class ValidateIfcAgainstIdsUseCaseTests(unittest.TestCase):
         self.assertEqual(store.report.project_name, "Residential Tower Alpha")
         self.assertEqual(store.report.discipline, "architecture")
 
+    def test_failed_ids_capability_blocks_pass_without_errors(self) -> None:
+        class EmptyExtractor:
+            def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
+                return [
+                    ParsedRequirement(
+                        rule_id="REQ-001",
+                        ifc_entity="IFCWALL",
+                        property_set="Pset_WallCommon",
+                        property_name="FireRating",
+                        expected_value="REI60",
+                    )
+                ]
+
+        class CleanValidator:
+            def validate(self, _ifc_path: Path, _requirements: list[ParsedRequirement]):
+                return []
+
+        store = FakeStore()
+        use_case = ValidateIfcAgainstIdsUseCase(
+            EmptyExtractor(),
+            CleanValidator(),
+            store,
+            ids_validator=None,
+        )
+        report = use_case.execute(
+            ValidationRequest(
+                request_id="req-ids-cap",
+                ifc_path=Path("sample.ifc"),
+                requirement_source=RequirementSource(
+                    text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+                ),
+                ids_path=Path("rules.ids"),
+            )
+        )
+        self.assertEqual(report.capabilities.ids.status.value, "failed")
+        self.assertEqual(report.summary.error_count, 0)
+        self.assertFalse(report.summary.passed)
+
 
 if __name__ == "__main__":
     unittest.main()

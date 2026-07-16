@@ -32,4 +32,4 @@ Canonical text: [`.github/repository-metadata.md`](../../.github/repository-meta
 
 ## Optional adapters
 
-Pilot default: `pip install -e ".[dev,vision]"` only. Document `.[clash]` / `.[docling]` smoke outcomes in [`pilot-weekly-log-2026.md`](../pilot-weekly-log-2026.md) per [`optional-adapters-smoke-2026.md`](../optional-adapters-smoke-2026.md).
+Pilot default: `pip install -e ".[dev,raster]"` only. Document `.[clash]` / `.[docling]` smoke outcomes in [`pilot-weekly-log-2026.md`](../pilot-weekly-log-2026.md) per [`optional-adapters-smoke-2026.md`](../optional-adapters-smoke-2026.md).

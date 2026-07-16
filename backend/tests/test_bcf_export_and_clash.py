@@ -295,21 +295,28 @@ class ClashDetectorPortTests(unittest.TestCase):
             detector.detect(Path("/nonexistent/model.ifc"))
 
     def test_clash_detector_graceful_without_ifcclash(self) -> None:
-        """When ifcclash is not installed, detect() returns empty list."""
+        """When ifcclash is not installed, detect() raises ClashCapabilityError(skipped)."""
+        from aerobim.domain.errors import ClashCapabilityError
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
         detector = IfcClashDetector()
-        # Use one of our real IFC fixtures
         ifc_path = (
             Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
         )
         if not ifc_path.exists():
             self.skipTest("IFC fixture not available")
-        results = detector.detect(ifc_path)
-        # ifcclash not installed → returns empty list (graceful fallback)
+
+        try:
+            results = detector.detect(ifc_path)
+        except ClashCapabilityError as exc:
+            self.assertEqual(exc.status, "skipped")
+            return
+
+        # ifcclash installed → real list result
         self.assertIsInstance(results, list)
 
-    def test_clash_detector_runtime_failure_falls_back_to_empty(self) -> None:
+    def test_clash_detector_runtime_failure_raises_capability_error(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
         detector = IfcClashDetector()
@@ -322,9 +329,11 @@ class ClashDetectorPortTests(unittest.TestCase):
         with patch.object(
             detector, "_run_clash_detection", side_effect=AssertionError("geom init failed")
         ):
-            results = detector.detect(ifc_path)
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector.detect(ifc_path)
 
-        self.assertEqual(results, [])
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("geom init failed", ctx.exception.reason)
 
     def test_clash_detector_cleans_temporary_output_directory(self) -> None:
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector

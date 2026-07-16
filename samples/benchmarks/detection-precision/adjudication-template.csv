@@ -1,0 +1,9 @@
+finding_id,case_id,finding_class,rule_id,target_ref,element_guid,match_key,adjudicator_id,verdict,notes,timestamp
+EXAMPLE-AR-001-01,EXAMPLE-AR-001,cross-document,SECTION-PAIR-AR-APARTMENT-AREA-TOTAL,APT-01,,,engineer-a,TP,PD 75 m2 vs RD 74.5 m2 real discrepancy,2026-07-11T10:00:00+03:00
+EXAMPLE-AR-001-01,EXAMPLE-AR-001,cross-document,SECTION-PAIR-AR-APARTMENT-AREA-TOTAL,APT-01,,,engineer-b,TP,agree real,2026-07-11T10:05:00+03:00
+EXAMPLE-AR-001-02,EXAMPLE-AR-001,cross-document,SECTION-PAIR-AR-FACADE-MATERIAL,FACADE-TYPE-F1,,,engineer-a,FP,facade change was approved in RFI-12,2026-07-11T10:10:00+03:00
+EXAMPLE-AR-001-02,EXAMPLE-AR-001,cross-document,SECTION-PAIR-AR-FACADE-MATERIAL,FACADE-TYPE-F1,,,engineer-b,FP,agree not a defect,2026-07-11T10:12:00+03:00
+EXAMPLE-AR-001-03,EXAMPLE-AR-001,missing-element,SECTION-PAIR-AR-DOOR-CLEAR-WIDTH,DOOR-TYPE-D1,,,engineer-a,FN,door width criterion missing in RD; tool did not flag,2026-07-11T10:15:00+03:00
+EXAMPLE-AR-001-03,EXAMPLE-AR-001,missing-element,SECTION-PAIR-AR-DOOR-CLEAR-WIDTH,DOOR-TYPE-D1,,,engineer-b,FN,agree missed,2026-07-11T10:16:00+03:00
+EXAMPLE-AR-001-04,EXAMPLE-AR-001,clash,SPATIAL-HARD-CLASH,,,GUID-A|GUID-B,engineer-a,TP,hard clash confirmed on site model,2026-07-11T10:20:00+03:00
+EXAMPLE-AR-001-04,EXAMPLE-AR-001,clash,SPATIAL-HARD-CLASH,,,GUID-A|GUID-B,engineer-b,FP,disagreement — clearance acceptable,2026-07-11T10:22:00+03:00

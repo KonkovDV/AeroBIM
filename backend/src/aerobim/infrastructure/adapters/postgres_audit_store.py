@@ -1,18 +1,25 @@
 from __future__ import annotations
 
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
-from aerobim.domain.models import ReportSummaryEntry, ValidationReport
+from aerobim.domain.models import ReportListFilters, ReportSummaryEntry, ValidationReport
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
 
-class PostgresAuditStore:
-    """Postgres-backed report summary index with filesystem/object payload fallback.
+def _run_coro(coro):
+    """Run an async coroutine from sync code without nesting ``asyncio.run`` unsafely."""
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coro)
 
-    This foundation pass keeps full report payload round-tripping in the existing
-    JSON/object store path while indexing report summaries in Postgres when the
-    optional enterprise dependencies are installed.
-    """
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        return executor.submit(asyncio.run, coro).result()
+
+
+class PostgresAuditStore:
+    """Postgres-backed report summary index with filesystem/object payload fallback."""
 
     def __init__(
         self,
@@ -69,18 +76,43 @@ class PostgresAuditStore:
                 discipline = EXCLUDED.discipline
             """
         )
-        asyncio.run(self._init_schema())
+        self._list_sql = text(
+            """
+            SELECT
+                report_id,
+                request_id,
+                created_at,
+                passed,
+                issue_count,
+                project_name,
+                discipline
+            FROM reports
+            WHERE
+                (:project IS NULL OR lower(coalesce(project_name, '')) LIKE :project_like)
+                AND (:discipline IS NULL OR lower(coalesce(discipline, '')) LIKE :discipline_like)
+                AND (:passed IS NULL OR passed = :passed)
+            ORDER BY created_at DESC
+            """
+        )
+        _run_coro(self._init_schema())
 
     def save(self, report: ValidationReport) -> str:
         report_id = self._payload_store.save(report)
-        asyncio.run(self._index_report(report))
+        _run_coro(self._index_report(report))
         return report_id
 
     def get(self, report_id: str) -> ValidationReport | None:
         return self._payload_store.get(report_id)
 
-    def list_reports(self) -> list[ReportSummaryEntry]:
-        return self._payload_store.list_reports()
+    def list_reports(
+        self,
+        filters: ReportListFilters | None = None,
+    ) -> list[ReportSummaryEntry]:
+        try:
+            return _run_coro(self._list_reports_async(filters))
+        except Exception:
+            # Index unavailable — fall back to payload store filters.
+            return self._payload_store.list_reports(filters)
 
     async def _init_schema(self) -> None:
         async with self._engine.begin() as conn:
@@ -100,3 +132,36 @@ class PostgresAuditStore:
                     "discipline": report.discipline,
                 },
             )
+
+    async def _list_reports_async(
+        self,
+        filters: ReportListFilters | None,
+    ) -> list[ReportSummaryEntry]:
+        project = filters.project.strip() if filters and filters.project else None
+        discipline = filters.discipline.strip() if filters and filters.discipline else None
+        passed = filters.passed if filters else None
+        async with self._engine.connect() as conn:
+            rows = await conn.execute(
+                self._list_sql,
+                {
+                    "project": project,
+                    "project_like": f"%{project.lower()}%" if project else "%",
+                    "discipline": discipline,
+                    "discipline_like": f"%{discipline.lower()}%" if discipline else "%",
+                    "passed": passed,
+                },
+            )
+            entries: list[ReportSummaryEntry] = []
+            for row in rows.mappings():
+                entries.append(
+                    ReportSummaryEntry(
+                        report_id=str(row["report_id"]),
+                        request_id=str(row["request_id"]),
+                        created_at=str(row["created_at"]),
+                        passed=bool(row["passed"]),
+                        issue_count=int(row["issue_count"]),
+                        project_name=row["project_name"],
+                        discipline=row["discipline"],
+                    )
+                )
+            return entries

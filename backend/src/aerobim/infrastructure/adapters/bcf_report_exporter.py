@@ -74,6 +74,11 @@ def _bcf_version_xml() -> str:
     return _to_xml_str(root)
 
 
+def collect_bcf_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
+    """Public topic enumeration shared by BCF ZIP export and BCF API push."""
+    return _collect_topics(report)
+
+
 def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
     topics: list[_BcfTopicPayload] = []
 

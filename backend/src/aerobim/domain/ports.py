@@ -4,19 +4,24 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Protocol
 
+from aerobim.domain.bcf_api import BcfApiPushResult
 from aerobim.domain.models import (
     AnalyzeProjectPackageJob,
     ClashResult,
     DrawingAnnotation,
     DrawingSource,
     GeneratedRemark,
+    NormRulePack,
     ParsedRequirement,
+    ReportListFilters,
     ReportSummaryEntry,
     RequirementSource,
+    ReviewEvent,
     ValidationIssue,
     ValidationReport,
     ValidationRequest,
 )
+from aerobim.domain.section_pairing import SectionPairingReport
 
 
 class RequirementExtractor(Protocol):
@@ -25,6 +30,29 @@ class RequirementExtractor(Protocol):
 
 class NarrativeRuleSynthesizer(Protocol):
     def synthesize(self, source: RequirementSource) -> list[ParsedRequirement]: ...
+
+
+class NormRulePackLoader(Protocol):
+    """Load and validate an agreed or explicitly non-approved rule pack."""
+
+    def load(self, pack_path: Path) -> NormRulePack: ...
+
+
+class SectionDiffAnalyzer(Protocol):
+    """Deterministically compare one paired PD/RD discipline section."""
+
+    def compare(self, pd_section_path: Path, rd_section_path: Path) -> list[ValidationIssue]: ...
+
+    def analyze(
+        self, pd_section_path: Path, rd_section_path: Path
+    ) -> SectionPairingReport:
+        """Compare a PD/RD pair and return findings plus coverage metadata.
+
+        ``compare`` remains the minimal findings-only contract; ``analyze``
+        additionally surfaces the resolved canonical discipline and canonical-key
+        coverage so the capability status can stay honest about what was mapped.
+        """
+        ...
 
 
 class DrawingAnalyzer(Protocol):
@@ -68,7 +96,24 @@ class AuditReportStore(Protocol):
 
     def get(self, report_id: str) -> ValidationReport | None: ...
 
-    def list_reports(self) -> list[ReportSummaryEntry]: ...
+    def list_reports(
+        self,
+        filters: ReportListFilters | None = None,
+    ) -> list[ReportSummaryEntry]: ...
+
+
+class ReviewEventStore(Protocol):
+    def append(self, event: ReviewEvent) -> str: ...
+
+    def list_for_report(self, report_id: str) -> list[ReviewEvent]: ...
+
+
+class BsiValidationService(Protocol):
+    """Optional remote IFC schema conformity submission (bSI Validation Service)."""
+
+    def submit(self, ifc_path: Path) -> str:
+        """Return external validation request id (``public_id``)."""
+        ...
 
 
 class ObjectStore(Protocol):
@@ -109,3 +154,26 @@ class ClashDetector(Protocol):
     """Domain port for BIM clash/collision detection."""
 
     def detect(self, ifc_path: Path) -> list[ClashResult]: ...
+
+
+class IfcSchemaValidator(Protocol):
+    """Pre-gate: SPF / schema / implementer-agreement checks before project rules."""
+
+    def validate_schema(self, ifc_path: Path) -> list[ValidationIssue]: ...
+
+
+class IdsDocumentAuditor(Protocol):
+    """Pre-gate: validate an IDS document before model checking."""
+
+    def audit(self, ids_path: Path) -> list[ValidationIssue]: ...
+
+
+class BcfApiClient(Protocol):
+    """OpenCDE BCF API 3.0 client — push coordination topics to a remote hub."""
+
+    def push_report_topics(
+        self,
+        report: ValidationReport,
+        *,
+        project_id: str,
+    ) -> BcfApiPushResult: ...
