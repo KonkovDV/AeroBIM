@@ -1,0 +1,11 @@
+#!/bin/sh
+# Strip AI co-author trailers so GitHub Contributors stays human-only.
+MSG_FILE="$1"
+if [ -z "$MSG_FILE" ] || [ ! -f "$MSG_FILE" ]; then
+  exit 0
+fi
+TMP_FILE="${MSG_FILE}.strip"
+# Portable filter without requiring python on PATH inside hooks.
+awk 'BEGIN{IGNORECASE=1} !/^[[:space:]]*Co-authored-by:/ {print}' "$MSG_FILE" > "$TMP_FILE"
+mv "$TMP_FILE" "$MSG_FILE"
+exit 0

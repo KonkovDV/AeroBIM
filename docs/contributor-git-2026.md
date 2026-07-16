@@ -42,9 +42,19 @@ If older commits already contain `Co-authored-by:`:
 
 ```powershell
 $env:FILTER_BRANCH_SQUELCH_WARNING = "1"
-git filter-branch -f --msg-filter "python scripts/strip_coauthor_msgfilter.py" -- main
+# Use an absolute path: filter-branch checkouts lack scripts/ on early commits.
+git filter-branch -f --msg-filter "python C:/plans/AeroBIM/scripts/strip_coauthor_msgfilter.py" -- main
+git update-ref -d refs/original/refs/heads/main
 git push --force-with-lease origin main
 ```
+
+Also enable the repo commit-msg hook (strips `Co-authored-by:` before the commit is recorded):
+
+```powershell
+git config core.hooksPath .githooks
+```
+
+In Cursor: disable Agent Attribution / co-author injection in Settings so trailers are not re-added after commit.
 
 Coordinate force-push with the branch owner first.
 
