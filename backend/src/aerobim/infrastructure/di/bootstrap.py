@@ -10,6 +10,9 @@ from aerobim.application.use_cases.analyze_project_package_jobs import (
     SubmitAnalyzeProjectPackageJobUseCase,
 )
 from aerobim.application.use_cases.apply_norm_rule_hitl_event import ApplyNormRuleHitlEventUseCase
+from aerobim.application.use_cases.compile_requirements_to_ids import (
+    CompileRequirementsToIdsUseCase,
+)
 from aerobim.application.use_cases.push_report_to_bcf_api import PushReportToBcfApiUseCase
 from aerobim.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
 from aerobim.core.config.settings import Settings
@@ -23,6 +26,9 @@ from aerobim.infrastructure.adapters.bsi_validation_service import (
     HttpBsiValidationService,
     LocalSchemaPackCertificate,
 )
+from aerobim.infrastructure.adapters.deterministic_requirement_to_ids_compiler import (
+    DeterministicRequirementToIdsCompiler,
+)
 from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
     DoclingOfficeDocumentIngestor,
 )
@@ -31,6 +37,9 @@ from aerobim.infrastructure.adapters.docling_requirement_extractor import (
 )
 from aerobim.infrastructure.adapters.ezdxf_cad_model_ingestor import EzdxfCadModelIngestor
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+from aerobim.infrastructure.adapters.filesystem_norm_corpus_retriever import (
+    FilesystemNormCorpusRetriever,
+)
 from aerobim.infrastructure.adapters.filesystem_review_event_store import FilesystemReviewEventStore
 from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
@@ -187,6 +196,28 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         Tokens.MULTIMODAL_DRAWING_PIPELINE,
         lambda current: OcrFallbackMultimodalDrawingPipeline(
             raster_analyzer=current.resolve(Tokens.RASTER_DRAWING_ANALYZER)
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.REQUIREMENT_TO_IDS_COMPILER,
+        lambda current: DeterministicRequirementToIdsCompiler(
+            requirement_extractor=current.resolve(Tokens.REQUIREMENT_EXTRACTOR)
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.NORM_CORPUS_RETRIEVER,
+        lambda current: FilesystemNormCorpusRetriever(
+            corpus_roots=_default_norm_corpus_roots(current.resolve(Tokens.SETTINGS))
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.COMPILE_REQUIREMENTS_TO_IDS_USE_CASE,
+        lambda current: CompileRequirementsToIdsUseCase(
+            compiler=current.resolve(Tokens.REQUIREMENT_TO_IDS_COMPILER),
+            norm_retriever=current.resolve(Tokens.NORM_CORPUS_RETRIEVER),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -358,6 +389,19 @@ def _resolve_default_norm_pack_path(settings: Settings) -> Path | None:
     if not settings.norm_rule_pack_path:
         return None
     return resolve_storage_path(settings.norm_rule_pack_path, base=settings.storage_dir)
+
+
+def _default_norm_corpus_roots(settings: Settings) -> list[Path]:
+    """Local corpus roots for keyword NormCorpusRetriever (advisory)."""
+
+    repo_root = Path(__file__).resolve().parents[5]
+    roots = [
+        settings.storage_dir / "norm-corpus",
+        repo_root / "samples" / "tz-appendix" / "03-standards",
+        repo_root / "samples" / "specifications",
+        repo_root / "samples" / "requirements",
+    ]
+    return [path for path in roots if path.exists()] or [settings.storage_dir / "norm-corpus"]
 
 
 def _build_object_store(settings: Settings):

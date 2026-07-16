@@ -31,6 +31,7 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationRequest,
 )
+from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
 from aerobim.domain.section_pairing import SectionPairingReport
 
 
@@ -255,3 +256,20 @@ class MultimodalDrawingPipeline(Protocol):
         *,
         mode: Literal["auto", "ocr_only", "detector_vlm"] = "auto",
     ) -> MultimodalDrawingResult: ...
+
+
+class RequirementToIdsCompiler(Protocol):
+    """TZ/requirements → draft IDS 1.0 XML (advisory; never auto sign-off)."""
+
+    def compile(self, source: RequirementSource) -> IdsCompileDraft: ...
+
+    def compile_requirements(
+        self,
+        requirements: Sequence[ParsedRequirement],
+    ) -> IdsCompileDraft: ...
+
+
+class NormCorpusRetriever(Protocol):
+    """Keyword/RAG-style retrieve over local norm corpus; citations required."""
+
+    def retrieve(self, query: str, *, top_k: int = 8) -> list[NormPassage]: ...
