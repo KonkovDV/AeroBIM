@@ -29,6 +29,21 @@ The product is meant to:
 9. export issue packs for review and coordination;
 10. support browser review and thin authoring-side roundtrip later.
 
+## Modular monolith — four contours (Task 07 architecture)
+
+One process, four explicit contours with ports as boundaries
+(`aerobim.domain.architecture.CONTOUR_PORTS`):
+
+1. **INGESTION** — normalize IFC/IDS/PDF/drawings/TZ/calcs → identities + artifacts  
+2. **DETERMINISTIC VALIDATION** — only contour that may set `summary.passed`  
+3. **AI ADVISORY** — CV/LLM/VLM/IDS-assist; may not write `passed`  
+4. **EVIDENCE & REPORTING** — provenance, BCF, HITL, KPI, precision claims  
+
+Flow: INGESTION → VALIDATION → (ADVISORY parallel, read-only) → EVIDENCE.
+
+Red-team seams: `PrecisionClaim` (R1/R4), `EvidenceProvenance` (R2),
+`export_runtime_baseline` (R5), `generate_tz_matrix_status` (R3).
+
 ## What The Product Is Not
 
 - not a full CDE;

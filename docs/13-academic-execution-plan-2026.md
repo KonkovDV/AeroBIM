@@ -8,7 +8,8 @@ tags: [aerobim, plan, academic, openBIM, roadmap, pilot]
 
 # AeroBIM Academic Execution Plan 2026
 
-Formal roadmap derived from the April 2026 external academic audit of **KonkovDV/AeroBIM**.
+Formal roadmap derived from the April 2026 **internal self-audit** of **KonkovDV/AeroBIM**
+(author_relationship=self; not an independent/external audit).
 Structured into three delivery iterations aligned with (A) production hygiene and current
 openBIM standards, (B) enterprise-scale infrastructure, and (C) research-grade validation.
 

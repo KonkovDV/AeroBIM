@@ -1,0 +1,105 @@
+{
+  "artifact_type": "aerobim_tz_matrix_status",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-16T20:48:33.582084+00:00",
+  "author_relationship": "self",
+  "corpus_kind": "fixture",
+  "customer_corpus_present": false,
+  "capabilities_snapshot": {
+    "clash": {
+      "status": "skipped",
+      "reason": "clash detection not evaluated",
+      "external_ref": null
+    },
+    "ids": {
+      "status": "skipped",
+      "reason": "IDS validation not requested",
+      "external_ref": null
+    },
+    "ifc_validation": {
+      "status": "skipped",
+      "reason": "IFC property validation not evaluated",
+      "external_ref": null
+    },
+    "unit_scale": {
+      "status": "skipped",
+      "reason": "IFC unit scale not evaluated",
+      "external_ref": null
+    },
+    "raster": {
+      "status": "skipped",
+      "reason": "raster drawing analysis not evaluated",
+      "external_ref": null
+    },
+    "ifc_schema": {
+      "status": "skipped",
+      "reason": "IFC schema pre-gate not evaluated",
+      "external_ref": null
+    },
+    "norm_rule_packs": {
+      "status": "skipped",
+      "reason": "norm rule packs not requested",
+      "external_ref": null
+    },
+    "section_pairing": {
+      "status": "skipped",
+      "reason": "PD/RD section pairing not requested",
+      "external_ref": null
+    }
+  },
+  "rows": [
+    {
+      "requirement": "BIM IFC + IDS",
+      "contour": "deterministic_validation",
+      "capability": "ids",
+      "status": "partial",
+      "note": "done only with customer corpus evidence"
+    },
+    {
+      "requirement": "Norm / rule packs",
+      "contour": "deterministic_validation",
+      "capability": "norm_rule_packs",
+      "status": "partial",
+      "note": "synthetic-template loader is partial until customer_approved pack"
+    },
+    {
+      "requirement": "Section pairing PD↔RD",
+      "contour": "deterministic_validation",
+      "capability": "section_pairing",
+      "status": "partial"
+    },
+    {
+      "requirement": "Geometric clash",
+      "contour": "deterministic_validation",
+      "capability": "clash",
+      "status": "partial",
+      "note": "generic clash only; MEP-CLASH-001 open"
+    },
+    {
+      "requirement": "MEP system intersections",
+      "contour": "deterministic_validation",
+      "capability": "clash",
+      "status": "missing",
+      "note": "blocked on federated MEP IFC + scope memo"
+    },
+    {
+      "requirement": "CV / drawing literacy",
+      "contour": "ai_advisory",
+      "capability": "raster",
+      "status": "missing",
+      "note": "OCR baseline ≠ CV; advisory only"
+    },
+    {
+      "requirement": "OCR baseline",
+      "contour": "ingestion",
+      "capability": "raster",
+      "status": "partial"
+    },
+    {
+      "requirement": "BCF / review HITL",
+      "contour": "evidence_reporting",
+      "capability": null,
+      "status": "partial"
+    }
+  ]
+}

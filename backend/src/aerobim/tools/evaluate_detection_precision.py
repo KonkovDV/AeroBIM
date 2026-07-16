@@ -148,6 +148,23 @@ def evaluate_detection_precision(
             "results and must not be published as AeroBIM product accuracy."
         )
 
+    from aerobim.domain.architecture import PrecisionClaim
+
+    if labels.dataset_status == "adjudicated":
+        corpus_kind = "customer"
+    elif labels.dataset_status == "draft":
+        corpus_kind = "fixture"
+    else:
+        corpus_kind = "synthetic"
+    claim = PrecisionClaim(
+        metric="macro_precision",
+        value=float(macro["precision"]),
+        corpus_id=str(labels.dataset_id),
+        corpus_kind=corpus_kind,  # type: ignore[arg-type]
+        adjudicators=int(labels.adjudicator_count),
+        date="",
+    )
+
     return {
         "artifact_type": "aerobim_detection_precision_evaluation",
         "schema_version": _SCHEMA_VERSION,
@@ -158,6 +175,16 @@ def evaluate_detection_precision(
         "matching_policy": "exact-v1",
         "publishable_protocol_gate": labels.publishable_protocol_gate,
         "adjudicator_count": labels.adjudicator_count,
+        "corpus_kind": corpus_kind,
+        "precision_claim": {
+            "metric": claim.metric,
+            "value": claim.value,
+            "corpus_id": claim.corpus_id,
+            "corpus_kind": claim.corpus_kind,
+            "adjudicators": claim.adjudicators,
+            "publishable": claim.publishable,
+            "render": claim.render_value(),
+        },
         "labels": {
             "confirmed": len(labels.expected),
             "excluded": labels.excluded_count,

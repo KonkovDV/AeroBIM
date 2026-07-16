@@ -40,6 +40,10 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Fail-closed API auth outside development | `AEROBIM_API_BEARER_TOKEN` and/or OIDC; frontend Bearer support |
 | Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,…}` ∈ ok/skipped/failed; **FAILED blocks `summary.passed`** |
 | Norm rule packs fail-closed (P0.2) | Requested/configured pack load error → `capabilities.norm_rule_packs=failed` → `summary.passed=false`; packs not requested → `skipped` (does not block) |
+| PrecisionClaim publish gate (R1/R4) | Typed claim; render withheld unless `corpus_kind=customer` and ≥2 adjudicators |
+| Runtime baseline metrics (R5) | `python -m aerobim.tools.export_runtime_baseline` — LOC/tests/F1 not hand-authored |
+| Internal self-audit naming (R2) | Self assessments must not be labeled external/independent |
+| Four contours | ingestion / deterministic_validation / ai_advisory / evidence_reporting — AI cannot mutate `passed` |
 | JSON norm / rule-pack loader | `NormRulePackLoader` + residential AR reference template (synthetic-template only) |
 | Deterministic PD↔RD section pairing scaffold | `SectionDiffAnalyzer` on normalized section JSON (one discipline pair) |
 | Detection precision harness (exact TP/FP/FN) | `aerobim-evaluate-detection-precision` + synthetic contract fixture + protocol gate |
