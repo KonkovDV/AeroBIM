@@ -99,6 +99,22 @@ class NormPackEnvCapabilityTests(unittest.TestCase):
         self.assertIn("does-not-exist.json", cap.reason or "")
         # Fail-closed capability must NOT be a silent skip.
         self.assertNotEqual(cap.status, CapabilityState.SKIPPED)
+        self.assertFalse(report.summary.passed)
+
+    def test_request_broken_pack_fails_closed_and_blocks_pass(self) -> None:
+        missing = REPO_ROOT / "samples" / "rule-packs" / "does-not-exist.json"
+        report = _use_case(None).execute(_request(norm_paths=(missing,)))
+        cap = report.capabilities.norm_rule_packs
+        self.assertEqual(cap.status, CapabilityState.FAILED)
+        self.assertIn("request manifest", cap.reason or "")
+        self.assertFalse(report.summary.passed)
+
+    def test_no_packs_skipped_does_not_alone_force_fail(self) -> None:
+        from aerobim.application.services.signoff_policy import failed_capabilities_blocking_pass
+
+        report = _use_case(None).execute(_request())
+        self.assertEqual(report.capabilities.norm_rule_packs.status, CapabilityState.SKIPPED)
+        self.assertNotIn("norm_rule_packs", failed_capabilities_blocking_pass(report.capabilities))
 
     def test_request_paths_take_precedence_over_env_default(self) -> None:
         missing = REPO_ROOT / "samples" / "rule-packs" / "does-not-exist.json"

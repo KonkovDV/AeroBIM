@@ -97,9 +97,9 @@ Schema: [`norm-rule-pack.schema.json`](../../samples/rule-packs/norm-rule-pack.s
 | Пакет(ы) загружены | `ok`; `reason` содержит `pack_id@version[status] sha256:…` |
 | Загружен non-approved пакет (`synthetic-template`/`draft`) | `ok` + пометка `advisory: non-approved pack(s) — not for deterministic sign-off` |
 
-Явный request-путь с отсутствующим/битым файлом по-прежнему fail-closed через
-исключение loader (жёсткая ошибка запроса); env-fallback деградирует до `failed`
-capability, чтобы одна плохая деплой-настройка не роняла каждый анализ.
+Явный request-путь с отсутствующим/битым файлом → `capabilities.norm_rule_packs=failed`
+и `summary.passed=false` (P0.2 fail-closed). Env-fallback ведёт себя так же: одна
+плохая деплой-настройка не маскируется silent skip.
 
 ## Свойство → rule pack / IDS (how-to)
 
