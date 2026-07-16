@@ -74,4 +74,5 @@ ruff format --check src tests
 - [x] **I4** Deterministic RequirementToIdsCompiler + FilesystemNormCorpusRetriever (advisory; no LLM)
 - [x] **I5** ComplianceAgentOrchestrator (deterministic ReAct tool allowlist → DeterminismGate)
 - [x] **I6** Customer metrics readiness — see [`EXECUTION_PLAN_I6_2026_07.md`](EXECUTION_PLAN_I6_2026_07.md)
+- [x] **I7** Post-I6 polish — see [`EXECUTION_PLAN_I7_2026_07.md`](EXECUTION_PLAN_I7_2026_07.md)
 - Next: customer evidence when corpus arrives (gates stay false until then)

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from aerobim.domain.models import DrawingAnnotation
+from aerobim.domain.models import DrawingAnnotation, DrawingRegionRef
 from aerobim.domain.quantity import QuantityValue, parse_quantity
 
 _AREA_NAME_HINTS = (
@@ -49,14 +49,6 @@ class PackageManifest:
     rd_section_path: Path | None
     revision: str | None
     stage: str | None
-
-
-@dataclass(frozen=True)
-class DrawingRegionRef:
-    sheet_id: str
-    bbox_xyxy: tuple[float, float, float, float]
-    confidence: float
-    modality: str  # ocr | detector | vlm | vector
 
 
 @dataclass(frozen=True)

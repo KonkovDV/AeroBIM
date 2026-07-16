@@ -67,6 +67,20 @@ class DeterminismGateTests(unittest.TestCase):
         self.assertEqual(len(divergences), 1)
         self.assertIn("warning", divergences[0].engine_verdict)
 
+    def test_divergence_record_is_domain_serializable(self) -> None:
+        from dataclasses import asdict
+
+        from aerobim.domain.models import DivergenceRecord
+
+        record = DivergenceRecord(
+            finding_key="f1",
+            engine_verdict="absent",
+            advisory_verdict="error:hallucinated",
+        )
+        payload = asdict(record)
+        self.assertEqual(payload["resolution"], "engine_wins")
+        self.assertEqual(payload["finding_key"], "f1")
+
 
 if __name__ == "__main__":
     unittest.main()

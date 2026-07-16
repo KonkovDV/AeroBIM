@@ -229,7 +229,9 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             ids_compiler=current.resolve(Tokens.REQUIREMENT_TO_IDS_COMPILER),
             load_verifier=current.resolve(Tokens.LOAD_EVIDENCE_VERIFIER),
             logic_analyzer=current.resolve(Tokens.LOGIC_CONSISTENCY_ANALYZER),
-            max_steps=6,
+            quantity_checker=current.resolve(Tokens.QUANTITY_CONSISTENCY_CHECKER),
+            clash_detector=current.resolve(Tokens.CLASH_DETECTOR),
+            max_steps=8,
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

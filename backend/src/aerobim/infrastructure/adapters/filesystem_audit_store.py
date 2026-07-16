@@ -14,8 +14,10 @@ from aerobim.domain.models import (
     ClashResult,
     ComparisonOperator,
     ConflictKind,
+    DivergenceRecord,
     DrawingAnnotation,
     DrawingAsset,
+    DrawingRegionRef,
     FindingCategory,
     GeneratedRemark,
     ParsedRequirement,
@@ -30,6 +32,7 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationSummary,
 )
+from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.ports import ObjectStore
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 
@@ -97,6 +100,9 @@ class FilesystemAuditStore:
             doc_status=report.doc_status,
             tenant_id=report.tenant_id,
             project_id=report.project_id,
+            divergences=report.divergences,
+            advisory_ids_draft=report.advisory_ids_draft,
+            drawing_regions=report.drawing_regions,
         )
 
     def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
@@ -351,6 +357,13 @@ class FilesystemAuditStore:
             doc_status=data.get("doc_status"),
             tenant_id=data.get("tenant_id"),
             project_id=data.get("project_id"),
+            divergences=tuple(
+                self._reconstruct_divergence(item) for item in data.get("divergences", [])
+            ),
+            advisory_ids_draft=self._reconstruct_ids_draft(data.get("advisory_ids_draft")),
+            drawing_regions=tuple(
+                self._reconstruct_drawing_region(item) for item in data.get("drawing_regions", [])
+            ),
         )
 
     def _reconstruct_requirement(self, data: dict) -> ParsedRequirement:
@@ -512,6 +525,34 @@ class FilesystemAuditStore:
             unit=data.get("unit"),
             problem_zone=ProblemZone(**problem_zone_data) if problem_zone_data else None,
             source=data.get("source", "drawing-text"),
+        )
+
+    def _reconstruct_divergence(self, data: dict) -> DivergenceRecord:
+        return DivergenceRecord(
+            finding_key=data["finding_key"],
+            engine_verdict=data["engine_verdict"],
+            advisory_verdict=data["advisory_verdict"],
+            resolution=data.get("resolution", "engine_wins"),
+        )
+
+    def _reconstruct_ids_draft(self, data: dict | None) -> IdsCompileDraft | None:
+        if not data:
+            return None
+        return IdsCompileDraft(
+            suggested_ids_xml=data.get("suggested_ids_xml", ""),
+            rationale=data.get("rationale", ""),
+            source_requirement_count=int(data.get("source_requirement_count", 0)),
+            advisory_only=bool(data.get("advisory_only", True)),
+            confidence=float(data.get("confidence", 0.4)),
+        )
+
+    def _reconstruct_drawing_region(self, data: dict) -> DrawingRegionRef:
+        bbox = data.get("bbox_xyxy") or (0.0, 0.0, 0.0, 0.0)
+        return DrawingRegionRef(
+            sheet_id=data["sheet_id"],
+            bbox_xyxy=(float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])),
+            confidence=float(data.get("confidence", 0.0)),
+            modality=str(data.get("modality", "ocr")),
         )
 
     def _reconstruct_drawing_asset(self, data: dict) -> DrawingAsset:

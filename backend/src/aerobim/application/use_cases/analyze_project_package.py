@@ -30,6 +30,7 @@ from aerobim.domain.models import (
     ConflictKind,
     DrawingAnnotation,
     DrawingAsset,
+    DrawingRegionRef,
     DrawingSource,
     FindingCategory,
     ParsedRequirement,
@@ -242,7 +243,7 @@ class AnalyzeProjectPackageUseCase:
                 "No requirements were extracted or synthesized from the provided sources"
             )
 
-        drawing_annotations = tuple(self._collect_drawing_annotations(request))
+        drawing_annotations, drawing_regions = self._collect_drawing_annotations(request)
         cad_annotations, cad_capability, cad_issues = self._run_cad_ingest(request)
         drawing_annotations = tuple([*drawing_annotations, *cad_annotations])
         ifc_issues = (
@@ -290,10 +291,12 @@ class AnalyzeProjectPackageUseCase:
             *logic_issues,
         ]
         agent_advisory: tuple[ValidationIssue, ...] = ()
+        advisory_ids_draft = None
         if self._compliance_agent is not None:
             agent_result = self._compliance_agent.run(request)
             agent_advisory = agent_result.advisory_issues
-        reconciled_issues, _divergences = self._determinism_gate.reconcile(
+            advisory_ids_draft = agent_result.ids_draft
+        reconciled_issues, divergences = self._determinism_gate.reconcile(
             engine_issues=raw_issues,
             advisory_issues=merge_advisory_sequences(
                 self._advisory_issues,
@@ -379,8 +382,10 @@ class AnalyzeProjectPackageUseCase:
             doc_status=request.doc_status,
             tenant_id=request.tenant_id,
             project_id=request.project_id,
+            divergences=divergences,
+            advisory_ids_draft=advisory_ids_draft,
+            drawing_regions=tuple(drawing_regions),
         )
-        self._audit_report_store.save(report)
         persisted_report = self._audit_report_store.get(report.report_id)
         return persisted_report or report
 
@@ -959,8 +964,11 @@ class AnalyzeProjectPackageUseCase:
             synthesized.extend(self._narrative_rule_synthesizer.synthesize(source))
         return synthesized
 
-    def _collect_drawing_annotations(self, request: ValidationRequest) -> list[DrawingAnnotation]:
+    def _collect_drawing_annotations(
+        self, request: ValidationRequest
+    ) -> tuple[list[DrawingAnnotation], list[DrawingRegionRef]]:
         annotations: list[DrawingAnnotation] = []
+        regions: list[DrawingRegionRef] = []
         for drawing_source in request.drawing_sources:
             if self._has_structured_drawing_input(drawing_source):
                 annotations.extend(self._drawing_analyzer.analyze(drawing_source))
@@ -968,9 +976,10 @@ class AnalyzeProjectPackageUseCase:
                 if self._multimodal_drawing_pipeline is not None:
                     result = self._multimodal_drawing_pipeline.analyze(drawing_source, mode="auto")
                     annotations.extend(result.annotations)
+                    regions.extend(result.regions)
                 else:
                     annotations.extend(self._collect_raster_annotations(drawing_source))
-        return annotations
+        return annotations, regions
 
     def _collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
         assets: list[DrawingAsset] = []
