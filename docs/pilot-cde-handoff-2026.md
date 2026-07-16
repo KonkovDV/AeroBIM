@@ -13,7 +13,7 @@ tags: [aerobim, pilot, bcf, cde, samolet]
 | Tier | Status | Artifact |
 |------|--------|----------|
 | T1 structural ZIP + dual consumers | **DONE** | [`../audit/evidence/bcf-structural-handoff-2026-07-17.json`](../audit/evidence/bcf-structural-handoff-2026-07-17.json) |
-| T2 independent CDE import | **NOT_VERIFIED** | [`evidence/internal/cde-import-proof/STATUS.json`](evidence/internal/cde-import-proof/STATUS.json) |
+| T2 independent CDE import | **NOT_VERIFIED** | [`../audit/evidence/cde-import-proof/STATUS.json`](../audit/evidence/cde-import-proof/STATUS.json) |
 
 Never claim “BCF ready for CDE” on T1 alone.
 
@@ -24,7 +24,7 @@ Never claim “BCF ready for CDE” on T1 alone.
 | A1 | Export BCF 2.1 from AeroBIM API | Operator | [ ] |
 | A2 | Import ZIP into customer CDE | Samolet engineer | [ ] |
 | A3 | Verify topics + descriptions (remark body) visible | Joint | [ ] |
-| A4 | Store screenshot + date in `docs/evidence/internal/cde-import-proof/` and flip `STATUS.json` to `VERIFIED` | Operator | [ ] |
+| A4 | Store screenshot + log (gitignored `docs/evidence/internal/cde-import-proof/` OK) and flip tracked `audit/evidence/cde-import-proof/STATUS.json` to `VERIFIED` | Operator | [ ] |
 
 Export:
 
