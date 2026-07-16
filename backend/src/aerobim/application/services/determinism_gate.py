@@ -7,20 +7,13 @@ AeroBIM Contour.DETERMINISTIC_VALIDATION ownership of summary.passed.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
-from typing import Literal
 
-from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
-
-
-@dataclass(frozen=True)
-class DivergenceRecord:
-    """Logged when advisory AI contradicts or invents a finding vs the engine."""
-
-    finding_key: str
-    engine_verdict: str
-    advisory_verdict: str
-    resolution: Literal["engine_wins"] = "engine_wins"
+from aerobim.domain.models import (
+    DivergenceRecord,
+    FindingCategory,
+    Severity,
+    ValidationIssue,
+)
 
 
 def _issue_key(issue: ValidationIssue) -> str:

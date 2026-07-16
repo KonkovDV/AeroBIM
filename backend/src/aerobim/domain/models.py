@@ -5,6 +5,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Literal
 
+from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.quantity import QuantityValue
 
 DocStatus = Literal["WIP", "Shared", "Published", "Archived"]
@@ -217,6 +218,26 @@ class DrawingAnnotation:
     unit: str | None = None
     problem_zone: ProblemZone | None = None
     source: str = "drawing-text"
+
+
+@dataclass(frozen=True)
+class DrawingRegionRef:
+    """Normalized drawing region for UI highlight overlays (OCR/detector/VLM)."""
+
+    sheet_id: str
+    bbox_xyxy: tuple[float, float, float, float]
+    confidence: float
+    modality: str  # ocr | detector | vlm | vector
+
+
+@dataclass(frozen=True)
+class DivergenceRecord:
+    """Audit when advisory AI contradicts or invents a finding vs the engine."""
+
+    finding_key: str
+    engine_verdict: str
+    advisory_verdict: str
+    resolution: Literal["engine_wins"] = "engine_wins"
 
 
 @dataclass(frozen=True)
@@ -441,6 +462,12 @@ class ValidationReport:
     doc_status: DocStatus | None = None
     tenant_id: str | None = None
     project_id: str | None = None
+    divergences: tuple[DivergenceRecord, ...] = ()
+    """DeterminismGate audit trail; never flips summary.passed alone."""
+    advisory_ids_draft: IdsCompileDraft | None = None
+    """Agent/compiler IDS draft — advisory until human promotes to ids_path."""
+    drawing_regions: tuple[DrawingRegionRef, ...] = ()
+    """Multimodal/OCR region refs for frontend highlight overlays."""
 
 
 @dataclass(frozen=True)

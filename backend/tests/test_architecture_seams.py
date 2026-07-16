@@ -79,6 +79,22 @@ class ArchitectureSeamTests(unittest.TestCase):
                 )
             )
 
+    def test_sota_stub_ids_assist_is_tracked_in_known_bugs(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        known = (root / "KNOWN_BUGS.md").read_text(encoding="utf-8")
+        self.assertIn("STUB-IDS-ASSIST-001", known)
+        adapter_src = (
+            root
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "application"
+            / "services"
+            / "ids_assist_boundary.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("@sota-stub", adapter_src)
+        self.assertIn("StubIdsAssistDraftAdapter", adapter_src)
+
     def test_advisory_off_equals_advisory_on_for_summary_passed(self) -> None:
         """AI advisory contour must not mutate deterministic summary.passed."""
 

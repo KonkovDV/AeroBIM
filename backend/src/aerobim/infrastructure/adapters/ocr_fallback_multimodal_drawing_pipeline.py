@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Literal
 
-from aerobim.domain.consistency import DrawingRegionRef, MultimodalDrawingResult
-from aerobim.domain.models import DrawingSource
+from aerobim.domain.consistency import MultimodalDrawingResult
+from aerobim.domain.models import DrawingRegionRef, DrawingSource
 from aerobim.domain.ports import RasterDrawingAnalyzer
 
 

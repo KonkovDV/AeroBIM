@@ -79,12 +79,33 @@ class ComplianceAgentTests(unittest.TestCase):
         self.assertIn("analyze_logic", names)
         self.assertTrue(all(step.status in {"ok", "skipped", "error"} for step in result.steps))
         self.assertIsNotNone(result.ids_draft)
+
+    def test_quantity_and_clash_tools_are_allowlisted(self) -> None:
+        class _Qty:
+            def check(self, ifc_path, declared):  # noqa: ANN001
+                del ifc_path, declared
+                return []
+
+        class _Clash:
+            def detect(self, ifc_path):  # noqa: ANN001
+                del ifc_path
+                return []
+
+        agent = ComplianceAgentOrchestrator(
+            quantity_checker=_Qty(),  # type: ignore[arg-type]
+            clash_detector=_Clash(),  # type: ignore[arg-type]
+            max_steps=4,
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            result = agent.run(self._request(temporary_directory))
+        names = [step.tool_name for step in result.steps]
+        self.assertIn("check_quantities", names)
+        self.assertIn("detect_clashes", names)
         self.assertTrue(
-            any(
-                issue.rule_id.startswith("AGENT-") or "advisory" in issue.message.lower()
-                for issue in result.advisory_issues
-            )
-            or any(i.rule_id.startswith("AEROBIM-AGENT") for i in result.advisory_issues)
+            any(i.rule_id.startswith("AEROBIM-AGENT-QTY") for i in result.advisory_issues)
+        )
+        self.assertTrue(
+            any(i.rule_id.startswith("AEROBIM-AGENT-CLASH") for i in result.advisory_issues)
         )
 
     def test_max_steps_cap(self) -> None:

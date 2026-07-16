@@ -13,7 +13,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 
 from aerobim.domain.compliance_agent import AgentRunResult, AgentToolStep
-from aerobim.domain.consistency import PackageManifest
+from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
 from aerobim.domain.models import (
     FindingCategory,
     Severity,
@@ -22,9 +22,11 @@ from aerobim.domain.models import (
 )
 from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
 from aerobim.domain.ports import (
+    ClashDetector,
     LoadEvidenceVerifier,
     LogicConsistencyAnalyzer,
     NormCorpusRetriever,
+    QuantityConsistencyChecker,
     RequirementToIdsCompiler,
 )
 
@@ -34,6 +36,8 @@ _ALLOWED_TOOLS = frozenset(
         "compile_ids_draft",
         "verify_loads",
         "analyze_logic",
+        "check_quantities",
+        "detect_clashes",
     }
 )
 
@@ -54,12 +58,16 @@ class ComplianceAgentOrchestrator:
         ids_compiler: RequirementToIdsCompiler | None = None,
         load_verifier: LoadEvidenceVerifier | None = None,
         logic_analyzer: LogicConsistencyAnalyzer | None = None,
+        quantity_checker: QuantityConsistencyChecker | None = None,
+        clash_detector: ClashDetector | None = None,
         max_steps: int = 6,
     ) -> None:
         self._norm_retriever = norm_retriever
         self._ids_compiler = ids_compiler
         self._load_verifier = load_verifier
         self._logic_analyzer = logic_analyzer
+        self._quantity_checker = quantity_checker
+        self._clash_detector = clash_detector
         self._max_steps = max(1, max_steps)
 
     def run(self, request: ValidationRequest) -> AgentRunResult:
@@ -88,6 +96,8 @@ class ComplianceAgentOrchestrator:
             "compile_ids_draft": self._tool_compile_ids,
             "verify_loads": self._tool_verify_loads,
             "analyze_logic": self._tool_analyze_logic,
+            "check_quantities": self._tool_check_quantities,
+            "detect_clashes": self._tool_detect_clashes,
         }
 
         for step in plan:
@@ -166,6 +176,22 @@ class ComplianceAgentOrchestrator:
                 AgentToolStep(
                     tool_name="analyze_logic",
                     rationale="Check package logical consistency (PD/RD, sheets)",
+                    arguments={},
+                )
+            )
+        if self._quantity_checker is not None:
+            steps.append(
+                AgentToolStep(
+                    tool_name="check_quantities",
+                    rationale="Advisory IFC quantity сверка vs declared area/volume claims",
+                    arguments={},
+                )
+            )
+        if self._clash_detector is not None and request.ifc_path is not None:
+            steps.append(
+                AgentToolStep(
+                    tool_name="detect_clashes",
+                    rationale="Advisory generic clash probe (not MEP system-aware)",
                     arguments={},
                 )
             )
@@ -433,6 +459,147 @@ class ComplianceAgentOrchestrator:
                 arguments=step.arguments,
                 status="ok",
                 detail=f"findings={len(advisory)}",
+            ),
+            advisory,
+            [],
+            None,
+        )
+
+    def _tool_check_quantities(
+        self,
+        request: ValidationRequest,
+        step: AgentToolStep,
+    ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
+        assert self._quantity_checker is not None
+        # Agent has no requirement extractor; empty claims → skipped summary only.
+        claims = claims_from_area_requirements(())
+        try:
+            raw = list(self._quantity_checker.check(request.ifc_path, claims))
+        except Exception as exc:  # noqa: BLE001
+            return (
+                AgentToolStep(
+                    tool_name=step.tool_name,
+                    rationale=step.rationale,
+                    arguments=step.arguments,
+                    status="error",
+                    detail=str(exc),
+                ),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-AGENT-QTY",
+                        severity=Severity.INFO,
+                        message=f"Agent quantity tool failed: {exc}",
+                        category=FindingCategory.IFC_VALIDATION,
+                        source_id="compliance-agent",
+                    )
+                ],
+                [],
+                None,
+            )
+        advisory = [
+            ValidationIssue(
+                rule_id=f"AGENT-{issue.rule_id}",
+                severity=Severity.INFO,
+                message=f"[advisory-agent] {issue.message}",
+                category=issue.category,
+                target_ref=issue.target_ref,
+                source_id="compliance-agent",
+                finding_id=f"agent-qty:{issue.rule_id}:{issue.target_ref or ''}",
+                confidence=0.5,
+            )
+            for issue in raw
+        ]
+        if not advisory:
+            advisory.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-AGENT-QTY-EMPTY",
+                    severity=Severity.INFO,
+                    message=(
+                        "[advisory] Quantity tool ran with no area/volume claims "
+                        "(engine path uses extracted requirements)"
+                    ),
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="compliance-agent",
+                    finding_id="agent-qty:empty",
+                    confidence=1.0,
+                )
+            )
+        return (
+            AgentToolStep(
+                tool_name=step.tool_name,
+                rationale=step.rationale,
+                arguments=step.arguments,
+                status="ok",
+                detail=f"findings={len(raw)}",
+            ),
+            advisory,
+            [],
+            None,
+        )
+
+    def _tool_detect_clashes(
+        self,
+        request: ValidationRequest,
+        step: AgentToolStep,
+    ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
+        assert self._clash_detector is not None
+        try:
+            results = list(self._clash_detector.detect(request.ifc_path))
+        except Exception as exc:  # noqa: BLE001
+            return (
+                AgentToolStep(
+                    tool_name=step.tool_name,
+                    rationale=step.rationale,
+                    arguments=step.arguments,
+                    status="error",
+                    detail=str(exc),
+                ),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-AGENT-CLASH",
+                        severity=Severity.INFO,
+                        message=f"Agent clash tool failed: {exc}",
+                        category=FindingCategory.SPATIAL,
+                        source_id="compliance-agent",
+                    )
+                ],
+                [],
+                None,
+            )
+        advisory = [
+            ValidationIssue(
+                rule_id="AEROBIM-AGENT-CLASH-HIT",
+                severity=Severity.INFO,
+                message=(
+                    f"[advisory-agent] Clash probe: {clash.description} "
+                    f"({clash.element_a_guid} × {clash.element_b_guid})"
+                ),
+                category=FindingCategory.SPATIAL,
+                source_id="compliance-agent",
+                finding_id=f"agent-clash:{clash.element_a_guid}:{clash.element_b_guid}",
+                confidence=0.5,
+            )
+            for clash in results[:20]
+        ]
+        if not advisory:
+            advisory.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-AGENT-CLASH-NONE",
+                    severity=Severity.INFO,
+                    message="[advisory] Clash probe returned zero hits (generic ifcclash path)",
+                    category=FindingCategory.SPATIAL,
+                    source_id="compliance-agent",
+                    finding_id="agent-clash:none",
+                    confidence=1.0,
+                )
+            )
+        return (
+            AgentToolStep(
+                tool_name=step.tool_name,
+                rationale=step.rationale,
+                arguments=step.arguments,
+                status="ok",
+                detail=f"clashes={len(results)}",
             ),
             advisory,
             [],

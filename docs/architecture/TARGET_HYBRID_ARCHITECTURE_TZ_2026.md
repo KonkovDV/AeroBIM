@@ -405,10 +405,13 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 ## 12. Immediate next engineering slice (recommended)
 
-Smallest high-leverage PR after this design:
+**Shipped:** I0–I6 (DeterminismGate, Cad/Office ingest, MEP DI, quantity/load/logic, OCR multimodal degrade, IDS compile + norm retrieve, ComplianceAgent, κ/α + intake gate readiness). See [`EXECUTION_PLAN_I0_I2_2026_07.md`](EXECUTION_PLAN_I0_I2_2026_07.md) and [`EXECUTION_PLAN_I6_2026_07.md`](EXECUTION_PLAN_I6_2026_07.md).
 
-1. Promote `MepSystemGraphProvider` into `ports` contour + `Tokens.MEP_SYSTEM_GRAPH_PROVIDER` + bootstrap (even if Unconfigured*).  
-2. Add `DeterminismGate` application service hooked from analyze UC (log-only).  
-3. Add stub-tagged `CadModelIngestor` / `MultimodalDrawingPipeline` Protocols **with** honesty fields staying MISSING and `@sota-stub` adapters — only if Anti-Stub policy and KNOWN_BUGS entries are created in the same unit; otherwise wait for real ezdxf adapter in I1.
+**Next (I7 polish — no customer corpus required):**
 
-Prefer **I1 real ezdxf** over new stubs when capacity allows.
+1. Persist DeterminismGate `divergences` + advisory `ids_draft` + `drawing_regions` on `ValidationReport` (audit/UI).  
+2. Expand ComplianceAgent allowlist (`check_quantities`, `detect_clashes`) → still advisory → DeterminismGate.  
+3. Track `@sota-stub` IdsAssist in [`KNOWN_BUGS.md`](../../KNOWN_BUGS.md).  
+4. When customer corpus arrives: flip intake gates only with evidence; run κ/α + PrecisionClaim publish path ([`EXECUTION_PLAN_I6_2026_07.md`](EXECUTION_PLAN_I6_2026_07.md)).
+
+Checkpoint remains **NO_GO** until RT-001/002/003.
