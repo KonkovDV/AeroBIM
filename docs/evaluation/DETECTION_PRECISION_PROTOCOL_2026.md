@@ -51,6 +51,25 @@ Labels со статусом `excluded` и `unresolved` не входят в gro
 Protocol gate проверяет полноту метаданных, но не удостоверяет личности и не
 заменяет подписанный customer adjudication log.
 
+## Inter-annotator agreement (July 2026 bar)
+
+Human adjudication is mandatory for publishable PrecisionClaim. Report:
+
+| Adjudicators | Metric | Minimum for publish gate |
+|---|---|---|
+| 2 | Cohen’s κ on binary verdicts (TP vs not-TP / FP / FN as defined in rubric) | κ ≥ 0.60 (substantial); target ≥ 0.80 |
+| ≥3 | Krippendorff’s α (nominal) | α ≥ 0.67; target ≥ 0.80 |
+
+Always publish the **confusion matrix** (or per-class TP/FP/FN counts) alongside
+F1 — scalar F1 alone is not enough. Exact-match agreement without chance
+correction is forbidden as the sole reliability statistic.
+
+**LLM-as-judge / LLM assist** may draft candidate labels but:
+
+- cannot count toward `adjudicators`;
+- cannot satisfy `PrecisionClaim.publishable`;
+- cannot replace human κ/α evidence.
+
 ## Pilot procedure
 
 1. Заморозить agreed pack, IFC/ПД/РД/TЗ/расчёты и software commit.

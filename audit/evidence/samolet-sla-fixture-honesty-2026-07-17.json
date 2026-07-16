@@ -1,0 +1,115 @@
+{
+  "artifact_type": "samolet_package_sla",
+  "schema_version": "1.2.0",
+  "generated_at": "2026-07-16T21:23:07.116448+00:00",
+  "customer_reference": "https://i.moscow/techlab/samolet",
+  "sla_target_minutes": 30.0,
+  "sla_pass": true,
+  "max_minutes_observed": 0.0096,
+  "avg_minutes_observed": 0.0096,
+  "stage_budgets": {
+    "ingestion_minutes": 5.0,
+    "deterministic_validation_minutes": 18.0,
+    "ai_advisory_minutes": 2.0,
+    "evidence_reporting_minutes": 5.0,
+    "total_minutes": 30.0
+  },
+  "stage_budget_consistent": true,
+  "package_sha256": "bb41905c7c1c7c88bcb03fd00d73b0b0b1b60fa401ba6e9402b85f98878f62cc",
+  "file_inventory": [
+    {
+      "path": "C:/plans/AeroBIM/samples/benchmarks/project-package-pilot-moscow-v1.json",
+      "bytes": 1096,
+      "sha256": "bb41905c7c1c7c88bcb03fd00d73b0b0b1b60fa401ba6e9402b85f98878f62cc"
+    }
+  ],
+  "machine": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "ram_gb": 31.83,
+    "python": "3.13.7"
+  },
+  "cold_run": {
+    "max_minutes": 0.0096,
+    "avg_minutes": 0.0096,
+    "benchmark": {
+      "iterations": 1,
+      "warmup_iterations": 0,
+      "measured_runs": [
+        {
+          "iteration": 1,
+          "request_id": "benchmark-project-package-pilot-moscow-v1-run-001",
+          "elapsed_ms": 576.87,
+          "report_id": "1450f29cfdf64ca6bbe6ab987b6a20f9",
+          "issue_count": 9,
+          "requirement_count": 6,
+          "project_name": "Пилот Москва — Жилой комплекс (огнестойкость + конструктив)",
+          "discipline": "fire-safety+structure"
+        }
+      ],
+      "summary": {
+        "min_ms": 576.87,
+        "max_ms": 576.87,
+        "avg_ms": 576.87,
+        "reports_per_second": 1.733
+      },
+      "artifact_type": "benchmark_project_package",
+      "schema_version": "1.0.0",
+      "generated_at": "2026-07-16T21:23:07.116295+00:00",
+      "benchmark_pack": {
+        "pack_id": "project-package-pilot-moscow-v1",
+        "pack_version": "1.0.0",
+        "manifest_schema_version": "1.0.0",
+        "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence."
+      },
+      "pack_id": "project-package-pilot-moscow-v1",
+      "pack_version": "1.0.0",
+      "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence.",
+      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+    }
+  },
+  "warm_run": {
+    "max_minutes": null,
+    "avg_minutes": null,
+    "benchmark": null
+  },
+  "command": "python -m aerobim.tools.measure_package_sla --pack C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-pilot-moscow-v1.json --max-minutes 30.0 --iterations 1 --warmup-iterations 0",
+  "corpus_kind": "fixture",
+  "claim_level": "fixture_only",
+  "allowed_wording": "Fixture wall-clock only; not customer комплект SLA",
+  "benchmark": {
+    "iterations": 1,
+    "warmup_iterations": 0,
+    "measured_runs": [
+      {
+        "iteration": 1,
+        "request_id": "benchmark-project-package-pilot-moscow-v1-run-001",
+        "elapsed_ms": 576.87,
+        "report_id": "1450f29cfdf64ca6bbe6ab987b6a20f9",
+        "issue_count": 9,
+        "requirement_count": 6,
+        "project_name": "Пилот Москва — Жилой комплекс (огнестойкость + конструктив)",
+        "discipline": "fire-safety+structure"
+      }
+    ],
+    "summary": {
+      "min_ms": 576.87,
+      "max_ms": 576.87,
+      "avg_ms": 576.87,
+      "reports_per_second": 1.733
+    },
+    "artifact_type": "benchmark_project_package",
+    "schema_version": "1.0.0",
+    "generated_at": "2026-07-16T21:23:07.116295+00:00",
+    "benchmark_pack": {
+      "pack_id": "project-package-pilot-moscow-v1",
+      "pack_version": "1.0.0",
+      "manifest_schema_version": "1.0.0",
+      "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence."
+    },
+    "pack_id": "project-package-pilot-moscow-v1",
+    "pack_version": "1.0.0",
+    "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence.",
+    "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+  }
+}

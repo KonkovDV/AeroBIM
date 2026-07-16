@@ -1,0 +1,39 @@
+{
+  "artifact_type": "customer_intake_gate",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-17",
+  "claim_level": "not_ready",
+  "status": "BLOCKED_NO_CUSTOMER_DATA",
+  "gates": {
+    "nda_signed": false,
+    "scope_memo_signed": false,
+    "customer_package_in_samples_customer": false,
+    "customer_approved_norm_pack_with_approval_ref": false,
+    "ids_or_property_table_present": false,
+    "dual_human_adjudicators_named": false,
+    "cohens_kappa_or_krippendorff_alpha_reported": false,
+    "confusion_matrix_reported": false,
+    "zero_unresolved_labels": false,
+    "precision_claim_publishable": false,
+    "cde_bcf_import_evidence": false,
+    "customer_sla_pack_measured": false,
+    "mep_federated_scope": false
+  },
+  "rules": {
+    "llm_assist_counts_as_adjudicator": false,
+    "synthetic_f1_is_product_accuracy": false,
+    "fixture_sla_is_customer_sla": false,
+    "customer_approved_without_approval_ref": false
+  },
+  "next_actions": [
+    "Deliver customer files to gitignored samples/customer/",
+    "Follow docs/ops/intake-precision-runbook-2026.md",
+    "Follow docs/samolet-pilot-intake-checklist-2026.md"
+  ],
+  "references": [
+    "docs/evaluation/DETECTION_PRECISION_PROTOCOL_2026.md",
+    "docs/ops/intake-precision-runbook-2026.md",
+    "docs/samolet-pilot-intake-checklist-2026.md",
+    "audit/reports/CLAIMS_LOCK_2026_07_17.md"
+  ]
+}

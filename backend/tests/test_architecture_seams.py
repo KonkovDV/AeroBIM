@@ -13,10 +13,14 @@ from aerobim.domain.architecture import (
     assert_precision_publishable,
 )
 from aerobim.domain.models import (
+    CapabilityState,
+    CapabilityStatus,
     GeneratedRemark,
+    ReportCapabilities,
     RequirementSource,
     ValidationRequest,
 )
+from aerobim.domain.system_capabilities import assert_honesty_capabilities_not_silently_ok
 from aerobim.tools.generate_tz_matrix_status import generate_tz_matrix_status
 
 
@@ -60,6 +64,22 @@ class ArchitectureSeamTests(unittest.TestCase):
         mep = next(row for row in payload["rows"] if "MEP" in row["requirement"])
         self.assertEqual(mep["status"], "missing")
         self.assertEqual(payload["author_relationship"], "self")
+
+    def test_honesty_capabilities_never_silently_ok(self) -> None:
+        caps = ReportCapabilities()
+        assert_honesty_capabilities_not_silently_ok(caps)
+        self.assertEqual(caps.dwg_dxf.status, CapabilityState.MISSING)
+        self.assertEqual(caps.cv_human_level.status, CapabilityState.MISSING)
+        self.assertEqual(caps.mep_system_clash.status, CapabilityState.NOT_VERIFIED)
+        self.assertEqual(
+            caps.calculation_correctness.status, CapabilityState.NOT_IMPLEMENTED
+        )
+        with self.assertRaises(AssertionError):
+            assert_honesty_capabilities_not_silently_ok(
+                ReportCapabilities(
+                    dwg_dxf=CapabilityStatus(CapabilityState.OK, "fake"),
+                )
+            )
 
     def test_advisory_off_equals_advisory_on_for_summary_passed(self) -> None:
         """AI advisory contour must not mutate deterministic summary.passed."""

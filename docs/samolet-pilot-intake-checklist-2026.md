@@ -26,7 +26,7 @@ EN SSOT → [`partners/SAMOLET_WHAT_WE_NEED_2026_07.md`](partners/SAMOLET_WHAT_W
 | 6 | Typical errors list (≥20 patterns with examples) | Samolet | [ ] | update `samolet-typical-errors-catalog.json` |
 | 7 | Manual review baseline hours (same package) | Samolet | [ ] | [`pilot-weekly-log-2026.md`](pilot-weekly-log-2026.md) W1 |
 | 8 | CDE tool name + BCF version + pilot project for import | Joint | [ ] | [`pilot-cde-handoff-2026.md`](pilot-cde-handoff-2026.md) |
-| 9 | ≥2 TP/FP adjudicators named + process agreed | Joint | [ ] | [`pilot-kpi-protocol-2026.md`](pilot-kpi-protocol-2026.md) |
+| 9 | ≥2 TP/FP adjudicators named + process agreed (Cohen’s κ / Krippendorff’s α + confusion matrix; LLM assist advisory-only) | Joint | [ ] | [`pilot-kpi-protocol-2026.md`](pilot-kpi-protocol-2026.md) + [`evaluation/DETECTION_PRECISION_PROTOCOL_2026.md`](evaluation/DETECTION_PRECISION_PROTOCOL_2026.md) |
 | 10 | TechLab pilot budget owner confirmed (2 000 000 ₽) | Samolet | [ ] | internal nomination |
 
 ## Commands (after manifest filled)

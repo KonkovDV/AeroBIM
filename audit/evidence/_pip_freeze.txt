@@ -1,5 +1,5 @@
 absl-py==2.4.0
--e git+https://github.com/KonkovDV/AeroBIM@c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f#egg=aerobim_backend&subdirectory=backend
+-e git+https://github.com/KonkovDV/AeroBIM@2b9b8348338c6952c64d92a86983eb62324043cf#egg=aerobim_backend&subdirectory=backend
 aiofiles==24.1.0
 aiogram==3.22.0
 aiohappyeyeballs==2.6.1

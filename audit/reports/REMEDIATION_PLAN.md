@@ -30,12 +30,12 @@ A finding is closed only when runtime + regression + negative test + evidence + 
 
 ## P2 — HIGH (TZ gaps needing customer data or honest PARTIAL)
 
-| ID | Slice | Acceptance |
-|---|---|---|
-| RT-008 | BCF independent import evidence | Saved import log/screenshot + hash |
-| RT-010 | Split calculation claims in docs/API | Two labels: match results vs verify correctness |
-| RT-011 | DWG/CV non-claims | Explicit MISSING in API capability surface |
-| RT-012 | SLA evidence pack | package hash, sizes, machine, cold/warm, command, result JSON |
+| ID | Slice | Acceptance | Status |
+|---|---|---|---|
+| RT-008 | BCF structural + CDE import evidence | T1 structural OK; T2 CDE import artifact | **PARTIAL** (T1 done; CDE NOT_VERIFIED) |
+| RT-010 | Split calculation claims in docs/API | match vs correctness labels | **CLOSED** |
+| RT-011 | DWG/CV/MEP honesty surface | Explicit MISSING/NOT_VERIFIED on API | **CLOSED** |
+| RT-012 | SLA evidence pack | hash/machine/cold-warm/claim_level | **CLOSED** (fixture_only; customer still open) |
 
 ## P3 — Customer-blocked (cannot close in git alone)
 

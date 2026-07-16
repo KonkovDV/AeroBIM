@@ -433,9 +433,16 @@ class FilesystemAuditStore:
             generated_remark_count=data.get("generated_remark_count", 0),
         )
 
-    def _reconstruct_capability_status(self, data: object) -> CapabilityStatus:
+    def _reconstruct_capability_status(
+        self,
+        data: object,
+        *,
+        default: CapabilityStatus | None = None,
+    ) -> CapabilityStatus:
         if not isinstance(data, dict):
-            return CapabilityStatus(CapabilityState.SKIPPED, "missing capability status")
+            return default or CapabilityStatus(
+                CapabilityState.SKIPPED, "missing capability status"
+            )
         raw_status = str(data.get("status", "skipped"))
         try:
             status = CapabilityState(raw_status)
@@ -461,6 +468,39 @@ class FilesystemAuditStore:
             ifc_schema=self._reconstruct_capability_status(data.get("ifc_schema")),
             norm_rule_packs=self._reconstruct_capability_status(data.get("norm_rule_packs")),
             section_pairing=self._reconstruct_capability_status(data.get("section_pairing")),
+            dwg_dxf=self._reconstruct_capability_status(
+                data.get("dwg_dxf"),
+                default=CapabilityStatus(
+                    CapabilityState.MISSING, "DWG/DXF native analysis not implemented"
+                ),
+            ),
+            cv_human_level=self._reconstruct_capability_status(
+                data.get("cv_human_level"),
+                default=CapabilityStatus(
+                    CapabilityState.MISSING,
+                    "Human-level CV/drawing understanding not implemented",
+                ),
+            ),
+            mep_system_clash=self._reconstruct_capability_status(
+                data.get("mep_system_clash"),
+                default=CapabilityStatus(
+                    CapabilityState.NOT_VERIFIED,
+                    "MEP system-aware clash not wired in runtime DI",
+                ),
+            ),
+            calculation_match=self._reconstruct_capability_status(
+                data.get("calculation_match"),
+                default=CapabilityStatus(
+                    CapabilityState.SKIPPED, "numeric calculation match not evaluated"
+                ),
+            ),
+            calculation_correctness=self._reconstruct_capability_status(
+                data.get("calculation_correctness"),
+                default=CapabilityStatus(
+                    CapabilityState.NOT_IMPLEMENTED,
+                    "Independent calculation correctness verification not implemented",
+                ),
+            ),
         )
 
     def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:

@@ -27,6 +27,7 @@ from aerobim.domain.models import (
     ValidationRequest,
 )
 from aerobim.domain.object_acl import AuthPrincipal, principal_may_access_report
+from aerobim.domain.system_capabilities import build_system_capabilities_payload
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
 )
@@ -734,6 +735,10 @@ def create_http_app(container: Container):
             "schema_version": report_payload.get("schemaVersion"),
             "project_code": metadata.get("projectCode"),
             "slab_id": metadata.get("slabId"),
+            "claim_labels": {
+                "calculation_match": "сверка результатов (provenance/numeric match) — PARTIAL",
+                "calculation_correctness": "независимая проверка корректности — НЕ РЕАЛИЗОВАНО",
+            },
         }
 
     @app.post("/v1/analyze/project-package/submit", status_code=202)
@@ -776,6 +781,14 @@ def create_http_app(container: Container):
                 status_code=404, detail=f"Analyze project-package job {job_id} not found"
             )
         return _serialize_analyze_project_package_job(job)
+
+    @app.get("/v1/system/capabilities")
+    def get_system_capabilities(
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        """Static honesty surface for DWG/CV/MEP/calculation claim boundaries."""
+
+        return build_system_capabilities_payload()
 
     @app.get("/v1/reports")
     def list_reports(

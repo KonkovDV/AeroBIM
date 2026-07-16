@@ -798,8 +798,11 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
                 "schema_version",
                 "project_code",
                 "slab_id",
+                "claim_labels",
             },
         )
+        self.assertIn("calculation_match", body["claim_labels"])
+        self.assertIn("calculation_correctness", body["claim_labels"])
 
     def test_reinforcement_digest_endpoint_rejects_path_traversal(self) -> None:
         response = self.client.post(

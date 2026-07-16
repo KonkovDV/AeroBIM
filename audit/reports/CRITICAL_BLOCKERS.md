@@ -16,7 +16,17 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RT-015 | **CLOSED** | Postgres→FS fallback only in `dev`; non-dev re-raises |
 | RT-009 | **CLOSED** | this remediation commit freezes prior dirty seams + P0 |
 
-Still open for checkpoint: **RT-001, RT-002, RT-003** (customer/MEP blocked). Next allowed: BCF consumer evidence, SLA pack, customer intake — not CV/MEP features.
+Still open for checkpoint: **RT-001, RT-002, RT-003** (customer/MEP blocked).  
+Evidence wave (2026-07-17): RT-008 **PARTIAL** (structural T1); RT-010/011/012 honesty closed for fixture/API surface; CDE import + customer SLA still open.
+
+## Closed in evidence wave (2026-07-17)
+
+| ID | Status | Evidence |
+|---|---|---|
+| RT-008 | **PARTIAL** | `audit/evidence/bcf-structural-handoff-2026-07-17.json`; `cde_import=NOT_VERIFIED` |
+| RT-010 | **CLOSED** | `claim_labels` on reinforcement-digest + `calculation_correctness=NOT_IMPLEMENTED` |
+| RT-011 | **CLOSED** | `GET /v1/system/capabilities` + ReportCapabilities honesty fields |
+| RT-012 | **CLOSED** (fixture honesty) | schema 1.2.0 `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json`; customer SLA still НЕ ДОКАЗАНО |
 
 ---
 

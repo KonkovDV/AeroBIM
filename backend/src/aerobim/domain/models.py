@@ -73,6 +73,12 @@ class CapabilityState(StrEnum):
     OK = "ok"
     SKIPPED = "skipped"
     FAILED = "failed"
+    MISSING = "missing"
+    """Declared product gap — never treat as silent PASS."""
+    NOT_VERIFIED = "not_verified"
+    """Scaffold or unproven capability (e.g. MEP system clash)."""
+    NOT_IMPLEMENTED = "not_implemented"
+    """Explicit non-delivery (e.g. independent calculation correctness)."""
 
 
 @dataclass(frozen=True)
@@ -110,6 +116,22 @@ class ReportCapabilities:
     )
     section_pairing: CapabilityStatus = CapabilityStatus(
         CapabilityState.SKIPPED, "PD/RD section pairing not requested"
+    )
+    dwg_dxf: CapabilityStatus = CapabilityStatus(
+        CapabilityState.MISSING, "DWG/DXF native analysis not implemented"
+    )
+    cv_human_level: CapabilityStatus = CapabilityStatus(
+        CapabilityState.MISSING, "Human-level CV/drawing understanding not implemented"
+    )
+    mep_system_clash: CapabilityStatus = CapabilityStatus(
+        CapabilityState.NOT_VERIFIED, "MEP system-aware clash not wired in runtime DI"
+    )
+    calculation_match: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "numeric calculation match not evaluated"
+    )
+    calculation_correctness: CapabilityStatus = CapabilityStatus(
+        CapabilityState.NOT_IMPLEMENTED,
+        "Independent calculation correctness verification not implemented",
     )
 
 
