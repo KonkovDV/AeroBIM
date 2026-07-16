@@ -36,7 +36,18 @@ def summary_passed_after_capabilities(
     error_count: int,
     capabilities: ReportCapabilities,
 ) -> bool:
-    """Compute report pass flag: zero ERROR issues and no FAILED capabilities."""
+    """Compute report pass flag: zero ERROR issues and no FAILED capabilities.
+
+    RT-SIGNOFF-002: ``calculation_match=NOT_VERIFIED`` (source present but сверка
+    not evaluated) must not green-pass. Other NOT_VERIFIED fields (e.g. DXF-only
+    ``dwg_dxf``) remain non-blocking.
+    """
+
     if error_count != 0:
         return False
-    return not failed_capabilities_blocking_pass(capabilities)
+    if failed_capabilities_blocking_pass(capabilities):
+        return False
+    calc = capabilities.calculation_match
+    if calc is not None and calc.status is CapabilityState.NOT_VERIFIED:
+        return False
+    return True

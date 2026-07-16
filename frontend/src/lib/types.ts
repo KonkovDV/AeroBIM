@@ -104,7 +104,13 @@ export interface ValidationSummary {
 
 export type DocStatus = "WIP" | "Shared" | "Published" | "Archived";
 
-export type CapabilityState = "ok" | "skipped" | "failed";
+export type CapabilityState =
+  | "ok"
+  | "skipped"
+  | "failed"
+  | "missing"
+  | "not_verified"
+  | "not_implemented";
 
 export interface CapabilityStatus {
   status: CapabilityState;
@@ -118,6 +124,35 @@ export interface ReportCapabilities {
   unit_scale: CapabilityStatus;
   raster: CapabilityStatus;
   ifc_schema: CapabilityStatus;
+  norm_rule_packs?: CapabilityStatus;
+  section_pairing?: CapabilityStatus;
+  dwg_dxf?: CapabilityStatus;
+  cv_human_level?: CapabilityStatus;
+  mep_system_clash?: CapabilityStatus;
+  calculation_match?: CapabilityStatus;
+  calculation_correctness?: CapabilityStatus;
+}
+
+export interface DivergenceRecord {
+  finding_key: string;
+  engine_verdict: string;
+  advisory_verdict: string;
+  resolution?: "engine_wins";
+}
+
+export interface DrawingRegionRef {
+  sheet_id: string;
+  bbox_xyxy: [number, number, number, number];
+  confidence: number;
+  modality: string;
+}
+
+export interface IdsCompileDraft {
+  suggested_ids_xml: string;
+  rationale: string;
+  source_requirement_count: number;
+  advisory_only?: boolean;
+  confidence?: number;
 }
 
 export interface ValidationReport {
@@ -137,4 +172,7 @@ export interface ValidationReport {
   drawing_assets: DrawingAsset[];
   clash_results: ClashResult[];
   capabilities?: ReportCapabilities | null;
+  divergences?: DivergenceRecord[];
+  drawing_regions?: DrawingRegionRef[];
+  advisory_ids_draft?: IdsCompileDraft | null;
 }

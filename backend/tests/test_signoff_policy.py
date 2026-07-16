@@ -51,6 +51,14 @@ class SignoffPolicyTests(unittest.TestCase):
         self.assertEqual(failed_capabilities_blocking_pass(caps), ())
         self.assertTrue(summary_passed_after_capabilities(error_count=0, capabilities=caps))
 
+    def test_not_verified_calculation_match_blocks_pass(self) -> None:
+        caps = ReportCapabilities(
+            calculation_match=CapabilityStatus(
+                CapabilityState.NOT_VERIFIED, "no LOAD rows evaluated"
+            ),
+        )
+        self.assertFalse(summary_passed_after_capabilities(error_count=0, capabilities=caps))
+
 
 if __name__ == "__main__":
     unittest.main()
