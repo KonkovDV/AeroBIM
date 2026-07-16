@@ -6,6 +6,7 @@ splitting the modular monolith into microservices.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Literal
@@ -171,3 +172,29 @@ def assert_precision_publishable(claim: PrecisionClaim) -> None:
             "PrecisionClaim is not publishable without corpus_kind=customer "
             "and adjudicators>=2 (red-team R1/R4)"
         )
+
+
+def precision_claim_publishable_with_agreement(
+    claim: PrecisionClaim,
+    *,
+    agreement: Mapping[str, object] | None,
+    require_agreement: bool = True,
+) -> bool:
+    """Publishable only with customer corpus, ≥2 adjudicators, and κ/α thresholds.
+
+    When ``require_agreement`` is True, an agreement artifact is mandatory.
+    Cohen κ must pass 0.60; if Krippendorff α is present it must pass 0.67.
+    """
+
+    if not claim.publishable:
+        return False
+    if require_agreement and agreement is None:
+        return False
+    if agreement is None:
+        return True
+    if not bool(agreement.get("pass_threshold_0_60")):
+        return False
+    if "krippendorff_alpha" in agreement or "pass_alpha_0_67" in agreement:
+        if not bool(agreement.get("pass_alpha_0_67")):
+            return False
+    return True

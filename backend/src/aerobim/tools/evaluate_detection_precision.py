@@ -102,6 +102,8 @@ def evaluate_detection_precision(
     detections_path: Path,
     *,
     require_publishable: bool = False,
+    agreement_path: Path | None = None,
+    require_agreement_for_publishable: bool = True,
 ) -> dict[str, object]:
     """Evaluate exact finding identities and return a deterministic JSON-ready report."""
 
@@ -150,7 +152,10 @@ def evaluate_detection_precision(
             "results and must not be published as AeroBIM product accuracy."
         )
 
-    from aerobim.domain.architecture import PrecisionClaim
+    from aerobim.domain.architecture import (
+        PrecisionClaim,
+        precision_claim_publishable_with_agreement,
+    )
 
     if labels.dataset_status == "adjudicated":
         corpus_kind = "customer"
@@ -167,6 +172,23 @@ def evaluate_detection_precision(
         date="",
     )
 
+    agreement_payload: dict[str, object] | None = None
+    if agreement_path is not None:
+        agreement_payload = _load_agreement_json(agreement_path)
+        if agreement_payload.get("artifact_type") != "adjudicator_agreement":
+            raise ValueError("agreement JSON must have artifact_type=adjudicator_agreement")
+
+    publishable = precision_claim_publishable_with_agreement(
+        claim,
+        agreement=agreement_payload,
+        require_agreement=require_agreement_for_publishable,
+    )
+    if require_publishable and not publishable:
+        raise ValueError(
+            "PrecisionClaim is not publishable: need customer corpus, ≥2 adjudicators, "
+            "and agreement artifact passing κ≥0.60 (and α≥0.67 when reported)"
+        )
+
     return {
         "artifact_type": "aerobim_detection_precision_evaluation",
         "schema_version": _SCHEMA_VERSION,
@@ -179,13 +201,15 @@ def evaluate_detection_precision(
         "adjudicator_count": labels.adjudicator_count,
         "corpus_kind": corpus_kind,
         "finding_predicates": [predicate.value for predicate in FindingPredicate],
+        "agreement_path": str(agreement_path.as_posix()) if agreement_path else None,
         "precision_claim": {
             "metric": claim.metric,
             "value": claim.value,
             "corpus_id": claim.corpus_id,
             "corpus_kind": claim.corpus_kind,
             "adjudicators": claim.adjudicators,
-            "publishable": claim.publishable,
+            "base_publishable": claim.publishable,
+            "publishable": publishable,
             "render": claim.render_value(),
         },
         "labels": {
@@ -250,6 +274,30 @@ def _load_json(path: Path, *, artifact: str) -> dict[str, Any]:
         raise ValueError(f"{artifact.capitalize()} root must be a JSON object")
     if payload.get("schema_version") != _SCHEMA_VERSION:
         raise ValueError(f"{artifact.capitalize()} schema_version must be {_SCHEMA_VERSION!r}")
+    return payload
+
+
+def _load_agreement_json(path: Path) -> dict[str, Any]:
+    """Load adjudicator agreement without binding to detection-precision schema."""
+
+    if path.is_symlink():
+        raise ValueError(f"Symlinked agreement input is not accepted: {path}")
+    if not path.exists():
+        raise FileNotFoundError(path)
+    if not path.is_file():
+        raise ValueError(f"Agreement path is not a regular file: {path}")
+    size = path.stat().st_size
+    if size > _MAX_INPUT_BYTES:
+        raise ValueError(f"Agreement input exceeds {_MAX_INPUT_BYTES} bytes: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Invalid UTF-8 JSON agreement input: {path}") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("Agreement root must be a JSON object")
+    schema = payload.get("schema_version")
+    if schema not in {"1.0.0", "1.1.0"}:
+        raise ValueError("Agreement schema_version must be '1.0.0' or '1.1.0'")
     return payload
 
 
@@ -491,6 +539,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Reject datasets that do not pass the two-adjudicator protocol gate",
     )
+    parser.add_argument(
+        "--agreement-json",
+        type=Path,
+        default=None,
+        help="Adjudicator agreement artifact (κ/α) required for publishable claims",
+    )
+    parser.add_argument(
+        "--no-require-agreement",
+        action="store_true",
+        help="Allow base PrecisionClaim.publishable without agreement artifact (debug only)",
+    )
     return parser
 
 
@@ -500,6 +559,8 @@ def main(argv: list[str] | None = None) -> int:
         args.labels,
         args.detections,
         require_publishable=args.require_publishable,
+        agreement_path=args.agreement_json,
+        require_agreement_for_publishable=not args.no_require_agreement,
     )
     failures = threshold_failures(
         report,

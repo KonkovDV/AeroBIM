@@ -127,6 +127,35 @@ KPI weekly rollup — в
 [`../samolet-kpi-adjudication-template-2026.md`](../samolet-kpi-adjudication-template-2026.md);
 traceability audit ≥ 0.90 — `aerobim.tools.audit_issue_traceability`.
 
+## 8b. I6 — agreement + intake gate (2026-07-17)
+
+```bash
+# Dual/multi-human κ + α
+aerobim-measure-adjudicator-agreement \
+  --csv adjudication-combined.csv \
+  --output agreement.json
+
+# Precision with agreement gate (publishable only if customer + κ/α)
+aerobim-evaluate-detection-precision \
+  --labels labels.json \
+  --detections detections.json \
+  --agreement-json agreement.json \
+  --require-publishable \
+  --output detection-precision-customer.json
+
+# Customer SLA (never use fixture default for customer packs)
+aerobim-measure-package-sla \
+  --pack samples/customer/<pack>.json \
+  --corpus-kind customer \
+  --max-minutes 30 \
+  --output docs/evidence/samolet-sla-customer-<date>.json
+
+# Intake gate must stay honest
+aerobim-validate-customer-intake-gate
+```
+
+Checkpoint remains **NO_GO** until `audit/evidence/customer-intake-gate.json` flips with evidence.
+
 ## 9. Go/No-go
 
 - `capabilities.*` = ok для required (нет silent skip);
@@ -141,5 +170,7 @@ traceability audit ≥ 0.90 — `aerobim.tools.audit_issue_traceability`.
 | 3 | `detections.json` | `detections.schema.json` |
 | 4 | `adjudication-combined.csv` | `adjudication-template.csv` |
 | 5 | `labels.json` | `labels.schema.json` |
-| 6 | `detection-precision-customer.json` | harness report |
-| 7 | `package-sla-customer.json` | SLA report |
+| 6 | `detection-precision-customer.json` | harness report + agreement |
+| 6b | `agreement.json` | adjudicator_agreement 1.1.0 (κ+α) |
+| 7 | `package-sla-customer.json` | SLA report (`corpus_kind=customer`) |
+| 8 | intake gate validation | `customer_intake_gate_validation` |
