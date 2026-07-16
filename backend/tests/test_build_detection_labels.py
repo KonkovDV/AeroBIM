@@ -248,8 +248,34 @@ class EndToEndHarnessTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            report = evaluate_detection_precision(labels_path, detections, require_publishable=True)
+            with self.assertRaisesRegex(ValueError, "PrecisionClaim is not publishable"):
+                evaluate_detection_precision(
+                    labels_path,
+                    detections,
+                    require_publishable=True,
+                )
+            agreement_path = tmp / "agreement.json"
+            agreement_path.write_text(
+                json.dumps(
+                    {
+                        "artifact_type": "adjudicator_agreement",
+                        "schema_version": "1.1.0",
+                        "cohen_kappa": 1.0,
+                        "pass_threshold_0_60": True,
+                        "krippendorff_alpha": 1.0,
+                        "pass_alpha_0_67": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            report = evaluate_detection_precision(
+                labels_path,
+                detections,
+                require_publishable=True,
+                agreement_path=agreement_path,
+            )
         self.assertTrue(report["publishable_protocol_gate"])
+        self.assertTrue(report["precision_claim"]["publishable"])
         self.assertIsNone(report["warning"])
         self.assertEqual(report["micro"]["tp"], 1)
 
