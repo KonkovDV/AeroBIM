@@ -1,7 +1,8 @@
-# AeroBIM Full Audit & Fact-Check — 2026-07-10
+# AeroBIM Full Audit & Fact-Check — 2026-07-10 (internal self-audit)
 
 **Scope:** `c:\plans\AeroBIM` live tree vs public README / capability claims  
-**Method:** Static inspection + live `pytest` + live extraction gate + external standards check  
+**Author relationship:** self (internal self-audit — not an independent/external audit)  
+**Method:** Static inspection + live `pytest` + live extraction gate + standards check  
 **Prior audits:** `docs/archive/05-fact-check-audit.md` (2026-04-12), `docs/evidence/public-surface-factcheck-2026-05-21.md`  
 **Hub:** this file supersedes stale metrics in README for audit purposes until README is corrected  
 **Deep follow-up:** [`ACADEMIC_DEEP_AUDIT_2026_07_10.md`](ACADEMIC_DEEP_AUDIT_2026_07_10.md) — security/correctness/integrity finding register

@@ -1,0 +1,14 @@
+{
+  "artifact_type": "aerobim_runtime_baseline",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-16T20:48:02.282467+00:00",
+  "author_relationship": "self",
+  "corpus_kind": "fixture",
+  "metrics": {
+    "backend_src_loc": 14744,
+    "backend_test_loc": 10810,
+    "backend_test_functions": 425,
+    "extraction_macro_f1": 0.8600000000000001
+  },
+  "readme_snippet": "Backend src ~14744 LOC; tests ~10810 LOC; 425+ test functions; extraction macro_f1=0.8600000000000001 (generated)"
+}

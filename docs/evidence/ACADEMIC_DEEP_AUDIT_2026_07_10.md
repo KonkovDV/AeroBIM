@@ -1,8 +1,9 @@
-# AeroBIM — Academic Deep Audit (End-to-End)
+# AeroBIM — Academic Deep Audit (End-to-End) — internal self-audit
 
 **Date:** 2026-07-10  
 **Object:** `c:\plans\AeroBIM`  
-**Method:** Integrity scan + architecture/DI audit + security/correctness hunt + live pytest/extraction + external standards check  
+**Author relationship:** self (internal self-audit — not an independent/external audit)  
+**Method:** Integrity scan + architecture/DI audit + security/correctness hunt + live pytest/extraction + standards check  
 **Companion:** [`FULL_AUDIT_FACTCHECK_2026_07_10.md`](FULL_AUDIT_FACTCHECK_2026_07_10.md)  
 **Prior:** `docs/archive/05-fact-check-audit.md` (2026-04-12), `docs/evidence/public-surface-factcheck-2026-05-21.md`
 
