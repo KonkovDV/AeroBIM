@@ -39,7 +39,7 @@ def krippendorff_alpha_nominal(units: Sequence[Sequence[str]]) -> float:
     Items with fewer than two labels are skipped.
     """
 
-    coincidence: Counter[tuple[str, str]] = Counter()
+    coincidence: dict[tuple[str, str], float] = defaultdict(float)
     n_values = 0.0
     for labels in units:
         if len(labels) < 2:
@@ -61,7 +61,7 @@ def krippendorff_alpha_nominal(units: Sequence[Sequence[str]]) -> float:
             observed_disagreement += weight
     observed_disagreement /= n_values
 
-    marginal: Counter[str] = Counter()
+    marginal: dict[str, float] = defaultdict(float)
     for (left, _right), weight in coincidence.items():
         marginal[left] += weight
 
