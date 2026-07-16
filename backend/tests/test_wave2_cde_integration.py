@@ -80,7 +80,10 @@ class HttpBcfApiClientTests(unittest.TestCase):
             access_token="hub-token",
             http_post=fake_post,
         )
-        result = client.push_report_topics(_sample_report(), project_id="11111111-1111-1111-1111-111111111111")
+        result = client.push_report_topics(
+            _sample_report(),
+            project_id="11111111-1111-1111-1111-111111111111",
+        )
         self.assertEqual(result.attempted, 1)
         self.assertEqual(result.succeeded, 1)
         self.assertEqual(result.failed, 0)

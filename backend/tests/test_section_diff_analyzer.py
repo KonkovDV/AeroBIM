@@ -8,7 +8,6 @@ from pathlib import Path
 from aerobim.domain.models import ConflictKind, FindingCategory, Severity
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SECTIONS = REPO_ROOT / "samples" / "sections"
 PD_SECTION = SECTIONS / "ar-pd-synthetic.json"

@@ -377,14 +377,14 @@ class JsonSectionDiffAnalyzer:
                 )
             seen_canonical[canonical.canonical] = key
             raw_value = item.get("value")
-            if not isinstance(raw_value, (str, int, float, bool)):
+            if not isinstance(raw_value, str | int | float | bool):
                 raise ValueError(f"values[{index}].value must be a scalar")
             raw_required = item.get("required_in_rd", True)
             if not isinstance(raw_required, bool):
                 raise ValueError(f"values[{index}].required_in_rd must be boolean")
             raw_tolerance = item.get("tolerance_si")
             if raw_tolerance is not None and (
-                not isinstance(raw_tolerance, (int, float)) or raw_tolerance < 0
+                not isinstance(raw_tolerance, int | float) or raw_tolerance < 0
             ):
                 raise ValueError(f"values[{index}].tolerance_si must be non-negative")
             values.append(

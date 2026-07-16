@@ -11,7 +11,6 @@ from aerobim.tools.evaluate_detection_precision import (
     threshold_failures,
 )
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURE_DIR = REPO_ROOT / "samples" / "benchmarks" / "detection-precision"
 LABELS = FIXTURE_DIR / "labels-synthetic.json"

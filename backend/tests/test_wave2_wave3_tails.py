@@ -36,8 +36,12 @@ from aerobim.infrastructure.adapters.template_remark_generator import TemplateRe
 class ReportListFilterTests(unittest.TestCase):
     def test_apply_filters_by_project_and_passed(self) -> None:
         entries = [
-            ReportSummaryEntry("a" * 32, "r1", "t1", True, 0, project_name="Alpha", discipline="AR"),
-            ReportSummaryEntry("b" * 32, "r2", "t2", False, 2, project_name="Beta", discipline="ME"),
+            ReportSummaryEntry(
+                "a" * 32, "r1", "t1", True, 0, project_name="Alpha", discipline="AR"
+            ),
+            ReportSummaryEntry(
+                "b" * 32, "r2", "t2", False, 2, project_name="Beta", discipline="ME"
+            ),
         ]
         filtered = apply_report_list_filters(
             entries, ReportListFilters(project="alp", passed=True)

@@ -15,7 +15,6 @@ from aerobim.domain.models import (
 from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCE_PACK = REPO_ROOT / "samples" / "rule-packs" / "residential-ar-reference-template.json"
 PD_SECTION = REPO_ROOT / "samples" / "sections" / "ar-pd-synthetic.json"
