@@ -243,9 +243,10 @@ class AnalyzeProjectPackageUseCase:
                 "No requirements were extracted or synthesized from the provided sources"
             )
 
-        drawing_annotations, drawing_regions = self._collect_drawing_annotations(request)
+        annotation_list, region_list = self._collect_drawing_annotations(request)
         cad_annotations, cad_capability, cad_issues = self._run_cad_ingest(request)
-        drawing_annotations = tuple([*drawing_annotations, *cad_annotations])
+        drawing_annotations = tuple([*annotation_list, *cad_annotations])
+        drawing_regions = tuple(region_list)
         ifc_issues = (
             tuple(self._ifc_validator.validate(request.ifc_path, requirements))
             if requirements
