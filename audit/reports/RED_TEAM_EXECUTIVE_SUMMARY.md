@@ -1,5 +1,9 @@
 # RED TEAM — Executive Summary (AeroBIM × Samolet TechLab)
 
+> **Historical freeze (pre-remediation).** Measured at SHA `c0c4b2b` with dirty tree and failing frontend tests.  
+> **Operational delta (post P0 + evidence wave):** see [`RED_TEAM_DELTA_2026_07_17.md`](RED_TEAM_DELTA_2026_07_17.md) at SHA `8efbef8` (451 backend / 21 frontend).  
+> **Checkpoint verdict remains `NO_GO`** (RT-001/002/003). Do not cite defect counts below as current.
+
 **Verdict: `NO_GO`**
 
 **Audit date (UTC):** 2026-07-16T20:59:16Z  

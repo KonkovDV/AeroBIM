@@ -1,5 +1,7 @@
 # RED TEAM FULL REPORT — AeroBIM (Samolet Task 07)
 
+> **Historical pre-remediation freeze.** For post-P0 / evidence-wave atomic status use [`RED_TEAM_DELTA_2026_07_17.md`](RED_TEAM_DELTA_2026_07_17.md) (SHA `8efbef8`). Checkpoint remains **`NO_GO`**.
+
 **Verdict:** `NO_GO`  
 **Audit UTC:** 2026-07-16T20:59:16Z  
 **SHA:** `c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f` (`main`, dirty)  

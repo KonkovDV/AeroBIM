@@ -1,8 +1,8 @@
 ---
 title: "TechLab Samolet Task 07 Readiness 2026"
 status: active
-version: "1.0.1"
-last_updated: "2026-07-11"
+version: "1.1.0"
+last_updated: "2026-07-17"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
@@ -12,28 +12,31 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site.  
 **Prize:** paid pilot testing fund **2 000 000 ₽**  
 **Task page:** https://i.moscow/techlab/samolet  
-**Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)
+**Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
+**Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
+
+Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED_BY_CUSTOMER_DATA` | `MISSING` | `NOT_VERIFIED`.
 
 ## 1. Official mandate → AeroBIM
 
 | Task 07 requirement | AeroBIM today | Status |
 |---------------------|---------------|--------|
-| Work with **2D drawings** | Structured annotations + PDF/OCR baseline + 2D overlay | partial (CV deferred) |
-| Work with **BIM models** | IFC + IDS + schema pre-gate + optional clash | done |
-| Work with **TZ + calculations** | Narrative/structured extract + cross-doc + OpenRebar | done |
-| Compare docs vs calcs / TZ / sections / norms | Cross-doc + IDS + JSON norm packs (manifest/env path, CI schema gate, A2) + PD↔RD canonical section pairing (multi-discipline RU/EN, A1) | partial (customer pack/pair TBD) |
-| Detect clashes | IfcClash + `SPATIAL-*` | partial (generic; MEP gap `MEP-CLASH-001`) |
-| Calc / dimension / area errors | Quantity algebra + cross-doc | done (bounded) |
-| Logic gaps / missing elements | IDS `exists` + property checks | done |
-| Highlight problem zones | `problem_zone` + drawing overlay | done |
-| Prioritize remarks | `compute_issue_priority` + Samolet profile | done |
-| Generate designer comments | RU/EN `TemplateRemarkGenerator` + HITL edit | done |
-| Speed up review | SLA rail ≤30 min on agreed pack | fixture done; customer pack TBD |
-| Expert remains in the loop | Claim boundary + review-events / adjudication | done |
-| MVP with visualization + reports | Browser shell + JSON/HTML/BCF | done |
-| Resources: PD/RD, BIM, TZ/standards, typical errors | Appendix + ≥20-pattern catalog + mapping tool | partial scaffold → customer intake |
-| Competencies BIM/CAD, CV/OCR, AI/ML | BIM/OCR strong; CV/LLM advisory only | honest split |
-| Stack at team discretion | Python FastAPI + React + openBIM | done |
+| Work with **2D drawings** | Structured annotations + PDF/OCR baseline + 2D overlay | PARTIAL (CV deferred; OCR optional-extra) |
+| Work with **BIM models** | IFC + IDS + schema pre-gate + optional clash | VERIFIED_FIXTURE_ONLY |
+| Work with **TZ + calculations** | Narrative/structured extract + cross-doc + OpenRebar **сверка** | PARTIAL (correctness NOT_IMPLEMENTED) |
+| Compare docs vs calcs / TZ / sections / norms | Cross-doc + IDS + JSON norm packs + PD↔RD pairing | PARTIAL (customer pack TBD) |
+| Detect clashes | IfcClash + `SPATIAL-*`; `require_clash` fail-closed | PARTIAL (generic; MEP NOT_VERIFIED) |
+| Calc / dimension / area errors | Quantity algebra + cross-doc | VERIFIED_FIXTURE_ONLY (bounded) |
+| Logic gaps / missing elements | IDS `exists` + property checks | VERIFIED_FIXTURE_ONLY |
+| Highlight problem zones | `problem_zone` + drawing overlay | VERIFIED_FIXTURE_ONLY |
+| Prioritize remarks | `compute_issue_priority` + Samolet profile | VERIFIED_FIXTURE_ONLY |
+| Generate designer comments | RU/EN templates + HITL edit | VERIFIED_FIXTURE_ONLY |
+| Speed up review | SLA rail ≤30 min on agreed pack | FIXTURE_ONLY measured; customer pack BLOCKED |
+| Expert remains in the loop | Claim boundary + review-events / adjudication | VERIFIED_FIXTURE_ONLY |
+| MVP with visualization + reports | Browser shell + JSON/HTML/BCF **export** | VERIFIED_FIXTURE_ONLY (CDE import NOT_VERIFIED) |
+| Resources: PD/RD, BIM, TZ/standards, typical errors | Appendix + catalog + mapping tool | PARTIAL → customer intake |
+| Competencies BIM/CAD, CV/OCR, AI/ML | BIM/OCR when extras present; CV/LLM advisory only | honest split |
+| Stack at team discretion | Python FastAPI + React + openBIM | VERIFIED_FIXTURE_ONLY |
 
 ## 2. Product stance (matches sponsor quote)
 

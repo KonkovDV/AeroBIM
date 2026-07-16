@@ -19,6 +19,7 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 - Preserve deterministic behavior in validation flows where deterministic mode already exists.
 - Treat auditability as a feature: new behavior should be explainable in report artifacts.
 - Keep diffs focused and reviewable.
+- Do not claim customer accuracy, CDE-ready BCF, MEP system clash, or calculation *correctness* without evidence cited in [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
 ## Local Setup
 
@@ -27,6 +28,12 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,raster]"
+```
+
+Enable single-author commit hygiene (required):
+
+```bash
+git config core.hooksPath .githooks
 ```
 
 Optional extras:

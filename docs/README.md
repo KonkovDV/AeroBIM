@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Documentation Map"
 status: active
-version: "0.5.0"
-last_updated: "2026-05-21"
+version: "0.6.0"
+last_updated: "2026-07-17"
 tags: [aerobim, documentation, navigation, reference]
 ---
 
@@ -16,8 +16,10 @@ Router for `AeroBIM/docs/`.
 |-------|------|
 | [`LANGUAGE-POLICY-2026.md`](LANGUAGE-POLICY-2026.md) | English vs Russian; no runglish |
 | [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md) | Git vs local vs CI artifacts |
-| [`evidence/README.md`](evidence/README.md) | Dated verification snapshots |
+| [`evidence/README.md`](evidence/README.md) | Dated verification snapshots (+ July 17 honesty index) |
 | [`archive/README.md`](archive/README.md) | Historical docs (`01`–`11`) |
+| [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | **Claims wording SSOT** |
+| [`../audit/reports/RED_TEAM_DELTA_2026_07_17.md`](../audit/reports/RED_TEAM_DELTA_2026_07_17.md) | Post-remediation atomic Red Team |
 
 ## Tier 0 — SSOT (read first)
 
@@ -26,6 +28,7 @@ Router for `AeroBIM/docs/`.
 | `REPRODUCIBILITY-2026.md` | FAIR/CODE, frozen tag, evidence manifest |
 | `06-architecture-reference.md` | Technical architecture |
 | `pilot-claim-boundary-2026.md` | Verified vs planned claims |
+| `../audit/reports/CRITICAL_BLOCKERS.md` | Checkpoint NO_GO register |
 | `samolet-techlab-alignment-2026.md` | Samolet R1–R15 traceability |
 | `samolet-compliance-scorecard-2026.md` | Pilot closure sign-off |
 | `PROJECT-AUDIT-2026-05-20.md` | Repository audit (May 2026) |
@@ -36,6 +39,7 @@ Router for `AeroBIM/docs/`.
 | `evidence/TRACK_A3_INTAKE_PRECISION_2026_07_11.md` | **Track A3** — adjudication templates + intake runbook |
 | `evidence/TRACK_A5_DEMO_PATH_2026_07_11.md` | **Track A5** — upload→analyze→BCF demo path on fixture |
 | `partners/SAMOLET_TZ_REMAINING_TAILS_2026_07.md` | **Хвосты ТЗ Самолёта** — blockers vs engineering done |
+| `partners/TECHLAB_TASK_07_READINESS_2026.md` | Task 07 readiness with fixture-only vocabulary |
 | `evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md` | **OCR/CV/NLP posture** — July 2026 vs “AI reads like a human” |
 | `tz/README.md` | **TZ Response Pack** — expert-assistant MVP (architecture/build/presentation TBD fills) |
 | `evidence/ACADEMIC_DEEP_AUDIT_2026_07_10.md` | Deep audit finding register (Jul 2026) |

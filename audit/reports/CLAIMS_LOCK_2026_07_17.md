@@ -1,6 +1,7 @@
 # Claims lock — Red Team freeze (2026-07-17)
 
-**Status:** locked; P0 closed; evidence wave honesty surfaces active.  
+**Status:** locked; P0 closed; evidence wave honesty surfaces active; public README aligned 2026-07-17.  
+**Operational freeze SHA:** `8efbef8fa5191ef8d6d68841f54fb1e415ae1a9b`.  
 **Checkpoint verdict:** `NO_GO` until RT-001/002/003 closed with customer evidence.
 
 ## Forbidden public wording (until evidence exists)

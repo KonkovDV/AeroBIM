@@ -1,7 +1,10 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
-Audit SHA: `c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f` (+ dirty tree at audit).  
+**Operational freeze SHA:** `8efbef8fa5191ef8d6d68841f54fb1e415ae1a9b` (2026-07-17).  
+**Historical Red Team freeze:** `c0c4b2b` — see `RED_TEAM_FULL_REPORT.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
+
+**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open).
 
 ## Closed in remediation commit (2026-07-17)
 
