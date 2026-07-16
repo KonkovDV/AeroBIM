@@ -11,6 +11,7 @@ from aerobim.domain.models import (
     DrawingAnnotation,
     DrawingSource,
     GeneratedRemark,
+    NormPackVersionInfo,
     NormRulePack,
     ParsedRequirement,
     ReportListFilters,
@@ -104,6 +105,26 @@ class ReviewEventStore(Protocol):
     def append(self, event: ReviewEvent) -> str: ...
 
     def list_for_report(self, report_id: str) -> list[ReviewEvent]: ...
+
+
+class NormRulePackVersionStore(Protocol):
+    """Immutable norm-pack version history (P0.3 HITL). Never overwrites prior versions."""
+
+    def save_version(
+        self,
+        *,
+        pack_id: str,
+        version: str,
+        payload: bytes,
+        created_by: str | None,
+        parent_version: str | None,
+        approval_status: str | None,
+        approval_ref: str | None,
+    ) -> NormPackVersionInfo: ...
+
+    def list_versions(self, pack_id: str) -> list[NormPackVersionInfo]: ...
+
+    def get_version_bytes(self, pack_id: str, version: str) -> bytes | None: ...
 
 
 class BsiValidationService(Protocol):

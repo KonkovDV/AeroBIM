@@ -8,6 +8,7 @@ from aerobim.application.use_cases.analyze_project_package_jobs import (
     GetAnalyzeProjectPackageJobStatusUseCase,
     SubmitAnalyzeProjectPackageJobUseCase,
 )
+from aerobim.application.use_cases.apply_norm_rule_hitl_event import ApplyNormRuleHitlEventUseCase
 from aerobim.application.use_cases.push_report_to_bcf_api import PushReportToBcfApiUseCase
 from aerobim.application.use_cases.validate_ifc_against_ids import ValidateIfcAgainstIdsUseCase
 from aerobim.core.config.settings import Settings
@@ -37,6 +38,9 @@ from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSecti
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
+from aerobim.infrastructure.adapters.object_store_norm_pack_version_store import (
+    ObjectStoreNormRulePackVersionStore,
+)
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
@@ -178,6 +182,22 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.REVIEW_EVENT_STORE,
         lambda current: FilesystemReviewEventStore(current.resolve(Tokens.SETTINGS).storage_dir),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.NORM_RULE_PACK_VERSION_STORE,
+        lambda current: ObjectStoreNormRulePackVersionStore(
+            current.resolve(Tokens.OBJECT_STORE),
+            index_dir=current.resolve(Tokens.SETTINGS).storage_dir,
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.APPLY_NORM_RULE_HITL_EVENT_USE_CASE,
+        lambda current: ApplyNormRuleHitlEventUseCase(
+            version_store=current.resolve(Tokens.NORM_RULE_PACK_VERSION_STORE),
+            review_event_store=current.resolve(Tokens.REVIEW_EVENT_STORE),
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(

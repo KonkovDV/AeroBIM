@@ -43,6 +43,11 @@ class FilesystemReviewEventStore:
                         actor=data.get("actor"),
                         note=data.get("note"),
                         latency_ms=data.get("latency_ms"),
+                        pack_id=data.get("pack_id"),
+                        resulting_pack_version=data.get("resulting_pack_version"),
+                        target_approval_status=data.get("target_approval_status"),
+                        approval_ref=data.get("approval_ref"),
+                        rule_diff_json=data.get("rule_diff_json"),
                     )
                 )
             except (KeyError, TypeError, ValueError, json.JSONDecodeError):

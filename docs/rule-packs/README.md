@@ -129,7 +129,25 @@ quantity / drawing acceptance criteria) или IDS 1.0 (facet-based требов
 - [ ] digest и версия заморожены до benchmark run.
 
 До получения пакета Самолёта закрыт только **loader + reference template +
-provenance badge**; customer-approved residential pack остаётся внешним blocker.
+provenance badge + HITL versioning scaffold**; customer-approved residential pack
+остаётся внешним blocker.
+
+## HITL-обновление норм-паков (P0.3)
+
+Инженер может предложить/отредактировать правило без выдумывания утверждённого
+заказчиком содержимого:
+
+1. `POST /v1/norm-packs/{pack_id}/rule-events` с `base_pack_path` (в storage jail),
+   `rule_diff`, `event_type` ∈ `norm_rule_proposed` | `norm_rule_edited`.
+2. Use-case создаёт **новую** immutable версию `{base}+hitl.N` в ObjectStore
+   (`norm-packs/...`); предыдущие ключи не перезаписываются.
+3. `GET /v1/norm-packs/{pack_id}/versions` — история версий.
+4. Повышение до `customer_approved` разрешено **только** при непустом
+   `approval_ref`; иначе 400.
+5. Review-event пишется с `resulting_pack_version` / `rule_diff_json`.
+6. Finding provenance (`source` / `approval_status`) указывает на версию пака.
+
+Это каркас «RU-норм-пак с provenance и HITL», **не** «утверждённый Самолётом пак».
 
 ## Drawing AI posture (retained local SSOT)
 
