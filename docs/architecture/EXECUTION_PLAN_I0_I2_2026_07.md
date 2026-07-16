@@ -69,4 +69,6 @@ ruff format --check src tests
 
 ## Iteration after this wave
 
-I2b Quantity/Load/Logic ports → I3 Multimodal → I4 NLP/IDS+RAG → I5 Agent → I6 customer metrics.
+- [x] **I2b** Quantity / Load / Logic ports + adapters + analyze wire
+- [x] **I3** MultimodalDrawingPipeline (OCR degrade only; cv_human_level stays MISSING)
+- Next: **I4** NLP→IDS + RAG · **I5** ComplianceAgent · **I6** customer metrics

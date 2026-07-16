@@ -35,3 +35,7 @@ class Tokens:
     CAD_MODEL_INGESTOR = "cad_model_ingestor"
     OFFICE_DOCUMENT_INGESTOR = "office_document_ingestor"
     DETERMINISM_GATE = "determinism_gate"
+    QUANTITY_CONSISTENCY_CHECKER = "quantity_consistency_checker"
+    LOAD_EVIDENCE_VERIFIER = "load_evidence_verifier"
+    LOGIC_CONSISTENCY_ANALYZER = "logic_consistency_analyzer"
+    MULTIMODAL_DRAWING_PIPELINE = "multimodal_drawing_pipeline"

@@ -35,6 +35,9 @@ from aerobim.infrastructure.adapters.filesystem_review_event_store import Filesy
 from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
+from aerobim.infrastructure.adapters.ifc_quantity_consistency_adapter import (
+    IfcQuantityConsistencyAdapter,
+)
 from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store import (
     InMemoryAnalyzeProjectPackageJobStore,
@@ -43,9 +46,15 @@ from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormR
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
+from aerobim.infrastructure.adapters.manifest_logic_consistency_adapter import (
+    ManifestLogicConsistencyAdapter,
+)
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 from aerobim.infrastructure.adapters.object_store_norm_pack_version_store import (
     ObjectStoreNormRulePackVersionStore,
+)
+from aerobim.infrastructure.adapters.ocr_fallback_multimodal_drawing_pipeline import (
+    OcrFallbackMultimodalDrawingPipeline,
 )
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
@@ -54,6 +63,9 @@ from aerobim.infrastructure.adapters.redis_analyze_project_package_job_store imp
     RedisAnalyzeProjectPackageJobStore,
 )
 from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
+from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
+    SpreadsheetLoadEvidenceAdapter,
+)
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 from aerobim.infrastructure.adapters.unconfigured_bcf_api_client import UnconfiguredBcfApiClient
@@ -154,6 +166,28 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.DETERMINISM_GATE,
         lambda _container: DeterminismGate(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.QUANTITY_CONSISTENCY_CHECKER,
+        lambda _container: IfcQuantityConsistencyAdapter(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.LOAD_EVIDENCE_VERIFIER,
+        lambda _container: SpreadsheetLoadEvidenceAdapter(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.LOGIC_CONSISTENCY_ANALYZER,
+        lambda _container: ManifestLogicConsistencyAdapter(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.MULTIMODAL_DRAWING_PIPELINE,
+        lambda current: OcrFallbackMultimodalDrawingPipeline(
+            raster_analyzer=current.resolve(Tokens.RASTER_DRAWING_ANALYZER)
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -281,6 +315,10 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             office_document_ingestor=current.resolve(Tokens.OFFICE_DOCUMENT_INGESTOR),
             mep_system_graph_provider=current.resolve(Tokens.MEP_SYSTEM_GRAPH_PROVIDER),
             determinism_gate=current.resolve(Tokens.DETERMINISM_GATE),
+            quantity_consistency_checker=current.resolve(Tokens.QUANTITY_CONSISTENCY_CHECKER),
+            load_evidence_verifier=current.resolve(Tokens.LOAD_EVIDENCE_VERIFIER),
+            logic_consistency_analyzer=current.resolve(Tokens.LOGIC_CONSISTENCY_ANALYZER),
+            multimodal_drawing_pipeline=current.resolve(Tokens.MULTIMODAL_DRAWING_PIPELINE),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

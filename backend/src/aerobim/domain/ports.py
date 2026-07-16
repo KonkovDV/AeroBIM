@@ -2,10 +2,15 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Protocol
+from typing import Literal, Protocol
 
 from aerobim.domain.bcf_api import BcfApiPushResult
 from aerobim.domain.cad_ingest import CadIngestResult
+from aerobim.domain.consistency import (
+    MultimodalDrawingResult,
+    PackageManifest,
+    QuantityClaim,
+)
 
 # Re-export MEP port for contour/DI discovery (implementation stays in domain.mep).
 from aerobim.domain.mep import MepSystemGraphProvider as MepSystemGraphProvider
@@ -217,3 +222,36 @@ class OfficeDocumentIngestor(Protocol):
     """MS Office / rich docs → RequirementSource with extracted text."""
 
     def ingest(self, path: Path) -> RequirementSource: ...
+
+
+class QuantityConsistencyChecker(Protocol):
+    """IFC quantity сверка vs declared claims (areas/space). Not solver correctness."""
+
+    def check(
+        self,
+        ifc_path: Path,
+        declared: Sequence[QuantityClaim],
+    ) -> list[ValidationIssue]: ...
+
+
+class LoadEvidenceVerifier(Protocol):
+    """Load-table / calc-sheet numeric match. Not independent correctness."""
+
+    def verify(self, request: ValidationRequest) -> list[ValidationIssue]: ...
+
+
+class LogicConsistencyAnalyzer(Protocol):
+    """Cross-section / package logical gaps (orphan sheets, unpaired PD/RD, etc.)."""
+
+    def analyze(self, manifest: PackageManifest) -> list[ValidationIssue]: ...
+
+
+class MultimodalDrawingPipeline(Protocol):
+    """Detector+VLM with mandatory OCR degrade when extras absent."""
+
+    def analyze(
+        self,
+        source: DrawingSource,
+        *,
+        mode: Literal["auto", "ocr_only", "detector_vlm"] = "auto",
+    ) -> MultimodalDrawingResult: ...

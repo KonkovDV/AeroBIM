@@ -83,6 +83,22 @@ _UNIT_REGISTRY: dict[str, tuple[str, float, str]] = {
     "%": ("%", 1.0, "dimensionless"),
     "percent": ("%", 1.0, "dimensionless"),
     "ratio": ("1", 1.0, "dimensionless"),
+    # Force / load (common AEC calc sheets) — SI newton
+    "n": ("N", 1.0, "force"),
+    "н": ("N", 1.0, "force"),
+    "kn": ("kN", 1000.0, "force"),
+    "кн": ("kN", 1000.0, "force"),
+    "mn": ("MN", 1_000_000.0, "force"),
+    "тс": ("tf", 9806.65, "force"),
+    "tf": ("tf", 9806.65, "force"),
+    # Pressure / distributed load
+    "pa": ("Pa", 1.0, "pressure"),
+    "kpa": ("kPa", 1000.0, "pressure"),
+    "мпа": ("MPa", 1_000_000.0, "pressure"),
+    "mpa": ("MPa", 1_000_000.0, "pressure"),
+    "kn/m2": ("kN/m2", 1000.0, "pressure"),
+    "кн/м2": ("kN/m2", 1000.0, "pressure"),
+    "kn/m²": ("kN/m2", 1000.0, "pressure"),
 }
 
 
