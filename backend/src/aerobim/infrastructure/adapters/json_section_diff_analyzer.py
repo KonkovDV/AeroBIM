@@ -85,9 +85,7 @@ class JsonSectionDiffAnalyzer:
         """Return findings only (minimal port contract, delegates to ``analyze``)."""
         return list(self.analyze(pd_section_path, rd_section_path).issues)
 
-    def analyze(
-        self, pd_section_path: Path, rd_section_path: Path
-    ) -> SectionPairingReport:
+    def analyze(self, pd_section_path: Path, rd_section_path: Path) -> SectionPairingReport:
         pd = self._load(pd_section_path)
         rd = self._load(rd_section_path)
         if pd.stage not in _PD_STAGE_ALIASES:
@@ -100,8 +98,7 @@ class JsonSectionDiffAnalyzer:
             )
         if pd.project_id != rd.project_id:
             raise ValueError(
-                "PD/RD section project_id mismatch: "
-                f"{pd.project_id!r} != {rd.project_id!r}"
+                f"PD/RD section project_id mismatch: {pd.project_id!r} != {rd.project_id!r}"
             )
 
         issues = self._metadata_issues(pd, rd)
@@ -199,8 +196,7 @@ class JsonSectionDiffAnalyzer:
             rule_id=f"SECTION-PAIR-{slugify(pd.section_code)}-{suffix}",
             severity=self._severity,
             message=(
-                f"PD/RD section metadata mismatch for {key}: "
-                f"PD={expected!r}, RD={observed!r}"
+                f"PD/RD section metadata mismatch for {key}: PD={expected!r}, RD={observed!r}"
             ),
             category=FindingCategory.CROSS_DOCUMENT,
             target_ref=key,
@@ -284,12 +280,16 @@ class JsonSectionDiffAnalyzer:
             observed_quantity = parse_quantity(observed_number, observed.unit)
             if not self._quantities_compatible(expected_quantity, observed_quantity):
                 return ConflictKind.UNIT_MISMATCH
+            expected_si = expected_quantity.si_value
+            observed_si = observed_quantity.si_value
+            if expected_si is None or observed_si is None:
+                return ConflictKind.UNIT_MISMATCH
             epsilon = (
                 expected.tolerance_si
                 if expected.tolerance_si is not None
                 else self._tolerance.epsilon_for_unit(expected.unit)
             )
-            if abs(expected_quantity.si_value - observed_quantity.si_value) <= epsilon:
+            if abs(expected_si - observed_si) <= epsilon:
                 return None
             return ConflictKind.HARD_CONFLICT
 

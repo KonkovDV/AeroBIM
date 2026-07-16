@@ -117,9 +117,7 @@ def evaluate_detection_precision(
         fn=len(false_negatives),
     )
 
-    classes = sorted(
-        {item.finding_class for item in labels.expected | detections.findings}
-    )
+    classes = sorted({item.finding_class for item in labels.expected | detections.findings})
     per_class: dict[str, dict[str, int | float]] = {}
     class_counts: list[MetricCounts] = []
     for finding_class in classes:
@@ -136,9 +134,7 @@ def evaluate_detection_precision(
             "precision": round(
                 sum(counts.precision for counts in class_counts) / len(class_counts), 6
             ),
-            "recall": round(
-                sum(counts.recall for counts in class_counts) / len(class_counts), 6
-            ),
+            "recall": round(sum(counts.recall for counts in class_counts) / len(class_counts), 6),
             "f1": round(sum(counts.f1 for counts in class_counts) / len(class_counts), 6),
             "class_count": len(class_counts),
         }
@@ -215,9 +211,7 @@ def _load_json(path: Path, *, artifact: str) -> dict[str, Any]:
         raise ValueError(f"{artifact.capitalize()} path is not a regular file: {path}")
     size = path.stat().st_size
     if size > _MAX_INPUT_BYTES:
-        raise ValueError(
-            f"{artifact.capitalize()} input exceeds {_MAX_INPUT_BYTES} bytes: {path}"
-        )
+        raise ValueError(f"{artifact.capitalize()} input exceeds {_MAX_INPUT_BYTES} bytes: {path}")
     try:
         payload = json.loads(path.read_text(encoding="utf-8-sig"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -225,9 +219,7 @@ def _load_json(path: Path, *, artifact: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(f"{artifact.capitalize()} root must be a JSON object")
     if payload.get("schema_version") != _SCHEMA_VERSION:
-        raise ValueError(
-            f"{artifact.capitalize()} schema_version must be {_SCHEMA_VERSION!r}"
-        )
+        raise ValueError(f"{artifact.capitalize()} schema_version must be {_SCHEMA_VERSION!r}")
     return payload
 
 
@@ -324,9 +316,7 @@ def _parse_detections(payload: dict[str, Any]) -> ParsedDetections:
     for case_index, case in enumerate(raw_cases):
         if not isinstance(case, dict):
             raise ValueError(f"detections.cases[{case_index}] must be an object")
-        case_id = _required_string(
-            case, "case_id", prefix=f"detections.cases[{case_index}]."
-        )
+        case_id = _required_string(case, "case_id", prefix=f"detections.cases[{case_index}].")
         if case_id in seen_case_ids:
             raise ValueError(f"Duplicate detections case_id: {case_id}")
         seen_case_ids.add(case_id)

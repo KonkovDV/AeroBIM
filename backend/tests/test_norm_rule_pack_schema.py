@@ -30,9 +30,7 @@ class NormRulePackSchemaTests(unittest.TestCase):
             with self.subTest(pack=pack.name):
                 payload = json.loads(pack.read_text(encoding="utf-8"))
                 errors = sorted(validator.iter_errors(payload), key=lambda e: list(e.path))
-                self.assertEqual(
-                    errors, [], f"{pack.name}: {[e.message for e in errors]}"
-                )
+                self.assertEqual(errors, [], f"{pack.name}: {[e.message for e in errors]}")
 
     def test_all_rule_packs_load_via_loader(self) -> None:
         """Schema validity and loader acceptance must agree (no drift)."""
@@ -50,9 +48,7 @@ class NormRulePackSchemaTests(unittest.TestCase):
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
         validator = jsonschema.Draft202012Validator(schema)
         base = json.loads(
-            (RULE_PACKS_DIR / "residential-ar-reference-template.json").read_text(
-                encoding="utf-8"
-            )
+            (RULE_PACKS_DIR / "residential-ar-reference-template.json").read_text(encoding="utf-8")
         )
         base["status"] = "approved"
         base.pop("approval", None)

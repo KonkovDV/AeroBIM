@@ -64,7 +64,7 @@ class RedisAnalyzeProjectPackageJobStore:
         raw = self._redis.get(self._key(job_id))
         if raw is None:
             return None
-        return self._deserialize(raw)
+        return self._deserialize(str(raw))
 
     def mark_running(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         return self._update(job_id, status=JobStatus.RUNNING, started_at=_now_iso())
@@ -100,7 +100,7 @@ class RedisAnalyzeProjectPackageJobStore:
                     if raw is None:
                         pipe.unwatch()
                         return None
-                    current = self._deserialize(raw)
+                    current = self._deserialize(str(raw))
                     if not can_transition(current.status, target_status):
                         pipe.unwatch()
                         return None

@@ -43,9 +43,7 @@ class ReportListFilterTests(unittest.TestCase):
                 "b" * 32, "r2", "t2", False, 2, project_name="Beta", discipline="ME"
             ),
         ]
-        filtered = apply_report_list_filters(
-            entries, ReportListFilters(project="alp", passed=True)
-        )
+        filtered = apply_report_list_filters(entries, ReportListFilters(project="alp", passed=True))
         self.assertEqual(len(filtered), 1)
         self.assertEqual(filtered[0].report_id, "a" * 32)
 

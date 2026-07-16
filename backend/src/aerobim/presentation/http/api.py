@@ -188,8 +188,7 @@ def create_http_app(container: Container):
             raise HTTPException(
                 status_code=413,
                 detail=(
-                    f"IFC file exceeds size limit "
-                    f"({size} bytes > {settings.max_ifc_bytes} bytes)"
+                    f"IFC file exceeds size limit ({size} bytes > {settings.max_ifc_bytes} bytes)"
                 ),
             )
 
@@ -236,6 +235,7 @@ def create_http_app(container: Container):
             return
 
         if oidc_ready:
+            assert oidc_validator is not None
             try:
                 oidc_validator.validate(token)
                 return
@@ -483,14 +483,10 @@ def create_http_app(container: Container):
                 _resolve_safe_path(path) for path in payload.norm_rule_pack_paths
             ),
             pd_section_path=(
-                _resolve_safe_path(payload.pd_section_path)
-                if payload.pd_section_path
-                else None
+                _resolve_safe_path(payload.pd_section_path) if payload.pd_section_path else None
             ),
             rd_section_path=(
-                _resolve_safe_path(payload.rd_section_path)
-                if payload.rd_section_path
-                else None
+                _resolve_safe_path(payload.rd_section_path) if payload.rd_section_path else None
             ),
             reinforcement_report_path=reinforcement_report_path,
             reinforcement_source_digest=reinforcement_source_digest,
@@ -525,11 +521,7 @@ def create_http_app(container: Container):
         """
         raw_name = (file.filename or "upload.bin").replace("\\", "/").split("/")[-1]
         safe_name = (
-            raw_name.replace("\r", "")
-            .replace("\n", "")
-            .replace('"', "")
-            .strip()
-            or "upload.bin"
+            raw_name.replace("\r", "").replace("\n", "").replace('"', "").strip() or "upload.bin"
         )[:180]
         upload_id = uuid4().hex
         relative_path = f"uploads/{upload_id}/{safe_name}"
@@ -554,8 +546,7 @@ def create_http_app(container: Container):
                         raise HTTPException(
                             status_code=413,
                             detail=(
-                                f"Upload exceeds size limit "
-                                f"({total} bytes > {max_bytes} bytes)"
+                                f"Upload exceeds size limit ({total} bytes > {max_bytes} bytes)"
                             ),
                         )
                     handle.write(chunk)

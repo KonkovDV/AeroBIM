@@ -172,9 +172,7 @@ class ClashCapabilityAndPassPolicyTests(unittest.TestCase):
         self.assertIsNotNone(report.capabilities)
         assert report.capabilities is not None
         self.assertEqual(report.capabilities.clash.status, CapabilityState.FAILED)
-        self.assertTrue(
-            any(issue.rule_id == "AEROBIM-CLASH-CAPABILITY" for issue in report.issues)
-        )
+        self.assertTrue(any(issue.rule_id == "AEROBIM-CLASH-CAPABILITY" for issue in report.issues))
         # FAILED clash capability blocks sign-off even when clash_affects_pass is false.
         self.assertFalse(report.summary.passed)
 
