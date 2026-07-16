@@ -6,36 +6,44 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Open-source **cross-modal semantic BIM validation** platform.
+Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + cross-document evidence).
 
-AeroBIM validates building information models (IFC) against technical specifications, 2D drawings, calculation documents, and IDS packages in a single deterministic pipeline — with full provenance tracing and BCF interoperability.
+AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidence for *Shared*, not contractual *Published* authorization). It fuses IFC property/quantity checks, IDS, drawings, and calculation text into a single report with explicit capability honesty, finding provenance, and BCF **ZIP export**. Independent CDE import and customer accuracy claims remain **out of scope until evidenced**.
+
+> **Checkpoint (2026-07-17):** Samolet TechLab Task 07 status is **`NO_GO`** until customer corpus, customer-approved norm pack, and MEP federated scope are evidenced ([RT-001/002/003](audit/reports/CRITICAL_BLOCKERS.md)). Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
 ## Key Capabilities
 
-| Capability | Status |
-|---|---|
-| IFC property/quantity validation (IfcOpenShell) | ✅ |
-| IDS 1.0 spec validation (IfcTester) | ✅ |
-| Cross-document contradiction detection | ✅ |
-| Conflict taxonomy (`ConflictKind`: hard / unit-mismatch / ambiguous assigned today) | ✅ subset |
-| Configurable contradiction severity policy | ✅ |
-| Drawing annotation ↔ IFC cross-validation | ✅ |
-| ISO 12006-3 tolerance algebra (ε-band) | ✅ |
-| Narrative text → requirements (deterministic regex; not in sign-off path) | ✅ |
-| Russian AEC extraction benchmark (10 docs, 50 requirements, CI F1 ≥ 0.70) | ✅ |
-| ISO 19650-lite context in reports (stage, revision, container) | ✅ |
-| Clash detection (IfcClash, optional `.[clash]` extra) | ✅ with explicit `capabilities.clash`; install `.[clash]` for engine |
-| Report capability status (`ok`/`skipped`/`failed`) | ✅ FAILED capabilities force `summary.passed=false` |
-| BCF 2.1 export | ✅ |
-| BCF 3.0 export | ✅ Experimental |
-| Enterprise storage foundation (ObjectStore + TTL + Postgres index hook) | ✅ Foundation |
-| HTML / JSON report export | ✅ |
-| Browser IFC viewer (`web-ifc` + Three.js`) | ✅ |
-| 2D problem-zone overlay on persisted drawing evidence | ✅ |
-| Deterministic PDF text extraction (PyMuPDF) | ✅ core dependency |
-| Image OCR drawing analysis (RapidOCR) | ✅ via optional `.[raster]` extra |
-| Advanced raster drawing analysis (optional port) | 🔜 Planned |
-| Frontend unit tests in main CI | ⚠️ Release-readiness / local only (see `frontend/`) |
+Statuses below are **repository / fixture** capabilities unless marked otherwise. Optional extras and fail-closed policies govern whether a green `summary.passed` is honest.
+
+| Capability | Status | Evidence level | Notes |
+|---|---|---|---|
+| IFC property/quantity validation (IfcOpenShell) | Available | fixture | IFC2x3 / IFC4 / IFC4x3 kernel |
+| IDS 1.0 validation (IfcTester) | Available | fixture | Requested path fail-closed when misconfigured |
+| Cross-document contradiction detection | Available | fixture | `ConflictKind` taxonomy (subset) |
+| Configurable contradiction severity policy | Available | fixture | — |
+| Drawing annotation ↔ IFC cross-validation | Available | fixture | Raster OCR path optional |
+| ISO 12006-3 tolerance algebra (ε-band) | Available | fixture | — |
+| Narrative text → requirements (deterministic regex) | Available | fixture | Not an LLM sign-off contour |
+| Russian AEC extraction benchmark (fixture corpus) | Available | fixture | macro_f1 on fixtures ≠ product accuracy |
+| ISO 19650-lite metadata on reports | Available | fixture | Stage/revision/container fields only — not a CDE product |
+| Clash detection (IfcClash) | Optional extra | optional-extra | `.[clash]`; `capabilities.clash`; under `require_clash`, SKIPPED→FAILED |
+| Report capability honesty (`ok`/`skipped`/`failed`/`missing`/…) | Available | fixture | FAILED blocks `summary.passed`; honesty surface via `/v1/system/capabilities` |
+| Finding provenance (`finding_id`, `source_id`, `evidence_refs`) | Available | fixture | Persist reject if missing |
+| Tenant / object ACL on report artifacts | Available | fixture | Bearer/OIDC principal + report `tenant_id` |
+| BCF 2.1 / 3.0 ZIP export | Available | fixture (T1) | Structural + dual-consumer verified; **CDE import NOT VERIFIED (T2)** |
+| OpenCDE BCF API push | Foundation | experimental | Not a substitute for T2 import proof |
+| HTML / JSON report export | Available | fixture | — |
+| Browser IFC viewer (`web-ifc` + Three.js) | Available | fixture | — |
+| 2D problem-zone overlay | Available | fixture | — |
+| Deterministic PDF text (PyMuPDF) | Available | core | — |
+| Image OCR (RapidOCR) | Optional extra | optional-extra | `.[raster]`; zero-yield → FAILED when requested |
+| DWG/DXF native analysis | Missing | — | Explicit `MISSING` on honesty surface |
+| Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` |
+| MEP system-aware clash | Not verified | — | Scaffold only; not wired in DI |
+| Independent calculation *correctness* | Not implemented | — | OpenRebar path = **match/сверка**, not solver verification |
+| Frontend vitest review-shell | Green locally | release-readiness | **21** passed; not in main CI job |
+| Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
 
 ## IFC Release Compatibility
 
@@ -50,13 +58,17 @@ Pset/property name divergence between releases is surfaced as a `ValidationIssue
 IFC2x3, IFC4, and IFC4x3 fixture files live in `samples/ifc/`.
 See [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) for the formal compatibility matrix and per-feature degradation rules.
 
-## BCF Roadmap
+## BCF Evidence Ladder
 
-| Version | Status | Notes |
+| Tier | Status | Notes |
 |---|---|---|
-| BCF 2.1 | ✅ Stable | All export paths (`/export/bcf`); `markup.bcfzip` + viewpoint |
-| BCF 3.0 | ✅ Experimental | `GET /v1/reports/{id}/export/bcf?version=3` — BCF 3.0 ZIP; default stays 2.1 |
-| BCF API | ✅ Foundation | `POST /v1/reports/{id}/export/bcf-api/push` — OpenCDE BCF 3.0 topic push |
+| BCF 2.1 ZIP export | Available (stable default) | `/v1/reports/{id}/export/bcf` |
+| BCF 3.0 ZIP export | Experimental | `?version=3` |
+| T1 structural + dual-consumer agreement | Evidenced | [`audit/evidence/bcf-structural-handoff-2026-07-17.json`](audit/evidence/bcf-structural-handoff-2026-07-17.json) |
+| OpenCDE BCF API push | Foundation | `/export/bcf-api/push` — hub sync not a T2 substitute |
+| T2 independent CDE import | **NOT VERIFIED** | [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) |
+
+Forbidden wording until T2: “BCF ready for CDE”, “CDE interoperable”.
 
 ## Enterprise Storage Foundation
 
@@ -144,11 +156,13 @@ python -m ruff format src tests
 
 ## Benchmarks and Evidence
 
-Verified capabilities are backed by tests, API contracts, or persisted report artifacts. Planned work (non-deterministic drawing adapters, BCF API) is listed separately in the capability table.
+Verified capabilities are backed by tests, API contracts, or persisted report artifacts. Planned / missing contours (DWG, human CV, MEP system clash, calculation *correctness*, customer accuracy) are explicit on `GET /v1/system/capabilities` and in the Claims Lock.
 
 ```bash
 cd backend
 python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
+python -m aerobim.tools.measure_package_sla --corpus-kind fixture
+python -m aerobim.tools.verify_bcf_structural_handoff
 python -m aerobim.tools.run_ablation_study
 python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
 python -m aerobim.tools.export_runtime_baseline
@@ -156,21 +170,24 @@ python -m aerobim.tools.export_runtime_baseline
 
 | Topic | Document |
 |---|---|
+| Claims lock (forbidden / allowed wording) | [audit/reports/CLAIMS_LOCK_2026_07_17.md](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
+| Claims × evidence matrix | [audit/reports/CLAIMS_EVIDENCE_MATRIX.md](audit/reports/CLAIMS_EVIDENCE_MATRIX.md) |
+| Critical blockers / checkpoint | [audit/reports/CRITICAL_BLOCKERS.md](audit/reports/CRITICAL_BLOCKERS.md) |
 | Claim boundary (pilot / publication) | [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) |
 | Publication evidence pack | [docs/academic-publication-evidence-2026.md](docs/academic-publication-evidence-2026.md) |
 | Annotation protocol (RU corpus) | [docs/annotation-protocol-2026.md](docs/annotation-protocol-2026.md) |
 | Benchmark packs | [samples/benchmarks/README.md](samples/benchmarks/README.md) |
+| Audit evidence (T1 BCF, SLA 1.2, intake gate) | [audit/evidence/](audit/evidence/) |
 
-Throughput and F1 figures are environment-specific; publish pack paths, CLI flags, and artifact files with any performance claim. Cite via [CITATION.cff](CITATION.cff) or [docs/CITATION.bib](docs/CITATION.bib).
+Throughput and F1 figures are environment-specific and **fixture-scoped** unless `corpus_kind=customer` and adjudication gates pass. Publish pack paths, CLI flags, machine fingerprint, and artifact hashes with any performance claim. Cite via [CITATION.cff](CITATION.cff) or [docs/CITATION.bib](docs/CITATION.bib).
 
 ## API Endpoints
 
-| Method | Path | Description |
-|---|---|---|
+| `GET` | `/v1/system/capabilities` | Static honesty surface (DWG/CV/MEP/calculation claim boundary) |
 | `GET` | `/health` | Readiness probe |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements + IDS |
 | `POST` | `/v1/analyze/project-package` | Multimodal validation (spec + calc + drawing + IDS + IFC) |
-| `POST` | `/v1/analyze/project-package/reinforcement-digest` | Build OpenRebar provenance digest from canonical report |
+| `POST` | `/v1/analyze/project-package/reinforcement-digest` | OpenRebar provenance digest (**сверка** labels; not correctness verification) |
 | `POST` | `/v1/analyze/project-package/submit` | Accept a same-process background analysis job for larger packages |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll async project-package job status |
 | `POST` | `/v1/uploads` | Multipart document ingest; returns storage-relative `path` for analyze |
@@ -269,11 +286,14 @@ aerobim/
 
 <!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->
 <!-- regenerated by: python -m aerobim.tools.export_runtime_baseline -->
-Backend src ~14744 LOC; tests ~10810 LOC; 425+ test functions; extraction macro_f1=0.8600000000000001 (generated)
+Backend src ~16247 LOC; tests ~11434 LOC; 456+ test functions; extraction macro_f1=0.86 (fixture corpus; not product accuracy)
 <!-- AEROBIM_RUNTIME_BASELINE:END -->
 
 ## Documentation
 
+- [Claims lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) — forbidden/allowed public wording (SSOT)
+- [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) — checkpoint NO_GO register
+- [Red Team delta (post-remediation)](audit/reports/RED_TEAM_DELTA_2026_07_17.md) — atomic re-verification after P0/evidence wave
 - [Repository hygiene](docs/REPOSITORY-HYGIENE-2026.md) — what to commit vs gitignore vs CI artifacts
 - [Reproducibility (FAIR/CODE)](docs/REPRODUCIBILITY-2026.md) — frozen tag, commands, evidence manifest
 - [Pilot start package](docs/pilot-start-package-2026.md) — Moscow pilot kickoff (tag `pilot-2026-pre`, gates, week 1)
@@ -291,7 +311,13 @@ Backend src ~14744 LOC; tests ~10810 LOC; 425+ test functions; extraction macro_
 
 ## Git commits
 
-Use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit (single author)** so history stays single-author without `Co-authored-by` trailers. See [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
+Use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit (single author)** so history stays single-author without `Co-authored-by` trailers. Enable the repo hook:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+See [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
 
 **GitHub publication:** [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md), [docs/PROJECT-AUDIT-2026-05-20.md](docs/PROJECT-AUDIT-2026-05-20.md). Suggested repo About — [.github/repository-metadata.md](.github/repository-metadata.md).
 
@@ -321,7 +347,7 @@ Release-readiness benchmark rails now support `benchmark_threshold_mode` (`advis
 - **Python 3.12+**, **FastAPI**, **Uvicorn**
 - **IfcOpenShell** / **IfcTester** / **IfcClash** (buildingSMART toolchain)
 - **web-ifc** + **Three.js** for browser-side IFC review
-- **PyMuPDF** + **RapidOCR** for deterministic PDF/OCR drawing extraction
+- **PyMuPDF** for deterministic PDF text; **RapidOCR** only when `.[raster]` is installed
 - **Docling** (optional, document parsing)
 - 5-layer Clean Architecture, constructor DI, Protocol ports
 

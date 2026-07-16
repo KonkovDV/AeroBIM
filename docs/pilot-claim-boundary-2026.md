@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.1.0"
-last_updated: "2026-07-11"
+version: "1.2.0"
+last_updated: "2026-07-17"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -10,18 +10,20 @@ tags: [aerobim, pilot, claims, evidence]
 
 This document separates **verified repository evidence** from **roadmap intent** for pilot and accelerator communications.
 
-**Stakeholder distribution:** share with [`pilot-start-package-2026.md`](pilot-start-package-2026.md) at pilot kickoff.
-**TZ preparation SSOT:** [`tz/README.md`](tz/README.md).
+**Stakeholder distribution:** share with [`pilot-start-package-2026.md`](pilot-start-package-2026.md) at pilot kickoff.  
+**TZ preparation SSOT:** [`tz/README.md`](tz/README.md).  
+**Forbidden wording SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).  
+**Checkpoint:** **`NO_GO`** until RT-001/002/003 close ([`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md)).
 
 ## TZ MVP scope (honest framing)
 
 | Scope | In MVP sign-off | Outside sign-off |
 |-------|-----------------|------------------|
-| Deterministic IFC/IDS/cross-doc/clash + OCR baseline + template remarks + HITL | Yes | — |
+| Deterministic IFC/IDS/cross-doc/clash + OCR baseline + template remarks + HITL | Yes (fixture-verified; customer pack TBD) | — |
 | Multipart upload + remarks UI edit (P0) | Target for TZ demo | — |
 | CV layout models, LLM remarks/IDS, DWG entity CAD | — | Advisory / Phase 2+ |
-| “AI reads drawings like a human” / unsupervised VLM drawing literacy | — | **Out of pilot acceptance** (world evidence July 2026) |
-| Clash / inconsistency **>90%** accuracy | — | Only after labeled corpus adjudication |
+| “AI reads drawings like a human” / unsupervised VLM drawing literacy | — | **Out of pilot acceptance** |
+| Clash / inconsistency **>90%** accuracy | — | Only after labeled corpus + ≥2 adjudicators + κ/α |
 
 ## Verified (may be claimed with evidence)
 
@@ -29,15 +31,15 @@ This document separates **verified repository evidence** from **roadmap intent**
 |---|---|
 | Deterministic IFC + IDS + cross-document validation | `pytest` suite, benchmark packs |
 | Multimodal project-package analysis | `POST /v1/analyze/project-package`, benchmark manifests |
-| BCF 2.1 export (default) and BCF 3.0 opt-in | Export tests, `GET /v1/reports/{id}/export/bcf` |
-| Browser review shell (3D + 2D evidence) | Frontend tests, `run_live_review_smoke` (overlay rectangle + preview asset) |
-| OpenRebar provenance digest chain | Contract schema, digest endpoint, enforced mode |
-| ISO 19650-lite context fields on reports | Optional request/report fields, HTML export section |
-| Extraction quality metrics (RU fixtures) | `evaluate_extraction` tool, macro F1 ≥ 0.70 on ground truth, CI gate |
-| Samolet-style priority profile (optional) | `AEROBIM_PRIORITY_PROFILE=samolet` boosts fire/cross-doc triage |
-| Package SLA on pilot fixture pack | `measure_package_sla` — see `docs/evidence/samolet-sla-*.json` (fixture only) |
-| Fixture demo path upload→analyze→BCF structural smoke (Track A5) | `aerobim-run-demo-path` / `run_demo_path` + [`ops/demo-path-runbook-2026.md`](ops/demo-path-runbook-2026.md) |
-| Fail-closed API auth outside development | `AEROBIM_API_BEARER_TOKEN` and/or OIDC; frontend Bearer support |
+| Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
+| Object ACL on report artifacts | API principal + `tenant_id` |
+| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-17.json` |
+| Browser review shell (3D + 2D evidence) | Frontend vitest **21** passed; `run_live_review_smoke` |
+| OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
+| ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
+| Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
+| Package SLA on **fixture** pack (schema 1.2, `fixture_only`) | `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json` |
+| System honesty surface | `GET /v1/system/capabilities` |
 | Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,…}` ∈ ok/skipped/failed; **FAILED blocks `summary.passed`** |
 | Norm rule packs fail-closed (P0.2) | Requested/configured pack load error → `capabilities.norm_rule_packs=failed` → `summary.passed=false`; packs not requested → `skipped` (does not block) |
 | PrecisionClaim publish gate (R1/R4) | Typed claim; render withheld unless `corpus_kind=customer` and ≥2 adjudicators |
@@ -74,7 +76,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Non-deterministic text extraction training | Not in pilot sign-off path |
 | Full OIDC multi-tenant auth | OIDC JWT validation available; full SSO/BFF still post-pilot |
 | arq/Redis async queue | Redis job store available when `AEROBIM_REDIS_URL` set; arq workers still post-pilot |
-| BCF API / OpenCDE integration | Topic push foundation live; full hub sync / Documents API post-pilot |
+| BCF API / OpenCDE integration | Topic push foundation live; **CDE import T2 NOT_VERIFIED**; full hub sync post-pilot |
 | Live bSI Validation Service submit in pilot | Local cert / mocked client tested; live hub needs credentials |
 | LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |
 | True computer vision for drawings | Not implemented; OCR baseline ≠ CV |

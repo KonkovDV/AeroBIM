@@ -2,53 +2,63 @@
 
 [English version](README.md)
 
-Платформа с открытым исходным кодом для **кросс-модальной проверки BIM** в едином детерминированном конвейере.
+[![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-AeroBIM сверяет IFC-модели с техническими требованиями, 2D-чертежами, расчётными документами и IDS-пакетами. Результаты сохраняются с трассировкой происхождения и экспортируются в JSON, HTML и BCF.
+Открытый **ассистент критериев приёмки** для openBIM-комплектов (IFC + IDS + междокументные доказательства).
+
+AeroBIM выполняет детерминированную проверку в логике Shared-gate (рамка ISO 19650: доказательства для состояния *Shared*, не контрактная авторизация *Published*). Сводка объединяет IFC, IDS, чертежи и тексты расчётов с явной честностью capabilities, provenance findings и экспортом BCF **ZIP**. Независимый импорт в CDE и customer accuracy остаются **вне утверждений**, пока нет доказательств.
+
+> **Checkpoint (2026-07-17):** статус Samolet TechLab Task 07 — **`NO_GO`**, пока нет customer corpus, утверждённого нормативного пакета и federated MEP-скоупа ([RT-001/002/003](audit/reports/CRITICAL_BLOCKERS.md)). SSOT формулировок: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
 ## Основные возможности
 
-| Возможность | Статус |
-|---|---|
-| Проверка свойств и величин IFC (`IfcOpenShell`) | ✅ |
-| Проверка по IDS 1.0 (`IfcTester`) | ✅ |
-| Междокументные противоречия | ✅ |
-| Типы конфликтов (`ConflictKind`: жёсткий / несовпадение единиц / неоднозначность) | ✅ |
-| Настройка уровня серьёзности противоречий | ✅ |
-| Сверка аннотаций чертежа с IFC | ✅ |
-| Допуски по ISO 12006-3 (?-полоса) | ✅ |
-| Извлечение требований из текста (regex, без моделей в контуре подписания) | ✅ |
-| Корпус RU AEC для оценки извлечения (10 документов, 50 требований) | ✅ |
-| Коллизии (`IfcClash`, опция `.[clash]`) | ✅ через `capabilities.clash`; движок — extra `.[clash]` |
-| Статус capabilities (`ok`/`skipped`/`failed`) | ✅ `FAILED` → `summary.passed=false` |
-| Экспорт BCF 2.1 | ✅ |
-| Экспорт BCF 3.0 | ? Экспериментально |
-| Контекст ISO 19650-lite в отчёте | ✅ |
-| Хранилище артефактов (`ObjectStore`, TTL, индекс Postgres) | ? Базовый слой |
-| Экспорт JSON и HTML | ✅ |
-| Просмотр IFC в браузере (`web-ifc` + `Three.js`) | ✅ |
-| Наложение зон проблем на 2D-чертежи | ✅ |
-| Текст из PDF (PyMuPDF) | ✅ в core |
-| OCR изображений (RapidOCR) | ✅ через optional `.[raster]` |
-| Расширенный анализ растровых чертежей (опциональный порт) | ?? В планах |
+Статусы ниже — уровень **репозиторий / fixture**, если не указано иное.
+
+| Возможность | Статус | Уровень доказательств | Примечание |
+|---|---|---|---|
+| Проверка свойств/величин IFC (IfcOpenShell) | Доступно | fixture | IFC2x3 / IFC4 / IFC4x3 |
+| IDS 1.0 (IfcTester) | Доступно | fixture | Fail-closed при запросе без валидатора |
+| Междокументные противоречия | Доступно | fixture | Таксономия `ConflictKind` (подмножество) |
+| Аннотации чертежа ↔ IFC | Доступно | fixture | OCR-путь опционален |
+| Допуски ISO 12006-3 (ε) | Доступно | fixture | — |
+| Извлечение требований (regex) | Доступно | fixture | Не LLM-контур подписания |
+| Бенчмарк извлечения RU AEC | Доступно | fixture | macro_f1 ≠ product accuracy |
+| ISO 19650-lite метаданные | Доступно | fixture | Не продукт CDE |
+| Коллизии (IfcClash) | Optional extra | optional-extra | `.[clash]`; при `require_clash` SKIPPED→FAILED |
+| Честность capabilities | Доступно | fixture | FAILED блокирует `passed`; `/v1/system/capabilities` |
+| Provenance finding | Доступно | fixture | Persist reject без `finding_id`/`evidence_refs` |
+| Tenant/object ACL | Доступно | fixture | Principal + `tenant_id` отчёта |
+| Экспорт BCF 2.1/3.0 ZIP | Доступно | fixture (T1) | Структурно доказано; **CDE import НЕ ДОКАЗАН (T2)** |
+| OpenCDE BCF API push | Foundation | experimental | Не заменяет T2 |
+| Vitest review-shell | Зелёный локально | release-readiness | **21** passed; не в main CI |
+| DWG/DXF / CV human-level | Missing | — | Явно на honesty surface |
+| MEP system-aware clash | Not verified | — | Scaffold, не в DI |
+| Корректность расчётов | Not implemented | — | OpenRebar = **сверка**, не верификация |
+| Точность >90% / утверждённые нормы | Blocked | customer | См. Claims Lock |
 
 ## Совместимость с IFC
 
 | Релиз IFC | Схема | Поддержка | Примечание |
 |---|---|---|---|
-| IFC2x3 | ISO 16739:2005 | ? Основной | Наиболее распространён в эксплуатации |
-| IFC4 (ADD2) | ISO 16739-1:2018 | ? Основной | Нормализация имён Pset и единиц |
-| IFC4x3 | ISO 16739-1:2024 | ? Основной | Тот же ядро проверки, расширения по инфраструктуре |
+| IFC2x3 | ISO 16739:2005 | Основной | Наиболее распространён в эксплуатации |
+| IFC4 (ADD2) | ISO 16739-1:2018 | Основной | Нормализация имён Pset и единиц |
+| IFC4x3 | ISO 16739-1:2024 | Основной | То же ядро проверки |
 
 Подробнее: [docs/ifc-compatibility-matrix.md](docs/ifc-compatibility-matrix.md).
 
-## BCF
+## BCF: лестница доказательств
 
-| Версия | Статус | Примечание |
+| Уровень | Статус | Примечание |
 |---|---|---|
-| BCF 2.1 | ? Стабильно | Основной путь экспорта |
-| BCF 3.0 | ? Экспериментально | `GET /v1/reports/{id}/export/bcf?version=3`, по умолчанию 2.1 |
-| BCF API | ?? В планах | REST-адаптер для CDE и трекеров задач |
+| BCF 2.1 ZIP | Стабильный default | `/export/bcf` |
+| BCF 3.0 ZIP | Экспериментально | `?version=3` |
+| T1 структура + dual consumers | Доказано | [`audit/evidence/bcf-structural-handoff-2026-07-17.json`](audit/evidence/bcf-structural-handoff-2026-07-17.json) |
+| OpenCDE API push | Foundation | Не заменяет T2 |
+| T2 импорт в CDE | **НЕ ДОКАЗАНО** | [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) |
+
+Запрещено до T2: «BCF готов к CDE».
 
 ## Быстрый старт
 
@@ -84,76 +94,36 @@ pytest tests -q
 
 ## Бенчмарки и воспроизводимость
 
-Команды для публикации метрик и supplementary-материалов:
-
 ```bash
 cd backend
 python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
-python -m aerobim.tools.run_ablation_study
-python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
+python -m aerobim.tools.measure_package_sla --corpus-kind fixture
+python -m aerobim.tools.verify_bcf_structural_handoff
 python -m aerobim.tools.export_runtime_baseline
 ```
 
-Граница утверждений для пилота и публикаций: [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md).  
+Граница утверждений: [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md).  
+SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK_2026_07_17.md](audit/reports/CLAIMS_LOCK_2026_07_17.md).  
 Пакет доказательств: [docs/academic-publication-evidence-2026.md](docs/academic-publication-evidence-2026.md).
 
 ## API (основное)
 
-| Метод | Путь | Назначение |
+| Метод | Путь | Описание |
 |---|---|---|
-| `GET` | `/health` | Проверка готовности |
-| `POST` | `/v1/validate/ifc` | IFC + требования + IDS |
-| `POST` | `/v1/analyze/project-package` | Мультимодальная проверка пакета |
-| `GET` | `/v1/reports` | Список отчётов |
-| `GET` | `/v1/reports/{id}/export/json` | JSON |
-| `GET` | `/v1/reports/{id}/export/html` | HTML |
-| `GET` | `/v1/reports/{id}/export/bcf` | BCF 2.1; `?version=3` — BCF 3.0 |
+| `GET` | `/v1/system/capabilities` | Статическая honesty-поверхность |
+| `GET` | `/health` | Readiness |
+| `POST` | `/v1/analyze/project-package` | Мультимодальный анализ |
+| `GET` | `/v1/reports/{id}/export/bcf` | Экспорт BCF ZIP |
 
-Полный перечень — в [README.md](README.md#api-endpoints).
+## Git-коммиты
 
-## Конфигурация
+```bash
+git config core.hooksPath .githooks
+powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: ..."
+```
 
-| Переменная | По умолчанию | Назначение |
-|---|---|---|
-| `AEROBIM_STORAGE_DIR` | `var/reports` | Каталог отчётов |
-| `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Уровень серьёзности междокументных противоречий |
-| `AEROBIM_DB_URL` | *(не задано)* | Postgres для индекса сводок |
-| `AEROBIM_REPORT_TTL_DAYS` | *(не задано)* | Срок хранения отчётов |
-| `AEROBIM_S3_BUCKET` | *(не задано)* | S3/MinIO |
-
-Полный список: [backend/.env.example](backend/.env.example), [ops/environment-matrix.md](ops/environment-matrix.md).
-
-## Документация
-
-- [Воспроизводимость (FAIR/CODE)](docs/REPRODUCIBILITY-2026.md) — тег, команды, manifest evidence
-- [Старт пилота](docs/pilot-start-package-2026.md) — kickoff Москва, тег `pilot-2026-pre`
-- [Карта документации](docs/README.md)
-- [Архив (01–11)](docs/archive/README.md)
-- [Архитектура](docs/06-architecture-reference.md)
-- [План исполнения 2026](docs/13-academic-execution-plan-2026.md)
-- [Протокол разметки RU](docs/annotation-protocol-2026.md)
-- [Наборы бенчмарков](samples/benchmarks/README.md)
-- [Эксплуатация](ops/standalone-runbook.md)
-
-## Коммиты в Git
-
-Коммиты — через [scripts/git_commit.ps1](scripts/git_commit.ps1) или задачу VS Code **AeroBIM: commit** (один автор, без `Co-authored-by`). Подробнее: [docs/contributor-git-ru.md](docs/contributor-git-ru.md).
-
-Перед push на GitHub: [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md). Метаданные репозитория: [.github/repository-metadata.md](.github/repository-metadata.md).
-
-## Управление проектом
-
-- [Contributing](CONTRIBUTING.md)
-- [Политика Git для контрибьюторов](docs/contributor-git-2026.md)
-- [Security](SECURITY.md)
-- [Citation](CITATION.cff) · [BibTeX](docs/CITATION.bib)
-- [Support](SUPPORT.md) · [Maintainers](MAINTAINERS.md)
-
-## Архитектура
-
-Пятислойная Clean Architecture: `core` > `domain` > `application` > `infrastructure` > `presentation`.  
-Внешние библиотеки подключаются только через порты; композиция — в `bootstrap_container()`.
+См. [docs/contributor-git-ru.md](docs/contributor-git-ru.md).
 
 ## Лицензия
 
-[MIT](LICENSE)
+MIT — см. [LICENSE](LICENSE).
