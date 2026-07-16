@@ -2,7 +2,7 @@
 title: MEP system-aware clash gap
 status: open
 tracking_id: MEP-CLASH-001
-last_updated: "2026-07-10"
+last_updated: "2026-07-16"
 ---
 
 # MEP-CLASH-001 — system-aware clash remains open
@@ -22,6 +22,17 @@ system-aware MEP coordination:
 Therefore the TZ row «MEP / system intersections» remains **missing / generic
 only**, not `partial-done`.
 
+## Contract scaffold (2026-07-16)
+
+Domain contracts landed (no runtime analyze wiring yet):
+
+- `aerobim.domain.mep.MepSystemGraphProvider`
+- `aerobim.domain.mep.AllowedIntersectionMatrix`
+- `UnconfiguredMepSystemGraphProvider` — fail-closed until customer corpus
+
+**Blocked on:** federated MEP IFC with systems + signed scope memo from Samolet.
+Do not implement graph/matrix adapters against synthetic-only models for sign-off.
+
 ## Acceptance criteria for closure
 
 1. Customer supplies at least one federated MEP IFC with systems and known
@@ -38,4 +49,4 @@ only**, not `partial-done`.
 ## Non-goal
 
 The milestone does not claim replacement of Solibri/Navisworks or a full MEP
-coordination suite. It is a bounded Task 07 pilot rule pack plus evidence.
+coordination suite.
