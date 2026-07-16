@@ -39,6 +39,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Fixture demo path upload→analyze→BCF structural smoke (Track A5) | `aerobim-run-demo-path` / `run_demo_path` + [`ops/demo-path-runbook-2026.md`](ops/demo-path-runbook-2026.md) |
 | Fail-closed API auth outside development | `AEROBIM_API_BEARER_TOKEN` and/or OIDC; frontend Bearer support |
 | Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,…}` ∈ ok/skipped/failed; **FAILED blocks `summary.passed`** |
+| Norm rule packs fail-closed (P0.2) | Requested/configured pack load error → `capabilities.norm_rule_packs=failed` → `summary.passed=false`; packs not requested → `skipped` (does not block) |
 | JSON norm / rule-pack loader | `NormRulePackLoader` + residential AR reference template (synthetic-template only) |
 | Deterministic PD↔RD section pairing scaffold | `SectionDiffAnalyzer` on normalized section JSON (one discipline pair) |
 | Detection precision harness (exact TP/FP/FN) | `aerobim-evaluate-detection-precision` + synthetic contract fixture + protocol gate |

@@ -541,13 +541,11 @@ class AnalyzeProjectPackageUseCase:
             try:
                 pack = self._norm_rule_pack_loader.load(pack_path)
             except (FileNotFoundError, ValueError, OSError) as exc:
-                # Tolerant (env-default) path fails closed as a FAILED capability
-                # instead of a silent skip; explicit request paths still raise.
-                if not tolerant:
-                    raise
+                # Requested or configured packs that fail to load must never look
+                # like a clean skip/pass: surface FAILED capability (fail-closed).
                 return [], CapabilityStatus(
                     CapabilityState.FAILED,
-                    f"configured norm rule pack unavailable via {source}: {pack_path.name}: {exc}",
+                    f"norm rule pack unavailable via {source}: {pack_path.name}: {exc}",
                 )
             identity = (pack.pack_id, pack.version)
             if identity in seen_packs:
