@@ -7,6 +7,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
+from aerobim.application.services.compliance_agent_orchestrator import (
+    ComplianceAgentOrchestrator,
+    merge_advisory_sequences,
+)
 from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
@@ -150,6 +154,7 @@ class AnalyzeProjectPackageUseCase:
         load_evidence_verifier: LoadEvidenceVerifier | None = None,
         logic_consistency_analyzer: LogicConsistencyAnalyzer | None = None,
         multimodal_drawing_pipeline: MultimodalDrawingPipeline | None = None,
+        compliance_agent: ComplianceAgentOrchestrator | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -189,6 +194,7 @@ class AnalyzeProjectPackageUseCase:
         self._load_evidence_verifier = load_evidence_verifier
         self._logic_consistency_analyzer = logic_consistency_analyzer
         self._multimodal_drawing_pipeline = multimodal_drawing_pipeline
+        self._compliance_agent = compliance_agent
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         request = self._maybe_hydrate_office_requirement_source(request)
@@ -283,9 +289,16 @@ class AnalyzeProjectPackageUseCase:
             *load_issues,
             *logic_issues,
         ]
+        agent_advisory: tuple[ValidationIssue, ...] = ()
+        if self._compliance_agent is not None:
+            agent_result = self._compliance_agent.run(request)
+            agent_advisory = agent_result.advisory_issues
         reconciled_issues, _divergences = self._determinism_gate.reconcile(
             engine_issues=raw_issues,
-            advisory_issues=self._advisory_issues,
+            advisory_issues=merge_advisory_sequences(
+                self._advisory_issues,
+                agent_advisory,
+            ),
         )
         prioritized_issues = tuple(
             ensure_finding_provenance(

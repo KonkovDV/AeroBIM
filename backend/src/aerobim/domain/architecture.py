@@ -153,6 +153,7 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
         "AdvisoryTextAssist",  # reserved; LLM assist never writes summary.passed
         "RequirementToIdsCompiler",
         "NormCorpusRetriever",
+        "ComplianceAgentOrchestrator",
     ),
     Contour.EVIDENCE_REPORTING: (
         "AuditReportStore",

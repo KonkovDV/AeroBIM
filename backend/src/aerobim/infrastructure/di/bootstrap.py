@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aerobim.application.services.compliance_agent_orchestrator import ComplianceAgentOrchestrator
 from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.application.use_cases.analyze_project_package_jobs import (
@@ -222,6 +223,17 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.COMPLIANCE_AGENT_ORCHESTRATOR,
+        lambda current: ComplianceAgentOrchestrator(
+            norm_retriever=current.resolve(Tokens.NORM_CORPUS_RETRIEVER),
+            ids_compiler=current.resolve(Tokens.REQUIREMENT_TO_IDS_COMPILER),
+            load_verifier=current.resolve(Tokens.LOAD_EVIDENCE_VERIFIER),
+            logic_analyzer=current.resolve(Tokens.LOGIC_CONSISTENCY_ANALYZER),
+            max_steps=6,
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.EXTERNAL_EVIDENCE_VERIFIER,
         lambda _container: OpenRebarEvidenceVerifier(),
         lifecycle=Lifecycle.SINGLETON,
@@ -350,6 +362,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             load_evidence_verifier=current.resolve(Tokens.LOAD_EVIDENCE_VERIFIER),
             logic_consistency_analyzer=current.resolve(Tokens.LOGIC_CONSISTENCY_ANALYZER),
             multimodal_drawing_pipeline=current.resolve(Tokens.MULTIMODAL_DRAWING_PIPELINE),
+            compliance_agent=current.resolve(Tokens.COMPLIANCE_AGENT_ORCHESTRATOR),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
