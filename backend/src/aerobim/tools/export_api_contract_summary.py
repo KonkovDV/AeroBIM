@@ -114,6 +114,16 @@ def _collect_contract_summary(app) -> dict[str, object]:
                 "contract_shape": ["reports", "count"],
             },
             {
+                "endpoint": "/v1/system/capabilities",
+                "expected_status": ["200"],
+                "contract_shape": [
+                    "artifact_type",
+                    "schema_version",
+                    "claim_boundary",
+                    "honesty",
+                ],
+            },
+            {
                 "endpoint": "/v1/analyze/project-package/reinforcement-digest",
                 "expected_status": ["200", "400", "404"],
                 "contract_shape": [
@@ -123,6 +133,7 @@ def _collect_contract_summary(app) -> dict[str, object]:
                     "schema_version",
                     "project_code",
                     "slab_id",
+                    "claim_labels",
                 ],
             },
         ],

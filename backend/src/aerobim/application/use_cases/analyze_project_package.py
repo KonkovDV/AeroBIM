@@ -478,6 +478,8 @@ class AnalyzeProjectPackageUseCase:
             or CapabilityStatus(CapabilityState.SKIPPED, "norm rule packs not requested"),
             section_pairing=section_pairing
             or CapabilityStatus(CapabilityState.SKIPPED, "PD/RD section pairing not requested"),
+            # Honesty surface defaults (MISSING / NOT_VERIFIED / NOT_IMPLEMENTED)
+            # are applied by ReportCapabilities dataclass fields.
         )
 
     def _submit_bsi_validation(self, ifc_path) -> tuple[str | None, list[ValidationIssue]]:

@@ -1,35 +1,41 @@
 {
   "artifact_type": "aerobim_red_team_audit_baseline",
   "schema_version": "1.0.0",
-  "audit_date_utc": "2026-07-16T20:59:16.366958+00:00",
+  "audit_date_utc": "2026-07-16T21:25:55.293485+00:00",
   "author_relationship": "self",
   "note": "Independent Red Team inventory. Values are command-derived. Working tree may be dirty relative to committed SHA.",
   "git": {
-    "commit_sha": "c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f",
+    "commit_sha": "2b9b8348338c6952c64d92a86983eb62324043cf",
     "branch": "main",
-    "latest_commit": "c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f\n2026-07-16 23:48:33 +0300\nfeat(arch): four-contour seams for R1–R5 (PrecisionClaim, baseline, TZ status)",
+    "latest_commit": "2b9b8348338c6952c64d92a86983eb62324043cf\n2026-07-17 00:17:44 +0300\nfix(p0): fail-closed clash/ACL/provenance and freeze red-team audit",
     "dirty": true,
-    "uncommitted_change_count": 20,
+    "uncommitted_change_count": 26,
     "uncommitted_paths": [
-      "M backend/src/aerobim/application/use_cases/analyze_project_package.py",
-      " M backend/src/aerobim/application/use_cases/analyze_project_package_jobs.py",
-      " M backend/src/aerobim/domain/architecture.py",
+      "M audit/reports/CLAIMS_EVIDENCE_MATRIX.md",
+      " M audit/reports/CLAIMS_LOCK_2026_07_17.md",
+      " M audit/reports/CRITICAL_BLOCKERS.md",
+      " M audit/reports/REMEDIATION_PLAN.md",
+      " M backend/src/aerobim/application/use_cases/analyze_project_package.py",
       " M backend/src/aerobim/domain/models.py",
-      " M backend/src/aerobim/domain/ports.py",
-      " M backend/src/aerobim/infrastructure/adapters/in_memory_analyze_project_package_job_store.py",
-      " M backend/src/aerobim/infrastructure/adapters/redis_analyze_project_package_job_store.py",
+      " M backend/src/aerobim/infrastructure/adapters/bcf_consumers.py",
+      " M backend/src/aerobim/infrastructure/adapters/filesystem_audit_store.py",
       " M backend/src/aerobim/presentation/http/api.py",
-      " M backend/src/aerobim/tools/evaluate_detection_precision.py",
+      " M backend/src/aerobim/tools/export_api_contract_summary.py",
       " M backend/src/aerobim/tools/measure_package_sla.py",
-      "?? _tmp10.md",
-      "?? audit/",
-      "?? backend/src/aerobim/domain/findings.py",
-      "?? backend/src/aerobim/domain/ingestion.py",
-      "?? backend/src/aerobim/infrastructure/adapters/bcf_consumers.py",
-      "?? backend/tests/test_bcf_multi_consumer_contract.py",
-      "?? backend/tests/test_document_identity_ingestion.py",
-      "?? backend/tests/test_finding_predicates.py",
-      "?? backend/tests/test_sla_and_idempotency.py",
+      " M backend/tests/test_api_security.py",
+      " M backend/tests/test_architecture_seams.py",
+      " M backend/tests/test_bcf_multi_consumer_contract.py",
+      " M backend/tests/test_measure_package_sla.py",
+      " M docs/evaluation/DETECTION_PRECISION_PROTOCOL_2026.md",
+      " M docs/evidence/pre-pilot-bcf-handoff-2026-05-21.json",
+      " M docs/evidence/samolet-sla-pilot-moscow-2026-05-21.json",
+      " M docs/ops/intake-precision-runbook-2026.md",
+      " M docs/samolet-pilot-intake-checklist-2026.md",
+      "?? audit/evidence/bcf-structural-handoff-2026-07-17.json",
+      "?? audit/evidence/customer-intake-gate.json",
+      "?? audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json",
+      "?? backend/src/aerobim/domain/system_capabilities.py",
+      "?? backend/src/aerobim/tools/verify_bcf_structural_handoff.py",
       "?? docs/samolet-techlab-scorecard-2026.zip"
     ]
   },
@@ -48,33 +54,33 @@
   },
   "loc": {
     "backend_src_py": {
-      "files": 101,
-      "lines": 15290
+      "files": 105,
+      "lines": 16129
     },
     "backend_tests_py": {
-      "files": 63,
-      "lines": 11149
+      "files": 64,
+      "lines": 11378
     },
     "frontend_src": {
       "files": 11,
-      "lines": 3871
+      "lines": 3868
     },
     "docs_md": {
       "files": 100,
-      "lines": 8864
+      "lines": 8890
     },
     "note": "Excludes node_modules/dist/__pycache__; does NOT count samples or site-packages"
   },
   "tests": {
-    "backend_collected": 439,
-    "backend_passed": 436,
+    "backend_collected": 449,
+    "backend_passed": 446,
     "backend_skipped": 3,
     "backend_failed": 0,
     "backend_errors": 0,
     "frontend_npm_test": {
-      "exit_code": 1,
-      "stdout_tail": "> aerobim-frontend@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.4 C:/plans/AeroBIM/frontend\n\n ❯ src/App.test.tsx (13 tests | 3 failed) 2330ms\n     × forwards project, discipline, and status filters to the backend list API 1105ms\n     × covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus 105ms\n     × switches the 2d evidence panel when another issue is selected 59ms\n\n Test Files  1 failed | 2 passed (3)\n      Tests  3 failed | 18 passed (21)\n   Start at  23:59:03\n   Duration  11.72s (transform 289ms, setup 3.87s, import 312ms, tests 2.45s, environment 22.89s)",
-      "stderr_tail": "@testing-library/dom/dist/query-helpers.js:76:38\n ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17\n ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19\n ❯ src/App.test.tsx:561:19\n    559|\n    560|     expect(await screen.findByRole(\"img\", { name: /drawing evidence pr…\n    561|     expect(screen.getByText(/plain drawing-preview mode|Preview loaded…\n       |                   ^\n    562|     const viewer = await screen.findByTestId(\"viewer-stub\");\n    563|     expect(await within(viewer).findByText(\"No spatial selection\")).to…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯\n\nnpm notice\nnpm notice New minor version of npm available! 11.6.1 -> 11.18.0\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v11.18.0\nnpm notice To update run: npm install -g npm@11.18.0\nnpm notice"
+      "exit_code": 0,
+      "stdout_tail": "> aerobim-frontend@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.4 C:/plans/AeroBIM/frontend\n\n\n Test Files  3 passed (3)\n      Tests  21 passed (21)\n   Start at  00:25:50\n   Duration  2.54s (transform 242ms, setup 452ms, import 356ms, tests 1.51s, environment 2.21s)",
+      "stderr_tail": "npm warn Unknown env config \"devdir\". This will stop working in the next major version of npm.\nNot implemented: navigation to another Document"
     }
   },
   "dependencies": {
@@ -230,6 +236,10 @@
       },
       {
         "method": "GET",
+        "path": "/v1/system/capabilities"
+      },
+      {
+        "method": "GET",
         "path": "/v1/reports"
       },
       {
@@ -306,7 +316,8 @@
       "run_demo_path.py",
       "run_live_review_smoke.py",
       "seed_smoke_report.py",
-      "summarize_conflict_breakdown.py"
+      "summarize_conflict_breakdown.py",
+      "verify_bcf_structural_handoff.py"
     ],
     "frontend_routes": [
       "SPA single-page App.tsx (no react-router routes found in inventory)",
@@ -318,7 +329,7 @@
       "command": "git rev-parse HEAD",
       "cwd": "C:\\plans\\AeroBIM",
       "exit_code": 0,
-      "stdout": "c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f",
+      "stdout": "2b9b8348338c6952c64d92a86983eb62324043cf",
       "stderr": ""
     },
     "git_branch": {
@@ -332,18 +343,18 @@
       "command": "git status --porcelain",
       "cwd": "C:\\plans\\AeroBIM",
       "exit_code": 0,
-      "stdout": "M backend/src/aerobim/application/use_cases/analyze_project_package.py\n M backend/src/aerobim/application/use_cases/analyze_project_package_jobs.py\n M backend/src/aerobim/domain/architecture.py\n M backend/src/aerobim/domain/models.py\n M backend/src/aerobim/domain/ports.py\n M backend/src/aerobim/infrastructure/adapters/in_memory_analyze_project_package_job_store.py\n M backend/src/aerobim/infrastructure/adapters/redis_analyze_project_package_job_store.py\n M backend/src/aerobim/presentation/http/api.py\n M backend/src/aerobim/tools/evaluate_detection_precision.py\n M backend/src/aerobim/tools/measure_package_sla.py\n?? _tmp10.md\n?? audit/\n?? backend/src/aerobim/domain/findings.py\n?? backend/src/aerobim/domain/ingestion.py\n?? backend/src/aerobim/infrastructure/adapters/bcf_consumers.py\n?? backend/tests/test_bcf_multi_consumer_contract.py\n?? backend/tests/test_document_identity_ingestion.py\n?? backend/tests/test_finding_predicates.py\n?? backend/tests/test_sla_and_idempotency.py\n?? docs/samolet-techlab-scorecard-2026.zip",
+      "stdout": "M audit/reports/CLAIMS_EVIDENCE_MATRIX.md\n M audit/reports/CLAIMS_LOCK_2026_07_17.md\n M audit/reports/CRITICAL_BLOCKERS.md\n M audit/reports/REMEDIATION_PLAN.md\n M backend/src/aerobim/application/use_cases/analyze_project_package.py\n M backend/src/aerobim/domain/models.py\n M backend/src/aerobim/infrastructure/adapters/bcf_consumers.py\n M backend/src/aerobim/infrastructure/adapters/filesystem_audit_store.py\n M backend/src/aerobim/presentation/http/api.py\n M backend/src/aerobim/tools/export_api_contract_summary.py\n M backend/src/aerobim/tools/measure_package_sla.py\n M backend/tests/test_api_security.py\n M backend/tests/test_architecture_seams.py\n M backend/tests/test_bcf_multi_consumer_contract.py\n M backend/tests/test_measure_package_sla.py\n M docs/evaluation/DETECTION_PRECISION_PROTOCOL_2026.md\n M docs/evidence/pre-pilot-bcf-handoff-2026-05-21.json\n M docs/evidence/samolet-sla-pilot-moscow-2026-05-21.json\n M docs/ops/intake-precision-runbook-2026.md\n M docs/samolet-pilot-intake-checklist-2026.md\n?? audit/evidence/bcf-structural-handoff-2026-07-17.json\n?? audit/evidence/customer-intake-gate.json\n?? audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json\n?? backend/src/aerobim/domain/system_capabilities.py\n?? backend/src/aerobim/tools/verify_bcf_structural_handoff.py\n?? docs/samolet-techlab-scorecard-2026.zip",
       "stderr": ""
     },
     "pytest_collect": {
       "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest --collect-only -q",
       "exit_code": 0,
-      "stdout_tail": "nfigured\ntests/test_wave2_wave3_tails.py::ReportListFilterTests::test_apply_filters_by_project_and_passed\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_analyze_attaches_schema_request_id\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_http_client_returns_public_id\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_local_pack_certificate_is_deterministic\ntests/test_wave2_wave3_tails.py::ReviewEventTests::test_filesystem_store_and_kpi\ntests/test_wave2_wave3_tails.py::LoinInformationLevelTests::test_geometry_level_for_clash_prefix\ntests/test_wave2_wave3_tails.py::SpatialPredicateTests::test_hard_clash_is_warning_unless_affects_pass\ntests/test_wave2_wave3_tails.py::IdsAssistBoundaryTests::test_stub_is_advisory_only\n\n439 tests collected in 0.69s"
+      "stdout_tail": "nfigured\ntests/test_wave2_wave3_tails.py::ReportListFilterTests::test_apply_filters_by_project_and_passed\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_analyze_attaches_schema_request_id\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_http_client_returns_public_id\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_local_pack_certificate_is_deterministic\ntests/test_wave2_wave3_tails.py::ReviewEventTests::test_filesystem_store_and_kpi\ntests/test_wave2_wave3_tails.py::LoinInformationLevelTests::test_geometry_level_for_clash_prefix\ntests/test_wave2_wave3_tails.py::SpatialPredicateTests::test_hard_clash_is_warning_unless_affects_pass\ntests/test_wave2_wave3_tails.py::IdsAssistBoundaryTests::test_stub_is_advisory_only\n\n449 tests collected in 0.72s"
     },
     "pytest_run": {
       "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=no",
       "exit_code": 0,
-      "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n........................................................................ [ 65%]\n....ss.................................................................. [ 82%]\n.......................................................s................ [ 98%]\n.......                                                                  [100%]\n436 passed, 3 skipped in 5.66s"
+      "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 48%]\n........................................................................ [ 64%]\n........ss.............................................................. [ 80%]\n.................................................................s...... [ 96%]\n.................                                                        [100%]\n446 passed, 3 skipped in 5.86s"
     }
   }
 }

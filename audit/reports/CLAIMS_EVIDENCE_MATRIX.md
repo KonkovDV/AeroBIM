@@ -2,19 +2,21 @@
 
 | Claim | Evidence | Corpus | Reproducible | Risk | Allowed wording |
 |---|---|---|---|---|---|
-| LOC ~14.7K / 425+ tests | Measured src 15290 LOC; 439 collected / 436 passed | n/a | Yes (`generate_audit_baseline.py`) | MED — maturity theatre | “Measured at audit freeze; dirty tree may differ from README” |
+| LOC / tests at freeze | `audit/evidence/audit-baseline.json` | n/a | Yes | MED | Measured at freeze SHA |
 | extraction macro_f1≈0.86 | evaluate_extraction | fixture | Yes | HIGH if sold as accuracy | Fixture F1 only; not product accuracy |
-| точность >90% | None | none | No | BLOCKER | **FORBIDDEN** until customer+2 adjudicators |
+| точность >90% | None | none | No | BLOCKER | **FORBIDDEN** until customer+2 adjudicators + κ/α |
 | Full norm checking | synthetic packs | synthetic | Partial | BLOCKER | Утверждённый пакет: **НЕТ** |
-| MEP clash | mep scaffold + generic clash | none | No | BLOCKER | NOT VERIFIED |
-| DWG analysis | docs say missing | none | No | HIGH | НЕ РЕАЛИЗОВАНО |
-| SLA ≤30 min | measure_package_sla tool | fixture | Partial | HIGH | НЕ ДОКАЗАНО for customer package |
-| BCF ready | ZIP exporters + unit consumers | synthetic | Unit only | HIGH | Export yes; CDE import НЕ ДОКАЗАНО |
-| Checks calculations | OpenRebar digest / numeric compare | fixture | Partial | HIGH | Сверка PARTIAL; correctness НЕ РЕАЛИЗОВАНО |
-| Understands drawings (CV) | OCR extra absent; CV missing | none | No | BLOCKER | L0 PARTIAL; L2–L4 НЕ РЕАЛИЗОВАНО |
+| MEP clash | mep scaffold + honesty surface | none | No | BLOCKER | NOT VERIFIED (`/v1/system/capabilities`) |
+| DWG analysis | honesty surface MISSING | none | No | HIGH | НЕ РЕАЛИЗОВАНО |
+| SLA ≤30 min customer | schema 1.2 fixture pack only | fixture | Yes | HIGH | Fixture wall-clock only; customer НЕ ДОКАЗАНО |
+| BCF structural ZIP | `bcf-structural-handoff-2026-07-17.json` + dual consumers | synthetic | Yes | MED | Structural OK; CDE import НЕ ДОКАЗАНО |
+| BCF ready for CDE | No import artifact | none | No | HIGH | **FORBIDDEN** until T2 evidence |
+| Checks calculations | OpenRebar digest + claim_labels | fixture | Partial | HIGH | Сверка PARTIAL; correctness НЕ РЕАЛИЗОВАНО |
+| Understands drawings (CV) | honesty `cv_human_level=missing` | none | No | BLOCKER | НЕ РЕАЛИЗОВАНО |
 | External academic audit | self evidence + display_label guard | n/a | Yes | HIGH | internal self-audit only |
-| Production-ready | boto3 absent; FE tests fail; no tenant ACL | n/a | No | BLOCKER | НЕ ДОКАЗАНО |
+| Production-ready | ACL + fail-closed P0; customer gates false | mixed | Partial | HIGH | НЕ ДОКАЗАНО (checkpoint NO_GO) |
 | Solibri replacement | explicit disclaimer in pilot-claim-boundary | n/a | Yes | LOW if held | Do not claim replacement |
 | Platform / automated compliance | marketing tone risk | mixed | n/a | HIGH | “Bounded openBIM validation pilot; not full compliance engine” |
 
-Inventory JSON: [`../evidence/claims-inventory.json`](../evidence/claims-inventory.json)
+Inventory JSON: [`../evidence/claims-inventory.json`](../evidence/claims-inventory.json)  
+Intake gate (all false): [`../evidence/customer-intake-gate.json`](../evidence/customer-intake-gate.json)

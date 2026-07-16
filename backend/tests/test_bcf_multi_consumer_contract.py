@@ -16,8 +16,13 @@ from aerobim.domain.models import (
     ValidationSummary,
 )
 from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
-from aerobim.infrastructure.adapters.bcf_consumers import consume_bcf3_zip, consume_bcf21_zip
+from aerobim.infrastructure.adapters.bcf_consumers import (
+    consume_bcf3_zip,
+    consume_bcf21_zip,
+    verify_bcf_zip_structure,
+)
 from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+from aerobim.tools.verify_bcf_structural_handoff import build_bcf_structural_handoff_evidence
 
 
 def _report() -> ValidationReport:
@@ -83,6 +88,21 @@ class BcfMultiConsumerContractTests(unittest.TestCase):
         titles_21 = sorted(t.title for t in topics_21)
         titles_30 = sorted(t.title for t in topics_30)
         self.assertEqual(titles_21, titles_30)
+
+    def test_structural_verifier_accepts_bcf21_and_bcf3(self) -> None:
+        report = _report()
+        for archive in (export_bcf(report), export_bcf3(report)):
+            result = verify_bcf_zip_structure(archive)
+            self.assertTrue(result.ok, msg=result.errors)
+            self.assertTrue(result.sha256)
+            self.assertGreaterEqual(result.topic_count, 1)
+            self.assertEqual(result.xsd_status, "not_configured")
+
+    def test_structural_handoff_evidence_keeps_cde_not_verified(self) -> None:
+        payload = build_bcf_structural_handoff_evidence()
+        self.assertTrue(payload["structural_ok"])
+        self.assertEqual(payload["cde_import"]["status"], "NOT_VERIFIED")
+        self.assertEqual(payload["claim_level"], "structural_only")
 
 
 if __name__ == "__main__":
