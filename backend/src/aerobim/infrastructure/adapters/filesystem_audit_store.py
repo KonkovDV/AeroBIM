@@ -440,9 +440,7 @@ class FilesystemAuditStore:
         default: CapabilityStatus | None = None,
     ) -> CapabilityStatus:
         if not isinstance(data, dict):
-            return default or CapabilityStatus(
-                CapabilityState.SKIPPED, "missing capability status"
-            )
+            return default or CapabilityStatus(CapabilityState.SKIPPED, "missing capability status")
         raw_status = str(data.get("status", "skipped"))
         try:
             status = CapabilityState(raw_status)

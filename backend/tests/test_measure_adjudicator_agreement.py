@@ -21,11 +21,7 @@ class AdjudicatorAgreementTests(unittest.TestCase):
     def test_template_csv_reports_matrix_and_kappa(self) -> None:
         repo = Path(__file__).resolve().parents[2]
         csv_path = (
-            repo
-            / "samples"
-            / "benchmarks"
-            / "detection-precision"
-            / "adjudication-template.csv"
+            repo / "samples" / "benchmarks" / "detection-precision" / "adjudication-template.csv"
         )
         self.assertTrue(csv_path.exists())
         payload = measure_adjudication_csv(csv_path)
@@ -38,9 +34,7 @@ class AdjudicatorAgreementTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "one.csv"
             path.write_text(
-                "finding_id,adjudicator_id,verdict\n"
-                "f1,engineer-a,TP\n"
-                "f2,engineer-a,FP\n",
+                "finding_id,adjudicator_id,verdict\nf1,engineer-a,TP\nf2,engineer-a,FP\n",
                 encoding="utf-8",
             )
             with self.assertRaises(ValueError):
