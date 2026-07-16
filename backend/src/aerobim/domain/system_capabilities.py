@@ -13,6 +13,14 @@ _MEP_ALLOWED = frozenset(
         CapabilityState.FAILED,
     }
 )
+_DWG_DXF_ALLOWED = frozenset(
+    {
+        CapabilityState.MISSING,
+        CapabilityState.FAILED,
+        CapabilityState.NOT_VERIFIED,
+        CapabilityState.SKIPPED,
+    }
+)
 _CALC_CORRECTNESS_ALLOWED = frozenset(
     {
         CapabilityState.NOT_IMPLEMENTED,
@@ -47,9 +55,9 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "calculation_correctness": (
                 "независимая проверка корректности расчёта — НЕ РЕАЛИЗОВАНО"
             ),
-            "dwg_dxf": "НЕ РЕАЛИЗОВАНО",
+            "dwg_dxf": ("DXF partial via optional ezdxf; native DWG / ODA NOT VERIFIED — never OK"),
             "cv_human_level": "НЕ РЕАЛИЗОВАНО",
-            "mep_system_clash": "NOT VERIFIED",
+            "mep_system_clash": ("DI-wired Unconfigured provider (MEP-CLASH-001) — NOT VERIFIED"),
         },
         "honesty": honesty,
         "forbidden_ok_states": {
@@ -61,7 +69,7 @@ def build_system_capabilities_payload() -> dict[str, object]:
         "notes": [
             (
                 "Runtime report.capabilities may flip evaluated contours "
-                "(clash/ids/raster) to ok/failed/skipped."
+                "(clash/ids/raster/dxf) to ok/failed/skipped/not_verified."
             ),
             (
                 "Honesty fields above must not silently become ok without "
@@ -75,11 +83,7 @@ def assert_honesty_capabilities_not_silently_ok(capabilities: ReportCapabilities
     """Architecture guard: declared gaps must not look delivered."""
 
     checks: tuple[tuple[str, CapabilityStatus, frozenset[CapabilityState]], ...] = (
-        (
-            "dwg_dxf",
-            capabilities.dwg_dxf,
-            frozenset({CapabilityState.MISSING, CapabilityState.FAILED}),
-        ),
+        ("dwg_dxf", capabilities.dwg_dxf, _DWG_DXF_ALLOWED),
         (
             "cv_human_level",
             capabilities.cv_human_level,

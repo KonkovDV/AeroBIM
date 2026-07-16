@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.application.use_cases.analyze_project_package_jobs import (
     AnalyzeProjectPackageJobRunner,
@@ -15,15 +16,20 @@ from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container, Lifecycle
 from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import resolve_storage_path
+from aerobim.domain.mep import UnconfiguredMepSystemGraphProvider
 from aerobim.domain.models import Severity, ToleranceConfig
 from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
 from aerobim.infrastructure.adapters.bsi_validation_service import (
     HttpBsiValidationService,
     LocalSchemaPackCertificate,
 )
+from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
+    DoclingOfficeDocumentIngestor,
+)
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
+from aerobim.infrastructure.adapters.ezdxf_cad_model_ingestor import EzdxfCadModelIngestor
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 from aerobim.infrastructure.adapters.filesystem_review_event_store import FilesystemReviewEventStore
 from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
@@ -128,6 +134,26 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.CLASH_DETECTOR,
         lambda _container: IfcClashDetector(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.MEP_SYSTEM_GRAPH_PROVIDER,
+        lambda _container: UnconfiguredMepSystemGraphProvider(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.CAD_MODEL_INGESTOR,
+        lambda _container: EzdxfCadModelIngestor(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.OFFICE_DOCUMENT_INGESTOR,
+        lambda _container: DoclingOfficeDocumentIngestor(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.DETERMINISM_GATE,
+        lambda _container: DeterminismGate(),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -251,6 +277,10 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             default_norm_rule_pack_path=_resolve_default_norm_pack_path(
                 current.resolve(Tokens.SETTINGS)
             ),
+            cad_model_ingestor=current.resolve(Tokens.CAD_MODEL_INGESTOR),
+            office_document_ingestor=current.resolve(Tokens.OFFICE_DOCUMENT_INGESTOR),
+            mep_system_graph_provider=current.resolve(Tokens.MEP_SYSTEM_GRAPH_PROVIDER),
+            determinism_gate=current.resolve(Tokens.DETERMINISM_GATE),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

@@ -5,6 +5,10 @@ from pathlib import Path
 from typing import Protocol
 
 from aerobim.domain.bcf_api import BcfApiPushResult
+from aerobim.domain.cad_ingest import CadIngestResult
+
+# Re-export MEP port for contour/DI discovery (implementation stays in domain.mep).
+from aerobim.domain.mep import MepSystemGraphProvider as MepSystemGraphProvider
 from aerobim.domain.models import (
     AnalyzeProjectPackageJob,
     ClashResult,
@@ -198,3 +202,18 @@ class BcfApiClient(Protocol):
         *,
         project_id: str,
     ) -> BcfApiPushResult: ...
+
+
+class CadModelIngestor(Protocol):
+    """DWG/DXF → drawing annotations.
+
+    Honesty: never claim OK for native DWG without ODA evidence.
+    """
+
+    def ingest(self, path: Path, *, sheet_id: str | None = None) -> CadIngestResult: ...
+
+
+class OfficeDocumentIngestor(Protocol):
+    """MS Office / rich docs → RequirementSource with extracted text."""
+
+    def ingest(self, path: Path) -> RequirementSource: ...

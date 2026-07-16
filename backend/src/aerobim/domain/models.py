@@ -124,7 +124,9 @@ class ReportCapabilities:
         CapabilityState.MISSING, "Human-level CV/drawing understanding not implemented"
     )
     mep_system_clash: CapabilityStatus = CapabilityStatus(
-        CapabilityState.NOT_VERIFIED, "MEP system-aware clash not wired in runtime DI"
+        CapabilityState.NOT_VERIFIED,
+        "MEP system graph provider DI-wired but unconfigured (MEP-CLASH-001); "
+        "federated MEP IFC + scope memo required",
     )
     calculation_match: CapabilityStatus = CapabilityStatus(
         CapabilityState.SKIPPED, "numeric calculation match not evaluated"
