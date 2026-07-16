@@ -11,6 +11,7 @@ from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
+from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.finding_provenance import ensure_finding_provenance
 from aerobim.domain.ingestion import (
@@ -53,9 +54,13 @@ from aerobim.domain.ports import (
     IdsValidator,
     IfcSchemaValidator,
     IfcValidator,
+    LoadEvidenceVerifier,
+    LogicConsistencyAnalyzer,
+    MultimodalDrawingPipeline,
     NarrativeRuleSynthesizer,
     NormRulePackLoader,
     OfficeDocumentIngestor,
+    QuantityConsistencyChecker,
     RasterDrawingAnalyzer,
     RemarkGenerator,
     RequirementExtractor,
@@ -141,6 +146,10 @@ class AnalyzeProjectPackageUseCase:
         mep_system_graph_provider: MepSystemGraphProvider | None = None,
         determinism_gate: DeterminismGate | None = None,
         advisory_issues: Sequence[ValidationIssue] | None = None,
+        quantity_consistency_checker: QuantityConsistencyChecker | None = None,
+        load_evidence_verifier: LoadEvidenceVerifier | None = None,
+        logic_consistency_analyzer: LogicConsistencyAnalyzer | None = None,
+        multimodal_drawing_pipeline: MultimodalDrawingPipeline | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -176,6 +185,10 @@ class AnalyzeProjectPackageUseCase:
         self._mep_system_graph_provider = mep_system_graph_provider
         self._determinism_gate = determinism_gate or DeterminismGate()
         self._advisory_issues = tuple(advisory_issues or ())
+        self._quantity_consistency_checker = quantity_consistency_checker
+        self._load_evidence_verifier = load_evidence_verifier
+        self._logic_consistency_analyzer = logic_consistency_analyzer
+        self._multimodal_drawing_pipeline = multimodal_drawing_pipeline
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         request = self._maybe_hydrate_office_requirement_source(request)
@@ -250,6 +263,9 @@ class AnalyzeProjectPackageUseCase:
         )
         clash_results, clash_capability, clash_issues = self._run_clash_detection(request.ifc_path)
         mep_capability = self._probe_mep_system_graph(request.ifc_path)
+        quantity_issues = self._run_quantity_consistency(request.ifc_path, requirements)
+        load_issues, calculation_match = self._run_load_evidence(request)
+        logic_issues = self._run_logic_consistency(request)
         raw_issues = [
             *schema_issues_t,
             *ids_audit_issues,
@@ -263,6 +279,9 @@ class AnalyzeProjectPackageUseCase:
             *clash_issues,
             *norm_pack_issues,
             *cad_issues,
+            *quantity_issues,
+            *load_issues,
+            *logic_issues,
         ]
         reconciled_issues, _divergences = self._determinism_gate.reconcile(
             engine_issues=raw_issues,
@@ -301,6 +320,7 @@ class AnalyzeProjectPackageUseCase:
             section_pairing=section_pairing_capability,
             dwg_dxf=cad_capability,
             mep_system_clash=mep_capability,
+            calculation_match=calculation_match,
         )
         passed = summary_passed_after_capabilities(
             error_count=error_count,
@@ -402,8 +422,7 @@ class AnalyzeProjectPackageUseCase:
                         rule_id="AEROBIM-CAD-INGEST",
                         severity=Severity.WARNING,
                         message=(
-                            "CAD drawing sources present but CadModelIngestor "
-                            "is not configured"
+                            "CAD drawing sources present but CadModelIngestor is not configured"
                         ),
                         category=FindingCategory.DRAWING_VALIDATION,
                         source_id="cad-ingest",
@@ -488,6 +507,94 @@ class AnalyzeProjectPackageUseCase:
             f"MEP graph probe returned {len(graph.nodes)} nodes; customer scope memo pending",
         )
 
+    def _run_quantity_consistency(
+        self,
+        ifc_path: Path,
+        requirements: Sequence[ParsedRequirement],
+    ) -> list[ValidationIssue]:
+        if self._quantity_consistency_checker is None:
+            return []
+        claims = claims_from_area_requirements(requirements)
+        if not claims:
+            return []
+        try:
+            return list(self._quantity_consistency_checker.check(ifc_path, claims))
+        except Exception as exc:  # noqa: BLE001
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-QTY-ERROR",
+                    severity=Severity.WARNING,
+                    message=f"Quantity consistency check failed: {exc}",
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="quantity-consistency",
+                )
+            ]
+
+    def _run_load_evidence(
+        self, request: ValidationRequest
+    ) -> tuple[list[ValidationIssue], CapabilityStatus]:
+        if request.calculation_source is None:
+            return (
+                [],
+                CapabilityStatus(
+                    CapabilityState.SKIPPED, "numeric calculation match not evaluated"
+                ),
+            )
+        if self._load_evidence_verifier is None:
+            return (
+                [],
+                CapabilityStatus(CapabilityState.SKIPPED, "LoadEvidenceVerifier not configured"),
+            )
+        try:
+            issues = list(self._load_evidence_verifier.verify(request))
+        except Exception as exc:  # noqa: BLE001
+            return (
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-LOAD-ERROR",
+                        severity=Severity.WARNING,
+                        message=f"Load evidence verify failed: {exc}",
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id="load-evidence",
+                    )
+                ],
+                CapabilityStatus(CapabilityState.FAILED, str(exc)),
+            )
+        mismatches = [i for i in issues if i.rule_id == "AEROBIM-LOAD-MISMATCH"]
+        if mismatches:
+            capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                f"{len(mismatches)} load match failure(s)",
+            )
+        else:
+            capability = CapabilityStatus(
+                CapabilityState.OK,
+                "calculation сверка evaluated (not correctness)",
+            )
+        return issues, capability
+
+    def _run_logic_consistency(self, request: ValidationRequest) -> list[ValidationIssue]:
+        if self._logic_consistency_analyzer is None:
+            return []
+        has_req = bool(
+            request.requirement_source.text.strip() or request.requirement_source.path is not None
+        )
+        manifest = PackageManifest(
+            request_id=request.request_id,
+            ifc_path=request.ifc_path,
+            has_requirement_source=has_req,
+            has_technical_spec=request.technical_spec_source is not None,
+            has_calculation_source=request.calculation_source is not None,
+            has_ids=request.ids_path is not None,
+            drawing_count=len(request.drawing_sources),
+            drawing_sheet_ids=tuple((source.sheet_id or "") for source in request.drawing_sources),
+            pd_section_path=request.pd_section_path,
+            rd_section_path=request.rd_section_path,
+            revision=request.revision,
+            stage=request.stage,
+        )
+        return list(self._logic_consistency_analyzer.analyze(manifest))
+
     def _run_clash_detection(
         self, ifc_path
     ) -> tuple[tuple, CapabilityStatus, list[ValidationIssue]]:
@@ -564,6 +671,7 @@ class AnalyzeProjectPackageUseCase:
         section_pairing: CapabilityStatus | None = None,
         dwg_dxf: CapabilityStatus | None = None,
         mep_system_clash: CapabilityStatus | None = None,
+        calculation_match: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
         ifc_validation = (
             CapabilityStatus(CapabilityState.OK)
@@ -652,6 +760,8 @@ class AnalyzeProjectPackageUseCase:
                 "MEP system graph provider DI-wired but unconfigured (MEP-CLASH-001); "
                 "federated MEP IFC + scope memo required",
             ),
+            calculation_match=calculation_match
+            or CapabilityStatus(CapabilityState.SKIPPED, "numeric calculation match not evaluated"),
         )
 
     def _submit_bsi_validation(self, ifc_path) -> tuple[str | None, list[ValidationIssue]]:
@@ -842,7 +952,11 @@ class AnalyzeProjectPackageUseCase:
             if self._has_structured_drawing_input(drawing_source):
                 annotations.extend(self._drawing_analyzer.analyze(drawing_source))
             if self._is_raster_drawing_source(drawing_source):
-                annotations.extend(self._collect_raster_annotations(drawing_source))
+                if self._multimodal_drawing_pipeline is not None:
+                    result = self._multimodal_drawing_pipeline.analyze(drawing_source, mode="auto")
+                    annotations.extend(result.annotations)
+                else:
+                    annotations.extend(self._collect_raster_annotations(drawing_source))
         return annotations
 
     def _collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:

@@ -134,6 +134,7 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
         "DocumentIdentity",
         "CadModelIngestor",
         "OfficeDocumentIngestor",
+        "MultimodalDrawingPipeline",
     ),
     Contour.DETERMINISTIC_VALIDATION: (
         "IfcValidator",
@@ -143,6 +144,9 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
         "SectionDiffAnalyzer",
         "ExternalEvidenceVerifier",
         "MepSystemGraphProvider",
+        "QuantityConsistencyChecker",
+        "LoadEvidenceVerifier",
+        "LogicConsistencyAnalyzer",
     ),
     Contour.AI_ADVISORY: (
         "IdsAssistDraftPort",
