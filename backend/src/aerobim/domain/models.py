@@ -79,7 +79,9 @@ class ReportCapabilities:
     clash: CapabilityStatus = CapabilityStatus(
         CapabilityState.SKIPPED, "clash detection not evaluated"
     )
-    ids: CapabilityStatus = CapabilityStatus(CapabilityState.SKIPPED, "IDS validation not requested")
+    ids: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "IDS validation not requested"
+    )
     ifc_validation: CapabilityStatus = CapabilityStatus(
         CapabilityState.SKIPPED, "IFC property validation not evaluated"
     )

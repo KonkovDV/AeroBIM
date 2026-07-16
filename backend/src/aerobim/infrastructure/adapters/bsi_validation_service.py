@@ -63,9 +63,9 @@ class HttpBsiValidationService:
                 f"--{boundary}\r\n"
                 f'Content-Disposition: form-data; name="file"; filename="{file_name}"\r\n'
                 f"Content-Type: application/octet-stream\r\n\r\n"
-            ).encode("utf-8")
+            ).encode()
             + payload
-            + f"\r\n--{boundary}--\r\n".encode("utf-8")
+            + f"\r\n--{boundary}--\r\n".encode()
         )
         req = request.Request(
             url,

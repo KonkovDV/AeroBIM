@@ -101,7 +101,9 @@ class JsonNormRulePackLoader:
             return RulePackStatus(str(raw))
         except ValueError as exc:
             allowed = ", ".join(status.value for status in RulePackStatus)
-            raise ValueError(f"Unsupported norm rule pack status {raw!r}; expected one of {allowed}") from exc
+            raise ValueError(
+                f"Unsupported norm rule pack status {raw!r}; expected one of {allowed}"
+            ) from exc
 
     def _parse_disciplines(self, raw: object) -> tuple[str, ...]:
         if not isinstance(raw, list) or not raw:
@@ -291,6 +293,6 @@ class JsonNormRulePackLoader:
     def _scalar_string(self, value: object) -> str:
         if isinstance(value, bool):
             return "true" if value else "false"
-        if isinstance(value, (str, int, float)) and not isinstance(value, complex):
+        if isinstance(value, str | int | float) and not isinstance(value, complex):
             return str(value).strip()
         raise ValueError("expected_value must be a string, number, boolean, or null")

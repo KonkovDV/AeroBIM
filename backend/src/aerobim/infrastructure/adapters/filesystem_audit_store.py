@@ -20,6 +20,7 @@ from aerobim.domain.models import (
     ParsedRequirement,
     ProblemZone,
     ReportCapabilities,
+    ReportListFilters,
     ReportSummaryEntry,
     RuleScope,
     Severity,

@@ -11,9 +11,9 @@ from aerobim.application.services.signoff_policy import summary_passed_after_cap
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.models import (
-    ComparisonOperator,
     CapabilityState,
     CapabilityStatus,
+    ComparisonOperator,
     ConflictKind,
     DrawingAnnotation,
     DrawingAsset,

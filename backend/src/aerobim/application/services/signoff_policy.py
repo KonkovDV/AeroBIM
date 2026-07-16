@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from aerobim.domain.models import CapabilityState, ReportCapabilities
 
-
 # Capabilities that were attempted and FAILED block summary.passed.
 # SKIPPED (not requested / optional extra missing) does not block.
 _PASS_BLOCKING_CAPABILITY_FIELDS: tuple[str, ...] = (

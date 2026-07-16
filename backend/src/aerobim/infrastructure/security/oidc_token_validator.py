@@ -65,7 +65,10 @@ class OidcTokenValidator:
     def fetch_jwks(self) -> dict[str, Any]:
         """Optional diagnostic helper; PyJWKClient handles runtime JWKS fetch."""
         now = time.time()
-        if self._jwks_cache is not None and now - self._jwks_fetched_at < self.jwks_cache_ttl_seconds:
+        if (
+            self._jwks_cache is not None
+            and now - self._jwks_fetched_at < self.jwks_cache_ttl_seconds
+        ):
             return self._jwks_cache
         with urllib.request.urlopen(self.jwks_url, timeout=10) as response:
             payload = json.loads(response.read().decode("utf-8"))

@@ -11,8 +11,8 @@ import logging
 import tempfile
 from pathlib import Path
 
-from aerobim.domain.models import ClashResult
 from aerobim.domain.errors import ClashCapabilityError
+from aerobim.domain.models import ClashResult
 
 
 class IfcClashDetector:

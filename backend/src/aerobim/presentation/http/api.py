@@ -125,7 +125,17 @@ class ReviewEventRequest(BaseModel):
 
 def create_http_app(container: Container):
     try:
-        from fastapi import BackgroundTasks, Body, Depends, FastAPI, File, Header, HTTPException, Response, UploadFile
+        from fastapi import (
+            BackgroundTasks,
+            Body,
+            Depends,
+            FastAPI,
+            File,
+            Header,
+            HTTPException,
+            Response,
+            UploadFile,
+        )
         from fastapi.middleware.cors import CORSMiddleware
     except ModuleNotFoundError as exc:
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc

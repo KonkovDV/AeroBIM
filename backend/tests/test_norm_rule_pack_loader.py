@@ -8,7 +8,6 @@ from pathlib import Path
 from aerobim.domain.models import ComparisonOperator, RulePackStatus
 from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REFERENCE_PACK = REPO_ROOT / "samples" / "rule-packs" / "residential-ar-reference-template.json"
 

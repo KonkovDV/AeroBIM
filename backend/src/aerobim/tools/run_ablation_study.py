@@ -106,9 +106,15 @@ def _to_markdown_table(payload: AblationStudyReport) -> str:
     lines.extend(
         [
             "",
-            "Modes: **A0** IDS-only → **A1** + IFC properties → **A2** + cross-document → **A3** reduced multimodal.",
+            (
+                "Modes: **A0** IDS-only → **A1** + IFC properties → "
+                "**A2** + cross-document → **A3** reduced multimodal."
+            ),
             "",
-            f"Pack count: {payload['pack_count']}. Regenerate via `python -m aerobim.tools.run_ablation_study`.",
+            (
+                f"Pack count: {payload['pack_count']}. "
+                "Regenerate via `python -m aerobim.tools.run_ablation_study`."
+            ),
             "",
         ]
     )
