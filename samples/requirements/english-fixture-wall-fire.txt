@@ -1,0 +1,5 @@
+EN-WALL-01|IFCWALL|Pset_WallCommon|FireRating|REI120
+EN-WALL-02|IFCWALL|Pset_WallCommon|ThermalTransmittance|0.28
+EN-WALL-03|IFCWALL|Qto_WallBaseQuantities|Width|200
+EN-WALL-04|IFCWALL|Pset_WallCommon|IsExternal|TRUE
+EN-WALL-05|IFCWALL|Pset_WallCommon|LoadBearing|TRUE

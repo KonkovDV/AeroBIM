@@ -8,6 +8,8 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from aerobim.domain.models import (
+    CapabilityState,
+    CapabilityStatus,
     ClashResult,
     ComparisonOperator,
     ConflictKind,
@@ -17,6 +19,7 @@ from aerobim.domain.models import (
     GeneratedRemark,
     ParsedRequirement,
     ProblemZone,
+    ReportCapabilities,
     ReportSummaryEntry,
     RuleScope,
     Severity,
@@ -76,6 +79,8 @@ class FilesystemAuditStore:
             drawing_annotations=report.drawing_annotations,
             drawing_assets=drawing_assets,
             clash_results=report.clash_results,
+            capabilities=report.capabilities,
+            schema_validation_request_id=report.schema_validation_request_id,
             project_name=report.project_name,
             discipline=report.discipline,
             stage=report.stage,
@@ -144,7 +149,7 @@ class FilesystemAuditStore:
             import pymupdf
         except ModuleNotFoundError as exc:
             raise RuntimeError(
-                "Drawing asset preview generation requires PyMuPDF. Install the 'vision' extra."
+                "Drawing asset preview generation requires PyMuPDF. Install the 'raster' extra."
             ) from exc
 
         source_path = asset.source_path
@@ -192,6 +197,43 @@ class FilesystemAuditStore:
         source_path: Path,
         pymupdf_module,
     ) -> DrawingAsset:
+        suffix = source_path.suffix.lower()
+        if suffix in {".png", ".jpg", ".jpeg", ".webp"}:
+            media_type = {
+                ".png": "image/png",
+                ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg",
+                ".webp": "image/webp",
+            }[suffix]
+            stored_filename = f"{asset.asset_id}{suffix}"
+            payload = source_path.read_bytes()
+            object_key = self._store_preview_bytes(
+                report_id,
+                stored_filename,
+                payload,
+                content_type=media_type,
+            )
+            width = asset.coordinate_width
+            height = asset.coordinate_height
+            if width is None or height is None:
+                try:
+                    pix = pymupdf_module.Pixmap(str(source_path))
+                    width = float(pix.width)
+                    height = float(pix.height)
+                except Exception:  # noqa: BLE001
+                    width = width
+                    height = height
+            return DrawingAsset(
+                asset_id=asset.asset_id,
+                sheet_id=asset.sheet_id,
+                page_number=asset.page_number or 1,
+                media_type=media_type,
+                coordinate_width=width,
+                coordinate_height=height,
+                stored_filename=stored_filename,
+                object_key=object_key,
+            )
+
         pix = pymupdf_module.Pixmap(str(source_path))
         stored_filename = f"{asset.asset_id}.png"
         object_key = self._store_preview_bytes(
@@ -210,9 +252,16 @@ class FilesystemAuditStore:
             object_key=object_key,
         )
 
-    def _store_preview_bytes(self, report_id: str, stored_filename: str, payload: bytes) -> str:
+    def _store_preview_bytes(
+        self,
+        report_id: str,
+        stored_filename: str,
+        payload: bytes,
+        *,
+        content_type: str = "image/png",
+    ) -> str:
         object_key = f"drawing-assets/{report_id}/{stored_filename}"
-        self._object_store.put_bytes(object_key, payload, content_type="image/png")
+        self._object_store.put_bytes(object_key, payload, content_type=content_type)
         return object_key
 
     def get(self, report_id: str) -> ValidationReport | None:
@@ -230,7 +279,10 @@ class FilesystemAuditStore:
         except (json.JSONDecodeError, KeyError):
             return None
 
-    def list_reports(self) -> list[ReportSummaryEntry]:
+    def list_reports(
+        self,
+        filters: ReportListFilters | None = None,
+    ) -> list[ReportSummaryEntry]:
         self._prune_expired_reports()
         entries: list[ReportSummaryEntry] = []
         for path in sorted(self._reports_dir.glob("*.json")):
@@ -254,7 +306,9 @@ class FilesystemAuditStore:
                 )
             except (json.JSONDecodeError, KeyError):
                 continue
-        return entries
+        from aerobim.application.services.report_list_filters import apply_report_list_filters
+
+        return apply_report_list_filters(entries, filters)
 
     def _reconstruct_report(self, data: dict) -> ValidationReport:
         return ValidationReport(
@@ -277,6 +331,8 @@ class FilesystemAuditStore:
             clash_results=tuple(
                 self._reconstruct_clash_result(c) for c in data.get("clash_results", [])
             ),
+            capabilities=self._reconstruct_capabilities(data.get("capabilities")),
+            schema_validation_request_id=data.get("schema_validation_request_id"),
             project_name=data.get("project_name"),
             discipline=data.get("discipline"),
             stage=data.get("stage"),
@@ -349,6 +405,36 @@ class FilesystemAuditStore:
             passed=data.get("passed", False),
             drawing_annotation_count=data.get("drawing_annotation_count", 0),
             generated_remark_count=data.get("generated_remark_count", 0),
+        )
+
+    def _reconstruct_capability_status(self, data: object) -> CapabilityStatus:
+        if not isinstance(data, dict):
+            return CapabilityStatus(CapabilityState.SKIPPED, "missing capability status")
+        raw_status = str(data.get("status", "skipped"))
+        try:
+            status = CapabilityState(raw_status)
+        except ValueError:
+            status = CapabilityState.SKIPPED
+        reason = data.get("reason")
+        external_ref = data.get("external_ref")
+        return CapabilityStatus(
+            status=status,
+            reason=str(reason) if reason is not None else None,
+            external_ref=str(external_ref) if external_ref is not None else None,
+        )
+
+    def _reconstruct_capabilities(self, data: object) -> ReportCapabilities | None:
+        if not isinstance(data, dict):
+            return None
+        return ReportCapabilities(
+            clash=self._reconstruct_capability_status(data.get("clash")),
+            ids=self._reconstruct_capability_status(data.get("ids")),
+            ifc_validation=self._reconstruct_capability_status(data.get("ifc_validation")),
+            unit_scale=self._reconstruct_capability_status(data.get("unit_scale")),
+            raster=self._reconstruct_capability_status(data.get("raster")),
+            ifc_schema=self._reconstruct_capability_status(data.get("ifc_schema")),
+            norm_rule_packs=self._reconstruct_capability_status(data.get("norm_rule_packs")),
+            section_pairing=self._reconstruct_capability_status(data.get("section_pairing")),
         )
 
     def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:

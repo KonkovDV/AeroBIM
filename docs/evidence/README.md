@@ -2,7 +2,7 @@
 title: "Evidence Directory Index"
 status: active
 version: "1.0.0"
-last_updated: "2026-05-21"
+last_updated: "2026-07-11"
 ---
 
 # Evidence directory
@@ -28,6 +28,17 @@ Dated, citeable verification snapshots for reviewers and pilot gates. Policy: [`
 | `samolet-sla-pilot-moscow-2026-05-21.json` | SLA smoke (fixture pack) |
 | `samolet-typical-errors-mapping.json` | Catalog → rule_id coverage |
 | `ablation-study-report.json` | A0–A3 |
+
+## July 2026 tracks
+
+| File | Role |
+|------|------|
+| `TRACK_A1_SECTION_PAIRING_2026_07_11.md` | PD↔RD canonical pairing |
+| `TRACK_A2_NORM_PACKS_2026_07_11.md` | Norm packs CI/env |
+| `TRACK_A3_INTAKE_PRECISION_2026_07_11.md` | Adjudication intake |
+| `TRACK_A5_DEMO_PATH_2026_07_11.md` | Demo upload→analyze→BCF |
+| `demo-path-pilot-moscow-2026-07-11.json` | A5 evidence (fixture loop) |
+| `DRAWING_AI_WORLD_PRACTICE_2026_07.md` | OCR/CV claim boundary |
 
 ## Not in git
 

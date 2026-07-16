@@ -37,13 +37,44 @@ class AnalyzeProjectPackageJobStoreDurabilityTests(unittest.TestCase):
             self.assertIsNotNone(recovered_job.started_at)
             self.assertIsNotNone(recovered_job.completed_at)
 
-    def test_store_ignores_invalid_snapshot_payload(self) -> None:
+    def test_store_rejects_invalid_snapshot_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             snapshot_path = Path(tmp_dir) / "jobs.snapshot.json"
             snapshot_path.write_text("{ invalid json", encoding="utf-8")
 
-            store = InMemoryAnalyzeProjectPackageJobStore(snapshot_path=snapshot_path)
-            self.assertIsNone(store.get("missing"))
+            with self.assertRaises(RuntimeError):
+                InMemoryAnalyzeProjectPackageJobStore(snapshot_path=snapshot_path)
+
+    def test_store_rejects_non_list_snapshot_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            snapshot_path = Path(tmp_dir) / "jobs.snapshot.json"
+            snapshot_path.write_text('{"jobs": []}', encoding="utf-8")
+
+            with self.assertRaises(RuntimeError):
+                InMemoryAnalyzeProjectPackageJobStore(snapshot_path=snapshot_path)
+
+    def test_illegal_transition_is_rejected(self) -> None:
+        store = InMemoryAnalyzeProjectPackageJobStore()
+        job = AnalyzeProjectPackageJob(
+            job_id="job-locked",
+            request_id="req-locked",
+            status=JobStatus.QUEUED,
+            created_at="2026-04-19T00:00:00+00:00",
+        )
+        store.create(job)
+        # Cannot jump QUEUED → SUCCEEDED.
+        self.assertIsNone(store.mark_succeeded("job-locked", "report-1"))
+        self.assertEqual(store.get("job-locked").status, JobStatus.QUEUED)  # type: ignore[union-attr]
+
+        store.mark_running("job-locked")
+        store.mark_succeeded("job-locked", "report-1")
+        # Terminal SUCCEEDED cannot move back to RUNNING or FAILED.
+        self.assertIsNone(store.mark_running("job-locked"))
+        self.assertIsNone(store.mark_failed("job-locked", "nope"))
+        recovered = store.get("job-locked")
+        assert recovered is not None
+        self.assertEqual(recovered.status, JobStatus.SUCCEEDED)
+        self.assertEqual(recovered.report_id, "report-1")
 
 
 if __name__ == "__main__":

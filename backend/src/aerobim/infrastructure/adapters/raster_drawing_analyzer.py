@@ -91,7 +91,7 @@ class RasterDrawingAnalyzer:
             import pymupdf
         except ModuleNotFoundError as exc:
             raise RuntimeError(
-                "PDF drawing analysis requires PyMuPDF. Install the 'vision' extra."
+                "PDF drawing analysis requires PyMuPDF. Install the 'raster' extra."
             ) from exc
 
         annotations: list[DrawingAnnotation] = []
@@ -160,7 +160,7 @@ class RasterDrawingAnalyzer:
             from rapidocr import RapidOCR
         except ModuleNotFoundError as exc:
             raise RuntimeError(
-                "Raster drawing OCR requires rapidocr and onnxruntime. Install the 'vision' extra."
+                "Raster drawing OCR requires rapidocr and onnxruntime. Install the 'raster' extra."
             ) from exc
         self._ocr_engine = RapidOCR()
         return self._ocr_engine

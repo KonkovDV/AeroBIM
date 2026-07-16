@@ -8,13 +8,13 @@ tags: [aerobim, pilot, adapters]
 
 # Optional Adapters Smoke
 
-Pilot default install: `pip install -e ".[dev,vision]"`. Optional extras are **not** required for Moscow pilot gates.
+Pilot default install: `pip install -e ".[dev,raster]"`. Optional extras are **not** required for Moscow pilot gates.
 
 ## Capability matrix
 
 | Extra | Capability | Pilot |
 |---|---|---|
-| `vision` | PDF/OCR drawing extraction (PyMuPDF + RapidOCR) | Required |
+| `raster` | PDF/OCR drawing extraction (PyMuPDF + RapidOCR) | Required |
 | `clash` | IfcClash detection | Optional |
 | `docling` | Docling document parser | Optional |
 | `enterprise` | Postgres/S3 adapters | Post-pilot |

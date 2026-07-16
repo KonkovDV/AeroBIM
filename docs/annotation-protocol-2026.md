@@ -1,21 +1,21 @@
 ---
 title: "AeroBIM Annotation Protocol 2026"
 status: active
-version: "1.0.0"
-last_updated: "2026-05-20"
+version: "1.2.0"
+last_updated: "2026-07-10"
 tags: [aerobim, annotation, benchmark, academic]
 ---
 
-# Annotation Protocol — Russian AEC Requirement Extraction Benchmark
+# Annotation Protocol — AEC Requirement Extraction Benchmark
 
 ## Purpose
 
-Define a reproducible ground-truth schema for evaluating **deterministic** requirement extraction from Russian narrative technical documents (TZ / specifications / calculations).
+Define a reproducible ground-truth schema for evaluating **deterministic** requirement extraction from narrative and structured technical documents (TZ / specifications / calculations), in **Russian and English**.
 
 ## Document inclusion criteria
 
-1. Language: Russian (`ru`).
-2. Format: plain text narrative (`.txt`) mimicking TZ fragments.
+1. Language: Russian (`ru`) or English (`en`).
+2. Format: plain text narrative (`.txt`) or structured pipe-delimited lines.
 3. Discipline tag: `architecture` | `structure` | `fire-safety` | `mep`.
 4. Each document contains **5** atomic requirements mappable to IFC entities and properties.
 
@@ -44,14 +44,32 @@ A predicted requirement is a **true positive** when:
 4. `property_set` checked when present in ground truth.
 5. `unit` checked when present in both prediction and ground truth.
 
+## Inter-annotator agreement (IAA)
+
+Dual annotation is required before promoting a fixture into the release gate corpus.
+
+| Step | Action |
+|------|--------|
+| 1 | Two annotators independently fill [`samples/benchmarks/annotation/iaa-worksheet-template.json`](../samples/benchmarks/annotation/iaa-worksheet-template.json) |
+| 2 | Labels: `requirement_span`, `ifc_entity`, `property_name`, `expected_value` |
+| 3 | Compute **percent agreement** and **Cohen’s κ** on the label set |
+| 4 | Accept fixture when κ ≥ **0.80** (substantial/almost perfect) **or** resolve disagreements and re-score |
+| 5 | Store filled worksheet beside the fixture under `samples/benchmarks/annotation/` |
+
+Cohen’s κ uses the standard chance-corrected formula on categorical labels; do not treat percent agreement alone as sufficient.
+
 ## Versioning
 
 | Version | Fixtures | Requirements | Notes |
 |---|---|---|---|
 | 1.0.0 | 3 | 15 | Initial RU pilot set |
-| 1.1.0 | 10 | 50 | Academic corpus extension |
+| 1.1.0 | 10 | 50 | Academic RU corpus extension |
+| 1.2.0 | +2 EN | +10 | EN structured-text corpus + IAA worksheet |
 
-Manifest SSOT: [`samples/benchmarks/russian-aec-ground-truth.json`](../samples/benchmarks/russian-aec-ground-truth.json).
+Manifest SSOTs:
+
+- RU: [`samples/benchmarks/russian-aec-ground-truth.json`](../samples/benchmarks/russian-aec-ground-truth.json)
+- EN: [`samples/benchmarks/english-aec-ground-truth.json`](../samples/benchmarks/english-aec-ground-truth.json)
 
 ## Annotation directory
 

@@ -25,6 +25,15 @@ class SourceKind(StrEnum):
     IDS = "ids"
 
 
+class RulePackStatus(StrEnum):
+    """Approval state of a machine-readable acceptance-criteria pack."""
+
+    SYNTHETIC_TEMPLATE = "synthetic-template"
+    DRAFT = "draft"
+    APPROVED = "approved"
+    RETIRED = "retired"
+
+
 class RuleScope(StrEnum):
     IFC_PROPERTY = "ifc-property"
     IFC_QUANTITY = "ifc-quantity"
@@ -43,14 +52,59 @@ class FindingCategory(StrEnum):
     IDS_VALIDATION = "ids-validation"
     DRAWING_VALIDATION = "drawing-validation"
     CROSS_DOCUMENT = "cross-document"
+    SPATIAL = "spatial"
+    """Geometry / clearance / clash predicates — never IDS alphanumeric facets."""
+
+
+class CapabilityState(StrEnum):
+    """Runtime status of an optional validation capability."""
+
+    OK = "ok"
+    SKIPPED = "skipped"
+    FAILED = "failed"
+
+
+@dataclass(frozen=True)
+class CapabilityStatus:
+    status: CapabilityState
+    reason: str | None = None
+    external_ref: str | None = None
+    """Optional external certificate / validation-request id (e.g. bSI public_id)."""
+
+
+@dataclass(frozen=True)
+class ReportCapabilities:
+    """Explicit capability outcomes so silent degradation cannot look like PASS."""
+
+    clash: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "clash detection not evaluated"
+    )
+    ids: CapabilityStatus = CapabilityStatus(CapabilityState.SKIPPED, "IDS validation not requested")
+    ifc_validation: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "IFC property validation not evaluated"
+    )
+    unit_scale: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "IFC unit scale not evaluated"
+    )
+    raster: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "raster drawing analysis not evaluated"
+    )
+    ifc_schema: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "IFC schema pre-gate not evaluated"
+    )
+    norm_rule_packs: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "norm rule packs not requested"
+    )
+    section_pairing: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "PD/RD section pairing not requested"
+    )
 
 
 class ConflictKind(StrEnum):
     """Semantic classification of cross-document contradiction kind.
 
-    Distinguishes genuine conflicts from artefacts of unit encoding, lifecycle
-    stage, versioning, or ambiguous property mapping — so consumers can apply
-    appropriate policies per kind rather than treating all contradictions equally.
+    Assigned in single-request analysis: HARD, UNIT_MISMATCH, SOFT, AMBIGUOUS.
+    STAGE_MISMATCH / VERSION_MISMATCH are reserved for multi-package CDE compare.
     """
 
     HARD_CONFLICT = "hard-conflict"
@@ -62,16 +116,13 @@ class ConflictKind(StrEnum):
     ambiguous unit encoding between source documents."""
 
     STAGE_MISMATCH = "stage-mismatch"
-    """Sources belong to different delivery stages (e.g. SD vs DD vs CD);
-    contradiction may be intentional progression rather than an error."""
+    """Reserved: sources belong to different delivery stages (e.g. SD vs DD)."""
 
     VERSION_MISMATCH = "version-mismatch"
-    """Sources carry explicit revision/version markers that differ; the conflict
-    may resolve once both documents are updated to the same revision."""
+    """Reserved: sources carry explicit revision/version markers that differ."""
 
     SOFT_CONFLICT_WITHIN_TOLERANCE = "soft-conflict-within-tolerance"
-    """Numeric values differ but the difference falls within the configured
-    ε-tolerance — flagged for visibility but not blocking."""
+    """Numeric values differ in presentation but SI comparison is within ε."""
 
     AMBIGUOUS_MAPPING = "ambiguous-mapping"
     """Property names or entity references are too ambiguous to determine whether
@@ -159,6 +210,27 @@ class ParsedRequirement:
 
 
 @dataclass(frozen=True)
+class NormRulePack:
+    """Validated rule-pack metadata plus deterministic parsed requirements.
+
+    ``confidence`` on individual rules describes extraction certainty only.  The
+    pack status remains the authority for whether the criteria were approved by
+    a customer; loading a draft or synthetic template does not make it normative.
+    """
+
+    pack_id: str
+    version: str
+    title: str
+    typology: str
+    disciplines: tuple[str, ...]
+    status: RulePackStatus
+    rules: tuple[ParsedRequirement, ...]
+    source_path: Path
+    sha256: str
+    approval_reference: str | None = None
+
+
+@dataclass(frozen=True)
 class ValidationIssue:
     rule_id: str
     severity: Severity
@@ -229,6 +301,9 @@ class ValidationRequest:
     information_container_id: str | None = None
     revision: str | None = None
     doc_status: DocStatus | None = None
+    norm_rule_pack_paths: tuple[Path, ...] = ()
+    pd_section_path: Path | None = None
+    rd_section_path: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -244,12 +319,22 @@ class ValidationReport:
     drawing_annotations: tuple[DrawingAnnotation, ...] = ()
     drawing_assets: tuple[DrawingAsset, ...] = ()
     clash_results: tuple[ClashResult, ...] = ()
+    capabilities: ReportCapabilities | None = None
+    schema_validation_request_id: str | None = None
+    """bSI Validation Service ``public_id`` (or local schema pack id) when submitted."""
     project_name: str | None = None
     discipline: str | None = None
     stage: str | None = None
     information_container_id: str | None = None
     revision: str | None = None
     doc_status: DocStatus | None = None
+
+
+@dataclass(frozen=True)
+class ReportListFilters:
+    project: str | None = None
+    discipline: str | None = None
+    passed: bool | None = None
 
 
 @dataclass(frozen=True)
@@ -261,6 +346,21 @@ class ReportSummaryEntry:
     issue_count: int
     project_name: str | None = None
     discipline: str | None = None
+
+
+@dataclass(frozen=True)
+class ReviewEvent:
+    """Human-in-the-loop review telemetry (W3.5) — never affects ``summary.passed``."""
+
+    event_id: str
+    report_id: str
+    event_type: Literal["opened", "accepted", "rejected", "edited_remark", "triaged"]
+    created_at: str
+    issue_rule_id: str | None = None
+    actor: str | None = None
+    note: str | None = None
+    latency_ms: int | None = None
+    """Milliseconds from report open to this event when measurable."""
 
 
 class JobStatus(StrEnum):

@@ -113,7 +113,7 @@ The authoring-side boundary remains intentionally thin and not yet implemented a
 |---|---|---|
 | IFC property and quantity validation | ✅ LIVE | Backed by `IfcOpenShellValidator` and fixture-driven tests |
 | IDS validation | ✅ LIVE | Backed by `IfcTesterIdsValidator` and end-to-end samples |
-| Narrative rule synthesis | ✅ LIVE BASELINE | Deterministic regex-backed baseline, not stochastic-model-first |
+| Narrative rule synthesis | ✅ LIVE BASELINE | Deterministic regex-backed baseline, not model-first |
 | Structured drawing annotation validation | ✅ LIVE | Active through drawing contracts |
 | Deterministic PDF / OCR drawing extraction | ✅ LIVE BASELINE | PyMuPDF + RapidOCR path exists behind `RasterDrawingAnalyzer` port |
 | Geometry clash detection | ✅ LIVE WITH OPTIONAL EXTRA | Real IfcClash path requires `.[clash]`; graceful empty fallback without the extra remains an intentional limitation |
@@ -136,7 +136,7 @@ This rebaseline corrects those mismatches.
 ### Optional Capability Gating Is Real
 
 **Verdict: CONFIRMED.**
-`.[vision]` is part of the common development lane, but `.[clash]` and `.[docling]` remain explicit extras. Active docs must say so clearly, otherwise runtime expectations become misleading.
+`.[raster]` is part of the common development lane, but `.[clash]` and `.[docling]` remain explicit extras. Active docs must say so clearly, otherwise runtime expectations become misleading.
 
 ### Clash Temp-Directory Cleanup Defect
 

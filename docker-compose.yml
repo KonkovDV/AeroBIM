@@ -1,4 +1,6 @@
 # AeroBIM local development stack
+# Auth is required: bearer token must be set (fail-closed if removed in production).
+# Prefer AEROBIM_ENV=production for any shared/LAN exposure.
 services:
   backend:
     build:
@@ -7,12 +9,16 @@ services:
     ports:
       - "8080:8080"
     environment:
-      AEROBIM_ENV: development
+      AEROBIM_ENV: production
       AEROBIM_HOST: "0.0.0.0"
       AEROBIM_PORT: "8080"
-      AEROBIM_DEBUG: "true"
+      AEROBIM_DEBUG: "false"
       AEROBIM_STORAGE_DIR: /data/reports
       AEROBIM_CORS_ORIGINS: "http://localhost:3000,http://localhost:5173"
+      # REQUIRED. Change before any shared use. Frontend must send the same token.
+      # WARNING: if you put this value in VITE_*, it is bundled into browser assets (demo-only).
+      AEROBIM_API_BEARER_TOKEN: "dev-local-token-change-me"
+      AEROBIM_CLASH_AFFECTS_PASS: "false"
     volumes:
       - reports-data:/data/reports
       - ./samples:/data/samples:ro

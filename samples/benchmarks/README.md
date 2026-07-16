@@ -22,6 +22,8 @@ Each pack references fixtures under `samples/` and stays license-safe.
 | Artifact | Role |
 |---|---|
 | `russian-aec-ground-truth.json` | 10 RU documents, 50 annotated requirements |
+| `english-aec-ground-truth.json` | 2 EN structured fixtures, 10 requirements |
+| `annotation/iaa-worksheet-template.json` | Cohen’s κ dual-annotator worksheet |
 | `benchmark-extraction-quality.json` | CI metadata for extraction gate |
 | `bsdd-pilot-terms.json` | Offline bSDD term map (pilot properties) |
 | `loin-rule-metadata.json` | LOIN purpose/milestone/actor per rule prefix |

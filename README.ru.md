@@ -1,4 +1,4 @@
-﻿# AeroBIM
+# AeroBIM
 
 [English version](README.md)
 
@@ -16,27 +16,29 @@ AeroBIM сверяет IFC-модели с техническими требов
 | Типы конфликтов (`ConflictKind`: жёсткий / несовпадение единиц / неоднозначность) | ✅ |
 | Настройка уровня серьёзности противоречий | ✅ |
 | Сверка аннотаций чертежа с IFC | ✅ |
-| Допуски по ISO 12006-3 (ε-полоса) | ✅ |
+| Допуски по ISO 12006-3 (?-полоса) | ✅ |
 | Извлечение требований из текста (regex, без моделей в контуре подписания) | ✅ |
 | Корпус RU AEC для оценки извлечения (10 документов, 50 требований) | ✅ |
-| Коллизии (`IfcClash`, опция `.[clash]`) | ✅ |
+| Коллизии (`IfcClash`, опция `.[clash]`) | ✅ через `capabilities.clash`; движок — extra `.[clash]` |
+| Статус capabilities (`ok`/`skipped`/`failed`) | ✅ `FAILED` → `summary.passed=false` |
 | Экспорт BCF 2.1 | ✅ |
-| Экспорт BCF 3.0 | ✅ Экспериментально |
+| Экспорт BCF 3.0 | ? Экспериментально |
 | Контекст ISO 19650-lite в отчёте | ✅ |
-| Хранилище артефактов (`ObjectStore`, TTL, индекс Postgres) | ✅ Базовый слой |
+| Хранилище артефактов (`ObjectStore`, TTL, индекс Postgres) | ? Базовый слой |
 | Экспорт JSON и HTML | ✅ |
 | Просмотр IFC в браузере (`web-ifc` + `Three.js`) | ✅ |
 | Наложение зон проблем на 2D-чертежи | ✅ |
-| Разбор PDF/OCR для чертежей | ✅ |
-| Расширенный анализ растровых чертежей (опциональный порт) | 🔜 В планах |
+| Текст из PDF (PyMuPDF) | ✅ в core |
+| OCR изображений (RapidOCR) | ✅ через optional `.[raster]` |
+| Расширенный анализ растровых чертежей (опциональный порт) | ?? В планах |
 
 ## Совместимость с IFC
 
 | Релиз IFC | Схема | Поддержка | Примечание |
 |---|---|---|---|
-| IFC2x3 | ISO 16739:2005 | ✅ Основной | Наиболее распространён в эксплуатации |
-| IFC4 (ADD2) | ISO 16739-1:2018 | ✅ Основной | Нормализация имён Pset и единиц |
-| IFC4x3 | ISO 16739-1:2024 | ✅ Основной | Тот же ядро проверки, расширения по инфраструктуре |
+| IFC2x3 | ISO 16739:2005 | ? Основной | Наиболее распространён в эксплуатации |
+| IFC4 (ADD2) | ISO 16739-1:2018 | ? Основной | Нормализация имён Pset и единиц |
+| IFC4x3 | ISO 16739-1:2024 | ? Основной | Тот же ядро проверки, расширения по инфраструктуре |
 
 Подробнее: [docs/ifc-compatibility-matrix.md](docs/ifc-compatibility-matrix.md).
 
@@ -44,9 +46,9 @@ AeroBIM сверяет IFC-модели с техническими требов
 
 | Версия | Статус | Примечание |
 |---|---|---|
-| BCF 2.1 | ✅ Стабильно | Основной путь экспорта |
-| BCF 3.0 | ✅ Экспериментально | `GET /v1/reports/{id}/export/bcf?version=3`, по умолчанию 2.1 |
-| BCF API | 🔜 В планах | REST-адаптер для CDE и трекеров задач |
+| BCF 2.1 | ? Стабильно | Основной путь экспорта |
+| BCF 3.0 | ? Экспериментально | `GET /v1/reports/{id}/export/bcf?version=3`, по умолчанию 2.1 |
+| BCF API | ?? В планах | REST-адаптер для CDE и трекеров задач |
 
 ## Быстрый старт
 
@@ -58,7 +60,7 @@ python -m venv .venv
 source .venv/bin/activate   # Linux/macOS
 # .venv\Scripts\activate    # Windows
 
-pip install -e ".[dev,vision]"
+pip install -e ".[dev,raster]"
 # pip install -e ".[clash]"
 # pip install -e ".[docling]"
 # pip install -e ".[enterprise]"
@@ -149,7 +151,7 @@ python -m aerobim.tools.export_runtime_baseline
 
 ## Архитектура
 
-Пятислойная Clean Architecture: `core` → `domain` → `application` → `infrastructure` → `presentation`.  
+Пятислойная Clean Architecture: `core` > `domain` > `application` > `infrastructure` > `presentation`.  
 Внешние библиотеки подключаются только через порты; композиция — в `bootstrap_container()`.
 
 ## Лицензия

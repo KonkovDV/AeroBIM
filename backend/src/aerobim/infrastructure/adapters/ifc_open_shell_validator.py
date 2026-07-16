@@ -65,17 +65,45 @@ class IfcOpenShellValidator:
             raise RuntimeError("Install ifcopenshell to run IFC validation") from exc
 
         model = ifcopenshell.open(str(ifc_path))
-        unit_scales = self._get_unit_scales(model)
+        unit_scales, unit_scales_ok = self._get_unit_scales(model)
         issues: list[ValidationIssue] = []
         entity_cache: dict[str, tuple[Any, ...]] = {}
         target_cache: dict[tuple[str, str], tuple[Any, ...]] = {}
         pset_cache: dict[object, dict[str, Any]] = {}
+
+        if not unit_scales_ok:
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-UNIT-SCALE",
+                    severity=Severity.ERROR,
+                    message=(
+                        "IFC unit scale extraction failed; numeric comparisons that "
+                        "require project-unit conversion were gated"
+                    ),
+                    category=FindingCategory.IFC_VALIDATION,
+                )
+            )
 
         for requirement in requirements:
             if requirement.rule_scope is RuleScope.DRAWING_ANNOTATION:
                 continue
 
             if not requirement.ifc_entity:
+                if requirement.rule_scope in {RuleScope.IFC_PROPERTY, RuleScope.IFC_QUANTITY}:
+                    issues.append(
+                        ValidationIssue(
+                            rule_id=requirement.rule_id,
+                            severity=Severity.WARNING,
+                            message="Incomplete IFC rule: missing ifc_entity",
+                            category=FindingCategory.IFC_VALIDATION,
+                            target_ref=requirement.target_ref,
+                            property_set=requirement.property_set,
+                            property_name=requirement.property_name,
+                            operator=requirement.operator,
+                            expected_value=requirement.expected_value,
+                            unit=requirement.unit,
+                        )
+                    )
                 continue
 
             matching_elements = self._get_matching_elements(
@@ -105,6 +133,49 @@ class IfcOpenShellValidator:
                 continue
 
             if not requirement.property_set or not requirement.property_name:
+                issues.append(
+                    ValidationIssue(
+                        rule_id=requirement.rule_id,
+                        severity=Severity.WARNING,
+                        message=(
+                            "Incomplete IFC rule: missing property_set or property_name; "
+                            "rule was not evaluated against model properties"
+                        ),
+                        ifc_entity=requirement.ifc_entity,
+                        category=FindingCategory.IFC_VALIDATION,
+                        target_ref=requirement.target_ref,
+                        property_set=requirement.property_set,
+                        property_name=requirement.property_name,
+                        operator=requirement.operator,
+                        expected_value=requirement.expected_value,
+                        unit=requirement.unit,
+                    )
+                )
+                continue
+
+            if (
+                not unit_scales_ok
+                and requirement.unit
+                and requirement.unit.strip().lower() in _UNIT_TO_SI_FACTOR
+            ):
+                issues.append(
+                    ValidationIssue(
+                        rule_id=requirement.rule_id,
+                        severity=Severity.ERROR,
+                        message=(
+                            f"Property {requirement.property_set}.{requirement.property_name} "
+                            "could not be compared because IFC unit scales are unavailable"
+                        ),
+                        ifc_entity=requirement.ifc_entity,
+                        category=FindingCategory.IFC_VALIDATION,
+                        target_ref=requirement.target_ref,
+                        property_set=requirement.property_set,
+                        property_name=requirement.property_name,
+                        operator=requirement.operator,
+                        expected_value=requirement.expected_value,
+                        unit=requirement.unit,
+                    )
+                )
                 continue
 
             property_found = False
@@ -219,18 +290,21 @@ class IfcOpenShellValidator:
 
         return ("object", id(element))
 
-    def _get_unit_scales(self, model: Any) -> dict[str, float]:
+    def _get_unit_scales(self, model: Any) -> tuple[dict[str, float], bool]:
         """Extract SI conversion factors from the IFC model's ``UnitsInContext``."""
         try:
             from ifcopenshell.util.unit import calculate_unit_scale
 
-            return {
-                "LENGTHUNIT": calculate_unit_scale(model, "LENGTHUNIT"),
-                "AREAUNIT": calculate_unit_scale(model, "AREAUNIT"),
-                "VOLUMEUNIT": calculate_unit_scale(model, "VOLUMEUNIT"),
-            }
+            return (
+                {
+                    "LENGTHUNIT": calculate_unit_scale(model, "LENGTHUNIT"),
+                    "AREAUNIT": calculate_unit_scale(model, "AREAUNIT"),
+                    "VOLUMEUNIT": calculate_unit_scale(model, "VOLUMEUNIT"),
+                },
+                True,
+            )
         except Exception:  # noqa: BLE001
-            return {"LENGTHUNIT": 1.0, "AREAUNIT": 1.0, "VOLUMEUNIT": 1.0}
+            return {"LENGTHUNIT": 1.0, "AREAUNIT": 1.0, "VOLUMEUNIT": 1.0}, False
 
     def _normalize_pair(
         self,

@@ -12,6 +12,8 @@ class LoinMetadata:
     purpose: str
     milestone: str
     actor: str
+    information_level: str = "alphanumeric"
+    """LOIN information level: ``geometry`` | ``alphanumeric`` | ``documentation``."""
 
 
 class LoinMetadataResolver:
@@ -29,6 +31,9 @@ class LoinMetadataResolver:
             prefix = str(entry.get("rule_id_prefix", "")).strip()
             if not prefix:
                 continue
+            level = str(entry.get("information_level", "alphanumeric")).strip().lower()
+            if level not in {"geometry", "alphanumeric", "documentation"}:
+                level = "alphanumeric"
             self._rules.append(
                 (
                     prefix,
@@ -36,6 +41,7 @@ class LoinMetadataResolver:
                         purpose=str(entry.get("purpose", "")),
                         milestone=str(entry.get("milestone", "")),
                         actor=str(entry.get("actor", "")),
+                        information_level=level,
                     ),
                 )
             )

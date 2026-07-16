@@ -5,23 +5,50 @@ import json
 import re as _re
 import secrets
 from dataclasses import asdict
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Any, Literal
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from aerobim.application.services.iso19650_metadata import enrich_iso19650_metadata
 from aerobim.application.services.loin_metadata_resolver import LoinMetadataResolver
+from aerobim.application.services.review_kpi import summarize_review_events
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, ValidationRequest
+from aerobim.core.security.path_jail import PathJailError, reject_symlinks, resolve_storage_path
+from aerobim.domain.models import (
+    DrawingSource,
+    ReportListFilters,
+    RequirementSource,
+    ReviewEvent,
+    SourceKind,
+    ValidationRequest,
+)
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
 )
+from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
 
 _REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
 _DRAWING_ASSET_ID_RE = _re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+_BCF_PROJECT_ID_RE = _re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
 _LOIN_RESOLVER = LoinMetadataResolver()
+
+
+def _attachment_content_disposition(filename: str) -> str:
+    """RFC 6266-ish attachment header; strip CR/LF and quotes from filename."""
+    safe = (
+        filename.replace('"', "")
+        .replace("\r", "")
+        .replace("\n", "")
+        .replace("\\", "_")
+        .replace("/", "_")
+    )
+    return f'attachment; filename="{safe}"'
 
 
 class ValidateIfcRequest(BaseModel):
@@ -56,6 +83,9 @@ class AnalyzeProjectPackageRequest(BaseModel):
     calculation_text: str = Field(default="", max_length=50_000)
     calculation_path: str | None = Field(default=None, max_length=2048)
     drawings: list[DrawingPayload] = Field(default_factory=list, max_length=64)
+    norm_rule_pack_paths: list[str] = Field(default_factory=list, max_length=16)
+    pd_section_path: str | None = Field(default=None, max_length=2048)
+    rd_section_path: str | None = Field(default=None, max_length=2048)
     reinforcement_report_path: str | None = Field(default=None, max_length=2048)
     reinforcement_handoff_path: str | None = Field(default=None, max_length=2048)
     reinforcement_source_digest: str | None = Field(default=None, max_length=128)
@@ -77,9 +107,25 @@ class OpenRebarDigestRequest(BaseModel):
     reinforcement_report_path: str = Field(max_length=2048)
 
 
+class PushBcfApiRequest(BaseModel):
+    project_id: str | None = Field(
+        default=None,
+        max_length=128,
+        description="BCF API project id; defaults to AEROBIM_BCF_API_PROJECT_ID",
+    )
+
+
+class ReviewEventRequest(BaseModel):
+    event_type: Literal["opened", "accepted", "rejected", "edited_remark", "triaged"]
+    issue_rule_id: str | None = Field(default=None, max_length=256)
+    actor: str | None = Field(default=None, max_length=128)
+    note: str | None = Field(default=None, max_length=2000)
+    latency_ms: int | None = Field(default=None, ge=0, le=86_400_000)
+
+
 def create_http_app(container: Container):
     try:
-        from fastapi import BackgroundTasks, Body, Depends, FastAPI, Header, HTTPException, Response
+        from fastapi import BackgroundTasks, Body, Depends, FastAPI, File, Header, HTTPException, Response, UploadFile
         from fastapi.middleware.cors import CORSMiddleware
     except ModuleNotFoundError as exc:
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc
@@ -91,6 +137,9 @@ def create_http_app(container: Container):
     validate_use_case = container.resolve(Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE)
     analyze_use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
     audit_store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+    oidc_validator = None
+    if container.is_registered(Tokens.OIDC_TOKEN_VALIDATOR):
+        oidc_validator = container.resolve(Tokens.OIDC_TOKEN_VALIDATOR)
     object_store = None
     if container.is_registered(Tokens.OBJECT_STORE):
         object_store = container.resolve(Tokens.OBJECT_STORE)
@@ -115,17 +164,48 @@ def create_http_app(container: Container):
         }
 
     def _resolve_safe_path(user_path: str) -> Path:
-        """Resolve user-supplied path strictly within storage_dir."""
-        base = settings.storage_dir.resolve()
-        resolved = (base / user_path).resolve()
-        if not resolved.is_relative_to(base):
-            raise HTTPException(status_code=400, detail="Path escapes storage boundary")
-        return resolved
+        """Resolve user-supplied path strictly within storage_dir; reject symlinks."""
+        try:
+            return resolve_storage_path(user_path, base=settings.storage_dir)
+        except PathJailError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    def _enforce_ifc_size(ifc_path: Path) -> None:
+        if not ifc_path.is_file():
+            return
+        size = ifc_path.stat().st_size
+        if size > settings.max_ifc_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=(
+                    f"IFC file exceeds size limit "
+                    f"({size} bytes > {settings.max_ifc_bytes} bytes)"
+                ),
+            )
 
     def _require_bearer_auth(authorization: Annotated[str | None, Header()] = None) -> None:
         configured_token = settings.api_bearer_token
-        if configured_token is None:
-            return
+        oidc_ready = oidc_validator is not None
+
+        if configured_token is None and not oidc_ready:
+            if settings.is_dev_environment and settings.allow_anonymous_dev:
+                return
+            if settings.is_dev_environment:
+                raise HTTPException(
+                    status_code=401,
+                    detail=(
+                        "API auth required: set AEROBIM_API_BEARER_TOKEN "
+                        "or AEROBIM_ALLOW_ANONYMOUS_DEV=true for local anonymous access"
+                    ),
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "API auth is required outside development "
+                    "(set AEROBIM_API_BEARER_TOKEN and/or OIDC settings)"
+                ),
+            )
 
         if not authorization:
             raise HTTPException(
@@ -142,12 +222,27 @@ def create_http_app(container: Container):
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-        if not secrets.compare_digest(token, configured_token):
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid API token",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        if configured_token is not None and secrets.compare_digest(token, configured_token):
+            return
+
+        if oidc_ready:
+            try:
+                oidc_validator.validate(token)
+                return
+            except OidcValidationError as exc:
+                # Fall through to static failure if bearer also configured.
+                if configured_token is None:
+                    raise HTTPException(
+                        status_code=401,
+                        detail=str(exc),
+                        headers={"WWW-Authenticate": "Bearer"},
+                    ) from exc
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid API token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     def _validate_report_id(report_id: str) -> None:
         if not _REPORT_ID_RE.match(report_id):
@@ -167,6 +262,7 @@ def create_http_app(container: Container):
             "loin_purpose": loin.purpose,
             "loin_milestone": loin.milestone,
             "loin_actor": loin.actor,
+            "loin_information_level": loin.information_level,
         }
 
     def _serialize_public_report(report) -> dict[str, Any]:
@@ -183,6 +279,7 @@ def create_http_app(container: Container):
             _enrich_issue_export(issue) if isinstance(issue, dict) else issue
             for issue in data.get("issues", ())
         ]
+        data["iso19650"] = enrich_iso19650_metadata(report)
         return data
 
     def _resolve_report_ifc_source(report_id: str) -> tuple[str, bytes | Path]:
@@ -206,6 +303,10 @@ def create_http_app(container: Container):
                 status_code=409,
                 detail="Stored IFC source escapes storage boundary",
             )
+        try:
+            reject_symlinks(resolved, base=base)
+        except PathJailError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
         if not resolved.exists():
             raise HTTPException(
                 status_code=404, detail=f"IFC source for report {report_id} not found"
@@ -334,9 +435,11 @@ def create_http_app(container: Container):
         reinforcement_report_path, reinforcement_source_digest = (
             _resolve_openrebar_provenance_inputs(payload)
         )
+        ifc_resolved = _resolve_safe_path(payload.ifc_path)
+        _enforce_ifc_size(ifc_resolved)
         return ValidationRequest(
             request_id=payload.request_id or uuid4().hex,
-            ifc_path=_resolve_safe_path(payload.ifc_path),
+            ifc_path=ifc_resolved,
             requirement_source=_build_requirement_source(
                 payload.requirement_text,
                 payload.requirement_path,
@@ -366,6 +469,19 @@ def create_http_app(container: Container):
                 )
                 for drawing in payload.drawings
             ),
+            norm_rule_pack_paths=tuple(
+                _resolve_safe_path(path) for path in payload.norm_rule_pack_paths
+            ),
+            pd_section_path=(
+                _resolve_safe_path(payload.pd_section_path)
+                if payload.pd_section_path
+                else None
+            ),
+            rd_section_path=(
+                _resolve_safe_path(payload.rd_section_path)
+                if payload.rd_section_path
+                else None
+            ),
             reinforcement_report_path=reinforcement_report_path,
             reinforcement_source_digest=reinforcement_source_digest,
             reinforcement_waste_warning_threshold_percent=(
@@ -387,6 +503,83 @@ def create_http_app(container: Container):
         payload["report_url"] = f"/v1/reports/{job.report_id}" if job.report_id else None
         return payload
 
+    @app.post("/v1/uploads")
+    async def upload_document(
+        file: Annotated[UploadFile, File(...)],
+        _auth: Annotated[None, Depends(_require_bearer_auth)] = None,
+    ) -> dict[str, object]:
+        """Multipart document ingest into the storage jail (TZ P0).
+
+        Returns a storage-relative ``path`` suitable for ``ifc_path`` / drawing paths
+        on subsequent analyze calls.
+        """
+        raw_name = (file.filename or "upload.bin").replace("\\", "/").split("/")[-1]
+        safe_name = (
+            raw_name.replace("\r", "")
+            .replace("\n", "")
+            .replace('"', "")
+            .strip()
+            or "upload.bin"
+        )[:180]
+        upload_id = uuid4().hex
+        relative_path = f"uploads/{upload_id}/{safe_name}"
+        target = (settings.storage_dir / "uploads" / upload_id / safe_name).resolve()
+        base = settings.storage_dir.resolve()
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            reject_symlinks(target.parent, base=base)
+        except PathJailError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+        max_bytes = settings.max_ifc_bytes
+        total = 0
+        try:
+            with target.open("wb") as handle:
+                while True:
+                    chunk = await file.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                    if total > max_bytes:
+                        raise HTTPException(
+                            status_code=413,
+                            detail=(
+                                f"Upload exceeds size limit "
+                                f"({total} bytes > {max_bytes} bytes)"
+                            ),
+                        )
+                    handle.write(chunk)
+        except HTTPException:
+            target.unlink(missing_ok=True)
+            raise
+        except OSError as exc:
+            target.unlink(missing_ok=True)
+            raise HTTPException(status_code=500, detail=f"Upload write failed: {exc}") from exc
+
+        if total == 0:
+            target.unlink(missing_ok=True)
+            raise HTTPException(status_code=400, detail="Empty upload")
+
+        object_key = None
+        if object_store is not None:
+            # Stream from disk without holding a second full in-memory copy when possible.
+            payload = target.read_bytes()
+            object_key = object_store.put_bytes(
+                relative_path.replace("\\", "/"),
+                payload,
+                content_type=file.content_type,
+            )
+            del payload
+
+        return {
+            "upload_id": upload_id,
+            "filename": safe_name,
+            "path": relative_path.replace("\\", "/"),
+            "size_bytes": total,
+            "content_type": file.content_type,
+            "object_key": object_key,
+        }
+
     @app.post("/v1/validate/ifc")
     def validate_ifc(
         payload: Annotated[ValidateIfcRequest, Body()],
@@ -396,6 +589,7 @@ def create_http_app(container: Container):
         logger.info("validate_ifc started", request_id=request_id, ifc_path=payload.ifc_path)
         try:
             ifc_resolved = _resolve_safe_path(payload.ifc_path)
+            _enforce_ifc_size(ifc_resolved)
 
             report = validate_use_case.execute(
                 ValidationRequest(
@@ -517,23 +711,13 @@ def create_http_app(container: Container):
         passed: bool | None = None,
         _auth: Annotated[None, Depends(_require_bearer_auth)] = None,
     ) -> dict[str, object]:
-        entries = audit_store.list_reports()
-        if project:
-            normalized_project = project.strip().lower()
-            entries = [
-                entry
-                for entry in entries
-                if normalized_project in (entry.project_name or "").lower()
-            ]
-        if discipline:
-            normalized_discipline = discipline.strip().lower()
-            entries = [
-                entry
-                for entry in entries
-                if normalized_discipline in (entry.discipline or "").lower()
-            ]
-        if passed is not None:
-            entries = [entry for entry in entries if entry.passed is passed]
+        entries = audit_store.list_reports(
+            ReportListFilters(
+                project=project,
+                discipline=discipline,
+                passed=passed,
+            )
+        )
         return {"reports": [asdict(e) for e in entries], "count": len(entries)}
 
     @app.get("/v1/reports/{report_id}")
@@ -546,6 +730,53 @@ def create_http_app(container: Container):
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         return _serialize_public_report(report)
+
+    @app.post("/v1/reports/{report_id}/review-events")
+    def append_review_event(
+        report_id: str,
+        payload: ReviewEventRequest,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        _validate_report_id(report_id)
+        if audit_store.get(report_id) is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
+        event = ReviewEvent(
+            event_id=uuid4().hex,
+            report_id=report_id,
+            event_type=payload.event_type,
+            created_at=datetime.now(tz=UTC).isoformat(),
+            issue_rule_id=payload.issue_rule_id,
+            actor=payload.actor,
+            note=payload.note,
+            latency_ms=payload.latency_ms,
+        )
+        review_store.append(event)
+        return {"event": asdict(event)}
+
+    @app.get("/v1/reports/{report_id}/review-events")
+    def list_review_events(
+        report_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        _validate_report_id(report_id)
+        if audit_store.get(report_id) is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
+        events = review_store.list_for_report(report_id)
+        return {"events": [asdict(e) for e in events], "count": len(events)}
+
+    @app.get("/v1/reports/{report_id}/review-kpi")
+    def get_review_kpi(
+        report_id: str,
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        _validate_report_id(report_id)
+        if audit_store.get(report_id) is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
+        events = review_store.list_for_report(report_id)
+        return {"report_id": report_id, "kpi": summarize_review_events(events)}
 
     @app.get("/v1/reports/{report_id}/source/ifc")
     def get_report_ifc_source(
@@ -606,7 +837,7 @@ def create_http_app(container: Container):
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         return JSONResponse(
             content=_serialize_public_report(report),
-            headers={"Content-Disposition": f'attachment; filename="{report_id}.json"'},
+            headers={"Content-Disposition": _attachment_content_disposition(f"{report_id}.json")},
         )
 
     @app.get("/v1/reports/{report_id}/export/html")
@@ -668,6 +899,7 @@ def create_http_app(container: Container):
                     ("loin_purpose", "purpose"),
                     ("loin_milestone", "milestone"),
                     ("loin_actor", "actor"),
+                    ("loin_information_level", "level"),
                 ):
                     value = issue.get(key)
                     if value:
@@ -767,7 +999,7 @@ Created: {_esc(str(data.get("created_at") or ""))}
 </body></html>"""
         return HTMLResponse(
             content=html,
-            headers={"Content-Disposition": f'attachment; filename="{report_id}.html"'},
+            headers={"Content-Disposition": _attachment_content_disposition(f"{report_id}.html")},
         )
 
     @app.get("/v1/reports/{report_id}/export/bcf")
@@ -801,8 +1033,52 @@ Created: {_esc(str(data.get("created_at") or ""))}
         return Response(
             content=bcf_bytes,
             media_type="application/x-bcfzip",
-            headers={"Content-Disposition": f'attachment; filename="{report_id}.bcf"'},
+            headers={"Content-Disposition": _attachment_content_disposition(f"{report_id}.bcf")},
         )
+
+    @app.post("/v1/reports/{report_id}/export/bcf-api/push")
+    def push_report_bcf_api(
+        report_id: str,
+        payload: Annotated[PushBcfApiRequest, Body()],
+        _auth: Annotated[None, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        """Push report topics to a remote OpenCDE BCF API 3.0 hub."""
+        _validate_report_id(report_id)
+        project_id = (payload.project_id or settings.bcf_api_project_id or "").strip()
+        if not project_id:
+            raise HTTPException(
+                status_code=400,
+                detail="project_id is required (body or AEROBIM_BCF_API_PROJECT_ID)",
+            )
+        if not _BCF_PROJECT_ID_RE.match(project_id):
+            raise HTTPException(
+                status_code=400,
+                detail="project_id must be a UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)",
+            )
+        configured_project = (settings.bcf_api_project_id or "").strip()
+        if configured_project and project_id.lower() != configured_project.lower():
+            raise HTTPException(
+                status_code=403,
+                detail="project_id does not match AEROBIM_BCF_API_PROJECT_ID",
+            )
+        if not container.is_registered(Tokens.PUSH_REPORT_TO_BCF_API_USE_CASE):
+            raise HTTPException(status_code=503, detail="BCF API push use case is not registered")
+
+        push_use_case = container.resolve(Tokens.PUSH_REPORT_TO_BCF_API_USE_CASE)
+        try:
+            result = push_use_case.execute(report_id, project_id=project_id)
+        except LookupError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+        return {
+            "project_id": result.project_id,
+            "attempted": result.attempted,
+            "succeeded": result.succeeded,
+            "failed": result.failed,
+            "topics": [asdict(topic) for topic in result.topics],
+        }
 
     return app
 

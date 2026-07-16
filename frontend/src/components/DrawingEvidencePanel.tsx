@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { buildDrawingAssetPreviewUrl } from "../lib/api";
+import { fetchDrawingAssetPreviewBlobUrl } from "../lib/api";
 import type { DrawingAsset, ValidationIssue, ValidationReport } from "../lib/types";
 
 interface DrawingEvidencePanelProps {
@@ -33,6 +33,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
   const [imageMetrics, setImageMetrics] = useState<{ width: number; height: number } | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const problemZone = activeIssue?.problem_zone ?? null;
   const matchedAsset = report ? findMatchingAsset(report, activeIssue) : null;
@@ -55,7 +56,39 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
     return drawingAssets.find((asset) => asset.asset_id === selectedAssetId) ?? drawingAssets[0] ?? null;
   }, [drawingAssets, selectedAssetId]);
 
-  const previewUrl = report && selectedAsset ? buildDrawingAssetPreviewUrl(report.report_id, selectedAsset.asset_id) : null;
+  useEffect(() => {
+    let revokedUrl: string | null = null;
+    let cancelled = false;
+
+    if (!report || !selectedAsset) {
+      setPreviewUrl(null);
+      return;
+    }
+
+    fetchDrawingAssetPreviewBlobUrl(report.report_id, selectedAsset.asset_id)
+      .then((url) => {
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        revokedUrl = url;
+        setPreviewUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPreviewUrl(null);
+          setImageError("Failed to load the persisted drawing preview for this issue.");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      if (revokedUrl) {
+        URL.revokeObjectURL(revokedUrl);
+      }
+    };
+  }, [report, selectedAsset]);
+
   const isOverlayTarget = selectedAsset !== null && matchedAsset !== null && selectedAsset.asset_id === matchedAsset.asset_id;
 
   useEffect(() => {

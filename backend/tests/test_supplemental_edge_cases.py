@@ -377,12 +377,22 @@ class ApiCorsAndCorrelationTests(unittest.TestCase):
 
 class SettingsEnvDefaultsTests(unittest.TestCase):
     @patch.dict(os.environ, {}, clear=True)
-    def test_from_env_debug_defaults_include_localhost_and_loopback_frontend_origins(self) -> None:
+    def test_from_env_secure_defaults_disable_debug_cors_and_anonymous(self) -> None:
         from aerobim.core.config.settings import Settings
 
         settings = Settings.from_env()
 
         self.assertEqual(settings.host, "127.0.0.1")
+        self.assertFalse(settings.debug)
+        self.assertEqual(settings.cors_origins, ())
+        self.assertFalse(settings.allow_anonymous_dev)
+
+    @patch.dict(os.environ, {"AEROBIM_DEBUG": "true"}, clear=True)
+    def test_from_env_debug_defaults_include_localhost_and_loopback_frontend_origins(self) -> None:
+        from aerobim.core.config.settings import Settings
+
+        settings = Settings.from_env()
+
         self.assertTrue(settings.debug)
         self.assertIn("http://localhost:5173", settings.cors_origins)
         self.assertIn("http://127.0.0.1:5173", settings.cors_origins)

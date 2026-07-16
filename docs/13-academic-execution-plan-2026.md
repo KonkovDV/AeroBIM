@@ -14,6 +14,11 @@ openBIM standards, (B) enterprise-scale infrastructure, and (C) research-grade v
 
 **H2 2026 priority:** Moscow pilot — see [`pilot-execution-runbook-2026.md`](pilot-execution-runbook-2026.md).
 
+**July 2026 superseding hygiene plan:** after deep audit, industry-aligned waves W0–W3 live in  
+[`INDUSTRY_IMPROVEMENT_PLAN_2026_07.md`](INDUSTRY_IMPROVEMENT_PLAN_2026_07.md)  
+(soundness/security → openBIM conformance → CDE/BCF API → research differentiation).  
+Evidence: [`evidence/ACADEMIC_DEEP_AUDIT_2026_07_10.md`](evidence/ACADEMIC_DEEP_AUDIT_2026_07_10.md).
+
 References: [`archive/10-academic-audit-and-recommendations-ru.md`](archive/10-academic-audit-and-recommendations-ru.md) (prior art),
 [`archive/11-rebaseline-execution-plan.md`](archive/11-rebaseline-execution-plan.md) (rebaseline snapshot).
 
@@ -67,7 +72,7 @@ Deferred until post-pilot unless customer blocks: B.1 full Postgres hydration, B
 | Storage: in-memory + filesystem only | production infra | P1 🚧 foundation |
 | AuthN: static Bearer only | OIDC / JWT RFC 7519 | P1 (post-pilot) |
 | bSDD term normalisation not present | buildingSMART bSDD | P2 ✅ pilot dictionary |
-| No precision/recall metrics for requirement extraction | NLP evaluation | P2 ✅ CI gate ≥ 0.70 |
+| No precision/recall metrics for requirement extraction | extraction evaluation | P2 ✅ CI gate ≥ 0.70 |
 | No open benchmark dataset protocol | reproducible research | P2 ✅ annotation protocol + ground truth |
 
 > ✅ = completed in the same session as this plan was created.
@@ -272,7 +277,7 @@ terminology-stable cross-project rule portability.
 
 ### C.4 — Precision/Recall Benchmark Protocol ✅ *Completed 2026-05*
 
-**Goal:** establish formal NLP evaluation metrics for requirement extraction quality.
+**Goal:** establish formal precision/recall metrics for requirement extraction quality.
 
 **Shipped:** `russian-aec-ground-truth.json` (10 fixtures), per-discipline F1, CI enforced macro F1 ≥ 0.70 (current ≈ 0.86).
 

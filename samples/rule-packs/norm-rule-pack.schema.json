@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerobim.dev/schemas/norm-rule-pack-1.0.0.json",
+  "title": "AeroBIM norm rule pack",
+  "description": "Machine-readable acceptance criteria. Approval metadata is mandatory only when status is approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_id",
+    "version",
+    "title",
+    "typology",
+    "disciplines",
+    "status",
+    "rules"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "pack_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "version": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "title": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "typology": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "disciplines": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 64 }
+    },
+    "status": {
+      "enum": ["synthetic-template", "draft", "approved", "retired"]
+    },
+    "approval": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["approved_by", "approved_at", "scope_reference"],
+      "properties": {
+        "approved_by": { "type": "string", "minLength": 1 },
+        "approved_at": { "type": "string", "format": "date-time" },
+        "scope_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "customer_action_required": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": { "$ref": "#/$defs/rule" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "approved" } } },
+      "then": { "required": ["approval"] },
+      "else": {
+        "properties": { "approval": { "type": "null" } }
+      }
+    }
+  ],
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "scope", "operator", "property_name"],
+      "properties": {
+        "rule_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+        "scope": {
+          "enum": ["ifc-property", "ifc-quantity", "drawing-annotation"]
+        },
+        "ifc_entity": { "type": "string", "minLength": 1 },
+        "target_ref": { "type": "string", "minLength": 1 },
+        "property_set": { "type": "string", "minLength": 1 },
+        "property_name": { "type": "string", "minLength": 1 },
+        "operator": { "enum": ["eq", "=", "equals", "gte", ">=", "lte", "<=", "exists"] },
+        "expected_value": { "type": ["string", "number", "boolean", "null"] },
+        "unit": { "type": "string", "minLength": 1 },
+        "evidence_text": { "type": "string" },
+        "instructions": { "type": "string" }
+      }
+    }
+  }
+}

@@ -395,7 +395,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         self.assertEqual(report.summary.warning_count, 1)
         self.assertEqual(report.issues[0].category, FindingCategory.IDS_VALIDATION)
 
-    def test_execute_routes_pdf_drawings_to_vision_analyzer(self) -> None:
+    def test_execute_routes_pdf_drawings_to_raster_analyzer(self) -> None:
         class ExplodingStructuredAnalyzer:
             def analyze(self, _source: DrawingSource) -> list[DrawingAnnotation]:
                 raise AssertionError(
@@ -432,7 +432,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 
         report = use_case.execute(
             ValidationRequest(
-                request_id="req-vision-pdf",
+                request_id="req-raster-pdf",
                 ifc_path=Path("sample.ifc"),
                 requirement_source=RequirementSource(text=""),
                 ids_path=Path("rules.ids"),
@@ -454,7 +454,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
         self.assertEqual(report.drawing_assets[0].sheet_id, "A-101")
         self.assertEqual(report.drawing_assets[0].source_path, Path("sheet-openrebar.pdf"))
 
-    def test_execute_merges_structured_and_vision_annotations(self) -> None:
+    def test_execute_merges_structured_and_raster_annotations(self) -> None:
         store = FakeStore()
         use_case = _make_analyze_use_case(
             requirement_extractor=FakeExtractor(),
@@ -469,7 +469,7 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
 
         report = use_case.execute(
             ValidationRequest(
-                request_id="req-vision-merge",
+                request_id="req-raster-merge",
                 ifc_path=Path("sample.ifc"),
                 requirement_source=RequirementSource(
                     text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"

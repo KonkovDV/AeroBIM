@@ -60,6 +60,7 @@ export interface ValidationIssue {
     body: string;
   } | null;
   conflict_kind?: string | null;
+  priority?: number;
 }
 
 export interface DrawingAnnotation {
@@ -103,6 +104,22 @@ export interface ValidationSummary {
 
 export type DocStatus = "WIP" | "Shared" | "Published" | "Archived";
 
+export type CapabilityState = "ok" | "skipped" | "failed";
+
+export interface CapabilityStatus {
+  status: CapabilityState;
+  reason?: string | null;
+}
+
+export interface ReportCapabilities {
+  clash: CapabilityStatus;
+  ids: CapabilityStatus;
+  ifc_validation: CapabilityStatus;
+  unit_scale: CapabilityStatus;
+  raster: CapabilityStatus;
+  ifc_schema: CapabilityStatus;
+}
+
 export interface ValidationReport {
   report_id: string;
   request_id: string;
@@ -119,4 +136,5 @@ export interface ValidationReport {
   drawing_annotations: DrawingAnnotation[];
   drawing_assets: DrawingAsset[];
   clash_results: ClashResult[];
+  capabilities?: ReportCapabilities | null;
 }

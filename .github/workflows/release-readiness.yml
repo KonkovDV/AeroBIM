@@ -61,7 +61,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install backend dependencies
-        run: pip install -e ".[dev,vision]"
+        run: pip install -e ".[dev,raster]"
       - name: Run baseline benchmark pack
         run: |
           mkdir -p ../artifacts/release-readiness
@@ -127,7 +127,7 @@ jobs:
       - name: Create backend virtualenv for smoke harness
         run: |
           python -m venv .venv
-          .venv/bin/pip install -e ".[dev,vision]"
+          .venv/bin/pip install -e ".[dev,raster]"
       - name: Install frontend dependencies
         run: npm ci
         working-directory: frontend

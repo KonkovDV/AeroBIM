@@ -1,5 +1,5 @@
 import { Suspense, lazy, startTransition, useDeferredValue, useEffect, useState } from "react";
-import { buildExportUrl, fetchReport, fetchReports, getApiBaseUrl } from "./lib/api";
+import { downloadExport, fetchReport, fetchReports, getApiBaseUrl, postReviewEvent } from "./lib/api";
 import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
 import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 
@@ -31,6 +31,14 @@ function normalizeStatus(value: string | null | undefined): "all" | "passed" | "
 
 function normalizePresetScope(value: unknown, fallback: PresetScope = "local"): PresetScope {
   return value === "team" || value === "local" ? value : fallback;
+}
+
+function readUrlReportId(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const report = new URLSearchParams(window.location.search).get("report")?.trim();
+  return report && /^[a-f0-9]{32}$/i.test(report) ? report.toLowerCase() : null;
 }
 
 function readUrlReportFilters(): Partial<PersistedReportFilters> {
@@ -129,7 +137,11 @@ function persistFilterPresets(presets: ReportFilterPreset[]): void {
   window.localStorage.setItem(REPORT_FILTER_PRESETS_STORAGE_KEY, JSON.stringify(presets));
 }
 
-function withReportFilters(url: URL, filters: PersistedReportFilters): URL {
+function withReportFilters(
+  url: URL,
+  filters: PersistedReportFilters,
+  reportId?: string | null,
+): URL {
   if (filters.project.trim()) {
     url.searchParams.set("project", filters.project.trim());
   } else {
@@ -148,15 +160,22 @@ function withReportFilters(url: URL, filters: PersistedReportFilters): URL {
     url.searchParams.delete("status");
   }
 
+  if (reportId) {
+    url.searchParams.set("report", reportId);
+  }
+
   return url;
 }
 
-function syncReportFiltersToUrl(filters: PersistedReportFilters): void {
+function syncReportFiltersToUrl(
+  filters: PersistedReportFilters,
+  reportId?: string | null,
+): void {
   if (typeof window === "undefined") {
     return;
   }
 
-  const url = withReportFilters(new URL(window.location.href), filters);
+  const url = withReportFilters(new URL(window.location.href), filters, reportId);
 
   window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
 }
@@ -245,15 +264,19 @@ function buildViewerFocus(activeIssue: ValidationIssue | null, activeClash: Clas
 
 export default function App() {
   const persistedFilters = initialReportFilters();
+  const deepLinkReportId = readUrlReportId();
   const [reports, setReports] = useState<ReportSummaryEntry[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState<string | null>(null);
-  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(deepLinkReportId);
   const [selectedReport, setSelectedReport] = useState<ValidationReport | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number>(0);
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
+  const [issueSeverityFilter, setIssueSeverityFilter] = useState<"all" | "error" | "warning" | "info">("all");
+  const [remarkDraft, setRemarkDraft] = useState("");
+  const [remarkSaveState, setRemarkSaveState] = useState<"idle" | "saving" | "saved" | "failed">("idle");
   const [search, setSearch] = useState("");
   const [groupByProject, setGroupByProject] = useState(false);
   const [shareLinkState, setShareLinkState] = useState<ShareLinkState>("idle");
@@ -278,9 +301,9 @@ export default function App() {
       status: statusFilter,
     };
     persistReportFilters(currentFilters);
-    syncReportFiltersToUrl(currentFilters);
+    syncReportFiltersToUrl(currentFilters, selectedReportId);
     setShareLinkState("idle");
-  }, [projectFilter, disciplineFilter, statusFilter]);
+  }, [projectFilter, disciplineFilter, statusFilter, selectedReportId]);
 
   useEffect(() => {
     persistFilterPresets(filterPresets);
@@ -306,6 +329,15 @@ export default function App() {
         setReports(response.reports);
         setReportsError(null);
         setSelectedReportId((current) => {
+          const fromUrl = readUrlReportId();
+          if (fromUrl) {
+            if (current === fromUrl) {
+              return fromUrl;
+            }
+            if (!current || response.reports.some((report) => report.report_id === fromUrl)) {
+              return fromUrl;
+            }
+          }
           if (current && response.reports.some((report) => report.report_id === current)) {
             return current;
           }
@@ -346,6 +378,8 @@ export default function App() {
         setReportError(null);
         setSelectedIssueIndex(0);
         setSelectedClashIndex(null);
+        setRemarkDraft(report.issues[0]?.remark?.body ?? "");
+        setRemarkSaveState("idle");
       })
       .catch((error: unknown) => {
         if (cancelled) {
@@ -651,12 +685,37 @@ export default function App() {
     selectedReport && selectedReport.issues.length > 0
       ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
       : null;
+  const filteredIssues =
+    selectedReport === null
+      ? []
+      : issueSeverityFilter === "all"
+        ? selectedReport.issues.map((issue, index) => ({ issue, index }))
+        : selectedReport.issues
+            .map((issue, index) => ({ issue, index }))
+            .filter(({ issue }) => issue.severity === issueSeverityFilter);
   const activeClash =
     selectedReport && selectedClashIndex !== null && selectedReport.clash_results.length > 0
       ? selectedReport.clash_results[Math.min(selectedClashIndex, selectedReport.clash_results.length - 1)]
       : null;
   const matchingRequirements = selectedReport ? findMatchingRequirements(selectedReport, activeIssue) : [];
   const viewerFocus = buildViewerFocus(activeIssue, activeClash);
+
+  async function saveRemarkEdit(): Promise<void> {
+    if (!selectedReport || !activeIssue) {
+      return;
+    }
+    setRemarkSaveState("saving");
+    try {
+      await postReviewEvent(selectedReport.report_id, {
+        event_type: "edited_remark",
+        issue_rule_id: activeIssue.rule_id,
+        note: remarkDraft,
+      });
+      setRemarkSaveState("saved");
+    } catch {
+      setRemarkSaveState("failed");
+    }
+  }
 
   return (
     <div className="app-shell">
@@ -891,9 +950,9 @@ export default function App() {
             </div>
             {selectedReport && (
               <div className="export-actions">
-                <a href={buildExportUrl(selectedReport.report_id, "html")} target="_blank" rel="noreferrer">HTML</a>
-                <a href={buildExportUrl(selectedReport.report_id, "json")} target="_blank" rel="noreferrer">JSON</a>
-                <a href={buildExportUrl(selectedReport.report_id, "bcf")} target="_blank" rel="noreferrer">BCF</a>
+                <button type="button" onClick={() => void downloadExport(selectedReport.report_id, "html")}>HTML</button>
+                <button type="button" onClick={() => void downloadExport(selectedReport.report_id, "json")}>JSON</button>
+                <button type="button" onClick={() => void downloadExport(selectedReport.report_id, "bcf")}>BCF</button>
               </div>
             )}
           </div>
@@ -935,11 +994,31 @@ export default function App() {
                 )}
               </div>
 
+              <div className="issue-toolbar">
+                <label>
+                  Severity
+                  <select
+                    value={issueSeverityFilter}
+                    onChange={(event) =>
+                      setIssueSeverityFilter(event.target.value as "all" | "error" | "warning" | "info")
+                    }
+                  >
+                    <option value="all">All</option>
+                    <option value="error">Error</option>
+                    <option value="warning">Warning</option>
+                    <option value="info">Info</option>
+                  </select>
+                </label>
+                <span className="compact-copy">
+                  {filteredIssues.length} / {selectedReport.issues.length} shown
+                </span>
+              </div>
+
               <div className="issue-list">
-                {selectedReport.issues.length === 0 ? (
-                  <div className="panel-empty compact">No issues. This report passed all current checks.</div>
+                {filteredIssues.length === 0 ? (
+                  <div className="panel-empty compact">No issues match the current severity filter.</div>
                 ) : (
-                  selectedReport.issues.map((issue, index) => (
+                  filteredIssues.map(({ issue, index }) => (
                     <button
                       key={`${issue.rule_id}-${index}`}
                       type="button"
@@ -948,12 +1027,17 @@ export default function App() {
                         startTransition(() => {
                           setSelectedIssueIndex(index);
                           setSelectedClashIndex(null);
+                          setRemarkDraft(issue.remark?.body ?? "");
+                          setRemarkSaveState("idle");
                         });
                       }}
                     >
                       <div className="issue-card-row">
                         <span className={`severity-pill severity-${issue.severity}`}>{issue.severity}</span>
                         <strong>{issue.rule_id}</strong>
+                        {typeof issue.priority === "number" && issue.priority > 0 ? (
+                          <span className="issue-priority">P{issue.priority}</span>
+                        ) : null}
                       </div>
                       <p>{issue.message}</p>
                       <div className="issue-card-meta">
@@ -1003,6 +1087,7 @@ export default function App() {
                     <dl className="detail-grid">
                       <div><dt>Rule</dt><dd>{activeIssue.rule_id}</dd></div>
                       <div><dt>Category</dt><dd>{activeIssue.category}</dd></div>
+                      <div><dt>Priority</dt><dd>{activeIssue.priority ?? "—"}</dd></div>
                       <div><dt>Entity</dt><dd>{activeIssue.ifc_entity ?? "—"}</dd></div>
                       <div><dt>Target</dt><dd>{activeIssue.target_ref ?? activeIssue.element_guid ?? "—"}</dd></div>
                       <div><dt>Expected</dt><dd>{activeIssue.expected_value ?? "—"}</dd></div>
@@ -1012,6 +1097,35 @@ export default function App() {
                     </dl>
                   ) : (
                     <p className="compact-copy">No active issue. Use the report detail panel to choose one.</p>
+                  )}
+                </article>
+
+                <article className="detail-block">
+                  <h3>Remark</h3>
+                  {activeIssue ? (
+                    <div className="remark-editor">
+                      <p className="compact-copy">
+                        <strong>{activeIssue.remark?.title ?? "Generated remark"}</strong>
+                      </p>
+                      <textarea
+                        value={remarkDraft}
+                        rows={5}
+                        onChange={(event) => {
+                          setRemarkDraft(event.target.value);
+                          setRemarkSaveState("idle");
+                        }}
+                        aria-label="Edit remark text"
+                      />
+                      <div className="remark-actions">
+                        <button type="button" onClick={() => void saveRemarkEdit()} disabled={remarkSaveState === "saving"}>
+                          {remarkSaveState === "saving" ? "Saving…" : "Save remark edit"}
+                        </button>
+                        {remarkSaveState === "saved" ? <span className="compact-copy">Saved to review events</span> : null}
+                        {remarkSaveState === "failed" ? <span className="compact-copy">Save failed</span> : null}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="compact-copy">Select an issue to review and edit its remark.</p>
                   )}
                 </article>
 

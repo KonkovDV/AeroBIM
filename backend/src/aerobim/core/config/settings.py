@@ -33,6 +33,10 @@ def _read_bool(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
+_DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
+_DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # aligned with bSI Validation Service
+
+
 @dataclass(frozen=True)
 class Settings:
     application_name: str
@@ -44,6 +48,7 @@ class Settings:
     cors_origins: tuple[str, ...] = ()
     api_bearer_token: str | None = None
     cross_doc_contradiction_severity: str = "warning"
+    """Severity for cross-document contradictions: ``error`` | ``warning`` | ``info``."""
     priority_profile: str = "default"
     """Reviewer priority profile: ``default`` or ``samolet`` (TechLab fire/cross-doc boost)."""
     db_url: str | None = None
@@ -54,17 +59,64 @@ class Settings:
     s3_secret_access_key: str | None = None
     s3_prefix: str = "aerobim"
     report_ttl_days: int | None = None
-    """Severity emitted for cross-document contradictions.
+    clash_affects_pass: bool = False
+    """When true, hard clashes (or clash capability failure) set ``summary.passed=False``."""
+    max_ifc_bytes: int = _DEFAULT_MAX_IFC_BYTES
+    """Maximum accepted IFC file size in bytes (default 256 MiB)."""
+    # OpenCDE BCF API 3.0 push (optional)
+    bcf_api_base_url: str | None = None
+    bcf_api_token: str | None = None
+    bcf_api_project_id: str | None = None
+    bcf_api_version: str = "3.0"
+    # OIDC / JWT (optional; accepted alongside static bearer)
+    oidc_issuer: str | None = None
+    oidc_audience: str | None = None
+    oidc_jwks_url: str | None = None
+    # Optional Redis for durable async jobs
+    redis_url: str | None = None
+    # Optional bSI Validation Service / local schema certificate
+    bsi_validation_url: str | None = None
+    bsi_api_token: str | None = None
+    bsi_local_cert: bool = False
+    """When true (and remote URL unset), emit a local schema-pack certificate id."""
+    remark_locale: str = "ru"
+    """Product remark language: ``ru`` | ``en`` (``AEROBIM_REMARK_LOCALE``)."""
+    norm_rule_pack_path: str | None = None
+    """Storage-relative path to a default norm/rule pack (``AEROBIM_NORM_RULE_PACK``).
 
-    Set to ``"error"`` to make all cross-document contradictions block delivery
-    (sets ``passed=False`` on the report).  Defaults to ``"warning"`` so that
-    contradictions are surfaced but non-blocking.  Accepted values: ``"error"``,
-    ``"warning"``, ``"info"``.
-    """
+    Used as the customer-pack fallback when a request/manifest does not list any
+    ``norm_rule_pack_paths``. If configured but missing at analysis time, the
+    ``norm_rule_packs`` capability fails closed (never a silent skip)."""
+    allow_anonymous_dev: bool = True
+    """When constructing Settings in-process (tests), default True for convenience.
+
+    ``Settings.from_env()`` defaults this to **False** unless
+    ``AEROBIM_ALLOW_ANONYMOUS_DEV=true`` — local/process env stacks must set a
+    bearer token (or explicitly opt into anonymous)."""
+
+    @property
+    def is_dev_environment(self) -> bool:
+        return self.environment.strip().lower() in _DEV_ENVIRONMENTS
+
+    @property
+    def oidc_enabled(self) -> bool:
+        return bool(self.oidc_issuer and self.oidc_audience and self.oidc_jwks_url)
+
+    def require_secure_auth(self) -> None:
+        """Fail closed: non-dev deployments must configure bearer and/or OIDC."""
+        if self.is_dev_environment:
+            return
+        if self.api_bearer_token or self.oidc_enabled:
+            return
+        raise RuntimeError(
+            "Non-development deployments require AEROBIM_API_BEARER_TOKEN "
+            "and/or OIDC settings (AEROBIM_OIDC_ISSUER, AEROBIM_OIDC_AUDIENCE, "
+            f"AEROBIM_OIDC_JWKS_URL); AEROBIM_ENV={self.environment!r}"
+        )
 
     @classmethod
     def from_env(cls) -> Settings:
-        debug = _read_bool("AEROBIM_DEBUG", True)
+        debug = _read_bool("AEROBIM_DEBUG", False)
         raw_origins = os.getenv("AEROBIM_CORS_ORIGINS", "")
         if raw_origins:
             origins = tuple(o.strip() for o in raw_origins.split(",") if o.strip())
@@ -78,7 +130,7 @@ class Settings:
         )
         raw_profile = (os.getenv("AEROBIM_PRIORITY_PROFILE") or "default").strip().lower()
         priority_profile = raw_profile if raw_profile in {"default", "samolet"} else "default"
-        return cls(
+        settings = cls(
             application_name=os.getenv("AEROBIM_APP_NAME", "aerobim-backend"),
             environment=os.getenv("AEROBIM_ENV", "development"),
             host=os.getenv("AEROBIM_HOST", "127.0.0.1"),
@@ -97,4 +149,22 @@ class Settings:
             s3_secret_access_key=(os.getenv("AEROBIM_S3_SECRET_ACCESS_KEY") or "").strip() or None,
             s3_prefix=(os.getenv("AEROBIM_S3_PREFIX") or "aerobim").strip() or "aerobim",
             report_ttl_days=_read_optional_int("AEROBIM_REPORT_TTL_DAYS"),
+            clash_affects_pass=_read_bool("AEROBIM_CLASH_AFFECTS_PASS", False),
+            max_ifc_bytes=_read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
+            bcf_api_base_url=(os.getenv("AEROBIM_BCF_API_BASE_URL") or "").strip() or None,
+            bcf_api_token=(os.getenv("AEROBIM_BCF_API_TOKEN") or "").strip() or None,
+            bcf_api_project_id=(os.getenv("AEROBIM_BCF_API_PROJECT_ID") or "").strip() or None,
+            bcf_api_version=(os.getenv("AEROBIM_BCF_API_VERSION") or "3.0").strip() or "3.0",
+            oidc_issuer=(os.getenv("AEROBIM_OIDC_ISSUER") or "").strip() or None,
+            oidc_audience=(os.getenv("AEROBIM_OIDC_AUDIENCE") or "").strip() or None,
+            oidc_jwks_url=(os.getenv("AEROBIM_OIDC_JWKS_URL") or "").strip() or None,
+            redis_url=(os.getenv("AEROBIM_REDIS_URL") or "").strip() or None,
+            bsi_validation_url=(os.getenv("AEROBIM_BSI_VALIDATION_URL") or "").strip() or None,
+            bsi_api_token=(os.getenv("AEROBIM_BSI_API_TOKEN") or "").strip() or None,
+            bsi_local_cert=_read_bool("AEROBIM_BSI_LOCAL_CERT", False),
+            remark_locale=(os.getenv("AEROBIM_REMARK_LOCALE") or "ru").strip().lower() or "ru",
+            norm_rule_pack_path=(os.getenv("AEROBIM_NORM_RULE_PACK") or "").strip() or None,
+            allow_anonymous_dev=_read_bool("AEROBIM_ALLOW_ANONYMOUS_DEV", False),
         )
+        settings.require_secure_auth()
+        return settings

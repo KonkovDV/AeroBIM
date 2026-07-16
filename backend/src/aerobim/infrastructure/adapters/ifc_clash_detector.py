@@ -1,11 +1,8 @@
 """Clash detection adapter using IfcOpenShell + IfcClash.
 
-Falls back to a no-op stub when ``ifcopenshell.geom`` or ``ifcclash`` are
-unavailable, so the rest of the system stays functional.
-
-The adapter currently supports **hard-clash** detection only (geometry
-intersection). Clearance-based checks require tolerance parameters and
-are deferred to a future iteration.
+Raises ``ClashCapabilityError`` when the optional geometry stack is missing or
+fails, so callers can record an explicit capability status instead of treating
+silent empty results as a clean model.
 """
 
 from __future__ import annotations
@@ -15,6 +12,7 @@ import tempfile
 from pathlib import Path
 
 from aerobim.domain.models import ClashResult
+from aerobim.domain.errors import ClashCapabilityError
 
 
 class IfcClashDetector:
@@ -26,13 +24,18 @@ class IfcClashDetector:
 
         try:
             return self._run_clash_detection(ifc_path)
-        except ImportError:
-            return []
-        except Exception:
-            # IfcClash can fail at runtime when optional geometry engines or
-            # native dependencies are partially available. Keep clash detection
-            # as a non-blocking capability for the broader validation pipeline.
-            return []
+        except ImportError as exc:
+            raise ClashCapabilityError(
+                "skipped",
+                f"IfcClash unavailable: {exc}",
+            ) from exc
+        except ClashCapabilityError:
+            raise
+        except Exception as exc:
+            raise ClashCapabilityError(
+                "failed",
+                f"Clash detection failed: {exc}",
+            ) from exc
 
     def _run_clash_detection(self, ifc_path: Path) -> list[ClashResult]:
         """Attempt IfcClash-based detection; raise ImportError if deps missing."""

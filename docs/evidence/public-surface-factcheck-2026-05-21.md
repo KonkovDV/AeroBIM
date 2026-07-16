@@ -25,6 +25,7 @@ Verification after language hygiene sweep: no AI vendor branding in active docs;
 | `VisionDrawingAnalyzer`, `vision_drawing_analyzer` | 0 (code + docs aligned on `RasterDrawingAnalyzer`) |
 | Marketing «AI product» | 0 (policy mentions avoidance only) |
 | `learned-model` / `stochastic vision` in pilot SSOT | 0 (replaced with **non-deterministic**) |
+| PyPI extra `vision` | 0 (renamed to **`raster`**) |
 
 ## Code rename
 

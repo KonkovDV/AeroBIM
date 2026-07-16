@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aerobim.core.security.path_jail import PathJailError, reject_symlinks
+
 
 class LocalObjectStore:
     def __init__(self, base_dir: Path) -> None:
@@ -41,7 +43,12 @@ class LocalObjectStore:
 
     def _resolve_key(self, key: str) -> Path:
         normalised = self._normalise_key(key)
-        target = (self._base_dir / normalised).resolve()
+        candidate = self._base_dir / normalised
+        try:
+            reject_symlinks(candidate, base=self._base_dir)
+        except PathJailError as exc:
+            raise ValueError(str(exc)) from exc
+        target = candidate.resolve()
         if not target.is_relative_to(self._base_dir):
             raise ValueError(f"Object key escapes base directory: {key}")
         return target

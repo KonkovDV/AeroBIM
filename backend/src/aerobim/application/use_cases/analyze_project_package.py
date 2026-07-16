@@ -3,17 +3,25 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
+from pathlib import Path
 from uuid import uuid4
 
 from aerobim.application.services.confidence_scorer import score_confidence
+from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
+from aerobim.application.services.spatial_predicates import issues_from_clash_results
+from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.models import (
     ComparisonOperator,
+    CapabilityState,
+    CapabilityStatus,
     ConflictKind,
     DrawingAnnotation,
     DrawingAsset,
     DrawingSource,
     FindingCategory,
     ParsedRequirement,
+    ReportCapabilities,
+    RulePackStatus,
     RuleScope,
     Severity,
     ToleranceConfig,
@@ -25,21 +33,26 @@ from aerobim.domain.models import (
 )
 from aerobim.domain.ports import (
     AuditReportStore,
+    BsiValidationService,
     ClashDetector,
     DrawingAnalyzer,
     ExternalEvidenceVerifier,
+    IdsDocumentAuditor,
     IdsValidator,
+    IfcSchemaValidator,
     IfcValidator,
     NarrativeRuleSynthesizer,
+    NormRulePackLoader,
     RasterDrawingAnalyzer,
     RemarkGenerator,
     RequirementExtractor,
+    SectionDiffAnalyzer,
 )
 from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
 
 _RASTER_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _RASTER_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
-_DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg"}
+_DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _OPENREBAR_REPORT_CONTRACT_ID = "OpenRebar.reinforcement.report.v1"
 _OPENREBAR_WARNING_SEVERITY_CLASS: dict[str, str] = {
     "OPENREBAR-CONTRACT": "critical",
@@ -99,6 +112,13 @@ class AnalyzeProjectPackageUseCase:
         cross_doc_severity: str = "warning",
         priority_profile: str = "default",
         external_evidence_verifier: ExternalEvidenceVerifier | None = None,
+        clash_affects_pass: bool = False,
+        ifc_schema_validator: IfcSchemaValidator | None = None,
+        ids_document_auditor: IdsDocumentAuditor | None = None,
+        bsi_validation_service: BsiValidationService | None = None,
+        norm_rule_pack_loader: NormRulePackLoader | None = None,
+        section_diff_analyzer: SectionDiffAnalyzer | None = None,
+        default_norm_rule_pack_path: Path | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -110,6 +130,7 @@ class AnalyzeProjectPackageUseCase:
         self._audit_report_store = audit_report_store
         self._tolerance = tolerance or ToleranceConfig()
         self._clash_detector = clash_detector
+        self._clash_affects_pass = clash_affects_pass
         _valid_severities = {"error", "warning", "info"}
         self._cross_doc_severity = Severity(
             cross_doc_severity if cross_doc_severity in _valid_severities else "warning"
@@ -120,6 +141,12 @@ class AnalyzeProjectPackageUseCase:
         self._external_evidence_verifier = (
             external_evidence_verifier or _NullExternalEvidenceVerifier()
         )
+        self._ifc_schema_validator = ifc_schema_validator
+        self._ids_document_auditor = ids_document_auditor
+        self._bsi_validation_service = bsi_validation_service
+        self._norm_rule_pack_loader = norm_rule_pack_loader
+        self._section_diff_analyzer = section_diff_analyzer
+        self._default_norm_rule_pack_path = default_norm_rule_pack_path
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         structured_requirements = list(
@@ -140,7 +167,28 @@ class AnalyzeProjectPackageUseCase:
             )
             for req in synthesized_requirements
         ]
-        requirements = tuple([*structured_requirements, *synthesized_requirements])
+        norm_pack_requirements, norm_pack_capability = self._collect_norm_pack_requirements(
+            request
+        )
+        norm_pack_issues: list[ValidationIssue] = []
+        if norm_pack_capability.status is CapabilityState.FAILED:
+            norm_pack_issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-NORM-PACK",
+                    severity=Severity.ERROR,
+                    message=norm_pack_capability.reason
+                    or "Configured norm rule pack failed to load",
+                    category=FindingCategory.IFC_VALIDATION,
+                )
+            )
+        requirements = tuple(
+            [*structured_requirements, *synthesized_requirements, *norm_pack_requirements]
+        )
+        schema_issues = list(self._collect_schema_issues(request.ifc_path))
+        schema_request_id, schema_remote_issues = self._submit_bsi_validation(request.ifc_path)
+        schema_issues.extend(schema_remote_issues)
+        schema_issues_t = tuple(schema_issues)
+        ids_audit_issues = tuple(self._collect_ids_audit_issues(request))
         ids_issues = tuple(self._collect_ids_issues(request))
         if not requirements and request.ids_path is None:
             raise ValueError(
@@ -158,21 +206,27 @@ class AnalyzeProjectPackageUseCase:
         )
         drawing_assets = tuple(self._collect_drawing_assets(request))
         cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
+        section_pairing_issues, section_pairing_capability = self._collect_section_pairing_issues(
+            request
+        )
         reinforcement_provenance_issues = tuple(
             self._apply_openrebar_provenance_policy(
                 self._external_evidence_verifier.verify(request),
                 request.reinforcement_provenance_mode,
             )
         )
-        clash_results = tuple(
-            self._clash_detector.detect(request.ifc_path) if self._clash_detector else []
-        )
+        clash_results, clash_capability, clash_issues = self._run_clash_detection(request.ifc_path)
         raw_issues = [
+            *schema_issues_t,
+            *ids_audit_issues,
             *ifc_issues,
             *drawing_issues,
             *cross_document_issues,
+            *section_pairing_issues,
             *reinforcement_provenance_issues,
             *ids_issues,
+            *clash_issues,
+            *norm_pack_issues,
         ]
         prioritized_issues = tuple(
             ValidationIssue(
@@ -187,6 +241,32 @@ class AnalyzeProjectPackageUseCase:
         error_count = severity_counts[Severity.ERROR]
         warning_count = severity_counts[Severity.WARNING]
 
+        capabilities = self._build_capabilities(
+            requirements=requirements,
+            ifc_issues=ifc_issues,
+            ids_path=request.ids_path,
+            ids_issues=ids_issues,
+            clash_capability=clash_capability,
+            drawing_sources=request.drawing_sources,
+            schema_issues=schema_issues_t,
+            ids_audit_issues=ids_audit_issues,
+            schema_request_id=schema_request_id,
+            norm_rule_packs=norm_pack_capability,
+            section_pairing=section_pairing_capability,
+        )
+        passed = summary_passed_after_capabilities(
+            error_count=error_count,
+            capabilities=capabilities,
+        )
+        if self._clash_affects_pass:
+            hard_clashes = tuple(
+                clash
+                for clash in clash_results
+                if getattr(clash, "clash_type", "hard") != "clearance"
+            )
+            if hard_clashes:
+                passed = False
+
         report = ValidationReport(
             report_id=uuid4().hex,
             request_id=request.request_id,
@@ -199,7 +279,7 @@ class AnalyzeProjectPackageUseCase:
                 issue_count=len(issues_with_remarks),
                 error_count=error_count,
                 warning_count=warning_count,
-                passed=error_count == 0,
+                passed=passed,
                 drawing_annotation_count=len(drawing_annotations),
                 generated_remark_count=sum(
                     1 for issue in issues_with_remarks if issue.remark is not None
@@ -208,6 +288,8 @@ class AnalyzeProjectPackageUseCase:
             drawing_annotations=drawing_annotations,
             drawing_assets=drawing_assets,
             clash_results=clash_results,
+            capabilities=capabilities,
+            schema_validation_request_id=schema_request_id,
             project_name=request.project_name,
             discipline=request.discipline,
             stage=request.stage,
@@ -218,6 +300,165 @@ class AnalyzeProjectPackageUseCase:
         self._audit_report_store.save(report)
         persisted_report = self._audit_report_store.get(report.report_id)
         return persisted_report or report
+
+    def _run_clash_detection(
+        self, ifc_path
+    ) -> tuple[tuple, CapabilityStatus, list[ValidationIssue]]:
+        if self._clash_detector is None:
+            return (
+                (),
+                CapabilityStatus(CapabilityState.SKIPPED, "clash detector not configured"),
+                [],
+            )
+        try:
+            results = tuple(self._clash_detector.detect(ifc_path))
+            return (
+                results,
+                CapabilityStatus(CapabilityState.OK),
+                issues_from_clash_results(results, affects_pass=self._clash_affects_pass),
+            )
+        except ClashCapabilityError as exc:
+            state = (
+                CapabilityState.SKIPPED if exc.status == "skipped" else CapabilityState.FAILED
+            )
+            # FAILED clash engine is a sign-off blocker; SKIPPED (optional extra) is not.
+            severity = Severity.ERROR if state == CapabilityState.FAILED else Severity.WARNING
+            issue = ValidationIssue(
+                rule_id="AEROBIM-CLASH-CAPABILITY",
+                severity=severity,
+                message=f"Clash detection capability {exc.status}: {exc.reason}",
+                category=FindingCategory.IFC_VALIDATION,
+            )
+            return (), CapabilityStatus(state, exc.reason), [issue]
+        except Exception as exc:  # noqa: BLE001
+            issue = ValidationIssue(
+                rule_id="AEROBIM-CLASH-CAPABILITY",
+                severity=Severity.ERROR,
+                message=f"Clash detection capability failed: {exc}",
+                category=FindingCategory.IFC_VALIDATION,
+            )
+            return (
+                (),
+                CapabilityStatus(CapabilityState.FAILED, str(exc)),
+                [issue],
+            )
+
+    def _build_capabilities(
+        self,
+        *,
+        requirements,
+        ifc_issues,
+        ids_path,
+        ids_issues,
+        clash_capability: CapabilityStatus,
+        drawing_sources,
+        schema_issues=(),
+        ids_audit_issues=(),
+        schema_request_id: str | None = None,
+        norm_rule_packs: CapabilityStatus | None = None,
+        section_pairing: CapabilityStatus | None = None,
+    ) -> ReportCapabilities:
+        ifc_validation = (
+            CapabilityStatus(CapabilityState.OK)
+            if requirements
+            else CapabilityStatus(CapabilityState.SKIPPED, "no IFC property requirements")
+        )
+        unit_scale = CapabilityStatus(CapabilityState.OK)
+        for issue in ifc_issues:
+            if issue.rule_id == "AEROBIM-UNIT-SCALE":
+                unit_scale = CapabilityStatus(
+                    CapabilityState.FAILED,
+                    issue.message,
+                )
+                break
+
+        if ids_path is None:
+            ids_capability = CapabilityStatus(
+                CapabilityState.SKIPPED, "IDS validation not requested"
+            )
+        elif self._ids_validator is None:
+            ids_capability = CapabilityStatus(
+                CapabilityState.FAILED, "IDS validation requested but no validator configured"
+            )
+        elif ids_audit_issues:
+            ids_capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                ids_audit_issues[0].message if ids_audit_issues else "IDS audit failed",
+            )
+        else:
+            ids_capability = CapabilityStatus(CapabilityState.OK)
+
+        if self._ifc_schema_validator is None and schema_request_id is None:
+            ifc_schema = CapabilityStatus(
+                CapabilityState.SKIPPED, "IFC schema pre-gate not configured"
+            )
+        elif schema_issues:
+            ifc_schema = CapabilityStatus(
+                CapabilityState.FAILED,
+                schema_issues[0].message if schema_issues else "schema pre-gate failed",
+                external_ref=schema_request_id,
+            )
+        else:
+            ifc_schema = CapabilityStatus(
+                CapabilityState.OK,
+                external_ref=schema_request_id,
+            )
+
+        raster_requested = any(
+            (source.path and source.path.suffix.lower() in _RASTER_DRAWING_SUFFIXES)
+            or (source.format or "").strip().lower() in _RASTER_DRAWING_FORMATS
+            for source in drawing_sources
+        )
+        if not raster_requested:
+            raster_capability = CapabilityStatus(
+                CapabilityState.SKIPPED, "no raster drawing sources"
+            )
+        elif self._raster_drawing_analyzer is None:
+            raster_capability = CapabilityStatus(
+                CapabilityState.SKIPPED, "raster drawing analyzer not configured"
+            )
+        else:
+            raster_capability = CapabilityStatus(CapabilityState.OK)
+
+        return ReportCapabilities(
+            clash=clash_capability,
+            ids=ids_capability,
+            ifc_validation=ifc_validation,
+            unit_scale=unit_scale,
+            raster=raster_capability,
+            ifc_schema=ifc_schema,
+            norm_rule_packs=norm_rule_packs
+            or CapabilityStatus(CapabilityState.SKIPPED, "norm rule packs not requested"),
+            section_pairing=section_pairing
+            or CapabilityStatus(CapabilityState.SKIPPED, "PD/RD section pairing not requested"),
+        )
+
+    def _submit_bsi_validation(
+        self, ifc_path
+    ) -> tuple[str | None, list[ValidationIssue]]:
+        if self._bsi_validation_service is None:
+            return None, []
+        try:
+            request_id = self._bsi_validation_service.submit(ifc_path)
+            return request_id, []
+        except Exception as exc:  # noqa: BLE001 — surface remote/local cert failures
+            return None, [
+                ValidationIssue(
+                    rule_id="AEROBIM-BSI-VALIDATION",
+                    severity=Severity.WARNING,
+                    message=f"bSI Validation Service / schema certificate submit failed: {exc}",
+                )
+            ]
+
+    def _collect_schema_issues(self, ifc_path) -> list[ValidationIssue]:
+        if self._ifc_schema_validator is None:
+            return []
+        return list(self._ifc_schema_validator.validate_schema(ifc_path))
+
+    def _collect_ids_audit_issues(self, request: ValidationRequest) -> list[ValidationIssue]:
+        if request.ids_path is None or self._ids_document_auditor is None:
+            return []
+        return list(self._ids_document_auditor.audit(request.ids_path))
 
     def _collect_ids_issues(self, request: ValidationRequest) -> list[ValidationIssue]:
         if request.ids_path is None:
@@ -267,6 +508,98 @@ class AnalyzeProjectPackageUseCase:
 
         return escalated
 
+    def _collect_norm_pack_requirements(
+        self,
+        request: ValidationRequest,
+    ) -> tuple[list[ParsedRequirement], CapabilityStatus]:
+        # Precedence: explicit request/manifest paths win; otherwise fall back to
+        # the operator-configured env default (AEROBIM_NORM_RULE_PACK). Nothing is
+        # hardcoded, and a configured-but-missing default fails closed.
+        if request.norm_rule_pack_paths:
+            return self._load_norm_packs(
+                request.norm_rule_pack_paths, source="request manifest", tolerant=False
+            )
+        if self._default_norm_rule_pack_path is not None:
+            return self._load_norm_packs(
+                (self._default_norm_rule_pack_path,),
+                source="env AEROBIM_NORM_RULE_PACK",
+                tolerant=True,
+            )
+        return [], CapabilityStatus(
+            CapabilityState.SKIPPED, "norm rule packs not requested"
+        )
+
+    def _load_norm_packs(
+        self,
+        pack_paths: Sequence[Path],
+        *,
+        source: str,
+        tolerant: bool,
+    ) -> tuple[list[ParsedRequirement], CapabilityStatus]:
+        if self._norm_rule_pack_loader is None:
+            raise RuntimeError("Norm rule packs requested but no loader is configured")
+
+        requirements: list[ParsedRequirement] = []
+        pack_refs: list[str] = []
+        non_approved = False
+        seen_packs: set[tuple[str, str]] = set()
+        for pack_path in pack_paths:
+            try:
+                pack = self._norm_rule_pack_loader.load(pack_path)
+            except (FileNotFoundError, ValueError, OSError) as exc:
+                # Tolerant (env-default) path fails closed as a FAILED capability
+                # instead of a silent skip; explicit request paths still raise.
+                if not tolerant:
+                    raise
+                return [], CapabilityStatus(
+                    CapabilityState.FAILED,
+                    f"configured norm rule pack unavailable via {source}: "
+                    f"{pack_path.name}: {exc}",
+                )
+            identity = (pack.pack_id, pack.version)
+            if identity in seen_packs:
+                raise ValueError(
+                    f"Duplicate norm rule pack requested: {pack.pack_id}@{pack.version}"
+                )
+            seen_packs.add(identity)
+            requirements.extend(pack.rules)
+            if pack.status is not RulePackStatus.APPROVED:
+                non_approved = True
+            pack_refs.append(
+                f"{pack.pack_id}@{pack.version}[{pack.status.value}]"
+                f" sha256:{pack.sha256[:12]}"
+            )
+        reason = f"loaded {len(pack_refs)} rule pack(s) via {source}: {', '.join(pack_refs)}"
+        if non_approved:
+            reason += "; advisory: non-approved pack(s) — not for deterministic sign-off"
+        return requirements, CapabilityStatus(CapabilityState.OK, reason)
+
+    def _collect_section_pairing_issues(
+        self,
+        request: ValidationRequest,
+    ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
+        pd_path = request.pd_section_path
+        rd_path = request.rd_section_path
+        if pd_path is None and rd_path is None:
+            return (), CapabilityStatus(
+                CapabilityState.SKIPPED, "PD/RD section pairing not requested"
+            )
+        if pd_path is None or rd_path is None:
+            raise ValueError(
+                "PD/RD section pairing requires both pd_section_path and rd_section_path"
+            )
+        if self._section_diff_analyzer is None:
+            raise RuntimeError("PD/RD section pairing requested but no analyzer is configured")
+        report = self._section_diff_analyzer.analyze(pd_path, rd_path)
+        reason = report.capability_reason(pd_path.name, rd_path.name)
+        # Honest capability: unrecognized discipline or zero canonical-key coverage
+        # cannot look like a successful pairing.
+        if (not report.discipline.recognized) or (
+            report.pd_key_count > 0 and report.recognized_key_count == 0
+        ):
+            return report.issues, CapabilityStatus(CapabilityState.FAILED, reason)
+        return report.issues, CapabilityStatus(CapabilityState.OK, reason)
+
     def _collect_synthesized_requirements(
         self, request: ValidationRequest
     ) -> list[ParsedRequirement]:
@@ -301,7 +634,15 @@ class AnalyzeProjectPackageUseCase:
                     asset_id=f"drawing-{index:03d}",
                     sheet_id=drawing_source.sheet_id or drawing_source.path.stem.upper(),
                     page_number=1 if suffix != ".pdf" else None,
-                    media_type="application/pdf" if suffix == ".pdf" else "image/png",
+            media_type=(
+                "application/pdf"
+                if suffix == ".pdf"
+                else "image/webp"
+                if suffix == ".webp"
+                else "image/jpeg"
+                if suffix in {".jpg", ".jpeg"}
+                else "image/png"
+            ),
                     source_path=drawing_source.path,
                 )
             )
@@ -373,21 +714,35 @@ class AnalyzeProjectPackageUseCase:
                 for prev_req in seen:
                     if prev_req.source_kind == req.source_kind:
                         continue
-                    if self._values_conflict(
+                    soft = self._values_soft_conflict(
                         prev_req.expected_value,
                         prev_req.unit,
                         req.expected_value,
                         req.unit,
                         quantity_a=prev_req.quantity,
                         quantity_b=req.quantity,
-                    ):
-                        prev_val = (prev_req.expected_value or "").strip()
-                        val = (req.expected_value or "").strip()
-                        property_label = (
-                            f"{entity}.{property_set}.{prop}"
-                            if property_set
-                            else f"{entity}.{prop}"
-                        )
+                    )
+                    hard = self._values_conflict(
+                        prev_req.expected_value,
+                        prev_req.unit,
+                        req.expected_value,
+                        req.unit,
+                        quantity_a=prev_req.quantity,
+                        quantity_b=req.quantity,
+                    )
+                    if not soft and not hard:
+                        continue
+                    prev_val = (prev_req.expected_value or "").strip()
+                    val = (req.expected_value or "").strip()
+                    property_label = (
+                        f"{entity}.{property_set}.{prop}"
+                        if property_set
+                        else f"{entity}.{prop}"
+                    )
+                    if soft and not hard:
+                        conflict_kind = ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
+                        severity = Severity.INFO
+                    else:
                         conflict_kind = self._classify_conflict_kind(
                             prev_req.expected_value,
                             prev_req.unit,
@@ -396,24 +751,25 @@ class AnalyzeProjectPackageUseCase:
                             quantity_a=prev_req.quantity,
                             quantity_b=req.quantity,
                         )
-                        issues.append(
-                            ValidationIssue(
-                                rule_id=f"CROSS-DOC-{entity}-{prop}",
-                                severity=self._cross_doc_severity,
-                                message=(
-                                    f"Cross-document contradiction: {property_label} "
-                                    f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
-                                    f"but '{val}' (from {req.source_kind.value})"
-                                ),
-                                ifc_entity=entity,
-                                category=FindingCategory.CROSS_DOCUMENT,
-                                property_set=prev_req.property_set or req.property_set,
-                                property_name=prop,
-                                expected_value=prev_val,
-                                observed_value=val,
-                                conflict_kind=conflict_kind,
-                            )
+                        severity = self._cross_doc_severity
+                    issues.append(
+                        ValidationIssue(
+                            rule_id=f"CROSS-DOC-{entity}-{prop}",
+                            severity=severity,
+                            message=(
+                                f"Cross-document contradiction: {property_label} "
+                                f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
+                                f"but '{val}' (from {req.source_kind.value})"
+                            ),
+                            ifc_entity=entity,
+                            category=FindingCategory.CROSS_DOCUMENT,
+                            property_set=prev_req.property_set or req.property_set,
+                            property_name=prop,
+                            expected_value=prev_val,
+                            observed_value=val,
+                            conflict_kind=conflict_kind,
                         )
+                    )
                 seen.append(req)
 
         return issues
@@ -478,6 +834,42 @@ class AnalyzeProjectPackageUseCase:
             return ConflictKind.HARD_CONFLICT
 
         return ConflictKind.HARD_CONFLICT
+
+    def _values_soft_conflict(
+        self,
+        value_a: str | None,
+        unit_a: str | None,
+        value_b: str | None,
+        unit_b: str | None,
+        *,
+        quantity_a: QuantityValue | None = None,
+        quantity_b: QuantityValue | None = None,
+    ) -> bool:
+        """True when same-unit numeric strings differ but stay within ε."""
+        if value_a is None or value_b is None:
+            return False
+        a_str = value_a.strip()
+        b_str = value_b.strip()
+        if a_str.lower() == b_str.lower():
+            return False
+        # Unit-normalized equivalence (1 m vs 1000 mm) is not a soft conflict.
+        unit_a_norm = (unit_a or "").strip().lower()
+        unit_b_norm = (unit_b or "").strip().lower()
+        if unit_a_norm and unit_b_norm and unit_a_norm != unit_b_norm:
+            return False
+        if self._values_conflict(
+            value_a,
+            unit_a,
+            value_b,
+            unit_b,
+            quantity_a=quantity_a,
+            quantity_b=quantity_b,
+        ):
+            return False
+
+        a_num = self._to_float(a_str)
+        b_num = self._to_float(b_str)
+        return a_num is not None and b_num is not None and a_num != b_num
 
     def _values_conflict(
         self,
@@ -684,6 +1076,25 @@ class AnalyzeProjectPackageUseCase:
         expected_number = self._to_float(expected_value)
 
         if observed_number is not None and expected_number is not None:
+            observed_q = parse_quantity(observed_number, unit or "")
+            expected_q = parse_quantity(expected_number, unit or "")
+            if (
+                observed_q.ucum_code
+                and expected_q.ucum_code
+                and observed_q.dimension == expected_q.dimension
+                and observed_q.si_value is not None
+                and expected_q.si_value is not None
+            ):
+                # ToleranceConfig ε is expressed in the declared unit; scale to SI.
+                eps_native = self._tolerance.epsilon_for_unit(unit)
+                scale = abs(observed_q.si_value / observed_number) if observed_number else 1.0
+                eps_si = eps_native * scale
+                if operator is ComparisonOperator.GREATER_OR_EQUAL:
+                    return observed_q.si_value >= expected_q.si_value - eps_si
+                if operator is ComparisonOperator.LESS_OR_EQUAL:
+                    return observed_q.si_value <= expected_q.si_value + eps_si
+                return si_compare(observed_q, expected_q, epsilon=eps_si)
+
             eps = self._tolerance.epsilon_for_unit(unit)
             if operator is ComparisonOperator.GREATER_OR_EQUAL:
                 return observed_number >= expected_number - eps

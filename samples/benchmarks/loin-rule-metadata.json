@@ -1,29 +1,47 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "rules": [
     {
       "rule_id_prefix": "CROSS-DOC",
       "purpose": "coordination",
       "milestone": "detailed-design",
-      "actor": "lead-coordinator"
+      "actor": "lead-coordinator",
+      "information_level": "alphanumeric"
     },
     {
       "rule_id_prefix": "OPENREBAR",
       "purpose": "structural-verification",
       "milestone": "construction",
-      "actor": "structural-engineer"
+      "actor": "structural-engineer",
+      "information_level": "alphanumeric"
     },
     {
       "rule_id_prefix": "ru-",
       "purpose": "regulatory-compliance",
       "milestone": "concept-design",
-      "actor": "fire-safety-engineer"
+      "actor": "fire-safety-engineer",
+      "information_level": "alphanumeric"
     },
     {
       "rule_id_prefix": "IDS",
       "purpose": "information-delivery",
       "milestone": "detailed-design",
-      "actor": "bim-manager"
+      "actor": "bim-manager",
+      "information_level": "alphanumeric"
+    },
+    {
+      "rule_id_prefix": "CLASH",
+      "purpose": "spatial-coordination",
+      "milestone": "detailed-design",
+      "actor": "lead-coordinator",
+      "information_level": "geometry"
+    },
+    {
+      "rule_id_prefix": "DRAWING",
+      "purpose": "documentation-check",
+      "milestone": "detailed-design",
+      "actor": "discipline-lead",
+      "information_level": "documentation"
     }
   ]
 }

@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "SYNTHETIC-AR-RD-001",
+  "project_id": "SYNTHETIC-RESIDENTIAL-DEMO",
+  "stage": "RD",
+  "discipline": "AR",
+  "section_code": "AR",
+  "revision": "R1",
+  "basis": {
+    "document_id": "SYNTHETIC-AR-PD-001",
+    "revision": "P0"
+  },
+  "values": [
+    {
+      "key": "building.height",
+      "value": 30000,
+      "unit": "mm",
+      "target_ref": "BUILDING-01",
+      "source_ref": "RD-AR sheet 1",
+      "problem_zone": { "sheet_id": "RD-AR-101", "page_number": 1 }
+    },
+    {
+      "key": "apartment.area.total",
+      "value": 74.5,
+      "unit": "m2",
+      "target_ref": "APT-01",
+      "source_ref": "RD-AR room schedule",
+      "problem_zone": {
+        "sheet_id": "RD-AR-102",
+        "page_number": 2,
+        "x": 120,
+        "y": 90,
+        "width": 180,
+        "height": 40
+      }
+    },
+    {
+      "key": "wall.external.thickness",
+      "value": 0.25,
+      "unit": "m",
+      "target_ref": "WALL-EXT-TYPE-A",
+      "source_ref": "RD-AR wall types"
+    },
+    {
+      "key": "facade.material",
+      "value": "fiber cement",
+      "target_ref": "FACADE-TYPE-F1",
+      "source_ref": "RD-AR facade specification",
+      "problem_zone": { "sheet_id": "RD-AR-103", "page_number": 3 }
+    },
+    {
+      "key": "floor.count",
+      "value": 10,
+      "target_ref": "BUILDING-01",
+      "source_ref": "RD-AR general data"
+    },
+    {
+      "key": "railing.height",
+      "value": 1200,
+      "unit": "mm",
+      "target_ref": "RAILING-TYPE-R1",
+      "source_ref": "RD-AR railing schedule"
+    }
+  ]
+}

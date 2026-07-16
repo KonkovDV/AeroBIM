@@ -15,7 +15,7 @@ This runbook describes the smallest sound way to operate AeroBIM as a standalone
 
 - Python 3.12+
 - Node 20+
-- on environments that need raster OCR: install the backend `vision` extra
+- on environments that need raster OCR: install the backend `raster` extra
 
 ## Local Bootstrap
 
@@ -25,7 +25,7 @@ This runbook describes the smallest sound way to operate AeroBIM as a standalone
 cd backend
 python -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev,vision]"
+pip install -e ".[dev,raster]"
 python -m aerobim.main
 ```
 
@@ -106,7 +106,7 @@ Action:
 
 ```bash
 cd backend
-pip install -e ".[vision]"
+pip install -e ".[raster]"
 ```
 
 ### Empty report list in frontend

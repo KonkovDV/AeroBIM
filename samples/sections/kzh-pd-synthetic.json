@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "SYNTHETIC-KZH-PD-001",
+  "project_id": "SYNTHETIC-RESIDENTIAL-DEMO",
+  "stage": "ПД",
+  "discipline": "КЖ",
+  "section_code": "КЖ",
+  "revision": "P0",
+  "values": [
+    {
+      "key": "concrete.class",
+      "value": "B25",
+      "target_ref": "CONCRETE-01",
+      "source_ref": "PD-KZH general notes",
+      "problem_zone": { "sheet_id": "PD-KZH-001", "page_number": 1 }
+    },
+    {
+      "key": "rebar.cover",
+      "value": 25,
+      "unit": "mm",
+      "target_ref": "REBAR-01",
+      "source_ref": "PD-KZH rebar notes"
+    },
+    {
+      "key": "slab.thickness",
+      "value": 200,
+      "unit": "mm",
+      "target_ref": "SLAB-01",
+      "source_ref": "PD-KZH slab schedule"
+    },
+    {
+      "key": "foundation.depth",
+      "value": 3,
+      "unit": "m",
+      "target_ref": "FOUND-01",
+      "source_ref": "PD-KZH foundation plan",
+      "required_in_rd": true,
+      "problem_zone": { "sheet_id": "PD-KZH-010", "page_number": 4 }
+    },
+    {
+      "key": "rebar.grade",
+      "value": "A500C",
+      "target_ref": "REBAR-01",
+      "source_ref": "PD-KZH rebar notes"
+    }
+  ]
+}

@@ -11,7 +11,7 @@ Download fresh artifacts from **GitHub Actions → workflow run → Artifacts**,
 
 ```powershell
 cd backend
-pip install -e ".[dev,vision]"
+pip install -e ".[dev,raster]"
 python -m aerobim.tools.benchmark_project_package --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json --iterations 1 --output ../artifacts/ci-benchmark-smoke/local-pilot-moscow.json
 ```
 

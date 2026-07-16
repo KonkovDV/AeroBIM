@@ -49,7 +49,12 @@ class _NullLogger:
         pass
 
 
-def _make_test_container(api_bearer_token: str | None = None):
+def _make_test_container(
+    api_bearer_token: str | None = None,
+    *,
+    environment: str = "test",
+    allow_anonymous_dev: bool = True,
+):
     """Build a container backed by InMemoryAuditStore for fast HTTP tests."""
     import tempfile
 
@@ -75,13 +80,14 @@ def _make_test_container(api_bearer_token: str | None = None):
     tmp = tempfile.mkdtemp()
     settings = Settings(
         application_name="test",
-        environment="test",
+        environment=environment,
         host="127.0.0.1",
         port=8080,
         storage_dir=Path(tmp),
         debug=True,
         cors_origins=_TEST_CORS_ORIGINS,
         api_bearer_token=api_bearer_token,
+        allow_anonymous_dev=allow_anonymous_dev,
     )
     settings.storage_dir.mkdir(parents=True, exist_ok=True)
 

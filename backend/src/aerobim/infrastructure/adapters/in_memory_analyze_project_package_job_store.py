@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from threading import Lock
 
+from aerobim.domain.job_transitions import can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
 
@@ -25,11 +26,16 @@ class InMemoryAnalyzeProjectPackageJobStore:
             return
         try:
             payload = json.loads(self._snapshot_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            return
+        except (json.JSONDecodeError, OSError) as exc:
+            # Surface corrupt snapshots instead of silently dropping job history.
+            raise RuntimeError(
+                f"Corrupt analyze-job snapshot at {self._snapshot_path}: {exc}"
+            ) from exc
 
         if not isinstance(payload, list):
-            return
+            raise RuntimeError(
+                f"Corrupt analyze-job snapshot at {self._snapshot_path}: expected a JSON list"
+            )
 
         for item in payload:
             if not isinstance(item, dict):
@@ -51,7 +57,16 @@ class InMemoryAnalyzeProjectPackageJobStore:
                 )
             except (KeyError, ValueError):
                 continue
+            if job.status in {JobStatus.QUEUED, JobStatus.RUNNING}:
+                job = replace(
+                    job,
+                    status=JobStatus.FAILED,
+                    completed_at=_now_iso(),
+                    error_message="Interrupted by process restart; resubmit the job",
+                )
             self._jobs[job.job_id] = job
+        if self._jobs:
+            self._persist_snapshot()
 
     def _persist_snapshot(self) -> None:
         if self._snapshot_path is None:
@@ -110,6 +125,8 @@ class InMemoryAnalyzeProjectPackageJobStore:
         with self._lock:
             job = self._jobs.get(job_id)
             if job is None:
+                return None
+            if not can_transition(job.status, status):
                 return None
             updated = replace(
                 job,

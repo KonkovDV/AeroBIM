@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0.0",
+  "description": "English AEC structured-text ground-truth for bilingual extraction benchmark (2 fixtures, 10 requirements)",
+  "fixtures": [
+    {
+      "fixture_id": "english-wall-fire",
+      "source_path": "samples/requirements/english-fixture-wall-fire.txt",
+      "source_kind": "structured-text",
+      "language": "en",
+      "discipline": "architecture",
+      "ground_truth_requirements": [
+        {
+          "rule_id": "EN-WALL-01",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "FireRating",
+          "expected_value": "REI120",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-WALL-02",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "ThermalTransmittance",
+          "expected_value": "0.28",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-WALL-03",
+          "ifc_entity": "IfcWall",
+          "property_set": "Qto_WallBaseQuantities",
+          "property_name": "Width",
+          "expected_value": "200",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-WALL-04",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "IsExternal",
+          "expected_value": "TRUE",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-WALL-05",
+          "ifc_entity": "IfcWall",
+          "property_set": "Pset_WallCommon",
+          "property_name": "LoadBearing",
+          "expected_value": "TRUE",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        }
+      ]
+    },
+    {
+      "fixture_id": "english-space-door",
+      "source_path": "samples/requirements/english-fixture-space-door.txt",
+      "source_kind": "structured-text",
+      "language": "en",
+      "discipline": "fire-safety",
+      "ground_truth_requirements": [
+        {
+          "rule_id": "EN-SPACE-01",
+          "ifc_entity": "IfcSpace",
+          "property_set": "Qto_SpaceBaseQuantities",
+          "property_name": "NetFloorArea",
+          "expected_value": "18.0",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-SPACE-02",
+          "ifc_entity": "IfcSpace",
+          "property_set": "Pset_SpaceCommon",
+          "property_name": "FireRating",
+          "expected_value": "REI60",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-SPACE-03",
+          "ifc_entity": "IfcDoor",
+          "property_set": "Pset_DoorCommon",
+          "property_name": "FireRating",
+          "expected_value": "EI30",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-SPACE-04",
+          "ifc_entity": "IfcDoor",
+          "property_set": "Qto_DoorBaseQuantities",
+          "property_name": "Height",
+          "expected_value": "2100",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        },
+        {
+          "rule_id": "EN-SPACE-05",
+          "ifc_entity": "IfcDoor",
+          "property_set": "Qto_DoorBaseQuantities",
+          "property_name": "Width",
+          "expected_value": "900",
+          "unit": null,
+          "operator": "EQ",
+          "rule_scope": "ifc-property"
+        }
+      ]
+    }
+  ]
+}
