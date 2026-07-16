@@ -42,3 +42,4 @@ class Tokens:
     REQUIREMENT_TO_IDS_COMPILER = "requirement_to_ids_compiler"
     NORM_CORPUS_RETRIEVER = "norm_corpus_retriever"
     COMPILE_REQUIREMENTS_TO_IDS_USE_CASE = "compile_requirements_to_ids_use_case"
+    COMPLIANCE_AGENT_ORCHESTRATOR = "compliance_agent_orchestrator"

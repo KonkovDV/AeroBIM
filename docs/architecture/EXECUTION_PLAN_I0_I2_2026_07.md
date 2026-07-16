@@ -72,4 +72,5 @@ ruff format --check src tests
 - [x] **I2b** Quantity / Load / Logic ports + adapters + analyze wire
 - [x] **I3** MultimodalDrawingPipeline (OCR degrade only; cv_human_level stays MISSING)
 - [x] **I4** Deterministic RequirementToIdsCompiler + FilesystemNormCorpusRetriever (advisory; no LLM)
-- Next: **I5** ComplianceAgentOrchestrator · **I6** customer metrics
+- [x] **I5** ComplianceAgentOrchestrator (deterministic ReAct tool allowlist → DeterminismGate)
+- Next: **I6** customer metrics / PrecisionClaim corpus intake
