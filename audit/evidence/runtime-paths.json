@@ -1,0 +1,160 @@
+{
+  "artifact_type": "aerobim_red_team_runtime_paths",
+  "schema_version": "1.0.0",
+  "audit_date_utc": "2026-07-16T20:59:16+00:00",
+  "author_relationship": "self",
+  "entry_chain": {
+    "http": "presentation/http/api.py::create_app → DI bootstrap_container → AnalyzeProjectPackageUseCase.execute",
+    "async_job": "POST /v1/analyze/project-package/submit → SubmitAnalyzeProjectPackageJobUseCase → BackgroundTasks → AnalyzeProjectPackageJobRunner.run",
+    "di": "infrastructure/di/bootstrap.py::bootstrap_container"
+  },
+  "pipeline_stages": [
+    {
+      "stage": "upload",
+      "runtime_reachable": true,
+      "entrypoint": "POST /v1/uploads",
+      "deterministic": true,
+      "evidence": "api.py",
+      "error_handling": "size limits / path jail",
+      "verdict": "PARTIAL"
+    },
+    {
+      "stage": "identity",
+      "runtime_reachable": "dirty_tree_only",
+      "entrypoint": "domain/ingestion.py::detect_revision_merge_conflicts (uncommitted) wired in analyze_project_package",
+      "deterministic": true,
+      "evidence": "working tree; NOT in commit c0c4b2b alone",
+      "error_handling": "VERSION_MISMATCH issue",
+      "verdict": "PARTIAL — incomplete DocumentIdentity; missing discipline/project_id/supersedes/effective_at"
+    },
+    {
+      "stage": "extraction",
+      "runtime_reachable": true,
+      "entrypoint": "RequirementExtractor + NarrativeRuleSynthesizer",
+      "deterministic": true,
+      "evidence": "fixture extraction F1≈0.86",
+      "error_handling": "raises if no requirements",
+      "verdict": "VERIFIED_FIXTURE_ONLY"
+    },
+    {
+      "stage": "IFC validation",
+      "runtime_reachable": true,
+      "entrypoint": "IfcValidator via DI",
+      "deterministic": true,
+      "evidence": "ifcopenshell adapter + tests",
+      "error_handling": "issues emitted",
+      "verdict": "VERIFIED_FIXTURE_ONLY"
+    },
+    {
+      "stage": "IDS validation",
+      "runtime_reachable": true,
+      "entrypoint": "IdsValidator / ifctester",
+      "deterministic": true,
+      "evidence": "optional path when ids_path set",
+      "error_handling": "capability FAILED blocks pass",
+      "verdict": "VERIFIED_FIXTURE_ONLY"
+    },
+    {
+      "stage": "drawing analysis",
+      "runtime_reachable": "conditional",
+      "entrypoint": "DrawingAnalyzer / RasterDrawingAnalyzer",
+      "deterministic": "structured text yes; OCR requires rapidocr extra",
+      "evidence": "rapidocr NOT importable in audit env",
+      "error_handling": "capability raster skipped/failed",
+      "verdict": "PARTIAL — L0/L1 only; no DWG; CV L2+ missing"
+    },
+    {
+      "stage": "cross-document comparison",
+      "runtime_reachable": true,
+      "entrypoint": "_detect_cross_document_contradictions",
+      "deterministic": true,
+      "evidence": "unit/quantity tests",
+      "error_handling": "ConflictKind taxonomy",
+      "verdict": "VERIFIED_FIXTURE_ONLY — not full PD/RD engineering review"
+    },
+    {
+      "stage": "clash detection",
+      "runtime_reachable": "degraded",
+      "entrypoint": "IfcClashDetector",
+      "deterministic": true,
+      "evidence": "ifcclash NOT installed → CapabilityState.SKIPPED; SKIPPED does NOT block summary.passed",
+      "error_handling": "ClashCapabilityError mapped; skipped≠failed",
+      "verdict": "PARTIAL — generic only; MEP NOT RUNTIME CONNECTED"
+    },
+    {
+      "stage": "MEP system clash",
+      "runtime_reachable": false,
+      "entrypoint": "domain/mep.py UnconfiguredMepSystemGraphProvider — NOT in bootstrap_container",
+      "deterministic": "n/a",
+      "evidence": "docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md MEP-CLASH-001",
+      "error_handling": "would raise if called",
+      "verdict": "SCAFFOLD / NOT_RUNTIME_CONNECTED"
+    },
+    {
+      "stage": "calculation evidence",
+      "runtime_reachable": "partial",
+      "entrypoint": "ExternalEvidenceVerifier / OpenRebar path",
+      "deterministic": true,
+      "evidence": "digest + compare; no independent solver verification",
+      "error_handling": "provenance issues",
+      "verdict": "PARTIAL — match results ≠ verify calculation correctness"
+    },
+    {
+      "stage": "norm rule packs",
+      "runtime_reachable": true,
+      "entrypoint": "NormRulePackLoader",
+      "deterministic": true,
+      "evidence": "synthetic packs; customer_approved requires approval_ref",
+      "error_handling": "FAILED pack blocks pass",
+      "verdict": "PARTIAL — no customer-approved pack present"
+    },
+    {
+      "stage": "remark generation",
+      "runtime_reachable": true,
+      "entrypoint": "RemarkGenerator",
+      "deterministic": "template-based",
+      "evidence": "RU/EN templates exist in adapters",
+      "error_handling": "attached to issues",
+      "verdict": "VERIFIED_FIXTURE_ONLY — not LLM; not human-level"
+    },
+    {
+      "stage": "report persistence + HTML/JSON/BCF",
+      "runtime_reachable": true,
+      "entrypoint": "AuditReportStore + export endpoints",
+      "deterministic": true,
+      "evidence": "BCF 2.1/3.0 exporters; consumers exist only in dirty tree / unit tests",
+      "error_handling": "filesystem/object store",
+      "verdict": "PARTIAL — no saved independent CDE import evidence artifact"
+    },
+    {
+      "stage": "HITL review events",
+      "runtime_reachable": true,
+      "entrypoint": "POST /v1/reports/{id}/review-events",
+      "deterministic": true,
+      "evidence": "ReviewEvent never affects summary.passed (documented + modeled)",
+      "error_handling": "404 if report missing",
+      "verdict": "VERIFIED_FIXTURE_ONLY"
+    },
+    {
+      "stage": "AI advisory",
+      "runtime_reachable": "stub",
+      "entrypoint": "StubIdsAssistDraftAdapter / ids_assist_boundary",
+      "deterministic": "advisory_only=true",
+      "evidence": "test_advisory_off_equals_advisory_on_for_summary_passed",
+      "error_handling": "n/a",
+      "verdict": "ADVISORY_ONLY"
+    }
+  ],
+  "contour_answers": {
+    "can_ai_change_summary_passed": false,
+    "evidence": "signoff_policy + test_architecture_seams.Advisory OFF==ON; ReviewEvent docstring",
+    "can_adapter_failure_become_empty_success": "PARTIAL_RISK",
+    "detail": "ClashCapabilityError skipped → empty results + SKIPPED capability; SKIPPED does not block pass. FAILED does block. Missing optional stack can yield green pass without clash work.",
+    "can_frontend_create_finding_absent_from_report": "NOT_OBSERVED",
+    "detail_frontend": "No createFinding path found; viewer is display. Frontend tests currently FAIL (3).",
+    "can_report_lose_provenance": "RISK",
+    "detail_provenance": "ValidationIssue lacks mandatory evidence_refs/document_identity/finding_id; many issues omit source_id; EvidenceRef type exists but is not required on every finding.",
+    "can_revisions_silently_merge": "RISK_ON_COMMITTED_HEAD",
+    "detail_revision": "Guard present in dirty working tree (ingestion.py). DocumentIdentity incomplete vs required field set. Committed SHA alone must be treated as weaker until committed."
+  }
+}

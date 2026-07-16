@@ -17,14 +17,32 @@ class SubmitAnalyzeProjectPackageJobUseCase:
     def __init__(self, job_store: AnalyzeProjectPackageJobStore) -> None:
         self._job_store = job_store
 
-    def execute(self, request: ValidationRequest) -> AnalyzeProjectPackageJob:
+    def execute(
+        self,
+        request: ValidationRequest,
+        *,
+        idempotency_key: str | None = None,
+    ) -> AnalyzeProjectPackageJob:
+        if idempotency_key:
+            existing = self._job_store.get_by_idempotency_key(idempotency_key)
+            if existing is not None and existing.status in {
+                JobStatus.QUEUED,
+                JobStatus.RUNNING,
+                JobStatus.SUCCEEDED,
+            }:
+                return existing
         job = AnalyzeProjectPackageJob(
             job_id=uuid4().hex,
             request_id=request.request_id,
             status=JobStatus.QUEUED,
             created_at=_now_iso(),
+            idempotency_key=idempotency_key,
         )
-        self._job_store.create(job)
+        created_id = self._job_store.create(job)
+        if created_id != job.job_id:
+            recovered = self._job_store.get(created_id)
+            if recovered is not None:
+                return recovered
         return job
 
 
@@ -48,7 +66,15 @@ class AnalyzeProjectPackageJobRunner:
         self._logger = logger
 
     def run(self, job_id: str, request: ValidationRequest) -> None:
-        self._job_store.mark_running(job_id)
+        claimed = self._job_store.mark_running(job_id)
+        if claimed is None:
+            # Missing job, illegal transition, or idempotent retry against terminal state.
+            self._logger.info(
+                "analyze_project_package async job skip (not claimable)",
+                job_id=job_id,
+                request_id=request.request_id,
+            )
+            return
         self._logger.info(
             "analyze_project_package async job started",
             job_id=job_id,

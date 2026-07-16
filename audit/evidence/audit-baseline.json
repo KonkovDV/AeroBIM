@@ -1,0 +1,349 @@
+{
+  "artifact_type": "aerobim_red_team_audit_baseline",
+  "schema_version": "1.0.0",
+  "audit_date_utc": "2026-07-16T20:59:16.366958+00:00",
+  "author_relationship": "self",
+  "note": "Independent Red Team inventory. Values are command-derived. Working tree may be dirty relative to committed SHA.",
+  "git": {
+    "commit_sha": "c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f",
+    "branch": "main",
+    "latest_commit": "c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f\n2026-07-16 23:48:33 +0300\nfeat(arch): four-contour seams for R1–R5 (PrecisionClaim, baseline, TZ status)",
+    "dirty": true,
+    "uncommitted_change_count": 20,
+    "uncommitted_paths": [
+      "M backend/src/aerobim/application/use_cases/analyze_project_package.py",
+      " M backend/src/aerobim/application/use_cases/analyze_project_package_jobs.py",
+      " M backend/src/aerobim/domain/architecture.py",
+      " M backend/src/aerobim/domain/models.py",
+      " M backend/src/aerobim/domain/ports.py",
+      " M backend/src/aerobim/infrastructure/adapters/in_memory_analyze_project_package_job_store.py",
+      " M backend/src/aerobim/infrastructure/adapters/redis_analyze_project_package_job_store.py",
+      " M backend/src/aerobim/presentation/http/api.py",
+      " M backend/src/aerobim/tools/evaluate_detection_precision.py",
+      " M backend/src/aerobim/tools/measure_package_sla.py",
+      "?? _tmp10.md",
+      "?? audit/",
+      "?? backend/src/aerobim/domain/findings.py",
+      "?? backend/src/aerobim/domain/ingestion.py",
+      "?? backend/src/aerobim/infrastructure/adapters/bcf_consumers.py",
+      "?? backend/tests/test_bcf_multi_consumer_contract.py",
+      "?? backend/tests/test_document_identity_ingestion.py",
+      "?? backend/tests/test_finding_predicates.py",
+      "?? backend/tests/test_sla_and_idempotency.py",
+      "?? docs/samolet-techlab-scorecard-2026.zip"
+    ]
+  },
+  "environment": {
+    "os": {
+      "system": "Windows",
+      "release": "11",
+      "version": "10.0.26200",
+      "machine": "AMD64",
+      "platform": "Windows-11-10.0.26200-SP0"
+    },
+    "python": "Python 3.13.7",
+    "python_full": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+    "node": "v24.11.0",
+    "npm": "11.6.1"
+  },
+  "loc": {
+    "backend_src_py": {
+      "files": 101,
+      "lines": 15290
+    },
+    "backend_tests_py": {
+      "files": 63,
+      "lines": 11149
+    },
+    "frontend_src": {
+      "files": 11,
+      "lines": 3871
+    },
+    "docs_md": {
+      "files": 100,
+      "lines": 8864
+    },
+    "note": "Excludes node_modules/dist/__pycache__; does NOT count samples or site-packages"
+  },
+  "tests": {
+    "backend_collected": 439,
+    "backend_passed": 436,
+    "backend_skipped": 3,
+    "backend_failed": 0,
+    "backend_errors": 0,
+    "frontend_npm_test": {
+      "exit_code": 1,
+      "stdout_tail": "> aerobim-frontend@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.4 C:/plans/AeroBIM/frontend\n\n ❯ src/App.test.tsx (13 tests | 3 failed) 2330ms\n     × forwards project, discipline, and status filters to the backend list API 1105ms\n     × covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus 105ms\n     × switches the 2d evidence panel when another issue is selected 59ms\n\n Test Files  1 failed | 2 passed (3)\n      Tests  3 failed | 18 passed (21)\n   Start at  23:59:03\n   Duration  11.72s (transform 289ms, setup 3.87s, import 312ms, tests 2.45s, environment 22.89s)",
+      "stderr_tail": "@testing-library/dom/dist/query-helpers.js:76:38\n ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17\n ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19\n ❯ src/App.test.tsx:561:19\n    559|\n    560|     expect(await screen.findByRole(\"img\", { name: /drawing evidence pr…\n    561|     expect(screen.getByText(/plain drawing-preview mode|Preview loaded…\n       |                   ^\n    562|     const viewer = await screen.findByTestId(\"viewer-stub\");\n    563|     expect(await within(viewer).findByText(\"No spatial selection\")).to…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯\n\nnpm notice\nnpm notice New minor version of npm available! 11.6.1 -> 11.18.0\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v11.18.0\nnpm notice To update run: npm install -g npm@11.18.0\nnpm notice"
+    }
+  },
+  "dependencies": {
+    "required_installed_versions": {
+      "fastapi": "0.135.3",
+      "uvicorn": "0.43.0",
+      "ifcopenshell": "0.8.5",
+      "ifctester": "0.8.5",
+      "pymupdf": "1.27.2.2",
+      "PyJWT": "2.10.1",
+      "redis": "6.4.0",
+      "SQLAlchemy": "2.0.43",
+      "httpx": "0.28.1",
+      "pytest": "8.4.2",
+      "ruff": "0.12.12",
+      "mypy": "1.17.1",
+      "starlette": "0.47.3",
+      "python-multipart": "0.0.20"
+    },
+    "optional_import_probe": {
+      "ifcclash": {
+        "module": "ifcclash",
+        "importable": false,
+        "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -c \"import ifcclash\"",
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import ifcclash\nModuleNotFoundError: No module named 'ifcclash'"
+      },
+      "rapidocr": {
+        "module": "rapidocr",
+        "importable": false,
+        "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -c \"import rapidocr\"",
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import rapidocr\nModuleNotFoundError: No module named 'rapidocr'"
+      },
+      "onnxruntime": {
+        "module": "onnxruntime",
+        "importable": false,
+        "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -c \"import onnxruntime\"",
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import onnxruntime\nModuleNotFoundError: No module named 'onnxruntime'"
+      },
+      "boto3": {
+        "module": "boto3",
+        "importable": false,
+        "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -c \"import boto3\"",
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import boto3\nModuleNotFoundError: No module named 'boto3'"
+      },
+      "docling": {
+        "module": "docling",
+        "importable": false,
+        "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -c \"import docling\"",
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import docling\nModuleNotFoundError: No module named 'docling'"
+      }
+    },
+    "optional_groups_declared": [
+      "dev",
+      "raster",
+      "clash",
+      "docling",
+      "enterprise"
+    ],
+    "pip_freeze_line_count": 278,
+    "pip_freeze_path": "audit/evidence/_pip_freeze.txt"
+  },
+  "ci": {
+    "workflows_present": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/release-readiness.yml",
+      ".github/workflows/academic-benchmark-release.yml"
+    ],
+    "gh_run_list": [
+      {
+        "conclusion": "success",
+        "createdAt": "2026-07-16T20:48:51Z",
+        "databaseId": 29533587676,
+        "displayTitle": "feat(arch): four-contour seams for R1–R5 (PrecisionClaim, baseline, T…",
+        "headBranch": "main",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-07-16T20:43:20Z",
+        "databaseId": 29533224276,
+        "displayTitle": "chore(P1.1): MEP system-graph contract stub; gap remains open",
+        "headBranch": "main",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-07-16T20:20:11Z",
+        "databaseId": 29531628326,
+        "displayTitle": "fix: satisfy ruff format and mypy for CI gates",
+        "headBranch": "main",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "createdAt": "2026-07-16T20:15:52Z",
+        "databaseId": 29531334263,
+        "displayTitle": "fix: resolve ruff I001/E501/UP012/F821 for CI lint",
+        "headBranch": "main",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "createdAt": "2026-07-16T20:11:06Z",
+        "databaseId": 29530998213,
+        "displayTitle": "feat: Task 07 tracks A1–A5, sign-off honesty, and pilot security hard…",
+        "headBranch": "main",
+        "name": "CI",
+        "status": "completed"
+      }
+    ]
+  },
+  "runtime_entrypoints": {
+    "http_factory": "backend/src/aerobim/presentation/http/api.py::create_app",
+    "di_bootstrap": "backend/src/aerobim/infrastructure/di/bootstrap.py::bootstrap_container",
+    "docker": "backend/Dockerfile + docker-compose.yml",
+    "api_endpoints": [
+      {
+        "method": "GET",
+        "path": "/health"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/uploads"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/validate/ifc"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/analyze/project-package"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/analyze/project-package/reinforcement-digest"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/analyze/project-package/submit"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/analyze/project-package/jobs/{job_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/reports/{report_id}/review-events"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/norm-packs/{pack_id}/rule-events"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/norm-packs/{pack_id}/versions"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}/review-events"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}/review-kpi"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}/source/ifc"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}/drawing-assets/{asset_id}/preview"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}/export/json"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}/export/html"
+      },
+      {
+        "method": "GET",
+        "path": "/v1/reports/{report_id}/export/bcf"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/reports/{report_id}/export/bcf-api/push"
+      }
+    ],
+    "cli_project_scripts": [
+      "aerobim-export-runtime-baseline = \"aerobim.tools.export_runtime_baseline:main\"",
+      "aerobim-export-api-contract-summary = \"aerobim.tools.export_api_contract_summary:main\"",
+      "aerobim-evaluate-detection-precision = \"aerobim.tools.evaluate_detection_precision:main\"",
+      "aerobim-build-detection-labels = \"aerobim.tools.build_detection_labels:main\"",
+      "aerobim-run-demo-path = \"aerobim.tools.run_demo_path:main\""
+    ],
+    "tools_modules": [
+      "audit_issue_traceability.py",
+      "benchmark_project_package.py",
+      "benchmark_threshold_gate.py",
+      "build_detection_labels.py",
+      "evaluate_detection_precision.py",
+      "evaluate_extraction.py",
+      "export_api_contract_summary.py",
+      "export_runtime_baseline.py",
+      "generate_benchmark_report.py",
+      "generate_tz_matrix_status.py",
+      "map_typical_errors.py",
+      "measure_package_sla.py",
+      "openrebar_provenance_digest.py",
+      "run_ablation_study.py",
+      "run_demo_path.py",
+      "run_live_review_smoke.py",
+      "seed_smoke_report.py",
+      "summarize_conflict_breakdown.py"
+    ],
+    "frontend_routes": [
+      "SPA single-page App.tsx (no react-router routes found in inventory)",
+      "components: IfcViewerPanel, DrawingEvidencePanel"
+    ]
+  },
+  "commands_executed": {
+    "git_sha": {
+      "command": "git rev-parse HEAD",
+      "cwd": "C:\\plans\\AeroBIM",
+      "exit_code": 0,
+      "stdout": "c0c4b2bdc8f0a6e18dacfe674b616b4e4e61d04f",
+      "stderr": ""
+    },
+    "git_branch": {
+      "command": "git branch --show-current",
+      "cwd": "C:\\plans\\AeroBIM",
+      "exit_code": 0,
+      "stdout": "main",
+      "stderr": ""
+    },
+    "git_status": {
+      "command": "git status --porcelain",
+      "cwd": "C:\\plans\\AeroBIM",
+      "exit_code": 0,
+      "stdout": "M backend/src/aerobim/application/use_cases/analyze_project_package.py\n M backend/src/aerobim/application/use_cases/analyze_project_package_jobs.py\n M backend/src/aerobim/domain/architecture.py\n M backend/src/aerobim/domain/models.py\n M backend/src/aerobim/domain/ports.py\n M backend/src/aerobim/infrastructure/adapters/in_memory_analyze_project_package_job_store.py\n M backend/src/aerobim/infrastructure/adapters/redis_analyze_project_package_job_store.py\n M backend/src/aerobim/presentation/http/api.py\n M backend/src/aerobim/tools/evaluate_detection_precision.py\n M backend/src/aerobim/tools/measure_package_sla.py\n?? _tmp10.md\n?? audit/\n?? backend/src/aerobim/domain/findings.py\n?? backend/src/aerobim/domain/ingestion.py\n?? backend/src/aerobim/infrastructure/adapters/bcf_consumers.py\n?? backend/tests/test_bcf_multi_consumer_contract.py\n?? backend/tests/test_document_identity_ingestion.py\n?? backend/tests/test_finding_predicates.py\n?? backend/tests/test_sla_and_idempotency.py\n?? docs/samolet-techlab-scorecard-2026.zip",
+      "stderr": ""
+    },
+    "pytest_collect": {
+      "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest --collect-only -q",
+      "exit_code": 0,
+      "stdout_tail": "nfigured\ntests/test_wave2_wave3_tails.py::ReportListFilterTests::test_apply_filters_by_project_and_passed\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_analyze_attaches_schema_request_id\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_http_client_returns_public_id\ntests/test_wave2_wave3_tails.py::BsiValidationServiceTests::test_local_pack_certificate_is_deterministic\ntests/test_wave2_wave3_tails.py::ReviewEventTests::test_filesystem_store_and_kpi\ntests/test_wave2_wave3_tails.py::LoinInformationLevelTests::test_geometry_level_for_clash_prefix\ntests/test_wave2_wave3_tails.py::SpatialPredicateTests::test_hard_clash_is_warning_unless_affects_pass\ntests/test_wave2_wave3_tails.py::IdsAssistBoundaryTests::test_stub_is_advisory_only\n\n439 tests collected in 0.69s"
+    },
+    "pytest_run": {
+      "command": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=no",
+      "exit_code": 0,
+      "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n........................................................................ [ 65%]\n....ss.................................................................. [ 82%]\n.......................................................s................ [ 98%]\n.......                                                                  [100%]\n436 passed, 3 skipped in 5.66s"
+    }
+  }
+}

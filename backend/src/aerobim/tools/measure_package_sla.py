@@ -8,6 +8,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, StageBudget
 from aerobim.tools.benchmark_project_package import (
     benchmark_project_package,
     default_pack_path,
@@ -21,7 +22,23 @@ def measure_package_sla(
     max_minutes: float,
     iterations: int = 1,
     warmup_iterations: int = 0,
+    stage_budget: StageBudget | None = None,
 ) -> dict[str, object]:
+    budget = stage_budget or DEFAULT_PACKAGE_STAGE_BUDGET
+    if abs(budget.total_minutes - max_minutes) > 1e-6 and stage_budget is None:
+        # Scale default contour budgets proportionally to the requested ceiling.
+        scale = max_minutes / DEFAULT_PACKAGE_STAGE_BUDGET.total_minutes
+        budget = StageBudget(
+            ingestion_minutes=round(DEFAULT_PACKAGE_STAGE_BUDGET.ingestion_minutes * scale, 4),
+            deterministic_validation_minutes=round(
+                DEFAULT_PACKAGE_STAGE_BUDGET.deterministic_validation_minutes * scale, 4
+            ),
+            ai_advisory_minutes=round(DEFAULT_PACKAGE_STAGE_BUDGET.ai_advisory_minutes * scale, 4),
+            evidence_reporting_minutes=round(
+                DEFAULT_PACKAGE_STAGE_BUDGET.evidence_reporting_minutes * scale, 4
+            ),
+        )
+
     payload = benchmark_project_package(
         pack_path=pack_path,
         iterations=iterations,
@@ -36,16 +53,19 @@ def measure_package_sla(
     max_minutes_observed = round(max_ms / 60_000.0, 4)
     avg_minutes_observed = round(avg_ms / 60_000.0, 4)
     sla_pass = max_minutes_observed <= max_minutes
+    stage_budget_consistent = abs(budget.total_minutes - max_minutes) <= 1e-6
 
     return {
         "artifact_type": "samolet_package_sla",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "customer_reference": "https://i.moscow/techlab/samolet",
         "sla_target_minutes": max_minutes,
         "sla_pass": sla_pass,
         "max_minutes_observed": max_minutes_observed,
         "avg_minutes_observed": avg_minutes_observed,
+        "stage_budgets": budget.as_dict(),
+        "stage_budget_consistent": stage_budget_consistent,
         "benchmark": payload,
     }
 

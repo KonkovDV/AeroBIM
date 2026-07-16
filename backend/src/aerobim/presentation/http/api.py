@@ -26,6 +26,7 @@ from aerobim.domain.models import (
     SourceKind,
     ValidationRequest,
 )
+from aerobim.domain.object_acl import AuthPrincipal, principal_may_access_report
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
 )
@@ -101,6 +102,8 @@ class AnalyzeProjectPackageRequest(BaseModel):
     information_container_id: str | None = Field(default=None, max_length=256)
     revision: str | None = Field(default=None, max_length=64)
     doc_status: Literal["WIP", "Shared", "Published", "Archived"] | None = None
+    tenant_id: str | None = Field(default=None, max_length=128)
+    project_id: str | None = Field(default=None, max_length=256)
 
 
 class OpenRebarDigestRequest(BaseModel):
@@ -210,13 +213,15 @@ def create_http_app(container: Container):
                 ),
             )
 
-    def _require_bearer_auth(authorization: Annotated[str | None, Header()] = None) -> None:
+    def _require_bearer_auth(
+        authorization: Annotated[str | None, Header()] = None,
+    ) -> AuthPrincipal:
         configured_token = settings.api_bearer_token
         oidc_ready = oidc_validator is not None
 
         if configured_token is None and not oidc_ready:
             if settings.is_dev_environment and settings.allow_anonymous_dev:
-                return
+                return AuthPrincipal(tenant_id=settings.api_tenant_id, subject="anonymous-dev")
             if settings.is_dev_environment:
                 raise HTTPException(
                     status_code=401,
@@ -250,15 +255,22 @@ def create_http_app(container: Container):
             )
 
         if configured_token is not None and secrets.compare_digest(token, configured_token):
-            return
+            return AuthPrincipal(tenant_id=settings.api_tenant_id, subject="api-bearer")
 
         if oidc_ready:
             assert oidc_validator is not None
             try:
-                oidc_validator.validate(token)
-                return
+                claims = oidc_validator.validate(token)
+                tenant_claim = (
+                    claims.get("tenant_id") or claims.get("tid") or claims.get("org_id")
+                )
+                tenant = str(tenant_claim).strip() if tenant_claim else settings.api_tenant_id
+                subject = claims.get("sub")
+                return AuthPrincipal(
+                    tenant_id=tenant,
+                    subject=str(subject) if subject is not None else None,
+                )
             except OidcValidationError as exc:
-                # Fall through to static failure if bearer also configured.
                 if configured_token is None:
                     raise HTTPException(
                         status_code=401,
@@ -270,6 +282,18 @@ def create_http_app(container: Container):
             status_code=401,
             detail="Invalid API token",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    def _assert_report_access(report, principal: AuthPrincipal) -> None:
+        if principal_may_access_report(
+            enforce_object_acl=settings.enforce_object_acl,
+            principal=principal,
+            report=report,
+        ):
+            return
+        raise HTTPException(
+            status_code=403,
+            detail="Object ACL denied: report tenant does not match authenticated tenant",
         )
 
     def _validate_report_id(report_id: str) -> None:
@@ -380,12 +404,21 @@ def create_http_app(container: Container):
         text: str,
         path: str | None,
         source_kind: SourceKind,
+        *,
+        revision: str | None = None,
+        stage: str | None = None,
+        doc_status: str | None = None,
+        source_id: str | None = None,
     ) -> RequirementSource:
         return RequirementSource(
             text=text,
             path=_resolve_safe_path(path) if path else None,
             source_kind=source_kind,
-            source_id=f"{source_kind.value}-input",
+            source_id=source_id or f"{source_kind.value}-input",
+            revision=revision,
+            stage=stage,
+            doc_type=source_kind.value,
+            doc_status=doc_status,
         )
 
     def _load_openrebar_report_payload(report_path: Path) -> dict[str, object]:
@@ -459,7 +492,11 @@ def create_http_app(container: Container):
         )
         return reinforcement_report_path, reinforcement_source_digest
 
-    def _build_project_package_request(payload: AnalyzeProjectPackageRequest) -> ValidationRequest:
+    def _build_project_package_request(
+        payload: AnalyzeProjectPackageRequest,
+        *,
+        tenant_id: str | None = None,
+    ) -> ValidationRequest:
         reinforcement_report_path, reinforcement_source_digest = (
             _resolve_openrebar_provenance_inputs(payload)
         )
@@ -472,12 +509,18 @@ def create_http_app(container: Container):
                 payload.requirement_text,
                 payload.requirement_path,
                 SourceKind.STRUCTURED_TEXT,
+                revision=payload.revision,
+                stage=payload.stage,
+                doc_status=payload.doc_status,
             ),
             ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
             technical_spec_source=_build_requirement_source(
                 payload.technical_spec_text,
                 payload.technical_spec_path,
                 SourceKind.TECHNICAL_SPECIFICATION,
+                revision=payload.revision,
+                stage=payload.stage,
+                doc_status=payload.doc_status,
             )
             if payload.technical_spec_text or payload.technical_spec_path
             else None,
@@ -485,6 +528,9 @@ def create_http_app(container: Container):
                 payload.calculation_text,
                 payload.calculation_path,
                 SourceKind.CALCULATION,
+                revision=payload.revision,
+                stage=payload.stage,
+                doc_status=payload.doc_status,
             )
             if payload.calculation_text or payload.calculation_path
             else None,
@@ -518,6 +564,8 @@ def create_http_app(container: Container):
             information_container_id=payload.information_container_id,
             revision=payload.revision,
             doc_status=payload.doc_status,
+            tenant_id=tenant_id or payload.tenant_id,
+            project_id=payload.project_id,
         )
 
     def _serialize_analyze_project_package_job(job) -> dict[str, object]:
@@ -530,7 +578,7 @@ def create_http_app(container: Container):
     @app.post("/v1/uploads")
     async def upload_document(
         file: Annotated[UploadFile, File(...)],
-        _auth: Annotated[None, Depends(_require_bearer_auth)] = None,
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         """Multipart document ingest into the storage jail (TZ P0).
 
@@ -602,7 +650,7 @@ def create_http_app(container: Container):
     @app.post("/v1/validate/ifc")
     def validate_ifc(
         payload: Annotated[ValidateIfcRequest, Body()],
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         request_id = payload.request_id or uuid4().hex
         logger.info("validate_ifc started", request_id=request_id, ifc_path=payload.ifc_path)
@@ -650,10 +698,10 @@ def create_http_app(container: Container):
     @app.post("/v1/analyze/project-package")
     def analyze_project_package(
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
-            request = _build_project_package_request(payload)
+            request = _build_project_package_request(payload, tenant_id=principal.tenant_id)
             report = analyze_use_case.execute(request)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -667,7 +715,7 @@ def create_http_app(container: Container):
     @app.post("/v1/analyze/project-package/reinforcement-digest")
     def analyze_project_package_reinforcement_digest(
         payload: Annotated[OpenRebarDigestRequest, Body()],
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
             report_path = _resolve_safe_path(payload.reinforcement_report_path)
@@ -692,25 +740,31 @@ def create_http_app(container: Container):
     def submit_analyze_project_package(
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
         background_tasks: BackgroundTasks,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
+        idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
     ) -> dict[str, object]:
         try:
-            request = _build_project_package_request(payload)
+            request = _build_project_package_request(payload, tenant_id=principal.tenant_id)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+        key = idempotency_key.strip() if idempotency_key and idempotency_key.strip() else None
+        if key is not None and len(key) > 128:
+            raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
+
         submit_job_use_case = container.resolve(Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE)
         job_runner = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER)
-        job = submit_job_use_case.execute(request)
-        background_tasks.add_task(job_runner.run, job.job_id, request)
+        job = submit_job_use_case.execute(request, idempotency_key=key)
+        if job.status.value == "queued":
+            background_tasks.add_task(job_runner.run, job.job_id, request)
         return _serialize_analyze_project_package_job(job)
 
     @app.get("/v1/analyze/project-package/jobs/{job_id}")
     def get_analyze_project_package_job(
         job_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_job_id(job_id)
         get_job_status_use_case = container.resolve(
@@ -725,10 +779,10 @@ def create_http_app(container: Container):
 
     @app.get("/v1/reports")
     def list_reports(
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
         project: str | None = None,
         discipline: str | None = None,
         passed: bool | None = None,
-        _auth: Annotated[None, Depends(_require_bearer_auth)] = None,
     ) -> dict[str, object]:
         entries = audit_store.list_reports(
             ReportListFilters(
@@ -742,23 +796,26 @@ def create_http_app(container: Container):
     @app.get("/v1/reports/{report_id}")
     def get_report(
         report_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_report_id(report_id)
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         return _serialize_public_report(report)
 
     @app.post("/v1/reports/{report_id}/review-events")
     def append_review_event(
         report_id: str,
         payload: ReviewEventRequest,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_report_id(report_id)
-        if audit_store.get(report_id) is None:
+        report = audit_store.get(report_id)
+        if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
         event = ReviewEvent(
             event_id=uuid4().hex,
@@ -777,7 +834,7 @@ def create_http_app(container: Container):
     def post_norm_rule_hitl_event(
         pack_id: str,
         payload: NormRuleHitlEventRequest,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         if not pack_id.strip() or len(pack_id) > 128:
             raise HTTPException(status_code=400, detail="Invalid pack_id")
@@ -801,7 +858,7 @@ def create_http_app(container: Container):
     @app.get("/v1/norm-packs/{pack_id}/versions")
     def list_norm_pack_versions(
         pack_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         if not pack_id.strip() or len(pack_id) > 128:
             raise HTTPException(status_code=400, detail="Invalid pack_id")
@@ -812,7 +869,7 @@ def create_http_app(container: Container):
     @app.get("/v1/reports/{report_id}/review-events")
     def list_review_events(
         report_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_report_id(report_id)
         if audit_store.get(report_id) is None:
@@ -824,7 +881,7 @@ def create_http_app(container: Container):
     @app.get("/v1/reports/{report_id}/review-kpi")
     def get_review_kpi(
         report_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_report_id(report_id)
         if audit_store.get(report_id) is None:
@@ -836,11 +893,15 @@ def create_http_app(container: Container):
     @app.get("/v1/reports/{report_id}/source/ifc")
     def get_report_ifc_source(
         report_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ):  # noqa: ANN201
         from fastapi.responses import FileResponse
 
         _validate_report_id(report_id)
+        report = audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         filename, source_payload = _resolve_report_ifc_source(report_id)
         if isinstance(source_payload, bytes):
             download_name = filename or f"{report_id}.ifc"
@@ -859,12 +920,16 @@ def create_http_app(container: Container):
     def get_report_drawing_asset_preview(
         report_id: str,
         asset_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ):  # noqa: ANN201
         from fastapi.responses import FileResponse
 
         _validate_report_id(report_id)
         _validate_drawing_asset_id(asset_id)
+        report = audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         drawing_asset, preview_payload = _resolve_report_drawing_asset_preview(report_id, asset_id)
         if isinstance(preview_payload, bytes):
             download_name = drawing_asset.stored_filename or f"{asset_id}.png"
@@ -882,7 +947,7 @@ def create_http_app(container: Container):
     @app.get("/v1/reports/{report_id}/export/json")
     def export_report_json(
         report_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ):  # noqa: ANN201
         from fastapi.responses import JSONResponse
 
@@ -890,6 +955,7 @@ def create_http_app(container: Container):
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         return JSONResponse(
             content=_serialize_public_report(report),
             headers={"Content-Disposition": _attachment_content_disposition(f"{report_id}.json")},
@@ -898,7 +964,7 @@ def create_http_app(container: Container):
     @app.get("/v1/reports/{report_id}/export/html")
     def export_report_html(
         report_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ):  # noqa: ANN201
         from fastapi.responses import HTMLResponse
 
@@ -906,6 +972,7 @@ def create_http_app(container: Container):
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         data: dict[str, Any] = _serialize_public_report(report)
         summary: dict[str, Any] = data["summary"]
         status_class = "pass" if summary["passed"] else "fail"
@@ -1078,7 +1145,7 @@ Created: {_esc(str(data.get("created_at") or ""))}
     @app.get("/v1/reports/{report_id}/export/bcf")
     def export_report_bcf(
         report_id: str,
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
         version: str = "2.1",
     ):  # noqa: ANN201
         """Export report as BCF ZIP.
@@ -1093,6 +1160,7 @@ Created: {_esc(str(data.get("created_at") or ""))}
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
 
         if version in {"3", "3.0"}:
             from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
@@ -1113,7 +1181,7 @@ Created: {_esc(str(data.get("created_at") or ""))}
     def push_report_bcf_api(
         report_id: str,
         payload: Annotated[PushBcfApiRequest, Body()],
-        _auth: Annotated[None, Depends(_require_bearer_auth)],
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         """Push report topics to a remote OpenCDE BCF API 3.0 hub."""
         _validate_report_id(report_id)

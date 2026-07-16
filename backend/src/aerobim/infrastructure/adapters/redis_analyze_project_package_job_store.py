@@ -52,9 +52,22 @@ class RedisAnalyzeProjectPackageJobStore:
             error_message=(
                 str(item["error_message"]) if item.get("error_message") is not None else None
             ),
+            idempotency_key=(
+                str(item["idempotency_key"]) if item.get("idempotency_key") else None
+            ),
         )
 
     def create(self, job: AnalyzeProjectPackageJob) -> str:
+        if job.idempotency_key:
+            existing = self.get_by_idempotency_key(job.idempotency_key)
+            if existing is not None:
+                return existing.job_id
+            # Index key → job_id for O(1) recovery across workers.
+            self._redis.set(
+                self._idempotency_key(job.idempotency_key),
+                job.job_id,
+                nx=True,
+            )
         created = self._redis.set(self._key(job.job_id), self._serialize(job), nx=True)
         if not created:
             raise ValueError(f"Job already exists: {job.job_id}")
@@ -65,6 +78,27 @@ class RedisAnalyzeProjectPackageJobStore:
         if raw is None:
             return None
         return self._deserialize(str(raw))
+
+    def get_by_idempotency_key(self, idempotency_key: str) -> AnalyzeProjectPackageJob | None:
+        job_id = self._redis.get(self._idempotency_key(idempotency_key))
+        if job_id is None:
+            # Fallback scan for legacy keys written before the index existed.
+            for key in self._redis.scan_iter(match=f"{self._prefix}*"):
+                key_str = str(key)
+                if ":idem:" in key_str:
+                    continue
+                raw = self._redis.get(key)
+                if raw is None:
+                    continue
+                job = self._deserialize(str(raw))
+                if job.idempotency_key == idempotency_key:
+                    self._redis.set(self._idempotency_key(idempotency_key), job.job_id)
+                    return job
+            return None
+        return self.get(str(job_id))
+
+    def _idempotency_key(self, idempotency_key: str) -> str:
+        return f"{self._prefix}idem:{idempotency_key}"
 
     def mark_running(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         return self._update(job_id, status=JobStatus.RUNNING, started_at=_now_iso())

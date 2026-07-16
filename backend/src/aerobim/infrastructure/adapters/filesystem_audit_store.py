@@ -7,6 +7,7 @@ from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+from aerobim.domain.finding_provenance import assert_finding_persistable, ensure_finding_provenance
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -53,6 +54,12 @@ class FilesystemAuditStore:
 
     def save(self, report: ValidationReport) -> str:
         self._prune_expired_reports()
+        stamped_issues = tuple(ensure_finding_provenance(issue) for issue in report.issues)
+        for issue in stamped_issues:
+            assert_finding_persistable(issue)
+        report = ValidationReport(
+            **{**report.__dict__, "issues": stamped_issues},
+        )
         persisted_report = self._materialize_report(report)
         data = self._serialize_report(persisted_report)
         target = self._reports_dir / f"{report.report_id}.json"
@@ -88,6 +95,8 @@ class FilesystemAuditStore:
             information_container_id=report.information_container_id,
             revision=report.revision,
             doc_status=report.doc_status,
+            tenant_id=report.tenant_id,
+            project_id=report.project_id,
         )
 
     def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
@@ -340,6 +349,8 @@ class FilesystemAuditStore:
             information_container_id=data.get("information_container_id"),
             revision=data.get("revision"),
             doc_status=data.get("doc_status"),
+            tenant_id=data.get("tenant_id"),
+            project_id=data.get("project_id"),
         )
 
     def _reconstruct_requirement(self, data: dict) -> ParsedRequirement:
@@ -405,6 +416,10 @@ class FilesystemAuditStore:
             norm_clause=data.get("norm_clause"),
             approval_status=data.get("approval_status"),
             approval_ref=data.get("approval_ref"),
+            finding_id=data.get("finding_id"),
+            evidence_refs=tuple(data.get("evidence_refs") or ()),
+            tenant_id=data.get("tenant_id"),
+            project_id=data.get("project_id"),
         )
 
     def _reconstruct_summary(self, data: dict) -> ValidationSummary:

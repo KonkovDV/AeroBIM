@@ -61,6 +61,14 @@ class Settings:
     report_ttl_days: int | None = None
     clash_affects_pass: bool = False
     """When true, hard clashes (or clash capability failure) set ``summary.passed=False``."""
+    require_clash: bool = False
+    """When true, missing/skipped clash capability is treated as FAILED (no green pass)."""
+    require_bsi_schema: bool = False
+    """When true, bSI/schema submit failures are ERROR and block pass via issues."""
+    enforce_object_acl: bool = False
+    """When true, report artifacts require matching tenant_id on the auth principal."""
+    api_tenant_id: str | None = None
+    """Tenant bound to the static bearer token (``AEROBIM_API_TENANT_ID``)."""
     max_ifc_bytes: int = _DEFAULT_MAX_IFC_BYTES
     """Maximum accepted IFC file size in bytes (default 256 MiB)."""
     # OpenCDE BCF API 3.0 push (optional)
@@ -150,6 +158,17 @@ class Settings:
             s3_prefix=(os.getenv("AEROBIM_S3_PREFIX") or "aerobim").strip() or "aerobim",
             report_ttl_days=_read_optional_int("AEROBIM_REPORT_TTL_DAYS"),
             clash_affects_pass=_read_bool("AEROBIM_CLASH_AFFECTS_PASS", False),
+            require_clash=_read_bool("AEROBIM_REQUIRE_CLASH", False),
+            require_bsi_schema=_read_bool("AEROBIM_REQUIRE_BSI_SCHEMA", False),
+            enforce_object_acl=_read_bool(
+                "AEROBIM_ENFORCE_OBJECT_ACL",
+                # Non-dev defaults to fail-closed object ACL when env unset.
+                default=False
+                if (os.getenv("AEROBIM_ENV") or "development").strip().lower()
+                in _DEV_ENVIRONMENTS
+                else True,
+            ),
+            api_tenant_id=(os.getenv("AEROBIM_API_TENANT_ID") or "").strip() or None,
             max_ifc_bytes=_read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
             bcf_api_base_url=(os.getenv("AEROBIM_BCF_API_BASE_URL") or "").strip() or None,
             bcf_api_token=(os.getenv("AEROBIM_BCF_API_TOKEN") or "").strip() or None,

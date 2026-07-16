@@ -11,6 +11,11 @@ from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
 from aerobim.domain.errors import ClashCapabilityError
+from aerobim.domain.finding_provenance import ensure_finding_provenance
+from aerobim.domain.ingestion import (
+    detect_revision_merge_conflicts,
+    stamp_requirement_source,
+)
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -22,9 +27,11 @@ from aerobim.domain.models import (
     FindingCategory,
     ParsedRequirement,
     ReportCapabilities,
+    RequirementSource,
     RulePackStatus,
     RuleScope,
     Severity,
+    SourceKind,
     ToleranceConfig,
     ValidationIssue,
     ValidationReport,
@@ -115,6 +122,8 @@ class AnalyzeProjectPackageUseCase:
         priority_profile: str = "default",
         external_evidence_verifier: ExternalEvidenceVerifier | None = None,
         clash_affects_pass: bool = False,
+        require_clash: bool = False,
+        require_bsi_schema: bool = False,
         ifc_schema_validator: IfcSchemaValidator | None = None,
         ids_document_auditor: IdsDocumentAuditor | None = None,
         bsi_validation_service: BsiValidationService | None = None,
@@ -133,6 +142,8 @@ class AnalyzeProjectPackageUseCase:
         self._tolerance = tolerance or ToleranceConfig()
         self._clash_detector = clash_detector
         self._clash_affects_pass = clash_affects_pass
+        self._require_clash = require_clash
+        self._require_bsi_schema = require_bsi_schema
         _valid_severities = {"error", "warning", "info"}
         self._cross_doc_severity = Severity(
             cross_doc_severity if cross_doc_severity in _valid_severities else "warning"
@@ -206,6 +217,9 @@ class AnalyzeProjectPackageUseCase:
         )
         drawing_assets = tuple(self._collect_drawing_assets(request))
         cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
+        revision_merge_issues = tuple(
+            detect_revision_merge_conflicts(self._collect_identity_sources(request))
+        )
         section_pairing_issues, section_pairing_capability = self._collect_section_pairing_issues(
             request
         )
@@ -222,6 +236,7 @@ class AnalyzeProjectPackageUseCase:
             *ifc_issues,
             *drawing_issues,
             *cross_document_issues,
+            *revision_merge_issues,
             *section_pairing_issues,
             *reinforcement_provenance_issues,
             *ids_issues,
@@ -229,9 +244,14 @@ class AnalyzeProjectPackageUseCase:
             *norm_pack_issues,
         ]
         prioritized_issues = tuple(
-            ValidationIssue(
-                **{k: v for k, v in issue.__dict__.items() if k != "priority"},
-                priority=compute_issue_priority(issue, profile=self._priority_profile),
+            ensure_finding_provenance(
+                ValidationIssue(
+                    **{k: v for k, v in issue.__dict__.items() if k != "priority"},
+                    priority=compute_issue_priority(issue, profile=self._priority_profile),
+                ),
+                tenant_id=request.tenant_id,
+                project_id=request.project_id or request.project_name,
+                revision=request.revision,
             )
             for issue in raw_issues
         )
@@ -248,6 +268,7 @@ class AnalyzeProjectPackageUseCase:
             ids_issues=ids_issues,
             clash_capability=clash_capability,
             drawing_sources=request.drawing_sources,
+            drawing_annotation_count=len(drawing_annotations),
             schema_issues=schema_issues_t,
             ids_audit_issues=ids_audit_issues,
             schema_request_id=schema_request_id,
@@ -296,6 +317,8 @@ class AnalyzeProjectPackageUseCase:
             information_container_id=request.information_container_id,
             revision=request.revision,
             doc_status=request.doc_status,
+            tenant_id=request.tenant_id,
+            project_id=request.project_id,
         )
         self._audit_report_store.save(report)
         persisted_report = self._audit_report_store.get(report.report_id)
@@ -305,6 +328,19 @@ class AnalyzeProjectPackageUseCase:
         self, ifc_path
     ) -> tuple[tuple, CapabilityStatus, list[ValidationIssue]]:
         if self._clash_detector is None:
+            if self._require_clash:
+                issue = ValidationIssue(
+                    rule_id="AEROBIM-CLASH-CAPABILITY",
+                    severity=Severity.ERROR,
+                    message="Clash detection required but detector is not configured",
+                    category=FindingCategory.SPATIAL,
+                    source_id="clash",
+                )
+                return (
+                    (),
+                    CapabilityStatus(CapabilityState.FAILED, "clash detector not configured"),
+                    [issue],
+                )
             return (
                 (),
                 CapabilityStatus(CapabilityState.SKIPPED, "clash detector not configured"),
@@ -318,14 +354,19 @@ class AnalyzeProjectPackageUseCase:
                 issues_from_clash_results(results, affects_pass=self._clash_affects_pass),
             )
         except ClashCapabilityError as exc:
-            state = CapabilityState.SKIPPED if exc.status == "skipped" else CapabilityState.FAILED
-            # FAILED clash engine is a sign-off blocker; SKIPPED (optional extra) is not.
+            skipped = exc.status == "skipped"
+            # Required clash must never green-pass on a missing optional stack.
+            if skipped and self._require_clash:
+                state = CapabilityState.FAILED
+            else:
+                state = CapabilityState.SKIPPED if skipped else CapabilityState.FAILED
             severity = Severity.ERROR if state == CapabilityState.FAILED else Severity.WARNING
             issue = ValidationIssue(
                 rule_id="AEROBIM-CLASH-CAPABILITY",
                 severity=severity,
                 message=f"Clash detection capability {exc.status}: {exc.reason}",
-                category=FindingCategory.IFC_VALIDATION,
+                category=FindingCategory.SPATIAL,
+                source_id="clash",
             )
             return (), CapabilityStatus(state, exc.reason), [issue]
         except Exception as exc:  # noqa: BLE001
@@ -333,7 +374,8 @@ class AnalyzeProjectPackageUseCase:
                 rule_id="AEROBIM-CLASH-CAPABILITY",
                 severity=Severity.ERROR,
                 message=f"Clash detection capability failed: {exc}",
-                category=FindingCategory.IFC_VALIDATION,
+                category=FindingCategory.SPATIAL,
+                source_id="clash",
             )
             return (
                 (),
@@ -350,6 +392,7 @@ class AnalyzeProjectPackageUseCase:
         ids_issues,
         clash_capability: CapabilityStatus,
         drawing_sources,
+        drawing_annotation_count: int = 0,
         schema_issues=(),
         ids_audit_issues=(),
         schema_request_id: str | None = None,
@@ -415,6 +458,12 @@ class AnalyzeProjectPackageUseCase:
             raster_capability = CapabilityStatus(
                 CapabilityState.SKIPPED, "raster drawing analyzer not configured"
             )
+        elif drawing_annotation_count <= 0:
+            # Requested OCR path with zero yield must not look like a clean OK.
+            raster_capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                "raster drawing analysis produced zero annotations",
+            )
         else:
             raster_capability = CapabilityStatus(CapabilityState.OK)
 
@@ -438,11 +487,14 @@ class AnalyzeProjectPackageUseCase:
             request_id = self._bsi_validation_service.submit(ifc_path)
             return request_id, []
         except Exception as exc:  # noqa: BLE001 — surface remote/local cert failures
+            severity = Severity.ERROR if self._require_bsi_schema else Severity.WARNING
             return None, [
                 ValidationIssue(
                     rule_id="AEROBIM-BSI-VALIDATION",
-                    severity=Severity.WARNING,
+                    severity=severity,
                     message=f"bSI Validation Service / schema certificate submit failed: {exc}",
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="bsi-schema",
                 )
             ]
 
@@ -667,6 +719,48 @@ class AnalyzeProjectPackageUseCase:
         if drawing_source.path is None:
             return False
         return drawing_source.path.suffix.lower() not in _RASTER_DRAWING_SUFFIXES
+
+    def _collect_identity_sources(self, request: ValidationRequest) -> list[RequirementSource]:
+        """Stamp package-level identity onto requirement and drawing sources."""
+
+        sources: list[RequirementSource] = []
+        doc_status = request.doc_status
+        status_value = doc_status if isinstance(doc_status, str) else None
+        for source in (
+            request.requirement_source,
+            request.technical_spec_source,
+            request.calculation_source,
+        ):
+            if source is None:
+                continue
+            sources.append(
+                stamp_requirement_source(
+                    source,
+                    revision=source.revision or request.revision,
+                    stage=source.stage or request.stage,
+                    doc_type=source.doc_type or source.source_kind.value,
+                    doc_status=source.doc_status or status_value,
+                    source_id=source.source_id or source.source_kind.value,
+                )
+            )
+        for drawing in request.drawing_sources:
+            sheet = drawing.sheet_id or (
+                drawing.path.name if drawing.path is not None else "drawing"
+            )
+            sources.append(
+                RequirementSource(
+                    text=drawing.text,
+                    path=drawing.path,
+                    source_kind=SourceKind.STRUCTURED_TEXT,
+                    source_id=sheet,
+                    revision=drawing.revision or request.revision,
+                    stage=request.stage,
+                    doc_type=drawing.doc_type or "drawing",
+                    sha256=drawing.sha256,
+                    doc_status=status_value,
+                )
+            )
+        return sources
 
     def _is_raster_drawing_source(self, drawing_source: DrawingSource) -> bool:
         if drawing_source.format and drawing_source.format.lower() in _RASTER_DRAWING_FORMATS:

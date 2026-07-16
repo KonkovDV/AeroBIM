@@ -54,6 +54,9 @@ class InMemoryAnalyzeProjectPackageJobStore:
                         if item.get("error_message") is not None
                         else None
                     ),
+                    idempotency_key=(
+                        str(item["idempotency_key"]) if item.get("idempotency_key") else None
+                    ),
                 )
             except (KeyError, ValueError):
                 continue
@@ -84,6 +87,10 @@ class InMemoryAnalyzeProjectPackageJobStore:
 
     def create(self, job: AnalyzeProjectPackageJob) -> str:
         with self._lock:
+            if job.idempotency_key:
+                existing = self._find_by_idempotency_key_unlocked(job.idempotency_key)
+                if existing is not None:
+                    return existing.job_id
             self._jobs[job.job_id] = job
             self._persist_snapshot()
         return job.job_id
@@ -91,6 +98,18 @@ class InMemoryAnalyzeProjectPackageJobStore:
     def get(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         with self._lock:
             return self._jobs.get(job_id)
+
+    def get_by_idempotency_key(self, idempotency_key: str) -> AnalyzeProjectPackageJob | None:
+        with self._lock:
+            return self._find_by_idempotency_key_unlocked(idempotency_key)
+
+    def _find_by_idempotency_key_unlocked(
+        self, idempotency_key: str
+    ) -> AnalyzeProjectPackageJob | None:
+        for job in self._jobs.values():
+            if job.idempotency_key == idempotency_key:
+                return job
+        return None
 
     def mark_running(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         return self._update(job_id, status=JobStatus.RUNNING, started_at=_now_iso())
