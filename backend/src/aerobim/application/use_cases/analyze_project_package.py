@@ -8,6 +8,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from aerobim.application.services.confidence_scorer import score_confidence
+from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
 from aerobim.domain.errors import ClashCapabilityError
@@ -16,6 +17,7 @@ from aerobim.domain.ingestion import (
     detect_revision_merge_conflicts,
     stamp_requirement_source,
 )
+from aerobim.domain.mep import MepSystemGraphProvider
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -43,6 +45,7 @@ from aerobim.domain.models import (
 from aerobim.domain.ports import (
     AuditReportStore,
     BsiValidationService,
+    CadModelIngestor,
     ClashDetector,
     DrawingAnalyzer,
     ExternalEvidenceVerifier,
@@ -52,6 +55,7 @@ from aerobim.domain.ports import (
     IfcValidator,
     NarrativeRuleSynthesizer,
     NormRulePackLoader,
+    OfficeDocumentIngestor,
     RasterDrawingAnalyzer,
     RemarkGenerator,
     RequirementExtractor,
@@ -62,6 +66,8 @@ from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
 _RASTER_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _RASTER_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
 _DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
+_CAD_DRAWING_SUFFIXES = {".dxf", ".dwg"}
+_OFFICE_SUFFIXES = {".docx", ".xlsx", ".pptx", ".doc", ".xls", ".odt", ".ods"}
 _OPENREBAR_REPORT_CONTRACT_ID = "OpenRebar.reinforcement.report.v1"
 _OPENREBAR_WARNING_SEVERITY_CLASS: dict[str, str] = {
     "OPENREBAR-CONTRACT": "critical",
@@ -130,6 +136,11 @@ class AnalyzeProjectPackageUseCase:
         norm_rule_pack_loader: NormRulePackLoader | None = None,
         section_diff_analyzer: SectionDiffAnalyzer | None = None,
         default_norm_rule_pack_path: Path | None = None,
+        cad_model_ingestor: CadModelIngestor | None = None,
+        office_document_ingestor: OfficeDocumentIngestor | None = None,
+        mep_system_graph_provider: MepSystemGraphProvider | None = None,
+        determinism_gate: DeterminismGate | None = None,
+        advisory_issues: Sequence[ValidationIssue] | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -160,8 +171,14 @@ class AnalyzeProjectPackageUseCase:
         self._norm_rule_pack_loader = norm_rule_pack_loader
         self._section_diff_analyzer = section_diff_analyzer
         self._default_norm_rule_pack_path = default_norm_rule_pack_path
+        self._cad_model_ingestor = cad_model_ingestor
+        self._office_document_ingestor = office_document_ingestor
+        self._mep_system_graph_provider = mep_system_graph_provider
+        self._determinism_gate = determinism_gate or DeterminismGate()
+        self._advisory_issues = tuple(advisory_issues or ())
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
+        request = self._maybe_hydrate_office_requirement_source(request)
         structured_requirements = list(
             self._requirement_extractor.extract(request.requirement_source)
         )
@@ -207,6 +224,8 @@ class AnalyzeProjectPackageUseCase:
             )
 
         drawing_annotations = tuple(self._collect_drawing_annotations(request))
+        cad_annotations, cad_capability, cad_issues = self._run_cad_ingest(request)
+        drawing_annotations = tuple([*drawing_annotations, *cad_annotations])
         ifc_issues = (
             tuple(self._ifc_validator.validate(request.ifc_path, requirements))
             if requirements
@@ -230,6 +249,7 @@ class AnalyzeProjectPackageUseCase:
             )
         )
         clash_results, clash_capability, clash_issues = self._run_clash_detection(request.ifc_path)
+        mep_capability = self._probe_mep_system_graph(request.ifc_path)
         raw_issues = [
             *schema_issues_t,
             *ids_audit_issues,
@@ -242,7 +262,12 @@ class AnalyzeProjectPackageUseCase:
             *ids_issues,
             *clash_issues,
             *norm_pack_issues,
+            *cad_issues,
         ]
+        reconciled_issues, _divergences = self._determinism_gate.reconcile(
+            engine_issues=raw_issues,
+            advisory_issues=self._advisory_issues,
+        )
         prioritized_issues = tuple(
             ensure_finding_provenance(
                 ValidationIssue(
@@ -253,7 +278,7 @@ class AnalyzeProjectPackageUseCase:
                 project_id=request.project_id or request.project_name,
                 revision=request.revision,
             )
-            for issue in raw_issues
+            for issue in reconciled_issues
         )
         issues_with_remarks = tuple(self._attach_remarks(prioritized_issues))
 
@@ -274,6 +299,8 @@ class AnalyzeProjectPackageUseCase:
             schema_request_id=schema_request_id,
             norm_rule_packs=norm_pack_capability,
             section_pairing=section_pairing_capability,
+            dwg_dxf=cad_capability,
+            mep_system_clash=mep_capability,
         )
         passed = summary_passed_after_capabilities(
             error_count=error_count,
@@ -323,6 +350,143 @@ class AnalyzeProjectPackageUseCase:
         self._audit_report_store.save(report)
         persisted_report = self._audit_report_store.get(report.report_id)
         return persisted_report or report
+
+    def _maybe_hydrate_office_requirement_source(
+        self, request: ValidationRequest
+    ) -> ValidationRequest:
+        source = request.requirement_source
+        if source.text.strip() or source.path is None or self._office_document_ingestor is None:
+            return request
+        if source.path.suffix.lower() not in _OFFICE_SUFFIXES:
+            return request
+        hydrated = self._office_document_ingestor.ingest(source.path)
+        return replace(
+            request,
+            requirement_source=replace(
+                source,
+                text=hydrated.text,
+                source_kind=hydrated.source_kind,
+                doc_type=hydrated.doc_type or source.doc_type,
+            ),
+        )
+
+    def _run_cad_ingest(
+        self, request: ValidationRequest
+    ) -> tuple[tuple[DrawingAnnotation, ...], CapabilityStatus, list[ValidationIssue]]:
+        cad_sources = [
+            source
+            for source in request.drawing_sources
+            if source.path is not None
+            and (
+                source.path.suffix.lower() in _CAD_DRAWING_SUFFIXES
+                or (source.format or "").strip().lower() in {"dxf", "dwg", "cad"}
+            )
+        ]
+        if not cad_sources:
+            return (
+                (),
+                CapabilityStatus(
+                    CapabilityState.MISSING, "DWG/DXF native analysis not implemented"
+                ),
+                [],
+            )
+        if self._cad_model_ingestor is None:
+            return (
+                (),
+                CapabilityStatus(
+                    CapabilityState.FAILED,
+                    "CAD sources present but CadModelIngestor not configured",
+                ),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-CAD-INGEST",
+                        severity=Severity.WARNING,
+                        message=(
+                            "CAD drawing sources present but CadModelIngestor "
+                            "is not configured"
+                        ),
+                        category=FindingCategory.DRAWING_VALIDATION,
+                        source_id="cad-ingest",
+                    )
+                ],
+            )
+
+        annotations: list[DrawingAnnotation] = []
+        issues: list[ValidationIssue] = []
+        saw_dwg = False
+        saw_supported_dxf = False
+        last_reason: str | None = None
+        for source in cad_sources:
+            assert source.path is not None
+            if source.path.suffix.lower() == ".dwg":
+                saw_dwg = True
+            result = self._cad_model_ingestor.ingest(source.path, sheet_id=source.sheet_id)
+            last_reason = result.reason
+            if result.supported:
+                saw_supported_dxf = True
+                annotations.extend(result.annotations)
+            elif result.format_resolved == "dwg":
+                issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-CAD-DWG",
+                        severity=Severity.WARNING,
+                        message=result.reason or "Native DWG ingest not configured",
+                        category=FindingCategory.DRAWING_VALIDATION,
+                        source_id=str(source.path),
+                    )
+                )
+            else:
+                issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-CAD-DXF",
+                        severity=Severity.WARNING,
+                        message=result.reason or "DXF ingest failed",
+                        category=FindingCategory.DRAWING_VALIDATION,
+                        source_id=str(source.path),
+                    )
+                )
+
+        if saw_dwg and not saw_supported_dxf:
+            capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                last_reason or "Native DWG requires ODA adapter",
+            )
+        elif saw_supported_dxf:
+            # Partial delivery: DXF only — never OK until ODA DWG evidenced.
+            capability = CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "DXF ingest via CadModelIngestor (ezdxf); native DWG not verified",
+            )
+        else:
+            capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                last_reason or "CAD ingest produced no supported parse",
+            )
+        return tuple(annotations), capability, issues
+
+    def _probe_mep_system_graph(self, ifc_path: Path) -> CapabilityStatus:
+        if self._mep_system_graph_provider is None:
+            return CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "MEP system graph provider not injected",
+            )
+        try:
+            graph = self._mep_system_graph_provider.build(ifc_path)
+        except Exception as exc:  # noqa: BLE001 — fail-closed probe
+            return CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                str(exc),
+            )
+        if not graph.nodes:
+            return CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "MEP system graph built empty; federated scope still required for sign-off",
+            )
+        # Still NOT_VERIFIED until customer federated pack (RT-003) — never OK here.
+        return CapabilityStatus(
+            CapabilityState.NOT_VERIFIED,
+            f"MEP graph probe returned {len(graph.nodes)} nodes; customer scope memo pending",
+        )
 
     def _run_clash_detection(
         self, ifc_path
@@ -398,6 +562,8 @@ class AnalyzeProjectPackageUseCase:
         schema_request_id: str | None = None,
         norm_rule_packs: CapabilityStatus | None = None,
         section_pairing: CapabilityStatus | None = None,
+        dwg_dxf: CapabilityStatus | None = None,
+        mep_system_clash: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
         ifc_validation = (
             CapabilityStatus(CapabilityState.OK)
@@ -478,8 +644,14 @@ class AnalyzeProjectPackageUseCase:
             or CapabilityStatus(CapabilityState.SKIPPED, "norm rule packs not requested"),
             section_pairing=section_pairing
             or CapabilityStatus(CapabilityState.SKIPPED, "PD/RD section pairing not requested"),
-            # Honesty surface defaults (MISSING / NOT_VERIFIED / NOT_IMPLEMENTED)
-            # are applied by ReportCapabilities dataclass fields.
+            dwg_dxf=dwg_dxf
+            or CapabilityStatus(CapabilityState.MISSING, "DWG/DXF native analysis not implemented"),
+            mep_system_clash=mep_system_clash
+            or CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "MEP system graph provider DI-wired but unconfigured (MEP-CLASH-001); "
+                "federated MEP IFC + scope memo required",
+            ),
         )
 
     def _submit_bsi_validation(self, ifc_path) -> tuple[str | None, list[ValidationIssue]]:
