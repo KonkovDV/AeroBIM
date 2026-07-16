@@ -164,8 +164,7 @@ class Settings:
                 "AEROBIM_ENFORCE_OBJECT_ACL",
                 # Non-dev defaults to fail-closed object ACL when env unset.
                 default=False
-                if (os.getenv("AEROBIM_ENV") or "development").strip().lower()
-                in _DEV_ENVIRONMENTS
+                if (os.getenv("AEROBIM_ENV") or "development").strip().lower() in _DEV_ENVIRONMENTS
                 else True,
             ),
             api_tenant_id=(os.getenv("AEROBIM_API_TENANT_ID") or "").strip() or None,

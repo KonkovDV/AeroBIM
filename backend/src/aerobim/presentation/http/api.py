@@ -262,9 +262,7 @@ def create_http_app(container: Container):
             assert oidc_validator is not None
             try:
                 claims = oidc_validator.validate(token)
-                tenant_claim = (
-                    claims.get("tenant_id") or claims.get("tid") or claims.get("org_id")
-                )
+                tenant_claim = claims.get("tenant_id") or claims.get("tid") or claims.get("org_id")
                 tenant = str(tenant_claim).strip() if tenant_claim else settings.api_tenant_id
                 subject = claims.get("sub")
                 return AuthPrincipal(

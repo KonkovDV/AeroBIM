@@ -79,9 +79,7 @@ def measure_adjudication_csv(path: Path) -> dict[str, object]:
         raise ValueError("no overlapping items between the first two adjudicators")
 
     kappa = cohen_kappa(paired_a, paired_b)
-    matrix = {
-        f"{a}/{b}": count for (a, b), count in sorted(confusion.items())
-    }
+    matrix = {f"{a}/{b}": count for (a, b), count in sorted(confusion.items())}
     return {
         "artifact_type": "adjudicator_agreement",
         "schema_version": "1.0.0",

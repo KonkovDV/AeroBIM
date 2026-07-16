@@ -71,9 +71,7 @@ class ArchitectureSeamTests(unittest.TestCase):
         self.assertEqual(caps.dwg_dxf.status, CapabilityState.MISSING)
         self.assertEqual(caps.cv_human_level.status, CapabilityState.MISSING)
         self.assertEqual(caps.mep_system_clash.status, CapabilityState.NOT_VERIFIED)
-        self.assertEqual(
-            caps.calculation_correctness.status, CapabilityState.NOT_IMPLEMENTED
-        )
+        self.assertEqual(caps.calculation_correctness.status, CapabilityState.NOT_IMPLEMENTED)
         with self.assertRaises(AssertionError):
             assert_honesty_capabilities_not_silently_ok(
                 ReportCapabilities(

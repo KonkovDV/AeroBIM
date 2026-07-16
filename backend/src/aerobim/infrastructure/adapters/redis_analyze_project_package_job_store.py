@@ -52,9 +52,7 @@ class RedisAnalyzeProjectPackageJobStore:
             error_message=(
                 str(item["error_message"]) if item.get("error_message") is not None else None
             ),
-            idempotency_key=(
-                str(item["idempotency_key"]) if item.get("idempotency_key") else None
-            ),
+            idempotency_key=(str(item["idempotency_key"]) if item.get("idempotency_key") else None),
         )
 
     def create(self, job: AnalyzeProjectPackageJob) -> str:
