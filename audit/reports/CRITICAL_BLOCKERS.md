@@ -59,13 +59,12 @@ Evidence wave (2026-07-17): RT-008 **PARTIAL** (structural T1); RT-010/011/012 h
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  
 - **Category:** MEP / Clash  
 - **Exact file:** `domain/mep.py`, `docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`  
-- **Symbol:** `UnconfiguredMepSystemGraphProvider` — **not wired in** `bootstrap_container`  
-- **Observed:** Generic `IfcClashDetector` only; `ifcclash` missing in audit env → SKIPPED  
-- **Expected:** system graph + intersection matrix + clearance semantics  
-- **Reproduction:** `python -c "import ifcclash"` → ModuleNotFoundError; grep bootstrap for mep → empty  
-- **Impact:** MEP TZ row NOT VERIFIED  
-- **Fix:** Do not claim; fail-closed capability when MEP required by policy; wait for federated IFC  
-- **Verification:** architecture test already marks MEP missing  
+- **Symbol:** `UnconfiguredMepSystemGraphProvider` — **DI-wired** via `Tokens.MEP_SYSTEM_GRAPH_PROVIDER` in `bootstrap_container` (I2a); still raises / probe → `NOT_VERIFIED`  
+- **Observed:** Generic `IfcClashDetector` only; system-aware MEP clash **not delivered**  
+- **Expected:** system graph + intersection matrix + clearance semantics on federated IFC  
+- **Impact:** MEP TZ row NOT VERIFIED — wiring ≠ capability  
+- **Fix:** Do not claim delivered; wait for federated IFC + real provider  
+- **Verification:** `GET /v1/system/capabilities` → `mep_system_clash=not_verified`; architecture tests  
 
 ### RT-004 — Clash SKIPPED does not block pass
 - **Severity:** CRITICAL  

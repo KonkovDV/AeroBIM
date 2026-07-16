@@ -386,6 +386,7 @@ class AnalyzeProjectPackageUseCase:
             advisory_ids_draft=advisory_ids_draft,
             drawing_regions=tuple(drawing_regions),
         )
+        self._audit_report_store.save(report)
         persisted_report = self._audit_report_store.get(report.report_id)
         return persisted_report or report
 
@@ -579,10 +580,16 @@ class AnalyzeProjectPackageUseCase:
                 CapabilityStatus(CapabilityState.FAILED, str(exc)),
             )
         mismatches = [i for i in issues if i.rule_id == "AEROBIM-LOAD-MISMATCH"]
+        format_skip = any(i.rule_id == "AEROBIM-LOAD-FORMAT" for i in issues)
         if mismatches:
             capability = CapabilityStatus(
                 CapabilityState.FAILED,
                 f"{len(mismatches)} load match failure(s)",
+            )
+        elif format_skip:
+            capability = CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "calculation source present but no LOAD rows evaluated (not OK)",
             )
         else:
             capability = CapabilityStatus(

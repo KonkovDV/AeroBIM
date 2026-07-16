@@ -471,8 +471,34 @@ class ComplianceAgentOrchestrator:
         step: AgentToolStep,
     ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
         assert self._quantity_checker is not None
-        # Agent has no requirement extractor; empty claims → skipped summary only.
+        # Agent has no requirement extractor; empty claims → skipped (not false "ok").
         claims = claims_from_area_requirements(())
+        if not claims:
+            return (
+                AgentToolStep(
+                    tool_name=step.tool_name,
+                    rationale=step.rationale,
+                    arguments=step.arguments,
+                    status="skipped",
+                    detail="no area/volume claims in agent context (engine path owns qty)",
+                ),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-AGENT-QTY-EMPTY",
+                        severity=Severity.INFO,
+                        message=(
+                            "[advisory] Quantity tool skipped: no claims in agent context "
+                            "(engine Analyze path uses extracted requirements)"
+                        ),
+                        category=FindingCategory.IFC_VALIDATION,
+                        source_id="compliance-agent",
+                        finding_id="agent-qty:empty",
+                        confidence=1.0,
+                    )
+                ],
+                [],
+                None,
+            )
         try:
             raw = list(self._quantity_checker.check(request.ifc_path, claims))
         except Exception as exc:  # noqa: BLE001
@@ -509,21 +535,6 @@ class ComplianceAgentOrchestrator:
             )
             for issue in raw
         ]
-        if not advisory:
-            advisory.append(
-                ValidationIssue(
-                    rule_id="AEROBIM-AGENT-QTY-EMPTY",
-                    severity=Severity.INFO,
-                    message=(
-                        "[advisory] Quantity tool ran with no area/volume claims "
-                        "(engine path uses extracted requirements)"
-                    ),
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="compliance-agent",
-                    finding_id="agent-qty:empty",
-                    confidence=1.0,
-                )
-            )
         return (
             AgentToolStep(
                 tool_name=step.tool_name,

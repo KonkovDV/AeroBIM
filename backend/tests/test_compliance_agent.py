@@ -101,6 +101,8 @@ class ComplianceAgentTests(unittest.TestCase):
         names = [step.tool_name for step in result.steps]
         self.assertIn("check_quantities", names)
         self.assertIn("detect_clashes", names)
+        qty_steps = [s for s in result.steps if s.tool_name == "check_quantities"]
+        self.assertEqual(qty_steps[0].status, "skipped")
         self.assertTrue(
             any(i.rule_id.startswith("AEROBIM-AGENT-QTY") for i in result.advisory_issues)
         )
