@@ -20,7 +20,8 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RT-009 | **CLOSED** | this remediation commit freezes prior dirty seams + P0 |
 
 Still open for checkpoint: **RT-001, RT-002, RT-003** (customer/MEP blocked).  
-Evidence wave (2026-07-17): RT-008 **PARTIAL** (structural T1); RT-010/011/012 honesty closed for fixture/API surface; CDE import + customer SLA still open.
+Evidence wave (2026-07-17): RT-008 **PARTIAL** (structural T1); RT-010/011/012 honesty closed for fixture/API surface; CDE import + customer SLA still open.  
+I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_2026_07_17.md` + `RED_TEAM_DELTA_I0_I7_PASS2_2026_07_17.md` — engineering honesty improved; checkpoint still **NO_GO**.
 
 ## Closed in evidence wave (2026-07-17)
 

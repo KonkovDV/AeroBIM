@@ -496,7 +496,8 @@ class FilesystemAuditStore:
                 data.get("mep_system_clash"),
                 default=CapabilityStatus(
                     CapabilityState.NOT_VERIFIED,
-                    "MEP system-aware clash not wired in runtime DI",
+                    "MEP system graph provider DI-wired but unconfigured (MEP-CLASH-001); "
+                    "system-aware clash NOT VERIFIED",
                 ),
             ),
             calculation_match=self._reconstruct_capability_status(

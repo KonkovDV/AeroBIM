@@ -38,7 +38,15 @@ class SpreadsheetLoadEvidenceAdapter:
         if not text and source.path is not None:
             text = self._load_path(source.path)
         if not text.strip():
-            return []
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-LOAD-FORMAT",
+                    severity=Severity.INFO,
+                    message="Calculation source empty; no LOAD rows evaluated",
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    source_id=source.source_id or "calculation",
+                )
+            ]
 
         if text.lstrip().startswith("{"):
             return self._verify_json(text, source_id=source.source_id or "calculation")
@@ -74,6 +82,17 @@ class SpreadsheetLoadEvidenceAdapter:
                 )
             ]
         issues: list[ValidationIssue] = []
+        evaluated_ok = 0
+        if len(rows) == 0:
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-LOAD-FORMAT",
+                    severity=Severity.INFO,
+                    message="Calculation JSON 'loads' array is empty; no rows evaluated",
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    source_id=source_id,
+                )
+            ]
         for row in rows:
             if not isinstance(row, dict):
                 continue
@@ -111,6 +130,19 @@ class SpreadsheetLoadEvidenceAdapter:
                         source_id=source_id,
                     )
                 )
+            else:
+                evaluated_ok += 1
+        if evaluated_ok == 0 and not any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues):
+            if not issues:
+                return [
+                    ValidationIssue(
+                        rule_id="AEROBIM-LOAD-FORMAT",
+                        severity=Severity.INFO,
+                        message="Calculation JSON loads present but no numeric rows evaluated",
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id=source_id,
+                    )
+                ]
         return issues
 
     def _verify_tabular(self, text: str, *, source_id: str) -> list[ValidationIssue]:

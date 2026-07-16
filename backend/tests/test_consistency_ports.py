@@ -80,6 +80,30 @@ class ConsistencyPortsTests(unittest.TestCase):
             issues_bad = adapter.verify(bad)
             self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues_bad))
 
+            empty = ValidationRequest(
+                request_id="r3",
+                ifc_path=ifc,
+                requirement_source=RequirementSource(text="R|IFCWALL|P|T|1"),
+                calculation_source=RequirementSource(
+                    text="   ",
+                    source_kind=SourceKind.CALCULATION,
+                ),
+            )
+            issues_empty = adapter.verify(empty)
+            self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-FORMAT" for i in issues_empty))
+
+            schema = ValidationRequest(
+                request_id="r4",
+                ifc_path=ifc,
+                requirement_source=RequirementSource(text="R|IFCWALL|P|T|1"),
+                calculation_source=RequirementSource(
+                    text='{"loads":[]}',
+                    source_kind=SourceKind.CALCULATION,
+                ),
+            )
+            issues_schema = adapter.verify(schema)
+            self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-FORMAT" for i in issues_schema))
+
     def test_logic_pd_without_rd(self) -> None:
         adapter = ManifestLogicConsistencyAdapter()
         with tempfile.TemporaryDirectory() as temporary_directory:

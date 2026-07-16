@@ -580,18 +580,28 @@ class AnalyzeProjectPackageUseCase:
                 CapabilityStatus(CapabilityState.FAILED, str(exc)),
             )
         mismatches = [i for i in issues if i.rule_id == "AEROBIM-LOAD-MISMATCH"]
-        format_skip = any(i.rule_id == "AEROBIM-LOAD-FORMAT" for i in issues)
+        unevaluated = any(
+            i.rule_id
+            in {
+                "AEROBIM-LOAD-FORMAT",
+                "AEROBIM-LOAD-SCHEMA",
+                "AEROBIM-LOAD-JSON",
+                "AEROBIM-LOAD-ROW",
+            }
+            for i in issues
+        )
         if mismatches:
             capability = CapabilityStatus(
                 CapabilityState.FAILED,
                 f"{len(mismatches)} load match failure(s)",
             )
-        elif format_skip:
+        elif unevaluated:
             capability = CapabilityStatus(
                 CapabilityState.NOT_VERIFIED,
-                "calculation source present but no LOAD rows evaluated (not OK)",
+                "calculation source present but load сверка not evaluated (not OK)",
             )
         else:
+            # Empty issues ⇒ adapter evaluated ≥1 matching row with no mismatches.
             capability = CapabilityStatus(
                 CapabilityState.OK,
                 "calculation сверка evaluated (not correctness)",
