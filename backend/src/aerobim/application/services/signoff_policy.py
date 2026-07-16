@@ -15,6 +15,9 @@ _PASS_BLOCKING_CAPABILITY_FIELDS: tuple[str, ...] = (
     "ifc_schema",
     "norm_rule_packs",
     "section_pairing",
+    # I0–I2 honesty fields: FAILED must not green-pass (Red Team RT-SIGNOFF-001)
+    "calculation_match",
+    "dwg_dxf",
 )
 
 

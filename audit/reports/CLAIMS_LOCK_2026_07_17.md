@@ -26,6 +26,7 @@
 - Calculation **сверка** PARTIAL; **корректность** НЕ РЕАЛИЗОВАНО
 - Internal self-audit only
 - Dual-human adjudication + Cohen’s κ / Krippendorff’s α required before publishable precision
+- Post–I0–I7 delta: `audit/reports/RED_TEAM_DELTA_I0_I7_2026_07_17.md` (self-audit; NO_GO unchanged)
 
 ## Evidence pointers
 

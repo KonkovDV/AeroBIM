@@ -77,18 +77,18 @@ EVIDENCE:      AuditReportStore, ReviewEventStore, NormRulePackVersionStore,
 
 | # | Требование ТЗ | Статус | Что мешает / почему |
 |---|---------------|--------|---------------------|
-| G1 | Загрузка MS Office, PDF, DWG, IFC | **PARTIAL** | PDF/IFC: live. Office: multipart + optional Docling inside extractor — нет отдельного `OfficeDocumentIngestor`. **DWG/DXF: `dwg_dxf=MISSING`**, порта нет |
-| G2 | Анализ 2D (вектор + сканы): объекты, размеры, текст | **PARTIAL** | `RasterDrawingAnalyzer` = RapidOCR+heuristics; `DrawingAnalyzer` = structured JSON. Нет detector+VLM; `cv_human_level=MISSING` |
-| G3 | BIM: геометрия + атрибуты (стены, перекрытия, сети) | **STRONG / PARTIAL(MEP)** | IfcOpenShell property + IDS. `MepSystemGraphProvider` scaffold **не в DI** → `mep_system_clash=NOT_VERIFIED` |
-| G4 | Сопоставление ПД↔РД, расчёты, ТЗ, нормы | **PARTIAL** | `SectionDiffAnalyzer`, norm packs, OpenRebar **сверка**. `calculation_correctness=NOT_IMPLEMENTED`. Customer-approved pack = RT-002 |
+| G1 | Загрузка MS Office, PDF, DWG, IFC | **PARTIAL** | PDF/IFC live. **I1:** `OfficeDocumentIngestor` + `CadModelIngestor` (DXF/ezdxf). Native DWG fail-closed without ODA; `dwg_dxf` never OK (NOT_VERIFIED/FAILED/MISSING) |
+| G2 | Анализ 2D (вектор + сканы): объекты, размеры, текст | **PARTIAL** | `RasterDrawingAnalyzer` + structured JSON. **I3:** OCR multimodal degrade; `cv_human_level=MISSING` (no detector+VLM) |
+| G3 | BIM: геометрия + атрибуты (стены, перекрытия, сети) | **STRONG / PARTIAL(MEP)** | IfcOpenShell + IDS. **I2a:** `MepSystemGraphProvider` **DI-wired** as Unconfigured → `mep_system_clash=NOT_VERIFIED` (not delivered) |
+| G4 | Сопоставление ПД↔РД, расчёты, ТЗ, нормы | **PARTIAL** | SectionDiff + norm packs + OpenRebar/load **сверка**. `calculation_correctness=NOT_IMPLEMENTED`. Customer-approved pack = RT-002 |
 | G5 | Коллизии инженерных систем + геометрия | **PARTIAL** | Generic `ClashDetector` (`ifcclash` optional). System-aware MEP clash не runtime |
-| G6 | Расчётные ошибки (нагрузки), площади, пространство, логика, missing elements, размеры | **WEAK** | Нет first-class `QuantityConsistencyChecker` / `LoadEvidenceVerifier` / `LogicConsistencyAnalyzer`. OpenRebar = match ≠ correctness |
-| G7 | AI: CV, OCR, NLP, anomalies | **WEAK** | OCR only. NLP = `NarrativeRuleSynthesizer` (regex). LLM IDS = `@sota-stub`. RAG/MCP agent отсутствует |
-| G8 | Поддержка эксперта: подсветка, RU/EN замечания, edit | **PARTIAL** | `TemplateRemarkGenerator` + `ReviewEventStore` / edited remarks. Нет multimodal region highlight pipeline |
-| G9 | Точность >90% | **BLOCKED** | `PrecisionClaim.publishable` требует `corpus_kind=customer` ∧ adjudicators≥2. Checkpoint **NO_GO** (RT-001) |
-| G10 | Комплект ≤30 мин | **PARTIAL** | `StageBudget` + async jobs существуют; customer package SLA **не доказан** |
+| G6 | Расчётные ошибки (нагрузки), площади, пространство, логика, missing elements, размеры | **PARTIAL / WEAK depth** | **I2b:** Quantity/Load/Logic ports wired (сверка semantics). Depth ≠ solver correctness; missing-elements/VLM still gap |
+| G7 | AI: CV, OCR, NLP, anomalies | **PARTIAL** | OCR + deterministic IDS compile + norm retrieve. **I5:** ComplianceAgent allowlist (advisory→DeterminismGate). LLM IDS = `@sota-stub`; no product VLM/MCP server |
+| G8 | Поддержка эксперта: подсветка, RU/EN замечания, edit | **PARTIAL** | Remarks + HITL. **I7:** `drawing_regions` / `divergences` / `advisory_ids_draft` on report; frontend overlay types still incomplete |
+| G9 | Точность >90% | **BLOCKED** | PrecisionClaim + κ/α + intake gate. Checkpoint **NO_GO** (RT-001) |
+| G10 | Комплект ≤30 мин | **PARTIAL** | StageBudget + jobs; customer SLA **не доказан** |
 | G11 | Масштабируемость / стабильность | **PARTIAL** | Redis/Postgres/S3 extras; нет parallel section fan-out как продуктовый контракт |
-| G12 | Снижение когнитивной нагрузки | **PARTIAL** | Confidence + priority + BCF; нет agent-summarized evidence packs с полным reasoning chain от VLM/LLM |
+| G12 | Снижение когнитивной нагрузки | **PARTIAL** | Confidence + priority + BCF; agent evidence packs without VLM reasoning chain |
 
 ---
 
@@ -405,13 +405,14 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 ## 12. Immediate next engineering slice (recommended)
 
-**Shipped:** I0–I6 (DeterminismGate, Cad/Office ingest, MEP DI, quantity/load/logic, OCR multimodal degrade, IDS compile + norm retrieve, ComplianceAgent, κ/α + intake gate readiness). See [`EXECUTION_PLAN_I0_I2_2026_07.md`](EXECUTION_PLAN_I0_I2_2026_07.md) and [`EXECUTION_PLAN_I6_2026_07.md`](EXECUTION_PLAN_I6_2026_07.md).
+**Shipped:** I0–I7 (DeterminismGate, Cad/Office, MEP DI-unconfigured, quantity/load/logic, OCR degrade, IDS/norm assist, ComplianceAgent, κ/α intake readiness, report divergences/regions/IDS draft). Plans: I0–I2, I6, I7.
 
-**Next (I7 polish — no customer corpus required):**
+**Next (customer-blocked — no engineering GO):**
 
-1. Persist DeterminismGate `divergences` + advisory `ids_draft` + `drawing_regions` on `ValidationReport` (audit/UI).  
-2. Expand ComplianceAgent allowlist (`check_quantities`, `detect_clashes`) → still advisory → DeterminismGate.  
-3. Track `@sota-stub` IdsAssist in [`KNOWN_BUGS.md`](../../KNOWN_BUGS.md).  
-4. When customer corpus arrives: flip intake gates only with evidence; run κ/α + PrecisionClaim publish path ([`EXECUTION_PLAN_I6_2026_07.md`](EXECUTION_PLAN_I6_2026_07.md)).
+1. Customer corpus intake → κ/α → publishable PrecisionClaim (RT-001).  
+2. Customer-approved norm pack with `approval_ref` (RT-002).  
+3. Federated MEP IFC + real `MepSystemGraphProvider` (RT-003).  
+4. CDE BCF T2 import artifact; customer SLA pack (`claim_level=customer_measurable`).  
+5. Harden intake-gate evidence digests; frontend types for `drawing_regions` / `divergences`.
 
 Checkpoint remains **NO_GO** until RT-001/002/003.

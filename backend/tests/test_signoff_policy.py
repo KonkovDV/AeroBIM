@@ -30,6 +30,27 @@ class SignoffPolicyTests(unittest.TestCase):
         caps = ReportCapabilities()
         self.assertFalse(summary_passed_after_capabilities(error_count=1, capabilities=caps))
 
+    def test_failed_calculation_match_blocks_pass(self) -> None:
+        caps = ReportCapabilities(
+            calculation_match=CapabilityStatus(CapabilityState.FAILED, "load mismatch"),
+        )
+        self.assertEqual(failed_capabilities_blocking_pass(caps), ("calculation_match",))
+        self.assertFalse(summary_passed_after_capabilities(error_count=0, capabilities=caps))
+
+    def test_failed_dwg_dxf_blocks_pass(self) -> None:
+        caps = ReportCapabilities(
+            dwg_dxf=CapabilityStatus(CapabilityState.FAILED, "native DWG missing ODA"),
+        )
+        self.assertEqual(failed_capabilities_blocking_pass(caps), ("dwg_dxf",))
+        self.assertFalse(summary_passed_after_capabilities(error_count=0, capabilities=caps))
+
+    def test_not_verified_dwg_dxf_does_not_block_pass(self) -> None:
+        caps = ReportCapabilities(
+            dwg_dxf=CapabilityStatus(CapabilityState.NOT_VERIFIED, "DXF only"),
+        )
+        self.assertEqual(failed_capabilities_blocking_pass(caps), ())
+        self.assertTrue(summary_passed_after_capabilities(error_count=0, capabilities=caps))
+
 
 if __name__ == "__main__":
     unittest.main()

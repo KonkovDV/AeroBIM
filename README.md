@@ -40,7 +40,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | Image OCR (RapidOCR) | Optional extra | optional-extra | `.[raster]`; zero-yield → FAILED when requested |
 | DWG/DXF native analysis | Missing | — | Explicit `MISSING` on honesty surface |
 | Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` |
-| MEP system-aware clash | Not verified | — | Scaffold only; not wired in DI |
+| MEP system-aware clash | Not verified | — | DI-wired Unconfigured provider; not delivered |
 | Independent calculation *correctness* | Not implemented | — | OpenRebar path = **match/сверка**, not solver verification |
 | Frontend vitest review-shell | Green locally | release-readiness | **21** passed; not in main CI job |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
