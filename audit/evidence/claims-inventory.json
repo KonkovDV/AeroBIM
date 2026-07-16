@@ -1,0 +1,128 @@
+{
+  "artifact_type": "aerobim_red_team_claims_inventory",
+  "schema_version": "1.0.0",
+  "audit_date_utc": "2026-07-16T20:59:16+00:00",
+  "author_relationship": "self",
+  "claims": [
+    {
+      "id": "CLM-001",
+      "claim": "Backend src ~14744 LOC; 425+ tests; extraction macro_f1≈0.86",
+      "source": "README.md / docs/evidence/runtime-baseline-latest.json",
+      "evidence": "Measured 2026-07-16: src LOC=15290 (dirty tree), tests collected=439, passed=436; F1=0.86 on fixture",
+      "corpus": "fixture",
+      "reproducible": true,
+      "risk": "MEDIUM — numbers look like product maturity; F1 is not customer accuracy",
+      "allowed_wording": "Fixture extraction macro_f1≈0.86 on russian-aec-ground-truth.json; not publishable product accuracy"
+    },
+    {
+      "id": "CLM-002",
+      "claim": "Clash/inconsistency accuracy >90%",
+      "source": "Samolet TZ wording referenced in docs/pilot-claim-boundary-2026.md",
+      "evidence": "Explicitly marked NOT measured; PrecisionClaim.publishable=false without customer corpus",
+      "corpus": "none",
+      "reproducible": false,
+      "risk": "BLOCKER if stated as achieved",
+      "allowed_wording": "Evaluation target only; NOT VERIFIED"
+    },
+    {
+      "id": "CLM-003",
+      "claim": "MEP / system intersections",
+      "source": "TZ matrix / partners docs",
+      "evidence": "domain/mep.py scaffold; not in DI; MEP-CLASH-001 open; generic IfcClash only",
+      "corpus": "none",
+      "reproducible": false,
+      "risk": "BLOCKER if claimed as delivered",
+      "allowed_wording": "MEP system-aware clash: NOT VERIFIED / SCAFFOLD"
+    },
+    {
+      "id": "CLM-004",
+      "claim": "DWG/DXF analysis",
+      "source": "pilot-claim-boundary / partners tails",
+      "evidence": "Documented missing Phase 2; no DWG adapter in runtime inventory",
+      "corpus": "none",
+      "reproducible": false,
+      "risk": "HIGH",
+      "allowed_wording": "НЕ РЕАЛИЗОВАНО for native DWG/DXF"
+    },
+    {
+      "id": "CLM-005",
+      "claim": "SLA ≤30 minutes",
+      "source": "measure_package_sla.py / Samolet task",
+      "evidence": "Tool exists; stage budgets in dirty tree; no customer package hash + machine profile evidence artifact in this audit",
+      "corpus": "fixture/pilot pack if present",
+      "reproducible": "partial",
+      "risk": "HIGH if published without measured artifact",
+      "allowed_wording": "SLA measurable on named pack only; not proven for customer комплекты"
+    },
+    {
+      "id": "CLM-006",
+      "claim": "Norm / regulatory checking",
+      "source": "product narrative",
+      "evidence": "synthetic rule packs + loader; customer_approved requires approval_ref; customer_corpus_present=false in tz-matrix-status",
+      "corpus": "synthetic",
+      "reproducible": true,
+      "risk": "BLOCKER for 'approved norms' claim",
+      "allowed_wording": "Есть ли утверждённый заказчиком нормативный пакет: НЕТ"
+    },
+    {
+      "id": "CLM-007",
+      "claim": "BCF support / CDE handoff",
+      "source": "exporters + docs",
+      "evidence": "ZIP export BCF 2.1/3.0; unit consumers; no saved independent CDE import evidence",
+      "corpus": "synthetic report fixtures",
+      "reproducible": "unit only",
+      "risk": "HIGH",
+      "allowed_wording": "BCF export exists; independent CDE import НЕ ДОКАЗАНО"
+    },
+    {
+      "id": "CLM-008",
+      "claim": "External / academic audit",
+      "source": "historical labels; architecture tests block 'external' display for self",
+      "evidence": "author_relationship=self on evidence artifacts; EvidenceProvenance.display_label strips 'external'",
+      "corpus": "n/a",
+      "reproducible": true,
+      "risk": "HIGH if marketed as external",
+      "allowed_wording": "internal self-audit only"
+    },
+    {
+      "id": "CLM-009",
+      "claim": "Checks calculations / расчётные ошибки",
+      "source": "TZ",
+      "evidence": "OpenRebar digest + cross-doc numeric compare; no independent control formula / solver verification path proven",
+      "corpus": "fixture",
+      "reproducible": "partial",
+      "risk": "HIGH",
+      "allowed_wording": "Сверка с результатами расчёта: PARTIAL; независимая проверка корректности: НЕ РЕАЛИЗОВАНО"
+    },
+    {
+      "id": "CLM-010",
+      "claim": "Production-ready / enterprise storage",
+      "source": "optional enterprise extras",
+      "evidence": "boto3 not installed in audit env; Redis present but optional; default storage filesystem; frontend tests failing",
+      "corpus": "n/a",
+      "reproducible": false,
+      "risk": "BLOCKER for production-ready wording",
+      "allowed_wording": "НЕ ДОКАЗАНО as production deployment"
+    },
+    {
+      "id": "CLM-011",
+      "claim": "Understands drawings like an engineer / CV",
+      "source": "TZ CV row",
+      "evidence": "tz-matrix status missing for CV; OCR extra absent; advisory contour",
+      "corpus": "none",
+      "reproducible": false,
+      "risk": "BLOCKER if claimed",
+      "allowed_wording": "L0 structured text PARTIAL; L1 OCR NOT available in this env; L2–L4 НЕ РЕАЛИЗОВАНО"
+    },
+    {
+      "id": "CLM-012",
+      "claim": "Solibri/Navisworks replacement",
+      "source": "docs explicitly disclaim",
+      "evidence": "pilot-claim-boundary + MEP gap",
+      "corpus": "n/a",
+      "reproducible": true,
+      "risk": "LOW if disclaimer held",
+      "allowed_wording": "Not a Solibri replacement — disclaimer must remain"
+    }
+  ]
+}

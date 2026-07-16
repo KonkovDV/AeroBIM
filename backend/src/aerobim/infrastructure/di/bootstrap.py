@@ -237,6 +237,8 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             priority_profile=current.resolve(Tokens.SETTINGS).priority_profile,
             external_evidence_verifier=current.resolve(Tokens.EXTERNAL_EVIDENCE_VERIFIER),
             clash_affects_pass=current.resolve(Tokens.SETTINGS).clash_affects_pass,
+            require_clash=current.resolve(Tokens.SETTINGS).require_clash,
+            require_bsi_schema=current.resolve(Tokens.SETTINGS).require_bsi_schema,
             ifc_schema_validator=current.resolve(Tokens.IFC_SCHEMA_VALIDATOR),
             ids_document_auditor=current.resolve(Tokens.IDS_DOCUMENT_AUDITOR),
             bsi_validation_service=(
@@ -364,5 +366,7 @@ def _build_audit_report_store(current: Container):
         try:
             return PostgresAuditStore(db_url=settings.db_url, payload_store=payload_store)
         except RuntimeError:
+            if not settings.is_dev_environment:
+                raise
             return payload_store
     return payload_store

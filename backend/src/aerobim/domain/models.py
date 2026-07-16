@@ -132,7 +132,7 @@ class ConflictKind(StrEnum):
     """Reserved: sources belong to different delivery stages (e.g. SD vs DD)."""
 
     VERSION_MISMATCH = "version-mismatch"
-    """Reserved: sources carry explicit revision/version markers that differ."""
+    """Same logical document compared across distinct revisions (ingestion guard)."""
 
     SOFT_CONFLICT_WITHIN_TOLERANCE = "soft-conflict-within-tolerance"
     """Numeric values differ in presentation but SI comparison is within ε."""
@@ -148,6 +148,11 @@ class RequirementSource:
     path: Path | None = None
     source_kind: SourceKind = SourceKind.STRUCTURED_TEXT
     source_id: str | None = None
+    revision: str | None = None
+    stage: str | None = None
+    doc_type: str | None = None
+    sha256: str | None = None
+    doc_status: str | None = None
 
 
 @dataclass(frozen=True)
@@ -156,6 +161,9 @@ class DrawingSource:
     path: Path | None = None
     sheet_id: str | None = None
     format: str | None = None
+    revision: str | None = None
+    sha256: str | None = None
+    doc_type: str | None = None
 
 
 @dataclass(frozen=True)
@@ -289,6 +297,12 @@ class ValidationIssue:
     norm_clause: str | None = None
     approval_status: NormApprovalStatus | None = None
     approval_ref: str | None = None
+    finding_id: str | None = None
+    """Stable finding identity required before persistence."""
+    evidence_refs: tuple[str, ...] = ()
+    """Opaque evidence pointers (source@rev#locator). Empty is not persistable."""
+    tenant_id: str | None = None
+    project_id: str | None = None
 
 
 def issue_from_requirement(
@@ -375,6 +389,8 @@ class ValidationRequest:
     norm_rule_pack_paths: tuple[Path, ...] = ()
     pd_section_path: Path | None = None
     rd_section_path: Path | None = None
+    tenant_id: str | None = None
+    project_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -399,6 +415,8 @@ class ValidationReport:
     information_container_id: str | None = None
     revision: str | None = None
     doc_status: DocStatus | None = None
+    tenant_id: str | None = None
+    project_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -480,6 +498,8 @@ class AnalyzeProjectPackageJob:
     completed_at: str | None = None
     report_id: str | None = None
     error_message: str | None = None
+    idempotency_key: str | None = None
+    """Client-supplied key: create returns the existing non-terminal job when present."""
 
 
 @dataclass(frozen=True)

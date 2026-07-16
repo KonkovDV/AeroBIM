@@ -14,6 +14,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.findings import FindingPredicate
+
 _SCHEMA_VERSION = "1.0.0"
 _MAX_INPUT_BYTES = 10 * 1024 * 1024
 _MAX_FINDINGS = 100_000
@@ -176,6 +178,7 @@ def evaluate_detection_precision(
         "publishable_protocol_gate": labels.publishable_protocol_gate,
         "adjudicator_count": labels.adjudicator_count,
         "corpus_kind": corpus_kind,
+        "finding_predicates": [predicate.value for predicate in FindingPredicate],
         "precision_claim": {
             "metric": claim.metric,
             "value": claim.value,

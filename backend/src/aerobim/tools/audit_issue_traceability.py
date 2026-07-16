@@ -39,7 +39,10 @@ def audit_report_traceability(report_id: str, storage_dir: Path | None = None) -
     per_issue: list[dict[str, object]] = []
     for issue in report.issues:
         has_guid = bool(issue.element_guid)
-        has_source = bool(issue.source_id)
+        # Provenance may stamp source_id="unspecified"; that is not a real anchor.
+        raw_source = (issue.source_id or "").strip()
+        placeholders = {"unspecified", "unknown", "n/a"}
+        has_source = bool(raw_source) and raw_source.lower() not in placeholders
         has_zone = issue.problem_zone is not None
         ok = has_guid or has_source or has_zone
         if ok:

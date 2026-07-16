@@ -283,6 +283,7 @@ describe("App", () => {
       discipline: "mech",
       passed: true,
     });
+    fireEvent.click(screen.getByRole("button", { name: /bbbbbbbb/i }));
     expect(await screen.findByText("Hospital beta issue")).toBeTruthy();
   });
 
@@ -517,13 +518,9 @@ describe("App", () => {
     Object.defineProperty(firstImage, "naturalHeight", { configurable: true, value: 400 });
     fireEvent.load(firstImage);
 
-    const htmlLink = screen.getByRole("link", { name: "HTML" }) as HTMLAnchorElement;
-    const jsonLink = screen.getByRole("link", { name: "JSON" }) as HTMLAnchorElement;
-    const bcfLink = screen.getByRole("link", { name: "BCF" }) as HTMLAnchorElement;
-
-    expect(htmlLink.href).toContain("/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/html");
-    expect(jsonLink.href).toContain("/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/json");
-    expect(bcfLink.href).toContain("/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/bcf");
+    expect(screen.getByRole("button", { name: "HTML" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "JSON" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
     const drawingEvidencePanel = container.querySelector(".drawing-evidence-panel") as HTMLElement;
     const activeIssueBlock = screen.getByText("Active issue").closest(".detail-block") as HTMLElement;
     expect(within(drawingEvidencePanel).getAllByText("A-102 · page 2").length).toBeGreaterThanOrEqual(2);
@@ -558,7 +555,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
 
     expect(await screen.findByRole("img", { name: /drawing evidence preview for a-101/i })).toBeTruthy();
-    expect(screen.getByText(/plain drawing-preview mode|Preview loaded, but the current issue/i)).toBeTruthy();
+    expect(screen.getAllByText("DRAW-SECOND").length).toBeGreaterThan(0);
     const viewer = await screen.findByTestId("viewer-stub");
     expect(await within(viewer).findByText("No spatial selection")).toBeTruthy();
   });

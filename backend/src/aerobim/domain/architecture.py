@@ -94,6 +94,37 @@ class EvidenceRef:
     corpus_kind: CorpusKind | None = None
 
 
+@dataclass(frozen=True)
+class StageBudget:
+    """Per-contour wall-time budgets for package SLA (default sum = 30 min)."""
+
+    ingestion_minutes: float = 5.0
+    deterministic_validation_minutes: float = 18.0
+    ai_advisory_minutes: float = 2.0
+    evidence_reporting_minutes: float = 5.0
+
+    @property
+    def total_minutes(self) -> float:
+        return (
+            self.ingestion_minutes
+            + self.deterministic_validation_minutes
+            + self.ai_advisory_minutes
+            + self.evidence_reporting_minutes
+        )
+
+    def as_dict(self) -> dict[str, float]:
+        return {
+            "ingestion_minutes": self.ingestion_minutes,
+            "deterministic_validation_minutes": self.deterministic_validation_minutes,
+            "ai_advisory_minutes": self.ai_advisory_minutes,
+            "evidence_reporting_minutes": self.evidence_reporting_minutes,
+            "total_minutes": self.total_minutes,
+        }
+
+
+DEFAULT_PACKAGE_STAGE_BUDGET = StageBudget()
+
+
 # Contour ownership of existing ports (documentation + test anchors).
 CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
     Contour.INGESTION: (
