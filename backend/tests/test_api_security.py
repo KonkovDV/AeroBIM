@@ -809,6 +809,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(body["artifact_type"], "system_capabilities")
+        self.assertEqual(body["schema_version"], "1.1.0")
         honesty = body["honesty"]
         self.assertEqual(honesty["dwg_dxf"]["status"], "missing")
         self.assertEqual(honesty["cv_human_level"]["status"], "missing")
@@ -816,6 +817,10 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertEqual(honesty["calculation_correctness"]["status"], "not_implemented")
         self.assertIn("calculation_match", body["claim_boundary"])
         self.assertIn("calculation_correctness", body["claim_boundary"])
+        self.assertIn("precision_claim", body["claim_boundary"])
+        intake = body["customer_intake_gate"]
+        self.assertEqual(intake["checkpoint"], "NO_GO")
+        self.assertEqual(intake.get("true_gates"), [])
 
     def test_reinforcement_digest_endpoint_rejects_path_traversal(self) -> None:
         response = self.client.post(

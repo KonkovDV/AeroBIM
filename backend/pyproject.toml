@@ -37,6 +37,9 @@ aerobim-export-api-contract-summary = "aerobim.tools.export_api_contract_summary
 aerobim-evaluate-detection-precision = "aerobim.tools.evaluate_detection_precision:main"
 aerobim-build-detection-labels = "aerobim.tools.build_detection_labels:main"
 aerobim-run-demo-path = "aerobim.tools.run_demo_path:main"
+aerobim-measure-adjudicator-agreement = "aerobim.tools.measure_adjudicator_agreement:main"
+aerobim-validate-customer-intake-gate = "aerobim.tools.validate_customer_intake_gate:main"
+aerobim-measure-package-sla = "aerobim.tools.measure_package_sla:main"
 
 [project.optional-dependencies]
 dev = [

@@ -28,7 +28,8 @@ Router for `AeroBIM/docs/`.
 | `REPRODUCIBILITY-2026.md` | FAIR/CODE, frozen tag, evidence manifest |
 | `06-architecture-reference.md` | Technical architecture |
 | `architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` | TZ hybrid target (ports, DeterminismGate, roadmap) |
-| `architecture/EXECUTION_PLAN_I0_I2_2026_07.md` | Active I0–I2a execution plan |
+| `architecture/EXECUTION_PLAN_I0_I2_2026_07.md` | Waves I0–I5 execution log |
+| `architecture/EXECUTION_PLAN_I6_2026_07.md` | **I6** customer metrics readiness (κ/α, intake gate) |
 | `pilot-claim-boundary-2026.md` | Verified vs planned claims |
 | `../audit/reports/CRITICAL_BLOCKERS.md` | Checkpoint NO_GO register |
 | `samolet-techlab-alignment-2026.md` | Samolet R1–R15 traceability |

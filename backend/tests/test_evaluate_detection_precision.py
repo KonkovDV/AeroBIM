@@ -55,17 +55,35 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
         ]
         unresolved = payload["cases"][0]["expected_findings"][4]
         unresolved["adjudication_status"] = "excluded"
+        agreement = {
+            "artifact_type": "adjudicator_agreement",
+            "schema_version": "1.1.0",
+            "cohen_kappa": 0.82,
+            "pass_threshold_0_60": True,
+            "krippendorff_alpha": 0.79,
+            "pass_alpha_0_67": True,
+        }
         with tempfile.TemporaryDirectory() as temporary_directory:
             labels_path = Path(temporary_directory) / "labels.json"
+            agreement_path = Path(temporary_directory) / "agreement.json"
             labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            agreement_path.write_text(json.dumps(agreement), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "PrecisionClaim is not publishable"):
+                evaluate_detection_precision(
+                    labels_path,
+                    DETECTIONS,
+                    require_publishable=True,
+                )
             report = evaluate_detection_precision(
                 labels_path,
                 DETECTIONS,
                 require_publishable=True,
+                agreement_path=agreement_path,
             )
 
         self.assertTrue(report["publishable_protocol_gate"])
         self.assertEqual(report["adjudicator_count"], 2)
+        self.assertTrue(report["precision_claim"]["publishable"])
         self.assertIsNone(report["warning"])
 
     def test_threshold_failures_are_ci_friendly(self) -> None:

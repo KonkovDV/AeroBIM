@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import asdict
+from pathlib import Path
+from typing import Any
 
 from aerobim.domain.models import CapabilityState, CapabilityStatus, ReportCapabilities
 
@@ -36,6 +39,42 @@ def default_honesty_capabilities() -> ReportCapabilities:
     return ReportCapabilities()
 
 
+def load_customer_intake_gate_snapshot() -> dict[str, Any]:
+    """Best-effort load of audit/evidence/customer-intake-gate.json for honesty API."""
+
+    candidates = [
+        Path(__file__).resolve().parents[4] / "audit" / "evidence" / "customer-intake-gate.json",
+        Path.cwd() / "audit" / "evidence" / "customer-intake-gate.json",
+    ]
+    for path in candidates:
+        if not path.is_file():
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        gates = payload.get("gates") if isinstance(payload, dict) else None
+        true_gates = (
+            [key for key, value in gates.items() if value is True]
+            if isinstance(gates, dict)
+            else []
+        )
+        return {
+            "status": payload.get("status", "UNKNOWN"),
+            "claim_level": payload.get("claim_level", "unknown"),
+            "true_gates": true_gates,
+            "checkpoint": "NO_GO",
+            "source": str(path.as_posix()),
+        }
+    return {
+        "status": "MISSING_GATE_FILE",
+        "claim_level": "not_ready",
+        "true_gates": [],
+        "checkpoint": "NO_GO",
+        "source": None,
+    }
+
+
 def build_system_capabilities_payload() -> dict[str, object]:
     caps = default_honesty_capabilities()
     honesty = {
@@ -45,9 +84,10 @@ def build_system_capabilities_payload() -> dict[str, object]:
         "calculation_match": asdict(caps.calculation_match),
         "calculation_correctness": asdict(caps.calculation_correctness),
     }
+    intake = load_customer_intake_gate_snapshot()
     return {
         "artifact_type": "system_capabilities",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "claim_boundary": {
             "calculation_match": (
                 "сверка результатов (numeric/provenance match) — PARTIAL when evaluated"
@@ -58,8 +98,13 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "dwg_dxf": ("DXF partial via optional ezdxf; native DWG / ODA NOT VERIFIED — never OK"),
             "cv_human_level": "НЕ РЕАЛИЗОВАНО",
             "mep_system_clash": ("DI-wired Unconfigured provider (MEP-CLASH-001) — NOT VERIFIED"),
+            "precision_claim": (
+                "Publishable only with customer corpus + ≥2 adjudicators + κ/α agreement"
+            ),
+            "customer_sla": "Fixture SLA ≠ customer комплект SLA",
         },
         "honesty": honesty,
+        "customer_intake_gate": intake,
         "forbidden_ok_states": {
             "dwg_dxf": [CapabilityState.OK.value],
             "cv_human_level": [CapabilityState.OK.value],
@@ -75,6 +120,7 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "Honesty fields above must not silently become ok without "
                 "an explicit product delivery change."
             ),
+            "Checkpoint remains NO_GO until RT-001/002/003 customer evidence.",
         ],
     }
 
@@ -108,4 +154,5 @@ __all__ = [
     "assert_honesty_capabilities_not_silently_ok",
     "build_system_capabilities_payload",
     "default_honesty_capabilities",
+    "load_customer_intake_gate_snapshot",
 ]

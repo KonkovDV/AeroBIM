@@ -73,4 +73,5 @@ ruff format --check src tests
 - [x] **I3** MultimodalDrawingPipeline (OCR degrade only; cv_human_level stays MISSING)
 - [x] **I4** Deterministic RequirementToIdsCompiler + FilesystemNormCorpusRetriever (advisory; no LLM)
 - [x] **I5** ComplianceAgentOrchestrator (deterministic ReAct tool allowlist → DeterminismGate)
-- Next: **I6** customer metrics / PrecisionClaim corpus intake
+- [x] **I6** Customer metrics readiness — see [`EXECUTION_PLAN_I6_2026_07.md`](EXECUTION_PLAN_I6_2026_07.md)
+- Next: customer evidence when corpus arrives (gates stay false until then)
