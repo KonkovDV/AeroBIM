@@ -14,6 +14,7 @@ from aerobim.domain.models import (
     Severity,
     ToleranceConfig,
     ValidationIssue,
+    issue_from_requirement,
 )
 
 # Maps requirement unit string → (IFC unit type, factor to convert that unit to SI).
@@ -91,17 +92,11 @@ class IfcOpenShellValidator:
             if not requirement.ifc_entity:
                 if requirement.rule_scope in {RuleScope.IFC_PROPERTY, RuleScope.IFC_QUANTITY}:
                     issues.append(
-                        ValidationIssue(
-                            rule_id=requirement.rule_id,
+                        issue_from_requirement(
+                            requirement,
                             severity=Severity.WARNING,
                             message="Incomplete IFC rule: missing ifc_entity",
                             category=FindingCategory.IFC_VALIDATION,
-                            target_ref=requirement.target_ref,
-                            property_set=requirement.property_set,
-                            property_name=requirement.property_name,
-                            operator=requirement.operator,
-                            expected_value=requirement.expected_value,
-                            unit=requirement.unit,
                         )
                     )
                 continue
@@ -116,39 +111,25 @@ class IfcOpenShellValidator:
 
             if not matching_elements:
                 issues.append(
-                    ValidationIssue(
-                        rule_id=requirement.rule_id,
+                    issue_from_requirement(
+                        requirement,
                         severity=Severity.ERROR,
                         message=f"No elements found for entity {requirement.ifc_entity}",
-                        ifc_entity=requirement.ifc_entity,
                         category=FindingCategory.IFC_VALIDATION,
-                        target_ref=requirement.target_ref,
-                        property_set=requirement.property_set,
-                        property_name=requirement.property_name,
-                        operator=requirement.operator,
-                        expected_value=requirement.expected_value,
-                        unit=requirement.unit,
                     )
                 )
                 continue
 
             if not requirement.property_set or not requirement.property_name:
                 issues.append(
-                    ValidationIssue(
-                        rule_id=requirement.rule_id,
+                    issue_from_requirement(
+                        requirement,
                         severity=Severity.WARNING,
                         message=(
                             "Incomplete IFC rule: missing property_set or property_name; "
                             "rule was not evaluated against model properties"
                         ),
-                        ifc_entity=requirement.ifc_entity,
                         category=FindingCategory.IFC_VALIDATION,
-                        target_ref=requirement.target_ref,
-                        property_set=requirement.property_set,
-                        property_name=requirement.property_name,
-                        operator=requirement.operator,
-                        expected_value=requirement.expected_value,
-                        unit=requirement.unit,
                     )
                 )
                 continue
@@ -159,21 +140,14 @@ class IfcOpenShellValidator:
                 and requirement.unit.strip().lower() in _UNIT_TO_SI_FACTOR
             ):
                 issues.append(
-                    ValidationIssue(
-                        rule_id=requirement.rule_id,
+                    issue_from_requirement(
+                        requirement,
                         severity=Severity.ERROR,
                         message=(
                             f"Property {requirement.property_set}.{requirement.property_name} "
                             "could not be compared because IFC unit scales are unavailable"
                         ),
-                        ifc_entity=requirement.ifc_entity,
                         category=FindingCategory.IFC_VALIDATION,
-                        target_ref=requirement.target_ref,
-                        property_set=requirement.property_set,
-                        property_name=requirement.property_name,
-                        operator=requirement.operator,
-                        expected_value=requirement.expected_value,
-                        unit=requirement.unit,
                     )
                 )
                 continue
@@ -195,43 +169,29 @@ class IfcOpenShellValidator:
                         observed_value, requirement.unit, unit_scales
                     )
                     issues.append(
-                        ValidationIssue(
-                            rule_id=requirement.rule_id,
+                        issue_from_requirement(
+                            requirement,
                             severity=Severity.ERROR,
                             message=(
                                 f"Property {requirement.property_set}.{requirement.property_name} "
                                 f"does not match the expected value"
                             ),
-                            ifc_entity=requirement.ifc_entity,
                             category=FindingCategory.IFC_VALIDATION,
-                            target_ref=requirement.target_ref,
-                            property_set=requirement.property_set,
-                            property_name=requirement.property_name,
-                            operator=requirement.operator,
-                            expected_value=requirement.expected_value,
                             observed_value=reported_observed,
-                            unit=requirement.unit,
                             element_guid=self._extract_guid(element),
                         )
                     )
 
             if not property_found:
                 issues.append(
-                    ValidationIssue(
-                        rule_id=requirement.rule_id,
+                    issue_from_requirement(
+                        requirement,
                         severity=Severity.ERROR,
                         message=(
                             f"Property {requirement.property_set}.{requirement.property_name} "
                             f"was not found on any {requirement.ifc_entity} elements"
                         ),
-                        ifc_entity=requirement.ifc_entity,
                         category=FindingCategory.IFC_VALIDATION,
-                        target_ref=requirement.target_ref,
-                        property_set=requirement.property_set,
-                        property_name=requirement.property_name,
-                        operator=requirement.operator,
-                        expected_value=requirement.expected_value,
-                        unit=requirement.unit,
                     )
                 )
 

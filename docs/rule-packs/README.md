@@ -1,7 +1,7 @@
 ---
 title: Norm / rule packs
 status: active
-last_updated: "2026-07-11"
+last_updated: "2026-07-16"
 ---
 
 # Подключение согласованного norm / rule pack
@@ -12,16 +12,36 @@ AeroBIM загружает версионированные JSON-наборы к
 
 ## Claim boundary
 
-- `synthetic-template` — только инженерный шаблон; sign-off запрещён;
+- `synthetic-template` / badge `synthetic` — только инженерный шаблон; sign-off запрещён;
 - `draft` — пакет на согласовании; sign-off запрещён;
-- `approved` — загрузчик требует `approved_by`, timezone-aware `approved_at` и
-  `scope_reference`; это фиксирует provenance, но не подменяет юридическую проверку;
+- `approved` / alias `customer_approved` — загрузчик требует `approval` object +
+  непустой `approval_ref` (`approval.scope_reference` или pack-level `approval_ref`);
+  это фиксирует provenance, но не подменяет юридическую проверку;
 - `retired` — исторический пакет; не использовать для нового обмена.
 
 В репозитории есть
 [`residential-ar-reference-template.json`](../../samples/rule-packs/residential-ar-reference-template.json)
 с **20** AR-критериями. Его статус — `synthetic-template`; числовой пример
 `SAM-AR-020` не является ссылкой на СП/ГОСТ и должен быть заменён заказчиком.
+
+## Rule / finding provenance (P0.1)
+
+Каждое правило и каждый `ValidationIssue`, порождённый из норм-пака, несёт Optional
+поля:
+
+| Поле | Смысл |
+|---|---|
+| `norm_source` | идентификатор нормы, напр. `СП 54.13330` |
+| `norm_edition` | редакция / год |
+| `norm_clause` | пункт |
+| `approval_status` | `synthetic` \| `draft` \| `customer_approved` (из манифеста пака; default `synthetic`) |
+| `approval_ref` | id / scope memo утверждения |
+
+`approval_status` **проставляет loader/use-case из статуса манифеста пака**; rule-level
+значение в JSON — декларативное для документации, runtime-authority = pack status.
+При `customer_approved` без `approval_ref` загрузка **падает** (явный fail, не silent).
+
+HTML/JSON export показывает бейдж `badge=<approval_status>` + src/ed/§/ref на finding.
 
 ## Контракт
 
@@ -105,11 +125,11 @@ quantity / drawing acceptance criteria) или IDS 1.0 (facet-based требов
 - [ ] значения и единицы проверены ГИП/нормоконтролем;
 - [ ] geometry/clash rules вынесены из IDS/property pack;
 - [ ] два инженера подтвердили pilot scope и правила adjudication;
-- [ ] `status` изменён на `approved` только после подписанного scope memo;
+- [ ] `status` изменён на `approved`/`customer_approved` только после подписанного scope memo + `approval_ref`;
 - [ ] digest и версия заморожены до benchmark run.
 
-До получения пакета Самолёта закрыт только **loader + reference template**;
-customer-approved residential pack остаётся внешним blocker.
+До получения пакета Самолёта закрыт только **loader + reference template +
+provenance badge**; customer-approved residential pack остаётся внешним blocker.
 
 ## Drawing AI posture (retained local SSOT)
 

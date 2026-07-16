@@ -28,7 +28,7 @@
       "items": { "type": "string", "minLength": 1, "maxLength": 64 }
     },
     "status": {
-      "enum": ["synthetic-template", "draft", "approved", "retired"]
+      "enum": ["synthetic-template", "synthetic", "draft", "approved", "customer_approved", "retired"]
     },
     "approval": {
       "type": ["object", "null"],
@@ -39,6 +39,12 @@
         "approved_at": { "type": "string", "format": "date-time" },
         "scope_reference": { "type": "string", "minLength": 1 }
       }
+    },
+    "approval_ref": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Jury-facing approval id; required (via this field or approval.scope_reference) when status is customer_approved/approved."
     },
     "customer_action_required": { "type": "string" },
     "rules": {
@@ -75,7 +81,15 @@
         "expected_value": { "type": ["string", "number", "boolean", "null"] },
         "unit": { "type": "string", "minLength": 1 },
         "evidence_text": { "type": "string" },
-        "instructions": { "type": "string" }
+        "instructions": { "type": "string" },
+        "norm_source": { "type": ["string", "null"], "maxLength": 256 },
+        "norm_edition": { "type": ["string", "null"], "maxLength": 128 },
+        "norm_clause": { "type": ["string", "null"], "maxLength": 128 },
+        "approval_status": {
+          "type": ["string", "null"],
+          "enum": ["synthetic", "draft", "customer_approved", null]
+        },
+        "approval_ref": { "type": ["string", "null"], "maxLength": 512 }
       }
     }
   }
