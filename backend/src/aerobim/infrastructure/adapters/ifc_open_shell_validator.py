@@ -60,7 +60,6 @@ class IfcOpenShellValidator:
             raise FileNotFoundError(ifc_path)
 
         try:
-            import ifcopenshell
             from ifcopenshell.util.element import get_psets
         except ModuleNotFoundError as exc:
             raise RuntimeError("Install ifcopenshell to run IFC validation") from exc
