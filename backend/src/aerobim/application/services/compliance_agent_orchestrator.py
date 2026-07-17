@@ -775,8 +775,12 @@ class ComplianceAgentOrchestrator:
                 tool_name=step.tool_name,
                 rationale=step.rationale,
                 arguments=step.arguments,
-                status="ok",
-                detail=f"findings={len(findings)}",
+                # Scaffold probe ≠ product MEP delivery (RT-003 HOLD / MEP-CLASH-001)
+                status="degraded",
+                detail=(
+                    f"findings={len(findings)}; advisory_scaffold_only; "
+                    "not geometric MEP clearance delivery"
+                ),
             ),
             advisory,
             [],

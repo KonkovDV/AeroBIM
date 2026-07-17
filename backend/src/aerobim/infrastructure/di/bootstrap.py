@@ -107,6 +107,10 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     runtime_settings.require_secure_auth()
     runtime_settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
+    from aerobim.infrastructure.adapters.ifc_file_open import configure_ifc_parse_cache
+
+    configure_ifc_parse_cache(runtime_settings.ifc_parse_cache_dir)
+
     container.register(Tokens.SETTINGS, lambda _container: runtime_settings)
     container.register(
         Tokens.LOGGER,

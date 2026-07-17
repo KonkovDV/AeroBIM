@@ -52,8 +52,42 @@ class NormRulePackSchemaTests(unittest.TestCase):
         )
         base["status"] = "approved"
         base.pop("approval", None)
+        base.pop("approval_ref", None)
         errors = list(validator.iter_errors(base))
         self.assertTrue(errors, "approved pack without approval block must fail schema")
+
+    def test_customer_approved_requires_full_approval_block_in_schema(self) -> None:
+        """Schema must match loader: ref-only is not enough for customer_approved."""
+        import jsonschema
+
+        schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+        validator = jsonschema.Draft202012Validator(schema)
+        base = json.loads(
+            (RULE_PACKS_DIR / "customer-norm-pack-intake-template.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        base["status"] = "customer_approved"
+        base["approval"] = None
+        base["approval_ref"] = None
+        errors = list(validator.iter_errors(base))
+        self.assertTrue(
+            errors, "customer_approved without approval block must fail schema"
+        )
+        # approval_ref alone must still fail (closes RT-002 schema bypass)
+        base["approval_ref"] = "SIGNED-MEMO-REF"
+        errors_ref_only = list(validator.iter_errors(base))
+        self.assertTrue(
+            errors_ref_only,
+            "customer_approved with approval_ref only must fail schema",
+        )
+        base["approval"] = {
+            "approved_by": "customer-qa",
+            "approved_at": "2026-07-17T12:00:00+03:00",
+            "scope_reference": "SIGNED-MEMO-REF",
+        }
+        errors_ok = list(validator.iter_errors(base))
+        self.assertEqual(errors_ok, [], [e.message for e in errors_ok])
 
 
 if __name__ == "__main__":

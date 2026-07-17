@@ -44,28 +44,31 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Impact:** Checkpoint fails if accuracy KPI presented as achieved  
 - **Fix:** Keep withheld; run customer intake protocol; do not raise claims  
 - **Verification:** PrecisionClaim.publishable true only with customer + adjudicators≥2  
+- **Engineering readiness (2026-07-17):** protocol aligned (`dual_independent` + `agreement-template.json` + runbook `--agreement-json`) — see `AUDIT_NEXT_WORK_PROTOCOL_2026_07_17.md`. **Product HOLD** until customer corpus.  
 
 ### RT-002 — Approved norm pack absent
 - **Severity:** BLOCKER  
 - **Category:** Norms  
 - **Exact file:** `infrastructure/adapters/json_norm_rule_pack_loader.py`, partners TZ tails  
-- **Observed:** synthetic/draft packs only; loader correctly rejects `customer_approved` without `approval_ref`  
+- **Observed:** synthetic/draft packs only; loader + schema require full `approval` object for `customer_approved`/`approved` (ref-only rejected)  
 - **Expected:** signed customer pack with edition/clause/jurisdiction  
 - **Reproduction:** inspect samples/norm packs; `customer_corpus_present`  
 - **Impact:** «проверка норм» cannot be signed off  
 - **Fix:** customer pack intake; immutable version store already partial  
 - **Verification:** pack load + analyze with FAILED/OK capability + hash reproducibility  
+- **Engineering readiness (2026-07-17):** schema↔loader parity closed. **Product HOLD** until signed pack.  
 
 ### RT-003 — MEP system-aware clash not runtime
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  
 - **Category:** MEP / Clash  
 - **Exact file:** `domain/mep.py`, `docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`  
 - **Symbol:** `UnconfiguredMepSystemGraphProvider` — **DI-wired** via `Tokens.MEP_SYSTEM_GRAPH_PROVIDER` in `bootstrap_container` (I2a); still raises / probe → `NOT_VERIFIED`  
-- **Observed:** Generic `IfcClashDetector` only; system-aware MEP clash **not delivered**  
+- **Observed:** Generic `IfcClashDetector` only; system-aware MEP clash **not delivered**; agent scaffold returns `degraded`  
 - **Expected:** system graph + intersection matrix + clearance semantics on federated IFC  
 - **Impact:** MEP TZ row NOT VERIFIED — wiring ≠ capability  
 - **Fix:** Do not claim delivered; wait for federated IFC + real provider  
 - **Verification:** `GET /v1/system/capabilities` → `mep_system_clash=not_verified`; architecture tests  
+- **Engineering readiness (2026-07-17):** honesty labeling updated. **Product HOLD** until RT-003 evidence.  
 
 ### RT-004 — Clash SKIPPED does not block pass
 - **Severity:** CRITICAL  

@@ -2,7 +2,7 @@
 title: MEP system-aware clash gap
 status: open
 tracking_id: MEP-CLASH-001
-last_updated: "2026-07-16"
+last_updated: "2026-07-17"
 ---
 
 # MEP-CLASH-001 — system-aware clash remains open
@@ -10,43 +10,35 @@ last_updated: "2026-07-16"
 ## Current truth
 
 AeroBIM has a generic IFC clash adapter and emits geometry results as
-`FindingCategory.SPATIAL`. It does **not** currently provide Solibri-depth
-system-aware MEP coordination:
+`FindingCategory.SPATIAL`. Product **MEP system-aware** coordination is **not delivered**:
 
-- no routing/connectivity graph for duct/pipe/cable tray systems;
-- no customer-approved allowed-intersection/exclusion matrix;
-- no insulation/maintenance clearance semantics per system;
+- no customer-approved routing/connectivity graph for duct/pipe/cable tray;
+- no signed allowed-intersection/exclusion matrix loaded from customer memo;
+- no insulation/maintenance clearance semantics per system as product claim;
 - no penetration/opening workflow;
-- no MEP-specific labeled precision corpus.
+- no MEP-specific labeled precision corpus (RT-001/003).
 
-Therefore the TZ row «MEP / system intersections» remains **missing / generic
-only**, not `partial-done`.
+**DI is wired** (fail-closed defaults):
 
-## Contract scaffold (2026-07-16)
+| Port | Default adapter | Opt-in |
+|------|-----------------|--------|
+| `MepSystemGraphProvider` | `UnconfiguredMepSystemGraphProvider` | — |
+| `SystemClashPort` | `UnconfiguredSystemClash` | `IfcSystemAwareClash` when `AEROBIM_MEP_SYSTEM_CLASH_ENABLED` + `AEROBIM_MEP_SCOPE_MEMO_REF` |
 
-Domain contracts landed (no runtime analyze wiring yet):
+`IfcSystemAwareClash` is an **advisory name-pair scaffold** (not geometric clearance delivery).
+Analyze probe keeps `mep_system_clash` **NOT_VERIFIED** even if nodes exist.
+Agent tool `detect_system_clash` returns step status **`degraded`**, never product `ok`.
+
+Therefore the TZ row «MEP / system intersections» remains **missing / generic only**
+until RT-003 customer federated IFC + signed scope memo + clearance matrix evidence.
+
+## Contract scaffold
 
 - `aerobim.domain.mep.MepSystemGraphProvider`
-- `aerobim.domain.mep.AllowedIntersectionMatrix`
-- `UnconfiguredMepSystemGraphProvider` — fail-closed until customer corpus
+- `aerobim.domain.tz_architecture_ports.SystemClashPort`
+- Template: `samples/mep/clearance-matrix-template.json` (not auto-loaded as product)
 
-**Blocked on:** federated MEP IFC with systems + signed scope memo from Samolet.
-Do not implement graph/matrix adapters against synthetic-only models for sign-off.
+## Claims Lock
 
-## Acceptance criteria for closure
-
-1. Customer supplies at least one federated MEP IFC with systems and known
-   collisions/non-collisions.
-2. Scope memo defines entities, system classes, exclusions, clearances and units.
-3. New spatial predicates remain separate from IDS alphanumeric facets.
-4. Adapter failure is explicit in `capabilities.clash`; no empty-success fallback.
-5. Tests cover connectivity, insulation, openings, allowed crossings and unit
-   normalization.
-6. Detection run is adjudicated by ≥2 engineers with
-   [`DETECTION_PRECISION_PROTOCOL_2026.md`](../evaluation/DETECTION_PRECISION_PROTOCOL_2026.md).
-7. BCF output is imported into the customer CDE and visually checked.
-
-## Non-goal
-
-The milestone does not claim replacement of Solibri/Navisworks or a full MEP
-coordination suite.
+Forbidden: «MEP clash delivered», `capabilities.mep_system_clash=OK`, flipping intake
+`federated_mep_scope_with_signed_memo` without evidence. Checkpoint **NO_GO**.

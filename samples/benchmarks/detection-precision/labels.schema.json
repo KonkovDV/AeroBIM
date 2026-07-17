@@ -13,7 +13,7 @@
       "type": "object",
       "required": ["method", "completed_at", "adjudicators"],
       "properties": {
-        "method": { "enum": ["consensus", "majority-with-resolution"] },
+        "method": { "enum": ["consensus", "majority-with-resolution", "dual_independent"] },
         "completed_at": { "type": "string", "format": "date-time" },
         "adjudicators": {
           "type": "array",
@@ -36,6 +36,12 @@
         "required": ["case_id", "expected_findings"],
         "properties": {
           "case_id": { "type": "string", "minLength": 1 },
+          "discipline": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "description": "Optional discipline code (ar|ov|kzh|…); used for per_discipline metrics"
+          },
           "expected_findings": {
             "type": "array",
             "items": { "$ref": "#/$defs/labeledFinding" }

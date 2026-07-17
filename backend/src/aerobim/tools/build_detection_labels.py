@@ -38,7 +38,7 @@ _MAX_ROWS = 200_000
 _VERDICTS = {"TP", "FP", "FN"}
 _REAL_VERDICTS = {"TP", "FN"}
 _DATASET_STATUSES = {"synthetic", "draft", "adjudicated"}
-_METHODS = {"consensus", "majority-with-resolution"}
+_METHODS = {"consensus", "majority-with-resolution", "dual_independent"}
 _REQUIRED_COLUMNS = {
     "case_id",
     "finding_class",

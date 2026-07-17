@@ -568,12 +568,14 @@ def _validate_adjudication_protocol(
         except ValueError:
             completed_with_timezone = False
     method = raw_adjudication.get("method")
+    # dual_independent ≡ dual-human adjudication protocol (customer template SSOT)
+    publishable_methods = {"consensus", "majority-with-resolution", "dual_independent"}
     return (
         dataset_status == "adjudicated"
         and scope_reference is not None
         and len(adjudicator_ids) >= 2
         and completed_with_timezone
-        and method in {"consensus", "majority-with-resolution"}
+        and method in publishable_methods
         and unresolved_count == 0,
         len(adjudicator_ids),
     )

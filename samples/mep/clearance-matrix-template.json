@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "title": "MEP allowed-intersection / clearance matrix template",
+  "claim_boundary": "Template only — not runtime evidence. RT-003 / MEP-CLASH-001 remain open until federated IFC + signed scope memo.",
+  "scope_memo_ref": "REPLACE-SIGNED-MEP-SCOPE-MEMO",
+  "units": "mm",
+  "default_clearance_mm": 50,
+  "pairs": [
+    {
+      "system_a": "HVAC-SUPPLY",
+      "system_b": "SPRINKLER",
+      "min_clearance_mm": 50,
+      "allowed_intersection": false,
+      "note": "Replace with customer clearance matrix rows"
+    }
+  ]
+}

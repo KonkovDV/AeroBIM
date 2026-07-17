@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "CUSTOMER-NORM-PACK-REPLACE",
+  "version": "0.0.0-draft",
+  "title": "Customer norm pack intake template (do not mark customer_approved until signed)",
+  "typology": "REPLACE-TYPOLOGY",
+  "jurisdiction": "RF",
+  "edition": "REPLACE-EDITION",
+  "disciplines": ["AR"],
+  "status": "draft",
+  "approval": null,
+  "approval_ref": null,
+  "customer_action_required": "Provide signed approval_ref + approval block before status=customer_approved (RT-002).",
+  "rules": [
+    {
+      "rule_id": "CUST-PLACEHOLDER-001",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcSpace",
+      "property_set": "Pset_SpaceCommon",
+      "property_name": "IsExternal",
+      "operator": "exists",
+      "expected_value": null,
+      "evidence_text": "Replace with customer criterion",
+      "norm_source": null,
+      "norm_edition": null,
+      "norm_clause": null,
+      "approval_status": "draft",
+      "approval_ref": null
+    }
+  ]
+}

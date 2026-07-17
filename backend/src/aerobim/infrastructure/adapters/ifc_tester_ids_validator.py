@@ -19,7 +19,6 @@ class IfcTesterIdsValidator:
             raise FileNotFoundError(f"IFC file not found: {ifc_path}")
 
         try:
-            import ifcopenshell
             from ifctester import ids, reporter
         except ModuleNotFoundError as exc:
             raise RuntimeError(
@@ -27,7 +26,9 @@ class IfcTesterIdsValidator:
             ) from exc
 
         specs = ids.open(str(ids_path))
-        ifc_file = ifcopenshell.open(str(ifc_path))
+        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+
+        ifc_file = open_ifc_model(ifc_path)
         specs.validate(ifc_file)
 
         json_reporter = reporter.Json(specs)
