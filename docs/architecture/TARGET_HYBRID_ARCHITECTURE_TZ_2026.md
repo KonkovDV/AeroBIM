@@ -402,7 +402,10 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 3. Luo et al. ArchCAD-400K / DPSS — panoptic symbol spotting baseline (arXiv:2503.22346).  
 4. Iversen & Huang (2026) / TUM agentic ACC tool-calling lineage (cited in EC3 multimodal ReAct distance-tool work).  
 5. MCP4IFC (2025): MCP + IfcOpenShell tool registry for LLM–BIM interaction.  
-6. AeroBIM SSOT: `domain/architecture.py`, `audit/reports/CLAIMS_LOCK_2026_07_17.md`, `GET /v1/system/capabilities`.
+6. Seefried et al. (2026). *Blueprint — Multimodal Retrieval for Complex Engineering Drawings* (arXiv:2602.13345) — region-detect → VLM OCR.  
+7. Lamsal et al. (2026). *IfcLLM — NL querying of IFC via relational + graph backends* (arXiv:2605.13236).  
+8. AeroBIM research map: [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md).  
+9. AeroBIM SSOT: `domain/architecture.py`, `audit/reports/CLAIMS_LOCK_2026_07_17.md`, `GET /v1/system/capabilities`.
 
 ---
 
@@ -410,12 +413,14 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 **Shipped:** I0–I7 (DeterminismGate, Cad/Office, MEP DI-unconfigured, quantity/load/logic, OCR degrade, IDS/norm assist, ComplianceAgent, κ/α intake readiness, report divergences/regions/IDS draft). Plans: I0–I2, I6, I7.
 
-**Next (customer-blocked — no engineering GO):**
+**Next (literature-aligned, still no engineering GO):**
 
-1. Customer corpus intake → κ/α → publishable PrecisionClaim (RT-001).  
-2. Customer-approved norm pack with `approval_ref` (RT-002).  
-3. Federated MEP IFC + real `MepSystemGraphProvider` (RT-003).  
-4. CDE BCF T2 import artifact; customer SLA pack (`claim_level=customer_measurable`).  
-5. Harden intake-gate evidence digests; frontend types for `drawing_regions` / `divergences`.
+1. **Customer-blocked (P0):** RT-001/002/003 — corpus, approved norms, federated MEP.  
+2. **I8a (P1):** Blueprint-style region detector behind `MultimodalDrawingPipeline`; `cv_human_level` stays MISSING.  
+3. **I8b (P1):** RASE-style provenance tags on advisory norm findings (ACC hybrid).  
+4. **I9 (P2):** IfcLLM-style `IfcKnowledgeGraphPort` + allowlisted advisory query (never sign-off).  
+5. Harden intake-gate evidence digests; nDCG optional for priority ranking (fixture only).
+
+See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md).
 
 Checkpoint remains **NO_GO** until RT-001/002/003.
