@@ -28,6 +28,7 @@ Router for `AeroBIM/docs/`.
 | `REPRODUCIBILITY-2026.md` | FAIR/CODE, frozen tag, evidence manifest |
 | `06-architecture-reference.md` | Technical architecture |
 | `architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` | TZ hybrid target (ports, DeterminismGate, roadmap) |
+| `architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md` | Literature map 2025–2026 → AeroBIM I8/I9 (no GO) |
 | `architecture/EXECUTION_PLAN_I0_I2_2026_07.md` | Waves I0–I5 execution log |
 | `architecture/EXECUTION_PLAN_I6_2026_07.md` | **I6** customer metrics readiness (κ/α, intake gate) |
 | `architecture/EXECUTION_PLAN_I7_2026_07.md` | **I7** post-I6 polish (divergences, regions, agent tools) |
