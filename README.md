@@ -50,6 +50,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | DXF via CadModelIngestor | Not verified | — | Optional ezdxf; honesty never OK |
 | Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` (OCR degrade ≠ VLM) |
 | MEP system-aware clash | Not verified | — | DI-wired Unconfigured provider; not delivered |
+| IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | OpenRebar path = **match/сверка**, not solver verification |
 | Frontend vitest review-shell | Green locally | release-readiness | **21** passed; not in main CI job |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |

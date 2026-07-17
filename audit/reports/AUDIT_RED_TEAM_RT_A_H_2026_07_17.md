@@ -16,7 +16,7 @@
 | **RT-G1** | TZ path verified; CI `check_markdown_links` job | tool + workflow |
 | **RT-G2** | `06-architecture-reference.md` → **SUPERSEDED**; SSOT = TARGET | header + Tier-0 |
 | **RT-G3** | README top **NO_GO** banner + claim-boundary links | README |
-| **RT-H** | `docs/TIER0_INDEX.md` live vs superseded; I0/I6/I7 → `docs/archive/execution/`; stubs kept; claim-boundary + Claims Lock aligned | Tier-0 + archive |
+| **RT-H** | `docs/TIER0_INDEX.md` live vs superseded; I0/I6/I7 → `docs/archive/execution/`; stubs kept; claim-boundary + Claims Lock aligned; **I9 labeled ADVISORY SCAFFOLD** (not GraphRAG) | Tier-0 + archive + Claims Lock |
 
 ## HOLD (unchanged)
 

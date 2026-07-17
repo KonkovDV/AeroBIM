@@ -187,7 +187,7 @@ See [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md). Depth 
 | I8a | `DrawingRegionDetector` behind multimodal pipeline | `cv_human_level=MISSING` | port+adapter+token+wiring+tests |
 | I8b | R/A/S/E on advisory issues | never → passed | schema + serializer |
 | I8c | unmatched region → ReviewEvent | FE consumes regions | API + FE |
-| I9 | `IfcKnowledgeGraphPort` | advisory agent tool only | port+stub+KNOWN_BUGS |
+| I9 | `IfcKnowledgeGraphPort` | **advisory scaffold** only (not GraphRAG) | port+relational+stub fallback+KNOWN_BUGS |
 
 Do **not** start I8a until E1–E2 landed (load/serde honesty baseline).
 

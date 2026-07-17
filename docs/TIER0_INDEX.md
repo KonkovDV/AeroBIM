@@ -16,7 +16,7 @@ Checkpoint: **`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKE
 | Surface | Role |
 |---------|------|
 | [`architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | **Architecture SSOT** (ports, contours, roadmap) |
-| [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) | Verified vs planned claims |
+| [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) | Verified vs planned claims (**I9 = advisory scaffold**, not GraphRAG) |
 | [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | Forbidden public wording |
 | [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 register |
 | [`tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Customer TZ v2.0 |

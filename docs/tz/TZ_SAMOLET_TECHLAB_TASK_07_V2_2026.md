@@ -199,7 +199,7 @@ basis:
 | RASE на findings / IDS draft | ACC §D.2 | I8b | partial |
 | `RequirementToIdsCompiler` + HITL promote | ACC §D.2 | P1/P3 | partial |
 | Semantic alignment + HITL escalate regions | §D.4 / I8c | P2 | partial/missing |
-| `IfcKnowledgeGraphPort` (NL→graph query) | IfcLLM §D.3 | I9 | missing |
+| `IfcKnowledgeGraphPort` (NL→graph query) | IfcLLM §D.3 | I9 | **advisory scaffold** (port+DI+fixture QA; GraphRAG not shipped) |
 | `MepSystemGraphProvider` | — | P1+ | not_verified |
 
 **ТР-31.** LLM/VLM/GraphRAG — **только advisory + HITL**; запрещены как единственный источник sign-off.  
@@ -469,7 +469,7 @@ basis:
 | ТР-54 | Claims Lock | done | — | Audit report | CLAIMS_LOCK |
 | ТР-55–56 | Eval protocol | done tooling | P1 | Runbook | I6 |
 | ТР-57–62 | AI safety | partial | MVP–P3 | Gate+HITL | Research §6 |
-| — | IfcKnowledgeGraphPort | missing | I9 | Advisory only | Research §3 |
+| — | IfcKnowledgeGraphPort | **advisory scaffold** | I9 | Not GraphRAG/IfcLLM product | Research §3 · Claims Lock |
 
 ---
 

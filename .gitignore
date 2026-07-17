@@ -40,6 +40,7 @@ samples/customer/**
 !samples/customer/README.md
 docs/evidence/internal/
 docs/evidence/samolet-sla-customer-*.json
+docs/samolet-techlab-scorecard-2026.zip
 *.log
 backend/cache/
 
