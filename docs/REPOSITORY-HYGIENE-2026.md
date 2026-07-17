@@ -15,7 +15,7 @@ SSOT for **what belongs in the public GitHub repo** vs local-only vs CI-generate
 | Principle | AeroBIM rule |
 |-----------|--------------|
 | **Reproducibility** | Source + pinned fixtures + dated evidence in `docs/evidence/`; frozen tag `pilot-2026-pre` for metrics |
-| **Minimal public surface** | No runtime `var/`, no NDA customer packs, no local CI dump with machine paths |
+| **Minimal public surface** | No runtime `var/`, no NDA customer packs, no local CI dump with machine paths, **no AI assistant session prompts** |
 | **Separation of concerns** | Code in `backend/` + `frontend/`; norms in `samples/`; proof in `docs/evidence/`; navigation in `docs/README.md` |
 | **No duplicate authority** | One SSOT per topic; mirrors link to canonical file |
 | **Honest claims** | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) lists verified vs planned |
@@ -46,6 +46,8 @@ AeroBIM/
 | `backend/var/` | Runtime reports, IFC copies from analysis |
 | `artifacts/` | CI/local benchmark dumps (ephemeral; use Actions artifacts) |
 | `docs/evidence/internal/` | NDA customer SLA, CDE screenshots |
+| `docs/prompts/` | Operator AI session prompts — **not product docs** |
+| `.local/` | Local operator scratch (prompts, notes) |
 | `project-package-samolet-pilot-v1.json` | Customer manifest (local only) |
 | `.venv*`, `__pycache__`, `.pytest_cache` | Environment |
 | `.env` | Secrets |
@@ -89,7 +91,8 @@ GitHub Actions generates `artifacts/ci-benchmark-smoke/` per run. **Do not track
 2. Update evidence only when metrics change; add new dated file, do not silently overwrite history.
 3. Refresh `docs/README.md` if new SSOT added.
 4. No customer data in `git add -A` — use [`contributor-git-2026.md`](contributor-git-2026.md).
-5. Do not move tag `pilot-2026-pre` without material-change protocol.
+5. Do not commit AI session prompts / Cursor scratch (`docs/prompts/`, `.local/`) — keep Claims Lock + claim-boundary + audits as the public operator SSOT.
+6. Do not move tag `pilot-2026-pre` without material-change protocol.
 
 ## Language
 

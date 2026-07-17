@@ -18,7 +18,6 @@ Router for `AeroBIM/docs/`.
 | [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md) | Git vs local vs CI artifacts |
 | [`evidence/README.md`](evidence/README.md) | Dated verification snapshots (+ July 17 honesty index) |
 | [`archive/README.md`](archive/README.md) | Historical docs (`01`–`11` + execution waves) |
-| [`prompts/PROMPT_AEROBIM_NEXT_AFTER_RT_AH_2026_07.md`](prompts/PROMPT_AEROBIM_NEXT_AFTER_RT_AH_2026_07.md) | **Next-work AI prompt** (NO_GO; I9 scaffold; do not redo RT-A…H) |
 | [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | **Claims wording SSOT** |
 | [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | Checkpoint **NO_GO** register (RT-001/002/003) |
 | [`../audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md`](../audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md) | **Current** Red Team I0–I7 pass-3 |

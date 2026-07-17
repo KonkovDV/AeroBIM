@@ -1,7 +1,7 @@
 # Self-audit — Next-work prompt execution (2026-07-17)
 
 **Checkpoint:** **NO_GO** (RT-001/002/003 product HOLD unchanged)  
-**Prompt:** `docs/prompts/PROMPT_AEROBIM_NEXT_AFTER_RT_AH_2026_07.md`
+**Session:** next-work protocol readiness (operator AI prompts are **local-only**, not published).
 
 ## Gap → engineering remediation (protocol-ready)
 
