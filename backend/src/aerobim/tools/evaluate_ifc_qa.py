@@ -76,8 +76,12 @@ def main(argv: list[str] | None = None) -> int:
         args.output.write_text(text + "\n", encoding="utf-8")
     else:
         print(text)
-    if args.min_accuracy is not None and float(report["accuracy"]) < args.min_accuracy:
-        return 2
+    if args.min_accuracy is not None:
+        accuracy = report["accuracy"]
+        if not isinstance(accuracy, (int, float)):
+            raise TypeError(f"accuracy must be numeric, got {type(accuracy)!r}")
+        if float(accuracy) < args.min_accuracy:
+            return 2
     return 0
 
 
