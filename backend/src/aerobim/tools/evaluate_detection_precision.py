@@ -34,6 +34,7 @@ class FindingKey:
     rule_id: str = field(compare=False)
     target_ref: str | None = field(default=None, compare=False)
     element_guid: str | None = field(default=None, compare=False)
+    discipline: str | None = field(default=None, compare=False)
 
     def as_dict(self) -> dict[str, str | None]:
         return {
@@ -43,6 +44,7 @@ class FindingKey:
             "rule_id": self.rule_id,
             "target_ref": self.target_ref,
             "element_guid": self.element_guid,
+            "discipline": self.discipline,
         }
 
 
@@ -244,6 +246,18 @@ def evaluate_detection_precision(
         "micro": micro.as_dict(),
         "macro": macro,
         "per_class": per_class,
+        "per_discipline": _bucket_metrics(
+            true_positives,
+            false_positives,
+            false_negatives,
+            key_fn=lambda item: item.discipline or "unknown",
+        ),
+        "clash_vs_nonclash": _bucket_metrics(
+            true_positives,
+            false_positives,
+            false_negatives,
+            key_fn=_clash_bucket,
+        ),
         "false_positives": [item.as_dict() for item in sorted(false_positives)],
         "false_negatives": [item.as_dict() for item in sorted(false_negatives)],
         "warning": warning,
@@ -369,7 +383,13 @@ def _parse_labels(
                 raise ValueError(
                     f"Unsupported adjudication_status {status!r} in labels case {case_id!r}"
                 )
-            key = _parse_finding(finding, case_id=case_id, source="labels")
+            key = _parse_finding(
+                finding,
+                case_id=case_id,
+                source="labels",
+                discipline=_optional_string(case.get("discipline"), "labels.discipline")
+                or _optional_string(finding.get("discipline"), "labels.finding.discipline"),
+            )
             if status == "excluded":
                 excluded_count += 1
                 continue
@@ -432,7 +452,13 @@ def _parse_detections(payload: dict[str, Any]) -> ParsedDetections:
                 raise ValueError(
                     f"detections case {case_id!r} finding[{finding_index}] must be an object"
                 )
-            key = _parse_finding(finding, case_id=case_id, source="detections")
+            key = _parse_finding(
+                finding,
+                case_id=case_id,
+                source="detections",
+                discipline=_optional_string(case.get("discipline"), "detections.discipline")
+                or _optional_string(finding.get("discipline"), "detections.finding.discipline"),
+            )
             if key in findings:
                 raise ValueError(
                     f"Duplicate detection identity in case {case_id!r}: {key.match_key}"
@@ -446,6 +472,7 @@ def _parse_finding(
     *,
     case_id: str,
     source: str,
+    discipline: str | None = None,
 ) -> FindingKey:
     finding_class = _required_string(payload, "finding_class", prefix=f"{source}.").lower()
     rule_id = _required_string(payload, "rule_id", prefix=f"{source}.")
@@ -464,6 +491,12 @@ def _parse_finding(
             ensure_ascii=False,
             separators=(",", ":"),
         )
+    inferred_discipline = discipline
+    if inferred_discipline is None:
+        # SYNTHETIC-AR-001 → ar; CUST-OV-02 → ov
+        parts = case_id.replace("_", "-").split("-")
+        if len(parts) >= 2 and parts[1].isalpha() and len(parts[1]) <= 4:
+            inferred_discipline = parts[1].lower()
     return FindingKey(
         case_id=case_id,
         finding_class=finding_class,
@@ -471,7 +504,39 @@ def _parse_finding(
         rule_id=rule_id,
         target_ref=target_ref,
         element_guid=element_guid,
+        discipline=inferred_discipline,
     )
+
+
+def _bucket_metrics(
+    true_positives: frozenset[FindingKey],
+    false_positives: frozenset[FindingKey],
+    false_negatives: frozenset[FindingKey],
+    *,
+    key_fn,
+) -> dict[str, dict[str, int | float]]:
+    buckets = sorted(
+        {
+            key_fn(item)
+            for item in true_positives | false_positives | false_negatives
+            if key_fn(item)
+        }
+    )
+    out: dict[str, dict[str, int | float]] = {}
+    for bucket in buckets:
+        counts = MetricCounts(
+            tp=sum(1 for item in true_positives if key_fn(item) == bucket),
+            fp=sum(1 for item in false_positives if key_fn(item) == bucket),
+            fn=sum(1 for item in false_negatives if key_fn(item) == bucket),
+        )
+        out[str(bucket)] = counts.as_dict()
+    return out
+
+
+def _clash_bucket(item: FindingKey) -> str:
+    if item.finding_class in {"clash", "spatial", "mep_clash", "system_clash"}:
+        return "clash"
+    return "non_clash"
 
 
 def _validate_adjudication_protocol(

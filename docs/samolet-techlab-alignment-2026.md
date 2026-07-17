@@ -158,4 +158,4 @@ When citing results for Samolet / TechLab, use frozen tag **`pilot-2026-pre`** f
 
 ## Drawing AI posture (retained local SSOT)
 
-July 2026: [../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+July 2026: [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).

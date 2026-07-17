@@ -101,6 +101,16 @@ class Settings:
     ``Settings.from_env()`` defaults this to **False** unless
     ``AEROBIM_ALLOW_ANONYMOUS_DEV=true`` — local/process env stacks must set a
     bearer token (or explicitly opt into anonymous)."""
+    oda_cad_enabled: bool = False
+    """Legal-gated ODA/Teigha DWG path (``AEROBIM_ODA_CAD_ENABLED``). Default off."""
+    mep_system_clash_enabled: bool = False
+    """Opt-in system-aware MEP clash (``AEROBIM_MEP_SYSTEM_CLASH_ENABLED``)."""
+    mep_scope_memo_ref: str | None = None
+    """Signed scope memo ref required with MEP system clash (``AEROBIM_MEP_SCOPE_MEMO_REF``)."""
+    ifc_parse_cache_dir: str | None = None
+    """Optional IFC parse cache directory (``AEROBIM_IFC_PARSE_CACHE_DIR``) — NFR SLA."""
+    hybrid_drawing_enabled: bool = True
+    """Use HybridDrawingAnalyzer for DrawingAnalyzerPort when True."""
 
     @property
     def is_dev_environment(self) -> bool:
@@ -183,6 +193,11 @@ class Settings:
             remark_locale=(os.getenv("AEROBIM_REMARK_LOCALE") or "ru").strip().lower() or "ru",
             norm_rule_pack_path=(os.getenv("AEROBIM_NORM_RULE_PACK") or "").strip() or None,
             allow_anonymous_dev=_read_bool("AEROBIM_ALLOW_ANONYMOUS_DEV", False),
+            oda_cad_enabled=_read_bool("AEROBIM_ODA_CAD_ENABLED", False),
+            mep_system_clash_enabled=_read_bool("AEROBIM_MEP_SYSTEM_CLASH_ENABLED", False),
+            mep_scope_memo_ref=(os.getenv("AEROBIM_MEP_SCOPE_MEMO_REF") or "").strip() or None,
+            ifc_parse_cache_dir=(os.getenv("AEROBIM_IFC_PARSE_CACHE_DIR") or "").strip() or None,
+            hybrid_drawing_enabled=_read_bool("AEROBIM_HYBRID_DRAWING_ENABLED", True),
         )
         settings.require_secure_auth()
         return settings

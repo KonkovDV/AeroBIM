@@ -61,6 +61,8 @@ export interface ValidationIssue {
   } | null;
   conflict_kind?: string | null;
   priority?: number;
+  rase_elements?: string[];
+  rase_summary?: string | null;
 }
 
 export interface DrawingAnnotation {

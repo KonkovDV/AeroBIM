@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aerobim.application.services.agentic_review_orchestrator import AgenticReviewOrchestrator
 from aerobim.application.services.compliance_agent_orchestrator import ComplianceAgentOrchestrator
 from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
@@ -27,6 +28,9 @@ from aerobim.infrastructure.adapters.bsi_validation_service import (
     HttpBsiValidationService,
     LocalSchemaPackCertificate,
 )
+from aerobim.infrastructure.adapters.deterministic_requirement_interpreter import (
+    DeterministicRequirementInterpreter,
+)
 from aerobim.infrastructure.adapters.deterministic_requirement_to_ids_compiler import (
     DeterministicRequirementToIdsCompiler,
 )
@@ -36,6 +40,7 @@ from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
+from aerobim.infrastructure.adapters.ezdxf_cad_entity_loader import EzdxfCadEntityLoader
 from aerobim.infrastructure.adapters.ezdxf_cad_model_ingestor import EzdxfCadModelIngestor
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 from aerobim.infrastructure.adapters.filesystem_norm_corpus_retriever import (
@@ -46,11 +51,13 @@ from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
     HeuristicLayoutRegionDetector,
 )
 from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
+from aerobim.infrastructure.adapters.hybrid_drawing_analyzer import HybridDrawingAnalyzer
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
 from aerobim.infrastructure.adapters.ifc_quantity_consistency_adapter import (
     IfcQuantityConsistencyAdapter,
 )
+from aerobim.infrastructure.adapters.ifc_system_aware_clash import IfcSystemAwareClash
 from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store import (
     InMemoryAnalyzeProjectPackageJobStore,
@@ -62,6 +69,9 @@ from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 from aerobim.infrastructure.adapters.manifest_logic_consistency_adapter import (
     ManifestLogicConsistencyAdapter,
 )
+from aerobim.infrastructure.adapters.multimodal_drawing_analyzer_port import (
+    MultimodalDrawingAnalyzerPort,
+)
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import NarrativeRuleSynthesizer
 from aerobim.infrastructure.adapters.object_store_norm_pack_version_store import (
     ObjectStoreNormRulePackVersionStore,
@@ -69,11 +79,15 @@ from aerobim.infrastructure.adapters.object_store_norm_pack_version_store import
 from aerobim.infrastructure.adapters.ocr_fallback_multimodal_drawing_pipeline import (
     OcrFallbackMultimodalDrawingPipeline,
 )
+from aerobim.infrastructure.adapters.oda_cad_model_ingestor import OdaCadModelIngestor
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 from aerobim.infrastructure.adapters.redis_analyze_project_package_job_store import (
     RedisAnalyzeProjectPackageJobStore,
+)
+from aerobim.infrastructure.adapters.relational_ifc_knowledge_graph import (
+    RelationalIfcKnowledgeGraph,
 )
 from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
 from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
@@ -82,6 +96,7 @@ from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
 from aerobim.infrastructure.adapters.structured_drawing_analyzer import StructuredDrawingAnalyzer
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 from aerobim.infrastructure.adapters.unconfigured_bcf_api_client import UnconfiguredBcfApiClient
+from aerobim.infrastructure.adapters.unconfigured_system_clash import UnconfiguredSystemClash
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
 from aerobim.infrastructure.security.oidc_token_validator import OidcTokenValidator
 
@@ -232,6 +247,40 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.ODA_CAD_MODEL_INGESTOR,
+        lambda current: OdaCadModelIngestor(
+            enabled=current.resolve(Tokens.SETTINGS).oda_cad_enabled
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.IFC_KNOWLEDGE_GRAPH,
+        lambda _container: RelationalIfcKnowledgeGraph(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.SYSTEM_CLASH,
+        lambda current: _build_system_clash(current.resolve(Tokens.SETTINGS)),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.REQUIREMENT_INTERPRETER,
+        lambda current: DeterministicRequirementInterpreter(
+            compiler=current.resolve(Tokens.REQUIREMENT_TO_IDS_COMPILER)
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.CAD_ENTITY_LOADER,
+        lambda _container: EzdxfCadEntityLoader(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.DRAWING_ANALYZER_PORT,
+        lambda current: _build_drawing_analyzer_port(current),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.COMPLIANCE_AGENT_ORCHESTRATOR,
         lambda current: ComplianceAgentOrchestrator(
             norm_retriever=current.resolve(Tokens.NORM_CORPUS_RETRIEVER),
@@ -240,7 +289,16 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             logic_analyzer=current.resolve(Tokens.LOGIC_CONSISTENCY_ANALYZER),
             quantity_checker=current.resolve(Tokens.QUANTITY_CONSISTENCY_CHECKER),
             clash_detector=current.resolve(Tokens.CLASH_DETECTOR),
+            ifc_knowledge_graph=current.resolve(Tokens.IFC_KNOWLEDGE_GRAPH),
+            system_clash=current.resolve(Tokens.SYSTEM_CLASH),
             max_steps=8,
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.AGENTIC_REVIEW_ORCHESTRATOR,
+        lambda current: AgenticReviewOrchestrator(
+            compliance_agent=current.resolve(Tokens.COMPLIANCE_AGENT_ORCHESTRATOR)
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -489,6 +547,27 @@ def _build_bsi_validation_service(settings: Settings):
     if settings.bsi_local_cert:
         return LocalSchemaPackCertificate()
     return None
+
+
+def _build_system_clash(settings: Settings):
+    if settings.mep_system_clash_enabled:
+        return IfcSystemAwareClash(
+            enabled=True,
+            scope_memo_ref=settings.mep_scope_memo_ref,
+        )
+    return UnconfiguredSystemClash()
+
+
+def _build_drawing_analyzer_port(current: Container):
+    settings = current.resolve(Tokens.SETTINGS)
+    if settings.hybrid_drawing_enabled:
+        return HybridDrawingAnalyzer(
+            raster_analyzer=current.resolve(Tokens.RASTER_DRAWING_ANALYZER),
+            region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),
+        )
+    return MultimodalDrawingAnalyzerPort(
+        pipeline=current.resolve(Tokens.MULTIMODAL_DRAWING_PIPELINE)
+    )
 
 
 def _build_audit_report_store(current: Container):

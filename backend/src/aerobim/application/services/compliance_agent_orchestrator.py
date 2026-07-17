@@ -30,6 +30,7 @@ from aerobim.domain.ports import (
     QuantityConsistencyChecker,
     RequirementToIdsCompiler,
 )
+from aerobim.domain.tz_architecture_ports import IfcKnowledgeGraphPort, SystemClashPort
 
 _ALLOWED_TOOLS = frozenset(
     {
@@ -39,6 +40,8 @@ _ALLOWED_TOOLS = frozenset(
         "analyze_logic",
         "check_quantities",
         "detect_clashes",
+        "query_ifc_kg",
+        "detect_system_clash",
     }
 )
 
@@ -61,6 +64,8 @@ class ComplianceAgentOrchestrator:
         logic_analyzer: LogicConsistencyAnalyzer | None = None,
         quantity_checker: QuantityConsistencyChecker | None = None,
         clash_detector: ClashDetector | None = None,
+        ifc_knowledge_graph: IfcKnowledgeGraphPort | None = None,
+        system_clash: SystemClashPort | None = None,
         max_steps: int = 6,
     ) -> None:
         self._norm_retriever = norm_retriever
@@ -69,6 +74,8 @@ class ComplianceAgentOrchestrator:
         self._logic_analyzer = logic_analyzer
         self._quantity_checker = quantity_checker
         self._clash_detector = clash_detector
+        self._ifc_kg = ifc_knowledge_graph
+        self._system_clash = system_clash
         self._max_steps = max(1, max_steps)
 
     def run(self, request: ValidationRequest) -> AgentRunResult:
@@ -99,6 +106,8 @@ class ComplianceAgentOrchestrator:
             "analyze_logic": self._tool_analyze_logic,
             "check_quantities": self._tool_check_quantities,
             "detect_clashes": self._tool_detect_clashes,
+            "query_ifc_kg": self._tool_query_ifc_kg,
+            "detect_system_clash": self._tool_detect_system_clash,
         }
 
         for step in plan:
@@ -193,6 +202,23 @@ class ComplianceAgentOrchestrator:
                 AgentToolStep(
                     tool_name="detect_clashes",
                     rationale="Advisory generic clash probe (not MEP system-aware)",
+                    arguments={},
+                )
+            )
+        if self._ifc_kg is not None and request.ifc_path is not None:
+            kg_question = query or request.discipline or "list structural elements"
+            steps.append(
+                AgentToolStep(
+                    tool_name="query_ifc_kg",
+                    rationale="Advisory IfcLLM-style NL→GUID query (never sign-off)",
+                    arguments={"question": kg_question[:500]},
+                )
+            )
+        if self._system_clash is not None and request.ifc_path is not None:
+            steps.append(
+                AgentToolStep(
+                    tool_name="detect_system_clash",
+                    rationale="Probe MEP system-aware clash port (fail-closed until configured)",
                     arguments={},
                 )
             )
@@ -613,6 +639,144 @@ class ComplianceAgentOrchestrator:
                 arguments=step.arguments,
                 status="ok",
                 detail=f"clashes={len(results)}",
+            ),
+            advisory,
+            [],
+            None,
+        )
+
+    def _tool_query_ifc_kg(
+        self,
+        request: ValidationRequest,
+        step: AgentToolStep,
+    ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
+        assert self._ifc_kg is not None
+        question = step.arguments.get("question", "") or "list elements"
+        try:
+            result = self._ifc_kg.query_nl(question, ifc_path=request.ifc_path)
+        except Exception as exc:  # noqa: BLE001
+            return (
+                AgentToolStep(
+                    tool_name=step.tool_name,
+                    rationale=step.rationale,
+                    arguments=step.arguments,
+                    status="error",
+                    detail=str(exc),
+                ),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-AGENT-IFC-KG",
+                        severity=Severity.INFO,
+                        message=f"IFC KG query failed: {exc}",
+                        category=FindingCategory.IFC_VALIDATION,
+                        source_id="compliance-agent",
+                    )
+                ],
+                [],
+                None,
+            )
+        guid_note = (
+            f"{len(result.element_guids)} GUID(s)"
+            if result.element_guids
+            else "no GUIDs (stub/degraded)"
+        )
+        issues = [
+            ValidationIssue(
+                rule_id="AEROBIM-AGENT-IFC-KG",
+                severity=Severity.INFO,
+                message=(
+                    f"[advisory] IFC KG ({result.backend}): {guid_note}. "
+                    f"{result.reason or '; '.join(result.facts[:2])}"
+                ),
+                category=FindingCategory.IFC_VALIDATION,
+                source_id="compliance-agent",
+                finding_id="agent-ifc-kg",
+                confidence=0.0 if result.degraded else 0.4,
+                element_guid=result.element_guids[0] if result.element_guids else None,
+            )
+        ]
+        return (
+            AgentToolStep(
+                tool_name=step.tool_name,
+                rationale=step.rationale,
+                arguments=step.arguments,
+                status="ok",
+                detail=f"backend={result.backend}; degraded={result.degraded}",
+            ),
+            issues,
+            [],
+            None,
+        )
+
+    def _tool_detect_system_clash(
+        self,
+        request: ValidationRequest,
+        step: AgentToolStep,
+    ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
+        assert self._system_clash is not None
+        try:
+            findings = list(self._system_clash.detect(request.ifc_path))
+        except Exception as exc:  # noqa: BLE001
+            return (
+                AgentToolStep(
+                    tool_name=step.tool_name,
+                    rationale=step.rationale,
+                    arguments=step.arguments,
+                    status="error",
+                    detail=str(exc),
+                ),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-AGENT-MEP-CLASH",
+                        severity=Severity.INFO,
+                        message=(
+                            f"[advisory] MEP system clash not available: {exc} "
+                            "(capability remains NOT_VERIFIED)"
+                        ),
+                        category=FindingCategory.SPATIAL,
+                        source_id="compliance-agent",
+                        finding_id="agent-mep-clash:unconfigured",
+                        confidence=1.0,
+                    )
+                ],
+                [],
+                None,
+            )
+        advisory = [
+            ValidationIssue(
+                rule_id="AEROBIM-AGENT-MEP-CLASH-HIT",
+                severity=Severity.INFO,
+                message=(
+                    f"[advisory-agent] System clash: {finding.message} "
+                    f"({finding.system_a}×{finding.system_b})"
+                ),
+                category=FindingCategory.SPATIAL,
+                source_id="compliance-agent",
+                finding_id=f"agent-mep:{finding.finding_id}",
+                confidence=0.5,
+                element_guid=finding.element_a_guid,
+            )
+            for finding in findings[:20]
+        ]
+        if not advisory:
+            advisory.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-AGENT-MEP-CLASH-NONE",
+                    severity=Severity.INFO,
+                    message="[advisory] SystemClashPort returned zero findings",
+                    category=FindingCategory.SPATIAL,
+                    source_id="compliance-agent",
+                    finding_id="agent-mep:none",
+                    confidence=1.0,
+                )
+            )
+        return (
+            AgentToolStep(
+                tool_name=step.tool_name,
+                rationale=step.rationale,
+                arguments=step.arguments,
+                status="ok",
+                detail=f"findings={len(findings)}",
             ),
             advisory,
             [],

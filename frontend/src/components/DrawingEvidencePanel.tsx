@@ -126,6 +126,11 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
       }
     : undefined;
 
+  const hitlRegions = useMemo(
+    () => (report?.drawing_regions ?? []).filter((region) => region.hitl_required === true),
+    [report],
+  );
+
   return (
     <section className="panel drawing-evidence-panel">
       <div className="panel-header">
@@ -145,7 +150,23 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
             <span>{selectedAsset ? describeAsset(selectedAsset) : "asset n/a"}</span>
             <span>{selectedAsset?.media_type ?? "preview n/a"}</span>
             <span>{isOverlayTarget ? "overlay target" : "browse mode"}</span>
+            {hitlRegions.length > 0 ? (
+              <span className="selection-badge">{hitlRegions.length} HITL region(s)</span>
+            ) : null}
           </div>
+
+          {hitlRegions.length > 0 && (
+            <ul className="drawing-hitl-list" aria-label="Regions requiring expert review">
+              {hitlRegions.map((region, index) => (
+                <li key={`${region.sheet_id}-${index}`}>
+                  <strong>{region.sheet_id}</strong>
+                  <span>{region.modality}</span>
+                  <span>{region.hitl_reason ?? "hitl_required"}</span>
+                  <span>conf={region.confidence.toFixed(2)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
 
           {drawingAssets.length > 1 && (
             <div className="drawing-evidence-selector" role="tablist" aria-label="Persisted drawing assets">

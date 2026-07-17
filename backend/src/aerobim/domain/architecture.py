@@ -137,6 +137,8 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
         "OfficeDocumentIngestor",
         "MultimodalDrawingPipeline",
         "DrawingRegionDetector",
+        "DrawingAnalyzerPort",
+        "CadEntityLoaderPort",
     ),
     Contour.DETERMINISTIC_VALIDATION: (
         "IfcValidator",
@@ -146,6 +148,7 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
         "SectionDiffAnalyzer",
         "ExternalEvidenceVerifier",
         "MepSystemGraphProvider",
+        "SystemClashPort",
         "QuantityConsistencyChecker",
         "LoadEvidenceVerifier",
         "LogicConsistencyAnalyzer",
@@ -154,8 +157,12 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
         "IdsAssistDraftPort",
         "AdvisoryTextAssist",  # reserved; LLM assist never writes summary.passed
         "RequirementToIdsCompiler",
+        "RequirementInterpreterPort",
         "NormCorpusRetriever",
+        "NormRetrieverPort",
         "ComplianceAgentOrchestrator",
+        "AgenticReviewOrchestrator",
+        "IfcKnowledgeGraphPort",
     ),
     Contour.EVIDENCE_REPORTING: (
         "AuditReportStore",
