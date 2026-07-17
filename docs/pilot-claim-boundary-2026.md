@@ -95,6 +95,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 4. Non-deterministic text extraction is **not** used for pilot sign-off; deterministic regex path meets F1 gates in CI.
 5. Optional LLM **IDS assist** (if enabled later) is **advisory only** and must never affect `summary.passed` without human-in-the-loop.
 6. TZ wording «точность >90%» is an **evaluation target**, not a verified product claim, until precision/recall is published from a labeled customer corpus.
+7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer”. See [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+8. General-purpose multimodal models must not be marketed as Task 07 sign-off for symbol counting or full PD/RD understanding.
 
 ## Reproducibility baseline
 
@@ -127,5 +129,6 @@ Keep aligned with:
 - [evaluation/DETECTION_PRECISION_PROTOCOL_2026.md](evaluation/DETECTION_PRECISION_PROTOCOL_2026.md)
 - [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
 - [evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md](evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md)
-7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer”. See [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
-8. General-purpose multimodal models must not be marketed as Task 07 sign-off for symbol counting or full PD/RD understanding.
+- [architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md](architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) — literature map (not product claims)
+- [architecture/EXECUTION_PLAN_I8_I9_2026_07.md](architecture/EXECUTION_PLAN_I8_I9_2026_07.md) — planned advisory waves (no GO)
+- [../audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md) — allowed / forbidden wording

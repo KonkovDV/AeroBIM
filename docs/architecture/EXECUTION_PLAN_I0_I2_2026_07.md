@@ -75,4 +75,4 @@ ruff format --check src tests
 - [x] **I5** ComplianceAgentOrchestrator (deterministic ReAct tool allowlist → DeterminismGate)
 - [x] **I6** Customer metrics readiness — see [`EXECUTION_PLAN_I6_2026_07.md`](EXECUTION_PLAN_I6_2026_07.md)
 - [x] **I7** Post-I6 polish — see [`EXECUTION_PLAN_I7_2026_07.md`](EXECUTION_PLAN_I7_2026_07.md)
-- Next: customer evidence when corpus arrives (gates stay false until then)
+- Next: **RT-001/002/003** (customer) · research waves [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md) · [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md)

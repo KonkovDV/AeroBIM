@@ -299,6 +299,8 @@ Backend src ~16247 LOC; tests ~11434 LOC; 456+ test functions; extraction macro_
 - [Reproducibility (FAIR/CODE)](docs/REPRODUCIBILITY-2026.md) — frozen tag, commands, evidence manifest
 - [Pilot start package](docs/pilot-start-package-2026.md) — Moscow pilot kickoff (tag `pilot-2026-pre`, gates, week 1)
 - [Documentation map](docs/README.md) — Tier 0 / pilot / archive router
+- [Hybrid TZ target architecture](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — DeterminismGate, ports, roadmap I0–I9
+- [Research alignment (AEC AI 2025–2026)](docs/architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) — Blueprint / IfcLLM map (no GO)
 - [Architecture Reference](docs/06-architecture-reference.md) — canonical layer map and invariants
 - [Standards Roadmap 2026](docs/13-academic-execution-plan-2026.md) — openBIM iterations A–C
 - [Archived docs](docs/archive/README.md) — MicroPhoenix extraction, rebaseline, April 2026 audits

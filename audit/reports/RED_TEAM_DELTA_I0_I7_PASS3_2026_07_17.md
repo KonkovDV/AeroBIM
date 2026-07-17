@@ -34,6 +34,11 @@ Hostile re-audit after PASS2 (`dbc41bf`). Prior CRITICAL remediations **not regr
 
 RT-001/002/003 · RT-INTAKE-001 · RT-PREC-001 · RT-HONESTY-001 · RT-CLI-001 · RT-SERDE roundtrip tests · RT-CALC-004/005 (JSON non-dict skip / text shadows path)
 
+## Related docs (post-audit)
+
+- Literature map: `docs/architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`
+- Planned I8–I9 (advisory only): `docs/architecture/EXECUTION_PLAN_I8_I9_2026_07.md`
+
 ## Positive controls
 
 DeterminismGate · forbidden OK paths · intake all-false · Claims Lock · customer samples gitignored.

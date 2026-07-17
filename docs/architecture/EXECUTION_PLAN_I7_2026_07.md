@@ -9,7 +9,7 @@ claim_boundary: "Engineering polish only. Checkpoint remains NO_GO. No customer 
 
 # Execution Plan — I7 (Post-I6 polish)
 
-Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · Prior: I0–I6
+Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · Prior: I0–I6 · Next: [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md)
 
 ## Objective
 

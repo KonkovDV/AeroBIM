@@ -1,10 +1,10 @@
 # AeroBIM — Industry-Grade Improvement Plan (July 2026)
 
-**Status:** active — **W0–W2 complete**; **W3 largely landed**; **TZ Response Pack + P0 landed 2026-07-10**; **P1 engineering scaffolds landed 2026-07-10** (norm packs, section pairing, precision harness, ≥20 typical patterns). Next: customer corpus / approved pack / MEP intake.  
-**Version:** 2.4.0  
-**Date:** 2026-07-10  
+**Status:** active — **W0–W2 complete**; **W3 largely landed**; **TZ Response Pack + P0 landed 2026-07-10**; **P1 engineering scaffolds landed 2026-07-10**; **I0–I7 + Red Team honesty remediations landed 2026-07-17**. Next: **RT-001/002/003** (customer) · advisory research waves [`architecture/EXECUTION_PLAN_I8_I9_2026_07.md`](architecture/EXECUTION_PLAN_I8_I9_2026_07.md). Checkpoint **NO_GO**.  
+**Version:** 2.5.0  
+**Date:** 2026-07-17  
 **Horizon:** H2 2026 → H1 2027  
-**Inputs:** deep audit [`ACADEMIC_DEEP_AUDIT_2026_07_10.md`](evidence/ACADEMIC_DEEP_AUDIT_2026_07_10.md), fact-check [`FULL_AUDIT_FACTCHECK_2026_07_10.md`](evidence/FULL_AUDIT_FACTCHECK_2026_07_10.md), prior roadmap [`13-academic-execution-plan-2026.md`](13-academic-execution-plan-2026.md), external standards & analogs (July 2026)
+**Inputs:** deep audit [`ACADEMIC_DEEP_AUDIT_2026_07_10.md`](evidence/ACADEMIC_DEEP_AUDIT_2026_07_10.md), fact-check [`FULL_AUDIT_FACTCHECK_2026_07_10.md`](evidence/FULL_AUDIT_FACTCHECK_2026_07_10.md), prior roadmap [`13-academic-execution-plan-2026.md`](13-academic-execution-plan-2026.md), research map [`architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md), external standards & analogs (July 2026)
 
 ---
 

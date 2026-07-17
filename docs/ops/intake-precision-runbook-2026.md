@@ -1,7 +1,7 @@
 ---
 title: "Intake precision & SLA runbook — when the corpus arrives"
 status: active
-last_updated: "2026-07-11"
+last_updated: "2026-07-17"
 tags: [aerobim, ops, precision, intake, samolet, track-a3]
 ---
 
@@ -155,6 +155,8 @@ aerobim-validate-customer-intake-gate
 ```
 
 Checkpoint remains **NO_GO** until `audit/evidence/customer-intake-gate.json` flips with evidence.
+
+**κ thresholds (honesty):** publishable gate in tooling is **κ≥0.60** / **α≥0.67** when agreement is present. Literature often cites κ≥0.80 as aspirational dual-expert quality — that is a **customer protocol stretch**, not a silent raise of the Claims Lock gate. See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](../architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md).
 
 ## 9. Go/No-go
 
