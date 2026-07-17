@@ -414,15 +414,14 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 ## 12. Immediate next engineering slice (recommended)
 
-**Shipped:** I0–I7 + Track E honesty + **I8a** heuristic `DrawingRegionDetector`. Plans: I0–I2, I6, I7, I8/I9, NEXT, HYPERDEEP.
+**Shipped:** I0–I7 + Track E + **I8a/b/c**. Next engineering: **I9** IfcKnowledgeGraphPort. Customer: RT-001/002/003.
 
 **Next (literature-aligned, still no engineering GO):**
 
 1. **Customer-blocked (P0):** RT-001/002/003 — corpus, approved norms, federated MEP.  
-2. **I8b (P1):** RASE-style provenance tags on advisory norm findings (ACC hybrid).  
-3. **I8c (P2):** HITL escalate unmatched drawing regions.  
-4. **I9 (P2):** IfcLLM-style `IfcKnowledgeGraphPort` + allowlisted advisory query (never sign-off).  
-5. Optional YOLO weights behind same `DrawingRegionDetector` port (cv stays MISSING).
+2. **I9 (P2):** IfcLLM-style `IfcKnowledgeGraphPort` + allowlisted advisory query (never sign-off).  
+3. Optional YOLO weights behind same `DrawingRegionDetector` port (cv stays MISSING).  
+4. FE filter for `hitl_required` regions (UX polish).
 
 See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md) · [`EXECUTION_PLAN_NEXT_2026_07.md`](EXECUTION_PLAN_NEXT_2026_07.md) · **гиперплан:** [`EXECUTION_PLAN_HYPERDEEP_2026_07.md`](EXECUTION_PLAN_HYPERDEEP_2026_07.md).
 

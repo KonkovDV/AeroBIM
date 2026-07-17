@@ -48,10 +48,12 @@ Translate 2025–2026 AEC AI practice (Blueprint region pipelines, hybrid ACC/RA
 
 ## I8c — HITL escalate unmatched regions
 
-- [ ] Unmatched / low-confidence `DrawingRegionRef` → `ReviewEvent` / triage queue
-- [ ] Frontend consumes `drawing_regions` (types already extended Pass-3)
+- [x] Unmatched / low-confidence `DrawingRegionRef` → `hitl_required` + INFO issue
+- [x] `ReviewEvent` type `drawing_region_escalated` persisted when store wired
+- [x] Frontend types consume `hitl_required` / `hitl_reason`
+- [ ] FE triage queue UX (filter by hitl_required) — optional polish
 
-**Driver:** Cross-document VLM escalate pattern
+**Driver:** Cross-document VLM escalate pattern + Blueprint HITL practice
 
 ## I9 — IfcKnowledgeGraphPort (advisory)
 

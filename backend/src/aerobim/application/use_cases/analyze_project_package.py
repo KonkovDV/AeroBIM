@@ -16,6 +16,11 @@ from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
+from aerobim.domain.drawing_region_hitl import (
+    issues_for_hitl_regions,
+    mark_regions_for_hitl,
+    review_events_for_hitl_regions,
+)
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.finding_provenance import ensure_finding_provenance
 from aerobim.domain.ingestion import (
@@ -69,6 +74,7 @@ from aerobim.domain.ports import (
     RasterDrawingAnalyzer,
     RemarkGenerator,
     RequirementExtractor,
+    ReviewEventStore,
     SectionDiffAnalyzer,
 )
 from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
@@ -157,6 +163,7 @@ class AnalyzeProjectPackageUseCase:
         logic_consistency_analyzer: LogicConsistencyAnalyzer | None = None,
         multimodal_drawing_pipeline: MultimodalDrawingPipeline | None = None,
         compliance_agent: ComplianceAgentOrchestrator | None = None,
+        review_event_store: ReviewEventStore | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -197,6 +204,7 @@ class AnalyzeProjectPackageUseCase:
         self._logic_consistency_analyzer = logic_consistency_analyzer
         self._multimodal_drawing_pipeline = multimodal_drawing_pipeline
         self._compliance_agent = compliance_agent
+        self._review_event_store = review_event_store
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         request = self._maybe_hydrate_office_requirement_source(request)
@@ -247,7 +255,8 @@ class AnalyzeProjectPackageUseCase:
         annotation_list, region_list = self._collect_drawing_annotations(request)
         cad_annotations, cad_capability, cad_issues = self._run_cad_ingest(request)
         drawing_annotations = tuple([*annotation_list, *cad_annotations])
-        drawing_regions = tuple(region_list)
+        drawing_regions = mark_regions_for_hitl(tuple(region_list), drawing_annotations)
+        region_hitl_issues = issues_for_hitl_regions(drawing_regions)
         ifc_issues = (
             tuple(self._ifc_validator.validate(request.ifc_path, requirements))
             if requirements
@@ -291,6 +300,7 @@ class AnalyzeProjectPackageUseCase:
             *quantity_issues,
             *load_issues,
             *logic_issues,
+            *region_hitl_issues,
         ]
         agent_advisory: tuple[ValidationIssue, ...] = ()
         advisory_ids_draft = None
@@ -390,6 +400,13 @@ class AnalyzeProjectPackageUseCase:
             drawing_regions=tuple(drawing_regions),
         )
         self._audit_report_store.save(report)
+        if self._review_event_store is not None:
+            for event in review_events_for_hitl_regions(
+                report_id=report.report_id,
+                regions=drawing_regions,
+                created_at=report.created_at,
+            ):
+                self._review_event_store.append(event)
         persisted_report = self._audit_report_store.get(report.report_id)
         return persisted_report or report
 

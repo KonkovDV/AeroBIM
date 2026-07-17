@@ -19,16 +19,18 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 
 ## Thesis (industry + AeroBIM)
 
-| Industry 2026 consensus | AeroBIM posture (I0–I7) |
+| Industry 2026 consensus | AeroBIM posture (I0–I8c) |
 |-------------------------|-------------------------|
-| Region-first VLM (detect → crop → VLM), not whole-sheet GPT-4V | **Partial:** `DrawingRegionRef` + OCR degrade; **no** YOLO/VLM yet (`cv_human_level=MISSING`) |
-| LLM interprets norms; **numerics stay deterministic** | **Aligned:** DeterminismGate + IDS compiler advisory; engine owns `summary.passed` |
-| IFC via Graph/relational backends, not raw IFC in context | **Gap:** IfcOpenShell validators; no GraphRAG / IfcLLM port |
-| Cross-doc = attribute/semantic alignment + HITL escalate | **Partial:** SectionDiff, quantity/load сверка; no VLM 2D↔3D map |
-| κ / dual experts before publishable metrics | **Aligned (tooling):** κ+α + intake gate; **blocked** on customer corpus |
-| Provenance + severity triage + HITL | **Partial:** findings provenance, priority, divergences; CoVe not shipped |
+| Region-first VLM (detect → crop → VLM), not whole-sheet GPT-4V | **Partial:** `DrawingRegionDetector` heuristic + OCR; YOLO/VLM weights **not** shipped (`cv_human_level=MISSING`) |
+| LLM interprets norms; **numerics stay deterministic** | **Aligned:** DeterminismGate + IDS compiler + RASE tags; engine owns `summary.passed` |
+| IFC via Graph/relational backends, not raw IFC in context | **Gap:** IfcOpenShell validators; no GraphRAG / IfcLLM port (I9) |
+| Cross-doc = attribute/semantic alignment + HITL escalate | **Partial:** SectionDiff, qty/load; **I8c** escalates unmatched regions → HITL |
+| κ / dual experts before publishable metrics | **Aligned (tooling):** κ≥0.60 / α≥0.67 gates; literature stretch κ>0.80 as SOP |
+| Provenance + severity triage + HITL | **Partial:** evidence_refs, RASE, region HITL; CoVe not shipped |
 
-**Invariant unchanged:** determinism ≻ LLM for sign-off (Mirhosseini et al. BRI 2026; Claims Lock).
+**External re-verify 2026-07-17:** Blueprint [arXiv:2602.13345](https://arxiv.org/abs/2602.13345) (YOLOv8-S regions → region-restricted VLM OCR; nDCG@3 graded 0/1/2); IfcLLM [arXiv:2605.13236](https://arxiv.org/abs/2605.13236) (relational+graph backends, retry-and-refine, **not** raw IFC dump); AECV-Bench [arXiv:2601.04819](https://arxiv.org/abs/2601.04819) (OCR strong, symbol counting weak → forbids unsupervised CV claims); IEEE ACCESS HITL RASE tagging (2024/25) — RASE + expert loop.
+
+**Invariant unchanged:** determinism ≻ LLM for sign-off (Claims Lock).
 
 ## Theme map
 
@@ -36,9 +38,10 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 
 | Source (verified*) | Recommendation | AeroBIM today | Next slice (no GO) |
 |--------------------|----------------|---------------|--------------------|
-| Blueprint [arXiv:2602.13345]* | YOLO regions → region-restricted VLM OCR | OCR-only multimodal; regions plumbed I7 | **I8a:** detector adapter behind `MultimodalDrawingPipeline`; honesty stays MISSING until corpus F1 |
+| Blueprint [arXiv:2602.13345]* | YOLO regions → region-restricted VLM OCR; nDCG@3 | Heuristic detector + OCR; no YOLO weights | Optional YOLO adapter; keep MISSING until corpus |
 | MechVQA [arXiv:2605.30794]† | Symbol VQA + drafting standards in prompts | Heuristic OCR annotations | Optional MechVQA-style eval harness (fixture only) |
-| AEI bridge digitization 2026† | VLM for 2D engineering sheets | Same | Bundle with I8a |
+| AECV-Bench [arXiv:2601.04819]* | OCR strong; symbol count weak | Honesty forbids human-level CV | Do not claim CV parity |
+| AEI bridge digitization 2026† | VLM for 2D engineering sheets | Same | Bundle with YOLO path |
 
 \*Externally spot-checked 2026-07-17. †From operator synthesis — re-verify before public cite.
 
@@ -46,7 +49,8 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 
 | Source | Recommendation | AeroBIM today | Next slice |
 |--------|----------------|---------------|------------|
-| AiC / AEI LLM ACC 2025–26† | LLM → IDS; hybrid RASE | Deterministic IDS compile + stub LLM assist | **I8b:** RASE fields on norm pack / issue provenance (`norm_clause` already partial) |
+| AiC / AEI LLM ACC 2025–26† | LLM → IDS; hybrid RASE | Deterministic IDS + `rase_elements` (I8b) | HITL RASE tagging loop (IEEE ACCESS style) |
+| LLM-FuncMapper / RASE HITL† | Atomic functions + expert markup | RASE tags inferred coarsely | Exception (E) NLP deferred |
 | LLM regulatory NL 2026† | Ambiguity → LLM; numbers → engine | DeterminismGate | Keep; add CoVe optional advisory loop |
 
 ### 3. IFC + LLM agents / GraphRAG
@@ -60,7 +64,7 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 
 | Source | Recommendation | AeroBIM today | Next slice |
 |--------|----------------|---------------|------------|
-| Context-aware 2D↔3D VLM [arXiv:2602.18296]† | Escalate unmatched zones to HITL | SectionDiff + load/qty | **I8c:** escalate unmatched `DrawingRegionRef` → review events |
+| Context-aware 2D↔3D VLM [arXiv:2602.18296]† | Escalate unmatched zones to HITL | **I8c done:** `hitl_required` + ReviewEvent `drawing_region_escalated` | FE triage UX polish |
 | Spec ↔ IFC attribute alignment† | Compare marks/quantities not raw geom | Quantity/Load ports | Extend claims; keep сверка ≠ correctness |
 
 ### 5. Evaluation / gold corpora

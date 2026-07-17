@@ -557,6 +557,8 @@ class FilesystemAuditStore:
             bbox_xyxy=(float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])),
             confidence=float(data.get("confidence", 0.0)),
             modality=str(data.get("modality", "ocr")),
+            hitl_required=bool(data.get("hitl_required", False)),
+            hitl_reason=data.get("hitl_reason"),
         )
 
     def _reconstruct_drawing_asset(self, data: dict) -> DrawingAsset:

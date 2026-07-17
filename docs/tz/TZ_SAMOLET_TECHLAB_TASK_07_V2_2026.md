@@ -109,9 +109,10 @@ basis:
 | **ТР-4** | Текст/аннотации с векторных/структурированных 2D | MVP | partial |
 | **ТР-5** | OCR сканов PDF/растр | MVP | partial |
 | **ТР-6** | DXF (ezdxf) / DWG через конвертацию или ODA | P2 | missing / not_verified |
-| **ТР-7** `[НОВОЕ]` | Детектор регионов листа → OCR/VLM на регионе (Blueprint) | P2/I8a | partial (heuristic priors; YOLO — future) |
+| **ТР-7** `[НОВОЕ]` | Детектор регионов → OCR/VLM на регионе (Blueprint arXiv:2602.13345; heuristic сейчас, YOLO — опция) | P2/I8a | partial |
+| **ТР-7a** `[НОВОЕ]` | HITL unmatched/low-confidence регионов (`hitl_required`, event `drawing_region_escalated`) | I8c | done/partial |
 
-**Критерий ТР-7:** регионы в `drawing_regions`; `cv_human_level` остаётся MISSING до labeled F1.
+**Критерий ТР-7/7a:** `drawing_regions` + HITL flags; `cv_human_level=MISSING` (AECV-Bench arXiv:2601.04819: OCR силён, подсчёт символов слаб).
 
 ### 4.2 Анализ соответствия
 
@@ -440,7 +441,8 @@ basis:
 | ТР-3 | IfcOpenShell / IDS | done | MVP | Capabilities ok/failed | Matrix §3.1 |
 | ТР-4–5 | DrawingAnalyzer / Raster | partial | MVP/P2 | Annotations / OCR | Matrix |
 | ТР-6 | CadModelIngestor | missing/NV | P2 | Honesty dwg_dxf | TARGET G1 |
-| ТР-7 | DrawingRegionDetector | partial | I8a | Regions + MISSING cv | Research §1 |
+| ТР-7 | DrawingRegionDetector | partial | I8a | Regions + MISSING cv | Blueprint 2602.13345 |
+| ТР-7a | drawing_region_hitl | partial | I8c | hitl_required + events | Research §4 |
 | ТР-8–9 | IdsValidator, extractors | done | MVP | Report issues | Matrix |
 | ТР-10 | SectionDiffAnalyzer | partial | P1 | Pairing capability | Track A1 |
 | ТР-11 | NormRulePackLoader | partial | P1 | approval_ref | RT-002 |
