@@ -374,6 +374,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             logic_consistency_analyzer=current.resolve(Tokens.LOGIC_CONSISTENCY_ANALYZER),
             multimodal_drawing_pipeline=current.resolve(Tokens.MULTIMODAL_DRAWING_PIPELINE),
             compliance_agent=current.resolve(Tokens.COMPLIANCE_AGENT_ORCHESTRATOR),
+            review_event_store=current.resolve(Tokens.REVIEW_EVENT_STORE),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

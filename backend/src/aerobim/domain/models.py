@@ -228,6 +228,9 @@ class DrawingRegionRef:
     bbox_xyxy: tuple[float, float, float, float]
     confidence: float
     modality: str  # ocr | detector | vlm | vector
+    hitl_required: bool = False
+    """I8c: low-confidence / unmatched region queued for expert review."""
+    hitl_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -507,6 +510,7 @@ class ReviewEvent:
         "triaged",
         "norm_rule_proposed",
         "norm_rule_edited",
+        "drawing_region_escalated",
     ]
     created_at: str
     issue_rule_id: str | None = None

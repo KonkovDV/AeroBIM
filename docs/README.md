@@ -22,6 +22,7 @@ Router for `AeroBIM/docs/`.
 | [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | Checkpoint **NO_GO** register (RT-001/002/003) |
 | [`../audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md`](../audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md) | **Current** Red Team I0–I7 pass-3 |
 | [`../audit/reports/RED_TEAM_TRACK_E_2026_07_17.md`](../audit/reports/RED_TEAM_TRACK_E_2026_07_17.md) | Track E residual honesty CLOSED |
+| [`../audit/reports/AUDIT_I8C_TZ_V2_RESEARCH_2026_07_17.md`](../audit/reports/AUDIT_I8C_TZ_V2_RESEARCH_2026_07_17.md) | Audit I8c + TZ v2 + research re-verify |
 | [`../audit/reports/RED_TEAM_DELTA_2026_07_17.md`](../audit/reports/RED_TEAM_DELTA_2026_07_17.md) | Post-P0 delta (MEP DI cell superseded — see banner) |
 
 ## Tier 0 — SSOT (read first)

@@ -145,6 +145,8 @@ export interface DrawingRegionRef {
   bbox_xyxy: [number, number, number, number];
   confidence: number;
   modality: string;
+  hitl_required?: boolean;
+  hitl_reason?: string | null;
 }
 
 export interface IdsCompileDraft {
@@ -153,6 +155,8 @@ export interface IdsCompileDraft {
   source_requirement_count: number;
   advisory_only?: boolean;
   confidence?: number;
+  rase_elements?: string[];
+  rase_summary?: string | null;
 }
 
 export interface ValidationReport {

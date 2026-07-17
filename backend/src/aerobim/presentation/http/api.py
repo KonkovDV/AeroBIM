@@ -128,6 +128,7 @@ class ReviewEventRequest(BaseModel):
         "triaged",
         "norm_rule_proposed",
         "norm_rule_edited",
+        "drawing_region_escalated",
     ]
     issue_rule_id: str | None = Field(default=None, max_length=256)
     actor: str | None = Field(default=None, max_length=128)
