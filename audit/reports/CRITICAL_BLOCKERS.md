@@ -156,7 +156,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `domain/ingestion.py::revisions_conflict`, `analyze_project_package.py::_collect_identity_sources`  
 - **Observed:** Conflict only if **both** revisions non-empty; drawing sources not in identity set  
 - **Expected:** AMBIGUOUS / REQUIRES_HITL when revision missing on one side; drawings in identity scope  
-- **Evidence:** [Architecture layer audit](2546f775-77dd-4830-b1f6-8a53371eaaee)  
+- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md)  
 
 ### RT-014 — Soft empty-success edges (raster OK + empty OCR; bSI WARNING)
 - **Severity:** HIGH  
@@ -164,7 +164,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** analyze `_build_capabilities` (raster OK if analyzer configured); `_submit_bsi_validation` WARNING path  
 - **Observed:** Empty OCR yield can still look capability-OK; remote schema WARNING may not fail pass  
 - **Expected:** Explicit yield/coverage gates; schema pre-gate policy for pilot packages  
-- **Evidence:** [Architecture layer audit](2546f775-77dd-4830-b1f6-8a53371eaaee)  
+- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md)  
 
 ### RT-015 — Storage fallbacks may hide enterprise misconfig
 - **Severity:** HIGH  
@@ -172,7 +172,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `infrastructure/di/bootstrap.py::_build_audit_report_store`  
 - **Observed:** Postgres init failure always falls back to filesystem (not only in dev); S3/Redis fall back in dev  
 - **Expected:** Non-dev fail-closed when configured enterprise store is required  
-- **Evidence:** [Architecture layer audit](2546f775-77dd-4830-b1f6-8a53371eaaee)  
+- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md)  
 
 ### RT-016 — Published SLA evidence is fixture-microscopic
 - **Severity:** HIGH  
@@ -180,7 +180,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `docs/evidence/samolet-sla-pilot-moscow-2026-05-21.json`  
 - **Observed:** `sla_pass: true` on tiny Moscow fixture (~0.01 min class), not customer комплект  
 - **Expected:** Measured SLA only with package hash + sizes + machine + cold/warm  
-- **Evidence:** [Claims and TZ audit](b0b9a9d7-762e-4e4a-9173-4a33d4c58d33)  
+- **Evidence:** Claims/TZ audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md) · claim boundary: [`../../docs/pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md)  
 
 ### RT-017 — Advisory OFF==ON test is narrow
 - **Severity:** MEDIUM  
@@ -188,7 +188,8 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `tests/test_architecture_seams.py::test_advisory_off_equals_advisory_on_for_summary_passed`  
 - **Observed:** Side-call to IDS-assist stub between empty analyzes; does not toggle real OCR/CV/LLM path inside UC  
 - **Expected:** Full report-hash / deterministic-findings equality under advisory feature flags  
-- **Evidence:** [Claims and TZ audit](b0b9a9d7-762e-4e4a-9173-4a33d4c58d33)  
+- **Evidence:** Claims/TZ audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md) · claim boundary: [`../../docs/pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md)  
+- **Engineering status (2026-07-17):** **REMEDIATED** via RT-E (`tests/test_red_team_signoff_remediation.py::test_rt_e_*`) — real UC path, advisory ON/OFF; deterministic findings + `summary.passed` equality. Does **not** close RT-001/002/003 or flip **NO_GO**.  
 
 ---
 

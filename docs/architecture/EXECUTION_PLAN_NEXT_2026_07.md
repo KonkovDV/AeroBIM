@@ -142,10 +142,10 @@ python -m aerobim.tools.validate_customer_intake_gate
 
 | Wave | Pri | Когда стартовать | Заметка |
 |------|-----|------------------|---------|
-| **I8a** Region detector | P1 | После E1 или параллельно с C0 | `cv_human_level=MISSING` |
-| **I8b** RASE provenance | P1 | После/с I8a | никогда → `passed` |
-| **I8c** HITL regions | P2 | После I8a + FE types | triage queue |
-| **I9** IfcKnowledgeGraphPort | P2 | После I8b или отдельной сессией | Atomic Delivery + stub ok |
+| **I8a** Region detector | P1 | **DONE** | `cv_human_level=MISSING` |
+| **I8b** RASE provenance | P1 | **DONE** | никогда → `passed` |
+| **I8c** HITL regions | P2 | **DONE** (+ FE filter) | triage queue |
+| **I9** IfcKnowledgeGraphPort | P2 | **DONE (stub)** | `STUB-IFC-KG-001`; real backend after RT-001 |
 
 Опционально (TARGET §12): fixture-only nDCG для priority ranking — **не** product KPI.
 
@@ -161,7 +161,7 @@ python -m aerobim.tools.validate_customer_intake_gate
 | 4 | I8a region detector (stub→real) | I | Blueprint seam |
 | 5 | I8b RASE tags | I | ACC provenance |
 | 6 | Customer kickoff + C1/C2 intake | C | evidence или явный wait |
-| 7 | I8c + I9 (по ёмкости) | I | HITL + KG query |
+| 7 | I8c + I9 + TZ ports | I | **DONE** HITL FE + KG stub + SystemClash |
 | 8 | C3 MEP когда есть federated IFC | C | RT-003 path |
 | 9 | Hostile Red Team Pass 4 | E/C | GO только если C закрыт |
 

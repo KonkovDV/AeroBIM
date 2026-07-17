@@ -1,16 +1,21 @@
 ---
 title: "AeroBIM Architecture Reference"
-status: active
+status: SUPERSEDED
 version: "0.3.0"
 last_updated: "2026-04-08"
-tags: [aerobim, architecture, reference]
+superseded_by: "docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md"
+tags: [aerobim, architecture, reference, superseded]
 ---
 
 # AeroBIM Architecture Reference
 
+> **SUPERSEDED (2026-07-17).** Tier-0 architecture SSOT is now  
+> [`architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).  
+> Keep this file as historical context only; do not cite it for live ports/DI/roadmap.
+
 ## Purpose
 
-This document is the canonical architecture reference for `AeroBIM` at the current phase. It converts the strategy, landscape research, and corrected fact-check audit into one implementation-oriented source of truth.
+This document was the canonical architecture reference for `AeroBIM` at the April 2026 phase. It converts the strategy, landscape research, and corrected fact-check audit into one implementation-oriented source of truth.
 
 ## Product Definition
 

@@ -51,4 +51,4 @@ Record in case study: geometric clash (IfcClash) vs cross-document — see [`sam
 
 ## Drawing AI posture (retained local SSOT)
 
-July 2026: [../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+July 2026: [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).

@@ -414,14 +414,16 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 ## 12. Immediate next engineering slice (recommended)
 
-**Shipped:** I0–I7 + Track E + **I8a/b/c**. Next engineering: **I9** IfcKnowledgeGraphPort. Customer: RT-001/002/003.
+**Shipped:** I0–I8c + Track E + **I9 relational** + combat CAD EntityGraph + HybridDrawingAnalyzer (priors) + RT harness discipline/clash splits + MEP opt-in scaffold.
 
-**Next (literature-aligned, still no engineering GO):**
+**Audit:** [`AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md`](../../audit/reports/AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md).
 
-1. **Customer-blocked (P0):** RT-001/002/003 — corpus, approved norms, federated MEP.  
-2. **I9 (P2):** IfcLLM-style `IfcKnowledgeGraphPort` + allowlisted advisory query (never sign-off).  
-3. Optional YOLO weights behind same `DrawingRegionDetector` port (cv stays MISSING).  
-4. FE filter for `hitl_required` regions (UX polish).
+**Next (still no engineering GO):**
+
+1. **Customer-blocked (P0):** RT-001/002/003.  
+2. GraphRAG multi-hop on top of relational I9 (still advisory).  
+3. Real MEP geometry clash after federated pack + clearance matrix.  
+4. Optional YOLO weights behind `DrawingRegionDetector` (cv stays MISSING until customer F1).
 
 See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md) · [`EXECUTION_PLAN_NEXT_2026_07.md`](EXECUTION_PLAN_NEXT_2026_07.md) · **гиперплан:** [`EXECUTION_PLAN_HYPERDEEP_2026_07.md`](EXECUTION_PLAN_HYPERDEEP_2026_07.md).
 

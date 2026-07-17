@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.2.0"
+version: "1.3.0"
 last_updated: "2026-07-17"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -40,12 +40,16 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
 | Package SLA on **fixture** pack (schema 1.2, `fixture_only`) | `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json` |
 | System honesty surface | `GET /v1/system/capabilities` |
-| Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,…}` ∈ ok/skipped/failed; **FAILED blocks `summary.passed`** |
+| Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,dwg_dxf,mep_system_clash,…}` ∈ ok/skipped/failed/not_verified; **FAILED blocks `summary.passed`** |
+| Infra failure honesty (RT-C) | Unexpected exceptions in quantity / load / MEP probe → capability **FAILED** + traceback log (not soft WARNING/NOT_VERIFIED) |
+| Mixed CAD package honesty (RT-D) | Unparsed `.dwg` in package with successful `.dxf` → `capabilities.dwg_dxf=FAILED` (DXF success must not mask DWG) |
+| Advisory isolation (RT-E / RT-017) | Same non-empty package: advisory ON vs OFF → identical deterministic findings + identical `summary.passed`; only advisory remarks/warnings may differ |
+| Non-dev auth fail-closed (RT-F) | `AEROBIM_ENV != development` + empty bearer + no OIDC → Settings/bootstrap refuse start |
 | Norm rule packs fail-closed (P0.2) | Requested/configured pack load error → `capabilities.norm_rule_packs=failed` → `summary.passed=false`; packs not requested → `skipped` (does not block) |
 | PrecisionClaim publish gate (R1/R4) | Typed claim; render withheld unless `corpus_kind=customer` and ≥2 adjudicators |
 | Runtime baseline metrics (R5) | `python -m aerobim.tools.export_runtime_baseline` — LOC/tests/F1 not hand-authored |
 | Internal self-audit naming (R2) | Self assessments must not be labeled external/independent |
-| Four contours | ingestion / deterministic_validation / ai_advisory / evidence_reporting — AI cannot mutate `passed` |
+| Four contours | ingestion / deterministic_validation / ai_advisory / evidence_reporting — AI cannot mutate `passed`; Analyze UC coordinates contour orchestrators (RT-A) |
 | JSON norm / rule-pack loader | `NormRulePackLoader` + residential AR reference template (synthetic-template only) |
 | Deterministic PD↔RD section pairing scaffold | `SectionDiffAnalyzer` on normalized section JSON (one discipline pair) |
 | Detection precision harness (exact TP/FP/FN) | `aerobim-evaluate-detection-precision` + synthetic contract fixture + protocol gate |
@@ -80,7 +84,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Live bSI Validation Service submit in pilot | Local cert / mocked client tested; live hub needs credentials |
 | LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |
 | True computer vision for drawings | Not implemented; OCR baseline ≠ CV |
-| Native DWG/DXF CAD entity parse | Missing — Phase 2 thin adapter |
+| Native DWG as product-ready CAD | Still missing / fail-closed; DXF optional `[cad]` EntityGraph never claims `dwg_dxf=OK` |
 | Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
 | Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |

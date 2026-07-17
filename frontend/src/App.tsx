@@ -275,6 +275,7 @@ export default function App() {
   const [selectedIssueIndex, setSelectedIssueIndex] = useState<number>(0);
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [issueSeverityFilter, setIssueSeverityFilter] = useState<"all" | "error" | "warning" | "info">("all");
+  const [hitlOnlyFilter, setHitlOnlyFilter] = useState(false);
   const [remarkDraft, setRemarkDraft] = useState("");
   const [remarkSaveState, setRemarkSaveState] = useState<"idle" | "saving" | "saved" | "failed">("idle");
   const [search, setSearch] = useState("");
@@ -688,11 +689,24 @@ export default function App() {
   const filteredIssues =
     selectedReport === null
       ? []
-      : issueSeverityFilter === "all"
-        ? selectedReport.issues.map((issue, index) => ({ issue, index }))
-        : selectedReport.issues
-            .map((issue, index) => ({ issue, index }))
-            .filter(({ issue }) => issue.severity === issueSeverityFilter);
+      : selectedReport.issues
+          .map((issue, index) => ({ issue, index }))
+          .filter(({ issue }) => {
+            if (issueSeverityFilter !== "all" && issue.severity !== issueSeverityFilter) {
+              return false;
+            }
+            if (hitlOnlyFilter) {
+              const isHitlIssue = issue.rule_id === "AEROBIM-DRAWING-REGION-HITL";
+              const hasHitlRegion =
+                (selectedReport.drawing_regions ?? []).some((region) => region.hitl_required === true) &&
+                isHitlIssue;
+              return isHitlIssue || hasHitlRegion;
+            }
+            return true;
+          });
+  const hitlRegionCount = selectedReport
+    ? (selectedReport.drawing_regions ?? []).filter((region) => region.hitl_required === true).length
+    : 0;
   const activeClash =
     selectedReport && selectedClashIndex !== null && selectedReport.clash_results.length > 0
       ? selectedReport.clash_results[Math.min(selectedClashIndex, selectedReport.clash_results.length - 1)]
@@ -1009,6 +1023,15 @@ export default function App() {
                     <option value="info">Info</option>
                   </select>
                 </label>
+                <label className="hitl-filter">
+                  <input
+                    type="checkbox"
+                    checked={hitlOnlyFilter}
+                    onChange={(event) => setHitlOnlyFilter(event.target.checked)}
+                  />
+                  HITL regions only
+                  {hitlRegionCount > 0 ? ` (${hitlRegionCount})` : ""}
+                </label>
                 <span className="compact-copy">
                   {filteredIssues.length} / {selectedReport.issues.length} shown
                 </span>
@@ -1035,6 +1058,9 @@ export default function App() {
                       <div className="issue-card-row">
                         <span className={`severity-pill severity-${issue.severity}`}>{issue.severity}</span>
                         <strong>{issue.rule_id}</strong>
+                        {issue.rule_id === "AEROBIM-DRAWING-REGION-HITL" ? (
+                          <span className="issue-priority">HITL</span>
+                        ) : null}
                         {typeof issue.priority === "number" && issue.priority > 0 ? (
                           <span className="issue-priority">P{issue.priority}</span>
                         ) : null}

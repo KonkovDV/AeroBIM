@@ -9,7 +9,8 @@
 - «точность >90%» / product accuracy percentages
 - «утверждённый заказчиком нормативный пакет» (current: **НЕТ**)
 - «MEP clash» as delivered capability
-- «анализирует DWG/DXF»
+- «анализирует DWG/DXF» / implying DWG ready because DXF parsed (mixed package must surface FAILED)
+- Soft-pass when quantity/load/MEP infrastructure threw (must be capability FAILED)
 - «проверяет расчёты» as independent correctness
 - «production-ready» / «external academic audit»
 - «BCF готов к CDE» without import artifact (structural ZIP ≠ CDE)
@@ -26,9 +27,16 @@
 - Calculation **сверка** PARTIAL; **корректность** НЕ РЕАЛИЗОВАНО
 - Internal self-audit only
 - Dual-human adjudication + Cohen’s κ / Krippendorff’s α required before publishable precision
+- DXF EntityGraph via optional `[cad]` (capability never OK for `dwg_dxf`; mixed DWG+DXF → FAILED if DWG unparsed)
+- Hybrid drawing = detector **priors / future YOLO** + OCR degrade (not human-level CV)
+- Relational IFC KG advisory fixture scores ≠ IfcLLM product accuracy
+- Advisory ON/OFF must not change deterministic findings or `summary.passed` (RT-E)
+- Contour orchestrators under Analyze UC (RT-A) — public `execute()` contract unchanged
 - Post–I0–I7 deltas: `RED_TEAM_DELTA_I0_I7_2026_07_17.md` (+ PASS2 / PASS3); checkpoint **NO_GO**
-- Literature map (not product claims): `docs/architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`
-- Planned advisory waves I8–I9: `docs/architecture/EXECUTION_PLAN_I8_I9_2026_07.md` (no GO)
+- Combat backends: `AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md`
+- Sign-off remediations RT-A…H: `AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`
+- Forbidden: citing IfcLLM 93–100% or AECV-Bench model scores as AeroBIM product accuracy
+- Forbidden: calling heuristic layout regions «YOLO» (priors / future YOLO only)
 
 ## Evidence pointers
 
@@ -37,3 +45,5 @@
 - Intake gates: `audit/evidence/customer-intake-gate.json`
 - System honesty API: `GET /v1/system/capabilities`
 - Red Team current: `audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md`
+- RT-A…H remediations: `audit/reports/AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`
+- Claim boundary: `docs/pilot-claim-boundary-2026.md` · Tier-0: `docs/TIER0_INDEX.md`

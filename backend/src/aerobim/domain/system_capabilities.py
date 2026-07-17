@@ -96,13 +96,25 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "calculation_correctness": (
                 "независимая проверка корректности расчёта — НЕ РЕАЛИЗОВАНО"
             ),
-            "dwg_dxf": ("DXF partial via optional ezdxf; native DWG / ODA NOT VERIFIED — never OK"),
-            "cv_human_level": "НЕ РЕАЛИЗОВАНО",
-            "mep_system_clash": ("DI-wired Unconfigured provider (MEP-CLASH-001) — NOT VERIFIED"),
-            "precision_claim": (
-                "Publishable only with customer corpus + ≥2 adjudicators + κ/α agreement"
+            "dwg_dxf": (
+                "DXF EntityGraph via optional ezdxf [cad]; native DWG ODA stub "
+                "(STUB-ODA-CAD-001) — never OK"
             ),
-            "customer_sla": "Fixture SLA ≠ customer комплект SLA",
+            "cv_human_level": (
+                "HybridDrawingAnalyzer priors+OCR (vision extra optional); "
+                "no YOLO weights; AECV-Bench symbol counting unsolved — MISSING"
+            ),
+            "mep_system_clash": (
+                "DI Unconfigured by default; opt-in IfcSystemAwareClash needs "
+                "AEROBIM_MEP_SYSTEM_CLASH_ENABLED + scope memo — MEP-CLASH-001 NOT VERIFIED"
+            ),
+            "precision_claim": (
+                "Publishable only with customer corpus + ≥2 adjudicators + κ≥0.60 agreement"
+            ),
+            "customer_sla": "Fixture SLA ≠ customer комплект SLA; Redis queue + IFC cache NFR",
+            "ifc_knowledge_graph": (
+                "Relational advisory default; fixture IFC-QA CI only — not IfcLLM accuracy"
+            ),
         },
         "honesty": honesty,
         "customer_intake_gate": intake,

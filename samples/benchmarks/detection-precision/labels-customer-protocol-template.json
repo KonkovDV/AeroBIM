@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "CUSTOMER-DATASET-ID-REPLACE",
+  "dataset_status": "draft",
+  "scope_reference": "SIGNED-SCOPE-MEMO-REF-REPLACE",
+  "adjudication": {
+    "method": "dual_independent",
+    "completed_at": "REPLACE-ISO8601-WITH-TZ",
+    "adjudicators": [
+      { "id": "eng-a", "role": "discipline engineer" },
+      { "id": "eng-b", "role": "independent adjudicator" }
+    ]
+  },
+  "protocol_notes": [
+    "Promote dataset_status to adjudicated only after κ≥0.60 agreement artifact",
+    "Split finding_class clash vs non-clash; set case.discipline (ar|ov|kzh|…)",
+    "Ensemble detector+VLM+rules: disputed → HITL; never auto-publish >90%",
+    "Synthetic fixtures must keep dataset_status=synthetic"
+  ],
+  "cases": [
+    {
+      "case_id": "CUST-AR-001",
+      "discipline": "ar",
+      "expected_findings": [
+        {
+          "finding_class": "cross-document",
+          "rule_id": "REPLACE-RULE",
+          "target_ref": "REPLACE-TARGET",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-HARD-CLASH",
+          "target_ref": "GUID-A|GUID-B",
+          "adjudication_status": "confirmed"
+        }
+      ]
+    }
+  ]
+}

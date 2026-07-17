@@ -6,11 +6,19 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+> ## Checkpoint: `NO_GO`
+>
+> Samolet TechLab Task 07 is **not** ready for customer sign-off. Open blockers:
+> **RT-001** (customer accuracy corpus), **RT-002** (approved norm pack), **RT-003** (federated MEP scope) —
+> see [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
+> Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
+> verified vs planned: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) ·
+> Tier-0 docs: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md).
+> Forbidden until evidenced: product accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, independent calc *correctness*.
+
 Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + cross-document evidence).
 
-AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidence for *Shared*, not contractual *Published* authorization). It fuses IFC property/quantity checks, IDS, drawings, and calculation text into a single report with explicit capability honesty, finding provenance, and BCF **ZIP export**. Independent CDE import and customer accuracy claims remain **out of scope until evidenced**.
-
-> **Checkpoint (2026-07-17):** Samolet TechLab Task 07 status is **`NO_GO`** until customer corpus, customer-approved norm pack, and MEP federated scope are evidenced ([RT-001/002/003](audit/reports/CRITICAL_BLOCKERS.md)). Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md).
+AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidence for *Shared*, not contractual *Published* authorization). It fuses IFC property/quantity checks, IDS, drawings, and calculation text into a single report with explicit capability honesty, finding provenance, and BCF **ZIP export**. Independent CDE import and customer accuracy claims remain **out of scope until evidenced**. Architecture SSOT: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
 ## Key Capabilities
 

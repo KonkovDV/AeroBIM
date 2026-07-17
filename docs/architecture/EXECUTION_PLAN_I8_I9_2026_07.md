@@ -51,16 +51,24 @@ Translate 2025–2026 AEC AI practice (Blueprint region pipelines, hybrid ACC/RA
 - [x] Unmatched / low-confidence `DrawingRegionRef` → `hitl_required` + INFO issue
 - [x] `ReviewEvent` type `drawing_region_escalated` persisted when store wired
 - [x] Frontend types consume `hitl_required` / `hitl_reason`
-- [ ] FE triage queue UX (filter by hitl_required) — optional polish
+- [x] FE triage queue UX (filter by hitl_required) — App checkbox + DrawingEvidencePanel list
 
 **Driver:** Cross-document VLM escalate pattern + Blueprint HITL practice
 
 ## I9 — IfcKnowledgeGraphPort (advisory)
 
-- [ ] Domain port + DI token + stub/real adapter unit (Atomic Delivery)
-- [ ] Agent allowlist tool: NL → graph/relational query → element GUIDs
-- [ ] DeterminismGate mandatory; no capability OK for “IFC LLM understanding”
-- [ ] `KNOWN_BUGS` if `@sota-stub`
+- [x] Domain port + DI token + relational adapter (Atomic Delivery) — `RelationalIfcKnowledgeGraph`
+- [x] Agent allowlist tool: `query_ifc_kg` → GUIDs
+- [x] DeterminismGate mandatory; no capability OK for “IFC LLM understanding”
+- [x] RU fixture CI harness `evaluate_ifc_qa` (fixture-only; not IfcLLM numbers)
+- [x] `KNOWN_BUGS` — stub demoted to fallback; ODA stub tracked
+- [ ] Multi-hop GraphRAG + customer IFC-QA (post RT-001)
+
+**Also shipped with I9 wave (TZ TARGET aliases):**
+
+- [x] `SystemClashPort` + `UnconfiguredSystemClash` + agent `detect_system_clash`
+- [x] `RequirementInterpreterPort` / `CadEntityLoaderPort` / `DrawingAnalyzerPort` facades
+- [x] `AgenticReviewOrchestrator` DI facade + CONTOUR_PORTS update
 
 **Driver:** IfcLLM (arXiv:2605.13236)
 

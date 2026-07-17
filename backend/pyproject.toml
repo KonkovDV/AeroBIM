@@ -35,6 +35,8 @@ Issues = "https://github.com/KonkovDV/AeroBIM/issues"
 aerobim-export-runtime-baseline = "aerobim.tools.export_runtime_baseline:main"
 aerobim-export-api-contract-summary = "aerobim.tools.export_api_contract_summary:main"
 aerobim-evaluate-detection-precision = "aerobim.tools.evaluate_detection_precision:main"
+aerobim-evaluate-ifc-qa = "aerobim.tools.evaluate_ifc_qa:main"
+aerobim-check-markdown-links = "aerobim.tools.check_markdown_links:main"
 aerobim-build-detection-labels = "aerobim.tools.build_detection_labels:main"
 aerobim-run-demo-path = "aerobim.tools.run_demo_path:main"
 aerobim-measure-adjudicator-agreement = "aerobim.tools.measure_adjudicator_agreement:main"
@@ -61,6 +63,9 @@ docling = [
 ]
 cad = [
   "ezdxf>=1.3,<2.0",
+]
+vision = [
+  "pillow>=10.0,<12.0",
 ]
 enterprise = [
   "boto3>=1.42,<2.0",

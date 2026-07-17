@@ -18,6 +18,8 @@ _PASS_BLOCKING_CAPABILITY_FIELDS: tuple[str, ...] = (
     # I0–I2 honesty fields: FAILED must not green-pass (Red Team RT-SIGNOFF-001)
     "calculation_match",
     "dwg_dxf",
+    # RT-C: infrastructure MEP probe failures must block pass
+    "mep_system_clash",
 )
 
 

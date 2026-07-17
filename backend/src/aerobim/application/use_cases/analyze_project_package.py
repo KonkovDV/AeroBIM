@@ -1,30 +1,24 @@
 from __future__ import annotations
 
-from collections import Counter
+import logging
 from collections.abc import Iterable, Sequence
 from dataclasses import replace
-from datetime import UTC, datetime
 from pathlib import Path
-from uuid import uuid4
 
+from aerobim.application.services.analyze_orchestrators import (
+    AdvisoryOrchestrator,
+    DeterministicValidationOrchestrator,
+    EvidenceAssembler,
+    IngestionOrchestrator,
+)
 from aerobim.application.services.compliance_agent_orchestrator import (
     ComplianceAgentOrchestrator,
-    merge_advisory_sequences,
 )
-from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.determinism_gate import DeterminismGate
-from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
-from aerobim.domain.drawing_region_hitl import (
-    issues_for_hitl_regions,
-    mark_regions_for_hitl,
-    review_events_for_hitl_regions,
-)
 from aerobim.domain.errors import ClashCapabilityError
-from aerobim.domain.finding_provenance import ensure_finding_provenance
 from aerobim.domain.ingestion import (
-    detect_revision_merge_conflicts,
     stamp_requirement_source,
 )
 from aerobim.domain.mep import MepSystemGraphProvider
@@ -49,8 +43,6 @@ from aerobim.domain.models import (
     ValidationIssue,
     ValidationReport,
     ValidationRequest,
-    ValidationSummary,
-    compute_issue_priority,
     issue_from_requirement,
 )
 from aerobim.domain.ports import (
@@ -78,7 +70,6 @@ from aerobim.domain.ports import (
     SectionDiffAnalyzer,
 )
 from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
-from aerobim.domain.system_capabilities import enforce_honesty_capabilities
 
 _RASTER_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _RASTER_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
@@ -121,6 +112,21 @@ _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "m³": ("m3", 1.0),
     "м³": ("m3", 1.0),
 }
+
+
+_logger = logging.getLogger("aerobim.analyze")
+
+
+def _is_expected_unconfigured_error(exc: BaseException) -> bool:
+    """MEP/CAD honesty placeholders raise RuntimeError by design → NOT_VERIFIED."""
+
+    text = str(exc).casefold()
+    return (
+        "not configured" in text
+        or "mep-clash-001" in text
+        or "scope memo" in text
+        or "not injected" in text
+    )
 
 
 class _NullExternalEvidenceVerifier:
@@ -205,210 +211,21 @@ class AnalyzeProjectPackageUseCase:
         self._multimodal_drawing_pipeline = multimodal_drawing_pipeline
         self._compliance_agent = compliance_agent
         self._review_event_store = review_event_store
+        self._ingestion = IngestionOrchestrator(self)
+        self._deterministic = DeterministicValidationOrchestrator(self)
+        self._advisory = AdvisoryOrchestrator(self)
+        self._evidence = EvidenceAssembler(self)
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
-        request = self._maybe_hydrate_office_requirement_source(request)
-        structured_requirements = list(
-            self._requirement_extractor.extract(request.requirement_source)
-        )
-        structured_requirements = [
-            ParsedRequirement(
-                **{k: v for k, v in req.__dict__.items() if k != "confidence"},
-                confidence=score_confidence(req),
-            )
-            for req in structured_requirements
-        ]
-        synthesized_requirements = self._collect_synthesized_requirements(request)
-        synthesized_requirements = [
-            ParsedRequirement(
-                **{k: v for k, v in req.__dict__.items() if k != "confidence"},
-                confidence=score_confidence(req),
-            )
-            for req in synthesized_requirements
-        ]
-        norm_pack_requirements, norm_pack_capability = self._collect_norm_pack_requirements(request)
-        norm_pack_issues: list[ValidationIssue] = []
-        if norm_pack_capability.status is CapabilityState.FAILED:
-            norm_pack_issues.append(
-                ValidationIssue(
-                    rule_id="AEROBIM-NORM-PACK",
-                    severity=Severity.ERROR,
-                    message=norm_pack_capability.reason
-                    or "Configured norm rule pack failed to load",
-                    category=FindingCategory.IFC_VALIDATION,
-                )
-            )
-        requirements = tuple(
-            [*structured_requirements, *synthesized_requirements, *norm_pack_requirements]
-        )
-        schema_issues = list(self._collect_schema_issues(request.ifc_path))
-        schema_request_id, schema_remote_issues = self._submit_bsi_validation(request.ifc_path)
-        schema_issues.extend(schema_remote_issues)
-        schema_issues_t = tuple(schema_issues)
-        ids_audit_issues = tuple(self._collect_ids_audit_issues(request))
-        ids_issues = tuple(self._collect_ids_issues(request))
-        if not requirements and request.ids_path is None:
+        ingested = self._ingestion.run(request)
+        request = ingested.request
+        if not ingested.requirements and request.ids_path is None:
             raise ValueError(
                 "No requirements were extracted or synthesized from the provided sources"
             )
-
-        annotation_list, region_list = self._collect_drawing_annotations(request)
-        cad_annotations, cad_capability, cad_issues = self._run_cad_ingest(request)
-        drawing_annotations = tuple([*annotation_list, *cad_annotations])
-        drawing_regions = mark_regions_for_hitl(tuple(region_list), drawing_annotations)
-        region_hitl_issues = issues_for_hitl_regions(drawing_regions)
-        ifc_issues = (
-            tuple(self._ifc_validator.validate(request.ifc_path, requirements))
-            if requirements
-            else ()
-        )
-        drawing_issues = tuple(
-            self._validate_drawing_annotations(requirements, drawing_annotations)
-        )
-        drawing_assets = tuple(self._collect_drawing_assets(request))
-        cross_document_issues = tuple(self._detect_cross_document_contradictions(requirements))
-        revision_merge_issues = tuple(
-            detect_revision_merge_conflicts(self._collect_identity_sources(request))
-        )
-        section_pairing_issues, section_pairing_capability = self._collect_section_pairing_issues(
-            request
-        )
-        reinforcement_provenance_issues = tuple(
-            self._apply_openrebar_provenance_policy(
-                self._external_evidence_verifier.verify(request),
-                request.reinforcement_provenance_mode,
-            )
-        )
-        clash_results, clash_capability, clash_issues = self._run_clash_detection(request.ifc_path)
-        mep_capability = self._probe_mep_system_graph(request.ifc_path)
-        quantity_issues = self._run_quantity_consistency(request.ifc_path, requirements)
-        load_issues, calculation_match = self._run_load_evidence(request)
-        logic_issues = self._run_logic_consistency(request)
-        raw_issues = [
-            *schema_issues_t,
-            *ids_audit_issues,
-            *ifc_issues,
-            *drawing_issues,
-            *cross_document_issues,
-            *revision_merge_issues,
-            *section_pairing_issues,
-            *reinforcement_provenance_issues,
-            *ids_issues,
-            *clash_issues,
-            *norm_pack_issues,
-            *cad_issues,
-            *quantity_issues,
-            *load_issues,
-            *logic_issues,
-            *region_hitl_issues,
-        ]
-        agent_advisory: tuple[ValidationIssue, ...] = ()
-        advisory_ids_draft = None
-        if self._compliance_agent is not None:
-            agent_result = self._compliance_agent.run(request)
-            agent_advisory = agent_result.advisory_issues
-            advisory_ids_draft = agent_result.ids_draft
-        reconciled_issues, divergences = self._determinism_gate.reconcile(
-            engine_issues=raw_issues,
-            advisory_issues=merge_advisory_sequences(
-                self._advisory_issues,
-                agent_advisory,
-            ),
-        )
-        prioritized_issues = tuple(
-            ensure_finding_provenance(
-                ValidationIssue(
-                    **{k: v for k, v in issue.__dict__.items() if k != "priority"},
-                    priority=compute_issue_priority(issue, profile=self._priority_profile),
-                ),
-                tenant_id=request.tenant_id,
-                project_id=request.project_id or request.project_name,
-                revision=request.revision,
-            )
-            for issue in reconciled_issues
-        )
-        issues_with_remarks = tuple(self._attach_remarks(prioritized_issues))
-
-        severity_counts = Counter(issue.severity for issue in issues_with_remarks)
-        error_count = severity_counts[Severity.ERROR]
-        warning_count = severity_counts[Severity.WARNING]
-
-        capabilities = self._build_capabilities(
-            requirements=requirements,
-            ifc_issues=ifc_issues,
-            ids_path=request.ids_path,
-            ids_issues=ids_issues,
-            clash_capability=clash_capability,
-            drawing_sources=request.drawing_sources,
-            drawing_annotation_count=len(drawing_annotations),
-            schema_issues=schema_issues_t,
-            ids_audit_issues=ids_audit_issues,
-            schema_request_id=schema_request_id,
-            norm_rule_packs=norm_pack_capability,
-            section_pairing=section_pairing_capability,
-            dwg_dxf=cad_capability,
-            mep_system_clash=mep_capability,
-            calculation_match=calculation_match,
-        )
-        enforce_honesty_capabilities(capabilities)
-        passed = summary_passed_after_capabilities(
-            error_count=error_count,
-            capabilities=capabilities,
-        )
-        if self._clash_affects_pass:
-            hard_clashes = tuple(
-                clash
-                for clash in clash_results
-                if getattr(clash, "clash_type", "hard") != "clearance"
-            )
-            if hard_clashes:
-                passed = False
-
-        report = ValidationReport(
-            report_id=uuid4().hex,
-            request_id=request.request_id,
-            ifc_path=request.ifc_path,
-            created_at=datetime.now(tz=UTC).isoformat(),
-            requirements=requirements,
-            issues=issues_with_remarks,
-            summary=ValidationSummary(
-                requirement_count=len(requirements),
-                issue_count=len(issues_with_remarks),
-                error_count=error_count,
-                warning_count=warning_count,
-                passed=passed,
-                drawing_annotation_count=len(drawing_annotations),
-                generated_remark_count=sum(
-                    1 for issue in issues_with_remarks if issue.remark is not None
-                ),
-            ),
-            drawing_annotations=drawing_annotations,
-            drawing_assets=drawing_assets,
-            clash_results=clash_results,
-            capabilities=capabilities,
-            schema_validation_request_id=schema_request_id,
-            project_name=request.project_name,
-            discipline=request.discipline,
-            stage=request.stage,
-            information_container_id=request.information_container_id,
-            revision=request.revision,
-            doc_status=request.doc_status,
-            tenant_id=request.tenant_id,
-            project_id=request.project_id,
-            divergences=divergences,
-            advisory_ids_draft=advisory_ids_draft,
-            drawing_regions=tuple(drawing_regions),
-        )
-        self._audit_report_store.save(report)
-        if self._review_event_store is not None:
-            for event in review_events_for_hitl_regions(
-                report_id=report.report_id,
-                regions=drawing_regions,
-                created_at=report.created_at,
-            ):
-                self._review_event_store.append(event)
-        persisted_report = self._audit_report_store.get(report.report_id)
-        return persisted_report or report
+        deterministic = self._deterministic.run(request, ingested)
+        advisory = self._advisory.run(request, deterministic)
+        return self._evidence.assemble(request, ingested, deterministic, advisory)
 
     def _maybe_hydrate_office_requirement_source(
         self, request: ValidationRequest
@@ -473,17 +290,27 @@ class AnalyzeProjectPackageUseCase:
         issues: list[ValidationIssue] = []
         saw_dwg = False
         saw_supported_dxf = False
+        all_dwg_supported = True
         last_reason: str | None = None
+        last_dwg_reason: str | None = None
         for source in cad_sources:
             assert source.path is not None
-            if source.path.suffix.lower() == ".dwg":
+            is_dwg = source.path.suffix.lower() == ".dwg" or (
+                (source.format or "").strip().lower() == "dwg"
+            )
+            if is_dwg:
                 saw_dwg = True
             result = self._cad_model_ingestor.ingest(source.path, sheet_id=source.sheet_id)
             last_reason = result.reason
             if result.supported:
-                saw_supported_dxf = True
+                if result.format_resolved == "dwg":
+                    pass
+                else:
+                    saw_supported_dxf = True
                 annotations.extend(result.annotations)
-            elif result.format_resolved == "dwg":
+            elif is_dwg or result.format_resolved == "dwg":
+                all_dwg_supported = False
+                last_dwg_reason = result.reason
                 issues.append(
                     ValidationIssue(
                         rule_id="AEROBIM-CAD-DWG",
@@ -504,10 +331,13 @@ class AnalyzeProjectPackageUseCase:
                     )
                 )
 
-        if saw_dwg and not saw_supported_dxf:
+        if saw_dwg and not all_dwg_supported:
+            # RT-D: unparsed DWG must not be masked by a successful sibling DXF.
             capability = CapabilityStatus(
                 CapabilityState.FAILED,
-                last_reason or "Native DWG requires ODA adapter",
+                last_dwg_reason
+                or last_reason
+                or "Package contains unsupported/unparsed DWG; DXF success does not clear DWG",
             )
         elif saw_supported_dxf:
             # Partial delivery: DXF only — never OK until ODA DWG evidenced.
@@ -530,10 +360,17 @@ class AnalyzeProjectPackageUseCase:
             )
         try:
             graph = self._mep_system_graph_provider.build(ifc_path)
-        except Exception as exc:  # noqa: BLE001 — fail-closed probe
+        except Exception as exc:
+            _logger.exception("MEP system graph probe failed for %s", ifc_path)
+            if _is_expected_unconfigured_error(exc):
+                return CapabilityStatus(
+                    CapabilityState.NOT_VERIFIED,
+                    str(exc),
+                )
+            # RT-C: infrastructure/runtime failure must FAILED (blocks pass), not soft NOT_VERIFIED
             return CapabilityStatus(
-                CapabilityState.NOT_VERIFIED,
-                str(exc),
+                CapabilityState.FAILED,
+                f"MEP system graph infrastructure failure: {exc}",
             )
         if not graph.nodes:
             return CapabilityStatus(
@@ -550,24 +387,34 @@ class AnalyzeProjectPackageUseCase:
         self,
         ifc_path: Path,
         requirements: Sequence[ParsedRequirement],
-    ) -> list[ValidationIssue]:
+    ) -> tuple[list[ValidationIssue], CapabilityStatus | None]:
+        """Return issues and optional capability override (FAILED on infra errors)."""
+
         if self._quantity_consistency_checker is None:
-            return []
+            return [], None
         claims = claims_from_area_requirements(requirements)
         if not claims:
-            return []
+            return [], None
         try:
-            return list(self._quantity_consistency_checker.check(ifc_path, claims))
-        except Exception as exc:  # noqa: BLE001
-            return [
-                ValidationIssue(
-                    rule_id="AEROBIM-QTY-ERROR",
-                    severity=Severity.WARNING,
-                    message=f"Quantity consistency check failed: {exc}",
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="quantity-consistency",
-                )
-            ]
+            return list(self._quantity_consistency_checker.check(ifc_path, claims)), None
+        except Exception as exc:
+            _logger.exception("Quantity consistency check failed for %s", ifc_path)
+            # RT-C: infrastructure exception → ERROR + FAILED capability (blocks pass)
+            return (
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-QTY-ERROR",
+                        severity=Severity.ERROR,
+                        message=f"Quantity consistency infrastructure failure: {exc}",
+                        category=FindingCategory.IFC_VALIDATION,
+                        source_id="quantity-consistency",
+                    )
+                ],
+                CapabilityStatus(
+                    CapabilityState.FAILED,
+                    f"Quantity consistency infrastructure failure: {exc}",
+                ),
+            )
 
     def _run_load_evidence(
         self, request: ValidationRequest
@@ -586,18 +433,24 @@ class AnalyzeProjectPackageUseCase:
             )
         try:
             issues = list(self._load_evidence_verifier.verify(request))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
+            _logger.exception(
+                "Load evidence verify failed for request %s", request.request_id
+            )
             return (
                 [
                     ValidationIssue(
                         rule_id="AEROBIM-LOAD-ERROR",
-                        severity=Severity.WARNING,
-                        message=f"Load evidence verify failed: {exc}",
+                        severity=Severity.ERROR,
+                        message=f"Load evidence infrastructure failure: {exc}",
                         category=FindingCategory.CROSS_DOCUMENT,
                         source_id="load-evidence",
                     )
                 ],
-                CapabilityStatus(CapabilityState.FAILED, str(exc)),
+                CapabilityStatus(
+                    CapabilityState.FAILED,
+                    f"Load evidence infrastructure failure: {exc}",
+                ),
             )
         mismatches = [i for i in issues if i.rule_id == "AEROBIM-LOAD-MISMATCH"]
         unevaluated = any(
@@ -619,12 +472,12 @@ class AnalyzeProjectPackageUseCase:
         elif unevaluated or not evaluated_ok:
             capability = CapabilityStatus(
                 CapabilityState.NOT_VERIFIED,
-                "calculation source present but load сверка not evaluated (not OK)",
+                "Load evidence present but сверка not fully evaluated",
             )
         else:
             capability = CapabilityStatus(
                 CapabilityState.OK,
-                "calculation сверка evaluated (not correctness)",
+                "Load evidence numeric match evaluated",
             )
         return issues, capability
 
@@ -727,12 +580,15 @@ class AnalyzeProjectPackageUseCase:
         dwg_dxf: CapabilityStatus | None = None,
         mep_system_clash: CapabilityStatus | None = None,
         calculation_match: CapabilityStatus | None = None,
+        quantity_capability: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
         ifc_validation = (
             CapabilityStatus(CapabilityState.OK)
             if requirements
             else CapabilityStatus(CapabilityState.SKIPPED, "no IFC property requirements")
         )
+        if quantity_capability is not None and quantity_capability.status is CapabilityState.FAILED:
+            ifc_validation = quantity_capability
         unit_scale = CapabilityStatus(CapabilityState.OK)
         for issue in ifc_issues:
             if issue.rule_id == "AEROBIM-UNIT-SCALE":
@@ -1065,7 +921,10 @@ class AnalyzeProjectPackageUseCase:
             return True
         if drawing_source.path is None:
             return False
-        return drawing_source.path.suffix.lower() not in _RASTER_DRAWING_SUFFIXES
+        suffix = drawing_source.path.suffix.lower()
+        if suffix in _RASTER_DRAWING_SUFFIXES or suffix in _CAD_DRAWING_SUFFIXES:
+            return False
+        return True
 
     def _collect_identity_sources(self, request: ValidationRequest) -> list[RequirementSource]:
         """Stamp package-level identity onto requirement and drawing sources."""

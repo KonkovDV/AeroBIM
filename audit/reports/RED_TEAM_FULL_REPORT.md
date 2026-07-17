@@ -251,5 +251,6 @@ Two read-only explores completed after the freeze and confirmed the same `NO_GO`
 
 | Explore | Confirmed | Added |
 |---|---|---|
-| [Architecture layer audit](2546f775-77dd-4830-b1f6-8a53371eaaee) | Clean domain layers; AI cannot flip pass; MEP unwired; finding contract gaps | Empty-revision silent co-analysis; drawings out of identity set; raster OK+empty OCR; bSI WARNING; Postgres always→FS fallback; OpenRebar escalate can strip provenance fields |
-| [Claims and TZ audit](b0b9a9d7-762e-4e4a-9173-4a33d4c58d33) | Self-authored evidence JSONs; synthetic norms only; no tenant ACL; BCF unit-only | Fixture SLA ~0.01 min class; narrow advisory OFF==ON test; README/pitch residual optimism vs claim-boundary docs |
+| Architecture layer audit (session) | Clean domain layers; AI cannot flip pass; MEP unwired; finding contract gaps | Empty-revision silent co-analysis; drawings out of identity set; raster OK+empty OCR; bSI WARNING; Postgres always→FS fallback; OpenRebar escalate can strip provenance fields |
+| Claims and TZ audit (session) | Self-authored evidence JSONs; synthetic norms only; no tenant ACL; BCF unit-only | Fixture SLA ~0.01 min class; narrow advisory OFF==ON test (later **REMEDIATED** as RT-E); README/pitch residual optimism vs claim-boundary docs |
+| [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md) | Contour orchestrators; infra FAILED; mixed DWG; advisory determinism; auth fail-closed; Tier-0 | Checkpoint still **NO_GO**; RT-001/002/003 HOLD |
