@@ -21,7 +21,6 @@ Checkpoint: **`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKE
 | [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 register |
 | [`tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Customer TZ v2.0 |
 | [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) | FAIR / evidence manifests |
-| [`prompts/PROMPT_AEROBIM_NEXT_AFTER_RT_AH_2026_07.md`](prompts/PROMPT_AEROBIM_NEXT_AFTER_RT_AH_2026_07.md) | **AI prompt** for next work (post RT-A…H; I9=scaffold) |
 | [`architecture/EXECUTION_PLAN_NEXT_2026_07.md`](architecture/EXECUTION_PLAN_NEXT_2026_07.md) | **Live** forward work plan (not architecture SSOT) |
 | [`architecture/EXECUTION_PLAN_I8_I9_2026_07.md`](architecture/EXECUTION_PLAN_I8_I9_2026_07.md) | Live I8–I9 research wave checklist |
 | [`architecture/EXECUTION_PLAN_HYPERDEEP_2026_07.md`](architecture/EXECUTION_PLAN_HYPERDEEP_2026_07.md) | Deep breakdown under NEXT |
@@ -39,7 +38,7 @@ Checkpoint: **`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKE
 
 | Report | Role |
 |--------|------|
-| [`../audit/reports/AUDIT_NEXT_WORK_PROTOCOL_2026_07_17.md`](../audit/reports/AUDIT_NEXT_WORK_PROTOCOL_2026_07_17.md) | Next-work prompt: RT-001/002/003 protocol readiness (product HOLD) |
+| [`../audit/reports/AUDIT_NEXT_WORK_PROTOCOL_2026_07_17.md`](../audit/reports/AUDIT_NEXT_WORK_PROTOCOL_2026_07_17.md) | RT-001/002/003 protocol readiness (product HOLD; engineering only) |
 | [`../audit/reports/AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](../audit/reports/AUDIT_RED_TEAM_RT_A_H_2026_07_17.md) | RT-A…H sign-off remediations |
 | [`../audit/reports/AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md`](../audit/reports/AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md) | Combat CAD/CV/I9/MEP honesty |
 | `audit/reports/RED_TEAM_*` / other dated audits | Evidence only — not Tier-0 SSOT |
