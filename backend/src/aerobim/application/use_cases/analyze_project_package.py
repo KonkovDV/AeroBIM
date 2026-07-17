@@ -72,6 +72,7 @@ from aerobim.domain.ports import (
     SectionDiffAnalyzer,
 )
 from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
+from aerobim.domain.system_capabilities import enforce_honesty_capabilities
 
 _RASTER_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 _RASTER_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
@@ -339,6 +340,7 @@ class AnalyzeProjectPackageUseCase:
             mep_system_clash=mep_capability,
             calculation_match=calculation_match,
         )
+        enforce_honesty_capabilities(capabilities)
         passed = summary_passed_after_capabilities(
             error_count=error_count,
             capabilities=capabilities,

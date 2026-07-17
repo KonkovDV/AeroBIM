@@ -95,11 +95,103 @@ class CustomerIntakeGateValidationTests(unittest.TestCase):
             self.assertFalse(report["ok"])
             self.assertTrue(any("nda_signed" in err for err in report["errors"]))
 
-    def test_blocked_status_forbids_true_gates(self) -> None:
+    def test_true_gate_rejects_string_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "gate.json"
-            evidence = Path(tmp) / "nda.txt"
+            root = Path(tmp)
+            evidence_dir = root / "audit" / "evidence"
+            evidence_dir.mkdir(parents=True)
+            evidence = evidence_dir / "nda.txt"
             evidence.write_text("signed", encoding="utf-8")
+            path = evidence_dir / "gate.json"
+            payload = {
+                "artifact_type": "customer_intake_gate",
+                "status": "IN_PROGRESS",
+                "claim_level": "not_ready",
+                "gates": {
+                    "nda_signed": True,
+                    "scope_memo_signed": False,
+                    "customer_package_in_samples_customer": False,
+                    "customer_approved_norm_pack_with_approval_ref": False,
+                    "ids_or_property_table_present": False,
+                    "dual_human_adjudicators_named": False,
+                    "cohens_kappa_or_krippendorff_alpha_reported": False,
+                    "confusion_matrix_reported": False,
+                    "zero_unresolved_labels": False,
+                    "precision_claim_publishable": False,
+                    "cde_bcf_import_evidence": False,
+                    "customer_sla_pack_measured": False,
+                    "mep_federated_scope": False,
+                },
+                "rules": {
+                    "llm_assist_counts_as_adjudicator": False,
+                    "synthetic_f1_is_product_accuracy": False,
+                    "fixture_sla_is_customer_sla": False,
+                    "customer_approved_without_approval_ref": False,
+                },
+                "evidence": {"nda_signed": str(evidence)},
+            }
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            report = validate_customer_intake_gate(path)
+            self.assertFalse(report["ok"])
+            self.assertTrue(any("must be object" in err for err in report["errors"]))
+
+    def test_true_gate_accepts_digest_evidence(self) -> None:
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence_dir = root / "audit" / "evidence"
+            evidence_dir.mkdir(parents=True)
+            evidence = evidence_dir / "nda.txt"
+            body = b"signed-nda"
+            evidence.write_bytes(body)
+            digest = hashlib.sha256(body).hexdigest()
+            path = evidence_dir / "gate.json"
+            payload = {
+                "artifact_type": "customer_intake_gate",
+                "status": "IN_PROGRESS",
+                "claim_level": "not_ready",
+                "gates": {
+                    "nda_signed": True,
+                    "scope_memo_signed": False,
+                    "customer_package_in_samples_customer": False,
+                    "customer_approved_norm_pack_with_approval_ref": False,
+                    "ids_or_property_table_present": False,
+                    "dual_human_adjudicators_named": False,
+                    "cohens_kappa_or_krippendorff_alpha_reported": False,
+                    "confusion_matrix_reported": False,
+                    "zero_unresolved_labels": False,
+                    "precision_claim_publishable": False,
+                    "cde_bcf_import_evidence": False,
+                    "customer_sla_pack_measured": False,
+                    "mep_federated_scope": False,
+                },
+                "rules": {
+                    "llm_assist_counts_as_adjudicator": False,
+                    "synthetic_f1_is_product_accuracy": False,
+                    "fixture_sla_is_customer_sla": False,
+                    "customer_approved_without_approval_ref": False,
+                },
+                "evidence": {
+                    "nda_signed": {"path": "nda.txt", "sha256": digest},
+                },
+            }
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            report = validate_customer_intake_gate(path)
+            self.assertTrue(report["ok"], report["errors"])
+            self.assertEqual(report["true_gates"], ["nda_signed"])
+
+    def test_blocked_status_forbids_true_gates(self) -> None:
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence_dir = root / "audit" / "evidence"
+            evidence_dir.mkdir(parents=True)
+            evidence = evidence_dir / "nda.txt"
+            body = b"signed"
+            evidence.write_bytes(body)
+            path = evidence_dir / "gate.json"
             payload = {
                 "artifact_type": "customer_intake_gate",
                 "status": "BLOCKED_NO_CUSTOMER_DATA",
@@ -125,7 +217,12 @@ class CustomerIntakeGateValidationTests(unittest.TestCase):
                     "fixture_sla_is_customer_sla": False,
                     "customer_approved_without_approval_ref": False,
                 },
-                "evidence": {"nda_signed": str(evidence)},
+                "evidence": {
+                    "nda_signed": {
+                        "path": "nda.txt",
+                        "sha256": hashlib.sha256(body).hexdigest(),
+                    }
+                },
             }
             path.write_text(json.dumps(payload), encoding="utf-8")
             report = validate_customer_intake_gate(path)

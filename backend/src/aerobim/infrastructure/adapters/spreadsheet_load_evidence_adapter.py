@@ -34,9 +34,33 @@ class SpreadsheetLoadEvidenceAdapter:
         source = request.calculation_source
         if source is None:
             return []
-        text = source.text.strip()
-        if not text and source.path is not None:
+
+        conflict_issues: list[ValidationIssue] = []
+        text = ""
+        source_id = source.source_id or "calculation"
+
+        # RT-CALC-005: .json path is SSOT when present (text must not shadow).
+        if source.path is not None and source.path.suffix.lower() == ".json":
             text = self._load_path(source.path)
+            inline = source.text.strip()
+            if inline and inline != text.strip():
+                conflict_issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-LOAD-FORMAT",
+                        severity=Severity.WARNING,
+                        message=(
+                            "Calculation source text disagrees with .json path; "
+                            "path is SSOT — load OK suppressed"
+                        ),
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id=source_id,
+                    )
+                )
+        else:
+            text = source.text.strip()
+            if not text and source.path is not None:
+                text = self._load_path(source.path)
+
         if not text.strip():
             return [
                 ValidationIssue(
@@ -44,13 +68,19 @@ class SpreadsheetLoadEvidenceAdapter:
                     severity=Severity.INFO,
                     message="Calculation source empty; no LOAD rows evaluated",
                     category=FindingCategory.CROSS_DOCUMENT,
-                    source_id=source.source_id or "calculation",
+                    source_id=source_id,
                 )
             ]
 
         if text.lstrip().startswith("{"):
-            return self._verify_json(text, source_id=source.source_id or "calculation")
-        return self._verify_tabular(text, source_id=source.source_id or "calculation")
+            issues = self._verify_json(text, source_id=source_id)
+        else:
+            issues = self._verify_tabular(text, source_id=source_id)
+
+        if conflict_issues:
+            issues = [item for item in issues if item.rule_id != "AEROBIM-LOAD-OK"]
+            return [*conflict_issues, *issues]
+        return issues
 
     def _load_path(self, path: Path) -> str:
         if not path.exists():
@@ -93,8 +123,18 @@ class SpreadsheetLoadEvidenceAdapter:
                     source_id=source_id,
                 )
             ]
-        for row in rows:
+        for index, row in enumerate(rows):
+            # RT-CALC-004: never silently skip non-dict rows.
             if not isinstance(row, dict):
+                issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-LOAD-ROW",
+                        severity=Severity.WARNING,
+                        message=f"loads[{index}] is not an object",
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id=source_id,
+                    )
+                )
                 continue
             load_id = str(row.get("id", "load"))
             unit = str(row.get("unit", "") or "")
@@ -133,6 +173,8 @@ class SpreadsheetLoadEvidenceAdapter:
             else:
                 evaluated_ok += 1
         if any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues):
+            return issues
+        if any(i.rule_id == "AEROBIM-LOAD-ROW" for i in issues):
             return issues
         if evaluated_ok == 0:
             if not issues:

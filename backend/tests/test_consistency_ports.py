@@ -105,6 +105,44 @@ class ConsistencyPortsTests(unittest.TestCase):
             issues_schema = adapter.verify(schema)
             self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-FORMAT" for i in issues_schema))
 
+            # RT-CALC-004: non-dict JSON rows must not greenwash LOAD-OK.
+            mixed = ValidationRequest(
+                request_id="r5",
+                ifc_path=ifc,
+                requirement_source=RequirementSource(text="R|IFCWALL|P|T|1"),
+                calculation_source=RequirementSource(
+                    text=(
+                        '{"loads":[{"id":"L1","expected":10,"observed":10,"unit":"kN"},'
+                        '"bad",{"id":"L2","expected":5,"observed":5,"unit":"kN"}]}'
+                    ),
+                    source_kind=SourceKind.CALCULATION,
+                ),
+            )
+            issues_mixed = adapter.verify(mixed)
+            self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-ROW" for i in issues_mixed))
+            self.assertFalse(any(i.rule_id == "AEROBIM-LOAD-OK" for i in issues_mixed))
+
+            # RT-CALC-005: tabular text must not shadow disagreeing .json path.
+            json_path = Path(temporary_directory) / "loads.json"
+            json_path.write_text(
+                '{"loads":[{"id":"L1","expected":10,"observed":99,"unit":"kN"}]}',
+                encoding="utf-8",
+            )
+            dual = ValidationRequest(
+                request_id="r6",
+                ifc_path=ifc,
+                requirement_source=RequirementSource(text="R|IFCWALL|P|T|1"),
+                calculation_source=RequirementSource(
+                    text="LOAD|L1|snow|10|kN|10\n",
+                    path=json_path,
+                    source_kind=SourceKind.CALCULATION,
+                ),
+            )
+            issues_dual = adapter.verify(dual)
+            self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-FORMAT" for i in issues_dual))
+            self.assertTrue(any(i.rule_id == "AEROBIM-LOAD-MISMATCH" for i in issues_dual))
+            self.assertFalse(any(i.rule_id == "AEROBIM-LOAD-OK" for i in issues_dual))
+
     def test_logic_pd_without_rd(self) -> None:
         adapter = ManifestLogicConsistencyAdapter()
         with tempfile.TemporaryDirectory() as temporary_directory:

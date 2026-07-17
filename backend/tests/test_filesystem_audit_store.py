@@ -86,6 +86,79 @@ class FilesystemAuditStoreTests(unittest.TestCase):
             self.assertEqual(loaded.project_name, "Residential Tower Alpha")
             self.assertEqual(loaded.discipline, "mechanical")
 
+    def test_save_and_get_roundtrip_preserves_i7_fields(self) -> None:
+        import tempfile
+
+        from aerobim.domain.models import (
+            ClashResult,
+            DivergenceRecord,
+            DrawingRegionRef,
+            ValidationSummary,
+        )
+        from aerobim.domain.norm_assist import IdsCompileDraft
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemAuditStore(Path(tmp))
+            report = ValidationReport(
+                report_id="rpt-i7",
+                request_id="req-i7",
+                ifc_path=Path("sample.ifc"),
+                created_at="2026-07-17T12:00:00Z",
+                requirements=(),
+                issues=(),
+                summary=ValidationSummary(
+                    requirement_count=0,
+                    issue_count=0,
+                    error_count=0,
+                    warning_count=0,
+                    passed=True,
+                ),
+                clash_results=(
+                    ClashResult(
+                        element_a_guid="guid-a",
+                        element_b_guid="guid-b",
+                        clash_type="hard",
+                        distance=0.01,
+                        description="fixture",
+                    ),
+                ),
+                divergences=(
+                    DivergenceRecord(
+                        finding_key="rule:A",
+                        engine_verdict="fail",
+                        advisory_verdict="pass",
+                    ),
+                ),
+                advisory_ids_draft=IdsCompileDraft(
+                    suggested_ids_xml="<ids/>",
+                    rationale="advisory draft",
+                    source_requirement_count=2,
+                    advisory_only=True,
+                    confidence=0.55,
+                ),
+                drawing_regions=(
+                    DrawingRegionRef(
+                        sheet_id="AR-01",
+                        bbox_xyxy=(0.1, 0.2, 0.3, 0.4),
+                        confidence=0.91,
+                        modality="ocr",
+                    ),
+                ),
+            )
+            store.save(report)
+            loaded = store.get("rpt-i7")
+            self.assertIsNotNone(loaded)
+            assert loaded is not None
+            self.assertEqual(len(loaded.divergences), 1)
+            self.assertEqual(loaded.divergences[0].finding_key, "rule:A")
+            self.assertIsNotNone(loaded.advisory_ids_draft)
+            assert loaded.advisory_ids_draft is not None
+            self.assertEqual(loaded.advisory_ids_draft.suggested_ids_xml, "<ids/>")
+            self.assertEqual(loaded.advisory_ids_draft.confidence, 0.55)
+            self.assertEqual(len(loaded.drawing_regions), 1)
+            self.assertEqual(loaded.drawing_regions[0].sheet_id, "AR-01")
+            self.assertEqual(loaded.drawing_regions[0].bbox_xyxy, (0.1, 0.2, 0.3, 0.4))
+
     def test_get_nonexistent_returns_none(self) -> None:
         import tempfile
 

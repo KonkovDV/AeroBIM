@@ -7,6 +7,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.errors import HonestyCapabilityError
 from aerobim.domain.models import CapabilityState, CapabilityStatus, ReportCapabilities
 
 _MEP_ALLOWED = frozenset(
@@ -125,8 +126,8 @@ def build_system_capabilities_payload() -> dict[str, object]:
     }
 
 
-def assert_honesty_capabilities_not_silently_ok(capabilities: ReportCapabilities) -> None:
-    """Architecture guard: declared gaps must not look delivered."""
+def enforce_honesty_capabilities(capabilities: ReportCapabilities) -> None:
+    """Runtime fail-closed: declared gaps must not look delivered."""
 
     checks: tuple[tuple[str, CapabilityStatus, frozenset[CapabilityState]], ...] = (
         ("dwg_dxf", capabilities.dwg_dxf, _DWG_DXF_ALLOWED),
@@ -144,15 +145,26 @@ def assert_honesty_capabilities_not_silently_ok(capabilities: ReportCapabilities
     )
     for name, status, allowed in checks:
         if status.status not in allowed:
-            raise AssertionError(
-                f"Honesty capability {name} has status {status.status.value!r}; "
-                f"allowed={sorted(s.value for s in allowed)}"
+            raise HonestyCapabilityError(
+                name,
+                status.status.value,
+                tuple(sorted(s.value for s in allowed)),
             )
+
+
+def assert_honesty_capabilities_not_silently_ok(capabilities: ReportCapabilities) -> None:
+    """Architecture guard for tests — wraps ``enforce_honesty_capabilities``."""
+
+    try:
+        enforce_honesty_capabilities(capabilities)
+    except HonestyCapabilityError as exc:
+        raise AssertionError(str(exc)) from exc
 
 
 __all__ = [
     "assert_honesty_capabilities_not_silently_ok",
     "build_system_capabilities_payload",
     "default_honesty_capabilities",
+    "enforce_honesty_capabilities",
     "load_customer_intake_gate_snapshot",
 ]
