@@ -184,7 +184,7 @@ python -m aerobim.tools.export_runtime_baseline
 | Claims × evidence matrix | [audit/reports/CLAIMS_EVIDENCE_MATRIX.md](audit/reports/CLAIMS_EVIDENCE_MATRIX.md) |
 | Critical blockers / checkpoint | [audit/reports/CRITICAL_BLOCKERS.md](audit/reports/CRITICAL_BLOCKERS.md) |
 | Claim boundary (pilot / publication) | [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) |
-| Publication evidence pack | [docs/academic-publication-evidence-2026.md](docs/academic-publication-evidence-2026.md) |
+| Reproducibility (FAIR) | [docs/REPRODUCIBILITY-2026.md](docs/REPRODUCIBILITY-2026.md) |
 | Annotation protocol (RU corpus) | [docs/annotation-protocol-2026.md](docs/annotation-protocol-2026.md) |
 | Benchmark packs | [samples/benchmarks/README.md](samples/benchmarks/README.md) |
 | Audit evidence (T1 BCF, SLA 1.2, intake gate) | [audit/evidence/](audit/evidence/) |
@@ -301,25 +301,21 @@ Backend src ~16247 LOC; tests ~11434 LOC; 456+ test functions; extraction macro_
 
 ## Documentation
 
-- [Claims lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) — forbidden/allowed public wording (SSOT)
-- [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) — checkpoint NO_GO register
-- [Red Team delta (post-remediation)](audit/reports/RED_TEAM_DELTA_2026_07_17.md) — atomic re-verification after P0/evidence wave
-- [Repository hygiene](docs/REPOSITORY-HYGIENE-2026.md) — what to commit vs gitignore vs CI artifacts
-- [Reproducibility (FAIR/CODE)](docs/REPRODUCIBILITY-2026.md) — frozen tag, commands, evidence manifest
-- [Pilot start package](docs/pilot-start-package-2026.md) — Moscow pilot kickoff (tag `pilot-2026-pre`, gates, week 1)
-- [Documentation map](docs/README.md) — Tier 0 / pilot / archive router
-- [Hybrid TZ target architecture](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — DeterminismGate, ports, roadmap I0–I9
-- [Research alignment (AEC AI 2025–2026)](docs/architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) — Blueprint / IfcLLM map (no GO)
-- [Architecture Reference](docs/06-architecture-reference.md) — canonical layer map and invariants
-- [Standards Roadmap 2026](docs/13-academic-execution-plan-2026.md) — openBIM iterations A–C
-- [Archived docs](docs/archive/README.md) — MicroPhoenix extraction, rebaseline, April 2026 audits
-- [Enterprise Storage](docs/14-enterprise-storage-foundation.md) — ObjectStore and Postgres index
-- [Publication Evidence](docs/academic-publication-evidence-2026.md) — reproducibility commands
-- [Local Quality Gate](docs/15-local-quality-gate.md) — CI-parity formatting/lint/type/test commands before push
-- [Standalone Runbook](ops/standalone-runbook.md) — backend/frontend bootstrap and day-1 operations
-- [Environment Matrix](ops/environment-matrix.md) — deployment variables and defaults
-- [Smoke Path](ops/smoke-path.md) — local and Docker verification checklist, including the deterministic seeded runtime smoke path
-- [Benchmark Packs](samples/benchmarks/README.md) — manifest-backed throughput rail for representative project-package fixtures
+Public docs are **Samolet TechLab TZ surface only**. Engineering wave logs and Red Team deltas stay local ([`docs/LOCAL_OPERATOR_ARTIFACTS.md`](docs/LOCAL_OPERATOR_ARTIFACTS.md)).
+
+- [Tier-0 index](docs/TIER0_INDEX.md) — public SSOT map
+- [TZ pack](docs/tz/README.md) — Task 07 v2 + matrices
+- [Claims lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) — forbidden/allowed wording
+- [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) — checkpoint **NO_GO** (RT-001/002/003)
+- [Pilot claim boundary](docs/pilot-claim-boundary-2026.md) — verified vs planned
+- [Target hybrid architecture](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — architecture SSOT
+- [Samolet alignment](docs/samolet-techlab-alignment-2026.md) — R1–R15
+- [Reproducibility](docs/REPRODUCIBILITY-2026.md) — FAIR / evidence
+- [Documentation map](docs/README.md) — full public router
+- [Repository hygiene](docs/REPOSITORY-HYGIENE-2026.md) — what belongs on GitHub
+- [Local quality gate](docs/15-local-quality-gate.md) — CI-parity before push
+- [Standalone runbook](ops/standalone-runbook.md) · [Environment matrix](ops/environment-matrix.md) · [Smoke path](ops/smoke-path.md)
+- [Benchmark packs](samples/benchmarks/README.md)
 
 ## Git commits
 
@@ -329,9 +325,7 @@ Use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroB
 git config core.hooksPath .githooks
 ```
 
-See [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
-
-**GitHub publication:** [docs/github-readiness-audit-2026-05-20.md](docs/github-readiness-audit-2026-05-20.md), [docs/PROJECT-AUDIT-2026-05-20.md](docs/PROJECT-AUDIT-2026-05-20.md). Suggested repo About — [.github/repository-metadata.md](.github/repository-metadata.md).
+See [docs/contributor-git-2026.md](docs/contributor-git-2026.md). Suggested repo About — [.github/repository-metadata.md](.github/repository-metadata.md).
 
 ## Governance
 

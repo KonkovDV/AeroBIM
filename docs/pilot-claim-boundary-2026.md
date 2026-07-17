@@ -137,7 +137,7 @@ Keep aligned with:
 - [section-pairing/README.md](section-pairing/README.md)
 - [evaluation/DETECTION_PRECISION_PROTOCOL_2026.md](evaluation/DETECTION_PRECISION_PROTOCOL_2026.md)
 - [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
-- [evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md](evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md)
+- [evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md)
 - [architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md](architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) — literature map (not product claims)
-- [architecture/EXECUTION_PLAN_I8_I9_2026_07.md](architecture/EXECUTION_PLAN_I8_I9_2026_07.md) — planned advisory waves (no GO)
+- [architecture/EXECUTION_PLAN_I8_I9_2026_07.md](architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) — planned advisory waves (no GO)
 - [../audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md) — allowed / forbidden wording

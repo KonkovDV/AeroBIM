@@ -416,7 +416,7 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 **Shipped:** I0–I8c + Track E + **I9 advisory scaffold** (relational fixture QA / stub fallback — **not GraphRAG**) + combat CAD EntityGraph + HybridDrawingAnalyzer (priors) + RT harness discipline/clash splits + MEP opt-in scaffold.
 
-**Audit:** [`AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md`](../../audit/reports/AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md).
+**Audit:** [`CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md).
 
 **Next (still no engineering GO):**
 
@@ -425,6 +425,6 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 3. Real MEP geometry clash after federated pack + clearance matrix.  
 4. Optional YOLO weights behind `DrawingRegionDetector` (cv stays MISSING until customer F1).
 
-See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md) · [`EXECUTION_PLAN_NEXT_2026_07.md`](EXECUTION_PLAN_NEXT_2026_07.md) · **гиперплан:** [`EXECUTION_PLAN_HYPERDEEP_2026_07.md`](EXECUTION_PLAN_HYPERDEEP_2026_07.md).
+See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · **гиперплан:** [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
 Checkpoint remains **NO_GO** until RT-001/002/003.

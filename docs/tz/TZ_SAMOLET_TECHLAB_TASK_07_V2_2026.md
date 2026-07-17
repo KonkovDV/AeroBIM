@@ -477,4 +477,4 @@ basis:
 
 Редакция **v2.0** делает TBD-разделы проверяемыми, привязывает требования к AeroBIM и research 2025–2026, и устраняет неизмеримые обещания v1. Продуктовый checkpoint остаётся **NO_GO** до RT-001/002/003; конкурсный MVP демонстрируется на детерминированном openBIM-контуре с честной таблицей gaps.
 
-**Согласовано с:** `CLAIMS_LOCK_2026_07_17.md`, `CRITICAL_BLOCKERS.md`, `RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`, `EXECUTION_PLAN_HYPERDEEP_2026_07.md`.
+**Согласовано с:** `CLAIMS_LOCK_2026_07_17.md`, `CRITICAL_BLOCKERS.md`, `RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`, `TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`.

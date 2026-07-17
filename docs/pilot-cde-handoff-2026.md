@@ -56,5 +56,5 @@ Use only if CDE requires BCF 3.0: `?version=3` on export endpoint. Default remai
 
 ## Related
 
-- [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md)
+- [`pilot-case-study-report-2026.md`](pilot-claim-boundary-2026.md)
 - Pre-pilot evidence: [`evidence/pre-pilot-bcf-handoff-2026-05-21.json`](evidence/pre-pilot-bcf-handoff-2026-05-21.json)

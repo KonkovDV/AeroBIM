@@ -65,7 +65,7 @@ python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
 python -m aerobim.tools.run_ablation_study --output ../docs/evidence/ablation-study-report.json
 ```
 
-Full publication rail: [`academic-publication-evidence-2026.md`](academic-publication-evidence-2026.md).
+Full publication rail: [`academic-publication-evidence-2026.md`](REPRODUCIBILITY-2026.md).
 
 ## Evidence artifact manifest
 

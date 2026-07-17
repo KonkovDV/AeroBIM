@@ -106,7 +106,7 @@ python -m aerobim.tools.export_runtime_baseline
 
 Граница утверждений: [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md).  
 SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK_2026_07_17.md](audit/reports/CLAIMS_LOCK_2026_07_17.md).  
-Пакет доказательств: [docs/academic-publication-evidence-2026.md](docs/academic-publication-evidence-2026.md).
+Воспроизводимость: [docs/REPRODUCIBILITY-2026.md](docs/REPRODUCIBILITY-2026.md).
 
 ## API (основное)
 

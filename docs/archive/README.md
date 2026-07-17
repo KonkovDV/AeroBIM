@@ -1,23 +1,13 @@
 ---
 title: "Archived Documentation"
 status: archive
-version: "1.1.0"
+version: "2.0.0"
 last_updated: "2026-07-17"
 ---
 
 # Archived documentation
 
-Historical MicroPhoenix extraction, rebaseline plans, pre-pilot audits, and **completed execution waves**. **Do not start here** — use [`../TIER0_INDEX.md`](../TIER0_INDEX.md).
-
-## Execution wave logs (RT-H)
-
-| File | Topic |
-|------|--------|
-| [`execution/EXECUTION_PLAN_I0_I2_2026_07.md`](execution/EXECUTION_PLAN_I0_I2_2026_07.md) | Waves I0–I5 (done) |
-| [`execution/EXECUTION_PLAN_I6_2026_07.md`](execution/EXECUTION_PLAN_I6_2026_07.md) | I6 customer metrics readiness (done) |
-| [`execution/EXECUTION_PLAN_I7_2026_07.md`](execution/EXECUTION_PLAN_I7_2026_07.md) | I7 post-I6 polish (done) |
-
-Stubs remain under `docs/architecture/` for old links.
+Historical MicroPhoenix extraction and rebaseline snapshots. **Do not start here** — use [`../TIER0_INDEX.md`](../TIER0_INDEX.md) for Samolet Task 07.
 
 ## MicroPhoenix / rebaseline index
 
@@ -35,12 +25,11 @@ Stubs remain under `docs/architecture/` for old links.
 | [`10-academic-audit-and-recommendations-ru.md`](10-academic-audit-and-recommendations-ru.md) | Academic audit (RU) |
 | [`11-rebaseline-execution-plan.md`](11-rebaseline-execution-plan.md) | Rebaseline waves |
 
-## Active counterparts (docs root)
+## Active counterparts
 
 | Need | Read |
 |------|------|
 | Architecture SSOT | [`../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) |
-| Tier-0 index | [`../TIER0_INDEX.md`](../TIER0_INDEX.md) |
+| Tier-0 | [`../TIER0_INDEX.md`](../TIER0_INDEX.md) |
+| TZ | [`../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) |
 | Claim boundary | [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) |
-| Live forward plan | [`../architecture/EXECUTION_PLAN_NEXT_2026_07.md`](../architecture/EXECUTION_PLAN_NEXT_2026_07.md) |
-| Samolet pilot | [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) |

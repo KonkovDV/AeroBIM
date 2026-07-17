@@ -16,7 +16,7 @@ Operational rhythm for the Moscow pilot. KPI definitions: [`pilot-kpi-protocol-2
 
 1. Complete gates 1–5 in [`pilot-pre-pilot-gates-2026.md`](pilot-pre-pilot-gates-2026.md).
 2. Create frozen tag per [`pilot-frozen-tag-protocol-2026.md`](pilot-frozen-tag-protocol-2026.md).
-3. Agree BCF tool + version (2.1 or 3.0) with customer — record in [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md).
+3. Agree BCF tool + version (2.1 or 3.0) with customer — record in [`pilot-case-study-report-2026.md`](pilot-claim-boundary-2026.md).
 
 ## Weekly loop
 
@@ -24,7 +24,7 @@ Operational rhythm for the Moscow pilot. KPI definitions: [`pilot-kpi-protocol-2
 |---|---|---|
 | Mon | Ingest package, run analysis, export BCF | AeroBIM operator |
 | Tue–Thu | Engineer review in CDE, label TP/FP | Customer |
-| Fri | Fill [`pilot-weekly-log-2026.md`](pilot-weekly-log-2026.md) | Joint |
+| Fri | Fill [`pilot-weekly-log-2026.md`](pilot-execution-runbook-2026.md) | Joint |
 
 ## Per-run checklist
 
@@ -52,5 +52,5 @@ Browser review: [`ops/smoke-path.md`](../ops/smoke-path.md) steps 8–10 (2D ove
 ## End of pilot
 
 1. Complete KPI table in case study report.
-2. Run post-pilot decision memo: [`post-pilot-go-no-go-memo-2026.md`](post-pilot-go-no-go-memo-2026.md).
-3. Choose branch A/B/C in [`post-pilot-fork-2026.md`](post-pilot-fork-2026.md).
+2. Run post-pilot decision memo: [`post-pilot-go-no-go-memo-2026.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+3. Choose branch A/B/C in [`post-pilot-fork-2026.md`](../audit/reports/CRITICAL_BLOCKERS.md).

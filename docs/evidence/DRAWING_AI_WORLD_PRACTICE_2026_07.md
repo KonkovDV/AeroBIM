@@ -102,7 +102,7 @@ Architecture split: [`tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](../tz/TZ_ARCHITE
 | P2 | Deepen OCR on Samolet scans; thin DWG; **narrow** CV advisory + capability honesty |
 | P3 | VLM/LLM remark or sheet Q&A assist behind flag + HITL audit log |
 | P4 | Publish precision only after labeled customer drawing corpus |
-| **I8a** | Blueprint-style region detect → crop → OCR/VLM (advisory); see [`EXECUTION_PLAN_I8_I9_2026_07.md`](../architecture/EXECUTION_PLAN_I8_I9_2026_07.md) |
+| **I8a** | Blueprint-style region detect → crop → OCR/VLM (advisory); see [`EXECUTION_PLAN_I8_I9_2026_07.md`](../architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) |
 
 Do **not** reorder P2/P3 ahead of customer IFC/IDS intake if that blocks Task 07 SLA/BCF KPIs — drawing AI is parallel, not a substitute for openBIM acceptance criteria.
 
