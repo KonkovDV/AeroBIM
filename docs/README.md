@@ -52,7 +52,8 @@ Router for `AeroBIM/docs/`.
 | `partners/SAMOLET_TZ_REMAINING_TAILS_2026_07.md` | **Хвосты ТЗ Самолёта** — blockers vs engineering done |
 | `partners/TECHLAB_TASK_07_READINESS_2026.md` | Task 07 readiness with fixture-only vocabulary |
 | `evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md` | **OCR/CV/NLP posture** — July 2026 vs “AI reads like a human” |
-| `tz/README.md` | **TZ Response Pack** — expert-assistant MVP (architecture/build/presentation TBD fills) |
+| `tz/README.md` | **TZ Response Pack** — expert-assistant MVP |
+| `tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md` | **ТЗ Задача 07 v2.0** (полный, Claims Lock) |
 | `evidence/ACADEMIC_DEEP_AUDIT_2026_07_10.md` | Deep audit finding register (Jul 2026) |
 | `evidence/FULL_AUDIT_FACTCHECK_2026_07_10.md` | Public-surface fact-check (Jul 2026) |
 
