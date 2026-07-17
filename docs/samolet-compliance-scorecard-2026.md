@@ -43,7 +43,7 @@ tags: [aerobim, samolet, compliance, scorecard]
 - [ ] KPI memo (PDF/MD, joint sign)
 - [ ] `docs/evidence/internal/samolet-sla-customer-*.json` (gitignored)
 - [ ] `docs/evidence/internal/cde-import-proof/` (gitignored)
-- [ ] Case study: [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md)
+- [ ] Case study: [`pilot-case-study-report-2026.md`](pilot-claim-boundary-2026.md)
 - [ ] Demo-day deck (external)
 
 ## Overall

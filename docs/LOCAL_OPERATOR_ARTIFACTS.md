@@ -1,24 +1,36 @@
-# Local operator artifacts (not published)
+---
+title: "Local Operator Artifacts (not in git)"
+status: active
+version: "1.1.0"
+last_updated: "2026-07-17"
+tags: [aerobim, operator, NDA, hygiene]
+---
 
-These paths are **gitignored**. Do not commit them to GitHub.
+# Local operator artifacts
 
-| Path | Purpose |
-|------|---------|
-| `.local/prompts/` | AI assistant session prompts for operators (e.g. next-work after Red Team) |
-| `docs/prompts/` | Legacy location — also ignored; prefer `.local/prompts/` |
-| `docs/evidence/internal/` | NDA / customer-only evidence |
-| `docs/samolet-techlab-scorecard-2026.zip` | Local scorecard archive |
-| `samples/customer/**` | Customer packs (except `README.md`) |
-| `backend/var/`, `artifacts/` | Runtime / CI dumps |
+Files that **must not** appear on public GitHub. Create on your machine only.
 
-## Public SSOT instead of prompts
+## Recommended layout
 
-Operators and jurors should use published surfaces only:
+```text
+AeroBIM/
+├── .local/
+│   ├── prompts/                 # AI session prompts
+│   └── engineering-docs/        # Red Team deltas, EXECUTION_PLAN waves, deep audits
+├── docs/evidence/internal/      # NDA customer SLA, CDE screenshots
+├── samples/customer/            # customer packs (README only in git)
+└── backend/var/                 # runtime reports
+```
 
-- `docs/TIER0_INDEX.md`
-- `docs/pilot-claim-boundary-2026.md`
-- `audit/reports/CLAIMS_LOCK_2026_07_17.md`
-- `audit/reports/CRITICAL_BLOCKERS.md`
-- Dated `audit/reports/AUDIT_*.md` (evidence of remediations, not chat prompts)
+## Public equivalents (safe to cite)
 
-Policy: [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md).
+| Need | Public path |
+|------|-------------|
+| TZ Task 07 | `docs/tz/` |
+| Claims / blockers | `audit/reports/CLAIMS_LOCK_*.md`, `CRITICAL_BLOCKERS.md` |
+| Claim boundary | `docs/pilot-claim-boundary-2026.md` |
+| Architecture SSOT | `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` |
+| Fixture SLA | `docs/evidence/samolet-sla-pilot-moscow-2026-05-21.json` |
+| Reproducibility | `docs/REPRODUCIBILITY-2026.md` |
+
+See [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md).

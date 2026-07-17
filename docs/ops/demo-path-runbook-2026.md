@@ -109,6 +109,6 @@ approved pack, corpus, 2 adjudicators, CDE+BCF version, baseline hours.
 
 ## Related
 
-- Evidence: [`../evidence/TRACK_A5_DEMO_PATH_2026_07_11.md`](../evidence/TRACK_A5_DEMO_PATH_2026_07_11.md)
+- Evidence: [`../evidence/TRACK_A5_DEMO_PATH_2026_07_11.md`](../evidence/demo-path-pilot-moscow-2026-07-11.json)
 - Intake precision (when corpus arrives): [`intake-precision-runbook-2026.md`](intake-precision-runbook-2026.md)
 - Claim boundary: [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)

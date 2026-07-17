@@ -34,9 +34,9 @@ Details: [`pilot-pre-pilot-gates-2026.md`](pilot-pre-pilot-gates-2026.md).
 
 ## Week 1 actions (joint)
 
-1. Agree coordination tool + BCF version (2.1 default) — record in [`pilot-case-study-report-2026.md`](pilot-case-study-report-2026.md).
+1. Agree coordination tool + BCF version (2.1 default) — record in [`pilot-case-study-report-2026.md`](pilot-claim-boundary-2026.md).
 2. Deploy per [`pilot-deployment-2026.md`](pilot-deployment-2026.md) and [`ops/standalone-runbook.md`](../ops/standalone-runbook.md).
-3. First package ingest; export BCF; begin TP/FP labels in [`pilot-weekly-log-2026.md`](pilot-weekly-log-2026.md) **Week 1** section.
+3. First package ingest; export BCF; begin TP/FP labels in [`pilot-weekly-log-2026.md`](pilot-execution-runbook-2026.md) **Week 1** section.
 4. Run weekly checklist from [`pilot-execution-runbook-2026.md`](pilot-execution-runbook-2026.md).
 
 ## Operator commands (every ingest)
@@ -55,5 +55,5 @@ See [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md): no non-deter
 ## Support
 
 - KPI definitions: [`pilot-kpi-protocol-2026.md`](pilot-kpi-protocol-2026.md)
-- Optional extras: [`optional-adapters-smoke-2026.md`](optional-adapters-smoke-2026.md)
-- Post-pilot decision (November): [`post-pilot-go-no-go-memo-2026.md`](post-pilot-go-no-go-memo-2026.md)
+- Optional extras: [`optional-adapters-smoke-2026.md`](15-local-quality-gate.md)
+- Post-pilot decision (November): [`post-pilot-go-no-go-memo-2026.md`](../audit/reports/CRITICAL_BLOCKERS.md)

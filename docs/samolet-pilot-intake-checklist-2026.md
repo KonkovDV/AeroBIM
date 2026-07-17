@@ -24,7 +24,7 @@ EN SSOT → [`partners/SAMOLET_WHAT_WE_NEED_2026_07.md`](partners/SAMOLET_WHAT_W
 | 4 | IFC (+ schema) + TZ/EIR extract + calc + PD/RD PDF + 2D paths validated | Samolet | [ ] | ingest log |
 | 5 | IDS 1.0 **or** property table (≥15–30 rules) for pilot disciplines | Samolet | [ ] | `.ids` / spreadsheet |
 | 6 | Typical errors list (≥20 patterns with examples) | Samolet | [ ] | update `samolet-typical-errors-catalog.json` |
-| 7 | Manual review baseline hours (same package) | Samolet | [ ] | [`pilot-weekly-log-2026.md`](pilot-weekly-log-2026.md) W1 |
+| 7 | Manual review baseline hours (same package) | Samolet | [ ] | [`pilot-weekly-log-2026.md`](pilot-execution-runbook-2026.md) W1 |
 | 8 | CDE tool name + BCF version + pilot project for import | Joint | [ ] | [`pilot-cde-handoff-2026.md`](pilot-cde-handoff-2026.md) |
 | 9 | ≥2 TP/FP adjudicators named + process agreed (Cohen’s κ / Krippendorff’s α + confusion matrix; LLM assist advisory-only) | Joint | [ ] | [`pilot-kpi-protocol-2026.md`](pilot-kpi-protocol-2026.md) + [`evaluation/DETECTION_PRECISION_PROTOCOL_2026.md`](evaluation/DETECTION_PRECISION_PROTOCOL_2026.md) |
 | 10 | TechLab pilot budget owner confirmed (2 000 000 ₽) | Samolet | [ ] | internal nomination |

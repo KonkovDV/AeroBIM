@@ -1,7 +1,7 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
 **Operational freeze SHA:** `8efbef8fa5191ef8d6d68841f54fb1e415ae1a9b` (2026-07-17).  
-**Historical Red Team freeze:** `c0c4b2b` — see `RED_TEAM_FULL_REPORT.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
+**Historical Red Team freeze:** `c0c4b2b` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open).
@@ -21,7 +21,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 Still open for checkpoint: **RT-001, RT-002, RT-003** (customer/MEP blocked).  
 Evidence wave (2026-07-17): RT-008 **PARTIAL** (structural T1); RT-010/011/012 honesty closed for fixture/API surface; CDE import + customer SLA still open.  
-I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md` · Track E close `RED_TEAM_TRACK_E_2026_07_17.md` — residual honesty CLOSED; checkpoint still **NO_GO**. Next: I8a / customer RT-001/002/003 — `docs/architecture/EXECUTION_PLAN_HYPERDEEP_2026_07.md`.
+I0–I7 + Red Team remediations (2026-07-17): see `CLAIMS_LOCK_2026_07_17.md` · Track E close `CLAIMS_LOCK_2026_07_17.md` — residual honesty CLOSED; checkpoint still **NO_GO**. Next: I8a / customer RT-001/002/003 — `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`.
 
 ## Closed in evidence wave (2026-07-17)
 
@@ -44,7 +44,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Impact:** Checkpoint fails if accuracy KPI presented as achieved  
 - **Fix:** Keep withheld; run customer intake protocol; do not raise claims  
 - **Verification:** PrecisionClaim.publishable true only with customer + adjudicators≥2  
-- **Engineering readiness (2026-07-17):** protocol aligned (`dual_independent` + `agreement-template.json` + runbook `--agreement-json`) — see `AUDIT_NEXT_WORK_PROTOCOL_2026_07_17.md`. **Product HOLD** until customer corpus.  
+- **Engineering readiness (2026-07-17):** protocol aligned (`dual_independent` + `agreement-template.json` + runbook `--agreement-json`) — see `pilot-claim-boundary-2026.md`. **Product HOLD** until customer corpus.  
 
 ### RT-002 — Approved norm pack absent
 - **Severity:** BLOCKER  
@@ -159,7 +159,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `domain/ingestion.py::revisions_conflict`, `analyze_project_package.py::_collect_identity_sources`  
 - **Observed:** Conflict only if **both** revisions non-empty; drawing sources not in identity set  
 - **Expected:** AMBIGUOUS / REQUIRES_HITL when revision missing on one side; drawings in identity scope  
-- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md)  
+- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](CLAIMS_LOCK_2026_07_17.md)  
 
 ### RT-014 — Soft empty-success edges (raster OK + empty OCR; bSI WARNING)
 - **Severity:** HIGH  
@@ -167,7 +167,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** analyze `_build_capabilities` (raster OK if analyzer configured); `_submit_bsi_validation` WARNING path  
 - **Observed:** Empty OCR yield can still look capability-OK; remote schema WARNING may not fail pass  
 - **Expected:** Explicit yield/coverage gates; schema pre-gate policy for pilot packages  
-- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md)  
+- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](CLAIMS_LOCK_2026_07_17.md)  
 
 ### RT-015 — Storage fallbacks may hide enterprise misconfig
 - **Severity:** HIGH  
@@ -175,7 +175,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `infrastructure/di/bootstrap.py::_build_audit_report_store`  
 - **Observed:** Postgres init failure always falls back to filesystem (not only in dev); S3/Redis fall back in dev  
 - **Expected:** Non-dev fail-closed when configured enterprise store is required  
-- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md)  
+- **Evidence:** Architecture layer audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](CLAIMS_LOCK_2026_07_17.md)  
 
 ### RT-016 — Published SLA evidence is fixture-microscopic
 - **Severity:** HIGH  
@@ -183,7 +183,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `docs/evidence/samolet-sla-pilot-moscow-2026-05-21.json`  
 - **Observed:** `sla_pass: true` on tiny Moscow fixture (~0.01 min class), not customer комплект  
 - **Expected:** Measured SLA only with package hash + sizes + machine + cold/warm  
-- **Evidence:** Claims/TZ audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md) · claim boundary: [`../../docs/pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md)  
+- **Evidence:** Claims/TZ audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](CLAIMS_LOCK_2026_07_17.md) · claim boundary: [`../../docs/pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md)  
 
 ### RT-017 — Advisory OFF==ON test is narrow
 - **Severity:** MEDIUM  
@@ -191,7 +191,7 @@ I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_20
 - **Exact file:** `tests/test_architecture_seams.py::test_advisory_off_equals_advisory_on_for_summary_passed`  
 - **Observed:** Side-call to IDS-assist stub between empty analyzes; does not toggle real OCR/CV/LLM path inside UC  
 - **Expected:** Full report-hash / deterministic-findings equality under advisory feature flags  
-- **Evidence:** Claims/TZ audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](AUDIT_RED_TEAM_RT_A_H_2026_07_17.md) · claim boundary: [`../../docs/pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md)  
+- **Evidence:** Claims/TZ audit (session); remediations: [`AUDIT_RED_TEAM_RT_A_H_2026_07_17.md`](CLAIMS_LOCK_2026_07_17.md) · claim boundary: [`../../docs/pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md)  
 - **Engineering status (2026-07-17):** **REMEDIATED** via RT-E (`tests/test_red_team_signoff_remediation.py::test_rt_e_*`) — real UC path, advisory ON/OFF; deterministic findings + `summary.passed` equality. Does **not** close RT-001/002/003 or flip **NO_GO**.  
 
 ---
