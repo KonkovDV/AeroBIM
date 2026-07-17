@@ -363,8 +363,11 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 | **I4** | P1 | `RequirementToIdsCompiler` + `NormCorpusRetriever` + HITL promote-to-pack | G4, G7 |
 | **I5** | P1 | `ComplianceAgentOrchestrator` + MCP tool registry over existing deterministic ports | G7, G12 |
 | **I6** | P0↔P2 | Customer corpus intake, κ/α, publishable PrecisionClaim, SLA proof | G9, G10 |
+| **I7** | P1 | Persist divergences / IDS draft / regions; expand agent tools | G8, G12 |
+| **I8** | P1 | Blueprint regions + RASE provenance + HITL region escalate | G2, G7, G8 |
+| **I9** | P2 | IfcLLM-style knowledge-graph query port (advisory) | G3, G12 |
 
-**Do not** claim GO after I1–I5 alone.
+**Do not** claim GO after I1–I9 alone without RT-001/002/003.
 
 ---
 
@@ -421,6 +424,6 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 4. **I9 (P2):** IfcLLM-style `IfcKnowledgeGraphPort` + allowlisted advisory query (never sign-off).  
 5. Harden intake-gate evidence digests; nDCG optional for priority ranking (fixture only).
 
-See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md).
+See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md) · [`EXECUTION_PLAN_NEXT_2026_07.md`](EXECUTION_PLAN_NEXT_2026_07.md) · **гиперплан:** [`EXECUTION_PLAN_HYPERDEEP_2026_07.md`](EXECUTION_PLAN_HYPERDEEP_2026_07.md).
 
 Checkpoint remains **NO_GO** until RT-001/002/003.

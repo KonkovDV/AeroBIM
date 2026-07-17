@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Documentation Map"
 status: active
-version: "0.6.0"
+version: "0.7.0"
 last_updated: "2026-07-17"
 tags: [aerobim, documentation, navigation, reference]
 ---
@@ -19,7 +19,9 @@ Router for `AeroBIM/docs/`.
 | [`evidence/README.md`](evidence/README.md) | Dated verification snapshots (+ July 17 honesty index) |
 | [`archive/README.md`](archive/README.md) | Historical docs (`01`–`11`) |
 | [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | **Claims wording SSOT** |
-| [`../audit/reports/RED_TEAM_DELTA_2026_07_17.md`](../audit/reports/RED_TEAM_DELTA_2026_07_17.md) | Post-remediation atomic Red Team |
+| [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | Checkpoint **NO_GO** register (RT-001/002/003) |
+| [`../audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md`](../audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md) | **Current** Red Team I0–I7 pass-3 |
+| [`../audit/reports/RED_TEAM_DELTA_2026_07_17.md`](../audit/reports/RED_TEAM_DELTA_2026_07_17.md) | Post-P0 delta (MEP DI cell superseded — see banner) |
 
 ## Tier 0 — SSOT (read first)
 
@@ -27,11 +29,14 @@ Router for `AeroBIM/docs/`.
 |------|------|
 | `REPRODUCIBILITY-2026.md` | FAIR/CODE, frozen tag, evidence manifest |
 | `06-architecture-reference.md` | Technical architecture |
-| `architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` | TZ hybrid target (ports, DeterminismGate, roadmap) |
-| `architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md` | Literature map 2025–2026 → AeroBIM I8/I9 (no GO) |
+| `architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` | TZ hybrid target (ports, DeterminismGate, roadmap I0–I9) |
+| `architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md` | Literature 2025–2026 → AeroBIM (Blueprint, IfcLLM, ACC) |
 | `architecture/EXECUTION_PLAN_I0_I2_2026_07.md` | Waves I0–I5 execution log |
 | `architecture/EXECUTION_PLAN_I6_2026_07.md` | **I6** customer metrics readiness (κ/α, intake gate) |
 | `architecture/EXECUTION_PLAN_I7_2026_07.md` | **I7** post-I6 polish (divergences, regions, agent tools) |
+| `architecture/EXECUTION_PLAN_I8_I9_2026_07.md` | **I8–I9** research-aligned advisory waves (planned) |
+| `architecture/EXECUTION_PLAN_NEXT_2026_07.md` | **План дальнейшей работы** — Track D/E/C/I + GO gate |
+| `architecture/EXECUTION_PLAN_HYPERDEEP_2026_07.md` | **Гиперглубокий план исполнения** — code-grounded E1–E6 + sessions |
 | `pilot-claim-boundary-2026.md` | Verified vs planned claims |
 | `../audit/reports/CRITICAL_BLOCKERS.md` | Checkpoint NO_GO register |
 | `samolet-techlab-alignment-2026.md` | Samolet R1–R15 traceability |

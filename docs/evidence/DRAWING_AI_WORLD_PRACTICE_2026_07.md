@@ -1,8 +1,8 @@
 ---
 title: "Drawing AI / OCR / CV / NLP — world practice memo (July 2026)"
 status: active
-version: "1.0.0"
-last_updated: "2026-07-11"
+version: "1.1.0"
+last_updated: "2026-07-17"
 tags: [aerobim, evidence, cv, ocr, nlp, samolet, tz]
 ---
 
@@ -102,8 +102,11 @@ Architecture split: [`tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](../tz/TZ_ARCHITE
 | P2 | Deepen OCR on Samolet scans; thin DWG; **narrow** CV advisory + capability honesty |
 | P3 | VLM/LLM remark or sheet Q&A assist behind flag + HITL audit log |
 | P4 | Publish precision only after labeled customer drawing corpus |
+| **I8a** | Blueprint-style region detect → crop → OCR/VLM (advisory); see [`EXECUTION_PLAN_I8_I9_2026_07.md`](../architecture/EXECUTION_PLAN_I8_I9_2026_07.md) |
 
 Do **not** reorder P2/P3 ahead of customer IFC/IDS intake if that blocks Task 07 SLA/BCF KPIs — drawing AI is parallel, not a substitute for openBIM acceptance criteria.
+
+Full AEC AI literature map (2025–2026): [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](../architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md).
 
 ## 7. Sources
 
@@ -112,5 +115,7 @@ Do **not** reorder P2/P3 ahead of customer IFC/IDS intake if that blocks Task 07
 3. Solibri / aec+tech interview 2025 — deterministic core, AI exploratory: https://www.aecplustech.com/blog/building-better-bim-qa-2025-interview-solibri  
 4. Smart Constr. 2026 — YOLO/U-Net scan→BIM (narrow high metrics): https://doi.org/10.55092/sc20260003  
 5. Buildings 2026 — hybrid DL + rules for drawing vectorization: https://www.mdpi.com/2075-5309/16/5/1043  
-6. RU practice examples (HITL drawing/PD assistants): TimDoc, industrial drawing QA case studies (2025–2026 public blogs)  
-7. AeroBIM claim boundary: [`pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)
+6. Blueprint — region multimodal retrieval for engineering drawings (arXiv:2602.13345, 2026)  
+7. RU practice examples (HITL drawing/PD assistants): TimDoc, industrial drawing QA case studies (2025–2026 public blogs)  
+8. AeroBIM claim boundary: [`pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)  
+9. AeroBIM research alignment: [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](../architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md)

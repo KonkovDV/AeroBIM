@@ -21,7 +21,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 Still open for checkpoint: **RT-001, RT-002, RT-003** (customer/MEP blocked).  
 Evidence wave (2026-07-17): RT-008 **PARTIAL** (structural T1); RT-010/011/012 honesty closed for fixture/API surface; CDE import + customer SLA still open.  
-I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_2026_07_17.md` + `RED_TEAM_DELTA_I0_I7_PASS2_2026_07_17.md` — engineering honesty improved; checkpoint still **NO_GO**.
+I0–I7 + Red Team remediations (2026-07-17): see `RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md` (current) · PASS2 · base delta — engineering honesty improved; checkpoint still **NO_GO**. Research-aligned next engineering (does **not** clear blockers): `docs/architecture/EXECUTION_PLAN_I8_I9_2026_07.md`.
 
 ## Closed in evidence wave (2026-07-17)
 

@@ -26,7 +26,9 @@
 - Calculation **сверка** PARTIAL; **корректность** НЕ РЕАЛИЗОВАНО
 - Internal self-audit only
 - Dual-human adjudication + Cohen’s κ / Krippendorff’s α required before publishable precision
-- Post–I0–I7 delta: `audit/reports/RED_TEAM_DELTA_I0_I7_2026_07_17.md` (self-audit; NO_GO unchanged)
+- Post–I0–I7 deltas: `RED_TEAM_DELTA_I0_I7_2026_07_17.md` (+ PASS2 / PASS3); checkpoint **NO_GO**
+- Literature map (not product claims): `docs/architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`
+- Planned advisory waves I8–I9: `docs/architecture/EXECUTION_PLAN_I8_I9_2026_07.md` (no GO)
 
 ## Evidence pointers
 
@@ -34,3 +36,4 @@
 - SLA fixture honesty: `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json`
 - Intake gates: `audit/evidence/customer-intake-gate.json`
 - System honesty API: `GET /v1/system/capabilities`
+- Red Team current: `audit/reports/RED_TEAM_DELTA_I0_I7_PASS3_2026_07_17.md`

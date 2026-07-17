@@ -88,6 +88,8 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 
 ## Proposed roadmap waves (post-I7)
 
+Canonical checklist: [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md).
+
 | Wave | Priority | Deliverable | Literature driver | Blocks GO? |
 |------|----------|-------------|-------------------|------------|
 | **I8a** | P1 | Region detector + region-OCR/VLM degrade path; keep `cv_human_level=MISSING` | Blueprint | No |
@@ -102,6 +104,7 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 2. IfcLLM (2605.13236) — IFC query backends  
 3. Mirhosseini et al. BRI 2026 — already in TARGET (ACC interpretation review)  
 4. AeroBIM Claims Lock + Red Team PASS3 — honesty bar  
+5. [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md) — wave scope / non-goals  
 
 ## Non-goals
 
