@@ -414,7 +414,7 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 ## 12. Immediate next engineering slice (recommended)
 
-**Shipped:** I0–I8c + Track E + **I9 relational** + combat CAD EntityGraph + HybridDrawingAnalyzer (priors) + RT harness discipline/clash splits + MEP opt-in scaffold.
+**Shipped:** I0–I8c + Track E + **I9 advisory scaffold** (relational fixture QA / stub fallback — **not GraphRAG**) + combat CAD EntityGraph + HybridDrawingAnalyzer (priors) + RT harness discipline/clash splits + MEP opt-in scaffold.
 
 **Audit:** [`AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md`](../../audit/reports/AUDIT_COMBAT_BACKENDS_I1_I9_2026_07_17.md).
 

@@ -50,6 +50,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Runtime baseline metrics (R5) | `python -m aerobim.tools.export_runtime_baseline` — LOC/tests/F1 not hand-authored |
 | Internal self-audit naming (R2) | Self assessments must not be labeled external/independent |
 | Four contours | ingestion / deterministic_validation / ai_advisory / evidence_reporting — AI cannot mutate `passed`; Analyze UC coordinates contour orchestrators (RT-A) |
+| I9 IFC KG port wiring | Domain port + DI + `query_ifc_kg` + fixture `evaluate_ifc_qa` — **advisory scaffold only** |
 | JSON norm / rule-pack loader | `NormRulePackLoader` + residential AR reference template (synthetic-template only) |
 | Deterministic PD↔RD section pairing scaffold | `SectionDiffAnalyzer` on normalized section JSON (one discipline pair) |
 | Detection precision harness (exact TP/FP/FN) | `aerobim-evaluate-detection-precision` + synthetic contract fixture + protocol gate |
@@ -89,6 +90,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
 | Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |
 | System-aware MEP clash (routing/clearances) | Explicit gap `MEP-CLASH-001`; generic clash only |
+| IfcLLM / GraphRAG multi-hop IFC QA | **Not shipped** — I9 remains advisory scaffold; stub/relational fixture ≠ product KG |
 | Production rollout / confirmed revenue | Requires customer documents outside repo |
 
 ## Non-claims (explicit boundaries)
@@ -100,7 +102,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 5. Optional LLM **IDS assist** (if enabled later) is **advisory only** and must never affect `summary.passed` without human-in-the-loop.
 6. TZ wording «точность >90%» is an **evaluation target**, not a verified product claim, until precision/recall is published from a labeled customer corpus.
 7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer”. See [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
-8. General-purpose multimodal models must not be marketed as Task 07 sign-off for symbol counting or full PD/RD understanding.
+9. AeroBIM does **not** claim IfcLLM / GraphRAG product capability. I9 is an **advisory scaffold** (port + allowlisted query + fixture QA); multi-hop GraphRAG is unshipped.
 
 ## Reproducibility baseline
 

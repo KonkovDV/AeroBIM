@@ -36,7 +36,7 @@ Router for `AeroBIM/docs/`.
 | `architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` | **Architecture SSOT** (ports, DeterminismGate, roadmap I0–I9) |
 | `TIER0_INDEX.md` | **Tier-0 docs index** (live vs superseded) |
 | `architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md` | Literature 2025–2026 → AeroBIM (Blueprint, IfcLLM, ACC) |
-| `architecture/EXECUTION_PLAN_I8_I9_2026_07.md` | **I8–I9** research-aligned advisory waves (**I9 stub shipped**) |
+| `architecture/EXECUTION_PLAN_I8_I9_2026_07.md` | **I8–I9** research-aligned advisory waves (**I9 = advisory scaffold**, not GraphRAG) |
 | `architecture/EXECUTION_PLAN_NEXT_2026_07.md` | **Live** forward work plan — Track D/E/C/I + GO gate |
 | `architecture/EXECUTION_PLAN_HYPERDEEP_2026_07.md` | Deep breakdown under NEXT |
 | `archive/execution/EXECUTION_PLAN_I0_I2_2026_07.md` | **SUPERSEDED** I0–I5 wave log (stub in `architecture/`) |

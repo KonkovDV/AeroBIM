@@ -43,11 +43,11 @@
 | Port | `IfcKnowledgeGraphPort` |
 | Severity | **LOW** |
 | Effect | Degraded empty GUIDs if explicitly constructed |
-| Note | Default bootstrap uses relational ifcopenshell keyword route — still advisory, not IfcLLM accuracy |
+| Note | Default bootstrap uses relational ifcopenshell keyword route — still **advisory scaffold**, not IfcLLM/GraphRAG product |
 
 ## Closed / N/A
 
 - Cad / OCR multimodal / MEP unconfigured adapters are real fail-closed or degrade paths (not `@sota-stub`).
 - `UnconfiguredSystemClash` / `UnconfiguredMepSystemGraphProvider` are honesty fail-closed (MEP-CLASH-001), not stubs.
 - `HybridDrawingAnalyzer` ships detector **priors / future YOLO** only — no YOLO weights; not a stub, honesty degrade.
-- `RelationalIfcKnowledgeGraph` is real I/O (ifcopenshell) — advisory; not a stub.
+- `RelationalIfcKnowledgeGraph` is real I/O (ifcopenshell) — **advisory scaffold** only; not a stub, but **not** GraphRAG / IfcLLM product capability.

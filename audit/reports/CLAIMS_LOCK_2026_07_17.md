@@ -30,6 +30,7 @@
 - DXF EntityGraph via optional `[cad]` (capability never OK for `dwg_dxf`; mixed DWG+DXF → FAILED if DWG unparsed)
 - Hybrid drawing = detector **priors / future YOLO** + OCR degrade (not human-level CV)
 - Relational IFC KG advisory fixture scores ≠ IfcLLM product accuracy
+- **Forbidden in prompts/decks:** «I9 DONE», «GraphRAG готов», «IfcLLM в AeroBIM» — only **advisory scaffold** (port + allowlisted query + fixture QA)
 - Advisory ON/OFF must not change deterministic findings or `summary.passed` (RT-E)
 - Contour orchestrators under Analyze UC (RT-A) — public `execute()` contract unchanged
 - Post–I0–I7 deltas: `RED_TEAM_DELTA_I0_I7_2026_07_17.md` (+ PASS2 / PASS3); checkpoint **NO_GO**

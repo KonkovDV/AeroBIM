@@ -55,14 +55,16 @@ Translate 2025–2026 AEC AI practice (Blueprint region pipelines, hybrid ACC/RA
 
 **Driver:** Cross-document VLM escalate pattern + Blueprint HITL practice
 
-## I9 — IfcKnowledgeGraphPort (advisory)
+## I9 — IfcKnowledgeGraphPort (**advisory scaffold**, not product capability)
 
 - [x] Domain port + DI token + relational adapter (Atomic Delivery) — `RelationalIfcKnowledgeGraph`
 - [x] Agent allowlist tool: `query_ifc_kg` → GUIDs
 - [x] DeterminismGate mandatory; no capability OK for “IFC LLM understanding”
 - [x] RU fixture CI harness `evaluate_ifc_qa` (fixture-only; not IfcLLM numbers)
 - [x] `KNOWN_BUGS` — stub demoted to fallback; ODA stub tracked
-- [ ] Multi-hop GraphRAG + customer IFC-QA (post RT-001)
+- [ ] Multi-hop **GraphRAG** + customer IFC-QA (post RT-001) — **not shipped**
+
+**Status label for prompts/presentations:** `ADVISORY SCAFFOLD` — never «I9 DONE» as a product feature.
 
 **Also shipped with I9 wave (TZ TARGET aliases):**
 
