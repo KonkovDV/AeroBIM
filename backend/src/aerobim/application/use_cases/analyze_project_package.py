@@ -434,9 +434,7 @@ class AnalyzeProjectPackageUseCase:
         try:
             issues = list(self._load_evidence_verifier.verify(request))
         except Exception as exc:
-            _logger.exception(
-                "Load evidence verify failed for request %s", request.request_id
-            )
+            _logger.exception("Load evidence verify failed for request %s", request.request_id)
             return (
                 [
                     ValidationIssue(

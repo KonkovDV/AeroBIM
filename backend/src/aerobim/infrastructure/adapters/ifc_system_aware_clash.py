@@ -58,8 +58,7 @@ class IfcSystemAwareClash:
         systems = list(model.by_type("IfcSystem"))
         if not systems:
             raise RuntimeError(
-                "No IfcSystem entities in model — federated MEP pack required "
-                "(MEP-CLASH-001)"
+                "No IfcSystem entities in model — federated MEP pack required (MEP-CLASH-001)"
             )
 
         # Scaffold: advisory routing findings only — not geometric MEP delivery (RT-003 HOLD).
@@ -72,9 +71,7 @@ class IfcSystemAwareClash:
             if system_id == peer_id:
                 continue
             clearance = matrix.get((system_id, peer_id)) or matrix.get((peer_id, system_id))
-            clearance_mm = (
-                float(clearance) if clearance is not None else self._default_clearance_mm
-            )
+            clearance_mm = float(clearance) if clearance is not None else self._default_clearance_mm
             findings.append(
                 SpatialFinding(
                     finding_id=f"mep-sys-advisory-{index}",

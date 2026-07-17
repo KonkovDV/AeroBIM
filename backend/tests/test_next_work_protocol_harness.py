@@ -15,9 +15,7 @@ PRECISION_DIR = REPO / "samples" / "benchmarks" / "detection-precision"
 class NextWorkProtocolHarnessTests(unittest.TestCase):
     def test_customer_template_method_is_publishable_when_adjudicated(self) -> None:
         template = json.loads(
-            (PRECISION_DIR / "labels-customer-protocol-template.json").read_text(
-                encoding="utf-8"
-            )
+            (PRECISION_DIR / "labels-customer-protocol-template.json").read_text(encoding="utf-8")
         )
         # Draft template must not look publishable as-is
         ok_draft, count = _validate_adjudication_protocol(
@@ -47,9 +45,7 @@ class NextWorkProtocolHarnessTests(unittest.TestCase):
 
     def test_draft_customer_template_never_implies_product_claim(self) -> None:
         template = json.loads(
-            (PRECISION_DIR / "labels-customer-protocol-template.json").read_text(
-                encoding="utf-8"
-            )
+            (PRECISION_DIR / "labels-customer-protocol-template.json").read_text(encoding="utf-8")
         )
         self.assertEqual(template["dataset_status"], "draft")
         agreement = json.loads(

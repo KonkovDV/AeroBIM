@@ -295,9 +295,7 @@ class EvidenceAssembler:
             ensure_finding_provenance(
                 replace(
                     issue,
-                    priority=compute_issue_priority(
-                        issue, profile=self._host._priority_profile
-                    ),
+                    priority=compute_issue_priority(issue, profile=self._host._priority_profile),
                 ),
                 tenant_id=request.tenant_id,
                 project_id=request.project_id or request.project_name,

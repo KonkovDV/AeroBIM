@@ -55,11 +55,7 @@ class LabelsSchemaCustomerTemplateTests(unittest.TestCase):
 
         schema = json.loads(
             (
-                REPO
-                / "samples"
-                / "benchmarks"
-                / "detection-precision"
-                / "labels.schema.json"
+                REPO / "samples" / "benchmarks" / "detection-precision" / "labels.schema.json"
             ).read_text(encoding="utf-8")
         )
         template = json.loads(
