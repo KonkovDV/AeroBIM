@@ -11,7 +11,7 @@
 | I8a Region detector | **DONE** (prior) | `DrawingRegionDetector` + heuristic adapter |
 | I8b RASE tags | **DONE** (prior) | `rase_elements` on issues / IDS drafts |
 | I8c HITL escalate | **DONE** + FE filter | Backend prior; FE `HITL regions only` + panel list |
-| **I9** IfcKnowledgeGraphPort | **DONE (stub)** | `StubIfcKnowledgeGraph` + DI + agent `query_ifc_kg` + `STUB-IFC-KG-001` |
+| **I9** IfcKnowledgeGraphPort | **ADVISORY SCAFFOLD** (not product) | Port+DI+agent tool wired; default `RelationalIfcKnowledgeGraph` (fixture QA); `StubIfcKnowledgeGraph` fallback (`STUB-IFC-KG-001`); **no GraphRAG / IfcLLM runtime** |
 | SystemClashPort | **DONE (fail-closed)** | `UnconfiguredSystemClash` + agent `detect_system_clash` |
 | DrawingAnalyzerPort | **DONE (facade)** | `MultimodalDrawingAnalyzerPort` over OCR multimodal |
 | RequirementInterpreterPort | **DONE** | `DeterministicRequirementInterpreter` |
@@ -23,7 +23,7 @@
 
 | Port | Adapter | Token | DI | Test | Docs |
 |------|---------|-------|----|------|------|
-| `IfcKnowledgeGraphPort` | `StubIfcKnowledgeGraph` | `IFC_KNOWLEDGE_GRAPH` | yes | `test_tz_architecture_ports` | KNOWN_BUGS + plans |
+| `IfcKnowledgeGraphPort` | `RelationalIfcKnowledgeGraph` (default) / `StubIfcKnowledgeGraph` (fallback) | `IFC_KNOWLEDGE_GRAPH` | yes | `test_tz_architecture_ports` + `evaluate_ifc_qa` | **scaffold only** — not GraphRAG |
 | `SystemClashPort` | `UnconfiguredSystemClash` | `SYSTEM_CLASH` | yes | same | TARGET / I8–I9 |
 | `RequirementInterpreterPort` | `DeterministicRequirementInterpreter` | `REQUIREMENT_INTERPRETER` | yes | same | TARGET |
 | `CadEntityLoaderPort` | `EzdxfCadEntityLoader` | `CAD_ENTITY_LOADER` | yes | same | TARGET |
@@ -34,7 +34,8 @@
 
 - No GO, no >90% accuracy, no MEP delivered, no CDE-ready BCF
 - No product VLM / YOLO weights; `cv_human_level` remains MISSING
-- IFC KG stub returns empty GUIDs; DeterminismGate still owns sign-off
+- **I9 is not a ready capability:** do not say «I9 DONE» / «GraphRAG» / «IfcLLM в продукте» in prompts or decks — only **advisory scaffold** (port + allowlisted `query_ifc_kg` + fixture QA)
+- Relational adapter fixture scores ≠ IfcLLM published accuracy
 - Native DWG / `dwg_dxf` never OK
 
 ## Residual backlog (not this ship)

@@ -145,7 +145,7 @@ python -m aerobim.tools.validate_customer_intake_gate
 | **I8a** Region detector | P1 | **DONE** | `cv_human_level=MISSING` |
 | **I8b** RASE provenance | P1 | **DONE** | никогда → `passed` |
 | **I8c** HITL regions | P2 | **DONE** (+ FE filter) | triage queue |
-| **I9** IfcKnowledgeGraphPort | P2 | **DONE (stub)** | `STUB-IFC-KG-001`; real backend after RT-001 |
+| **I9** IfcKnowledgeGraphPort | P2 | **ADVISORY SCAFFOLD** | Port+DI+fixture QA; stub fallback; **no GraphRAG**; not product-ready |
 
 Опционально (TARGET §12): fixture-only nDCG для priority ranking — **не** product KPI.
 
@@ -161,7 +161,7 @@ python -m aerobim.tools.validate_customer_intake_gate
 | 4 | I8a region detector (stub→real) | I | Blueprint seam |
 | 5 | I8b RASE tags | I | ACC provenance |
 | 6 | Customer kickoff + C1/C2 intake | C | evidence или явный wait |
-| 7 | I8c + I9 + TZ ports | I | **DONE** HITL FE + KG stub + SystemClash |
+| 7 | I8c + I9 + TZ ports | I | HITL FE + **I9 advisory scaffold** + SystemClash fail-closed (not GraphRAG) |
 | 8 | C3 MEP когда есть federated IFC | C | RT-003 path |
 | 9 | Hostile Red Team Pass 4 | E/C | GO только если C закрыт |
 

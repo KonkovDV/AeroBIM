@@ -28,14 +28,16 @@
 | Honesty | `cv_human_level` stays MISSING; low_confidence → I8c HITL; docs = priors / future YOLO |
 | Claim | Khan RCIM narrow-domain ≠ product; AECV-Bench counting 0.40–0.55 = unsolved |
 
-### 3. I9 RelationalIfcKnowledgeGraph
+### 3. I9 RelationalIfcKnowledgeGraph — **advisory scaffold only**
 
 | Layer | Path |
 |-------|------|
-| Adapter | `relational_ifc_knowledge_graph.py` (default DI) |
+| Adapter | `relational_ifc_knowledge_graph.py` (default DI); stub fallback `STUB-IFC-KG-001` |
 | Tool | `tools/evaluate_ifc_qa.py` + `samples/benchmarks/ifc-qa-ru/` |
-| Agent | existing `query_ifc_kg` |
-| Claim | Fixture accuracy only; **not** IfcLLM product numbers |
+| Agent | existing `query_ifc_kg` (advisory allowlist) |
+| Claim | Fixture accuracy only; **not** IfcLLM / GraphRAG product; **not** demo-ready «I9 DONE» |
+
+**Prompt/deck rule:** say «I9 advisory scaffold (port + fixture QA)» — never «knowledge graph / GraphRAG готов».
 
 ### 4. RT precision protocol (harness only)
 
