@@ -8,6 +8,7 @@ from xml.sax.saxutils import escape
 from aerobim.domain.models import ParsedRequirement, RequirementSource, RuleScope
 from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.ports import RequirementExtractor
+from aerobim.domain.rase import format_rase_summary, infer_rase_elements
 
 
 class DeterministicRequirementToIdsCompiler:
@@ -89,6 +90,12 @@ class DeterministicRequirementToIdsCompiler:
             "    </info>\n"
             "    <specifications>\n" + "\n".join(specs) + "\n    </specifications>\n</ids>\n"
         )
+        rase: list[str] = []
+        for req in usable:
+            for tag in infer_rase_elements(req):
+                if tag not in rase:
+                    rase.append(tag)
+        rase_tuple = tuple(rase)
         return IdsCompileDraft(
             suggested_ids_xml=xml,
             rationale=(
@@ -98,4 +105,6 @@ class DeterministicRequirementToIdsCompiler:
             source_requirement_count=len(usable),
             advisory_only=True,
             confidence=0.55,
+            rase_elements=rase_tuple,
+            rase_summary=format_rase_summary(rase_tuple),  # type: ignore[arg-type]
         )

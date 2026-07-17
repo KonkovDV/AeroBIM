@@ -429,6 +429,7 @@ class FilesystemAuditStore:
             norm_clause=data.get("norm_clause"),
             approval_status=data.get("approval_status"),
             approval_ref=data.get("approval_ref"),
+            rase_elements=tuple(data.get("rase_elements") or ()),
             finding_id=data.get("finding_id"),
             evidence_refs=tuple(data.get("evidence_refs") or ()),
             tenant_id=data.get("tenant_id"),
@@ -545,6 +546,8 @@ class FilesystemAuditStore:
             source_requirement_count=int(data.get("source_requirement_count", 0)),
             advisory_only=bool(data.get("advisory_only", True)),
             confidence=float(data.get("confidence", 0.4)),
+            rase_elements=tuple(data.get("rase_elements") or ()),
+            rase_summary=data.get("rase_summary"),
         )
 
     def _reconstruct_drawing_region(self, data: dict) -> DrawingRegionRef:

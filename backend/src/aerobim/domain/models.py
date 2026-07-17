@@ -342,6 +342,8 @@ class ValidationIssue:
     norm_clause: str | None = None
     approval_status: NormApprovalStatus | None = None
     approval_ref: str | None = None
+    rase_elements: tuple[str, ...] = ()
+    """Advisory R/A/S/E tags (I8b); never drives summary.passed."""
     finding_id: str | None = None
     """Stable finding identity required before persistence."""
     evidence_refs: tuple[str, ...] = ()
@@ -367,6 +369,8 @@ def issue_from_requirement(
 ) -> ValidationIssue:
     """Build an issue that carries requirement→finding norm provenance."""
 
+    from aerobim.domain.rase import infer_rase_elements
+
     return ValidationIssue(
         rule_id=requirement.rule_id,
         severity=severity,
@@ -390,6 +394,7 @@ def issue_from_requirement(
         norm_clause=requirement.norm_clause,
         approval_status=requirement.approval_status,
         approval_ref=requirement.approval_ref,
+        rase_elements=infer_rase_elements(requirement),
     )
 
 

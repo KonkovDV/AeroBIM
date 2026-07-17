@@ -39,9 +39,10 @@ Translate 2025–2026 AEC AI practice (Blueprint region pipelines, hybrid ACC/RA
 
 ## I8b — RASE-style provenance on advisory findings
 
-- [ ] Optional R/A/S/E tags on advisory issues / norm assist drafts
-- [ ] Deep-link `norm_clause` + pack version already present where possible — extend systematically
-- [ ] Never write `summary.passed` from RASE/LLM path
+- [x] Optional R/A/S/E tags on advisory issues / IDS drafts (`rase_elements`, `rase_summary`)
+- [x] Deep-link via existing `norm_clause` + pack fields; `issue_from_requirement` stamps RASE
+- [x] Never write `summary.passed` from RASE/LLM path (tags are metadata only)
+- [ ] Full RASE exception (E) NLP extraction — deferred
 
 **Driver:** Hybrid ACC / LLM→IDS literature (re-verify before public cite)
 
