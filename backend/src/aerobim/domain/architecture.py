@@ -136,6 +136,7 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
         "CadModelIngestor",
         "OfficeDocumentIngestor",
         "MultimodalDrawingPipeline",
+        "DrawingRegionDetector",
     ),
     Contour.DETERMINISTIC_VALIDATION: (
         "IfcValidator",

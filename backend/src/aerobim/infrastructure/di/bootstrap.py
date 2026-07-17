@@ -42,6 +42,9 @@ from aerobim.infrastructure.adapters.filesystem_norm_corpus_retriever import (
     FilesystemNormCorpusRetriever,
 )
 from aerobim.infrastructure.adapters.filesystem_review_event_store import FilesystemReviewEventStore
+from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
+    HeuristicLayoutRegionDetector,
+)
 from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
@@ -194,9 +197,15 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.DRAWING_REGION_DETECTOR,
+        lambda _container: HeuristicLayoutRegionDetector(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.MULTIMODAL_DRAWING_PIPELINE,
         lambda current: OcrFallbackMultimodalDrawingPipeline(
-            raster_analyzer=current.resolve(Tokens.RASTER_DRAWING_ANALYZER)
+            raster_analyzer=current.resolve(Tokens.RASTER_DRAWING_ANALYZER),
+            region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

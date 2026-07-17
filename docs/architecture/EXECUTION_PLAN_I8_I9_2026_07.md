@@ -29,10 +29,11 @@ Translate 2025–2026 AEC AI practice (Blueprint region pipelines, hybrid ACC/RA
 
 ## I8a — Region detector behind MultimodalDrawingPipeline
 
-- [ ] Port/adapter: layout region detector (YOLO-class or equivalent) feeding `DrawingRegionRef`
-- [ ] Region-restricted OCR/VLM path; full-page path remains degrade
-- [ ] Honesty: `cv_human_level` stays **MISSING** until named corpus + Claims Lock amendment
-- [ ] Tests: detector absent → OCR degrade; regions persist on report
+- [x] Port/adapter: layout region detector feeding `DrawingRegionRef` (`DrawingRegionDetector` + `HeuristicLayoutRegionDetector`)
+- [x] Region-restricted path: detector priors merge with OCR; full-page VLM still degrade
+- [x] Honesty: `cv_human_level` stays **MISSING** (pipeline `degraded=True` + reason)
+- [x] Tests: detector without raster → `detector_only`; DI token registered
+- [ ] Future: YOLO/Blueprint weights behind same port (optional; still MISSING until corpus)
 
 **Driver:** Blueprint (arXiv:2602.13345)
 

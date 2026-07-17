@@ -177,6 +177,28 @@ class ConsistencyPortsTests(unittest.TestCase):
         self.assertEqual(result.pipeline_mode_used, "unavailable")
         self.assertIn("VLM", result.reason or "")
 
+    def test_i8a_heuristic_detector_regions_without_raster(self) -> None:
+        from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
+            HeuristicLayoutRegionDetector,
+        )
+
+        pipeline = OcrFallbackMultimodalDrawingPipeline(
+            raster_analyzer=None,
+            region_detector=HeuristicLayoutRegionDetector(),
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "sheet.png"
+            path.write_bytes(b"\x89PNG\r\n\x1a\n")
+            result = pipeline.analyze(
+                DrawingSource(path=path, sheet_id="AR-01"),
+                mode="auto",
+            )
+        self.assertTrue(result.degraded)
+        self.assertEqual(result.pipeline_mode_used, "detector_only")
+        self.assertGreaterEqual(len(result.regions), 3)
+        self.assertTrue(all(r.modality == "detector" for r in result.regions))
+        self.assertIn("MISSING", result.reason or "")
+
     def test_quantity_empty_claims_noop(self) -> None:
         adapter = IfcQuantityConsistencyAdapter()
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -201,8 +223,11 @@ class ConsistencyPortsTests(unittest.TestCase):
             Tokens.LOAD_EVIDENCE_VERIFIER,
             Tokens.LOGIC_CONSISTENCY_ANALYZER,
             Tokens.MULTIMODAL_DRAWING_PIPELINE,
+            Tokens.DRAWING_REGION_DETECTOR,
         ):
             self.assertTrue(container.is_registered(token), token)
+        detector = container.resolve(Tokens.DRAWING_REGION_DETECTOR)
+        self.assertEqual(type(detector).__name__, "HeuristicLayoutRegionDetector")
 
 
 if __name__ == "__main__":
