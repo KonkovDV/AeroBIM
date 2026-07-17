@@ -14,6 +14,9 @@ class IdsCompileDraft:
     source_requirement_count: int
     advisory_only: bool = True
     confidence: float = 0.4
+    rase_elements: tuple[str, ...] = ()
+    """Aggregated R/A/S/E tags across compiled rules (I8b)."""
+    rase_summary: str | None = None
 
 
 @dataclass(frozen=True)
