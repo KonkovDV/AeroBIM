@@ -91,18 +91,29 @@ python -m aerobim.tools.build_detection_labels \
 
 ```bash
 cd backend
+# Agreement artifact first (κ≥0.60 / α≥0.67) — see §8b and agreement-template.json
+aerobim-measure-adjudicator-agreement \
+  --csv ../samples/customer/adjudication-combined.csv \
+  --output ../artifacts/agreement.json
+
 python -m aerobim.tools.evaluate_detection_precision \
   --labels ../samples/customer/labels.json \
   --detections ../samples/customer/detections.json \
+  --agreement-json ../artifacts/agreement.json \
   --require-publishable \
   --min-precision 0.6 --min-recall 0.6 --min-f1 0.6 \
   --output ../artifacts/detection-precision-customer.json
 ```
 
 - `--require-publishable` блокирует не-adjudicated наборы.
+- Accepted adjudication methods: `consensus` | `majority-with-resolution` | `dual_independent`
+  (customer protocol template uses `dual_independent`).
+- Без `--agreement-json` publishable gate не проходит (кроме debug `--no-require-agreement`).
 - Пороговые значения (>0.6 interim) — **процессный gate**, не CI. В CI пороги
   применяются **только** к synthetic fixture (`test_evaluate_detection_precision`).
 - Exit code `2` = порог не пройден.
+- Shape reference: `samples/benchmarks/detection-precision/agreement-template.json`
+  (template only — not customer evidence).
 
 ## 7. SLA ≤ 30 мин на agreed pack
 

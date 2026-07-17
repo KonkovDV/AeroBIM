@@ -65,7 +65,9 @@ class IfcOpenShellValidator:
         except ModuleNotFoundError as exc:
             raise RuntimeError("Install ifcopenshell to run IFC validation") from exc
 
-        model = ifcopenshell.open(str(ifc_path))
+        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+
+        model = open_ifc_model(ifc_path)
         unit_scales, unit_scales_ok = self._get_unit_scales(model)
         issues: list[ValidationIssue] = []
         entity_cache: dict[str, tuple[Any, ...]] = {}

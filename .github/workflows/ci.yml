@@ -71,6 +71,12 @@ jobs:
             --min-precision 0.6 \
             --min-recall 0.6 \
             --min-f1 0.6
+      - name: Verify IFC QA RU fixture (advisory scaffold only)
+        run: |
+          python -m aerobim.tools.evaluate_ifc_qa \
+            --questions ../samples/benchmarks/ifc-qa-ru/questions-fixture.json \
+            --ifc ../samples/ifc/wall-pset-qto-pass.ifc \
+            --min-accuracy 0.5
 
   benchmark-smoke:
     runs-on: ubuntu-latest

@@ -52,19 +52,9 @@ class RelationalIfcKnowledgeGraph:
             )
 
         try:
-            import ifcopenshell
-        except ModuleNotFoundError:
-            return IfcKnowledgeQueryResult(
-                question=cleaned,
-                element_guids=(),
-                facts=(),
-                backend="relational",
-                degraded=True,
-                reason="ifcopenshell not installed",
-            )
+            from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 
-        try:
-            model = ifcopenshell.open(str(ifc_path))
+            model = open_ifc_model(ifc_path)
         except Exception as exc:  # noqa: BLE001
             return IfcKnowledgeQueryResult(
                 question=cleaned,

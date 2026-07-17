@@ -49,12 +49,9 @@ class IfcSystemAwareClash:
             raise FileNotFoundError(model_path)
 
         try:
-            import ifcopenshell
-        except ModuleNotFoundError as exc:
-            raise RuntimeError("ifcopenshell required for system-aware clash") from exc
+            from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 
-        try:
-            model = ifcopenshell.open(str(model_path))
+            model = open_ifc_model(model_path)
         except Exception as exc:  # noqa: BLE001
             raise RuntimeError(f"IFC open failed for system clash: {exc}") from exc
 
@@ -65,7 +62,7 @@ class IfcSystemAwareClash:
                 "(MEP-CLASH-001)"
             )
 
-        # Scaffold: emit advisory routing findings for distinct system pairs (no geometry OK).
+        # Scaffold: advisory routing findings only — not geometric MEP delivery (RT-003 HOLD).
         findings: list[SpatialFinding] = []
         matrix = clearance_matrix or {}
         for index, system in enumerate(systems[:20]):
@@ -75,26 +72,23 @@ class IfcSystemAwareClash:
             if system_id == peer_id:
                 continue
             clearance = matrix.get((system_id, peer_id)) or matrix.get((peer_id, system_id))
+            clearance_mm = (
+                float(clearance) if clearance is not None else self._default_clearance_mm
+            )
             findings.append(
                 SpatialFinding(
-                    finding_id=f"mep-sys-{index}",
+                    finding_id=f"mep-sys-advisory-{index}",
                     system_a=system_id,
                     system_b=peer_id,
                     element_a_guid=str(getattr(system, "GlobalId", "")),
                     element_b_guid=str(getattr(peer, "GlobalId", "")),
                     message=(
-                        f"System pair advisory probe (scope={self._scope_memo_ref}); "
-                        f"clearance_mm="
-                        f"{clearance if clearance is not None else self._default_clearance_mm}; "
-                        "geometry intersection not claimed — Solibri-class core "
-                        "remains generic ClashDetector"
+                        f"[advisory_probe] System pair {system_id!r}↔{peer_id!r}; "
+                        f"clearance_mm={clearance_mm}; scope_memo={self._scope_memo_ref}; "
+                        "geometry intersection not claimed — not MEP product delivery"
                     ),
                     clash_kind="clearance",
-                    clearance_mm=(
-                        float(clearance)
-                        if clearance is not None
-                        else self._default_clearance_mm
-                    ),
+                    clearance_mm=clearance_mm,
                 )
             )
         return findings
