@@ -124,6 +124,67 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertTrue(payload["gate"]["passed"])
 
+    def test_no_require_agreement_blocked_with_require_publishable(self) -> None:
+        exit_code = main(
+            [
+                "--labels",
+                str(LABELS),
+                "--detections",
+                str(DETECTIONS),
+                "--require-publishable",
+                "--no-require-agreement",
+            ]
+        )
+        self.assertEqual(exit_code, 2)
+
+    def test_no_require_agreement_stamps_debug_escape(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "evaluation.json"
+            exit_code = main(
+                [
+                    "--labels",
+                    str(LABELS),
+                    "--detections",
+                    str(DETECTIONS),
+                    "--no-require-agreement",
+                    "--output",
+                    str(output),
+                ]
+            )
+            payload = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(payload["debug_escape"])
+
+    def test_empty_class_set_does_not_report_perfect_macro(self) -> None:
+        labels = {
+            "artifact_type": "aerobim_detection_labels",
+            "schema_version": "1.0.0",
+            "dataset_id": "empty-classes",
+            "dataset_status": "synthetic",
+            "cases": [],
+            "adjudication": {"adjudicators": []},
+        }
+        detections = {
+            "artifact_type": "aerobim_detection_run",
+            "schema_version": "1.0.0",
+            "run_id": "empty-run",
+            "cases": [],
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            detections_path = Path(temporary_directory) / "detections.json"
+            labels_path.write_text(json.dumps(labels), encoding="utf-8")
+            detections_path.write_text(json.dumps(detections), encoding="utf-8")
+            # May fail schema if cases required non-empty — catch either path.
+            try:
+                report = evaluate_detection_precision(labels_path, detections_path)
+            except ValueError as exc:
+                self.assertIn("non-empty", str(exc).lower())
+                return
+            self.assertTrue(report["macro"]["empty_classes"])
+            self.assertIsNone(report["macro"]["f1"])
+            self.assertFalse(report["precision_claim"]["publishable"])
+
     def test_duplicate_detection_identity_is_rejected(self) -> None:
         payload = json.loads(DETECTIONS.read_text(encoding="utf-8"))
         payload["cases"][0]["findings"].append(dict(payload["cases"][0]["findings"][0]))

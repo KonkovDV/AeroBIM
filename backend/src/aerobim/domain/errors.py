@@ -12,3 +12,15 @@ class ClashCapabilityError(RuntimeError):
         self.status = status
         self.reason = reason
         super().__init__(reason)
+
+
+class HonestyCapabilityError(RuntimeError):
+    """Honesty-gated capability illegally reported as delivered (e.g. OK)."""
+
+    def __init__(self, capability: str, status: str, allowed: tuple[str, ...]) -> None:
+        self.capability = capability
+        self.status = status
+        self.allowed = allowed
+        super().__init__(
+            f"Honesty capability {capability} has status {status!r}; allowed={list(allowed)}"
+        )

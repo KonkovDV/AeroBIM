@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -134,16 +135,24 @@ def evaluate_detection_precision(
         per_class[finding_class] = counts.as_dict()
 
     if class_counts:
-        macro = {
+        macro: dict[str, object] = {
             "precision": round(
                 sum(counts.precision for counts in class_counts) / len(class_counts), 6
             ),
             "recall": round(sum(counts.recall for counts in class_counts) / len(class_counts), 6),
             "f1": round(sum(counts.f1 for counts in class_counts) / len(class_counts), 6),
             "class_count": len(class_counts),
+            "empty_classes": False,
         }
     else:
-        macro = {"precision": 1.0, "recall": 1.0, "f1": 1.0, "class_count": 0}
+        # RT-PREC-001: empty class set must not report perfect F1=1.0.
+        macro = {
+            "precision": None,
+            "recall": None,
+            "f1": None,
+            "class_count": 0,
+            "empty_classes": True,
+        }
 
     warning = None
     if labels.dataset_status != "adjudicated":
@@ -151,6 +160,12 @@ def evaluate_detection_precision(
             "Dataset is not adjudicated customer evidence; metrics are harness/fixture "
             "results and must not be published as AeroBIM product accuracy."
         )
+    if macro.get("empty_classes"):
+        empty_warning = (
+            "No finding classes in labels∪detections; macro metrics are null "
+            "(not 1.0) and not publishable."
+        )
+        warning = f"{warning} {empty_warning}" if warning else empty_warning
 
     from aerobim.domain.architecture import (
         PrecisionClaim,
@@ -163,9 +178,10 @@ def evaluate_detection_precision(
         corpus_kind = "fixture"
     else:
         corpus_kind = "synthetic"
+    macro_precision = macro["precision"]
     claim = PrecisionClaim(
         metric="macro_precision",
-        value=float(macro["precision"]),
+        value=float(macro_precision) if isinstance(macro_precision, int | float) else 0.0,
         corpus_id=str(labels.dataset_id),
         corpus_kind=corpus_kind,  # type: ignore[arg-type]
         adjudicators=int(labels.adjudicator_count),
@@ -183,6 +199,12 @@ def evaluate_detection_precision(
         agreement=agreement_payload,
         require_agreement=require_agreement_for_publishable,
     )
+    if macro.get("empty_classes"):
+        publishable = False
+    if require_publishable and macro.get("empty_classes"):
+        raise ValueError(
+            "PrecisionClaim is not publishable: empty finding-class set (macro metrics null)"
+        )
     if require_publishable and not publishable:
         raise ValueError(
             "PrecisionClaim is not publishable: need customer corpus, ≥2 adjudicators, "
@@ -202,6 +224,7 @@ def evaluate_detection_precision(
         "corpus_kind": corpus_kind,
         "finding_predicates": [predicate.value for predicate in FindingPredicate],
         "agreement_path": str(agreement_path.as_posix()) if agreement_path else None,
+        "require_agreement_for_publishable": require_agreement_for_publishable,
         "precision_claim": {
             "metric": claim.metric,
             "value": claim.value,
@@ -555,6 +578,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.no_require_agreement and args.require_publishable:
+        print(
+            "ERROR: --no-require-agreement cannot combine with --require-publishable",
+            file=sys.stderr,
+        )
+        return 2
+    if args.no_require_agreement:
+        print(
+            "WARNING: --no-require-agreement is a debug escape (RT-PREC-001)",
+            file=sys.stderr,
+        )
     report = evaluate_detection_precision(
         args.labels,
         args.detections,
@@ -562,6 +596,8 @@ def main(argv: list[str] | None = None) -> int:
         agreement_path=args.agreement_json,
         require_agreement_for_publishable=not args.no_require_agreement,
     )
+    if args.no_require_agreement:
+        report["debug_escape"] = True
     failures = threshold_failures(
         report,
         min_precision=args.min_precision,
@@ -588,6 +624,7 @@ def main(argv: list[str] | None = None) -> int:
                 "micro": micro,
                 "gate_passed": not failures,
                 "warning": report["warning"],
+                "debug_escape": report.get("debug_escape", False),
             },
             ensure_ascii=False,
         )
