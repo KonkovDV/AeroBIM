@@ -113,7 +113,8 @@ def build_system_capabilities_payload() -> dict[str, object]:
             ),
             "customer_sla": "Fixture SLA ≠ customer комплект SLA; Redis queue + IFC cache NFR",
             "ifc_knowledge_graph": (
-                "Relational advisory default; fixture IFC-QA CI only — not IfcLLM accuracy"
+                "I9 advisory scaffold: relational fixture QA + stub fallback — "
+                "not GraphRAG / IfcLLM product"
             ),
         },
         "honesty": honesty,

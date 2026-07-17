@@ -19,11 +19,11 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 
 ## Thesis (industry + AeroBIM)
 
-| Industry 2026 consensus | AeroBIM posture (I0–I8c) |
+| Industry 2026 consensus | AeroBIM posture (I0–I9 scaffold) |
 |-------------------------|-------------------------|
 | Region-first VLM (detect → crop → VLM), not whole-sheet GPT-4V | **Partial:** `DrawingRegionDetector` heuristic + OCR; YOLO/VLM weights **not** shipped (`cv_human_level=MISSING`) |
 | LLM interprets norms; **numerics stay deterministic** | **Aligned:** DeterminismGate + IDS compiler + RASE tags; engine owns `summary.passed` |
-| IFC via Graph/relational backends, not raw IFC in context | **Gap:** IfcOpenShell validators; no GraphRAG / IfcLLM port (I9) |
+| IFC via Graph/relational backends, not raw IFC in context | **Partial (I9 scaffold):** `IfcKnowledgeGraphPort` + relational fixture QA + stub fallback; **no GraphRAG / IfcLLM product runtime** |
 | Cross-doc = attribute/semantic alignment + HITL escalate | **Partial:** SectionDiff, qty/load; **I8c** escalates unmatched regions → HITL |
 | κ / dual experts before publishable metrics | **Aligned (tooling):** κ≥0.60 / α≥0.67 gates; literature stretch κ>0.80 as SOP |
 | Provenance + severity triage + HITL | **Partial:** evidence_refs, RASE, region HITL; CoVe not shipped |
@@ -85,7 +85,7 @@ Parent: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_
 ## Honest gaps (do not overclaim)
 
 1. **No product VLM** — Blueprint-class pipeline not shipped; OCR degrade ≠ human CV.  
-2. **No GraphRAG IFC** — IfcLLM is target pattern, not runtime.  
+2. **No GraphRAG IFC product** — I9 is advisory scaffold (port + fixture QA); IfcLLM is target pattern, not runtime.  
 3. **No RASE compiler** — norm packs carry clause metadata; not full RASE extraction.  
 4. **κ≥0.8** is literature preference; AeroBIM publish gate remains κ≥0.60 / α≥0.67 until customer protocol amends Claims Lock.  
 5. **Checkpoint NO_GO** until RT-001/002/003 regardless of research alignment.
@@ -99,7 +99,7 @@ Canonical checklist: [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_20
 | **I8a** | P1 | Region detector + region-OCR/VLM degrade path; keep `cv_human_level=MISSING` | Blueprint | No |
 | **I8b** | P1 | RASE-ish provenance on advisory findings (R/A/S/E tags) | Hybrid ACC | No |
 | **I8c** | P2 | HITL escalate unmatched drawing regions | Cross-doc VLM | No |
-| **I9** | P2 | `IfcKnowledgeGraphPort` + agent query tool (advisory) | IfcLLM | No |
+| **I9** | P2 | `IfcKnowledgeGraphPort` + agent query tool — **advisory scaffold** (not GraphRAG) | IfcLLM | No |
 | **I6′** | P0 | Customer corpus + κ/α publish path (existing I6) | Evaluation chapter | **Yes — RT-001** |
 
 ## Suggested reading order for implementers
