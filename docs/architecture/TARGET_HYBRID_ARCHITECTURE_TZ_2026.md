@@ -414,15 +414,15 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 ## 12. Immediate next engineering slice (recommended)
 
-**Shipped:** I0–I7 (DeterminismGate, Cad/Office, MEP DI-unconfigured, quantity/load/logic, OCR degrade, IDS/norm assist, ComplianceAgent, κ/α intake readiness, report divergences/regions/IDS draft). Plans: I0–I2, I6, I7.
+**Shipped:** I0–I7 + Track E honesty + **I8a** heuristic `DrawingRegionDetector`. Plans: I0–I2, I6, I7, I8/I9, NEXT, HYPERDEEP.
 
 **Next (literature-aligned, still no engineering GO):**
 
 1. **Customer-blocked (P0):** RT-001/002/003 — corpus, approved norms, federated MEP.  
-2. **I8a (P1):** Blueprint-style region detector behind `MultimodalDrawingPipeline`; `cv_human_level` stays MISSING.  
-3. **I8b (P1):** RASE-style provenance tags on advisory norm findings (ACC hybrid).  
+2. **I8b (P1):** RASE-style provenance tags on advisory norm findings (ACC hybrid).  
+3. **I8c (P2):** HITL escalate unmatched drawing regions.  
 4. **I9 (P2):** IfcLLM-style `IfcKnowledgeGraphPort` + allowlisted advisory query (never sign-off).  
-5. Harden intake-gate evidence digests; nDCG optional for priority ranking (fixture only).
+5. Optional YOLO weights behind same `DrawingRegionDetector` port (cv stays MISSING).
 
 See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`EXECUTION_PLAN_I8_I9_2026_07.md`](EXECUTION_PLAN_I8_I9_2026_07.md) · [`EXECUTION_PLAN_NEXT_2026_07.md`](EXECUTION_PLAN_NEXT_2026_07.md) · **гиперплан:** [`EXECUTION_PLAN_HYPERDEEP_2026_07.md`](EXECUTION_PLAN_HYPERDEEP_2026_07.md).
 

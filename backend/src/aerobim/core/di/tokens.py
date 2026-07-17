@@ -39,6 +39,7 @@ class Tokens:
     LOAD_EVIDENCE_VERIFIER = "load_evidence_verifier"
     LOGIC_CONSISTENCY_ANALYZER = "logic_consistency_analyzer"
     MULTIMODAL_DRAWING_PIPELINE = "multimodal_drawing_pipeline"
+    DRAWING_REGION_DETECTOR = "drawing_region_detector"
     REQUIREMENT_TO_IDS_COMPILER = "requirement_to_ids_compiler"
     NORM_CORPUS_RETRIEVER = "norm_corpus_retriever"
     COMPILE_REQUIREMENTS_TO_IDS_USE_CASE = "compile_requirements_to_ids_use_case"

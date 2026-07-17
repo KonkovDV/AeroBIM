@@ -217,8 +217,8 @@ While waiting: dry-run C0 via intake runbook on fixtures only.
 | **S3** | E2 SERDE I7 | E | code |
 | **S4** | E3 INTAKE digests | E | code |
 | **S5** | E4 PREC + E5 HONESTY + E6 CLI | E | code |
-| **S6** | Track E commit + PASS3 delta note | E | git |
-| **S7** | I8a (next engineering wave) | I | code |
+| **S6** | Track E commit + PASS3 delta note | E | **done** `903a2ad` |
+| **S7** | I8a region detector (heuristic priors) | I | in progress → ship |
 | **S8+** | C when customer files arrive | C | evidence |
 
 ---

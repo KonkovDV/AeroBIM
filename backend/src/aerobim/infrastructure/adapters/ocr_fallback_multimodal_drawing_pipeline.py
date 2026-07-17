@@ -6,17 +6,23 @@ from typing import Literal
 
 from aerobim.domain.consistency import MultimodalDrawingResult
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
-from aerobim.domain.ports import RasterDrawingAnalyzer
+from aerobim.domain.ports import DrawingRegionDetector, RasterDrawingAnalyzer
 
 
 class OcrFallbackMultimodalDrawingPipeline:
-    """Detector+VLM not shipped — always degrade to RasterDrawingAnalyzer when available.
+    """Detector priors + OCR degrade — never implies VLM / cv_human_level delivery.
 
-    Honesty: ``cv_human_level`` must remain MISSING; this adapter never implies VLM delivery.
+    I8a: optional ``DrawingRegionDetector`` supplies Blueprint-style layout regions;
+    OCR annotations still produce ``modality=ocr`` regions. Full-page VLM not shipped.
     """
 
-    def __init__(self, raster_analyzer: RasterDrawingAnalyzer | None = None) -> None:
+    def __init__(
+        self,
+        raster_analyzer: RasterDrawingAnalyzer | None = None,
+        region_detector: DrawingRegionDetector | None = None,
+    ) -> None:
         self._raster = raster_analyzer
+        self._region_detector = region_detector
 
     def analyze(
         self,
@@ -25,7 +31,7 @@ class OcrFallbackMultimodalDrawingPipeline:
         mode: Literal["auto", "ocr_only", "detector_vlm"] = "auto",
     ) -> MultimodalDrawingResult:
         if mode == "detector_vlm":
-            # Explicit request still degrades — extras not productized.
+            # Explicit request still degrades — VLM extras not productized.
             pass
 
         if source.path is None:
@@ -37,7 +43,24 @@ class OcrFallbackMultimodalDrawingPipeline:
                 reason="Multimodal pipeline requires a drawing file path",
             )
 
+        detector_regions: tuple[DrawingRegionRef, ...] = ()
+        if mode != "ocr_only" and self._region_detector is not None:
+            detector_regions = tuple(
+                self._region_detector.detect(source.path, sheet_id=source.sheet_id)
+            )
+
         if self._raster is None:
+            if detector_regions:
+                return MultimodalDrawingResult(
+                    annotations=(),
+                    regions=detector_regions,
+                    pipeline_mode_used="detector_only",
+                    degraded=True,
+                    reason=(
+                        "Layout detector priors only; RasterDrawingAnalyzer absent — "
+                        "cv_human_level remains MISSING"
+                    ),
+                )
             return MultimodalDrawingResult(
                 annotations=(),
                 regions=(),
@@ -47,7 +70,7 @@ class OcrFallbackMultimodalDrawingPipeline:
             )
 
         annotations = tuple(self._raster.analyze_image(source.path, sheet_id=source.sheet_id))
-        regions = tuple(
+        ocr_regions = tuple(
             DrawingRegionRef(
                 sheet_id=ann.sheet_id,
                 bbox_xyxy=(
@@ -62,13 +85,15 @@ class OcrFallbackMultimodalDrawingPipeline:
             for ann in annotations
             if ann.problem_zone is not None
         )
+        regions = tuple([*detector_regions, *ocr_regions])
+        pipeline_mode = "detector+ocr" if detector_regions else "ocr_only"
         return MultimodalDrawingResult(
             annotations=annotations,
             regions=regions,
-            pipeline_mode_used="ocr_only",
+            pipeline_mode_used=pipeline_mode,
             degraded=True,
             reason=(
-                "Degraded to OCR (RapidOCR path); detector+VLM extras not installed — "
-                "cv_human_level remains MISSING"
+                "Degraded multimodal path (heuristic detector priors + OCR); "
+                "VLM extras not installed — cv_human_level remains MISSING"
             ),
         )

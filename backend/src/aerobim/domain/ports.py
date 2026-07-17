@@ -18,6 +18,7 @@ from aerobim.domain.models import (
     AnalyzeProjectPackageJob,
     ClashResult,
     DrawingAnnotation,
+    DrawingRegionRef,
     DrawingSource,
     GeneratedRemark,
     NormPackVersionInfo,
@@ -245,6 +246,12 @@ class LogicConsistencyAnalyzer(Protocol):
     """Cross-section / package logical gaps (orphan sheets, unpaired PD/RD, etc.)."""
 
     def analyze(self, manifest: PackageManifest) -> list[ValidationIssue]: ...
+
+
+class DrawingRegionDetector(Protocol):
+    """Layout region priors / detector (Blueprint-style); never implies cv_human_level OK."""
+
+    def detect(self, path: Path, *, sheet_id: str | None = None) -> list[DrawingRegionRef]: ...
 
 
 class MultimodalDrawingPipeline(Protocol):
