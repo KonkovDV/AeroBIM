@@ -78,9 +78,26 @@ Detailed ask (world + RU practice, July 2026):
 | CDE handoff | BCF 2.1 visible in customer tool |
 | Expert accountability | Adjudication log signed |
 
-## 4. Pitch (one paragraph, RU)
+## Form field — «Подходы команды» (копировать в заявку i.moscow)
 
-AeroBIM — открытый мультимодальный ассистент проверки ПД/РД: IFC, IDS, ТЗ, расчёты и 2D-доказательства в одном детерминированном контуре. Подсветка проблемных зон, приоритизация и генерация замечаний (RU/EN), выгрузка BCF. Система ускоряет эксперта и не заменяет его. Для пилота TechLab: адаптация под типы документов Самолёта, каталог типовых ошибок, SLA ≤30 мин на согласованном комплекте, импорт BCF в CDE.
+Ниже текст для поля *«Укажите подходы команды к решению задачи…»*.  
+Red Team / Claims Lock: без «>90%», без «DWG готов», без «MEP delivered», без «AI читает чертежи как инженер», без «BCF готов к CDE».
+
+```
+Уникальность. AeroBIM — openBIM-native ассистент приёмки ПД/РД: не «ещё один LLM поверх PDF», а гибрид, совпадающий с консенсусом AECO 2026 (Solibri-класс детерминизма + AI только как advisory). Источник правды для вердикта — детерминированные контуры IFC/IDS/cross-document/clash/количеств; LLM/VLM/агент не выставляют summary.passed сами. При расхождении AI↔движок побеждает движок, расхождение уходит эксперту (DeterminismGate). Это прямо отвечает тезису Самолёта: автоматизация не заменяет инженера, а не даёт очевидной ошибке дойти до стройки.
+
+Архитектура результата. Четыре контура: INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING. Clean Architecture (domain/application/infrastructure), Protocol-порты, DI. Analyze оркестрирует контуры; capability-честность (ok/skipped/failed/not_verified): FAILED блокирует pass. Fail-closed: clash/OCR/нормо-пак при ошибке конфигурации, auth вне development, смешанный DWG+DXF не маскируется успехом DXF.
+
+Что уже работает (демо / fixture). Мультимодальный analyze (IFC + IDS + ТЗ/расчёты + чертежи); браузерный review (3D web-ifc + 2D overlay проблемных зон + приоритеты + HITL-правка замечаний RU/EN); multipart upload; BCF 2.1/3.0 ZIP export (структурно доказан); OpenCDE push foundation; каталог типовых ошибок ≥20; PD↔RD pairing scaffold; нормо-паки JSON; precision-харнесс + протокол adjudication (κ/α) под клиентский корпус. Стек: Python 3.12, FastAPI, React, IfcOpenShell, IfcTester, optional IfcClash, PyMuPDF/RapidOCR.
+
+Чем отличаемся от «AI-хайпа». Не обещаем product CV/YOLO и GraphRAG «из коробки»: OCR-базлайн и advisory-скаффолды (регионы/приоры, I9 KG) — с HITL. «Точность >90%» из ТЗ трактуем как evaluation target: публикуем только после размеченного корпуса Самолёта + ≥2 экспертов. Generic clash есть; system-aware MEP — честный gap до федеративного комплекта. BCF export ≠ доказанный импорт в CDE.
+
+Планируемый результат пилота TechLab (2 млн ₽). На согласованном комплекте Самолёта: SLA ≤30 мин; interim TP/(TP+FP) ≥60% с журналом adjudication; экономия времени ревью ≥20% vs baseline; BCF виден в CDE заказчика; эксперт остаётся accountable. Нужны: пакет ПД/РД/IFC+IDS, подписанный нормо-пак, 2 инженера-разметчика, scope memo, канал NDA.
+
+Мировые практики (июль 2026), которые мы сознательно повторяем: гибрид rule-based≻LLM (обзоры BRI / AiC); IDS 1.0 как machine-checkable якорь; HITL; узкий detector+VLM только advisory (AECV-Bench: counting unsolved). Код: github.com/KonkovDV/AeroBIM · граница заявлений: docs/pilot-claim-boundary-2026.md · Claims Lock.
+```
+
+Символов ориентир: ~2,5–3 тыс. (умещается в типичные формы). Полный pitch/ask — ниже и в readiness memo.
 
 ## 5. Ask
 
