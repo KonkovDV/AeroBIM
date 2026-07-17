@@ -63,17 +63,13 @@ class NormRulePackSchemaTests(unittest.TestCase):
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
         validator = jsonschema.Draft202012Validator(schema)
         base = json.loads(
-            (RULE_PACKS_DIR / "customer-norm-pack-intake-template.json").read_text(
-                encoding="utf-8"
-            )
+            (RULE_PACKS_DIR / "customer-norm-pack-intake-template.json").read_text(encoding="utf-8")
         )
         base["status"] = "customer_approved"
         base["approval"] = None
         base["approval_ref"] = None
         errors = list(validator.iter_errors(base))
-        self.assertTrue(
-            errors, "customer_approved without approval block must fail schema"
-        )
+        self.assertTrue(errors, "customer_approved without approval block must fail schema")
         # approval_ref alone must still fail (closes RT-002 schema bypass)
         base["approval_ref"] = "SIGNED-MEMO-REF"
         errors_ref_only = list(validator.iter_errors(base))

@@ -80,9 +80,7 @@ class HybridDrawingAnalyzer:
 
         regions: list[DrawingRegionRef] = []
         if sheet.path is not None and self._region_detector is not None:
-            regions.extend(
-                self._region_detector.detect(sheet.path, sheet_id=sheet.sheet_id)
-            )
+            regions.extend(self._region_detector.detect(sheet.path, sheet_id=sheet.sheet_id))
 
         # Future YOLO / VLM slot: without weights emit low-confidence prior object.
         objects = (
