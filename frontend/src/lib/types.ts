@@ -76,6 +76,10 @@ export interface ValidationIssue {
   approval_ref?: string | null;
   tenant_id?: string | null;
   project_id?: string | null;
+  origin?: "deterministic" | "advisory" | string | null;
+  finding_id?: string | null;
+  evidence_refs?: string[];
+  source_id?: string | null;
 }
 
 export interface DrawingAnnotation {
@@ -162,6 +166,9 @@ export interface DrawingRegionRef {
   modality: string;
   hitl_required?: boolean;
   hitl_reason?: string | null;
+  coordinate_system?: string | null;
+  page_width?: number | null;
+  page_height?: number | null;
 }
 
 export interface IdsCompileDraft {

@@ -1,0 +1,38 @@
+{
+  "artifact_type": "red_team_phase3_command_results",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-18T16:15:00+00:00",
+  "phase": "3",
+  "git": {
+    "head_sha": "ad8e12d7fd28731ba6eb4bcfa9c677220ba01225",
+    "branch": "main",
+    "dirty_tree": true,
+    "gates_evaluated_against": "working_tree"
+  },
+  "confirmations": {
+    "pr_10_untouched": true,
+    "pr_11_untouched": true,
+    "git_history_untouched": true,
+    "no_destructive_git_command": true,
+    "no_unsupported_capability_promoted_to_ok": true
+  },
+  "commands": {
+    "mypy_src": {"exit_code": 0, "classification": "passed", "summary": "148 source files"},
+    "pytest": {
+      "exit_code": 0,
+      "classification": "passed",
+      "summary": "593 passed, 4 skipped"
+    }
+  },
+  "mitigations": [
+    "RT-P3-001 reviewable requires commit marker",
+    "RT-P3-002 TTL cleans linked artifacts and events",
+    "RT-P3-003 ArtifactManifest / ReportCommitState",
+    "RT-P3-004 injected commit failure orphan path",
+    "RT-P3-005 committed.json iteration filter"
+  ],
+  "checkpoint": {
+    "verdict": "NO_GO",
+    "external_blockers_open": ["RT-001", "RT-002", "RT-003"]
+  }
+}

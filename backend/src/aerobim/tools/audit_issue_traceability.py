@@ -39,10 +39,15 @@ def audit_report_traceability(report_id: str, storage_dir: Path | None = None) -
     per_issue: list[dict[str, object]] = []
     for issue in report.issues:
         has_guid = bool(issue.element_guid)
-        # Provenance may stamp source_id="unspecified"; that is not a real anchor.
+        # Provenance may stamp source_id="unspecified" or auto:*; those are not
+        # spatial/document anchors for the traceability ratio metric.
         raw_source = (issue.source_id or "").strip()
         placeholders = {"unspecified", "unknown", "n/a"}
-        has_source = bool(raw_source) and raw_source.lower() not in placeholders
+        has_source = (
+            bool(raw_source)
+            and raw_source.lower() not in placeholders
+            and not raw_source.lower().startswith("auto:")
+        )
         has_zone = issue.problem_zone is not None
         ok = has_guid or has_source or has_zone
         if ok:

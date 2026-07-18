@@ -5,10 +5,19 @@ from __future__ import annotations
 from aerobim.domain.models import JobStatus
 
 _ALLOWED_TRANSITIONS: dict[JobStatus, frozenset[JobStatus]] = {
-    JobStatus.QUEUED: frozenset({JobStatus.RUNNING, JobStatus.FAILED}),
-    JobStatus.RUNNING: frozenset({JobStatus.SUCCEEDED, JobStatus.FAILED}),
+    JobStatus.QUEUED: frozenset({JobStatus.RUNNING, JobStatus.FAILED, JobStatus.CANCELLED}),
+    JobStatus.RUNNING: frozenset(
+        {
+            JobStatus.SUCCEEDED,
+            JobStatus.FAILED,
+            JobStatus.CANCELLED,
+            JobStatus.DEAD_LETTER,
+        }
+    ),
     JobStatus.SUCCEEDED: frozenset(),
-    JobStatus.FAILED: frozenset(),
+    JobStatus.FAILED: frozenset({JobStatus.QUEUED}),  # explicit retry re-queue
+    JobStatus.CANCELLED: frozenset(),
+    JobStatus.DEAD_LETTER: frozenset(),
 }
 
 

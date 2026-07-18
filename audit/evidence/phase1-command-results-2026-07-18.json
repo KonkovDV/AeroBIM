@@ -1,0 +1,50 @@
+{
+  "artifact_type": "red_team_phase1_command_results",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-18T15:55:00+00:00",
+  "phase": "1",
+  "git": {
+    "head_sha": "ad8e12d7fd28731ba6eb4bcfa9c677220ba01225",
+    "branch": "main",
+    "dirty_tree": true,
+    "gates_evaluated_against": "working_tree"
+  },
+  "confirmations": {
+    "pr_10_untouched": true,
+    "pr_11_untouched": true,
+    "git_history_untouched": true,
+    "no_destructive_git_command": true,
+    "no_unsupported_capability_promoted_to_ok": true
+  },
+  "commands": {
+    "ruff_check_touched": {"exit_code": 0, "classification": "passed"},
+    "mypy_src": {"exit_code": 0, "classification": "passed", "summary": "147 source files"},
+    "pytest": {
+      "exit_code": 0,
+      "classification": "passed",
+      "summary": "584 passed, 4 skipped"
+    },
+    "frontend_vitest": {
+      "exit_code": 0,
+      "classification": "passed",
+      "summary": "25 passed"
+    },
+    "frontend_build": {
+      "exit_code": 0,
+      "classification": "passed",
+      "summary": "vite build ok after BlobPart typing fix"
+    }
+  },
+  "mitigations": [
+    "RT-P1-001 require_clash/require_bsi_schema policy blocking",
+    "RT-P1-002 required MEP via required_capability_blocks_pass",
+    "RT-P1-003 schema missing validator FAILED when required",
+    "RT-P1-004 raster missing analyzer FAILED",
+    "RT-P1-005 quantity NOT_VERIFIED blocks pass",
+    "RT-P1-006 frontend npm run build"
+  ],
+  "checkpoint": {
+    "verdict": "NO_GO",
+    "external_blockers_open": ["RT-001", "RT-002", "RT-003"]
+  }
+}

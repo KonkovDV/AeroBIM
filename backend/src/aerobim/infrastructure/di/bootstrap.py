@@ -357,7 +357,10 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         )
     container.register(
         Tokens.REVIEW_EVENT_STORE,
-        lambda current: FilesystemReviewEventStore(current.resolve(Tokens.SETTINGS).storage_dir),
+        lambda current: FilesystemReviewEventStore(
+            current.resolve(Tokens.SETTINGS).storage_dir,
+            fail_closed=current.resolve(Tokens.SETTINGS).audit_fail_closed,
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -415,6 +418,8 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             clash_affects_pass=current.resolve(Tokens.SETTINGS).clash_affects_pass,
             require_clash=current.resolve(Tokens.SETTINGS).require_clash,
             require_bsi_schema=current.resolve(Tokens.SETTINGS).require_bsi_schema,
+            require_mep_system_clash=current.resolve(Tokens.SETTINGS).require_mep_system_clash,
+            signoff_profile=current.resolve(Tokens.SETTINGS).signoff_profile,
             ifc_schema_validator=current.resolve(Tokens.IFC_SCHEMA_VALIDATOR),
             ids_document_auditor=current.resolve(Tokens.IDS_DOCUMENT_AUDITOR),
             bsi_validation_service=(
@@ -503,7 +508,11 @@ def _build_object_store(settings: Settings):
                 prefix=settings.s3_prefix,
             )
         except RuntimeError:
-            if not settings.is_dev_environment:
+            # Production / pilot: never hide enterprise object-store failure behind local FS.
+            if not settings.is_dev_environment or settings.signoff_profile in {
+                "samolet_pilot",
+                "production",
+            }:
                 raise
             return LocalObjectStore(settings.storage_dir)
     return LocalObjectStore(settings.storage_dir)

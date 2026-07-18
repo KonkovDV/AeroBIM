@@ -1,0 +1,35 @@
+{
+  "artifact_type": "red_team_phase4_command_results",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-18T16:25:00+00:00",
+  "phase": "4",
+  "git": {
+    "head_sha": "ad8e12d7fd28731ba6eb4bcfa9c677220ba01225",
+    "branch": "main",
+    "dirty_tree": true
+  },
+  "confirmations": {
+    "pr_10_untouched": true,
+    "pr_11_untouched": true,
+    "git_history_untouched": true,
+    "no_destructive_git_command": true,
+    "no_unsupported_capability_promoted_to_ok": true
+  },
+  "commands": {
+    "mypy_src": {"exit_code": 0, "classification": "passed"},
+    "pytest": {
+      "exit_code": 0,
+      "classification": "passed",
+      "summary": "599 passed, 4 skipped"
+    }
+  },
+  "mitigations": [
+    "RT-P4-001 path jail fuzz",
+    "RT-P4-002 no pilot/production S3 filesystem fallback",
+    "RT-P4-003 quarantine_path removed from upload response"
+  ],
+  "checkpoint": {
+    "verdict": "NO_GO",
+    "external_blockers_open": ["RT-001", "RT-002", "RT-003"]
+  }
+}

@@ -10,12 +10,15 @@
 - «MEP clash» as delivered capability
 - «анализирует DWG/DXF» / implying DWG ready because DXF parsed (mixed package must surface FAILED)
 - Soft-pass when quantity/load/MEP infrastructure threw (must be capability FAILED)
+- Soft-pass when `require_mep_system_clash` and MEP is NOT_VERIFIED / empty graph
+- Soft-pass when audit JSONL corruption is silently ignored under pilot profile
 - «проверяет расчёты» as independent correctness
 - «production-ready» / «external academic audit»
 - «BCF готов к CDE» without import artifact (structural ZIP ≠ CDE)
 - Green pass when required clash/OCR/schema checks were skipped
 - Fixture SLA as customer комплект ≤30 мин
 - «I9 DONE», «GraphRAG готов», «IfcLLM в AeroBIM» — I9 is **advisory scaffold** only
+- Closing RT-001/002/003 without customer evidence
 
 ## Allowed wording
 
@@ -30,6 +33,7 @@
 - Hybrid drawing = detector **priors / future YOLO** + OCR degrade (not human-level CV)
 - Relational IFC KG advisory fixture scores ≠ IfcLLM product accuracy
 - Advisory ON/OFF must not change deterministic findings or `summary.passed`
+- `AEROBIM_SIGNOFF_PROFILE=samolet_pilot` fail-closes required MEP/clash/BSI/audit corruption
 - Checkpoint remains **NO_GO** until RT-001/002/003
 
 ## Evidence pointers (public)
@@ -42,3 +46,5 @@
 - Intake gates: `audit/evidence/customer-intake-gate.json`
 - System honesty API: `GET /v1/system/capabilities`
 - TZ: `docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`
+- Hyperdeep Phase 0: `audit/reports/RT_HYPERDEEP_PHASE0_2026_07_18.md`
+- Hyperdeep plan: `audit/reports/REDTEAM_HYPERDEEP_PLAN_2026_07_18.md`

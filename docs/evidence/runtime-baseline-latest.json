@@ -1,14 +1,14 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-16T21:57:37.535978+00:00",
+  "generated_at": "2026-07-18T15:43:06.896884+00:00",
   "author_relationship": "self",
   "corpus_kind": "fixture",
   "metrics": {
-    "backend_src_loc": 16247,
-    "backend_test_loc": 11434,
-    "backend_test_functions": 456,
+    "backend_src_loc": 22808,
+    "backend_test_loc": 14562,
+    "backend_test_functions": 581,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~16247 LOC; tests ~11434 LOC; 456+ test functions; extraction macro_f1=0.8600000000000001 (generated)"
+  "readme_snippet": "Backend src ~22808 LOC; tests ~14562 LOC; 581+ test functions; extraction macro_f1=0.8600000000000001 (generated)"
 }

@@ -13,7 +13,7 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Prize:** paid pilot testing fund **2 000 000 ₽**  
 **Task page:** https://i.moscow/techlab/samolet  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
-**Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
+**Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [`AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md`](AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md)
 
 Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED_BY_CUSTOMER_DATA` | `MISSING` | `NOT_VERIFIED`.
 

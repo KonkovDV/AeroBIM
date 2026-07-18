@@ -107,7 +107,9 @@ export async function fetchReportIfcSource(reportId: string): Promise<Uint8Array
 
 export async function fetchDrawingAssetPreviewBlobUrl(reportId: string, assetId: string): Promise<string> {
   const bytes = await readBytes(buildDrawingAssetPreviewUrl(reportId, assetId));
-  const blob = new Blob([bytes]);
+  // Copy into a fresh ArrayBuffer-backed view for DOM Blob typing (TS 5.x BlobPart).
+  const copy = Uint8Array.from(bytes);
+  const blob = new Blob([copy]);
   return URL.createObjectURL(blob);
 }
 
@@ -130,7 +132,16 @@ export async function downloadExport(reportId: string, format: "json" | "html" |
   URL.revokeObjectURL(objectUrl);
 }
 
-export type ReviewEventType = "opened" | "accepted" | "rejected" | "edited_remark" | "triaged";
+export type ReviewEventType =
+  | "opened"
+  | "accepted"
+  | "rejected"
+  | "edited_remark"
+  | "edited"
+  | "triaged"
+  | "waived"
+  | "superseded"
+  | "escalated";
 
 export async function postReviewEvent(
   reportId: string,
@@ -140,6 +151,9 @@ export async function postReviewEvent(
     actor?: string;
     note?: string;
     latency_ms?: number;
+    previous_state?: string;
+    finding_id?: string;
+    idempotency_key?: string;
   },
 ): Promise<{ event: Record<string, unknown> }> {
   const response = await fetch(`${apiBaseUrl}/v1/reports/${reportId}/review-events`, {
