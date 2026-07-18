@@ -136,6 +136,9 @@ class ReportCapabilities:
         CapabilityState.NOT_IMPLEMENTED,
         "Independent calculation correctness verification not implemented",
     )
+    quantity: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED, "quantity consistency not evaluated"
+    )
 
 
 class ConflictKind(StrEnum):
@@ -231,6 +234,10 @@ class DrawingRegionRef:
     hitl_required: bool = False
     """I8c: low-confidence / unmatched region queued for expert review."""
     hitl_reason: str | None = None
+    coordinate_system: str | None = None
+    """Explicit coordinate system, e.g. ``page-pixel`` or ``normalized-0-1``."""
+    page_width: float | None = None
+    page_height: float | None = None
 
 
 @dataclass(frozen=True)
@@ -353,6 +360,10 @@ class ValidationIssue:
     """Opaque evidence pointers (source@rev#locator). Empty is not persistable."""
     tenant_id: str | None = None
     project_id: str | None = None
+    origin: Literal["deterministic", "advisory"] | None = None
+    """Contour ownership: deterministic engine vs advisory AI. Never drives passed."""
+    match_method: str | None = None
+    """Cross-document match method, e.g. ``entity+pset+prop`` or ``entity+prop``."""
 
 
 def issue_from_requirement(
@@ -476,6 +487,8 @@ class ValidationReport:
     """Agent/compiler IDS draft — advisory until human promotes to ids_path."""
     drawing_regions: tuple[DrawingRegionRef, ...] = ()
     """Multimodal/OCR region refs for frontend highlight overlays."""
+    schema_version: str = "1.0.0"
+    """Persisted report schema version for backward-compatible reload/migrations."""
 
 
 @dataclass(frozen=True)
@@ -507,10 +520,14 @@ class ReviewEvent:
         "accepted",
         "rejected",
         "edited_remark",
+        "edited",
         "triaged",
         "norm_rule_proposed",
         "norm_rule_edited",
         "drawing_region_escalated",
+        "escalated",
+        "waived",
+        "superseded",
     ]
     created_at: str
     issue_rule_id: str | None = None
@@ -525,6 +542,14 @@ class ReviewEvent:
     approval_ref: str | None = None
     rule_diff_json: str | None = None
     """JSON object describing the proposed/edited rule fields."""
+    idempotency_key: str | None = None
+    """Stable key for de-duplicating system escalations across re-analysis."""
+    sequence_number: int | None = None
+    """Monotonic per-report append order (1-based)."""
+    previous_state: str | None = None
+    resulting_state: str | None = None
+    finding_id: str | None = None
+    """Optional finding this review event attaches to."""
 
 
 @dataclass(frozen=True)
@@ -546,6 +571,8 @@ class JobStatus(StrEnum):
     RUNNING = "running"
     SUCCEEDED = "succeeded"
     FAILED = "failed"
+    CANCELLED = "cancelled"
+    DEAD_LETTER = "dead_letter"
 
 
 @dataclass(frozen=True)
@@ -560,6 +587,11 @@ class AnalyzeProjectPackageJob:
     error_message: str | None = None
     idempotency_key: str | None = None
     """Client-supplied key: create returns the existing non-terminal job when present."""
+    heartbeat_at: str | None = None
+    lease_expires_at: str | None = None
+    retry_count: int = 0
+    stage_progress: str | None = None
+    cancel_requested: bool = False
 
 
 @dataclass(frozen=True)

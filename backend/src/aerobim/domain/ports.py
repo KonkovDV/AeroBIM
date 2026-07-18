@@ -175,6 +175,20 @@ class AnalyzeProjectPackageJobStore(Protocol):
 
     def mark_failed(self, job_id: str, error_message: str) -> AnalyzeProjectPackageJob | None: ...
 
+    def heartbeat(
+        self, job_id: str, *, lease_seconds: int = 120
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def request_cancel(self, job_id: str) -> AnalyzeProjectPackageJob | None: ...
+
+    def mark_cancelled(
+        self, job_id: str, reason: str | None = None
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def reclaim_stale_running(
+        self, *, now_iso: str | None = None
+    ) -> list[AnalyzeProjectPackageJob]: ...
+
 
 class ExternalEvidenceVerifier(Protocol):
     """Port for third-party calculation / reinforcement evidence verification."""

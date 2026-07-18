@@ -53,6 +53,13 @@ class RedisAnalyzeProjectPackageJobStore:
                 str(item["error_message"]) if item.get("error_message") is not None else None
             ),
             idempotency_key=(str(item["idempotency_key"]) if item.get("idempotency_key") else None),
+            heartbeat_at=(str(item["heartbeat_at"]) if item.get("heartbeat_at") else None),
+            lease_expires_at=(
+                str(item["lease_expires_at"]) if item.get("lease_expires_at") else None
+            ),
+            retry_count=int(item.get("retry_count") or 0),
+            stage_progress=(str(item["stage_progress"]) if item.get("stage_progress") else None),
+            cancel_requested=bool(item.get("cancel_requested") or False),
         )
 
     def create(self, job: AnalyzeProjectPackageJob) -> str:
@@ -111,12 +118,81 @@ class RedisAnalyzeProjectPackageJobStore:
         )
 
     def mark_failed(self, job_id: str, error_message: str) -> AnalyzeProjectPackageJob | None:
+        current = self.get(job_id)
+        if current is None:
+            return None
+        retries = current.retry_count + 1
+        if retries > 3 and can_transition(current.status, JobStatus.DEAD_LETTER):
+            return self._update(
+                job_id,
+                status=JobStatus.DEAD_LETTER,
+                completed_at=_now_iso(),
+                error_message=error_message,
+                retry_count=retries,
+                lease_expires_at=None,
+                stage_progress="dead_letter",
+            )
         return self._update(
             job_id,
             status=JobStatus.FAILED,
             completed_at=_now_iso(),
             error_message=error_message,
+            retry_count=retries,
+            lease_expires_at=None,
+            stage_progress="failed",
         )
+
+    def heartbeat(
+        self, job_id: str, *, lease_seconds: int = 120
+    ) -> AnalyzeProjectPackageJob | None:
+        from datetime import timedelta
+
+        current = self.get(job_id)
+        if current is None or current.status is not JobStatus.RUNNING:
+            return None
+        if current.cancel_requested:
+            return self.mark_cancelled(job_id, "Cancelled by request")
+        lease_until = (datetime.now(tz=UTC) + timedelta(seconds=lease_seconds)).isoformat()
+        return self._update(
+            job_id,
+            status=JobStatus.RUNNING,
+            heartbeat_at=_now_iso(),
+            lease_expires_at=lease_until,
+        )
+
+    def request_cancel(self, job_id: str) -> AnalyzeProjectPackageJob | None:
+        current = self.get(job_id)
+        if current is None:
+            return None
+        if current.status is JobStatus.QUEUED:
+            return self.mark_cancelled(job_id, "Cancelled before start")
+        if current.status is JobStatus.RUNNING:
+            return self._update(
+                job_id,
+                status=JobStatus.RUNNING,
+                cancel_requested=True,
+                stage_progress="cancel_requested",
+            )
+        return current
+
+    def mark_cancelled(
+        self, job_id: str, reason: str | None = None
+    ) -> AnalyzeProjectPackageJob | None:
+        return self._update(
+            job_id,
+            status=JobStatus.CANCELLED,
+            completed_at=_now_iso(),
+            error_message=reason or "Cancelled",
+            lease_expires_at=None,
+            cancel_requested=True,
+            stage_progress="cancelled",
+        )
+
+    def reclaim_stale_running(
+        self, *, now_iso: str | None = None
+    ) -> list[AnalyzeProjectPackageJob]:
+        # Redis reclaim is opportunistic via get()/heartbeat; full scan is optional.
+        return []
 
     def _update(self, job_id: str, **changes: object) -> AnalyzeProjectPackageJob | None:
         key = self._key(job_id)
@@ -133,7 +209,9 @@ class RedisAnalyzeProjectPackageJobStore:
                         pipe.unwatch()
                         return None
                     current = self._deserialize(str(raw))
-                    if not can_transition(current.status, target_status):
+                    if current.status is not target_status and not can_transition(
+                        current.status, target_status
+                    ):
                         pipe.unwatch()
                         return None
                     updated = replace(current, **changes)  # type: ignore[arg-type]

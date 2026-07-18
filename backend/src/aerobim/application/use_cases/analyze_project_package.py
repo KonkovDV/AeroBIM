@@ -153,6 +153,8 @@ class AnalyzeProjectPackageUseCase:
         clash_affects_pass: bool = False,
         require_clash: bool = False,
         require_bsi_schema: bool = False,
+        require_mep_system_clash: bool = False,
+        signoff_profile: str = "development",
         ifc_schema_validator: IfcSchemaValidator | None = None,
         ids_document_auditor: IdsDocumentAuditor | None = None,
         bsi_validation_service: BsiValidationService | None = None,
@@ -184,6 +186,8 @@ class AnalyzeProjectPackageUseCase:
         self._clash_affects_pass = clash_affects_pass
         self._require_clash = require_clash
         self._require_bsi_schema = require_bsi_schema
+        self._require_mep_system_clash = require_mep_system_clash
+        self._signoff_profile = signoff_profile
         _valid_severities = {"error", "warning", "info"}
         self._cross_doc_severity = Severity(
             cross_doc_severity if cross_doc_severity in _valid_severities else "warning"
@@ -390,13 +394,22 @@ class AnalyzeProjectPackageUseCase:
     ) -> tuple[list[ValidationIssue], CapabilityStatus | None]:
         """Return issues and optional capability override (FAILED on infra errors)."""
 
-        if self._quantity_consistency_checker is None:
-            return [], None
         claims = claims_from_area_requirements(requirements)
         if not claims:
             return [], None
+        if self._quantity_consistency_checker is None:
+            # Claims present but checker absent: not a silent skip (false-pass).
+            return (
+                [],
+                CapabilityStatus(
+                    CapabilityState.NOT_VERIFIED,
+                    "QuantityConsistencyChecker not configured while area claims present",
+                ),
+            )
         try:
-            return list(self._quantity_consistency_checker.check(ifc_path, claims)), None
+            return list(
+                self._quantity_consistency_checker.check(ifc_path, claims)
+            ), CapabilityStatus(CapabilityState.OK, "quantity consistency evaluated")
         except Exception as exc:
             _logger.exception("Quantity consistency check failed for %s", ifc_path)
             # RT-C: infrastructure exception → ERROR + FAILED capability (blocks pass)
@@ -585,6 +598,9 @@ class AnalyzeProjectPackageUseCase:
             if requirements
             else CapabilityStatus(CapabilityState.SKIPPED, "no IFC property requirements")
         )
+        quantity = quantity_capability or CapabilityStatus(
+            CapabilityState.SKIPPED, "quantity consistency not evaluated"
+        )
         if quantity_capability is not None and quantity_capability.status is CapabilityState.FAILED:
             ifc_validation = quantity_capability
         unit_scale = CapabilityStatus(CapabilityState.OK)
@@ -613,19 +629,36 @@ class AnalyzeProjectPackageUseCase:
             ids_capability = CapabilityStatus(CapabilityState.OK)
 
         if self._ifc_schema_validator is None and schema_request_id is None:
-            ifc_schema = CapabilityStatus(
-                CapabilityState.SKIPPED, "IFC schema pre-gate not configured"
-            )
+            if self._require_bsi_schema:
+                ifc_schema = CapabilityStatus(
+                    CapabilityState.FAILED,
+                    "IFC schema pre-gate required but not configured",
+                )
+            else:
+                ifc_schema = CapabilityStatus(
+                    CapabilityState.SKIPPED, "IFC schema pre-gate not configured"
+                )
         elif schema_issues:
             ifc_schema = CapabilityStatus(
                 CapabilityState.FAILED,
                 schema_issues[0].message if schema_issues else "schema pre-gate failed",
                 external_ref=schema_request_id,
             )
+        elif self._require_bsi_schema and schema_request_id is None:
+            # SPF pre-gate alone must not green-pass pilot/production schema requirement.
+            ifc_schema = CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "IFC schema required: SPF pre-gate only; bSI/schema certificate not obtained",
+            )
         else:
             ifc_schema = CapabilityStatus(
                 CapabilityState.OK,
                 external_ref=schema_request_id,
+                reason=(
+                    None
+                    if schema_request_id
+                    else "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)"
+                ),
             )
 
         raster_requested = any(
@@ -639,7 +672,8 @@ class AnalyzeProjectPackageUseCase:
             )
         elif self._raster_drawing_analyzer is None:
             raster_capability = CapabilityStatus(
-                CapabilityState.SKIPPED, "raster drawing analyzer not configured"
+                CapabilityState.FAILED,
+                "raster drawing analysis requested but analyzer not configured",
             )
         elif drawing_annotation_count <= 0:
             # Requested OCR path with zero yield must not look like a clean OK.
@@ -671,6 +705,7 @@ class AnalyzeProjectPackageUseCase:
             ),
             calculation_match=calculation_match
             or CapabilityStatus(CapabilityState.SKIPPED, "numeric calculation match not evaluated"),
+            quantity=quantity,
         )
 
     def _submit_bsi_validation(self, ifc_path) -> tuple[str | None, list[ValidationIssue]]:
@@ -871,8 +906,9 @@ class AnalyzeProjectPackageUseCase:
                     result = self._multimodal_drawing_pipeline.analyze(drawing_source, mode="auto")
                     annotations.extend(result.annotations)
                     regions.extend(result.regions)
-                else:
+                elif self._raster_drawing_analyzer is not None:
                     annotations.extend(self._collect_raster_annotations(drawing_source))
+                # else: requested raster without analyzer → empty yield; FAILED in capabilities
         return annotations, regions
 
     def _collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
@@ -1049,6 +1085,11 @@ class AnalyzeProjectPackageUseCase:
                             quantity_b=req.quantity,
                         )
                         severity = self._cross_doc_severity
+                    match_method = (
+                        f"entity+pset+prop"
+                        if property_set
+                        else "entity+prop"
+                    )
                     issues.append(
                         ValidationIssue(
                             rule_id=f"CROSS-DOC-{entity}-{prop}",
@@ -1065,6 +1106,16 @@ class AnalyzeProjectPackageUseCase:
                             expected_value=prev_val,
                             observed_value=val,
                             conflict_kind=conflict_kind,
+                            origin="deterministic",
+                            match_method=match_method,
+                            source_id=(
+                                f"cross-doc:{prev_req.source_kind.value}|{req.source_kind.value}"
+                            ),
+                            evidence_modality="cross-document",
+                            evidence_refs=(
+                                f"cross-doc@{prev_req.source_kind.value}#{property_label}",
+                                f"cross-doc@{req.source_kind.value}#{property_label}",
+                            ),
                         )
                     )
                 seen.append(req)
@@ -1121,6 +1172,12 @@ class AnalyzeProjectPackageUseCase:
                     source_id=f"cross-doc:{sample.source_kind.value}|{other.source_kind.value}",
                     evidence_modality="cross-document",
                     confidence=0.0,
+                    origin="deterministic",
+                    match_method="entity+prop(divergent-pset)",
+                    evidence_refs=(
+                        f"cross-doc@{sample.source_kind.value}#{entity}.{prop}",
+                        f"cross-doc@{other.source_kind.value}#{entity}.{prop}",
+                    ),
                 )
             )
         return issues

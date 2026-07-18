@@ -18,6 +18,12 @@ from aerobim.application.services.review_kpi import summarize_review_events
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import PathJailError, reject_symlinks, resolve_storage_path
+from aerobim.core.security.upload_content import UploadContentError, validate_upload_content
+from aerobim.core.security.upload_quota import (
+    FilesystemUploadQuotaStore,
+    UploadQuotaExceeded,
+)
+from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_path
 from aerobim.domain.models import (
     DrawingSource,
     ReportListFilters,
@@ -27,6 +33,7 @@ from aerobim.domain.models import (
     ValidationRequest,
 )
 from aerobim.domain.object_acl import AuthPrincipal, principal_may_access_report
+from aerobim.domain.review_state_machine import HitlTransitionError, assert_hitl_transition
 from aerobim.domain.system_capabilities import build_system_capabilities_payload
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
@@ -39,6 +46,8 @@ _BCF_PROJECT_ID_RE = _re.compile(
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
 )
 _LOIN_RESOLVER = LoinMetadataResolver()
+_UPLOAD_HASH_CHUNK = 1024 * 1024
+_UPLOAD_SNIFF_BYTES = 4096
 
 
 def _attachment_content_disposition(filename: str) -> str:
@@ -125,15 +134,22 @@ class ReviewEventRequest(BaseModel):
         "accepted",
         "rejected",
         "edited_remark",
+        "edited",
         "triaged",
         "norm_rule_proposed",
         "norm_rule_edited",
         "drawing_region_escalated",
+        "escalated",
+        "waived",
+        "superseded",
     ]
     issue_rule_id: str | None = Field(default=None, max_length=256)
     actor: str | None = Field(default=None, max_length=128)
     note: str | None = Field(default=None, max_length=2000)
     latency_ms: int | None = Field(default=None, ge=0, le=86_400_000)
+    previous_state: str | None = Field(default=None, max_length=64)
+    finding_id: str | None = Field(default=None, max_length=64)
+    idempotency_key: str | None = Field(default=None, max_length=256)
 
 
 class NormRuleHitlEventRequest(BaseModel):
@@ -176,6 +192,11 @@ def create_http_app(container: Container):
     object_store = None
     if container.is_registered(Tokens.OBJECT_STORE):
         object_store = container.resolve(Tokens.OBJECT_STORE)
+    upload_quota_store = FilesystemUploadQuotaStore(
+        settings.storage_dir,
+        max_uploads_per_day=settings.max_uploads_per_tenant_day,
+        max_bytes_per_day=settings.max_upload_bytes_per_tenant_day,
+    )
 
     app = FastAPI(title="aerobim-backend", version="0.2.0")
 
@@ -583,28 +604,36 @@ def create_http_app(container: Container):
         """Multipart document ingest into the storage jail (TZ P0).
 
         Returns a storage-relative ``path`` suitable for ``ifc_path`` / drawing paths
-        on subsequent analyze calls.
+        on subsequent analyze calls. Validates extension + magic bytes and enforces
+        ``max_upload_bytes`` for all document types. Content is quarantined until
+        checks pass, then promoted to ``uploads/``.
         """
+        tenant_key = (
+            principal.tenant_id or principal.subject or "anonymous"
+        ).strip() or "anonymous"
         raw_name = (file.filename or "upload.bin").replace("\\", "/").split("/")[-1]
         safe_name = (
             raw_name.replace("\r", "").replace("\n", "").replace('"', "").strip() or "upload.bin"
         )[:180]
         upload_id = uuid4().hex
         relative_path = f"uploads/{upload_id}/{safe_name}"
+        quarantine = (settings.storage_dir / "quarantine" / upload_id / safe_name).resolve()
         target = (settings.storage_dir / "uploads" / upload_id / safe_name).resolve()
         base = settings.storage_dir.resolve()
-        target.parent.mkdir(parents=True, exist_ok=True)
+        quarantine.parent.mkdir(parents=True, exist_ok=True)
         try:
-            reject_symlinks(target.parent, base=base)
+            reject_symlinks(quarantine.parent, base=base)
         except PathJailError as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
 
-        max_bytes = settings.max_ifc_bytes
+        max_bytes = settings.max_upload_bytes
         total = 0
+        digest = hashlib.sha256()
+        sniff_buf = bytearray()
         try:
-            with target.open("wb") as handle:
+            with quarantine.open("wb") as handle:
                 while True:
-                    chunk = await file.read(1024 * 1024)
+                    chunk = await file.read(_UPLOAD_HASH_CHUNK)
                     if not chunk:
                         break
                     total += len(chunk)
@@ -615,36 +644,86 @@ def create_http_app(container: Container):
                                 f"Upload exceeds size limit ({total} bytes > {max_bytes} bytes)"
                             ),
                         )
+                    digest.update(chunk)
+                    if len(sniff_buf) < _UPLOAD_SNIFF_BYTES:
+                        need = _UPLOAD_SNIFF_BYTES - len(sniff_buf)
+                        sniff_buf.extend(chunk[:need])
                     handle.write(chunk)
         except HTTPException:
-            target.unlink(missing_ok=True)
+            quarantine.unlink(missing_ok=True)
             raise
         except OSError as exc:
-            target.unlink(missing_ok=True)
+            quarantine.unlink(missing_ok=True)
             raise HTTPException(status_code=500, detail=f"Upload write failed: {exc}") from exc
 
         if total == 0:
-            target.unlink(missing_ok=True)
+            quarantine.unlink(missing_ok=True)
             raise HTTPException(status_code=400, detail="Empty upload")
+
+        try:
+            upload_quota_store.assert_can_accept(tenant_key, size_bytes=total)
+        except UploadQuotaExceeded as exc:
+            quarantine.unlink(missing_ok=True)
+            raise HTTPException(status_code=429, detail=str(exc)) from exc
+
+        try:
+            sniffed = validate_upload_content(
+                filename=safe_name,
+                payload=bytes(sniff_buf)
+                if sniff_buf
+                else quarantine.read_bytes()[:_UPLOAD_SNIFF_BYTES],
+                declared_content_type=file.content_type,
+            )
+            if sniffed.kind == "zip" or safe_name.lower().endswith(
+                (".zip", ".ifczip", ".docx", ".xlsx", ".pptx")
+            ):
+                inspect_zip_path(quarantine)
+        except UploadContentError as exc:
+            quarantine.unlink(missing_ok=True)
+            raise HTTPException(status_code=415, detail=str(exc)) from exc
+        except ZipBombError as exc:
+            quarantine.unlink(missing_ok=True)
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+        # Promote out of quarantine only after content + zip checks pass.
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            reject_symlinks(target.parent, base=base)
+            quarantine.replace(target)
+        except (OSError, PathJailError) as exc:
+            quarantine.unlink(missing_ok=True)
+            raise HTTPException(
+                status_code=500, detail=f"Quarantine promote failed: {exc}"
+            ) from exc
 
         object_key = None
         if object_store is not None:
-            # Stream from disk without holding a second full in-memory copy when possible.
             payload = target.read_bytes()
             object_key = object_store.put_bytes(
                 relative_path.replace("\\", "/"),
                 payload,
-                content_type=file.content_type,
+                content_type=sniffed.mime or file.content_type,
             )
             del payload
 
+        quota = upload_quota_store.record(tenant_key, size_bytes=total)
         return {
             "upload_id": upload_id,
             "filename": safe_name,
             "path": relative_path.replace("\\", "/"),
             "size_bytes": total,
-            "content_type": file.content_type,
+            "content_type": sniffed.mime or file.content_type,
+            "sniffed_kind": sniffed.kind,
+            "sha256": digest.hexdigest(),
             "object_key": object_key,
+            "tenant_id": tenant_key,
+            "quota": {
+                "day": quota.day,
+                "upload_count": quota.upload_count,
+                "bytes_used": quota.bytes_used,
+                "max_uploads": quota.max_uploads,
+                "max_bytes": quota.max_bytes,
+            },
         }
 
     @app.post("/v1/validate/ifc")
@@ -781,6 +860,20 @@ def create_http_app(container: Container):
             )
         return _serialize_analyze_project_package_job(job)
 
+    @app.post("/v1/analyze/project-package/jobs/{job_id}/cancel")
+    def cancel_analyze_project_package_job(
+        job_id: str,
+        principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
+    ) -> dict[str, object]:
+        _validate_job_id(job_id)
+        job_store = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+        job = job_store.request_cancel(job_id)
+        if job is None:
+            raise HTTPException(
+                status_code=404, detail=f"Analyze project-package job {job_id} not found"
+            )
+        return _serialize_analyze_project_package_job(job)
+
     @app.get("/v1/system/capabilities")
     def get_system_capabilities(
         principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
@@ -803,6 +896,24 @@ def create_http_app(container: Container):
                 passed=passed,
             )
         )
+        if settings.enforce_object_acl:
+            principal_tenant = (principal.tenant_id or "").strip().casefold()
+            if not principal_tenant:
+                entries = []
+            else:
+                # list_reports returns summaries; reload for tenant binding when enforced.
+                filtered = []
+                for entry in entries:
+                    report = audit_store.get(entry.report_id)
+                    if report is None:
+                        continue
+                    if principal_may_access_report(
+                        enforce_object_acl=True,
+                        principal=principal,
+                        report=report,
+                    ):
+                        filtered.append(entry)
+                entries = filtered
         return {"reports": [asdict(e) for e in entries], "count": len(entries)}
 
     @app.get("/v1/reports/{report_id}")
@@ -829,8 +940,36 @@ def create_http_app(container: Container):
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         _assert_report_access(report, principal)
         review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
+        resulting_state: str | None = None
+        # Norm-pack events are a separate lifecycle; finding HITL transitions are validated.
+        if payload.event_type not in {"norm_rule_proposed", "norm_rule_edited"}:
+            try:
+                resulting_state = assert_hitl_transition(
+                    current=payload.previous_state,
+                    event_type=payload.event_type,
+                    actor=payload.actor,
+                    note=payload.note,
+                )
+            except HitlTransitionError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+        idem = (payload.idempotency_key or "").strip()
+        if not idem:
+            idem_seed = "|".join(
+                [
+                    report_id,
+                    payload.event_type,
+                    payload.issue_rule_id or "",
+                    payload.finding_id or "",
+                    payload.actor or "",
+                    payload.note or "",
+                    payload.previous_state or "",
+                ]
+            )
+            idem = "api:" + hashlib.sha256(idem_seed.encode("utf-8")).hexdigest()[:40]
+        event_id = hashlib.sha256(idem.encode("utf-8")).hexdigest()[:32]
+        existing = review_store.list_for_report(report_id)
         event = ReviewEvent(
-            event_id=uuid4().hex,
+            event_id=event_id,
             report_id=report_id,
             event_type=payload.event_type,
             created_at=datetime.now(tz=UTC).isoformat(),
@@ -838,6 +977,11 @@ def create_http_app(container: Container):
             actor=payload.actor,
             note=payload.note,
             latency_ms=payload.latency_ms,
+            idempotency_key=idem,
+            sequence_number=len(existing) + 1,
+            previous_state=payload.previous_state,
+            resulting_state=resulting_state,
+            finding_id=payload.finding_id,
         )
         review_store.append(event)
         return {"event": asdict(event)}
@@ -884,8 +1028,10 @@ def create_http_app(container: Container):
         principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_report_id(report_id)
-        if audit_store.get(report_id) is None:
+        report = audit_store.get(report_id)
+        if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
         events = review_store.list_for_report(report_id)
         return {"events": [asdict(e) for e in events], "count": len(events)}
@@ -896,8 +1042,10 @@ def create_http_app(container: Container):
         principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_report_id(report_id)
-        if audit_store.get(report_id) is None:
+        report = audit_store.get(report_id)
+        if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
         review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
         events = review_store.list_for_report(report_id)
         return {"report_id": report_id, "kpi": summarize_review_events(events)}
@@ -1073,6 +1221,9 @@ def create_http_app(container: Container):
                     audit_bits.append(f"source_id={_esc(str(source_id))}")
                 if refs_joined:
                     audit_bits.append(f"evidence_refs={_esc(refs_joined)}")
+                origin = issue.get("origin")
+                if origin:
+                    audit_bits.append(f"origin={_esc(str(origin))}")
                 if not finding_id or not source_id or not refs_joined:
                     audit_bits.append("provenance=INCOMPLETE")
                 audit_html = (
@@ -1238,6 +1389,11 @@ Created: {_esc(str(data.get("created_at") or ""))}
             )
         if not container.is_registered(Tokens.PUSH_REPORT_TO_BCF_API_USE_CASE):
             raise HTTPException(status_code=503, detail="BCF API push use case is not registered")
+
+        report = audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        _assert_report_access(report, principal)
 
         push_use_case = container.resolve(Tokens.PUSH_REPORT_TO_BCF_API_USE_CASE)
         try:

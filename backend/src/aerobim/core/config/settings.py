@@ -65,12 +65,27 @@ class Settings:
     """When true, missing/skipped clash capability is treated as FAILED (no green pass)."""
     require_bsi_schema: bool = False
     """When true, bSI/schema submit failures are ERROR and block pass via issues."""
+    signoff_profile: str = "development"
+    """Capability policy profile: development|fixture|samolet_pilot|production."""
+    require_mep_system_clash: bool = False
+    """When true, MEP capability must be OK; NOT_VERIFIED/FAILED blocks summary.passed."""
+    audit_fail_closed: bool = False
+    """When true, corrupt review-event JSONL raises instead of silent skip."""
     enforce_object_acl: bool = False
     """When true, report artifacts require matching tenant_id on the auth principal."""
     api_tenant_id: str | None = None
     """Tenant bound to the static bearer token (``AEROBIM_API_TENANT_ID``)."""
     max_ifc_bytes: int = _DEFAULT_MAX_IFC_BYTES
     """Maximum accepted IFC file size in bytes (default 256 MiB)."""
+    max_upload_bytes: int = _DEFAULT_MAX_IFC_BYTES
+    """Maximum accepted multipart upload size in bytes (all document types)."""
+    max_uploads_per_tenant_day: int | None = None
+    """Optional per-tenant daily upload count quota (``AEROBIM_MAX_UPLOADS_PER_TENANT_DAY``)."""
+    max_upload_bytes_per_tenant_day: int | None = None
+    """Optional per-tenant daily upload bytes quota.
+
+    Env: ``AEROBIM_MAX_UPLOAD_BYTES_PER_TENANT_DAY``.
+    """
     # OpenCDE BCF API 3.0 push (optional)
     bcf_api_base_url: str | None = None
     bcf_api_token: str | None = None
@@ -148,6 +163,57 @@ class Settings:
         )
         raw_profile = (os.getenv("AEROBIM_PRIORITY_PROFILE") or "default").strip().lower()
         priority_profile = raw_profile if raw_profile in {"default", "samolet"} else "default"
+
+        def _optional_bool(name: str) -> bool | None:
+            if name not in os.environ:
+                return None
+            return _read_bool(name, False)
+
+        env_name = (os.getenv("AEROBIM_ENV") or "development").strip().lower()
+        # Non-dev defaults ACL on when unset (legacy); profile may still override.
+        acl_default = False if env_name in _DEV_ENVIRONMENTS else True
+        # Inline profile map keeps core free of application imports (layer boundary).
+        raw_signoff = (os.getenv("AEROBIM_SIGNOFF_PROFILE") or "development").strip().lower()
+        if raw_signoff in {"samolet", "samolet_pilot", "pilot"}:
+            signoff_profile = "samolet_pilot"
+        elif raw_signoff in {"production", "prod"}:
+            signoff_profile = "production"
+        elif raw_signoff in {"fixture", "fixtures"}:
+            signoff_profile = "fixture"
+        else:
+            signoff_profile = "development"
+        profile_gate = signoff_profile in {"samolet_pilot", "production"}
+        require_clash = (
+            profile_gate
+            if _optional_bool("AEROBIM_REQUIRE_CLASH") is None
+            else bool(_optional_bool("AEROBIM_REQUIRE_CLASH"))
+        )
+        clash_affects_pass = (
+            profile_gate
+            if _optional_bool("AEROBIM_CLASH_AFFECTS_PASS") is None
+            else bool(_optional_bool("AEROBIM_CLASH_AFFECTS_PASS"))
+        )
+        require_bsi_schema = (
+            profile_gate
+            if _optional_bool("AEROBIM_REQUIRE_BSI_SCHEMA") is None
+            else bool(_optional_bool("AEROBIM_REQUIRE_BSI_SCHEMA"))
+        )
+        require_mep_system_clash = (
+            profile_gate
+            if _optional_bool("AEROBIM_REQUIRE_MEP_SYSTEM_CLASH") is None
+            else bool(_optional_bool("AEROBIM_REQUIRE_MEP_SYSTEM_CLASH"))
+        )
+        if "AEROBIM_ENFORCE_OBJECT_ACL" in os.environ:
+            enforce_object_acl = bool(_optional_bool("AEROBIM_ENFORCE_OBJECT_ACL"))
+        elif profile_gate:
+            enforce_object_acl = True
+        else:
+            enforce_object_acl = acl_default
+        audit_fail_closed = (
+            profile_gate
+            if _optional_bool("AEROBIM_AUDIT_FAIL_CLOSED") is None
+            else bool(_optional_bool("AEROBIM_AUDIT_FAIL_CLOSED"))
+        )
         settings = cls(
             application_name=os.getenv("AEROBIM_APP_NAME", "aerobim-backend"),
             environment=os.getenv("AEROBIM_ENV", "development"),
@@ -167,18 +233,23 @@ class Settings:
             s3_secret_access_key=(os.getenv("AEROBIM_S3_SECRET_ACCESS_KEY") or "").strip() or None,
             s3_prefix=(os.getenv("AEROBIM_S3_PREFIX") or "aerobim").strip() or "aerobim",
             report_ttl_days=_read_optional_int("AEROBIM_REPORT_TTL_DAYS"),
-            clash_affects_pass=_read_bool("AEROBIM_CLASH_AFFECTS_PASS", False),
-            require_clash=_read_bool("AEROBIM_REQUIRE_CLASH", False),
-            require_bsi_schema=_read_bool("AEROBIM_REQUIRE_BSI_SCHEMA", False),
-            enforce_object_acl=_read_bool(
-                "AEROBIM_ENFORCE_OBJECT_ACL",
-                # Non-dev defaults to fail-closed object ACL when env unset.
-                default=False
-                if (os.getenv("AEROBIM_ENV") or "development").strip().lower() in _DEV_ENVIRONMENTS
-                else True,
-            ),
+            clash_affects_pass=clash_affects_pass,
+            require_clash=require_clash,
+            require_bsi_schema=require_bsi_schema,
+            signoff_profile=signoff_profile,
+            require_mep_system_clash=require_mep_system_clash,
+            audit_fail_closed=audit_fail_closed,
+            enforce_object_acl=enforce_object_acl,
             api_tenant_id=(os.getenv("AEROBIM_API_TENANT_ID") or "").strip() or None,
             max_ifc_bytes=_read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
+            max_upload_bytes=_read_int(
+                "AEROBIM_MAX_UPLOAD_BYTES",
+                _read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
+            ),
+            max_uploads_per_tenant_day=_read_optional_int("AEROBIM_MAX_UPLOADS_PER_TENANT_DAY"),
+            max_upload_bytes_per_tenant_day=_read_optional_int(
+                "AEROBIM_MAX_UPLOAD_BYTES_PER_TENANT_DAY"
+            ),
             bcf_api_base_url=(os.getenv("AEROBIM_BCF_API_BASE_URL") or "").strip() or None,
             bcf_api_token=(os.getenv("AEROBIM_BCF_API_TOKEN") or "").strip() or None,
             bcf_api_project_id=(os.getenv("AEROBIM_BCF_API_PROJECT_ID") or "").strip() or None,

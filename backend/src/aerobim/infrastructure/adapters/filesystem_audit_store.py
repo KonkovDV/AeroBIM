@@ -33,6 +33,11 @@ from aerobim.domain.models import (
     ValidationSummary,
 )
 from aerobim.domain.norm_assist import IdsCompileDraft
+from aerobim.domain.persistence import (
+    ReportCommitState,
+    build_commit_manifest_payload,
+    is_report_reviewable,
+)
 from aerobim.domain.ports import ObjectStore
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 
@@ -63,20 +68,102 @@ class FilesystemAuditStore:
         report = ValidationReport(
             **{**report.__dict__, "issues": stamped_issues},
         )
-        persisted_report = self._materialize_report(report)
-        data = self._serialize_report(persisted_report)
-        target = self._reports_dir / f"{report.report_id}.json"
-        tmp = self._reports_dir / f"{report.report_id}.tmp"
-        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        os.replace(str(tmp), str(target))
-        return report.report_id
+        artifact_keys: list[str] = []
+        try:
+            persisted_report = self._materialize_report(report, artifact_keys=artifact_keys)
+            data = self._serialize_report(persisted_report)
+            target = self._reports_dir / f"{report.report_id}.json"
+            tmp = self._reports_dir / f"{report.report_id}.tmp"
+            tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            os.replace(str(tmp), str(target))
+            self._write_commit_manifest(
+                report.report_id,
+                artifact_keys=artifact_keys,
+                ifc_object_key=persisted_report.ifc_object_key,
+            )
+            return report.report_id
+        except Exception:
+            self._record_orphan(report.report_id, artifact_keys=artifact_keys)
+            raise
 
-    def _materialize_report(self, report: ValidationReport) -> ValidationReport:
+    def is_report_committed(self, report_id: str) -> bool:
+        return self._commit_marker_path(report_id).exists()
+
+    def is_report_reviewable(self, report_id: str) -> bool:
+        return is_report_reviewable(
+            committed=self.is_report_committed(report_id),
+            report_json_exists=self._report_json_path(report_id).exists(),
+        )
+
+    def list_orphan_report_ids(self) -> list[str]:
+        orphan_dir = self._storage_dir / "orphans"
+        if not orphan_dir.exists():
+            return []
+        return sorted(path.stem for path in orphan_dir.glob("*.json"))
+
+    def _report_json_path(self, report_id: str) -> Path:
+        return self._reports_dir / f"{report_id}.json"
+
+    def _commit_marker_path(self, report_id: str) -> Path:
+        return self._reports_dir / f"{report_id}.committed.json"
+
+    def _iter_report_json_paths(self):
+        for path in sorted(self._reports_dir.glob("*.json")):
+            name = path.name
+            if name.endswith(".committed.json") or name.endswith(".tmp"):
+                continue
+            if ".committed." in name:
+                continue
+            yield path
+
+    def _write_commit_manifest(
+        self,
+        report_id: str,
+        *,
+        artifact_keys: list[str],
+        ifc_object_key: str | None,
+    ) -> None:
+        manifest = build_commit_manifest_payload(
+            report_id=report_id,
+            artifact_keys=artifact_keys,
+            ifc_object_key=ifc_object_key,
+            committed_at=datetime.now(tz=UTC).isoformat(),
+            commit_state=ReportCommitState.REVIEWABLE,
+        )
+        target = self._commit_marker_path(report_id)
+        tmp = self._reports_dir / f"{report_id}.committed.tmp"
+        tmp.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(str(tmp), str(target))
+
+    def _record_orphan(self, report_id: str, *, artifact_keys: list[str]) -> None:
+        orphan_dir = self._storage_dir / "orphans"
+        orphan_dir.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "schema_version": "1.0.0",
+            "report_id": report_id,
+            "artifact_keys": list(artifact_keys),
+            "consistency_state": ReportCommitState.ORPHAN_UNCOMMITTED.value,
+            "recorded_at": datetime.now(tz=UTC).isoformat(),
+        }
+        (orphan_dir / f"{report_id}.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    def _materialize_report(
+        self,
+        report: ValidationReport,
+        *,
+        artifact_keys: list[str] | None = None,
+    ) -> ValidationReport:
+        keys = artifact_keys if artifact_keys is not None else []
         ifc_object_key = report.ifc_object_key or self._materialize_ifc_source(
-            report.report_id, report.ifc_path
+            report.report_id, report.ifc_path, artifact_keys=keys
         )
         drawing_assets = tuple(
-            self._materialize_drawing_assets(report.report_id, report.drawing_assets)
+            self._materialize_drawing_assets(
+                report.report_id, report.drawing_assets, artifact_keys=keys
+            )
         )
         return ValidationReport(
             report_id=report.report_id,
@@ -103,6 +190,7 @@ class FilesystemAuditStore:
             divergences=report.divergences,
             advisory_ids_draft=report.advisory_ids_draft,
             drawing_regions=report.drawing_regions,
+            schema_version=report.schema_version,
         )
 
     def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
@@ -124,7 +212,13 @@ class FilesystemAuditStore:
         ]
         return data
 
-    def _materialize_ifc_source(self, report_id: str, ifc_path: Path) -> str | None:
+    def _materialize_ifc_source(
+        self,
+        report_id: str,
+        ifc_path: Path,
+        *,
+        artifact_keys: list[str] | None = None,
+    ) -> str | None:
         if not ifc_path.exists() or not ifc_path.is_file():
             return None
         object_key = f"ifc-sources/{report_id}/{ifc_path.name}"
@@ -133,12 +227,16 @@ class FilesystemAuditStore:
             ifc_path.read_bytes(),
             content_type="application/octet-stream",
         )
+        if artifact_keys is not None:
+            artifact_keys.append(object_key)
         return object_key
 
     def _materialize_drawing_assets(
         self,
         report_id: str,
         drawing_assets: tuple[DrawingAsset, ...],
+        *,
+        artifact_keys: list[str] | None = None,
     ) -> list[DrawingAsset]:
         if not drawing_assets:
             return []
@@ -153,7 +251,12 @@ class FilesystemAuditStore:
             if asset.source_path is None:
                 persisted_assets.append(asset)
                 continue
-            persisted_assets.extend(self._persist_document_asset(report_id, asset))
+            persisted = self._persist_document_asset(report_id, asset)
+            persisted_assets.extend(persisted)
+            if artifact_keys is not None:
+                for item in persisted:
+                    if item.object_key:
+                        artifact_keys.append(item.object_key)
         return persisted_assets
 
     def _persist_document_asset(
@@ -282,8 +385,11 @@ class FilesystemAuditStore:
 
     def get(self, report_id: str) -> ValidationReport | None:
         self._prune_expired_reports()
-        target = self._reports_dir / f"{report_id}.json"
+        target = self._report_json_path(report_id)
         if not target.exists():
+            return None
+        # Uncommitted JSON is not reviewable — hide from consumers.
+        if not self.is_report_committed(report_id):
             return None
         try:
             data = json.loads(target.read_text(encoding="utf-8"))
@@ -292,7 +398,7 @@ class FilesystemAuditStore:
                 self._delete_report_files(report, target)
                 return None
             return report
-        except (json.JSONDecodeError, KeyError):
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
             return None
 
     def list_reports(
@@ -301,7 +407,10 @@ class FilesystemAuditStore:
     ) -> list[ReportSummaryEntry]:
         self._prune_expired_reports()
         entries: list[ReportSummaryEntry] = []
-        for path in sorted(self._reports_dir.glob("*.json")):
+        for path in self._iter_report_json_paths():
+            report_id = path.stem
+            if not self.is_report_committed(report_id):
+                continue
             try:
                 data = json.loads(path.read_text(encoding="utf-8"))
                 report = self._reconstruct_report(data)
@@ -320,7 +429,7 @@ class FilesystemAuditStore:
                         discipline=data.get("discipline"),
                     )
                 )
-            except (json.JSONDecodeError, KeyError):
+            except (json.JSONDecodeError, KeyError, TypeError, ValueError):
                 continue
         from aerobim.application.services.report_list_filters import apply_report_list_filters
 
@@ -364,6 +473,7 @@ class FilesystemAuditStore:
             drawing_regions=tuple(
                 self._reconstruct_drawing_region(item) for item in data.get("drawing_regions", [])
             ),
+            schema_version=str(data.get("schema_version") or "1.0.0"),
         )
 
     def _reconstruct_requirement(self, data: dict) -> ParsedRequirement:
@@ -434,6 +544,7 @@ class FilesystemAuditStore:
             evidence_refs=tuple(data.get("evidence_refs") or ()),
             tenant_id=data.get("tenant_id"),
             project_id=data.get("project_id"),
+            origin=data.get("origin"),
         )
 
     def _reconstruct_summary(self, data: dict) -> ValidationSummary:
@@ -514,6 +625,12 @@ class FilesystemAuditStore:
                     "Independent calculation correctness verification not implemented",
                 ),
             ),
+            quantity=self._reconstruct_capability_status(
+                data.get("quantity"),
+                default=CapabilityStatus(
+                    CapabilityState.SKIPPED, "quantity consistency not evaluated"
+                ),
+            ),
         )
 
     def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:
@@ -586,11 +703,11 @@ class FilesystemAuditStore:
     def _prune_expired_reports(self) -> None:
         if self._report_ttl_days is None:
             return
-        for path in sorted(self._reports_dir.glob("*.json")):
+        for path in self._iter_report_json_paths():
             try:
                 data = json.loads(path.read_text(encoding="utf-8"))
                 report = self._reconstruct_report(data)
-            except (json.JSONDecodeError, KeyError):
+            except (json.JSONDecodeError, KeyError, TypeError, ValueError):
                 continue
             if self._is_expired(report):
                 self._delete_report_files(report, path)
@@ -613,10 +730,40 @@ class FilesystemAuditStore:
         return parsed.astimezone(UTC)
 
     def _delete_report_files(self, report: ValidationReport, report_path: Path) -> None:
+        report_id = report.report_id
+        # Prefer keys from commit manifest when present (complete artifact set).
+        commit_path = self._commit_marker_path(report_id)
+        artifact_keys: list[str] = []
+        if commit_path.exists():
+            try:
+                commit_data = json.loads(commit_path.read_text(encoding="utf-8"))
+                artifact_keys = [str(k) for k in (commit_data.get("artifact_keys") or [])]
+            except (json.JSONDecodeError, OSError):
+                artifact_keys = []
         if report.ifc_object_key:
-            self._object_store.delete(report.ifc_object_key)
+            artifact_keys.append(report.ifc_object_key)
         for asset in report.drawing_assets:
             if asset.object_key:
-                self._object_store.delete(asset.object_key)
+                artifact_keys.append(asset.object_key)
+        seen: set[str] = set()
+        for key in artifact_keys:
+            if key in seen:
+                continue
+            seen.add(key)
+            try:
+                self._object_store.delete(key)
+            except Exception:  # noqa: BLE001 — best-effort TTL cleanup
+                pass
+        assets_dir = self._drawing_assets_dir / report_id
+        if assets_dir.exists():
+            shutil.rmtree(assets_dir, ignore_errors=True)
+        review_events = self._storage_dir / "review-events" / f"{report_id}.jsonl"
+        if review_events.exists():
+            review_events.unlink(missing_ok=True)
+        orphan_record = self._storage_dir / "orphans" / f"{report_id}.json"
+        if orphan_record.exists():
+            orphan_record.unlink(missing_ok=True)
+        if commit_path.exists():
+            commit_path.unlink(missing_ok=True)
         if report_path.exists():
-            report_path.unlink()
+            report_path.unlink(missing_ok=True)

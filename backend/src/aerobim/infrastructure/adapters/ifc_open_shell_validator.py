@@ -73,6 +73,19 @@ class IfcOpenShellValidator:
         target_cache: dict[tuple[str, str], tuple[Any, ...]] = {}
         pset_cache: dict[object, dict[str, Any]] = {}
 
+        from aerobim.domain.ifc_globalid import collect_global_id_integrity_issues
+
+        try:
+            roots = tuple(model.by_type("IfcRoot"))
+        except Exception:  # noqa: BLE001 — schema without IfcRoot must not abort property checks
+            roots = ()
+        issues.extend(
+            collect_global_id_integrity_issues(
+                roots,
+                source_id=ifc_path.name,
+            )
+        )
+
         if not unit_scales_ok:
             issues.append(
                 ValidationIssue(

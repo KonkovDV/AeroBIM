@@ -20,10 +20,11 @@ optional and are intentionally omitted here.
 
 from __future__ import annotations
 
+import hashlib
 import io
+import uuid
 import zipfile
 from dataclasses import dataclass
-from uuid import uuid4
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from aerobim.domain.models import (
@@ -51,6 +52,14 @@ class _BcfTopicPayload:
     selected_guids: tuple[str, ...]
     topic_type: str
     topic_status: str = "Open"
+    labels: tuple[str, ...] = ()
+
+
+def _stable_uuid(seed: str) -> str:
+    """Deterministic UUID from seed (BCF Guid fields require UUID form)."""
+
+    digest = hashlib.sha256(f"aerobim:bcf:{seed}".encode()).hexdigest()
+    return str(uuid.UUID(digest[:32]))
 
 
 def export_bcf(report: ValidationReport) -> bytes:
@@ -86,17 +95,45 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
         if not _should_export_issue_as_bcf_topic(issue):
             continue
 
-        reference_links = tuple(link for link in (issue.element_guid, issue.target_ref) if link)
+        reference_links = tuple(
+            link
+            for link in (
+                issue.element_guid,
+                issue.target_ref,
+                *(issue.evidence_refs or ()),
+            )
+            if link
+        )
         selected_guids = (issue.element_guid,) if issue.element_guid else ()
         topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
-        description = issue.remark.body if issue.remark is not None else (issue.message or "")
+        base_description = issue.remark.body if issue.remark is not None else (issue.message or "")
+        provenance_lines = [
+            f"finding_id={issue.finding_id}" if issue.finding_id else None,
+            f"source_id={issue.source_id}" if issue.source_id else None,
+            (f"evidence_refs={','.join(issue.evidence_refs)}" if issue.evidence_refs else None),
+            f"origin={issue.origin}" if issue.origin else None,
+            f"ifc_globalid={issue.element_guid}" if issue.element_guid else None,
+        ]
+        description = base_description
+        extras = [line for line in provenance_lines if line]
+        if extras:
+            description = f"{base_description}\n\n" + "\n".join(extras)
         title = issue.rule_id or "Validation Issue"
         if issue.priority:
             title = f"[P{issue.priority}] {title}"
+        seed = issue.finding_id or f"{issue.rule_id}|{issue.element_guid}|{issue.target_ref}"
+        labels = tuple(
+            label
+            for label in (
+                f"origin:{issue.origin}" if issue.origin else None,
+                f"category:{issue.category.value}" if issue.category else None,
+            )
+            if label
+        )
         topics.append(
             _BcfTopicPayload(
-                topic_guid=str(uuid4()),
-                viewpoint_guid=str(uuid4()),
+                topic_guid=_stable_uuid(f"topic:{seed}"),
+                viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
                 title=title,
                 description=description,
                 creation_date=report.created_at,
@@ -104,6 +141,7 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
                 reference_links=reference_links,
                 selected_guids=selected_guids,
                 topic_type=topic_type,
+                labels=labels,
             )
         )
 
@@ -130,9 +168,10 @@ def _clash_topic_payload(
     clash: ClashResult,
     index: int,
 ) -> _BcfTopicPayload:
+    seed = f"clash:{clash.element_a_guid}|{clash.element_b_guid}|{clash.clash_type}|{index}"
     return _BcfTopicPayload(
-        topic_guid=str(uuid4()),
-        viewpoint_guid=str(uuid4()),
+        topic_guid=_stable_uuid(f"topic:{seed}"),
+        viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
         title=f"Clash {index}: {clash.clash_type}",
         description=(
             f"{clash.description}. "
@@ -144,6 +183,7 @@ def _clash_topic_payload(
         reference_links=(clash.element_a_guid, clash.element_b_guid),
         selected_guids=(clash.element_a_guid, clash.element_b_guid),
         topic_type="Clash",
+        labels=("origin:deterministic", "category:spatial"),
     )
 
 
@@ -161,6 +201,9 @@ def _build_markup(topic: _BcfTopicPayload) -> str:
     SubElement(topic_node, "Description").text = topic.description
     SubElement(topic_node, "CreationDate").text = topic.creation_date
     SubElement(topic_node, "CreationAuthor").text = topic.creation_author
+    if topic.labels:
+        for label in topic.labels:
+            SubElement(topic_node, "Labels").text = label
 
     for reference_link in topic.reference_links:
         SubElement(topic_node, "ReferenceLink").text = reference_link

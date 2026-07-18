@@ -1,0 +1,43 @@
+{
+  "artifact_type": "bcf_structural_handoff",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-18T15:43:05.955693+00:00",
+  "claim_level": "structural_only",
+  "bcf_21": {
+    "ok": true,
+    "version_id": "2.1",
+    "topic_count": 2,
+    "markup_count": 2,
+    "viewpoint_count": 2,
+    "sha256": "bc9856fdb4847dbabc4804c7f1e0aea3db573904feb0846d39ca454e15aa824d",
+    "errors": [],
+    "xsd_status": "not_configured"
+  },
+  "bcf_30": {
+    "ok": true,
+    "version_id": "3.0",
+    "topic_count": 2,
+    "markup_count": 2,
+    "viewpoint_count": 2,
+    "sha256": "4a87e7057e27c9e96bf7d242d82da4025f2dbd725f3ad20fa157ea0acbd69bc4",
+    "errors": [],
+    "xsd_status": "not_configured"
+  },
+  "consumer_agreement": {
+    "topic_count_21": 2,
+    "topic_count_30": 2,
+    "titles_match": true,
+    "ok": true
+  },
+  "structural_ok": true,
+  "cde_import": {
+    "status": "NOT_VERIFIED",
+    "reason": "No independent CDE import log/screenshot hash in evidence pack"
+  },
+  "allowed_wording": "BCF ZIP structural OK; CDE import not evidenced",
+  "forbidden_wording": [
+    "BCF ready for CDE",
+    "CDE interoperable",
+    "production BCF handoff"
+  ]
+}

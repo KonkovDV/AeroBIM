@@ -1,11 +1,19 @@
-"""Sign-off helpers: capability failures must not look like a clean pass."""
+"""Sign-off helpers: capability failures must not look like a clean pass.
+
+Canonical policy object lives in ``capability_policy.SignOffCapabilityPolicy``.
+These module-level helpers remain for backward-compatible unit tests and call sites
+that do not yet thread a full policy instance.
+"""
 
 from __future__ import annotations
 
+from aerobim.application.services.capability_policy import (
+    SignOffCapabilityPolicy,
+    build_signoff_policy,
+)
 from aerobim.domain.models import CapabilityState, ReportCapabilities
 
-# Capabilities that were attempted and FAILED block summary.passed.
-# SKIPPED (not requested / optional extra missing) does not block.
+# Re-export for discoverability / mutation tests.
 _PASS_BLOCKING_CAPABILITY_FIELDS: tuple[str, ...] = (
     "clash",
     "ids",
@@ -15,41 +23,45 @@ _PASS_BLOCKING_CAPABILITY_FIELDS: tuple[str, ...] = (
     "ifc_schema",
     "norm_rule_packs",
     "section_pairing",
-    # I0–I2 honesty fields: FAILED must not green-pass (Red Team RT-SIGNOFF-001)
     "calculation_match",
     "dwg_dxf",
-    # RT-C: infrastructure MEP probe failures must block pass
     "mep_system_clash",
+    "quantity",
 )
 
 
 def failed_capabilities_blocking_pass(capabilities: ReportCapabilities) -> tuple[str, ...]:
     """Return capability names in FAILED state that must force ``summary.passed=false``."""
-    blocked: list[str] = []
-    for name in _PASS_BLOCKING_CAPABILITY_FIELDS:
-        status = getattr(capabilities, name, None)
-        if status is not None and status.status is CapabilityState.FAILED:
-            blocked.append(name)
-    return tuple(blocked)
+    return build_signoff_policy(profile="development").failed_capabilities_blocking_pass(
+        capabilities
+    )
 
 
 def summary_passed_after_capabilities(
     *,
     error_count: int,
     capabilities: ReportCapabilities,
+    policy: SignOffCapabilityPolicy | None = None,
+    require_mep_system_clash: bool = False,
 ) -> bool:
     """Compute report pass flag: zero ERROR issues and no FAILED capabilities.
 
-    RT-SIGNOFF-002: ``calculation_match=NOT_VERIFIED`` (source present but сверка
-    not evaluated) must not green-pass. Other NOT_VERIFIED fields (e.g. DXF-only
-    ``dwg_dxf``) remain non-blocking.
+    RT-SIGNOFF-002: ``calculation_match=NOT_VERIFIED`` must not green-pass.
+    RT-HYPER-001: when ``require_mep_system_clash`` (or policy flag) is set,
+    MEP NOT_VERIFIED/FAILED/SKIPPED/MISSING blocks pass — only OK is acceptable.
     """
 
-    if error_count != 0:
-        return False
-    if failed_capabilities_blocking_pass(capabilities):
-        return False
-    calc = capabilities.calculation_match
-    if calc is not None and calc.status is CapabilityState.NOT_VERIFIED:
-        return False
-    return True
+    active = policy or build_signoff_policy(
+        profile="development",
+        require_mep_system_clash=require_mep_system_clash,
+    )
+    if policy is None and require_mep_system_clash:
+        active = build_signoff_policy(
+            profile="development",
+            require_mep_system_clash=True,
+        )
+    return active.summary_passed(error_count=error_count, capabilities=capabilities)
+
+
+# Keep CapabilityState import used (mutation / honesty guard).
+_ = CapabilityState

@@ -36,7 +36,7 @@ class BcfStructuralVerification:
     sha256: str
     errors: tuple[str, ...]
     xsd_status: str
-    """``not_configured`` | ``passed`` | ``failed`` | ``skipped``."""
+    """``not_configured`` | ``not_run`` | ``failed`` | ``skipped``. Never ``passed`` without XSD run."""
 
     def as_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -213,9 +213,7 @@ def verify_bcf_zip_structure(
         if not xsd_files:
             xsd_status = "skipped"
         else:
-            # Optional soft probe: presence of XSD files is recorded; full
-            # xmlschema validation is deferred to environments that vendor XSDs.
-            xsd_status = "passed" if not errors else "failed"
+            xsd_status = "not_run" if not errors else "failed"
 
     return BcfStructuralVerification(
         ok=not errors,

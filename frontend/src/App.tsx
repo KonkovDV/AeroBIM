@@ -1068,6 +1068,11 @@ export default function App() {
                         {issue.rule_id === "AEROBIM-DRAWING-REGION-HITL" ? (
                           <span className="issue-priority">HITL</span>
                         ) : null}
+                        {issue.origin === "advisory" ? (
+                          <span className="issue-priority">advisory</span>
+                        ) : issue.origin === "deterministic" ? (
+                          <span className="issue-priority">deterministic</span>
+                        ) : null}
                         {typeof issue.priority === "number" && issue.priority > 0 ? (
                           <span className="issue-priority">P{issue.priority}</span>
                         ) : null}

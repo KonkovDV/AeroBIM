@@ -62,6 +62,7 @@ class DeterminismGate:
                         evidence_refs=advisory.evidence_refs,
                         source_id=advisory.source_id or "ai-advisory",
                         confidence=advisory.confidence,
+                        origin="advisory",
                     )
                 )
                 divergences.append(
@@ -97,6 +98,7 @@ class DeterminismGate:
                         finding_id=f"divergence:{key}",
                         evidence_refs=engine.evidence_refs,
                         source_id="determinism-gate",
+                        origin="deterministic",
                     )
                 )
 

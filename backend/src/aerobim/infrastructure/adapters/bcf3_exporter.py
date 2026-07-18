@@ -28,10 +28,11 @@ Public API:
 
 from __future__ import annotations
 
+import hashlib
 import io
+import uuid
 import zipfile
 from dataclasses import dataclass
-from uuid import uuid4
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from aerobim.domain.models import (
@@ -43,6 +44,11 @@ from aerobim.domain.models import (
 )
 
 _BCF30_VERSION = "3.0"
+
+
+def _stable_uuid(seed: str) -> str:
+    digest = hashlib.sha256(f"aerobim:bcf3:{seed}".encode()).hexdigest()
+    return str(uuid.UUID(digest[:32]))
 
 
 @dataclass(frozen=True)
@@ -90,15 +96,30 @@ def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
         if not _should_export(issue):
             continue
 
-        reference_links = tuple(link for link in (issue.element_guid, issue.target_ref) if link)
+        reference_links = tuple(
+            link
+            for link in (issue.element_guid, issue.target_ref, *(issue.evidence_refs or ()))
+            if link
+        )
         selected_guids = (issue.element_guid,) if issue.element_guid else ()
         topic_type = "Error" if issue.severity == Severity.ERROR else "Warning"
+        base = issue.message or ""
+        extras = [
+            line
+            for line in (
+                f"finding_id={issue.finding_id}" if issue.finding_id else None,
+                f"origin={issue.origin}" if issue.origin else None,
+            )
+            if line
+        ]
+        description = f"{base}\n\n" + "\n".join(extras) if extras else base
+        seed = issue.finding_id or f"{issue.rule_id}|{issue.element_guid}|{issue.target_ref}"
         topics.append(
             _Bcf3TopicPayload(
-                topic_guid=str(uuid4()),
-                viewpoint_guid=str(uuid4()),
+                topic_guid=_stable_uuid(f"topic:{seed}"),
+                viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
                 title=issue.rule_id or "Validation Issue",
-                description=issue.message or "",
+                description=description,
                 creation_date=report.created_at,
                 creation_author="aerobim-backend",
                 reference_links=reference_links,
@@ -127,9 +148,10 @@ def _clash_topic(
     clash: ClashResult,
     index: int,
 ) -> _Bcf3TopicPayload:
+    seed = f"clash:{clash.element_a_guid}|{clash.element_b_guid}|{clash.clash_type}|{index}"
     return _Bcf3TopicPayload(
-        topic_guid=str(uuid4()),
-        viewpoint_guid=str(uuid4()),
+        topic_guid=_stable_uuid(f"topic:{seed}"),
+        viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
         title=f"Clash {index}: {clash.clash_type}",
         description=(
             f"{clash.description}. "

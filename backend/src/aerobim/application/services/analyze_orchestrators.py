@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
+from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.application.services.compliance_agent_orchestrator import merge_advisory_sequences
 from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
@@ -327,9 +328,17 @@ class EvidenceAssembler:
             quantity_capability=deterministic.quantity_capability,
         )
         enforce_honesty_capabilities(capabilities)
+        policy = build_signoff_policy(
+            profile=self._host._signoff_profile,
+            require_clash=self._host._require_clash,
+            clash_affects_pass=self._host._clash_affects_pass,
+            require_bsi_schema=self._host._require_bsi_schema,
+            require_mep_system_clash=self._host._require_mep_system_clash,
+        )
         passed = summary_passed_after_capabilities(
             error_count=error_count,
             capabilities=capabilities,
+            policy=policy,
         )
         if self._host._clash_affects_pass:
             hard_clashes = tuple(
