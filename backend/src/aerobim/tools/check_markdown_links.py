@@ -9,7 +9,7 @@ from pathlib import Path
 
 _LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 _SKIP_SCHEMES = ("http://", "https://", "mailto:", "#")
-# Cursor/chat transcript IDs used as markdown targets are not filesystem paths.
+# UUID-only markdown targets are not filesystem paths.
 _UUID_RE = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
     re.IGNORECASE,

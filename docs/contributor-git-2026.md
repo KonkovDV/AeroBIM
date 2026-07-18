@@ -54,7 +54,7 @@ Also enable the repo commit-msg hook (strips `Co-authored-by:` before the commit
 git config core.hooksPath .githooks
 ```
 
-In Cursor: disable Agent Attribution / co-author injection in Settings so trailers are not re-added after commit.
+In the IDE: disable any commit co-author / attribution injection so trailers are not re-added after commit.
 
 Coordinate force-push with the branch owner first.
 
