@@ -93,6 +93,10 @@ function buildIssue(overrides: Partial<ValidationIssue>): ValidationIssue {
       element_guid: null,
     },
     remark: overrides.remark ?? null,
+    finding_id: overrides.finding_id ?? "fid-draw-001",
+    source_id: overrides.source_id ?? "drawing:A-102",
+    evidence_refs: overrides.evidence_refs ?? ["drawing:A-102#sheet:A-102"],
+    evidence_modality: overrides.evidence_modality ?? "drawing",
   };
 }
 
@@ -522,12 +526,14 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "JSON" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
     const drawingEvidencePanel = container.querySelector(".drawing-evidence-panel") as HTMLElement;
-    const activeIssueBlock = screen.getByText("Active issue").closest(".detail-block") as HTMLElement;
+    const activeIssueBlock = screen.getByTestId("provenance-active-issue");
     expect(within(drawingEvidencePanel).getAllByText("A-102 · page 2").length).toBeGreaterThanOrEqual(2);
     await waitFor(() => {
       expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
     });
     expect(within(activeIssueBlock).getByText("WALL-01")).toBeTruthy();
+    expect(within(activeIssueBlock).getByText(/Audit-ready provenance present/i)).toBeTruthy();
+    expect(within(activeIssueBlock).getByText("fid-draw-001")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
     const secondImage = await screen.findByRole("img", { name: /drawing evidence preview for a-101/i });
@@ -536,7 +542,7 @@ describe("App", () => {
     fireEvent.load(secondImage);
 
     const viewerAfterIssueSwitch = await screen.findByTestId("viewer-stub");
-    const activeIssueBlockAfterSwitch = screen.getByText("Active issue").closest(".detail-block") as HTMLElement;
+    const activeIssueBlockAfterSwitch = screen.getByTestId("provenance-active-issue");
     expect(within(viewerAfterIssueSwitch).getByText("No spatial selection")).toBeTruthy();
     expect(within(activeIssueBlockAfterSwitch).getByText("SLAB-02")).toBeTruthy();
     expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();

@@ -1059,6 +1059,28 @@ def create_http_app(container: Container):
                     if norm_bits
                     else ""
                 )
+                finding_id = issue.get("finding_id") or ""
+                source_id = issue.get("source_id") or ""
+                evidence_refs = issue.get("evidence_refs") or ()
+                if isinstance(evidence_refs, list | tuple):
+                    refs_joined = ", ".join(str(ref) for ref in evidence_refs if ref)
+                else:
+                    refs_joined = str(evidence_refs)
+                audit_bits: list[str] = []
+                if finding_id:
+                    audit_bits.append(f"finding_id={_esc(str(finding_id))}")
+                if source_id:
+                    audit_bits.append(f"source_id={_esc(str(source_id))}")
+                if refs_joined:
+                    audit_bits.append(f"evidence_refs={_esc(refs_joined)}")
+                if not finding_id or not source_id or not refs_joined:
+                    audit_bits.append("provenance=INCOMPLETE")
+                audit_html = (
+                    f"<br><small class='audit'>{' · '.join(audit_bits)}</small>"
+                    if audit_bits
+                    else ""
+                )
+                detail_html = f"{pz_html}{audit_html}" or "—"
                 rows += (
                     f"<tr><td class='sev {_esc(sev)}'>{_esc(sev)}</td>"
                     f"<td class='{pri_class}'>{pri}</td>"
@@ -1068,7 +1090,7 @@ def create_http_app(container: Container):
                     f"{ev_exp}{ev_obs}"
                     f"<td>{_esc(issue.get('element_guid') or '')}</td>"
                     f"<td>{_esc(issue.get('target_ref') or '')}</td></tr>\n"
-                    f"<tr class='detail'><td colspan='9'>{pz_html}</td></tr>\n"
+                    f"<tr class='detail'><td colspan='9'>{detail_html}</td></tr>\n"
                 )
             return rows
 

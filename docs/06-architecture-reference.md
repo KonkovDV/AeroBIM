@@ -40,9 +40,9 @@ One process, four explicit contours with ports as boundaries
 (`aerobim.domain.architecture.CONTOUR_PORTS`):
 
 1. **INGESTION** — normalize IFC/IDS/PDF/drawings/TZ/calcs → identities + artifacts  
-2. **DETERMINISTIC VALIDATION** — only contour that may set `summary.passed`  
+2. **DETERMINISTIC VALIDATION** — owns the *semantic* verdict inputs (engine ERROR count + blocking capabilities)  
 3. **AI ADVISORY** — CV/LLM/VLM/IDS-assist; may not write `passed`  
-4. **EVIDENCE & REPORTING** — provenance, BCF, HITL, KPI, precision claims  
+4. **EVIDENCE & REPORTING** — stamps provenance; **physically writes** `summary.passed` via `signoff_policy` over deterministic inputs only ([ADR-001](architecture/ADR-001-verdict-ownership-2026.md))  
 
 Flow: INGESTION → VALIDATION → (ADVISORY parallel, read-only) → EVIDENCE.
 

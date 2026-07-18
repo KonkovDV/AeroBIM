@@ -115,6 +115,10 @@ class JsonSectionDiffAnalyzer:
 
         recognized = sum(1 for value in pd.values if value.key_recognized)
         unrecognized = tuple(value.key for value in pd.values if not value.key_recognized)
+        for expected in pd.values:
+            if expected.key_recognized:
+                continue
+            issues.append(self._unrecognized_key_issue(pd, rd, expected))
         return SectionPairingReport(
             issues=tuple(issues),
             discipline=pd.discipline_info,
@@ -124,6 +128,35 @@ class JsonSectionDiffAnalyzer:
             pd_key_count=len(pd.values),
             recognized_key_count=recognized,
             unrecognized_keys=unrecognized,
+        )
+
+    def _unrecognized_key_issue(
+        self,
+        pd: _SectionDocument,
+        rd: _SectionDocument,
+        expected: _SectionValue,
+    ) -> ValidationIssue:
+        paired = any(item.canonical_key == expected.canonical_key for item in rd.values)
+        return ValidationIssue(
+            rule_id=f"SECTION-PAIR-{slugify(pd.section_code)}-UNRECOGNIZED-{slugify(expected.key)}",
+            severity=Severity.ERROR,
+            message=(
+                f"Unresolved PD/RD section key {expected.key!r} is outside the canonical "
+                f"registry (normalized={expected.canonical_key!r}"
+                f"{'; paired' if paired else ', unpaired'}). Escalate to HITL — "
+                "do not treat raw-normalize pairing as agreement."
+            ),
+            category=FindingCategory.CROSS_DOCUMENT,
+            target_ref=expected.target_ref or expected.key,
+            operator=ComparisonOperator.EQUALS,
+            expected_value=self._display_value(expected),
+            observed_value=None,
+            unit=expected.unit,
+            problem_zone=expected.problem_zone,
+            conflict_kind=ConflictKind.AMBIGUOUS_MAPPING,
+            source_id=self._source_id(pd, rd),
+            evidence_modality="section-pairing",
+            confidence=0.0,
         )
 
     def _metadata_issues(
@@ -271,7 +304,7 @@ class JsonSectionDiffAnalyzer:
         if expected_number is None or observed_number is None:
             if expected.value.strip().casefold() == observed.value.strip().casefold():
                 return None
-            return ConflictKind.HARD_CONFLICT
+            return ConflictKind.AMBIGUOUS_MAPPING
 
         if bool(expected.unit) != bool(observed.unit):
             return ConflictKind.UNIT_MISMATCH
