@@ -669,6 +669,90 @@ input {
   margin-bottom: 16px;
 }
 
+.capability-honesty {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(24, 33, 46, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.capability-honesty h3,
+.capability-honesty h4 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.capability-honesty-header {
+  margin-bottom: 10px;
+}
+
+.capability-block-banner {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(180, 35, 24, 0.1);
+  color: #8a1f16;
+  font-size: 0.9rem;
+}
+
+.provenance-gap-banner {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(180, 35, 24, 0.1);
+  color: #8a1f16;
+  font-size: 0.88rem;
+}
+
+.provenance-ok-banner {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(15, 118, 110, 0.1);
+  color: #0f766e;
+  font-size: 0.88rem;
+}
+
+.evidence-ref-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  word-break: break-all;
+}
+
+.capability-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin-bottom: 12px;
+}
+
+.capability-table th,
+.capability-table td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(24, 33, 46, 0.08);
+  vertical-align: top;
+}
+
+.capability-table tr.cap-ok td:nth-child(2) code {
+  color: #0f766e;
+}
+
+.capability-table tr.cap-block td:nth-child(2) code {
+  color: #b42318;
+  font-weight: 600;
+}
+
+.capability-table tr.cap-warn td:nth-child(2) code {
+  color: #9a6700;
+}
+
+.divergence-block ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
 .summary-tile,
 .detail-block,
 .collection-card {

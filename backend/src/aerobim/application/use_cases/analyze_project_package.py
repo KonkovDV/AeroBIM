@@ -835,10 +835,13 @@ class AnalyzeProjectPackageUseCase:
             raise RuntimeError("PD/RD section pairing requested but no analyzer is configured")
         report = self._section_diff_analyzer.analyze(pd_path, rd_path)
         reason = report.capability_reason(pd_path.name, rd_path.name)
-        # Honest capability: unrecognized discipline or zero canonical-key coverage
-        # cannot look like a successful pairing.
-        if (not report.discipline.recognized) or (
-            report.pd_key_count > 0 and report.recognized_key_count == 0
+        # Honest capability: unrecognized discipline, zero canonical coverage, or
+        # residual unrecognized keys (raw-normalize pairing without registry) cannot
+        # look like a successful pairing.
+        if (
+            (not report.discipline.recognized)
+            or (report.pd_key_count > 0 and report.recognized_key_count == 0)
+            or bool(report.unrecognized_keys)
         ):
             return report.issues, CapabilityStatus(CapabilityState.FAILED, reason)
         return report.issues, CapabilityStatus(CapabilityState.OK, reason)
@@ -1066,6 +1069,60 @@ class AnalyzeProjectPackageUseCase:
                     )
                 seen.append(req)
 
+        issues.extend(self._detect_ambiguous_property_set_alignments(requirements))
+        return issues
+
+    def _detect_ambiguous_property_set_alignments(
+        self,
+        requirements: Sequence[ParsedRequirement],
+    ) -> list[ValidationIssue]:
+        """Escalate same entity+property across sources when Psets differ.
+
+        Exact-key comparison already handles identical (entity, pset, prop).
+        Silent non-pairing of FireRating across Pset_WallCommon vs Pset_FireSafety
+        must not look like agreement — emit AMBIGUOUS_MAPPING for HITL.
+        """
+        by_entity_prop: dict[tuple[str, str], list[ParsedRequirement]] = {}
+        for req in requirements:
+            if not req.ifc_entity or not req.property_name or req.expected_value is None:
+                continue
+            key = (req.ifc_entity.upper(), req.property_name.lower())
+            by_entity_prop.setdefault(key, []).append(req)
+
+        issues: list[ValidationIssue] = []
+        for (entity, prop), reqs in by_entity_prop.items():
+            kinds = {req.source_kind for req in reqs}
+            if len(kinds) < 2:
+                continue
+            psets = {(req.property_set or "").strip() for req in reqs}
+            if len(psets) < 2:
+                continue
+            # Distinct non-empty psets (or empty vs named) across sources → unresolved.
+            labeled = sorted(pset or "<none>" for pset in psets)
+            sample = reqs[0]
+            other = next(req for req in reqs if req.source_kind != sample.source_kind)
+            issues.append(
+                ValidationIssue(
+                    rule_id=f"CROSS-DOC-AMBIGUOUS-{entity}-{prop}",
+                    severity=Severity.ERROR,
+                    message=(
+                        f"Unresolved cross-document alignment: {entity}.{prop} appears under "
+                        f"divergent property sets {labeled} across "
+                        f"{sample.source_kind.value} and {other.source_kind.value}. "
+                        "Do not treat as agreement — escalate to HITL."
+                    ),
+                    ifc_entity=entity,
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    property_set=sample.property_set or other.property_set,
+                    property_name=prop,
+                    expected_value=sample.expected_value,
+                    observed_value=other.expected_value,
+                    conflict_kind=ConflictKind.AMBIGUOUS_MAPPING,
+                    source_id=f"cross-doc:{sample.source_kind.value}|{other.source_kind.value}",
+                    evidence_modality="cross-document",
+                    confidence=0.0,
+                )
+            )
         return issues
 
     def _resolve_quantity(
@@ -1127,7 +1184,8 @@ class AnalyzeProjectPackageUseCase:
                 return ConflictKind.UNIT_MISMATCH
             return ConflictKind.HARD_CONFLICT
 
-        return ConflictKind.HARD_CONFLICT
+        # Non-numeric / uncalibrated strings: do not pretend hard SI conflict.
+        return ConflictKind.AMBIGUOUS_MAPPING
 
     def _values_soft_conflict(
         self,

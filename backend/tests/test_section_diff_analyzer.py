@@ -143,6 +143,46 @@ class JsonSectionDiffAnalyzerTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "canonical key"):
                 self.analyzer.compare(path, RD_SECTION)
 
+    def test_unrecognized_keys_escalate_to_hitl_error(self) -> None:
+        payload = json.loads(PD_SECTION.read_text(encoding="utf-8"))
+        payload["values"].append(
+            {
+                "key": "custom.noncanonical.metric",
+                "value": 42,
+                "unit": "mm",
+                "target_ref": "CUSTOM-01",
+                "source_ref": "PD-AR custom",
+                "required_in_rd": False,
+            }
+        )
+        rd_payload = json.loads(RD_SECTION.read_text(encoding="utf-8"))
+        rd_payload["values"].append(
+            {
+                "key": "custom.noncanonical.metric",
+                "value": 40,
+                "unit": "mm",
+                "target_ref": "CUSTOM-01",
+                "source_ref": "RD-AR custom",
+            }
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            pd_path = Path(temporary_directory) / "pd.json"
+            rd_path = Path(temporary_directory) / "rd.json"
+            pd_path.write_text(json.dumps(payload), encoding="utf-8")
+            rd_path.write_text(json.dumps(rd_payload), encoding="utf-8")
+            report = self.analyzer.analyze(pd_path, rd_path)
+
+        self.assertIn("custom.noncanonical.metric", report.unrecognized_keys)
+        unresolved = [
+            issue
+            for issue in report.issues
+            if issue.conflict_kind is ConflictKind.AMBIGUOUS_MAPPING
+            and "UNRECOGNIZED" in issue.rule_id
+        ]
+        self.assertEqual(len(unresolved), 1)
+        self.assertEqual(unresolved[0].severity, Severity.ERROR)
+        self.assertIn("HITL", unresolved[0].message)
+
 
 class SectionFixtureSchemaTests(unittest.TestCase):
     """The shipped fixtures must validate against the published section schema."""

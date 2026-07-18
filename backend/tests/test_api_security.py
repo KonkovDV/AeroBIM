@@ -1087,6 +1087,9 @@ class ApiHtmlExportTests(unittest.TestCase):
                     unit="",
                     conflict_kind=ConflictKind.HARD_CONFLICT,
                     priority=55,
+                    finding_id="fid-html-high",
+                    source_id="pkg-main",
+                    evidence_refs=("pkg-main@r1#ifc:guid-high",),
                 ),
                 ValidationIssue(
                     rule_id="RULE-LOW-001",
@@ -1095,6 +1098,9 @@ class ApiHtmlExportTests(unittest.TestCase):
                     category=FindingCategory.IFC_VALIDATION,
                     element_guid="guid-low",
                     priority=10,
+                    finding_id="fid-html-low",
+                    source_id="pkg-main",
+                    evidence_refs=("pkg-main@r1#ifc:guid-low",),
                 ),
             ),
             summary=ValidationSummary(
@@ -1115,6 +1121,8 @@ class ApiHtmlExportTests(unittest.TestCase):
         self.assertIn("IFC Model Validation", text)
         self.assertIn("REI60", text)
         self.assertIn("REI30", text)
+        self.assertIn("finding_id=fid-html-high", text)
+        self.assertIn("evidence_refs=pkg-main@r1#ifc:guid-high", text)
 
     def test_html_export_escapes_problem_zone_content(self) -> None:
         """Verify problem zone coordinates and sheet are escaped."""

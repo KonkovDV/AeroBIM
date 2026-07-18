@@ -14,7 +14,8 @@ Current scope:
 - current filter state can be copied as a shareable link directly from the toolbar;
 - local report search within the already filtered result set;
 - report summary and export actions;
-- issue detail panel with provenance fields;
+- issue detail panel with full audit provenance (`finding_id`, `source_id`, `evidence_refs`, GlobalId, norm/approval, HITL readiness banner);
+- capability honesty matrix + AI↔engine divergences on the selected report;
 - report-scoped IFC loading through the backend;
 - initial 3D viewer with issue highlight / isolate by IFC GUID;
 - clash-pair focus and multi-selection isolate workflow in the viewer;

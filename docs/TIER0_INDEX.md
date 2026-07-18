@@ -20,6 +20,9 @@ Checkpoint: **`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKE
 | [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | Forbidden public wording |
 | [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 |
 | [`architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | Architecture SSOT |
+| [`architecture/ADR-001-verdict-ownership-2026.md`](architecture/ADR-001-verdict-ownership-2026.md) | Who owns `summary.passed` |
+| [`architecture/PHASE3_NORM_CROSSDOC_2026.md`](architecture/PHASE3_NORM_CROSSDOC_2026.md) | NormPack gates + unresolved cross-doc HITL |
+| [`../audit/reports/PHASE0_AUDIT_REPORT_2026_07_18.md`](../audit/reports/PHASE0_AUDIT_REPORT_2026_07_18.md) | Phase 0 gate baseline + risk register |
 | [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | Samolet R1–R15 |
 | [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) | FAIR / evidence manifests |
 | [`README.md`](README.md) | Full public docs map |

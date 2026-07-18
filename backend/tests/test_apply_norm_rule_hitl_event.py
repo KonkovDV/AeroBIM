@@ -83,6 +83,18 @@ class ApplyNormRuleHitlEventTests(unittest.TestCase):
                 approval_ref=None,
             )
 
+    def test_version_store_rejects_customer_approved_without_approval_ref(self) -> None:
+        with self.assertRaisesRegex(ValueError, "approval_ref"):
+            self.versions.save_version(
+                pack_id="SAMOLET-RESIDENTIAL-AR-REFERENCE",
+                version="9.9.9-bad",
+                payload=REFERENCE_PACK.read_bytes(),
+                created_by="attacker",
+                parent_version=None,
+                approval_status="customer_approved",
+                approval_ref=None,
+            )
+
     def test_finding_provenance_points_at_hitl_pack_version(self) -> None:
         pack_id = "SAMOLET-RESIDENTIAL-AR-REFERENCE"
         record, _event = self.use_case.execute(

@@ -39,6 +39,11 @@ class ObjectStoreNormRulePackVersionStore:
         existing = {item.version for item in self.list_versions(pack_id)}
         if version in existing:
             raise ValueError(f"Norm pack version already exists: {pack_id}@{version}")
+        status = (approval_status or "").strip().lower()
+        if status in {"customer_approved", "approved"} and not (approval_ref or "").strip():
+            raise ValueError(
+                "customer_approved/approved norm pack versions require non-empty approval_ref"
+            )
         key = self._object_key(pack_id, version)
         # Immutable: refuse overwrite if object already present.
         if self._store.get_bytes(key) is not None:

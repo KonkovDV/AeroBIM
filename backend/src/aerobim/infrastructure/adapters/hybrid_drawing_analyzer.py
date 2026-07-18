@@ -54,18 +54,7 @@ class HybridDrawingAnalyzer:
     ) -> StructuredAnnotations:
         sheet_id = sheet.sheet_id or (sheet.path.name if sheet.path else "unknown")
 
-        if not _vision_available():
-            return self._ocr_degrade(
-                sheet,
-                sheet_id=sheet_id,
-                sheet_type=sheet_type,
-                reason=(
-                    "vision optional extra not installed "
-                    "(pip install aerobim-backend[vision]); OCR degrade"
-                ),
-                pipeline_mode="ocr_degrade_no_vision",
-            )
-
+        # Allowlist gate first: outside-allowlist degrade must not depend on vision extra.
         if sheet_type not in self._allowlist:
             return self._ocr_degrade(
                 sheet,
@@ -76,6 +65,18 @@ class HybridDrawingAnalyzer:
                     f"{sorted(self._allowlist)}; OCR-only"
                 ),
                 pipeline_mode="ocr_degrade_outside_allowlist",
+            )
+
+        if not _vision_available():
+            return self._ocr_degrade(
+                sheet,
+                sheet_id=sheet_id,
+                sheet_type=sheet_type,
+                reason=(
+                    "vision optional extra not installed "
+                    "(pip install aerobim-backend[vision]); OCR degrade"
+                ),
+                pipeline_mode="ocr_degrade_no_vision",
             )
 
         regions: list[DrawingRegionRef] = []

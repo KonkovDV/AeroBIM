@@ -113,7 +113,7 @@ class CrossDocumentContradictionTests(unittest.TestCase):
 
         issue = cross_issues[0]
         self.assertEqual(issue.severity, Severity.WARNING)
-        self.assertEqual(issue.conflict_kind, ConflictKind.HARD_CONFLICT)
+        self.assertEqual(issue.conflict_kind, ConflictKind.AMBIGUOUS_MAPPING)
         self.assertIn("contradiction", issue.message.lower())
         self.assertIn("REI60", issue.message)
         self.assertIn("REI90", issue.message)
@@ -217,7 +217,7 @@ class CrossDocumentContradictionTests(unittest.TestCase):
             "Equivalent values in m and mm should not produce a contradiction",
         )
 
-    def test_no_contradiction_when_property_sets_differ(self) -> None:
+    def test_ambiguous_property_sets_escalate_to_hitl_error(self) -> None:
         class DifferentPsetExtractor:
             def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
                 return [
@@ -260,18 +260,19 @@ class CrossDocumentContradictionTests(unittest.TestCase):
                 ifc_path=Path("sample.ifc"),
                 requirement_source=RequirementSource(text="dummy"),
                 calculation_source=RequirementSource(
-                    text="Fire safety pset disagrees but should not be compared",
+                    text="Fire safety pset disagrees — must escalate, not silent agree",
                     source_kind=SourceKind.CALCULATION,
                 ),
             )
         )
 
         cross_issues = [i for i in report.issues if i.category == FindingCategory.CROSS_DOCUMENT]
-        self.assertEqual(
-            len(cross_issues),
-            0,
-            "Requirements from different property sets should not be compared",
-        )
+        self.assertEqual(len(cross_issues), 1)
+        issue = cross_issues[0]
+        self.assertEqual(issue.conflict_kind, ConflictKind.AMBIGUOUS_MAPPING)
+        self.assertEqual(issue.severity, Severity.ERROR)
+        self.assertIn("HITL", issue.message)
+        self.assertFalse(report.summary.passed)
 
 
 if __name__ == "__main__":

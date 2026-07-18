@@ -2,6 +2,8 @@ import { Suspense, lazy, startTransition, useDeferredValue, useEffect, useState 
 import { downloadExport, fetchReport, fetchReports, getApiBaseUrl, postReviewEvent } from "./lib/api";
 import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
 import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
+import CapabilityHonestyPanel from "./components/CapabilityHonestyPanel";
+import ProvenancePanel from "./components/ProvenancePanel";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
@@ -1008,6 +1010,11 @@ export default function App() {
                 )}
               </div>
 
+              <CapabilityHonestyPanel
+                capabilities={selectedReport.capabilities}
+                divergences={selectedReport.divergences}
+              />
+
               <div className="issue-toolbar">
                 <label>
                   Severity
@@ -1107,24 +1114,7 @@ export default function App() {
               <div className="panel-empty">Select a report first.</div>
             ) : (
               <div className="provenance-stack">
-                <article className="detail-block">
-                  <h3>Active issue</h3>
-                  {activeIssue ? (
-                    <dl className="detail-grid">
-                      <div><dt>Rule</dt><dd>{activeIssue.rule_id}</dd></div>
-                      <div><dt>Category</dt><dd>{activeIssue.category}</dd></div>
-                      <div><dt>Priority</dt><dd>{activeIssue.priority ?? "—"}</dd></div>
-                      <div><dt>Entity</dt><dd>{activeIssue.ifc_entity ?? "—"}</dd></div>
-                      <div><dt>Target</dt><dd>{activeIssue.target_ref ?? activeIssue.element_guid ?? "—"}</dd></div>
-                      <div><dt>Expected</dt><dd>{activeIssue.expected_value ?? "—"}</dd></div>
-                      <div><dt>Observed</dt><dd>{activeIssue.observed_value ?? "—"}</dd></div>
-                      <div><dt>Unit</dt><dd>{activeIssue.unit ?? "—"}</dd></div>
-                      <div><dt>Problem zone</dt><dd>{activeIssue.problem_zone ? `${activeIssue.problem_zone.sheet_id ?? "sheet?"} · page ${activeIssue.problem_zone.page_number ?? "?"}` : "—"}</dd></div>
-                    </dl>
-                  ) : (
-                    <p className="compact-copy">No active issue. Use the report detail panel to choose one.</p>
-                  )}
-                </article>
+                <ProvenancePanel activeIssue={activeIssue} />
 
                 <article className="detail-block">
                   <h3>Remark</h3>

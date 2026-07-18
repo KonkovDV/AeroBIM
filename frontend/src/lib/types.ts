@@ -63,6 +63,19 @@ export interface ValidationIssue {
   priority?: number;
   rase_elements?: string[];
   rase_summary?: string | null;
+  /** Stable finding identity required before persistence / sign-off. */
+  finding_id?: string | null;
+  source_id?: string | null;
+  evidence_refs?: string[];
+  evidence_modality?: string | null;
+  confidence?: number | null;
+  norm_source?: string | null;
+  norm_edition?: string | null;
+  norm_clause?: string | null;
+  approval_status?: string | null;
+  approval_ref?: string | null;
+  tenant_id?: string | null;
+  project_id?: string | null;
 }
 
 export interface DrawingAnnotation {
