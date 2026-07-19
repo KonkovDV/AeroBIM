@@ -26,6 +26,6 @@
   "_intake_notes": {
     "nda_required": true,
     "do_not_commit": "See .gitignore — project-package-samolet-pilot-v1.json",
-    "checklist": "docs/samolet-pilot-intake-checklist-2026.md"
+    "checklist": "samples/customer/README.md"
   }
 }

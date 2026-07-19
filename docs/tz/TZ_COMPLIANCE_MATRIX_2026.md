@@ -123,7 +123,7 @@ Architecture TBD fill: [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_
 | Package ≤30 min | `measure_package_sla` on **agreed** pack | done (fixture); customer TBD | MVP |
 | Cognitive load reduction | Priority profile + HITL KPI | partial | P0 |
 
-**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-kpi-protocol-2026.md`](../pilot-kpi-protocol-2026.md).
+**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) and Claims Lock.
 
 ## 7. Appendices (data)
 

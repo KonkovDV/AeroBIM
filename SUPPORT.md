@@ -24,7 +24,7 @@ Read:
 1. README.md
 2. CONTRIBUTING.md
 3. SECURITY.md
-4. docs/15-local-quality-gate.md
+4. docs/TIER0_INDEX.md · docs/pilot-claim-boundary-2026.md
 
 ## Public Channels
 

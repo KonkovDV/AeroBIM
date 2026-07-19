@@ -9,7 +9,7 @@ tags: [aerobim, tz, build, quality]
 # TZ Build and Quality Requirements
 
 Fills **«Требования к коду и сборке = TBD»**.
-Local gate companion: [`../15-local-quality-gate.md`](../15-local-quality-gate.md).
+Local quality gate: `ruff` + `mypy` + `pytest` in `backend/` (see root README «Checks before push»).
 
 ## 1. Runtime matrix
 
@@ -75,8 +75,8 @@ Frontend unit/smoke tests exist under `frontend/` but are **release-readiness / 
 
 ## 7. Environment contract
 
-SSOT: [`../../ops/environment-matrix.md`](../../ops/environment-matrix.md).
-Minimum for secured demo: `AEROBIM_ENV`, `AEROBIM_API_BEARER_TOKEN`, `AEROBIM_STORAGE_DIR`.
+SSOT: root README «Configuration» table + `.env.example`.
+Minimum for secured demo: `AEROBIM_ENV`, `AEROBIM_API_BEARER_TOKEN`, `AEROBIM_STORAGE_DIR` (non-dev defaults to production sign-off profile).
 
 ## 8. Reproducibility
 

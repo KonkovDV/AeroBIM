@@ -104,7 +104,7 @@
     }
   ],
   "intake": {
-    "checklist": "docs/samolet-pilot-intake-checklist-2026.md",
+    "checklist": "samples/customer/README.md",
     "note": "Replace skeleton pointers with customer corpus hashes after week-1 intake."
   }
 }

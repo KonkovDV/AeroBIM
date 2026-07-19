@@ -10,7 +10,7 @@ tags: [aerobim, reproducibility, FAIR, openBIM, academic]
 
 Single source of truth for reviewers, pilot operators, and supplementary material (ITcon / Automation in Construction class).
 
-**Repository layout:** [`REPOSITORY-HYGIENE-2026.md`](REPOSITORY-HYGIENE-2026.md) — committed vs gitignored vs CI `artifacts/`.
+**Repository layout:** public GitHub = product code + TechLab jury docs; operator/debug materials stay under `.local/` (gitignored). CI dumps use `artifacts/`.
 
 ## Frozen vs rolling references
 

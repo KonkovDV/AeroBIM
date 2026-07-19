@@ -288,9 +288,9 @@ aerobim/
 │   ├── tests/               # Backend test suite (see generated baseline below)
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
-├── docs/                    # Public Samolet TZ / claims / architecture SSOT (see docs/README.md)
-├── frontend/                # Browser review shell with 3D viewer, 2D evidence overlay rails, and server-backed report filters
-├── ops/                     # Standalone runbooks, env matrix, smoke path
+├── docs/                    # TechLab jury docs only (see docs/README.md)
+├── frontend/                # Browser review shell
+├── audit/                   # Claims lock, blockers, citeable honesty fixtures
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
 ├── .github/workflows/       # CI pipeline (lint, typecheck, test, benchmark-smoke) + manual release-readiness gates
 └── LICENSE                  # MIT
@@ -303,7 +303,7 @@ Backend src ~16247 LOC; tests ~11434 LOC; 456+ test functions; extraction macro_
 
 ## Documentation
 
-Public GitHub shows a **minimal Samolet TechLab surface**. Red Team phase reports and AI prompts are local-only ([`docs/LOCAL_OPERATOR_ARTIFACTS.md`](docs/LOCAL_OPERATOR_ARTIFACTS.md) · [`docs/REPOSITORY-HYGIENE-2026.md`](docs/REPOSITORY-HYGIENE-2026.md)).
+Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architecture. Operator runbooks, Red Team dumps, and archive stay in `.local/` (not published).
 
 | Need | Document |
 |------|----------|
@@ -312,17 +312,13 @@ Public GitHub shows a **minimal Samolet TechLab surface**. Red Team phase report
 | Samolet strategy | [`docs/samolet.md`](docs/samolet.md) |
 | TZ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
 | Claims lock | [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
-| Checkpoint / blockers | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · **NO_GO** |
+| Checkpoint | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · **NO_GO** |
 | Claim boundary | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) |
 | Architecture | [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) |
-| Verdict ownership | [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | Alignment R1–R15 | [`docs/samolet-techlab-alignment-2026.md`](docs/samolet-techlab-alignment-2026.md) |
+| Partners / readiness | [`docs/partners/TECHLAB_TASK_07_READINESS_2026.md`](docs/partners/TECHLAB_TASK_07_READINESS_2026.md) |
 | Reproducibility | [`docs/REPRODUCIBILITY-2026.md`](docs/REPRODUCIBILITY-2026.md) |
-| Audit reports (public) | [`audit/reports/README.md`](audit/reports/README.md) |
-| Evidence | [`docs/evidence/README.md`](docs/evidence/README.md) · [`audit/evidence/`](audit/evidence/) |
-| Local quality gate | [`docs/15-local-quality-gate.md`](docs/15-local-quality-gate.md) |
-| Ops runbooks | [`ops/standalone-runbook.md`](ops/standalone-runbook.md) · [`ops/environment-matrix.md`](ops/environment-matrix.md) |
-| Benchmarks | [`samples/benchmarks/README.md`](samples/benchmarks/README.md) |
+| Fixtures | [`docs/evidence/README.md`](docs/evidence/README.md) · [`samples/benchmarks/README.md`](samples/benchmarks/README.md) |
 
 ## Git commits
 
@@ -332,12 +328,11 @@ Use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroB
 git config core.hooksPath .githooks
 ```
 
-See [docs/contributor-git-2026.md](docs/contributor-git-2026.md). Suggested repo About — [.github/repository-metadata.md](.github/repository-metadata.md).
+Suggested repo About — [.github/repository-metadata.md](.github/repository-metadata.md).
 
 ## Governance
 
 - [Contributing](CONTRIBUTING.md)
-- [Contributor Git policy](docs/contributor-git-2026.md)
 - [Security Policy](SECURITY.md)
 - [Citation Metadata](CITATION.cff)
 - [Support](SUPPORT.md)
