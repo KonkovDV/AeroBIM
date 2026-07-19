@@ -407,7 +407,7 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 5. MCP4IFC (2025): MCP + IfcOpenShell tool registry for LLM–BIM interaction.  
 6. Seefried et al. (2026). *Blueprint — Multimodal Retrieval for Complex Engineering Drawings* (arXiv:2602.13345) — region-detect → VLM OCR.  
 7. Lamsal et al. (2026). *IfcLLM — NL querying of IFC via relational + graph backends* (arXiv:2605.13236).  
-8. AeroBIM research map: [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md).  
+8. AeroBIM architecture SSOT: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md); verdict ownership: [`ADR-001-verdict-ownership-2026.md`](ADR-001-verdict-ownership-2026.md).  
 9. AeroBIM SSOT: `domain/architecture.py`, `audit/reports/CLAIMS_LOCK_2026_07_17.md`, `GET /v1/system/capabilities`.
 
 ---
@@ -425,6 +425,6 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 3. Real MEP geometry clash after federated pack + clearance matrix.  
 4. Optional YOLO weights behind `DrawingRegionDetector` (cv stays MISSING until customer F1).
 
-See [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`](RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) · [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · **гиперплан:** [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
+See [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · [`ADR-001-verdict-ownership-2026.md`](ADR-001-verdict-ownership-2026.md) · [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md).
 
 Checkpoint remains **NO_GO** until RT-001/002/003.

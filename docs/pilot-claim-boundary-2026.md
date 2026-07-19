@@ -104,7 +104,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 4. Non-deterministic text extraction is **not** used for pilot sign-off; deterministic regex path meets F1 gates in CI.
 5. Optional LLM **IDS assist** (if enabled later) is **advisory only** and must never affect `summary.passed` without human-in-the-loop.
 6. TZ wording «точность >90%» is an **evaluation target**, not a verified product claim, until precision/recall is published from a labeled customer corpus.
-7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer”. See [evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer” (see Claims Lock / this claim boundary).
 9. AeroBIM does **not** claim IfcLLM / GraphRAG product capability. I9 is an **advisory scaffold** (port + allowlisted query + fixture QA); multi-hop GraphRAG is unshipped.
 
 ## Reproducibility baseline
@@ -133,11 +133,8 @@ Keep aligned with:
 
 - [partners/TECHLAB_SAMOLET_APPLICATION_2026.md](partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
 - [README.md](../README.md) Scientific Reporting Standard section
-- [rule-packs/README.md](rule-packs/README.md)
-- [section-pairing/README.md](section-pairing/README.md)
-- [evaluation/DETECTION_PRECISION_PROTOCOL_2026.md](evaluation/DETECTION_PRECISION_PROTOCOL_2026.md)
 - [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
-- [evidence/EXTERNAL_STANDARDS_CHECK_2026_07_10.md](evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md)
-- [architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md](architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) — literature map (not product claims)
-- [architecture/EXECUTION_PLAN_I8_I9_2026_07.md](architecture/RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md) — planned advisory waves (no GO)
+- [architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — architecture SSOT
+- [architecture/ADR-001-verdict-ownership-2026.md](architecture/ADR-001-verdict-ownership-2026.md) — `summary.passed` ownership
+- [../samples/benchmarks/detection-precision/](../samples/benchmarks/detection-precision/) — precision harness fixtures
 - [../audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md) — allowed / forbidden wording
