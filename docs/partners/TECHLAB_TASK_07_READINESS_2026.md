@@ -1,8 +1,8 @@
 ---
 title: "TechLab Samolet Task 07 Readiness 2026"
 status: active
-version: "1.1.0"
-last_updated: "2026-07-17"
+version: "1.2.0"
+last_updated: "2026-07-19"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
@@ -42,7 +42,7 @@ Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED
 
 > Automation reduces the volume of manual checking; **expert validation of results remains**.
 
-AeroBIM is **decision-support**, not a licensed-engineer replacement. Sign-off path is **deterministic** (IFC/IDS/cross-doc/clash/OCR+regex). Computer Vision / LLM are **advisory** and do not set `summary.passed` without HITL.
+AeroBIM is **decision-support**, not a licensed-engineer replacement. Sign-off path is **deterministic** (IFC/IDS/cross-doc/clash/OCR+regex). Computer Vision / LLM are **advisory** and do not set `summary.passed`. The automatic `summary.passed` flag is a **Shared-gate** technical status (ADR-001), not Shared→Published authorization.
 
 ## 3. MVP delivered vs pilot ask (2M ₽)
 

@@ -1,10 +1,10 @@
 ---
 title: "AeroBIM Target Hybrid Architecture for Samolet TechLab TZ"
 status: active
-version: "1.0.0"
-last_updated: "2026-07-17"
+version: "1.1.0"
+last_updated: "2026-07-19"
 tags: [aerobim, architecture, openbim, tz, sota-2026, hybrid-ai]
-claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002/003 evidenced."
+claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002/003 evidenced. ADR-001 owns summary.passed wording."
 ---
 
 # Target Hybrid Architecture — AeroBIM × ТЗ Техлаб / Самолёт (SOTA 2026)
@@ -12,7 +12,7 @@ claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002
 **Scope:** architecture, Protocol port signatures, DI tokens, evaluation plan.  
 **Not in scope:** full adapter implementations; claims of product accuracy >90%; CDE-ready BCF; customer SLA.
 
-**Authority alignment:** preserves existing four contours in `domain/architecture.py` (`INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING`) and the hard rule that **only** `DETERMINISTIC_VALIDATION` may set `summary.passed`.
+**Authority alignment:** preserves existing four contours in `domain/architecture.py` (`INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING`). Semantic owner of `summary.passed` = deterministic outputs; physical writer = EvidenceAssembler (ADR-001). AI/OCR cannot flip Shared-gate; Shared-gate ≠ Published.
 
 ---
 

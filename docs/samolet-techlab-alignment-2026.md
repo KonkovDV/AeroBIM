@@ -1,14 +1,15 @@
 ---
 title: "Samolet TechLab Alignment 2026 (Academic)"
 status: active
-version: "1.1.0"
-last_updated: "2026-07-10"
+version: "1.2.0"
+last_updated: "2026-07-19"
 tags: [aerobim, samolet, techlab, openBIM, academic, traceability]
+claim_boundary: "Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ product accuracy."
 ---
 
 # Samolet × TechLab × AeroBIM — Academic Alignment
 
-Single traceability document mapping **customer requirements** ([i.moscow/techlab/samolet](https://i.moscow/techlab/samolet), task **#07** — *Система автоматизированной верификации проектной и рабочей документации*) to **AeroBIM capabilities**, **openBIM standards**, and **pilot evidence**. Use with [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) and [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md).
+Single traceability document mapping **customer requirements** ([i.moscow/techlab/samolet](https://i.moscow/techlab/samolet), task **#07** — *Система автоматизированной верификации проектной и рабочей документации*) to **AeroBIM capabilities**, **openBIM standards**, and **pilot evidence**. Use with [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md), [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md), and [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
 **TZ Response Pack:** [`tz/README.md`](tz/README.md).  
 **Task 07 readiness memo:** [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md).  

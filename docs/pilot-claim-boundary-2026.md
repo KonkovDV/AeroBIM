@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.3.0"
+version: "1.4.0"
 last_updated: "2026-07-19"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -41,6 +41,10 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Package SLA on **fixture** pack (schema 1.2, `fixture_only`) | `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json` |
 | System honesty surface | `GET /v1/system/capabilities` |
 | Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,dwg_dxf,mep_system_clash,…}` ∈ ok/skipped/failed/not_verified; **FAILED blocks `summary.passed`** |
+| Shared-gate `summary.passed` ownership | ADR-001: deterministic inputs + EvidenceAssembler writer; AI/OCR cannot flip; ≠ Shared→Published |
+| Production / pilot sign-off fail-closed | Non-dev defaults `production` profile; soft clash env flags ignored under pilot/production |
+| Cross-tenant ACL | Deny → **404**; object enumeration avoided |
+| Outbound SSRF guard | JWKS / bSI / OpenCDE URL validation |
 | Infra failure honesty (RT-C) | Unexpected exceptions in quantity / load / MEP probe → capability **FAILED** + traceback log (not soft WARNING/NOT_VERIFIED) |
 | Mixed CAD package honesty (RT-D) | Unparsed `.dwg` in package with successful `.dxf` → `capabilities.dwg_dxf=FAILED` (DXF success must not mask DWG) |
 | Advisory isolation (RT-E / RT-017) | Same non-empty package: advisory ON vs OFF → identical deterministic findings + identical `summary.passed`; only advisory remarks/warnings may differ |
