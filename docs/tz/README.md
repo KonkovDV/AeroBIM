@@ -2,8 +2,9 @@
 title: "AeroBIM TZ Response Pack"
 status: active
 version: "2.0.0"
-last_updated: "2026-07-17"
+last_updated: "2026-07-19"
 tags: [aerobim, tz, index]
+claim_boundary: "Checkpoint NO_GO until RT-001/002/003."
 ---
 
 # TZ Response Pack (index)

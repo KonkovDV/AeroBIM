@@ -1,10 +1,10 @@
 ---
 title: "AeroBIM Documentation — TechLab jury surface"
 status: active
-version: "3.0.0"
+version: "3.1.0"
 last_updated: "2026-07-19"
 tags: [aerobim, documentation, samolet, techlab, jury]
-claim_boundary: "Public GitHub = TechLab jury pack only. Operator/debug docs are local (.local/)."
+claim_boundary: "Public GitHub = TechLab jury pack only. Red Team docs pass 2026-07-19. Operator/debug docs are local (.local/)."
 ---
 
 # Documentation (TechLab jury)
@@ -12,6 +12,8 @@ claim_boundary: "Public GitHub = TechLab jury pack only. Operator/debug docs are
 Checkpoint: **`NO_GO`** — [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
 
 Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, and citeable fixtures. Operator runbooks, Red Team phase dumps, and MicroPhoenix archive live under `.local/` (not published).
+
+**Red Team docs pass (2026-07-19):** Claims Lock / blockers / runtime matrix / ADR-001 / SECURITY aligned with post-remediation fail-closed, ACL 404, SSRF guard, and Shared-gate `summary.passed` wording. Customer blockers RT-001/002/003 remain open.
 
 ## Read first
 

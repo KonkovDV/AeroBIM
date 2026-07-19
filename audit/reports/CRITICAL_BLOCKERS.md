@@ -1,10 +1,25 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
-**Operational freeze SHA:** `8efbef8fa5191ef8d6d68841f54fb1e415ae1a9b` (2026-07-17).  
-**Historical Red Team freeze:** `c0c4b2b` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
+**Operational freeze SHA:** `f3340a7` (2026-07-19 docs-links + jury pack) — refresh when claiming metrics.  
+**Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open).
+**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers.
+
+## Closed in post-remediation wave (2026-07-19)
+
+| ID | Status | Evidence |
+|---|---|---|
+| RT-POST-01 | **CLOSED** | Non-dev `AEROBIM_ENV` → default `signoff_profile=production`; Docker/compose bake; soft clash flags ignored under pilot/production |
+| RT-POST-02 | **CLOSED** | Cross-tenant ACL → **404** (not 403); `tests/test_rt_remediation_post.py` + ACL suite |
+| RT-POST-03 | **CLOSED** | `outbound_url.py` SSRF guard on JWKS / bSI / OpenCDE |
+| RT-POST-04 | **CLOSED** | OIDC tenant only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`) |
+| RT-POST-06/07 | **CLOSED** | Pilot/production: `unit_scale` default NOT_VERIFIED; SKIPPED calc/qty block pass |
+| RT-POST-08 | **CLOSED** | Upload response omits `object_key` |
+| RT-POST-09 | **PARTIAL** | Actions pinned to commit SHAs (corrected `setup-python` SHA); lockfile still NOT_VERIFIED |
+| RT-POST-10/11 | **CLOSED** | `html.escape(quote=True)`; ZIP rejects `..` / absolute members |
+
+Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: VITE bearer BFF **NOT_IMPLEMENTED** (POST-05).
 
 ## Closed in remediation commit (2026-07-17)
 
@@ -12,7 +27,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 |---|---|---|
 | RT-004 | **CLOSED** | `require_clash` → SKIPPED clash ⇒ FAILED + `passed=false`; `tests/test_p0_remediation_fail_closed.py` |
 | RT-005 | **CLOSED** | `AuthPrincipal` + `principal_may_access_report` on report/IFC/preview/export/review; ACL tests in P0 suite |
-| RT-006 | **CLOSED** | `frontend` vitest **21 passed** |
+| RT-006 | **CLOSED** | `frontend` vitest **25 passed** (local / release-readiness; not in main CI job) |
 | RT-007 | **CLOSED** | `finding_id` / `evidence_refs` / `source_id` stamped + persist reject; provenance helpers |
 | RT-013 | **CLOSED** | one-sided empty revision ⇒ conflict; drawings in identity collection |
 | RT-014 | **CLOSED** | raster requested+analyzer+zero annotations ⇒ FAILED; bSI ERROR under `require_bsi_schema` |
@@ -21,7 +36,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 Still open for checkpoint: **RT-001, RT-002, RT-003** (customer/MEP blocked).  
 Evidence wave (2026-07-17): RT-008 **PARTIAL** (structural T1); RT-010/011/012 honesty closed for fixture/API surface; CDE import + customer SLA still open.  
-I0–I7 + Red Team remediations (2026-07-17): see `CLAIMS_LOCK_2026_07_17.md` · Track E close `CLAIMS_LOCK_2026_07_17.md` — residual honesty CLOSED; checkpoint still **NO_GO**. Next: I8a / customer RT-001/002/003 — `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`.
+Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · ADR-001 verdict ownership.
 
 ## Closed in evidence wave (2026-07-17)
 

@@ -57,12 +57,17 @@ When reporting, include:
 - code scanning (CodeQL or equivalent) enabled
 - protected default branch with pull-request review gates
 
-## Deployment Hardening (Wave 0–2)
+## Deployment Hardening (Wave 0–2 + RT-POST 2026-07-19)
 
 - Non-`development`/`test` environments **require** `AEROBIM_API_BEARER_TOKEN` and/or OIDC (`AEROBIM_OIDC_ISSUER` + audience + JWKS) at startup and on every `/v1/*` call (503/401 fail-closed).
-- OIDC JWT validation pins algorithms (RS256), and verifies `iss`, `aud`, and `exp` (2026 FastAPI/OIDC practice).
-- Storage path resolution rejects symlinks and path escapes under `AEROBIM_STORAGE_DIR`.
+- Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash / MEP / schema / unit_scale). Soft `AEROBIM_CLASH_AFFECTS_PASS=false` is ignored under pilot/production.
+- OIDC JWT validation pins algorithms (RS256), verifies `iss`, `aud`, and `exp`; tenant claim only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`).
+- Cross-tenant object ACL denials return **HTTP 404** (not 403).
+- Outbound JWKS / buildingSMART Validation Service / OpenCDE fetches pass an SSRF URL allowlist guard.
+- Storage path resolution rejects symlinks and path escapes under `AEROBIM_STORAGE_DIR`; ZIP members with `..` or absolute paths are rejected.
 - IFC inputs larger than `AEROBIM_MAX_IFC_BYTES` (default 256 MiB) are rejected with HTTP 413.
 - Optional validation engines publish `report.capabilities` so silent empty clash/IDS results cannot look like PASS.
-- Frontend sends `VITE_AEROBIM_API_BEARER_TOKEN` as `Authorization: Bearer …` for API and export downloads.
+- Upload responses omit storage `object_key` from client-visible JSON.
+- Frontend may send `VITE_AEROBIM_API_BEARER_TOKEN` as `Authorization: Bearer …` for API and export downloads (BFF proxy still **NOT_IMPLEMENTED**).
 - BCF API push uses OpenCDE Foundation Bearer tokens only; no proprietary hub protocol.
+- HTML export uses `html.escape(..., quote=True)` for attribute contexts.

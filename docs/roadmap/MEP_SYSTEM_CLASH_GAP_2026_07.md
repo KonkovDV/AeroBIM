@@ -2,7 +2,7 @@
 title: MEP system-aware clash gap
 status: open
 tracking_id: MEP-CLASH-001
-last_updated: "2026-07-17"
+last_updated: "2026-07-19"
 ---
 
 # MEP-CLASH-001 — system-aware clash remains open
@@ -12,6 +12,7 @@ last_updated: "2026-07-17"
 AeroBIM has a generic IFC clash adapter and emits geometry results as
 `FindingCategory.SPATIAL`. Product **MEP system-aware** coordination is **not delivered**:
 
+- DI wires `UnconfiguredMepSystemGraphProvider` (probe → `capabilities.mep_system_clash=NOT_VERIFIED`); wiring ≠ capability;
 - no customer-approved routing/connectivity graph for duct/pipe/cable tray;
 - no signed allowed-intersection/exclusion matrix loaded from customer memo;
 - no insulation/maintenance clearance semantics per system as product claim;

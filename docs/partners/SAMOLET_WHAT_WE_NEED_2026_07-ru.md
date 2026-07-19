@@ -137,7 +137,7 @@ CIB W78 2024 и industry notes (ACCA/Solibri): IDS закрывает **алфа
 2. Стадия (П / Р).  
 3. Что **входит** в автопроверку: IDS-атрибуты, кросс-док ТЗ↔расчёт↔IFC, drawing annotations, optional clash.  
 4. Что **не входит**: полный СП/ГОСТ, замена ГГЭ, «CV понимает любой скан как человек», авто-sign-off.  
-5. Политика коллизий: geometric clash влияет на `passed` или только advisory (`AEROBIM_CLASH_AFFECTS_PASS`).  
+5. Политика коллизий: для пилота/production geometric clash **обязан** влиять на `summary.passed` (fail-closed profile). Soft `AEROBIM_CLASH_AFFECTS_PASS=false` допустим только в development/fixture.  
 6. Язык замечаний: RU (default) / EN.
 
 ### B2. Каталог типовых ошибок (≥20)
