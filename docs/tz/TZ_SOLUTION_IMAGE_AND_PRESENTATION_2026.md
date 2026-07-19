@@ -60,7 +60,7 @@ Pack suggestion: `samples/benchmarks/project-package-pilot-moscow-v1.json` or cu
 
 ## 4. Presentation constraints
 
-- One language per slide deck (EN or RU) — see [`../LANGUAGE-POLICY-2026.md`](../LANGUAGE-POLICY-2026.md).
+- One language per slide deck (EN or RU); keep bilingual decks as separate files.
 - No revenue or “replaces Solibri” claims.
 - Every metric cites `docs/evidence/` or live command.
 - Screenshots from `run_live_review_smoke` preferred over mockups.

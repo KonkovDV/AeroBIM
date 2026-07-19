@@ -21,7 +21,7 @@ tags: [aerobim, techlab, samolet, strategy, positioning]
 
 > AI-система, которая автоматически проверяет всю проектную документацию, расчёты, DWG, MEP и нормы с точностью более 90%.
 
-Связанные артефакты: [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md) · [`AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md`](AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md) · [`../../audit/reports/REDTEAM_HYPERDEEP_PLAN_2026_07_18.md`](../../audit/reports/REDTEAM_HYPERDEEP_PLAN_2026_07_18.md) · [`../../audit/reports/P0_EXECUTION_FROM_STRATEGY_2026_07_18.md`](../../audit/reports/P0_EXECUTION_FROM_STRATEGY_2026_07_18.md)
+Связанные артефакты: [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)
 
 ---
 

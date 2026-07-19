@@ -5,7 +5,7 @@
 **Режим:** Red Team, evidence-first  
 **Объект:** ПАО «ГК «Самолёт», платформа «Самолёт 10D», задача МИК «Техлаб Москва» №7  
 **Решение:** AeroBIM, `KonkovDV/AeroBIM`  
-**Жюри-memo:** [`docs.md`](docs.md) · **сверка claims:** [`evidence/DOCS_SAMOLET_MATRIX_RECONCILIATION_2026_07_19.md`](evidence/DOCS_SAMOLET_MATRIX_RECONCILIATION_2026_07_19.md)  
+**Жюри-memo:** [`docs.md`](docs.md) · **claim boundary:** [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) · **Claims Lock:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md)  
 **Публичные данные не заменяют внутреннее обследование ИТ-ландшафта и интервью с владельцами процессов.**
 
 ---

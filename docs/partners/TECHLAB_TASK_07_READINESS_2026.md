@@ -143,4 +143,4 @@ Primary handoff document: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_WHAT_WE
 
 ## Drawing AI posture (retained local SSOT)
 
-July 2026: [../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+July 2026: drawing OCR/CV/VLM literacy is **not** a pilot acceptance claim — see [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md).

@@ -9,7 +9,7 @@ tags: [aerobim, tz, architecture]
 # TZ Architecture Requirements
 
 Fills **«Требования к архитектуре решения = TBD»** for the expert-assistant TZ.
-Canonical product architecture: [`../06-architecture-reference.md`](../06-architecture-reference.md).
+Canonical product architecture: [`../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
 ## 1. Product posture
 
@@ -112,4 +112,4 @@ The React shell is a **review surface**, not domain truth:
 
 ## Drawing AI posture (retained local SSOT)
 
-July 2026: [../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+July 2026: drawing OCR/CV/VLM literacy is **not** a pilot acceptance claim — see [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md).

@@ -167,7 +167,7 @@ CIB W78 2024 и industry notes (ACCA/Solibri): IDS закрывает **алфа
 
 **Baseline:** часы ручной проверки **того же** комплекта (до или параллельно пилоту) — иначе KPI «−20% времени» не считается ([`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)).
 
-**Adjudication:** журнал по [`../samolet-kpi-adjudication-template-2026.md`](../samolet-kpi-adjudication-template-2026.md); целевой interim **TP/(TP+FP) ≥ 60%**.
+**Adjudication:** dual-human journal (TP/FP/FN) per Claims Lock; целевой interim **TP/(TP+FP) ≥ 60%** — see [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md).
 
 ---
 
@@ -251,4 +251,4 @@ CIB W78 2024 и industry notes (ACCA/Solibri): IDS закрывает **алфа
 
 ## Drawing AI posture (retained local SSOT)
 
-July 2026: [../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md](../evidence/DRAWING_AI_WORLD_PRACTICE_2026_07.md).
+July 2026: drawing OCR/CV/VLM literacy is **not** a pilot acceptance claim — see [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md).

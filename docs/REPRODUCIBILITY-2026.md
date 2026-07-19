@@ -69,9 +69,6 @@ Full publication rail: [`academic-publication-evidence-2026.md`](REPRODUCIBILITY
 
 ## Evidence artifact manifest
 
-| File | Content |
-|---|---|
-| [`evidence/pre-pilot-gates-evidence-2026-05-21.md`](evidence/pre-pilot-gates-evidence-2026-05-21.md) | Gates 1–4 sign-off |
 | Artifact | Role |
 |---|---|
 | [`evidence/README.md`](evidence/README.md) | Citeable fixtures index |
