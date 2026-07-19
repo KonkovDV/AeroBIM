@@ -9,6 +9,10 @@ from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus, Validatio
 from aerobim.domain.ports import AnalyzeProjectPackageJobStore
 
 
+class JobConcurrencyLimitError(RuntimeError):
+    """Raised when a tenant exceeds max concurrent QUEUED+RUNNING analyze jobs."""
+
+
 def _now_iso() -> str:
     return datetime.now(tz=UTC).isoformat()
 
@@ -22,21 +26,38 @@ class SubmitAnalyzeProjectPackageJobUseCase:
         request: ValidationRequest,
         *,
         idempotency_key: str | None = None,
+        max_concurrent_per_tenant: int | None = None,
     ) -> AnalyzeProjectPackageJob:
+        tenant_id = (request.tenant_id or "").strip() or None
         if idempotency_key:
-            existing = self._job_store.get_by_idempotency_key(idempotency_key)
+            existing = self._job_store.get_by_idempotency_key(
+                idempotency_key,
+                tenant_id=tenant_id,
+            )
             if existing is not None and existing.status in {
                 JobStatus.QUEUED,
                 JobStatus.RUNNING,
                 JobStatus.SUCCEEDED,
             }:
                 return existing
+        if (
+            max_concurrent_per_tenant is not None
+            and max_concurrent_per_tenant > 0
+            and tenant_id is not None
+        ):
+            active = self._job_store.count_active_for_tenant(tenant_id)
+            if active >= max_concurrent_per_tenant:
+                raise JobConcurrencyLimitError(
+                    f"Tenant {tenant_id!r} has {active} active analyze jobs "
+                    f"(limit {max_concurrent_per_tenant})"
+                )
         job = AnalyzeProjectPackageJob(
             job_id=uuid4().hex,
             request_id=request.request_id,
             status=JobStatus.QUEUED,
             created_at=_now_iso(),
             idempotency_key=idempotency_key,
+            tenant_id=tenant_id,
         )
         created_id = self._job_store.create(job)
         if created_id != job.job_id:

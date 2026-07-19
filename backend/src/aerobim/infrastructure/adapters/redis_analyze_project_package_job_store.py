@@ -60,16 +60,20 @@ class RedisAnalyzeProjectPackageJobStore:
             retry_count=int(item.get("retry_count") or 0),
             stage_progress=(str(item["stage_progress"]) if item.get("stage_progress") else None),
             cancel_requested=bool(item.get("cancel_requested") or False),
+            tenant_id=(str(item["tenant_id"]) if item.get("tenant_id") else None),
         )
 
     def create(self, job: AnalyzeProjectPackageJob) -> str:
         if job.idempotency_key:
-            existing = self.get_by_idempotency_key(job.idempotency_key)
+            existing = self.get_by_idempotency_key(
+                job.idempotency_key,
+                tenant_id=job.tenant_id,
+            )
             if existing is not None:
                 return existing.job_id
             # Index key → job_id for O(1) recovery across workers.
             self._redis.set(
-                self._idempotency_key(job.idempotency_key),
+                self._idempotency_key(job.idempotency_key, tenant_id=job.tenant_id),
                 job.job_id,
                 nx=True,
             )
@@ -84,10 +88,16 @@ class RedisAnalyzeProjectPackageJobStore:
             return None
         return self._deserialize(str(raw))
 
-    def get_by_idempotency_key(self, idempotency_key: str) -> AnalyzeProjectPackageJob | None:
-        job_id = self._redis.get(self._idempotency_key(idempotency_key))
+    def get_by_idempotency_key(
+        self,
+        idempotency_key: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> AnalyzeProjectPackageJob | None:
+        job_id = self._redis.get(self._idempotency_key(idempotency_key, tenant_id=tenant_id))
         if job_id is None:
-            # Fallback scan for legacy keys written before the index existed.
+            # Fallback scan for legacy keys written before the tenant-scoped index.
+            wanted_tenant = (tenant_id or "").strip().casefold()
             for key in self._redis.scan_iter(match=f"{self._prefix}*"):
                 key_str = str(key)
                 if ":idem:" in key_str:
@@ -96,14 +106,40 @@ class RedisAnalyzeProjectPackageJobStore:
                 if raw is None:
                     continue
                 job = self._deserialize(str(raw))
-                if job.idempotency_key == idempotency_key:
-                    self._redis.set(self._idempotency_key(idempotency_key), job.job_id)
-                    return job
+                if job.idempotency_key != idempotency_key:
+                    continue
+                if (job.tenant_id or "").strip().casefold() != wanted_tenant:
+                    continue
+                self._redis.set(
+                    self._idempotency_key(idempotency_key, tenant_id=tenant_id),
+                    job.job_id,
+                )
+                return job
             return None
         return self.get(str(job_id))
 
-    def _idempotency_key(self, idempotency_key: str) -> str:
-        return f"{self._prefix}idem:{idempotency_key}"
+    def count_active_for_tenant(self, tenant_id: str) -> int:
+        wanted = (tenant_id or "").strip().casefold()
+        if not wanted:
+            return 0
+        count = 0
+        for key in self._redis.scan_iter(match=f"{self._prefix}*"):
+            key_str = str(key)
+            if ":idem:" in key_str:
+                continue
+            raw = self._redis.get(key)
+            if raw is None:
+                continue
+            job = self._deserialize(str(raw))
+            if job.status not in {JobStatus.QUEUED, JobStatus.RUNNING}:
+                continue
+            if (job.tenant_id or "").strip().casefold() == wanted:
+                count += 1
+        return count
+
+    def _idempotency_key(self, idempotency_key: str, *, tenant_id: str | None = None) -> str:
+        tenant = (tenant_id or "").strip().casefold() or "_"
+        return f"{self._prefix}idem:{tenant}:{idempotency_key}"
 
     def mark_running(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         return self._update(job_id, status=JobStatus.RUNNING, started_at=_now_iso())
@@ -191,8 +227,46 @@ class RedisAnalyzeProjectPackageJobStore:
     def reclaim_stale_running(
         self, *, now_iso: str | None = None
     ) -> list[AnalyzeProjectPackageJob]:
-        # Redis reclaim is opportunistic via get()/heartbeat; full scan is optional.
-        return []
+        from datetime import timedelta
+
+        def _parse_iso(value: str | None) -> datetime | None:
+            if not value:
+                return None
+            try:
+                parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            except ValueError:
+                return None
+            if parsed.tzinfo is None:
+                return parsed.replace(tzinfo=UTC)
+            return parsed.astimezone(UTC)
+
+        now = _parse_iso(now_iso) or datetime.now(tz=UTC)
+        reclaimed: list[AnalyzeProjectPackageJob] = []
+        for key in self._redis.scan_iter(match=f"{self._prefix}*"):
+            key_str = str(key)
+            if ":idem:" in key_str:
+                continue
+            raw = self._redis.get(key)
+            if raw is None:
+                continue
+            job = self._deserialize(str(raw))
+            if job.status is not JobStatus.RUNNING:
+                continue
+            expires = _parse_iso(job.lease_expires_at) or _parse_iso(job.heartbeat_at)
+            if expires is None:
+                started = _parse_iso(job.started_at) or _parse_iso(job.created_at)
+                if started is None:
+                    continue
+                expires = started + timedelta(seconds=120)
+            if expires >= now:
+                continue
+            updated = self.mark_failed(
+                job.job_id,
+                "Lease expired; job marked failed for recovery/resubmit",
+            )
+            if updated is not None:
+                reclaimed.append(updated)
+        return reclaimed
 
     def _update(self, job_id: str, **changes: object) -> AnalyzeProjectPackageJob | None:
         key = self._key(job_id)

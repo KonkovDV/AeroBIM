@@ -122,6 +122,8 @@ class ValidateIfcAgainstIdsUseCase:
             information_container_id=request.information_container_id,
             revision=request.revision,
             doc_status=request.doc_status,
+            tenant_id=request.tenant_id,
+            project_id=request.project_id,
         )
         self._audit_report_store.save(report)
         return report

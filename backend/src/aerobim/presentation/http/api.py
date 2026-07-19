@@ -32,7 +32,11 @@ from aerobim.domain.models import (
     SourceKind,
     ValidationRequest,
 )
-from aerobim.domain.object_acl import AuthPrincipal, principal_may_access_report
+from aerobim.domain.object_acl import (
+    AuthPrincipal,
+    principal_may_access_job,
+    principal_may_access_report,
+)
 from aerobim.domain.review_state_machine import HitlTransitionError, assert_hitl_transition
 from aerobim.domain.system_capabilities import build_system_capabilities_payload
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
@@ -317,6 +321,36 @@ def create_http_app(container: Container):
             detail="Object ACL denied: report tenant does not match authenticated tenant",
         )
 
+    def _assert_job_access(job, principal: AuthPrincipal) -> None:
+        if principal_may_access_job(
+            enforce_object_acl=settings.enforce_object_acl,
+            principal=principal,
+            job=job,
+        ):
+            return
+        raise HTTPException(
+            status_code=403,
+            detail="Object ACL denied: job tenant does not match authenticated tenant",
+        )
+
+    def _resolve_bound_tenant(
+        principal: AuthPrincipal,
+        *,
+        payload_tenant_id: str | None = None,
+    ) -> str | None:
+        """Bind request tenant from principal; block client spoof when ACL is on."""
+
+        principal_tenant = (principal.tenant_id or "").strip() or None
+        if settings.enforce_object_acl:
+            if principal_tenant is None:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Object ACL requires authenticated tenant binding",
+                )
+            return principal_tenant
+        payload_tenant = (payload_tenant_id or "").strip() or None
+        return principal_tenant or payload_tenant
+
     def _validate_report_id(report_id: str) -> None:
         if not _REPORT_ID_RE.match(report_id):
             raise HTTPException(status_code=400, detail="Invalid report ID format")
@@ -585,7 +619,7 @@ def create_http_app(container: Container):
             information_container_id=payload.information_container_id,
             revision=payload.revision,
             doc_status=payload.doc_status,
-            tenant_id=tenant_id or payload.tenant_id,
+            tenant_id=tenant_id,
             project_id=payload.project_id,
         )
 
@@ -753,6 +787,7 @@ def create_http_app(container: Container):
                     information_container_id=payload.information_container_id,
                     revision=payload.revision,
                     doc_status=payload.doc_status,
+                    tenant_id=_resolve_bound_tenant(principal),
                 )
             )
         except FileNotFoundError as exc:
@@ -780,7 +815,13 @@ def create_http_app(container: Container):
         principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
-            request = _build_project_package_request(payload, tenant_id=principal.tenant_id)
+            request = _build_project_package_request(
+                payload,
+                tenant_id=_resolve_bound_tenant(
+                    principal,
+                    payload_tenant_id=payload.tenant_id,
+                ),
+            )
             report = analyze_use_case.execute(request)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -827,7 +868,13 @@ def create_http_app(container: Container):
         idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
     ) -> dict[str, object]:
         try:
-            request = _build_project_package_request(payload, tenant_id=principal.tenant_id)
+            request = _build_project_package_request(
+                payload,
+                tenant_id=_resolve_bound_tenant(
+                    principal,
+                    payload_tenant_id=payload.tenant_id,
+                ),
+            )
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except ValueError as exc:
@@ -837,9 +884,20 @@ def create_http_app(container: Container):
         if key is not None and len(key) > 128:
             raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
 
+        from aerobim.application.use_cases.analyze_project_package_jobs import (
+            JobConcurrencyLimitError,
+        )
+
         submit_job_use_case = container.resolve(Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE)
         job_runner = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER)
-        job = submit_job_use_case.execute(request, idempotency_key=key)
+        try:
+            job = submit_job_use_case.execute(
+                request,
+                idempotency_key=key,
+                max_concurrent_per_tenant=settings.max_concurrent_analyze_jobs_per_tenant,
+            )
+        except JobConcurrencyLimitError as exc:
+            raise HTTPException(status_code=429, detail=str(exc)) from exc
         if job.status.value == "queued":
             background_tasks.add_task(job_runner.run, job.job_id, request)
         return _serialize_analyze_project_package_job(job)
@@ -858,6 +916,7 @@ def create_http_app(container: Container):
             raise HTTPException(
                 status_code=404, detail=f"Analyze project-package job {job_id} not found"
             )
+        _assert_job_access(job, principal)
         return _serialize_analyze_project_package_job(job)
 
     @app.post("/v1/analyze/project-package/jobs/{job_id}/cancel")
@@ -866,6 +925,15 @@ def create_http_app(container: Container):
         principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         _validate_job_id(job_id)
+        get_job_status_use_case = container.resolve(
+            Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
+        )
+        existing = get_job_status_use_case.execute(job_id)
+        if existing is None:
+            raise HTTPException(
+                status_code=404, detail=f"Analyze project-package job {job_id} not found"
+            )
+        _assert_job_access(existing, principal)
         job_store = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
         job = job_store.request_cancel(job_id)
         if job is None:

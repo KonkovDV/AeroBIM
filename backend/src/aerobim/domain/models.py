@@ -592,6 +592,8 @@ class AnalyzeProjectPackageJob:
     retry_count: int = 0
     stage_progress: str | None = None
     cancel_requested: bool = False
+    tenant_id: str | None = None
+    """Owning tenant; required for object ACL on job get/cancel."""
 
 
 @dataclass(frozen=True)

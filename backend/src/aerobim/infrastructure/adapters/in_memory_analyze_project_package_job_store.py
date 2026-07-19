@@ -92,6 +92,7 @@ class InMemoryAnalyzeProjectPackageJobStore:
                         str(item["stage_progress"]) if item.get("stage_progress") else None
                     ),
                     cancel_requested=bool(item.get("cancel_requested") or False),
+                    tenant_id=(str(item["tenant_id"]) if item.get("tenant_id") else None),
                 )
             except (KeyError, ValueError, TypeError):
                 continue
@@ -124,7 +125,10 @@ class InMemoryAnalyzeProjectPackageJobStore:
     def create(self, job: AnalyzeProjectPackageJob) -> str:
         with self._lock:
             if job.idempotency_key:
-                existing = self._find_by_idempotency_key_unlocked(job.idempotency_key)
+                existing = self._find_by_idempotency_key_unlocked(
+                    job.idempotency_key,
+                    tenant_id=job.tenant_id,
+                )
                 if existing is not None:
                     return existing.job_id
             self._jobs[job.job_id] = job
@@ -136,15 +140,43 @@ class InMemoryAnalyzeProjectPackageJobStore:
             self._reclaim_stale_unlocked(_now())
             return self._jobs.get(job_id)
 
-    def get_by_idempotency_key(self, idempotency_key: str) -> AnalyzeProjectPackageJob | None:
+    def get_by_idempotency_key(
+        self,
+        idempotency_key: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> AnalyzeProjectPackageJob | None:
         with self._lock:
-            return self._find_by_idempotency_key_unlocked(idempotency_key)
+            return self._find_by_idempotency_key_unlocked(
+                idempotency_key,
+                tenant_id=tenant_id,
+            )
+
+    def count_active_for_tenant(self, tenant_id: str) -> int:
+        wanted = (tenant_id or "").strip().casefold()
+        if not wanted:
+            return 0
+        with self._lock:
+            self._reclaim_stale_unlocked(_now())
+            return sum(
+                1
+                for job in self._jobs.values()
+                if job.status in {JobStatus.QUEUED, JobStatus.RUNNING}
+                and (job.tenant_id or "").strip().casefold() == wanted
+            )
 
     def _find_by_idempotency_key_unlocked(
-        self, idempotency_key: str
+        self,
+        idempotency_key: str,
+        *,
+        tenant_id: str | None = None,
     ) -> AnalyzeProjectPackageJob | None:
+        wanted_tenant = (tenant_id or "").strip().casefold()
         for job in self._jobs.values():
-            if job.idempotency_key == idempotency_key:
+            if job.idempotency_key != idempotency_key:
+                continue
+            job_tenant = (job.tenant_id or "").strip().casefold()
+            if job_tenant == wanted_tenant:
                 return job
         return None
 
