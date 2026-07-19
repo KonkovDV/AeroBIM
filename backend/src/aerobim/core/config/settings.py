@@ -100,6 +100,8 @@ class Settings:
     oidc_issuer: str | None = None
     oidc_audience: str | None = None
     oidc_jwks_url: str | None = None
+    oidc_tenant_claim: str = "tenant_id"
+    """JWT claim used for tenant binding. No silent fallback to tid/org_id."""
     # Optional Redis for durable async jobs
     redis_url: str | None = None
     # Optional bSI Validation Service / local schema certificate
@@ -178,15 +180,20 @@ class Settings:
         # Non-dev defaults ACL on when unset (legacy); profile may still override.
         acl_default = False if env_name in _DEV_ENVIRONMENTS else True
         # Inline profile map keeps core free of application imports (layer boundary).
-        raw_signoff = (os.getenv("AEROBIM_SIGNOFF_PROFILE") or "development").strip().lower()
-        if raw_signoff in {"samolet", "samolet_pilot", "pilot"}:
-            signoff_profile = "samolet_pilot"
-        elif raw_signoff in {"production", "prod"}:
-            signoff_profile = "production"
-        elif raw_signoff in {"fixture", "fixtures"}:
-            signoff_profile = "fixture"
+        # RT-POST-01: non-dev without explicit profile must not silently use soft development.
+        signoff_raw_env = os.getenv("AEROBIM_SIGNOFF_PROFILE")
+        if signoff_raw_env is None or not str(signoff_raw_env).strip():
+            signoff_profile = "development" if env_name in _DEV_ENVIRONMENTS else "production"
         else:
-            signoff_profile = "development"
+            raw_signoff = str(signoff_raw_env).strip().lower()
+            if raw_signoff in {"samolet", "samolet_pilot", "pilot"}:
+                signoff_profile = "samolet_pilot"
+            elif raw_signoff in {"production", "prod"}:
+                signoff_profile = "production"
+            elif raw_signoff in {"fixture", "fixtures"}:
+                signoff_profile = "fixture"
+            else:
+                signoff_profile = "development"
         profile_gate = signoff_profile in {"samolet_pilot", "production"}
         # Pilot/production are fail-closed: env cannot weaken required gates.
         if profile_gate:
@@ -257,6 +264,9 @@ class Settings:
             oidc_issuer=(os.getenv("AEROBIM_OIDC_ISSUER") or "").strip() or None,
             oidc_audience=(os.getenv("AEROBIM_OIDC_AUDIENCE") or "").strip() or None,
             oidc_jwks_url=(os.getenv("AEROBIM_OIDC_JWKS_URL") or "").strip() or None,
+            oidc_tenant_claim=(
+                (os.getenv("AEROBIM_OIDC_TENANT_CLAIM") or "tenant_id").strip() or "tenant_id"
+            ),
             redis_url=(os.getenv("AEROBIM_REDIS_URL") or "").strip() or None,
             bsi_validation_url=(os.getenv("AEROBIM_BSI_VALIDATION_URL") or "").strip() or None,
             bsi_api_token=(os.getenv("AEROBIM_BSI_API_TOKEN") or "").strip() or None,
@@ -270,5 +280,29 @@ class Settings:
             ifc_parse_cache_dir=(os.getenv("AEROBIM_IFC_PARSE_CACHE_DIR") or "").strip() or None,
             hybrid_drawing_enabled=_read_bool("AEROBIM_HYBRID_DRAWING_ENABLED", True),
         )
+        # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
+        from aerobim.core.security.outbound_url import (
+            UnsafeOutboundUrlError,
+            assert_safe_outbound_url,
+        )
+
+        for label, candidate in (
+            ("AEROBIM_OIDC_JWKS_URL", settings.oidc_jwks_url),
+            ("AEROBIM_BSI_VALIDATION_URL", settings.bsi_validation_url),
+            ("AEROBIM_BCF_API_BASE_URL", settings.bcf_api_base_url),
+            ("AEROBIM_S3_ENDPOINT_URL", settings.s3_endpoint_url),
+        ):
+            if not candidate:
+                continue
+            try:
+                # S3 custom endpoints often use http:// on local MinIO — allow http there.
+                allow_http = label == "AEROBIM_S3_ENDPOINT_URL" and env_name in _DEV_ENVIRONMENTS
+                assert_safe_outbound_url(
+                    candidate,
+                    allow_http=allow_http,
+                    resolve_dns=False,  # boot-time: scheme/host literal checks; DNS at fetch
+                )
+            except UnsafeOutboundUrlError as exc:
+                raise RuntimeError(f"Unsafe outbound URL in {label}: {exc}") from exc
         settings.require_secure_auth()
         return settings

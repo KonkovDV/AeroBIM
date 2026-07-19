@@ -10,6 +10,7 @@ services:
       - "8080:8080"
     environment:
       AEROBIM_ENV: production
+      AEROBIM_SIGNOFF_PROFILE: production
       AEROBIM_HOST: "0.0.0.0"
       AEROBIM_PORT: "8080"
       AEROBIM_DEBUG: "false"
@@ -18,7 +19,6 @@ services:
       # REQUIRED. Change before any shared use. Frontend must send the same token.
       # WARNING: if you put this value in VITE_*, it is bundled into browser assets (demo-only).
       AEROBIM_API_BEARER_TOKEN: "dev-local-token-change-me"
-      AEROBIM_CLASH_AFFECTS_PASS: "false"
     volumes:
       - reports-data:/data/reports
       - ./samples:/data/samples:ro

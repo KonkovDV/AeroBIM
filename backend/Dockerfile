@@ -26,6 +26,7 @@ RUN mkdir -p var/reports && chown -R aerobim:aerobim /app
 USER aerobim
 
 ENV AEROBIM_ENV=production \
+    AEROBIM_SIGNOFF_PROFILE=production \
     AEROBIM_HOST=0.0.0.0 \
     AEROBIM_PORT=8080 \
     AEROBIM_DEBUG=false \
