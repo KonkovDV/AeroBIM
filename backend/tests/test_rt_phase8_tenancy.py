@@ -138,12 +138,12 @@ class Phase8JobAclApiTests(unittest.TestCase):
                 f"/v1/analyze/project-package/jobs/{job_id}",
                 headers=headers,
             )
-            self.assertEqual(get_resp.status_code, 403, get_resp.text)
+            self.assertEqual(get_resp.status_code, 404, get_resp.text)
             cancel_resp = client_a.post(
                 f"/v1/analyze/project-package/jobs/{job_id}/cancel",
                 headers=headers,
             )
-            self.assertEqual(cancel_resp.status_code, 403, cancel_resp.text)
+            self.assertEqual(cancel_resp.status_code, 404, cancel_resp.text)
 
 
 class Phase8AdvisoryIsolationTests(unittest.TestCase):

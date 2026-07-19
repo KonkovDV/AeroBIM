@@ -67,7 +67,7 @@ class ApiObjectAclTests(unittest.TestCase):
                 f"/v1/reports/{report_id}",
                 headers={"Authorization": "Bearer secret-token"},
             )
-            self.assertEqual(response.status_code, 403, response.text)
+            self.assertEqual(response.status_code, 404, response.text)
 
     def test_cross_tenant_ifc_source_denied(self) -> None:
         try:
@@ -82,7 +82,7 @@ class ApiObjectAclTests(unittest.TestCase):
                 f"/v1/reports/{report_id}/source/ifc",
                 headers={"Authorization": "Bearer secret-token"},
             )
-            self.assertEqual(response.status_code, 403, response.text)
+            self.assertEqual(response.status_code, 404, response.text)
 
     def test_cross_tenant_bcf_export_denied(self) -> None:
         try:
@@ -97,7 +97,7 @@ class ApiObjectAclTests(unittest.TestCase):
                 f"/v1/reports/{report_id}/export/bcf",
                 headers={"Authorization": "Bearer secret-token"},
             )
-            self.assertEqual(response.status_code, 403, response.text)
+            self.assertEqual(response.status_code, 404, response.text)
 
     def test_cross_tenant_review_events_denied(self) -> None:
         try:
@@ -112,12 +112,12 @@ class ApiObjectAclTests(unittest.TestCase):
                 f"/v1/reports/{report_id}/review-events",
                 headers={"Authorization": "Bearer secret-token"},
             )
-            self.assertEqual(response.status_code, 403, response.text)
+            self.assertEqual(response.status_code, 404, response.text)
             response_kpi = client.get(
                 f"/v1/reports/{report_id}/review-kpi",
                 headers={"Authorization": "Bearer secret-token"},
             )
-            self.assertEqual(response_kpi.status_code, 403, response_kpi.text)
+            self.assertEqual(response_kpi.status_code, 404, response_kpi.text)
 
     def test_same_tenant_report_allowed(self) -> None:
         try:
