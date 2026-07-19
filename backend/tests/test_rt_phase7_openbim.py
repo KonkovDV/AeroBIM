@@ -31,7 +31,6 @@ from aerobim.infrastructure.adapters.structured_drawing_analyzer import Structur
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
 
-
 _MINIMAL_SPF = """ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('ViewDefinition [CoordinationView]'),'2;1');

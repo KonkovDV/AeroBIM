@@ -36,7 +36,10 @@ class BcfStructuralVerification:
     sha256: str
     errors: tuple[str, ...]
     xsd_status: str
-    """``not_configured`` | ``not_run`` | ``failed`` | ``skipped``. Never ``passed`` without XSD run."""
+    """``not_configured`` | ``not_run`` | ``failed`` | ``skipped``.
+
+    Never ``passed`` without an actual XSD validation run.
+    """
 
     def as_dict(self) -> dict[str, object]:
         return asdict(self)

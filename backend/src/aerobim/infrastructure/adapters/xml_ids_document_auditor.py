@@ -54,7 +54,6 @@ _STRUCTURAL_NAMES = frozenset(
         "instructions",
         "ifcversion",
         "identifier",
-        "description",
         "simplevalue",
         "uri",
         "system",
