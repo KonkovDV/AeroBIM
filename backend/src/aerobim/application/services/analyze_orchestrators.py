@@ -55,6 +55,7 @@ class IngestionBundle:
     drawing_annotations: tuple[DrawingAnnotation, ...]
     drawing_regions: tuple[DrawingRegionRef, ...]
     drawing_assets: tuple[DrawingAsset, ...]
+    raster_annotation_count: int
     cad_capability: CapabilityStatus
     cad_issues: tuple[ValidationIssue, ...]
     region_hitl_issues: tuple[ValidationIssue, ...]
@@ -130,7 +131,9 @@ class IngestionOrchestrator:
         requirements = tuple(
             [*structured_requirements, *synthesized_requirements, *norm_pack_requirements]
         )
-        annotation_list, region_list = self._host._collect_drawing_annotations(request)
+        annotation_list, region_list, raster_annotation_count = (
+            self._host._collect_drawing_annotations(request)
+        )
         cad_annotations, cad_capability, cad_issues = self._host._run_cad_ingest(request)
         drawing_annotations = tuple([*annotation_list, *cad_annotations])
         drawing_regions = mark_regions_for_hitl(tuple(region_list), drawing_annotations)
@@ -142,6 +145,7 @@ class IngestionOrchestrator:
             drawing_annotations=drawing_annotations,
             drawing_regions=drawing_regions,
             drawing_assets=drawing_assets,
+            raster_annotation_count=raster_annotation_count,
             cad_capability=cad_capability,
             cad_issues=tuple(cad_issues),
             region_hitl_issues=region_hitl_issues,
@@ -316,7 +320,7 @@ class EvidenceAssembler:
             ids_issues=deterministic.ids_issues,
             clash_capability=deterministic.clash_capability,
             drawing_sources=request.drawing_sources,
-            drawing_annotation_count=len(ingested.drawing_annotations),
+            drawing_annotation_count=ingested.raster_annotation_count,
             schema_issues=deterministic.schema_issues,
             ids_audit_issues=deterministic.ids_audit_issues,
             schema_request_id=deterministic.schema_request_id,

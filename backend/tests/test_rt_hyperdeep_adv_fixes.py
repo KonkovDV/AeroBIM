@@ -310,6 +310,7 @@ class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
             drawing_annotations=(),
             drawing_regions=(region,),
             drawing_assets=(),
+            raster_annotation_count=0,
             cad_capability=skipped,
             cad_issues=(),
             region_hitl_issues=(),
