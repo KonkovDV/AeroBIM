@@ -3,9 +3,10 @@ FROM python:3.12-slim AS builder
 
 WORKDIR /build
 
-COPY pyproject.toml ./
+COPY pyproject.toml requirements-lock.txt ./
 COPY src/ src/
-RUN pip install --no-cache-dir --prefix=/install ".[raster]"
+RUN pip install --no-cache-dir --prefix=/install -r requirements-lock.txt \
+    && pip install --no-cache-dir --prefix=/install --no-deps .
 
 # ---------- production ----------
 FROM python:3.12-slim

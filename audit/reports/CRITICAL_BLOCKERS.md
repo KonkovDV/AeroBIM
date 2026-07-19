@@ -16,7 +16,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RT-POST-04 | **CLOSED** | OIDC tenant only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`) |
 | RT-POST-06/07 | **CLOSED** | Pilot/production: `unit_scale` default NOT_VERIFIED; SKIPPED calc/qty block pass |
 | RT-POST-08 | **CLOSED** | Upload response omits `object_key` |
-| RT-POST-09 | **PARTIAL** | Actions pinned to commit SHAs (corrected `setup-python` SHA); lockfile still NOT_VERIFIED |
+| RT-POST-09 | **CLOSED** | Actions pinned to commit SHAs; `backend/requirements-lock.txt` + `requirements-dev-lock.txt` (uv pip compile); CI installs from lock |
 | RT-POST-10/11 | **CLOSED** | `html.escape(quote=True)`; ZIP rejects `..` / absolute members |
 
 Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: VITE bearer BFF **NOT_IMPLEMENTED** (POST-05).
@@ -27,7 +27,7 @@ Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: VITE bearer BFF
 |---|---|---|
 | RT-004 | **CLOSED** | `require_clash` → SKIPPED clash ⇒ FAILED + `passed=false`; `tests/test_p0_remediation_fail_closed.py` |
 | RT-005 | **CLOSED** | `AuthPrincipal` + `principal_may_access_report` on report/IFC/preview/export/review; ACL tests in P0 suite |
-| RT-006 | **CLOSED** | `frontend` vitest **25 passed** (local / release-readiness; not in main CI job) |
+| RT-006 | **CLOSED** | `frontend` vitest in main CI (`frontend` job: `npm ci` + `npm test` + `npm run build`) |
 | RT-007 | **CLOSED** | `finding_id` / `evidence_refs` / `source_id` stamped + persist reject; provenance helpers |
 | RT-013 | **CLOSED** | one-sided empty revision ⇒ conflict; drawings in identity collection |
 | RT-014 | **CLOSED** | raster requested+analyzer+zero annotations ⇒ FAILED; bSI ERROR under `require_bsi_schema` |

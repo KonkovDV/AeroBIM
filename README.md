@@ -73,7 +73,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | MEP system-aware clash | Not verified | — | DI-wired Unconfigured provider; not delivered |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | OpenRebar path = **match/сверка**, not solver verification |
-| Frontend vitest review-shell | Green locally | release-readiness | **25** passed; not in main CI job |
+| Frontend vitest review-shell | Green in CI | release-readiness | **25** passed (`frontend` CI job) |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
 
 ## IFC Release Compatibility
