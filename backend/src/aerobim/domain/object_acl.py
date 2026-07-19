@@ -57,8 +57,25 @@ def principal_may_access_job(
     return _tenants_match(principal.tenant_id, job_tenant)
 
 
+def principal_may_access_norm_pack(
+    *,
+    enforce_object_acl: bool,
+    principal: AuthPrincipal,
+    tenant_id: str | None,
+) -> bool:
+    """Return False when enforced ACL denies cross-tenant norm-pack access."""
+
+    if not enforce_object_acl:
+        return True
+    pack_tenant = (tenant_id or "").strip()
+    if not pack_tenant:
+        return False
+    return _tenants_match(principal.tenant_id, pack_tenant)
+
+
 __all__ = [
     "AuthPrincipal",
     "principal_may_access_job",
+    "principal_may_access_norm_pack",
     "principal_may_access_report",
 ]

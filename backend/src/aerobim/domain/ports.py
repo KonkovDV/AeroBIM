@@ -131,11 +131,23 @@ class NormRulePackVersionStore(Protocol):
         parent_version: str | None,
         approval_status: str | None,
         approval_ref: str | None,
+        tenant_id: str | None = None,
     ) -> NormPackVersionInfo: ...
 
-    def list_versions(self, pack_id: str) -> list[NormPackVersionInfo]: ...
+    def list_versions(
+        self,
+        pack_id: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> list[NormPackVersionInfo]: ...
 
-    def get_version_bytes(self, pack_id: str, version: str) -> bytes | None: ...
+    def get_version_bytes(
+        self,
+        pack_id: str,
+        version: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> bytes | None: ...
 
 
 class BsiValidationService(Protocol):

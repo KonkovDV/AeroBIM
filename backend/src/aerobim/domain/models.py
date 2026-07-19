@@ -564,6 +564,8 @@ class NormPackVersionInfo:
     parent_version: str | None = None
     approval_status: NormApprovalStatus | None = None
     approval_ref: str | None = None
+    tenant_id: str | None = None
+    """Owning tenant; versions are namespaced per tenant under ACL."""
 
 
 class JobStatus(StrEnum):
