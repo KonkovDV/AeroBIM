@@ -71,12 +71,22 @@ class RedisAnalyzeProjectPackageJobStore:
             )
             if existing is not None:
                 return existing.job_id
-            # Index key → job_id for O(1) recovery across workers.
-            self._redis.set(
+            # Atomic claim of tenant-scoped idempotency index.
+            claimed = self._redis.set(
                 self._idempotency_key(job.idempotency_key, tenant_id=job.tenant_id),
                 job.job_id,
                 nx=True,
             )
+            if not claimed:
+                raced = self.get_by_idempotency_key(
+                    job.idempotency_key,
+                    tenant_id=job.tenant_id,
+                )
+                if raced is not None:
+                    return raced.job_id
+                raise RuntimeError(
+                    "Idempotency key claimed by concurrent submit; retry shortly"
+                )
         created = self._redis.set(self._key(job.job_id), self._serialize(job), nx=True)
         if not created:
             raise ValueError(f"Job already exists: {job.job_id}")

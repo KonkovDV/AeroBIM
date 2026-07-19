@@ -137,7 +137,6 @@ class InMemoryAnalyzeProjectPackageJobStore:
 
     def get(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         with self._lock:
-            self._reclaim_stale_unlocked(_now())
             return self._jobs.get(job_id)
 
     def get_by_idempotency_key(

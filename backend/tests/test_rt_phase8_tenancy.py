@@ -190,7 +190,9 @@ class Phase8ValidateIfcTenantStampTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             storage = Path(tmp)
-            target = storage / "model.ifc"
+            relative = "tenants/tenant-stamp/uploads/model.ifc"
+            target = storage / relative
+            target.parent.mkdir(parents=True)
             target.write_bytes(ifc_files[0].read_bytes())
             client, container = Phase8JobAclApiTests()._client(
                 storage=storage,
@@ -200,7 +202,7 @@ class Phase8ValidateIfcTenantStampTests(unittest.TestCase):
                 "/v1/validate/ifc",
                 headers={"Authorization": "Bearer secret-token"},
                 json={
-                    "ifc_path": "model.ifc",
+                    "ifc_path": relative,
                     "requirement_text": "R1|IFCWALL|Pset_WallCommon|FireRating|REI60\n",
                 },
             )

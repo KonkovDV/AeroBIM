@@ -65,6 +65,13 @@ class FilesystemReviewEventStore:
     def list_for_report(self, report_id: str) -> list[ReviewEvent]:
         return list(self._iter_events(report_id=report_id, raise_on_corrupt=self._fail_closed))
 
+    def discard_report(self, report_id: str) -> None:
+        """Compensating delete when report persist fails after HITL trail write."""
+        target = self._path(report_id)
+        lock_path = target.with_suffix(target.suffix + ".lock")
+        target.unlink(missing_ok=True)
+        lock_path.unlink(missing_ok=True)
+
     def _append_exclusive(self, target: Path, line: str) -> None:
         lock_path = target.with_suffix(target.suffix + ".lock")
         for _ in range(_LOCK_ATTEMPTS):

@@ -216,7 +216,8 @@ def verify_bcf_zip_structure(
         if not xsd_files:
             xsd_status = "skipped"
         else:
-            xsd_status = "not_run" if not errors else "failed"
+            xsd_status = "not_run"
+            # Presence of XSD files does not imply validation ran or failed.
 
     return BcfStructuralVerification(
         ok=not errors,

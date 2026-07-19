@@ -17,7 +17,14 @@ from aerobim.application.services.loin_metadata_resolver import LoinMetadataReso
 from aerobim.application.services.review_kpi import summarize_review_events
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
-from aerobim.core.security.path_jail import PathJailError, reject_symlinks, resolve_storage_path
+from aerobim.core.security.path_jail import (
+    PathJailError,
+    assert_path_under_tenant_prefix,
+    reject_symlinks,
+    resolve_storage_path,
+    safe_storage_token,
+    tenant_storage_prefix,
+)
 from aerobim.core.security.upload_content import UploadContentError, validate_upload_content
 from aerobim.core.security.upload_quota import (
     FilesystemUploadQuotaStore,
@@ -222,12 +229,33 @@ def create_http_app(container: Container):
             "status": "ok",
         }
 
-    def _resolve_safe_path(user_path: str) -> Path:
-        """Resolve user-supplied path strictly within storage_dir; reject symlinks."""
+    def _resolve_safe_path(
+        user_path: str,
+        *,
+        principal: AuthPrincipal | None = None,
+    ) -> Path:
+        """Resolve user-supplied path strictly within storage_dir; reject symlinks.
+
+        When object ACL is enforced, paths must stay under ``tenants/{tenant}/``.
+        """
         try:
-            return resolve_storage_path(user_path, base=settings.storage_dir)
+            resolved = resolve_storage_path(user_path, base=settings.storage_dir)
+            if settings.enforce_object_acl:
+                if principal is None or not (principal.tenant_id or "").strip():
+                    raise HTTPException(
+                        status_code=403,
+                        detail="Object ACL requires authenticated tenant for path access",
+                    )
+                assert_path_under_tenant_prefix(
+                    resolved,
+                    base=settings.storage_dir,
+                    tenant_id=principal.tenant_id or "",
+                )
+            return resolved
         except PathJailError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            detail = str(exc)
+            status = 403 if "tenant storage prefix" in detail else 400
+            raise HTTPException(status_code=status, detail=detail) from exc
 
     def _enforce_ifc_size(ifc_path: Path) -> None:
         if not ifc_path.is_file():
@@ -477,10 +505,11 @@ def create_http_app(container: Container):
         stage: str | None = None,
         doc_status: str | None = None,
         source_id: str | None = None,
+        principal: AuthPrincipal | None = None,
     ) -> RequirementSource:
         return RequirementSource(
             text=text,
-            path=_resolve_safe_path(path) if path else None,
+            path=_resolve_safe_path(path, principal=principal) if path else None,
             source_kind=source_kind,
             source_id=source_id or f"{source_kind.value}-input",
             revision=revision,
@@ -520,6 +549,8 @@ def create_http_app(container: Container):
 
     def _resolve_openrebar_provenance_inputs(
         payload: AnalyzeProjectPackageRequest,
+        *,
+        principal: AuthPrincipal | None = None,
     ) -> tuple[Path | None, str | None]:
         if payload.reinforcement_handoff_path:
             if payload.reinforcement_report_path or payload.reinforcement_source_digest:
@@ -528,13 +559,15 @@ def create_http_app(container: Container):
                     "reinforcement_report_path or reinforcement_source_digest"
                 )
 
-            handoff_path = _resolve_safe_path(payload.reinforcement_handoff_path)
+            handoff_path = _resolve_safe_path(
+                payload.reinforcement_handoff_path, principal=principal
+            )
             handoff_payload = _load_openrebar_handoff_payload(handoff_path)
             raw_report_path = handoff_payload.get("reinforcement_report_path")
             if not isinstance(raw_report_path, str) or not raw_report_path.strip():
                 raise ValueError("OpenRebar handoff manifest must define reinforcement_report_path")
 
-            report_path = _resolve_safe_path(raw_report_path.strip())
+            report_path = _resolve_safe_path(raw_report_path.strip(), principal=principal)
             manifest_sha = handoff_payload.get("report_sha256")
             if manifest_sha is not None:
                 if not isinstance(manifest_sha, str) or not manifest_sha.strip():
@@ -549,7 +582,7 @@ def create_http_app(container: Container):
             return report_path, build_openrebar_provenance_digest(report_payload)
 
         reinforcement_report_path = (
-            _resolve_safe_path(payload.reinforcement_report_path)
+            _resolve_safe_path(payload.reinforcement_report_path, principal=principal)
             if payload.reinforcement_report_path
             else None
         )
@@ -564,11 +597,12 @@ def create_http_app(container: Container):
         payload: AnalyzeProjectPackageRequest,
         *,
         tenant_id: str | None = None,
+        principal: AuthPrincipal | None = None,
     ) -> ValidationRequest:
         reinforcement_report_path, reinforcement_source_digest = (
-            _resolve_openrebar_provenance_inputs(payload)
+            _resolve_openrebar_provenance_inputs(payload, principal=principal)
         )
-        ifc_resolved = _resolve_safe_path(payload.ifc_path)
+        ifc_resolved = _resolve_safe_path(payload.ifc_path, principal=principal)
         _enforce_ifc_size(ifc_resolved)
         return ValidationRequest(
             request_id=payload.request_id or uuid4().hex,
@@ -580,8 +614,13 @@ def create_http_app(container: Container):
                 revision=payload.revision,
                 stage=payload.stage,
                 doc_status=payload.doc_status,
+                principal=principal,
             ),
-            ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
+            ids_path=(
+                _resolve_safe_path(payload.ids_path, principal=principal)
+                if payload.ids_path
+                else None
+            ),
             technical_spec_source=_build_requirement_source(
                 payload.technical_spec_text,
                 payload.technical_spec_path,
@@ -589,6 +628,7 @@ def create_http_app(container: Container):
                 revision=payload.revision,
                 stage=payload.stage,
                 doc_status=payload.doc_status,
+                principal=principal,
             )
             if payload.technical_spec_text or payload.technical_spec_path
             else None,
@@ -599,26 +639,36 @@ def create_http_app(container: Container):
                 revision=payload.revision,
                 stage=payload.stage,
                 doc_status=payload.doc_status,
+                principal=principal,
             )
             if payload.calculation_text or payload.calculation_path
             else None,
             drawing_sources=tuple(
                 DrawingSource(
                     text=drawing.text,
-                    path=_resolve_safe_path(drawing.path) if drawing.path else None,
+                    path=(
+                        _resolve_safe_path(drawing.path, principal=principal)
+                        if drawing.path
+                        else None
+                    ),
                     sheet_id=drawing.sheet_id,
                     format=drawing.format,
                 )
                 for drawing in payload.drawings
             ),
             norm_rule_pack_paths=tuple(
-                _resolve_safe_path(path) for path in payload.norm_rule_pack_paths
+                _resolve_safe_path(path, principal=principal)
+                for path in payload.norm_rule_pack_paths
             ),
             pd_section_path=(
-                _resolve_safe_path(payload.pd_section_path) if payload.pd_section_path else None
+                _resolve_safe_path(payload.pd_section_path, principal=principal)
+                if payload.pd_section_path
+                else None
             ),
             rd_section_path=(
-                _resolve_safe_path(payload.rd_section_path) if payload.rd_section_path else None
+                _resolve_safe_path(payload.rd_section_path, principal=principal)
+                if payload.rd_section_path
+                else None
             ),
             reinforcement_report_path=reinforcement_report_path,
             reinforcement_source_digest=reinforcement_source_digest,
@@ -653,19 +703,22 @@ def create_http_app(container: Container):
         Returns a storage-relative ``path`` suitable for ``ifc_path`` / drawing paths
         on subsequent analyze calls. Validates extension + magic bytes and enforces
         ``max_upload_bytes`` for all document types. Content is quarantined until
-        checks pass, then promoted to ``uploads/``.
+        checks pass, then promoted under ``tenants/{tenant}/uploads/``.
         """
         tenant_key = (
             principal.tenant_id or principal.subject or "anonymous"
         ).strip() or "anonymous"
+        tenant_seg = safe_storage_token(tenant_key)
         raw_name = (file.filename or "upload.bin").replace("\\", "/").split("/")[-1]
         safe_name = (
             raw_name.replace("\r", "").replace("\n", "").replace('"', "").strip() or "upload.bin"
         )[:180]
         upload_id = uuid4().hex
-        relative_path = f"uploads/{upload_id}/{safe_name}"
-        quarantine = (settings.storage_dir / "quarantine" / upload_id / safe_name).resolve()
-        target = (settings.storage_dir / "uploads" / upload_id / safe_name).resolve()
+        relative_path = f"{tenant_storage_prefix(tenant_seg)}uploads/{upload_id}/{safe_name}"
+        quarantine = (
+            settings.storage_dir / "quarantine" / tenant_seg / upload_id / safe_name
+        ).resolve()
+        target = (settings.storage_dir / relative_path).resolve()
         base = settings.storage_dir.resolve()
         quarantine.parent.mkdir(parents=True, exist_ok=True)
         try:
@@ -781,7 +834,7 @@ def create_http_app(container: Container):
         request_id = payload.request_id or uuid4().hex
         logger.info("validate_ifc started", request_id=request_id, ifc_path=payload.ifc_path)
         try:
-            ifc_resolved = _resolve_safe_path(payload.ifc_path)
+            ifc_resolved = _resolve_safe_path(payload.ifc_path, principal=principal)
             _enforce_ifc_size(ifc_resolved)
 
             report = validate_use_case.execute(
@@ -792,8 +845,13 @@ def create_http_app(container: Container):
                         payload.requirement_text,
                         payload.requirement_path,
                         SourceKind.STRUCTURED_TEXT,
+                        principal=principal,
                     ),
-                    ids_path=_resolve_safe_path(payload.ids_path) if payload.ids_path else None,
+                    ids_path=(
+                        _resolve_safe_path(payload.ids_path, principal=principal)
+                        if payload.ids_path
+                        else None
+                    ),
                     project_name=payload.project_name,
                     discipline=payload.discipline,
                     stage=payload.stage,
@@ -834,6 +892,7 @@ def create_http_app(container: Container):
                     principal,
                     payload_tenant_id=payload.tenant_id,
                 ),
+                principal=principal,
             )
             report = analyze_use_case.execute(request)
         except FileNotFoundError as exc:
@@ -851,7 +910,9 @@ def create_http_app(container: Container):
         principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
-            report_path = _resolve_safe_path(payload.reinforcement_report_path)
+            report_path = _resolve_safe_path(
+                payload.reinforcement_report_path, principal=principal
+            )
             report_payload = _load_openrebar_report_payload(report_path)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -887,6 +948,7 @@ def create_http_app(container: Container):
                     principal,
                     payload_tenant_id=payload.tenant_id,
                 ),
+                principal=principal,
             )
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -1084,7 +1146,7 @@ def create_http_app(container: Container):
                 raise HTTPException(status_code=404, detail=f"Report {payload.report_id} not found")
             _assert_report_access(linked, principal)
         use_case = container.resolve(Tokens.APPLY_NORM_RULE_HITL_EVENT_USE_CASE)
-        base_path = _resolve_safe_path(payload.base_pack_path)
+        base_path = _resolve_safe_path(payload.base_pack_path, principal=principal)
         try:
             record, event = use_case.execute(
                 pack_id=pack_id,

@@ -68,7 +68,12 @@ class UploadApiTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200, response.text)
             body = response.json()
             self.assertEqual(body["filename"], "pilot.ifc")
-            self.assertTrue(body["path"].startswith("uploads/"))
+            path = body["path"]
+            self.assertTrue(
+                path.startswith("tenants/anonymous-dev/uploads/")
+                or path.startswith("tenants/anonymous/uploads/"),
+                path,
+            )
             self.assertEqual(body["size_bytes"], len(b"ISO-10303-21;"))
             stored = Path(tmp) / body["path"]
             self.assertTrue(stored.is_file())
