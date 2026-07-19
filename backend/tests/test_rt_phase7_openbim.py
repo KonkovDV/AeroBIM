@@ -149,9 +149,7 @@ class Phase7GlobalIdTests(unittest.TestCase):
                 self.GlobalId = guid
 
         good = "0123456789ABCDEFGHIJ_$"
-        issues = collect_global_id_integrity_issues(
-            [_El(good), _El(good), _El("bad"), _El("")]
-        )
+        issues = collect_global_id_integrity_issues([_El(good), _El(good), _El("bad"), _El("")])
         rule_ids = {i.rule_id for i in issues}
         self.assertIn("AEROBIM-IFC-GUID-DUPLICATE", rule_ids)
         self.assertIn("AEROBIM-IFC-GUID-INVALID", rule_ids)
