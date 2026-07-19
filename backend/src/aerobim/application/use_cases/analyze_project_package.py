@@ -1085,9 +1085,7 @@ class AnalyzeProjectPackageUseCase:
                             quantity_b=req.quantity,
                         )
                         severity = self._cross_doc_severity
-                    match_method = (
-                        "entity+pset+prop" if property_set else "entity+prop"
-                    )
+                    match_method = "entity+pset+prop" if property_set else "entity+prop"
                     issues.append(
                         ValidationIssue(
                             rule_id=f"CROSS-DOC-{entity}-{prop}",
