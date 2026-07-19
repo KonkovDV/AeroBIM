@@ -56,8 +56,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - name: Install backend dependencies
@@ -99,7 +99,7 @@ jobs:
             > ../artifacts/release-readiness/benchmark-threshold-evaluation.json
           cat ../artifacts/release-readiness/benchmark-threshold-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: release-readiness-benchmark-artifacts
           path: |
@@ -115,11 +115,11 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: "20"
           cache: npm
@@ -145,7 +145,7 @@ jobs:
             --output-dir ../frontend/artifacts/browser-smoke-ci \
             > ../artifacts/release-readiness/live-review-smoke.json
       - name: Upload live smoke artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: release-readiness-live-smoke-artifacts
           path: |
