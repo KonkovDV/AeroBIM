@@ -179,11 +179,17 @@ class FilesystemAuditStore:
     ) -> ValidationReport:
         keys = artifact_keys if artifact_keys is not None else []
         ifc_object_key = report.ifc_object_key or self._materialize_ifc_source(
-            report.report_id, report.ifc_path, artifact_keys=keys
+            report.report_id,
+            report.ifc_path,
+            artifact_keys=keys,
+            tenant_id=report.tenant_id,
         )
         drawing_assets = tuple(
             self._materialize_drawing_assets(
-                report.report_id, report.drawing_assets, artifact_keys=keys
+                report.report_id,
+                report.drawing_assets,
+                artifact_keys=keys,
+                tenant_id=report.tenant_id,
             )
         )
         return ValidationReport(
@@ -233,16 +239,37 @@ class FilesystemAuditStore:
         ]
         return data
 
+    def _tenant_prefixed_key(
+        self,
+        *,
+        kind: str,
+        report_id: str,
+        name: str,
+        tenant_id: str | None,
+    ) -> str:
+        relative = f"{kind}/{report_id}/{name}"
+        tenant = (tenant_id or "").strip()
+        if not tenant:
+            return relative
+        safe = "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in tenant)
+        return f"tenants/{safe}/{relative}"
+
     def _materialize_ifc_source(
         self,
         report_id: str,
         ifc_path: Path,
         *,
         artifact_keys: list[str] | None = None,
+        tenant_id: str | None = None,
     ) -> str | None:
         if not ifc_path.exists() or not ifc_path.is_file():
             return None
-        object_key = f"ifc-sources/{report_id}/{ifc_path.name}"
+        object_key = self._tenant_prefixed_key(
+            kind="ifc-sources",
+            report_id=report_id,
+            name=ifc_path.name,
+            tenant_id=tenant_id,
+        )
         self._object_store.put_bytes(
             object_key,
             ifc_path.read_bytes(),
@@ -258,6 +285,7 @@ class FilesystemAuditStore:
         drawing_assets: tuple[DrawingAsset, ...],
         *,
         artifact_keys: list[str] | None = None,
+        tenant_id: str | None = None,
     ) -> list[DrawingAsset]:
         if not drawing_assets:
             return []
@@ -272,7 +300,11 @@ class FilesystemAuditStore:
             if asset.source_path is None:
                 persisted_assets.append(asset)
                 continue
-            persisted = self._persist_document_asset(report_id, asset)
+            persisted = self._persist_document_asset(
+                report_id,
+                asset,
+                tenant_id=tenant_id,
+            )
             persisted_assets.extend(persisted)
             if artifact_keys is not None:
                 for item in persisted:
@@ -284,6 +316,8 @@ class FilesystemAuditStore:
         self,
         report_id: str,
         asset: DrawingAsset,
+        *,
+        tenant_id: str | None = None,
     ) -> list[DrawingAsset]:
         try:
             import pymupdf
@@ -299,7 +333,15 @@ class FilesystemAuditStore:
             raise FileNotFoundError(source_path)
 
         if source_path.suffix.lower() != ".pdf":
-            return [self._persist_raster_asset(report_id, asset, source_path, pymupdf)]
+            return [
+                self._persist_raster_asset(
+                    report_id,
+                    asset,
+                    source_path,
+                    pymupdf,
+                    tenant_id=tenant_id,
+                )
+            ]
 
         persisted_assets: list[DrawingAsset] = []
         with pymupdf.open(source_path) as document:
@@ -315,6 +357,7 @@ class FilesystemAuditStore:
                     report_id,
                     stored_filename,
                     pix.tobytes("png"),
+                    tenant_id=tenant_id,
                 )
                 persisted_assets.append(
                     DrawingAsset(
@@ -336,6 +379,8 @@ class FilesystemAuditStore:
         asset: DrawingAsset,
         source_path: Path,
         pymupdf_module,
+        *,
+        tenant_id: str | None = None,
     ) -> DrawingAsset:
         suffix = source_path.suffix.lower()
         if suffix in {".png", ".jpg", ".jpeg", ".webp"}:
@@ -352,6 +397,7 @@ class FilesystemAuditStore:
                 stored_filename,
                 payload,
                 content_type=media_type,
+                tenant_id=tenant_id,
             )
             width = asset.coordinate_width
             height = asset.coordinate_height
@@ -380,6 +426,7 @@ class FilesystemAuditStore:
             report_id,
             stored_filename,
             pix.tobytes("png"),
+            tenant_id=tenant_id,
         )
         return DrawingAsset(
             asset_id=asset.asset_id,
@@ -399,8 +446,14 @@ class FilesystemAuditStore:
         payload: bytes,
         *,
         content_type: str = "image/png",
+        tenant_id: str | None = None,
     ) -> str:
-        object_key = f"drawing-assets/{report_id}/{stored_filename}"
+        object_key = self._tenant_prefixed_key(
+            kind="drawing-assets",
+            report_id=report_id,
+            name=stored_filename,
+            tenant_id=tenant_id,
+        )
         self._object_store.put_bytes(object_key, payload, content_type=content_type)
         return object_key
 
