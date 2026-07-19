@@ -37,16 +37,23 @@ artifacts/*
 # Local operator artifacts
 .local/
 
-# Operator AI session prompts (never publish — local only)
+# Operator / debug (not TechLab jury surface)
+docs/archive/
+docs/ops/
+docs/evaluation/
 docs/prompts/
-
-# Red Team phase deltas / deep-audit scratch (not public GitHub)
+docs/openapi.json
+ops/
 audit/reports/RED_TEAM_*.md
 audit/reports/RT_HYPERDEEP_*.md
 audit/reports/REDTEAM_*.md
 audit/reports/P0_EXECUTION_*.md
 audit/reports/PHASE0_AUDIT_*.md
 audit/evidence/*.txt
+audit/evidence/phase*-command-results-*.json
+audit/evidence/baseline-command-results-*.json
+audit/evidence/redteam-*.json
+audit/evidence/phase10-*.json
 
 # Samolet / customer pilot (never commit NDA corpus)
 samples/benchmarks/project-package-samolet-pilot-v1.json

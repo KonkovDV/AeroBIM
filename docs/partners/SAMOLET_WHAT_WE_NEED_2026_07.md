@@ -42,8 +42,8 @@ Samolet supplies **truth boundaries**, **corpus**, and **people** — see RU doc
 ## Related
 
 - [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md)  
-- [`../samolet-pilot-intake-checklist-2026.md`](../samolet-pilot-intake-checklist-2026.md)  
-- [`../pilot-kpi-protocol-2026.md`](../pilot-kpi-protocol-2026.md)
+- [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)  
+- [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)
 
 ## Drawing AI posture (retained local SSOT)
 

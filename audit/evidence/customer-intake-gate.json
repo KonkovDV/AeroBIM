@@ -27,15 +27,14 @@
   },
   "next_actions": [
     "Deliver customer files to gitignored samples/customer/",
-    "Follow docs/ops/intake-precision-runbook-2026.md",
-    "Follow docs/samolet-pilot-intake-checklist-2026.md"
+    "Run dual-human adjudication + aerobim-validate-customer-intake-gate",
+    "Keep checkpoint NO_GO until RT-001/002/003 evidenced"
   ],
   "references": [
-    "docs/evaluation/DETECTION_PRECISION_PROTOCOL_2026.md",
-    "docs/ops/intake-precision-runbook-2026.md",
-    "docs/samolet-pilot-intake-checklist-2026.md",
+    "samples/customer/README.md",
     "audit/reports/CLAIMS_LOCK_2026_07_17.md",
-    "docs/evidence/internal/cde-import-proof/STATUS.json",
+    "audit/reports/CRITICAL_BLOCKERS.md",
+    "docs/pilot-claim-boundary-2026.md",
     "audit/evidence/cde-import-proof/STATUS.json",
     "backend/src/aerobim/tools/measure_adjudicator_agreement.py"
   ]

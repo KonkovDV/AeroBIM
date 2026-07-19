@@ -225,7 +225,7 @@ basis:
 **ТР-36.** Extraction gate: `evaluate_extraction --min-macro-f1 0.70` (fixture corpus).  
 **ТР-37.** Detection harness: `evaluate_detection_precision` с порогами пилота (≥0.6 interim); publishable — только с agreement.  
 **ТР-38.** Frontend: vitest; не заявлять «всегда в CI», если не wired.  
-**ТР-39.** Docker-compose + OpenAPI (`docs/openapi.json`) + semver / RELEASE_POLICY.  
+**ТР-39.** Docker-compose + live OpenAPI (`GET /openapi.json`) + semver / RELEASE_POLICY.  
 **ТР-40.** Воспроизводимость: frozen tags, REPRODUCIBILITY-2026, CITATION.cff.  
 **ТР-41.** SECURITY.md процесс; лицензии зависимостей совместимы с MIT.  
 **ТР-42.** Anti-stub: фейковый I/O только с `@sota-stub` + запись в KNOWN_BUGS.
@@ -247,7 +247,7 @@ basis:
 6. **Экспорт:** HTML, JSON, BCF 2.1 ZIP.  
 7. **Передача** проектировщику; эксперт несёт ответственность (HITL).
 
-**ТР-43.** Demo-path воспроизводим по `docs/ops/demo-path-runbook-2026.md` (или актуальному ops runbook).  
+**ТР-43.** Demo-path воспроизводим по корневому README + `samples/benchmarks/` (TechLab demo packs).  
 **Критерий:** сценарий 8–12 мин без нарушения Claims Lock.
 
 ### 7.2 Что считается «готовым» для жюри vs roadmap
@@ -389,7 +389,7 @@ basis:
 
 **ТР-55.** Двойная слепая разметка → adjudication CSV → `labels.json` → `measure_adjudicator_agreement` → `evaluate_detection_precision --require-publishable --agreement-json`.  
 **ТР-56.** Intake: `validate_customer_intake_gate` (evidence `{path,sha256}`).  
-**Критерий:** runbook `docs/ops/intake-precision-runbook-2026.md`.
+**Критерий:** intake precision protocol + `aerobim-validate-customer-intake-gate` (customer corpus local).
 
 ---
 

@@ -9,7 +9,7 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 1. README.md
 2. docs/TIER0_INDEX.md · docs/README.md
 3. docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md
-4. docs/15-local-quality-gate.md
+4. docs/pilot-claim-boundary-2026.md
 5. SECURITY.md · audit/reports/CLAIMS_LOCK_2026_07_17.md
 
 ## Contribution Principles
@@ -63,7 +63,7 @@ python -m ruff format src tests
 
 ## Git Commits (single author)
 
-Do not use commit flows that inject `Co-authored-by:` trailers (see [`docs/contributor-git-2026.md`](docs/contributor-git-2026.md)).
+Do not use commit flows that inject `Co-authored-by:` trailers.
 
 1. Commit from your shell or the VS Code task **AeroBIM: commit (single author)**.
 2. Or run:
@@ -73,7 +73,7 @@ cd AeroBIM
 powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "type: description"
 ```
 
-Details: [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
+Enable hooks: `git config core.hooksPath .githooks`.
 
 ## Pull Request Checklist
 
@@ -88,7 +88,7 @@ Details: [docs/contributor-git-2026.md](docs/contributor-git-2026.md).
 For public API or report-contract changes:
 
 - keep backward-compatibility intent explicit;
-- update docs/openapi.json and related API documentation;
+- document OpenAPI via the live `/openapi.json` endpoint (do not commit generated OpenAPI dumps);
 - highlight migration impact in the PR description.
 
 ## License

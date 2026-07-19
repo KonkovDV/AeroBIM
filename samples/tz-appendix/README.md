@@ -1,7 +1,7 @@
 # TZ Appendix — Data Pack Skeleton
 
 Maps the TZ «Приложения и источники данных» to repo fixtures.
-Customer NDA packs stay outside git — see `docs/LOCAL_OPERATOR_ARTIFACTS.md`.
+Customer NDA packs stay outside git — see `samples/customer/README.md` and root Claims Lock.
 
 | Folder | TZ appendix | Points to |
 |--------|-------------|-----------|

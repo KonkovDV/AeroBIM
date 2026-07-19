@@ -108,7 +108,9 @@ python -m aerobim.tools.export_runtime_baseline
 SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK_2026_07_17.md](audit/reports/CLAIMS_LOCK_2026_07_17.md).  
 Воспроизводимость: [docs/REPRODUCIBILITY-2026.md](docs/REPRODUCIBILITY-2026.md).
 
-## Документация (публичная поверхность GitHub)
+## Документация (пакет для жюри Техлаба)
+
+На GitHub — **только** код и материалы для жюри Task 07. Служебные runbook’и, archive и Red Team dumps не публикуются.
 
 | Нужно | Документ |
 |------|----------|
@@ -117,10 +119,8 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 | Стратегия × Самолёт | [`docs/samolet.md`](docs/samolet.md) |
 | ТЗ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
 | Блокеры / NO_GO | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) |
+| Граница утверждений | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) |
 | Архитектура | [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) |
-| Гигиена репозитория | [`docs/REPOSITORY-HYGIENE-2026.md`](docs/REPOSITORY-HYGIENE-2026.md) |
-
-Red Team phase-отчёты и AI-промпты **не** публикуются на GitHub — см. [`docs/LOCAL_OPERATOR_ARTIFACTS.md`](docs/LOCAL_OPERATOR_ARTIFACTS.md).
 
 ## API (основное)
 
@@ -137,8 +137,6 @@ Red Team phase-отчёты и AI-промпты **не** публикуются
 git config core.hooksPath .githooks
 powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: ..."
 ```
-
-См. [docs/contributor-git-ru.md](docs/contributor-git-ru.md).
 
 ## Лицензия
 

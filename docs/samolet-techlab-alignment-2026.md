@@ -75,7 +75,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 
 ## 4. Recommended pilot scope (repeatable scenario)
 
-Aligns with internal dossier and [`pilot-kpi-protocol-2026.md`](pilot-kpi-protocol-2026.md):
+Aligns with Claims Lock / claim-boundary KPI posture:
 
 ```mermaid
 flowchart LR

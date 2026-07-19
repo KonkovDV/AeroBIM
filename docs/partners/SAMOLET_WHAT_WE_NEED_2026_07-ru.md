@@ -62,7 +62,7 @@ CIB W78 2024 и industry notes (ACCA/Solibri): IDS закрывает **алфа
 
 Практика VDC 2026 (и оценки FP до ~60% у «сырого» clash): считают **decision velocity**, долю подтверждённых findings, готовность модели к стройке — не сырой счётчик пересечений.
 
-Следствие: от Самолёта нужны **люди на adjudication** и согласие на interim KPI **TP ≥ 60%**, а не немедленные «>90%» без разметки (90% — цель после labeled corpus, см. [`../pilot-kpi-protocol-2026.md`](../pilot-kpi-protocol-2026.md)).
+Следствие: от Самолёта нужны **люди на adjudication** и согласие на interim KPI **TP ≥ 60%**, а не немедленные «>90%» без разметки (90% — цель после labeled corpus, см. [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)).
 
 ---
 
@@ -165,7 +165,7 @@ CIB W78 2024 и industry notes (ACCA/Solibri): IDS закрывает **алфа
 | Инженер-эксперт (adjudicator) | **≥2** | Разметка TP/FP по замечаниям AeroBIM |
 | Нормоконтроль / ГИП (опц.) | 1 | Согласование rule pack |
 
-**Baseline:** часы ручной проверки **того же** комплекта (до или параллельно пилоту) — иначе KPI «−20% времени» не считается ([`../pilot-kpi-protocol-2026.md`](../pilot-kpi-protocol-2026.md)).
+**Baseline:** часы ручной проверки **того же** комплекта (до или параллельно пилоту) — иначе KPI «−20% времени» не считается ([`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)).
 
 **Adjudication:** журнал по [`../samolet-kpi-adjudication-template-2026.md`](../samolet-kpi-adjudication-template-2026.md); целевой interim **TP/(TP+FP) ≥ 60%**.
 
@@ -245,8 +245,8 @@ CIB W78 2024 и industry notes (ACCA/Solibri): IDS закрывает **алфа
 **AeroBIM SSOT**
 
 - [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md)  
-- [`../samolet-pilot-intake-checklist-2026.md`](../samolet-pilot-intake-checklist-2026.md)  
-- [`../pilot-kpi-protocol-2026.md`](../pilot-kpi-protocol-2026.md)  
+- [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)  
+- [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)  
 - [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)
 
 ## Drawing AI posture (retained local SSOT)
