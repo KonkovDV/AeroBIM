@@ -1,6 +1,6 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
-**Operational freeze SHA:** `f3340a7` (2026-07-19 docs-links + jury pack) — refresh when claiming metrics.  
+**Operational freeze SHA:** `16110f9` (2026-07-19 Red Team docs refresh) — refresh when claiming metrics.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
