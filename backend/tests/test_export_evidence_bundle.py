@@ -40,9 +40,18 @@ class ExportEvidenceBundleTests(unittest.TestCase):
                 "findings.json",
                 "capability_coverage.json",
                 "timings.json",
+                "report.html",
+                "logs_snippet.txt",
                 "README.md",
             ):
                 self.assertTrue((output_dir / name).is_file(), msg=name)
+
+            self.assertTrue(str(manifest.get("code_version", "")).startswith("aerobim-backend@"))
+            self.assertIn("report.html", manifest.get("artifacts") or {})
+            self.assertTrue((output_dir / "report.html").read_text(encoding="utf-8"))
+            self.assertIn(
+                "summary_passed=", (output_dir / "logs_snippet.txt").read_text(encoding="utf-8")
+            )
 
             coverage = json.loads(
                 (output_dir / "capability_coverage.json").read_text(encoding="utf-8")

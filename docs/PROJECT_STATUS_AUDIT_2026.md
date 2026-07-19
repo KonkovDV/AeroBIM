@@ -16,11 +16,11 @@ claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evid
 
 | Gate | Result | Evidence class |
 |------|--------|----------------|
-| `ruff format --check src tests` | **PASS** (246 files) | runtime |
+| `ruff format --check src tests` | **PASS** (249 files) | runtime |
 | `ruff check src tests` | **PASS** | runtime |
-| `mypy src` | **PASS** (150 files) | runtime |
+| `mypy src` | **PASS** (151 files) | runtime |
 | `pytest tests -q` | **656 passed, 4 skipped** (660 collected; 2026-07-19 local) | test |
-| `evaluate_extraction --min-macro-f1 0.70` | Expected PASS on RU fixtures (macro_f1≈0.86 baseline) | benchmark/fixture |
+| `evaluate_extraction --min-macro-f1 0.70` | **PASS** (macro_f1≈0.86 on RU fixtures) | benchmark/fixture |
 | Frontend vitest | **25 passed** (local / release-readiness; not main CI job) | test |
 | Docker smoke | **NOT_RUN** in this session | needs env |
 | Live review smoke | **NOT_RUN** in this session | needs env |
