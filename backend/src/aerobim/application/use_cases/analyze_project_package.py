@@ -632,6 +632,9 @@ class AnalyzeProjectPackageUseCase:
                 CapabilityState.FAILED,
                 ids_audit_issues[0].message if ids_audit_issues else "IDS audit failed",
             )
+        elif any(issue.rule_id == "AEROBIM-IDS-ERROR" for issue in ids_issues):
+            ids_error = next(issue for issue in ids_issues if issue.rule_id == "AEROBIM-IDS-ERROR")
+            ids_capability = CapabilityStatus(CapabilityState.FAILED, ids_error.message)
         else:
             ids_capability = CapabilityStatus(CapabilityState.OK)
 
@@ -757,8 +760,29 @@ class AnalyzeProjectPackageUseCase:
         if request.ids_path is None:
             return []
         if self._ids_validator is None:
-            raise RuntimeError("IDS validation requested but no ids validator is configured")
-        return self._ids_validator.validate(request.ids_path, request.ifc_path)
+            # Requested IDS must fail closed — never crash the package contour.
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-IDS-CAPABILITY",
+                    severity=Severity.ERROR,
+                    message="IDS validation requested but no ids validator is configured",
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="ids",
+                )
+            ]
+        try:
+            return list(self._ids_validator.validate(request.ids_path, request.ifc_path))
+        except Exception as exc:  # noqa: BLE001 — adapter I/O must not silent-pass
+            _logger.exception("IDS validation failed for %s", request.ids_path)
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-IDS-ERROR",
+                    severity=Severity.ERROR,
+                    message=f"IDS validation infrastructure failure: {exc}",
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="ids",
+                )
+            ]
 
     def _apply_openrebar_provenance_policy(
         self,
@@ -912,13 +936,15 @@ class AnalyzeProjectPackageUseCase:
 
     def _collect_drawing_annotations(
         self, request: ValidationRequest
-    ) -> tuple[list[DrawingAnnotation], list[DrawingRegionRef]]:
+    ) -> tuple[list[DrawingAnnotation], list[DrawingRegionRef], int]:
         annotations: list[DrawingAnnotation] = []
         regions: list[DrawingRegionRef] = []
+        raster_yield = 0
         for drawing_source in request.drawing_sources:
             if self._has_structured_drawing_input(drawing_source):
                 annotations.extend(self._drawing_analyzer.analyze(drawing_source))
             if self._is_raster_drawing_source(drawing_source):
+                before = len(annotations)
                 if self._multimodal_drawing_pipeline is not None:
                     result = self._multimodal_drawing_pipeline.analyze(drawing_source, mode="auto")
                     annotations.extend(result.annotations)
@@ -926,7 +952,8 @@ class AnalyzeProjectPackageUseCase:
                 elif self._raster_drawing_analyzer is not None:
                     annotations.extend(self._collect_raster_annotations(drawing_source))
                 # else: requested raster without analyzer → empty yield; FAILED in capabilities
-        return annotations, regions
+                raster_yield += len(annotations) - before
+        return annotations, regions, raster_yield
 
     def _collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
         assets: list[DrawingAsset] = []
@@ -965,10 +992,18 @@ class AnalyzeProjectPackageUseCase:
             raise RuntimeError(
                 "Raster drawing analysis requested but no raster drawing analyzer is configured"
             )
-        return self._raster_drawing_analyzer.analyze_image(
-            drawing_source.path,
-            sheet_id=drawing_source.sheet_id,
-        )
+        try:
+            return list(
+                self._raster_drawing_analyzer.analyze_image(
+                    drawing_source.path,
+                    sheet_id=drawing_source.sheet_id,
+                )
+            )
+        except Exception as exc:  # noqa: BLE001 — empty/unreadable PDF must not crash
+            _logger.exception("Raster drawing analysis failed for %s", drawing_source.path)
+            # Zero yield → capabilities.raster FAILED (not silent OK / PASS).
+            _ = exc
+            return []
 
     def _has_structured_drawing_input(self, drawing_source: DrawingSource) -> bool:
         if drawing_source.text.strip():

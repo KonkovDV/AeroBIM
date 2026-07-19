@@ -45,4 +45,8 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`ifc-compatibility-matrix.md`](ifc-compatibility-matrix.md) | IFC schema support |
 | [`evidence/README.md`](evidence/README.md) | Citeable fixtures |
 | [`../audit/reports/README.md`](../audit/reports/README.md) | Public audit index |
+| [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md) | Self-audit / gates |
+| [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Claims ↔ evidence |
+| [`benchmark-evidence-2026.md`](benchmark-evidence-2026.md) | Fixture metric boundaries |
+| [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md) | Samolet pilot phases |
 | [`TIER0_INDEX.md`](TIER0_INDEX.md) | Compact map |

@@ -21,6 +21,26 @@ Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + 
 
 AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidence for *Shared*, not contractual *Published* authorization). It fuses IFC property/quantity checks, IDS, drawings, and calculation text into a single report with explicit capability honesty, finding provenance, and BCF **ZIP export**. Independent CDE import and customer accuracy claims remain **out of scope until evidenced**. Architecture SSOT: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
+## Status map (honest)
+
+| Bucket | Meaning |
+|---|---|
+| **What works** | Fixture/repo-proven; Shared-gate honesty |
+| **Experimental** | Code present; not customer-proven |
+| **Planned** | Design only / deferred Wave 2+ |
+| **Needs customer** | RT-001/002/003 — checkpoint **NO_GO** |
+| **Not claimed** | Forbidden wording until dual evidence |
+
+**What works:** project-package analyze; IFC/IDS/cross-doc; `summary.passed` Shared-gate ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); pilot/production fail-closed profiles; ACL 404; SSRF outbound guard; provenance stamp/persist; BCF 2.1/3.0 structural ZIP; HITL review-events; evidence bundle CLI (`python -m aerobim.tools.export_evidence_bundle`); **656** pytest passed / **4** skipped (local 2026-07-19); frontend vitest **25**.
+
+**Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold.
+
+**Planned:** package outcome enum (`PASS` / `PASS_WITH_WARNINGS` / `BLOCKED` / `FAILED` / `REVIEW_REQUIRED`); Stage-3 finding field expansion.
+
+**Needs customer:** RT-001 accuracy corpus · RT-002 approved norms · RT-003 federated MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)).
+
+**Not claimed:** product accuracy >90%; customer ≤30 min SLA; native DWG; MEP system clash delivered; independent calc *correctness*; CDE-ready BCF. See [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md) · [benchmark-evidence](docs/benchmark-evidence-2026.md).
+
 ## Key Capabilities
 
 Statuses below are **repository / fixture** capabilities unless marked otherwise. Optional extras and fail-closed policies govern whether a green `summary.passed` is honest.
@@ -177,6 +197,9 @@ python -m aerobim.tools.verify_bcf_structural_handoff
 python -m aerobim.tools.run_ablation_study
 python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
 python -m aerobim.tools.export_runtime_baseline
+python -m aerobim.tools.export_evidence_bundle \
+  --pack ../samples/benchmarks/project-package-techlab-demo.json \
+  --output ../artifacts/evidence-bundle/techlab-demo
 ```
 
 | Topic | Document |
@@ -185,6 +208,10 @@ python -m aerobim.tools.export_runtime_baseline
 | Claims × evidence matrix | [audit/reports/CLAIMS_EVIDENCE_MATRIX.md](audit/reports/CLAIMS_EVIDENCE_MATRIX.md) |
 | Critical blockers / checkpoint | [audit/reports/CRITICAL_BLOCKERS.md](audit/reports/CRITICAL_BLOCKERS.md) |
 | Claim boundary (pilot / publication) | [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) |
+| Project status audit | [docs/PROJECT_STATUS_AUDIT_2026.md](docs/PROJECT_STATUS_AUDIT_2026.md) |
+| Capability × claim matrix | [docs/capability-claim-matrix-2026.md](docs/capability-claim-matrix-2026.md) |
+| Benchmark evidence boundaries | [docs/benchmark-evidence-2026.md](docs/benchmark-evidence-2026.md) |
+| Samolet pilot protocol | [docs/pilot-protocol-samolet-2026.md](docs/pilot-protocol-samolet-2026.md) |
 | Reproducibility (FAIR) | [docs/REPRODUCIBILITY-2026.md](docs/REPRODUCIBILITY-2026.md) |
 | Extraction corpus / IAA | [`samples/benchmarks/annotation/README.md`](samples/benchmarks/annotation/README.md) · RU GT in `samples/benchmarks/` |
 | Benchmark packs | [samples/benchmarks/README.md](samples/benchmarks/README.md) |
@@ -314,6 +341,10 @@ Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architectu
 | TZ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
 | Claims lock | [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
 | Checkpoint | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · **NO_GO** |
+| Project status audit | [`docs/PROJECT_STATUS_AUDIT_2026.md`](docs/PROJECT_STATUS_AUDIT_2026.md) |
+| Capability × claim matrix | [`docs/capability-claim-matrix-2026.md`](docs/capability-claim-matrix-2026.md) |
+| Benchmark evidence | [`docs/benchmark-evidence-2026.md`](docs/benchmark-evidence-2026.md) |
+| Pilot protocol | [`docs/pilot-protocol-samolet-2026.md`](docs/pilot-protocol-samolet-2026.md) |
 | Claim boundary | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) |
 | Architecture | [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) |
 | Alignment R1–R15 | [`docs/samolet-techlab-alignment-2026.md`](docs/samolet-techlab-alignment-2026.md) |

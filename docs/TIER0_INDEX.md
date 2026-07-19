@@ -22,6 +22,10 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Red Team
 | [`architecture/ADR-001-verdict-ownership-2026.md`](architecture/ADR-001-verdict-ownership-2026.md) | `summary.passed` ownership |
 | [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | R1–R15 |
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness |
+| [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md) | Self-audit / gate status |
+| [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Allowed vs forbidden claims |
+| [`benchmark-evidence-2026.md`](benchmark-evidence-2026.md) | Fixture metrics boundaries |
+| [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md) | Pilot phases 0–5 |
 | [`README.md`](README.md) | Full jury map |
 
 Operator / debug / archive documentation is **not** on GitHub (kept in `.local/engineering-docs/`).
