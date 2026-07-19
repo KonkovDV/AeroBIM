@@ -25,4 +25,4 @@
 
 Inventory JSON: [`../evidence/claims-inventory.json`](../evidence/claims-inventory.json)  
 Intake gate (all false): [`../evidence/customer-intake-gate.json`](../evidence/customer-intake-gate.json)  
-Delta report: [`RED_TEAM_DELTA_2026_07_17.md`](CRITICAL_BLOCKERS.md)
+Open blockers / checkpoint: [`CRITICAL_BLOCKERS.md`](CRITICAL_BLOCKERS.md)

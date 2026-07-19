@@ -46,5 +46,5 @@
 - Intake gates: `audit/evidence/customer-intake-gate.json`
 - System honesty API: `GET /v1/system/capabilities`
 - TZ: `docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`
-- Hyperdeep Phase 0: `audit/reports/RT_HYPERDEEP_PHASE0_2026_07_18.md`
-- Hyperdeep plan: `audit/reports/REDTEAM_HYPERDEEP_PLAN_2026_07_18.md`
+- Public audit index: `audit/reports/README.md`
+- Red Team phase deltas: local only (`.local/engineering-docs/audit-reports/`) — not on GitHub

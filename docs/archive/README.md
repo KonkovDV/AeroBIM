@@ -2,12 +2,14 @@
 title: "Archived Documentation"
 status: archive
 version: "2.0.0"
-last_updated: "2026-07-17"
+last_updated: "2026-07-19"
 ---
 
 # Archived documentation
 
 Historical MicroPhoenix extraction and rebaseline snapshots. **Do not start here** — use [`../TIER0_INDEX.md`](../TIER0_INDEX.md) for Samolet Task 07.
+
+Root stubs `docs/01`–`11` were removed from the public tree (2026-07-19); read archive files here only.
 
 ## MicroPhoenix / rebaseline index
 
