@@ -8,10 +8,13 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
+import subprocess
 from dataclasses import asdict, is_dataclass, replace
 from datetime import UTC, datetime
 from enum import Enum
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -24,7 +27,7 @@ from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_ro
 _SCHEMA_VERSION = "1.0.0"
 _FORBIDDEN = (
     "customer accuracy >90%",
-    "customer SLA ≤30 min",
+    "customer SLA <=30 min",
     "CDE BCF import proven",
     "MEP system clash delivered",
     "native DWG ready",
@@ -113,6 +116,142 @@ def _derived_outcome(report: Any, coverage: dict[str, Any]) -> str:
     return "FAILED"
 
 
+def _resolve_code_version(repo: Path) -> dict[str, str]:
+    package_version = "unknown"
+    try:
+        package_version = version("aerobim-backend")
+    except PackageNotFoundError:
+        package_version = "0.1.0-dev"
+    git_sha = ""
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=repo,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if completed.returncode == 0:
+            git_sha = completed.stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        git_sha = ""
+    label = f"aerobim-backend@{package_version}"
+    if git_sha:
+        label = f"{label}+{git_sha}"
+    return {"label": label, "package_version": package_version, "git_sha": git_sha}
+
+
+def _render_bundle_html(
+    *,
+    report: Any,
+    pack_id: str,
+    derived: str,
+    coverage: dict[str, Any],
+    code_version: str,
+) -> str:
+    esc = html.escape
+    status = "PASSED" if report.summary.passed else "FAILED"
+    rows: list[str] = []
+    for issue in list(report.issues)[:200]:
+        rows.append(
+            "<tr>"
+            f"<td>{esc(str(getattr(issue, 'severity', '')))}</td>"
+            f"<td>{esc(str(getattr(issue, 'rule_id', '')))}</td>"
+            f"<td>{esc(str(getattr(issue, 'category', '')))}</td>"
+            f"<td>{esc(str(getattr(issue, 'message', '')))}</td>"
+            "</tr>"
+        )
+    if not rows:
+        rows.append("<tr><td colspan='4'>No findings</td></tr>")
+    cap_rows: list[str] = []
+    fields = coverage.get("fields") or {}
+    if isinstance(fields, dict):
+        for name, status_obj in sorted(fields.items()):
+            if isinstance(status_obj, dict):
+                state = str(status_obj.get("status") or "")
+                reason = str(status_obj.get("reason") or "")
+            else:
+                state = str(status_obj)
+                reason = ""
+            cap_rows.append(
+                f"<tr><td>{esc(name)}</td><td>{esc(state)}</td><td>{esc(reason)}</td></tr>"
+            )
+    if not cap_rows:
+        cap_rows.append("<tr><td colspan='3'>No capability fields</td></tr>")
+    return f"""<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>AeroBIM evidence — {esc(pack_id)}</title>
+<style>
+body {{ font-family: Segoe UI, sans-serif; margin: 1.5rem; color: #1a1a1a; }}
+.pass {{ color: #0a7a32; }} .fail {{ color: #b00020; }}
+table {{ border-collapse: collapse; width: 100%; margin: 1rem 0; }}
+th, td {{ border: 1px solid #ccc; padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }}
+th {{ background: #f4f4f4; }}
+small {{ color: #555; }}
+</style></head><body>
+<h1>AeroBIM evidence bundle</h1>
+<p><small>code: {esc(code_version)} · Shared-gate only (ADR-001)</small></p>
+<p>Pack: <code>{esc(pack_id)}</code> · Report: <code>{esc(report.report_id)}</code></p>
+<p class="{"pass" if report.summary.passed else "fail"}">
+  summary.passed={status} · derived_outcome={esc(derived)} ·
+  errors={report.summary.error_count} warnings={report.summary.warning_count}
+  issues={report.summary.issue_count}
+</p>
+<h2>Capability coverage</h2>
+<table><thead><tr><th>Capability</th><th>Status</th><th>Reason</th></tr></thead>
+<tbody>{"".join(cap_rows)}</tbody></table>
+<h2>Findings (first 200)</h2>
+<table><thead><tr><th>Severity</th><th>Rule</th><th>Category</th><th>Message</th></tr></thead>
+<tbody>{"".join(rows)}</tbody></table>
+</body></html>
+"""
+
+
+def _write_logs_snippet(
+    *,
+    output_dir: Path,
+    pack_id: str,
+    report: Any,
+    derived: str,
+    elapsed_ms: float,
+    code_version: str,
+) -> None:
+    lines = [
+        f"generated_at={datetime.now(UTC).isoformat()}",
+        f"code_version={code_version}",
+        f"pack_id={pack_id}",
+        f"report_id={report.report_id}",
+        f"summary_passed={bool(report.summary.passed)}",
+        f"derived_outcome={derived}",
+        f"issue_count={report.summary.issue_count}",
+        f"error_count={report.summary.error_count}",
+        f"warning_count={report.summary.warning_count}",
+        f"analyze_elapsed_ms={elapsed_ms}",
+        "claim_boundary=summary.passed is Shared-gate (ADR-001), not Shared→Published",
+    ]
+    caps = getattr(report, "capabilities", None)
+    if caps is not None:
+        for name in (
+            "clash",
+            "ids",
+            "ifc_validation",
+            "raster",
+            "dwg_dxf",
+            "mep_system_clash",
+            "calculation_match",
+            "quantity",
+        ):
+            status = getattr(caps, name, None)
+            if status is None:
+                continue
+            state = getattr(status, "status", status)
+            state_value = getattr(state, "value", state)
+            reason = getattr(status, "reason", None) or ""
+            lines.append(f"capability.{name}={state_value}" + (f" ({reason})" if reason else ""))
+    (output_dir / "logs_snippet.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def export_evidence_bundle(
     *,
     pack_path: Path,
@@ -155,6 +294,7 @@ def export_evidence_bundle(
 
     coverage = _capability_coverage(report)
     derived = _derived_outcome(report, coverage)
+    code_meta = _resolve_code_version(repo)
     report_payload = _json_safe(asdict(report))
     if isinstance(report_payload, dict):
         report_payload["ifc_path"] = str(report.ifc_path)
@@ -163,6 +303,16 @@ def export_evidence_bundle(
     timings = {
         "analyze_elapsed_ms": elapsed_ms,
         "generated_at": datetime.now(UTC).isoformat(),
+    }
+    artifacts = {
+        "manifest.json": True,
+        "report.json": True,
+        "findings.json": True,
+        "capability_coverage.json": True,
+        "timings.json": True,
+        "report.html": True,
+        "logs_snippet.txt": True,
+        "README.md": True,
     }
     manifest = {
         "artifact_type": "aerobim_evidence_bundle",
@@ -185,7 +335,10 @@ def export_evidence_bundle(
             "not Shared→Published / contractual fitness."
         ),
         "timings": timings,
-        "code_version": "aerobim-backend",
+        "code_version": code_meta["label"],
+        "package_version": code_meta["package_version"],
+        "git_sha": code_meta["git_sha"],
+        "artifacts": artifacts,
     }
 
     (output_dir / "manifest.json").write_text(
@@ -205,13 +358,40 @@ def export_evidence_bundle(
     (output_dir / "timings.json").write_text(
         json.dumps(timings, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
+    (output_dir / "report.html").write_text(
+        _render_bundle_html(
+            report=report,
+            pack_id=benchmark_pack.pack_id,
+            derived=derived,
+            coverage=coverage,
+            code_version=code_meta["label"],
+        ),
+        encoding="utf-8",
+    )
+    _write_logs_snippet(
+        output_dir=output_dir,
+        pack_id=benchmark_pack.pack_id,
+        report=report,
+        derived=derived,
+        elapsed_ms=elapsed_ms,
+        code_version=code_meta["label"],
+    )
 
     readme = f"""# AeroBIM evidence bundle
 
 Pack: `{manifest["pack_path"]}`  
 Report: `{report.report_id}`  
 `summary.passed` (Shared-gate): `{manifest["summary_passed"]}`  
-Derived outcome (docs mapping): `{derived}`
+Derived outcome (docs mapping): `{derived}`  
+Code: `{code_meta["label"]}`
+
+## Artifacts
+
+- `manifest.json` — pack identity, hashes, Shared-gate + derived outcome
+- `report.json` / `findings.json` / `capability_coverage.json`
+- `report.html` — offline review surface
+- `timings.json` / `logs_snippet.txt`
+- `README.md` — this file
 
 ## Reproduce
 
@@ -263,7 +443,12 @@ def main() -> None:
         output_dir=args.output,
         storage_dir=args.storage_dir,
     )
-    print(json.dumps({"ok": True, "manifest": manifest}, indent=2, ensure_ascii=False))
+    payload = json.dumps({"ok": True, "manifest": manifest}, indent=2, ensure_ascii=False)
+    try:
+        print(payload)
+    except UnicodeEncodeError:
+        # Windows consoles often use cp1251/cp866; ASCII-escape keeps the CLI usable.
+        print(json.dumps({"ok": True, "manifest": manifest}, indent=2, ensure_ascii=True))
 
 
 if __name__ == "__main__":

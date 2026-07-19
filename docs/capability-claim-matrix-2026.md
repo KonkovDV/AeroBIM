@@ -41,8 +41,11 @@ Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLA
 | Reading | Signals |
 |---|---|
 | PASS | `summary.passed=true` + required caps OK |
-| BLOCKED | required cap not OK under pilot/production |
-| FAILED | deterministic ERROR findings / `passed=false` |
-| REVIEW_REQUIRED | open findings awaiting HITL accept/reject |
+| PASS_WITH_WARNINGS | `passed=true` with non-blocking WARNING findings (expert judgement; enum not shipped) |
+| BLOCKED | `passed=false` because required cap not OK under pilot/production (often `error_count=0`) |
+| FAILED | deterministic ERROR findings / adapter infra failure / `passed=false` |
+| REVIEW_REQUIRED | open findings awaiting HITL accept/reject (`drawing_regions.hitl_required` / review-events) |
+
+Until the package enum lands (Wave 2), experts derive the reading from `summary.passed` + `capabilities.*` + HITL state. Evidence bundles expose the same mapping as `derived_outcome` (`PASS` / `BLOCKED` / `FAILED`).
 
 `summary.passed` remains Shared-gate technical status — **not** Shared→Published.
