@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import time
 from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -41,6 +42,9 @@ from aerobim.domain.persistence import (
 from aerobim.domain.ports import ObjectStore
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 
+_LOCK_ATTEMPTS = 50
+_LOCK_SLEEP_S = 0.02
+
 
 class FilesystemAuditStore:
     """Persists validation reports as JSON files with atomic writes."""
@@ -69,6 +73,8 @@ class FilesystemAuditStore:
             **{**report.__dict__, "issues": stamped_issues},
         )
         artifact_keys: list[str] = []
+        lock_path = self._reports_dir / f"{report.report_id}.save.lock"
+        self._acquire_exclusive_lock(lock_path)
         try:
             persisted_report = self._materialize_report(report, artifact_keys=artifact_keys)
             data = self._serialize_report(persisted_report)
@@ -85,6 +91,21 @@ class FilesystemAuditStore:
         except Exception:
             self._record_orphan(report.report_id, artifact_keys=artifact_keys)
             raise
+        finally:
+            lock_path.unlink(missing_ok=True)
+
+    def _acquire_exclusive_lock(self, lock_path: Path) -> None:
+        for _ in range(_LOCK_ATTEMPTS):
+            try:
+                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                try:
+                    os.write(fd, b"1")
+                finally:
+                    os.close(fd)
+                return
+            except FileExistsError:
+                time.sleep(_LOCK_SLEEP_S)
+        raise RuntimeError(f"Could not acquire report-save lock for {lock_path.name}")
 
     def is_report_committed(self, report_id: str) -> bool:
         return self._commit_marker_path(report_id).exists()

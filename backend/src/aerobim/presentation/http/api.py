@@ -35,6 +35,7 @@ from aerobim.domain.models import (
 from aerobim.domain.object_acl import (
     AuthPrincipal,
     principal_may_access_job,
+    principal_may_access_norm_pack,
     principal_may_access_report,
 )
 from aerobim.domain.review_state_machine import HitlTransitionError, assert_hitl_transition
@@ -331,6 +332,18 @@ def create_http_app(container: Container):
         raise HTTPException(
             status_code=403,
             detail="Object ACL denied: job tenant does not match authenticated tenant",
+        )
+
+    def _assert_norm_pack_access(principal: AuthPrincipal, *, tenant_id: str | None) -> None:
+        if principal_may_access_norm_pack(
+            enforce_object_acl=settings.enforce_object_acl,
+            principal=principal,
+            tenant_id=tenant_id,
+        ):
+            return
+        raise HTTPException(
+            status_code=403,
+            detail="Object ACL denied: norm-pack tenant does not match authenticated tenant",
         )
 
     def _resolve_bound_tenant(
@@ -1062,6 +1075,14 @@ def create_http_app(container: Container):
     ) -> dict[str, object]:
         if not pack_id.strip() or len(pack_id) > 128:
             raise HTTPException(status_code=400, detail="Invalid pack_id")
+        tenant_id = _resolve_bound_tenant(principal)
+        _assert_norm_pack_access(principal, tenant_id=tenant_id)
+        if payload.report_id:
+            _validate_report_id(payload.report_id)
+            linked = audit_store.get(payload.report_id)
+            if linked is None:
+                raise HTTPException(status_code=404, detail=f"Report {payload.report_id} not found")
+            _assert_report_access(linked, principal)
         use_case = container.resolve(Tokens.APPLY_NORM_RULE_HITL_EVENT_USE_CASE)
         base_path = _resolve_safe_path(payload.base_pack_path)
         try:
@@ -1074,6 +1095,7 @@ def create_http_app(container: Container):
                 target_approval_status=payload.target_approval_status,
                 approval_ref=payload.approval_ref,
                 report_id=payload.report_id,
+                tenant_id=tenant_id,
             )
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -1086,8 +1108,10 @@ def create_http_app(container: Container):
     ) -> dict[str, object]:
         if not pack_id.strip() or len(pack_id) > 128:
             raise HTTPException(status_code=400, detail="Invalid pack_id")
+        tenant_id = _resolve_bound_tenant(principal)
+        _assert_norm_pack_access(principal, tenant_id=tenant_id)
         store = container.resolve(Tokens.NORM_RULE_PACK_VERSION_STORE)
-        versions = store.list_versions(pack_id)
+        versions = store.list_versions(pack_id, tenant_id=tenant_id)
         return {"pack_id": pack_id, "versions": [asdict(item) for item in versions]}
 
     @app.get("/v1/reports/{report_id}/review-events")

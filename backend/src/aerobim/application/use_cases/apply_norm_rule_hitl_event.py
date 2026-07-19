@@ -41,6 +41,7 @@ class ApplyNormRuleHitlEventUseCase:
         target_approval_status: NormApprovalStatus | None = None,
         approval_ref: str | None = None,
         report_id: str | None = None,
+        tenant_id: str | None = None,
     ) -> tuple[NormPackVersionInfo, ReviewEvent]:
         if not isinstance(rule_diff, dict) or not rule_diff.get("rule_id"):
             raise ValueError("rule_diff must be an object with rule_id")
@@ -48,6 +49,8 @@ class ApplyNormRuleHitlEventUseCase:
         status = target_approval_status or "draft"
         if status == "customer_approved" and not (approval_ref or "").strip():
             raise ValueError("customer_approved HITL upgrades require a non-empty approval_ref")
+
+        bound_tenant = (tenant_id or "").strip() or None
 
         base_bytes = base_pack_path.read_bytes()
         try:
@@ -60,7 +63,7 @@ class ApplyNormRuleHitlEventUseCase:
             raise ValueError(f"pack_id mismatch: event={pack_id!r} base={payload.get('pack_id')!r}")
 
         parent_version = str(payload.get("version") or "0.0.0")
-        existing = self._versions.list_versions(pack_id)
+        existing = self._versions.list_versions(pack_id, tenant_id=bound_tenant)
         next_index = len(existing) + 1
         new_version = f"{parent_version}+hitl.{next_index}"
 
@@ -107,6 +110,7 @@ class ApplyNormRuleHitlEventUseCase:
             parent_version=parent_version,
             approval_status=status,
             approval_ref=approval_ref,
+            tenant_id=bound_tenant,
         )
 
         event = ReviewEvent(

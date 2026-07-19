@@ -1,4 +1,7 @@
-"""ObjectStore-backed immutable norm-pack version history (P0.3)."""
+"""ObjectStore-backed immutable norm-pack version history (P0.3).
+
+Phase 8 residual: versions are tenant-namespaced when ``tenant_id`` is set.
+"""
 
 from __future__ import annotations
 
@@ -10,19 +13,31 @@ from aerobim.domain.models import NormPackVersionInfo
 from aerobim.domain.ports import ObjectStore
 
 
+def _safe_token(value: str) -> str:
+    return "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in value)
+
+
 class ObjectStoreNormRulePackVersionStore:
     def __init__(self, object_store: ObjectStore, *, index_dir: Path) -> None:
         self._store = object_store
         self._index_dir = index_dir / "norm-pack-versions"
         self._index_dir.mkdir(parents=True, exist_ok=True)
 
-    def _index_path(self, pack_id: str) -> Path:
-        safe = "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in pack_id)
+    def _index_path(self, pack_id: str, *, tenant_id: str | None = None) -> Path:
+        safe = _safe_token(pack_id)
+        tenant = (tenant_id or "").strip()
+        if tenant:
+            tenant_dir = self._index_dir / _safe_token(tenant)
+            tenant_dir.mkdir(parents=True, exist_ok=True)
+            return tenant_dir / f"{safe}.json"
         return self._index_dir / f"{safe}.json"
 
-    def _object_key(self, pack_id: str, version: str) -> str:
-        safe_pack = "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in pack_id)
+    def _object_key(self, pack_id: str, version: str, *, tenant_id: str | None = None) -> str:
+        safe_pack = _safe_token(pack_id)
         safe_version = "".join(ch if ch.isalnum() or ch in "._:+-" else "_" for ch in version)
+        tenant = (tenant_id or "").strip()
+        if tenant:
+            return f"tenants/{_safe_token(tenant)}/norm-packs/{safe_pack}/{safe_version}.json"
         return f"norm-packs/{safe_pack}/{safe_version}.json"
 
     def save_version(
@@ -35,8 +50,9 @@ class ObjectStoreNormRulePackVersionStore:
         parent_version: str | None,
         approval_status: str | None,
         approval_ref: str | None,
+        tenant_id: str | None = None,
     ) -> NormPackVersionInfo:
-        existing = {item.version for item in self.list_versions(pack_id)}
+        existing = {item.version for item in self.list_versions(pack_id, tenant_id=tenant_id)}
         if version in existing:
             raise ValueError(f"Norm pack version already exists: {pack_id}@{version}")
         status = (approval_status or "").strip().lower()
@@ -44,7 +60,7 @@ class ObjectStoreNormRulePackVersionStore:
             raise ValueError(
                 "customer_approved/approved norm pack versions require non-empty approval_ref"
             )
-        key = self._object_key(pack_id, version)
+        key = self._object_key(pack_id, version, tenant_id=tenant_id)
         # Immutable: refuse overwrite if object already present.
         if self._store.get_bytes(key) is not None:
             raise ValueError(f"ObjectStore key already exists (immutable history): {key}")
@@ -58,8 +74,9 @@ class ObjectStoreNormRulePackVersionStore:
             parent_version=parent_version,
             approval_status=approval_status,  # type: ignore[arg-type]
             approval_ref=approval_ref,
+            tenant_id=(tenant_id or "").strip() or None,
         )
-        entries = [item.__dict__ for item in self.list_versions(pack_id)]
+        entries = [item.__dict__ for item in self.list_versions(pack_id, tenant_id=tenant_id)]
         entries.append(
             {
                 "pack_id": record.pack_id,
@@ -70,16 +87,22 @@ class ObjectStoreNormRulePackVersionStore:
                 "parent_version": record.parent_version,
                 "approval_status": record.approval_status,
                 "approval_ref": record.approval_ref,
+                "tenant_id": record.tenant_id,
             }
         )
-        self._index_path(pack_id).write_text(
+        self._index_path(pack_id, tenant_id=tenant_id).write_text(
             json.dumps(entries, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
         return record
 
-    def list_versions(self, pack_id: str) -> list[NormPackVersionInfo]:
-        path = self._index_path(pack_id)
+    def list_versions(
+        self,
+        pack_id: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> list[NormPackVersionInfo]:
+        path = self._index_path(pack_id, tenant_id=tenant_id)
         if not path.exists():
             return []
         try:
@@ -102,12 +125,19 @@ class ObjectStoreNormRulePackVersionStore:
                     parent_version=item.get("parent_version"),
                     approval_status=item.get("approval_status"),
                     approval_ref=item.get("approval_ref"),
+                    tenant_id=item.get("tenant_id"),
                 )
             )
         return out
 
-    def get_version_bytes(self, pack_id: str, version: str) -> bytes | None:
-        for item in self.list_versions(pack_id):
+    def get_version_bytes(
+        self,
+        pack_id: str,
+        version: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> bytes | None:
+        for item in self.list_versions(pack_id, tenant_id=tenant_id):
             if item.version == version:
                 return self._store.get_bytes(item.object_key)
         return None
