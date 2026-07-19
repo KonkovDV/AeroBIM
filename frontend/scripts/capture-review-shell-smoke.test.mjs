@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseArgs, validateExportLinks } from "./capture-review-shell-smoke.mjs";
+import { parseArgs, validateExportLinks } from "./capture-review-shell-smoke-helpers.mjs";
 
 describe("capture-review-shell-smoke helpers", () => {
   it("parses explicit base url, report prefix, and output dir", () => {
