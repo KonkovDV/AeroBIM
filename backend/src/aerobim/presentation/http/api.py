@@ -317,7 +317,8 @@ def create_http_app(container: Container):
             assert oidc_validator is not None
             try:
                 claims = oidc_validator.validate(token)
-                tenant_claim = claims.get("tenant_id") or claims.get("tid") or claims.get("org_id")
+                claim_name = (settings.oidc_tenant_claim or "tenant_id").strip() or "tenant_id"
+                tenant_claim = claims.get(claim_name)
                 tenant = str(tenant_claim).strip() if tenant_claim else settings.api_tenant_id
                 subject = claims.get("sub")
                 return AuthPrincipal(
@@ -345,9 +346,10 @@ def create_http_app(container: Container):
             report=report,
         ):
             return
+        # RT-POST-02: identical to missing — do not confirm cross-tenant existence.
         raise HTTPException(
-            status_code=403,
-            detail="Object ACL denied: report tenant does not match authenticated tenant",
+            status_code=404,
+            detail=f"Report {getattr(report, 'report_id', '')} not found",
         )
 
     def _assert_job_access(job, principal: AuthPrincipal) -> None:
@@ -358,8 +360,8 @@ def create_http_app(container: Container):
         ):
             return
         raise HTTPException(
-            status_code=403,
-            detail="Object ACL denied: job tenant does not match authenticated tenant",
+            status_code=404,
+            detail=f"Analyze project-package job {getattr(job, 'job_id', '')} not found",
         )
 
     def _assert_norm_pack_access(principal: AuthPrincipal, *, tenant_id: str | None) -> None:
@@ -370,8 +372,8 @@ def create_http_app(container: Container):
         ):
             return
         raise HTTPException(
-            status_code=403,
-            detail="Object ACL denied: norm-pack tenant does not match authenticated tenant",
+            status_code=404,
+            detail="Norm pack not found",
         )
 
     def _resolve_bound_tenant(
@@ -796,10 +798,9 @@ def create_http_app(container: Container):
                 status_code=500, detail=f"Quarantine promote failed: {exc}"
             ) from exc
 
-        object_key = None
         if object_store is not None:
             payload = target.read_bytes()
-            object_key = object_store.put_bytes(
+            object_store.put_bytes(
                 relative_path.replace("\\", "/"),
                 payload,
                 content_type=sniffed.mime or file.content_type,
@@ -815,7 +816,6 @@ def create_http_app(container: Container):
             "content_type": sniffed.mime or file.content_type,
             "sniffed_kind": sniffed.kind,
             "sha256": digest.hexdigest(),
-            "object_key": object_key,
             "tenant_id": tenant_key,
             "quota": {
                 "day": quota.day,
@@ -1567,11 +1567,7 @@ Created: {_esc(str(data.get("created_at") or ""))}
 
 
 def _esc(value: str) -> str:
-    """Minimal HTML escaping for user-controlled values."""
-    return (
-        str(value)
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
+    """HTML-escape user-controlled values for element text and attributes."""
+    import html
+
+    return html.escape(str(value), quote=True)
