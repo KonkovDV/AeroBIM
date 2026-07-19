@@ -50,6 +50,12 @@ def inspect_zip_bytes(
     for info in infos:
         if info.is_dir():
             continue
+        name = info.filename.replace("\\", "/")
+        if name.startswith("/") or name.startswith("../") or "/../" in f"/{name}/":
+            raise ZipBombError(f"ZIP member path is not allowed: {info.filename!r}")
+        if ":" in name.split("/")[0]:
+            # Windows drive / alternate stream style absolute members
+            raise ZipBombError(f"ZIP member path is not allowed: {info.filename!r}")
         size = int(info.file_size)
         compress = max(int(info.compress_size), 1)
         if size > max_member_bytes:
