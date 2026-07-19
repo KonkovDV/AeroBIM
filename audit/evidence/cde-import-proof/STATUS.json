@@ -3,7 +3,7 @@
   "schema_version": "1.0.0",
   "generated_at": "2026-07-17",
   "status": "NOT_VERIFIED",
-  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-17.json",
+  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-18.json",
   "required_files": [
     "import-log.txt",
     "screenshot.png",

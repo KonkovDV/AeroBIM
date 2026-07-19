@@ -9,7 +9,7 @@ tags: [aerobim, tz, presentation, demo]
 # TZ Solution Image and Presentation
 
 Fills **«Образ финального решения»** and **«Требования к презентации»**.
-Score ladder companion: [`../samolet-techlab-scorecard-2026.md`](../samolet-techlab-scorecard-2026.md).
+Claims / readiness companion: [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md).
 
 ## 1. Solution image (MVP)
 

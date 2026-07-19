@@ -129,7 +129,7 @@ $env:AEROBIM_PRIORITY_PROFILE = "samolet"
 | Methods | [`manuscript-draft-2026.md`](REPRODUCIBILITY-2026.md), ablation JSON |
 | Limits | This doc §2 non-goals + claim boundary |
 | Data availability | [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) |
-| Case study | [`pilot-case-study-report-2026.md`](pilot-claim-boundary-2026.md) (KPI TBD) |
+| Case study / claims | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) · [`docs.md`](docs.md) |
 | TechLab application | [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
 
 ## Clash policy (Samolet R5)
@@ -140,7 +140,7 @@ $env:AEROBIM_PRIORITY_PROFILE = "samolet"
 | Logical discrepancies (RU: «логические расхождения») | `CROSS_DOCUMENT` + `ConflictKind` | Core sign-off path |
 | Area / dimension mismatches (RU: «расхождения размеров/площадей») | Quantity algebra + cross-doc | Core |
 
-**Week 1 action:** record customer interpretation in [`pilot-case-study-report-2026.md`](pilot-claim-boundary-2026.md) and [`pilot-cde-handoff-2026.md`](pilot-cde-handoff-2026.md).
+**Week 1 action:** record customer interpretation in [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) and [`../audit/evidence/cde-import-proof/`](../audit/evidence/cde-import-proof/) (CDE import gate).
 
 ## 8. Gap backlog (post-alignment)
 
