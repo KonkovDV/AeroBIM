@@ -29,6 +29,8 @@ class SubmitAnalyzeProjectPackageJobUseCase:
         max_concurrent_per_tenant: int | None = None,
     ) -> AnalyzeProjectPackageJob:
         tenant_id = (request.tenant_id or "").strip() or None
+        # Opportunistic reclaim before concurrency accounting / create.
+        self._job_store.reclaim_stale_running()
         if idempotency_key:
             existing = self._job_store.get_by_idempotency_key(
                 idempotency_key,
@@ -72,7 +74,7 @@ class GetAnalyzeProjectPackageJobStatusUseCase:
         self._job_store = job_store
 
     def execute(self, job_id: str) -> AnalyzeProjectPackageJob | None:
-        self._job_store.reclaim_stale_running()
+        # Do not globally reclaim on every status GET — that can FAIL a live runner.
         return self._job_store.get(job_id)
 
 

@@ -644,12 +644,22 @@ class AnalyzeProjectPackageUseCase:
                 schema_issues[0].message if schema_issues else "schema pre-gate failed",
                 external_ref=schema_request_id,
             )
-        elif self._require_bsi_schema and schema_request_id is None:
-            # SPF pre-gate alone must not green-pass pilot/production schema requirement.
-            ifc_schema = CapabilityStatus(
-                CapabilityState.NOT_VERIFIED,
-                "IFC schema required: SPF pre-gate only; bSI/schema certificate not obtained",
-            )
+        elif self._require_bsi_schema:
+            # Submit ACK / local cert id must never green-pass required schema.
+            if schema_request_id is None:
+                ifc_schema = CapabilityStatus(
+                    CapabilityState.NOT_VERIFIED,
+                    "IFC schema required: SPF pre-gate only; bSI/schema certificate not obtained",
+                )
+            else:
+                ifc_schema = CapabilityStatus(
+                    CapabilityState.NOT_VERIFIED,
+                    (
+                        "IFC schema required: bSI/schema submit ACK only; "
+                        "validation result not verified"
+                    ),
+                    external_ref=schema_request_id,
+                )
         else:
             ifc_schema = CapabilityStatus(
                 CapabilityState.OK,

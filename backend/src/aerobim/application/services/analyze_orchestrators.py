@@ -384,7 +384,9 @@ class EvidenceAssembler:
             advisory_ids_draft=advisory.advisory_ids_draft,
             drawing_regions=ingested.drawing_regions,
         )
-        self._host._audit_report_store.save(report)
+        # HITL trail before report persist: never save a report without audit events
+        # when regions require HITL. Orphan events on save failure are reconcilesable;
+        # report-without-trail is a false-pass integrity hole (RT-ADV-HITL-TX).
         if self._host._review_event_store is not None:
             for event in review_events_for_hitl_regions(
                 report_id=report.report_id,
@@ -392,5 +394,13 @@ class EvidenceAssembler:
                 created_at=report.created_at,
             ):
                 self._host._review_event_store.append(event)
+        try:
+            self._host._audit_report_store.save(report)
+        except Exception:
+            if self._host._review_event_store is not None:
+                discard = getattr(self._host._review_event_store, "discard_report", None)
+                if callable(discard):
+                    discard(report.report_id)
+            raise
         persisted_report = self._host._audit_report_store.get(report.report_id)
         return persisted_report or report

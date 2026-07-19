@@ -188,37 +188,29 @@ class Settings:
         else:
             signoff_profile = "development"
         profile_gate = signoff_profile in {"samolet_pilot", "production"}
-        require_clash = (
-            profile_gate
-            if _optional_bool("AEROBIM_REQUIRE_CLASH") is None
-            else bool(_optional_bool("AEROBIM_REQUIRE_CLASH"))
-        )
-        clash_affects_pass = (
-            profile_gate
-            if _optional_bool("AEROBIM_CLASH_AFFECTS_PASS") is None
-            else bool(_optional_bool("AEROBIM_CLASH_AFFECTS_PASS"))
-        )
-        require_bsi_schema = (
-            profile_gate
-            if _optional_bool("AEROBIM_REQUIRE_BSI_SCHEMA") is None
-            else bool(_optional_bool("AEROBIM_REQUIRE_BSI_SCHEMA"))
-        )
-        require_mep_system_clash = (
-            profile_gate
-            if _optional_bool("AEROBIM_REQUIRE_MEP_SYSTEM_CLASH") is None
-            else bool(_optional_bool("AEROBIM_REQUIRE_MEP_SYSTEM_CLASH"))
-        )
-        if "AEROBIM_ENFORCE_OBJECT_ACL" in os.environ:
-            enforce_object_acl = bool(_optional_bool("AEROBIM_ENFORCE_OBJECT_ACL"))
-        elif profile_gate:
+        # Pilot/production are fail-closed: env cannot weaken required gates.
+        if profile_gate:
+            require_clash = True
+            clash_affects_pass = True
+            require_bsi_schema = True
+            require_mep_system_clash = True
             enforce_object_acl = True
+            audit_fail_closed = True
         else:
-            enforce_object_acl = acl_default
-        audit_fail_closed = (
-            profile_gate
-            if _optional_bool("AEROBIM_AUDIT_FAIL_CLOSED") is None
-            else bool(_optional_bool("AEROBIM_AUDIT_FAIL_CLOSED"))
-        )
+            require_clash = bool(_optional_bool("AEROBIM_REQUIRE_CLASH") or False)
+            clash_affects_pass = bool(_optional_bool("AEROBIM_CLASH_AFFECTS_PASS") or False)
+            require_bsi_schema = bool(_optional_bool("AEROBIM_REQUIRE_BSI_SCHEMA") or False)
+            require_mep_system_clash = bool(
+                _optional_bool("AEROBIM_REQUIRE_MEP_SYSTEM_CLASH") or False
+            )
+            if "AEROBIM_ENFORCE_OBJECT_ACL" in os.environ:
+                enforce_object_acl = bool(_optional_bool("AEROBIM_ENFORCE_OBJECT_ACL"))
+            else:
+                enforce_object_acl = acl_default
+            audit_fail_closed = bool(_optional_bool("AEROBIM_AUDIT_FAIL_CLOSED") or False)
+        # Local SPF certificate is development-only; never under pilot/production.
+        bsi_local_cert = _read_bool("AEROBIM_BSI_LOCAL_CERT", False) and not profile_gate
+
         settings = cls(
             application_name=os.getenv("AEROBIM_APP_NAME", "aerobim-backend"),
             environment=os.getenv("AEROBIM_ENV", "development"),
@@ -268,7 +260,7 @@ class Settings:
             redis_url=(os.getenv("AEROBIM_REDIS_URL") or "").strip() or None,
             bsi_validation_url=(os.getenv("AEROBIM_BSI_VALIDATION_URL") or "").strip() or None,
             bsi_api_token=(os.getenv("AEROBIM_BSI_API_TOKEN") or "").strip() or None,
-            bsi_local_cert=_read_bool("AEROBIM_BSI_LOCAL_CERT", False),
+            bsi_local_cert=bsi_local_cert,
             remark_locale=(os.getenv("AEROBIM_REMARK_LOCALE") or "ru").strip().lower() or "ru",
             norm_rule_pack_path=(os.getenv("AEROBIM_NORM_RULE_PACK") or "").strip() or None,
             allow_anonymous_dev=_read_bool("AEROBIM_ALLOW_ANONYMOUS_DEV", False),

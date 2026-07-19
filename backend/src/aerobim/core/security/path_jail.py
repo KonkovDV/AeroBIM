@@ -47,6 +47,36 @@ def reject_symlinks(path: Path, *, base: Path) -> None:
             raise PathJailError(f"Symlinks are not allowed in storage paths: {cursor}")
 
 
+def safe_storage_token(value: str) -> str:
+    """Sanitize a tenant / pack token for use as a single path segment."""
+    return "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in value)
+
+
+def tenant_storage_prefix(tenant_id: str) -> str:
+    """Return ``tenants/{safe}/`` for ACL-scoped storage paths."""
+    safe = safe_storage_token(tenant_id.strip())
+    if not safe:
+        raise PathJailError("Empty tenant token is not allowed for storage prefix")
+    return f"tenants/{safe}/"
+
+
+def assert_path_under_tenant_prefix(
+    resolved: Path,
+    *,
+    base: Path,
+    tenant_id: str,
+) -> None:
+    """Reject resolved paths outside the caller's tenant storage prefix."""
+    base_resolved = base.resolve()
+    try:
+        relative = resolved.resolve().relative_to(base_resolved).as_posix()
+    except ValueError as exc:
+        raise PathJailError(f"Path escapes storage boundary: {resolved}") from exc
+    prefix = tenant_storage_prefix(tenant_id)
+    if not relative.startswith(prefix):
+        raise PathJailError(f"Path outside tenant storage prefix ({prefix}): {relative}")
+
+
 def resolve_storage_path(user_path: str, *, base: Path) -> Path:
     """Resolve *user_path* strictly under *base*, rejecting escapes and symlinks."""
     if not isinstance(user_path, str) or not user_path.strip():
