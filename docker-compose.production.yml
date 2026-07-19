@@ -1,0 +1,37 @@
+# Production-like / shared LAN stack — secrets REQUIRED (fail if unset).
+# Usage:
+#   set AEROBIM_API_BEARER_TOKEN=<long-random>
+#   docker compose -f docker-compose.production.yml up --build
+#
+# Never commit real tokens. Prefer OIDC in real deployments (AEROBIM_OIDC_*).
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      AEROBIM_ENV: production
+      AEROBIM_SIGNOFF_PROFILE: ${AEROBIM_SIGNOFF_PROFILE:-production}
+      AEROBIM_HOST: "0.0.0.0"
+      AEROBIM_PORT: "8080"
+      AEROBIM_DEBUG: "false"
+      AEROBIM_STORAGE_DIR: /data/reports
+      AEROBIM_CORS_ORIGINS: ${AEROBIM_CORS_ORIGINS:-}
+      # Compose fails fast if the variable is missing — no default token.
+      AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?Set AEROBIM_API_BEARER_TOKEN to a long random secret}
+      AEROBIM_ALLOW_ANONYMOUS_DEV: "false"
+    volumes:
+      - reports-data:/data/reports
+      - ./samples:/data/samples:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  reports-data:
