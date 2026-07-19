@@ -1,0 +1,38 @@
+{
+  "artifact_type": "red_team_phase8_command_results",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-19T09:05:00+00:00",
+  "phase": "8",
+  "git": {
+    "branch": "main",
+    "dirty_tree": true
+  },
+  "confirmations": {
+    "pr_10_untouched": true,
+    "pr_11_untouched": true,
+    "git_history_untouched": true,
+    "no_destructive_git_command": true,
+    "no_unsupported_capability_promoted_to_ok": true
+  },
+  "commands": {
+    "ruff_src_tests": {"exit_code": 0, "classification": "passed"},
+    "pytest": {
+      "exit_code": 0,
+      "classification": "passed",
+      "summary": "622 passed, 4 skipped"
+    }
+  },
+  "mitigations": [
+    "RT-P8-001 job tenant_id",
+    "RT-P8-002 job get/cancel ACL",
+    "RT-P8-003 tenant-scoped idempotency",
+    "RT-P8-004 principal tenant bind / anti-spoof",
+    "RT-P8-005 validate_ifc tenant stamp",
+    "RT-P8-006 concurrent job quota 429",
+    "RT-P8-007 advisory ERROR isolation"
+  ],
+  "checkpoint": {
+    "verdict": "NO_GO",
+    "external_blockers_open": ["RT-001", "RT-002", "RT-003"]
+  }
+}

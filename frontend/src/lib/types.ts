@@ -77,9 +77,7 @@ export interface ValidationIssue {
   tenant_id?: string | null;
   project_id?: string | null;
   origin?: "deterministic" | "advisory" | string | null;
-  finding_id?: string | null;
-  evidence_refs?: string[];
-  source_id?: string | null;
+  match_method?: string | null;
 }
 
 export interface DrawingAnnotation {

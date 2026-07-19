@@ -86,6 +86,11 @@ class Settings:
 
     Env: ``AEROBIM_MAX_UPLOAD_BYTES_PER_TENANT_DAY``.
     """
+    max_concurrent_analyze_jobs_per_tenant: int | None = None
+    """Optional cap on QUEUED+RUNNING analyze jobs per tenant.
+
+    Env: ``AEROBIM_MAX_CONCURRENT_ANALYZE_JOBS_PER_TENANT``.
+    """
     # OpenCDE BCF API 3.0 push (optional)
     bcf_api_base_url: str | None = None
     bcf_api_token: str | None = None
@@ -249,6 +254,9 @@ class Settings:
             max_uploads_per_tenant_day=_read_optional_int("AEROBIM_MAX_UPLOADS_PER_TENANT_DAY"),
             max_upload_bytes_per_tenant_day=_read_optional_int(
                 "AEROBIM_MAX_UPLOAD_BYTES_PER_TENANT_DAY"
+            ),
+            max_concurrent_analyze_jobs_per_tenant=_read_optional_int(
+                "AEROBIM_MAX_CONCURRENT_ANALYZE_JOBS_PER_TENANT"
             ),
             bcf_api_base_url=(os.getenv("AEROBIM_BCF_API_BASE_URL") or "").strip() or None,
             bcf_api_token=(os.getenv("AEROBIM_BCF_API_TOKEN") or "").strip() or None,
