@@ -78,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         print(text)
     if args.min_accuracy is not None:
         accuracy = report["accuracy"]
-        if not isinstance(accuracy, (int, float)):
+        if not isinstance(accuracy, int | float):
             raise TypeError(f"accuracy must be numeric, got {type(accuracy)!r}")
         if float(accuracy) < args.min_accuracy:
             return 2

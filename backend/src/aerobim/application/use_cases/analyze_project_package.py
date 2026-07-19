@@ -1086,9 +1086,7 @@ class AnalyzeProjectPackageUseCase:
                         )
                         severity = self._cross_doc_severity
                     match_method = (
-                        f"entity+pset+prop"
-                        if property_set
-                        else "entity+prop"
+                        "entity+pset+prop" if property_set else "entity+prop"
                     )
                     issues.append(
                         ValidationIssue(
