@@ -126,7 +126,9 @@ class HttpBcfApiClient:
             },
         )
         try:
-            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+            from aerobim.core.security.outbound_url import safe_urlopen
+
+            with safe_urlopen(request, timeout=timeout_seconds) as response:
                 raw = response.read().decode("utf-8")
                 if not raw.strip():
                     return {}

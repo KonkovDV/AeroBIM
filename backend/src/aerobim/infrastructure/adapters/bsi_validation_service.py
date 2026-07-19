@@ -78,7 +78,9 @@ class HttpBsiValidationService:
             },
         )
         try:
-            with request.urlopen(req, timeout=timeout_seconds) as resp:
+            from aerobim.core.security.outbound_url import safe_urlopen
+
+            with safe_urlopen(req, timeout=timeout_seconds) as resp:
                 raw = resp.read().decode("utf-8")
                 parsed = json.loads(raw) if raw.strip() else {}
                 return parsed if isinstance(parsed, dict) else {}
