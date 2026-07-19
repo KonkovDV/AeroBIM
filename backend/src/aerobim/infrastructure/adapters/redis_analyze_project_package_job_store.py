@@ -84,9 +84,7 @@ class RedisAnalyzeProjectPackageJobStore:
                 )
                 if raced is not None:
                     return raced.job_id
-                raise RuntimeError(
-                    "Idempotency key claimed by concurrent submit; retry shortly"
-                )
+                raise RuntimeError("Idempotency key claimed by concurrent submit; retry shortly")
         created = self._redis.set(self._key(job.job_id), self._serialize(job), nx=True)
         if not created:
             raise ValueError(f"Job already exists: {job.job_id}")

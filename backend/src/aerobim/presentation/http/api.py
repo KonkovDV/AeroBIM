@@ -910,9 +910,7 @@ def create_http_app(container: Container):
         principal: Annotated[AuthPrincipal, Depends(_require_bearer_auth)],
     ) -> dict[str, object]:
         try:
-            report_path = _resolve_safe_path(
-                payload.reinforcement_report_path, principal=principal
-            )
+            report_path = _resolve_safe_path(payload.reinforcement_report_path, principal=principal)
             report_payload = _load_openrebar_report_payload(report_path)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
