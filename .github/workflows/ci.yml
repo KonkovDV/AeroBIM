@@ -16,8 +16,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install ruff
@@ -30,8 +30,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install -e .
@@ -44,8 +44,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev,raster]"
@@ -57,8 +57,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev,raster]"
@@ -85,8 +85,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev,raster]"
@@ -188,7 +188,7 @@ jobs:
             --output ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-evaluation.json
           cat ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark-smoke artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: ci-benchmark-smoke-artifacts
           path: |
@@ -204,8 +204,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev,raster]"
@@ -221,7 +221,7 @@ jobs:
             --warmup-iterations 0 \
             --output ../artifacts/samolet-sla-smoke/samolet-sla-pilot-moscow-ci.json
       - name: Upload Samolet SLA artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: samolet-sla-smoke-artifacts
           path: artifacts/samolet-sla-smoke/*.json
@@ -233,8 +233,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev,raster]"
@@ -245,7 +245,7 @@ jobs:
             --output ../artifacts/extraction-quality/russian-aec-extraction.json \
             --min-macro-f1 0.70
       - name: Upload extraction-quality artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: extraction-quality-artifacts
           path: artifacts/extraction-quality/*.json
@@ -257,8 +257,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318eca7822bab98ab87bb9b1249 # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev,raster]"
@@ -279,7 +279,7 @@ jobs:
           print(f"Schema OK — {len(paths)} paths present")
           PY
       - name: Upload OpenAPI schema artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: openapi-schema
           path: artifacts/openapi.json
