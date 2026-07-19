@@ -101,19 +101,18 @@ Red Team / Claims Lock: без «>90%», без «DWG готов», без «MEP
 
 ### Pilot env profile (Samolet Task 07)
 
-Defaults keep clash optional so fixture/dev installs without `.[clash]` stay green.  
-For **customer pilot packages** enable fail-closed clash + Samolet priority:
+**Development / fixture** profiles keep soft gates so local installs without `.[clash]` stay usable.  
+**Customer / production** packages must run fail-closed: unset `AEROBIM_SIGNOFF_PROFILE` under `AEROBIM_ENV=production` defaults to `production` sign-off (RT-POST-01), which forces clash / bSI schema / MEP requirements. Explicit pilot profile:
 
 ```bash
+export AEROBIM_ENV=production
+export AEROBIM_SIGNOFF_PROFILE=samolet_pilot   # or omit under AEROBIM_ENV=production
 export AEROBIM_PRIORITY_PROFILE=samolet
-export AEROBIM_REQUIRE_CLASH=true
-export AEROBIM_CLASH_AFFECTS_PASS=true
-export AEROBIM_REQUIRE_BSI_SCHEMA=true
 export AEROBIM_CROSS_DOC_SEVERITY=error
 pip install -e '.[clash]'
 ```
 
-Evidence: `tests/test_p0_remediation_fail_closed.py`.  
+Evidence: `tests/test_p0_remediation_fail_closed.py`, `tests/test_rt_remediation_post.py`.  
 Still blocked: RT-001/002/003 (customer corpus / approved norms / MEP).
 
 ## 5. Ask

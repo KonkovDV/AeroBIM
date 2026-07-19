@@ -7,10 +7,10 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 ## Read First
 
 1. README.md
-2. docs/README.md
-3. docs/06-architecture-reference.md
+2. docs/TIER0_INDEX.md · docs/README.md
+3. docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md
 4. docs/15-local-quality-gate.md
-5. SECURITY.md
+5. SECURITY.md · audit/reports/CLAIMS_LOCK_2026_07_17.md
 
 ## Contribution Principles
 

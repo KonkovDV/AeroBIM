@@ -52,7 +52,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | MEP system-aware clash | Not verified | — | DI-wired Unconfigured provider; not delivered |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | OpenRebar path = **match/сверка**, not solver verification |
-| Frontend vitest review-shell | Green locally | release-readiness | **21** passed; not in main CI job |
+| Frontend vitest review-shell | Green locally | release-readiness | **25** passed; not in main CI job |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
 
 ## IFC Release Compatibility
@@ -263,9 +263,11 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_STORAGE_DIR` | `var/reports` | Report persistence directory |
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
 | `AEROBIM_ENV` | `development` | Environment name; non-dev requires bearer/OIDC (fail-closed) |
+| `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | Unset under non-dev → `production` fail-closed; `development`/`fixture`/`samolet_pilot`/`production` |
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Bearer for `/v1/*`; required unless `AEROBIM_ALLOW_ANONYMOUS_DEV` |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `false` | Opt-in anonymous API in development/test only (`from_env`) |
-| `AEROBIM_CLASH_AFFECTS_PASS` | `false` | When `true`, hard clashes fail the report (`summary.passed`) |
+| `AEROBIM_CLASH_AFFECTS_PASS` | `false` | Soft only in development/fixture; forced `true` under pilot/production sign-off |
+| `AEROBIM_REQUIRE_CLASH` | `false` | Soft only in development/fixture; forced under pilot/production |
 | `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC size (256 MiB, aligned with bSI Validation Service) |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_DB_URL` | *(unset)* | Optional Postgres URL for report summary indexing |
@@ -286,7 +288,7 @@ aerobim/
 │   ├── tests/               # Backend test suite (see generated baseline below)
 │   └── pyproject.toml
 ├── clients/revit-plugin/    # Thin authoring-side client boundary (planned)
-├── docs/                    # Architecture reference, extraction dossier, backlog
+├── docs/                    # Public Samolet TZ / claims / architecture SSOT (see docs/README.md)
 ├── frontend/                # Browser review shell with 3D viewer, 2D evidence overlay rails, and server-backed report filters
 ├── ops/                     # Standalone runbooks, env matrix, smoke path
 ├── samples/                 # IFC, IDS, drawing, spec fixtures
@@ -301,21 +303,26 @@ Backend src ~16247 LOC; tests ~11434 LOC; 456+ test functions; extraction macro_
 
 ## Documentation
 
-Public docs are **Samolet TechLab TZ surface only**. Engineering wave logs and Red Team deltas stay local ([`docs/LOCAL_OPERATOR_ARTIFACTS.md`](docs/LOCAL_OPERATOR_ARTIFACTS.md)).
+Public GitHub shows a **minimal Samolet TechLab surface**. Red Team phase reports and AI prompts are local-only ([`docs/LOCAL_OPERATOR_ARTIFACTS.md`](docs/LOCAL_OPERATOR_ARTIFACTS.md) · [`docs/REPOSITORY-HYGIENE-2026.md`](docs/REPOSITORY-HYGIENE-2026.md)).
 
-- [Tier-0 index](docs/TIER0_INDEX.md) — public SSOT map
-- [TZ pack](docs/tz/README.md) — Task 07 v2 + matrices
-- [Claims lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) — forbidden/allowed wording
-- [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) — checkpoint **NO_GO** (RT-001/002/003)
-- [Pilot claim boundary](docs/pilot-claim-boundary-2026.md) — verified vs planned
-- [Target hybrid architecture](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — architecture SSOT
-- [Samolet alignment](docs/samolet-techlab-alignment-2026.md) — R1–R15
-- [Reproducibility](docs/REPRODUCIBILITY-2026.md) — FAIR / evidence
-- [Documentation map](docs/README.md) — full public router
-- [Repository hygiene](docs/REPOSITORY-HYGIENE-2026.md) — what belongs on GitHub
-- [Local quality gate](docs/15-local-quality-gate.md) — CI-parity before push
-- [Standalone runbook](ops/standalone-runbook.md) · [Environment matrix](ops/environment-matrix.md) · [Smoke path](ops/smoke-path.md)
-- [Benchmark packs](samples/benchmarks/README.md)
+| Need | Document |
+|------|----------|
+| **Start** | [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · [`docs/README.md`](docs/README.md) |
+| Jury memo (RU) | [`docs/docs.md`](docs/docs.md) |
+| Samolet strategy | [`docs/samolet.md`](docs/samolet.md) |
+| TZ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
+| Claims lock | [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
+| Checkpoint / blockers | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · **NO_GO** |
+| Claim boundary | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) |
+| Architecture | [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) |
+| Verdict ownership | [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Alignment R1–R15 | [`docs/samolet-techlab-alignment-2026.md`](docs/samolet-techlab-alignment-2026.md) |
+| Reproducibility | [`docs/REPRODUCIBILITY-2026.md`](docs/REPRODUCIBILITY-2026.md) |
+| Audit reports (public) | [`audit/reports/README.md`](audit/reports/README.md) |
+| Evidence | [`docs/evidence/README.md`](docs/evidence/README.md) · [`audit/evidence/`](audit/evidence/) |
+| Local quality gate | [`docs/15-local-quality-gate.md`](docs/15-local-quality-gate.md) |
+| Ops runbooks | [`ops/standalone-runbook.md`](ops/standalone-runbook.md) · [`ops/environment-matrix.md`](ops/environment-matrix.md) |
+| Benchmarks | [`samples/benchmarks/README.md`](samples/benchmarks/README.md) |
 
 ## Git commits
 
