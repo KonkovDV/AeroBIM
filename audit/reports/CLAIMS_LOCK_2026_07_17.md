@@ -41,7 +41,7 @@
 - Blockers: `audit/reports/CRITICAL_BLOCKERS.md`
 - Claim boundary: `docs/pilot-claim-boundary-2026.md`
 - Tier-0: `docs/TIER0_INDEX.md`
-- BCF T1: `audit/evidence/bcf-structural-handoff-2026-07-17.json`
+- BCF T1: `audit/evidence/bcf-structural-handoff-2026-07-18.json`
 - SLA fixture honesty: `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json`
 - Intake gates: `audit/evidence/customer-intake-gate.json`
 - System honesty API: `GET /v1/system/capabilities`

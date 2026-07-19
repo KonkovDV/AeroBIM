@@ -179,7 +179,7 @@ CIB W78 2024 и industry notes (ACCA/Solibri): IDS закрывает **алфа
 | Версия BCF | 2.1 (предпочтительно) или 3.0 |
 | Пилотный проект / контейнер | Куда импортировать BCF |
 | Учётки / доступ | Read+import для оператора пилота |
-| Сценарий | A: файл BCF ZIP; B: BCF API (если есть) — [`../pilot-cde-handoff-2026.md`](../pilot-cde-handoff-2026.md) |
+| Сценарий | A: файл BCF ZIP; B: BCF API (если есть) — gate: [`../../audit/evidence/cde-import-proof/`](../../audit/evidence/cde-import-proof/) |
 
 ---
 

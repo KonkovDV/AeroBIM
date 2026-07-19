@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "description": "Inter-annotator agreement worksheet template (Cohen's κ) for AeroBIM extraction corpora",
-  "protocol": "docs/annotation-protocol-2026.md#inter-annotator-agreement",
+  "protocol": "docs/pilot-claim-boundary-2026.md + dual-human adjudication (Claims Lock)",
   "annotators": ["A1", "A2"],
   "labels": ["requirement_span", "ifc_entity", "property_name", "expected_value"],
   "items": [

@@ -17,9 +17,9 @@ Single source of truth for reviewers, pilot operators, and supplementary materia
 | Line | Git ref | Use when |
 |---|---|---|
 | **Frozen pre-pilot baseline** | tag `pilot-2026-pre` → commit `1a5c03e` | Citing metrics locked at pilot kickoff; comparing pilot weeks |
-| **Rolling documentation** | branch `main` @ `078769a` (academic release, 2026-05-21); newer doc-only commits on `main` | Operator docs, weekly logs, [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md) |
+| **Rolling documentation** | branch `main` (latest jury pack) | Operator-local notes under `.local/`; citeable fixtures in [`evidence/README.md`](evidence/README.md) |
 
-Metrics in [`pilot-start-package-2026.md`](pilot-start-package-2026.md) for extraction F1 and test counts refer to the **frozen** line unless a weekly log records a re-run on a newer SHA.
+Metrics in root README runtime baseline / [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) for extraction F1 and test counts refer to the **frozen** line unless a re-run is recorded on a newer SHA.
 
 ## Standards alignment (May 2026)
 
@@ -72,22 +72,19 @@ Full publication rail: [`academic-publication-evidence-2026.md`](REPRODUCIBILITY
 | File | Content |
 |---|---|
 | [`evidence/pre-pilot-gates-evidence-2026-05-21.md`](evidence/pre-pilot-gates-evidence-2026-05-21.md) | Gates 1–4 sign-off |
-| [`evidence/pre-pilot-extraction-2026-05-21.json`](evidence/pre-pilot-extraction-2026-05-21.json) | Extraction P/R/F1 snapshot |
-| [`evidence/pre-pilot-runtime-baseline-2026-05-21.json`](evidence/pre-pilot-runtime-baseline-2026-05-21.json) | Runtime APPROVED bundle |
-| [`evidence/pre-pilot-conflict-breakdown-2026-05-21.json`](evidence/pre-pilot-conflict-breakdown-2026-05-21.json) | Pilot fixture ConflictKind |
-| [`evidence/pre-pilot-bcf-handoff-2026-05-21.json`](evidence/pre-pilot-bcf-handoff-2026-05-21.json) | BCF repository verification |
-| [`evidence/benchmark-report-2026-05-20.md`](evidence/benchmark-report-2026-05-20.md) | Frozen-line benchmark (pre-pilot tag era) |
-| [`evidence/benchmark-report-2026-05-21.md`](evidence/benchmark-report-2026-05-21.md) | Rolling-line benchmark refresh |
-| [`evidence/ablation-study-report.json`](evidence/ablation-study-report.json) | Multimodal ablation A0–A3 |
-| [`evidence/pre-push-verification-2026-05-21.md`](evidence/pre-push-verification-2026-05-21.md) | Pre-commit verification lane |
-| [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | Samolet TechLab traceability matrix |
+| Artifact | Role |
+|---|---|
+| [`evidence/README.md`](evidence/README.md) | Citeable fixtures index |
+| [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) | Runtime LOC / tests / F1 |
+| [`evidence/benchmark-report-2026-05-21.md`](evidence/benchmark-report-2026-05-21.md) | Academic benchmark snapshot |
+| [`evidence/samolet-sla-pilot-moscow-2026-05-21.json`](evidence/samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA (not customer) |
+| [`evidence/tz-matrix-status-latest.json`](evidence/tz-matrix-status-latest.json) | TZ matrix status |
+| [`../audit/evidence/bcf-structural-handoff-2026-07-18.json`](../audit/evidence/bcf-structural-handoff-2026-07-18.json) | BCF structural T1 |
+| [`../audit/evidence/cde-import-proof/STATUS.json`](../audit/evidence/cde-import-proof/STATUS.json) | CDE import gate (`NOT_VERIFIED`) |
+| [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | Samolet TechLab R1–R15 |
 | [`../samples/benchmarks/samolet-typical-errors-catalog.json`](../samples/benchmarks/samolet-typical-errors-catalog.json) | Typical error catalog scaffold |
-| [`samolet-techlab-scorecard-2026.md`](samolet-techlab-scorecard-2026.md) | Score ladder 7.6 → 10 |
-| [`samolet-compliance-scorecard-2026.md`](samolet-compliance-scorecard-2026.md) | Closure SSOT (sign-off) |
-| [`evidence/samolet-sla-pilot-moscow-2026-05-21.json`](evidence/samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA evidence |
-| Customer SLA | `docs/evidence/internal/samolet-sla-customer-*.json` (gitignored) |
-
-Corpus SSOT: [`annotation-protocol-2026.md`](annotation-protocol-2026.md), [`../samples/benchmarks/russian-aec-ground-truth.json`](../samples/benchmarks/russian-aec-ground-truth.json).
+| [`../samples/benchmarks/russian-aec-ground-truth.json`](../samples/benchmarks/russian-aec-ground-truth.json) | RU extraction corpus |
+| Customer SLA | `docs/evidence/internal/` / `samples/customer/` (gitignored) |
 
 ## FAIR software self-check (condensed)
 

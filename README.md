@@ -74,7 +74,7 @@ See [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) for t
 |---|---|---|
 | BCF 2.1 ZIP export | Available (stable default) | `/v1/reports/{id}/export/bcf` |
 | BCF 3.0 ZIP export | Experimental | `?version=3` |
-| T1 structural + dual-consumer agreement | Evidenced | [`audit/evidence/bcf-structural-handoff-2026-07-17.json`](audit/evidence/bcf-structural-handoff-2026-07-17.json) |
+| T1 structural + dual-consumer agreement | Evidenced | [`audit/evidence/bcf-structural-handoff-2026-07-18.json`](audit/evidence/bcf-structural-handoff-2026-07-18.json) |
 | OpenCDE BCF API push | Foundation | `/export/bcf-api/push` — hub sync not a T2 substitute |
 | T2 independent CDE import | **NOT VERIFIED** | [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) |
 
@@ -185,7 +185,7 @@ python -m aerobim.tools.export_runtime_baseline
 | Critical blockers / checkpoint | [audit/reports/CRITICAL_BLOCKERS.md](audit/reports/CRITICAL_BLOCKERS.md) |
 | Claim boundary (pilot / publication) | [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) |
 | Reproducibility (FAIR) | [docs/REPRODUCIBILITY-2026.md](docs/REPRODUCIBILITY-2026.md) |
-| Annotation protocol (RU corpus) | [docs/annotation-protocol-2026.md](docs/annotation-protocol-2026.md) |
+| Extraction corpus / IAA | [`samples/benchmarks/annotation/README.md`](samples/benchmarks/annotation/README.md) · RU GT in `samples/benchmarks/` |
 | Benchmark packs | [samples/benchmarks/README.md](samples/benchmarks/README.md) |
 | Audit evidence (T1 BCF, SLA 1.2, intake gate) | [audit/evidence/](audit/evidence/) |
 

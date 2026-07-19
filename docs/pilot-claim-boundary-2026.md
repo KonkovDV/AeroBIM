@@ -2,7 +2,7 @@
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
 version: "1.3.0"
-last_updated: "2026-07-17"
+last_updated: "2026-07-19"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -10,7 +10,7 @@ tags: [aerobim, pilot, claims, evidence]
 
 This document separates **verified repository evidence** from **roadmap intent** for pilot and accelerator communications.
 
-**Stakeholder distribution:** share with [`pilot-start-package-2026.md`](pilot-start-package-2026.md) at pilot kickoff.  
+**Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
 **TZ preparation SSOT:** [`tz/README.md`](tz/README.md).  
 **Forbidden wording SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 close ([`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md)).
@@ -33,8 +33,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Multimodal project-package analysis | `POST /v1/analyze/project-package`, benchmark manifests |
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
-| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-17.json` |
-| Browser review shell (3D + 2D evidence) | Frontend vitest **21** passed; `run_live_review_smoke` |
+| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-18.json` |
+| Browser review shell (3D + 2D evidence) | Frontend vitest **25** passed; `run_live_review_smoke` |
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
 | Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
@@ -70,7 +70,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | LOIN information levels on issues | `loin_information_level` ∈ geometry/alphanumeric/documentation |
 | Spatial predicates separate from IDS | `FindingCategory.SPATIAL` + `SPATIAL-*` issues from clash results |
 | EN structured extraction corpus | `english-aec-ground-truth.json` (macro F1 1.0 on structured fixtures) |
-| Ablation paper table | `docs/evidence/ablation-study-paper-table-2026.md` |
+| Ablation / benchmark snapshot | `docs/evidence/benchmark-report-2026-05-21.md` |
 | TZ Response Pack (architecture/build/presentation TBD fills) | [`docs/tz/README.md`](tz/README.md) |
 | Multipart document upload | `POST /v1/uploads` → storage-relative path |
 | EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |

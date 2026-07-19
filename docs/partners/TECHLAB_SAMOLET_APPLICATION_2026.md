@@ -12,7 +12,7 @@ tags: [aerobim, techlab, samolet, application]
 **Task:** Система автоматизированной верификации проектной и рабочей документации — **Задача 07**  
 **Task page:** https://i.moscow/techlab/samolet  
 **Prize:** платное пилотное тестирование **2 000 000 ₽**  
-**Scorecard:** [`../samolet-techlab-scorecard-2026.md`](../samolet-techlab-scorecard-2026.md)  
+**Readiness / claims:** [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)  
 **Readiness memo:** [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md)  
 **Alignment:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md)  
 **TZ pack:** [`../tz/README.md`](../tz/README.md)

@@ -23,5 +23,5 @@ Do **not** invent screenshots. Until real pilot import lands, keep
 
 ## Upstream
 
-- Structural T1: `audit/evidence/bcf-structural-handoff-2026-07-17.json`
-- Procedure: `docs/pilot-cde-handoff-2026.md`
+- Structural T1: `audit/evidence/bcf-structural-handoff-2026-07-18.json`
+- CDE claim rule: keep `STATUS.json` at `NOT_VERIFIED` until real import evidence lands
