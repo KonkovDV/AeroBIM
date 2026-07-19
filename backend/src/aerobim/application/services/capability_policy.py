@@ -79,6 +79,13 @@ class SignOffCapabilityPolicy:
             mep = capabilities.mep_system_clash
             if mep is None or mep.status in _REQUIRED_NON_OK:
                 blocked.append("mep_system_clash")
+        # RT-POST-06/07: pilot/production require verified unit_scale and do not
+        # treat SKIPPED calculation/quantity as an implicit pass.
+        if self.profile in {"samolet_pilot", "production"}:
+            for name in ("unit_scale", "calculation_match", "quantity"):
+                status = getattr(capabilities, name, None)
+                if status is None or status.status in _REQUIRED_NON_OK:
+                    blocked.append(name)
         return tuple(blocked)
 
     def mep_blocks_pass(self, capabilities: ReportCapabilities) -> bool:
