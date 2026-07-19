@@ -70,7 +70,11 @@ class OidcTokenValidator:
             and now - self._jwks_fetched_at < self.jwks_cache_ttl_seconds
         ):
             return self._jwks_cache
-        with urllib.request.urlopen(self.jwks_url, timeout=10) as response:
+        from aerobim.core.security.outbound_url import assert_safe_outbound_url, safe_urlopen
+
+        assert_safe_outbound_url(self.jwks_url, allow_http=False, resolve_dns=True)
+        req = urllib.request.Request(self.jwks_url, method="GET")
+        with safe_urlopen(req, timeout=10) as response:
             payload = json.loads(response.read().decode("utf-8"))
         if not isinstance(payload, dict):
             raise OidcValidationError("JWKS response must be a JSON object")
