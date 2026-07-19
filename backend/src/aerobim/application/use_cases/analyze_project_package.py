@@ -603,13 +603,20 @@ class AnalyzeProjectPackageUseCase:
         )
         if quantity_capability is not None and quantity_capability.status is CapabilityState.FAILED:
             ifc_validation = quantity_capability
-        unit_scale = CapabilityStatus(CapabilityState.OK)
+        # RT-POST-06: never default unit_scale to OK without an explicit probe.
+        unit_scale = CapabilityStatus(
+            CapabilityState.NOT_VERIFIED,
+            "IFC unit scale not probed",
+        )
         for issue in ifc_issues:
             if issue.rule_id == "AEROBIM-UNIT-SCALE":
                 unit_scale = CapabilityStatus(
                     CapabilityState.FAILED,
                     issue.message,
                 )
+                break
+            if issue.rule_id == "AEROBIM-UNIT-SCALE-OK":
+                unit_scale = CapabilityStatus(CapabilityState.OK, issue.message)
                 break
 
         if ids_path is None:
