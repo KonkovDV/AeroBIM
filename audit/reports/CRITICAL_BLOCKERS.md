@@ -68,7 +68,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 
 | ID | Status | Evidence |
 |---|---|---|
-| RT-008 | **PARTIAL** | `audit/evidence/bcf-structural-handoff-2026-07-18.json`; `cde_import=NOT_VERIFIED` |
+| RT-008 | **PARTIAL** | T1 structural evidenced; T0–T4 ladder formalized; `cde_import=NOT_VERIFIED` |
 | RT-010 | **CLOSED** | `claim_labels` on reinforcement-digest + `calculation_correctness=NOT_IMPLEMENTED` |
 | RT-011 | **CLOSED** | `GET /v1/system/capabilities` + ReportCapabilities honesty fields |
 | RT-012 | **CLOSED** (fixture honesty) | schema 1.3.0 claim gate in `measure_package_sla`; customer SLA still НЕ ДОКАЗАНО |

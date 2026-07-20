@@ -16,12 +16,17 @@ receive a `STATUS.json` flip to `VERIFIED` plus hash references.
 | `import-log.txt` or tool export log | Timestamped import success/failure |
 | screenshot / PDF (path referenced in STATUS) | Topics visible in CDE UI |
 | `STATUS.json` | Machine gate (`status` must become `VERIFIED`) |
+| `T2_EVIDENCE_TEMPLATE.json` | Empty field template — fill only with real pilot evidence |
 | `hashes.json` | SHA-256 of BCF ZIP + screenshot + log |
 
 Do **not** invent screenshots. Until real pilot import lands, keep
 `STATUS.json` at `NOT_VERIFIED`.
 
+Ladder taxonomy: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](../../../docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)
+(T0 export → T1 structural → **T2 CDE import** → T3 round-trip → T4 production).
+
 ## Upstream
 
 - Structural T1: `audit/evidence/bcf-structural-handoff-2026-07-18.json`
 - CDE claim rule: keep `STATUS.json` at `NOT_VERIFIED` until real import evidence lands
+- Allowed wording: **structural ZIP AVAILABLE**; **CDE NOT_VERIFIED**

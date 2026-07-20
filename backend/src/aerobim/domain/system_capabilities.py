@@ -136,6 +136,10 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "Production Authorization Code + PKCE BFF with HttpOnly session cookie — "
                 "DESIGNED / NOT_IMPLEMENTED (POST-05); Vite loopback inject is dev-only"
             ),
+            "bcf_cde": (
+                "BCF ZIP structural AVAILABLE (T0/T1); CDE import NOT_VERIFIED (T2) — "
+                "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md"
+            ),
         },
         "honesty": honesty,
         "auth_bff": auth_bff,

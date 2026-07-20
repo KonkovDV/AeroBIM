@@ -1,0 +1,45 @@
+{
+  "artifact_type": "cde_bcf_import_t2_evidence_template",
+  "schema_version": "1.0.0",
+  "ladder_tier": "T2",
+  "status": "NOT_VERIFIED",
+  "claim_allowed": false,
+  "generated_at": "2026-07-21",
+  "ladder_doc": "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md",
+  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-18.json",
+  "status_gate": "audit/evidence/cde-import-proof/STATUS.json",
+  "pilot": {
+    "customer": "",
+    "cde_product": "",
+    "cde_version": "",
+    "operator": "",
+    "import_performed_at": ""
+  },
+  "artifacts": {
+    "bcf_zip_path": "",
+    "bcf_zip_sha256": "",
+    "import_log_path": "",
+    "import_log_sha256": "",
+    "screenshot_or_pdf_path": "",
+    "screenshot_or_pdf_sha256": "",
+    "hashes_json_path": ""
+  },
+  "observations": {
+    "topics_visible": null,
+    "viewpoints_visible": null,
+    "comments_visible": null,
+    "import_result": "",
+    "notes": ""
+  },
+  "forbidden_wording": [
+    "BCF ready for CDE",
+    "CDE interoperable",
+    "production BCF handoff"
+  ],
+  "allowed_wording": "BCF ZIP structural OK / AVAILABLE; CDE import NOT_VERIFIED",
+  "fill_instructions": [
+    "Do not invent screenshots, logs, or hashes.",
+    "Copy real pilot paths into artifacts.* only after independent CDE import.",
+    "Flip STATUS.json status to VERIFIED and claim_allowed=true only when present_files lists all required evidence."
+  ]
+}

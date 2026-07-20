@@ -1,9 +1,12 @@
 {
   "artifact_type": "cde_bcf_import_proof",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-17",
+  "generated_at": "2026-07-21",
+  "ladder_tier": "T2",
+  "ladder_doc": "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md",
   "status": "NOT_VERIFIED",
   "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-18.json",
+  "t2_template": "audit/evidence/cde-import-proof/T2_EVIDENCE_TEMPLATE.json",
   "required_files": [
     "import-log.txt",
     "screenshot.png",
@@ -16,5 +19,5 @@
     "CDE interoperable",
     "production BCF handoff"
   ],
-  "allowed_wording": "BCF ZIP structural OK; CDE import not evidenced"
+  "allowed_wording": "BCF ZIP structural OK / AVAILABLE; CDE import NOT_VERIFIED"
 }
