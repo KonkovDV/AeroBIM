@@ -16,6 +16,7 @@ from uuid import uuid4
 from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.application.services.compliance_agent_orchestrator import merge_advisory_sequences
 from aerobim.application.services.confidence_scorer import score_confidence
+from aerobim.application.services.customer_intake import CustomerIntakeGate
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
 from aerobim.domain.drawing_region_hitl import (
     issues_for_hitl_regions,
@@ -300,6 +301,25 @@ class EvidenceAssembler:
         deterministic: DeterministicBundle,
         advisory: AdvisoryBundle,
     ) -> ValidationReport:
+        intake_issues: list[ValidationIssue] = []
+        # Phase B: only samolet_pilot requires full customer intake (not fixture/dev CI).
+        if self._host._signoff_profile == "samolet_pilot":
+            gate_path = self._host._customer_intake_gate_path or CustomerIntakeGate.default_path()
+            intake = CustomerIntakeGate.evaluate(gate_path)
+            if not intake.ok:
+                reason_text = "; ".join(intake.reasons) if intake.reasons else intake.status
+                intake_issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-CUSTOMER-INTAKE",
+                        severity=Severity.ERROR,
+                        message=(f"Customer pilot intake blocked Shared-gate: {reason_text}"),
+                        category=FindingCategory.IFC_VALIDATION,
+                        source_id="customer-intake-gate",
+                        evidence_refs=(f"intake:{gate_path.as_posix()}",),
+                        origin="deterministic",
+                    )
+                )
+
         prioritized_issues = tuple(
             ensure_finding_provenance(
                 replace(
@@ -310,7 +330,7 @@ class EvidenceAssembler:
                 project_id=request.project_id or request.project_name,
                 revision=request.revision,
             )
-            for issue in advisory.reconciled_issues
+            for issue in [*intake_issues, *advisory.reconciled_issues]
         )
         issues_with_remarks = tuple(self._host._attach_remarks(prioritized_issues))
         severity_counts = Counter(issue.severity for issue in issues_with_remarks)

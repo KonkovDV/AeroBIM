@@ -13,7 +13,7 @@ from typing import Any
 
 from aerobim.core.security.path_jail import PathJailError, resolve_storage_path
 
-_GATE_KEYS = (
+INTAKE_GATE_KEYS = (
     "nda_signed",
     "scope_memo_signed",
     "customer_package_in_samples_customer",
@@ -28,6 +28,7 @@ _GATE_KEYS = (
     "customer_sla_pack_measured",
     "mep_federated_scope",
 )
+_GATE_KEYS = INTAKE_GATE_KEYS
 
 _FORBIDDEN_RULES = (
     "llm_assist_counts_as_adjudicator",

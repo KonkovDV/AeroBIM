@@ -17,7 +17,7 @@
 | ID | Проблема | Текущий статус | Доказательство | Требуется изменение | Можно закрыть без заказчика |
 |---|---|---|---|---|---|
 | A | Drift runtime metrics / README | **DONE** | schema 1.1.0 artifact + README/RU markers; CI `--check-readme` | SSOT JSON + CI drift gate | **Да** |
-| B | Customer intake fail-closed | **PARTIAL** | Gate tool exists; gates all false | Enforce intake before samolet_pilot analyze → BLOCKED | Eng **да** |
+| B | Customer intake fail-closed | **DONE** | Gate tool + `CustomerIntakeGate` + `AEROBIM-CUSTOMER-INTAKE` on `samolet_pilot` | Enforce intake before samolet_pilot analyze → BLOCKED/passed=false | Eng **да** |
 | C | Boolean `summary.passed` ambiguity | **PARTIAL** | Evidence `derived_outcome` only | Domain `PackageOutcome` enum + API/FE | **Да** |
 | D | Rule pack pilot contract | **PARTIAL** | Schema + immutable store | Harden required approval fields; synthetic ≠ customer | Eng **да**; RT-002 **нет** |
 | E | MEP system-aware clash | **PARTIAL** | Ports + Unconfigured + scaffold | Domain entities + adapter + fail-closed probe | Тех. основу **да** |

@@ -173,6 +173,7 @@ class AnalyzeProjectPackageUseCase:
         multimodal_drawing_pipeline: MultimodalDrawingPipeline | None = None,
         compliance_agent: ComplianceAgentOrchestrator | None = None,
         review_event_store: ReviewEventStore | None = None,
+        customer_intake_gate_path: Path | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -220,6 +221,7 @@ class AnalyzeProjectPackageUseCase:
         self._multimodal_drawing_pipeline = multimodal_drawing_pipeline
         self._compliance_agent = compliance_agent
         self._review_event_store = review_event_store
+        self._customer_intake_gate_path = customer_intake_gate_path
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
         self._advisory = AdvisoryOrchestrator(self)
