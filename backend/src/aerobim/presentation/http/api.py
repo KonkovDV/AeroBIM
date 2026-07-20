@@ -20,6 +20,7 @@ from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import (
     PathJailError,
     assert_path_under_tenant_prefix,
+    open_storage_file,
     reject_symlinks,
     resolve_storage_path,
     safe_storage_token,
@@ -212,6 +213,7 @@ def create_http_app(container: Container):
         raise RuntimeError("Install FastAPI and Pydantic to run the HTTP API") from exc
 
     from aerobim.presentation.http.correlation import add_correlation_middleware
+    from aerobim.presentation.http.security_headers import add_security_headers_middleware
 
     settings = container.resolve(Tokens.SETTINGS)
     logger = container.resolve(Tokens.LOGGER)
@@ -251,6 +253,7 @@ def create_http_app(container: Container):
         ],
     )
     add_correlation_middleware(app)
+    add_security_headers_middleware(app)
 
     @app.get("/health")
     def health() -> dict[str, object]:
@@ -652,7 +655,7 @@ def create_http_app(container: Container):
 
     def _compute_file_sha256(file_path: Path) -> str:
         hasher = hashlib.sha256()
-        with file_path.open("rb") as handle:
+        with open_storage_file(file_path, base=settings.storage_dir, mode="rb") as handle:
             for chunk in iter(lambda: handle.read(8192), b""):
                 hasher.update(chunk)
         return hasher.hexdigest()
@@ -1382,6 +1385,10 @@ def create_http_app(container: Container):
                 media_type="application/octet-stream",
                 headers={"Content-Disposition": _attachment_content_disposition(download_name)},
             )
+        try:
+            reject_symlinks(Path(source_payload), base=settings.storage_dir.resolve())
+        except PathJailError as exc:
+            raise HTTPException(status_code=404, detail="IFC source not found") from exc
         return FileResponse(
             path=source_payload,
             media_type="application/octet-stream",
@@ -1414,6 +1421,10 @@ def create_http_app(container: Container):
                 media_type=media_type,
                 headers={"Content-Disposition": _attachment_content_disposition(download_name)},
             )
+        try:
+            reject_symlinks(Path(preview_payload), base=settings.storage_dir.resolve())
+        except PathJailError as exc:
+            raise HTTPException(status_code=404, detail="Drawing preview not found") from exc
         return FileResponse(
             path=preview_payload,
             media_type=media_type,

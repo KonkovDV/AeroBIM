@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import os
 import re
+import unicodedata
 from pathlib import Path
+from typing import IO, Any
 from urllib.parse import unquote
 
 
@@ -24,21 +27,30 @@ def _normalize_user_path(user_path: str) -> str:
     decoded = unquote(user_path)
     if "\x00" in decoded or any(ord(ch) < 32 for ch in decoded):
         raise PathJailError("Encoded control characters are not allowed in paths")
-    return decoded
+    # NFKC collapses compatibility lookalikes before jail checks (OWASP API1 / Unicode).
+    return unicodedata.normalize("NFKC", decoded)
 
 
 def reject_symlinks(path: Path, *, base: Path) -> None:
     """Reject *path* if any component under *base* is a symlink."""
     base_resolved = base.resolve()
+    walk_root = base_resolved
     try:
         relative = path.relative_to(base_resolved)
-    except ValueError as exc:
-        raise PathJailError(f"Path escapes storage boundary: {path}") from exc
+    except ValueError:
+        # Windows may expose the same directory as short (8.3) and long forms.
+        # Prefer parts relative to the caller-supplied base, then walk under resolve().
+        try:
+            base_abs = base.absolute()
+            path_abs = path.absolute() if path.is_absolute() else (base_abs / path).absolute()
+            relative = path_abs.relative_to(base_abs)
+        except ValueError as exc:
+            raise PathJailError(f"Path escapes storage boundary: {path}") from exc
 
     if ".." in relative.parts:
         raise PathJailError(f"Path escapes storage boundary: {path}")
 
-    cursor = base_resolved
+    cursor = walk_root
     for part in relative.parts:
         if part in ("", "."):
             continue
@@ -51,12 +63,13 @@ def safe_storage_token(value: str) -> str:
     """Encode a tenant / pack token as a single reversible path segment.
 
     Alphanumeric plus ``._-`` are kept; every other character becomes ``!{ord:02x}``
-    so ``Tenant/A`` and ``Tenant_A`` never collide.
+    so ``Tenant/A`` and ``Tenant_A`` never collide. Input is NFKC-normalized first.
     """
     if "\x00" in value:
         raise PathJailError("Null bytes are not allowed in storage tokens")
+    normalized = unicodedata.normalize("NFKC", value.strip())
     encoded: list[str] = []
-    for ch in value.strip():
+    for ch in normalized:
         if ch.isalnum() or ch in "._-":
             encoded.append(ch)
         else:
@@ -65,6 +78,33 @@ def safe_storage_token(value: str) -> str:
     if not safe:
         raise PathJailError("Empty storage token is not allowed")
     return safe
+
+
+def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
+    """Open a storage file after symlink rejection; prefer O_NOFOLLOW on POSIX.
+
+    Callers must pass a path already resolved under *base* (or about to be checked).
+    Re-checks for planted symlinks immediately before open to shrink TOCTOU windows.
+    """
+    reject_symlinks(path, base=base)
+    if mode == "rb" and hasattr(os, "O_NOFOLLOW"):
+        try:
+            fd = os.open(str(path), os.O_RDONLY | os.O_NOFOLLOW)
+        except OSError as exc:
+            raise PathJailError(
+                f"Cannot open storage path without following links: {path}"
+            ) from exc
+        return os.fdopen(fd, mode)
+
+    handle = path.open(mode)
+    try:
+        reject_symlinks(path, base=base)
+        if path.is_symlink():
+            raise PathJailError(f"Symlinks are not allowed in storage paths: {path}")
+    except Exception:
+        handle.close()
+        raise
+    return handle
 
 
 def tenant_storage_prefix(tenant_id: str) -> str:
@@ -112,3 +152,14 @@ def resolve_storage_path(user_path: str, *, base: Path) -> Path:
     if not resolved.is_relative_to(base_resolved):
         raise PathJailError(f"Path escapes storage boundary: {user_path}")
     return resolved
+
+
+__all__ = [
+    "PathJailError",
+    "assert_path_under_tenant_prefix",
+    "open_storage_file",
+    "reject_symlinks",
+    "resolve_storage_path",
+    "safe_storage_token",
+    "tenant_storage_prefix",
+]

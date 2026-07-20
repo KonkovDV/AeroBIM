@@ -104,6 +104,11 @@ class Settings:
     oidc_issuer: str | None = None
     oidc_audience: str | None = None
     oidc_jwks_url: str | None = None
+    oidc_jwks_extra_hosts: tuple[str, ...] = ()
+    """Extra JWKS hostnames allowed when they differ from the issuer host.
+
+    Env: ``AEROBIM_OIDC_JWKS_EXTRA_HOSTS`` (comma-separated).
+    """
     oidc_tenant_claim: str = "tenant_id"
     """JWT claim used for tenant binding. No silent fallback to tid/org_id."""
     # Optional Redis for durable async jobs
@@ -306,6 +311,11 @@ class Settings:
             oidc_issuer=(os.getenv("AEROBIM_OIDC_ISSUER") or "").strip() or None,
             oidc_audience=(os.getenv("AEROBIM_OIDC_AUDIENCE") or "").strip() or None,
             oidc_jwks_url=(os.getenv("AEROBIM_OIDC_JWKS_URL") or "").strip() or None,
+            oidc_jwks_extra_hosts=tuple(
+                host.strip()
+                for host in (os.getenv("AEROBIM_OIDC_JWKS_EXTRA_HOSTS") or "").split(",")
+                if host.strip()
+            ),
             oidc_tenant_claim=(
                 (os.getenv("AEROBIM_OIDC_TENANT_CLAIM") or "tenant_id").strip() or "tenant_id"
             ),
@@ -325,9 +335,20 @@ class Settings:
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
             UnsafeOutboundUrlError,
+            assert_oidc_jwks_host_bound,
             assert_safe_datastore_url,
             assert_safe_outbound_url,
         )
+
+        if settings.oidc_issuer and settings.oidc_jwks_url:
+            try:
+                assert_oidc_jwks_host_bound(
+                    settings.oidc_issuer,
+                    settings.oidc_jwks_url,
+                    settings.oidc_jwks_extra_hosts,
+                )
+            except UnsafeOutboundUrlError as exc:
+                raise RuntimeError(f"OIDC JWKS host binding failed: {exc}") from exc
 
         for label, candidate in (
             ("AEROBIM_OIDC_JWKS_URL", settings.oidc_jwks_url),
