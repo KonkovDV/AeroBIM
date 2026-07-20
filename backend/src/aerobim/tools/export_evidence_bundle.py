@@ -264,18 +264,19 @@ def export_evidence_bundle(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     source_files: list[dict[str, str]] = []
+    missing_sources: list[str] = []
     for path in _collect_source_paths(pack_path, repo):
         if not path.is_file():
-            source_files.append(
-                {
-                    "path": str(path.relative_to(repo)) if path.is_relative_to(repo) else str(path),
-                    "sha256": "",
-                    "status": "missing",
-                }
-            )
+            rel = str(path.relative_to(repo)) if path.is_relative_to(repo) else str(path)
+            source_files.append({"path": rel, "sha256": "", "status": "missing"})
+            missing_sources.append(rel)
             continue
         rel = str(path.relative_to(repo)) if path.is_relative_to(repo) else str(path)
         source_files.append({"path": rel, "sha256": _sha256_file(path), "status": "ok"})
+    if missing_sources:
+        raise FileNotFoundError(
+            "Evidence bundle refuses missing pack inputs: " + ", ".join(missing_sources)
+        )
 
     benchmark_pack = load_benchmark_pack(pack_path, repo_root_path=repo)
     settings = Settings.from_env()
@@ -304,6 +305,14 @@ def export_evidence_bundle(
         "analyze_elapsed_ms": elapsed_ms,
         "generated_at": datetime.now(UTC).isoformat(),
     }
+    runtime_settings = {
+        "environment": settings.environment,
+        "signoff_profile": settings.signoff_profile,
+        "require_clash": settings.require_clash,
+        "require_bsi_schema": settings.require_bsi_schema,
+        "require_mep_system_clash": settings.require_mep_system_clash,
+        "allow_anonymous_dev": settings.allow_anonymous_dev,
+    }
     artifacts = {
         "manifest.json": True,
         "report.json": True,
@@ -329,6 +338,7 @@ def export_evidence_bundle(
         "error_count": report.summary.error_count,
         "warning_count": report.summary.warning_count,
         "source_files": source_files,
+        "runtime_settings": runtime_settings,
         "forbidden_claims": list(_FORBIDDEN),
         "claim_boundary": (
             "summary.passed is Shared-gate technical status (ADR-001), "
@@ -409,6 +419,17 @@ python -m aerobim.tools.export_evidence_bundle \\
 - Forbidden: {", ".join(_FORBIDDEN)}.
 """
     (output_dir / "README.md").write_text(readme, encoding="utf-8")
+
+    output_hashes: dict[str, str] = {}
+    for name in artifacts:
+        path = output_dir / name
+        if path.is_file() and name != "manifest.json":
+            output_hashes[name] = _sha256_file(path)
+    manifest["output_file_sha256"] = output_hashes
+    # Re-write manifest with output hashes (manifest hash intentionally omitted).
+    (output_dir / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     return manifest
 
 

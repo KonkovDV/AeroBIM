@@ -1,8 +1,8 @@
 # AeroBIM local development stack
 #
-# Auth hygiene (audit 2026-07-20): this file is LOCAL DEMO only.
-# It defaults to AEROBIM_ENV=development — never ships production + a baked-in token.
-# For shared/LAN/production-like runs use docker-compose.production.yml + real secrets.
+# Auth hygiene (Red Team 2026-07-20): LOCAL DEMO only — published on loopback.
+# Anonymous API is OFF by default. Opt in explicitly for local demos.
+# Shared/LAN/production-like: docker-compose.production.yml + real secrets.
 
 services:
   backend:
@@ -10,7 +10,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      # Bind host loopback only — do not expose unauthenticated/dev API on LAN.
+      - "127.0.0.1:8080:8080"
     environment:
       AEROBIM_ENV: ${AEROBIM_ENV:-development}
       AEROBIM_SIGNOFF_PROFILE: ${AEROBIM_SIGNOFF_PROFILE:-development}
@@ -19,10 +20,11 @@ services:
       AEROBIM_DEBUG: ${AEROBIM_DEBUG:-true}
       AEROBIM_STORAGE_DIR: /data/reports
       AEROBIM_CORS_ORIGINS: "http://localhost:3000,http://localhost:5173"
-      # Optional for local development. Prefer exporting the var; never commit secrets.
+      # Optional. Prefer exporting the var; never commit secrets.
       # WARNING: do not put the token in VITE_* (it is bundled into browser assets).
       AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:-}
-      AEROBIM_ALLOW_ANONYMOUS_DEV: ${AEROBIM_ALLOW_ANONYMOUS_DEV:-true}
+      # Explicit opt-in only (default false). Set AEROBIM_ALLOW_ANONYMOUS_DEV=true for local demos.
+      AEROBIM_ALLOW_ANONYMOUS_DEV: ${AEROBIM_ALLOW_ANONYMOUS_DEV:-false}
     volumes:
       - reports-data:/data/reports
       - ./samples:/data/samples:ro

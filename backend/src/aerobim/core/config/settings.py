@@ -118,11 +118,12 @@ class Settings:
     ``norm_rule_pack_paths``. If configured but missing at analysis time, the
     ``norm_rule_packs`` capability fails closed (never a silent skip)."""
     allow_anonymous_dev: bool = True
-    """When constructing Settings in-process (tests), default True for convenience.
+    """In-process Settings default (unit/TestClient convenience).
 
     ``Settings.from_env()`` defaults this to **False** unless
-    ``AEROBIM_ALLOW_ANONYMOUS_DEV=true`` — local/process env stacks must set a
-    bearer token (or explicitly opt into anonymous)."""
+    ``AEROBIM_ALLOW_ANONYMOUS_DEV=true``. Production and compose stacks must not
+    rely on this dataclass default — they go through ``from_env()``.
+    """
     oda_cad_enabled: bool = False
     """Legal-gated ODA/Teigha DWG path (``AEROBIM_ODA_CAD_ENABLED``). Default off."""
     mep_system_clash_enabled: bool = False
@@ -153,6 +154,18 @@ class Settings:
             "and/or OIDC settings (AEROBIM_OIDC_ISSUER, AEROBIM_OIDC_AUDIENCE, "
             f"AEROBIM_OIDC_JWKS_URL); AEROBIM_ENV={self.environment!r}"
         )
+
+    def require_oidc_runtime_deps(self) -> None:
+        """Fail closed when OIDC is configured but PyJWT is not installed."""
+        if not self.oidc_enabled:
+            return
+        try:
+            import jwt  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise RuntimeError(
+                "OIDC is configured but PyJWT is not installed; "
+                "install the 'enterprise' extra or unset AEROBIM_OIDC_*"
+            ) from exc
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -194,6 +207,12 @@ class Settings:
                 signoff_profile = "fixture"
             else:
                 signoff_profile = "development"
+        # Non-dev deployments must not soft-open Shared-gate via development/fixture profile.
+        if env_name not in _DEV_ENVIRONMENTS and signoff_profile in {"development", "fixture"}:
+            raise RuntimeError(
+                f"AEROBIM_SIGNOFF_PROFILE={signoff_profile!r} is not allowed when "
+                f"AEROBIM_ENV={env_name!r}; use 'production' or 'samolet_pilot'"
+            )
         profile_gate = signoff_profile in {"samolet_pilot", "production"}
         # Pilot/production are fail-closed: env cannot weaken required gates.
         if profile_gate:
@@ -305,4 +324,5 @@ class Settings:
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"Unsafe outbound URL in {label}: {exc}") from exc
         settings.require_secure_auth()
+        settings.require_oidc_runtime_deps()
         return settings

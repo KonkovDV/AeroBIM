@@ -31,6 +31,34 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev-lock.txt
           pip install -e . --no-deps
+          pip install uv
+      - name: Lockfile drift check (runtime lock must match pyproject extras)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+          before = Path("requirements-lock.txt").read_text(encoding="utf-8")
+          subprocess.check_call(
+              [
+                  sys.executable, "-m", "uv", "pip", "compile",
+                  "--python", "3.12",
+                  "--extra=raster",
+                  "-o", "requirements-lock.check.txt",
+                  "pyproject.toml",
+              ]
+          )
+          after = Path("requirements-lock.check.txt").read_text(encoding="utf-8")
+          def pins(text: str) -> set[str]:
+              return {
+                  line.strip().lower()
+                  for line in text.splitlines()
+                  if line.strip() and not line.strip().startswith("#") and "==" in line
+              }
+          if pins(before) != pins(after):
+              raise SystemExit("requirements-lock.txt is stale; regenerate via uv pip compile")
+          print("requirements-lock.txt pin set OK")
+          PY
       - run: ruff check src tests
       - run: ruff format --check src tests
 
@@ -84,17 +112,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev-lock.txt
           pip install -e . --no-deps
-      - run: pytest tests -v --tb=short
-      - name: Coverage report (informational; no fail-under gate yet)
+      - name: Pytest + coverage (single run)
         run: |
           mkdir -p ../artifacts/coverage
-          pytest tests -q --cov=aerobim --cov-report=term-missing:skip-covered --cov-report=xml:../artifacts/coverage/coverage.xml
+          pytest tests -v --tb=short \
+            --cov=aerobim \
+            --cov-report=term-missing:skip-covered \
+            --cov-report=xml:../artifacts/coverage/coverage.xml
       - name: Upload coverage artifact
-        if: always()
+        if: success()
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: backend-coverage
           path: artifacts/coverage/coverage.xml
+          if-no-files-found: warn
       - name: Verify synthetic detection-precision harness contract
         run: |
           python -m aerobim.tools.evaluate_detection_precision \

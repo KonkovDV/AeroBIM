@@ -14,9 +14,11 @@ const configuredBase = (import.meta.env.VITE_AEROBIM_API_BASE_URL as string | un
 // or terminate TLS at a reverse proxy that adds Authorization server-side.
 const apiBaseUrl = configuredBase ?? (import.meta.env.DEV ? "" : "http://localhost:8080");
 const useDevProxy = import.meta.env.DEV && !configuredBase;
-const apiBearerToken = useDevProxy
-  ? undefined
-  : (import.meta.env.VITE_AEROBIM_API_BEARER_TOKEN as string | undefined)?.trim() || undefined;
+// Never embed a bearer token in production bundles (POST-05). Dev-only VITE token remains demo-only.
+const apiBearerToken =
+  useDevProxy || import.meta.env.PROD
+    ? undefined
+    : (import.meta.env.VITE_AEROBIM_API_BEARER_TOKEN as string | undefined)?.trim() || undefined;
 
 function authHeaders(extra: Record<string, string> = {}): HeadersInit {
   const headers: Record<string, string> = {
@@ -32,7 +34,9 @@ function authHeaders(extra: Record<string, string> = {}): HeadersInit {
 function throwForFailedResponse(response: Response): never {
   if (response.status === 401) {
     throw new Error(
-      "Unauthorized (401): set VITE_AEROBIM_API_BEARER_TOKEN to match AEROBIM_API_BEARER_TOKEN (demo-only; token is public in the bundle)."
+      import.meta.env.PROD
+        ? "Unauthorized (401): terminate TLS at a reverse proxy that adds Authorization server-side (VITE bearer is disabled in production builds)."
+        : "Unauthorized (401): set VITE_AEROBIM_API_BEARER_TOKEN to match AEROBIM_API_BEARER_TOKEN (demo-only; token is public in the bundle)."
     );
   }
   if (response.status === 503) {

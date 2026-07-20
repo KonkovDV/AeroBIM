@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
       exclude: ["**/node_modules/**", "**/dist/**"],
     },
     server: {
-      host: "0.0.0.0",
+      host: env.AEROBIM_VITE_HOST || "127.0.0.1",
       port: 5173,
       proxy: {
         "/v1": {
@@ -62,7 +62,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: {
-      host: "0.0.0.0",
+      host: env.AEROBIM_VITE_HOST || "127.0.0.1",
       port: 4173,
     },
   };

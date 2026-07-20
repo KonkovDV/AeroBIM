@@ -221,13 +221,13 @@ class ApiSecurityTests(unittest.TestCase):
         data = response.json()
         self.assertEqual(data["status"], "ok")
         self.assertIn("service", data)
-        self.assertIn("environment", data)
+        self.assertNotIn("environment", data)
 
     def test_health_response_shape_locked(self) -> None:
         response = self.client.get("/health")
         self.assertEqual(response.status_code, 200)
         payload = response.json()
-        self.assertEqual(set(payload.keys()), {"service", "environment", "status"})
+        self.assertEqual(set(payload.keys()), {"service", "status"})
 
     def test_requirement_path_traversal_rejected(self) -> None:
         response = self.client.post(
