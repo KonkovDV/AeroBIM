@@ -301,6 +301,7 @@ class Bcf3HttpEndpointTests(unittest.TestCase):
             port=8080,
             storage_dir=Path(cls._tmp.name),
             debug=True,
+            allow_anonymous_dev=True,
         )
         settings.storage_dir.mkdir(parents=True, exist_ok=True)
         container = bootstrap_container(settings)

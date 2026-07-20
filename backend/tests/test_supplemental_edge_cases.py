@@ -129,6 +129,10 @@ class ValidateWithIdsPathTests(unittest.TestCase):
                     )
                 ]
 
+        class _NoOpAuditor:
+            def audit(self, _ids_path):
+                return []
+
         class StubStore:
             saved = None
 
@@ -142,6 +146,7 @@ class ValidateWithIdsPathTests(unittest.TestCase):
             ifc_validator=StubIfcValidator(),
             audit_report_store=store,
             ids_validator=StubIdsValidator(),
+            ids_document_auditor=_NoOpAuditor(),
         )
 
         report = uc.execute(

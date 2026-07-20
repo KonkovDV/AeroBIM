@@ -396,6 +396,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             ids_validator=current.resolve(Tokens.IDS_VALIDATOR),
             ifc_schema_validator=current.resolve(Tokens.IFC_SCHEMA_VALIDATOR),
             ids_document_auditor=current.resolve(Tokens.IDS_DOCUMENT_AUDITOR),
+            signoff_profile=current.resolve(Tokens.SETTINGS).signoff_profile,
+            require_clash=current.resolve(Tokens.SETTINGS).require_clash,
+            clash_affects_pass=current.resolve(Tokens.SETTINGS).clash_affects_pass,
+            require_bsi_schema=current.resolve(Tokens.SETTINGS).require_bsi_schema,
+            require_mep_system_clash=current.resolve(Tokens.SETTINGS).require_mep_system_clash,
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -506,6 +511,7 @@ def _build_object_store(settings: Settings):
                 access_key_id=settings.s3_access_key_id,
                 secret_access_key=settings.s3_secret_access_key,
                 prefix=settings.s3_prefix,
+                allow_http_endpoint=settings.is_dev_environment,
             )
         except RuntimeError:
             # Production / pilot: never hide enterprise object-store failure behind local FS.

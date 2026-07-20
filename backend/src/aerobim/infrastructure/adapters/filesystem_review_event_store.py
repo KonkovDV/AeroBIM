@@ -39,7 +39,9 @@ class FilesystemReviewEventStore:
 
     def append(self, event: ReviewEvent) -> str:
         target = self._path(event.report_id)
-        existing = self._iter_events(report_id=event.report_id, raise_on_corrupt=False)
+        existing = self._iter_events(
+            report_id=event.report_id, raise_on_corrupt=self._fail_closed
+        )
         existing_ids = {e.event_id for e in existing}
         existing_keys = {e.idempotency_key for e in existing if e.idempotency_key}
         if event.event_id in existing_ids:

@@ -42,11 +42,13 @@ class SubmitAnalyzeProjectPackageJobUseCase:
                 JobStatus.SUCCEEDED,
             }:
                 return existing
-        if (
-            max_concurrent_per_tenant is not None
-            and max_concurrent_per_tenant > 0
-            and tenant_id is not None
-        ):
+        if max_concurrent_per_tenant is not None and max_concurrent_per_tenant > 0:
+            # RT D09: deny anonymous/null tenant when a concurrency limit is configured.
+            if tenant_id is None:
+                raise JobConcurrencyLimitError(
+                    "Analyze job concurrency limit requires a bound tenant_id "
+                    f"(limit {max_concurrent_per_tenant})"
+                )
             active = self._job_store.count_active_for_tenant(tenant_id)
             if active >= max_concurrent_per_tenant:
                 raise JobConcurrencyLimitError(

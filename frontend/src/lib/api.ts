@@ -12,7 +12,8 @@ const configuredBase = (import.meta.env.VITE_AEROBIM_API_BASE_URL as string | un
 );
 // Dev default: same-origin (Vite proxy injects bearer). Production: set VITE_AEROBIM_API_BASE_URL
 // or terminate TLS at a reverse proxy that adds Authorization server-side.
-const apiBaseUrl = configuredBase ?? (import.meta.env.DEV ? "" : "http://localhost:8080");
+// Never default production builds to http://localhost:8080 (RT C17).
+const apiBaseUrl = configuredBase ?? "";
 const useDevProxy = import.meta.env.DEV && !configuredBase;
 // Never embed a bearer token in production bundles (POST-05). Dev-only VITE token remains demo-only.
 const apiBearerToken =

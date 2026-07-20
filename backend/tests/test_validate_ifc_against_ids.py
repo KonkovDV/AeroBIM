@@ -19,6 +19,11 @@ from aerobim.domain.models import (
 )
 
 
+class _NoOpIdsDocumentAuditor:
+    def audit(self, _ids_path: Path) -> list[ValidationIssue]:
+        return []
+
+
 class FakeExtractor:
     def extract(self, _source: RequirementSource) -> list[ParsedRequirement]:
         return [
@@ -129,6 +134,7 @@ class ValidateIfcAgainstIdsUseCaseTests(unittest.TestCase):
             CleanValidator(),
             store,
             ids_validator=None,
+            ids_document_auditor=_NoOpIdsDocumentAuditor(),
         )
         report = use_case.execute(
             ValidationRequest(

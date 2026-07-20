@@ -32,32 +32,38 @@ jobs:
           pip install -r requirements-dev-lock.txt
           pip install -e . --no-deps
           pip install uv
-      - name: Lockfile drift check (runtime lock must match pyproject extras)
+      - name: Lockfile drift check (runtime + dev locks must match pyproject extras)
         run: |
           python - <<'PY'
           from pathlib import Path
           import subprocess
           import sys
-          before = Path("requirements-lock.txt").read_text(encoding="utf-8")
-          subprocess.check_call(
-              [
-                  sys.executable, "-m", "uv", "pip", "compile",
-                  "--python", "3.12",
-                  "--extra=raster",
-                  "-o", "requirements-lock.check.txt",
-                  "pyproject.toml",
-              ]
-          )
-          after = Path("requirements-lock.check.txt").read_text(encoding="utf-8")
+
           def pins(text: str) -> set[str]:
               return {
                   line.strip().lower()
                   for line in text.splitlines()
                   if line.strip() and not line.strip().startswith("#") and "==" in line
               }
-          if pins(before) != pins(after):
-              raise SystemExit("requirements-lock.txt is stale; regenerate via uv pip compile")
-          print("requirements-lock.txt pin set OK")
+
+          def check(lock_name: str, extras: list[str]) -> None:
+              before = Path(lock_name).read_text(encoding="utf-8")
+              out = Path(f"{lock_name}.check.txt")
+              cmd = [
+                  sys.executable, "-m", "uv", "pip", "compile",
+                  "--python", "3.12",
+                  *extras,
+                  "-o", str(out),
+                  "pyproject.toml",
+              ]
+              subprocess.check_call(cmd)
+              after = out.read_text(encoding="utf-8")
+              if pins(before) != pins(after):
+                  raise SystemExit(f"{lock_name} is stale; regenerate via uv pip compile")
+              print(f"{lock_name} pin set OK")
+
+          check("requirements-lock.txt", ["--extra=raster"])
+          check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster"])
           PY
       - run: ruff check src tests
       - run: ruff format --check src tests

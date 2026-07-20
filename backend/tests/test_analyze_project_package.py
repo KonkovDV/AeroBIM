@@ -33,6 +33,12 @@ from aerobim.infrastructure.adapters.template_remark_generator import TemplateRe
 
 def _make_analyze_use_case(**kwargs) -> AnalyzeProjectPackageUseCase:
     kwargs.setdefault("external_evidence_verifier", OpenRebarEvidenceVerifier())
+
+    class _NoOpIdsDocumentAuditor:
+        def audit(self, _ids_path: Path) -> list[ValidationIssue]:
+            return []
+
+    kwargs.setdefault("ids_document_auditor", _NoOpIdsDocumentAuditor())
     return AnalyzeProjectPackageUseCase(**kwargs)
 
 

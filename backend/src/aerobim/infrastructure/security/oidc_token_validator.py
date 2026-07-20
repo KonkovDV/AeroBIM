@@ -43,6 +43,9 @@ class OidcTokenValidator:
         try:
             header = jwt.get_unverified_header(token)
             kid = header.get("kid")
+            if kid is None or (isinstance(kid, str) and not kid.strip()):
+                raise OidcValidationError("OIDC token header missing required kid")
+            kid = str(kid).strip()
             keys = jwks.get("keys")
             if not isinstance(keys, list) or not keys:
                 raise OidcValidationError("JWKS response contains no keys")
@@ -50,9 +53,14 @@ class OidcTokenValidator:
             for candidate in keys:
                 if not isinstance(candidate, dict):
                     continue
-                if kid is None or candidate.get("kid") == kid:
-                    key_data = candidate
-                    break
+                if candidate.get("kid") != kid:
+                    continue
+                # Prefer signing keys when JWK advertises use=.
+                key_use = candidate.get("use")
+                if key_use is not None and str(key_use).lower() not in {"sig", ""}:
+                    continue
+                key_data = candidate
+                break
             if key_data is None:
                 raise OidcValidationError(f"No JWKS key matched kid={kid!r}")
             signing_key = PyJWK.from_dict(key_data)

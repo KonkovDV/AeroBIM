@@ -67,7 +67,15 @@ When reporting, include:
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash / MEP / schema / unit_scale). Soft `AEROBIM_CLASH_AFFECTS_PASS=false` is ignored under pilot/production.
 - OIDC JWT validation pins algorithms (RS256), verifies `iss`, `aud`, and `exp`; tenant claim only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`).
 - Cross-tenant object ACL denials return **HTTP 404** (not 403).
-- Outbound JWKS / buildingSMART Validation Service / OpenCDE fetches pass an SSRF URL allowlist guard.
+- Outbound JWKS / buildingSMART Validation Service / OpenCDE fetches pass an SSRF URL allowlist guard; DNS is resolved once and connections are IP-pinned; non-global addresses (incl. CGNAT `100.64/10`) are blocked.
+- OIDC JWTs without `kid` are rejected; JWKS key selection requires a matching `kid` (and `use=sig` when advertised).
+- OIDC principals must carry a non-empty tenant claim — never fall back to `AEROBIM_API_TENANT_ID`.
+- OpenAPI `/docs`/`/redoc`/`/openapi.json` are disabled outside development/test.
+- CORS request headers are allowlisted (`Authorization`, `Content-Type`, `Idempotency-Key`, `X-Request-ID`, `Accept`).
+- Production compose publishes `127.0.0.1:8080` only; LAN exposure requires a reverse proxy.
+- Soft `development`/`fixture` sign-off profiles cannot weaken pilot/production capability gates; evidence-bundle PASS claims are evaluated under production policy.
+- Backend image base is digest-pinned (`python:3.12-slim@sha256:…`); pip lockfiles remain version-pinned (hash-require still PARTIAL).
+- PDF raster/preview uses PyMuPDF on authenticated uploads — keep patched; treat untrusted PDF rendering as residual host risk (sandbox not yet shipped).
 - Storage path resolution rejects symlinks and path escapes under `AEROBIM_STORAGE_DIR`; ZIP members with `..` or absolute paths are rejected.
 - IFC inputs larger than `AEROBIM_MAX_IFC_BYTES` (default 256 MiB) are rejected with HTTP 413.
 - Optional validation engines publish `report.capabilities` so silent empty clash/IDS results cannot look like PASS.

@@ -74,6 +74,22 @@ def _attachment_content_disposition(filename: str) -> str:
     return f'attachment; filename="{safe}"'
 
 
+_ALLOWED_PREVIEW_MEDIA_TYPES = frozenset(
+    {
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+        "application/pdf",
+    }
+)
+
+
+def _safe_preview_media_type(raw: str | None) -> str:
+    value = (raw or "").strip().lower()
+    return value if value in _ALLOWED_PREVIEW_MEDIA_TYPES else "application/octet-stream"
+
+
 class ValidateIfcRequest(BaseModel):
     request_id: str | None = None
     ifc_path: str = Field(max_length=2048)
@@ -210,14 +226,24 @@ def create_http_app(container: Container):
         max_bytes_per_day=settings.max_upload_bytes_per_tenant_day,
     )
 
-    app = FastAPI(title="aerobim-backend", version="0.2.0")
+    # Harden OpenAPI surfaces outside development/test (RT A03).
+    docs_kwargs: dict[str, None] = {}
+    if not settings.is_dev_environment:
+        docs_kwargs = {"docs_url": None, "redoc_url": None, "openapi_url": None}
+    app = FastAPI(title="aerobim-backend", version="0.2.0", **docs_kwargs)
 
     # -- Middleware stack (order matters: outermost first) --
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),
         allow_methods=["GET", "POST"],
-        allow_headers=["*"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "Idempotency-Key",
+            "X-Request-ID",
+            "Accept",
+        ],
     )
     add_correlation_middleware(app)
 
@@ -319,19 +345,29 @@ def create_http_app(container: Container):
                 claims = oidc_validator.validate(token)
                 claim_name = (settings.oidc_tenant_claim or "tenant_id").strip() or "tenant_id"
                 tenant_claim = claims.get(claim_name)
-                tenant = str(tenant_claim).strip() if tenant_claim else settings.api_tenant_id
+                tenant = str(tenant_claim).strip() if tenant_claim is not None else ""
+                if not tenant:
+                    # RT A07: never fall back to api_tenant_id for OIDC principals.
+                    raise HTTPException(
+                        status_code=401,
+                        detail="OIDC token missing required tenant claim",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
                 subject = claims.get("sub")
                 return AuthPrincipal(
                     tenant_id=tenant,
                     subject=str(subject) if subject is not None else None,
                 )
+            except HTTPException:
+                raise
             except OidcValidationError as exc:
-                if configured_token is None:
-                    raise HTTPException(
-                        status_code=401,
-                        detail=str(exc),
-                        headers={"WWW-Authenticate": "Bearer"},
-                    ) from exc
+                # RT A13: never leak validator detail to clients.
+                logger.warning("OIDC token validation failed", detail=str(exc))
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid API token",
+                    headers={"WWW-Authenticate": "Bearer"},
+                ) from exc
 
         raise HTTPException(
             status_code=401,
@@ -432,12 +468,40 @@ def create_http_app(container: Container):
         data["iso19650"] = enrich_iso19650_metadata(report)
         return data
 
-    def _resolve_report_ifc_source(report_id: str) -> tuple[str, bytes | Path]:
+    def _assert_object_key_under_tenant(
+        object_key: str,
+        *,
+        report,
+        principal: AuthPrincipal,
+    ) -> None:
+        """When ACL is on, object keys must live under the tenant storage prefix."""
+        if not settings.enforce_object_acl:
+            return
+        tenant = (getattr(report, "tenant_id", None) or principal.tenant_id or "").strip()
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Object not found")
+        try:
+            prefix = tenant_storage_prefix(tenant)
+        except PathJailError as exc:
+            raise HTTPException(status_code=404, detail="Object not found") from exc
+        key = (object_key or "").lstrip("/")
+        if not key.startswith(prefix):
+            raise HTTPException(status_code=404, detail="Object not found")
+
+    def _resolve_report_ifc_source(
+        report_id: str,
+        *,
+        principal: AuthPrincipal | None = None,
+    ) -> tuple[str, bytes | Path]:
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
 
         if report.ifc_object_key and object_store is not None:
+            if principal is not None:
+                _assert_object_key_under_tenant(
+                    report.ifc_object_key, report=report, principal=principal
+                )
             payload = object_store.get_bytes(report.ifc_object_key)
             if payload is None:
                 raise HTTPException(
@@ -467,7 +531,12 @@ def create_http_app(container: Container):
         if not _DRAWING_ASSET_ID_RE.match(asset_id):
             raise HTTPException(status_code=400, detail="Invalid drawing asset ID format")
 
-    def _resolve_report_drawing_asset_preview(report_id: str, asset_id: str):
+    def _resolve_report_drawing_asset_preview(
+        report_id: str,
+        asset_id: str,
+        *,
+        principal: AuthPrincipal | None = None,
+    ):
         report = audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
@@ -479,6 +548,10 @@ def create_http_app(container: Container):
             raise HTTPException(status_code=404, detail=f"Drawing asset {asset_id} not found")
 
         if drawing_asset.object_key and object_store is not None:
+            if principal is not None:
+                _assert_object_key_under_tenant(
+                    drawing_asset.object_key, report=report, principal=principal
+                )
             payload = object_store.get_bytes(drawing_asset.object_key)
             if payload is None:
                 raise HTTPException(
@@ -492,6 +565,10 @@ def create_http_app(container: Container):
             raise HTTPException(
                 status_code=409, detail="Stored drawing asset escapes storage boundary"
             )
+        try:
+            reject_symlinks(resolved, base=settings.storage_dir.resolve())
+        except PathJailError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
         if not resolved.exists():
             raise HTTPException(
                 status_code=404, detail=f"Drawing asset preview for {asset_id} not found"
@@ -763,12 +840,6 @@ def create_http_app(container: Container):
             raise HTTPException(status_code=400, detail="Empty upload")
 
         try:
-            upload_quota_store.assert_can_accept(tenant_key, size_bytes=total)
-        except UploadQuotaExceeded as exc:
-            quarantine.unlink(missing_ok=True)
-            raise HTTPException(status_code=429, detail=str(exc)) from exc
-
-        try:
             sniffed = validate_upload_content(
                 filename=safe_name,
                 payload=bytes(sniff_buf)
@@ -786,6 +857,12 @@ def create_http_app(container: Container):
         except ZipBombError as exc:
             quarantine.unlink(missing_ok=True)
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+        try:
+            quota = upload_quota_store.reserve(tenant_key, size_bytes=total)
+        except UploadQuotaExceeded as exc:
+            quarantine.unlink(missing_ok=True)
+            raise HTTPException(status_code=429, detail=str(exc)) from exc
 
         # Promote out of quarantine only after content + zip checks pass.
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -807,7 +884,6 @@ def create_http_app(container: Container):
             )
             del payload
 
-        quota = upload_quota_store.record(tenant_key, size_bytes=total)
         return {
             "upload_id": upload_id,
             "filename": safe_name,
@@ -1082,13 +1158,15 @@ def create_http_app(container: Container):
         _assert_report_access(report, principal)
         review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
         resulting_state: str | None = None
+        # RT A14/A15: prefer authenticated principal subject over client-supplied actor.
+        actor = (principal.subject or "").strip() or payload.actor
         # Norm-pack events are a separate lifecycle; finding HITL transitions are validated.
         if payload.event_type not in {"norm_rule_proposed", "norm_rule_edited"}:
             try:
                 resulting_state = assert_hitl_transition(
                     current=payload.previous_state,
                     event_type=payload.event_type,
-                    actor=payload.actor,
+                    actor=actor,
                     note=payload.note,
                 )
             except HitlTransitionError as exc:
@@ -1101,7 +1179,7 @@ def create_http_app(container: Container):
                     payload.event_type,
                     payload.issue_rule_id or "",
                     payload.finding_id or "",
-                    payload.actor or "",
+                    actor or "",
                     payload.note or "",
                     payload.previous_state or "",
                 ]
@@ -1115,7 +1193,7 @@ def create_http_app(container: Container):
             event_type=payload.event_type,
             created_at=datetime.now(tz=UTC).isoformat(),
             issue_rule_id=payload.issue_rule_id,
-            actor=payload.actor,
+            actor=actor,
             note=payload.note,
             latency_ms=payload.latency_ms,
             idempotency_key=idem,
@@ -1214,18 +1292,19 @@ def create_http_app(container: Container):
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         _assert_report_access(report, principal)
-        filename, source_payload = _resolve_report_ifc_source(report_id)
+        filename, source_payload = _resolve_report_ifc_source(report_id, principal=principal)
         if isinstance(source_payload, bytes):
             download_name = filename or f"{report_id}.ifc"
             return Response(
                 content=source_payload,
                 media_type="application/octet-stream",
-                headers={"content-disposition": f'attachment; filename="{download_name}"'},
+                headers={"Content-Disposition": _attachment_content_disposition(download_name)},
             )
         return FileResponse(
             path=source_payload,
             media_type="application/octet-stream",
             filename=filename or f"{report_id}.ifc",
+            content_disposition_type="attachment",
         )
 
     @app.get("/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
@@ -1242,18 +1321,22 @@ def create_http_app(container: Container):
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         _assert_report_access(report, principal)
-        drawing_asset, preview_payload = _resolve_report_drawing_asset_preview(report_id, asset_id)
+        drawing_asset, preview_payload = _resolve_report_drawing_asset_preview(
+            report_id, asset_id, principal=principal
+        )
+        media_type = _safe_preview_media_type(drawing_asset.media_type)
         if isinstance(preview_payload, bytes):
             download_name = drawing_asset.stored_filename or f"{asset_id}.png"
             return Response(
                 content=preview_payload,
-                media_type=drawing_asset.media_type,
-                headers={"content-disposition": f'attachment; filename="{download_name}"'},
+                media_type=media_type,
+                headers={"Content-Disposition": _attachment_content_disposition(download_name)},
             )
         return FileResponse(
             path=preview_payload,
-            media_type=drawing_asset.media_type,
+            media_type=media_type,
             filename=drawing_asset.stored_filename,
+            content_disposition_type="attachment",
         )
 
     @app.get("/v1/reports/{report_id}/export/json")

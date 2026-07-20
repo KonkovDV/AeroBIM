@@ -3,9 +3,14 @@
 from __future__ import annotations
 
 import json
+import os
+import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+
+_LOCK_ATTEMPTS = 50
+_LOCK_SLEEP_S = 0.02
 
 
 class UploadQuotaExceeded(ValueError):
@@ -62,6 +67,23 @@ class FilesystemUploadQuotaStore:
             "bytes_used": int(data.get("bytes_used") or 0),
         }
 
+    def _with_exclusive_lock(self, path: Path, fn):  # noqa: ANN001 — internal
+        lock_path = path.with_suffix(path.suffix + ".lock")
+        for _ in range(_LOCK_ATTEMPTS):
+            try:
+                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                try:
+                    os.write(fd, b"1")
+                finally:
+                    os.close(fd)
+                try:
+                    return fn()
+                finally:
+                    lock_path.unlink(missing_ok=True)
+            except FileExistsError:
+                time.sleep(_LOCK_SLEEP_S)
+        raise RuntimeError(f"Could not acquire upload-quota lock for {path.name}")
+
     def snapshot(self, tenant_id: str) -> QuotaSnapshot:
         day = self._day()
         data = self._load(self._path(tenant_id, day))
@@ -75,7 +97,12 @@ class FilesystemUploadQuotaStore:
         )
 
     def assert_can_accept(self, tenant_id: str, *, size_bytes: int) -> None:
+        """Check quotas without mutating (prefer ``reserve`` for check+write)."""
+
         snap = self.snapshot(tenant_id)
+        self._raise_if_exceeded(snap, size_bytes=size_bytes)
+
+    def _raise_if_exceeded(self, snap: QuotaSnapshot, *, size_bytes: int) -> None:
         if self._max_uploads is not None and snap.upload_count + 1 > self._max_uploads:
             raise UploadQuotaExceeded(
                 "Tenant upload count quota exceeded "
@@ -90,11 +117,53 @@ class FilesystemUploadQuotaStore:
     def record(self, tenant_id: str, *, size_bytes: int) -> QuotaSnapshot:
         day = self._day()
         path = self._path(tenant_id, day)
-        data = self._load(path)
-        data["upload_count"] = int(data["upload_count"]) + 1
-        data["bytes_used"] = int(data["bytes_used"]) + max(0, int(size_bytes))
-        path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        return self.snapshot(tenant_id)
+
+        def _mutate() -> QuotaSnapshot:
+            data = self._load(path)
+            data["upload_count"] = int(data["upload_count"]) + 1
+            data["bytes_used"] = int(data["bytes_used"]) + max(0, int(size_bytes))
+            path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            return QuotaSnapshot(
+                tenant_id=tenant_id or "anonymous",
+                day=day,
+                upload_count=data["upload_count"],
+                bytes_used=data["bytes_used"],
+                max_uploads=self._max_uploads,
+                max_bytes=self._max_bytes,
+            )
+
+        return self._with_exclusive_lock(path, _mutate)
+
+    def reserve(self, tenant_id: str, *, size_bytes: int) -> QuotaSnapshot:
+        """Atomically check quotas and increment counters under one exclusive lock."""
+
+        day = self._day()
+        path = self._path(tenant_id, day)
+
+        def _check_and_increment() -> QuotaSnapshot:
+            data = self._load(path)
+            snap = QuotaSnapshot(
+                tenant_id=tenant_id or "anonymous",
+                day=day,
+                upload_count=data["upload_count"],
+                bytes_used=data["bytes_used"],
+                max_uploads=self._max_uploads,
+                max_bytes=self._max_bytes,
+            )
+            self._raise_if_exceeded(snap, size_bytes=size_bytes)
+            data["upload_count"] = int(data["upload_count"]) + 1
+            data["bytes_used"] = int(data["bytes_used"]) + max(0, int(size_bytes))
+            path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            return QuotaSnapshot(
+                tenant_id=tenant_id or "anonymous",
+                day=day,
+                upload_count=data["upload_count"],
+                bytes_used=data["bytes_used"],
+                max_uploads=self._max_uploads,
+                max_bytes=self._max_bytes,
+            )
+
+        return self._with_exclusive_lock(path, _check_and_increment)
 
 
 __all__ = [

@@ -224,6 +224,7 @@ def run_demo_path(
             port=8080,
             storage_dir=storage_dir_resolved,
             debug=True,
+            allow_anonymous_dev=True,
         )
         container = bootstrap_container(settings)
 
