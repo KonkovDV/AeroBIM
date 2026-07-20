@@ -91,7 +91,8 @@ export class IfcSceneController {
 
     const modelId = ifcApi.OpenModel(ifcBytes, {
       COORDINATE_TO_ORIGIN: true,
-      MEMORY_LIMIT: 1024 * 1024 * 1024,
+      // Cap WASM IFC memory (RTATOM-F07); aligned with backend default 256 MiB.
+      MEMORY_LIMIT: 256 * 1024 * 1024,
     });
     if (modelId < 0) {
       throw new Error("web-ifc failed to open the selected model.");

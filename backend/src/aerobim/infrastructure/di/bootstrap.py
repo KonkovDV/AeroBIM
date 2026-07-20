@@ -470,6 +470,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             analyze_use_case=current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE),
             job_store=current.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE),
             logger=current.resolve(Tokens.LOGGER),
+            audit_report_store=current.resolve(Tokens.AUDIT_REPORT_STORE),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -596,12 +597,14 @@ def _build_audit_report_store(current: Container):
         settings.storage_dir,
         object_store=object_store,
         report_ttl_days=settings.report_ttl_days,
+        fail_closed=settings.audit_fail_closed,
     )
     if settings.db_url:
         try:
             return PostgresAuditStore(db_url=settings.db_url, payload_store=payload_store)
-        except RuntimeError:
-            if not settings.is_dev_environment:
+        except Exception:
+            # Fail-closed when audit_fail_closed / hard profile — no silent FS fallback.
+            if settings.audit_fail_closed or not settings.is_dev_environment:
                 raise
             return payload_store
     return payload_store

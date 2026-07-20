@@ -95,6 +95,43 @@ def assert_safe_outbound_url(
     return pinned.url
 
 
+_LOCAL_DATASTORE_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+
+
+def assert_safe_datastore_url(url: str, *, resolve_dns: bool = True) -> str:
+    """Validate Redis / Postgres connection URLs at settings load (RTATOM-I09/I10).
+
+    Localhost and unix sockets are skipped. Remote hosts are gated via the same
+    SSRF host checks as HTTP outbound URLs (scheme rewritten to https for reuse).
+    """
+
+    if not isinstance(url, str) or not url.strip():
+        raise UnsafeOutboundUrlError("Datastore URL must be a non-empty string")
+    cleaned = url.strip()
+    lowered = cleaned.lower()
+    # Unix-domain sockets: redis+unix://, unix://, or libpq host=/path forms.
+    if (
+        lowered.startswith("unix:")
+        or lowered.startswith("redis+unix:")
+        or "host=/ " in lowered
+        or "host=/" in lowered
+        or lowered.startswith("postgresql:///")
+        or lowered.startswith("postgres:///")
+    ):
+        return cleaned
+
+    parsed = urlparse(cleaned)
+    host = parsed.hostname
+    if host is None or not host.strip():
+        raise UnsafeOutboundUrlError("Datastore URL must include a hostname or unix socket")
+    if host.lower() in _LOCAL_DATASTORE_HOSTS:
+        return cleaned
+
+    # Reuse HTTP SSRF host/IP policy (blocks metadata, CGNAT, RFC1918, etc.).
+    assert_safe_outbound_url(f"https://{host}/", allow_http=False, resolve_dns=resolve_dns)
+    return cleaned
+
+
 def resolve_and_pin_outbound_url(
     url: str,
     *,
@@ -233,6 +270,7 @@ def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False):
 __all__ = [
     "PinnedOutboundUrl",
     "UnsafeOutboundUrlError",
+    "assert_safe_datastore_url",
     "assert_safe_outbound_url",
     "resolve_and_pin_outbound_url",
     "safe_urlopen",

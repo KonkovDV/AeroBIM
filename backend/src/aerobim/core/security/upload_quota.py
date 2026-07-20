@@ -36,6 +36,7 @@ class FilesystemUploadQuotaStore:
         *,
         max_uploads_per_day: int | None = None,
         max_bytes_per_day: int | None = None,
+        fail_closed: bool = False,
     ) -> None:
         self._root = storage_dir / "quotas"
         self._root.mkdir(parents=True, exist_ok=True)
@@ -43,6 +44,7 @@ class FilesystemUploadQuotaStore:
             max_uploads_per_day if max_uploads_per_day and max_uploads_per_day > 0 else None
         )
         self._max_bytes = max_bytes_per_day if max_bytes_per_day and max_bytes_per_day > 0 else None
+        self._fail_closed = fail_closed
 
     def _day(self) -> str:
         return datetime.now(tz=UTC).strftime("%Y-%m-%d")
@@ -60,12 +62,19 @@ class FilesystemUploadQuotaStore:
             return {"upload_count": 0, "bytes_used": 0}
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+        except (OSError, json.JSONDecodeError) as exc:
+            if self._fail_closed:
+                raise RuntimeError(f"Upload quota store corrupt or unreadable: {path}") from exc
             return {"upload_count": 0, "bytes_used": 0}
         return {
             "upload_count": int(data.get("upload_count") or 0),
             "bytes_used": int(data.get("bytes_used") or 0),
         }
+
+    def _atomic_write(self, path: Path, data: dict[str, int]) -> None:
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(str(tmp), str(path))
 
     def _with_exclusive_lock(self, path: Path, fn):  # noqa: ANN001 — internal
         lock_path = path.with_suffix(path.suffix + ".lock")
@@ -122,7 +131,7 @@ class FilesystemUploadQuotaStore:
             data = self._load(path)
             data["upload_count"] = int(data["upload_count"]) + 1
             data["bytes_used"] = int(data["bytes_used"]) + max(0, int(size_bytes))
-            path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            self._atomic_write(path, data)
             return QuotaSnapshot(
                 tenant_id=tenant_id or "anonymous",
                 day=day,
@@ -153,7 +162,7 @@ class FilesystemUploadQuotaStore:
             self._raise_if_exceeded(snap, size_bytes=size_bytes)
             data["upload_count"] = int(data["upload_count"]) + 1
             data["bytes_used"] = int(data["bytes_used"]) + max(0, int(size_bytes))
-            path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            self._atomic_write(path, data)
             return QuotaSnapshot(
                 tenant_id=tenant_id or "anonymous",
                 day=day,
@@ -164,6 +173,30 @@ class FilesystemUploadQuotaStore:
             )
 
         return self._with_exclusive_lock(path, _check_and_increment)
+
+    def release(self, tenant_id: str, *, size_bytes: int, count: int = 1) -> QuotaSnapshot:
+        """Roll back a prior ``reserve`` after a failed promote/upload (RTATOM-I11)."""
+
+        day = self._day()
+        path = self._path(tenant_id, day)
+        release_count = max(0, int(count))
+        release_bytes = max(0, int(size_bytes))
+
+        def _decrement() -> QuotaSnapshot:
+            data = self._load(path)
+            data["upload_count"] = max(0, int(data["upload_count"]) - release_count)
+            data["bytes_used"] = max(0, int(data["bytes_used"]) - release_bytes)
+            self._atomic_write(path, data)
+            return QuotaSnapshot(
+                tenant_id=tenant_id or "anonymous",
+                day=day,
+                upload_count=data["upload_count"],
+                bytes_used=data["bytes_used"],
+                max_uploads=self._max_uploads,
+                max_bytes=self._max_bytes,
+            )
+
+        return self._with_exclusive_lock(path, _decrement)
 
 
 __all__ = [

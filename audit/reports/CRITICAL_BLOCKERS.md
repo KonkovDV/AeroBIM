@@ -2,9 +2,33 @@
 
 **Operational freeze SHA:** `73e8932` (2026-07-20 RT-FULL P0/P1 remediation) — refresh when claiming metrics.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
+**RTATOM tip (2026-07-20):** Wave **A1 DONE** + Wave **A2 partial** (engineering only). Freeze tip for RTATOM work: `f1742bc` plan + post-A1/A2 local remediations — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers.
+
+## Closed in RTATOM Wave A1 + A2 (2026-07-20)
+
+| ID | Status | Notes |
+|---|---|---|
+| RTATOM-H01 | **CLOSED** | FS IFC/drawing tenant prefix assert |
+| RTATOM-I05 | **CLOSED** | `safe_storage_token` collision-resistant encoding |
+| RTATOM-G01/D02 | **CLOSED** | Hard clash flip from `policy.clash_affects_pass` only |
+| RTATOM-H04/I06 | **CLOSED** | HITL `previous_state` SSOT from event store |
+| RTATOM-H05/I07 | **CLOSED** | Norm-pack `proposed_by` bound to principal |
+| RTATOM-G04 | **CLOSED** | Evidence HTML uses enforced pass |
+| RTATOM-G11 | **CLOSED** | Report content hash verify on get |
+| RTATOM-I01 | **CLOSED** | S3 endpoint re-assert |
+| RTATOM-I02 | **CLOSED** | Quota corrupt fail-closed |
+| RTATOM-I03 | **CLOSED** | PDF thread timeout |
+| RTATOM-I04 | **CLOSED** | `:` reject in uploads |
+| RTATOM-G03 | **CLOSED** | Cancel discard/tombstone |
+| RTATOM-H02/H03 | **CLOSED** | List reports tenant-scoped even under soft ACL-off |
+| RTATOM-G02/G05/G07/G08 | **PARTIAL** | Soft `authoritative=false`; hard cross-doc ERROR + openrebar enforced |
+| RTATOM-I09/I10/I11/I14/I20 | **PARTIAL** | Datastore URL SSRF; quota release; BCF `inspect_zip`; baked pilot quotas; PG fail-closed |
+| RTATOM-F02/F05/F07 | **PARTIAL** | Client bearer inject removed; preview Blob MIME allowlist; WASM IFC 256 MiB |
+
+Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF (POST-05), A2.5 supply-chain hashes, customer corpus.
 
 ## Closed in post-remediation wave (2026-07-19)
 

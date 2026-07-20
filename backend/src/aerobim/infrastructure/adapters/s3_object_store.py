@@ -27,6 +27,7 @@ class S3ObjectStore:
         self._access_key_id = access_key_id
         self._secret_access_key = secret_access_key
         self._prefix = prefix.strip("/")
+        self._allow_http_endpoint = allow_http_endpoint
 
     def put_bytes(
         self,
@@ -76,6 +77,18 @@ class S3ObjectStore:
             raise RuntimeError(
                 "S3ObjectStore requires boto3/botocore. Install AeroBIM enterprise extras."
             ) from exc
+
+        # Re-assert DNS pin at connect time so a stale boot-time check cannot
+        # survive a rebind. Residual: boto3 still dials the hostname (Host/SNI);
+        # full IP dial requires a custom endpoint resolver.
+        if self._endpoint_url:
+            from aerobim.core.security.outbound_url import assert_safe_outbound_url
+
+            assert_safe_outbound_url(
+                self._endpoint_url,
+                allow_http=self._allow_http_endpoint,
+                resolve_dns=True,
+            )
 
         return boto3.client(
             "s3",

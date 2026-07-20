@@ -6,7 +6,7 @@ from uuid import uuid4
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.domain.logging import StructuredLogger
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus, ValidationRequest
-from aerobim.domain.ports import AnalyzeProjectPackageJobStore
+from aerobim.domain.ports import AnalyzeProjectPackageJobStore, AuditReportStore
 
 
 class JobConcurrencyLimitError(RuntimeError):
@@ -94,10 +94,20 @@ class AnalyzeProjectPackageJobRunner:
         analyze_use_case: AnalyzeProjectPackageUseCase,
         job_store: AnalyzeProjectPackageJobStore,
         logger: StructuredLogger,
+        audit_report_store: AuditReportStore | None = None,
     ) -> None:
         self._analyze_use_case = analyze_use_case
         self._job_store = job_store
         self._logger = logger
+        self._audit_report_store = audit_report_store
+
+    def _discard_report(self, report_id: str) -> None:
+        store = self._audit_report_store
+        if store is None:
+            store = getattr(self._analyze_use_case, "_audit_report_store", None)
+        discard = getattr(store, "discard", None)
+        if callable(discard):
+            discard(report_id)
 
     def run(self, job_id: str, request: ValidationRequest) -> None:
         claimed = self._job_store.mark_running(job_id)
@@ -129,13 +139,16 @@ class AnalyzeProjectPackageJobRunner:
             report = self._analyze_use_case.execute(request)
             beat = self._job_store.heartbeat(job_id)
             if beat is not None and beat.status is JobStatus.CANCELLED:
+                self._discard_report(report.report_id)
                 self._logger.info(
                     "analyze_project_package async job cancelled after analyze",
                     job_id=job_id,
                     request_id=request.request_id,
+                    report_id=report.report_id,
                 )
                 return
             if beat is not None and beat.cancel_requested:
+                self._discard_report(report.report_id)
                 self._job_store.mark_cancelled(job_id, "Cancelled after analyze")
                 return
         except Exception as exc:

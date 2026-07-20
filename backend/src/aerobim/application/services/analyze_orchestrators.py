@@ -191,10 +191,14 @@ class DeterministicValidationOrchestrator:
         section_pairing_issues, section_pairing_capability = (
             self._host._collect_section_pairing_issues(request)
         )
+        reinforcement_mode = request.reinforcement_provenance_mode
+        # Hard profiles always enforce OpenRebar provenance (RTATOM-G07); soft stays advisory.
+        if getattr(self._host, "_hard_signoff_profile", False):
+            reinforcement_mode = "enforced"
         reinforcement_provenance_issues = tuple(
             self._host._apply_openrebar_provenance_policy(
                 self._host._external_evidence_verifier.verify(request),
-                request.reinforcement_provenance_mode,
+                reinforcement_mode,
             )
         )
         clash_results, clash_capability, clash_issues = self._host._run_clash_detection(
@@ -344,7 +348,7 @@ class EvidenceAssembler:
             capabilities=capabilities,
             policy=policy,
         )
-        if self._host._clash_affects_pass:
+        if policy.clash_affects_pass:
             hard_clashes = tuple(
                 clash
                 for clash in deterministic.clash_results
@@ -352,6 +356,10 @@ class EvidenceAssembler:
             )
             if hard_clashes:
                 passed = False
+
+        # Soft Shared-gate honesty: soft-profile passed must not claim production verdict.
+        soft_profile = policy.profile in {"development", "fixture"}
+        authoritative = not (soft_profile and passed)
 
         report = ValidationReport(
             report_id=uuid4().hex,
@@ -370,6 +378,7 @@ class EvidenceAssembler:
                 generated_remark_count=sum(
                     1 for issue in issues_with_remarks if issue.remark is not None
                 ),
+                authoritative=authoritative,
             ),
             drawing_annotations=ingested.drawing_annotations,
             drawing_assets=ingested.drawing_assets,

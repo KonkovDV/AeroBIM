@@ -11,6 +11,7 @@ from aerobim.application.services.analyze_orchestrators import (
     EvidenceAssembler,
     IngestionOrchestrator,
 )
+from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.application.services.compliance_agent_orchestrator import (
     ComplianceAgentOrchestrator,
 )
@@ -189,9 +190,13 @@ class AnalyzeProjectPackageUseCase:
         self._require_mep_system_clash = require_mep_system_clash
         self._signoff_profile = signoff_profile
         _valid_severities = {"error", "warning", "info"}
+        # Hard profiles always escalate cross-doc contradictions to ERROR (RTATOM-G05).
+        hard_profile = signoff_profile in {"samolet_pilot", "production"}
+        effective_cross_doc = "error" if hard_profile else cross_doc_severity
         self._cross_doc_severity = Severity(
-            cross_doc_severity if cross_doc_severity in _valid_severities else "warning"
+            effective_cross_doc if effective_cross_doc in _valid_severities else "warning"
         )
+        self._hard_signoff_profile = hard_profile
         self._priority_profile = (
             priority_profile if priority_profile in {"default", "samolet"} else "default"
         )
@@ -514,6 +519,17 @@ class AnalyzeProjectPackageUseCase:
         )
         return list(self._logic_consistency_analyzer.analyze(manifest))
 
+    def _effective_clash_affects_pass(self) -> bool:
+        """Hard profiles always force clash_affects_pass via sign-off policy (RT D03/G01)."""
+
+        return build_signoff_policy(
+            profile=self._signoff_profile,
+            require_clash=self._require_clash,
+            clash_affects_pass=self._clash_affects_pass,
+            require_bsi_schema=self._require_bsi_schema,
+            require_mep_system_clash=self._require_mep_system_clash,
+        ).clash_affects_pass
+
     def _run_clash_detection(
         self, ifc_path
     ) -> tuple[tuple, CapabilityStatus, list[ValidationIssue]]:
@@ -541,7 +557,10 @@ class AnalyzeProjectPackageUseCase:
             return (
                 results,
                 CapabilityStatus(CapabilityState.OK),
-                issues_from_clash_results(results, affects_pass=self._clash_affects_pass),
+                issues_from_clash_results(
+                    results,
+                    affects_pass=self._effective_clash_affects_pass(),
+                ),
             )
         except ClashCapabilityError as exc:
             skipped = exc.status == "skipped"
@@ -672,12 +691,12 @@ class AnalyzeProjectPackageUseCase:
                 )
         else:
             ifc_schema = CapabilityStatus(
-                CapabilityState.OK,
+                CapabilityState.NOT_VERIFIED,
                 external_ref=schema_request_id,
                 reason=(
-                    None
-                    if schema_request_id
-                    else "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)"
+                    "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)"
+                    if not schema_request_id
+                    else "SPF / submit ACK only (not full EXPRESS / bSI)"
                 ),
             )
 

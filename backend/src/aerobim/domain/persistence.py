@@ -82,6 +82,8 @@ def build_commit_manifest_payload(
     ifc_object_key: str | None,
     committed_at: str,
     commit_state: ReportCommitState = ReportCommitState.REVIEWABLE,
+    report_sha256: str | None = None,
+    report_byte_length: int | None = None,
 ) -> dict[str, object]:
     artifacts = [
         ArtifactManifestEntry(
@@ -118,6 +120,8 @@ def build_commit_manifest_payload(
             }
             for entry in manifest.artifacts
         ],
+        "report_sha256": report_sha256,
+        "report_byte_length": report_byte_length,
         "committed_at": manifest.committed_at,
     }
 

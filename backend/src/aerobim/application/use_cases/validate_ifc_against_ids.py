@@ -128,6 +128,12 @@ class ValidateIfcAgainstIdsUseCase:
                 else CapabilityStatus(CapabilityState.SKIPPED, "no IFC property requirements")
             ),
         )
+        passed = summary_passed_after_capabilities(
+            error_count=error_count,
+            capabilities=capabilities,
+            policy=self._signoff_policy,
+        )
+        soft_profile = self._signoff_policy.profile in {"development", "fixture"}
         report = ValidationReport(
             report_id=uuid4().hex,
             request_id=request.request_id,
@@ -140,11 +146,8 @@ class ValidateIfcAgainstIdsUseCase:
                 issue_count=len(issues),
                 error_count=error_count,
                 warning_count=warning_count,
-                passed=summary_passed_after_capabilities(
-                    error_count=error_count,
-                    capabilities=capabilities,
-                    policy=self._signoff_policy,
-                ),
+                passed=passed,
+                authoritative=not (soft_profile and passed),
             ),
             capabilities=capabilities,
             project_name=request.project_name,

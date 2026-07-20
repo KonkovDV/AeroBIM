@@ -113,7 +113,7 @@ class BsiValidationServiceTests(unittest.TestCase):
             self.assertEqual(report.schema_validation_request_id, "local-cert-99")
             assert report.capabilities is not None
             self.assertEqual(report.capabilities.ifc_schema.external_ref, "local-cert-99")
-            self.assertEqual(report.capabilities.ifc_schema.status, CapabilityState.OK)
+            self.assertEqual(report.capabilities.ifc_schema.status, CapabilityState.NOT_VERIFIED)
 
 
 class ReviewEventTests(unittest.TestCase):

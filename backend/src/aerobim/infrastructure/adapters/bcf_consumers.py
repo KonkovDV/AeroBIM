@@ -48,6 +48,9 @@ class BcfStructuralVerification:
 def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
     """Consumer A: namespace-aware ElementTree walk of BCF 2.1 ZIP."""
 
+    from aerobim.core.security.zip_limits import inspect_zip_bytes
+
+    inspect_zip_bytes(archive)
     topics: list[BcfTopicContract] = []
     with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:
         version_raw = zf.read("bcf.version")
@@ -89,6 +92,9 @@ def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
 def consume_bcf3_zip(archive: bytes) -> list[BcfTopicContract]:
     """Consumer B: string/tag-local scan of BCF 3.0 ZIP (no shared helper with A)."""
 
+    from aerobim.core.security.zip_limits import inspect_zip_bytes
+
+    inspect_zip_bytes(archive)
     topics: list[BcfTopicContract] = []
     with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:
         version_text = zf.read("bcf.version").decode("utf-8", errors="replace")
@@ -165,12 +171,28 @@ def verify_bcf_zip_structure(
 ) -> BcfStructuralVerification:
     """buildingSMART-style container checks (structure + well-formed XML)."""
 
+    from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_bytes
+
     errors: list[str] = []
     digest = hashlib.sha256(archive).hexdigest()
     version_id = ""
     markup_count = 0
     viewpoint_count = 0
     topic_guids: list[str] = []
+
+    try:
+        inspect_zip_bytes(archive)
+    except ZipBombError as exc:
+        return BcfStructuralVerification(
+            ok=False,
+            version_id="",
+            topic_count=0,
+            markup_count=0,
+            viewpoint_count=0,
+            sha256=digest,
+            errors=(str(exc),),
+            xsd_status="not_run",
+        )
 
     try:
         with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:

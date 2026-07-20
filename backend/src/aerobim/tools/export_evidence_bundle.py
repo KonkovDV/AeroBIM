@@ -160,9 +160,10 @@ def _render_bundle_html(
     derived: str,
     coverage: dict[str, Any],
     code_version: str,
+    enforced_passed: bool,
 ) -> str:
     esc = html.escape
-    status = "PASSED" if report.summary.passed else "FAILED"
+    status = "PASSED" if enforced_passed else "FAILED"
     rows: list[str] = []
     for issue in list(report.issues)[:200]:
         rows.append(
@@ -204,7 +205,7 @@ small {{ color: #555; }}
 <h1>AeroBIM evidence bundle</h1>
 <p><small>code: {esc(code_version)} · Shared-gate only (ADR-001)</small></p>
 <p>Pack: <code>{esc(pack_id)}</code> · Report: <code>{esc(report.report_id)}</code></p>
-<p class="{"pass" if report.summary.passed else "fail"}">
+<p class="{"pass" if enforced_passed else "fail"}">
   summary.passed={status} · derived_outcome={esc(derived)} ·
   errors={report.summary.error_count} warnings={report.summary.warning_count}
   issues={report.summary.issue_count}
@@ -227,13 +228,15 @@ def _write_logs_snippet(
     derived: str,
     elapsed_ms: float,
     code_version: str,
+    enforced_passed: bool,
 ) -> None:
     lines = [
         f"generated_at={datetime.now(UTC).isoformat()}",
         f"code_version={code_version}",
         f"pack_id={pack_id}",
         f"report_id={report.report_id}",
-        f"summary_passed={bool(report.summary.passed)}",
+        f"summary_passed={bool(enforced_passed)}",
+        f"summary_passed_ambient={bool(report.summary.passed)}",
         f"derived_outcome={derived}",
         f"issue_count={report.summary.issue_count}",
         f"error_count={report.summary.error_count}",
@@ -401,6 +404,7 @@ def export_evidence_bundle(
             derived=derived,
             coverage=coverage,
             code_version=code_meta["label"],
+            enforced_passed=bool(enforced_passed),
         ),
         encoding="utf-8",
     )
@@ -411,6 +415,7 @@ def export_evidence_bundle(
         derived=derived,
         elapsed_ms=elapsed_ms,
         code_version=code_meta["label"],
+        enforced_passed=bool(enforced_passed),
     )
 
     readme = f"""# AeroBIM evidence bundle

@@ -48,15 +48,28 @@ def reject_symlinks(path: Path, *, base: Path) -> None:
 
 
 def safe_storage_token(value: str) -> str:
-    """Sanitize a tenant / pack token for use as a single path segment."""
-    return "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in value)
+    """Encode a tenant / pack token as a single reversible path segment.
+
+    Alphanumeric plus ``._-`` are kept; every other character becomes ``!{ord:02x}``
+    so ``Tenant/A`` and ``Tenant_A`` never collide.
+    """
+    if "\x00" in value:
+        raise PathJailError("Null bytes are not allowed in storage tokens")
+    encoded: list[str] = []
+    for ch in value.strip():
+        if ch.isalnum() or ch in "._-":
+            encoded.append(ch)
+        else:
+            encoded.append(f"!{ord(ch):02x}")
+    safe = "".join(encoded)
+    if not safe:
+        raise PathJailError("Empty storage token is not allowed")
+    return safe
 
 
 def tenant_storage_prefix(tenant_id: str) -> str:
     """Return ``tenants/{safe}/`` for ACL-scoped storage paths."""
     safe = safe_storage_token(tenant_id.strip())
-    if not safe:
-        raise PathJailError("Empty tenant token is not allowed for storage prefix")
     return f"tenants/{safe}/"
 
 

@@ -108,6 +108,9 @@ class PostgresAuditStore:
         self,
         filters: ReportListFilters | None = None,
     ) -> list[ReportSummaryEntry]:
+        # Tenant-scoped lists must go through the payload store (index has no tenant_id).
+        if filters is not None and (filters.tenant_id or "").strip():
+            return self._payload_store.list_reports(filters)
         try:
             return _run_coro(self._list_reports_async(filters))
         except Exception:

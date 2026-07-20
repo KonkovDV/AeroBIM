@@ -15,11 +15,9 @@ const configuredBase = (import.meta.env.VITE_AEROBIM_API_BASE_URL as string | un
 // Never default production builds to http://localhost:8080 (RT C17).
 const apiBaseUrl = configuredBase ?? "";
 const useDevProxy = import.meta.env.DEV && !configuredBase;
-// Never embed a bearer token in production bundles (POST-05). Dev-only VITE token remains demo-only.
-const apiBearerToken =
-  useDevProxy || import.meta.env.PROD
-    ? undefined
-    : (import.meta.env.VITE_AEROBIM_API_BEARER_TOKEN as string | undefined)?.trim() || undefined;
+// Never embed a bearer token in client bundles (RTATOM-F02 / POST-05).
+// Dev auth is injected only by the Vite loopback proxy (see vite.config.ts).
+const apiBearerToken: string | undefined = undefined;
 
 function authHeaders(extra: Record<string, string> = {}): HeadersInit {
   const headers: Record<string, string> = {
@@ -35,9 +33,9 @@ function authHeaders(extra: Record<string, string> = {}): HeadersInit {
 function throwForFailedResponse(response: Response): never {
   if (response.status === 401) {
     throw new Error(
-      import.meta.env.PROD
-        ? "Unauthorized (401): terminate TLS at a reverse proxy that adds Authorization server-side (VITE bearer is disabled in production builds)."
-        : "Unauthorized (401): set VITE_AEROBIM_API_BEARER_TOKEN to match AEROBIM_API_BEARER_TOKEN (demo-only; token is public in the bundle)."
+      import.meta.env.PROD || useDevProxy
+        ? "Unauthorized (401): terminate TLS at a reverse proxy that adds Authorization server-side (client bearer inject is disabled)."
+        : "Unauthorized (401): use the Vite dev proxy (same-origin) so Authorization is injected server-side."
     );
   }
   if (response.status === 503) {
@@ -60,14 +58,17 @@ async function readJson<T>(url: string): Promise<T> {
   return (await response.json()) as T;
 }
 
-async function readBytes(url: string): Promise<Uint8Array> {
+async function readBytes(url: string): Promise<{ bytes: Uint8Array; contentType: string | null }> {
   const response = await fetch(url, {
     headers: authHeaders({ Accept: "*/*" }),
   });
   if (!response.ok) {
     throwForFailedResponse(response);
   }
-  return new Uint8Array(await response.arrayBuffer());
+  return {
+    bytes: new Uint8Array(await response.arrayBuffer()),
+    contentType: response.headers.get("Content-Type"),
+  };
 }
 
 export function getApiBaseUrl(): string {
@@ -107,14 +108,29 @@ export async function fetchReport(reportId: string): Promise<ValidationReport> {
 }
 
 export async function fetchReportIfcSource(reportId: string): Promise<Uint8Array> {
-  return readBytes(buildReportIfcSourceUrl(reportId));
+  const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId));
+  return bytes;
+}
+
+const _SAFE_PREVIEW_BLOB_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+]);
+
+function safePreviewBlobType(raw: string | null): string {
+  const value = (raw || "").split(";")[0]?.trim().toLowerCase() || "";
+  return _SAFE_PREVIEW_BLOB_TYPES.has(value) ? value : "application/octet-stream";
 }
 
 export async function fetchDrawingAssetPreviewBlobUrl(reportId: string, assetId: string): Promise<string> {
-  const bytes = await readBytes(buildDrawingAssetPreviewUrl(reportId, assetId));
+  const { bytes, contentType } = await readBytes(buildDrawingAssetPreviewUrl(reportId, assetId));
   // Copy into a fresh ArrayBuffer-backed view for DOM Blob typing (TS 5.x BlobPart).
   const copy = Uint8Array.from(bytes);
-  const blob = new Blob([copy]);
+  // Never trust image/* / octet blindly from a user-controlled store without allowlist (RTATOM-F05).
+  const blob = new Blob([copy], { type: safePreviewBlobType(contentType) });
   return URL.createObjectURL(blob);
 }
 

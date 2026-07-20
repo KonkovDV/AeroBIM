@@ -45,7 +45,11 @@ from aerobim.domain.object_acl import (
     principal_may_access_norm_pack,
     principal_may_access_report,
 )
-from aerobim.domain.review_state_machine import HitlTransitionError, assert_hitl_transition
+from aerobim.domain.review_state_machine import (
+    HitlTransitionError,
+    assert_hitl_transition,
+    latest_hitl_state,
+)
 from aerobim.domain.system_capabilities import build_system_capabilities_payload
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
@@ -224,6 +228,7 @@ def create_http_app(container: Container):
         settings.storage_dir,
         max_uploads_per_day=settings.max_uploads_per_tenant_day,
         max_bytes_per_day=settings.max_upload_bytes_per_tenant_day,
+        fail_closed=settings.audit_fail_closed,
     )
 
     # Harden OpenAPI surfaces outside development/test (RT A03).
@@ -521,6 +526,19 @@ def create_http_app(container: Container):
             reject_symlinks(resolved, base=base)
         except PathJailError as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if settings.enforce_object_acl:
+            tenant = (getattr(report, "tenant_id", None) or "").strip()
+            if not tenant and principal is not None:
+                tenant = (principal.tenant_id or "").strip()
+            if tenant:
+                try:
+                    assert_path_under_tenant_prefix(
+                        resolved,
+                        base=base,
+                        tenant_id=tenant,
+                    )
+                except PathJailError as exc:
+                    raise HTTPException(status_code=404, detail="Object not found") from exc
         if not resolved.exists():
             raise HTTPException(
                 status_code=404, detail=f"IFC source for report {report_id} not found"
@@ -569,6 +587,19 @@ def create_http_app(container: Container):
             reject_symlinks(resolved, base=settings.storage_dir.resolve())
         except PathJailError as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if settings.enforce_object_acl:
+            tenant = (getattr(report, "tenant_id", None) or "").strip()
+            if not tenant and principal is not None:
+                tenant = (principal.tenant_id or "").strip()
+            if tenant:
+                try:
+                    assert_path_under_tenant_prefix(
+                        resolved,
+                        base=settings.storage_dir.resolve(),
+                        tenant_id=tenant,
+                    )
+                except PathJailError as exc:
+                    raise HTTPException(status_code=404, detail="Object not found") from exc
         if not resolved.exists():
             raise HTTPException(
                 status_code=404, detail=f"Drawing asset preview for {asset_id} not found"
@@ -789,9 +820,9 @@ def create_http_app(container: Container):
         ).strip() or "anonymous"
         tenant_seg = safe_storage_token(tenant_key)
         raw_name = (file.filename or "upload.bin").replace("\\", "/").split("/")[-1]
-        safe_name = (
-            raw_name.replace("\r", "").replace("\n", "").replace('"', "").strip() or "upload.bin"
-        )[:180]
+        for banned in ':*?"<>|\r\n':
+            raw_name = raw_name.replace(banned, "")
+        safe_name = (raw_name.strip() or "upload.bin")[:180]
         upload_id = uuid4().hex
         relative_path = f"{tenant_storage_prefix(tenant_seg)}uploads/{upload_id}/{safe_name}"
         quarantine = (
@@ -871,18 +902,40 @@ def create_http_app(container: Container):
             quarantine.replace(target)
         except (OSError, PathJailError) as exc:
             quarantine.unlink(missing_ok=True)
+            try:
+                upload_quota_store.release(tenant_key, size_bytes=total)
+            except Exception:  # noqa: BLE001 — best-effort compensate; surface promote error
+                logger.warning(
+                    "upload quota release failed after promote error",
+                    tenant_id=tenant_key,
+                    size_bytes=total,
+                )
             raise HTTPException(
                 status_code=500, detail=f"Quarantine promote failed: {exc}"
             ) from exc
 
         if object_store is not None:
-            payload = target.read_bytes()
-            object_store.put_bytes(
-                relative_path.replace("\\", "/"),
-                payload,
-                content_type=sniffed.mime or file.content_type,
-            )
-            del payload
+            try:
+                payload = target.read_bytes()
+                object_store.put_bytes(
+                    relative_path.replace("\\", "/"),
+                    payload,
+                    content_type=sniffed.mime or file.content_type,
+                )
+                del payload
+            except Exception as exc:
+                target.unlink(missing_ok=True)
+                try:
+                    upload_quota_store.release(tenant_key, size_bytes=total)
+                except Exception:  # noqa: BLE001 — best-effort compensate
+                    logger.warning(
+                        "upload quota release failed after object-store error",
+                        tenant_id=tenant_key,
+                        size_bytes=total,
+                    )
+                raise HTTPException(
+                    status_code=500, detail=f"Object store put failed: {exc}"
+                ) from exc
 
         return {
             "upload_id": upload_id,
@@ -1106,15 +1159,17 @@ def create_http_app(container: Container):
         discipline: str | None = None,
         passed: bool | None = None,
     ) -> dict[str, object]:
+        # RTATOM-H02/H03: when principal has tenant_id, always scope list — even with ACL soft-off.
+        principal_tenant = (principal.tenant_id or "").strip() or None
         entries = audit_store.list_reports(
             ReportListFilters(
                 project=project,
                 discipline=discipline,
                 passed=passed,
+                tenant_id=principal_tenant,
             )
         )
         if settings.enforce_object_acl:
-            principal_tenant = (principal.tenant_id or "").strip().casefold()
             if not principal_tenant:
                 entries = []
             else:
@@ -1157,14 +1212,26 @@ def create_http_app(container: Container):
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         _assert_report_access(report, principal)
         review_store = container.resolve(Tokens.REVIEW_EVENT_STORE)
+        existing = review_store.list_for_report(report_id)
         resulting_state: str | None = None
         # RT A14/A15: prefer authenticated principal subject over client-supplied actor.
         actor = (principal.subject or "").strip() or payload.actor
+        # Server is SSOT for HITL previous_state (RT26-A01 / H04).
+        server_state = latest_hitl_state(existing, payload.finding_id, payload.issue_rule_id)
+        client_previous = (payload.previous_state or "").strip() or None
+        if payload.previous_state is not None and client_previous != server_state:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "previous_state does not match server HITL state "
+                    f"(server={server_state!r}, client={client_previous!r})"
+                ),
+            )
         # Norm-pack events are a separate lifecycle; finding HITL transitions are validated.
         if payload.event_type not in {"norm_rule_proposed", "norm_rule_edited"}:
             try:
                 resulting_state = assert_hitl_transition(
-                    current=payload.previous_state,
+                    current=server_state,
                     event_type=payload.event_type,
                     actor=actor,
                     note=payload.note,
@@ -1181,12 +1248,11 @@ def create_http_app(container: Container):
                     payload.finding_id or "",
                     actor or "",
                     payload.note or "",
-                    payload.previous_state or "",
+                    server_state or "",
                 ]
             )
             idem = "api:" + hashlib.sha256(idem_seed.encode("utf-8")).hexdigest()[:40]
         event_id = hashlib.sha256(idem.encode("utf-8")).hexdigest()[:32]
-        existing = review_store.list_for_report(report_id)
         event = ReviewEvent(
             event_id=event_id,
             report_id=report_id,
@@ -1198,7 +1264,7 @@ def create_http_app(container: Container):
             latency_ms=payload.latency_ms,
             idempotency_key=idem,
             sequence_number=len(existing) + 1,
-            previous_state=payload.previous_state,
+            previous_state=server_state,
             resulting_state=resulting_state,
             finding_id=payload.finding_id,
         )
@@ -1221,6 +1287,22 @@ def create_http_app(container: Container):
             if linked is None:
                 raise HTTPException(status_code=404, detail=f"Report {payload.report_id} not found")
             _assert_report_access(linked, principal)
+        subject = (principal.subject or "").strip()
+        if subject:
+            proposed_by = subject
+        elif settings.is_dev_environment and settings.allow_anonymous_dev:
+            proposed_by = (payload.proposed_by or "").strip() or "anonymous-dev"
+        else:
+            proposed_by = None
+        if payload.target_approval_status == "customer_approved":
+            if not subject or subject in {"anonymous-dev", "api-bearer"}:
+                raise HTTPException(
+                    status_code=403,
+                    detail=(
+                        "customer_approved requires an authenticated human subject "
+                        "(OIDC sub); anonymous-dev/api-bearer are not allowed"
+                    ),
+                )
         use_case = container.resolve(Tokens.APPLY_NORM_RULE_HITL_EVENT_USE_CASE)
         base_path = _resolve_safe_path(payload.base_pack_path, principal=principal)
         try:
@@ -1229,7 +1311,7 @@ def create_http_app(container: Container):
                 base_pack_path=base_path,
                 event_type=payload.event_type,
                 rule_diff=payload.rule_diff,
-                proposed_by=payload.proposed_by,
+                proposed_by=proposed_by,
                 target_approval_status=payload.target_approval_status,
                 approval_ref=payload.approval_ref,
                 report_id=payload.report_id,
