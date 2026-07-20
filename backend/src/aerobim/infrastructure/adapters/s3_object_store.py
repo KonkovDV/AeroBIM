@@ -11,7 +11,16 @@ class S3ObjectStore:
         access_key_id: str | None = None,
         secret_access_key: str | None = None,
         prefix: str = "aerobim",
+        allow_http_endpoint: bool = False,
     ) -> None:
+        if endpoint_url:
+            from aerobim.core.security.outbound_url import assert_safe_outbound_url
+
+            assert_safe_outbound_url(
+                endpoint_url,
+                allow_http=allow_http_endpoint,
+                resolve_dns=True,
+            )
         self._bucket = bucket
         self._region = region
         self._endpoint_url = endpoint_url

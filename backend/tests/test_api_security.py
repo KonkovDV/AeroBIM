@@ -1456,6 +1456,7 @@ class ApiAnalyzeProjectPackageIdsTests(unittest.TestCase):
             storage_dir=Path(temp_dir.name),
             debug=True,
             cors_origins=_TEST_CORS_ORIGINS,
+            allow_anonymous_dev=True,
         )
         settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1546,6 +1547,7 @@ def _make_async_job_test_client(analyze_use_case):
         storage_dir=Path(temp_dir.name),
         debug=True,
         cors_origins=_TEST_CORS_ORIGINS,
+        allow_anonymous_dev=True,
     )
     settings.storage_dir.mkdir(parents=True, exist_ok=True)
 

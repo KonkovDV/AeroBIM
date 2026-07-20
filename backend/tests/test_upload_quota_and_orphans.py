@@ -46,6 +46,7 @@ class UploadQuotaTests(unittest.TestCase):
                 storage_dir=Path(tmp),
                 debug=True,
                 max_uploads_per_tenant_day=1,
+                allow_anonymous_dev=True,
             )
             container = bootstrap_container(settings)
             client = TestClient(create_http_app(container))

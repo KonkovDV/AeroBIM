@@ -1,6 +1,6 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
-**Operational freeze SHA:** `19d6420` (2026-07-20 Red Team residual highs closed) — refresh when claiming metrics.  
+**Operational freeze SHA:** `19d6420` (2026-07-20 Red Team residual highs) — refresh to RT-FULL tip after land.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
@@ -16,7 +16,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RT-POST-04 | **CLOSED** | OIDC tenant only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`) |
 | RT-POST-06/07 | **CLOSED** | Pilot/production: `unit_scale` default NOT_VERIFIED; SKIPPED calc/qty block pass |
 | RT-POST-08 | **CLOSED** | Upload response omits `object_key` |
-| RT-POST-09 | **CLOSED** | Actions pinned to SHAs; `requirements-lock.txt` + `requirements-dev-lock.txt`; CI/release/academic install from lock; lock drift check in lint job |
+| RT-POST-09 | **PARTIAL** | Actions SHA-pinned; runtime+dev locks; CI install from lock; Docker base digest-pinned; lock drift (runtime+dev); release input bounds; academic least-privilege. Residuals: `--require-hashes` / floating pip bootstrap. |
 | RT-POST-10/11 | **CLOSED** | `html.escape(quote=True)`; ZIP rejects `..` / absolute members |
 
 Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: VITE bearer BFF **NOT_IMPLEMENTED** (POST-05).

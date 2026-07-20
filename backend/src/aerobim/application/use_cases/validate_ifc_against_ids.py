@@ -5,12 +5,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
+from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
+    FindingCategory,
     ReportCapabilities,
     Severity,
+    ValidationIssue,
     ValidationReport,
     ValidationRequest,
     ValidationSummary,
@@ -34,6 +37,11 @@ class ValidateIfcAgainstIdsUseCase:
         ids_validator: IdsValidator | None = None,
         ifc_schema_validator: IfcSchemaValidator | None = None,
         ids_document_auditor: IdsDocumentAuditor | None = None,
+        signoff_profile: str = "development",
+        require_clash: bool = False,
+        clash_affects_pass: bool = False,
+        require_bsi_schema: bool = False,
+        require_mep_system_clash: bool = False,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._ifc_validator = ifc_validator
@@ -41,6 +49,13 @@ class ValidateIfcAgainstIdsUseCase:
         self._ids_validator = ids_validator
         self._ifc_schema_validator = ifc_schema_validator
         self._ids_document_auditor = ids_document_auditor
+        self._signoff_policy = build_signoff_policy(
+            profile=signoff_profile,
+            require_clash=require_clash,
+            clash_affects_pass=clash_affects_pass,
+            require_bsi_schema=require_bsi_schema,
+            require_mep_system_clash=require_mep_system_clash,
+        )
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         requirements = tuple(self._requirement_extractor.extract(request.requirement_source))
@@ -52,10 +67,25 @@ class ValidateIfcAgainstIdsUseCase:
             if self._ifc_schema_validator is not None
             else []
         )
-        ids_audit_issues: list = []
+        ids_audit_issues: list[ValidationIssue] = []
         ids_path: Path | None = getattr(request, "ids_path", None)
-        if ids_path is not None and self._ids_document_auditor is not None:
-            ids_audit_issues = list(self._ids_document_auditor.audit(ids_path))
+        if ids_path is not None:
+            if self._ids_document_auditor is None:
+                # RT D01/D04: never silent-skip a requested IDS audit capability.
+                ids_audit_issues = [
+                    ValidationIssue(
+                        rule_id="AEROBIM-IDS-AUDIT-CAPABILITY",
+                        severity=Severity.ERROR,
+                        message=(
+                            "IDS document audit requested but no ids document "
+                            "auditor is configured"
+                        ),
+                        category=FindingCategory.IDS_VALIDATION,
+                        source_id="ids",
+                    )
+                ]
+            else:
+                ids_audit_issues = list(self._ids_document_auditor.audit(ids_path))
 
         issues_list = list(schema_issues)
         issues_list.extend(ids_audit_issues)
@@ -113,6 +143,7 @@ class ValidateIfcAgainstIdsUseCase:
                 passed=summary_passed_after_capabilities(
                     error_count=error_count,
                     capabilities=capabilities,
+                    policy=self._signoff_policy,
                 ),
             ),
             capabilities=capabilities,

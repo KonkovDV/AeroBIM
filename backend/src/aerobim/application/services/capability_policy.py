@@ -171,28 +171,28 @@ def build_signoff_policy(
     enforce_object_acl: bool | None = None,
     audit_fail_closed: bool | None = None,
 ) -> SignOffCapabilityPolicy:
-    """Merge explicit overrides onto profile defaults (explicit wins)."""
+    """Merge explicit overrides onto profile defaults.
+
+    Soft profiles (``development`` / ``fixture``) allow explicit overrides.
+    Hard profiles (``samolet_pilot`` / ``production``) always use profile
+    defaults — weakening overrides are ignored (RT D03).
+    """
 
     name = normalize_signoff_profile(profile)
     defaults = _PROFILE_DEFAULTS[name]
+    hard = name in {"samolet_pilot", "production"}
+
+    def _pick(key: str, override: bool | None) -> bool:
+        if hard or override is None:
+            return defaults[key]
+        return override
+
     return SignOffCapabilityPolicy(
         profile=name,
-        require_clash=defaults["require_clash"] if require_clash is None else require_clash,
-        clash_affects_pass=(
-            defaults["clash_affects_pass"] if clash_affects_pass is None else clash_affects_pass
-        ),
-        require_bsi_schema=(
-            defaults["require_bsi_schema"] if require_bsi_schema is None else require_bsi_schema
-        ),
-        require_mep_system_clash=(
-            defaults["require_mep_system_clash"]
-            if require_mep_system_clash is None
-            else require_mep_system_clash
-        ),
-        enforce_object_acl=(
-            defaults["enforce_object_acl"] if enforce_object_acl is None else enforce_object_acl
-        ),
-        audit_fail_closed=(
-            defaults["audit_fail_closed"] if audit_fail_closed is None else audit_fail_closed
-        ),
+        require_clash=_pick("require_clash", require_clash),
+        clash_affects_pass=_pick("clash_affects_pass", clash_affects_pass),
+        require_bsi_schema=_pick("require_bsi_schema", require_bsi_schema),
+        require_mep_system_clash=_pick("require_mep_system_clash", require_mep_system_clash),
+        enforce_object_acl=_pick("enforce_object_acl", enforce_object_acl),
+        audit_fail_closed=_pick("audit_fail_closed", audit_fail_closed),
     )

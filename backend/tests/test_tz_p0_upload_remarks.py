@@ -58,6 +58,7 @@ class UploadApiTests(unittest.TestCase):
                 port=8080,
                 storage_dir=Path(tmp),
                 debug=True,
+                allow_anonymous_dev=True,
             )
             container = bootstrap_container(settings)
             client = TestClient(create_http_app(container))

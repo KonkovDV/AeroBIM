@@ -117,12 +117,11 @@ class Settings:
     Used as the customer-pack fallback when a request/manifest does not list any
     ``norm_rule_pack_paths``. If configured but missing at analysis time, the
     ``norm_rule_packs`` capability fails closed (never a silent skip)."""
-    allow_anonymous_dev: bool = True
-    """In-process Settings default (unit/TestClient convenience).
+    allow_anonymous_dev: bool = False
+    """Allow unauthenticated /v1 access in development/test only.
 
-    ``Settings.from_env()`` defaults this to **False** unless
-    ``AEROBIM_ALLOW_ANONYMOUS_DEV=true``. Production and compose stacks must not
-    rely on this dataclass default — they go through ``from_env()``.
+    Default is **False** (fail-closed). Opt in explicitly for local TestClient /
+    demo paths via ``allow_anonymous_dev=True`` or ``AEROBIM_ALLOW_ANONYMOUS_DEV=true``.
     """
     oda_cad_enabled: bool = False
     """Legal-gated ODA/Teigha DWG path (``AEROBIM_ODA_CAD_ENABLED``). Default off."""
@@ -315,11 +314,14 @@ class Settings:
                 continue
             try:
                 # S3 custom endpoints often use http:// on local MinIO — allow http there.
-                allow_http = label == "AEROBIM_S3_ENDPOINT_URL" and env_name in _DEV_ENVIRONMENTS
+                is_s3 = label == "AEROBIM_S3_ENDPOINT_URL"
+                allow_http = is_s3 and env_name in _DEV_ENVIRONMENTS
+                # Non-dev: resolve DNS at boot for S3 endpoints (RT B02).
+                resolve_dns = is_s3 and env_name not in _DEV_ENVIRONMENTS
                 assert_safe_outbound_url(
                     candidate,
                     allow_http=allow_http,
-                    resolve_dns=False,  # boot-time: scheme/host literal checks; DNS at fetch
+                    resolve_dns=resolve_dns,
                 )
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"Unsafe outbound URL in {label}: {exc}") from exc

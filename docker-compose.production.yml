@@ -11,7 +11,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      # Bind loopback only — LAN exposure requires an explicit reverse proxy (RT A04).
+      - "127.0.0.1:8080:8080"
     environment:
       AEROBIM_ENV: production
       AEROBIM_SIGNOFF_PROFILE: ${AEROBIM_SIGNOFF_PROFILE:-production}

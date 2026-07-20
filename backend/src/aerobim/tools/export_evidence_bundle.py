@@ -19,6 +19,10 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any
 
+from aerobim.application.services.capability_policy import (
+    build_signoff_policy,
+    normalize_signoff_profile,
+)
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
@@ -96,9 +100,16 @@ def _capability_coverage(report: Any) -> dict[str, Any]:
     return {"present": True, "fields": fields}
 
 
-def _derived_outcome(report: Any, coverage: dict[str, Any]) -> str:
-    passed = bool(getattr(report.summary, "passed", False))
-    if passed:
+def _derived_outcome(
+    report: Any,
+    coverage: dict[str, Any],
+    *,
+    passed: bool | None = None,
+) -> str:
+    effective_passed = (
+        bool(passed) if passed is not None else bool(getattr(report.summary, "passed", False))
+    )
+    if effective_passed:
         return "PASS"
     fields = coverage.get("fields") or {}
     blocking_non_ok = False
@@ -294,7 +305,15 @@ def export_evidence_bundle(
     elapsed_ms = round((perf_counter() - started) * 1000.0, 3)
 
     coverage = _capability_coverage(report)
-    derived = _derived_outcome(report, coverage)
+    ambient_profile = normalize_signoff_profile(settings.signoff_profile)
+    # RT C13: evidence-bundle PASS claims always evaluate under production policy.
+    enforced_profile = "production"
+    enforced_policy = build_signoff_policy(profile=enforced_profile)
+    enforced_passed = enforced_policy.summary_passed(
+        error_count=int(report.summary.error_count),
+        capabilities=report.capabilities,
+    )
+    derived = _derived_outcome(report, coverage, passed=enforced_passed)
     code_meta = _resolve_code_version(repo)
     report_payload = _json_safe(asdict(report))
     if isinstance(report_payload, dict):
@@ -308,6 +327,8 @@ def export_evidence_bundle(
     runtime_settings = {
         "environment": settings.environment,
         "signoff_profile": settings.signoff_profile,
+        "signoff_profile_ambient": ambient_profile,
+        "signoff_profile_enforced": enforced_profile,
         "require_clash": settings.require_clash,
         "require_bsi_schema": settings.require_bsi_schema,
         "require_mep_system_clash": settings.require_mep_system_clash,
@@ -332,7 +353,11 @@ def export_evidence_bundle(
         if pack_path.is_relative_to(repo)
         else str(pack_path),
         "report_id": report.report_id,
-        "summary_passed": bool(report.summary.passed),
+        "summary_passed": bool(enforced_passed),
+        "summary_passed_ambient": bool(report.summary.passed),
+        "summary_passed_enforced": bool(enforced_passed),
+        "signoff_profile_ambient": ambient_profile,
+        "signoff_profile_enforced": enforced_profile,
         "derived_outcome": derived,
         "issue_count": report.summary.issue_count,
         "error_count": report.summary.error_count,
@@ -342,7 +367,8 @@ def export_evidence_bundle(
         "forbidden_claims": list(_FORBIDDEN),
         "claim_boundary": (
             "summary.passed is Shared-gate technical status (ADR-001), "
-            "not Shared→Published / contractual fitness."
+            "not Shared→Published / contractual fitness. "
+            "Bundle PASS claims are evaluated under production sign-off policy."
         ),
         "timings": timings,
         "code_version": code_meta["label"],

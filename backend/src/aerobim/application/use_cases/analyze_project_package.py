@@ -752,8 +752,21 @@ class AnalyzeProjectPackageUseCase:
         return list(self._ifc_schema_validator.validate_schema(ifc_path))
 
     def _collect_ids_audit_issues(self, request: ValidationRequest) -> list[ValidationIssue]:
-        if request.ids_path is None or self._ids_document_auditor is None:
+        if request.ids_path is None:
             return []
+        if self._ids_document_auditor is None:
+            # RT D04: never silent-skip a requested IDS document audit.
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-IDS-AUDIT-CAPABILITY",
+                    severity=Severity.ERROR,
+                    message=(
+                        "IDS document audit requested but no ids document auditor is configured"
+                    ),
+                    category=FindingCategory.IDS_VALIDATION,
+                    source_id="ids",
+                )
+            ]
         return list(self._ids_document_auditor.audit(request.ids_path))
 
     def _collect_ids_issues(self, request: ValidationRequest) -> list[ValidationIssue]:

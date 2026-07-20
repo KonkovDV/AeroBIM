@@ -48,8 +48,15 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           configure: (proxy) => {
             // Some http-proxy type packs omit EventEmitter methods on ProxyServer.
+            // RT A12: only inject bearer when the Vite host is loopback.
+            const viteHost = (env.AEROBIM_VITE_HOST || "127.0.0.1").trim().toLowerCase();
+            const loopback =
+              viteHost === "127.0.0.1" ||
+              viteHost === "localhost" ||
+              viteHost === "::1" ||
+              viteHost === "[::1]";
             proxy.on("proxyReq", (proxyReq: ClientRequest) => {
-              if (bearer) {
+              if (bearer && loopback) {
                 proxyReq.setHeader("Authorization", `Bearer ${bearer}`);
               }
             });
