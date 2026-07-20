@@ -99,6 +99,22 @@ def _machine_fingerprint() -> dict[str, object]:
     }
 
 
+def _machine_fingerprint_complete(machine: dict[str, object]) -> bool:
+    """Require stable OS/CPU/Python identity for customer-measurable SLA claims."""
+
+    os_name = machine.get("os")
+    cpu = machine.get("cpu")
+    python = machine.get("python")
+    return (
+        isinstance(os_name, str)
+        and bool(os_name.strip())
+        and isinstance(cpu, str)
+        and bool(cpu.strip())
+        and isinstance(python, str)
+        and bool(python.strip())
+    )
+
+
 def measure_package_sla(
     pack_path: Path,
     *,
@@ -109,6 +125,7 @@ def measure_package_sla(
     corpus_kind: str = "fixture",
     claim_level: str | None = None,
     command: str | None = None,
+    mandatory_capabilities_complete: bool = False,
 ) -> dict[str, object]:
     if corpus_kind not in {"fixture", "customer"}:
         raise ValueError("corpus_kind must be 'fixture' or 'customer'")
@@ -138,6 +155,24 @@ def measure_package_sla(
 
     inventory = _pack_file_inventory(pack_path)
     package_sha256 = _sha256_file(pack_path)
+    machine = _machine_fingerprint()
+
+    if resolved_claim == "customer_measurable":
+        missing: list[str] = []
+        if corpus_kind != "customer":
+            missing.append("corpus_kind=customer")
+        if not package_sha256:
+            missing.append("pack_hash")
+        if not _machine_fingerprint_complete(machine):
+            missing.append("machine_fingerprint")
+        if not mandatory_capabilities_complete:
+            missing.append("mandatory_capabilities_complete")
+        if missing:
+            raise ValueError(
+                "customer_measurable claim refused: missing "
+                + ", ".join(missing)
+                + " (fixture runs must stay claim_level=fixture_only)"
+            )
 
     cold_payload = benchmark_project_package(
         pack_path=pack_path,
@@ -182,7 +217,7 @@ def measure_package_sla(
 
     return {
         "artifact_type": "samolet_package_sla",
-        "schema_version": "1.2.0",
+        "schema_version": "1.3.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "customer_reference": "https://i.moscow/techlab/samolet",
         "sla_target_minutes": max_minutes,
@@ -192,8 +227,11 @@ def measure_package_sla(
         "stage_budgets": budget.as_dict(),
         "stage_budget_consistent": stage_budget_consistent,
         "package_sha256": package_sha256,
+        "pack_hash": package_sha256,
         "file_inventory": inventory,
-        "machine": _machine_fingerprint(),
+        "machine": machine,
+        "machine_fingerprint": machine,
+        "mandatory_capabilities_complete": mandatory_capabilities_complete,
         "cold_run": {
             "max_minutes": cold_max,
             "avg_minutes": cold_avg,
@@ -244,6 +282,14 @@ def main() -> None:
         choices=("fixture_only", "customer_measurable"),
         default=None,
     )
+    parser.add_argument(
+        "--mandatory-capabilities-complete",
+        action="store_true",
+        help=(
+            "Required for customer_measurable claims; affirms mandatory pilot "
+            "capabilities completed on the measured customer package"
+        ),
+    )
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
 
@@ -259,6 +305,7 @@ def main() -> None:
         warmup_iterations=args.warmup_iterations,
         corpus_kind=args.corpus_kind,
         claim_level=args.claim_level,
+        mandatory_capabilities_complete=args.mandatory_capabilities_complete,
     )
     serialized = json.dumps(result, ensure_ascii=False, indent=2)
 
