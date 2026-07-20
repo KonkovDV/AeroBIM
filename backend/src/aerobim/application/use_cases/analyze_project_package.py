@@ -389,9 +389,16 @@ class AnalyzeProjectPackageUseCase:
                 "MEP system graph built empty; federated scope still required for sign-off",
             )
         # Still NOT_VERIFIED until customer federated pack (RT-003) — never OK here.
+        # Synthetic/@sota-stub graphs are engineering scaffolds only.
+        synthetic = getattr(graph, "synthetic", False)
+        suffix = (
+            "; synthetic graph — not customer evidence (RT-003 OPEN)"
+            if synthetic
+            else "; customer scope memo pending (RT-003 OPEN)"
+        )
         return CapabilityStatus(
             CapabilityState.NOT_VERIFIED,
-            f"MEP graph probe returned {len(graph.nodes)} nodes; customer scope memo pending",
+            f"MEP graph probe returned {len(graph.nodes)} nodes{suffix}",
         )
 
     def _run_quantity_consistency(
@@ -909,7 +916,7 @@ class AnalyzeProjectPackageUseCase:
                 )
             seen_packs.add(identity)
             requirements.extend(pack.rules)
-            if pack.status is not RulePackStatus.APPROVED:
+            if pack.status is not RulePackStatus.APPROVED or pack.advisory_only:
                 non_approved = True
             pack_refs.append(
                 f"{pack.pack_id}@{pack.version}[{pack.status.value}] sha256:{pack.sha256[:12]}"
@@ -919,12 +926,18 @@ class AnalyzeProjectPackageUseCase:
         for requirement in requirements:
             if requirement.approval_status is None:
                 stamped.append(replace(requirement, approval_status="synthetic"))
+            elif non_approved and requirement.approval_status == "customer_approved":
+                # Draft/synthetic load path cannot surface customer_approved badges.
+                stamped.append(replace(requirement, approval_status="synthetic"))
             else:
                 stamped.append(requirement)
         requirements = stamped
         reason = f"loaded {len(pack_refs)} rule pack(s) via {source}: {', '.join(pack_refs)}"
         if non_approved:
-            reason += "; advisory: non-approved pack(s) — not for deterministic sign-off"
+            reason += (
+                "; advisory: non-approved/draft pack(s) — not for deterministic sign-off "
+                "(RT-002 open; customer_approved capability not granted)"
+            )
         return requirements, CapabilityStatus(CapabilityState.OK, reason)
 
     def _collect_section_pairing_issues(

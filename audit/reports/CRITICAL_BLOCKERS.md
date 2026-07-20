@@ -5,7 +5,7 @@
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Phase B customer-intake fail-closed + Phase C `PackageOutcome` landed; RT-001/002/003 remain open.
+**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Phase B customer-intake fail-closed + Phase C `PackageOutcome` + Phase D approved rule-pack contract hardening landed; RT-001/002/003 remain open.
 
 ## Closed in RTATOM Wave A1 + A2 (2026-07-20)
 
@@ -91,25 +91,25 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Severity:** BLOCKER  
 - **Category:** Norms  
 - **Exact file:** `infrastructure/adapters/json_norm_rule_pack_loader.py`, partners TZ tails  
-- **Observed:** synthetic/draft packs only; loader + schema require full `approval` object for `customer_approved`/`approved` (ref-only rejected)  
-- **Expected:** signed customer pack with edition/clause/jurisdiction  
+- **Observed:** synthetic/draft packs only (`claim_labels` honesty); loader + schema require **full** `approval` object for `customer_approved`/`approved` — `approved_by`, `approval_date`, `approval_status`, `document_title`, `document_edition`, `effective_date`, `scope_reference` — plus `jurisdiction`, `pack_hash`/`source_hash`, and per-rule `clause`/`norm_clause`. **approval_ref alone rejected**. Synthetic/fixture labels cannot claim `customer_approved`. Content-hash mismatch blocks sign-off.  
+- **Expected:** signed customer pack with edition/clause/jurisdiction + matching pack_hash  
 - **Reproduction:** inspect samples/norm packs; `customer_corpus_present`  
 - **Impact:** «проверка норм» cannot be signed off  
-- **Fix:** customer pack intake; immutable version store already partial  
+- **Fix:** customer pack intake; immutable version store records `content_sha256`  
 - **Verification:** pack load + analyze with FAILED/OK capability + hash reproducibility  
-- **Engineering readiness (2026-07-17):** schema↔loader parity closed. **Product HOLD** until signed pack.  
+- **Engineering readiness (2026-07-21):** approved-pack contract hardened (schema↔loader↔immutable store). **Product HOLD — RT-002 still OPEN** until signed customer pack. No fixture invents customer evidence.  
 
 ### RT-003 — MEP system-aware clash not runtime
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  
 - **Category:** MEP / Clash  
 - **Exact file:** `domain/mep.py`, `docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`  
 - **Symbol:** `UnconfiguredMepSystemGraphProvider` — **DI-wired** via `Tokens.MEP_SYSTEM_GRAPH_PROVIDER` in `bootstrap_container` (I2a); still raises / probe → `NOT_VERIFIED`  
-- **Observed:** Generic `IfcClashDetector` only; system-aware MEP clash **not delivered**; agent scaffold returns `degraded`  
+- **Observed:** Domain foundation expanded (`MepSystem`, `MepClashMatrix`, `MepClearanceRule`, `MepClashFinding` + matrix eval). Generic `IfcClashDetector` for geometry; system-aware MEP clash **not delivered** on customer federated IFC. `SyntheticMepSystemGraphProvider` is `@sota-stub` / unit-test only — never OK. Agent scaffold returns `degraded`.  
 - **Expected:** system graph + intersection matrix + clearance semantics on federated IFC  
 - **Impact:** MEP TZ row NOT VERIFIED — wiring ≠ capability  
 - **Fix:** Do not claim delivered; wait for federated IFC + real provider  
 - **Verification:** `GET /v1/system/capabilities` → `mep_system_clash=not_verified`; architecture tests  
-- **Engineering readiness (2026-07-17):** honesty labeling updated. **Product HOLD** until RT-003 evidence.  
+- **Engineering readiness (2026-07-21):** engineering foundation improved (domain + matrix eval + synthetic stub tests). **Product HOLD — RT-003 still OPEN** until customer federated IFC + signed scope memo. No invented federated model.  
 
 ### RT-004 — Clash SKIPPED does not block pass
 - **Severity:** CRITICAL  

@@ -16,8 +16,8 @@ Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLA
 |---|---|---|
 | Product accuracy >90% | RT-001 | Fixture macro_f1 only; cite pack + SHA |
 | Customer SLA ≤30 min | RT-001 / SLA honesty | Fixture SLA `claim_level=fixture_only` |
-| Approved customer norm pack | RT-002 | Synthetic/draft packs only |
-| MEP system clash delivered | RT-003 | `mep_system_clash=NOT_VERIFIED` |
+| Approved customer norm pack | RT-002 | Synthetic/draft packs only (`claim_labels`); full approval object + pack_hash required — RT-002 **OPEN** |
+| MEP system clash delivered | RT-003 | `mep_system_clash=NOT_VERIFIED`; eng foundation improved — RT-003 **OPEN** |
 | Native DWG analysis | — | НЕ РЕАЛИЗОВАНО |
 | Independent calc correctness | — | Сверка PARTIAL only |
 | BCF ready for CDE | RT-008 T2 | Structural ZIP OK; import НЕ ДОКАЗАНО |

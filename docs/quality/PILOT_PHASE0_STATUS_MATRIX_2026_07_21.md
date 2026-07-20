@@ -19,8 +19,8 @@
 | A | Drift runtime metrics / README | **DONE** | schema 1.1.0 artifact + README/RU markers; CI `--check-readme` | SSOT JSON + CI drift gate | **Да** |
 | B | Customer intake fail-closed | **DONE** | Gate tool + `CustomerIntakeGate` + `AEROBIM-CUSTOMER-INTAKE` on `samolet_pilot` | Enforce intake before samolet_pilot analyze → BLOCKED/passed=false | Eng **да** |
 | C | Boolean `summary.passed` ambiguity | **DONE** | Domain `PackageOutcome` + `summary.outcome` + FE badge | Domain enum + API/FE | **Да** |
-| D | Rule pack pilot contract | **PARTIAL** | Schema + immutable store | Harden required approval fields; synthetic ≠ customer | Eng **да**; RT-002 **нет** |
-| E | MEP system-aware clash | **PARTIAL** | Ports + Unconfigured + scaffold | Domain entities + adapter + fail-closed probe | Тех. основу **да** |
+| D | Rule pack pilot contract | **DONE** (eng) | Schema + loader + immutable hash + negative tests | — | Eng **да**; **RT-002 OPEN** |
+| E | MEP system-aware clash | **DONE** (eng foundation) | Domain entities + matrix eval + Unconfigured DI + synthetic stub tests | Federated IFC + signed matrix | Тех. основу **да**; **RT-003 OPEN** |
 | F | Precision claim gates | **PARTIAL** | PrecisionClaim + agreement tool | Per-class metrics + publishable gates honesty | Eng **да** |
 | G | SLA ≤30 min evidence | **PARTIAL** | measure_package_sla 1.2.0 fixture-only | Harden claim_level gates | Eng **да** |
 | H | BCF T0–T4 ladder | **PARTIAL** | T1 structural done; T2 NOT_VERIFIED | Formal ladder + T2 evidence template | Taxonomy **да**; T2 **нет** |

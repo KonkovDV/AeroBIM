@@ -315,6 +315,16 @@ class NormRulePack:
     source_path: Path
     sha256: str
     approval_reference: str | None = None
+    jurisdiction: str | None = None
+    claim_labels: tuple[str, ...] = ()
+    pack_hash: str | None = None
+    """Declared content hash (pack_hash/source_hash); must match recomputed sha256 for sign-off."""
+    document_title: str | None = None
+    document_edition: str | None = None
+    effective_date: str | None = None
+    approval_date: str | None = None
+    advisory_only: bool = False
+    """True for draft/synthetic packs — never customer_approved sign-off capable."""
 
 
 @dataclass(frozen=True)
@@ -574,6 +584,8 @@ class NormPackVersionInfo:
     approval_ref: str | None = None
     tenant_id: str | None = None
     """Owning tenant; versions are namespaced per tenant under ACL."""
+    content_sha256: str | None = None
+    """SHA-256 of stored payload bytes; changing one rule changes this hash."""
 
 
 class JobStatus(StrEnum):

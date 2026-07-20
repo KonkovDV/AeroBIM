@@ -18,11 +18,17 @@ from aerobim.domain.models import (
     SourceKind,
     approval_status_from_pack,
 )
+from aerobim.domain.norm_pack_hash import compute_norm_pack_content_hash
 from aerobim.domain.quantity import parse_quantity
+
+# Re-export for tests / callers that historically imported from the loader.
+__all__ = ["JsonNormRulePackLoader", "compute_norm_pack_content_hash"]
 
 _MAX_PACK_BYTES = 2 * 1024 * 1024
 _MAX_RULES = 500
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_HEX64_RE = re.compile(r"^[a-fA-F0-9]{64}$")
+_SYNTHETIC_CLAIM_LABELS = frozenset({"synthetic", "fixture", "template", "not-customer-evidence"})
 _STATUS_ALIASES = {
     "synthetic-template": RulePackStatus.SYNTHETIC_TEMPLATE,
     "synthetic": RulePackStatus.SYNTHETIC_TEMPLATE,
@@ -73,20 +79,52 @@ class JsonNormRulePackLoader:
         typology = self._required_string(payload, "typology", max_length=128)
         status = self._parse_status(payload.get("status"))
         disciplines = self._parse_disciplines(payload.get("disciplines"))
-        approval_reference = self._parse_approval(payload.get("approval"), status, payload)
+        claim_labels = self._parse_claim_labels(payload.get("claim_labels"), status)
+        jurisdiction = self._optional_string(
+            payload.get("jurisdiction"), "jurisdiction", max_length=128
+        )
+        content_hash = compute_norm_pack_content_hash(payload)
+        declared_hash = self._parse_declared_hash(payload)
+        if declared_hash is not None and declared_hash.lower() != content_hash.lower():
+            raise ValueError(
+                "pack_hash/source_hash mismatch vs recomputed content hash — "
+                "sign-off blocked (immutable pack integrity)"
+            )
+
+        approval_meta = self._parse_approval(payload.get("approval"), status, payload)
         pack_approval_status = approval_status_from_pack(status)
-        if pack_approval_status == "customer_approved" and not approval_reference:
+        # Draft / synthetic packs are advisory only — never customer_approved capable.
+        advisory_only = status is not RulePackStatus.APPROVED
+        if advisory_only and pack_approval_status == "customer_approved":
+            raise ValueError("draft/synthetic packs cannot stamp customer_approved approval_status")
+        if pack_approval_status == "customer_approved" and not approval_meta["approval_ref"]:
             raise ValueError(
                 "customer_approved norm rule packs require a non-empty approval_ref "
                 "(approval.scope_reference or pack-level approval_ref)"
             )
+        if status is RulePackStatus.APPROVED:
+            if not jurisdiction:
+                raise ValueError("approved/customer_approved packs require non-empty jurisdiction")
+            if not declared_hash:
+                raise ValueError(
+                    "approved/customer_approved packs require pack_hash or source_hash"
+                )
+            for index, rule in enumerate(payload.get("rules") or []):
+                if not isinstance(rule, dict):
+                    continue
+                clause = rule.get("norm_clause") or rule.get("clause")
+                if not (isinstance(clause, str) and clause.strip()):
+                    raise ValueError(
+                        f"rules[{index}] must include clause/norm_clause when pack is approved"
+                    )
+
         rules = self._parse_rules(
             payload.get("rules"),
             pack_path,
             pack_id,
             version,
             status,
-            approval_reference=approval_reference,
+            approval_reference=approval_meta["approval_ref"],
             approval_status=pack_approval_status,
         )
 
@@ -100,7 +138,19 @@ class JsonNormRulePackLoader:
             rules=rules,
             source_path=pack_path,
             sha256=hashlib.sha256(payload_bytes).hexdigest(),
-            approval_reference=approval_reference,
+            approval_reference=approval_meta["approval_ref"],
+            jurisdiction=jurisdiction,
+            claim_labels=claim_labels,
+            pack_hash=(
+                (declared_hash or content_hash)
+                if status is RulePackStatus.APPROVED
+                else declared_hash
+            ),
+            document_title=approval_meta["document_title"],
+            document_edition=approval_meta["document_edition"],
+            effective_date=approval_meta["effective_date"],
+            approval_date=approval_meta["approval_date"],
+            advisory_only=advisory_only,
         )
 
     def _read_source(self, pack_path: Path) -> bytes:
@@ -149,15 +199,69 @@ class JsonNormRulePackLoader:
             values.append(normalized)
         return tuple(values)
 
+    def _parse_claim_labels(self, raw: object, status: RulePackStatus) -> tuple[str, ...]:
+        if raw is None:
+            labels: tuple[str, ...] = ()
+        elif not isinstance(raw, list):
+            raise ValueError("claim_labels must be an array when provided")
+        else:
+            values: list[str] = []
+            for index, value in enumerate(raw):
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"claim_labels[{index}] must be a non-empty string")
+                label = value.strip().lower()
+                if label in values:
+                    raise ValueError(f"Duplicate claim_labels entry: {label}")
+                values.append(label)
+            labels = tuple(values)
+
+        synthetic_marked = bool(_SYNTHETIC_CLAIM_LABELS.intersection(labels))
+        if synthetic_marked and status is RulePackStatus.APPROVED:
+            raise ValueError(
+                "synthetic/fixture claim_labels cannot claim customer_approved/approved "
+                "(RT-002 remains open until signed customer pack)"
+            )
+        if status in {RulePackStatus.SYNTHETIC_TEMPLATE, RulePackStatus.DRAFT}:
+            # Fixture honesty: draft/synthetic packs should declare synthetic labels.
+            if not labels:
+                # Soft-default for legacy fixtures still on disk without labels —
+                # treat as synthetic so they cannot silently promote.
+                return ("synthetic", "not-customer-evidence")
+            if not synthetic_marked and "draft" not in labels:
+                raise ValueError(
+                    "draft/synthetic packs must include synthetic, fixture, template, "
+                    "not-customer-evidence, or draft in claim_labels"
+                )
+        return labels
+
+    def _parse_declared_hash(self, payload: dict[str, Any]) -> str | None:
+        pack_hash = self._optional_string(payload.get("pack_hash"), "pack_hash", max_length=64)
+        source_hash = self._optional_string(
+            payload.get("source_hash"), "source_hash", max_length=64
+        )
+        for field, value in (("pack_hash", pack_hash), ("source_hash", source_hash)):
+            if value is not None and not _HEX64_RE.fullmatch(value):
+                raise ValueError(f"{field} must be a 64-char hex SHA-256 digest")
+        if pack_hash and source_hash and pack_hash.lower() != source_hash.lower():
+            raise ValueError("pack_hash and source_hash disagree")
+        return pack_hash or source_hash
+
     def _parse_approval(
         self,
         raw: object,
         status: RulePackStatus,
         payload: dict[str, Any],
-    ) -> str | None:
+    ) -> dict[str, str | None]:
         pack_level_ref = self._optional_string(
             payload.get("approval_ref"), "approval_ref", max_length=512
         )
+        empty = {
+            "approval_ref": None,
+            "document_title": None,
+            "document_edition": None,
+            "effective_date": None,
+            "approval_date": None,
+        }
         if status is not RulePackStatus.APPROVED:
             if raw not in (None, {}):
                 raise ValueError(
@@ -165,25 +269,50 @@ class JsonNormRulePackLoader:
                 )
             if pack_level_ref:
                 raise ValueError("approval_ref is only valid for customer_approved packs")
-            return None
+            return empty
+        # Reject approval-by-string-ref-only: full approval object is mandatory.
+        if pack_level_ref and raw in (None, {}):
+            raise ValueError(
+                "approval_ref alone is not sufficient; approved packs require a full "
+                "approval object (approved_by, approval_date, approval_status, "
+                "document_title, document_edition, effective_date, scope_reference)"
+            )
         if not isinstance(raw, dict):
             raise ValueError("Approved norm rule packs require an approval object")
         approved_by = self._required_string(raw, "approved_by", max_length=256)
-        approved_at = self._required_string(raw, "approved_at", max_length=64)
+        approval_date = self._optional_string(
+            raw.get("approval_date"), "approval.approval_date", max_length=64
+        ) or self._optional_string(raw.get("approved_at"), "approval.approved_at", max_length=64)
+        if not approval_date:
+            raise ValueError("approval.approval_date (or approved_at) is required")
+        approval_status = self._required_string(raw, "approval_status", max_length=64)
+        if approval_status not in {"approved", "customer_approved"}:
+            raise ValueError("approval.approval_status must be 'approved' or 'customer_approved'")
+        document_title = self._required_string(raw, "document_title", max_length=512)
+        document_edition = self._required_string(raw, "document_edition", max_length=128)
+        effective_date = self._required_string(raw, "effective_date", max_length=64)
         scope_reference = self._required_string(raw, "scope_reference", max_length=512)
         try:
-            parsed_at = datetime.fromisoformat(approved_at.replace("Z", "+00:00"))
+            parsed_at = datetime.fromisoformat(approval_date.replace("Z", "+00:00"))
         except ValueError as exc:
-            raise ValueError("approval.approved_at must be an ISO 8601 datetime") from exc
+            raise ValueError("approval.approval_date must be an ISO 8601 datetime") from exc
         if parsed_at.tzinfo is None:
-            raise ValueError("approval.approved_at must include an explicit timezone")
+            raise ValueError("approval.approval_date must include an explicit timezone")
         approval_ref = pack_level_ref or scope_reference
         if not approval_ref:
             raise ValueError(
                 "customer_approved packs require approval_ref "
                 "(pack-level approval_ref or approval.scope_reference)"
             )
-        return f"{approved_by}; {approved_at}; {approval_ref}"
+        # Bind identity into the composite reference for audit trails.
+        _ = (approved_by, document_title, document_edition, effective_date)
+        return {
+            "approval_ref": f"{approved_by}; {approval_date}; {approval_ref}",
+            "document_title": document_title,
+            "document_edition": document_edition,
+            "effective_date": effective_date,
+            "approval_date": approval_date,
+        }
 
     def _parse_rules(
         self,
@@ -260,7 +389,9 @@ class JsonNormRulePackLoader:
             payload.get("norm_edition"), f"rules[{index}].norm_edition", max_length=128
         )
         norm_clause = self._optional_string(
-            payload.get("norm_clause"), f"rules[{index}].norm_clause", max_length=128
+            payload.get("norm_clause") or payload.get("clause"),
+            f"rules[{index}].norm_clause",
+            max_length=128,
         )
         rule_approval_ref = self._optional_string(
             payload.get("approval_ref"), f"rules[{index}].approval_ref", max_length=512
@@ -298,6 +429,10 @@ class JsonNormRulePackLoader:
         )
         # Pack manifest is the authority for approval_status; default synthetic.
         stamped_status = approval_status or "synthetic"
+        if status is not RulePackStatus.APPROVED and stamped_status == "customer_approved":
+            raise ValueError(
+                f"rules[{index}] cannot claim customer_approved under draft/synthetic pack"
+            )
         stamped_ref = rule_approval_ref or approval_reference
         if stamped_status == "customer_approved" and not stamped_ref:
             raise ValueError(

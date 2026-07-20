@@ -149,6 +149,17 @@ class NormRulePackVersionStore(Protocol):
         tenant_id: str | None = None,
     ) -> bytes | None: ...
 
+    def verify_version_integrity(
+        self,
+        pack_id: str,
+        version: str,
+        *,
+        tenant_id: str | None = None,
+        expected_sha256: str | None = None,
+    ) -> str:
+        """Recompute payload hash; raise on mismatch (blocks sign-off)."""
+        ...
+
 
 class BsiValidationService(Protocol):
     """Optional remote IFC schema conformity submission (bSI Validation Service)."""

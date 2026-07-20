@@ -4,7 +4,10 @@ import json
 import unittest
 from pathlib import Path
 
-from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
+from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import (
+    JsonNormRulePackLoader,
+    compute_norm_pack_content_hash,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RULE_PACKS_DIR = REPO_ROOT / "samples" / "rule-packs"
@@ -40,6 +43,13 @@ class NormRulePackSchemaTests(unittest.TestCase):
                 loaded = loader.load(pack)
                 self.assertTrue(loaded.rules, f"{pack.name}: expected non-empty rules")
                 self.assertEqual(len(loaded.sha256), 64)
+                self.assertTrue(loaded.advisory_only)
+                self.assertTrue(
+                    set(loaded.claim_labels).intersection(
+                        {"synthetic", "fixture", "template", "draft", "not-customer-evidence"}
+                    ),
+                    f"{pack.name}: fixture packs must carry synthetic/draft claim_labels",
+                )
 
     def test_approved_status_requires_approval_block_in_schema(self) -> None:
         """Guard the approval invariant the loader also enforces."""
@@ -51,6 +61,7 @@ class NormRulePackSchemaTests(unittest.TestCase):
             (RULE_PACKS_DIR / "residential-ar-reference-template.json").read_text(encoding="utf-8")
         )
         base["status"] = "approved"
+        base["claim_labels"] = ["customer-evidence"]
         base.pop("approval", None)
         base.pop("approval_ref", None)
         errors = list(validator.iter_errors(base))
@@ -66,6 +77,7 @@ class NormRulePackSchemaTests(unittest.TestCase):
             (RULE_PACKS_DIR / "customer-norm-pack-intake-template.json").read_text(encoding="utf-8")
         )
         base["status"] = "customer_approved"
+        base["claim_labels"] = ["customer-evidence"]
         base["approval"] = None
         base["approval_ref"] = None
         errors = list(validator.iter_errors(base))
@@ -77,13 +89,42 @@ class NormRulePackSchemaTests(unittest.TestCase):
             errors_ref_only,
             "customer_approved with approval_ref only must fail schema",
         )
+        base["rules"][0]["norm_clause"] = "7.1.2"
         base["approval"] = {
             "approved_by": "customer-qa",
-            "approved_at": "2026-07-17T12:00:00+03:00",
+            "approval_date": "2026-07-17T12:00:00+03:00",
+            "approval_status": "customer_approved",
+            "document_title": "Customer AR norms",
+            "document_edition": "2026-07",
+            "effective_date": "2026-07-01",
             "scope_reference": "SIGNED-MEMO-REF",
         }
+        base["pack_hash"] = compute_norm_pack_content_hash(base)
         errors_ok = list(validator.iter_errors(base))
         self.assertEqual(errors_ok, [], [e.message for e in errors_ok])
+
+    def test_synthetic_claim_labels_forbid_customer_approved_in_schema(self) -> None:
+        import jsonschema
+
+        schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+        validator = jsonschema.Draft202012Validator(schema)
+        base = json.loads(
+            (RULE_PACKS_DIR / "residential-ar-reference-template.json").read_text(encoding="utf-8")
+        )
+        base["status"] = "customer_approved"
+        base["jurisdiction"] = "RF"
+        base["approval"] = {
+            "approved_by": "customer-qa",
+            "approval_date": "2026-07-17T12:00:00+03:00",
+            "approval_status": "customer_approved",
+            "document_title": "x",
+            "document_edition": "1",
+            "effective_date": "2026-07-01",
+            "scope_reference": "REF",
+        }
+        base["pack_hash"] = "a" * 64
+        errors = list(validator.iter_errors(base))
+        self.assertTrue(errors, "synthetic claim_labels + customer_approved must fail schema")
 
 
 if __name__ == "__main__":
