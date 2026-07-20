@@ -1,11 +1,23 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
-**Operational freeze SHA:** `8473b66` (2026-07-21 RTATOM A3 XML/S3/POST-05 design) — refresh when claiming metrics.  
+**Operational freeze SHA:** `c366b08` (2026-07-21 eng F–L: precision gates, SLA claim gate, BCF ladder, revision compare, threat model, open-core ADR) — refresh when claiming metrics.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Phase B customer-intake fail-closed + Phase C `PackageOutcome` + Phase D approved rule-pack contract hardening landed; RT-001/002/003 remain open.
+**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Eng readiness **improved** (F–L): publishable precision gates, SLA `customer_measurable` refuse-without-evidence, BCF T0–T4 ladder + empty T2 template, revision finding compare, pilot threat model, open-core ADR — **without** inventing customer corpus, CDE screenshots, or SLA customer packs.
+
+## Engineering readiness improved (2026-07-21 F–L)
+
+| Track | Eng status | Customer evidence |
+|---|---|---|
+| F Precision publishable gates | Hardened (held-out + FN + κ/α) | RT-001 **OPEN** |
+| G ≤30 min SLA claim gate | Schema 1.3.0 refuse without pack/machine/caps | Customer SLA **OPEN** |
+| H BCF T0–T4 | Ladder formalized; T2 template empty | RT-008 T2 **NOT_VERIFIED** |
+| I Revision finding compare | Domain + export helper | No customer revision packs |
+| J HITL | **DONE** (skipped further UX) | — |
+| K Threat model | Doc + inventory tests | POST-05 residual |
+| L Open-core ADR | ADR-002 proposed | LICENSE unchanged (MIT) |
 
 ## Closed in RTATOM Wave A1 + A2 (2026-07-20)
 
