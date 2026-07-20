@@ -1,6 +1,6 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
-**Operational freeze SHA:** `c366b08` (2026-07-21 eng F–L: precision gates, SLA claim gate, BCF ladder, revision compare, threat model, open-core ADR) — refresh when claiming metrics.  
+**Operational freeze SHA:** `f2615e7` (2026-07-21 eng F–L: precision gates, SLA claim gate, BCF ladder, revision compare, threat model, open-core ADR) — refresh when claiming metrics.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
