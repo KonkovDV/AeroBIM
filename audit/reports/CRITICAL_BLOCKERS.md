@@ -1,8 +1,8 @@
 # CRITICAL BLOCKERS — Samolet Checkpoint
 
-**Operational freeze SHA:** `73e8932` (2026-07-20 RT-FULL P0/P1 remediation) — refresh when claiming metrics.  
+**Operational freeze SHA:** `9b610e9` (2026-07-20 RTATOM A1/A2 remediation) — refresh when claiming metrics.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
-**RTATOM tip (2026-07-20):** Wave **A1 DONE** + Wave **A2 partial** (engineering only). Freeze tip for RTATOM work: `f1742bc` plan + post-A1/A2 local remediations — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
+**RTATOM tip (2026-07-20):** Wave **A1 DONE** + Wave **A2 partial** (engineering only). Landing commit `9b610e9`; plan baseline `f1742bc` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers.

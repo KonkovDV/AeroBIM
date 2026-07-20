@@ -1,6 +1,6 @@
 # AeroBIM RTATOM — Atomic Red Team & Remediation Plan
 
-**Freeze SHA:** `f1742bc` (2026-07-20)  
+**Freeze SHA:** `9b610e9` (2026-07-20 RTATOM A1/A2 landing; plan baseline `f1742bc`)  
 **Depth:** seams · chains · blind spots · vectors · every `/v1` route · every `summary.passed` writer · every I/O boundary · DI · frontend · CI/claims  
 **Checkpoint:** **NO_GO** (RT-001 / RT-002 / RT-003)  
 **Supersedes for engineering sequencing:** extends `docs/quality/RT26_FULL_REMEDIATION_PLAN_2026_07_20.md` with atomic findings  
@@ -9,9 +9,9 @@
 
 | Wave | Status | Notes |
 |---|---|---|
-| A0 | DONE | Plan published; freeze `f1742bc` |
-| **A1** | **DONE** | H01 I05 G01 H04 H05 G04 G11 I01 I02 I03 I04 G03 + soft SPF honesty; 683 tests green at A1 close |
-| **A2** | **PARTIAL** | A2.1 list tenant scope; A2.2 soft `authoritative` + hard cross-doc/openrebar; A2.3 quota release / BCF zip / baked quotas; A2.4 datastore SSRF + PG fail-closed; A2.6 FE bearer/MIME/WASM. **Deferred:** A2.5 `--require-hashes` / floating pip; full OIDC BFF (POST-05); stream ZIP/S3 OOM; symlink TOCTOU; ADS residual |
+| A0 | DONE | Plan published; baseline `f1742bc` |
+| **A1** | **DONE** | H01 I05 G01 H04 H05 G04 G11 I01 I02 I03 I04 G03 + soft SPF honesty — landed `9b610e9` |
+| **A2** | **PARTIAL** | A2.1–A2.4 + A2.6 landed `9b610e9` (689 backend / 25 frontend tests). **Deferred:** A2.5 `--require-hashes` / floating pip; full OIDC BFF (POST-05); stream ZIP/S3 OOM; symlink TOCTOU; ADS residual |
 | A3 | PENDING | Hygiene + POST-05 design |
 | A4 | PENDING | Customer RT-001/002/003 evidence only |
 
