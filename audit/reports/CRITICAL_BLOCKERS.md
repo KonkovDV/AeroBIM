@@ -71,7 +71,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 | RT-008 | **PARTIAL** | `audit/evidence/bcf-structural-handoff-2026-07-18.json`; `cde_import=NOT_VERIFIED` |
 | RT-010 | **CLOSED** | `claim_labels` on reinforcement-digest + `calculation_correctness=NOT_IMPLEMENTED` |
 | RT-011 | **CLOSED** | `GET /v1/system/capabilities` + ReportCapabilities honesty fields |
-| RT-012 | **CLOSED** (fixture honesty) | schema 1.2.0 `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json`; customer SLA still НЕ ДОКАЗАНО |
+| RT-012 | **CLOSED** (fixture honesty) | schema 1.3.0 claim gate in `measure_package_sla`; customer SLA still НЕ ДОКАЗАНО |
 
 ---
 
@@ -189,8 +189,9 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 ### RT-012 — SLA not published with machine+package evidence
 - **Severity:** HIGH  
 - **Category:** Performance  
-- **Observed:** tool + stage budgets (dirty); no customer package measurement artifact in this audit freeze  
+- **Observed:** tool + stage budgets + schema 1.3.0 claim gate (refuse `customer_measurable` without customer corpus + pack_hash + machine_fingerprint + mandatory capabilities); no customer package measurement artifact  
 - **Allowed wording:** НЕ ДОКАЗАНО for customer комплект ≤30 мин  
+- **Engineering readiness (2026-07-21):** claim gate hardened. **Product HOLD — customer SLA still open.**  
 
 ---
 

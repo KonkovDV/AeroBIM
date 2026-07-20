@@ -123,7 +123,11 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "Publishable only with customer corpus + ≥2 adjudicators + κ/α "
                 "agreement + held-out split + FN tracked (never synthetic-only)"
             ),
-            "customer_sla": "Fixture SLA ≠ customer комплект SLA; Redis queue + IFC cache NFR",
+            "customer_sla": (
+                "Fixture SLA ≠ customer комплект SLA; customer_measurable requires "
+                "corpus_kind=customer + pack_hash + machine_fingerprint + "
+                "mandatory_capabilities_complete (schema 1.3.0)"
+            ),
             "ifc_knowledge_graph": (
                 "I9 advisory scaffold: relational fixture QA + stub fallback — "
                 "not GraphRAG / IfcLLM product"
