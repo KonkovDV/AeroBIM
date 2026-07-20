@@ -9,6 +9,14 @@
     "dataset_id": { "type": "string", "minLength": 1 },
     "dataset_status": { "enum": ["synthetic", "draft", "adjudicated"] },
     "scope_reference": { "type": "string", "minLength": 1 },
+    "held_out_split": {
+      "type": "boolean",
+      "description": "True when metrics are measured on a held-out / test split (required for product publishable claims)"
+    },
+    "evaluation_split": {
+      "type": "string",
+      "description": "Optional split label; held_out|holdout|test also satisfies the held-out gate"
+    },
     "adjudication": {
       "type": "object",
       "required": ["method", "completed_at", "adjudicators"],

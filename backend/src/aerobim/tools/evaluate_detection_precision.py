@@ -18,6 +18,8 @@ from typing import Any
 from aerobim.domain.findings import FindingPredicate
 
 _SCHEMA_VERSION = "1.0.0"
+_EVAL_SCHEMA_VERSION = "1.1.0"
+_HELD_OUT_SPLIT_VALUES = frozenset({"held_out", "holdout", "test", "held-out"})
 _MAX_INPUT_BYTES = 10 * 1024 * 1024
 _MAX_FINDINGS = 100_000
 _DATASET_STATUSES = {"synthetic", "draft", "adjudicated"}
@@ -72,6 +74,8 @@ class MetricCounts:
         return 2 * self.precision * self.recall / denominator if denominator else 0.0
 
     def as_dict(self) -> dict[str, int | float]:
+        support = self.tp + self.fn
+        total = self.tp + self.fp + self.fn
         return {
             "tp": self.tp,
             "fp": self.fp,
@@ -79,6 +83,9 @@ class MetricCounts:
             "precision": round(self.precision, 6),
             "recall": round(self.recall, 6),
             "f1": round(self.f1, 6),
+            "critical_recall": round(self.recall, 6),
+            "false_positive_burden": round(self.fp / total, 6) if total else 0.0,
+            "support": support,
         }
 
 
@@ -92,6 +99,7 @@ class ParsedLabels:
     unresolved_count: int
     publishable_protocol_gate: bool
     adjudicator_count: int
+    held_out_split: bool
 
 
 @dataclass(frozen=True)
@@ -180,6 +188,8 @@ def evaluate_detection_precision(
         corpus_kind = "fixture"
     else:
         corpus_kind = "synthetic"
+    # Harness always materializes FN identities — product gate still requires the flag.
+    fn_tracked = True
     macro_precision = macro["precision"]
     claim = PrecisionClaim(
         metric="macro_precision",
@@ -188,6 +198,8 @@ def evaluate_detection_precision(
         corpus_kind=corpus_kind,  # type: ignore[arg-type]
         adjudicators=int(labels.adjudicator_count),
         date="",
+        held_out_split=labels.held_out_split,
+        fn_tracked=fn_tracked,
     )
 
     agreement_payload: dict[str, object] | None = None
@@ -200,7 +212,11 @@ def evaluate_detection_precision(
         claim,
         agreement=agreement_payload,
         require_agreement=require_agreement_for_publishable,
+        held_out_split=labels.held_out_split,
+        fn_tracked=fn_tracked,
     )
+    if corpus_kind != "customer":
+        publishable = False
     if macro.get("empty_classes"):
         publishable = False
     if require_publishable and macro.get("empty_classes"):
@@ -210,12 +226,13 @@ def evaluate_detection_precision(
     if require_publishable and not publishable:
         raise ValueError(
             "PrecisionClaim is not publishable: need customer corpus, ≥2 adjudicators, "
-            "and agreement artifact passing κ≥0.60 (and α≥0.67 when reported)"
+            "held-out split, FN tracking, and agreement artifact passing κ≥0.60 "
+            "(and α≥0.67 when reported)"
         )
 
     return {
         "artifact_type": "aerobim_detection_precision_evaluation",
-        "schema_version": _SCHEMA_VERSION,
+        "schema_version": _EVAL_SCHEMA_VERSION,
         "dataset_id": labels.dataset_id,
         "dataset_status": labels.dataset_status,
         "scope_reference": labels.scope_reference,
@@ -224,6 +241,8 @@ def evaluate_detection_precision(
         "publishable_protocol_gate": labels.publishable_protocol_gate,
         "adjudicator_count": labels.adjudicator_count,
         "corpus_kind": corpus_kind,
+        "held_out_split": labels.held_out_split,
+        "fn_tracked": fn_tracked,
         "finding_predicates": [predicate.value for predicate in FindingPredicate],
         "agreement_path": str(agreement_path.as_posix()) if agreement_path else None,
         "require_agreement_for_publishable": require_agreement_for_publishable,
@@ -233,6 +252,8 @@ def evaluate_detection_precision(
             "corpus_id": claim.corpus_id,
             "corpus_kind": claim.corpus_kind,
             "adjudicators": claim.adjudicators,
+            "held_out_split": claim.held_out_split,
+            "fn_tracked": claim.fn_tracked,
             "base_publishable": claim.publishable,
             "publishable": publishable,
             "render": claim.render_value(),
@@ -414,6 +435,7 @@ def _parse_labels(
             "status=adjudicated, scope_reference, two adjudicators, timezone-aware "
             "completion time, and zero unresolved labels are required"
         )
+    held_out_split = _parse_held_out_split(payload)
     return ParsedLabels(
         dataset_id=dataset_id,
         dataset_status=dataset_status,
@@ -423,6 +445,7 @@ def _parse_labels(
         unresolved_count=unresolved_count,
         publishable_protocol_gate=publishable_gate,
         adjudicator_count=adjudicator_count,
+        held_out_split=held_out_split,
     )
 
 
@@ -537,6 +560,17 @@ def _clash_bucket(item: FindingKey) -> str:
     if item.finding_class in {"clash", "spatial", "mep_clash", "system_clash"}:
         return "clash"
     return "non_clash"
+
+
+def _parse_held_out_split(payload: dict[str, Any]) -> bool:
+    """Detect explicit held-out / test-split flags on a labels artifact."""
+
+    if payload.get("held_out_split") is True:
+        return True
+    raw_split = payload.get("evaluation_split") or payload.get("split")
+    if isinstance(raw_split, str) and raw_split.strip().casefold() in _HELD_OUT_SPLIT_VALUES:
+        return True
+    return False
 
 
 def _validate_adjudication_protocol(

@@ -21,6 +21,8 @@ class PrecisionAgreementPublishabilityTests(unittest.TestCase):
             corpus_kind="customer",
             adjudicators=2,
             date="2026-07-17",
+            held_out_split=True,
+            fn_tracked=True,
         )
         self.assertTrue(claim.publishable)
         self.assertFalse(
@@ -46,6 +48,31 @@ class PrecisionAgreementPublishabilityTests(unittest.TestCase):
                 require_agreement=True,
             )
         )
+
+    def test_missing_held_out_or_fn_blocks_publishable(self) -> None:
+        base = dict(
+            metric="macro_precision",
+            value=0.91,
+            corpus_id="customer-1",
+            corpus_kind="customer",
+            adjudicators=2,
+            date="2026-07-17",
+        )
+        agreement = {
+            "pass_threshold_0_60": True,
+            "pass_alpha_0_67": True,
+            "krippendorff_alpha": 0.8,
+        }
+        no_split = PrecisionClaim(**base, held_out_split=False, fn_tracked=True)
+        no_fn = PrecisionClaim(**base, held_out_split=True, fn_tracked=False)
+        synthetic = PrecisionClaim(
+            **{**base, "corpus_kind": "synthetic"},
+            held_out_split=True,
+            fn_tracked=True,
+        )
+        self.assertFalse(precision_claim_publishable_with_agreement(no_split, agreement=agreement))
+        self.assertFalse(precision_claim_publishable_with_agreement(no_fn, agreement=agreement))
+        self.assertFalse(precision_claim_publishable_with_agreement(synthetic, agreement=agreement))
 
     def test_capabilities_include_intake_gate_no_go(self) -> None:
         payload = build_system_capabilities_payload()

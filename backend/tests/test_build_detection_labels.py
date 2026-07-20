@@ -226,6 +226,9 @@ class EndToEndHarnessTests(unittest.TestCase):
                 ]
             )
             self.assertEqual(rc, 0)
+            labels_payload = json.loads(labels_path.read_text(encoding="utf-8"))
+            labels_payload["held_out_split"] = True
+            labels_path.write_text(json.dumps(labels_payload), encoding="utf-8")
             detections = tmp / "det.json"
             detections.write_text(
                 json.dumps(
