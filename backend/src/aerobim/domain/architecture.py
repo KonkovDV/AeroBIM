@@ -56,7 +56,12 @@ class EvidenceProvenance:
 
 @dataclass(frozen=True)
 class PrecisionClaim:
-    """Typed precision claim (R1/R4). Unpublishable without customer corpus + ≥2 adjudicators."""
+    """Typed precision claim (R1/R4).
+
+    Base ``publishable`` is necessary but not sufficient for product claims.
+    Full product gate: ``precision_claim_publishable_with_agreement`` (customer
+    corpus, ≥2 adjudicators, κ/α agreement, held-out split, FN tracked).
+    """
 
     metric: str
     value: float
@@ -65,9 +70,13 @@ class PrecisionClaim:
     adjudicators: int
     date: str
     finding_class: str | None = None
+    held_out_split: bool = False
+    fn_tracked: bool = False
 
     @property
     def publishable(self) -> bool:
+        """Layer-A gate: customer corpus + ≥2 adjudicators (never synthetic-only)."""
+
         return self.corpus_kind == "customer" and self.adjudicators >= 2
 
     def render_value(self) -> str:
@@ -187,14 +196,24 @@ def precision_claim_publishable_with_agreement(
     *,
     agreement: Mapping[str, object] | None,
     require_agreement: bool = True,
+    held_out_split: bool | None = None,
+    fn_tracked: bool | None = None,
 ) -> bool:
-    """Publishable only with customer corpus, ≥2 adjudicators, and κ/α thresholds.
+    """Product publishable gate (RT-001).
 
-    When ``require_agreement`` is True, an agreement artifact is mandatory.
-    Cohen κ must pass 0.60; if Krippendorff α is present it must pass 0.67.
+    Requires all of:
+    - corpus_kind=customer (never synthetic-only / fixture)
+    - adjudicators ≥ 2
+    - agreement artifact present with κ≥0.60 (and α≥0.67 when reported)
+    - held-out split flagged
+    - FN tracked in the evaluation harness
     """
 
-    if not claim.publishable:
+    if claim.corpus_kind != "customer" or claim.adjudicators < 2:
+        return False
+    split_ok = claim.held_out_split if held_out_split is None else bool(held_out_split)
+    fn_ok = claim.fn_tracked if fn_tracked is None else bool(fn_tracked)
+    if not split_ok or not fn_ok:
         return False
     if require_agreement and agreement is None:
         return False

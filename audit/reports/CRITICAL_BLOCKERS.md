@@ -84,8 +84,8 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Reproduction:** `python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70`  
 - **Impact:** Checkpoint fails if accuracy KPI presented as achieved  
 - **Fix:** Keep withheld; run customer intake protocol; do not raise claims  
-- **Verification:** PrecisionClaim.publishable true only with customer + adjudicators≥2  
-- **Engineering readiness (2026-07-17):** protocol aligned (`dual_independent` + `agreement-template.json` + runbook `--agreement-json`) — see `pilot-claim-boundary-2026.md`. **Product HOLD** until customer corpus.  
+- **Verification:** PrecisionClaim product publishable only with customer + adjudicators≥2 + κ/α agreement + held-out split + FN tracked (never synthetic-only)  
+- **Engineering readiness (2026-07-21):** publishable gates hardened (`precision_claim_publishable_with_agreement` + per-class support/critical_recall/FP burden). **Product HOLD — RT-001 still OPEN** until customer corpus.  
 
 ### RT-002 — Approved norm pack absent
 - **Severity:** BLOCKER  

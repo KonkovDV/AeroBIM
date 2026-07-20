@@ -11,12 +11,14 @@
       { "id": "eng-b", "role": "independent adjudicator" }
     ]
   },
-  "protocol_notes": [
+    "protocol_notes": [
     "Promote dataset_status to adjudicated only after κ≥0.60 agreement artifact",
+    "Set held_out_split=true (or evaluation_split=held_out) before any publishable claim",
     "Split finding_class clash vs non-clash; set case.discipline (ar|ov|kzh|…)",
     "Ensemble detector+VLM+rules: disputed → HITL; never auto-publish >90%",
     "Synthetic fixtures must keep dataset_status=synthetic"
   ],
+  "held_out_split": false,
   "cases": [
     {
       "case_id": "CUST-AR-001",

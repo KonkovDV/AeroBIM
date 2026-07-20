@@ -120,7 +120,8 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "AEROBIM_MEP_SYSTEM_CLASH_ENABLED + scope memo — MEP-CLASH-001 NOT VERIFIED"
             ),
             "precision_claim": (
-                "Publishable only with customer corpus + ≥2 adjudicators + κ≥0.60 agreement"
+                "Publishable only with customer corpus + ≥2 adjudicators + κ/α "
+                "agreement + held-out split + FN tracked (never synthetic-only)"
             ),
             "customer_sla": "Fixture SLA ≠ customer комплект SLA; Redis queue + IFC cache NFR",
             "ifc_knowledge_graph": (

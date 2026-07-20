@@ -30,25 +30,60 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
                 "precision": 0.666667,
                 "recall": 0.666667,
                 "f1": 0.666667,
+                "critical_recall": 0.666667,
+                "false_positive_burden": 0.25,
+                "support": 6,
             },
         )
         self.assertEqual(report["labels"]["excluded"], 1)
         self.assertEqual(report["labels"]["unresolved"], 1)
         self.assertEqual(report["per_class"]["missing-element"]["fn"], 2)
+        self.assertEqual(report["per_class"]["missing-element"]["support"], 2)
+        self.assertIn("false_positive_burden", report["per_class"]["missing-element"])
+        self.assertIn("critical_recall", report["per_class"]["missing-element"])
         self.assertEqual(len(report["false_positives"]), 2)
         self.assertEqual(len(report["false_negatives"]), 2)
+        self.assertTrue(report["fn_tracked"])
+        self.assertFalse(report["held_out_split"])
+        self.assertFalse(report["precision_claim"]["publishable"])
 
     def test_synthetic_fixture_never_passes_publishable_protocol_gate(self) -> None:
         report = evaluate_detection_precision(LABELS, DETECTIONS)
 
         self.assertFalse(report["publishable_protocol_gate"])
+        self.assertEqual(report["corpus_kind"], "synthetic")
+        self.assertFalse(report["precision_claim"]["publishable"])
         self.assertIn("not adjudicated customer evidence", report["warning"])
         with self.assertRaisesRegex(ValueError, "publishable adjudication protocol gate"):
             evaluate_detection_precision(LABELS, DETECTIONS, require_publishable=True)
 
+    def test_missing_agreement_never_publishable(self) -> None:
+        payload = json.loads(LABELS.read_text(encoding="utf-8"))
+        payload["dataset_status"] = "adjudicated"
+        payload["held_out_split"] = True
+        payload["adjudication"]["adjudicators"] = [
+            {"id": "engineer-1", "role": "AR adjudicator"},
+            {"id": "engineer-2", "role": "BIM adjudicator"},
+        ]
+        unresolved = payload["cases"][0]["expected_findings"][4]
+        unresolved["adjudication_status"] = "excluded"
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            report = evaluate_detection_precision(labels_path, DETECTIONS)
+            self.assertTrue(report["precision_claim"]["base_publishable"])
+            self.assertFalse(report["precision_claim"]["publishable"])
+            with self.assertRaisesRegex(ValueError, "PrecisionClaim is not publishable"):
+                evaluate_detection_precision(
+                    labels_path,
+                    DETECTIONS,
+                    require_publishable=True,
+                )
+
     def test_two_adjudicator_protocol_gate_can_be_enforced(self) -> None:
         payload = json.loads(LABELS.read_text(encoding="utf-8"))
         payload["dataset_status"] = "adjudicated"
+        payload["held_out_split"] = True
         payload["adjudication"]["adjudicators"] = [
             {"id": "engineer-1", "role": "AR adjudicator"},
             {"id": "engineer-2", "role": "BIM adjudicator"},
@@ -83,8 +118,40 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
 
         self.assertTrue(report["publishable_protocol_gate"])
         self.assertEqual(report["adjudicator_count"], 2)
+        self.assertTrue(report["held_out_split"])
+        self.assertTrue(report["fn_tracked"])
         self.assertTrue(report["precision_claim"]["publishable"])
         self.assertIsNone(report["warning"])
+
+    def test_adjudicated_without_held_out_not_publishable(self) -> None:
+        payload = json.loads(LABELS.read_text(encoding="utf-8"))
+        payload["dataset_status"] = "adjudicated"
+        payload["adjudication"]["adjudicators"] = [
+            {"id": "engineer-1", "role": "AR adjudicator"},
+            {"id": "engineer-2", "role": "BIM adjudicator"},
+        ]
+        unresolved = payload["cases"][0]["expected_findings"][4]
+        unresolved["adjudication_status"] = "excluded"
+        agreement = {
+            "artifact_type": "adjudicator_agreement",
+            "schema_version": "1.1.0",
+            "cohen_kappa": 0.82,
+            "pass_threshold_0_60": True,
+            "krippendorff_alpha": 0.79,
+            "pass_alpha_0_67": True,
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            agreement_path = Path(temporary_directory) / "agreement.json"
+            labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            agreement_path.write_text(json.dumps(agreement), encoding="utf-8")
+            report = evaluate_detection_precision(
+                labels_path,
+                DETECTIONS,
+                agreement_path=agreement_path,
+            )
+        self.assertFalse(report["held_out_split"])
+        self.assertFalse(report["precision_claim"]["publishable"])
 
     def test_threshold_failures_are_ci_friendly(self) -> None:
         report = evaluate_detection_precision(LABELS, DETECTIONS)
