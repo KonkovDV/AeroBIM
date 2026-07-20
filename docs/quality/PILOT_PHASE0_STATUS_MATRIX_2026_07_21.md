@@ -1,6 +1,6 @@
 # AeroBIM Pilot Phase-0 Status Matrix
 
-**Freeze SHA:** `c366b08` (2026-07-21 eng F–L)  
+**Freeze SHA:** `f2615e7` (2026-07-21 eng F–L + claims refresh)  
 **Checkpoint:** **NO_GO** (RT-001 / RT-002 / RT-003) — unchanged by engineering remediations  
 **Principle:** do not invent customer evidence; do not flip checkpoint to GO
 
