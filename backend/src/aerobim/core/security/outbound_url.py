@@ -98,6 +98,35 @@ def assert_safe_outbound_url(
 _LOCAL_DATASTORE_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 
 
+def assert_oidc_jwks_host_bound(
+    issuer: str,
+    jwks_url: str,
+    extra_hosts: tuple[str, ...] | list[str] = (),
+) -> None:
+    """Require JWKS hostname to match issuer hostname (or an explicit extra allowlist).
+
+    Known multi-host IdPs can list alternate JWKS hosts via
+    ``AEROBIM_OIDC_JWKS_EXTRA_HOSTS``.
+    """
+    issuer_host = urlparse(issuer.strip()).hostname if isinstance(issuer, str) else None
+    jwks_host = urlparse(jwks_url.strip()).hostname if isinstance(jwks_url, str) else None
+    if not issuer_host or not jwks_host:
+        raise UnsafeOutboundUrlError(
+            "OIDC issuer and JWKS URL must both include hostnames for host binding"
+        )
+    issuer_norm = issuer_host.lower()
+    jwks_norm = jwks_host.lower()
+    if issuer_norm == jwks_norm:
+        return
+    allowed = {host.strip().lower() for host in extra_hosts if host and host.strip()}
+    if jwks_norm in allowed:
+        return
+    raise UnsafeOutboundUrlError(
+        f"OIDC JWKS host {jwks_host!r} does not match issuer host {issuer_host!r} "
+        "and is not listed in AEROBIM_OIDC_JWKS_EXTRA_HOSTS"
+    )
+
+
 def assert_safe_datastore_url(url: str, *, resolve_dns: bool = True) -> str:
     """Validate Redis / Postgres connection URLs at settings load (RTATOM-I09/I10).
 
@@ -270,6 +299,7 @@ def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False):
 __all__ = [
     "PinnedOutboundUrl",
     "UnsafeOutboundUrlError",
+    "assert_oidc_jwks_host_bound",
     "assert_safe_datastore_url",
     "assert_safe_outbound_url",
     "resolve_and_pin_outbound_url",

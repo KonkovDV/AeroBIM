@@ -11,8 +11,8 @@
 |---|---|---|
 | A0 | DONE | Plan published; baseline `f1742bc` |
 | **A1** | **DONE** | H01 I05 G01 H04 H05 G04 G11 I01 I02 I03 I04 G03 + soft SPF honesty — landed `9b610e9` |
-| **A2** | **PARTIAL** | A2.1–A2.4 + A2.6 landed `9b610e9` (689 backend / 25 frontend tests). **Deferred:** A2.5 `--require-hashes` / floating pip; full OIDC BFF (POST-05); stream ZIP/S3 OOM; symlink TOCTOU; ADS residual |
-| A3 | PENDING | Hygiene + POST-05 design |
+| **A2** | **PARTIAL→A2.5 CLOSED*** | A2.1–A2.4 + A2.6 landed `9b610e9`; A2.5 hashed locks + CI/Docker `--require-hashes` (pip/uv bootstrap residual). **Deferred:** full OIDC BFF (POST-05); ADS residual; broader S3 stream OOM |
+| **A3** | **PARTIAL** | CSP/nosniff; NFKC; JWKS host bind; ZIP stream inspect; TOCTOU on report get + IFC/drawing FileResponse. Residual: POST-05 design, ElementTree caps |
 | A4 | PENDING | Customer RT-001/002/003 evidence only |
 
 ### External anchors (Jul 2026)

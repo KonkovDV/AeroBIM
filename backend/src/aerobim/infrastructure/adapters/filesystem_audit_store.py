@@ -12,6 +12,7 @@ from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+from aerobim.core.security.path_jail import open_storage_file
 from aerobim.domain.finding_provenance import assert_finding_persistable, ensure_finding_provenance
 from aerobim.domain.models import (
     CapabilityState,
@@ -68,8 +69,8 @@ class FilesystemAuditStore:
         fail_closed: bool = False,
     ) -> None:
         self._storage_dir = storage_dir.resolve()
-        self._reports_dir = storage_dir / "reports"
-        self._drawing_assets_dir = storage_dir / "drawing-assets"
+        self._reports_dir = self._storage_dir / "reports"
+        self._drawing_assets_dir = self._storage_dir / "drawing-assets"
         self._object_store = object_store or LocalObjectStore(self._storage_dir)
         self._report_ttl_days = report_ttl_days if report_ttl_days and report_ttl_days > 0 else None
         self._fail_closed = fail_closed
@@ -501,7 +502,8 @@ class FilesystemAuditStore:
         if not self.is_report_committed(report_id):
             return None
         try:
-            raw = target.read_bytes()
+            with open_storage_file(target, base=self._storage_dir, mode="rb") as handle:
+                raw = handle.read()
             if not self._verify_report_integrity(report_id, raw):
                 return None
             data = json.loads(raw.decode("utf-8"))

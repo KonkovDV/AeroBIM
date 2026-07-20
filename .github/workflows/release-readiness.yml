@@ -62,8 +62,8 @@ jobs:
           python-version: "3.12"
       - name: Install backend dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev-lock.txt
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
           pip install -e . --no-deps
       - name: Validate benchmark workflow inputs
         run: |
@@ -127,6 +127,12 @@ jobs:
             --markdown-output ../artifacts/release-readiness/benchmark-threshold-summary.md \
             > ../artifacts/release-readiness/benchmark-threshold-evaluation.json
           cat ../artifacts/release-readiness/benchmark-threshold-summary.md >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo ""
+            echo "## Fixture honesty (C07)"
+            echo ""
+            echo "- \`fixture_only: true\` — release-readiness benchmark packs are synthetic/fixture rails, not product metrics."
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark artifacts
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
@@ -156,8 +162,8 @@ jobs:
       - name: Create backend virtualenv for smoke harness
         run: |
           python -m venv .venv
-          .venv/bin/pip install --upgrade pip
-          .venv/bin/pip install -r requirements-dev-lock.txt
+          .venv/bin/pip install --upgrade "pip==25.2"
+          .venv/bin/pip install --require-hashes -r requirements-dev-lock.txt
           .venv/bin/pip install -e . --no-deps
       - name: Install frontend dependencies
         run: npm ci

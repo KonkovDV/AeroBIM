@@ -5,7 +5,7 @@ WORKDIR /build
 
 COPY pyproject.toml requirements-lock.txt ./
 COPY src/ src/
-RUN pip install --no-cache-dir --prefix=/install -r requirements-lock.txt \
+RUN pip install --no-cache-dir --require-hashes --prefix=/install -r requirements-lock.txt \
     && pip install --no-cache-dir --prefix=/install --no-deps .
 
 # ---------- production ----------

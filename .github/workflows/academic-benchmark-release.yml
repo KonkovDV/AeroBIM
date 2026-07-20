@@ -20,10 +20,18 @@ jobs:
         with:
           python-version: "3.12"
       - run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev-lock.txt
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
           pip install -e . --no-deps
       - run: pytest tests -q --tb=short
+      - name: Stamp fixture-only advisory label (C07)
+        run: |
+          {
+            echo "## Academic benchmark honesty"
+            echo ""
+            echo "- \`fixture_only: true\` — pack/extraction metrics from repo fixtures are **advisory**, not product QA claims."
+            echo "- Do not treat F1 / accuracy gates in this workflow as customer-corpus evidence (RT-001/002/003 remain open)."
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Extraction quality gate
         run: python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
       - name: Generate benchmark report bundle
