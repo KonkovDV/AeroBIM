@@ -8,12 +8,15 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeout
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from aerobim.domain.models import DrawingAnnotation, ProblemZone
 
+_PDF_OPEN_TIMEOUT_S = 30.0
 _MEASURE_ALIASES = {
     "thickness": "thickness",
     "толщина": "thickness",
@@ -95,26 +98,39 @@ class RasterDrawingAnalyzer:
             ) from exc
 
         annotations: list[DrawingAnnotation] = []
-        with pymupdf.open(pdf_path) as document:
-            for page_number, page in enumerate(document, start=1):
-                blocks = page.get_text("blocks", sort=True)
-                for block in blocks:
-                    if len(block) < 5:
-                        continue
-                    x0, y0, x1, y1, text = block[:5]
-                    if not isinstance(text, str) or not text.strip():
-                        continue
-                    region = _TextRegion(
-                        text=text,
-                        page_number=page_number,
-                        x=float(x0),
-                        y=float(y0),
-                        width=max(float(x1) - float(x0), 0.0),
-                        height=max(float(y1) - float(y0), 0.0),
-                    )
-                    annotations.extend(
-                        self._extract_annotations_from_region(region, sheet_id, pdf_path)
-                    )
+
+        def _extract() -> list[DrawingAnnotation]:
+            extracted: list[DrawingAnnotation] = []
+            with pymupdf.open(pdf_path) as document:
+                for page_number, page in enumerate(document, start=1):
+                    blocks = page.get_text("blocks", sort=True)
+                    for block in blocks:
+                        if len(block) < 5:
+                            continue
+                        x0, y0, x1, y1, text = block[:5]
+                        if not isinstance(text, str) or not text.strip():
+                            continue
+                        region = _TextRegion(
+                            text=text,
+                            page_number=page_number,
+                            x=float(x0),
+                            y=float(y0),
+                            width=max(float(x1) - float(x0), 0.0),
+                            height=max(float(y1) - float(y0), 0.0),
+                        )
+                        extracted.extend(
+                            self._extract_annotations_from_region(region, sheet_id, pdf_path)
+                        )
+            return extracted
+
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(_extract)
+            try:
+                annotations = future.result(timeout=_PDF_OPEN_TIMEOUT_S)
+            except FuturesTimeout as exc:
+                raise TimeoutError(
+                    f"PDF analysis timed out after {_PDF_OPEN_TIMEOUT_S:.0f}s: {pdf_path}"
+                ) from exc
         return self._deduplicate_annotations(annotations)
 
     def _analyze_raster(

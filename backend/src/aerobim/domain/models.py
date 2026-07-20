@@ -428,6 +428,8 @@ class ValidationSummary:
     passed: bool
     drawing_annotation_count: int = 0
     generated_remark_count: int = 0
+    authoritative: bool = True
+    """False when soft-profile ``passed`` must not be treated as Shared-gate production verdict."""
 
 
 @dataclass(frozen=True)
@@ -496,6 +498,8 @@ class ReportListFilters:
     project: str | None = None
     discipline: str | None = None
     passed: bool | None = None
+    tenant_id: str | None = None
+    """When set, stores must scope results to this tenant (BOLA / soft-ACL honesty)."""
 
 
 @dataclass(frozen=True)
@@ -507,6 +511,7 @@ class ReportSummaryEntry:
     issue_count: int
     project_name: str | None = None
     discipline: str | None = None
+    tenant_id: str | None = None
 
 
 @dataclass(frozen=True)

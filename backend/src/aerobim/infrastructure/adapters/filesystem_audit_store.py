@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import logging
 import os
 import shutil
 import time
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeout
 from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -44,6 +48,12 @@ from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 
 _LOCK_ATTEMPTS = 50
 _LOCK_SLEEP_S = 0.02
+_PDF_OPEN_TIMEOUT_S = 30.0
+_logger = logging.getLogger(__name__)
+
+
+class ReportIntegrityError(RuntimeError):
+    """Raised when report JSON does not match the commit manifest digest."""
 
 
 class FilesystemAuditStore:
@@ -55,12 +65,14 @@ class FilesystemAuditStore:
         *,
         object_store: ObjectStore | None = None,
         report_ttl_days: int | None = None,
+        fail_closed: bool = False,
     ) -> None:
         self._storage_dir = storage_dir.resolve()
         self._reports_dir = storage_dir / "reports"
         self._drawing_assets_dir = storage_dir / "drawing-assets"
         self._object_store = object_store or LocalObjectStore(self._storage_dir)
         self._report_ttl_days = report_ttl_days if report_ttl_days and report_ttl_days > 0 else None
+        self._fail_closed = fail_closed
         self._reports_dir.mkdir(parents=True, exist_ok=True)
         self._drawing_assets_dir.mkdir(parents=True, exist_ok=True)
 
@@ -78,14 +90,18 @@ class FilesystemAuditStore:
         try:
             persisted_report = self._materialize_report(report, artifact_keys=artifact_keys)
             data = self._serialize_report(persisted_report)
+            payload = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
+            report_sha256 = hashlib.sha256(payload).hexdigest()
             target = self._reports_dir / f"{report.report_id}.json"
             tmp = self._reports_dir / f"{report.report_id}.tmp"
-            tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            tmp.write_bytes(payload)
             os.replace(str(tmp), str(target))
             self._write_commit_manifest(
                 report.report_id,
                 artifact_keys=artifact_keys,
                 ifc_object_key=persisted_report.ifc_object_key,
+                report_sha256=report_sha256,
+                report_byte_length=len(payload),
             )
             return report.report_id
         except Exception:
@@ -143,6 +159,8 @@ class FilesystemAuditStore:
         *,
         artifact_keys: list[str],
         ifc_object_key: str | None,
+        report_sha256: str | None = None,
+        report_byte_length: int | None = None,
     ) -> None:
         manifest = build_commit_manifest_payload(
             report_id=report_id,
@@ -150,6 +168,8 @@ class FilesystemAuditStore:
             ifc_object_key=ifc_object_key,
             committed_at=datetime.now(tz=UTC).isoformat(),
             commit_state=ReportCommitState.REVIEWABLE,
+            report_sha256=report_sha256,
+            report_byte_length=report_byte_length,
         )
         target = self._commit_marker_path(report_id)
         tmp = self._reports_dir / f"{report_id}.committed.tmp"
@@ -251,7 +271,9 @@ class FilesystemAuditStore:
         tenant = (tenant_id or "").strip()
         if not tenant:
             return relative
-        safe = "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in tenant)
+        from aerobim.core.security.path_jail import safe_storage_token
+
+        safe = safe_storage_token(tenant)
         return f"tenants/{safe}/{relative}"
 
     def _materialize_ifc_source(
@@ -344,33 +366,46 @@ class FilesystemAuditStore:
             ]
 
         persisted_assets: list[DrawingAsset] = []
-        with pymupdf.open(source_path) as document:
-            for page_index, page in enumerate(document, start=1):
-                if asset.page_number is not None and page_index != asset.page_number:
-                    continue
-                pix = page.get_pixmap(dpi=144, annots=False)
-                persisted_asset_id = asset.asset_id
-                if document.page_count > 1 or asset.page_number is None:
-                    persisted_asset_id = f"{asset.asset_id}-page-{page_index:03d}"
-                stored_filename = f"{persisted_asset_id}.png"
-                object_key = self._store_preview_bytes(
-                    report_id,
-                    stored_filename,
-                    pix.tobytes("png"),
-                    tenant_id=tenant_id,
-                )
-                persisted_assets.append(
-                    DrawingAsset(
-                        asset_id=persisted_asset_id,
-                        sheet_id=asset.sheet_id,
-                        page_number=page_index,
-                        media_type="image/png",
-                        coordinate_width=float(page.rect.width),
-                        coordinate_height=float(page.rect.height),
-                        stored_filename=stored_filename,
-                        object_key=object_key,
+
+        def _render_pdf_pages() -> list[DrawingAsset]:
+            pages: list[DrawingAsset] = []
+            with pymupdf.open(source_path) as document:
+                for page_index, page in enumerate(document, start=1):
+                    if asset.page_number is not None and page_index != asset.page_number:
+                        continue
+                    pix = page.get_pixmap(dpi=144, annots=False)
+                    persisted_asset_id = asset.asset_id
+                    if document.page_count > 1 or asset.page_number is None:
+                        persisted_asset_id = f"{asset.asset_id}-page-{page_index:03d}"
+                    stored_filename = f"{persisted_asset_id}.png"
+                    object_key = self._store_preview_bytes(
+                        report_id,
+                        stored_filename,
+                        pix.tobytes("png"),
+                        tenant_id=tenant_id,
                     )
-                )
+                    pages.append(
+                        DrawingAsset(
+                            asset_id=persisted_asset_id,
+                            sheet_id=asset.sheet_id,
+                            page_number=page_index,
+                            media_type="image/png",
+                            coordinate_width=float(page.rect.width),
+                            coordinate_height=float(page.rect.height),
+                            stored_filename=stored_filename,
+                            object_key=object_key,
+                        )
+                    )
+            return pages
+
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(_render_pdf_pages)
+            try:
+                persisted_assets = future.result(timeout=_PDF_OPEN_TIMEOUT_S)
+            except FuturesTimeout as exc:
+                raise TimeoutError(
+                    f"PDF preview timed out after {_PDF_OPEN_TIMEOUT_S:.0f}s: {source_path}"
+                ) from exc
         return persisted_assets
 
     def _persist_raster_asset(
@@ -466,14 +501,79 @@ class FilesystemAuditStore:
         if not self.is_report_committed(report_id):
             return None
         try:
-            data = json.loads(target.read_text(encoding="utf-8"))
+            raw = target.read_bytes()
+            if not self._verify_report_integrity(report_id, raw):
+                return None
+            data = json.loads(raw.decode("utf-8"))
             report = self._reconstruct_report(data)
             if self._is_expired(report):
                 self._delete_report_files(report, target)
                 return None
             return report
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+        except ReportIntegrityError:
+            if self._fail_closed:
+                raise
             return None
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError, UnicodeDecodeError):
+            return None
+
+    def discard(self, report_id: str) -> bool:
+        """Remove report JSON, commit marker, and drawing assets (cancel tombstone)."""
+
+        report_id = (report_id or "").strip()
+        if not report_id:
+            return False
+        target = self._report_json_path(report_id)
+        report: ValidationReport | None = None
+        if target.exists():
+            try:
+                data = json.loads(target.read_text(encoding="utf-8"))
+                report = self._reconstruct_report(data)
+            except (json.JSONDecodeError, KeyError, TypeError, ValueError, OSError):
+                report = None
+        if report is not None:
+            self._delete_report_files(report, target)
+            return True
+        # Best-effort cleanup when JSON is missing/corrupt.
+        commit_path = self._commit_marker_path(report_id)
+        assets_dir = self._drawing_assets_dir / report_id
+        removed = False
+        if assets_dir.exists():
+            shutil.rmtree(assets_dir, ignore_errors=True)
+            removed = True
+        if commit_path.exists():
+            commit_path.unlink(missing_ok=True)
+            removed = True
+        if target.exists():
+            target.unlink(missing_ok=True)
+            removed = True
+        return removed
+
+    def _verify_report_integrity(self, report_id: str, raw: bytes) -> bool:
+        commit_path = self._commit_marker_path(report_id)
+        if not commit_path.exists():
+            return False
+        try:
+            commit = json.loads(commit_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as exc:
+            if self._fail_closed:
+                raise ReportIntegrityError(
+                    f"Report {report_id} commit manifest unreadable"
+                ) from exc
+            _logger.warning("Report %s commit manifest unreadable; denying", report_id)
+            return False
+        expected = commit.get("report_sha256")
+        if not expected:
+            # Legacy commits without digest remain readable.
+            return True
+        actual = hashlib.sha256(raw).hexdigest()
+        if actual != expected:
+            message = f"Report {report_id} integrity mismatch (sha256)"
+            if self._fail_closed:
+                raise ReportIntegrityError(message)
+            _logger.warning("%s; denying", message)
+            return False
+        return True
 
     def list_reports(
         self,
@@ -501,6 +601,7 @@ class FilesystemAuditStore:
                         issue_count=summary.get("issue_count", 0),
                         project_name=data.get("project_name"),
                         discipline=data.get("discipline"),
+                        tenant_id=data.get("tenant_id"),
                     )
                 )
             except (json.JSONDecodeError, KeyError, TypeError, ValueError):
@@ -630,6 +731,7 @@ class FilesystemAuditStore:
             passed=data.get("passed", False),
             drawing_annotation_count=data.get("drawing_annotation_count", 0),
             generated_remark_count=data.get("generated_remark_count", 0),
+            authoritative=bool(data.get("authoritative", True)),
         )
 
     def _reconstruct_capability_status(

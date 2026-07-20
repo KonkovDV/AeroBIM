@@ -35,6 +35,10 @@ def _read_bool(name: str, default: bool) -> bool:
 
 _DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
 _DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # aligned with bSI Validation Service
+# Baked pilot/production quotas when env unset (RTATOM-I20 / A2.3).
+_PILOT_DEFAULT_MAX_UPLOADS_PER_DAY = 100
+_PILOT_DEFAULT_MAX_BYTES_PER_DAY = 10 * 1024 * 1024 * 1024  # 10 GiB
+_PILOT_DEFAULT_MAX_CONCURRENT_JOBS = 4
 
 
 @dataclass(frozen=True)
@@ -176,6 +180,12 @@ class Settings:
             origins = _DEBUG_CORS_ORIGINS
         else:
             origins = ()
+        env_name = (os.getenv("AEROBIM_ENV") or "development").strip().lower()
+        if any(origin == "*" for origin in origins) and env_name not in _DEV_ENVIRONMENTS:
+            raise RuntimeError(
+                "AEROBIM_CORS_ORIGINS must not include '*' outside development/test "
+                f"(AEROBIM_ENV={env_name!r})"
+            )
         raw_severity = (os.getenv("AEROBIM_CROSS_DOC_SEVERITY") or "warning").strip().lower()
         cross_doc_severity = (
             raw_severity if raw_severity in {"error", "warning", "info"} else "warning"
@@ -188,7 +198,6 @@ class Settings:
                 return None
             return _read_bool(name, False)
 
-        env_name = (os.getenv("AEROBIM_ENV") or "development").strip().lower()
         # Non-dev defaults ACL on when unset (legacy); profile may still override.
         acl_default = False if env_name in _DEV_ENVIRONMENTS else True
         # Inline profile map keeps core free of application imports (layer boundary).
@@ -235,6 +244,25 @@ class Settings:
             audit_fail_closed = bool(_optional_bool("AEROBIM_AUDIT_FAIL_CLOSED") or False)
         # Local SPF certificate is development-only; never under pilot/production.
         bsi_local_cert = _read_bool("AEROBIM_BSI_LOCAL_CERT", False) and not profile_gate
+        # Hard profiles always escalate cross-doc contradictions (RTATOM-G05).
+        if profile_gate:
+            cross_doc_severity = "error"
+
+        max_uploads_per_tenant_day = _read_optional_int("AEROBIM_MAX_UPLOADS_PER_TENANT_DAY")
+        max_upload_bytes_per_tenant_day = _read_optional_int(
+            "AEROBIM_MAX_UPLOAD_BYTES_PER_TENANT_DAY"
+        )
+        max_concurrent_analyze_jobs_per_tenant = _read_optional_int(
+            "AEROBIM_MAX_CONCURRENT_ANALYZE_JOBS_PER_TENANT"
+        )
+        # Bake reasonable pilot quotas when unset under hard profiles (RTATOM-I20).
+        if profile_gate:
+            if max_uploads_per_tenant_day is None:
+                max_uploads_per_tenant_day = _PILOT_DEFAULT_MAX_UPLOADS_PER_DAY
+            if max_upload_bytes_per_tenant_day is None:
+                max_upload_bytes_per_tenant_day = _PILOT_DEFAULT_MAX_BYTES_PER_DAY
+            if max_concurrent_analyze_jobs_per_tenant is None:
+                max_concurrent_analyze_jobs_per_tenant = _PILOT_DEFAULT_MAX_CONCURRENT_JOBS
 
         settings = cls(
             application_name=os.getenv("AEROBIM_APP_NAME", "aerobim-backend"),
@@ -268,13 +296,9 @@ class Settings:
                 "AEROBIM_MAX_UPLOAD_BYTES",
                 _read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
             ),
-            max_uploads_per_tenant_day=_read_optional_int("AEROBIM_MAX_UPLOADS_PER_TENANT_DAY"),
-            max_upload_bytes_per_tenant_day=_read_optional_int(
-                "AEROBIM_MAX_UPLOAD_BYTES_PER_TENANT_DAY"
-            ),
-            max_concurrent_analyze_jobs_per_tenant=_read_optional_int(
-                "AEROBIM_MAX_CONCURRENT_ANALYZE_JOBS_PER_TENANT"
-            ),
+            max_uploads_per_tenant_day=max_uploads_per_tenant_day,
+            max_upload_bytes_per_tenant_day=max_upload_bytes_per_tenant_day,
+            max_concurrent_analyze_jobs_per_tenant=max_concurrent_analyze_jobs_per_tenant,
             bcf_api_base_url=(os.getenv("AEROBIM_BCF_API_BASE_URL") or "").strip() or None,
             bcf_api_token=(os.getenv("AEROBIM_BCF_API_TOKEN") or "").strip() or None,
             bcf_api_project_id=(os.getenv("AEROBIM_BCF_API_PROJECT_ID") or "").strip() or None,
@@ -301,6 +325,7 @@ class Settings:
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
             UnsafeOutboundUrlError,
+            assert_safe_datastore_url,
             assert_safe_outbound_url,
         )
 
@@ -325,6 +350,17 @@ class Settings:
                 )
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"Unsafe outbound URL in {label}: {exc}") from exc
+        # Redis / Postgres URLs: SSRF gate when not localhost / unix socket (RTATOM-I09/I10).
+        for label, candidate in (
+            ("AEROBIM_REDIS_URL", settings.redis_url),
+            ("AEROBIM_DB_URL", settings.db_url),
+        ):
+            if not candidate:
+                continue
+            try:
+                assert_safe_datastore_url(candidate)
+            except UnsafeOutboundUrlError as exc:
+                raise RuntimeError(f"Unsafe datastore URL in {label}: {exc}") from exc
         settings.require_secure_auth()
         settings.require_oidc_runtime_deps()
         return settings

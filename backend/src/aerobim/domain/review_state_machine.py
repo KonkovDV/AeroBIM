@@ -5,7 +5,8 @@ System escalations are distinct from expert decisions. Invalid transitions fail 
 
 from __future__ import annotations
 
-from typing import Literal
+from collections.abc import Sequence
+from typing import Literal, Protocol
 
 HitlReviewState = Literal[
     "escalated",
@@ -48,6 +49,47 @@ _ALLOWED_TRANSITIONS: dict[str, frozenset[str]] = {
 
 class HitlTransitionError(ValueError):
     """Invalid HITL lifecycle transition or missing required fields."""
+
+
+class _HitlEventLike(Protocol):
+    event_type: str
+    finding_id: str | None
+    issue_rule_id: str | None
+    resulting_state: str | None
+
+
+_NORM_PACK_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
+
+
+def latest_hitl_state(
+    events: Sequence[_HitlEventLike],
+    finding_id: str | None,
+    issue_rule_id: str | None,
+) -> str | None:
+    """Return server SSOT HITL state for a finding/issue from stored events.
+
+    Walks events in order and keeps the last ``resulting_state`` matching the
+    finding (preferred) or issue rule. Norm-pack events are ignored.
+    """
+
+    fid = (finding_id or "").strip() or None
+    rid = (issue_rule_id or "").strip() or None
+    latest: str | None = None
+    for event in events:
+        if event.event_type in _NORM_PACK_EVENT_TYPES:
+            continue
+        event_fid = (getattr(event, "finding_id", None) or "").strip() or None
+        event_rid = (getattr(event, "issue_rule_id", None) or "").strip() or None
+        if fid is not None:
+            if event_fid != fid:
+                continue
+        elif rid is not None:
+            if event_rid != rid:
+                continue
+        state = (getattr(event, "resulting_state", None) or "").strip() or None
+        if state:
+            latest = state
+    return latest
 
 
 def normalize_hitl_state(event_type: str) -> HitlReviewState:
@@ -120,5 +162,6 @@ __all__ = [
     "HitlReviewState",
     "HitlTransitionError",
     "assert_hitl_transition",
+    "latest_hitl_state",
     "normalize_hitl_state",
 ]

@@ -28,6 +28,7 @@ class InMemoryAuditStore:
                 issue_count=r.summary.issue_count,
                 project_name=r.project_name,
                 discipline=r.discipline,
+                tenant_id=r.tenant_id,
             )
             for r in self._reports.values()
         ]
