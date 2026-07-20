@@ -77,8 +77,7 @@ class ValidateIfcAgainstIdsUseCase:
                         rule_id="AEROBIM-IDS-AUDIT-CAPABILITY",
                         severity=Severity.ERROR,
                         message=(
-                            "IDS document audit requested but no ids document "
-                            "auditor is configured"
+                            "IDS document audit requested but no ids document auditor is configured"
                         ),
                         category=FindingCategory.IDS_VALIDATION,
                         source_id="ids",
