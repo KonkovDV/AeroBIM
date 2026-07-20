@@ -87,13 +87,16 @@ Legend: **code** · **test** · **runtime** · **benchmark** · **README-only** 
 
 **Next:** (1) claim matrix + pilot protocol (this wave); (2) `export_evidence_bundle` + gap tests; (3) customer intake for RT-001/002/003 (external).
 
-## 6. Derived package outcome (until Wave2 enum)
+## 6. Derived package outcome
+
+`summary.outcome` (`PackageOutcome`) is the package reading; `summary.passed` is derived from it.
 
 | Expert reading | Runtime signals |
 |---|---|
-| PASS | `summary.passed=true` and required capabilities OK |
-| BLOCKED | required capability SKIPPED/FAILED/NOT_VERIFIED under pilot/production |
-| FAILED | `passed=false` with deterministic ERROR findings |
-| REVIEW_REQUIRED | findings present; HITL not yet accepted (review-events) |
+| PASS | `outcome=pass` and required capabilities OK |
+| PASS_WITH_WARNINGS | `outcome=pass_with_warnings` |
+| BLOCKED | intake blocked or required capability SKIPPED/FAILED/NOT_VERIFIED under pilot/production |
+| FAILED | deterministic ERROR findings / hard clash blocks |
+| REVIEW_REQUIRED | HITL regions require review |
 
-Do **not** invent PASS when any mandatory check did not complete successfully.
+Do **not** invent PASS when any mandatory check did not complete successfully. Checkpoint **NO_GO** until RT-001/002/003.

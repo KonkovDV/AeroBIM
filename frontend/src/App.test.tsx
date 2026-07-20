@@ -144,6 +144,7 @@ function buildReport(): ValidationReport {
       passed: false,
       drawing_annotation_count: 1,
       generated_remark_count: 0,
+      outcome: "blocked",
     },
     drawing_annotations: [],
     drawing_assets: [
@@ -232,6 +233,7 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByRole("img", { name: /drawing evidence preview for a-102/i })).toBeTruthy();
+    expect(screen.getByText("BLOCKED")).toBeTruthy();
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
     expect(within(viewer).getByText("issue")).toBeTruthy();

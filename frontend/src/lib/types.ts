@@ -117,7 +117,16 @@ export interface ValidationSummary {
   passed: boolean;
   drawing_annotation_count: number;
   generated_remark_count: number;
+  authoritative?: boolean;
+  outcome?: PackageOutcome | null;
 }
+
+export type PackageOutcome =
+  | "pass"
+  | "pass_with_warnings"
+  | "review_required"
+  | "blocked"
+  | "failed";
 
 export type DocStatus = "WIP" | "Shared" | "Published" | "Archived";
 

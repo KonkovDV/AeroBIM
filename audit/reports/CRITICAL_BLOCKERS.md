@@ -5,7 +5,7 @@
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Phase B customer-intake fail-closed landed (`samolet_pilot` → `AEROBIM-CUSTOMER-INTAKE`); RT-001/002/003 remain open.
+**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Phase B customer-intake fail-closed + Phase C `PackageOutcome` landed; RT-001/002/003 remain open.
 
 ## Closed in RTATOM Wave A1 + A2 (2026-07-20)
 

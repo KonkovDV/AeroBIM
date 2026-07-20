@@ -6,7 +6,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from aerobim.application.services.capability_policy import build_signoff_policy
-from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
+from aerobim.application.services.package_outcome import compute_package_outcome
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -18,6 +18,7 @@ from aerobim.domain.models import (
     ValidationRequest,
     ValidationSummary,
 )
+from aerobim.domain.package_outcome import summary_passed_from_outcome
 from aerobim.domain.ports import (
     AuditReportStore,
     IdsDocumentAuditor,
@@ -127,11 +128,14 @@ class ValidateIfcAgainstIdsUseCase:
                 else CapabilityStatus(CapabilityState.SKIPPED, "no IFC property requirements")
             ),
         )
-        passed = summary_passed_after_capabilities(
+        outcome = compute_package_outcome(
             error_count=error_count,
+            warning_count=warning_count,
             capabilities=capabilities,
+            intake_blocked=False,
             policy=self._signoff_policy,
         )
+        passed = summary_passed_from_outcome(outcome)
         soft_profile = self._signoff_policy.profile in {"development", "fixture"}
         report = ValidationReport(
             report_id=uuid4().hex,
@@ -147,6 +151,7 @@ class ValidateIfcAgainstIdsUseCase:
                 warning_count=warning_count,
                 passed=passed,
                 authoritative=not (soft_profile and passed),
+                outcome=outcome,
             ),
             capabilities=capabilities,
             project_name=request.project_name,
