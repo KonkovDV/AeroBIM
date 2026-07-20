@@ -5,9 +5,10 @@ Phase 7: reject unsupported facets and empty applicability — no silent skip.
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
 from pathlib import Path
+from xml.etree.ElementTree import ParseError
 
+from aerobim.core.security.xml_limits import XmlBombError, safe_parse
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
 # IDS 1.0 facet local-names (case-insensitive) accepted by AeroBIM / IfcTester path.
@@ -87,9 +88,9 @@ class XmlIdsDocumentAuditor:
             ]
 
         try:
-            tree = ET.parse(ids_path)
+            tree = safe_parse(ids_path)
             root = tree.getroot()
-        except ET.ParseError as exc:
+        except (ParseError, XmlBombError) as exc:
             return [
                 ValidationIssue(
                     rule_id="AEROBIM-IDS-AUDIT",

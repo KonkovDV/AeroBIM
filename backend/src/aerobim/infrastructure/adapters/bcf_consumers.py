@@ -15,7 +15,9 @@ import io
 import zipfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from xml.etree import ElementTree as ET
+from xml.etree.ElementTree import Element, ParseError
+
+from aerobim.core.security.xml_limits import XmlBombError, safe_fromstring
 
 
 @dataclass(frozen=True)
@@ -54,7 +56,7 @@ def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
     topics: list[BcfTopicContract] = []
     with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:
         version_raw = zf.read("bcf.version")
-        version_root = ET.fromstring(version_raw)
+        version_root = safe_fromstring(version_raw)
         version_id = version_root.attrib.get("VersionId", "")
         if version_id and not version_id.startswith("2."):
             raise ValueError(f"BCF 2.1 consumer rejected VersionId={version_id!r}")
@@ -62,7 +64,7 @@ def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
         markup_names = sorted(n for n in zf.namelist() if n.endswith("/markup.bcf"))
         for markup_name in markup_names:
             topic_guid = markup_name.split("/", 1)[0]
-            root = ET.fromstring(zf.read(markup_name))
+            root = safe_fromstring(zf.read(markup_name))
             topic_el = _find_local(root, "Topic")
             if topic_el is None:
                 raise ValueError(f"markup missing Topic: {markup_name}")
@@ -72,7 +74,7 @@ def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
             has_viewpoint = viewpoint_name in zf.namelist()
             selected: list[str] = []
             if has_viewpoint:
-                vis = ET.fromstring(zf.read(viewpoint_name))
+                vis = safe_fromstring(zf.read(viewpoint_name))
                 for component in vis.iter():
                     if _local(component.tag) == "Component":
                         guid = component.attrib.get("IfcGuid") or component.attrib.get("ifc_guid")
@@ -141,7 +143,7 @@ def _local(tag: str) -> str:
     return tag
 
 
-def _find_local(root: ET.Element, name: str) -> ET.Element | None:
+def _find_local(root: Element, name: str) -> Element | None:
     for element in root.iter():
         if _local(element.tag) == name:
             return element
@@ -201,11 +203,11 @@ def verify_bcf_zip_structure(
                 errors.append("missing bcf.version")
             else:
                 try:
-                    root = ET.fromstring(zf.read("bcf.version"))
+                    root = safe_fromstring(zf.read("bcf.version"))
                     version_id = root.attrib.get("VersionId", "") or ""
                     if not version_id:
                         errors.append("bcf.version missing VersionId")
-                except ET.ParseError as exc:
+                except (ParseError, XmlBombError) as exc:
                     errors.append(f"bcf.version not well-formed XML: {exc}")
 
             markup_names = sorted(n for n in names if n.endswith("/markup.bcf"))
@@ -217,15 +219,15 @@ def verify_bcf_zip_structure(
                 topic_guid = markup_name.split("/", 1)[0]
                 topic_guids.append(topic_guid)
                 try:
-                    ET.fromstring(zf.read(markup_name))
-                except ET.ParseError as exc:
+                    safe_fromstring(zf.read(markup_name))
+                except (ParseError, XmlBombError) as exc:
                     errors.append(f"markup not well-formed: {markup_name}: {exc}")
                 viewpoint_name = f"{topic_guid}/viewpoint.bcfv"
                 if viewpoint_name in names:
                     viewpoint_count += 1
                     try:
-                        ET.fromstring(zf.read(viewpoint_name))
-                    except ET.ParseError as exc:
+                        safe_fromstring(zf.read(viewpoint_name))
+                    except (ParseError, XmlBombError) as exc:
                         errors.append(f"viewpoint not well-formed: {viewpoint_name}: {exc}")
                 else:
                     errors.append(f"missing viewpoint.bcfv for topic {topic_guid}")

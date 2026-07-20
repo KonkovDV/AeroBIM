@@ -2,13 +2,24 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aerobim.core.security.object_limits import (
+    DEFAULT_GET_CHUNK_BYTES,
+    DEFAULT_MAX_GET_BYTES,
+    ObjectTooLargeError,
+)
 from aerobim.core.security.path_jail import PathJailError, reject_symlinks
 
 
 class LocalObjectStore:
-    def __init__(self, base_dir: Path) -> None:
+    def __init__(
+        self,
+        base_dir: Path,
+        *,
+        max_get_bytes: int = DEFAULT_MAX_GET_BYTES,
+    ) -> None:
         self._base_dir = base_dir.resolve()
         self._base_dir.mkdir(parents=True, exist_ok=True)
+        self._max_get_bytes = max_get_bytes
 
     def put_bytes(
         self,
@@ -27,7 +38,23 @@ class LocalObjectStore:
         target = self._resolve_key(key)
         if not target.exists() or not target.is_file():
             return None
-        return target.read_bytes()
+        size = target.stat().st_size
+        if size > self._max_get_bytes:
+            raise ObjectTooLargeError(f"Object file too large ({size} > {self._max_get_bytes})")
+        chunks: list[bytes] = []
+        total = 0
+        with target.open("rb") as handle:
+            while True:
+                chunk = handle.read(DEFAULT_GET_CHUNK_BYTES)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > self._max_get_bytes:
+                    raise ObjectTooLargeError(
+                        f"Object payload too large (>{self._max_get_bytes} bytes)"
+                    )
+                chunks.append(chunk)
+        return b"".join(chunks)
 
     def delete(self, key: str) -> None:
         target = self._resolve_key(key)
@@ -35,6 +62,8 @@ class LocalObjectStore:
             target.unlink()
 
     def presign_get(self, key: str, *, expires_in_seconds: int = 3600) -> str | None:
+        # Local residual: returns file:// URI — caller opens the path directly;
+        # max_get_bytes is enforced only on get_bytes().
         del expires_in_seconds
         target = self._resolve_key(key)
         if not target.exists() or not target.is_file():
@@ -55,3 +84,6 @@ class LocalObjectStore:
 
     def _normalise_key(self, key: str) -> str:
         return key.strip().replace("\\", "/").lstrip("/")
+
+
+__all__ = ["ObjectTooLargeError", "LocalObjectStore"]

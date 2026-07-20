@@ -8,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from aerobim.core.security.object_limits import ObjectTooLargeError
 from aerobim.domain.models import ValidationReport, ValidationSummary
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
@@ -37,6 +38,26 @@ def _make_report(
     )
 
 
+class FakeBody:
+    """Minimal StreamingBody stand-in with chunked ``read(amt)``."""
+
+    def __init__(self, data: bytes) -> None:
+        self._data = data
+        self._pos = 0
+
+    def read(self, amt: int | None = None) -> bytes:
+        if self._pos >= len(self._data):
+            return b""
+        if amt is None:
+            chunk = self._data[self._pos :]
+            self._pos = len(self._data)
+            return chunk
+        end = min(self._pos + amt, len(self._data))
+        chunk = self._data[self._pos : end]
+        self._pos = end
+        return chunk
+
+
 class LocalObjectStoreTests(unittest.TestCase):
     def test_put_get_delete_roundtrip(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -48,6 +69,13 @@ class LocalObjectStoreTests(unittest.TestCase):
 
             store.delete(key)
             self.assertIsNone(store.get_bytes(key))
+
+    def test_get_bytes_rejects_oversized_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            store = LocalObjectStore(Path(tmpdir), max_get_bytes=8)
+            key = store.put_bytes("big.bin", b"0123456789")
+            with self.assertRaises(ObjectTooLargeError):
+                store.get_bytes(key)
 
 
 class FilesystemAuditStoreEnterpriseFoundationTests(unittest.TestCase):
@@ -90,9 +118,7 @@ class FilesystemAuditStoreEnterpriseFoundationTests(unittest.TestCase):
 
 
 class S3ObjectStoreTests(unittest.TestCase):
-    def test_qualified_key_roundtrip_is_idempotent_for_persisted_keys(self) -> None:
-        stored_objects: dict[str, bytes] = {}
-
+    def _patch_fake_client(self, stored_objects: dict[str, bytes]):
         class NoSuchKeyError(Exception):
             pass
 
@@ -106,7 +132,11 @@ class S3ObjectStoreTests(unittest.TestCase):
             def get_object(self, *, Bucket: str, Key: str) -> dict[str, object]:
                 if Key not in stored_objects:
                     raise NoSuchKeyError()
-                return {"Body": SimpleNamespace(read=lambda: stored_objects[Key])}
+                payload = stored_objects[Key]
+                return {
+                    "Body": FakeBody(payload),
+                    "ContentLength": len(payload),
+                }
 
             def delete_object(self, *, Bucket: str, Key: str) -> None:
                 stored_objects.pop(Key, None)
@@ -122,14 +152,17 @@ class S3ObjectStoreTests(unittest.TestCase):
 
         fake_boto3 = SimpleNamespace(client=lambda *args, **kwargs: FakeS3Client())
         fake_botocore_config = SimpleNamespace(Config=lambda **kwargs: object())
-
-        with patch.dict(
+        return patch.dict(
             sys.modules,
             {
                 "boto3": fake_boto3,
                 "botocore.config": fake_botocore_config,
             },
-        ):
+        )
+
+    def test_qualified_key_roundtrip_is_idempotent_for_persisted_keys(self) -> None:
+        stored_objects: dict[str, bytes] = {}
+        with self._patch_fake_client(stored_objects):
             store = S3ObjectStore(bucket="bucket", region="ru-test-1", prefix="aerobim")
 
             key = store.put_bytes("ifc-sources/report-1/model.ifc", b"ifc-bytes")
@@ -143,3 +176,46 @@ class S3ObjectStoreTests(unittest.TestCase):
 
             store.delete(key)
             self.assertIsNone(store.get_bytes(key))
+
+    def test_get_bytes_rejects_oversized_content_length(self) -> None:
+        stored_objects: dict[str, bytes] = {}
+        with self._patch_fake_client(stored_objects):
+            store = S3ObjectStore(
+                bucket="bucket",
+                region="ru-test-1",
+                prefix="aerobim",
+                max_get_bytes=8,
+            )
+            key = store.put_bytes("ifc-sources/report-1/model.ifc", b"0123456789")
+            with self.assertRaises(ObjectTooLargeError):
+                store.get_bytes(key)
+
+    def test_get_bytes_rejects_when_stream_exceeds_cap_without_length(self) -> None:
+        class NoSuchKeyError(Exception):
+            pass
+
+        class FakeS3Client:
+            class exceptions:
+                NoSuchKey = NoSuchKeyError
+
+            def get_object(self, *, Bucket: str, Key: str) -> dict[str, object]:
+                del Bucket, Key
+                return {"Body": FakeBody(b"0123456789")}
+
+        fake_boto3 = SimpleNamespace(client=lambda *args, **kwargs: FakeS3Client())
+        fake_botocore_config = SimpleNamespace(Config=lambda **kwargs: object())
+        with patch.dict(
+            sys.modules,
+            {
+                "boto3": fake_boto3,
+                "botocore.config": fake_botocore_config,
+            },
+        ):
+            store = S3ObjectStore(
+                bucket="bucket",
+                region="ru-test-1",
+                prefix="aerobim",
+                max_get_bytes=8,
+            )
+            with self.assertRaises(ObjectTooLargeError):
+                store.get_bytes("aerobim/any")
