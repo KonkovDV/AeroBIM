@@ -7,14 +7,15 @@ Pinned installs for supply-chain honesty (RT-POST-09 / RTATOM A2.5):
 | `requirements-lock.txt` | Runtime + `raster` (Docker image) |
 | `requirements-dev-lock.txt` | Runtime + `dev` + `raster` (CI / local gates) |
 
-Regenerate (Python 3.12, via [uv](https://github.com/astral-sh/uv)):
+Regenerate (Python 3.12, Linux/CI target via [uv](https://github.com/astral-sh/uv)):
 
 ```bash
 cd backend
-uv pip compile --python 3.12 --generate-hashes --extra=raster -o requirements-lock.txt pyproject.toml
-uv pip compile --python 3.12 --generate-hashes --extra=dev --extra=raster -o requirements-dev-lock.txt pyproject.toml
+uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=raster -o requirements-lock.txt pyproject.toml
+uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=dev --extra=raster -o requirements-dev-lock.txt pyproject.toml
 ```
 
+Locks target `x86_64-manylinux_2_31` so CI (ubuntu) and Docker stay aligned; Windows-only extras (e.g. `colorama`) are intentionally absent.
 Install:
 
 ```bash

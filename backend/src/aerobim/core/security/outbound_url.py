@@ -273,9 +273,12 @@ def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False):
         class _PinnedHTTPSConnection(http.client.HTTPSConnection):
             def connect(self) -> None:  # noqa: ANN201 — stdlib signature
                 sock = socket.create_connection((self.host, self.port), self.timeout)
-                if self._tunnel_host:  # type: ignore[attr-defined]
+                tunnel_host = getattr(self, "_tunnel_host", None)
+                if tunnel_host:
                     self.sock = sock
-                    self._tunnel()  # type: ignore[misc]
+                    tunnel = getattr(self, "_tunnel", None)
+                    if callable(tunnel):
+                        tunnel()
                     sock = self.sock  # type: ignore[assignment]
                 self.sock = context.wrap_socket(sock, server_hostname=server_hostname)
 

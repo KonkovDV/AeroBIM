@@ -234,10 +234,16 @@ def create_http_app(container: Container):
     )
 
     # Harden OpenAPI surfaces outside development/test (RT A03).
-    docs_kwargs: dict[str, None] = {}
     if not settings.is_dev_environment:
-        docs_kwargs = {"docs_url": None, "redoc_url": None, "openapi_url": None}
-    app = FastAPI(title="aerobim-backend", version="0.2.0", **docs_kwargs)
+        app = FastAPI(
+            title="aerobim-backend",
+            version="0.2.0",
+            docs_url=None,
+            redoc_url=None,
+            openapi_url=None,
+        )
+    else:
+        app = FastAPI(title="aerobim-backend", version="0.2.0")
 
     # -- Middleware stack (order matters: outermost first) --
     app.add_middleware(
