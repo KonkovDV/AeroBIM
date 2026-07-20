@@ -91,15 +91,18 @@ See [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) for t
 
 ## BCF Evidence Ladder
 
+Canonical taxonomy: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md).
+
 | Tier | Status | Notes |
 |---|---|---|
-| BCF 2.1 ZIP export | Available (stable default) | `/v1/reports/{id}/export/bcf` |
-| BCF 3.0 ZIP export | Experimental | `?version=3` |
-| T1 structural + dual-consumer agreement | Evidenced | [`audit/evidence/bcf-structural-handoff-2026-07-18.json`](audit/evidence/bcf-structural-handoff-2026-07-18.json) |
+| T0 BCF ZIP export surface | **AVAILABLE** | 2.1 default `/export/bcf`; 3.0 experimental `?version=3` |
+| T1 structural + dual-consumer | Evidenced | [`audit/evidence/bcf-structural-handoff-2026-07-18.json`](audit/evidence/bcf-structural-handoff-2026-07-18.json) |
 | OpenCDE BCF API push | Foundation | `/export/bcf-api/push` — hub sync not a T2 substitute |
-| T2 independent CDE import | **NOT VERIFIED** | [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) |
+| T2 independent CDE import | **NOT_VERIFIED** | [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) |
+| T3 round-trip fidelity | Not started | Blocked on T2 |
+| T4 production handoff | Not started | Blocked on T2/T3 |
 
-Forbidden wording until T2: “BCF ready for CDE”, “CDE interoperable”.
+Allowed: structural ZIP **AVAILABLE**. Forbidden until T2: “BCF ready for CDE”, “CDE interoperable”.
 
 ## Enterprise Storage Foundation
 

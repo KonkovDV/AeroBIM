@@ -20,7 +20,7 @@ Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLA
 | MEP system clash delivered | RT-003 | `mep_system_clash=NOT_VERIFIED`; eng foundation improved — RT-003 **OPEN** |
 | Native DWG analysis | — | НЕ РЕАЛИЗОВАНО |
 | Independent calc correctness | — | Сверка PARTIAL only |
-| BCF ready for CDE | RT-008 T2 | Structural ZIP OK; import НЕ ДОКАЗАНО |
+| BCF ready for CDE | RT-008 T2 | Structural ZIP **AVAILABLE**; CDE import **NOT_VERIFIED** ([ladder](architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)) |
 | Production-ready / external academic audit | — | Self-audit + NO_GO |
 
 ## Allowed with evidence pointers
