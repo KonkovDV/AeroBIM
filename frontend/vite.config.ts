@@ -1,3 +1,5 @@
+import type { ClientRequest } from "node:http";
+import { cwd } from "node:process";
 import react from "@vitejs/plugin-react";
 import { loadEnv } from "vite";
 import { defineConfig } from "vitest/config";
@@ -8,7 +10,7 @@ import { defineConfig } from "vitest/config";
  * so the secret never ships in the JS bundle.
  */
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+  const env = loadEnv(mode, cwd(), "");
   const backend = (env.AEROBIM_PROXY_TARGET || "http://127.0.0.1:8080").replace(/\/$/, "");
   const bearer = (env.AEROBIM_API_BEARER_TOKEN || "").trim();
 
@@ -45,7 +47,8 @@ export default defineConfig(({ mode }) => {
           target: backend,
           changeOrigin: true,
           configure: (proxy) => {
-            proxy.on("proxyReq", (proxyReq) => {
+            // Some http-proxy type packs omit EventEmitter methods on ProxyServer.
+            proxy.on("proxyReq", (proxyReq: ClientRequest) => {
               if (bearer) {
                 proxyReq.setHeader("Authorization", `Bearer ${bearer}`);
               }
