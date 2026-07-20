@@ -60,16 +60,12 @@ class PathJailTenantPrefixTests(unittest.TestCase):
             allowed = base / "tenants" / "Tenant!2fA" / "uploads" / "x.ifc"
             allowed.parent.mkdir(parents=True)
             allowed.write_text("ok", encoding="utf-8")
-            assert_path_under_tenant_prefix(
-                allowed, base=base, tenant_id="Tenant/A"
-            )
+            assert_path_under_tenant_prefix(allowed, base=base, tenant_id="Tenant/A")
             outsider = base / "tenants" / "Tenant_A" / "uploads" / "x.ifc"
             outsider.parent.mkdir(parents=True)
             outsider.write_text("no", encoding="utf-8")
             with self.assertRaises(PathJailError):
-                assert_path_under_tenant_prefix(
-                    outsider, base=base, tenant_id="Tenant/A"
-                )
+                assert_path_under_tenant_prefix(outsider, base=base, tenant_id="Tenant/A")
 
 
 class ClashPolicyFlipTests(unittest.TestCase):

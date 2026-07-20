@@ -18,11 +18,7 @@ def apply_report_list_filters(
             # Empty principal tenant must not leak any tenant-bound reports.
             result = [e for e in result if not (e.tenant_id or "").strip()]
         else:
-            result = [
-                e
-                for e in result
-                if (e.tenant_id or "").strip().casefold() == wanted
-            ]
+            result = [e for e in result if (e.tenant_id or "").strip().casefold() == wanted]
     if filters.project:
         needle = filters.project.strip().lower()
         result = [e for e in result if needle in (e.project_name or "").lower()]
