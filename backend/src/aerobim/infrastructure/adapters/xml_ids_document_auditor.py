@@ -111,6 +111,17 @@ class XmlIdsDocumentAuditor:
                 )
             ]
 
+        if root is None:
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-IDS-AUDIT",
+                    severity=Severity.ERROR,
+                    message="IDS document has no root element",
+                    category=FindingCategory.IDS_VALIDATION,
+                    origin="deterministic",
+                )
+            ]
+
         local_name = _local(root.tag)
         if local_name.lower() not in {"ids", "informationsdeliveryspecification"}:
             return [

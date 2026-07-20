@@ -87,6 +87,8 @@ jobs:
           check("requirements-lock.txt", ["--extra=raster"])
           check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster"])
           PY
+      - name: Runtime baseline README drift check
+        run: python -m aerobim.tools.export_runtime_baseline --check-readme
       - run: ruff check src tests
       - run: ruff format --check src tests
 
