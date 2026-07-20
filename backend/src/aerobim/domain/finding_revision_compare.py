@@ -215,6 +215,15 @@ def _index_by_match_key(
 
 
 def _normalize_finding(item: FindingLike, *, index: int) -> dict[str, Any]:
+    finding_id: str | None
+    rule_id: str
+    element_guid: str | None
+    source_id: str | None
+    target_ref: str | None
+    severity: str | None
+    expected: object
+    observed: object
+    category: str | None
     if isinstance(item, ValidationIssue):
         finding_id = (item.finding_id or "").strip() or None
         rule_id = (item.rule_id or "").strip()
