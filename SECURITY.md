@@ -59,6 +59,9 @@ When reporting, include:
 
 ## Deployment Hardening (Wave 0–2 + RT-POST 2026-07-19 + RTATOM A1/A2/A3 2026-07-20)
 
+Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/security/PILOT_THREAT_MODEL_2026_07.md)
+(closed RTATOM controls + residual POST-05 BFF — **not** SSO production-ready).
+
 - Non-`development`/`test` environments **require** `AEROBIM_API_BEARER_TOKEN` and/or OIDC (`AEROBIM_OIDC_ISSUER` + audience + JWKS) at startup and on every authenticated `/v1/*` call (503/401 fail-closed). Public exception: `GET /v1/auth/bff` returns 501 honesty JSON for FE discovery.
 - Local `docker-compose.yml` defaults to **development**, publishes **127.0.0.1:8080 only**, and keeps `AEROBIM_ALLOW_ANONYMOUS_DEV=false` unless explicitly opted in. Shared/LAN use `docker-compose.production.yml` which **requires** `AEROBIM_API_BEARER_TOKEN` with no default.
 - Non-dev `AEROBIM_ENV` rejects soft `AEROBIM_SIGNOFF_PROFILE=development|fixture` (must be `production` or `samolet_pilot`).
