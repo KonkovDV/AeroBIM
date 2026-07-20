@@ -48,10 +48,17 @@ class ExportEvidenceBundleTests(unittest.TestCase):
 
             self.assertTrue(str(manifest.get("code_version", "")).startswith("aerobim-backend@"))
             self.assertIn("report.html", manifest.get("artifacts") or {})
+            self.assertIn("runtime_settings", manifest)
+            self.assertIn("output_file_sha256", manifest)
+            self.assertTrue(manifest["output_file_sha256"].get("report.json"))
             self.assertTrue((output_dir / "report.html").read_text(encoding="utf-8"))
             self.assertIn(
                 "summary_passed=", (output_dir / "logs_snippet.txt").read_text(encoding="utf-8")
             )
+            readme = (output_dir / "README.md").read_text(encoding="utf-8")
+            self.assertIn("Forbidden:", readme)
+            self.assertNotIn("production-ready", readme.lower())
+            self.assertNotIn("customer accuracy achieved", readme.lower())
 
             coverage = json.loads(
                 (output_dir / "capability_coverage.json").read_text(encoding="utf-8")

@@ -60,7 +60,10 @@ When reporting, include:
 ## Deployment Hardening (Wave 0–2 + RT-POST 2026-07-19)
 
 - Non-`development`/`test` environments **require** `AEROBIM_API_BEARER_TOKEN` and/or OIDC (`AEROBIM_OIDC_ISSUER` + audience + JWKS) at startup and on every `/v1/*` call (503/401 fail-closed).
-- Local `docker-compose.yml` defaults to **development** (optional bearer / anonymous-dev). Shared/LAN use `docker-compose.production.yml` which **requires** `AEROBIM_API_BEARER_TOKEN` with no default.
+- Local `docker-compose.yml` defaults to **development**, publishes **127.0.0.1:8080 only**, and keeps `AEROBIM_ALLOW_ANONYMOUS_DEV=false` unless explicitly opted in. Shared/LAN use `docker-compose.production.yml` which **requires** `AEROBIM_API_BEARER_TOKEN` with no default.
+- Non-dev `AEROBIM_ENV` rejects soft `AEROBIM_SIGNOFF_PROFILE=development|fixture` (must be `production` or `samolet_pilot`).
+- OIDC JWKS is fetched only via SSRF-guarded `safe_urlopen` (no unguarded `PyJWKClient` HTTP).
+- Frontend Vite defaults to `127.0.0.1`; production builds do not embed `VITE_AEROBIM_API_BEARER_TOKEN`.
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash / MEP / schema / unit_scale). Soft `AEROBIM_CLASH_AFFECTS_PASS=false` is ignored under pilot/production.
 - OIDC JWT validation pins algorithms (RS256), verifies `iss`, `aud`, and `exp`; tenant claim only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`).
 - Cross-tenant object ACL denials return **HTTP 404** (not 403).

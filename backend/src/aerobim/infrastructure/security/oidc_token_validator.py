@@ -1,7 +1,8 @@
 """OIDC JWT access-token validation (RS256, iss/aud/exp) for enterprise SSO.
 
 Follows 2026 FastAPI/OIDC practice: pin algorithms, validate issuer + audience +
-expiry, fetch JWKS from the IdP. Static API bearer remains supported in parallel.
+expiry, fetch JWKS via SSRF-guarded safe_urlopen (never unguarded PyJWKClient HTTP).
+Static API bearer remains supported in parallel.
 """
 
 from __future__ import annotations
@@ -32,15 +33,29 @@ class OidcTokenValidator:
     def validate(self, token: str) -> dict[str, Any]:
         try:
             import jwt
-            from jwt import PyJWKClient
+            from jwt import PyJWK
         except ModuleNotFoundError as exc:
             raise OidcValidationError(
                 "OIDC JWT validation requires PyJWT; install the 'enterprise' extra"
             ) from exc
 
-        jwks_client = PyJWKClient(self.jwks_url, cache_keys=True)
+        jwks = self.fetch_jwks()
         try:
-            signing_key = jwks_client.get_signing_key_from_jwt(token)
+            header = jwt.get_unverified_header(token)
+            kid = header.get("kid")
+            keys = jwks.get("keys")
+            if not isinstance(keys, list) or not keys:
+                raise OidcValidationError("JWKS response contains no keys")
+            key_data: dict[str, Any] | None = None
+            for candidate in keys:
+                if not isinstance(candidate, dict):
+                    continue
+                if kid is None or candidate.get("kid") == kid:
+                    key_data = candidate
+                    break
+            if key_data is None:
+                raise OidcValidationError(f"No JWKS key matched kid={kid!r}")
+            signing_key = PyJWK.from_dict(key_data)
             claims = jwt.decode(
                 token,
                 signing_key.key,
@@ -55,6 +70,8 @@ class OidcTokenValidator:
                     "verify_nbf": True,
                 },
             )
+        except OidcValidationError:
+            raise
         except Exception as exc:  # noqa: BLE001 — normalize library errors
             raise OidcValidationError(f"OIDC token validation failed: {exc}") from exc
 
@@ -63,7 +80,7 @@ class OidcTokenValidator:
         return claims
 
     def fetch_jwks(self) -> dict[str, Any]:
-        """Optional diagnostic helper; PyJWKClient handles runtime JWKS fetch."""
+        """Fetch JWKS through the shared SSRF outbound guard (resolve DNS at fetch)."""
         now = time.time()
         if (
             self._jwks_cache is not None

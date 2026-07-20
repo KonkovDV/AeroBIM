@@ -106,7 +106,7 @@ def _collect_contract_summary(app) -> dict[str, object]:
             {
                 "endpoint": "/health",
                 "expected_status": ["200"],
-                "contract_shape": ["service", "environment", "status"],
+                "contract_shape": ["service", "status"],
             },
             {
                 "endpoint": "/v1/reports",

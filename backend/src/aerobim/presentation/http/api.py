@@ -223,9 +223,9 @@ def create_http_app(container: Container):
 
     @app.get("/health")
     def health() -> dict[str, object]:
+        # Do not disclose AEROBIM_ENV on the unauthenticated probe surface.
         return {
             "service": settings.application_name,
-            "environment": settings.environment,
             "status": "ok",
         }
 
