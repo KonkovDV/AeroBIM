@@ -9,6 +9,7 @@ from typing import Literal
 from uuid import uuid4
 
 from aerobim.domain.models import NormApprovalStatus, NormPackVersionInfo, ReviewEvent
+from aerobim.domain.norm_pack_hash import compute_norm_pack_content_hash
 from aerobim.domain.ports import NormRulePackVersionStore, ReviewEventStore
 
 NormRuleHitlEventType = Literal["norm_rule_proposed", "norm_rule_edited"]
@@ -86,20 +87,73 @@ class ApplyNormRuleHitlEventUseCase:
 
         payload["rules"] = updated_rules
         payload["version"] = new_version
+        labels = payload.get("claim_labels")
+        if isinstance(labels, list):
+            synthetic = {
+                str(item).strip().lower()
+                for item in labels
+                if isinstance(item, str) and item.strip()
+            }
+        else:
+            synthetic = set()
         if status == "customer_approved":
-            payload["status"] = "approved"
+            if synthetic.intersection(
+                {"synthetic", "fixture", "template", "not-customer-evidence"}
+            ):
+                raise ValueError(
+                    "synthetic/fixture claim_labels cannot promote to customer_approved "
+                    "(RT-002 open)"
+                )
+            # Residential reference template defaults to synthetic labels when absent.
+            if not labels and str(payload.get("status", "")).startswith("synthetic"):
+                raise ValueError(
+                    "synthetic base packs cannot promote to customer_approved (RT-002 open)"
+                )
+            now = datetime.now(tz=UTC).isoformat()
+            payload["status"] = "customer_approved"
             payload["approval_ref"] = approval_ref
+            if not payload.get("jurisdiction"):
+                raise ValueError(
+                    "customer_approved HITL upgrades require pack jurisdiction metadata"
+                )
+            rules_for_hash = payload.get("rules")
+            if isinstance(rules_for_hash, list):
+                for item in rules_for_hash:
+                    if not isinstance(item, dict):
+                        continue
+                    clause = item.get("norm_clause") or item.get("clause")
+                    if not (isinstance(clause, str) and clause.strip()):
+                        raise ValueError(
+                            "customer_approved HITL upgrades require clause/norm_clause "
+                            f"on every rule (missing on {item.get('rule_id')!r})"
+                        )
+
             payload["approval"] = {
                 "approved_by": proposed_by or "hitl-engineer",
-                "approved_at": datetime.now(tz=UTC).isoformat(),
+                "approval_date": now,
+                "approval_status": "customer_approved",
+                "document_title": str(payload.get("title") or pack_id),
+                "document_edition": str(payload.get("edition") or payload.get("version") or "1"),
+                "effective_date": now[:10],
                 "scope_reference": approval_ref,
             }
+            payload["pack_hash"] = compute_norm_pack_content_hash(payload)
+            # Strip synthetic honesty labels before customer storage.
+            payload["claim_labels"] = ["customer-evidence"]
         elif status == "draft":
             payload["status"] = "draft"
             payload["approval"] = None
+            merged = [*(labels if isinstance(labels, list) else []), "draft"]
+            payload["claim_labels"] = list(dict.fromkeys(merged))
         else:
             payload["status"] = "synthetic-template"
             payload["approval"] = None
+            merged = [
+                *(labels if isinstance(labels, list) else []),
+                "synthetic",
+                "not-customer-evidence",
+            ]
+            payload["claim_labels"] = list(dict.fromkeys(merged))
 
         encoded = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
         record = self._versions.save_version(

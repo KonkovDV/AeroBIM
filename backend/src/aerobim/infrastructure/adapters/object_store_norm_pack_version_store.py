@@ -1,10 +1,12 @@
 """ObjectStore-backed immutable norm-pack version history (P0.3).
 
 Phase 8 residual: versions are tenant-namespaced when ``tenant_id`` is set.
+Changing one rule changes ``content_sha256``; mismatch blocks sign-off.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -60,10 +62,14 @@ class ObjectStoreNormRulePackVersionStore:
             raise ValueError(
                 "customer_approved/approved norm pack versions require non-empty approval_ref"
             )
+        # Reject synthetic-labeled payloads claiming customer_approved.
+        if status in {"customer_approved", "approved"}:
+            self._assert_payload_not_synthetic_claim(payload)
         key = self._object_key(pack_id, version, tenant_id=tenant_id)
         # Immutable: refuse overwrite if object already present.
         if self._store.get_bytes(key) is not None:
             raise ValueError(f"ObjectStore key already exists (immutable history): {key}")
+        content_sha256 = hashlib.sha256(payload).hexdigest()
         self._store.put_bytes(key, payload, content_type="application/json")
         record = NormPackVersionInfo(
             pack_id=pack_id,
@@ -75,21 +81,12 @@ class ObjectStoreNormRulePackVersionStore:
             approval_status=approval_status,  # type: ignore[arg-type]
             approval_ref=approval_ref,
             tenant_id=(tenant_id or "").strip() or None,
+            content_sha256=content_sha256,
         )
-        entries = [item.__dict__ for item in self.list_versions(pack_id, tenant_id=tenant_id)]
-        entries.append(
-            {
-                "pack_id": record.pack_id,
-                "version": record.version,
-                "object_key": record.object_key,
-                "created_at": record.created_at,
-                "created_by": record.created_by,
-                "parent_version": record.parent_version,
-                "approval_status": record.approval_status,
-                "approval_ref": record.approval_ref,
-                "tenant_id": record.tenant_id,
-            }
-        )
+        entries = [
+            self._record_dict(item) for item in self.list_versions(pack_id, tenant_id=tenant_id)
+        ]
+        entries.append(self._record_dict(record))
         self._index_path(pack_id, tenant_id=tenant_id).write_text(
             json.dumps(entries, ensure_ascii=False, indent=2),
             encoding="utf-8",
@@ -126,6 +123,7 @@ class ObjectStoreNormRulePackVersionStore:
                     approval_status=item.get("approval_status"),
                     approval_ref=item.get("approval_ref"),
                     tenant_id=item.get("tenant_id"),
+                    content_sha256=item.get("content_sha256"),
                 )
             )
         return out
@@ -141,3 +139,77 @@ class ObjectStoreNormRulePackVersionStore:
             if item.version == version:
                 return self._store.get_bytes(item.object_key)
         return None
+
+    def verify_version_integrity(
+        self,
+        pack_id: str,
+        version: str,
+        *,
+        tenant_id: str | None = None,
+        expected_sha256: str | None = None,
+    ) -> str:
+        """Recompute payload hash; mismatch blocks sign-off.
+
+        Returns the observed content SHA-256 when integrity holds.
+        """
+
+        record = next(
+            (
+                item
+                for item in self.list_versions(pack_id, tenant_id=tenant_id)
+                if item.version == version
+            ),
+            None,
+        )
+        if record is None:
+            raise ValueError(f"Unknown norm pack version: {pack_id}@{version}")
+        payload = self._store.get_bytes(record.object_key)
+        if payload is None:
+            raise ValueError(f"Missing immutable payload for {pack_id}@{version}")
+        observed = hashlib.sha256(payload).hexdigest()
+        if record.content_sha256 and record.content_sha256.lower() != observed.lower():
+            raise ValueError(
+                f"Norm pack content hash mismatch for {pack_id}@{version}: "
+                f"index={record.content_sha256} observed={observed} — sign-off blocked"
+            )
+        if expected_sha256 and expected_sha256.lower() != observed.lower():
+            raise ValueError(
+                f"Norm pack expected hash mismatch for {pack_id}@{version}: "
+                f"expected={expected_sha256} observed={observed} — sign-off blocked"
+            )
+        return observed
+
+    @staticmethod
+    def _record_dict(record: NormPackVersionInfo) -> dict[str, object]:
+        return {
+            "pack_id": record.pack_id,
+            "version": record.version,
+            "object_key": record.object_key,
+            "created_at": record.created_at,
+            "created_by": record.created_by,
+            "parent_version": record.parent_version,
+            "approval_status": record.approval_status,
+            "approval_ref": record.approval_ref,
+            "tenant_id": record.tenant_id,
+            "content_sha256": record.content_sha256,
+        }
+
+    @staticmethod
+    def _assert_payload_not_synthetic_claim(payload: bytes) -> None:
+        try:
+            data = json.loads(payload.decode("utf-8-sig"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return
+        if not isinstance(data, dict):
+            return
+        labels = data.get("claim_labels") or []
+        if not isinstance(labels, list):
+            return
+        synthetic = {
+            str(item).strip().lower() for item in labels if isinstance(item, str) and item.strip()
+        }
+        forbidden = {"synthetic", "fixture", "template", "not-customer-evidence"}
+        if synthetic.intersection(forbidden):
+            raise ValueError(
+                "synthetic/fixture claim_labels cannot be stored as customer_approved (RT-002 open)"
+            )

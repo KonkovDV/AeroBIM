@@ -8,9 +8,10 @@
   "edition": "REPLACE-EDITION",
   "disciplines": ["AR"],
   "status": "draft",
+  "claim_labels": ["draft", "not-customer-evidence", "template"],
   "approval": null,
   "approval_ref": null,
-  "customer_action_required": "Provide signed approval_ref + approval block before status=customer_approved (RT-002).",
+  "customer_action_required": "Provide signed approval object (approved_by, approval_date, approval_status, document_title, document_edition, effective_date, scope_reference) + pack_hash + jurisdiction + per-rule clause before status=customer_approved (RT-002).",
   "rules": [
     {
       "rule_id": "CUST-PLACEHOLDER-001",

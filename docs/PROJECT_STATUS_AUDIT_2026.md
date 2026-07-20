@@ -56,12 +56,12 @@ Legend: **code** · **test** · **runtime** · **benchmark** · **README-only** 
 | Cross-document contradictions | code+test | ConflictKind subset |
 | Drawing annotation ↔ IFC | code+test | Text/PDF paths; OCR optional-extra |
 | Clash (IfcClash) | code+test | Optional extra; pilot/production require_clash |
-| MEP system-aware clash | needs_customer + scaffold | DI Unconfigured → NOT_VERIFIED (RT-003) |
+| MEP system-aware clash | needs_customer + eng foundation | DI Unconfigured → NOT_VERIFIED; domain matrix eval (RT-003 OPEN) |
 | Native DWG | broken/not claimed | Honesty never OK as product DWG |
 | DXF EntityGraph | code+test (optional `[cad]`) | Partial; never masks DWG failure |
 | Calculation **сверка** | code+test | Correctness NOT_IMPLEMENTED |
 | Independent calc solver | planned / not claimed | — |
-| Norm rule packs | code+test synthetic | Customer-approved pack needs_customer (RT-002) |
+| Norm rule packs | code+test synthetic; full approval contract | Customer-approved pack needs_customer (RT-002 OPEN) |
 | Extraction F1 (RU) | benchmark fixture | ≠ product accuracy (RT-001) |
 | Precision >90% | needs_customer | **FORBIDDEN** until dual adjudication |
 | Package SLA ≤30 min | benchmark fixture_only | Customer SLA needs_customer |

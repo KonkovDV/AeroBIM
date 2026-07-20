@@ -6,8 +6,9 @@
   "typology": "residential-multifamily",
   "disciplines": ["AR"],
   "status": "synthetic-template",
+  "claim_labels": ["synthetic", "fixture", "template", "not-customer-evidence"],
   "approval": null,
-  "customer_action_required": "Replace demo values and approve every criterion against the pilot scope memo before use as a sign-off pack.",
+  "customer_action_required": "Replace demo values and approve every criterion against the pilot scope memo before use as a sign-off pack. RT-002 remains OPEN until a signed customer_approved pack exists.",
   "rules": [
     {
       "rule_id": "SAM-AR-001",
