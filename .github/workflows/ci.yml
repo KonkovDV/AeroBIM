@@ -14,9 +14,9 @@ permissions:
 #   pip install --require-hashes -r requirements-dev-lock.txt
 #   pip install -e . --no-deps
 # Residual: floating pip bootstrap before pin; uv install after lock is unhashed but version-pinned.
-# Regenerate locks:
-#   uv pip compile --python 3.12 --generate-hashes --extra=raster -o requirements-lock.txt pyproject.toml
-#   uv pip compile --python 3.12 --generate-hashes --extra=dev --extra=raster -o requirements-dev-lock.txt pyproject.toml
+# Regenerate locks (Linux/CI target — ifcopenshell needs manylinux_2_31):
+#   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=raster -o requirements-lock.txt pyproject.toml
+#   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=dev --extra=raster -o requirements-dev-lock.txt pyproject.toml
 
 jobs:
   lint:
@@ -43,12 +43,21 @@ jobs:
           import subprocess
           import sys
 
+          # Compare name==version only (ignore trailing \, markers, and hashes).
+          # Locks are compiled for CI/Docker Linux (manylinux_2_31) so Windows
+          # extras like colorama do not falsely trip drift.
           def pins(text: str) -> set[str]:
-              return {
-                  line.strip().lower()
-                  for line in text.splitlines()
-                  if line.strip() and not line.strip().startswith("#") and "==" in line
-              }
+              out: set[str] = set()
+              for line in text.splitlines():
+                  s = line.strip().lower()
+                  if not s or s.startswith("#") or s.startswith("--"):
+                      continue
+                  if "==" not in s:
+                      continue
+                  namever = s.rstrip("\\").strip().split(";", 1)[0].strip()
+                  if "==" in namever:
+                      out.add(namever)
+              return out
 
           def check(lock_name: str, extras: list[str]) -> None:
               before = Path(lock_name).read_text(encoding="utf-8")
@@ -56,6 +65,7 @@ jobs:
               cmd = [
                   sys.executable, "-m", "uv", "pip", "compile",
                   "--python", "3.12",
+                  "--python-platform", "x86_64-manylinux_2_31",
                   "--generate-hashes",
                   *extras,
                   "-o", str(out),
@@ -64,9 +74,13 @@ jobs:
               subprocess.check_call(cmd)
               after = out.read_text(encoding="utf-8")
               if pins(before) != pins(after):
+                  only_before = sorted(pins(before) - pins(after))
+                  only_after = sorted(pins(after) - pins(before))
                   raise SystemExit(
                       f"{lock_name} is stale; regenerate via "
-                      "uv pip compile --generate-hashes ..."
+                      "uv pip compile --python-platform x86_64-manylinux_2_31 "
+                      f"--generate-hashes ...; only_before={only_before}; "
+                      f"only_after={only_after}"
                   )
               print(f"{lock_name} pin set OK")
 
