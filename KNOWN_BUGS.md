@@ -45,6 +45,20 @@
 | Effect | Degraded empty GUIDs if explicitly constructed |
 | Note | Default bootstrap uses relational ifcopenshell keyword route — still **advisory scaffold**, not IfcLLM/GraphRAG product |
 
+### STUB-MEP-GRAPH-001 (unit tests only)
+
+| Field | Value |
+|-------|-------|
+| Stub ID | `STUB-MEP-GRAPH-001` |
+| Tag | `@sota-stub` |
+| Adapter | `backend/src/aerobim/domain/mep.py` (`SyntheticMepSystemGraphProvider`) |
+| Port | `MepSystemGraphProvider` |
+| Severity | **MEDIUM** |
+| Effect | Fixed multi-system synthetic graph for unit/integration tests; analyze probe stays `NOT_VERIFIED` |
+| Blockers | Customer federated IFC + signed scope memo + clearance matrix (RT-003) |
+| Target | Replace with real IFC system-assignment provider after RT-003 evidence |
+| Honesty | Never DI default; never `mep_system_clash=OK`; template JSON stays template |
+
 ## Closed / N/A
 
 - Cad / OCR multimodal / MEP unconfigured adapters are real fail-closed or degrade paths (not `@sota-stub`).
