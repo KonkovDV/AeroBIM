@@ -59,7 +59,8 @@ class CustomerIntakeGate:
         true_gates = [str(item) for item in report.get("true_gates") or []]
         reasons: list[str] = [str(err) for err in report.get("errors") or []]
 
-        gates = payload.get("gates") if isinstance(payload.get("gates"), dict) else {}
+        raw_gates = payload.get("gates")
+        gates: dict[str, object] = raw_gates if isinstance(raw_gates, dict) else {}
         false_gates = [key for key in INTAKE_GATE_KEYS if gates.get(key) is not True]
         if false_gates:
             reasons.append("required intake gates false: " + ", ".join(false_gates))

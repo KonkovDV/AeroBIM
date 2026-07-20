@@ -255,7 +255,7 @@ class JsonNormRulePackLoader:
         pack_level_ref = self._optional_string(
             payload.get("approval_ref"), "approval_ref", max_length=512
         )
-        empty = {
+        empty: dict[str, str | None] = {
             "approval_ref": None,
             "document_title": None,
             "document_edition": None,

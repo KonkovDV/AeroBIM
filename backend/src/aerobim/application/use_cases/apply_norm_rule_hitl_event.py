@@ -143,17 +143,17 @@ class ApplyNormRuleHitlEventUseCase:
         elif status == "draft":
             payload["status"] = "draft"
             payload["approval"] = None
-            merged = [*(labels if isinstance(labels, list) else []), "draft"]
-            payload["claim_labels"] = list(dict.fromkeys(merged))
+            draft_labels = [*(labels if isinstance(labels, list) else []), "draft"]
+            payload["claim_labels"] = list(dict.fromkeys(draft_labels))
         else:
             payload["status"] = "synthetic-template"
             payload["approval"] = None
-            merged = [
+            synthetic_labels = [
                 *(labels if isinstance(labels, list) else []),
                 "synthetic",
                 "not-customer-evidence",
             ]
-            payload["claim_labels"] = list(dict.fromkeys(merged))
+            payload["claim_labels"] = list(dict.fromkeys(synthetic_labels))
 
         encoded = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
         record = self._versions.save_version(
