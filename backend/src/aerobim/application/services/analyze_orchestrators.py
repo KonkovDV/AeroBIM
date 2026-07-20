@@ -17,7 +17,7 @@ from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.application.services.compliance_agent_orchestrator import merge_advisory_sequences
 from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.customer_intake import CustomerIntakeGate
-from aerobim.application.services.signoff_policy import summary_passed_after_capabilities
+from aerobim.application.services.package_outcome import compute_package_outcome
 from aerobim.domain.drawing_region_hitl import (
     issues_for_hitl_regions,
     mark_regions_for_hitl,
@@ -43,6 +43,7 @@ from aerobim.domain.models import (
     compute_issue_priority,
 )
 from aerobim.domain.norm_assist import IdsCompileDraft
+from aerobim.domain.package_outcome import summary_passed_from_outcome
 from aerobim.domain.system_capabilities import enforce_honesty_capabilities
 
 if TYPE_CHECKING:
@@ -302,11 +303,13 @@ class EvidenceAssembler:
         advisory: AdvisoryBundle,
     ) -> ValidationReport:
         intake_issues: list[ValidationIssue] = []
+        intake_blocked = False
         # Phase B: only samolet_pilot requires full customer intake (not fixture/dev CI).
         if self._host._signoff_profile == "samolet_pilot":
             gate_path = self._host._customer_intake_gate_path or CustomerIntakeGate.default_path()
             intake = CustomerIntakeGate.evaluate(gate_path)
             if not intake.ok:
+                intake_blocked = True
                 reason_text = "; ".join(intake.reasons) if intake.reasons else intake.status
                 intake_issues.append(
                     ValidationIssue(
@@ -363,11 +366,7 @@ class EvidenceAssembler:
             require_bsi_schema=self._host._require_bsi_schema,
             require_mep_system_clash=self._host._require_mep_system_clash,
         )
-        passed = summary_passed_after_capabilities(
-            error_count=error_count,
-            capabilities=capabilities,
-            policy=policy,
-        )
+        hard_clash_blocks = False
         if policy.clash_affects_pass:
             hard_clashes = tuple(
                 clash
@@ -375,7 +374,21 @@ class EvidenceAssembler:
                 if getattr(clash, "clash_type", "hard") != "clearance"
             )
             if hard_clashes:
-                passed = False
+                hard_clash_blocks = True
+
+        hitl_requires_review = any(
+            bool(getattr(region, "hitl_required", False)) for region in ingested.drawing_regions
+        )
+        outcome = compute_package_outcome(
+            error_count=error_count,
+            warning_count=warning_count,
+            capabilities=capabilities,
+            intake_blocked=intake_blocked,
+            hitl_requires_review=hitl_requires_review,
+            hard_clash_blocks=hard_clash_blocks,
+            policy=policy,
+        )
+        passed = summary_passed_from_outcome(outcome)
 
         # Soft Shared-gate honesty: soft-profile passed must not claim production verdict.
         soft_profile = policy.profile in {"development", "fixture"}
@@ -399,6 +412,7 @@ class EvidenceAssembler:
                     1 for issue in issues_with_remarks if issue.remark is not None
                 ),
                 authoritative=authoritative,
+                outcome=outcome,
             ),
             drawing_annotations=ingested.drawing_annotations,
             drawing_assets=ingested.drawing_assets,

@@ -725,6 +725,15 @@ class FilesystemAuditStore:
         )
 
     def _reconstruct_summary(self, data: dict) -> ValidationSummary:
+        from aerobim.domain.package_outcome import PackageOutcome
+
+        raw_outcome = data.get("outcome")
+        outcome: PackageOutcome | None = None
+        if raw_outcome is not None:
+            try:
+                outcome = PackageOutcome(str(raw_outcome))
+            except ValueError:
+                outcome = None
         return ValidationSummary(
             requirement_count=data.get("requirement_count", 0),
             issue_count=data.get("issue_count", 0),
@@ -734,6 +743,7 @@ class FilesystemAuditStore:
             drawing_annotation_count=data.get("drawing_annotation_count", 0),
             generated_remark_count=data.get("generated_remark_count", 0),
             authoritative=bool(data.get("authoritative", True)),
+            outcome=outcome,
         )
 
     def _reconstruct_capability_status(

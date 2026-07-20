@@ -18,7 +18,7 @@
 |---|---|---|---|---|---|
 | A | Drift runtime metrics / README | **DONE** | schema 1.1.0 artifact + README/RU markers; CI `--check-readme` | SSOT JSON + CI drift gate | **Да** |
 | B | Customer intake fail-closed | **DONE** | Gate tool + `CustomerIntakeGate` + `AEROBIM-CUSTOMER-INTAKE` on `samolet_pilot` | Enforce intake before samolet_pilot analyze → BLOCKED/passed=false | Eng **да** |
-| C | Boolean `summary.passed` ambiguity | **PARTIAL** | Evidence `derived_outcome` only | Domain `PackageOutcome` enum + API/FE | **Да** |
+| C | Boolean `summary.passed` ambiguity | **DONE** | Domain `PackageOutcome` + `summary.outcome` + FE badge | Domain enum + API/FE | **Да** |
 | D | Rule pack pilot contract | **PARTIAL** | Schema + immutable store | Harden required approval fields; synthetic ≠ customer | Eng **да**; RT-002 **нет** |
 | E | MEP system-aware clash | **PARTIAL** | Ports + Unconfigured + scaffold | Domain entities + adapter + fail-closed probe | Тех. основу **да** |
 | F | Precision claim gates | **PARTIAL** | PrecisionClaim + agreement tool | Per-class metrics + publishable gates honesty | Eng **да** |

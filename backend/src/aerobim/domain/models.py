@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Literal
 
 from aerobim.domain.norm_assist import IdsCompileDraft
+from aerobim.domain.package_outcome import PackageOutcome
 from aerobim.domain.quantity import QuantityValue
 
 DocStatus = Literal["WIP", "Shared", "Published", "Archived"]
@@ -430,6 +431,8 @@ class ValidationSummary:
     generated_remark_count: int = 0
     authoritative: bool = True
     """False when soft-profile ``passed`` must not be treated as Shared-gate production verdict."""
+    outcome: PackageOutcome | None = None
+    """Package-level reading; ``passed`` must be derived via ``summary_passed_from_outcome``."""
 
 
 @dataclass(frozen=True)

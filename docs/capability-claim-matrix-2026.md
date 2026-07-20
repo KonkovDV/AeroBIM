@@ -36,16 +36,16 @@ Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLA
 | HITL remark edit | frontend + review-events API |
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
 
-## Derived package outcome (no enum yet)
+## Derived package outcome
+
+`PackageOutcome` enum landed on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`). `summary.passed` is derived only via `summary_passed_from_outcome` (true for PASS / PASS_WITH_WARNINGS). Evidence bundles prefer `summary.outcome` for `derived_outcome`.
 
 | Reading | Signals |
 |---|---|
-| PASS | `summary.passed=true` + required caps OK |
-| PASS_WITH_WARNINGS | `passed=true` with non-blocking WARNING findings (expert judgement; enum not shipped) |
-| BLOCKED | `passed=false` because required cap not OK under pilot/production (often `error_count=0`) |
-| FAILED | deterministic ERROR findings / adapter infra failure / `passed=false` |
-| REVIEW_REQUIRED | open findings awaiting HITL accept/reject (`drawing_regions.hitl_required` / review-events) |
+| PASS | `summary.outcome=pass` + required caps OK |
+| PASS_WITH_WARNINGS | `outcome=pass_with_warnings` (non-blocking WARNING findings) |
+| BLOCKED | intake blocked or required cap not OK under hard profile (often `error_count=0`) |
+| FAILED | deterministic ERROR findings / hard clash under clash_affects_pass |
+| REVIEW_REQUIRED | HITL regions require review |
 
-Until the package enum lands (Wave 2), experts derive the reading from `summary.passed` + `capabilities.*` + HITL state. Evidence bundles expose the same mapping as `derived_outcome` (`PASS` / `BLOCKED` / `FAILED`).
-
-`summary.passed` remains Shared-gate technical status — **not** Shared→Published.
+Checkpoint remains **NO_GO** until RT-001/002/003 customer evidence. `summary.passed` remains Shared-gate technical status — **not** Shared→Published.

@@ -1,6 +1,6 @@
 import { Suspense, lazy, startTransition, useDeferredValue, useEffect, useState } from "react";
 import { downloadExport, fetchReport, fetchReports, getApiBaseUrl, postReviewEvent } from "./lib/api";
-import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
+import type { ClashResult, PackageOutcome, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
 import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 import CapabilityHonestyPanel from "./components/CapabilityHonestyPanel";
 import ProvenancePanel from "./components/ProvenancePanel";
@@ -214,6 +214,23 @@ function ViewerPlaceholder({ message }: { message: string }) {
 function formatTimestamp(value: string): string {
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
+}
+
+function formatPackageOutcome(outcome: PackageOutcome | null | undefined, passed: boolean): string {
+  switch (outcome) {
+    case "pass":
+      return "PASS";
+    case "pass_with_warnings":
+      return "PASS_WITH_WARNINGS";
+    case "review_required":
+      return "REVIEW_REQUIRED";
+    case "blocked":
+      return "BLOCKED";
+    case "failed":
+      return "FAILED";
+    default:
+      return passed ? "Passed" : "Failed";
+  }
 }
 
 function reportSortWeight(report: ReportSummaryEntry): [number, string] {
@@ -982,7 +999,12 @@ export default function App() {
               <div className="summary-grid">
                 <article className="summary-tile">
                   <span>Status</span>
-                  <strong>{selectedReport.summary.passed ? "Passed" : "Failed"}</strong>
+                  <strong>
+                    {formatPackageOutcome(
+                      selectedReport.summary.outcome,
+                      selectedReport.summary.passed,
+                    )}
+                  </strong>
                 </article>
                 <article className="summary-tile">
                   <span>Requirements</span>

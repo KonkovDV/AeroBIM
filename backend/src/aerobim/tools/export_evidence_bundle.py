@@ -106,6 +106,20 @@ def _derived_outcome(
     *,
     passed: bool | None = None,
 ) -> str:
+    summary_outcome = getattr(getattr(report, "summary", None), "outcome", None)
+    if summary_outcome is not None:
+        raw = getattr(summary_outcome, "value", summary_outcome)
+        text = str(raw).strip().lower()
+        mapping = {
+            "pass": "PASS",
+            "pass_with_warnings": "PASS_WITH_WARNINGS",
+            "review_required": "REVIEW_REQUIRED",
+            "blocked": "BLOCKED",
+            "failed": "FAILED",
+        }
+        if text in mapping:
+            return mapping[text]
+
     effective_passed = (
         bool(passed) if passed is not None else bool(getattr(report.summary, "passed", False))
     )
