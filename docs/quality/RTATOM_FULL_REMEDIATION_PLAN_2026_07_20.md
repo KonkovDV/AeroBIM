@@ -1,6 +1,6 @@
 # AeroBIM RTATOM — Atomic Red Team & Remediation Plan
 
-**Freeze SHA:** `9b610e9` (2026-07-20 RTATOM A1/A2 landing; plan baseline `f1742bc`)  
+**Freeze SHA:** `8a314d8` (2026-07-20 RTATOM A2.5/A3; A1/A2 baseline `9b610e9`)  
 **Depth:** seams · chains · blind spots · vectors · every `/v1` route · every `summary.passed` writer · every I/O boundary · DI · frontend · CI/claims  
 **Checkpoint:** **NO_GO** (RT-001 / RT-002 / RT-003)  
 **Supersedes for engineering sequencing:** extends `docs/quality/RT26_FULL_REMEDIATION_PLAN_2026_07_20.md` with atomic findings  
