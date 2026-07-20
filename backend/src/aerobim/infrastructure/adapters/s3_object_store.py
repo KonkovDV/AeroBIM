@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from aerobim.core.security.object_limits import (
+    DEFAULT_MAX_GET_BYTES,
+    ObjectTooLargeError,
+    read_stream_capped,
+)
+
 
 class S3ObjectStore:
     def __init__(
@@ -12,6 +18,7 @@ class S3ObjectStore:
         secret_access_key: str | None = None,
         prefix: str = "aerobim",
         allow_http_endpoint: bool = False,
+        max_get_bytes: int = DEFAULT_MAX_GET_BYTES,
     ) -> None:
         if endpoint_url:
             from aerobim.core.security.outbound_url import assert_safe_outbound_url
@@ -28,6 +35,7 @@ class S3ObjectStore:
         self._secret_access_key = secret_access_key
         self._prefix = prefix.strip("/")
         self._allow_http_endpoint = allow_http_endpoint
+        self._max_get_bytes = max_get_bytes
 
     def put_bytes(
         self,
@@ -55,13 +63,30 @@ class S3ObjectStore:
             response = client.get_object(Bucket=self._bucket, Key=object_key)
         except client.exceptions.NoSuchKey:
             return None
-        return response["Body"].read()
+        content_length = response.get("ContentLength")
+        length: int | None = None
+        if content_length is not None:
+            try:
+                length = int(content_length)
+            except (TypeError, ValueError):
+                length = None
+            if length is not None and length > self._max_get_bytes:
+                raise ObjectTooLargeError(
+                    f"Object ContentLength too large ({length} > {self._max_get_bytes})"
+                )
+        return read_stream_capped(
+            response["Body"],
+            max_bytes=self._max_get_bytes,
+            content_length=length,
+        )
 
     def delete(self, key: str) -> None:
         client = self._build_client()
         client.delete_object(Bucket=self._bucket, Key=self._qualify_key(key))
 
     def presign_get(self, key: str, *, expires_in_seconds: int = 3600) -> str | None:
+        # Residual: presigned GET bypasses this store's max_get_bytes streaming cap;
+        # callers that fetch via URL must enforce their own size limits.
         client = self._build_client()
         return client.generate_presigned_url(
             "get_object",
@@ -106,3 +131,6 @@ class S3ObjectStore:
         if normalised == self._prefix or normalised.startswith(f"{self._prefix}/"):
             return normalised
         return f"{self._prefix}/{normalised}"
+
+
+__all__ = ["ObjectTooLargeError", "S3ObjectStore"]

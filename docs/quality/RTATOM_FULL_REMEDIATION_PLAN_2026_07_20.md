@@ -5,14 +5,14 @@
 **Checkpoint:** **NO_GO** (RT-001 / RT-002 / RT-003)  
 **Supersedes for engineering sequencing:** extends `docs/quality/RT26_FULL_REMEDIATION_PLAN_2026_07_20.md` with atomic findings  
 
-### Status (2026-07-20)
+### Status (2026-07-21)
 
 | Wave | Status | Notes |
 |---|---|---|
 | A0 | DONE | Plan published; baseline `f1742bc` |
 | **A1** | **DONE** | H01 I05 G01 H04 H05 G04 G11 I01 I02 I03 I04 G03 + soft SPF honesty — landed `9b610e9` |
-| **A2** | **PARTIAL→A2.5 CLOSED*** | A2.1–A2.4 + A2.6 landed `9b610e9`; A2.5 hashed locks + CI/Docker `--require-hashes` (pip/uv bootstrap residual). **Deferred:** full OIDC BFF (POST-05); ADS residual; broader S3 stream OOM |
-| **A3** | **PARTIAL** | CSP/nosniff; NFKC; JWKS host bind; ZIP stream inspect; TOCTOU on report get + IFC/drawing FileResponse. Residual: POST-05 design, ElementTree caps |
+| **A2** | **PARTIAL→A2.5 CLOSED*** | A2.1–A2.4 + A2.6 landed `9b610e9`; A2.5 hashed locks + CI/Docker `--require-hashes` (pip/uv bootstrap residual). **Deferred:** full OIDC BFF (POST-05); ADS residual |
+| **A3** | **CLOSED*** | CSP/nosniff; NFKC; JWKS host bind; ZIP stream inspect; TOCTOU on report get + IFC/drawing FileResponse; **ElementTree caps** (`xml_limits`/defusedxml); **S3/Local `max_get_bytes` stream caps**; POST-05 design spike + honesty `auth_bff`. *Residual: POST-05 full BFF remains **DESIGNED / NOT_IMPLEMENTED** |
 | A4 | PENDING | Customer RT-001/002/003 evidence only |
 
 ### External anchors (Jul 2026)
@@ -33,7 +33,7 @@
 
 | Class | Count | Status |
 |---|---|---|
-| `/v1/*` with bearer `Depends` | **21/21** | Auth present |
+| `/v1/*` with bearer `Depends` | **21/21** (+ public `GET /v1/auth/bff` 501 honesty) | Auth present; BFF discovery is intentional public |
 | Public | 1 (`GET /health`) | Intentional |
 | Report/job ACL assert | 12 | Hold under ACL-on |
 | Path-jail only (upload/validate/analyze) | 5 | Tenant jail when ACL-on |
@@ -133,7 +133,7 @@ RT-001 · RT-002 · RT-003 · POST-05 full BFF (tracked epic).
 | A2.6 | FE: remove VITE bearer path; Blob MIME; WASM caps | Browser trust |
 
 ### Wave A3 — Hygiene + POST-05 design
-CSP/nosniff; health; CORS; JWKS host; NFKC; SECURITY/README sync; BFF design spike.
+CSP/nosniff; health; CORS; JWKS host; NFKC; SECURITY/README sync; ElementTree caps; S3/Local stream get caps; BFF design spike (`POST05_OIDC_BFF_DESIGN_2026_07.md`, `auth_bff` honesty, `GET /v1/auth/bff` → 501).
 
 ### Wave A4 — Customer blockers
 RT-001/002/003 evidence only.

@@ -809,7 +809,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(body["artifact_type"], "system_capabilities")
-        self.assertEqual(body["schema_version"], "1.1.0")
+        self.assertEqual(body["schema_version"], "1.2.0")
         honesty = body["honesty"]
         self.assertEqual(honesty["dwg_dxf"]["status"], "missing")
         self.assertEqual(honesty["cv_human_level"]["status"], "missing")
@@ -818,9 +818,18 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertIn("calculation_match", body["claim_boundary"])
         self.assertIn("calculation_correctness", body["claim_boundary"])
         self.assertIn("precision_claim", body["claim_boundary"])
+        self.assertIn("auth_bff", body["claim_boundary"])
+        self.assertEqual(body["auth_bff"]["status"], "NOT_IMPLEMENTED")
         intake = body["customer_intake_gate"]
         self.assertEqual(intake["checkpoint"], "NO_GO")
         self.assertEqual(intake.get("true_gates"), [])
+
+    def test_auth_bff_discovery_is_public_501(self) -> None:
+        response = self.client.get("/v1/auth/bff")
+        self.assertEqual(response.status_code, 501)
+        body = response.json()
+        self.assertEqual(body["status"], "NOT_IMPLEMENTED")
+        self.assertIn("POST05_OIDC_BFF_DESIGN", body["design"])
 
     def test_reinforcement_digest_endpoint_rejects_path_traversal(self) -> None:
         response = self.client.post(

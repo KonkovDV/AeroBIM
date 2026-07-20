@@ -513,6 +513,7 @@ def _build_object_store(settings: Settings):
                 secret_access_key=settings.s3_secret_access_key,
                 prefix=settings.s3_prefix,
                 allow_http_endpoint=settings.is_dev_environment,
+                max_get_bytes=settings.max_ifc_bytes,
             )
         except RuntimeError:
             # Production / pilot: never hide enterprise object-store failure behind local FS.
@@ -521,8 +522,14 @@ def _build_object_store(settings: Settings):
                 "production",
             }:
                 raise
-            return LocalObjectStore(settings.storage_dir)
-    return LocalObjectStore(settings.storage_dir)
+            return LocalObjectStore(
+                settings.storage_dir,
+                max_get_bytes=settings.max_ifc_bytes,
+            )
+    return LocalObjectStore(
+        settings.storage_dir,
+        max_get_bytes=settings.max_ifc_bytes,
+    )
 
 
 def _build_job_store(settings: Settings):

@@ -51,7 +51,10 @@ from aerobim.domain.review_state_machine import (
     assert_hitl_transition,
     latest_hitl_state,
 )
-from aerobim.domain.system_capabilities import build_system_capabilities_payload
+from aerobim.domain.system_capabilities import (
+    build_auth_bff_capability,
+    build_system_capabilities_payload,
+)
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
 )
@@ -268,6 +271,14 @@ def create_http_app(container: Container):
             "service": settings.application_name,
             "status": "ok",
         }
+
+    @app.get("/v1/auth/bff")
+    def get_auth_bff_status():
+        """Public discovery: POST-05 OIDC BFF is designed but not implemented."""
+
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=501, content=build_auth_bff_capability())
 
     def _resolve_safe_path(
         user_path: str,

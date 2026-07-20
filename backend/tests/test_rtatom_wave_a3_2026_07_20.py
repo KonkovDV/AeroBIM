@@ -139,5 +139,42 @@ class OpenStorageFileTests(unittest.TestCase):
                 open_storage_file(link, base=base, mode="rb")
 
 
+class XmlLimitsTests(unittest.TestCase):
+    def test_safe_fromstring_rejects_oversized_payload(self) -> None:
+        from aerobim.core.security.xml_limits import XmlBombError, safe_fromstring
+
+        with self.assertRaises(XmlBombError):
+            safe_fromstring(b"<root/>" + b"x" * 64, max_bytes=8)
+
+    def test_safe_fromstring_rejects_too_many_elements(self) -> None:
+        from aerobim.core.security.xml_limits import XmlBombError, safe_fromstring
+
+        payload = b"<root>" + b"<e/>" * 20 + b"</root>"
+        with self.assertRaises(XmlBombError):
+            safe_fromstring(payload, max_elements=5)
+
+    def test_safe_parse_roundtrip(self) -> None:
+        from aerobim.core.security.xml_limits import safe_parse
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "doc.xml"
+            path.write_text("<ids><info/></ids>", encoding="utf-8")
+            tree = safe_parse(path)
+            self.assertEqual(tree.getroot().tag, "ids")
+
+
+class AuthBffHonestyTests(unittest.TestCase):
+    def test_capabilities_auth_bff_not_implemented(self) -> None:
+        from aerobim.domain.system_capabilities import build_system_capabilities_payload
+
+        payload = build_system_capabilities_payload()
+        self.assertEqual(payload["schema_version"], "1.2.0")
+        auth_bff = payload["auth_bff"]
+        assert isinstance(auth_bff, dict)
+        self.assertEqual(auth_bff["status"], "NOT_IMPLEMENTED")
+        design = str(auth_bff["design"])
+        self.assertTrue(Path(design).as_posix().endswith("POST05_OIDC_BFF_DESIGN_2026_07.md"))
+
+
 if __name__ == "__main__":
     unittest.main()

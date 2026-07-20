@@ -76,6 +76,16 @@ def load_customer_intake_gate_snapshot() -> dict[str, Any]:
     }
 
 
+def build_auth_bff_capability() -> dict[str, object]:
+    """Honesty surface for production OIDC BFF — designed, not implemented."""
+
+    return {
+        "status": "NOT_IMPLEMENTED",
+        "design": "docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md",
+        "dev_proxy": "Vite loopback Authorization inject only",
+    }
+
+
 def build_system_capabilities_payload() -> dict[str, object]:
     caps = default_honesty_capabilities()
     honesty = {
@@ -86,9 +96,10 @@ def build_system_capabilities_payload() -> dict[str, object]:
         "calculation_correctness": asdict(caps.calculation_correctness),
     }
     intake = load_customer_intake_gate_snapshot()
+    auth_bff = build_auth_bff_capability()
     return {
         "artifact_type": "system_capabilities",
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
         "claim_boundary": {
             "calculation_match": (
                 "сверка результатов (numeric/provenance match) — PARTIAL when evaluated"
@@ -116,8 +127,13 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "I9 advisory scaffold: relational fixture QA + stub fallback — "
                 "not GraphRAG / IfcLLM product"
             ),
+            "auth_bff": (
+                "Production Authorization Code + PKCE BFF with HttpOnly session cookie — "
+                "DESIGNED / NOT_IMPLEMENTED (POST-05); Vite loopback inject is dev-only"
+            ),
         },
         "honesty": honesty,
+        "auth_bff": auth_bff,
         "customer_intake_gate": intake,
         "forbidden_ok_states": {
             "dwg_dxf": [CapabilityState.OK.value],
@@ -135,6 +151,10 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "an explicit product delivery change."
             ),
             "Checkpoint remains NO_GO until RT-001/002/003 customer evidence.",
+            (
+                "auth_bff remains NOT_IMPLEMENTED until POST-05 phases 2–3 ship; "
+                "see docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md."
+            ),
         ],
     }
 
@@ -176,6 +196,7 @@ def assert_honesty_capabilities_not_silently_ok(capabilities: ReportCapabilities
 
 __all__ = [
     "assert_honesty_capabilities_not_silently_ok",
+    "build_auth_bff_capability",
     "build_system_capabilities_payload",
     "default_honesty_capabilities",
     "enforce_honesty_capabilities",

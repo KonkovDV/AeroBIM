@@ -2,7 +2,7 @@
 
 **Operational freeze SHA:** `8a314d8` (2026-07-20 RTATOM A2.5/A3 supply-chain + hygiene) — refresh when claiming metrics.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
-**RTATOM tip (2026-07-20):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** (pip bootstrap residual) + Wave **A3 PARTIAL**. Landing `8a314d8` (prior A1/A2 `9b610e9`) — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
+**RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** (pip bootstrap residual) + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing pending — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers.
@@ -28,9 +28,9 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RTATOM-I09/I10/I11/I14/I20 | **PARTIAL** | Datastore URL SSRF; quota release; BCF `inspect_zip`; baked pilot quotas; PG fail-closed |
 | RTATOM-F02/F05/F07 | **PARTIAL** | Client bearer inject removed; preview Blob MIME allowlist; WASM IFC 256 MiB |
 | RTATOM A2.5 / RT-POST-09 hashes | **CLOSED*** | `--require-hashes` + `--generate-hashes` locks; CI/Docker wire-up; pinned `pip==25.2` / `uv==0.8.22`. *Residual: unhashed pip/uv bootstrap wheels. |
-| RTATOM A3 hygiene | **PARTIAL** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail. Residual: full OIDC BFF (POST-05), ElementTree caps, POST-05 design. |
+| RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: full OIDC BFF (POST-05) remains **DESIGNED / NOT_IMPLEMENTED** — see `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md`. |
 
-Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF (POST-05), customer corpus.
+Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF (POST-05 **DESIGNED / NOT_IMPLEMENTED**), customer corpus.
 
 ## Closed in post-remediation wave (2026-07-19)
 
@@ -45,7 +45,7 @@ Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF (
 | RT-POST-09 | **CLOSED*** | Actions SHA-pinned; hashed locks (`--generate-hashes`); CI/Docker `--require-hashes`; pinned pip 25.2 + uv 0.8.22; lock drift with hashes. *Residual: floating pip/uv bootstrap before pin. |
 | RT-POST-10/11 | **CLOSED** | `html.escape(quote=True)`; ZIP rejects `..` / absolute members |
 
-Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: VITE bearer BFF **NOT_IMPLEMENTED** (POST-05).
+Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: VITE bearer BFF **DESIGNED / NOT_IMPLEMENTED** (POST-05).
 
 ## Closed in remediation commit (2026-07-17)
 
