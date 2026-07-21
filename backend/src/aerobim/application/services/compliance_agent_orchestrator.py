@@ -121,7 +121,7 @@ class ComplianceAgentOrchestrator:
                 continue
             registry_name = _REGISTRY_TOOL_MAP.get(step.tool_name)
             contract = lookup_advisory_tool(registry_name) if registry_name else None
-            if contract is None:
+            if registry_name is None or contract is None:
                 executed.append(
                     AgentToolStep(
                         tool_name=step.tool_name,
