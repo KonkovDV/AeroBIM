@@ -25,6 +25,7 @@ from aerobim.application.services.capability_policy import (
 )
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.run_manifest import build_run_manifest
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
@@ -359,8 +360,20 @@ def export_evidence_bundle(
         "timings.json": True,
         "report.html": True,
         "logs_snippet.txt": True,
+        "run_manifest.json": True,
         "README.md": True,
     }
+    package_sha = next(
+        (item["sha256"] for item in source_files if item.get("path", "").endswith(".ifc")),
+        None,
+    )
+    run_manifest = build_run_manifest(
+        report,
+        request_id=request.request_id,
+        pack_id=benchmark_pack.pack_id,
+        package_sha256=package_sha,
+        code_version=code_meta["label"],
+    )
     manifest = {
         "artifact_type": "aerobim_evidence_bundle",
         "schema_version": _SCHEMA_VERSION,
@@ -391,6 +404,8 @@ def export_evidence_bundle(
         "code_version": code_meta["label"],
         "package_version": code_meta["package_version"],
         "git_sha": code_meta["git_sha"],
+        "reproducibility_hash": run_manifest.reproducibility_hash,
+        "run_manifest": run_manifest.as_dict(),
         "artifacts": artifacts,
     }
 
@@ -410,6 +425,10 @@ def export_evidence_bundle(
     )
     (output_dir / "timings.json").write_text(
         json.dumps(timings, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    (output_dir / "run_manifest.json").write_text(
+        json.dumps(run_manifest.as_dict(), indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
     )
     (output_dir / "report.html").write_text(
         _render_bundle_html(

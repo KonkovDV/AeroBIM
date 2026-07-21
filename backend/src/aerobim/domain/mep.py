@@ -353,3 +353,54 @@ class SyntheticMepSystemGraphProvider:
             source_ifc=str(ifc_path),
             synthetic=True,
         )
+
+
+@dataclass(frozen=True)
+class FederatedMepScope:
+    """Customer federated MEP scope manifest (RT-003). Empty template stays NOT_VERIFIED."""
+
+    schema_version: str
+    status: str
+    federated_ifc_paths: tuple[str, ...]
+    scope_memo_ref: str | None
+    clearance_matrix_ref: str | None
+    claim_boundary: str
+
+    @property
+    def verified(self) -> bool:
+        return self.status.upper() == "VERIFIED" and bool(self.federated_ifc_paths)
+
+
+def load_federated_mep_scope(path: Path) -> FederatedMepScope:
+    """Load federated MEP scope JSON; refuses to upgrade NOT_VERIFIED without paths."""
+
+    import json
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("federated MEP scope must be a JSON object")
+    raw_paths = payload.get("federated_ifc_paths") or []
+    if not isinstance(raw_paths, list):
+        raise ValueError("federated_ifc_paths must be an array")
+    paths = tuple(str(item).strip() for item in raw_paths if str(item).strip())
+    status = str(payload.get("status") or "NOT_VERIFIED").strip().upper()
+    if status == "VERIFIED" and not paths:
+        raise ValueError("VERIFIED federated MEP scope requires federated_ifc_paths")
+    return FederatedMepScope(
+        schema_version=str(payload.get("schema_version") or "1.0.0"),
+        status=status,
+        federated_ifc_paths=paths,
+        scope_memo_ref=_optional_str(payload.get("scope_memo_ref")),
+        clearance_matrix_ref=_optional_str(payload.get("clearance_matrix_ref")),
+        claim_boundary=str(
+            payload.get("claim_boundary")
+            or "RT-003 remains OPEN until customer federated IFC + signed matrix"
+        ),
+    )
+
+
+def _optional_str(value: object) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
