@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from aerobim.domain.architecture import DocumentIdentity
 from aerobim.domain.models import (
     ConflictKind,
+    DrawingSource,
     FindingCategory,
     RequirementSource,
     Severity,
@@ -97,6 +100,46 @@ def detect_revision_merge_conflicts(
     return issues
 
 
+def drawing_sheet_identity(source: DrawingSource) -> str | None:
+    """Resolve stable sheet identity for 2D provenance (sheet_id preferred)."""
+
+    sheet = (source.sheet_id or "").strip()
+    if sheet:
+        return sheet
+    if source.path is not None:
+        stem = source.path.stem.strip()
+        if stem:
+            return stem
+    return None
+
+
+def detect_missing_drawing_sheet_identity(
+    sources: Sequence[DrawingSource],
+) -> list[ValidationIssue]:
+    """Warn when raster/CAD drawings lack sheet identity — HITL escalation path."""
+
+    issues: list[ValidationIssue] = []
+    for index, source in enumerate(sources):
+        if drawing_sheet_identity(source) is not None:
+            continue
+        label = source.path.name if source.path is not None else f"drawing-{index}"
+        issues.append(
+            ValidationIssue(
+                rule_id="AEROBIM-SHEET-IDENTITY",
+                severity=Severity.WARNING,
+                message=(
+                    f"Drawing source {label!r} lacks sheet_id/path identity; "
+                    "annotation↔IFC matching may require HITL"
+                ),
+                category=FindingCategory.DRAWING_VALIDATION,
+                source_id=label,
+                evidence_modality="drawing",
+                evidence_refs=(f"drawing:{label}",),
+            )
+        )
+    return issues
+
+
 def stamp_requirement_source(
     source: RequirementSource,
     *,
@@ -123,7 +166,9 @@ def stamp_requirement_source(
 
 
 __all__ = [
+    "detect_missing_drawing_sheet_identity",
     "detect_revision_merge_conflicts",
+    "drawing_sheet_identity",
     "identity_from_requirement_source",
     "revisions_conflict",
     "same_logical_document",

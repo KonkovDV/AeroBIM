@@ -132,6 +132,34 @@ class ComplianceAgentTests(unittest.TestCase):
         self.assertEqual(len(result.steps), 1)
         self.assertTrue(any(i.rule_id == "AEROBIM-AGENT-CAP" for i in result.advisory_issues))
 
+    def test_agent_emits_registry_tool_traces_with_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            (root / "norms.txt").write_text("FireRating REI60 wall", encoding="utf-8")
+            orchestrator = ComplianceAgentOrchestrator(
+                norm_retriever=FilesystemNormCorpusRetriever([root]),
+                ids_compiler=DeterministicRequirementToIdsCompiler(
+                    StructuredRequirementExtractor()
+                ),
+                max_steps=2,
+            )
+            ifc = root / "m.ifc"
+            ifc.write_text("ISO-10303-21;", encoding="utf-8")
+            result = orchestrator.run(
+                ValidationRequest(
+                    request_id="trace-1",
+                    ifc_path=ifc,
+                    requirement_source=RequirementSource(
+                        text="height = 3 m",
+                        source_kind=SourceKind.STRUCTURED_TEXT,
+                    ),
+                )
+            )
+        self.assertGreater(len(result.tool_traces), 0)
+        self.assertTrue(
+            all(row.get("can_change_verdict") is not True for row in result.tool_traces)
+        )
+
     def test_agent_advisory_never_blocks_via_determinism_gate(self) -> None:
         gate = DeterminismGate()
         engine = [

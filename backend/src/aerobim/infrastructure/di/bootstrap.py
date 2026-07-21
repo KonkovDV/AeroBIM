@@ -447,6 +447,9 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             multimodal_drawing_pipeline=current.resolve(Tokens.MULTIMODAL_DRAWING_PIPELINE),
             compliance_agent=current.resolve(Tokens.COMPLIANCE_AGENT_ORCHESTRATOR),
             review_event_store=current.resolve(Tokens.REVIEW_EVENT_STORE),
+            mep_federated_scope_path=_resolve_mep_federated_scope_path(
+                current.resolve(Tokens.SETTINGS)
+            ),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
@@ -475,6 +478,17 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     return container
+
+
+def _resolve_mep_federated_scope_path(settings: Settings) -> Path | None:
+    raw = settings.mep_federated_scope_path
+    if not raw:
+        return None
+    path = Path(raw)
+    if path.is_absolute():
+        return path
+    repo_root = Path(__file__).resolve().parents[5]
+    return (repo_root / path).resolve()
 
 
 def _resolve_default_norm_pack_path(settings: Settings) -> Path | None:

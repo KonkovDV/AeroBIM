@@ -17,12 +17,17 @@ from aerobim.application.services.compliance_agent_orchestrator import (
 )
 from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
+from aerobim.domain.architecture import Contour
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.ingestion import (
     stamp_requirement_source,
 )
-from aerobim.domain.mep import MepSystemGraphProvider
+from aerobim.domain.mep import (
+    FederatedMepScope,
+    MepSystemGraphProvider,
+    load_federated_mep_scope,
+)
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -46,6 +51,7 @@ from aerobim.domain.models import (
     ValidationRequest,
     issue_from_requirement,
 )
+from aerobim.domain.package_trace import PackageTraceCollector
 from aerobim.domain.ports import (
     AuditReportStore,
     BsiValidationService,
@@ -174,6 +180,7 @@ class AnalyzeProjectPackageUseCase:
         compliance_agent: ComplianceAgentOrchestrator | None = None,
         review_event_store: ReviewEventStore | None = None,
         customer_intake_gate_path: Path | None = None,
+        mep_federated_scope_path: Path | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -222,21 +229,39 @@ class AnalyzeProjectPackageUseCase:
         self._compliance_agent = compliance_agent
         self._review_event_store = review_event_store
         self._customer_intake_gate_path = customer_intake_gate_path
+        self._mep_federated_scope_path = mep_federated_scope_path
+        self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
         self._advisory = AdvisoryOrchestrator(self)
         self._evidence = EvidenceAssembler(self)
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
-        ingested = self._ingestion.run(request)
+        collector: PackageTraceCollector | None = self._package_trace_collector
+        if collector is None:
+            ingested = self._ingestion.run(request)
+            request = ingested.request
+            if not ingested.requirements and request.ids_path is None:
+                raise ValueError(
+                    "No requirements were extracted or synthesized from the provided sources"
+                )
+            deterministic = self._deterministic.run(request, ingested)
+            advisory = self._advisory.run(request, deterministic)
+            return self._evidence.assemble(request, ingested, deterministic, advisory)
+
+        with collector.span(Contour.INGESTION):
+            ingested = self._ingestion.run(request)
         request = ingested.request
         if not ingested.requirements and request.ids_path is None:
             raise ValueError(
                 "No requirements were extracted or synthesized from the provided sources"
             )
-        deterministic = self._deterministic.run(request, ingested)
-        advisory = self._advisory.run(request, deterministic)
-        return self._evidence.assemble(request, ingested, deterministic, advisory)
+        with collector.span(Contour.DETERMINISTIC_VALIDATION):
+            deterministic = self._deterministic.run(request, ingested)
+        with collector.span(Contour.AI_ADVISORY):
+            advisory = self._advisory.run(request, deterministic)
+        with collector.span(Contour.EVIDENCE_REPORTING):
+            return self._evidence.assemble(request, ingested, deterministic, advisory)
 
     def _maybe_hydrate_office_requirement_source(
         self, request: ValidationRequest
@@ -363,39 +388,56 @@ class AnalyzeProjectPackageUseCase:
             )
         return tuple(annotations), capability, issues
 
+    def _load_mep_federated_scope(self) -> FederatedMepScope | None:
+        path = self._mep_federated_scope_path
+        if path is None:
+            return None
+        if not path.exists():
+            return None
+        return load_federated_mep_scope(path)
+
     def _probe_mep_system_graph(self, ifc_path: Path) -> CapabilityStatus:
+        scope = self._load_mep_federated_scope()
+        if scope is not None and scope.verified:
+            missing_paths = [item for item in scope.federated_ifc_paths if not Path(item).exists()]
+            if missing_paths:
+                return CapabilityStatus(
+                    CapabilityState.FAILED,
+                    "federated MEP scope lists missing IFC paths: " + ", ".join(missing_paths[:5]),
+                )
         if self._mep_system_graph_provider is None:
-            return CapabilityStatus(
-                CapabilityState.NOT_VERIFIED,
-                "MEP system graph provider not injected",
-            )
+            reason = "MEP system graph provider not injected"
+            if scope is not None:
+                reason += f"; scope_status={scope.status}"
+            return CapabilityStatus(CapabilityState.NOT_VERIFIED, reason)
         try:
             graph = self._mep_system_graph_provider.build(ifc_path)
         except Exception as exc:
             _logger.exception("MEP system graph probe failed for %s", ifc_path)
             if _is_expected_unconfigured_error(exc):
-                return CapabilityStatus(
-                    CapabilityState.NOT_VERIFIED,
-                    str(exc),
-                )
-            # RT-C: infrastructure/runtime failure must FAILED (blocks pass), not soft NOT_VERIFIED
+                reason = str(exc)
+                if scope is not None:
+                    reason += f"; scope_status={scope.status}"
+                return CapabilityStatus(CapabilityState.NOT_VERIFIED, reason)
             return CapabilityStatus(
                 CapabilityState.FAILED,
                 f"MEP system graph infrastructure failure: {exc}",
             )
         if not graph.nodes:
-            return CapabilityStatus(
-                CapabilityState.NOT_VERIFIED,
-                "MEP system graph built empty; federated scope still required for sign-off",
-            )
-        # Still NOT_VERIFIED until customer federated pack (RT-003) — never OK here.
-        # Synthetic/@sota-stub graphs are engineering scaffolds only.
+            reason = "MEP system graph built empty; federated scope still required for sign-off"
+            if scope is not None:
+                reason += f"; scope_status={scope.status}"
+            return CapabilityStatus(CapabilityState.NOT_VERIFIED, reason)
         synthetic = getattr(graph, "synthetic", False)
         suffix = (
             "; synthetic graph — not customer evidence (RT-003 OPEN)"
             if synthetic
             else "; customer scope memo pending (RT-003 OPEN)"
         )
+        if scope is not None:
+            suffix += f"; scope_status={scope.status}"
+            if scope.scope_memo_ref:
+                suffix += f"; scope_memo_ref={scope.scope_memo_ref}"
         return CapabilityStatus(
             CapabilityState.NOT_VERIFIED,
             f"MEP graph probe returned {len(graph.nodes)} nodes{suffix}",
