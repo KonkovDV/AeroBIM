@@ -154,11 +154,18 @@ def resolve_storage_path(user_path: str, *, base: Path) -> Path:
     return resolved
 
 
+def resolve_repo_relative_path(user_path: str, *, repo_root: Path) -> Path:
+    """Resolve project-relative IFC/matrix paths under *repo_root* (MEP scope jail)."""
+
+    return resolve_storage_path(user_path, base=repo_root)
+
+
 __all__ = [
     "PathJailError",
     "assert_path_under_tenant_prefix",
     "open_storage_file",
     "reject_symlinks",
+    "resolve_repo_relative_path",
     "resolve_storage_path",
     "safe_storage_token",
     "tenant_storage_prefix",

@@ -44,6 +44,11 @@ class MepFederatedScopeWiringTests(unittest.TestCase):
                         "schema_version": "1.0.0",
                         "status": "VERIFIED",
                         "federated_ifc_paths": ["missing-hvac.ifc"],
+                        "scope_memo_ref": "memo-test",
+                        "expert_signoff": {
+                            "signed_by": "tester@example.com",
+                            "signed_at": "2026-07-21T00:00:00Z",
+                        },
                     }
                 ),
                 encoding="utf-8",
@@ -52,8 +57,8 @@ class MepFederatedScopeWiringTests(unittest.TestCase):
             ifc.write_text("ISO-10303-21;", encoding="utf-8")
             uc = _minimal_uc(mep_federated_scope_path=scope_path)
             status = uc._probe_mep_system_graph(ifc)
-        self.assertEqual(status.status, CapabilityState.FAILED)
-        self.assertIn("missing IFC paths", status.reason or "")
+        self.assertEqual(status[0].status, CapabilityState.FAILED)
+        self.assertIn("missing IFC paths", status[0].reason or "")
 
     def test_not_verified_template_keeps_not_verified(self) -> None:
         repo = Path(__file__).resolve().parents[2]
@@ -64,9 +69,10 @@ class MepFederatedScopeWiringTests(unittest.TestCase):
             ifc = Path(tmpdir) / "model.ifc"
             ifc.write_text("ISO-10303-21;", encoding="utf-8")
             uc = _minimal_uc(mep_federated_scope_path=template)
-            status = uc._probe_mep_system_graph(ifc)
+            status, issues = uc._probe_mep_system_graph(ifc)
         self.assertEqual(status.status, CapabilityState.NOT_VERIFIED)
         self.assertIn("scope_status=NOT_VERIFIED", status.reason or "")
+        self.assertEqual(issues, ())
 
 
 if __name__ == "__main__":

@@ -238,6 +238,8 @@ class FilesystemAuditStore:
             divergences=report.divergences,
             advisory_ids_draft=report.advisory_ids_draft,
             drawing_regions=report.drawing_regions,
+            annotation_ifc_links=report.annotation_ifc_links,
+            tool_traces=report.tool_traces,
             schema_version=report.schema_version,
         )
 
@@ -650,6 +652,14 @@ class FilesystemAuditStore:
             drawing_regions=tuple(
                 self._reconstruct_drawing_region(item) for item in data.get("drawing_regions", [])
             ),
+            annotation_ifc_links=tuple(
+                item
+                for item in data.get("annotation_ifc_links", [])
+                if isinstance(item, dict)
+            ),
+            tool_traces=tuple(
+                item for item in data.get("tool_traces", []) if isinstance(item, dict)
+            ),
             schema_version=str(data.get("schema_version") or "1.0.0"),
         )
 
@@ -742,7 +752,7 @@ class FilesystemAuditStore:
             passed=data.get("passed", False),
             drawing_annotation_count=data.get("drawing_annotation_count", 0),
             generated_remark_count=data.get("generated_remark_count", 0),
-            authoritative=bool(data.get("authoritative", True)),
+            authoritative=bool(data.get("authoritative", False)),
             outcome=outcome,
         )
 

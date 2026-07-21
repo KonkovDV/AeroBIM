@@ -105,7 +105,39 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             if link
         )
         selected_guids = (issue.element_guid,) if issue.element_guid else ()
-        topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
+        rule_upper = (issue.rule_id or "").upper()
+        is_mep = rule_upper.startswith("AEROBIM-MEP-")
+        claim_lines = tuple(
+            ref for ref in (issue.evidence_refs or ()) if str(ref).startswith("claim_boundary:")
+        )
+        is_template_or_unverified = (
+            rule_upper
+            in {
+                "AEROBIM-MEP-TEMPLATE",
+                "AEROBIM-MEP-UNCLASSIFIED",
+                "AEROBIM-MEP-FINDING",
+            }
+            or any("NOT_VERIFIED" in str(ref) or "synthetic" in str(ref) for ref in claim_lines)
+            or issue.severity != Severity.ERROR
+        )
+        if is_mep:
+            mep_guids = tuple(
+                ref
+                for ref in (issue.evidence_refs or ())
+                if isinstance(ref, str)
+                and len(ref) == 22
+                and not ref.startswith(("mep:", "claim_boundary:"))
+            )
+            if mep_guids:
+                selected_guids = mep_guids
+            # Only customer ERROR with geometry may be Clash; else Comment + claim boundary.
+            topic_type = (
+                "Clash"
+                if rule_upper == "AEROBIM-MEP-FORBIDDEN" and not is_template_or_unverified
+                else "Comment"
+            )
+        else:
+            topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
         base_description = issue.remark.body if issue.remark is not None else (issue.message or "")
         provenance_lines = [
             f"finding_id={issue.finding_id}" if issue.finding_id else None,
@@ -113,6 +145,9 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             (f"evidence_refs={','.join(issue.evidence_refs)}" if issue.evidence_refs else None),
             f"origin={issue.origin}" if issue.origin else None,
             f"ifc_globalid={issue.element_guid}" if issue.element_guid else None,
+            "claim_boundary:RT-003_OPEN;MEP_not_delivered;geometry_may_be_NOT_VERIFIED"
+            if is_mep
+            else None,
         ]
         description = base_description
         extras = [line for line in provenance_lines if line]
@@ -127,6 +162,8 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             for label in (
                 f"origin:{issue.origin}" if issue.origin else None,
                 f"category:{issue.category.value}" if issue.category else None,
+                "mep:system-clash" if is_mep else None,
+                "mep:not_verified" if is_mep and is_template_or_unverified else None,
             )
             if label
         )
@@ -155,11 +192,15 @@ def _should_export_issue_as_bcf_topic(issue: ValidationIssue) -> bool:
     if issue.severity == Severity.ERROR:
         return True
 
+    rule_id = (issue.rule_id or "").upper()
+    # MEP system-pair findings (even WARNING/unclassified) are coordination topics.
+    if rule_id.startswith("AEROBIM-MEP-"):
+        return True
+
     # OpenRebar cross-document warnings are actionable coordination findings.
     if issue.severity != Severity.WARNING:
         return False
 
-    rule_id = (issue.rule_id or "").upper()
     return issue.category == FindingCategory.CROSS_DOCUMENT and rule_id.startswith("OPENREBAR-")
 
 

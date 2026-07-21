@@ -18,6 +18,7 @@ from aerobim.application.services.compliance_agent_orchestrator import merge_adv
 from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.customer_intake import CustomerIntakeGate
 from aerobim.application.services.package_outcome import compute_package_outcome
+from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink, match_annotations_to_regions
 from aerobim.domain.drawing_region_hitl import (
     issues_for_hitl_regions,
     mark_regions_for_hitl,
@@ -25,6 +26,7 @@ from aerobim.domain.drawing_region_hitl import (
 )
 from aerobim.domain.finding_provenance import ensure_finding_provenance
 from aerobim.domain.ingestion import (
+    detect_annotation_sheet_identity_drift,
     detect_missing_drawing_sheet_identity,
     detect_revision_merge_conflicts,
 )
@@ -66,6 +68,7 @@ class IngestionBundle:
     region_hitl_issues: tuple[ValidationIssue, ...]
     norm_pack_capability: CapabilityStatus
     norm_pack_issues: tuple[ValidationIssue, ...]
+    annotation_ifc_links: tuple[AnnotationIfcLink, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -85,6 +88,7 @@ class DeterministicBundle:
     clash_capability: CapabilityStatus
     clash_issues: tuple[ValidationIssue, ...]
     mep_capability: CapabilityStatus
+    mep_issues: tuple[ValidationIssue, ...]
     quantity_issues: tuple[ValidationIssue, ...]
     quantity_capability: CapabilityStatus | None
     load_issues: tuple[ValidationIssue, ...]
@@ -99,6 +103,7 @@ class AdvisoryBundle:
     advisory_ids_draft: IdsCompileDraft | None
     reconciled_issues: tuple[ValidationIssue, ...]
     divergences: tuple[DivergenceRecord, ...]
+    tool_traces: tuple[dict[str, object], ...] = ()
 
 
 class IngestionOrchestrator:
@@ -143,6 +148,13 @@ class IngestionOrchestrator:
         drawing_annotations = tuple([*annotation_list, *cad_annotations])
         drawing_regions = mark_regions_for_hitl(tuple(region_list), drawing_annotations)
         region_hitl_issues = tuple(issues_for_hitl_regions(drawing_regions))
+        annotation_ifc_links = tuple(
+            match_annotations_to_regions(
+                drawing_annotations,
+                drawing_regions,
+                requirements=requirements,
+            )
+        )
         drawing_assets = tuple(self._host._collect_drawing_assets(request))
         return IngestionBundle(
             request=request,
@@ -156,6 +168,7 @@ class IngestionOrchestrator:
             region_hitl_issues=region_hitl_issues,
             norm_pack_capability=norm_pack_capability,
             norm_pack_issues=tuple(norm_pack_issues),
+            annotation_ifc_links=annotation_ifc_links,
         )
 
 
@@ -188,7 +201,13 @@ class DeterministicValidationOrchestrator:
             self._host._validate_drawing_annotations(requirements, ingested.drawing_annotations)
         )
         sheet_identity_issues = tuple(
-            detect_missing_drawing_sheet_identity(request.drawing_sources)
+            [
+                *detect_missing_drawing_sheet_identity(request.drawing_sources),
+                *detect_annotation_sheet_identity_drift(
+                    request.drawing_sources,
+                    ingested.drawing_annotations,
+                ),
+            ]
         )
         cross_document_issues = tuple(
             self._host._detect_cross_document_contradictions(requirements)
@@ -212,7 +231,7 @@ class DeterministicValidationOrchestrator:
         clash_results, clash_capability, clash_issues = self._host._run_clash_detection(
             request.ifc_path
         )
-        mep_capability = self._host._probe_mep_system_graph(request.ifc_path)
+        mep_capability, mep_issues = self._host._probe_mep_system_graph(request.ifc_path)
         quantity_issues, quantity_capability = self._host._run_quantity_consistency(
             request.ifc_path, requirements
         )
@@ -231,6 +250,7 @@ class DeterministicValidationOrchestrator:
                 *reinforcement_provenance_issues,
                 *ids_issues,
                 *clash_issues,
+                *mep_issues,
                 *ingested.norm_pack_issues,
                 *ingested.cad_issues,
                 *quantity_issues,
@@ -255,6 +275,7 @@ class DeterministicValidationOrchestrator:
             clash_capability=clash_capability,
             clash_issues=tuple(clash_issues),
             mep_capability=mep_capability,
+            mep_issues=tuple(mep_issues),
             quantity_issues=tuple(quantity_issues),
             quantity_capability=quantity_capability,
             load_issues=tuple(load_issues),
@@ -277,10 +298,12 @@ class AdvisoryOrchestrator:
     ) -> AdvisoryBundle:
         agent_advisory: tuple[ValidationIssue, ...] = ()
         advisory_ids_draft = None
+        tool_traces: tuple[dict[str, object], ...] = ()
         if self._host._compliance_agent is not None:
             agent_result = self._host._compliance_agent.run(request)
             agent_advisory = agent_result.advisory_issues
             advisory_ids_draft = agent_result.ids_draft
+            tool_traces = tuple(agent_result.tool_traces or ())
         reconciled_issues, divergences = self._host._determinism_gate.reconcile(
             engine_issues=list(deterministic.engine_issues),
             advisory_issues=merge_advisory_sequences(
@@ -293,6 +316,7 @@ class AdvisoryOrchestrator:
             advisory_ids_draft=advisory_ids_draft,
             reconciled_issues=tuple(reconciled_issues),
             divergences=tuple(divergences),
+            tool_traces=tool_traces,
         )
 
 
@@ -437,6 +461,10 @@ class EvidenceAssembler:
             divergences=advisory.divergences,
             advisory_ids_draft=advisory.advisory_ids_draft,
             drawing_regions=ingested.drawing_regions,
+            annotation_ifc_links=tuple(
+                link.as_dict() for link in ingested.annotation_ifc_links
+            ),
+            tool_traces=advisory.tool_traces,
         )
         # HITL trail before report persist: never save a report without audit events
         # when regions require HITL. Orphan events on save failure are reconcilesable;

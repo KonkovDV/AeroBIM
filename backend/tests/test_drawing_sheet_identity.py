@@ -6,10 +6,11 @@ import unittest
 from pathlib import Path
 
 from aerobim.domain.ingestion import (
+    detect_annotation_sheet_identity_drift,
     detect_missing_drawing_sheet_identity,
     drawing_sheet_identity,
 )
-from aerobim.domain.models import DrawingSource, Severity
+from aerobim.domain.models import DrawingAnnotation, DrawingSource, Severity
 
 
 class DrawingSheetIdentityTests(unittest.TestCase):
@@ -28,6 +29,22 @@ class DrawingSheetIdentityTests(unittest.TestCase):
             [DrawingSource(path=Path("samples/drawings/plan-a.txt"))]
         )
         self.assertEqual(issues, [])
+
+    def test_annotation_sheet_drift_warns(self) -> None:
+        issues = detect_annotation_sheet_identity_drift(
+            [DrawingSource(sheet_id="A-101")],
+            [
+                DrawingAnnotation(
+                    annotation_id="a1",
+                    sheet_id="B-202",
+                    target_ref="Wall",
+                    measure_name="Width",
+                    observed_value="300",
+                )
+            ],
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule_id, "AEROBIM-SHEET-IDENTITY-DRIFT")
 
 
 if __name__ == "__main__":

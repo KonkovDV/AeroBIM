@@ -80,6 +80,49 @@ def _make_report_with_clash() -> ValidationReport:
 
 
 class BcfExportTests(unittest.TestCase):
+    def test_bcf_exports_template_mep_as_comment_not_clash(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-mep-bcf",
+            ifc_path=Path("test.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(
+                ValidationIssue(
+                    rule_id="AEROBIM-MEP-TEMPLATE",
+                    severity=Severity.WARNING,
+                    message="Template matrix co-presence only",
+                    category=FindingCategory.SPATIAL,
+                    element_guid="3ZAR7ASd14MuxcHc7_fqIb",
+                    target_ref="HVAC-SUPPLY|SPRINKLER",
+                    evidence_refs=(
+                        "3ZAR7ASd14MuxcHc7_fqIb",
+                        "0aKrY0eXn00Qu9HBZ7Ao4t",
+                        "claim_boundary:geometry_NOT_VERIFIED",
+                        "claim_boundary:matrix_synthetic",
+                    ),
+                    origin="deterministic",
+                ),
+            ),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=1,
+                error_count=0,
+                warning_count=1,
+                passed=True,
+            ),
+        )
+        bcf_bytes = export_bcf(report)
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup = next(n for n in zf.namelist() if n.endswith("/markup.bcf"))
+            xml = zf.read(markup).decode("utf-8")
+            self.assertIn('TopicType="Comment"', xml)
+            self.assertNotIn('TopicType="Clash"', xml)
+            self.assertIn("RT-003_OPEN", xml)
+            self.assertIn("mep:not_verified", xml)
+
     def test_bcf_archive_is_valid_zip(self) -> None:
         from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 

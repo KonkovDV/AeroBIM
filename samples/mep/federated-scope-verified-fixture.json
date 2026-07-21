@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "ENG_FIXTURE",
+  "claim_boundary": "Engineering fixture only — not customer RT-003 evidence. Geometry intersection remains NOT_VERIFIED. Never claim MEP delivered.",
+  "scope_memo_ref": "eng-fixture-mep-001",
+  "federated_ifc_paths": [
+    "samples/mep/hvac-sprinkler-systems.ifc"
+  ],
+  "disciplines": ["HVAC", "FP"],
+  "clearance_matrix_ref": "samples/mep/clearance-matrix-template.json",
+  "allowed_exceptions": [],
+  "expert_signoff": {
+    "required": true,
+    "signed_by": null,
+    "signed_at": null
+  },
+  "notes": "Unlocks FederatedIfcMepSystemGraphProvider + matrix eval on fixture as synthetic. Capability stays NOT_VERIFIED. status must remain ENG_FIXTURE (not VERIFIED)."
+}

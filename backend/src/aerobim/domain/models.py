@@ -502,6 +502,10 @@ class ValidationReport:
     """Agent/compiler IDS draft — advisory until human promotes to ids_path."""
     drawing_regions: tuple[DrawingRegionRef, ...] = ()
     """Multimodal/OCR region refs for frontend highlight overlays."""
+    annotation_ifc_links: tuple[dict[str, object], ...] = ()
+    """Deterministic annotation↔IFC / region provenance rows (not verdict)."""
+    tool_traces: tuple[dict[str, object], ...] = ()
+    """Advisory compliance-agent tool traces — never mutate summary.passed."""
     schema_version: str = "1.0.0"
     """Persisted report schema version for backward-compatible reload/migrations."""
 

@@ -47,6 +47,13 @@ def validate_bbox_xyxy(
     return "ok", None
 
 
+def intersection_over_union(
+    a: tuple[float, float, float, float],
+    b: tuple[float, float, float, float],
+) -> float:
+    return _iou(a, b)
+
+
 def _iou(a: tuple[float, float, float, float], b: tuple[float, float, float, float]) -> float:
     ax0, ay0, ax1, ay1 = a
     bx0, by0, bx1, by1 = b
@@ -60,6 +67,12 @@ def _iou(a: tuple[float, float, float, float], b: tuple[float, float, float, flo
     area_b = max(0.0, bx1 - bx0) * max(0.0, by1 - by0)
     union = area_a + area_b - inter
     return inter / union if union > 0 else 0.0
+
+
+def annotation_bbox_xyxy(ann: DrawingAnnotation) -> tuple[float, float, float, float] | None:
+    """Public bbox helper for annotation↔region overlap."""
+
+    return _annotation_bbox(ann)
 
 
 def _annotation_bbox(ann: DrawingAnnotation) -> tuple[float, float, float, float] | None:
