@@ -1127,8 +1127,8 @@ pyyaml==6.0.3 \
     #   omegaconf
     #   rapidocr
     #   uvicorn
-rapidocr==3.9.1 \
-    --hash=sha256:600885e4e94e0b427abad394fccb0ec1d3c9118a215ca435bf7680aeae0e292b
+rapidocr==3.9.2 \
+    --hash=sha256:04d6b8d151f823d930bd91910555f57bea897c0c44fa6794267b94cf9c1ef9a0
     # via aerobim-backend (pyproject.toml)
 referencing==0.37.0 \
     --hash=sha256:381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231 \
