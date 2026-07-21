@@ -35,7 +35,9 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 
 **Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold.
 
-**Planned:** package outcome enum (`PASS` / `PASS_WITH_WARNINGS` / `BLOCKED` / `FAILED` / `REVIEW_REQUIRED`); Stage-3 finding field expansion.
+**Available (eng):** `PackageOutcome` on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`); run manifest + reproducibility hash; stage timeout budgets.
+
+**Planned:** Stage-3 finding field expansion; profiling-driven performance wave.
 
 **Needs customer:** RT-001 accuracy corpus · RT-002 approved norms · RT-003 federated MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)).
 

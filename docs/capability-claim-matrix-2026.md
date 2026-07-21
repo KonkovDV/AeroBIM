@@ -35,8 +35,11 @@ Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLA
 | BCF 2.1/3.0 structural export | `audit/evidence/bcf-structural-handoff-2026-07-18.json` |
 | HITL remark edit | frontend + review-events API |
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
+| Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
 
-## Derived package outcome
+## Run manifest (iteration 2026-07-21)
+
+Evidence bundles emit `run_manifest.json` with `reproducibility_hash` over deterministic engine findings + capability digest (excludes `report_id` / timestamps). Golden baseline hash pinned in `backend/tests/test_golden_report.py`. **Fixture only** — not customer accuracy.
 
 `PackageOutcome` enum landed on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`). `summary.passed` is derived only via `summary_passed_from_outcome` (true for PASS / PASS_WITH_WARNINGS). Evidence bundles prefer `summary.outcome` for `derived_outcome`.
 

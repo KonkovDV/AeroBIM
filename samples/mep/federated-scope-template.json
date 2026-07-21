@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "status": "NOT_VERIFIED",
+  "claim_boundary": "Template only — not customer federated MEP evidence. RT-003 remains OPEN.",
+  "scope_memo_ref": null,
+  "federated_ifc_paths": [],
+  "disciplines": [],
+  "clearance_matrix_ref": null,
+  "allowed_exceptions": [],
+  "expert_signoff": {
+    "required": true,
+    "signed_by": null,
+    "signed_at": null
+  },
+  "notes": "Populate federated_ifc_paths and scope_memo_ref when Samolet provides federated MEP IFC + signed clearance matrix. Until then analyze keeps mep_system_clash=NOT_VERIFIED under pilot profile."
+}
