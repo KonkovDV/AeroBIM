@@ -7,6 +7,7 @@ from collections.abc import Sequence
 from aerobim.domain.architecture import DocumentIdentity
 from aerobim.domain.models import (
     ConflictKind,
+    DrawingAnnotation,
     DrawingSource,
     FindingCategory,
     RequirementSource,
@@ -140,6 +141,46 @@ def detect_missing_drawing_sheet_identity(
     return issues
 
 
+def detect_annotation_sheet_identity_drift(
+    sources: Sequence[DrawingSource],
+    annotations: Sequence[DrawingAnnotation],
+) -> list[ValidationIssue]:
+    """Warn when annotation sheet_id is not among known drawing identities."""
+
+    known = {
+        identity.casefold()
+        for source in sources
+        if (identity := drawing_sheet_identity(source)) is not None
+    }
+    if not known or not annotations:
+        return []
+    issues: list[ValidationIssue] = []
+    seen: set[str] = set()
+    for annotation in annotations:
+        sheet = (annotation.sheet_id or "").strip()
+        if not sheet:
+            continue
+        key = sheet.casefold()
+        if key in known or key in seen:
+            continue
+        seen.add(key)
+        issues.append(
+            ValidationIssue(
+                rule_id="AEROBIM-SHEET-IDENTITY-DRIFT",
+                severity=Severity.WARNING,
+                message=(
+                    f"Annotation sheet_id {sheet!r} not found among drawing sources; "
+                    "region/IFC matching may require HITL"
+                ),
+                category=FindingCategory.DRAWING_VALIDATION,
+                source_id=sheet,
+                evidence_modality="drawing",
+                evidence_refs=(f"annotation:{annotation.annotation_id}", f"sheet:{sheet}"),
+            )
+        )
+    return issues
+
+
 def stamp_requirement_source(
     source: RequirementSource,
     *,
@@ -166,6 +207,7 @@ def stamp_requirement_source(
 
 
 __all__ = [
+    "detect_annotation_sheet_identity_drift",
     "detect_missing_drawing_sheet_identity",
     "detect_revision_merge_conflicts",
     "drawing_sheet_identity",

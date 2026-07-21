@@ -20,6 +20,12 @@ from aerobim.tools.benchmark_project_package import (
 )
 
 
+def _ifc_cache_stats() -> dict[str, int]:
+    from aerobim.infrastructure.adapters.ifc_file_open import ifc_parse_cache_stats
+
+    return ifc_parse_cache_stats()
+
+
 def profile_package_trace(
     *,
     pack_path: Path,
@@ -57,6 +63,7 @@ def profile_package_trace(
         "summary_outcome": getattr(getattr(report.summary, "outcome", None), "value", None),
         "reproducibility_hash": manifest.reproducibility_hash,
         "contour_trace": collector.as_dict(),
+        "ifc_parse_cache": _ifc_cache_stats(),
         "forbidden_claims": [
             "customer SLA <=30 min",
             "product accuracy >90%",

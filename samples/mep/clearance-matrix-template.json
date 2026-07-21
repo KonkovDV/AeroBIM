@@ -11,6 +11,7 @@
       "system_b": "SPRINKLER",
       "min_clearance_mm": 50,
       "allowed_intersection": false,
+      "clearance_class": "hard",
       "note": "Replace with customer clearance matrix rows"
     }
   ]

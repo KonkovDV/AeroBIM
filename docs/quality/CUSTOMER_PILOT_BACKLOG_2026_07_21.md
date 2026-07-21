@@ -4,43 +4,62 @@
 **Checkpoint:** `NO_GO` (RT-001 / RT-002 / RT-003)  
 **Principle:** deterministic engine checks; AI assists only; evidence explains; expert decides disputes.
 
-## Inventory (as of iteration 1)
+## Inventory (as of P2b)
 
 | Bucket | Items |
 |---|---|
-| **Works (fixture-proven)** | Package analyze; IFC/IDS/cross-doc; `PackageOutcome` + `summary.passed` (ADR-001); intake fail-closed; provenance stamp/persist; BCF ZIP T1; HITL; ACL 404; SSRF guard; idempotent jobs; precision publishable gates (eng); SLA refuse-without-evidence; revision compare; **run manifest + reproducibility hash**; **golden baseline hash**; **stage timeout guard** |
-| **Experimental** | OpenCDE BCF API; IfcSystemAwareClash probe; IFC KG advisory; compliance agent; OCR/raster extras |
-| **Planned** | Profiling-driven perf (fan-out, caches, spatial index); POST-05 OIDC BFF; full federated MEP geometry |
-| **Needs customer** | RT-001 corpus + κ/α; RT-002 approved norm pack; RT-003 federated MEP + matrix; CDE T2 import; customer SLA pack |
+| **Works (fixture-proven)** | Package analyze; IFC/IDS/cross-doc; `PackageOutcome`; intake fail-closed; provenance; BCF ZIP T1 + MEP topics; HITL; ACL 404; SSRF; jobs; precision/SLA gates (eng); revision merge; run manifest; golden hash; stage timeout; **IFC parse cache + spatial index**; **annotation↔IFC links persisted**; **federated IfcSystem graph + clearance matrix eval (fixture)** |
+| **Experimental** | OpenCDE BCF API; IfcSystemAwareClash probe; IFC KG advisory; compliance agent tool traces |
+| **Planned** | POST-05 OIDC BFF; full federated MEP **geometry** intersection |
+| **Needs customer** | RT-001 corpus + κ/α; RT-002 approved norm pack; RT-003 federated MEP + signed matrix; CDE T2; customer SLA pack |
 | **Not claimable** | >90% accuracy; ≤30 min customer SLA; native DWG; MEP delivered; calc correctness; CDE-ready BCF |
 
 ## Priority backlog
 
-### P0 — runtime / evidence / security (engineering, no customer flip)
+### P0 — runtime / evidence / security — **DONE** (iterations 1–2)
 
-| ID | Task | Risk removed | Pilot req | Evidence | Test | Allows | Still forbids |
-|---|---|---|---|---|---|---|---|
-| P0-01 | `RunManifest` + reproducibility hash | Non-reproducible verdict drift | Repro by package/code/rules hash | `run_manifest.json` in evidence bundle | `test_run_manifest`, `test_golden_report` | Fixture reproducibility hash cite | Customer accuracy |
-| P0-02 | Stage timeout guard | Runaway contour blocking SLA | Stage budgets in pilot protocol | `stage_timeout.py` + budgets in manifest | `test_stage_timeout` | Documented per-contour limits | Customer ≤30 min SLA |
-| P0-03 | Golden report baseline pin | Silent regression on Shared-gate | Deterministic regression gate | Pinned hash in `test_golden_report` | same | Baseline stability claim | Product accuracy |
-| P0-04 | Advisory tool registry scaffold | AI on sign-off path | Typed tool boundary | `ai_tool_registry.py` | `test_ai_tool_registry` | Advisory tool contract list | AI changes verdict |
-| P0-05 | README / matrix drift | False "planned" claims | Honest capability map | Updated README + matrix | CI readme check | PackageOutcome available | — |
-| P0-06 | Profiling trace (next) | Blind perf optimization | SLA measurement prep | `profile_package_trace.json` | TBD | Fixture timing breakdown | Customer SLA |
+P0-01..09 complete (run manifest, timeouts, golden, tool registry scaffold, profile trace, MEP scope env, sheet identity, agent traces).
 
-**P0 status (iteration 1):** P0-01..05 **DONE**; P0-06 pending profiling on representative pack.
+## Red Team remediation (2026-07-21)
 
-### P0 iteration 2 (2026-07-21)
+| ID | Finding | Fix |
+|---|---|---|
+| RT-P2-001 | Path jail escape on federated/matrix paths | `resolve_repo_relative_path` |
+| RT-P2-002 | Co-presence → invented ERROR | `geometry_verified=False` demotes to WARNING |
+| RT-P2-003 | Template matrix → ERROR | `AEROBIM-MEP-TEMPLATE` WARNING only |
+| RT-P2-004 | BCF Clash inflation | Template/unclassified → `Comment` + claim_boundary |
+| RT-P2-005 | Self-attested VERIFIED | Requires expert_signoff + memo; fixture=`ENG_FIXTURE` |
+| RT-P2-006 | Dead `validate_invocation` | Called before every agent tool handler |
+| RT-P2-007 | Invented IFC guids | `ifc_guid=None`; `claimed_guid:` evidence only |
+| RT-P2-008 | Soft matrix skip | Missing matrix on ENG/VERIFIED → ERROR + FAILED |
+| RT-P2-009 | `synthetic=False` on fixtures | eng_fixture → `synthetic=True` |
+| RT-P2-010 | `authoritative` default True | Reconstruct default **False** |
+| RT-P2-011 | Test theater | Inverted asserts |
+| RT-P2-012 | False DONE labels | Relabeled **ENG_PARTIAL** below |
+
+### P2 status after remediation
 
 | ID | Task | Status |
 |---|---|---|
-| P0-06 | `profile_package_trace` CLI + `PackageTraceCollector` | **DONE** |
-| P0-07 | MEP federated scope env + analyze wiring | **DONE** |
-| P0-08 | Drawing sheet identity guard | **DONE** |
-| P0-09 | Advisory tool trace rows in compliance agent | **DONE** |
+| P2-01 | IFC parse session + spatial index | **ENG_DONE** |
+| P2-02 | Federated graph + matrix + BCF honesty | **ENG_PARTIAL** (geometry NOT_VERIFIED; RT-003 OPEN) |
+| P2-03 | Sheet identity + drift | **ENG_DONE** (OCR title-block still partial) |
+| P2-04 | Annotation↔IFC matching | **ENG_PARTIAL** (candidates only; no verified guid) |
+| P2-05 | Pilot env runbook + ENG_FIXTURE scope | **ENG_DONE** |
+| P2-06 | Registry allowlist + validate_invocation | **ENG_DONE** |
 
-**P0 status (iteration 2):** P0-06..09 **DONE**. Next: wire scope into pilot profile docs; 2D coordinate/regions; perf wave from trace evidence.
+**Evidence:** `docs/evidence/package-profile-trace-latest.json`; `samples/mep/hvac-sprinkler-systems.ifc`; `samples/mep/federated-scope-verified-fixture.json` (`ENG_FIXTURE`); `docs/pilot/SAMOLET_PILOT_ENV_RUNBOOK_2026_07.md`.
 
-### P1 — customer pilot (blocked on intake)
+### P2 — MEP / 2D / perf (engineering)
+
+| ID | Task | Status |
+|---|---|---|
+| P2-01 | IFC parse session + spatial index + cache stats | **ENG_DONE** |
+| P2-02 | Federated IfcSystem graph + clearance matrix + BCF honesty | **ENG_PARTIAL** |
+| P2-03 | Sheet identity + annotation sheet drift | **ENG_DONE** |
+| P2-04 | Annotation↔IFC matching + report persistence | **ENG_PARTIAL** |
+| P2-05 | `SAMOLET_PILOT_ENV_RUNBOOK` + ENG_FIXTURE scope | **ENG_DONE** |
+| P2-06 | AI tool registry = agent allowlist + validate_invocation | **ENG_DONE** |
 
 | ID | Task | Blocker |
 |---|---|---|
@@ -51,24 +70,14 @@
 | P1-05 | Customer SLA measurement pack | customer SLA OPEN |
 | P1-06 | BCF T2 CDE import screenshot + hash | RT-008 |
 
-**P1-04 eng prep (iteration 1):** `samples/mep/federated-scope-template.json` + `load_federated_mep_scope()` — template stays `NOT_VERIFIED`.
-
-### P2 — MEP / 2D improvements
-
-| ID | Task | Status |
-|---|---|---|
-| P2-01 | Federated IFC graph builder (IfcSystem) | scaffold in `IfcSystemAwareClash` |
-| P2-02 | Clearance matrix + BCF topic from MEP findings | domain in `mep.py` |
-| P2-03 | PDF/OCR sheet identity + revision compare | partial |
-| P2-04 | Annotation↔IFC matching + HITL escalation | partial |
-| P2-05 | Coordinate system + regions | partial |
+**P1-04 eng prep:** template + verified **fixture** scope + matrix eval — still not customer evidence.
 
 ### P3 — VLM / agent / knowledge graph
 
 | ID | Task | Status |
 |---|---|---|
-| P3-01 | Typed tool registry wiring to orchestrator | scaffold only |
-| P3-02 | Full trace + replay store | planned |
+| P3-01 | Typed tool registry wiring to orchestrator | **ENG_DONE** (`validate_invocation` + allowlist) |
+| P3-02 | Full trace + replay store | partial (`tool_traces` on report) |
 | P3-03 | GraphRAG / IfcLLM product | **forbidden** |
 
 ## Definition of Done (customer pilot) — tracking
@@ -77,11 +86,11 @@
 |---|---|
 | Customer package via intake gate | **OPEN** |
 | Approved norm/IDS pack hash | **OPEN** (RT-002) |
-| Federated MEP scope or written exclusion | **PARTIAL** (template + fail-closed) |
+| Federated MEP scope or written exclusion | **PARTIAL** (fixture VERIFIED eng + fail-closed; customer OPEN) |
 | Dual expert adjudication | **OPEN** (RT-001) |
 | Finding evidence provenance | **ENG DONE** |
 | Capability failures block PASS | **ENG DONE** |
-| Reproducible by hashes | **ENG DONE** (iteration 1) |
+| Reproducible by hashes | **ENG DONE** |
 | Customer SLA measured | **OPEN** |
 | BCF 2.1 CDE import | **NOT_VERIFIED** |
 | Security review | **PARTIAL** (threat model) |
@@ -90,16 +99,7 @@
 
 ## Iteration protocol
 
-Before each task answer:
-
-1. Risk removed  
-2. Pilot requirement  
-3. Evidence artifact  
-4. Proof test  
-5. Allowed public wording  
-6. Still forbidden wording  
-
-After each iteration publish: changed files, tests, measurements, blockers, capability matrix delta, pilot readiness status.
+Before each task answer: risk removed → pilot requirement → evidence → proof test → allowed wording → forbidden wording.
 
 ## Allowed verdict (pre-customer)
 

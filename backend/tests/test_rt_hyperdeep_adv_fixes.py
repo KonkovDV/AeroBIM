@@ -333,6 +333,7 @@ class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
             clash_capability=skipped,
             clash_issues=(),
             mep_capability=CapabilityStatus(CapabilityState.NOT_VERIFIED, "n/a"),
+            mep_issues=(),
             quantity_issues=(),
             quantity_capability=None,
             load_issues=(),

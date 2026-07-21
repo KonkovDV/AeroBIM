@@ -117,7 +117,10 @@ class IfcOpenShellValidatorCachingTests(unittest.TestCase):
             issues = IfcOpenShellValidator().validate(Path(tmp_file.name), requirements)
 
         self.assertEqual(issues, [])
-        self.assertEqual(model.by_type_calls, ["IfcRoot", "IFCWALL"])
+        self.assertEqual(
+            model.by_type_calls,
+            ["IfcSystem", "IfcRoot", "IfcRoot", "IFCWALL"],
+        )
         self.assertEqual(pset_calls, {1: 1})
 
     def test_caches_target_ref_filter_for_repeated_targeted_requirements(self) -> None:
@@ -165,7 +168,10 @@ class IfcOpenShellValidatorCachingTests(unittest.TestCase):
             issues = validator.validate(Path(tmp_file.name), requirements)
 
         self.assertEqual(issues, [])
-        self.assertEqual(model.by_type_calls, ["IfcRoot", "IFCWALL"])
+        self.assertEqual(
+            model.by_type_calls,
+            ["IfcSystem", "IfcRoot", "IfcRoot", "IFCWALL"],
+        )
         self.assertEqual(validator.target_ref_checks, 2)
         self.assertEqual(pset_calls, {1: 1})
 

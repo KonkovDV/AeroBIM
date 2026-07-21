@@ -102,7 +102,29 @@ def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
             if link
         )
         selected_guids = (issue.element_guid,) if issue.element_guid else ()
-        topic_type = "Error" if issue.severity == Severity.ERROR else "Warning"
+        rule_upper = (issue.rule_id or "").upper()
+        is_mep = rule_upper.startswith("AEROBIM-MEP-")
+        is_template_or_unverified = (
+            rule_upper in {"AEROBIM-MEP-TEMPLATE", "AEROBIM-MEP-UNCLASSIFIED", "AEROBIM-MEP-FINDING"}
+            or issue.severity != Severity.ERROR
+        )
+        if is_mep:
+            topic_type = (
+                "Clash"
+                if rule_upper == "AEROBIM-MEP-FORBIDDEN" and not is_template_or_unverified
+                else "Comment"
+            )
+            mep_guids = tuple(
+                ref
+                for ref in (issue.evidence_refs or ())
+                if isinstance(ref, str)
+                and len(ref) == 22
+                and not ref.startswith(("mep:", "claim_boundary:"))
+            )
+            if mep_guids:
+                selected_guids = mep_guids
+        else:
+            topic_type = "Error" if issue.severity == Severity.ERROR else "Warning"
         base = issue.message or ""
         extras = [
             line
@@ -137,9 +159,11 @@ def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
 def _should_export(issue: ValidationIssue) -> bool:
     if issue.severity == Severity.ERROR:
         return True
+    rule_id = (issue.rule_id or "").upper()
+    if rule_id.startswith("AEROBIM-MEP-"):
+        return True
     if issue.severity != Severity.WARNING:
         return False
-    rule_id = (issue.rule_id or "").upper()
     return issue.category == FindingCategory.CROSS_DOCUMENT and rule_id.startswith("OPENREBAR-")
 
 

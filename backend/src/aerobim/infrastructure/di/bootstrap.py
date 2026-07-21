@@ -21,7 +21,6 @@ from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container, Lifecycle
 from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import resolve_storage_path
-from aerobim.domain.mep import UnconfiguredMepSystemGraphProvider
 from aerobim.domain.models import Severity, ToleranceConfig
 from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
 from aerobim.infrastructure.adapters.bsi_validation_service import (
@@ -90,6 +89,9 @@ from aerobim.infrastructure.adapters.relational_ifc_knowledge_graph import (
     RelationalIfcKnowledgeGraph,
 )
 from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
+from aerobim.infrastructure.adapters.scoped_mep_system_graph_provider import (
+    ScopedMepSystemGraphProvider,
+)
 from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
     SpreadsheetLoadEvidenceAdapter,
 )
@@ -182,7 +184,10 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     )
     container.register(
         Tokens.MEP_SYSTEM_GRAPH_PROVIDER,
-        lambda _container: UnconfiguredMepSystemGraphProvider(),
+        lambda current: ScopedMepSystemGraphProvider(
+            scope_path=_resolve_mep_federated_scope_path(current.resolve(Tokens.SETTINGS)),
+            repo_root=Path(__file__).resolve().parents[5],
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -484,11 +489,19 @@ def _resolve_mep_federated_scope_path(settings: Settings) -> Path | None:
     raw = settings.mep_federated_scope_path
     if not raw:
         return None
-    path = Path(raw)
-    if path.is_absolute():
-        return path
+    from aerobim.core.security.path_jail import PathJailError, resolve_repo_relative_path
+
     repo_root = Path(__file__).resolve().parents[5]
-    return (repo_root / path).resolve()
+    try:
+        return resolve_repo_relative_path(raw, repo_root=repo_root)
+    except PathJailError:
+        # Absolute env paths are operator-local only when already under repo_root.
+        path = Path(raw)
+        if path.is_absolute():
+            resolved = path.resolve()
+            if resolved.is_relative_to(repo_root.resolve()):
+                return resolved
+        raise
 
 
 def _resolve_default_norm_pack_path(settings: Settings) -> Path | None:

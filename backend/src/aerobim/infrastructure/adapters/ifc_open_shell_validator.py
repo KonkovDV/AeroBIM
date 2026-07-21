@@ -64,9 +64,10 @@ class IfcOpenShellValidator:
         except ModuleNotFoundError as exc:
             raise RuntimeError("Install ifcopenshell to run IFC validation") from exc
 
-        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_session
 
-        model = open_ifc_model(ifc_path)
+        session = open_ifc_session(ifc_path)
+        model = session.model
         unit_scales, unit_scales_ok = self._get_unit_scales(model)
         issues: list[ValidationIssue] = []
         entity_cache: dict[str, tuple[Any, ...]] = {}
@@ -121,6 +122,7 @@ class IfcOpenShellValidator:
                 requirement.target_ref,
                 entity_cache,
                 target_cache,
+                spatial_index=session.spatial_index,
             )
 
             if not matching_elements:
@@ -218,6 +220,8 @@ class IfcOpenShellValidator:
         target_ref: str | None,
         entity_cache: dict[str, tuple[Any, ...]],
         target_cache: dict[tuple[str, str], tuple[Any, ...]],
+        *,
+        spatial_index: Any | None = None,
     ) -> list[Any]:
         entity_key = ifc_entity.strip().upper()
         elements = entity_cache.get(entity_key)
@@ -231,11 +235,46 @@ class IfcOpenShellValidator:
         target_key = (entity_key, target_ref.strip().lower())
         filtered_elements = target_cache.get(target_key)
         if filtered_elements is None:
-            filtered_elements = tuple(
-                element for element in elements if self._matches_target_ref(element, target_ref)
+            fast = self._fast_guid_lookup(
+                model,
+                entity_key=entity_key,
+                target_ref=target_ref,
+                spatial_index=spatial_index,
             )
+            if fast is not None:
+                filtered_elements = fast
+            else:
+                filtered_elements = tuple(
+                    element for element in elements if self._matches_target_ref(element, target_ref)
+                )
             target_cache[target_key] = filtered_elements
         return list(filtered_elements)
+
+    def _fast_guid_lookup(
+        self,
+        model: Any,
+        *,
+        entity_key: str,
+        target_ref: str,
+        spatial_index: Any | None,
+    ) -> tuple[Any, ...] | None:
+        """O(1) guid path when spatial index confirms entity type — avoids full by_type scan."""
+
+        if spatial_index is None:
+            return None
+        guid = target_ref.strip()
+        if len(guid) != 22:
+            return None
+        hit = spatial_index.lookup(guid)
+        if hit is None or hit.ifc_type.upper() != entity_key:
+            return None
+        try:
+            element = model.by_guid(guid)
+        except Exception:  # noqa: BLE001
+            return None
+        if element is None:
+            return None
+        return (element,)
 
     def _get_element_psets(
         self,

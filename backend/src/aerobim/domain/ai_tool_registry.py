@@ -11,7 +11,23 @@ AdvisoryToolName = Literal[
     "requirement_interpret",
     "ifc_kg_query",
     "compliance_agent_review",
+    "verify_loads",
+    "check_quantities",
+    "detect_clashes",
+    "detect_system_clash",
 ]
+
+# Agent step names → registry contract names (SSOT for allowlist + traces).
+AGENT_TOOL_TO_REGISTRY: dict[str, AdvisoryToolName] = {
+    "retrieve_norms": "norm_corpus_retrieve",
+    "compile_ids_draft": "ids_assist_draft",
+    "analyze_logic": "requirement_interpret",
+    "query_ifc_kg": "ifc_kg_query",
+    "verify_loads": "verify_loads",
+    "check_quantities": "check_quantities",
+    "detect_clashes": "detect_clashes",
+    "detect_system_clash": "detect_system_clash",
+}
 
 
 @dataclass(frozen=True)
@@ -77,7 +93,45 @@ DEFAULT_ADVISORY_TOOL_REGISTRY: tuple[AdvisoryToolContract, ...] = (
         max_steps=8,
         evidence_required=True,
     ),
+    AdvisoryToolContract(
+        name="verify_loads",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.verify_loads.v1",
+        timeout_seconds=20.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="check_quantities",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.check_quantities.v1",
+        timeout_seconds=20.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="detect_clashes",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.detect_clashes.v1",
+        timeout_seconds=30.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="detect_system_clash",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.detect_system_clash.v1",
+        timeout_seconds=30.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
 )
+
+
+def allowed_agent_tool_names() -> frozenset[str]:
+    """Agent step allowlist derived from registry mapping — single SSOT."""
+
+    return frozenset(AGENT_TOOL_TO_REGISTRY.keys())
 
 
 def lookup_advisory_tool(name: str) -> AdvisoryToolContract | None:
@@ -115,9 +169,11 @@ def advisory_trace_record(
 
 
 __all__ = [
+    "AGENT_TOOL_TO_REGISTRY",
     "AdvisoryToolContract",
     "AdvisoryToolName",
     "DEFAULT_ADVISORY_TOOL_REGISTRY",
     "advisory_trace_record",
+    "allowed_agent_tool_names",
     "lookup_advisory_tool",
 ]

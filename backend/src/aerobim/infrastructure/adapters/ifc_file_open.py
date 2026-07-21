@@ -11,13 +11,28 @@ from __future__ import annotations
 import hashlib
 import json
 import threading
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.ifc_spatial_index import IfcSpatialIndex
+
 _lock = threading.Lock()
 _memory: dict[tuple[str, int, int], Any] = {}
+_index_memory: dict[tuple[str, int, int], IfcSpatialIndex] = {}
 _cache_dir: Path | None = None
+_stats: dict[str, int] = {"opens": 0, "hits": 0, "misses": 0, "indexes_built": 0}
+
+
+@dataclass(frozen=True)
+class IfcParseSession:
+    """Cached IFC model + spatial index for deterministic_validation hot path."""
+
+    model: Any
+    spatial_index: IfcSpatialIndex
+    cache_hit: bool
+    ifc_path: Path
 
 
 def configure_ifc_parse_cache(cache_dir: str | Path | None) -> None:
@@ -39,7 +54,40 @@ def reset_ifc_parse_cache_for_tests() -> None:
     global _cache_dir
     with _lock:
         _memory.clear()
+        _index_memory.clear()
         _cache_dir = None
+        for key in _stats:
+            _stats[key] = 0
+
+
+def ifc_parse_cache_stats() -> dict[str, int]:
+    """Process-local cache counters for profiling — not customer SLA evidence."""
+
+    with _lock:
+        return dict(_stats)
+
+
+def open_ifc_session(ifc_path: Path) -> IfcParseSession:
+    """Open IFC with memoized model and spatial index."""
+
+    resolved = ifc_path.resolve()
+    stat = resolved.stat()
+    key = (str(resolved), int(stat.st_mtime_ns), int(stat.st_size))
+    with _lock:
+        model_cache_hit = key in _memory
+        cached_index = _index_memory.get(key)
+    model = open_ifc_model(ifc_path)
+    if cached_index is None:
+        cached_index = IfcSpatialIndex.from_model(model)
+        with _lock:
+            _index_memory[key] = cached_index
+            _stats["indexes_built"] += 1
+    return IfcParseSession(
+        model=model,
+        spatial_index=cached_index,
+        cache_hit=model_cache_hit,
+        ifc_path=resolved,
+    )
 
 
 def open_ifc_model(ifc_path: Path) -> Any:
@@ -59,7 +107,11 @@ def open_ifc_model(ifc_path: Path) -> Any:
         cached = _memory.get(key)
         if cached is not None:
             _touch_marker(resolved, hit=True)
+            _stats["opens"] += 1
+            _stats["hits"] += 1
             return cached
+        _stats["opens"] += 1
+        _stats["misses"] += 1
     model = ifcopenshell.open(str(resolved))
     with _lock:
         _memory[key] = model

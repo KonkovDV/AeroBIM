@@ -2,21 +2,21 @@
   "artifact_type": "aerobim_package_profile_trace",
   "schema_version": "1.0.0",
   "pack_id": "project-package-baseline",
-  "pack_path": "..\\samples\\benchmarks\\project-package-baseline.json",
+  "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-baseline.json",
   "request_id": "profile-project-package-baseline",
-  "analyze_total_ms": 534.742,
+  "analyze_total_ms": 457.582,
   "summary_passed": false,
   "summary_outcome": "blocked",
   "reproducibility_hash": "746343939b16732f4d0476d6b61284861054be7cef4e6bade07fafdcc93a4884",
   "contour_trace": {
     "schema_version": "1.0.0",
     "elapsed_seconds": {
-      "ai_advisory": 0.0031209999997372506,
-      "deterministic_validation": 0.5260222999995676,
-      "evidence_reporting": 0.005088200000500365,
-      "ingestion": 0.0004785999999512569
+      "ai_advisory": 0.0029746000000159256,
+      "deterministic_validation": 0.4479658999999856,
+      "evidence_reporting": 0.0060894000000644155,
+      "ingestion": 0.0005227999999988242
     },
-    "total_elapsed_seconds": 0.53471,
+    "total_elapsed_seconds": 0.457553,
     "stage_budget_minutes": {
       "ingestion_minutes": 5.0,
       "deterministic_validation_minutes": 18.0,
@@ -26,7 +26,7 @@
     },
     "budget_utilization": {
       "ingestion": 0.0,
-      "deterministic_validation": 0.0005,
+      "deterministic_validation": 0.0004,
       "ai_advisory": 0.0,
       "evidence_reporting": 0.0
     },
@@ -35,6 +35,12 @@
       "bottleneck_contour=deterministic_validation"
     ],
     "claim_boundary": "fixture profiling only; not customer SLA proof"
+  },
+  "ifc_parse_cache": {
+    "opens": 4,
+    "hits": 3,
+    "misses": 1,
+    "indexes_built": 1
   },
   "forbidden_claims": [
     "customer SLA <=30 min",

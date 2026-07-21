@@ -13,7 +13,12 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
-from aerobim.domain.ai_tool_registry import advisory_trace_record, lookup_advisory_tool
+from aerobim.domain.ai_tool_registry import (
+    AGENT_TOOL_TO_REGISTRY,
+    advisory_trace_record,
+    allowed_agent_tool_names,
+    lookup_advisory_tool,
+)
 from aerobim.domain.compliance_agent import AgentRunResult, AgentToolStep
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
 from aerobim.domain.models import (
@@ -33,25 +38,8 @@ from aerobim.domain.ports import (
 )
 from aerobim.domain.tz_architecture_ports import IfcKnowledgeGraphPort, SystemClashPort
 
-_ALLOWED_TOOLS = frozenset(
-    {
-        "retrieve_norms",
-        "compile_ids_draft",
-        "verify_loads",
-        "analyze_logic",
-        "check_quantities",
-        "detect_clashes",
-        "query_ifc_kg",
-        "detect_system_clash",
-    }
-)
-
-_REGISTRY_TOOL_MAP = {
-    "retrieve_norms": "norm_corpus_retrieve",
-    "compile_ids_draft": "ids_assist_draft",
-    "analyze_logic": "requirement_interpret",
-    "query_ifc_kg": "ifc_kg_query",
-}
+_ALLOWED_TOOLS = allowed_agent_tool_names()
+_REGISTRY_TOOL_MAP = dict(AGENT_TOOL_TO_REGISTRY)
 
 
 class ComplianceAgentOrchestrator:
@@ -128,6 +116,35 @@ class ComplianceAgentOrchestrator:
                         arguments=step.arguments,
                         status="error",
                         detail="tool not in allowlist",
+                    )
+                )
+                continue
+            registry_name = _REGISTRY_TOOL_MAP.get(step.tool_name)
+            contract = lookup_advisory_tool(registry_name) if registry_name else None
+            if contract is None:
+                executed.append(
+                    AgentToolStep(
+                        tool_name=step.tool_name,
+                        rationale=step.rationale,
+                        arguments=step.arguments,
+                        status="error",
+                        detail="tool missing registry contract",
+                    )
+                )
+                continue
+            try:
+                contract.validate_invocation(
+                    tool_name=registry_name,
+                    tenant_id=request.tenant_id,
+                )
+            except ValueError as exc:
+                executed.append(
+                    AgentToolStep(
+                        tool_name=step.tool_name,
+                        rationale=step.rationale,
+                        arguments=step.arguments,
+                        status="error",
+                        detail=f"registry gate: {exc}",
                     )
                 )
                 continue

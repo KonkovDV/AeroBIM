@@ -31,9 +31,10 @@ class IfcQuantityConsistencyAdapter:
         except ModuleNotFoundError as exc:
             raise RuntimeError("Install ifcopenshell for quantity consistency") from exc
 
-        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_session
 
-        model = open_ifc_model(ifc_path)
+        session = open_ifc_session(ifc_path)
+        model = session.model
         issues: list[ValidationIssue] = []
         for claim in declared:
             observed = self._find_observed(model, get_psets, claim)
