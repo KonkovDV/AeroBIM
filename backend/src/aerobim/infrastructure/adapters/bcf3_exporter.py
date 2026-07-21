@@ -101,11 +101,18 @@ def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
             for link in (issue.element_guid, issue.target_ref, *(issue.evidence_refs or ()))
             if link
         )
-        selected_guids = (issue.element_guid,) if issue.element_guid else ()
+        selected_guids: tuple[str, ...] = (
+            (issue.element_guid,) if issue.element_guid else ()
+        )
         rule_upper = (issue.rule_id or "").upper()
         is_mep = rule_upper.startswith("AEROBIM-MEP-")
         is_template_or_unverified = (
-            rule_upper in {"AEROBIM-MEP-TEMPLATE", "AEROBIM-MEP-UNCLASSIFIED", "AEROBIM-MEP-FINDING"}
+            rule_upper
+            in {
+                "AEROBIM-MEP-TEMPLATE",
+                "AEROBIM-MEP-UNCLASSIFIED",
+                "AEROBIM-MEP-FINDING",
+            }
             or issue.severity != Severity.ERROR
         )
         if is_mep:
