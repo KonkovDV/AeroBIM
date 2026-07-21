@@ -29,3 +29,5 @@ class AgentRunResult:
     ids_draft: IdsCompileDraft | None = None
     capped: bool = False
     """True when max_steps truncated the plan."""
+    tool_traces: tuple[dict[str, object], ...] = ()
+    """Replayable advisory tool rows — never authoritative for summary.passed."""

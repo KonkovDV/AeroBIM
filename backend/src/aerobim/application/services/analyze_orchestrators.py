@@ -24,7 +24,10 @@ from aerobim.domain.drawing_region_hitl import (
     review_events_for_hitl_regions,
 )
 from aerobim.domain.finding_provenance import ensure_finding_provenance
-from aerobim.domain.ingestion import detect_revision_merge_conflicts
+from aerobim.domain.ingestion import (
+    detect_missing_drawing_sheet_identity,
+    detect_revision_merge_conflicts,
+)
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -184,6 +187,9 @@ class DeterministicValidationOrchestrator:
         drawing_issues = tuple(
             self._host._validate_drawing_annotations(requirements, ingested.drawing_annotations)
         )
+        sheet_identity_issues = tuple(
+            detect_missing_drawing_sheet_identity(request.drawing_sources)
+        )
         cross_document_issues = tuple(
             self._host._detect_cross_document_contradictions(requirements)
         )
@@ -218,6 +224,7 @@ class DeterministicValidationOrchestrator:
                 *ids_audit_issues,
                 *ifc_issues,
                 *drawing_issues,
+                *sheet_identity_issues,
                 *cross_document_issues,
                 *revision_merge_issues,
                 *section_pairing_issues,

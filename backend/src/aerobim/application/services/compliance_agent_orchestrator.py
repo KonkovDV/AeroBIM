@@ -13,6 +13,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
+from aerobim.domain.ai_tool_registry import advisory_trace_record, lookup_advisory_tool
 from aerobim.domain.compliance_agent import AgentRunResult, AgentToolStep
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
 from aerobim.domain.models import (
@@ -44,6 +45,13 @@ _ALLOWED_TOOLS = frozenset(
         "detect_system_clash",
     }
 )
+
+_REGISTRY_TOOL_MAP = {
+    "retrieve_norms": "norm_corpus_retrieve",
+    "compile_ids_draft": "ids_assist_draft",
+    "analyze_logic": "requirement_interpret",
+    "query_ifc_kg": "ifc_kg_query",
+}
 
 
 class ComplianceAgentOrchestrator:
@@ -87,6 +95,7 @@ class ComplianceAgentOrchestrator:
         advisory: list[ValidationIssue] = []
         passages: list[NormPassage] = []
         ids_draft: IdsCompileDraft | None = None
+        tool_traces: list[dict[str, object]] = []
 
         handlers: dict[
             str,
@@ -129,6 +138,9 @@ class ComplianceAgentOrchestrator:
             passages.extend(more_passages)
             if maybe_draft is not None:
                 ids_draft = maybe_draft
+            trace = self._trace_tool_step(request, done, issues)
+            if trace is not None:
+                tool_traces.append(trace)
 
         if capped:
             advisory.append(
@@ -148,6 +160,34 @@ class ComplianceAgentOrchestrator:
             norm_passages=tuple(passages),
             ids_draft=ids_draft,
             capped=capped,
+            tool_traces=tuple(tool_traces),
+        )
+
+    def _trace_tool_step(
+        self,
+        request: ValidationRequest,
+        step: AgentToolStep,
+        issues: Sequence[ValidationIssue],
+    ) -> dict[str, object] | None:
+        registry_name = _REGISTRY_TOOL_MAP.get(step.tool_name)
+        if registry_name is None or lookup_advisory_tool(registry_name) is None:
+            return None
+        refs = tuple(ref for issue in issues for ref in (issue.evidence_refs or ()))
+        evidence_refs = refs or (f"agent:{step.tool_name}",)
+        if step.status != "ok":
+            return {
+                "tool_name": registry_name,
+                "request_id": request.request_id,
+                "agent_tool": step.tool_name,
+                "status": step.status,
+                "can_change_verdict": False,
+            }
+        return advisory_trace_record(
+            tool_name=registry_name,
+            request_id=request.request_id,
+            steps=1,
+            evidence_refs=evidence_refs,
+            payload={"agent_tool": step.tool_name, "status": step.status},
         )
 
     def _plan(self, request: ValidationRequest) -> list[AgentToolStep]:

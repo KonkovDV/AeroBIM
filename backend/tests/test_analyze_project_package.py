@@ -278,7 +278,10 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                     source_kind=SourceKind.TECHNICAL_SPECIFICATION,
                 ),
                 drawing_sources=(
-                    DrawingSource(text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50"),
+                    DrawingSource(
+                        text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50",
+                        sheet_id="A-101",
+                    ),
                 ),
             )
         )
@@ -349,7 +352,10 @@ class AnalyzeProjectPackageUseCaseTests(unittest.TestCase):
                     source_kind=SourceKind.TECHNICAL_SPECIFICATION,
                 ),
                 drawing_sources=(
-                    DrawingSource(text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50"),
+                    DrawingSource(
+                        text="ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50",
+                        sheet_id="A-101",
+                    ),
                 ),
                 ids_path=Path("rules.ids"),
             )

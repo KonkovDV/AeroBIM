@@ -29,6 +29,17 @@
 
 **P0 status (iteration 1):** P0-01..05 **DONE**; P0-06 pending profiling on representative pack.
 
+### P0 iteration 2 (2026-07-21)
+
+| ID | Task | Status |
+|---|---|---|
+| P0-06 | `profile_package_trace` CLI + `PackageTraceCollector` | **DONE** |
+| P0-07 | MEP federated scope env + analyze wiring | **DONE** |
+| P0-08 | Drawing sheet identity guard | **DONE** |
+| P0-09 | Advisory tool trace rows in compliance agent | **DONE** |
+
+**P0 status (iteration 2):** P0-06..09 **DONE**. Next: wire scope into pilot profile docs; 2D coordinate/regions; perf wave from trace evidence.
+
 ### P1 — customer pilot (blocked on intake)
 
 | ID | Task | Blocker |
