@@ -418,8 +418,7 @@ class AnalyzeProjectPackageUseCase:
                 return (
                     CapabilityStatus(
                         CapabilityState.FAILED,
-                        "federated MEP scope path jail violation: "
-                        + "; ".join(jail_errors[:3]),
+                        "federated MEP scope path jail violation: " + "; ".join(jail_errors[:3]),
                     ),
                     (),
                 )

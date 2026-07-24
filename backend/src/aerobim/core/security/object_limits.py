@@ -32,7 +32,7 @@ def read_stream_capped(
         chunk = read(chunk_size)
         if not chunk:
             break
-        if not isinstance(chunk, (bytes, bytearray)):
+        if not isinstance(chunk, bytes | bytearray):
             chunk = bytes(chunk)
         total += len(chunk)
         if total > max_bytes:

@@ -29,9 +29,7 @@ class FederatedIfcMepSystemGraphProvider:
         repo_root: Path | None = None,
     ) -> None:
         if not scope.allows_federated_graph:
-            raise ValueError(
-                "federated MEP graph requires VERIFIED (signed) or ENG_FIXTURE scope"
-            )
+            raise ValueError("federated MEP graph requires VERIFIED (signed) or ENG_FIXTURE scope")
         self._scope = scope
         self._repo_root = (repo_root or Path.cwd()).resolve()
 

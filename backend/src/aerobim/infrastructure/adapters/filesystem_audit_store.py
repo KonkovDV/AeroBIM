@@ -653,9 +653,7 @@ class FilesystemAuditStore:
                 self._reconstruct_drawing_region(item) for item in data.get("drawing_regions", [])
             ),
             annotation_ifc_links=tuple(
-                item
-                for item in data.get("annotation_ifc_links", [])
-                if isinstance(item, dict)
+                item for item in data.get("annotation_ifc_links", []) if isinstance(item, dict)
             ),
             tool_traces=tuple(
                 item for item in data.get("tool_traces", []) if isinstance(item, dict)

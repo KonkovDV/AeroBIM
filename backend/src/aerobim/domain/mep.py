@@ -540,9 +540,7 @@ def mep_finding_to_issue(
         severity = Severity.WARNING
         rule_id = "AEROBIM-MEP-FINDING"
 
-    guids = tuple(
-        guid for guid in (finding.element_guid_a, finding.element_guid_b) if guid
-    )
+    guids = tuple(guid for guid in (finding.element_guid_a, finding.element_guid_b) if guid)
     return ValidationIssue(
         rule_id=rule_id,
         severity=severity,

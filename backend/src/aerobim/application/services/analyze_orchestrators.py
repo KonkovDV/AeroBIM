@@ -461,9 +461,7 @@ class EvidenceAssembler:
             divergences=advisory.divergences,
             advisory_ids_draft=advisory.advisory_ids_draft,
             drawing_regions=ingested.drawing_regions,
-            annotation_ifc_links=tuple(
-                link.as_dict() for link in ingested.annotation_ifc_links
-            ),
+            annotation_ifc_links=tuple(link.as_dict() for link in ingested.annotation_ifc_links),
             tool_traces=advisory.tool_traces,
         )
         # HITL trail before report persist: never save a report without audit events
