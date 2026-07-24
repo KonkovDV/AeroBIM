@@ -49,7 +49,7 @@ def _sha256_file(path: Path) -> str:
 
 
 def _json_safe(value: Any) -> Any:
-    if value is None or isinstance(value, (bool, int, float, str)):
+    if value is None or isinstance(value, bool | int | float | str):
         return value
     if isinstance(value, Path):
         return str(value)
@@ -57,7 +57,7 @@ def _json_safe(value: Any) -> Any:
         return value.value
     if isinstance(value, dict):
         return {str(key): _json_safe(item) for key, item in value.items()}
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, list | tuple):
         return [_json_safe(item) for item in value]
     if is_dataclass(value) and not isinstance(value, type):
         return _json_safe(asdict(value))

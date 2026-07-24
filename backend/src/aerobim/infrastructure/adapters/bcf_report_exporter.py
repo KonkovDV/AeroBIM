@@ -104,9 +104,7 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             )
             if link
         )
-        selected_guids: tuple[str, ...] = (
-            (issue.element_guid,) if issue.element_guid else ()
-        )
+        selected_guids: tuple[str, ...] = (issue.element_guid,) if issue.element_guid else ()
         rule_upper = (issue.rule_id or "").upper()
         is_mep = rule_upper.startswith("AEROBIM-MEP-")
         claim_lines = tuple(
