@@ -597,6 +597,129 @@ def holm_bonferroni(
     )
 
 
+def paired_scalar_permutation_test(
+    values_a: Sequence[float],
+    values_b: Sequence[float],
+    *,
+    metric: str = "scalar",
+    replicates: int = 10000,
+    seed: int = 20260726,
+    alternative: str = "two_sided",
+) -> PairedTestResult:
+    """Paired sign-flip permutation test on per-cluster scalar pairs.
+
+    Statistic: mean(b_i − a_i). Under H0 the A/B assignment within each
+    pair is exchangeable, so flipping a pair negates its difference. Exact
+    enumeration for n <= 12; Monte-Carlo with the Phipson & Smyth (2010)
+    add-one estimator otherwise. Companion to the FixtureCounts variant for
+    metrics that are already one scalar per cluster (e.g. per-case nDCG).
+    """
+
+    if alternative not in ("two_sided", "less", "greater"):
+        raise ValueError(f"unknown alternative {alternative!r}")
+    if len(values_a) != len(values_b):
+        raise ValueError("paired test requires equal-length aligned value lists")
+    n = len(values_a)
+    if n == 0:
+        raise ValueError("paired test requires at least one pair")
+    if replicates < 1:
+        raise ValueError("paired test requires at least one replicate")
+    for value in (*values_a, *values_b):
+        if not math.isfinite(value):
+            raise ValueError("paired test requires finite values")
+
+    diffs = [b - a for a, b in zip(values_a, values_b, strict=True)]
+    observed = sum(diffs) / n
+    tolerance = 1e-12
+
+    def is_extreme(diff: float) -> bool:
+        if alternative == "two_sided":
+            return abs(diff) >= abs(observed) - tolerance
+        if alternative == "less":
+            return diff <= observed + tolerance
+        return diff >= observed - tolerance
+
+    def diff_for_mask(mask: int) -> float:
+        total = 0.0
+        for index, diff in enumerate(diffs):
+            total += -diff if (mask >> index) & 1 else diff
+        return total / n
+
+    if n <= _EXACT_ENUMERATION_MAX_N:
+        total_masks = 1 << n
+        extreme = sum(1 for mask in range(total_masks) if is_extreme(diff_for_mask(mask)))
+        return PairedTestResult(
+            metric=metric,
+            observed_diff=observed,
+            p_value=extreme / total_masks,
+            exact=True,
+            permutations=total_masks,
+            seed=None,
+            n_pairs=n,
+            alternative=alternative,
+        )
+
+    rng = random.Random(seed)
+    extreme = 0
+    for _ in range(replicates):
+        mask = rng.getrandbits(n)
+        if is_extreme(diff_for_mask(mask)):
+            extreme += 1
+    return PairedTestResult(
+        metric=metric,
+        observed_diff=observed,
+        p_value=(extreme + 1) / (replicates + 1),
+        exact=False,
+        permutations=replicates,
+        seed=seed,
+        n_pairs=n,
+        alternative=alternative,
+    )
+
+
+def paired_scalar_bootstrap_diff_ci(
+    values_a: Sequence[float],
+    values_b: Sequence[float],
+    *,
+    metric: str = "scalar",
+    replicates: int = 1000,
+    alpha: float = 0.05,
+    seed: int = 20260726,
+) -> BootstrapCI:
+    """Percentile CI for mean(B − A) with joint index resampling of pairs."""
+
+    if len(values_a) != len(values_b):
+        raise ValueError("paired CI requires equal-length aligned value lists")
+    n = len(values_a)
+    if n == 0:
+        raise ValueError("paired CI requires at least one pair")
+    if replicates < 1:
+        raise ValueError("bootstrap requires at least one replicate")
+    diffs = [b - a for a, b in zip(values_a, values_b, strict=True)]
+    for value in diffs:
+        if not math.isfinite(value):
+            raise ValueError("paired CI requires finite values")
+    point = sum(diffs) / n
+    rng = random.Random(seed)
+    means: list[float] = []
+    for _ in range(replicates):
+        sample = [diffs[rng.randrange(n)] for _ in range(n)]
+        means.append(sum(sample) / n)
+    means.sort()
+    return BootstrapCI(
+        metric=f"diff_{metric}",
+        point=point,
+        lower=_percentile(means, alpha / 2),
+        upper=_percentile(means, 1 - alpha / 2),
+        replicates=replicates,
+        alpha=alpha,
+        seed=seed,
+        n_clusters=n,
+        method="paired_scalar_percentile_bootstrap",
+        stable=n >= _MIN_CLUSTERS_FOR_STABLE_CI,
+    )
+
+
 def cohen_kappa(labels_a: Sequence[str], labels_b: Sequence[str]) -> float:
     """Cohen's kappa (1960) for two annotators over nominal labels."""
 

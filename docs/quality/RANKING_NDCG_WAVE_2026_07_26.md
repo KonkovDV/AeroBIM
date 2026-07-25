@@ -67,7 +67,9 @@ group's position discounts) is permutation-invariant and deterministic.
 - Comparing two rankers on the same labeled corpus should reuse Wave L/M
   machinery (paired permutation + Holm + TOST) over per-case nDCG — the
   values plug directly into `scalar` pairing; wiring that CLI is deferred
-  until two real ranker variants exist.
+  until two real ranker variants exist. **Closed by Wave P:**
+  [`RANKER_AB_CORPUS_PLANNING_WAVE_2026_07_26.md`](RANKER_AB_CORPUS_PLANNING_WAVE_2026_07_26.md)
+  (`compare_ranker_profiles` — default vs samolet profiles).
 
 ## Explicitly NOT claimed
 
