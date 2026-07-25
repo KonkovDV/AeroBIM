@@ -764,10 +764,12 @@ class DrawingAssetPreviewTests(unittest.TestCase):
             self.assertEqual(exc.status_code, 404)
 
     def test_escaping_stored_filename_is_409(self) -> None:
-        # Kills NumberReplacer on the escape 409 (L458).
+        # Kills NumberReplacer on the escape 409 (L458). POSIX-style traversal
+        # escapes on both platforms; a backslash variant is a plain filename
+        # on Linux (404, not 409) and broke on CI.
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), enforce_object_acl=False)
-            report = _report(drawing_assets=(_asset("A1", stored_filename="..\\..\\evil.png"),))
+            report = _report(drawing_assets=(_asset("A1", stored_filename="../../evil.png"),))
             ctx.audit_store.reports[report.report_id] = report
             exc = _status(ctx.resolve_report_drawing_asset_preview, report.report_id, "A1")
             self.assertEqual(exc.status_code, 409)
