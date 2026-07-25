@@ -57,7 +57,7 @@
 - Verdict ownership: `docs/architecture/ADR-001-verdict-ownership-2026.md`
 - Tier-0: `docs/TIER0_INDEX.md`
 - Jury memo: `docs/docs.md`
-- BCF T1: `audit/evidence/bcf-structural-handoff-2026-07-18.json`
+- BCF T1: `audit/evidence/bcf-structural-handoff-2026-07-25.json` (канон; 2026-07-18 superseded — без XSD-прогона)
 - SLA fixture honesty: `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json`
 - Intake gates: `audit/evidence/customer-intake-gate.json`
 - System honesty API: `GET /v1/system/capabilities`

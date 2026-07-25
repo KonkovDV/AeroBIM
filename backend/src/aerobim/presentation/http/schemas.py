@@ -105,3 +105,81 @@ class NormRuleHitlEventRequest(BaseModel):
     target_approval_status: Literal["synthetic", "draft", "customer_approved"] | None = None
     approval_ref: str | None = Field(default=None, max_length=512)
     report_id: str | None = Field(default=None, max_length=64)
+
+
+# --- /v1/system/capabilities response contract (schema_version 1.3.0) ------
+# Strict response models so the OpenAPI document describes the honesty
+# surface field-by-field instead of a bare object. Field semantics live in
+# ``aerobim.domain.system_capabilities``; forbidden OK-states stay enforced
+# by ``enforce_honesty_capabilities`` — the schema documents, never relaxes.
+
+
+class HonestyCapabilityStatus(BaseModel):
+    """Mirror of domain ``CapabilityStatus`` (asdict serialization)."""
+
+    status: str
+    reason: str | None = None
+    external_ref: str | None = None
+
+
+class DirectionContract(BaseModel):
+    """Mirror of ``capability_contract`` entries (DWG/MEP/calc/BCF→CDE)."""
+
+    capability: str
+    status: str
+    evidence_level: str
+    affects_pass: bool
+    reason: str
+    dependencies: list[str]
+    claim_boundary: str
+    evidence_refs: list[str]
+
+
+class HonestyCapabilities(BaseModel):
+    dwg_dxf: HonestyCapabilityStatus
+    cv_human_level: HonestyCapabilityStatus
+    mep_system_clash: HonestyCapabilityStatus
+    calculation_match: HonestyCapabilityStatus
+    calculation_correctness: HonestyCapabilityStatus
+
+
+class BcfT2Status(BaseModel):
+    status: str
+    ladder_tier: str
+    raw_status: str
+    claim_allowed: bool
+    required_files: list[str]
+    present_files: list[str]
+    source: str | None = None
+    reason: str
+
+
+class AuthBffStatus(BaseModel):
+    status: str
+    design: str
+    dev_proxy: str
+
+
+class CustomerIntakeGateSnapshot(BaseModel):
+    status: str
+    claim_level: str
+    true_gates: list[str]
+    checkpoint: str
+    source: str | None = None
+
+
+class SystemCapabilitiesResponse(BaseModel):
+    """Full 1.3.0 payload of ``GET /v1/system/capabilities``."""
+
+    artifact_type: Literal["system_capabilities"]
+    schema_version: str
+    claim_boundary: dict[str, str]
+    honesty: HonestyCapabilities
+    direction_contracts: list[DirectionContract]
+    bcf_t2: BcfT2Status
+    mep_intake: dict[str, object]
+    auth_bff: AuthBffStatus
+    customer_intake_gate: CustomerIntakeGateSnapshot
+    forbidden_ok_states: dict[str, list[str]]
+    forbidden_claim_phrases: list[str]
+    notes: list[str]

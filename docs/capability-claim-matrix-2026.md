@@ -49,7 +49,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Provenance required on persist | `finding_provenance` + tests |
 | Cross-tenant ACL → 404 | ACL tests |
 | SSRF guard on outbound JWKS/bSI/OpenCDE | `outbound_url.py` + tests |
-| BCF 2.1/3.0 structural export | `audit/evidence/bcf-structural-handoff-2026-07-18.json` |
+| BCF 2.1/3.0 structural export | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |
 | HITL remark edit | frontend + review-events API |
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |

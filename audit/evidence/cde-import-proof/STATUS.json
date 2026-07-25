@@ -5,7 +5,7 @@
   "ladder_tier": "T2",
   "ladder_doc": "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md",
   "status": "NOT_VERIFIED",
-  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-18.json",
+  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-25.json",
   "t2_template": "audit/evidence/cde-import-proof/T2_EVIDENCE_TEMPLATE.json",
   "required_files": [
     "import-log.txt",

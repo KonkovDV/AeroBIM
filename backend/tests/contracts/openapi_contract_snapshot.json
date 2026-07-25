@@ -291,6 +291,89 @@
         "title": "AnalyzeProjectPackageRequest",
         "type": "object"
       },
+      "AuthBffStatus": {
+        "properties": {
+          "design": {
+            "title": "Design",
+            "type": "string"
+          },
+          "dev_proxy": {
+            "title": "Dev Proxy",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "design",
+          "dev_proxy"
+        ],
+        "title": "AuthBffStatus",
+        "type": "object"
+      },
+      "BcfT2Status": {
+        "properties": {
+          "claim_allowed": {
+            "title": "Claim Allowed",
+            "type": "boolean"
+          },
+          "ladder_tier": {
+            "title": "Ladder Tier",
+            "type": "string"
+          },
+          "present_files": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Present Files",
+            "type": "array"
+          },
+          "raw_status": {
+            "title": "Raw Status",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "required_files": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Files",
+            "type": "array"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "ladder_tier",
+          "raw_status",
+          "claim_allowed",
+          "required_files",
+          "present_files",
+          "reason"
+        ],
+        "title": "BcfT2Status",
+        "type": "object"
+      },
       "Body_upload_document_v1_uploads_post": {
         "properties": {
           "file": {
@@ -303,6 +386,103 @@
           "file"
         ],
         "title": "Body_upload_document_v1_uploads_post",
+        "type": "object"
+      },
+      "CustomerIntakeGateSnapshot": {
+        "properties": {
+          "checkpoint": {
+            "title": "Checkpoint",
+            "type": "string"
+          },
+          "claim_level": {
+            "title": "Claim Level",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "true_gates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "True Gates",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "claim_level",
+          "true_gates",
+          "checkpoint"
+        ],
+        "title": "CustomerIntakeGateSnapshot",
+        "type": "object"
+      },
+      "DirectionContract": {
+        "description": "Mirror of ``capability_contract`` entries (DWG/MEP/calc/BCF→CDE).",
+        "properties": {
+          "affects_pass": {
+            "title": "Affects Pass",
+            "type": "boolean"
+          },
+          "capability": {
+            "title": "Capability",
+            "type": "string"
+          },
+          "claim_boundary": {
+            "title": "Claim Boundary",
+            "type": "string"
+          },
+          "dependencies": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dependencies",
+            "type": "array"
+          },
+          "evidence_level": {
+            "title": "Evidence Level",
+            "type": "string"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Refs",
+            "type": "array"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "capability",
+          "status",
+          "evidence_level",
+          "affects_pass",
+          "reason",
+          "dependencies",
+          "claim_boundary",
+          "evidence_refs"
+        ],
+        "title": "DirectionContract",
         "type": "object"
       },
       "DrawingPayload": {
@@ -364,6 +544,70 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HonestyCapabilities": {
+        "properties": {
+          "calculation_correctness": {
+            "$ref": "#/components/schemas/HonestyCapabilityStatus"
+          },
+          "calculation_match": {
+            "$ref": "#/components/schemas/HonestyCapabilityStatus"
+          },
+          "cv_human_level": {
+            "$ref": "#/components/schemas/HonestyCapabilityStatus"
+          },
+          "dwg_dxf": {
+            "$ref": "#/components/schemas/HonestyCapabilityStatus"
+          },
+          "mep_system_clash": {
+            "$ref": "#/components/schemas/HonestyCapabilityStatus"
+          }
+        },
+        "required": [
+          "dwg_dxf",
+          "cv_human_level",
+          "mep_system_clash",
+          "calculation_match",
+          "calculation_correctness"
+        ],
+        "title": "HonestyCapabilities",
+        "type": "object"
+      },
+      "HonestyCapabilityStatus": {
+        "description": "Mirror of domain ``CapabilityStatus`` (asdict serialization).",
+        "properties": {
+          "external_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Ref"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HonestyCapabilityStatus",
         "type": "object"
       },
       "NormRuleHitlEventRequest": {
@@ -591,6 +835,91 @@
           "event_type"
         ],
         "title": "ReviewEventRequest",
+        "type": "object"
+      },
+      "SystemCapabilitiesResponse": {
+        "description": "Full 1.3.0 payload of ``GET /v1/system/capabilities``.",
+        "properties": {
+          "artifact_type": {
+            "const": "system_capabilities",
+            "title": "Artifact Type",
+            "type": "string"
+          },
+          "auth_bff": {
+            "$ref": "#/components/schemas/AuthBffStatus"
+          },
+          "bcf_t2": {
+            "$ref": "#/components/schemas/BcfT2Status"
+          },
+          "claim_boundary": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Claim Boundary",
+            "type": "object"
+          },
+          "customer_intake_gate": {
+            "$ref": "#/components/schemas/CustomerIntakeGateSnapshot"
+          },
+          "direction_contracts": {
+            "items": {
+              "$ref": "#/components/schemas/DirectionContract"
+            },
+            "title": "Direction Contracts",
+            "type": "array"
+          },
+          "forbidden_claim_phrases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Forbidden Claim Phrases",
+            "type": "array"
+          },
+          "forbidden_ok_states": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Forbidden Ok States",
+            "type": "object"
+          },
+          "honesty": {
+            "$ref": "#/components/schemas/HonestyCapabilities"
+          },
+          "mep_intake": {
+            "additionalProperties": true,
+            "title": "Mep Intake",
+            "type": "object"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_type",
+          "schema_version",
+          "claim_boundary",
+          "honesty",
+          "direction_contracts",
+          "bcf_t2",
+          "mep_intake",
+          "auth_bff",
+          "customer_intake_gate",
+          "forbidden_ok_states",
+          "forbidden_claim_phrases",
+          "notes"
+        ],
+        "title": "SystemCapabilitiesResponse",
         "type": "object"
       },
       "ValidateIfcRequest": {
@@ -1925,7 +2254,7 @@
     },
     "/v1/system/capabilities": {
       "get": {
-        "description": "Static honesty surface for DWG/CV/MEP/calculation claim boundaries.",
+        "description": "Static honesty surface for DWG/CV/MEP/calculation claim boundaries.\n\nResponse contract is pinned field-by-field (schema_version 1.3.0):\nmodel validation here means a payload drift fails loudly instead of\nsilently loosening the published OpenAPI document.",
         "operationId": "get_system_capabilities_v1_system_capabilities_get",
         "parameters": [
           {
@@ -1950,9 +2279,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Get System Capabilities V1 System Capabilities Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/SystemCapabilitiesResponse"
                 }
               }
             },

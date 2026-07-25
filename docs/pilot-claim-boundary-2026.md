@@ -33,7 +33,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Multimodal project-package analysis | `POST /v1/analyze/project-package`, benchmark manifests |
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
-| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-18.json` |
+| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |
 | Browser review shell (3D + 2D evidence) | Frontend vitest **25** passed; `run_live_review_smoke` |
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |

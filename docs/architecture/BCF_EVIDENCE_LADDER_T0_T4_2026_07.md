@@ -16,7 +16,7 @@ do **not** flip CDE product wording. Checkpoint remains **NO_GO**.
 | Tier | Name | What it proves | Current status |
 |---|---|---|---|
 | **T0** | Export surface | HTTP/API can emit a BCF ZIP (2.1 default; 3.0 experimental) | **AVAILABLE** |
-| **T1** | Structural + dual-consumer | ZIP schema members parse; ≥2 independent consumers agree on GUID/title/viewpoint | **EVIDENCED** (`audit/evidence/bcf-structural-handoff-2026-07-18.json`) |
+| **T1** | Structural + dual-consumer | ZIP schema members parse; ≥2 independent consumers agree on GUID/title/viewpoint | **EVIDENCED** (`audit/evidence/bcf-structural-handoff-2026-07-25.json`) |
 | **T2** | Independent CDE import | Customer CDE imported the ZIP (or BCF-API push) with log + screenshot + hashes | **NOT_VERIFIED** (`audit/evidence/cde-import-proof/`) |
 | **T3** | Round-trip fidelity | Topics/comments/viewpoints survive CDE → re-export without semantic loss | **NOT_STARTED** (blocked on T2) |
 | **T4** | Production handoff | Repeated customer CDE imports under signed scope + ops runbook | **NOT_STARTED** (blocked on T2/T3) |
