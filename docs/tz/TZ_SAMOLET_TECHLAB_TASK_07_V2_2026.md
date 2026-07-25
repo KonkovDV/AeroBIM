@@ -283,7 +283,7 @@ basis:
 | Publishable product | Precision / Recall / F1 | Целевая **>0.90** | Только после P4 + корпус заказчика |
 | Согласованность разметки | Cohen’s κ (2 эксперта) | Инструментальный gate κ≥0.60; **целевой протокол κ>0.80** `[УТОЧНЕНО: research vs tooling]` | `measure_adjudicator_agreement` |
 | При ≥3 разметчиках | Krippendorff’s α | α≥0.67 (tooling) | schema 1.1.0 |
-| Ранжирование | nDCG (graded 0/1/2) | Согласовать на пилоте | Fixture-only до корпуса `[НОВОЕ]` |
+| Ранжирование | nDCG (graded 0/1/2) | Согласовать на пилоте | Реализован: `evaluate_ranking_quality` (tie-aware, CI); fixture-only до корпуса `[НОВОЕ]` |
 
 **ТР-48.** Запрещено публиковать «точность >90%» без `PrecisionClaim.publishable=true` (customer + ≥2 adjudicators + agreement).  
 **Критерий:** intake gate + evaluate_detection_precision --require-publishable.
