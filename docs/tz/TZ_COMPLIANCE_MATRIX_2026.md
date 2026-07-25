@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.1.2"
-last_updated: "2026-07-11"
+version: "1.2.0"
+last_updated: "2026-07-24"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -12,9 +12,23 @@ SSOT mapping of the **intellectual expert-assistant TZ** / **TechLab Samolet Tas
 Companion: [`samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) (R1–R15).
 Task 07 readiness: [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md).
 Architecture TBD fill: [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_REQUIREMENTS_2026.md).
+Parallel Checkpoint #2 plan: [`../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md).
+Claims Lock: [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
-**Status legend:** `done` | `partial` | `missing`  
+**Status legend:** `done` | `partial` | `missing` | `blocked` (needs Samolet)  
 **Phase legend:** `MVP` (sign-off deterministic) | `P0`–`P4` (implementation waves)
+
+## 0. Former TBD sections (closed in TZ v2 pack)
+
+| TBD area | Status | Canonical doc | Owner | Acceptance |
+|----------|--------|---------------|-------|------------|
+| Architecture | done (draft→v2) | [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_REQUIREMENTS_2026.md) + TZ §5 | Tech lead | Module map + ports listed |
+| Code / build | done | [`TZ_BUILD_AND_QUALITY_2026.md`](TZ_BUILD_AND_QUALITY_2026.md) + TZ §6 | Tech lead | Repro build + test gate |
+| Solution image | done | [`TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md`](TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md) §7 | Tech lead | Image description without overclaim |
+| Presentation | done | same §8 | Tech lead | Jury deck boundary = Claims Lock |
+| Accompanying docs | done | [`TZ_ACCOMPANYING_DOCS_2026.md`](TZ_ACCOMPANYING_DOCS_2026.md) + TZ §10 | Tech lead | Pilot protocol + claim boundary linked |
+
+**Samolet-blocked rows elsewhere in this matrix** (corpus, approved norm pack, MEP federated, CDE BCF, dual adjudication) stay `partial`/`missing`/`blocked` until RT-001/002/003 — do not relabel `done`.
 
 ## 1. Terms (OCR / CV / NLP / BIM)
 

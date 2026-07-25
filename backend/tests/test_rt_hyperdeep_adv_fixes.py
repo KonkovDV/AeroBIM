@@ -388,7 +388,7 @@ class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
 
 
 class Adv09BcfXsdStatusTests(unittest.TestCase):
-    def test_structural_errors_with_xsd_present_stay_not_run(self) -> None:
+    def test_incomplete_xsd_dir_is_skipped_never_fake_passed(self) -> None:
         import io
         import zipfile
 
@@ -398,10 +398,12 @@ class Adv09BcfXsdStatusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             xsd_dir = Path(temporary_directory) / "xsd"
             xsd_dir.mkdir()
+            # Incomplete schema set (no version/visinfo) — must skip, never fake pass.
             (xsd_dir / "markup.xsd").write_text("<xs:schema/>", encoding="utf-8")
             result = verify_bcf_zip_structure(buf.getvalue(), xsd_dir=xsd_dir)
         self.assertFalse(result.ok)
-        self.assertEqual(result.xsd_status, "not_run")
+        self.assertEqual(result.xsd_status, "skipped")
+        self.assertNotEqual(result.xsd_status, "passed")
 
 
 if __name__ == "__main__":

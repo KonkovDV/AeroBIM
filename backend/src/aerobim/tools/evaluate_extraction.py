@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import TypedDict
 
 from aerobim.application.services.extraction_benchmark import evaluate_fixture
+from aerobim.domain.eval_statistics import FixtureCounts, cluster_bootstrap_cis
 from aerobim.domain.models import RequirementSource, SourceKind
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
@@ -27,6 +28,7 @@ class ExtractionQualityReport(TypedDict):
     micro_f1: float
     per_discipline: dict[str, dict[str, float]]
     fixtures: list[dict[str, float | int | str]]
+    uncertainty: dict[str, object]
 
 
 def _default_manifest_path() -> Path:
@@ -38,7 +40,13 @@ def _default_manifest_path() -> Path:
     )
 
 
-def _evaluate_manifest(manifest_path: Path) -> ExtractionQualityReport:
+def _evaluate_manifest(
+    manifest_path: Path,
+    *,
+    bootstrap_replicates: int = 1000,
+    bootstrap_seed: int = 20260725,
+    bootstrap_alpha: float = 0.05,
+) -> ExtractionQualityReport:
     with open(manifest_path, encoding="utf-8") as fh:
         manifest = json.load(fh)
 
@@ -103,6 +111,32 @@ def _evaluate_manifest(manifest_path: Path) -> ExtractionQualityReport:
             "macro_f1": sum(r.f1_score for r in results) / len(results),
         }
 
+    # Cluster bootstrap CIs (fixtures = resampling unit); ACL/NeurIPS reporting norm.
+    cis = cluster_bootstrap_cis(
+        [
+            FixtureCounts(
+                true_positives=result.true_positives,
+                false_positives=result.false_positives,
+                false_negatives=result.false_negatives,
+            )
+            for result in fixture_results
+        ],
+        replicates=bootstrap_replicates,
+        alpha=bootstrap_alpha,
+        seed=bootstrap_seed,
+    )
+    uncertainty: dict[str, object] = {
+        "method": "cluster_percentile_bootstrap",
+        "resampling_unit": "fixture",
+        "replicates": bootstrap_replicates,
+        "alpha": bootstrap_alpha,
+        "seed": bootstrap_seed,
+        "confidence_intervals": {name: ci.as_dict() for name, ci in cis.items()},
+        "claim_boundary": (
+            "CIs quantify fixture-corpus uncertainty only; never customer accuracy (RT-001)"
+        ),
+    }
+
     return {
         "artifact_type": "extraction_quality_report",
         "manifest": str(manifest_path.resolve()),
@@ -113,6 +147,7 @@ def _evaluate_manifest(manifest_path: Path) -> ExtractionQualityReport:
         "micro_recall": micro_recall,
         "micro_f1": micro_f1,
         "per_discipline": per_discipline,
+        "uncertainty": uncertainty,
         "fixtures": [
             {
                 "fixture_id": result.fixture_id,
@@ -150,6 +185,18 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Exit with code 1 if macro F1 is below this threshold (advisory gate)",
     )
+    parser.add_argument(
+        "--bootstrap",
+        type=int,
+        default=1000,
+        help="Bootstrap replicates for CIs (cluster/percentile; default 1000)",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=20260725,
+        help="Bootstrap RNG seed (deterministic artifacts)",
+    )
     args = parser.parse_args(argv)
 
     manifest_path = args.manifest.resolve()
@@ -157,7 +204,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Manifest not found: {manifest_path}", file=sys.stderr)
         return 1
 
-    payload = _evaluate_manifest(manifest_path)
+    payload = _evaluate_manifest(
+        manifest_path,
+        bootstrap_replicates=args.bootstrap,
+        bootstrap_seed=args.seed,
+    )
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 
     if args.output is not None:

@@ -2,13 +2,30 @@
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-07-19"
+last_updated: "2026-07-24"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003."
 ---
 
 # Capability × Claim Matrix (TechLab / Samolet)
 
 Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) and [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md).
+
+API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_contracts`, `bcf_t2`, `mep_intake`).
+
+## Four gap directions (honest statuses)
+
+| Direction | Code readiness | Fixture | Customer | Status vocabulary |
+|---|---|---|---|---|
+| Native DWG | MISSING (`Ezdxf` fail-closed; ODA stub off analyze) | — | — | never `dwg_dxf=ok` |
+| DXF | PARTIAL optional `[cad]` | fixture TEXT/MTEXT | not claimed | never = DWG support |
+| DWG→PDF/IFC route | derived provenance helper | unit | external prep | `available_as_derived_input` ≠ `dwg_supported` |
+| Geometric hard clash | when ifcclash configured | fixture | — | ≠ full MEP |
+| MEP system graph | co-presence / ENG_FIXTURE | FIXTURE_ONLY | BLOCKED | RT-003 OPEN |
+| MEP system-aware rules | matrix schema + intake | template | BLOCKED_CUSTOMER_DATA | MEP-CLASH-001 |
+| Calculation match | load/qty/cross-doc/OpenRebar | fixture | — | сверка only |
+| Calculation correctness | NOT_IMPLEMENTED | — | — | no solver |
+| BCF 2.1 / T1 | AVAILABLE | integration | — | structural ZIP |
+| BCF T2 CDE import | NOT_VERIFIED | empty proof dir | needs sandbox | no CDE_READY |
 
 ## Forbidden until customer evidence
 
@@ -18,9 +35,9 @@ Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLA
 | Customer SLA ≤30 min | RT-001 / SLA honesty | Fixture SLA `claim_level=fixture_only` |
 | Approved customer norm pack | RT-002 | Synthetic/draft packs only (`claim_labels`); full approval object + pack_hash required — RT-002 **OPEN** |
 | MEP system clash delivered | RT-003 | `mep_system_clash=NOT_VERIFIED`; eng foundation improved — RT-003 **OPEN** |
-| Native DWG analysis | — | НЕ РЕАЛИЗОВАНО |
-| Independent calc correctness | — | Сверка PARTIAL only |
-| BCF ready for CDE | RT-008 T2 | Structural ZIP **AVAILABLE**; CDE import **NOT_VERIFIED** ([ladder](architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)) |
+| Native DWG analysis | — | НЕ РЕАЛИЗОВАНО (`native DWG parser is not implemented`) |
+| Independent calc correctness | — | Сверка переданных результатов и источников, не расчётный решатель |
+| BCF ready for CDE | RT-008 T2 | Structural ZIP **AVAILABLE**; CDE import **NOT_VERIFIED** ([ladder](architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)); requires log+screenshot+hashes |
 | Production-ready / external academic audit | — | Self-audit + NO_GO |
 
 ## Allowed with evidence pointers

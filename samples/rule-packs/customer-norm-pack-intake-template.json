@@ -26,7 +26,16 @@
       "norm_edition": null,
       "norm_clause": null,
       "approval_status": "draft",
-      "approval_ref": null
+      "approval_ref": null,
+      "severity": "warning",
+      "finding_class": "attribute",
+      "rase": {
+        "requirement": "Replace: normative requirement statement",
+        "applicability": "Replace: which IfcSpace / storeys / stage",
+        "selection": "Pset_SpaceCommon.IsExternal exists",
+        "exception": "Replace or null if none"
+      },
+      "test_example_ref": "REPLACE-fixture-or-test-id"
     }
   ]
 }

@@ -6,18 +6,28 @@ buildingSMART BCF-XML 3.0 schema.
 Key differences from BCF 2.1 (implemented in bcf_report_exporter.py):
 
 * ``bcf.version`` VersionId = ``"3.0"``, DetailedVersion = ``"3.0"``.
-* ``markup.bcf`` root element is ``<Markup>`` with no XML namespace; attributes
-  use camelCase per BCF 3.0 XSD.
-* ``Topic`` uses new required fields: ``Guid``, ``TopicType``, ``TopicStatus``,
-  ``Title``, ``CreationDate``, ``CreationAuthor``, ``ModifiedDate``,
-  ``ModifiedAuthor``, ``Description``.
-* ``Comment`` block included per topic (BCF 3.0 requires at least an empty list).
-* ``Viewpoint`` reference in ``Viewpoints`` uses ``Guid`` attribute (3.0 style).
+* ``markup.bcf`` root element is ``<Markup>`` with no XML namespace.
+* Per official ``markup.xsd`` (release_3_0): ``Markup`` contains only
+  ``Header?`` and ``Topic``; ``Comments`` and ``Viewpoints`` are *children of
+  Topic* (they moved inside Topic in 3.0); ``ReferenceLinks`` and ``Labels``
+  are wrapper elements (``ReferenceLink*`` / ``Label*``); ``Header`` wraps
+  ``Files/File``.
+* ``Topic`` sequence: ReferenceLinks?, Title, Priority?, Index?, Labels?,
+  CreationDate, CreationAuthor, ModifiedDate?, ModifiedAuthor?, …,
+  Description?, …, Comments?, Viewpoints?.
 * ``viewpoint.bcfv`` root element is ``VisualizationInfo`` with ``Guid``
-  attribute; ``Components.Selection.Component`` uses ``IfcGuid`` attribute as
-  in 2.1 but ``Coloring`` and ``Visibility`` child structure is updated per 3.0
-  XSD (``Coloring`` before ``Visibility``).
-* No XML namespace declarations on markup and visinfo (3.0 dropped them).
+  attribute; Components order per 3.0 XSD is Selection?, Visibility?, Coloring?
+  (camera choice is required).
+* ``bcf.version`` (release_3_0) allows only the ``VersionId`` attribute —
+  no ``DetailedVersion`` child.
+* Root ``extensions.xml`` (extensions.xsd) declares the project vocabularies
+  actually used by emitted topics (TopicTypes / TopicStatuses / Priorities /
+  TopicLabels), so consumers (e.g. BIMcollab BCF 3.0 import) resolve
+  ``Priority`` and labels against a predefined list instead of free text.
+
+Clash topics are exported in deterministic triage order (band → severity
+metric → pair key; see ``domain.clash_triage``) with ``Priority`` from the
+triage band.
 
 The exporter is intentionally minimal and experimental.  It is not a full BCF 3.0
 implementation (BCF API, extensions.xml, document references are out of scope).
@@ -35,8 +45,8 @@ import zipfile
 from dataclasses import dataclass
 from xml.etree.ElementTree import Element, SubElement, tostring
 
+from aerobim.domain.clash_triage import TriagedClash, triage_clash_results
 from aerobim.domain.models import (
-    ClashResult,
     FindingCategory,
     Severity,
     ValidationIssue,
@@ -63,6 +73,9 @@ class _Bcf3TopicPayload:
     selected_guids: tuple[str, ...]
     topic_type: str
     topic_status: str = "Open"
+    labels: tuple[str, ...] = ()
+    priority: str | None = None
+    topic_index: int | None = None
 
 
 def export_bcf3(report: ValidationReport) -> bytes:
@@ -72,7 +85,10 @@ def export_bcf3(report: ValidationReport) -> bytes:
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("bcf.version", _bcf3_version_xml())
 
-        for topic in _collect_topics(report):
+        topics = _collect_topics(report)
+        if topics:
+            zf.writestr("extensions.xml", _extensions_xml(topics))
+        for topic in topics:
             zf.writestr(f"{topic.topic_guid}/", "")
             zf.writestr(f"{topic.topic_guid}/markup.bcf", _build_markup3(topic))
             zf.writestr(
@@ -84,8 +100,39 @@ def export_bcf3(report: ValidationReport) -> bytes:
 
 
 def _bcf3_version_xml() -> str:
+    # version.xsd (release_3_0): only the required VersionId attribute.
     root = Element("Version", VersionId=_BCF30_VERSION)
-    SubElement(root, "DetailedVersion").text = _BCF30_VERSION
+    return _to_xml_str(root)
+
+
+def _extensions_xml(topics: list[_Bcf3TopicPayload]) -> str:
+    """Build root extensions.xml (extensions.xsd) from vocabularies in use.
+
+    Deterministic: values are sorted and de-duplicated so identical reports
+    produce byte-identical archives.
+    """
+
+    root = Element("Extensions")
+    vocabularies: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+        ("TopicTypes", "TopicType", tuple(sorted({t.topic_type for t in topics}))),
+        ("TopicStatuses", "TopicStatus", tuple(sorted({t.topic_status for t in topics}))),
+        (
+            "Priorities",
+            "Priority",
+            tuple(sorted({t.priority for t in topics if t.priority})),
+        ),
+        (
+            "TopicLabels",
+            "TopicLabel",
+            tuple(sorted({label for t in topics for label in t.labels})),
+        ),
+    )
+    for wrapper_name, item_name, values in vocabularies:
+        if not values:
+            continue
+        wrapper = SubElement(root, wrapper_name)
+        for value in values:
+            SubElement(wrapper, item_name).text = value
     return _to_xml_str(root)
 
 
@@ -155,8 +202,8 @@ def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
             )
         )
 
-    for index, clash in enumerate(report.clash_results, start=1):
-        topics.append(_clash_topic(report, clash, index))
+    for item in triage_clash_results(report.clash_results).items:
+        topics.append(_clash_topic(report, item))
 
     return topics
 
@@ -174,33 +221,47 @@ def _should_export(issue: ValidationIssue) -> bool:
 
 def _clash_topic(
     report: ValidationReport,
-    clash: ClashResult,
-    index: int,
+    item: TriagedClash,
 ) -> _Bcf3TopicPayload:
-    seed = f"clash:{clash.element_a_guid}|{clash.element_b_guid}|{clash.clash_type}|{index}"
+    clash = item.clash
+    pair_a, pair_b = item.pair_key
+    # Pair-key seed keeps topic GUIDs stable across engine output reorderings.
+    seed = f"clash:{pair_a}|{pair_b}|{clash.clash_type}"
     return _Bcf3TopicPayload(
         topic_guid=_stable_uuid(f"topic:{seed}"),
         viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
-        title=f"Clash {index}: {clash.clash_type}",
+        title=f"Clash {item.rank}: {clash.clash_type} [{item.band.value}]",
         description=(
             f"{clash.description}. "
             f"Distance: {clash.distance:.6f} m. "
-            f"Elements: {clash.element_a_guid}, {clash.element_b_guid}."
+            f"Elements: {clash.element_a_guid}, {clash.element_b_guid}.\n\n"
+            f"triage:{item.rationale}\n"
+            f"triage:duplicates_merged={item.duplicates_merged}"
         ),
         creation_date=report.created_at,
         creation_author="aerobim-backend",
         reference_links=(clash.element_a_guid, clash.element_b_guid),
         selected_guids=(clash.element_a_guid, clash.element_b_guid),
         topic_type="Clash",
+        labels=(
+            "origin:deterministic",
+            "category:spatial",
+            f"triage:band={item.band.value}",
+        ),
+        priority=item.band.value.capitalize(),
+        topic_index=item.rank,
     )
 
 
 def _build_markup3(topic: _Bcf3TopicPayload) -> str:
-    """Build BCF 3.0 markup.bcf XML (no namespace)."""
+    """Build BCF 3.0 markup.bcf XML per official markup.xsd (release_3_0)."""
     root = Element("Markup")
 
+    # Header/Files/File wrappers; File children are elements (Filename/Date).
     header = SubElement(root, "Header")
-    SubElement(header, "File", Date=topic.creation_date)
+    files = SubElement(header, "Files")
+    file_node = SubElement(files, "File", IsExternal="true")
+    SubElement(file_node, "Date").text = topic.creation_date
 
     topic_node = SubElement(
         root,
@@ -209,21 +270,28 @@ def _build_markup3(topic: _Bcf3TopicPayload) -> str:
         TopicType=topic.topic_type,
         TopicStatus=topic.topic_status,
     )
+    if topic.reference_links:
+        reference_links = SubElement(topic_node, "ReferenceLinks")
+        for link in topic.reference_links:
+            SubElement(reference_links, "ReferenceLink").text = link
     SubElement(topic_node, "Title").text = topic.title
+    if topic.priority:
+        SubElement(topic_node, "Priority").text = topic.priority
+    if topic.topic_index is not None:
+        SubElement(topic_node, "Index").text = str(topic.topic_index)
+    if topic.labels:
+        labels_node = SubElement(topic_node, "Labels")
+        for label in topic.labels:
+            SubElement(labels_node, "Label").text = label
     SubElement(topic_node, "CreationDate").text = topic.creation_date
     SubElement(topic_node, "CreationAuthor").text = topic.creation_author
     SubElement(topic_node, "ModifiedDate").text = topic.creation_date
     SubElement(topic_node, "ModifiedAuthor").text = topic.creation_author
     SubElement(topic_node, "Description").text = topic.description
 
-    for link in topic.reference_links:
-        SubElement(topic_node, "ReferenceLink").text = link
-
-    # BCF 3.0: Comments list (may be empty)
-    SubElement(root, "Comments")
-
-    # BCF 3.0: Viewpoints list
-    viewpoints = SubElement(root, "Viewpoints")
+    # BCF 3.0: Comments and Viewpoints are children of Topic (moved in 3.0).
+    SubElement(topic_node, "Comments")
+    viewpoints = SubElement(topic_node, "Viewpoints")
     vp = SubElement(viewpoints, "ViewPoint", Guid=topic.viewpoint_guid)
     SubElement(vp, "Viewpoint").text = "viewpoint.bcfv"
     SubElement(vp, "Index").text = "0"
@@ -232,19 +300,18 @@ def _build_markup3(topic: _Bcf3TopicPayload) -> str:
 
 
 def _build_viewpoint3(topic: _Bcf3TopicPayload) -> str:
-    """Build BCF 3.0 viewpoint.bcfv XML (no namespace)."""
+    """Build BCF 3.0 viewpoint.bcfv XML per official visinfo.xsd (release_3_0)."""
     root = Element("VisualizationInfo", Guid=topic.viewpoint_guid)
 
+    # visinfo.xsd (release_3_0) Components order: Selection?, Visibility?, Coloring?.
     components = SubElement(root, "Components")
-    # BCF 3.0 XSD: Coloring before Visibility
-    SubElement(components, "Coloring")
-
-    selection = SubElement(components, "Selection")
-    for ifc_guid in topic.selected_guids:
-        SubElement(selection, "Component", IfcGuid=ifc_guid)
-
+    if topic.selected_guids:
+        selection = SubElement(components, "Selection")
+        for ifc_guid in topic.selected_guids:
+            SubElement(selection, "Component", IfcGuid=ifc_guid)
     SubElement(components, "Visibility", DefaultVisibility="true")
 
+    # Camera choice is required in 3.0; OrthogonalCamera requires AspectRatio.
     camera = SubElement(root, "OrthogonalCamera")
     _vector(camera, "CameraViewPoint", 10.0, 10.0, 10.0)
     _vector(camera, "CameraDirection", -0.577350269, -0.577350269, -0.577350269)

@@ -287,9 +287,15 @@ def evaluate_matrix_against_graph(
 
 
 class MepSystemGraphProvider(Protocol):
-    """Build duct/pipe/tray connectivity from IFC system assignments."""
+    """Build duct/pipe/tray connectivity from IFC system assignments.
+
+    ``build`` is the analyze-path entry. ``build_graph`` is the honesty-contract
+    alias (same semantics; ``ModelSet`` packaging is a future intake shape).
+    """
 
     def build(self, ifc_path: Path) -> MepSystemGraph: ...
+
+    def build_graph(self, ifc_path: Path) -> MepSystemGraph: ...
 
 
 class UnconfiguredMepSystemGraphProvider:
@@ -301,6 +307,9 @@ class UnconfiguredMepSystemGraphProvider:
             "MEP system graph is not configured (MEP-CLASH-001): "
             "requires federated MEP IFC with systems and a signed scope memo"
         )
+
+    def build_graph(self, ifc_path: Path) -> MepSystemGraph:
+        return self.build(ifc_path)
 
 
 class SyntheticMepSystemGraphProvider:
@@ -353,6 +362,9 @@ class SyntheticMepSystemGraphProvider:
             source_ifc=str(ifc_path),
             synthetic=True,
         )
+
+    def build_graph(self, ifc_path: Path) -> MepSystemGraph:
+        return self.build(ifc_path)
 
 
 @dataclass(frozen=True)

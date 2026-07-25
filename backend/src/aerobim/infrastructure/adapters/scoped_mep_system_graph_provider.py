@@ -38,5 +38,8 @@ class ScopedMepSystemGraphProvider:
             return provider.build(ifc_path)
         return self._fallback.build(ifc_path)
 
+    def build_graph(self, ifc_path: Path) -> MepSystemGraph:
+        return self.build(ifc_path)
+
 
 __all__ = ["ScopedMepSystemGraphProvider"]

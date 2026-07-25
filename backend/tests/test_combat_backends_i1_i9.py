@@ -42,7 +42,9 @@ class CombatBackendTests(unittest.TestCase):
             path.write_bytes(b"AC1015")
             result = OdaCadModelIngestor(enabled=False).ingest(path)
         self.assertFalse(result.supported)
-        self.assertIn("ODA", result.reason or "")
+        from aerobim.domain.cad_ingest import NATIVE_DWG_MISSING_REASON
+
+        self.assertEqual(result.reason, NATIVE_DWG_MISSING_REASON)
 
     def test_hybrid_degrades_outside_allowlist(self) -> None:
         analyzer = HybridDrawingAnalyzer()

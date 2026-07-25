@@ -5,7 +5,9 @@ GUID, title, and viewpoint presence — that is the interoperability seam.
 
 Structural verification follows buildingSMART BCFZIP practice: require
 ``bcf.version``, ``markup.bcf`` per topic folder, and well-formed XML.
-Optional XSD validation runs only when schema files are vendored locally.
+XSD validation runs against the vendored official schemas
+(``samples/bcf-xsd/release_2_1`` / ``release_3_0``) when an ``xsd_dir`` is
+supplied — ``xsd_status`` is ``passed`` only after an actual validation run.
 """
 
 from __future__ import annotations
@@ -38,9 +40,10 @@ class BcfStructuralVerification:
     sha256: str
     errors: tuple[str, ...]
     xsd_status: str
-    """``not_configured`` | ``not_run`` | ``failed`` | ``skipped``.
+    """``not_configured`` | ``not_run`` | ``failed`` | ``skipped`` | ``passed``.
 
-    Never ``passed`` without an actual XSD validation run.
+    ``passed`` only after an actual XSD validation run against the official
+    buildingSMART schemas; ``skipped`` when the validator/schemas are absent.
     """
 
     def as_dict(self) -> dict[str, object]:
@@ -166,6 +169,77 @@ def _extract_tag_text(xml: str, tag: str) -> str:
     return xml[gt + 1 : close].strip()
 
 
+def default_bcf_xsd_dir(version_id: str) -> Path | None:
+    """Vendored official schema dir for a BCF VersionId, if present in the repo."""
+
+    release = "release_2_1" if version_id.startswith("2") else "release_3_0"
+    for parent in Path(__file__).resolve().parents:
+        candidate = parent / "samples" / "bcf-xsd" / release
+        if candidate.is_dir():
+            return candidate
+    return None
+
+
+def _validate_against_xsd(
+    zf: zipfile.ZipFile,
+    names: set[str],
+    xsd_dir: Path,
+    errors: list[str],
+) -> str:
+    """Validate bcf.version / markup.bcf / viewpoint.bcfv against official XSDs.
+
+    Returns the resulting ``xsd_status``. Never fakes ``passed``: import or
+    schema-load failures yield ``skipped`` with an error note, validation
+    findings yield ``failed``.
+    """
+
+    try:
+        import xmlschema
+    except ImportError:
+        errors.append("xmlschema not installed; XSD validation skipped")
+        return "skipped"
+
+    schema_files = {
+        "version": xsd_dir / "version.xsd",
+        "markup": xsd_dir / "markup.xsd",
+        "visinfo": xsd_dir / "visinfo.xsd",
+    }
+    if not all(path.is_file() for path in schema_files.values()):
+        return "skipped"
+    # Optional root-file schema (release_3_0): validate extensions.xml when both
+    # the schema and the archive member exist.
+    extensions_xsd = xsd_dir / "extensions.xsd"
+    if extensions_xsd.is_file():
+        schema_files["extensions"] = extensions_xsd
+
+    try:
+        schemas = {key: xmlschema.XMLSchema10(str(path)) for key, path in schema_files.items()}
+    except Exception as exc:  # noqa: BLE001 — schema load must not crash verifier
+        errors.append(f"XSD schema load failed: {exc}")
+        return "skipped"
+
+    failures = 0
+    checks: list[tuple[str, str]] = [("bcf.version", "version")]
+    if "extensions" in schemas and "extensions.xml" in names:
+        checks.append(("extensions.xml", "extensions"))
+    checks.extend(
+        (name, "markup") for name in sorted(n for n in names if n.endswith("/markup.bcf"))
+    )
+    checks.extend(
+        (name, "visinfo") for name in sorted(n for n in names if n.endswith("/viewpoint.bcfv"))
+    )
+    for member, kind in checks:
+        if member not in names:
+            continue
+        try:
+            schemas[kind].validate(io.BytesIO(zf.read(member)))
+        except Exception as exc:  # noqa: BLE001 — collect per-file findings
+            failures += 1
+            first_line = str(exc).strip().splitlines()[0] if str(exc).strip() else repr(exc)
+            errors.append(f"XSD invalid: {member}: {first_line}")
+    return "failed" if failures else "passed"
+
+
 def verify_bcf_zip_structure(
     archive: bytes,
     *,
@@ -196,6 +270,7 @@ def verify_bcf_zip_structure(
             xsd_status="not_run",
         )
 
+    xsd_status = "not_configured"
     try:
         with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:
             names = set(zf.namelist())
@@ -231,17 +306,18 @@ def verify_bcf_zip_structure(
                         errors.append(f"viewpoint not well-formed: {viewpoint_name}: {exc}")
                 else:
                     errors.append(f"missing viewpoint.bcfv for topic {topic_guid}")
+
+            if xsd_dir is None:
+                xsd_dir = default_bcf_xsd_dir(version_id) if version_id else None
+                xsd_status = "not_configured" if xsd_dir is None else xsd_status
+            if xsd_dir is not None:
+                if xsd_dir.is_dir():
+                    xsd_status = _validate_against_xsd(zf, names, xsd_dir, errors)
+                else:
+                    xsd_status = "skipped"
     except zipfile.BadZipFile as exc:
         errors.append(f"not a ZIP archive: {exc}")
-
-    xsd_status = "not_configured"
-    if xsd_dir is not None and xsd_dir.is_dir():
-        xsd_files = list(xsd_dir.glob("*.xsd"))
-        if not xsd_files:
-            xsd_status = "skipped"
-        else:
-            xsd_status = "not_run"
-            # Presence of XSD files does not imply validation ran or failed.
+        xsd_status = "not_run"
 
     return BcfStructuralVerification(
         ok=not errors,

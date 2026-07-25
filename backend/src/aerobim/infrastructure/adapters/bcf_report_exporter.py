@@ -4,8 +4,14 @@ Converts a ``ValidationReport`` into a minimal BCF 2.1 XML ZIP archive
 (buildingSMART BCF-XML schema, ISO 16739-based).
 
 Each ``ValidationIssue`` with severity ERROR becomes a BCF Topic (markup.bcf).
-Detected clashes are exported as additional BCF topics so coordination tools
-can consume them directly.
+Detected clashes are exported as additional BCF topics in deterministic triage
+order (band → severity metric → pair key; see ``domain.clash_triage``) so
+coordination tools can consume them directly. Topic child-element order follows
+the official ``markup.xsd`` (release_2_1) sequence: ReferenceLink*, Title,
+Priority?, Index?, Labels*, CreationDate, CreationAuthor, Description?.
+Official 2.1 XSDs declare no targetNamespace, so markup/version/visinfo are
+emitted without namespaces (matches buildingSMART sample files and enables
+local XSD validation against vendored ``samples/bcf-xsd/release_2_1``).
 
 The archive structure follows::
 
@@ -27,17 +33,13 @@ import zipfile
 from dataclasses import dataclass
 from xml.etree.ElementTree import Element, SubElement, tostring
 
+from aerobim.domain.clash_triage import TriagedClash, triage_clash_results
 from aerobim.domain.models import (
-    ClashResult,
     FindingCategory,
     Severity,
     ValidationIssue,
     ValidationReport,
 )
-
-_BCF_MARKUP_NS = "http://www.buildingsmart-tech.org/bcf/markup/2.1"
-_BCF_VERSION_NS = "http://www.buildingsmart-tech.org/bcf/version/2.1"
-_BCF_VISINFO_NS = "http://www.buildingsmart-tech.org/bcf/visinfo/2.1"
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,10 @@ class _BcfTopicPayload:
     topic_type: str
     topic_status: str = "Open"
     labels: tuple[str, ...] = ()
+    priority: str | None = None
+    """BCF Topic/Priority text (e.g. triage band Critical/Major/Minor)."""
+    topic_index: int | None = None
+    """BCF Topic/Index sort order (deterministic triage rank for clashes)."""
 
 
 def _stable_uuid(seed: str) -> str:
@@ -78,7 +84,8 @@ def export_bcf(report: ValidationReport) -> bytes:
 
 
 def _bcf_version_xml() -> str:
-    root = Element("Version", VersionId="2.1", xmlns=_BCF_VERSION_NS)
+    # version.xsd (release_2_1): no targetNamespace; VersionId attr + DetailedVersion.
+    root = Element("Version", VersionId="2.1")
     SubElement(root, "DetailedVersion").text = "2.1"
     return _to_xml_str(root)
 
@@ -182,8 +189,8 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             )
         )
 
-    for index, clash in enumerate(report.clash_results, start=1):
-        topics.append(_clash_topic_payload(report, clash, index))
+    for item in triage_clash_results(report.clash_results).items:
+        topics.append(_clash_topic_payload(report, item))
 
     return topics
 
@@ -206,30 +213,40 @@ def _should_export_issue_as_bcf_topic(issue: ValidationIssue) -> bool:
 
 def _clash_topic_payload(
     report: ValidationReport,
-    clash: ClashResult,
-    index: int,
+    item: TriagedClash,
 ) -> _BcfTopicPayload:
-    seed = f"clash:{clash.element_a_guid}|{clash.element_b_guid}|{clash.clash_type}|{index}"
+    clash = item.clash
+    pair_a, pair_b = item.pair_key
+    # Pair-key seed keeps topic GUIDs stable across engine output reorderings.
+    seed = f"clash:{pair_a}|{pair_b}|{clash.clash_type}"
     return _BcfTopicPayload(
         topic_guid=_stable_uuid(f"topic:{seed}"),
         viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
-        title=f"Clash {index}: {clash.clash_type}",
+        title=f"Clash {item.rank}: {clash.clash_type} [{item.band.value}]",
         description=(
             f"{clash.description}. "
             f"Distance: {clash.distance:.6f} m. "
-            f"Elements: {clash.element_a_guid}, {clash.element_b_guid}."
+            f"Elements: {clash.element_a_guid}, {clash.element_b_guid}.\n\n"
+            f"triage:{item.rationale}\n"
+            f"triage:duplicates_merged={item.duplicates_merged}"
         ),
         creation_date=report.created_at,
         creation_author="aerobim-backend",
         reference_links=(clash.element_a_guid, clash.element_b_guid),
         selected_guids=(clash.element_a_guid, clash.element_b_guid),
         topic_type="Clash",
-        labels=("origin:deterministic", "category:spatial"),
+        labels=(
+            "origin:deterministic",
+            "category:spatial",
+            f"triage:band={item.band.value}",
+        ),
+        priority=item.band.value.capitalize(),
+        topic_index=item.rank,
     )
 
 
 def _build_markup(topic: _BcfTopicPayload) -> str:
-    root = Element("Markup", xmlns=_BCF_MARKUP_NS)
+    root = Element("Markup")
 
     topic_node = SubElement(
         root,
@@ -238,19 +255,23 @@ def _build_markup(topic: _BcfTopicPayload) -> str:
         TopicType=topic.topic_type,
         TopicStatus=topic.topic_status,
     )
-    SubElement(topic_node, "Title").text = topic.title
-    SubElement(topic_node, "Description").text = topic.description
-    SubElement(topic_node, "CreationDate").text = topic.creation_date
-    SubElement(topic_node, "CreationAuthor").text = topic.creation_author
-    if topic.labels:
-        for label in topic.labels:
-            SubElement(topic_node, "Labels").text = label
-
+    # markup.xsd (release_2_1) Topic sequence: ReferenceLink*, Title, Priority?,
+    # Index?, Labels*, CreationDate, CreationAuthor, ..., Description?.
     for reference_link in topic.reference_links:
         SubElement(topic_node, "ReferenceLink").text = reference_link
+    SubElement(topic_node, "Title").text = topic.title
+    if topic.priority:
+        SubElement(topic_node, "Priority").text = topic.priority
+    if topic.topic_index is not None:
+        SubElement(topic_node, "Index").text = str(topic.topic_index)
+    for label in topic.labels:
+        SubElement(topic_node, "Labels").text = label
+    SubElement(topic_node, "CreationDate").text = topic.creation_date
+    SubElement(topic_node, "CreationAuthor").text = topic.creation_author
+    SubElement(topic_node, "Description").text = topic.description
 
-    viewpoints = SubElement(root, "Viewpoints")
-    viewpoint = SubElement(viewpoints, "Viewpoint", Guid=topic.viewpoint_guid)
+    # markup.xsd: Viewpoints is a ViewPoint-typed element with Guid attribute.
+    viewpoint = SubElement(root, "Viewpoints", Guid=topic.viewpoint_guid)
     SubElement(viewpoint, "Viewpoint").text = "viewpoint.bcfv"
     SubElement(viewpoint, "Index").text = "0"
 
@@ -258,22 +279,24 @@ def _build_markup(topic: _BcfTopicPayload) -> str:
 
 
 def _build_viewpoint(topic: _BcfTopicPayload) -> str:
-    root = Element("VisualizationInfo", Guid=topic.viewpoint_guid, xmlns=_BCF_VISINFO_NS)
+    root = Element("VisualizationInfo", Guid=topic.viewpoint_guid)
 
+    # visinfo.xsd (release_2_1) Components: ViewSetupHints?, Selection?,
+    # Visibility (required), Coloring?. Empty Selection/Coloring are invalid
+    # (both require >=1 child), so they are emitted only when populated.
     components = SubElement(root, "Components")
-    selection = SubElement(components, "Selection")
-    for ifc_guid in topic.selected_guids:
-        SubElement(selection, "Component", IfcGuid=ifc_guid)
-
+    if topic.selected_guids:
+        selection = SubElement(components, "Selection")
+        for ifc_guid in topic.selected_guids:
+            SubElement(selection, "Component", IfcGuid=ifc_guid)
     SubElement(components, "Visibility", DefaultVisibility="true")
-    SubElement(components, "Coloring")
 
+    # OrthogonalCamera (release_2_1): no AspectRatio element (3.0-only).
     camera = SubElement(root, "OrthogonalCamera")
     _vector_node(camera, "CameraViewPoint", 10.0, 10.0, 10.0)
     _vector_node(camera, "CameraDirection", -0.577350269, -0.577350269, -0.577350269)
     _vector_node(camera, "CameraUpVector", 0.0, 0.0, 1.0)
     SubElement(camera, "ViewToWorldScale").text = "10.0"
-    SubElement(camera, "AspectRatio").text = "1.7777777777777777"
 
     SubElement(root, "ClippingPlanes")
     return _to_xml_str(root)

@@ -1,0 +1,10 @@
+# H1.1 mutation testing config: presentation/http/context.py (auth + ACL + jail glue).
+# Run from backend/ (see object_acl.toml for the command sequence).
+[cosmic-ray]
+module-path = "src/aerobim/presentation/http/context.py"
+timeout = 90.0
+excluded-modules = []
+test-command = "python -m pytest -x -q tests/test_mutation_kills_http_context.py tests/test_api_security.py tests/test_api_object_acl.py tests/test_enterprise_storage_foundation.py tests/test_api_contract_invariants.py"
+
+[cosmic-ray.distributor]
+name = "local"

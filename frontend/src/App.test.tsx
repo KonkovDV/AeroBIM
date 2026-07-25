@@ -579,4 +579,43 @@ describe("App", () => {
     expect(within(viewer).getByText("clash")).toBeTruthy();
     expect(within(viewer).getByText(/pipe-guid-a,beam-guid-b/i)).toBeTruthy();
   });
+
+  it("renders clash triage band chips and orders issues by priority", async () => {
+    const report = buildReport();
+    report.issues = [
+      {
+        ...buildIssue({
+          rule_id: "SPATIAL-NEGLIGIBLE",
+          severity: "warning",
+          message: "tiny clash",
+          category: "spatial",
+          evidence_refs: ["n1", "n2", "triage:band=negligible", "triage:rank=2"],
+        }),
+        priority: 30,
+      },
+      {
+        ...buildIssue({
+          rule_id: "SPATIAL-CRITICAL",
+          severity: "warning",
+          message: "deep clash",
+          category: "spatial",
+          evidence_refs: ["c1", "c2", "triage:band=critical", "triage:rank=1"],
+        }),
+        priority: 42,
+      },
+    ];
+    fetchReportMock.mockResolvedValue(report);
+
+    render(<App />);
+
+    const criticalChip = await screen.findByText("critical", { selector: ".triage-band" });
+    expect(criticalChip.className).toContain("triage-band-critical");
+    const negligibleChip = screen.getByText("negligible", { selector: ".triage-band" });
+    expect(negligibleChip.className).toContain("triage-band-negligible");
+
+    // Priority-desc reviewer order: critical card must precede negligible card.
+    const cards = screen.getAllByRole("button", { name: /SPATIAL-/i });
+    expect(cards[0].textContent).toContain("SPATIAL-CRITICAL");
+    expect(cards[1].textContent).toContain("SPATIAL-NEGLIGIBLE");
+  });
 });

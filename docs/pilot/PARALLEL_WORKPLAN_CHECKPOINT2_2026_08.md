@@ -1,0 +1,78 @@
+---
+title: "AeroBIM parallel workplan → Checkpoint #2 (Aug 2026) → final (Sep 2026)"
+status: active
+version: "1.0.0"
+last_updated: "2026-07-24"
+claim_boundary: "Methodology and engineering contour only. Customer precision / SLA / CDE-ready BCF remain NO_GO until RT-001/002/003."
+---
+
+# Параллельный план до контрольной точки №2
+
+**Цель (4–20 августа):** промежуточная версия на согласованном сценарии Самолёта — границы применимости, воспроизводимый прогон, измеримые критерии.  
+**Цель (3–21 сентября):** пилотный отчёт на данных заказчика и подтверждённый экономический эффект.
+
+**Checkpoint продукта:** `NO_GO` до закрытия RT-001 / RT-002 / RT-003 с evidence.
+
+## Пять параллельных потоков
+
+| # | Поток | Результат | Критерий готовности | Артефакты в репо |
+|---|--------|-----------|---------------------|------------------|
+| 1 | Протокол пилота + методика разметки | Утверждённый протокол + инструкция двум экспертам | У каждого типа проверки: вход, ожидаемый результат, источник доказательства, эксперт, способ измерения | [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md), [`EXPERT_LABELING_INSTRUCTION_2026.md`](EXPERT_LABELING_INSTRUCTION_2026.md), [`../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) |
+| 2 | Живой демо-прогон + evidence-бандл | Воспроизводимый демо-сценарий | Повторный запуск сопоставим; у замечания есть ссылка на файл/лист/элемент | [`SAMOLET_PILOT_ENV_RUNBOOK_2026_07.md`](SAMOLET_PILOT_ENV_RUNBOOK_2026_07.md), [`HARNESS_AND_DEMO_RUNBOOK_2026.md`](HARNESS_AND_DEMO_RUNBOOK_2026.md), `aerobim.tools.export_evidence_bundle` |
+| 3 | Norm pack + RASE | Шаблон + первый набор правил (fail-closed) | У правила: источник, область, исключения, исполняемый критерий, тест; неподтверждённый pack ≠ positive verdict | [`NORM_PACK_RASE_GUIDE_2026.md`](NORM_PACK_RASE_GUIDE_2026.md), `samples/rule-packs/norm-rule-pack.schema.json`, `customer-norm-pack-intake-template.json` |
+| 4 | Harness размеченного среза | Отчёт TP/FP/FN + κ + время без ручных таблиц | Один запуск → метрики, конфиг, размер корпуса, согласие экспертов, ошибки по категориям | [`HARNESS_AND_DEMO_RUNBOOK_2026.md`](HARNESS_AND_DEMO_RUNBOOK_2026.md), `evaluate_detection_precision`, `measure_adjudicator_agreement` |
+| 5 | Матрица трассируемости ТЗ | Требование → модуль → evidence → статус → next | Нет требования без статуса, владельца и критерия | [`../tz/TZ_COMPLIANCE_MATRIX_2026.md`](../tz/TZ_COMPLIANCE_MATRIX_2026.md), [`../tz/README.md`](../tz/README.md), Claims Lock |
+
+## Календарь
+
+| Окно | Фокус | Зависимость от Самолёта |
+|------|--------|-------------------------|
+| **28–31 июля** | Протокол, схема разметки, структура norm pack, перечень входных данных | Список запросов готов; данные ещё не обязательны |
+| **1–3 августа** | Демо-прогон, evidence-бандл, harness; вопросы к Самолёту | Стабильный демо-комплект (fixture OK) |
+| **4–10 августа** | Intake комплекта, норм, двух экспертов; baseline | **Блокирует** customer KPI |
+| **11–20 августа** | Промежуточный прогон, правка правил, передача версии | Обратная связь экспертов |
+| **21 авг – 2 сен** | Оценка на размеченном срезе; BCF в контуре заказчика | Корпус + adjudication + CDE |
+| **3–21 сентября** | Пилотный отчёт, метрики, ограничения, внедрение | Подписанный scope + evidence |
+
+## Критические зависимости (не заявлять без них)
+
+| Нужно | Без этого нельзя |
+|-------|------------------|
+| Согласованный комплект ПД/РД/IFC/ТЗ/расчёты | Customer SLA / precision |
+| Утверждённый norm pack (`customer_approved` + `pack_hash`) | Positive verdict по нормам (RT-002) |
+| ≥2 эксперта-разметчика + dual-blind + adjudication | κ/α, TP/(TP+FP), экономический эффект (RT-001) |
+| Federated MEP + signed matrix (если MEP в scope) | MEP system-aware claim (RT-003) |
+
+**Отдельные проверяемые направления (не заявленные результаты промежуточной версии):** нативный DWG; полноценный MEP system-aware clash; независимая проверка корректности расчётов; импорт BCF в конкретную СОД.
+
+**Инженерный gap-анализ четырёх направлений:** [`FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md`](FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md).
+
+**Kickoff-карта (входы заказчика ↔ intake gates ↔ этапность):** [`CUSTOMER_KICKOFF_MAP_2026_07_26.md`](CUSTOMER_KICKOFF_MAP_2026_07_26.md).
+
+**Протокол сравнения VLM/OCR (Qwen · Kimi · Gemma, окно 4–20 авг):** [`VLM_OCR_COMPARISON_PROTOCOL_2026_08.md`](VLM_OCR_COMPARISON_PROTOCOL_2026_08.md) — вспомогательный инструмент, не критерий приёмки.
+
+## Claims Lock (промежуточная версия)
+
+Запрещено до evidence: «>90%», «SLA ≤30 мин на комплекте заказчика», «DWG готов», «MEP delivered», «AI читает чертежи как инженер», «BCF готов к CDE», positive verdict по неподтверждённому norm pack.
+
+Допустимо: «инженерная готовность контура», «fixture GO», «методика готова», «ожидаем корпус / pack / экспертов».
+
+## Владельцы потоков (внутренняя)
+
+| Поток | Owner | Соисполнитель |
+|-------|-------|---------------|
+| 1 Протокол / разметка | Tech lead | openBIM lead |
+| 2 Демо / evidence | Tech lead | — |
+| 3 Norm / RASE | openBIM lead | Samolet (утверждение) |
+| 4 Harness | Tech lead | Adjudicators (labels) |
+| 5 TZ matrix | Tech lead | Claims Lock guardian |
+
+## Definition of Done — Checkpoint #2 (промежуточная)
+
+- [ ] Протокол + инструкция экспертов утверждены (или «черновик на согласование» с датой)
+- [ ] Демо-бандл воспроизводим на fixture-комплекте
+- [ ] Norm pack template + RASE-гайд + fail-closed поведение задокументированы
+- [ ] Harness один командой даёт precision/recall/F1/FP-rate (+ κ из CSV); nDCG — если реализован или явно «planned»
+- [ ] TZ matrix без «пустых» TBD: у каждого требования статус / owner / acceptance
+- [ ] Список входных данных / вопросов Самолёту актуален
+- [ ] Claims Lock не нарушен в материалах промежуточной версии

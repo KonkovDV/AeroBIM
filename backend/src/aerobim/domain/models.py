@@ -120,7 +120,7 @@ class ReportCapabilities:
         CapabilityState.SKIPPED, "PD/RD section pairing not requested"
     )
     dwg_dxf: CapabilityStatus = CapabilityStatus(
-        CapabilityState.MISSING, "DWG/DXF native analysis not implemented"
+        CapabilityState.MISSING, "native DWG parser is not implemented"
     )
     cv_human_level: CapabilityStatus = CapabilityStatus(
         CapabilityState.MISSING, "Human-level CV/drawing understanding not implemented"
@@ -135,7 +135,7 @@ class ReportCapabilities:
     )
     calculation_correctness: CapabilityStatus = CapabilityStatus(
         CapabilityState.NOT_IMPLEMENTED,
-        "Independent calculation correctness verification not implemented",
+        "independent solver verification is not implemented",
     )
     quantity: CapabilityStatus = CapabilityStatus(
         CapabilityState.SKIPPED, "quantity consistency not evaluated"

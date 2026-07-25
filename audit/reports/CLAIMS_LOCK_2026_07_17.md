@@ -9,19 +9,23 @@
 - «точность >90%» / product accuracy percentages
 - «утверждённый заказчиком нормативный пакет» (current: **НЕТ**)
 - «MEP clash» as delivered capability
+- «полный MEP clash» / full MEP system-aware as AVAILABLE without customer federated IFC + signed matrix (RT-003)
 - «анализирует DWG/DXF» / implying DWG ready because DXF parsed (mixed package must surface FAILED)
+- «DWG поддерживается» / `dwg_supported` / DWG-ready (native DWG = MISSING; PDF/IFC = derived input only)
 - Soft-pass when quantity/load/MEP infrastructure threw (must be capability FAILED)
 - Soft-pass when `require_mep_system_clash` and MEP is NOT_VERIFIED / empty graph
 - Soft-pass when audit JSONL corruption is silently ignored under pilot/production profile
 - Soft `AEROBIM_CLASH_AFFECTS_PASS=false` under pilot/production (env soft flags are ignored; profile forces fail-closed)
-- «проверяет расчёты» as independent correctness
+- «проверяет расчёты» as independent correctness / `calculation_correctness_verified`
 - «production-ready» / «external academic audit»
-- «BCF готов к CDE» without import artifact (structural ZIP ≠ CDE)
+- «BCF готов к CDE» / «BCF готов для СОД» / `CDE_READY` / «CDE interoperable» without T2 import-log + screenshot + hashes
 - Green pass when required clash/OCR/schema checks were skipped
 - Fixture SLA as customer комплект ≤30 мин
 - «I9 DONE», «GraphRAG готов», «IfcLLM в AeroBIM» — I9 is **advisory scaffold** only
 - Closing RT-001/002/003 without customer evidence
 - «нет автоматического вердикта» without clarifying Shared-gate `summary.passed` (see ADR-001)
+- Treating co-presence MEP graph edges as connection / system-membership proof
+- Treating fixture_only / ENG_FIXTURE as customer-validated MEP
 
 ## Allowed wording
 
@@ -30,9 +34,10 @@
 - Synthetic / draft norm packs only
 - BCF ZIP **structural** OK; CDE import **НЕ ДОКАЗАНО**
 - Fixture SLA schema 1.2.0 with `claim_level=fixture_only`
-- Calculation **сверка** PARTIAL; **корректность** НЕ РЕАЛИЗОВАНО
+- Calculation **сверка** PARTIAL; **корректность** НЕ РЕАЛИЗОВАНО (`evidence_consistency_only`)
 - Dual-human adjudication + Cohen’s κ / Krippendorff’s α required before publishable precision
 - DXF EntityGraph via optional `[cad]` (`dwg_dxf` never OK; mixed DWG+DXF → FAILED if DWG unparsed)
+- PDF/IFC/DXF as **derived** substitutes with provenance (`available_as_derived_input`) — not native DWG support
 - Hybrid drawing = detector **priors / future YOLO** + OCR degrade (not human-level CV)
 - Relational IFC KG advisory fixture scores ≠ IfcLLM product accuracy
 - Advisory ON/OFF must not change deterministic findings or `summary.passed`
@@ -41,6 +46,8 @@
 - Explicit `AEROBIM_SIGNOFF_PROFILE=samolet_pilot` likewise fail-closes required MEP/clash/BSI/audit corruption
 - Cross-tenant ACL denial returns **404** (not 403) to avoid object enumeration
 - Outbound JWKS / bSI / OpenCDE fetches pass SSRF URL guard
+- Hard geometric IFC clash **when** evidenced — separate from MEP system-aware (RT-003 OPEN)
+- `GET /v1/system/capabilities` schema **1.3.0** `direction_contracts` for four gap directions
 - Checkpoint remains **NO_GO** until RT-001/002/003
 
 ## Evidence pointers (public)

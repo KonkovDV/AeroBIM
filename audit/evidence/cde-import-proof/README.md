@@ -22,6 +22,17 @@ receive a `STATUS.json` flip to `VERIFIED` plus hash references.
 Do **not** invent screenshots. Until real pilot import lands, keep
 `STATUS.json` at `NOT_VERIFIED`.
 
+## Integrity gate (2026-07-25, SLSA-style artifact binding)
+
+`python -m aerobim.tools.verify_bcf_t2_evidence --dir <pack> \
+  --structural-evidence audit/evidence/bcf-structural-handoff-<date>.json`
+
+- every `hashes.json` entry naming a pack file is **recomputed** (SHA-256) and
+  must match — stale/foreign hash packs can never flip `claim_allowed`;
+- `import-log.txt` and `screenshot.png` must each have a verified hash entry;
+- `bcf_zip_sha256` must equal a `sha256` from the T1 structural-handoff JSON,
+  proving the imported archive is the one we exported (artifact binding).
+
 Ladder taxonomy: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](../../../docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)
 (T0 export → T1 structural → **T2 CDE import** → T3 round-trip → T4 production).
 

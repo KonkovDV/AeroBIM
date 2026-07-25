@@ -107,9 +107,8 @@ class Bcf3ArchiveStructureTests(unittest.TestCase):
 
         root = ET.fromstring(version_xml.split("\n", 1)[-1])
         self.assertEqual("3.0", root.get("VersionId"))
-        detail = root.find("DetailedVersion")
-        self.assertIsNotNone(detail)
-        self.assertEqual("3.0", detail.text)  # type: ignore[union-attr]
+        # version.xsd (release_3_0): only VersionId attribute — no DetailedVersion.
+        self.assertIsNone(root.find("DetailedVersion"))
 
     def test_topic_directory_and_markup_created(self) -> None:
         report = _make_report(issue_count=1, severity=Severity.ERROR)
@@ -157,14 +156,16 @@ class Bcf3MarkupStructureTests(unittest.TestCase):
             )
 
     def test_comments_element_present(self) -> None:
+        # markup.xsd (release_3_0): Comments is a child of Topic, not Markup.
         root = self._get_markup_root(_make_report())
-        comments = root.find("Comments")
-        self.assertIsNotNone(comments, msg="BCF 3.0 requires <Comments> element")
+        comments = root.find("Topic/Comments")
+        self.assertIsNotNone(comments, msg="BCF 3.0 requires <Comments> under <Topic>")
 
     def test_viewpoints_element_present(self) -> None:
+        # markup.xsd (release_3_0): Viewpoints is a child of Topic, not Markup.
         root = self._get_markup_root(_make_report())
-        viewpoints = root.find("Viewpoints")
-        self.assertIsNotNone(viewpoints, msg="BCF 3.0 requires <Viewpoints> element")
+        viewpoints = root.find("Topic/Viewpoints")
+        self.assertIsNotNone(viewpoints, msg="BCF 3.0 requires <Viewpoints> under <Topic>")
 
     def test_viewpoint_has_guid_attribute(self) -> None:
         root = self._get_markup_root(_make_report())
@@ -218,18 +219,22 @@ class Bcf3ViewpointStructureTests(unittest.TestCase):
         root = self._get_viewpoint_root(_make_report())
         self.assertFalse(root.tag.startswith("{"), msg="BCF 3.0 visinfo must not use namespace")
 
-    def test_coloring_before_visibility(self) -> None:
-        """BCF 3.0 XSD requires Coloring before Visibility in Components."""
+    def test_components_order_follows_visinfo_xsd(self) -> None:
+        """visinfo.xsd (release_3_0) Components order: Selection?, Visibility?, Coloring?."""
         root = self._get_viewpoint_root(_make_report())
         components = root.find("Components")
         self.assertIsNotNone(components)
         assert components is not None
         children = [c.tag for c in components]
-        coloring_idx = children.index("Coloring") if "Coloring" in children else -1
+        selection_idx = children.index("Selection") if "Selection" in children else -1
         visibility_idx = children.index("Visibility") if "Visibility" in children else -1
-        self.assertGreater(coloring_idx, -1, msg="Coloring element missing from Components")
         self.assertGreater(visibility_idx, -1, msg="Visibility element missing from Components")
-        self.assertLess(coloring_idx, visibility_idx, msg="Coloring must precede Visibility")
+        if selection_idx > -1:
+            self.assertLess(selection_idx, visibility_idx, msg="Selection must precede Visibility")
+        if "Coloring" in children:
+            self.assertGreater(
+                children.index("Coloring"), visibility_idx, msg="Coloring must follow Visibility"
+            )
 
     def test_ifc_guid_propagated_to_selection(self) -> None:
         report = _make_report(with_guid=True)
