@@ -6,7 +6,7 @@
   "claim_allowed": false,
   "generated_at": "2026-07-21",
   "ladder_doc": "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md",
-  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-18.json",
+  "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-25.json",
   "status_gate": "audit/evidence/cde-import-proof/STATUS.json",
   "pilot": {
     "customer": "",

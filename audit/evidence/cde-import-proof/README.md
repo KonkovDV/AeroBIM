@@ -38,6 +38,6 @@ Ladder taxonomy: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](../.
 
 ## Upstream
 
-- Structural T1: `audit/evidence/bcf-structural-handoff-2026-07-18.json`
+- Structural T1: `audit/evidence/bcf-structural-handoff-2026-07-25.json`
 - CDE claim rule: keep `STATUS.json` at `NOT_VERIFIED` until real import evidence lands
 - Allowed wording: **structural ZIP AVAILABLE**; **CDE NOT_VERIFIED**

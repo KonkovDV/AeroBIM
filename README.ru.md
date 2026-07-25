@@ -76,7 +76,7 @@ AeroBIM выполняет детерминированную проверку �
 |---|---|---|
 | BCF 2.1 ZIP | Стабильный default | `/export/bcf` |
 | BCF 3.0 ZIP | Экспериментально | `?version=3` |
-| T1 структура + dual consumers | Доказано | [`audit/evidence/bcf-structural-handoff-2026-07-18.json`](audit/evidence/bcf-structural-handoff-2026-07-18.json) |
+| T1 структура + dual consumers | Доказано | [`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json) |
 | OpenCDE API push | Foundation | Не заменяет T2 |
 | T2 импорт в CDE | **НЕ ДОКАЗАНО** | [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) |
 

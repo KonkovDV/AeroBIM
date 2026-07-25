@@ -10,6 +10,7 @@ from aerobim.domain.system_capabilities import (
     build_system_capabilities_payload,
 )
 from aerobim.presentation.http.context import ApiContext
+from aerobim.presentation.http.schemas import SystemCapabilitiesResponse
 
 
 def build_system_router(ctx: ApiContext) -> APIRouter:
@@ -31,12 +32,17 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
 
         return JSONResponse(status_code=501, content=build_auth_bff_capability())
 
-    @router.get("/v1/system/capabilities")
+    @router.get("/v1/system/capabilities", response_model=SystemCapabilitiesResponse)
     def get_system_capabilities(
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
-    ) -> dict[str, object]:
-        """Static honesty surface for DWG/CV/MEP/calculation claim boundaries."""
+    ) -> SystemCapabilitiesResponse:
+        """Static honesty surface for DWG/CV/MEP/calculation claim boundaries.
 
-        return build_system_capabilities_payload()
+        Response contract is pinned field-by-field (schema_version 1.3.0):
+        model validation here means a payload drift fails loudly instead of
+        silently loosening the published OpenAPI document.
+        """
+
+        return SystemCapabilitiesResponse.model_validate(build_system_capabilities_payload())
 
     return router

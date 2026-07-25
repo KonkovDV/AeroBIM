@@ -279,7 +279,7 @@ def build_four_direction_contracts() -> list[dict[str, Any]]:
             affects_pass=False,
             reason="BCF 2.1 ZIP export AVAILABLE (T0)",
             claim_boundary="Export ≠ CDE import",
-            evidence_refs=["audit/evidence/bcf-structural-handoff-2026-07-18.json"],
+            evidence_refs=["audit/evidence/bcf-structural-handoff-2026-07-25.json"],
         ),
         capability_contract(
             capability="bcf_t1_structural",

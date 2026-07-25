@@ -98,7 +98,7 @@ Canonical taxonomy: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](d
 | Tier | Status | Notes |
 |---|---|---|
 | T0 BCF ZIP export surface | **AVAILABLE** | 2.1 default `/export/bcf`; 3.0 experimental `?version=3` |
-| T1 structural + dual-consumer | Evidenced | [`audit/evidence/bcf-structural-handoff-2026-07-18.json`](audit/evidence/bcf-structural-handoff-2026-07-18.json) |
+| T1 structural + dual-consumer | Evidenced | [`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json) |
 | OpenCDE BCF API push | Foundation | `/export/bcf-api/push` — hub sync not a T2 substitute |
 | T2 independent CDE import | **NOT_VERIFIED** | [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) |
 | T3 round-trip fidelity | Not started | Blocked on T2 |
