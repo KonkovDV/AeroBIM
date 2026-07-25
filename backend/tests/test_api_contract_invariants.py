@@ -119,7 +119,22 @@ class AuthGateTests(unittest.TestCase):
         return calls
 
     def _service_routes(self):
-        for route in self.app.routes:
+        # FastAPI >= 0.140 wraps included routers lazily (_IncludedRouter):
+        # app.routes no longer flattens them, so walk nested routers too.
+        # Version-tolerant: flat APIRoute lists (<= 0.139) still work.
+        def walk_routes(routes):
+            for route in routes:
+                inner = getattr(route, "original_router", None)
+                if inner is not None:
+                    yield from walk_routes(inner.routes)
+                    continue
+                nested = getattr(route, "routes", None)
+                if nested is not None and not hasattr(route, "dependant"):
+                    yield from walk_routes(nested)
+                    continue
+                yield route
+
+        for route in walk_routes(self.app.routes):
             path = getattr(route, "path", "")
             if getattr(route, "dependant", None) is None:
                 continue
