@@ -76,7 +76,7 @@ class PrecisionAgreementPublishabilityTests(unittest.TestCase):
 
     def test_capabilities_include_intake_gate_no_go(self) -> None:
         payload = build_system_capabilities_payload()
-        self.assertEqual(payload["schema_version"], "1.2.0")
+        self.assertEqual(payload["schema_version"], "1.3.0")
         intake = payload["customer_intake_gate"]
         assert isinstance(intake, dict)
         self.assertEqual(intake["checkpoint"], "NO_GO")

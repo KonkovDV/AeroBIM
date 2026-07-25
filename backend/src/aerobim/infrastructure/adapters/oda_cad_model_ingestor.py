@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from aerobim.domain.cad_ingest import CadIngestResult
+from aerobim.domain.cad_ingest import NATIVE_DWG_MISSING_REASON, CadIngestResult
 
 
 class OdaCadModelIngestor:
@@ -16,6 +16,7 @@ class OdaCadModelIngestor:
 
     /** @sota-stub */
     Tracked as STUB-ODA-CAD-001. Never implies product DWG readiness.
+    Never wired into AnalyzeProjectPackageUseCase — analyze uses EzdxfCadModelIngestor.
     """
 
     def __init__(self, *, enabled: bool = False) -> None:
@@ -30,10 +31,7 @@ class OdaCadModelIngestor:
                 entity_count=0,
                 degraded=True,
                 supported=False,
-                reason=(
-                    "ODA/Teigha adapter disabled (AEROBIM_ODA_CAD_ENABLED=false); "
-                    "legal review required before enabling STUB-ODA-CAD-001"
-                ),
+                reason=NATIVE_DWG_MISSING_REASON,
             )
         return CadIngestResult(
             annotations=(),
@@ -41,8 +39,5 @@ class OdaCadModelIngestor:
             entity_count=0,
             degraded=True,
             supported=False,
-            reason=(
-                "STUB-ODA-CAD-001: ODA SDK not productized; convert DWG→DXF "
-                "or complete licensed ODA integration after legal review"
-            ),
+            reason=NATIVE_DWG_MISSING_REASON,
         )

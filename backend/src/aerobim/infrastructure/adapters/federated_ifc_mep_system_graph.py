@@ -94,6 +94,9 @@ class FederatedIfcMepSystemGraphProvider:
             synthetic=synthetic,
         )
 
+    def build_graph(self, ifc_path: Path) -> MepSystemGraph:
+        return self.build(ifc_path)
+
     def _resolve_path(self, raw_path: str) -> Path:
         return resolve_repo_relative_path(raw_path, repo_root=self._repo_root)
 

@@ -168,7 +168,7 @@ class AuthBffHonestyTests(unittest.TestCase):
         from aerobim.domain.system_capabilities import build_system_capabilities_payload
 
         payload = build_system_capabilities_payload()
-        self.assertEqual(payload["schema_version"], "1.2.0")
+        self.assertEqual(payload["schema_version"], "1.3.0")
         auth_bff = payload["auth_bff"]
         assert isinstance(auth_bff, dict)
         self.assertEqual(auth_bff["status"], "NOT_IMPLEMENTED")

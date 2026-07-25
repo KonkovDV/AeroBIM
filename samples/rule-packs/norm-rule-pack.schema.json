@@ -206,7 +206,41 @@
           "type": ["string", "null"],
           "enum": ["synthetic", "draft", "customer_approved", null]
         },
-        "approval_ref": { "type": ["string", "null"], "maxLength": 512 }
+        "approval_ref": { "type": ["string", "null"], "maxLength": 512 },
+        "severity": {
+          "type": ["string", "null"],
+          "enum": ["critical", "warning", "info", null],
+          "description": "Pilot severity hint; runtime may map to Finding severity"
+        },
+        "finding_class": {
+          "type": ["string", "null"],
+          "enum": [
+            "clash",
+            "attribute",
+            "dimension",
+            "area",
+            "cross_document",
+            "missing_element",
+            "other",
+            null
+          ]
+        },
+        "rase": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "description": "RASE decomposition: interpretative R/A/E vs executable Selection",
+          "properties": {
+            "requirement": { "type": "string", "minLength": 1, "maxLength": 2000 },
+            "applicability": { "type": "string", "minLength": 1, "maxLength": 2000 },
+            "selection": { "type": "string", "minLength": 1, "maxLength": 2000 },
+            "exception": { "type": ["string", "null"], "maxLength": 2000 }
+          }
+        },
+        "test_example_ref": {
+          "type": ["string", "null"],
+          "maxLength": 512,
+          "description": "Pointer to fixture finding / unit test id for this rule"
+        }
       }
     }
   }

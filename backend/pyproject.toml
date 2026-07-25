@@ -112,5 +112,7 @@ module = [
   "PIL.*",
   "sqlalchemy",
   "sqlalchemy.*",
+  "defusedxml",
+  "defusedxml.*",
 ]
 ignore_missing_imports = true

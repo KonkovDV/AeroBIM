@@ -53,11 +53,11 @@ AeroBIM выполняет детерминированную проверку �
 | Экспорт BCF 2.1/3.0 ZIP | Доступно (T0/T1) | fixture | Структурный ZIP **AVAILABLE**; **CDE import NOT_VERIFIED (T2)** — лестница T0–T4 |
 | OpenCDE BCF API push | Foundation | experimental | Не заменяет T2 |
 | Vitest review-shell | Зелёный локально | release-readiness | **25** passed; не в main CI |
-| DWG native | Missing / Failed | — | Без ODA fail-closed; never OK |
-| DXF (CadModelIngestor) | Not verified | — | Optional ezdxf; honesty never OK |
+| DWG native | Missing / Failed | — | Fail-closed; never OK; PDF/IFC = только derived input |
+| DXF (CadModelIngestor) | Partial / Not verified | fixture | Optional ezdxf; ≠ поддержка DWG |
 | CV human-level | Missing | — | OCR degrade ≠ VLM |
-| MEP system-aware clash | Not verified | — | DI-wired Unconfigured; не delivered |
-| Корректность расчётов | Not implemented | — | OpenRebar = **сверка**, не верификация |
+| MEP system-aware clash | Not verified / blocked | fixture_only | Unconfigured DI; RT-003 OPEN; co-presence ≠ connection |
+| Корректность расчётов | Not implemented | — | сверка переданных результатов и источников, не расчётный решатель |
 | Точность >90% / утверждённые нормы | Blocked | customer | См. Claims Lock |
 
 ## Совместимость с IFC

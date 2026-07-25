@@ -1,0 +1,10 @@
+# H1.1 mutation testing config: domain/review_state_machine.py (HITL transitions).
+# Run from backend/ (see object_acl.toml for the command sequence).
+[cosmic-ray]
+module-path = "src/aerobim/domain/review_state_machine.py"
+timeout = 60.0
+excluded-modules = []
+test-command = "python -m pytest -x -q tests/test_mutation_kills_review_state_machine.py tests/test_rt_phase5_hitl.py tests/test_rt_hyperdeep_residuals.py tests/test_apply_norm_rule_hitl_event.py"
+
+[cosmic-ray.distributor]
+name = "local"

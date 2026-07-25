@@ -662,6 +662,32 @@ input {
   color: var(--accent-strong);
 }
 
+.triage-band {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+.triage-band.triage-band-critical {
+  background: #b42318;
+}
+
+.triage-band.triage-band-major {
+  background: #9a6700;
+}
+
+.triage-band.triage-band-minor {
+  background: #5b7fa6;
+}
+
+.triage-band.triage-band-negligible {
+  background: #8a8f98;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

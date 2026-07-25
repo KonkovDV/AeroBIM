@@ -32,7 +32,7 @@ class CadOfficeIngestTests(unittest.TestCase):
         self.assertIsInstance(result, CadIngestResult)
         self.assertFalse(result.supported)
         self.assertEqual(result.format_resolved, "dwg")
-        self.assertIn("ODA", result.reason or "")
+        self.assertEqual(result.reason, "native DWG parser is not implemented")
 
     def test_dxf_without_ezdxf_reports_degraded(self) -> None:
         ingestor = EzdxfCadModelIngestor()

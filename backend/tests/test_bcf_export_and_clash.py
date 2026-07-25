@@ -175,7 +175,8 @@ class BcfExportTests(unittest.TestCase):
             self.assertEqual(len(markup_files), 1)
             self.assertEqual(len(viewpoint_files), 1)
             markup_xml = zf.read(markup_files[0]).decode("utf-8")
-            self.assertIn("<Viewpoints>", markup_xml)
+            # markup.xsd (release_2_1): Viewpoints is ViewPoint-typed with Guid attr.
+            self.assertIn("<Viewpoints", markup_xml)
             self.assertIn("viewpoint.bcfv", markup_xml)
 
     def test_bcf_viewpoint_contains_camera_and_selected_guid(self) -> None:

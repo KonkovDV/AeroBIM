@@ -1,8 +1,20 @@
 # Customer Pilot Backlog — Samolet Task 07
 
-**Date:** 2026-07-21  
+**Date:** 2026-07-24  
 **Checkpoint:** `NO_GO` (RT-001 / RT-002 / RT-003)  
 **Principle:** deterministic engine checks; AI assists only; evidence explains; expert decides disputes.
+
+## Parallel workplan → Checkpoint #2 (Aug 4–20)
+
+SSOT: [`../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md)
+
+| Stream | Jul 28–31 target | Status |
+|--------|------------------|--------|
+| 1 Protocol + dual-blind labeling | Protocol taxonomy + expert instruction | **DRAFT_READY** — needs Samolet sign-off |
+| 2 Demo + evidence bundle | Fixture-reproducible demo | **ENG_PARTIAL** — runbook ready; live bundle on schedule 1–3 Aug |
+| 3 Norm pack + RASE | Template + schema RASE fields | **DRAFT_READY** — customer pack still RT-002 OPEN |
+| 4 Harness TP/FP/FN + κ | One-shot precision + agreement | **ENG_PARTIAL** — tools exist; nDCG **implemented** (`evaluate_ranking_quality`, tie-aware + CI, 2026-07-26) |
+| 5 TZ traceability matrix | No empty TBD; Claims Lock | **ENG_PARTIAL** — matrix exists; refresh owners 28–31 Jul |
 
 ## Inventory (as of P2b)
 

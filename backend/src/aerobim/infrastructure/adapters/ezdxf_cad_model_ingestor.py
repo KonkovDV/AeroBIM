@@ -34,10 +34,7 @@ class EzdxfCadModelIngestor:
                 entity_count=0,
                 degraded=True,
                 supported=False,
-                reason=(
-                    "Native DWG requires ODA/Teigha licensed adapter "
-                    "(not configured); convert to DXF or enable ODA extra"
-                ),
+                reason="native DWG parser is not implemented",
             )
 
         if suffix not in _DXF_SUFFIXES:

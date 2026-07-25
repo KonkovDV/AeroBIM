@@ -49,4 +49,9 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Claims ↔ evidence |
 | [`benchmark-evidence-2026.md`](benchmark-evidence-2026.md) | Fixture metric boundaries |
 | [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md) | Samolet pilot phases |
+| [`pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md) | Parallel plan → Aug / Sep checkpoints |
+| [`pilot/EXPERT_LABELING_INSTRUCTION_2026.md`](pilot/EXPERT_LABELING_INSTRUCTION_2026.md) | Dual-blind TP/FP/FN + κ |
+| [`pilot/NORM_PACK_RASE_GUIDE_2026.md`](pilot/NORM_PACK_RASE_GUIDE_2026.md) | Norm pack + RASE |
+| [`pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md`](pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md) | Demo evidence + precision harness |
+| [`pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md`](pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md) | DWG / MEP / calc / BCF→СОД gap + priority |
 | [`TIER0_INDEX.md`](TIER0_INDEX.md) | Compact map |

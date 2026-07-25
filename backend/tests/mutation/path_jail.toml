@@ -1,0 +1,10 @@
+# H1.1 mutation testing config: core/security/path_jail.py (traversal / symlink jail).
+# Run from backend/ (see object_acl.toml for the command sequence).
+[cosmic-ray]
+module-path = "src/aerobim/core/security/path_jail.py"
+timeout = 60.0
+excluded-modules = []
+test-command = "python -m pytest -x -q tests/test_mutation_kills_path_jail.py tests/test_rt_phase4_security.py tests/test_rt_hyperdeep_adv_fixes.py tests/test_rt_residual_defense.py tests/test_wave0_soundness.py tests/test_rtatom_remediation_2026_07_20.py tests/test_norm_pack_env_capability.py"
+
+[cosmic-ray.distributor]
+name = "local"

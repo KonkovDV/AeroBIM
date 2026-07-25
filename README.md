@@ -69,12 +69,12 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | 2D problem-zone overlay | Available | fixture | — |
 | Deterministic PDF text (PyMuPDF) | Available | core | — |
 | Image OCR (RapidOCR) | Optional extra | optional-extra | `.[raster]`; zero-yield → FAILED when requested |
-| DWG native analysis | Missing / Failed | — | Fail-closed without ODA; never OK |
-| DXF via CadModelIngestor | Not verified | — | Optional ezdxf; honesty never OK |
+| DWG native analysis | Missing / Failed | — | Fail-closed; never OK; PDF/IFC = derived input with provenance only |
+| DXF via CadModelIngestor | Partial / Not verified | fixture | Optional ezdxf; honesty never OK; ≠ DWG support |
 | Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` (OCR degrade ≠ VLM) |
-| MEP system-aware clash | Not verified | — | DI-wired Unconfigured provider; not delivered |
+| MEP system-aware clash | Not verified / blocked | fixture_only | Unconfigured DI; RT-003 OPEN; co-presence ≠ connection |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
-| Independent calculation *correctness* | Not implemented | — | OpenRebar path = **match/сверка**, not solver verification |
+| Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
 | Frontend vitest review-shell | Green in CI | release-readiness | **25** passed (`frontend` CI job) |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
 

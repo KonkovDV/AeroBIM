@@ -150,12 +150,12 @@ class ProvenanceExportRoundTripTests(unittest.TestCase):
                 markup_name = next(name for name in zf.namelist() if name.endswith("markup.bcf"))
                 markup = zf.read(markup_name).decode("utf-8")
             root_xml = ET.fromstring(markup)
-            ns = {"m": "http://www.buildingsmart-tech.org/bcf/markup/2.1"}
-            description = root_xml.find("m:Topic/m:Description", ns)
+            # Official 2.1 XSDs have no targetNamespace — markup is namespace-free.
+            description = root_xml.find("Topic/Description")
             assert description is not None and description.text is not None
             self.assertIn(f"finding_id={issue.finding_id}", description.text)
             self.assertIn("origin=deterministic", description.text)
-            labels = [node.text for node in root_xml.findall("m:Topic/m:Labels", ns)]
+            labels = [node.text for node in root_xml.findall("Topic/Labels")]
             self.assertIn("origin:deterministic", labels)
 
 

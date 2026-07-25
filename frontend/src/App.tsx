@@ -246,6 +246,22 @@ function findMatchingRequirements(report: ValidationReport, issue: ValidationIss
   return report.requirements.filter((requirement) => requirement.rule_id === issue.rule_id);
 }
 
+const TRIAGE_BANDS = ["critical", "major", "minor", "negligible"] as const;
+type TriageBand = (typeof TRIAGE_BANDS)[number];
+
+/** Deterministic clash triage band carried in evidence_refs (backend Wave B). */
+function triageBand(issue: ValidationIssue): TriageBand | null {
+  for (const ref of issue.evidence_refs ?? []) {
+    if (ref.startsWith("triage:band=")) {
+      const band = ref.slice("triage:band=".length);
+      if ((TRIAGE_BANDS as readonly string[]).includes(band)) {
+        return band as TriageBand;
+      }
+    }
+  }
+  return null;
+}
+
 type ViewerFocus = {
   mode: "none" | "issue" | "clash";
   guids: string[];
@@ -722,7 +738,9 @@ export default function App() {
               return isHitlIssue || hasHitlRegion;
             }
             return true;
-          });
+          })
+          // Reviewer triage order: priority desc (stable — ties keep report order).
+          .sort((a, b) => (b.issue.priority ?? 0) - (a.issue.priority ?? 0));
   const hitlRegionCount = selectedReport
     ? (selectedReport.drawing_regions ?? []).filter((region) => region.hitl_required === true).length
     : 0;
@@ -1086,6 +1104,11 @@ export default function App() {
                     >
                       <div className="issue-card-row">
                         <span className={`severity-pill severity-${issue.severity}`}>{issue.severity}</span>
+                        {triageBand(issue) ? (
+                          <span className={`triage-band triage-band-${triageBand(issue)}`}>
+                            {triageBand(issue)}
+                          </span>
+                        ) : null}
                         <strong>{issue.rule_id}</strong>
                         {issue.rule_id === "AEROBIM-DRAWING-REGION-HITL" ? (
                           <span className="issue-priority">HITL</span>

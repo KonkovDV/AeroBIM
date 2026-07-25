@@ -51,8 +51,9 @@ def _sample_report() -> ValidationReport:
         ),
         clash_results=(
             ClashResult(
-                element_a_guid="clash-a",
-                element_b_guid="clash-b",
+                # Valid 22-char IfcGuids — required by visinfo.xsd Component/IfcGuid.
+                element_a_guid="3ZAR7ASd14MuxcHc7_fqIb",
+                element_b_guid="0aKrY0eXn00Qu9HBZ7Ao4t",
                 clash_type="hard",
                 distance=0.02,
                 description="Hard clash",

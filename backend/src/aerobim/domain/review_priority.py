@@ -17,16 +17,32 @@ def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> 
     cat_score = {
         FindingCategory.CROSS_DOCUMENT: 15,
         FindingCategory.IDS_VALIDATION: 10,
+        FindingCategory.SPATIAL: 8,
         FindingCategory.DRAWING_VALIDATION: 5,
         FindingCategory.IFC_VALIDATION: 0,
     }.get(issue.category, 0)
     conflict_score = 10 if issue.conflict_kind == ConflictKind.HARD_CONFLICT else 0
-    score = sev_score + cat_score + conflict_score
+    score = sev_score + cat_score + conflict_score + _clash_triage_boost(issue)
 
     if normalized == "samolet":
         score += _samolet_profile_boost(issue)
 
     return score
+
+
+def _clash_triage_boost(issue: ValidationIssue) -> int:
+    """Boost by deterministic clash triage band carried in evidence_refs.
+
+    Advisory ordering only (clash relevance triage, Jul 2026 practice) —
+    the boost reorders review, it never changes severity or ``summary.passed``.
+    """
+    if issue.category != FindingCategory.SPATIAL:
+        return 0
+    bands = {"critical": 12, "major": 6, "minor": 2, "negligible": 0}
+    for ref in issue.evidence_refs:
+        if ref.startswith("triage:band="):
+            return bands.get(ref.removeprefix("triage:band="), 0)
+    return 0
 
 
 def _samolet_profile_boost(issue: ValidationIssue) -> int:

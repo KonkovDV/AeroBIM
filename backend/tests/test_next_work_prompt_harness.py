@@ -90,6 +90,18 @@ class MepMatrixTemplateExistsTests(unittest.TestCase):
         self.assertIn("claim_boundary", payload)
         self.assertIn("RT-003", payload["claim_boundary"])
 
+    def test_clearance_matrix_schema_validates_template(self) -> None:
+        try:
+            import jsonschema
+        except ModuleNotFoundError:
+            self.skipTest("jsonschema not installed")
+        schema_path = REPO / "samples" / "mep" / "clearance-matrix.schema.json"
+        template_path = REPO / "samples" / "mep" / "clearance-matrix-template.json"
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        template = json.loads(template_path.read_text(encoding="utf-8"))
+        errors = list(jsonschema.Draft202012Validator(schema).iter_errors(template))
+        self.assertEqual(errors, [], [e.message for e in errors])
+
 
 if __name__ == "__main__":
     unittest.main()

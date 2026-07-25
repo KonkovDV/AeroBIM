@@ -1,12 +1,15 @@
 ---
 title: "Samolet Pilot Protocol 2026"
 status: active
-version: "1.0.0"
-last_updated: "2026-07-19"
+version: "1.1.0"
+last_updated: "2026-07-24"
 claim_boundary: "Protocol only. Thresholds are parameters for customer agreement. Checkpoint NO_GO until RT-001/002/003."
 ---
 
 # Pilot Protocol — ГК «Самолёт» × AeroBIM TechLab Task 07
+
+Параллельный план Checkpoint #2: [`pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md).  
+Инструкция разметчиков: [`pilot/EXPERT_LABELING_INSTRUCTION_2026.md`](pilot/EXPERT_LABELING_INSTRUCTION_2026.md).
 
 ## Goal
 
@@ -16,6 +19,38 @@ Evidence-driven bounded pilot: measure whether AeroBIM reduces expert verificati
 
 - Replace licensed engineer.
 - Claim >90% / customer SLA / MEP delivered / native DWG / calc solver / CDE-ready BCF without artifacts.
+
+## Pilot package composition (состав комплекта)
+
+| Компонент | Обязательность | Форматы (допустимые) |
+|-----------|----------------|----------------------|
+| ПД | По scope memo | PDF (+ IFC если в обмене) |
+| РД | Рекомендуется пара ПД↔РД | PDF / IFC |
+| IFC | Обязателен для BIM-проверок | IFC2X3 / IFC4 (см. compatibility matrix) |
+| ТЗ / EIR-фрагмент | Обязателен для TZ/IDS | PDF / DOCX / structured JSON |
+| Расчётные материалы | Если сверка в scope | PDF / таблица + provenance |
+| Нормативные документы / pack | RT-002 | Machine-readable norm pack + ссылки на СП |
+
+**Границы пилота** фиксируются в scope memo: разделы, стадии (П/Р), типы проверок, версии IFC, что *не* проверяем (DWG native, calc solver, полный MEP и т.д.).
+
+## Сценарий end-to-end
+
+```text
+загрузка → проверка (AeroBIM) → экспертная валидация (dual-blind)
+  → исправление (проектная команда) → повторная проверка → BCF handoff (если в scope)
+```
+
+## Классы ошибок и уровни
+
+| Класс | Critical / Warning / Info |
+|-------|---------------------------|
+| clash | Critical при обязательном clearance; иначе Warning/Info |
+| attribute | Critical если IDS/обязательный критерий; иначе Warning |
+| dimension / area | По согласованной допусковой политике |
+| cross_document | Critical при противоречии ПД↔РД в scope |
+| missing_element | Critical если `exists` в утверждённом pack |
+
+Детали разметки TP/FP/FN и κ: инструкция экспертов.
 
 ## Agreed inputs (Phase 0 — blocking)
 

@@ -184,7 +184,7 @@ class Phase7CrossDocProvenanceTests(unittest.TestCase):
 
 
 class Phase7BcfXsdHonestyTests(unittest.TestCase):
-    def test_xsd_dir_present_is_not_run_not_passed(self) -> None:
+    def test_incomplete_xsd_dir_is_skipped_not_passed(self) -> None:
         from aerobim.domain.models import (
             FindingCategory,
             Severity,
@@ -220,9 +220,10 @@ class Phase7BcfXsdHonestyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             xsd_dir = Path(tmp) / "xsd"
             xsd_dir.mkdir()
+            # Incomplete schema set (no version/visinfo) — must skip, never fake pass.
             (xsd_dir / "markup.xsd").write_text("<xs:schema/>", encoding="utf-8")
             result = verify_bcf_zip_structure(archive, xsd_dir=xsd_dir)
-        self.assertEqual(result.xsd_status, "not_run")
+        self.assertEqual(result.xsd_status, "skipped")
         self.assertNotEqual(result.xsd_status, "passed")
 
 

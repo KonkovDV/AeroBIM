@@ -1,17 +1,29 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "title": "MEP allowed-intersection / clearance matrix template",
-  "claim_boundary": "Template only — not runtime evidence. RT-003 / MEP-CLASH-001 remain open until federated IFC + signed scope memo.",
+  "claim_boundary": "Template only — not runtime evidence. RT-003 / MEP-CLASH-001 remain open until federated IFC + signed scope memo. Co-presence ≠ connection.",
   "scope_memo_ref": "REPLACE-SIGNED-MEP-SCOPE-MEMO",
+  "approval_ref": null,
   "units": "mm",
   "default_clearance_mm": 50,
+  "synthetic": true,
   "pairs": [
     {
       "system_a": "HVAC-SUPPLY",
       "system_b": "SPRINKLER",
+      "system_type": "clearance",
+      "source_discipline": "HVAC",
+      "target_discipline": "FP",
+      "allowed_relation": "forbid_intersection",
       "min_clearance_mm": 50,
       "allowed_intersection": false,
+      "zone_or_service_envelope": null,
+      "severity": "critical",
       "clearance_class": "hard",
+      "source_rule": "REPLACE-CUSTOMER-RULE-ID",
+      "approval_reference": null,
+      "test_case": "samples/mep/hvac-sprinkler-systems.ifc",
+      "expected_result": "WARNING on template; ERROR only with geometry_verified + signed matrix",
       "note": "Replace with customer clearance matrix rows"
     }
   ]

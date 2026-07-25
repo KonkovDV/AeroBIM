@@ -51,8 +51,9 @@ def _report() -> ValidationReport:
         ),
         clash_results=(
             ClashResult(
-                element_a_guid="clash-a",
-                element_b_guid="clash-b",
+                # Valid 22-char IfcGuids — required by visinfo.xsd Component/IfcGuid.
+                element_a_guid="3ZAR7ASd14MuxcHc7_fqIb",
+                element_b_guid="0aKrY0eXn00Qu9HBZ7Ao4t",
                 clash_type="hard",
                 distance=0.02,
                 description="Hard clash",
@@ -96,7 +97,8 @@ class BcfMultiConsumerContractTests(unittest.TestCase):
             self.assertTrue(result.ok, msg=result.errors)
             self.assertTrue(result.sha256)
             self.assertGreaterEqual(result.topic_count, 1)
-            self.assertEqual(result.xsd_status, "not_configured")
+            # Vendored official XSDs are auto-discovered — validation must run.
+            self.assertEqual(result.xsd_status, "passed", msg=result.errors)
 
     def test_structural_handoff_evidence_keeps_cde_not_verified(self) -> None:
         payload = build_bcf_structural_handoff_evidence()

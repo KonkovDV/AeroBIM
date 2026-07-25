@@ -809,7 +809,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(body["artifact_type"], "system_capabilities")
-        self.assertEqual(body["schema_version"], "1.2.0")
+        self.assertEqual(body["schema_version"], "1.3.0")
         honesty = body["honesty"]
         self.assertEqual(honesty["dwg_dxf"]["status"], "missing")
         self.assertEqual(honesty["cv_human_level"]["status"], "missing")
@@ -819,10 +819,24 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertIn("calculation_correctness", body["claim_boundary"])
         self.assertIn("precision_claim", body["claim_boundary"])
         self.assertIn("auth_bff", body["claim_boundary"])
+        self.assertIn("bcf_cde", body["claim_boundary"])
         self.assertEqual(body["auth_bff"]["status"], "NOT_IMPLEMENTED")
         intake = body["customer_intake_gate"]
         self.assertEqual(intake["checkpoint"], "NO_GO")
         self.assertEqual(intake.get("true_gates"), [])
+        directions = body["direction_contracts"]
+        by_name = {row["capability"]: row for row in directions}
+        self.assertEqual(by_name["native_dwg"]["status"], "missing")
+        self.assertEqual(by_name["dxf_ingest"]["status"], "partial")
+        self.assertEqual(by_name["mep_system_aware_rules"]["status"], "blocked_customer_data")
+        self.assertEqual(by_name["calculation_correctness"]["status"], "not_implemented")
+        self.assertEqual(by_name["bcf_cde_t2_import"]["status"], "not_verified")
+        self.assertNotEqual(body["bcf_t2"]["status"], "available")
+        self.assertFalse(body["bcf_t2"]["claim_allowed"])
+        forbidden = body["forbidden_claim_phrases"]
+        self.assertIn("calculation_correctness_verified", forbidden)
+        self.assertIn("CDE_READY", forbidden)
+        self.assertIn("dwg_supported", forbidden)
 
     def test_auth_bff_discovery_is_public_501(self) -> None:
         response = self.client.get("/v1/auth/bff")

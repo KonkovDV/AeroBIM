@@ -17,6 +17,7 @@ from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.application.services.compliance_agent_orchestrator import merge_advisory_sequences
 from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.customer_intake import CustomerIntakeGate
+from aerobim.application.services.determinism_gate import build_evidence_universe
 from aerobim.application.services.package_outcome import compute_package_outcome
 from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink, match_annotations_to_regions
 from aerobim.domain.drawing_region_hitl import (
@@ -295,6 +296,7 @@ class AdvisoryOrchestrator:
         self,
         request: ValidationRequest,
         deterministic: DeterministicBundle,
+        ingested: IngestionBundle | None = None,
     ) -> AdvisoryBundle:
         agent_advisory: tuple[ValidationIssue, ...] = ()
         advisory_ids_draft = None
@@ -304,12 +306,20 @@ class AdvisoryOrchestrator:
             agent_advisory = agent_result.advisory_issues
             advisory_ids_draft = agent_result.ids_draft
             tool_traces = tuple(agent_result.tool_traces or ())
+        # Wave J: ground advisory references against the deterministic universe.
+        evidence_universe = build_evidence_universe(
+            engine_issues=deterministic.engine_issues,
+            requirements=ingested.requirements if ingested is not None else (),
+            clash_results=deterministic.clash_results,
+            drawing_annotations=(ingested.drawing_annotations if ingested is not None else ()),
+        )
         reconciled_issues, divergences = self._host._determinism_gate.reconcile(
             engine_issues=list(deterministic.engine_issues),
             advisory_issues=merge_advisory_sequences(
                 self._host._advisory_issues,
                 agent_advisory,
             ),
+            evidence_universe=evidence_universe,
         )
         return AdvisoryBundle(
             advisory_issues=agent_advisory,
