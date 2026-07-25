@@ -75,6 +75,8 @@ inference is a separate design"; Wave O is that design.
   — отсутствие тревоги ≠ доказательство стабильности.
 - Не реализован прямой betting e-process (aGRAPA/ONS) — p-калибровка
   консервативнее; зафиксировано как осознанный трейд-офф.
+  **Closed by Wave R:** [`BETTING_EVALUE_WAVE_2026_07_26.md`](BETTING_EVALUE_WAVE_2026_07_26.md)
+  (усечённая aGRAPA, `--calibrator betting`).
 - Fixture-история ≠ customer evidence (RT-001 неизменен).
 
 ## Gate evidence (2026-07-26 local)

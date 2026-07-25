@@ -32,6 +32,7 @@ and super-uniform — valid calibrator inputs.
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 _LN_EPS = 1e-15
@@ -69,6 +70,91 @@ def calibrate_p_to_e_mixture(p_value: float) -> float:
     if abs(log_p) < 1e-9:
         return 0.5
     return (1.0 - p + p * log_p) / (p * log_p * log_p)
+
+
+@dataclass(frozen=True)
+class BettingEvalue:
+    """One-sided betting e-value for H0: mean(diff) >= 0 on bounded diffs.
+
+    Test-by-betting (Waudby-Smith & Ramdas, JRSS-B 2024 read paper; Shafer
+    2021): wealth W_n = prod_t (1 + lam_t * (x_t - 1/2)) with diffs mapped
+    to x = (d + 1)/2 in [0, 1] and only downward bets lam_t <= 0, so W is a
+    nonnegative supermartingale under every mean(d) >= 0 and W_n is a valid
+    e-value (Markov/Ville). Bets are the truncated aGRAPA rule — the
+    log-optimal-in-hindsight bet approximated from prefix mean/variance,
+    clipped to [-lambda_cap, 0]. Truncation is deliberate: aggressive
+    strategies risk almost-sure null bankruptcy (arXiv 2602.08888, Feb
+    2026); capping preserves future power under optional continuation.
+    """
+
+    e_value: float
+    n: int
+    lambda_cap: float
+    final_lambda: float
+    strategy: str = "truncated_agrapa_one_sided"
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "e_value": self.e_value,
+            "n": self.n,
+            "lambda_cap": self.lambda_cap,
+            "final_lambda": round(self.final_lambda, 6),
+            "strategy": self.strategy,
+        }
+
+
+def betting_evalue_one_sided(
+    diffs: Sequence[float],
+    *,
+    lambda_cap: float = 1.0,
+) -> BettingEvalue:
+    """Truncated-aGRAPA betting e-value against H0: mean(diff) >= 0.
+
+    ``diffs`` are per-fixture metric differences (candidate − baseline),
+    each in [-1, 1] (F1-type metrics). Mapping x = (d + 1)/2 puts the null
+    boundary at m0 = 1/2. The bet is predictable: lam_t depends only on
+    x_1..x_{t-1} (prefix mean and variance, aGRAPA form
+    (mu_hat - m0) / (sigma_hat^2 + (mu_hat - m0)^2), clipped to
+    [-lambda_cap, 0]); the theoretical positivity bound is |lam| < 2, the
+    default cap 1.0 stakes at most half the wealth per round. Deterministic,
+    no randomness. E[W] <= 1 under the null, so W plugs directly into the
+    Wave O e-process as a per-run e-value. Power profile is *complementary*
+    to p-calibration, not dominant: adaptive betting pays a burn-in (no bet
+    at t=1), so at tiny n an exact permutation p can calibrate sharper,
+    while for sustained shifts the betting wealth grows exponentially in n.
+    """
+
+    if not diffs:
+        raise ValueError("betting e-value requires at least one diff")
+    if not 0.0 < lambda_cap < 2.0:
+        raise ValueError("lambda_cap must lie strictly inside (0, 2)")
+    for diff in diffs:
+        if not math.isfinite(diff) or not -1.0 <= diff <= 1.0:
+            raise ValueError(f"diffs must be finite and within [-1, 1], got {diff}")
+
+    m0 = 0.5
+    wealth = 1.0
+    running_sum = 0.0
+    running_sq_sum = 0.0
+    lam = 0.0
+    for index, diff in enumerate(diffs):
+        x = (diff + 1.0) / 2.0
+        if index == 0:
+            lam = 0.0  # no history -> no bet (predictability)
+        else:
+            mean = running_sum / index
+            variance = max(running_sq_sum / index - mean * mean, 1e-12)
+            raw = (mean - m0) / (variance + (mean - m0) ** 2)
+            lam = min(0.0, max(-lambda_cap, raw))
+        wealth *= 1.0 + lam * (x - m0)
+        running_sum += x
+        running_sq_sum += x * x
+    return BettingEvalue(
+        e_value=wealth,
+        n=len(diffs),
+        lambda_cap=lambda_cap,
+        final_lambda=lam,
+    )
 
 
 @dataclass(frozen=True)
@@ -139,11 +225,13 @@ def new_e_process_state(
     calibrator: str = "mixture",
     kappa: float | None = None,
 ) -> EProcessState:
-    """Fresh monitor. ``calibrator``: ``mixture`` (default) or ``power``."""
+    """Fresh monitor. ``calibrator``: ``mixture`` (default), ``power`` or
+    ``betting`` (per-run e-values come from ``betting_evalue_one_sided``
+    instead of p-calibration)."""
 
     if not 0.0 < alpha < 1.0:
         raise ValueError("alpha must lie strictly inside (0, 1)")
-    if calibrator not in ("mixture", "power"):
+    if calibrator not in ("mixture", "power", "betting"):
         raise ValueError(f"unknown calibrator {calibrator!r}")
     if calibrator == "power":
         resolved_kappa = 0.5 if kappa is None else kappa
@@ -156,21 +244,17 @@ def new_e_process_state(
     return EProcessState(alpha=alpha, calibrator=calibrator, kappa=resolved_kappa)
 
 
-def update_e_process(state: EProcessState, *, run_id: str, p_value: float) -> EProcessState:
-    """Fold one comparison run into the monitor (pure, returns new state).
-
-    The e-value multiplies the wealth; the rejection flag latches once
-    wealth crosses 1/alpha. Duplicate run_ids are rejected — feeding the
-    same evidence twice would double-count it in the martingale.
-    """
+def _append_entry(
+    state: EProcessState,
+    *,
+    run_id: str,
+    p_value: float,
+    e_value: float,
+) -> EProcessState:
+    """Shared wealth-update core: latch rejection, forbid duplicate runs."""
 
     if any(entry.run_id == run_id for entry in state.history):
         raise ValueError(f"duplicate run_id {run_id!r} in monitor history")
-    if state.calibrator == "power":
-        assert state.kappa is not None  # enforced by new_e_process_state
-        e_value = calibrate_p_to_e(p_value, kappa=state.kappa)
-    else:
-        e_value = calibrate_p_to_e_mixture(p_value)
     wealth = state.wealth * e_value
     entry = EProcessEntry(
         run_id=run_id,
@@ -186,3 +270,46 @@ def update_e_process(state: EProcessState, *, run_id: str, p_value: float) -> EP
         rejected=state.rejected or wealth >= state.threshold,
         history=(*state.history, entry),
     )
+
+
+def update_e_process(state: EProcessState, *, run_id: str, p_value: float) -> EProcessState:
+    """Fold one comparison run into the monitor (pure, returns new state).
+
+    The e-value multiplies the wealth; the rejection flag latches once
+    wealth crosses 1/alpha. Duplicate run_ids are rejected — feeding the
+    same evidence twice would double-count it in the martingale.
+    """
+
+    if state.calibrator == "power":
+        assert state.kappa is not None  # enforced by new_e_process_state
+        e_value = calibrate_p_to_e(p_value, kappa=state.kappa)
+    elif state.calibrator == "mixture":
+        e_value = calibrate_p_to_e_mixture(p_value)
+    else:
+        raise ValueError(
+            "state pins the betting strategy; feed betting e-values via "
+            "update_e_process_with_evalue"
+        )
+    return _append_entry(state, run_id=run_id, p_value=p_value, e_value=e_value)
+
+
+def update_e_process_with_evalue(
+    state: EProcessState,
+    *,
+    run_id: str,
+    e_value: float,
+) -> EProcessState:
+    """Fold a directly-constructed e-value (e.g. betting) into the monitor.
+
+    Only ``betting`` states accept direct e-values — mixing sources inside
+    one martingale would blur which guarantee the wealth carries. The
+    recorded p-value is the Markov companion min(1, 1/e) (a valid p by
+    Markov's inequality), kept for human-readable history only.
+    """
+
+    if state.calibrator != "betting":
+        raise ValueError("direct e-values are only valid for a betting-calibrator state")
+    if not math.isfinite(e_value) or e_value < 0.0:
+        raise ValueError(f"e-value must be finite and nonnegative, got {e_value}")
+    p_companion = min(1.0, 1.0 / e_value) if e_value > 0 else 1.0
+    return _append_entry(state, run_id=run_id, p_value=p_companion, e_value=e_value)

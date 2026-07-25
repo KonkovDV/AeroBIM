@@ -6,11 +6,14 @@ open-ended history of CI comparisons needs Ville-type control instead of
 per-run alpha=0.05. Each invocation:
 
 1. aligns baseline/candidate ``extraction_quality_report`` artifacts,
-2. computes the **one-sided** paired sign-flip permutation p-value for
-   "candidate is worse" (``alternative='less'``, exact for n<=12, add-one
-   Monte-Carlo otherwise — super-uniform, hence calibratable),
-3. calibrates p -> e (Vovk & Wang 2021; mixture calibrator by default),
-4. multiplies it into the persisted wealth and latches rejection when
+2. produces a per-run e-value by one of two pinned strategies:
+   - ``mixture`` / ``power``: one-sided paired sign-flip permutation p
+     (``alternative='less'``, exact for n<=12, add-one Monte-Carlo
+     otherwise) calibrated to an e-value (Vovk & Wang 2021);
+   - ``betting``: direct test-by-betting e-value on the per-fixture
+     macro-F1 differences (Waudby-Smith & Ramdas JRSS-B 2024; truncated
+     aGRAPA, one-sided, deterministic) — no p-value intermediary;
+3. multiplies it into the persisted wealth and latches rejection when
    wealth >= 1/alpha (Ville 1939; safe testing: rejection is irreversible).
 
 Exit code 1 iff the monitor is in the rejected state. Claim boundary: the
@@ -31,8 +34,10 @@ from aerobim.domain.eval_statistics import paired_permutation_test
 from aerobim.domain.sequential_inference import (
     EProcessEntry,
     EProcessState,
+    betting_evalue_one_sided,
     new_e_process_state,
     update_e_process,
+    update_e_process_with_evalue,
 )
 from aerobim.tools.compare_extraction_runs import _load_fixture_counts
 
@@ -92,21 +97,37 @@ def monitor_step(
     aligned_a = [baseline[fixture_id] for fixture_id in shared_ids]
     aligned_b = [candidate[fixture_id] for fixture_id in shared_ids]
 
-    test = paired_permutation_test(
-        aligned_a,
-        aligned_b,
-        metric=metric,
-        replicates=replicates,
-        seed=seed,
-        alternative="less",
-    )
-    new_state = update_e_process(state, run_id=run_id, p_value=test.p_value)
+    if state.calibrator == "betting":
+        if metric != "macro_f1":
+            raise ValueError("betting monitor currently supports metric=macro_f1 only")
+        from aerobim.domain.eval_statistics import _METRIC_FNS
+
+        metric_fn = _METRIC_FNS[metric]
+        diffs = [
+            metric_fn([counts_b]) - metric_fn([counts_a])
+            for counts_a, counts_b in zip(aligned_a, aligned_b, strict=True)
+        ]
+        bet = betting_evalue_one_sided(diffs)
+        new_state = update_e_process_with_evalue(state, run_id=run_id, e_value=bet.e_value)
+        evidence: dict[str, Any] = {"betting": bet.as_dict()}
+    else:
+        test = paired_permutation_test(
+            aligned_a,
+            aligned_b,
+            metric=metric,
+            replicates=replicates,
+            seed=seed,
+            alternative="less",
+        )
+        new_state = update_e_process(state, run_id=run_id, p_value=test.p_value)
+        evidence = {"permutation_test": test.as_dict()}
+
     latest = new_state.history[-1]
     step = {
         "run_id": run_id,
         "metric": metric,
-        "n_pairs": test.n_pairs,
-        "permutation_test": test.as_dict(),
+        "n_pairs": len(shared_ids),
+        **evidence,
         "e_value": round(latest.e_value, 6),
         "wealth": round(new_state.wealth, 6),
         "threshold": new_state.threshold,
@@ -125,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--alpha", type=float, default=0.05, help="Used only when creating state")
     parser.add_argument(
         "--calibrator",
-        choices=("mixture", "power"),
+        choices=("mixture", "power", "betting"),
         default="mixture",
         help="Used only when creating state",
     )
