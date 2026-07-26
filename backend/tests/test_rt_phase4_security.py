@@ -42,6 +42,88 @@ class PathJailFuzzTests(unittest.TestCase):
                 resolve_storage_path("uploads/evil\n.ifc", base=base)
 
 
+class PathJailAdversarialProbeTests(unittest.TestCase):
+    """Permanent home of the adversarial probe corpus (ex backend/_probe_jail.py).
+
+    Each vector was fired against ``resolve_storage_path`` on 2026-07-26;
+    traversal-class inputs were already rejected, the Windows-specific class
+    (ADS colons, reserved device names, overlong components, trailing dots)
+    was ACCEPTED and is now closed by ``_validate_path_components``.
+    """
+
+    REJECTED_VECTORS = (
+        "evil.png::$DATA",  # NTFS alternate data stream
+        "a/evil.txt:hidden",  # named ADS in nested component
+        "CON",  # reserved device name, bare
+        "NUL.txt",  # reserved device name survives an extension
+        "aux.tar.gz",  # reserved name, case-insensitive, multi-suffix
+        "COM1",
+        "x" * 300 + ".png",  # component beyond the NTFS 255-char limit
+        "trailing./x",  # Windows strips trailing dots -> collision
+        "trailing /x",  # Windows strips trailing spaces -> collision
+        "...",  # trailing-dot component (Windows strips to '..'-lookalike)
+        "\u2025\u2025/x",  # two-dot leader: NFKC -> '....' -> trailing-dot reject
+        "\uff0e\uff0e/\uff0e\uff0e/etc",  # fullwidth dots -> NFKC '..'
+        "%2e%2e/%2e%2e/secret",  # percent-encoded traversal
+        " ..%2fsecret",  # leading space + encoded slash
+    )
+
+    ACCEPTED_VECTORS = (
+        "%252e%252e/x",  # double encoding decodes once to literal '%2e%2e' (no traversal)
+        "a\u2215b",  # division slash is NOT NFKC-normalized to '/' -> plain filename
+        "..\u2044etc",  # fraction slash is NOT NFKC-normalized -> plain filename
+        "console.log",  # 'CON' must match whole stem only, not a prefix
+        "a/./b",  # single-dot components collapse harmlessly
+    )
+
+    def test_adversarial_vectors_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            base = Path(temporary_directory)
+            for vector in self.REJECTED_VECTORS:
+                with self.subTest(vector=ascii(vector)):
+                    with self.assertRaises(PathJailError):
+                        resolve_storage_path(vector, base=base)
+
+    def test_benign_lookalikes_stay_inside_jail(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            base = Path(temporary_directory)
+            for vector in self.ACCEPTED_VECTORS:
+                with self.subTest(vector=ascii(vector)):
+                    resolved = resolve_storage_path(vector, base=base)
+                    self.assertTrue(resolved.is_relative_to(base.resolve()))
+
+    def test_traversal_via_dot_dot_still_names_boundary(self) -> None:
+        # The '..' layer must keep its specific message so component checks
+        # (which skip '..') never shadow the boundary rejection.
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            base = Path(temporary_directory)
+            with self.assertRaisesRegex(PathJailError, "escapes storage boundary"):
+                resolve_storage_path("../outside.ifc", base=base)
+
+    def test_component_length_boundary_255_256(self) -> None:
+        # Mutation-strength boundary: `> 255` mutants (>=, >256) disagree here.
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            base = Path(temporary_directory)
+            ok = resolve_storage_path("x" * 255, base=base)
+            self.assertEqual(len(ok.name), 255)
+            with self.assertRaisesRegex(PathJailError, "maximum length"):
+                resolve_storage_path("x" * 256, base=base)
+
+    def test_reserved_name_matches_stem_not_substring(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            base = Path(temporary_directory)
+            # Whole-stem matches rejected regardless of case / extension depth.
+            for bad in ("nul", "Con.ifc", "lpt9.a.b"):
+                with self.subTest(vector=bad):
+                    with self.assertRaisesRegex(PathJailError, "reserved device name"):
+                        resolve_storage_path(bad, base=base)
+            # Prefix / suffix lookalikes stay valid filenames.
+            for good in ("nullable.ifc", "falcon.ifc", "COM10"):
+                with self.subTest(vector=good):
+                    resolved = resolve_storage_path(good, base=base)
+                    self.assertTrue(resolved.is_relative_to(base.resolve()))
+
+
 class ObjectStoreFallbackTests(unittest.TestCase):
     def test_pilot_profile_does_not_fallback_to_filesystem(self) -> None:
         settings = Settings(
