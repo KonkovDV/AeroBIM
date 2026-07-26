@@ -1,0 +1,43 @@
+{
+  "artifact_type": "ranking_quality_labels",
+  "schema_version": "1.0.0",
+  "dataset_id": "REPLACE-pilot-ranking-corpus-id",
+  "dataset_status": "draft",
+  "_instructions": {
+    "purpose": "Graded relevance labels for reviewer-priority ranking (TZ v2 §9.1 nDCG, graded 0/1/2).",
+    "workflow": [
+      "1. One case per reviewed package/sheet; copy findings with their priority_score from the report (issues[].priority or export).",
+      "2. Each adjudicator grades relevance independently (dual-blind), then reconcile: 0 = noise/false positive, 1 = useful remark, 2 = critical must-fix.",
+      "3. Set dataset_status=adjudicated ONLY after both experts signed the reconciliation; draft/synthetic results are never product ranking quality (RT-001).",
+      "4. Run: python -m aerobim.tools.evaluate_ranking_quality --labels <this file> --output <run>/ranking-report.json (or via run_pilot_harness --ranking-labels)."
+    ],
+    "grade_scale": {
+      "0": "noise / FP — реальной проблемы нет",
+      "1": "полезное замечание — стоит внимания эксперта",
+      "2": "критичное — обязательное к устранению"
+    },
+    "claim_boundary": "tie-aware expected nDCG on the labeled corpus only; никогда не публикуется как качество ранжирования продукта без adjudicated customer corpus"
+  },
+  "cases": [
+    {
+      "case_id": "EXAMPLE-case-ar-sheet-01",
+      "findings": [
+        {
+          "finding_id": "EXAMPLE-REQ-FIRE-001",
+          "priority_score": 45,
+          "relevance": 2
+        },
+        {
+          "finding_id": "EXAMPLE-IDS-WALL-THK",
+          "priority_score": 30,
+          "relevance": 1
+        },
+        {
+          "finding_id": "EXAMPLE-OCR-NOTE-DUP",
+          "priority_score": 10,
+          "relevance": 0
+        }
+      ]
+    }
+  ]
+}

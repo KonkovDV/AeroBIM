@@ -68,6 +68,22 @@ python -m aerobim.tools.export_evidence_bundle \
 
 ### Команды
 
+**Одной командой (DoD поток 4 — закрыто 2026-07-26):**
+
+```bash
+cd backend
+python -m aerobim.tools.run_pilot_harness \
+  --labels ../samples/benchmarks/detection-precision/<labels>.json \
+  --detections ../artifacts/pilot-evidence/<run-id>/detections.json \
+  --adjudication-csv ../samples/benchmarks/detection-precision/<pilot>-adjudication.csv \
+  --ranking-labels ../samples/benchmarks/detection-precision/<ranking-labels>.json \
+  --output ../artifacts/pilot-evidence/<run-id>
+# → agreement.json + precision-report.json + ranking-report.json + pilot-harness-report.json
+# --require-publishable → exit 1 на не-customer/неполном протоколе (fail-closed)
+```
+
+Покомпонентно (те же евалюаторы):
+
 ```bash
 cd backend
 
@@ -95,7 +111,7 @@ python -m aerobim.tools.evaluate_detection_precision \
 | Размер корпуса, config, code version | evidence-бандл + precision report |
 | Ошибки по категориям | breakdown по `finding_class` |
 | Wall-clock полного прогона | evidence timings |
-| Time-to-first-finding | зафиксировать в run notes (если нет автополя — вручную в README бандла) |
+| Time-to-first-finding | **автополе** `timings.time_to_first_finding_ms` (2026-07-26): batch-пайплайн — равно analyze_elapsed_ms при наличии находок, null без них; не streaming-метрика |
 
 ### Interim порог пилота
 
