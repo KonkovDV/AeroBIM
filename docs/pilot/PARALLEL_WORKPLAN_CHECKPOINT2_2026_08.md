@@ -69,10 +69,10 @@ claim_boundary: "Methodology and engineering contour only. Customer precision / 
 
 ## Definition of Done — Checkpoint #2 (промежуточная)
 
-- [ ] Протокол + инструкция экспертов утверждены (или «черновик на согласование» с датой)
+- [x] Протокол + инструкция экспертов — **черновик на согласование с 2026-07-26** ([протокол](../pilot-protocol-samolet-2026.md), [инструкция](EXPERT_LABELING_INSTRUCTION_2026.md)); sign-off Самолёта ожидается в окне 4–10 авг
 - [x] Демо-бандл воспроизводим на fixture-комплекте — dry-run 2026-07-26: два независимых прогона дали идентичный `reproducibility_hash` (`artifacts/evidence-bundle/checkpoint2-dryrun/`)
-- [ ] Norm pack template + RASE-гайд + fail-closed поведение задокументированы
+- [x] Norm pack template + RASE-гайд + fail-closed — задокументированы: [`NORM_PACK_RASE_GUIDE_2026.md`](NORM_PACK_RASE_GUIDE_2026.md), `norm-rule-pack.schema.json`, fail-closed тесты (`test_norm_pack_env_capability`, `test_norm_rule_pack_loader`); customer pack = RT-002 OPEN
 - [x] Harness одним запуском даёт precision/recall/F1/FP-rate + κ/α + nDCG — `aerobim.tools.run_pilot_harness` (2026-07-26); пороги корпуса обоснованы `plan_adjudication_corpus`
-- [ ] TZ matrix без «пустых» TBD: у каждого требования статус / owner / acceptance
-- [ ] Список входных данных / вопросов Самолёту актуален
-- [ ] Claims Lock не нарушен в материалах промежуточной версии
+- [x] TZ matrix без «пустых» TBD — верифицировано 2026-07-26: ТЗ v2 §19 (ТР-1..62 со статусами/критериями) + [трёхисточниковая матрица](../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md)
+- [x] Список входных данных / вопросов Самолёту актуален — [kickoff-карта](CUSTOMER_KICKOFF_MAP_2026_07_26.md) (2026-07-26, вкл. трек МИК)
+- [x] Claims Lock не нарушен — enforced fail-closed (`enforce_honesty_capabilities`, forbidden phrases, publishable-гейты) + док-ревью 2026-07-26; обязательство непрерывное до КТ3
