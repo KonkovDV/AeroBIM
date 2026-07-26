@@ -29,6 +29,11 @@ SSOT: [`PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](PARALLEL_WORKPLAN_CHECKPOINT2
 
 Все ворота сейчас `false` → checkpoint **NO_GO**; fixture-контур ≠ замена этих входов.
 
+**Параллельный трек МИК (оператор программы, до 3 авг):** запросить у менеджера Фонда
+шаблон соглашения, форму программы пилотирования, форму акта и требования
+финотчётности по гранту 2 млн ₽ — см. [`MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md)
+и [`TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md`](../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md).
+
 ## 2. Согласовать письменно до Phase 0
 
 1. Границы пилота и перечень обязательных проверок (что влияет на `summary.passed`).
