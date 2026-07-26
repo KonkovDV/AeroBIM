@@ -70,9 +70,9 @@ claim_boundary: "Methodology and engineering contour only. Customer precision / 
 ## Definition of Done — Checkpoint #2 (промежуточная)
 
 - [ ] Протокол + инструкция экспертов утверждены (или «черновик на согласование» с датой)
-- [ ] Демо-бандл воспроизводим на fixture-комплекте
+- [x] Демо-бандл воспроизводим на fixture-комплекте — dry-run 2026-07-26: два независимых прогона дали идентичный `reproducibility_hash` (`artifacts/evidence-bundle/checkpoint2-dryrun/`)
 - [ ] Norm pack template + RASE-гайд + fail-closed поведение задокументированы
-- [ ] Harness один командой даёт precision/recall/F1/FP-rate (+ κ из CSV); nDCG — если реализован или явно «planned»
+- [x] Harness одним запуском даёт precision/recall/F1/FP-rate + κ/α + nDCG — `aerobim.tools.run_pilot_harness` (2026-07-26); пороги корпуса обоснованы `plan_adjudication_corpus`
 - [ ] TZ matrix без «пустых» TBD: у каждого требования статус / owner / acceptance
 - [ ] Список входных данных / вопросов Самолёту актуален
 - [ ] Claims Lock не нарушен в материалах промежуточной версии

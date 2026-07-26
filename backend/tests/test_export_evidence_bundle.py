@@ -71,6 +71,19 @@ class ExportEvidenceBundleTests(unittest.TestCase):
             self.assertIn("summary", report)
             self.assertEqual(bool(report["summary"]["passed"]), bool(manifest["summary_passed"]))
 
+            # P2 (Checkpoint #2): time-to-first-finding is an auto field with
+            # explicit batch semantics — equals analyze_elapsed_ms when the
+            # run has findings, null otherwise; never a streaming claim.
+            timings = json.loads((output_dir / "timings.json").read_text(encoding="utf-8"))
+            self.assertIn("time_to_first_finding_ms", timings)
+            self.assertIn(
+                "not a streaming-latency claim", timings["time_to_first_finding_semantics"]
+            )
+            if report["summary"]["issue_count"] > 0:
+                self.assertEqual(timings["time_to_first_finding_ms"], timings["analyze_elapsed_ms"])
+            else:
+                self.assertIsNone(timings["time_to_first_finding_ms"])
+
 
 if __name__ == "__main__":
     unittest.main()

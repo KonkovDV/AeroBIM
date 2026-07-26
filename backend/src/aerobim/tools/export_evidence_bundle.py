@@ -340,6 +340,15 @@ def export_evidence_bundle(
     findings = _json_safe(list(report.issues))
     timings = {
         "analyze_elapsed_ms": elapsed_ms,
+        # Pilot KPI «время до первого замечания»: the analyze pipeline is
+        # batch-synchronous (no streaming), so findings become reviewable at
+        # report completion — first-finding time equals full analyze time by
+        # construction; null when the run produced no findings at all.
+        "time_to_first_finding_ms": (elapsed_ms if report.summary.issue_count > 0 else None),
+        "time_to_first_finding_semantics": (
+            "batch pipeline: equals analyze_elapsed_ms when issue_count > 0; "
+            "null when no findings; not a streaming-latency claim"
+        ),
         "generated_at": datetime.now(UTC).isoformat(),
     }
     runtime_settings = {

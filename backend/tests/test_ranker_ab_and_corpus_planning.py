@@ -212,9 +212,7 @@ class PlanAdjudicationCorpusTests(unittest.TestCase):
             plan["recommended_n"],
             max(plan["power_design"]["n"], plan["wilson_width_n"]),
         )
-        preview = {
-            row["planning_rate"]: row for row in plan["decision_preview_at_recommended_n"]
-        }
+        preview = {row["planning_rate"]: row for row in plan["decision_preview_at_recommended_n"]}
         # Observing exactly the threshold rate can never demonstrate it...
         self.assertFalse(preview[0.6]["demonstrates_threshold"])
         # ...while the expected rate at the recommended n must.
