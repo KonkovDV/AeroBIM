@@ -16,6 +16,16 @@ class PathJailError(ValueError):
 
 _DRIVE_ABS = re.compile(r"^[A-Za-z]:[\\/]")
 _UNC = re.compile(r"^[\\/]{2}")
+_COMPONENT_SPLIT = re.compile(r"[\\/]+")
+# NTFS filename component limit; also bounds the 8.3/long-path expansion surface.
+_MAX_COMPONENT_LENGTH = 255
+# Reserved device names are dangerous in ANY component, with or without extension
+# (``NUL.txt`` still resolves to the NUL device on Windows).
+_WINDOWS_RESERVED_NAMES = frozenset(
+    {"CON", "PRN", "AUX", "NUL"}
+    | {f"COM{digit}" for digit in range(1, 10)}
+    | {f"LPT{digit}" for digit in range(1, 10)}
+)
 
 
 def _normalize_user_path(user_path: str) -> str:
@@ -29,6 +39,29 @@ def _normalize_user_path(user_path: str) -> str:
         raise PathJailError("Encoded control characters are not allowed in paths")
     # NFKC collapses compatibility lookalikes before jail checks (OWASP API1 / Unicode).
     return unicodedata.normalize("NFKC", decoded)
+
+
+def _validate_path_components(normalized: str) -> None:
+    """Reject Windows-hostile components: ADS colons, device names, overlong parts.
+
+    Runs after the UNC / drive-absolute layer so those keep their specific
+    messages; storage-relative paths never legitimately contain colons
+    (``safe_storage_token`` encodes ``:`` as ``!3a``).
+    """
+    for component in _COMPONENT_SPLIT.split(normalized):
+        if not component or component in (".", ".."):
+            continue
+        if ":" in component:
+            # NTFS alternate data streams: evil.png::$DATA / evil.txt:hidden.
+            raise PathJailError("Colons / NTFS data streams are not allowed in paths")
+        if len(component) > _MAX_COMPONENT_LENGTH:
+            raise PathJailError("Path component exceeds maximum length")
+        if component[-1] in ". ":
+            # Windows silently strips trailing dots/spaces -> name collisions.
+            raise PathJailError("Trailing dots or spaces are not allowed in path components")
+        stem = component.split(".", 1)[0].rstrip(" ")
+        if stem.upper() in _WINDOWS_RESERVED_NAMES:
+            raise PathJailError(f"Windows reserved device name is not allowed: {component}")
 
 
 def reject_symlinks(path: Path, *, base: Path) -> None:
@@ -138,6 +171,7 @@ def resolve_storage_path(user_path: str, *, base: Path) -> Path:
     normalized = _normalize_user_path(user_path.strip())
     if _UNC.match(normalized) or _DRIVE_ABS.match(normalized):
         raise PathJailError("Absolute / UNC paths are not allowed; use storage-relative paths")
+    _validate_path_components(normalized)
 
     base_resolved = base.resolve()
     raw = Path(normalized)
