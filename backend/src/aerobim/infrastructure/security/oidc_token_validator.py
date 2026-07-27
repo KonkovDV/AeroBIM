@@ -13,6 +13,10 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
+# Cap the JWKS response so a compromised/hostile IdP (or a TLS-terminating
+# proxy) cannot exhaust memory with an oversized body. Real JWKS docs are KiB.
+_MAX_JWKS_BYTES = 1 * 1024 * 1024
+
 
 class OidcValidationError(ValueError):
     """Raised when a bearer token fails OIDC/JWT validation."""
@@ -100,7 +104,11 @@ class OidcTokenValidator:
         assert_safe_outbound_url(self.jwks_url, allow_http=False, resolve_dns=True)
         req = urllib.request.Request(self.jwks_url, method="GET")
         with safe_urlopen(req, timeout=10) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+            # Bounded read: fetch one byte past the cap to detect overflow.
+            raw = response.read(_MAX_JWKS_BYTES + 1)
+        if len(raw) > _MAX_JWKS_BYTES:
+            raise OidcValidationError(f"JWKS response exceeds {_MAX_JWKS_BYTES}-byte cap")
+        payload = json.loads(raw.decode("utf-8"))
         if not isinstance(payload, dict):
             raise OidcValidationError("JWKS response must be a JSON object")
         self._jwks_cache = payload
