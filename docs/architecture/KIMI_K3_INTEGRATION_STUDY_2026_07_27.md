@@ -28,11 +28,11 @@ tags: [aerobim, kimi-k3, vlm, advisory, moonshot, integration, study]
 | Контекст | 1 048 576 токенов (1M) | офиц. блог / northflank |
 | Вход | текст + изображения (подтверждено API); видео — в продуктах Kimi | northflank (незав. тест) |
 | API | OpenAI-совместимый; `kimi-k3`; $0.30 cache-in / $3 in / $15 out за MTok | офиц. блог |
-| Веса | ~1.4 ТБ (MXFP4), live на HuggingFace с 00:00 UTC 27.07.2026 | HF blog / AI Weekly (27.07) |
+| Веса | live на HF с 27.07.2026; **download ≈594 ГБ (MXFP4, оценка)** vs **VRAM footprint ≈1.4 ТБ (оценка развёртывания)** — это разные величины | HF / AI Weekly (27.07); оба числа — оценки |
 | Железо (prod) | supernode **64+ ускорителей**; min-конфиг НЕ опубликован; vLLM + KDA prefill cache | northflank (17.07) |
 | Мультимодальные бенчи | PerceptionBench, MMMU-Pro, ZeroBench, **OfficeQA Pro** (PDF как изображения, без machine-readable текста) | офиц. блог footnotes |
 | Известные лимитации | max reasoning effort по умолчанию (латентность/стоимость); **«excessive proactiveness»** (решает за пользователя); чувствительность к thinking-history | офиц. блог §Limitations |
-| Лицензия | **Kimi K3 License** (кастомная, `license: other` / `license_name: kimi-k3`); пермиссивная для нашего масштаба | HF model card + LICENSE (27.07) |
+| Лицензия | **Kimi K3 License** (кастомная, `license: other` / `license_name: kimi-k3`); пермиссивная для нашего масштаба; evidence: `audit/evidence/kimi-k3-license-2026-07-27.json` (sha256 a3742cc1…) | HF model card + LICENSE (27.07) |
 
 ## 2. НЕ верифицировано / противоречиво (не заявлять как факт)
 
@@ -44,12 +44,14 @@ tags: [aerobim, kimi-k3, vlm, advisory, moonshot, integration, study]
   certified partners исключены**. Для AeroBIM (advisory, внутренний пилот, не
   MaaS, наш масштаб) пороги не триггерятся → self-host разрешён. Веса ≠
   pip-зависимость → MIT-репо не конфликтует (ТР-41 про Python-deps, не про веса).
+  Evidence: `audit/evidence/kimi-k3-license-2026-07-27.{txt,json}` (sha256
+  a3742cc1…; retrieval WebFetch — canonical HF-blob hash подтвердить direct-загрузкой).
 - **Точность на инженерных чертежах** — не измерена нами; общие бенчи ≠ доменное
   качество. Enginuity/SeePhys: frontier-VLM перефразируют обозначения, <60% на
   структурных диаграммах. **Живой вызов K3 ещё не прогонялся** — smoke-тул
   `aerobim-kimi-advisory-smoke` готов (tier A, открытые данные), статус NOT_RUN до ключа.
 - **Минимальное жизнеспособное железо** — Moonshot не опубликовал; 64+ —
-  рекомендация prod, не минимум.
+  рекомендация prod, не минимум; community-оценка ~18×H100-80G на MXFP4 — оценка, не факт.
 
 **Рамка (важно):** волна называется «Kimi K3», но пилотная цель закрытого
 контура — **малый Kimi-VL (tier C)**, не 2.8T K3 (tier B вне железа). Клиент и

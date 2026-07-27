@@ -1,0 +1,38 @@
+{
+  "artifact_type": "aerobim_kimi_k3_license_evidence",
+  "schema_version": "1.1.0",
+  "retrieved_at": "2026-07-27",
+  "source_url": "https://huggingface.co/moonshotai/Kimi-K3/raw/main/LICENSE",
+  "model_card_metadata": {
+    "license": "other",
+    "license_name": "kimi-k3",
+    "source": "https://huggingface.co/moonshotai/Kimi-K3/raw/main/README.md front-matter"
+  },
+  "license_text_sha256": "a3742cc13306fceddc4b79ed60ceeb98232d4ff67845697f71bb0451f4980ca3",
+  "license_text_sha256_note": "sha256 of the retrieved license text (UTF-8, trailing newline). The raw .txt copy is gitignored (audit/evidence/*.txt); the authoritative text is embedded below.",
+  "retrieval_method": "WebFetch (text may be normalized); confirm against a direct byte download of the canonical HF blob before any redistribution decision",
+  "license_type": "custom Kimi K3 License (NOT MIT / NOT Modified MIT / NOT Apache 2.0)",
+  "key_terms": {
+    "core": "permissive: use, copy, modify, merge, publish, distribute, sublicense, sell; run/deploy/fine-tune/derivative works",
+    "section_2_maas": "separate agreement required ONLY if operating a Model-as-a-Service business with aggregate revenue > $20M over any consecutive 12 months",
+    "section_3_attribution": "must display 'Kimi K3' on UI ONLY if the product has > 100M MAU or > $20M monthly revenue",
+    "section_4_exemptions": "sections 2 & 3 do NOT apply to (a) internal use (not exposed to third parties) or (b) use via Moonshot official products / certified inference partners",
+    "section_5_warranty": "AS IS, no warranty"
+  },
+  "applicability_to_aerobim": {
+    "verdict": "PERMITTED at our scale",
+    "reasoning": [
+      "AeroBIM uses the model as an internal advisory feature, not as a Model-as-a-Service to third parties (section 4a internal-use exemption)",
+      "revenue / MAU are far below the section 2 ($20M) and section 3 (100M MAU / $20M/mo) thresholds",
+      "model weights are loaded at deploy time under the Kimi K3 License; they are NOT a pip/code dependency redistributed in this MIT repo, so TR-41 (Python-dependency license compatibility) is not implicated"
+    ],
+    "obligations_if_used": [
+      "include the Kimi K3 License copyright + permission notice with any copy of the weights",
+      "comply with applicable laws/regulations",
+      "note China-jurisdiction (data residency) — additional reason to keep NDA/customer data off the public Moonshot API (tier A open data only)"
+    ]
+  },
+  "self_host_status": "PERMITTED for AeroBIM internal advisory use under sections 1 + 4; VERIFY_WITH_SOURCE lifted for the terms; canonical-blob byte hash still to be confirmed by direct download",
+  "checkpoint_note": "This does not change the product checkpoint: still NO_GO (RT-001/002/003). VLM stays advisory-only.",
+  "license_text": "Kimi K3 License\n\nCopyright (c) 2026 Moonshot AI\n\nPermission is hereby granted, free of charge, to any person (the \"Licensee\") obtaining a copy of this software — including the model weights, parameters, configuration files, inference and training code, and associated documentation (collectively, the \"Software\") — to deal in the Software without restriction. This includes, without limitation, the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software; to run, deploy, fine-tune, or otherwise modify the Software and create derivative works from it; and to permit persons to whom the Software is furnished to do so, in each case subject to the following conditions:\n\n1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Licensee's use of the Software must comply with applicable laws and regulations.\n\n2. \"Model as a Service\" means giving a third party access to language model inference or fine-tuning (e.g., via API) in a manner that allows such third party to exercise meaningful control over the inputs, parameters, or training data. This does not include (a) end-user products with model capabilities solely embedded within specific features or harnesses, or (b) mere relaying of requests to models hosted by others.\n\nIf the Licensee or any of its affiliates operates a Model as a Service business, and the aggregate revenue of the Licensee and its affiliates exceeds 20 million US dollars (or the equivalent in other currencies) in total over any consecutive 12 months, the Licensee must enter into a separate agreement with Moonshot AI before using the Software or its derivative works for any commercial purpose.\n\n3. If the Software (or any derivative works thereof) is used for any of the Licensee's commercial products or services that have more than 100 million monthly active users, or more than 20 million US dollars (or equivalent in other currencies) in monthly revenue, \"Kimi K3\" must be prominently displayed on the user interface of such product or service.\n\n4. The requirements set forth in Sections 2 and 3 do not apply to: (a) internal use of the Software, defined as any use that does not make the Software, its outputs, or its underlying capabilities available to third parties; or (b) any use of the Software accessed through Moonshot AI's official products or certified inference partners.\n\n5. THE SOFTWARE AND ANY OUTPUT AND RESULTS THEREFROM ARE PROVIDED ON AN \"AS IS\" BASIS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL MOONSHOT AI OR ITS AFFILIATES OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n\nFor any questions regarding this license, please contact <license@moonshot.ai>."
+}
