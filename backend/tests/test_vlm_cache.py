@@ -1,0 +1,64 @@
+"""§2.1 deterministic VLM cache — key stability + golden-hash integrity tests."""
+
+from __future__ import annotations
+
+import unittest
+
+from aerobim.domain.vlm_cache import (
+    InMemoryVlmResponseStore,
+    build_cache_entry,
+    content_sha256,
+    entry_content_if_intact,
+    vlm_cache_key,
+)
+
+
+class VlmCacheKeyTests(unittest.TestCase):
+    def test_key_is_stable_for_same_inputs(self) -> None:
+        a = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        b = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        self.assertEqual(a, b)
+
+    def test_key_changes_with_image_prompt_or_model(self) -> None:
+        base = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        self.assertNotEqual(base, vlm_cache_key(image_bytes=b"IMG", prompt="p", model="kimi-k3"))
+        self.assertNotEqual(base, vlm_cache_key(image_bytes=b"img", prompt="P", model="kimi-k3"))
+        self.assertNotEqual(base, vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-vl"))
+
+
+class ContentHashTests(unittest.TestCase):
+    def test_hash_stable_across_key_ordering(self) -> None:
+        self.assertEqual(content_sha256({"a": 1, "b": 2}), content_sha256({"b": 2, "a": 1}))
+
+    def test_hash_differs_on_value_change(self) -> None:
+        self.assertNotEqual(content_sha256({"a": 1}), content_sha256({"a": 2}))
+
+
+class CacheEntryTests(unittest.TestCase):
+    def test_roundtrip_intact(self) -> None:
+        content = {"readable": True, "observations": []}
+        entry = build_cache_entry(image_bytes=b"img", prompt="p", model="kimi-k3", content=content)
+        self.assertEqual(entry_content_if_intact(entry), content)
+        self.assertEqual(entry["model"], "kimi-k3")
+
+    def test_tampered_content_fails_closed(self) -> None:
+        entry = build_cache_entry(image_bytes=b"img", prompt="p", model="kimi-k3", content={"x": 1})
+        entry["content"] = {"x": 999}  # golden hash no longer matches
+        self.assertIsNone(entry_content_if_intact(entry))
+
+    def test_malformed_entry_fails_closed(self) -> None:
+        self.assertIsNone(entry_content_if_intact("not-a-dict"))
+        self.assertIsNone(entry_content_if_intact({"content": {"x": 1}}))  # no hash
+        self.assertIsNone(entry_content_if_intact({"content_sha256": "z"}))  # no content
+
+
+class InMemoryStoreTests(unittest.TestCase):
+    def test_put_get(self) -> None:
+        store = InMemoryVlmResponseStore()
+        self.assertIsNone(store.get("k"))
+        store.put("k", {"content": {"x": 1}})
+        self.assertEqual(store.get("k"), {"content": {"x": 1}})
+
+
+if __name__ == "__main__":
+    unittest.main()
