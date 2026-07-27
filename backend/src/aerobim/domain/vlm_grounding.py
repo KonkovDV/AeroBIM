@@ -23,6 +23,7 @@ import math
 from dataclasses import dataclass, field
 
 from aerobim.domain.models import DrawingRegionRef
+from aerobim.domain.vlm_normalize import is_allowed_kind, normalize_observation_value
 
 _VLM_MODALITY = "vlm"
 _DEFAULT_MIN_CONFIDENCE = 0.60
@@ -151,7 +152,136 @@ def ground_vlm_drawing_response(
     )
 
 
+def _parse_bbox_rel(raw: object) -> tuple[float, float, float, float] | None:
+    """Normalized [0,1] bbox; reject out-of-range / non-finite / degenerate (§4)."""
+    if not isinstance(raw, (list, tuple)) or len(raw) != 4:
+        return None
+    try:
+        coords = tuple(float(v) for v in raw)
+    except (TypeError, ValueError):
+        return None
+    if not all(math.isfinite(c) for c in coords):
+        return None
+    x1, y1, x2, y2 = coords
+    if not (0.0 <= x1 < x2 <= 1.0 and 0.0 <= y1 < y2 <= 1.0):
+        return None
+    return (x1, y1, x2, y2)
+
+
+@dataclass(frozen=True)
+class VlmObservation:
+    """One candidate observation from a region read (§4 schema)."""
+
+    kind: str
+    raw_value: str
+    normalized_value: str | None
+    bbox_rel: tuple[float, float, float, float]
+    confidence: float
+    hitl_required: bool
+    evidence_note: str = ""
+
+
+@dataclass(frozen=True)
+class VlmRegionReadResult:
+    """Grounded outcome of one region read (§4)."""
+
+    sheet_id: str
+    region_id: str
+    readable: bool
+    observations: tuple[VlmObservation, ...] = ()
+    parse_ok: bool = False
+    reason: str | None = None
+    hitl_count: int = 0
+    dropped_count: int = 0
+
+
+def ground_vlm_region_observations(
+    raw: object,
+    *,
+    sheet_id: str,
+    region_id: str,
+    min_confidence: float = _DEFAULT_MIN_CONFIDENCE,
+) -> VlmRegionReadResult:
+    """Ground the §4 observations schema; fail-closed only on structural deviation.
+
+    Per §4: an observation with an invalid kind or out-of-range/degenerate
+    ``bbox_rel`` is **dropped** (not the whole answer); ``confidence`` is clamped
+    and below-threshold reads are flagged ``hitl_required`` (abstention); and the
+    ``normalized_value`` is recomputed by OUR deterministic normalizer — the
+    model's own normalized_value is ignored (paraphrase-divergence defense).
+    Top-level structural problems (not an object, no ``observations`` array)
+    fail closed with ``parse_ok=False``.
+    """
+
+    if not isinstance(raw, dict):
+        return VlmRegionReadResult(
+            sheet_id=sheet_id,
+            region_id=region_id,
+            readable=False,
+            parse_ok=False,
+            reason="VLM region response is not a JSON object",
+        )
+    observations_raw = raw.get("observations")
+    if not isinstance(observations_raw, list):
+        return VlmRegionReadResult(
+            sheet_id=sheet_id,
+            region_id=region_id,
+            readable=False,
+            parse_ok=False,
+            reason="VLM region response has no 'observations' array",
+        )
+
+    readable = bool(raw.get("readable", True))
+    grounded: list[VlmObservation] = []
+    hitl = 0
+    dropped = 0
+    for observation_raw in observations_raw:
+        if not isinstance(observation_raw, dict):
+            dropped += 1
+            continue
+        kind = str(observation_raw.get("kind", "")).strip().lower()
+        bbox = _parse_bbox_rel(observation_raw.get("bbox_rel"))
+        if not is_allowed_kind(kind) or bbox is None:
+            dropped += 1
+            continue
+        raw_value = str(observation_raw.get("raw_value", "") or "")
+        confidence = _clamp_unit(observation_raw.get("confidence"))
+        low = confidence < min_confidence
+        if low:
+            hitl += 1
+        grounded.append(
+            VlmObservation(
+                kind=kind,
+                raw_value=raw_value,
+                normalized_value=normalize_observation_value(kind, raw_value),
+                bbox_rel=bbox,
+                confidence=confidence,
+                hitl_required=low,
+                evidence_note=str(observation_raw.get("evidence_note", "") or ""),
+            )
+        )
+
+    reason: str | None = None
+    if not readable and not grounded:
+        reason = str(raw.get("unreadable_reason") or "region marked unreadable")
+    elif dropped:
+        reason = f"{dropped} observation(s) dropped (invalid kind/bbox_rel)"
+    return VlmRegionReadResult(
+        sheet_id=sheet_id,
+        region_id=region_id,
+        readable=readable,
+        observations=tuple(grounded),
+        parse_ok=True,
+        reason=reason,
+        hitl_count=hitl,
+        dropped_count=dropped,
+    )
+
+
 __all__ = [
+    "VlmObservation",
     "VlmReadResult",
+    "VlmRegionReadResult",
     "ground_vlm_drawing_response",
+    "ground_vlm_region_observations",
 ]
