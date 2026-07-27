@@ -53,7 +53,11 @@ class _FallbackPipeline(Protocol):
 
 
 class KimiVlmDrawingPipeline:
-    """Advisory VLM reads via Kimi; OCR-degrade on any non-VLM / failure path."""
+    """Advisory VLM reads (model-agnostic; Kimi is one provider profile).
+
+    OCR-degrades on any non-VLM / failure path. Kept named ``Kimi*`` for
+    back-compat; ``VlmDrawingPipeline`` is the model-agnostic alias.
+    """
 
     def __init__(
         self,
@@ -151,4 +155,7 @@ class KimiVlmDrawingPipeline:
         )
 
 
-__all__ = ["KimiVlmDrawingPipeline"]
+# Model-agnostic alias (§5): the contour is not named after one model.
+VlmDrawingPipeline = KimiVlmDrawingPipeline
+
+__all__ = ["KimiVlmDrawingPipeline", "VlmDrawingPipeline"]
