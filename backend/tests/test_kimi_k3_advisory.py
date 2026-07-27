@@ -347,6 +347,30 @@ class VlmProfileAndContractTests(unittest.TestCase):
         self.assertEqual(result.usage["prompt_tokens"], 10)
         self.assertEqual(result.determinism_basis, "sampling_fixed_by_service")
 
+    def test_read_region_uses_observations_schema(self) -> None:
+        captured: dict[str, object] = {}
+        ok = json.dumps(
+            {"choices": [{"message": {"content": '{"readable":true,"observations":[]}'}}]}
+        ).encode("utf-8")
+
+        def transport(url: str, headers: dict[str, str], body: bytes) -> bytes:
+            captured["body"] = json.loads(body.decode("utf-8"))
+            return ok
+
+        client = VlmAdvisoryClient(
+            base_url="https://x/v1", api_key="k", model="kimi-k3", transport=transport
+        )
+        res = client.read_region(
+            b"x", media_type="image/png", sheet_id="AR-01", region_id="stamp", prompt="p"
+        )
+        body = captured["body"]
+        assert isinstance(body, dict)
+        self.assertEqual(
+            body["response_format"]["json_schema"]["name"], "aerobim_region_observations"
+        )
+        self.assertIn("AR-01#stamp", body["messages"][1]["content"][0]["text"])
+        self.assertIn("observations", res.content)
+
 
 class KimiConfigGateTests(unittest.TestCase):
     def test_disabled_by_default(self) -> None:

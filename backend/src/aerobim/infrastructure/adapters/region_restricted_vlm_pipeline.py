@@ -1,0 +1,153 @@
+"""§3 layer 2: region-restricted VLM orchestration (advisory, fail-closed).
+
+Composes a layout detector (layer 1) + a deterministic read plan (layers 0-1) +
+a region cropper + the advisory reader, so the VLM only ever sees ONE region
+crop at a time (never the whole sheet). Every outcome is ``degraded=True`` —
+these are candidate observations, not findings; the verdict stays with the
+deterministic engine and the expert (ADR-001).
+
+Fail-closed everywhere: not ready, no cropper, no path, text layer present, no
+regions, a per-region crop/read/parse failure — each degrades without inventing
+observations and without a whole-sheet read.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Protocol
+
+from aerobim.domain.models import DrawingRegionRef, DrawingSource
+from aerobim.domain.region_read_plan import RegionReadTask, plan_region_reads
+from aerobim.domain.vlm_grounding import VlmObservation, ground_vlm_region_observations
+from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
+    KimiAdvisoryError,
+    KimiReadResult,
+)
+
+_DEFAULT_MAX_REGIONS = 24
+_DEFAULT_REGION_PROMPT = (
+    "You are reading ONE cropped region of an engineering drawing. Extract only "
+    "text physically visible in this crop (title-block fields, marks, dimensions, "
+    "table rows). Do not infer, do not count, do not judge compliance. Return JSON "
+    "per the schema; if the crop is unreadable, set readable=false with a reason."
+)
+
+
+class _RegionReader(Protocol):
+    def read_region(
+        self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
+    ) -> KimiReadResult: ...
+
+
+class _RegionDetector(Protocol):
+    def detect(self, path: Path, *, sheet_id: str | None = None) -> list[DrawingRegionRef]: ...
+
+
+class RegionCropper(Protocol):
+    """Crops one region to raw image bytes; returns ``(bytes, media_type)``."""
+
+    def crop(
+        self, source: DrawingSource, *, bbox_xyxy: tuple[float, float, float, float]
+    ) -> tuple[bytes, str]: ...
+
+
+@dataclass(frozen=True)
+class RegionRead:
+    region_id: str
+    observations: tuple[VlmObservation, ...]
+    degraded: bool
+    reason: str | None
+
+
+@dataclass(frozen=True)
+class SheetReadResult:
+    sheet_id: str
+    skipped_vlm: bool
+    reason: str
+    reads: tuple[RegionRead, ...] = ()
+    degraded: bool = True  # candidates only; cv_human_level remains MISSING
+
+
+class RegionRestrictedVlmPipeline:
+    """Layer-0/1/2 advisory orchestrator; the whole sheet is never sent to the VLM."""
+
+    def __init__(
+        self,
+        *,
+        region_detector: _RegionDetector | None,
+        reader: _RegionReader | None,
+        cropper: RegionCropper | None,
+        ready: bool,
+        min_confidence: float = 0.60,
+        max_regions: int = _DEFAULT_MAX_REGIONS,
+        prompt: str = _DEFAULT_REGION_PROMPT,
+    ) -> None:
+        self._region_detector = region_detector
+        self._reader = reader
+        self._cropper = cropper
+        self._ready = ready
+        self._min_confidence = min_confidence
+        self._max_regions = max_regions
+        self._prompt = prompt
+
+    def read_sheet(self, source: DrawingSource, *, text_layer_present: bool) -> SheetReadResult:
+        sheet_id = source.sheet_id or (source.path.stem if source.path else "sheet")
+        # Fail-closed: without reader/cropper/detector/path we do NOT read the
+        # whole sheet — region-restricted is the only permitted VLM path.
+        if (
+            not self._ready
+            or self._reader is None
+            or self._cropper is None
+            or self._region_detector is None
+            or source.path is None
+        ):
+            return SheetReadResult(
+                sheet_id=sheet_id,
+                skipped_vlm=True,
+                reason="region-restricted VLM unavailable (not ready / no cropper); "
+                "whole-sheet read is forbidden",
+            )
+
+        regions = self._region_detector.detect(source.path, sheet_id=source.sheet_id)
+        plan = plan_region_reads(text_layer_present=text_layer_present, regions=regions)
+        if plan.skip_vlm:
+            return SheetReadResult(sheet_id=sheet_id, skipped_vlm=True, reason=plan.reason)
+
+        reads = tuple(
+            self._read_one(source, sheet_id, task) for task in plan.tasks[: self._max_regions]
+        )
+        return SheetReadResult(
+            sheet_id=sheet_id, skipped_vlm=False, reason=plan.reason, reads=reads
+        )
+
+    def _read_one(self, source: DrawingSource, sheet_id: str, task: RegionReadTask) -> RegionRead:
+        assert self._cropper is not None and self._reader is not None  # narrowed by caller
+        try:
+            crop_bytes, media_type = self._cropper.crop(source, bbox_xyxy=task.bbox_xyxy)
+            read = self._reader.read_region(
+                crop_bytes,
+                media_type=media_type,
+                sheet_id=sheet_id,
+                region_id=task.region_id,
+                prompt=self._prompt,
+            )
+        except KimiAdvisoryError as exc:
+            return RegionRead(task.region_id, (), True, f"read failed ({exc.reason_code})")
+        except (OSError, ValueError) as exc:
+            return RegionRead(task.region_id, (), True, f"crop/read failed: {exc}")
+        except Exception as exc:  # noqa: BLE001 — transport/SSRF must fail closed
+            return RegionRead(task.region_id, (), True, f"transport error (fail-closed): {exc}")
+
+        grounded = ground_vlm_region_observations(
+            read.content,
+            sheet_id=sheet_id,
+            region_id=task.region_id,
+            min_confidence=self._min_confidence,
+        )
+        if not grounded.parse_ok:
+            return RegionRead(task.region_id, (), True, f"schema deviation: {grounded.reason}")
+        return RegionRead(task.region_id, grounded.observations, True, grounded.reason)
+
+
+__all__ = ["RegionCropper", "RegionRead", "RegionRestrictedVlmPipeline", "SheetReadResult"]
