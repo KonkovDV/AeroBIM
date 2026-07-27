@@ -11,6 +11,8 @@ tags: [aerobim, kimi-k3, samolet, scenarios, vlm, advisory, tz]
 
 Спутник [`KIMI_K3_INTEGRATION_STUDY_2026_07_27.md`](KIMI_K3_INTEGRATION_STUDY_2026_07_27.md)
 (факты о модели) и [`VLM_OCR_COMPARISON_PROTOCOL_2026_08`](../pilot/VLM_OCR_COMPARISON_PROTOCOL_2026_08.md).
+Трёхисточниковое согласование (Техлаб × МИК):
+[`KIMI_K3_MIK_TECHLAB_ALIGNMENT_2026_07_27.md`](KIMI_K3_MIK_TECHLAB_ALIGNMENT_2026_07_27.md).
 Здесь — разбор **каждого** сценария ТЗ (ТР-3..24) и **всех 20** типовых ошибок
 (`samples/benchmarks/samolet-typical-errors-catalog.json`) в терминах: что K3
 делает, где граница, tier данных, риск, вердикт.

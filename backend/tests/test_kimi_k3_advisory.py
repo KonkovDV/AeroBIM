@@ -25,11 +25,13 @@ from aerobim.domain.ai_tool_registry import (
     allowed_agent_tool_names,
     lookup_advisory_tool,
 )
+from aerobim.domain.models import DrawingSource
 from aerobim.domain.vlm_grounding import ground_vlm_drawing_response
 from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
     KimiAdvisoryError,
     KimiK3AdvisoryClient,
 )
+from aerobim.infrastructure.adapters.kimi_vlm_drawing_pipeline import KimiVlmDrawingPipeline
 
 
 def _settings(**overrides: object) -> Settings:
@@ -244,6 +246,111 @@ class KimiConfigGateTests(unittest.TestCase):
                 signoff_profile=profile,
             ).kimi_advisory_ready()
             self.assertFalse(ready, profile)
+
+
+class _CountingReader:
+    def __init__(self, response: dict | None = None, raise_exc: Exception | None = None) -> None:
+        self.calls = 0
+        self._response = response if response is not None else {"regions": []}
+        self._raise = raise_exc
+
+    def read_drawing(
+        self, image_bytes: bytes, *, media_type: str, sheet_id: str, prompt: str
+    ) -> dict:
+        self.calls += 1
+        if self._raise is not None:
+            raise self._raise
+        return self._response
+
+
+def _png_source(tmp: str, name: str = "AR-01.png") -> DrawingSource:
+    path = Path(tmp) / name
+    path.write_bytes(b"\x89PNG\r\n\x1a\n fake image bytes")
+    return DrawingSource(path=path, sheet_id="AR-01")
+
+
+class KimiVlmPipelineTests(unittest.TestCase):
+    def test_not_ready_degrades_without_calling_vlm(self) -> None:
+        reader = _CountingReader()
+        pipeline = KimiVlmDrawingPipeline(reader, ready=False)
+        with tempfile.TemporaryDirectory() as tmp:
+            result = pipeline.analyze(_png_source(tmp), mode="auto")
+        self.assertEqual(reader.calls, 0)
+        self.assertTrue(result.degraded)
+        self.assertEqual(result.pipeline_mode_used, "unavailable")
+
+    def test_ocr_only_mode_does_not_call_vlm(self) -> None:
+        reader = _CountingReader()
+        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            result = pipeline.analyze(_png_source(tmp), mode="ocr_only")
+        self.assertEqual(reader.calls, 0)
+        self.assertTrue(result.degraded)
+
+    def test_valid_read_yields_candidate_regions_always_degraded(self) -> None:
+        reader = _CountingReader(
+            {"regions": [{"bbox": [1, 2, 3, 4], "text": "AR-01", "confidence": 0.9}]}
+        )
+        pipeline = KimiVlmDrawingPipeline(reader, ready=True, model_id="kimi-k3")
+        with tempfile.TemporaryDirectory() as tmp:
+            result = pipeline.analyze(_png_source(tmp), mode="auto")
+        self.assertEqual(reader.calls, 1)
+        self.assertEqual(len(result.regions), 1)
+        self.assertEqual(result.annotations, ())
+        self.assertEqual(result.pipeline_mode_used, "kimi_vlm_candidate")
+        self.assertTrue(result.degraded)  # candidates never verified CV
+        self.assertIn("cv_human_level remains", result.reason or "")
+
+    def test_schema_deviation_fails_closed(self) -> None:
+        reader = _CountingReader({"no_regions": True})
+        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            result = pipeline.analyze(_png_source(tmp), mode="auto")
+        self.assertEqual(reader.calls, 1)
+        self.assertTrue(result.degraded)
+        self.assertEqual(result.pipeline_mode_used, "unavailable")
+
+    def test_client_error_fails_closed(self) -> None:
+        reader = _CountingReader(raise_exc=KimiAdvisoryError("boom"))
+        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            result = pipeline.analyze(_png_source(tmp), mode="auto")
+        self.assertTrue(result.degraded)
+        self.assertEqual(result.pipeline_mode_used, "unavailable")
+
+    def test_unsupported_suffix_degrades_before_read(self) -> None:
+        reader = _CountingReader()
+        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        source = DrawingSource(path=Path("nonexistent/plan.pdf"), sheet_id="S1")
+        result = pipeline.analyze(source, mode="auto")
+        self.assertEqual(reader.calls, 0)
+        self.assertTrue(result.degraded)
+
+    def test_end_to_end_with_real_client_fake_transport(self) -> None:
+        envelope = json.dumps(
+            {
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(
+                                {"regions": [{"bbox": [0, 0, 9, 9], "confidence": 0.4}]}
+                            )
+                        }
+                    }
+                ]
+            }
+        ).encode("utf-8")
+        client = KimiK3AdvisoryClient(
+            base_url="https://kimi.example.com/v1",
+            api_key="k",
+            transport=lambda url, headers, body: envelope,
+        )
+        pipeline = KimiVlmDrawingPipeline(client, ready=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            result = pipeline.analyze(_png_source(tmp), mode="auto")
+        self.assertEqual(len(result.regions), 1)
+        self.assertTrue(result.regions[0].hitl_required)  # 0.4 < 0.6 → abstain
+        self.assertTrue(result.degraded)
 
 
 if __name__ == "__main__":
