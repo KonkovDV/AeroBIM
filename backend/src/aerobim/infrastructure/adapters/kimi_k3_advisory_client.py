@@ -71,6 +71,50 @@ _DRAWING_REGIONS_SCHEMA: dict[str, Any] = {
     "required": ["regions"],
 }
 
+# §4 rich region-observation schema (strict). normalized_value is echoed by the
+# model but IGNORED by grounding — we recompute it deterministically.
+_OBSERVATIONS_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": False,
+    "properties": {
+        "sheet_id": {"type": "string"},
+        "region_id": {"type": "string"},
+        "readable": {"type": "boolean"},
+        "unreadable_reason": {"type": ["string", "null"]},
+        "observations": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "kind": {
+                        "type": "string",
+                        "enum": [
+                            "text",
+                            "dimension",
+                            "designation",
+                            "table_row",
+                            "stamp_field",
+                        ],
+                    },
+                    "raw_value": {"type": "string"},
+                    "normalized_value": {"type": ["string", "null"]},
+                    "bbox_rel": {
+                        "type": "array",
+                        "items": {"type": "number"},
+                        "minItems": 4,
+                        "maxItems": 4,
+                    },
+                    "confidence": {"type": "number"},
+                    "evidence_note": {"type": "string"},
+                },
+                "required": ["kind", "raw_value", "bbox_rel", "confidence"],
+            },
+        },
+    },
+    "required": ["readable", "observations"],
+}
+
 
 @dataclass(frozen=True)
 class KimiModelProfile:
@@ -209,11 +253,18 @@ class VlmAdvisoryClient:
             raise KimiAdvisoryError(f"VLM response exceeds {self._max_response_bytes}-byte cap")
         return raw
 
-    def _build_payload(self, data_url: str, *, sheet_id: str, prompt: str) -> dict[str, Any]:
+    def _build_payload(
+        self,
+        data_url: str,
+        *,
+        sheet_id: str,
+        prompt: str,
+        response_format: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         profile = self._profile
         payload: dict[str, Any] = {
             "model": self._model,
-            "response_format": profile.response_format,
+            "response_format": response_format or profile.response_format,
             # §2.5: never let the model run billable/uncontrolled server tools.
             "tools": [],
             "messages": [
@@ -246,6 +297,7 @@ class VlmAdvisoryClient:
         media_type: str,
         sheet_id: str,
         prompt: str,
+        response_format: dict[str, Any] | None = None,
     ) -> KimiReadResult:
         """Send one image + prompt; return structured content + usage + basis.
 
@@ -254,9 +306,11 @@ class VlmAdvisoryClient:
         """
 
         data_url = f"data:{media_type};base64,{base64.b64encode(image_bytes).decode('ascii')}"
-        body = json.dumps(self._build_payload(data_url, sheet_id=sheet_id, prompt=prompt)).encode(
-            "utf-8"
-        )
+        body = json.dumps(
+            self._build_payload(
+                data_url, sheet_id=sheet_id, prompt=prompt, response_format=response_format
+            )
+        ).encode("utf-8")
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
@@ -291,6 +345,36 @@ class VlmAdvisoryClient:
         usage = envelope.get("usage") if isinstance(envelope.get("usage"), dict) else {}
         return KimiReadResult(
             content=parsed, usage=dict(usage), determinism_basis=self._profile.determinism_basis
+        )
+
+    def _observations_response_format(self) -> dict[str, Any]:
+        if self._profile.response_format.get("type") == "json_schema":
+            return {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "aerobim_region_observations",
+                    "strict": True,
+                    "schema": _OBSERVATIONS_SCHEMA,
+                },
+            }
+        return {"type": "json_object"}
+
+    def read_region(
+        self,
+        image_bytes: bytes,
+        *,
+        media_type: str,
+        sheet_id: str,
+        region_id: str,
+        prompt: str,
+    ) -> KimiReadResult:
+        """Region-restricted read (§3/§4): one region crop → the observations schema."""
+        return self.read_drawing(
+            image_bytes,
+            media_type=media_type,
+            sheet_id=f"{sheet_id}#{region_id}",
+            prompt=prompt,
+            response_format=self._observations_response_format(),
         )
 
     @staticmethod
