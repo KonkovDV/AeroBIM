@@ -92,9 +92,11 @@ class KimiVlmDrawingPipeline:
 
         sheet_id = source.sheet_id or source.path.stem
         try:
-            image_bytes = source.path.read_bytes()
-            if len(image_bytes) > self._max_image_bytes:
+            # Size-gate on stat() BEFORE reading, so an oversized file never gets
+            # fully buffered into memory (OOM guard).
+            if source.path.stat().st_size > self._max_image_bytes:
                 return self._degrade(source, "Drawing image exceeds VLM size cap")
+            image_bytes = source.path.read_bytes()
             raw = self._client.read_drawing(
                 image_bytes, media_type=media_type, sheet_id=sheet_id, prompt=self._prompt
             )
