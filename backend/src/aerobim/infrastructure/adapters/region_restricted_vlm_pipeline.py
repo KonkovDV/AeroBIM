@@ -58,6 +58,7 @@ class RegionRead:
     observations: tuple[VlmObservation, ...]
     degraded: bool
     reason: str | None
+    determinism_basis: str = "unavailable"
 
 
 @dataclass(frozen=True)
@@ -157,7 +158,9 @@ class RegionRestrictedVlmPipeline:
         )
         if not grounded.parse_ok:
             return RegionRead(task.region_id, (), True, f"schema deviation: {grounded.reason}")
-        return RegionRead(task.region_id, grounded.observations, True, grounded.reason)
+        return RegionRead(
+            task.region_id, grounded.observations, True, grounded.reason, read.determinism_basis
+        )
 
 
 __all__ = ["RegionCropper", "RegionRead", "RegionRestrictedVlmPipeline", "SheetReadResult"]
