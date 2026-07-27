@@ -47,6 +47,7 @@ aerobim-measure-package-sla = "aerobim.tools.measure_package_sla:main"
 aerobim-export-evidence-bundle = "aerobim.tools.export_evidence_bundle:main"
 aerobim-register-dwg-conversion = "aerobim.tools.register_dwg_conversion:main"
 aerobim-kimi-advisory-smoke = "aerobim.tools.kimi_advisory_smoke:main"
+aerobim-kimi-region-smoke = "aerobim.tools.kimi_region_smoke:main"
 
 [project.optional-dependencies]
 dev = [
