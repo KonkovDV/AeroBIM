@@ -76,10 +76,10 @@ tags: [aerobim, samolet, techlab, gap, dwg, mep, calc, bcf, cde]
 
 1. Приём `.dwg` как **входного артефакта** (ingest + hash).  
 2. Обязательная **внешняя** конвертация (заказчик или согласованный tool) → PDF и/или DXF/IFC.  
-3. Регистрация пары `source_dwg_sha256` ↔ `derived_*_sha256` в provenance.  
-4. QA конвертации: список ожидаемых листов/слоёв; фиксация loss report.  
-5. При неуспехе конвертации / отсутствии derived → capability `FAILED`, **блокировка** `summary.passed` в pilot/production.  
-6. В UI/отчёте: «результат относится к производному файлу; исходный DWG = N».  
+3. Регистрация пары `source_dwg_sha256` ↔ `derived_*_sha256` в provenance. **ЗАКРЫТО 2026-07-27** — hash-верифицируемый sidecar + CLI `aerobim-register-dwg-conversion` ([Wave S](../quality/DWG_DERIVED_PROVENANCE_WAVE_2026_07_27.md)).  
+4. QA конвертации: список ожидаемых листов/слоёв; фиксация loss report. **ЗАКРЫТО 2026-07-27** — `cad_conversion_qa` diff + пороги §1.4; вердикт пересчитывается, не читается из sidecar (Wave S).  
+5. При неуспехе конвертации / отсутствии derived → capability `FAILED`, **блокировка** `summary.passed` в pilot/production. **ЗАКРЫТО 2026-07-27** — невалидный/tampered sidecar строже отсутствующего (Wave S).  
+6. В UI/отчёте: «результат относится к производному файлу; исходный DWG = N». **ЗАКРЫТО 2026-07-27** — INFO-issue `AEROBIM-CAD-DWG-DERIVED` с обоими sha256 в evidence_refs (Wave S).  
 7. **Не** ставить `dwg_dxf=ok`.
 
 ## 1.4 Критерии приёмки MVP

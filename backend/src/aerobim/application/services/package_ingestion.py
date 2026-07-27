@@ -16,6 +16,10 @@ from aerobim.application.services.capability_matrix import (
     RASTER_DRAWING_FORMATS,
     RASTER_DRAWING_SUFFIXES,
 )
+from aerobim.domain.derived_cad_provenance import (
+    find_derived_provenance_sidecar,
+    verify_derived_provenance_sidecar,
+)
 from aerobim.domain.ingestion import stamp_requirement_source
 from aerobim.domain.models import (
     CapabilityState,
@@ -135,6 +139,7 @@ class PackageIngestionService:
         issues: list[ValidationIssue] = []
         saw_dwg = False
         saw_supported_dxf = False
+        saw_verified_derived_dwg = False
         all_dwg_supported = True
         last_reason: str | None = None
         last_dwg_reason: str | None = None
@@ -154,17 +159,32 @@ class PackageIngestionService:
                     saw_supported_dxf = True
                 annotations.extend(result.annotations)
             elif is_dwg or result.format_resolved == "dwg":
+                # DWG conversion MVP: an explicitly declared + hash-verified derived
+                # substitute registers the pair instead of failing the package.
+                # Declared-but-unverifiable provenance is worse than none (fail-closed).
+                verified, derived_issues = self._assess_dwg_derived_route(source.path)
+                issues.extend(derived_issues)
+                if verified:
+                    saw_verified_derived_dwg = True
+                    continue
                 all_dwg_supported = False
-                last_dwg_reason = result.reason
-                issues.append(
-                    ValidationIssue(
-                        rule_id="AEROBIM-CAD-DWG",
-                        severity=Severity.WARNING,
-                        message=result.reason or "Native DWG ingest not configured",
-                        category=FindingCategory.DRAWING_VALIDATION,
-                        source_id=source.path.name if source.path is not None else "cad",
-                    )
+                derived_warning = next(
+                    (issue for issue in derived_issues if issue.severity is Severity.WARNING),
+                    None,
                 )
+                last_dwg_reason = (
+                    derived_warning.message if derived_warning is not None else result.reason
+                )
+                if derived_warning is None:
+                    issues.append(
+                        ValidationIssue(
+                            rule_id="AEROBIM-CAD-DWG",
+                            severity=Severity.WARNING,
+                            message=result.reason or "Native DWG ingest not configured",
+                            category=FindingCategory.DRAWING_VALIDATION,
+                            source_id=source.path.name if source.path is not None else "cad",
+                        )
+                    )
             else:
                 issues.append(
                     ValidationIssue(
@@ -184,6 +204,14 @@ class PackageIngestionService:
                 or last_reason
                 or "Package contains unsupported/unparsed DWG; DXF success does not clear DWG",
             )
+        elif saw_verified_derived_dwg:
+            # Derived route: hash-verified substitute pair registered — never OK
+            # (analysis refers to the derived file, not the native DWG).
+            capability = CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "DWG via hash-verified derived substitute (source_dwg_sha256↔derived_sha256); "
+                "native DWG not parsed",
+            )
         elif saw_supported_dxf:
             # Partial delivery: DXF only — never OK until ODA DWG evidenced.
             capability = CapabilityStatus(
@@ -196,6 +224,69 @@ class PackageIngestionService:
                 last_reason or "CAD ingest produced no supported parse",
             )
         return tuple(annotations), capability, issues
+
+    def _assess_dwg_derived_route(self, dwg_path: Path) -> tuple[bool, tuple[ValidationIssue, ...]]:
+        """Check the DWG sidecar (``*.derived-provenance.json``) for a verified pair.
+
+        Returns ``(verified, issues)``. No sidecar → ``(False, ())`` — caller keeps
+        the legacy unsupported-DWG path. Verified sidecar → INFO registration issue
+        (+ WARNING when recomputed conversion QA reports losses). Failing sidecar
+        or failed QA → WARNING with mismatches (worse than absent: fail-closed).
+        """
+
+        sidecar = find_derived_provenance_sidecar(dwg_path)
+        if sidecar is None:
+            return False, ()
+        verification = verify_derived_provenance_sidecar(sidecar)
+        if not verification.verified:
+            return False, (
+                ValidationIssue(
+                    rule_id="AEROBIM-CAD-DWG-DERIVED",
+                    severity=Severity.WARNING,
+                    message=(
+                        "DWG derived-provenance sidecar failed hash verification: "
+                        + "; ".join(verification.mismatches)
+                    ),
+                    category=FindingCategory.DRAWING_VALIDATION,
+                    source_id=dwg_path.name,
+                    evidence_refs=(f"sidecar:{sidecar.name}",),
+                ),
+            )
+        provenance = verification.provenance
+        assert provenance is not None
+        registration = ValidationIssue(
+            rule_id="AEROBIM-CAD-DWG-DERIVED",
+            severity=Severity.INFO,
+            message=(
+                "Analysis refers to the derived file "
+                f"{provenance.derived_format}:{(provenance.derived_sha256 or '')[:12]} "
+                f"converted from DWG sha256:{(provenance.source_dwg_sha256 or '')[:12]} "
+                f"via {provenance.conversion_tool or 'undeclared tool'}; "
+                "native DWG is not parsed"
+            ),
+            category=FindingCategory.DRAWING_VALIDATION,
+            source_id=dwg_path.name,
+            evidence_refs=(
+                f"sidecar:{sidecar.name}",
+                f"source_dwg_sha256:{provenance.source_dwg_sha256}",
+                f"derived_sha256:{provenance.derived_sha256}",
+            ),
+        )
+        qa = verification.conversion_qa
+        if qa is not None and qa.status == "warning":
+            # Loss within the agreed policy: route stays, expert sees the diff.
+            return True, (
+                registration,
+                ValidationIssue(
+                    rule_id="AEROBIM-CAD-DWG-QA",
+                    severity=Severity.WARNING,
+                    message="DWG conversion loss report: " + "; ".join(qa.reasons),
+                    category=FindingCategory.DRAWING_VALIDATION,
+                    source_id=dwg_path.name,
+                    evidence_refs=(f"sidecar:{sidecar.name}",),
+                ),
+            )
+        return True, (registration,)
 
     def collect_norm_pack_requirements(
         self,
