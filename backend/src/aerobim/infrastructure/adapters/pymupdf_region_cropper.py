@@ -1,0 +1,79 @@
+"""§3 layer-2 crop adapter: extract ONE region to PNG bytes via PyMuPDF.
+
+Implements the ``RegionCropper`` protocol used by ``RegionRestrictedVlmPipeline``.
+PyMuPDF is a shipped core dependency (unlike Pillow), so this needs no optional
+extra. The crop is deterministic; a degenerate / out-of-bounds rectangle fails
+closed with ``ValueError`` (the orchestrator then degrades only that region).
+
+Coordinate contract: ``bbox_xyxy`` is interpreted in the SAME space as the
+page rectangle (PyMuPDF points) unless ``coordinate_system="normalized-0-1"``,
+in which case it is scaled by the page rect. The caller is responsible for
+emitting region boxes in the matching space (the layout detector's convention).
+"""
+
+from __future__ import annotations
+
+from aerobim.domain.models import DrawingSource
+
+_DEFAULT_DPI = 200
+_DEFAULT_MAX_SIDE_PX = 4096
+
+
+class PyMuPDFRegionCropper:
+    """Crops one region of a PDF page / raster image to PNG bytes."""
+
+    def __init__(
+        self,
+        *,
+        dpi: int = _DEFAULT_DPI,
+        page_number: int = 0,
+        coordinate_system: str = "page-point",
+        max_side_px: int = _DEFAULT_MAX_SIDE_PX,
+    ) -> None:
+        self._dpi = dpi
+        self._page_number = page_number
+        self._coordinate_system = coordinate_system
+        self._max_side_px = max_side_px
+
+    def crop(
+        self, source: DrawingSource, *, bbox_xyxy: tuple[float, float, float, float]
+    ) -> tuple[bytes, str]:
+        if source.path is None:
+            raise ValueError("cannot crop: DrawingSource has no path")
+        try:
+            import pymupdf
+        except ModuleNotFoundError as exc:  # pragma: no cover - shipped core dep
+            raise RuntimeError("Region cropping requires PyMuPDF (core dependency)") from exc
+
+        with pymupdf.open(source.path) as document:
+            if not 0 <= self._page_number < document.page_count:
+                raise ValueError(
+                    f"page {self._page_number} out of range (pages={document.page_count})"
+                )
+            page = document[self._page_number]
+            rect = self._clip_rect(pymupdf, page.rect, bbox_xyxy)
+            dpi = self._bounded_dpi(rect)
+            pixmap = page.get_pixmap(clip=rect, dpi=dpi)
+            return (pixmap.tobytes("png"), "image/png")
+
+    def _clip_rect(self, pymupdf, page_rect, bbox: tuple[float, float, float, float]):  # noqa: ANN001
+        x1, y1, x2, y2 = bbox
+        if self._coordinate_system == "normalized-0-1":
+            x1, x2 = x1 * page_rect.width, x2 * page_rect.width
+            y1, y2 = y1 * page_rect.height, y2 * page_rect.height
+        # Intersect with the page to clamp defensively, then reject empties.
+        rect = pymupdf.Rect(x1, y1, x2, y2) & page_rect
+        if rect.is_empty or rect.width <= 0 or rect.height <= 0:
+            raise ValueError(f"degenerate/out-of-bounds crop rect for bbox={bbox}")
+        return rect
+
+    def _bounded_dpi(self, rect) -> int:  # noqa: ANN001
+        """Cap the effective dpi so the longest rendered side stays within budget."""
+        longest_pt = max(rect.width, rect.height)
+        if longest_pt <= 0:
+            return self._dpi
+        max_dpi_for_budget = int(self._max_side_px * 72 / longest_pt)
+        return max(72, min(self._dpi, max_dpi_for_budget))
+
+
+__all__ = ["PyMuPDFRegionCropper"]
