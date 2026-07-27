@@ -91,6 +91,16 @@ class RegionRestrictedVlmPipeline:
         self._max_regions = max_regions
         self._prompt = prompt
 
+    @property
+    def ready(self) -> bool:
+        """True only when a reader, cropper and detector are wired (advisory available)."""
+        return (
+            self._ready
+            and self._reader is not None
+            and self._cropper is not None
+            and self._region_detector is not None
+        )
+
     def read_sheet(self, source: DrawingSource, *, text_layer_present: bool) -> SheetReadResult:
         sheet_id = source.sheet_id or (source.path.stem if source.path else "sheet")
         # Fail-closed: without reader/cropper/detector/path we do NOT read the
