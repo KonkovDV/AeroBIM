@@ -81,9 +81,13 @@ from aerobim.infrastructure.adapters.ocr_fallback_multimodal_drawing_pipeline im
 from aerobim.infrastructure.adapters.oda_cad_model_ingestor import OdaCadModelIngestor
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
+from aerobim.infrastructure.adapters.pymupdf_region_cropper import PyMuPDFRegionCropper
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 from aerobim.infrastructure.adapters.redis_analyze_project_package_job_store import (
     RedisAnalyzeProjectPackageJobStore,
+)
+from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
+    RegionRestrictedVlmPipeline,
 )
 from aerobim.infrastructure.adapters.relational_ifc_knowledge_graph import (
     RelationalIfcKnowledgeGraph,
@@ -231,6 +235,14 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             raster_analyzer=current.resolve(Tokens.RASTER_DRAWING_ANALYZER),
             region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),
         ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    # Advisory VLM (§3/§7): available under kimi_advisory_ready(), but DELIBERATELY
+    # NOT consumed by AnalyzeProjectPackageUseCase — its candidate regions must
+    # never reach engine_issues / summary.passed (advisory OFF==ON invariant).
+    container.register(
+        Tokens.ADVISORY_VLM_PIPELINE,
+        lambda current: _build_advisory_vlm_pipeline(current),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -621,6 +633,36 @@ def _build_drawing_analyzer_port(current: Container):
         )
     return MultimodalDrawingAnalyzerPort(
         pipeline=current.resolve(Tokens.MULTIMODAL_DRAWING_PIPELINE)
+    )
+
+
+def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipeline:
+    """Region-restricted advisory VLM; fail-closed and NOT on the verdict path.
+
+    Constructed ready only when ``settings.kimi_advisory_ready()`` (opt-in, and
+    hard-disabled on samolet_pilot / production). Even when ready it is not wired
+    into the deterministic use case, so toggling the flag cannot change
+    ``summary.passed`` (advisory OFF==ON). A future advisory surface may consume
+    it, but must keep candidate regions out of ``engine_issues``.
+    """
+    settings = current.resolve(Tokens.SETTINGS)
+    if not settings.kimi_advisory_ready():
+        return RegionRestrictedVlmPipeline(
+            region_detector=None, reader=None, cropper=None, ready=False
+        )
+    from aerobim.infrastructure.adapters.kimi_k3_advisory_client import VlmAdvisoryClient
+
+    client = VlmAdvisoryClient(
+        base_url=settings.kimi_api_base_url or "",
+        api_key=settings.kimi_api_key or "",
+        model=settings.kimi_model,
+        reasoning_effort=settings.kimi_reasoning_effort,
+    )
+    return RegionRestrictedVlmPipeline(
+        region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),
+        reader=client,
+        cropper=PyMuPDFRegionCropper(),
+        ready=True,
     )
 
 
