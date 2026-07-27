@@ -658,9 +658,22 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
         model=settings.kimi_model,
         reasoning_effort=settings.kimi_reasoning_effort,
     )
+    # §2.1: deterministic act-grade replay when a cache dir is configured.
+    reader: object = client
+    if settings.kimi_cache_dir:
+        from aerobim.infrastructure.adapters.caching_vlm_reader import (
+            CachingVlmReader,
+            FilesystemVlmResponseStore,
+        )
+
+        reader = CachingVlmReader(
+            client,
+            FilesystemVlmResponseStore(Path(settings.kimi_cache_dir)),
+            model=settings.kimi_model,
+        )
     return RegionRestrictedVlmPipeline(
         region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),
-        reader=client,
+        reader=reader,  # type: ignore[arg-type]
         cropper=PyMuPDFRegionCropper(),
         ready=True,
     )

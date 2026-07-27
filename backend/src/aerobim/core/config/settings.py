@@ -162,6 +162,12 @@ class Settings:
     """
     kimi_max_image_bytes: int = 32 * 1024 * 1024
     """Max drawing-image bytes before the VLM pipeline fails closed (IMAGE_TOO_LARGE)."""
+    kimi_cache_dir: str | None = None
+    """Optional dir for the deterministic VLM response cache (§2.1 act replay).
+
+    When set, advisory region reads are cached by (sha256 image + sha256 prompt +
+    model) for byte-identical golden-hash replay. Advisory-only; off by default.
+    """
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -376,6 +382,7 @@ class Settings:
                 (os.getenv("AEROBIM_KIMI_REASONING_EFFORT") or "low").strip().lower() or "low"
             ),
             kimi_max_image_bytes=_read_int("AEROBIM_KIMI_MAX_IMAGE_BYTES", 32 * 1024 * 1024),
+            kimi_cache_dir=(os.getenv("AEROBIM_KIMI_CACHE_DIR") or "").strip() or None,
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
