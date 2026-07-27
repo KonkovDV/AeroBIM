@@ -45,6 +45,7 @@ aerobim-measure-adjudicator-agreement = "aerobim.tools.measure_adjudicator_agree
 aerobim-validate-customer-intake-gate = "aerobim.tools.validate_customer_intake_gate:main"
 aerobim-measure-package-sla = "aerobim.tools.measure_package_sla:main"
 aerobim-export-evidence-bundle = "aerobim.tools.export_evidence_bundle:main"
+aerobim-register-dwg-conversion = "aerobim.tools.register_dwg_conversion:main"
 
 [project.optional-dependencies]
 dev = [
