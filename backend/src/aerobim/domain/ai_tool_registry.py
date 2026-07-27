@@ -15,6 +15,7 @@ AdvisoryToolName = Literal[
     "check_quantities",
     "detect_clashes",
     "detect_system_clash",
+    "drawing_vlm_read",
 ]
 
 # Agent step names → registry contract names (SSOT for allowlist + traces).
@@ -123,6 +124,18 @@ DEFAULT_ADVISORY_TOOL_REGISTRY: tuple[AdvisoryToolContract, ...] = (
         json_schema_id="aerobim.detect_system_clash.v1",
         timeout_seconds=30.0,
         max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        # VLM drawing read (Kimi K3 / small Kimi-VL). Not an agent orchestrator
+        # step (absent from AGENT_TOOL_TO_REGISTRY): the drawing pipeline invokes
+        # it directly. Output is candidate annotations/regions only; the
+        # deterministic engine and the expert own the verdict (TR-2/27/31).
+        name="drawing_vlm_read",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.drawing_vlm_read.v1",
+        timeout_seconds=60.0,
+        max_steps=1,
         evidence_required=True,
     ),
 )
