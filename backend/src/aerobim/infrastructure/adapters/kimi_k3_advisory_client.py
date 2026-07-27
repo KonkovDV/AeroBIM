@@ -30,6 +30,12 @@ _DEFAULT_MAX_RESPONSE_BYTES = 4 * 1024 * 1024
 Transport = Callable[[str, dict[str, str], bytes], bytes]
 
 
+def _reject_nonfinite(constant: str) -> float:
+    # Strict JSON (constrained-decoding posture): NaN/Infinity are not allowed;
+    # a non-finite confidence would otherwise slip past the abstention gate.
+    raise ValueError(f"non-finite JSON constant not allowed: {constant}")
+
+
 class KimiAdvisoryError(RuntimeError):
     """Raised when the Kimi advisory call fails or returns an unusable response."""
 
@@ -116,12 +122,12 @@ class KimiK3AdvisoryClient:
 
         raw = self._transport(url, headers, body)
         try:
-            envelope = json.loads(raw.decode("utf-8"))
+            envelope = json.loads(raw.decode("utf-8"), parse_constant=_reject_nonfinite)
         except (ValueError, UnicodeDecodeError) as exc:
             raise KimiAdvisoryError(f"Kimi response is not valid JSON: {exc}") from exc
         content = self._extract_message_content(envelope)
         try:
-            parsed = json.loads(content)
+            parsed = json.loads(content, parse_constant=_reject_nonfinite)
         except ValueError as exc:
             raise KimiAdvisoryError(f"Kimi message content is not valid JSON: {exc}") from exc
         if not isinstance(parsed, dict):

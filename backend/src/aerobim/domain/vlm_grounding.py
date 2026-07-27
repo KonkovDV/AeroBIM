@@ -19,6 +19,7 @@ Academic posture (Jul 2026):
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 from aerobim.domain.models import DrawingRegionRef
@@ -40,10 +41,18 @@ class VlmReadResult:
 
 
 def _clamp_unit(value: object) -> float:
-    """Clamp any numeric-ish confidence into [0, 1]; non-numeric → 0.0 (abstain)."""
+    """Clamp confidence into [0, 1]; non-numeric / non-finite → 0.0 (abstain).
+
+    NaN must not leak: ``nan < 0`` and ``nan > 1`` are both False, so an unclamped
+    NaN would also slip past the ``< min_confidence`` abstention gate and read as
+    high confidence. ``json.loads`` accepts the ``NaN`` literal, so this path is
+    reachable from a hostile/buggy VLM response — fail closed to 0.0.
+    """
     try:
         conf = float(value)  # type: ignore[arg-type]
     except (TypeError, ValueError):
+        return 0.0
+    if not math.isfinite(conf):
         return 0.0
     if conf < 0.0:
         return 0.0
@@ -56,10 +65,13 @@ def _parse_bbox(raw: object) -> tuple[float, float, float, float] | None:
     if not isinstance(raw, (list, tuple)) or len(raw) != 4:
         return None
     try:
-        x1, y1, x2, y2 = (float(v) for v in raw)
+        coords = tuple(float(v) for v in raw)
     except (TypeError, ValueError):
         return None
-    return (x1, y1, x2, y2)
+    # Reject NaN/Inf coordinates: not JSON-serializable and invalid as overlays.
+    if not all(math.isfinite(coord) for coord in coords):
+        return None
+    return (coords[0], coords[1], coords[2], coords[3])
 
 
 def ground_vlm_drawing_response(

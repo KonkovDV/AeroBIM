@@ -101,6 +101,21 @@ class VlmGroundingTests(unittest.TestCase):
             self.assertEqual(result.regions, ())
             self.assertIsNotNone(result.reason)
 
+    def test_nan_confidence_abstains_not_high(self) -> None:
+        # Red Team: NaN must not slip past the abstention gate as high confidence.
+        raw = {"regions": [{"bbox": [1, 1, 2, 2], "confidence": float("nan")}]}
+        result = ground_vlm_drawing_response(raw, sheet_id="S1", model_id="kimi-k3")
+        self.assertTrue(result.parse_ok)
+        self.assertEqual(result.regions[0].confidence, 0.0)
+        self.assertTrue(result.regions[0].hitl_required)
+
+    def test_nonfinite_bbox_fails_closed(self) -> None:
+        for bad in (float("inf"), float("nan"), float("-inf")):
+            raw = {"regions": [{"bbox": [bad, 1, 2, 2], "confidence": 0.9}]}
+            result = ground_vlm_drawing_response(raw, sheet_id="S1", model_id="kimi-k3")
+            self.assertFalse(result.parse_ok, bad)
+            self.assertEqual(result.regions, ())
+
 
 class DrawingVlmToolContractTests(unittest.TestCase):
     def test_tool_registered_and_cannot_change_verdict(self) -> None:
@@ -219,6 +234,15 @@ class KimiClientTests(unittest.TestCase):
         with patch.object(outbound_url, "safe_urlopen", lambda *a, **k: _FakeResp(oversized)):
             with self.assertRaises(KimiAdvisoryError):
                 client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+
+    def test_nan_in_structured_content_rejected(self) -> None:
+        # Red Team: json.loads accepts the NaN literal by default; the client must
+        # reject non-finite JSON constants at the boundary.
+        content_with_nan = '{"regions":[{"bbox":[1,2,3,4],"confidence":NaN}]}'
+        env = json.dumps({"choices": [{"message": {"content": content_with_nan}}]}).encode("utf-8")
+        client = self._client(lambda *a, **k: env)
+        with self.assertRaises(KimiAdvisoryError):
+            client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
 
 
 class KimiConfigGateTests(unittest.TestCase):
@@ -351,6 +375,17 @@ class KimiVlmPipelineTests(unittest.TestCase):
         self.assertEqual(len(result.regions), 1)
         self.assertTrue(result.regions[0].hitl_required)  # 0.4 < 0.6 → abstain
         self.assertTrue(result.degraded)
+
+    def test_oversized_image_degrades_without_reading(self) -> None:
+        # Red Team: size gate must trip on stat() before read_bytes (OOM guard);
+        # the VLM is not called.
+        reader = _CountingReader({"regions": []})
+        pipeline = KimiVlmDrawingPipeline(reader, ready=True, max_image_bytes=4)
+        with tempfile.TemporaryDirectory() as tmp:
+            result = pipeline.analyze(_png_source(tmp), mode="auto")
+        self.assertEqual(reader.calls, 0)
+        self.assertTrue(result.degraded)
+        self.assertEqual(result.pipeline_mode_used, "unavailable")
 
 
 if __name__ == "__main__":
