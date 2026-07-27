@@ -171,10 +171,15 @@ def render_report_html(report_id: str, data: dict[str, Any]) -> str:
         "spatial": "Spatial / Clash Coordination",
     }
     for cat, issues in sorted(category_issues.items()):
-        label = cat_labels.get(cat, cat)
+        # Known categories map to safe static labels; escape the fallback so a
+        # non-enum ``category`` (e.g. from a hand-tampered stored report) cannot
+        # inject markup into the <h2>. Defense-in-depth: export CSP has no
+        # script-src and is served as an attachment.
+        label = cat_labels.get(cat)
+        label_html = label if label is not None else _esc(str(cat))
         rows = _build_issue_rows(issues)
         category_sections += (
-            f"<section class='cat'><h2>{label} ({len(issues)})</h2>"
+            f"<section class='cat'><h2>{label_html} ({len(issues)})</h2>"
             f"<table><thead><tr><th>Severity</th><th>Priority</th><th>Confidence</th><th>Rule</th><th>Message</th>"
             f"<th>Expected</th><th>Observed</th><th>GUID</th><th>Target</th></tr></thead>"
             f"<tbody>{rows}</tbody></table></section>\n"

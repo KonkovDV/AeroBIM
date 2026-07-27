@@ -62,12 +62,16 @@ class LocalObjectStore:
             target.unlink()
 
     def presign_get(self, key: str, *, expires_in_seconds: int = 3600) -> str | None:
-        # Local residual: returns file:// URI — caller opens the path directly;
-        # max_get_bytes is enforced only on get_bytes().
+        # Local residual: returns file:// URI — caller opens the path directly.
+        # Defense-in-depth: refuse to hand out a reference to an object that
+        # exceeds the streaming get cap (parity with get_bytes).
         del expires_in_seconds
         target = self._resolve_key(key)
         if not target.exists() or not target.is_file():
             return None
+        size = target.stat().st_size
+        if size > self._max_get_bytes:
+            raise ObjectTooLargeError(f"Object file too large ({size} > {self._max_get_bytes})")
         return target.as_uri()
 
     def _resolve_key(self, key: str) -> Path:
