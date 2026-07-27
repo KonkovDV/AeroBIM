@@ -155,6 +155,13 @@ class Settings:
     """Bearer key for the Kimi advisory endpoint (never logged)."""
     kimi_model: str = "kimi-k3"
     """Advisory model id (e.g. ``kimi-k3`` or a small ``kimi-vl`` variant)."""
+    kimi_reasoning_effort: str = "low"
+    """reasoning_effort for kimi-k3 API (``low`` OCR-by-region / ``high`` cross-doc).
+
+    Only sent for profiles that support it (kimi-k3 API); ignored for vLLM VLMs.
+    """
+    kimi_max_image_bytes: int = 32 * 1024 * 1024
+    """Max drawing-image bytes before the VLM pipeline fails closed (IMAGE_TOO_LARGE)."""
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -365,6 +372,10 @@ class Settings:
             kimi_api_base_url=(os.getenv("AEROBIM_KIMI_API_BASE_URL") or "").strip() or None,
             kimi_api_key=(os.getenv("AEROBIM_KIMI_API_KEY") or "").strip() or None,
             kimi_model=(os.getenv("AEROBIM_KIMI_MODEL") or "kimi-k3").strip() or "kimi-k3",
+            kimi_reasoning_effort=(
+                (os.getenv("AEROBIM_KIMI_REASONING_EFFORT") or "low").strip().lower() or "low"
+            ),
+            kimi_max_image_bytes=_read_int("AEROBIM_KIMI_MAX_IMAGE_BYTES", 32 * 1024 * 1024),
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
