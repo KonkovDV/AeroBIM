@@ -23,7 +23,7 @@ tags: [aerobim, kimi-k3, vlm, advisory, moonshot, integration, study]
 | Свойство | Значение | Источник (дата) |
 |---|---|---|
 | Разработчик / тип | Moonshot AI; мультимодальная reasoning-модель | kimi.com/blog/kimi-k3 (16.07) |
-| Параметры / MoE | 2.8T total; активны 16 из 896 экспертов (Stable LatentMoE) | офиц. блог |
+| Параметры / MoE | 2.8T total; **активных 104B**; 16 из 896 экспертов (Stable LatentMoE) | офиц. блог + HF model card |
 | Архитектура | Kimi Delta Attention (KDA) + Attention Residuals; MXFP4 веса / MXFP8 активации (QAT) | офиц. блог |
 | Контекст | 1 048 576 токенов (1M) | офиц. блог / northflank |
 | Вход | текст + изображения (подтверждено API); видео — в продуктах Kimi | northflank (незав. тест) |
@@ -32,18 +32,29 @@ tags: [aerobim, kimi-k3, vlm, advisory, moonshot, integration, study]
 | Железо (prod) | supernode **64+ ускорителей**; min-конфиг НЕ опубликован; vLLM + KDA prefill cache | northflank (17.07) |
 | Мультимодальные бенчи | PerceptionBench, MMMU-Pro, ZeroBench, **OfficeQA Pro** (PDF как изображения, без machine-readable текста) | офиц. блог footnotes |
 | Известные лимитации | max reasoning effort по умолчанию (латентность/стоимость); **«excessive proactiveness»** (решает за пользователя); чувствительность к thinking-history | офиц. блог §Limitations |
+| Лицензия | **Kimi K3 License** (кастомная, `license: other` / `license_name: kimi-k3`); пермиссивная для нашего масштаба | HF model card + LICENSE (27.07) |
 
 ## 2. НЕ верифицировано / противоречиво (не заявлять как факт)
 
-- **Лицензия**: источники расходятся — «Modified MIT» (enterprisedna, 27.07) vs
-  «изменилась» (roo.beehiiv) vs «не указана» (howaiworks). **Требование:**
-  прочитать реальный `LICENSE` в HF-репозитории до любого self-host/редистрибуции;
-  до этого статус — `VERIFY_WITH_SOURCE`.
+- **Лицензия — РАЗРЕШЕНО (27.07, VERIFY_WITH_SOURCE снят):** прочитан реальный
+  `LICENSE` — это кастомная **Kimi K3 License** (не Modified MIT). Ядро пермиссивное
+  (use/modify/deploy/fine-tune/distribute/sell). Условия: §2 отдельное соглашение
+  только для Model-as-a-Service с выручкой >$20M/12мес; §3 атрибуция «Kimi K3»
+  при >100M MAU или >$20M/мес; **§4: внутреннее использование и official/
+  certified partners исключены**. Для AeroBIM (advisory, внутренний пилот, не
+  MaaS, наш масштаб) пороги не триггерятся → self-host разрешён. Веса ≠
+  pip-зависимость → MIT-репо не конфликтует (ТР-41 про Python-deps, не про веса).
 - **Точность на инженерных чертежах** — не измерена нами; общие бенчи ≠ доменное
-  качество. Enginuity/SeePhys показывают, что frontier-VLM перефразируют
-  обозначения и <60% на структурных диаграммах (см. протокол §Академические якоря).
+  качество. Enginuity/SeePhys: frontier-VLM перефразируют обозначения, <60% на
+  структурных диаграммах. **Живой вызов K3 ещё не прогонялся** — smoke-тул
+  `aerobim-kimi-advisory-smoke` готов (tier A, открытые данные), статус NOT_RUN до ключа.
 - **Минимальное жизнеспособное железо** — Moonshot не опубликовал; 64+ —
   рекомендация prod, не минимум.
+
+**Рамка (важно):** волна называется «Kimi K3», но пилотная цель закрытого
+контура — **малый Kimi-VL (tier C)**, не 2.8T K3 (tier B вне железа). Клиент и
+пайплайн **model-agnostic** (любой OpenAI-совместимый VLM через `AEROBIM_KIMI_MODEL`);
+K3 через публичный API — только tier A на открытых данных для бенчмарков.
 
 ## 3. Почему это релевантно AeroBIM
 
@@ -109,13 +120,16 @@ tier A для бенчмарков на открытых данных и tier C 
 | Non-determinism (temp=1.0 default) | eval с temp=0 + логи + пин; advisory не влияет на `passed` |
 | Paraphrase divergence обозначений | Нормализация + grounding к region/GUID; сырой вывод не идёт в правило |
 | Утечка NDA-данных в публичный API | tier-гейт: customer-данные только tier C/D; SSRF-гард; ключ из env |
-| Лицензионная неоднозначность | Прочитать реальный LICENSE до self-host; юр-ревью (совместимость с MIT-репо) |
 | Стоимость 2.8T max-effort | Бюджеты, retrieval, cache; сравнить TCO с малым Kimi-VL/Qwen3-VL |
+| Лицензия | **Снято 27.07**: Kimi K3 License прочитана; пермиссивна для нашего масштаба (§4 internal-use); веса ≠ code-dep, MIT-репо не конфликтует |
+| Schema drift реального API | Клиент терпит markdown-```json``` fences и content-как-dict; smoke-тул проверяет схему до протокола |
 
 ## 8. Фазовый план (окно протокола 4–20 авг)
 
-1. **Сейчас (27.07)**: зафиксировать веса/лицензию (sha256 + LICENSE-ревью);
-   обновить строку Kimi в [протоколе](../pilot/VLM_OCR_COMPARISON_PROTOCOL_2026_08.md) (сделано, §ниже).
+1. **Сейчас (27.07)**: лицензия прочитана (Kimi K3 License, §выше); схема
+   парсера укреплена (fences/dict); smoke-тул готов — **прогнать один живой
+   `aerobim-kimi-advisory-smoke` на tier A (открытые данные) до протокола**
+   (требует `AEROBIM_KIMI_API_*` от оператора).
 2. **4–20 авг**: прогнать T1–T4 на fixture-корпусе (tier A, открытые данные) для K3
    API **и** малых Kimi-VL (tier C); сравнение — `compare_extraction_runs`
    (paired permutation + Holm, CI), primary endpoint macro-F1 T2.
