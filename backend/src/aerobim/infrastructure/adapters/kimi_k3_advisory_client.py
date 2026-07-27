@@ -36,6 +36,18 @@ def _reject_nonfinite(constant: str) -> float:
     raise ValueError(f"non-finite JSON constant not allowed: {constant}")
 
 
+def _strip_json_fence(text: str) -> str:
+    """Strip a leading ```json / ``` fence some servers emit even under json_object."""
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        stripped = stripped[3:]
+        if stripped[:4].lower() == "json":
+            stripped = stripped[4:]
+        if stripped.endswith("```"):
+            stripped = stripped[:-3]
+    return stripped.strip()
+
+
 class KimiAdvisoryError(RuntimeError):
     """Raised when the Kimi advisory call fails or returns an unusable response."""
 
@@ -126,8 +138,14 @@ class KimiK3AdvisoryClient:
         except (ValueError, UnicodeDecodeError) as exc:
             raise KimiAdvisoryError(f"Kimi response is not valid JSON: {exc}") from exc
         content = self._extract_message_content(envelope)
+        # OpenAI-compatible servers vary: some return the structured object
+        # directly; others return a JSON string, sometimes wrapped in ```json
+        # fences even under response_format=json_object. Handle all three,
+        # fail-closed on anything else.
+        if isinstance(content, dict):
+            return content
         try:
-            parsed = json.loads(content, parse_constant=_reject_nonfinite)
+            parsed = json.loads(_strip_json_fence(content), parse_constant=_reject_nonfinite)
         except ValueError as exc:
             raise KimiAdvisoryError(f"Kimi message content is not valid JSON: {exc}") from exc
         if not isinstance(parsed, dict):
@@ -135,7 +153,7 @@ class KimiK3AdvisoryClient:
         return parsed
 
     @staticmethod
-    def _extract_message_content(envelope: object) -> str:
+    def _extract_message_content(envelope: object) -> str | dict[str, Any]:
         if not isinstance(envelope, dict):
             raise KimiAdvisoryError("Kimi response envelope must be an object")
         choices = envelope.get("choices")
@@ -143,9 +161,11 @@ class KimiK3AdvisoryClient:
             raise KimiAdvisoryError("Kimi response has no choices")
         message = choices[0].get("message") if isinstance(choices[0], dict) else None
         content = message.get("content") if isinstance(message, dict) else None
-        if not isinstance(content, str) or not content.strip():
-            raise KimiAdvisoryError("Kimi response choice has no message content")
-        return content
+        if isinstance(content, dict):
+            return content
+        if isinstance(content, str) and content.strip():
+            return content
+        raise KimiAdvisoryError("Kimi response choice has no message content")
 
 
 __all__ = ["KimiAdvisoryError", "KimiK3AdvisoryClient", "Transport"]

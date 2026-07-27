@@ -12,6 +12,7 @@ Invariants under test:
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -244,6 +245,21 @@ class KimiClientTests(unittest.TestCase):
         with self.assertRaises(KimiAdvisoryError):
             client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
 
+    def test_content_json_fence_parses(self) -> None:
+        # Real servers wrap JSON in ```json fences even under json_object.
+        content = '```json\n{"regions": [{"bbox": [1,2,3,4], "confidence": 0.9}]}\n```'
+        env = json.dumps({"choices": [{"message": {"content": content}}]}).encode("utf-8")
+        client = self._client(lambda *a, **k: env)
+        parsed = client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+        self.assertIn("regions", parsed)
+
+    def test_content_as_dict_object_parses(self) -> None:
+        # Some OpenAI-compatible servers return the structured object directly.
+        env = json.dumps({"choices": [{"message": {"content": {"regions": []}}}]}).encode("utf-8")
+        client = self._client(lambda *a, **k: env)
+        parsed = client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+        self.assertEqual(parsed, {"regions": []})
+
 
 class KimiConfigGateTests(unittest.TestCase):
     def test_disabled_by_default(self) -> None:
@@ -386,6 +402,15 @@ class KimiVlmPipelineTests(unittest.TestCase):
         self.assertEqual(reader.calls, 0)
         self.assertTrue(result.degraded)
         self.assertEqual(result.pipeline_mode_used, "unavailable")
+
+
+class KimiAdvisorySmokeTests(unittest.TestCase):
+    def test_not_run_without_credentials(self) -> None:
+        from aerobim.tools.kimi_advisory_smoke import run_smoke
+
+        with patch.dict(os.environ, {"AEROBIM_KIMI_API_BASE_URL": "", "AEROBIM_KIMI_API_KEY": ""}):
+            report = run_smoke(Path("nonexistent.png"), sheet_id="S1")
+        self.assertEqual(report["status"], "NOT_RUN")
 
 
 if __name__ == "__main__":
