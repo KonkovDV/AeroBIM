@@ -144,6 +144,31 @@ class Settings:
     """Optional IFC parse cache directory (``AEROBIM_IFC_PARSE_CACHE_DIR``) — NFR SLA."""
     hybrid_drawing_enabled: bool = True
     """Use HybridDrawingAnalyzer for DrawingAnalyzerPort when True."""
+    kimi_k3_enabled: bool = False
+    """Opt-in Kimi K3 / Kimi-VL advisory drawing read (``AEROBIM_KIMI_K3_ENABLED``).
+
+    Advisory only (ADR-001 / TR-31): never sets ``summary.passed``. Default off.
+    """
+    kimi_api_base_url: str | None = None
+    """OpenAI-compatible base URL for the Kimi advisory endpoint (SSRF-gated)."""
+    kimi_api_key: str | None = None
+    """Bearer key for the Kimi advisory endpoint (never logged)."""
+    kimi_model: str = "kimi-k3"
+    """Advisory model id (e.g. ``kimi-k3`` or a small ``kimi-vl`` variant)."""
+
+    def kimi_advisory_ready(self) -> bool:
+        """True only when K3 advisory is safe to invoke.
+
+        Fail-closed tiers (see KIMI_K3_SCENARIO_MATRIX): under pilot/production
+        profiles the public Kimi API is **forbidden** (NDA data must not leave the
+        contour) and no on-prem wiring exists yet, so advisory is hard-disabled
+        there regardless of config. Dev/fixture may enable it for open data only.
+        """
+        if not self.kimi_k3_enabled:
+            return False
+        if self.signoff_profile in {"samolet_pilot", "production"}:
+            return False
+        return bool(self.kimi_api_base_url and self.kimi_api_key)
 
     @property
     def is_dev_environment(self) -> bool:
@@ -336,6 +361,10 @@ class Settings:
             ),
             ifc_parse_cache_dir=(os.getenv("AEROBIM_IFC_PARSE_CACHE_DIR") or "").strip() or None,
             hybrid_drawing_enabled=_read_bool("AEROBIM_HYBRID_DRAWING_ENABLED", True),
+            kimi_k3_enabled=_read_bool("AEROBIM_KIMI_K3_ENABLED", False),
+            kimi_api_base_url=(os.getenv("AEROBIM_KIMI_API_BASE_URL") or "").strip() or None,
+            kimi_api_key=(os.getenv("AEROBIM_KIMI_API_KEY") or "").strip() or None,
+            kimi_model=(os.getenv("AEROBIM_KIMI_MODEL") or "kimi-k3").strip() or "kimi-k3",
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
@@ -360,6 +389,7 @@ class Settings:
             ("AEROBIM_BSI_VALIDATION_URL", settings.bsi_validation_url),
             ("AEROBIM_BCF_API_BASE_URL", settings.bcf_api_base_url),
             ("AEROBIM_S3_ENDPOINT_URL", settings.s3_endpoint_url),
+            ("AEROBIM_KIMI_API_BASE_URL", settings.kimi_api_base_url),
         ):
             if not candidate:
                 continue
