@@ -31,6 +31,9 @@ from aerobim.domain.vlm_grounding import ground_vlm_drawing_response
 from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
     KimiAdvisoryError,
     KimiK3AdvisoryClient,
+    KimiReadResult,
+    VlmAdvisoryClient,
+    profile_for,
 )
 from aerobim.infrastructure.adapters.kimi_vlm_drawing_pipeline import KimiVlmDrawingPipeline
 
@@ -194,7 +197,7 @@ class KimiClientTests(unittest.TestCase):
         parsed = client.read_drawing(
             b"\x89PNG", media_type="image/png", sheet_id="AR-01", prompt="read title block"
         )
-        self.assertIn("regions", parsed)
+        self.assertIn("regions", parsed.content)
         self.assertEqual(captured["url"], "https://kimi.example.com/v1/chat/completions")
         self.assertEqual(captured["auth"], "Bearer secret-key-abc")
 
@@ -251,14 +254,98 @@ class KimiClientTests(unittest.TestCase):
         env = json.dumps({"choices": [{"message": {"content": content}}]}).encode("utf-8")
         client = self._client(lambda *a, **k: env)
         parsed = client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
-        self.assertIn("regions", parsed)
+        self.assertIn("regions", parsed.content)
 
     def test_content_as_dict_object_parses(self) -> None:
         # Some OpenAI-compatible servers return the structured object directly.
         env = json.dumps({"choices": [{"message": {"content": {"regions": []}}}]}).encode("utf-8")
         client = self._client(lambda *a, **k: env)
         parsed = client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
-        self.assertEqual(parsed, {"regions": []})
+        self.assertEqual(parsed.content, {"regions": []})
+
+
+class VlmProfileAndContractTests(unittest.TestCase):
+    def test_kimi_k3_profile_shapes(self) -> None:
+        p = profile_for("kimi-k3")
+        self.assertFalse(p.send_temperature)
+        self.assertEqual(p.response_format["type"], "json_schema")
+        self.assertTrue(p.supports_reasoning_effort)
+        self.assertTrue(p.disable_server_tools)
+        self.assertEqual(p.determinism_basis, "sampling_fixed_by_service")
+
+    def test_vllm_profile_shapes(self) -> None:
+        p = profile_for("kimi-vl-3b")
+        self.assertTrue(p.send_temperature)
+        self.assertEqual(p.response_format["type"], "json_object")
+        self.assertFalse(p.supports_reasoning_effort)
+        self.assertEqual(p.determinism_basis, "temperature_zero")
+
+    def _capture_body(self, model: str) -> dict:
+        captured: dict[str, object] = {}
+        ok = json.dumps({"choices": [{"message": {"content": '{"regions":[]}'}}]}).encode("utf-8")
+
+        def transport(url: str, headers: dict[str, str], body: bytes) -> bytes:
+            captured["body"] = json.loads(body.decode("utf-8"))
+            return ok
+
+        client = VlmAdvisoryClient(
+            base_url="https://x/v1",
+            api_key="k",
+            model=model,
+            reasoning_effort="high",
+            transport=transport,
+        )
+        client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+        return captured["body"]  # type: ignore[return-value]
+
+    def test_kimi_k3_payload_no_temp_reasoning_tools_empty(self) -> None:
+        body = self._capture_body("kimi-k3")
+        self.assertNotIn("temperature", body)
+        self.assertEqual(body["response_format"]["type"], "json_schema")
+        self.assertEqual(body["reasoning_effort"], "high")
+        self.assertEqual(body["tools"], [])
+
+    def test_vllm_payload_sends_temperature_no_reasoning(self) -> None:
+        body = self._capture_body("kimi-vl-3b")
+        self.assertEqual(body["temperature"], 0)
+        self.assertEqual(body["response_format"]["type"], "json_object")
+        self.assertNotIn("reasoning_effort", body)
+
+    def test_truncated_finish_reason_classified(self) -> None:
+        env = json.dumps(
+            {"choices": [{"finish_reason": "length", "message": {"content": '{"regions"'}}]}
+        ).encode("utf-8")
+        client = VlmAdvisoryClient(
+            base_url="https://x/v1", api_key="k", transport=lambda *a, **k: env
+        )
+        with self.assertRaises(KimiAdvisoryError) as ctx:
+            client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+        self.assertEqual(ctx.exception.reason_code, "TRUNCATED")
+
+    def test_empty_content_with_reasoning_classified(self) -> None:
+        env = json.dumps(
+            {"choices": [{"message": {"content": "", "reasoning_content": "thinking"}}]}
+        ).encode("utf-8")
+        client = VlmAdvisoryClient(
+            base_url="https://x/v1", api_key="k", transport=lambda *a, **k: env
+        )
+        with self.assertRaises(KimiAdvisoryError) as ctx:
+            client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+        self.assertEqual(ctx.exception.reason_code, "EMPTY_CONTENT")
+
+    def test_usage_and_determinism_basis_captured(self) -> None:
+        env = json.dumps(
+            {
+                "choices": [{"message": {"content": '{"regions":[]}'}}],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 5},
+            }
+        ).encode("utf-8")
+        client = VlmAdvisoryClient(
+            base_url="https://x/v1", api_key="k", model="kimi-k3", transport=lambda *a, **k: env
+        )
+        result = client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+        self.assertEqual(result.usage["prompt_tokens"], 10)
+        self.assertEqual(result.determinism_basis, "sampling_fixed_by_service")
 
 
 class KimiConfigGateTests(unittest.TestCase):
@@ -296,11 +383,11 @@ class _CountingReader:
 
     def read_drawing(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, prompt: str
-    ) -> dict:
+    ) -> KimiReadResult:
         self.calls += 1
         if self._raise is not None:
             raise self._raise
-        return self._response
+        return KimiReadResult(content=self._response, usage={}, determinism_basis="test")
 
 
 def _png_source(tmp: str, name: str = "AR-01.png") -> DrawingSource:

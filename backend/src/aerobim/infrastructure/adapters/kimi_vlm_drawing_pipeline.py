@@ -21,7 +21,10 @@ from typing import Literal, Protocol
 from aerobim.domain.consistency import MultimodalDrawingResult
 from aerobim.domain.models import DrawingSource
 from aerobim.domain.vlm_grounding import ground_vlm_drawing_response
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import KimiAdvisoryError
+from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
+    KimiAdvisoryError,
+    KimiReadResult,
+)
 
 _VLM_IMAGE_MEDIA_TYPES = {
     ".png": "image/png",
@@ -40,7 +43,7 @@ _DEFAULT_PROMPT = (
 class _DrawingReader(Protocol):
     def read_drawing(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, prompt: str
-    ) -> dict: ...
+    ) -> KimiReadResult: ...
 
 
 class _FallbackPipeline(Protocol):
@@ -95,18 +98,24 @@ class KimiVlmDrawingPipeline:
             # Size-gate on stat() BEFORE reading, so an oversized file never gets
             # fully buffered into memory (OOM guard).
             if source.path.stat().st_size > self._max_image_bytes:
-                return self._degrade(source, "Drawing image exceeds VLM size cap")
+                return self._degrade(source, "IMAGE_TOO_LARGE: drawing image exceeds VLM size cap")
             image_bytes = source.path.read_bytes()
-            raw = self._client.read_drawing(
+            read = self._client.read_drawing(
                 image_bytes, media_type=media_type, sheet_id=sheet_id, prompt=self._prompt
             )
-        except (KimiAdvisoryError, OSError) as exc:
-            return self._degrade(source, f"Kimi VLM read failed (fail-closed): {exc}")
+        except KimiAdvisoryError as exc:
+            # §2.4: classified failure (TRUNCATED/EMPTY_CONTENT/SCHEMA_DEVIATION/...)
+            # must be surfaced faithfully, never as "found nothing".
+            return self._degrade(
+                source, f"Kimi VLM read failed (fail-closed, {exc.reason_code}): {exc}"
+            )
+        except OSError as exc:
+            return self._degrade(source, f"Kimi VLM read failed (fail-closed, IO): {exc}")
         except Exception as exc:  # noqa: BLE001 — SSRF/transport errors must fail closed, not OK
             return self._degrade(source, f"Kimi VLM transport error (fail-closed): {exc}")
 
         grounded = ground_vlm_drawing_response(
-            raw,
+            read.content,
             sheet_id=sheet_id,
             model_id=self._model_id,
             min_confidence=self._min_confidence,
@@ -124,8 +133,9 @@ class KimiVlmDrawingPipeline:
             degraded=True,
             reason=(
                 f"Advisory VLM candidate regions ({len(grounded.regions)}; "
-                f"{grounded.hitl_count} low-confidence → HITL); cv_human_level remains "
-                "MISSING; verdict stays with the deterministic engine and the expert"
+                f"{grounded.hitl_count} low-confidence → HITL); determinism_basis="
+                f"{read.determinism_basis}; cv_human_level remains MISSING; verdict "
+                "stays with the deterministic engine and the expert"
             ),
         )
 

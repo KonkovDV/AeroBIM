@@ -31,6 +31,7 @@ def run_smoke(image: Path, *, sheet_id: str) -> dict[str, object]:
     base_url = (os.getenv("AEROBIM_KIMI_API_BASE_URL") or "").strip()
     api_key = (os.getenv("AEROBIM_KIMI_API_KEY") or "").strip()
     model = (os.getenv("AEROBIM_KIMI_MODEL") or "kimi-k3").strip() or "kimi-k3"
+    reasoning = (os.getenv("AEROBIM_KIMI_REASONING_EFFORT") or "low").strip().lower() or "low"
     if not base_url or not api_key:
         return {
             "status": "NOT_RUN",
@@ -41,7 +42,9 @@ def run_smoke(image: Path, *, sheet_id: str) -> dict[str, object]:
     if not image.is_file():
         return {"status": "NOT_RUN", "reason": f"image not found: {image}"}
 
-    client = KimiK3AdvisoryClient(base_url=base_url, api_key=api_key, model=model)
+    client = KimiK3AdvisoryClient(
+        base_url=base_url, api_key=api_key, model=model, reasoning_effort=reasoning
+    )
     pipeline = KimiVlmDrawingPipeline(client, ready=True, model_id=model)
     try:
         result = pipeline.analyze(DrawingSource(path=image, sheet_id=sheet_id), mode="auto")
