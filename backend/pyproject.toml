@@ -49,7 +49,7 @@ aerobim-register-dwg-conversion = "aerobim.tools.register_dwg_conversion:main"
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8.3,<9.0",
+  "pytest>=9.0.3,<10.0",
   "pytest-cov>=6.0,<8.0",
   "httpx>=0.27",
   "ruff>=0.7,<1.0",
