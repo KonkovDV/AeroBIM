@@ -42,12 +42,20 @@ advisory-only. **Живой вызов API и DI-wiring в analyze — созн�
   (`can_change_verdict=False`, `evidence_required=True`, `max_steps=1`); **не**
   agent-step (нет в `AGENT_TOOL_TO_REGISTRY`) → `allowed_agent_tool_names()`
   остаётся 8 (регрессия не сломана).
-- `tests/test_kimi_k3_advisory.py` — **18 тестов**: grounding (валид/low-conf
+- `infrastructure/adapters/kimi_vlm_drawing_pipeline.py`: `KimiVlmDrawingPipeline`
+  — реализация `MultimodalDrawingPipeline`, композит client+grounding +
+  OCR-фолбэк; **всегда `degraded=True`** (кандидаты, `cv_human_level`
+  остаётся MISSING); not-ready/ocr_only/ошибка/schema-deviation → fail-closed
+  degrade (VLM не вызывается); не подключён в bootstrap по умолчанию.
+- `tests/test_kimi_k3_advisory.py` — **25 тестов**: grounding (валид/low-conf
   abstention/clamp/6 вариантов schema-deviation); tool-contract (never-verdict,
-  allowlist=8, trace требует evidence); клиент (parse, redaction ключа, нет choices,
-  не-JSON, требует base+key, **SSRF блок private IP**, **cap размера ответа**);
-  config-гейт (default off, enabled-но-не-настроен → not ready, dev-ready,
-  **customer-профиль hard-disable**).
+  allowlist=8, trace); клиент (parse, redaction ключа, SSRF-блок private IP,
+  cap ответа); config-гейт (default off, customer hard-disable); **пайплайн**
+  (not-ready/ocr_only не вызывают VLM, valid→кандидаты+always-degraded,
+  fail-closed, e2e через реальный client+fake transport).
+
+Трёхисточниковое согласование (Самолёт × Техлаб × МИК):
+[`../architecture/KIMI_K3_MIK_TECHLAB_ALIGNMENT_2026_07_27.md`](../architecture/KIMI_K3_MIK_TECHLAB_ALIGNMENT_2026_07_27.md).
 
 ## Инвариант «advisory OFF==ON» (по построению)
 
@@ -59,9 +67,9 @@ K3 **не подключён** в `AnalyzeProjectPackageUseCase`/`bootstrap` и 
 
 1. **4–20 авг** — прогон VLM/OCR-протокола (T1–T4) на fixture-данных: K3 API (tier A)
    + малые Kimi-VL (tier C); выбор через `compare_extraction_runs` (CI/p-values).
-2. **После выбора победителя** — DI-wiring `KimiVlmDrawingPipeline`
-   (`MultimodalDrawingPipeline`) под `kimi_advisory_ready()`, с тестом
-   advisory-OFF==ON на реальном UC-пути и golden-hash реплеем.
+2. **После выбора победителя** — DI-wiring `KimiVlmDrawingPipeline` в `bootstrap`
+   под `kimi_advisory_ready()`, с тестом advisory-OFF==ON на реальном UC-пути
+   и golden-hash реплеем (адаптер уже реализован в этой волне, но не wired).
 3. **Customer-данные** — только tier C/D после scope memo (RT-001), не ранее intake.
 
 ## Явно НЕ сделано / НЕ заявлено
@@ -73,5 +81,5 @@ K3 **не подключён** в `AnalyzeProjectPackageUseCase`/`bootstrap` и 
 
 ## Gate evidence (2026-07-27 local)
 
-`ruff format/check` PASS (354 files) · `mypy src` 209 files PASS ·
-`pytest tests -q` **1173 passed, 7 skipped**.
+`ruff format/check` PASS (356 files) · `mypy src` 210 files PASS ·
+`pytest tests -q` **1180 passed, 7 skipped**.
