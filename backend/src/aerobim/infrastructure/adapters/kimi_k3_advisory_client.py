@@ -33,6 +33,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from aerobim.domain.vlm_response_schema import OBSERVATIONS_RESPONSE_SCHEMA
+
 _DEFAULT_TIMEOUT_SECONDS = 60.0
 _DEFAULT_MAX_RESPONSE_BYTES = 4 * 1024 * 1024
 
@@ -71,49 +73,10 @@ _DRAWING_REGIONS_SCHEMA: dict[str, Any] = {
     "required": ["regions"],
 }
 
-# §4 rich region-observation schema (strict). normalized_value is echoed by the
-# model but IGNORED by grounding — we recompute it deterministically.
-_OBSERVATIONS_SCHEMA: dict[str, Any] = {
-    "type": "object",
-    "additionalProperties": False,
-    "properties": {
-        "sheet_id": {"type": "string"},
-        "region_id": {"type": "string"},
-        "readable": {"type": "boolean"},
-        "unreadable_reason": {"type": ["string", "null"]},
-        "observations": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "additionalProperties": False,
-                "properties": {
-                    "kind": {
-                        "type": "string",
-                        "enum": [
-                            "text",
-                            "dimension",
-                            "designation",
-                            "table_row",
-                            "stamp_field",
-                        ],
-                    },
-                    "raw_value": {"type": "string"},
-                    "normalized_value": {"type": ["string", "null"]},
-                    "bbox_rel": {
-                        "type": "array",
-                        "items": {"type": "number"},
-                        "minItems": 4,
-                        "maxItems": 4,
-                    },
-                    "confidence": {"type": "number"},
-                    "evidence_note": {"type": "string"},
-                },
-                "required": ["kind", "raw_value", "bbox_rel", "confidence"],
-            },
-        },
-    },
-    "required": ["readable", "observations"],
-}
+# §4 rich region-observation schema — canonical declaration + fail-closed validator
+# live in the domain (``vlm_response_schema``); re-bound here for ``response_format``
+# and the provenance hash. Grounding IGNORES the model's ``normalized_value``.
+_OBSERVATIONS_SCHEMA: dict[str, Any] = OBSERVATIONS_RESPONSE_SCHEMA
 
 
 def observations_schema_hash() -> str:
