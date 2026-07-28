@@ -81,6 +81,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Multipart document upload | `POST /v1/uploads` → storage-relative path |
 | EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |
 | Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark`) |
+| Hybrid AI routing foundation (eng) | `domain/hybrid/*` classify/policy/guard/audit + `HybridRouteGate`; domain-pure, verdict-neutral (OFF==ON), fail-closed; 53 tests |
 
 ## Planned (do not claim as deployed)
 
@@ -101,6 +102,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | System-aware MEP clash (routing/clearances) | Explicit gap `MEP-CLASH-001`; generic clash only |
 | IfcLLM / GraphRAG multi-hop IFC QA | **Not shipped** — I9 remains advisory scaffold; stub/relational fixture ≠ product KG |
 | Production rollout / confirmed revenue | Requires customer documents outside repo |
+| Hybrid AI live pre-gate wiring / model router / masking-on-egress | Foundation done (P0/P1); live consumption + router = post-P1/P2; not deployed |
 
 ## Non-claims (explicit boundaries)
 
@@ -112,6 +114,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 6. TZ wording «точность >90%» is an **evaluation target**, not a verified product claim, until precision/recall is published from a labeled customer corpus.
 7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer” (see Claims Lock / this claim boundary).
 9. AeroBIM does **not** claim IfcLLM / GraphRAG product capability. I9 is an **advisory scaffold** (port + allowlisted query + fixture QA); multi-hop GraphRAG is unshipped.
+10. AeroBIM does **not** claim the Hybrid AI routing contour is wired into the verdict, nor that masking guarantees anonymity — it is a domain-pure, fail-closed **foundation** (verdict-neutral, OFF==ON; not in the live egress path).
 
 ## Reproducibility baseline
 
@@ -142,5 +145,6 @@ Keep aligned with:
 - [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
 - [architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — architecture SSOT
 - [architecture/ADR-001-verdict-ownership-2026.md](architecture/ADR-001-verdict-ownership-2026.md) — `summary.passed` ownership
+- [../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) — Hybrid AI routing foundation (P0/P1, verdict-neutral)
 - [../samples/benchmarks/detection-precision/](../samples/benchmarks/detection-precision/) — precision harness fixtures
 - [../audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md) — allowed / forbidden wording
