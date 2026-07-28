@@ -46,7 +46,7 @@ def build_region_smoke_report(
         {
             "region_id": read.region_id,
             "observations": len(read.observations),
-            "hitl_low_confidence": sum(1 for obs in read.observations if obs.hitl_required),
+            "hitl_required": sum(1 for obs in read.observations if obs.hitl_required),
             "degraded": read.degraded,
             "determinism_basis": read.determinism_basis,
             "crop_sha256": read.crop_sha256,

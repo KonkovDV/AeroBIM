@@ -126,6 +126,7 @@ tier A для бенчмарков на открытых данных и tier C 
 | Лицензия | **Снято 27.07**: Kimi K3 License прочитана; пермиссивна для нашего масштаба (§4 internal-use); веса ≠ code-dep, MIT-репо не конфликтует |
 | Schema drift реального API | Клиент терпит markdown-```json``` fences и content-как-dict; smoke-тул проверяет схему до протокола |
 | Image-based prompt injection (инструкция в чертеже) | **Сдержано архитектурно:** вывод VLM — только кандидат-данные по строгой схеме, вне вердикта; `normalized_value` модели игнорируется (наш нормализатор). Плюс fail-closed капы: ≤128 observations/регион, ≤512 символов raw_value (flood/payload-guard, drop-not-whole). Литература: arXiv 2603.03637 (IPI); MDPI Electronics 14(10):1907, 2025; OWASP LLM Top-10 2025 (injection — #1); Microsoft/Google layered defense — «output как data, не instruction». |
+| Overtrust некалиброванной уверенности | **Снято:** verbalized confidence VLM некалибрована (EMNLP 2025 main.74 «Seeing is Believing»; arXiv 2504.14848; обзоры LLM-confidence). Гроундинг по умолчанию требует HITL для **каждого** кандидата; порог срабатывает только при явном `confidence_calibrated`; число — для ranking/отображения, не для авто-очистки от эксперта. |
 
 ## 8. Фазовый план (окно протокола 4–20 авг)
 
