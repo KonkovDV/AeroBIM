@@ -52,12 +52,13 @@ AeroBIM выполняет детерминированную проверку �
 | Tenant/object ACL | Доступно | fixture | Principal + `tenant_id` отчёта |
 | Экспорт BCF 2.1/3.0 ZIP | Доступно (T0/T1) | fixture | Структурный ZIP **AVAILABLE**; **CDE import NOT_VERIFIED (T2)** — лестница T0–T4 |
 | OpenCDE BCF API push | Foundation | experimental | Не заменяет T2 |
-| Vitest review-shell | Зелёный локально | release-readiness | **25** passed; не в main CI |
+| Vitest review-shell | Зелёный в CI | release-readiness | **29** passed (`frontend` CI job) |
 | DWG native | Missing / Failed | — | Fail-closed; never OK; PDF/IFC = только derived input |
 | DXF (CadModelIngestor) | Partial / Not verified | fixture | Optional ezdxf; ≠ поддержка DWG |
 | CV human-level | Missing | — | OCR degrade ≠ VLM |
 | MEP system-aware clash | Not verified / blocked | fixture_only | Unconfigured DI; RT-003 OPEN; co-presence ≠ connection |
 | Корректность расчётов | Not implemented | — | сверка переданных результатов и источников, не расчётный решатель |
+| Hybrid AI routing foundation (классификация/policy/guard/audit/gate) | Доступно (eng) | fixture | Domain-pure, fail-closed, verdict-neutral (OFF==ON); НЕ в пути вердикта / live egress; маскирование ≠ анонимность; Checkpoint NO_GO |
 | Точность >90% / утверждённые нормы | Blocked | customer | См. Claims Lock |
 
 ## Совместимость с IFC
@@ -144,6 +145,7 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 | Блокеры / NO_GO | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) |
 | Граница утверждений | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) |
 | Архитектура | [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) |
+| Hybrid AI (дизайн + финальный отчёт) | [`audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
 
 ## API (основное)
 

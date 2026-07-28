@@ -35,7 +35,7 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 
 **Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold.
 
-**Available (eng):** `PackageOutcome` on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`); run manifest + reproducibility hash; stage timeout budgets.
+**Available (eng):** `PackageOutcome` on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`); run manifest + reproducibility hash; stage timeout budgets; **Hybrid AI routing foundation** (5-level data classification + fail-closed policy engine + secret-safe audit event + privacy guard + composed pre-gate) — domain-pure, verdict-neutral (OFF==ON), **NOT in the verdict path** (advisory-contour scaffold; masking ≠ anonymity; Checkpoint **NO_GO**).
 
 **Planned:** Stage-3 finding field expansion; profiling-driven performance wave.
 
@@ -76,6 +76,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
 | Frontend vitest review-shell | Green in CI | release-readiness | **29** passed (`frontend` CI job) |
+| Hybrid AI routing foundation (classify/policy/guard/audit/gate) | Available (eng) | fixture | Domain-pure, fail-closed, verdict-neutral (OFF==ON); NOT wired to verdict / live egress; masking ≠ anonymity; Checkpoint NO_GO |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
 
 ## IFC Release Compatibility
@@ -217,6 +218,7 @@ python -m aerobim.tools.export_evidence_bundle \
 | Capability × claim matrix | [docs/capability-claim-matrix-2026.md](docs/capability-claim-matrix-2026.md) |
 | Benchmark evidence boundaries | [docs/benchmark-evidence-2026.md](docs/benchmark-evidence-2026.md) |
 | Samolet pilot protocol | [docs/pilot-protocol-samolet-2026.md](docs/pilot-protocol-samolet-2026.md) |
+| Hybrid AI routing foundation (design + final report) | [audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
 | Reproducibility (FAIR) | [docs/REPRODUCIBILITY-2026.md](docs/REPRODUCIBILITY-2026.md) |
 | Extraction corpus / IAA | [`samples/benchmarks/annotation/README.md`](samples/benchmarks/annotation/README.md) · RU GT in `samples/benchmarks/` |
 | Benchmark packs | [samples/benchmarks/README.md](samples/benchmarks/README.md) |
