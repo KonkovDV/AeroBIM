@@ -143,9 +143,9 @@ elementpath==5.1.3 \
     --hash=sha256:35e98cc2e26332305a49b32eaaebfb7289d1963c88d3989ff5ccb02c46809820 \
     --hash=sha256:c46f5e0e36c149b892308843e1e394bdee17ceafbc18cfa39250403dd8475a4e
     # via xmlschema
-fastapi==0.140.7 \
-    --hash=sha256:09a640af2d29006345e1f28e4f031fa60f89b1a75d29f26070f3afa677d66cce \
-    --hash=sha256:960bb9696d8fd19dff488aa4f67f276364542cfcce9f7e68a82fe49dce126626
+fastapi==0.140.8 \
+    --hash=sha256:66d65922ff010d99548db624beec4d705f731c29e58a163207f5a0a83974a3d1 \
+    --hash=sha256:c166580b6a1f96d0feda536830dbaef56962f66e9a3a87054c34906b6339390b
     # via aerobim-backend (pyproject.toml)
 flask==3.1.3 \
     --hash=sha256:0ef0e52b8a9cd932855379197dd8f94047b359ca0a78695144304cb45f87c9eb \
