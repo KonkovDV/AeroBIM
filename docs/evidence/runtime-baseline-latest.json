@@ -1,8 +1,8 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.1.0",
-  "commit_sha": "1aaf7d7e51e2fa755ac51b9808bb6c33b8f6d9fe",
-  "generated_at": "2026-07-28T11:17:53.126139+00:00",
+  "commit_sha": "1bc3f16f50bf68bc41e72f2be28e5bfddb3ecc7e",
+  "generated_at": "2026-07-28T11:24:53.716494+00:00",
   "corpus_kind": "fixture",
   "backend": {
     "tests_collected": 1303,
@@ -13,7 +13,7 @@
     "test_functions": 1303
   },
   "frontend": {
-    "tests_passed": 27,
+    "tests_passed": 28,
     "note": "Recorded from last CI/local vitest run when provided via --frontend-tests-passed"
   },
   "quality_gates": {
