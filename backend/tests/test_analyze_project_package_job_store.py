@@ -173,6 +173,54 @@ class AnalyzeProjectPackageJobRunnerCancelTests(unittest.TestCase):
         assert after is not None
         self.assertEqual(after.status, JobStatus.CANCELLED)  # never SUCCEEDED
 
+    def test_mid_run_cancel_discards_report_and_never_succeeds(self) -> None:
+        # §4.3: a cancel that lands DURING analysis must discard the produced report
+        # — never publish a partial/uncommitted report as a completed job.
+        from types import SimpleNamespace
+
+        from aerobim.application.use_cases.analyze_project_package_jobs import (
+            AnalyzeProjectPackageJobRunner,
+        )
+
+        store = InMemoryAnalyzeProjectPackageJobStore()
+        store.create(
+            AnalyzeProjectPackageJob(
+                job_id="job-m",
+                request_id="req-m",
+                status=JobStatus.QUEUED,
+                created_at="2026-04-19T00:00:00+00:00",
+            )
+        )
+
+        class _CancellingAnalyze:
+            def execute(self, request: object) -> object:
+                # Simulate a concurrent cancel arriving while analysis runs.
+                store.request_cancel("job-m")
+                return SimpleNamespace(report_id="r-partial")
+
+        class _RecordingAudit:
+            def __init__(self) -> None:
+                self.discarded: list[str] = []
+
+            def discard(self, report_id: str) -> None:
+                self.discarded.append(report_id)
+
+        class _NullLogger:
+            def info(self, *args: object, **kwargs: object) -> None: ...
+            def error(self, *args: object, **kwargs: object) -> None: ...
+            def warning(self, *args: object, **kwargs: object) -> None: ...
+
+        audit = _RecordingAudit()
+        runner = AnalyzeProjectPackageJobRunner(
+            _CancellingAnalyze(), store, _NullLogger(), audit_report_store=audit
+        )
+        runner.run("job-m", SimpleNamespace(request_id="req-m"))
+        self.assertEqual(audit.discarded, ["r-partial"])  # partial report discarded
+        final = store.get("job-m")
+        assert final is not None
+        self.assertEqual(final.status, JobStatus.CANCELLED)
+        self.assertIsNone(final.report_id)  # never published as a completed report
+
 
 if __name__ == "__main__":
     unittest.main()
