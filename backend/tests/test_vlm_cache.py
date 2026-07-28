@@ -42,6 +42,13 @@ class VlmCacheKeyTests(unittest.TestCase):
                 kwargs,
             )
 
+    def test_key_has_no_delimiter_ambiguity_between_scopes(self) -> None:
+        # A newline inside one scope field must not shift the boundary and collide
+        # with a different field split (each field is hashed before joining).
+        a = vlm_cache_key(image_bytes=b"i", prompt="p", model="m", namespace="a\nb", project="c")
+        b = vlm_cache_key(image_bytes=b"i", prompt="p", model="m", namespace="a", project="b\nc")
+        self.assertNotEqual(a, b)
+
 
 class ContentHashTests(unittest.TestCase):
     def test_hash_stable_across_key_ordering(self) -> None:

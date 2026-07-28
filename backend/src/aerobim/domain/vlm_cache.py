@@ -52,10 +52,14 @@ def vlm_cache_key(
     server-side ``reasoning_effort``, our ``request_schema_hash`` and
     ``normalizer_version``. Omitting these (the previous key) let a config change
     replay a STALE cached answer and shared a cache across tenants/projects.
+    Each field is hashed before joining so a newline (or any delimiter) inside one
+    field cannot shift a boundary and collide with a different field split —
+    isolation holds at the domain layer, not only via DI-layer validation.
     ``model`` is a string id, not a weights hash — not proof of model determinism.
     """
     parts = "\n".join(
-        (
+        _sha256_text(field)
+        for field in (
             _sha256_bytes(image_bytes),
             _sha256_text(prompt),
             model,
