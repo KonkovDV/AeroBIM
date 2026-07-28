@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.models import ValidationReport, ValidationSummary
+from aerobim.domain.models import DrawingAsset, ValidationReport, ValidationSummary
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.presentation.http.api import create_http_app
 
@@ -145,6 +145,90 @@ class ApiObjectAclTests(unittest.TestCase):
             report_id = self._seed_report(container, tenant_id="tenant-b")
             response = client.get(
                 f"/v1/reports/{report_id}/export/html",
+                headers={"Authorization": "Bearer secret-token"},
+            )
+            self.assertEqual(response.status_code, 404, response.text)
+
+    def _seed_job(self, container, *, tenant_id: str) -> str:
+        from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
+
+        store = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+        job_id = uuid4().hex
+        store.create(
+            AnalyzeProjectPackageJob(
+                job_id=job_id,
+                request_id="acl-job",
+                status=JobStatus.QUEUED,
+                created_at=datetime.now(tz=UTC).isoformat(),
+                tenant_id=tenant_id,
+            )
+        )
+        return job_id
+
+    def _seed_report_with_asset(
+        self, container, *, tenant_id: str, asset_id: str = "A1"
+    ) -> tuple[str, str]:
+        settings = container.resolve(Tokens.SETTINGS)
+        store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+        report_id = uuid4().hex
+        asset_dir = settings.storage_dir / "drawing-assets" / report_id
+        asset_dir.mkdir(parents=True, exist_ok=True)
+        (asset_dir / f"{asset_id}.png").write_bytes(b"\x89PNG\r\n\x1a\npreview")
+        ifc_path = settings.storage_dir / "models" / "asset.ifc"
+        ifc_path.parent.mkdir(parents=True, exist_ok=True)
+        ifc_path.write_text("ISO-10303-21;\n", encoding="utf-8")
+        report = ValidationReport(
+            report_id=report_id,
+            request_id="acl-asset",
+            ifc_path=ifc_path,
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(0, 0, 0, 0, True),
+            drawing_assets=(
+                DrawingAsset(
+                    asset_id=asset_id,
+                    sheet_id="A-101",
+                    page_number=1,
+                    media_type="image/png",
+                    coordinate_width=320,
+                    coordinate_height=200,
+                    stored_filename=f"{asset_id}.png",
+                ),
+            ),
+            tenant_id=tenant_id,
+        )
+        store.save(report)
+        return report_id, asset_id
+
+    def test_cross_tenant_job_get_and_cancel_denied(self) -> None:
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(storage=Path(tmp), tenant="tenant-a")
+            job_id = self._seed_job(container, tenant_id="tenant-b")
+            headers = {"Authorization": "Bearer secret-token"}
+            got = client.get(f"/v1/analyze/project-package/jobs/{job_id}", headers=headers)
+            self.assertEqual(got.status_code, 404, got.text)
+            cancelled = client.post(
+                f"/v1/analyze/project-package/jobs/{job_id}/cancel", headers=headers
+            )
+            self.assertEqual(cancelled.status_code, 404, cancelled.text)
+
+    def test_cross_tenant_drawing_asset_preview_denied(self) -> None:
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(storage=Path(tmp), tenant="tenant-a")
+            report_id, asset_id = self._seed_report_with_asset(container, tenant_id="tenant-b")
+            response = client.get(
+                f"/v1/reports/{report_id}/drawing-assets/{asset_id}/preview",
                 headers={"Authorization": "Bearer secret-token"},
             )
             self.assertEqual(response.status_code, 404, response.text)
