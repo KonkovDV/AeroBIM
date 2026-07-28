@@ -4,8 +4,9 @@ Domain-pure. Masking **reduces disclosure; it does NOT prove anonymity** — str
 geometry, rare values and system names can re-identify. Honest guarantees:
 
 - Pseudonyms are deterministic PER TENANT (so the deterministic engine can still join
-  the same entity) and **unlinkable ACROSS tenants** (per-tenant salt): the same raw
-  value yields different tokens for different tenants.
+  the same entity) and **unlinkable ACROSS tenants** (one shared deployment salt with
+  a tenant-bound, length-prefixed HMAC input): the same raw value yields different
+  tokens for different tenants.
 - Tokens are opaque ``sha256`` prefixes — a model cannot reverse a token, and the
   salt / restore key is never part of any payload.
 - The restore table (``TokenVault``) is **local-only and tenant-scoped**: a restore
@@ -20,12 +21,40 @@ geometry, rare values and system names can re-identify. Honest guarantees:
 from __future__ import annotations
 
 import hashlib
+import hmac
+import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
 _MASK_VERSION = "1.0.0"
-_UNIT_SEP = "\x1f"
+
+
+class PrivacyLeakError(ValueError):
+    """Raised when a masked payload would still carry a sensitive raw value."""
+
+
+def _canonical_component(value: str, label: str) -> str:
+    """Trim + reject control chars (kills \\x1f delimiter-collision in hash material)."""
+    text = str(value).strip()
+    if any(ord(ch) < 0x20 for ch in text):
+        raise ValueError(f"{label} must not contain control characters")
+    return text
+
+
+def _canonical_tenant(tenant_id: str) -> str:
+    text = _canonical_component(tenant_id or "", "tenant_id")
+    if not text:
+        raise ValueError("tenant_id is required (fail-closed)")
+    return text
+
+
+def _assert_no_residual_leak(masked: Mapping[str, Any], sensitive_values: list[str]) -> None:
+    """Fail closed if a kept field still contains a tokenized/removed raw value."""
+    serialized = json.dumps(masked, ensure_ascii=False, default=str)
+    for raw in sensitive_values:
+        if len(raw) >= 3 and raw in serialized:
+            raise PrivacyLeakError("masked output still contains a sensitive raw value")
 
 
 @dataclass(frozen=True)
@@ -46,7 +75,12 @@ class TokenVault:
         self._by_tenant: dict[str, dict[str, str]] = {}
 
     def put(self, *, tenant_id: str, token: str, original: str) -> None:
-        self._by_tenant.setdefault(tenant_id, {})[token] = original
+        bucket = self._by_tenant.setdefault(tenant_id, {})
+        existing = bucket.get(token)
+        if existing is not None and existing != original:
+            # A truncated-digest collision would silently corrupt restore — fail closed.
+            raise ValueError(f"token collision for tenant {tenant_id!r}: {token}")
+        bucket[token] = original
 
     def restore(self, *, tenant_id: str, token: str) -> str | None:
         return self._by_tenant.get(tenant_id, {}).get(token)
@@ -72,20 +106,34 @@ class PrivacyGuard:
 
     def tokenize(self, value: str, *, tenant_id: str, kind: str) -> str:
         """Opaque, deterministic-per-tenant token; stores the reverse map locally."""
-        if not tenant_id or not tenant_id.strip():
-            raise ValueError("tenant_id is required to tokenize (fail-closed)")
-        safe_kind = (kind or "value").strip().lower() or "value"
-        material = _UNIT_SEP.join((self._salt, tenant_id, safe_kind, str(value)))
-        digest = hashlib.sha256(material.encode("utf-8")).hexdigest()[:16]
+        tenant = _canonical_tenant(tenant_id)
+        safe_kind = _canonical_component(kind or "value", "kind").lower() or "value"
+        digest = self._pseudonym_digest(tenant, safe_kind, str(value))
         token = f"TKN_{safe_kind.upper()}_{digest}"
-        self._vault.put(tenant_id=tenant_id, token=token, original=str(value))
+        self._vault.put(tenant_id=tenant, token=token, original=str(value))
         return token
 
+    def _pseudonym_digest(self, tenant: str, kind: str, value: str) -> str:
+        """Length-prefixed HMAC(salt) over (tenant, kind, value) — no delimiter shift.
+
+        HMAC keeps the salt out of the hash pre-image; length-prefixing each part
+        removes the boundary collision where two different (tenant, kind) splits hash
+        the same. 128-bit (32-hex) output keeps the token opaque while making a
+        truncation collision astronomically unlikely.
+        """
+        mac = hmac.new(self._salt.encode("utf-8"), digestmod=hashlib.sha256)
+        for part in (tenant, kind, value):
+            encoded = part.encode("utf-8")
+            mac.update(len(encoded).to_bytes(8, "big"))
+            mac.update(encoded)
+        return mac.hexdigest()[:32]
+
     def restore(self, token: str, *, tenant_id: str) -> str | None:
-        """Local, tenant-scoped reverse lookup (wrong tenant → None)."""
-        if not tenant_id or not tenant_id.strip():
+        """Local, tenant-scoped reverse lookup (wrong/blank tenant → None)."""
+        text = str(tenant_id or "").strip()
+        if not text or any(ord(ch) < 0x20 for ch in text):
             return None
-        return self._vault.restore(tenant_id=tenant_id, token=token)
+        return self._vault.restore(tenant_id=text, token=token)
 
     def mask_payload(
         self,
@@ -100,22 +148,30 @@ class PrivacyGuard:
         """
         if not tenant_id or not tenant_id.strip():
             raise ValueError("tenant_id is required to mask (fail-closed)")
+        tenant = _canonical_tenant(tenant_id)
         masked: dict[str, Any] = {}
         sent: list[str] = []
         removed: list[str] = []
         tokenized: list[str] = []
+        sensitive_values: list[str] = []
         for key, value in payload.items():
             action = rules.get(key, "remove")  # fail-closed default: drop unlisted
             if action == "keep":
+                if isinstance(value, (dict, list, tuple, set)):
+                    # Nested containers can smuggle unlisted sensitive fields — fail closed.
+                    raise ValueError(f"'keep' on non-scalar field {key!r} is not allowed")
                 masked[key] = value
                 sent.append(key)
             elif action.startswith("tokenize:"):
                 kind = action.split(":", 1)[1] or key
-                masked[key] = self.tokenize(str(value), tenant_id=tenant_id, kind=kind)
+                sensitive_values.append(str(value))
+                masked[key] = self.tokenize(str(value), tenant_id=tenant, kind=kind)
                 sent.append(key)
                 tokenized.append(key)
             else:
+                sensitive_values.append(str(value))
                 removed.append(key)
+        _assert_no_residual_leak(masked, sensitive_values)
         return MaskResult(
             masked=masked,
             fields_sent=tuple(sent),
@@ -127,6 +183,7 @@ class PrivacyGuard:
 __all__ = [
     "MaskResult",
     "PrivacyGuard",
+    "PrivacyLeakError",
     "TokenVault",
     "truncate_flagged",
 ]

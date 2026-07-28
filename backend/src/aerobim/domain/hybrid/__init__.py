@@ -19,6 +19,7 @@ from aerobim.domain.hybrid.data_classification import (
 from aerobim.domain.hybrid.privacy_guard import (
     MaskResult,
     PrivacyGuard,
+    PrivacyLeakError,
     TokenVault,
     truncate_flagged,
 )
@@ -35,6 +36,7 @@ __all__ = [
     "HybridAuditEvent",
     "MaskResult",
     "PrivacyGuard",
+    "PrivacyLeakError",
     "RouteDecision",
     "RouteStatus",
     "RouteTarget",
