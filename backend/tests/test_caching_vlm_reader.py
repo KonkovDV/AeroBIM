@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -157,15 +159,56 @@ class FilesystemVlmResponseStoreTests(unittest.TestCase):
     def test_put_get_roundtrip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             store = FilesystemVlmResponseStore(Path(tmp))
-            self.assertIsNone(store.get("missing"))
-            store.put("k1", {"content": {"a": 1}, "content_sha256": "h"})
-            self.assertEqual(store.get("k1"), {"content": {"a": 1}, "content_sha256": "h"})
+            key = "a" * 64  # sha256-hex shape (the only accepted key form)
+            self.assertIsNone(store.get("b" * 64))
+            store.put(key, {"content": {"a": 1}, "content_sha256": "h"})
+            self.assertEqual(store.get(key), {"content": {"a": 1}, "content_sha256": "h"})
 
     def test_corrupt_file_returns_none(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "bad.json").write_text("{not-json", encoding="utf-8")
-            self.assertIsNone(FilesystemVlmResponseStore(root).get("bad"))
+            key = "c" * 64
+            (root / f"{key}.json").write_text("{not-json", encoding="utf-8")
+            self.assertIsNone(FilesystemVlmResponseStore(root).get(key))
+
+    def test_unsafe_key_fails_closed(self) -> None:
+        # §5.11: a key must be sha256 hex; traversal / non-hex / wrong length must
+        # never touch the filesystem (get miss, put no-op).
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            store = FilesystemVlmResponseStore(root)
+            for bad in ("../escape", "k1", "A" * 64, "a" * 63, "a" * 65, "a/b", ".."):
+                store.put(bad, {"content": {"a": 1}, "content_sha256": "h"})
+                self.assertIsNone(store.get(bad), bad)
+            self.assertEqual(list(root.glob("*.json")), [])  # nothing written
+
+    def test_ttl_expiry_is_a_miss_and_deletes(self) -> None:
+        # §5.10: an entry older than the TTL is a miss and is deleted on read.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            key = "a" * 64
+            store = FilesystemVlmResponseStore(root, ttl_seconds=1.0)
+            store.put(key, {"content": {"a": 1}, "content_sha256": "h"})
+            path = root / f"{key}.json"
+            self.assertTrue(path.exists())
+            past = time.time() - 3600
+            os.utime(path, (past, past))  # backdate beyond the TTL
+            self.assertIsNone(store.get(key))
+            self.assertFalse(path.exists())  # explicit deletion policy
+
+    def test_symlink_target_is_refused(self) -> None:
+        # §5.11: a planted symlink at the target must never be followed.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            key = "b" * 64
+            real = root / "real.json"
+            real.write_text('{"content": {"x": 1}, "content_sha256": "h"}', encoding="utf-8")
+            link = root / f"{key}.json"
+            try:
+                os.symlink(real, link)
+            except (OSError, NotImplementedError, AttributeError):
+                self.skipTest("symlinks not supported in this environment")
+            self.assertIsNone(FilesystemVlmResponseStore(root).get(key))
 
 
 if __name__ == "__main__":

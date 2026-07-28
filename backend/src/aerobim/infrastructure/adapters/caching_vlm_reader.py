@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
-from time import perf_counter
+from time import perf_counter, time
 from typing import Any, Protocol
 
 from aerobim.domain.vlm_cache import (
@@ -33,25 +33,58 @@ class _RegionReader(Protocol):
     ) -> KimiReadResult: ...
 
 
+_SHA256_HEX_LEN = 64
+_HEX_CHARS = frozenset("0123456789abcdef")
+
+
+def _is_cache_key_safe(key: str) -> bool:
+    """A store key MUST be a sha256 hex digest — no separators / traversal / dots."""
+    return len(key) == _SHA256_HEX_LEN and all(ch in _HEX_CHARS for ch in key)
+
+
 class FilesystemVlmResponseStore:
-    """JSON-per-key store; the key is a sha256 hex (safe filename, no traversal)."""
+    """JSON-per-key store, fail-closed (§5.9–§5.11).
 
-    def __init__(self, root: Path) -> None:
+    Keys must be sha256 hex (rejects path traversal via the key); a symlinked
+    target is refused (never followed for read or write); entries older than
+    ``ttl_seconds`` are treated as a miss and deleted (explicit deletion policy);
+    the cache dir is created owner-only (best-effort; a no-op ACL on Windows).
+    """
+
+    def __init__(self, root: Path, *, ttl_seconds: float | None = None) -> None:
         self._root = Path(root)
+        self._ttl_seconds = ttl_seconds
 
-    def _path(self, key: str) -> Path:
+    def _path(self, key: str) -> Path | None:
+        if not _is_cache_key_safe(key):
+            return None
         return self._root / f"{key}.json"
 
     def get(self, key: str) -> dict[str, Any] | None:
+        path = self._path(key)
+        if path is None or path.is_symlink():  # bad key / planted symlink -> miss
+            return None
         try:
-            loaded = json.loads(self._path(key).read_text(encoding="utf-8"))
+            if self._ttl_seconds is not None and path.exists():
+                if (time() - path.stat().st_mtime) > self._ttl_seconds:
+                    path.unlink(missing_ok=True)  # expired -> deletion policy
+                    return None
+            loaded = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
         return loaded if isinstance(loaded, dict) else None
 
     def put(self, key: str, entry: dict[str, Any]) -> None:
-        self._root.mkdir(parents=True, exist_ok=True)
         path = self._path(key)
+        if path is None:
+            return  # fail-closed: never write under an unsafe key
+        self._root.mkdir(parents=True, exist_ok=True)
+        try:
+            self._root.chmod(0o700)  # owner-only; best-effort (Windows ACLs differ)
+        except OSError:
+            pass
+        if path.is_symlink():  # never write through a planted symlink
+            return
         tmp = path.with_suffix(".json.tmp")
         tmp.write_text(
             json.dumps(entry, ensure_ascii=False, sort_keys=True, indent=2), encoding="utf-8"
