@@ -107,6 +107,42 @@ class HybridRouteGateTests(unittest.TestCase):
         self.assertFalse(hasattr(r, "summary"))
         self.assertEqual(r.audit_event.verdict_impact, "none")
 
+    def test_egress_refusal_is_audited_distinct_from_question_only(self) -> None:
+        # Red Team MEDIUM-1: a fail-closed refusal must be distinguishable in the audit.
+        refusal = self._eval(
+            _gate(with_guard=False),
+            object_kind="public_fixture",
+            target=_T.PUBLIC,
+            payload={"gid": "GID-SECRET"},
+        )
+        self.assertIsNone(refusal.masked)
+        self.assertFalse(refusal.may_call_external)
+        self.assertIn("fail-closed", refusal.audit_event.failure_reason or "")
+        # Question-only egress: no refusal reason.
+        question = self._eval(_gate(), object_kind="public_fixture", target=_T.PUBLIC, payload=None)
+        self.assertEqual(question.masked, {})
+        self.assertTrue(question.may_call_external)
+        self.assertIsNone(question.audit_event.failure_reason)
+
+    def test_masking_leak_refusal_is_audited(self) -> None:
+        # Red Team MEDIUM-2: a masking failure (leak) must fail-closed AND be audited.
+        r = self._eval(
+            _gate(with_guard=True),
+            object_kind="public_fixture",
+            target=_T.PUBLIC,
+            payload={"gid": "GID-SECRET", "note": "see GID-SECRET"},
+            mask_rules={"gid": "tokenize:global_id", "note": "keep"},
+        )
+        self.assertIsNone(r.masked)
+        self.assertFalse(r.may_call_external)
+        self.assertIn("masking refused", r.audit_event.failure_reason or "")
+
+    def test_human_review_no_egress(self) -> None:
+        r = self._eval(_gate(), object_kind="internal_doc", target=_T.PUBLIC)
+        self.assertEqual(r.decision.status, RouteStatus.HUMAN_REVIEW)
+        self.assertFalse(r.may_call_external)
+        self.assertEqual(r.audit_event.tier, "none")
+
     def test_di_gate_available_and_verdict_neutral(self) -> None:
         from aerobim.core.config.settings import Settings
         from aerobim.core.di.tokens import Tokens

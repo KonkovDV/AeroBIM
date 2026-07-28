@@ -72,6 +72,13 @@ class HybridRouteGate:
         event_id: str | None = None,
         timestamp: str | None = None,
     ) -> HybridGateResult:
+        """Classify + decide route + (mask on egress) + audit; returns routing only.
+
+        ``payload=None`` = question-only egress (no document leaves) and is allowed on
+        an egress route. A non-None payload requires a PrivacyGuard + ``mask_rules`` to
+        egress; otherwise (or if masking refuses/raises) ``masked`` is ``None`` and
+        ``may_call_external`` is ``False`` (fail-closed), with the reason audited.
+        """
         classification = classify_object(object_kind)
         decision = decide_route(
             classification=classification,
@@ -86,18 +93,28 @@ class HybridRouteGate:
         fields_sent: tuple[str, ...] = ()
         fields_removed: tuple[str, ...] = ()
         mask_version: str | None = None
+        egress_failure: str | None = None
         if decision.external_call:
-            # External egress requires masking. Fail closed if we cannot mask.
+            # External egress requires masking. Fail closed if we cannot mask, and
+            # record WHY so the audit distinguishes a refusal from a real egress (§13).
             if payload is None:
-                masked = {}  # question-only: nothing to send
-            elif self._guard is not None and mask_rules is not None:
-                result = self._guard.mask_payload(payload, tenant_id=tenant_id, rules=mask_rules)
-                masked = result.masked
-                fields_sent = result.fields_sent
-                fields_removed = result.fields_removed
-                mask_version = result.mask_version
+                masked = {}  # question-only egress: nothing to send
+            elif self._guard is None or mask_rules is None:
+                egress_failure = "external egress fail-closed: no privacy guard / mask rules"
             else:
-                masked = None  # no guard/rules -> do NOT egress unmasked
+                try:
+                    result = self._guard.mask_payload(
+                        payload, tenant_id=tenant_id, rules=mask_rules
+                    )
+                except ValueError as exc:
+                    # PrivacyLeakError / non-scalar keep / bad tenant -> refuse egress,
+                    # keep an audit trail, do not crash the caller (fail-closed).
+                    egress_failure = f"masking refused egress: {type(exc).__name__}"
+                else:
+                    masked = result.masked
+                    fields_sent = result.fields_sent
+                    fields_removed = result.fields_removed
+                    mask_version = result.mask_version
 
         event = build_route_audit_event(
             event_id=event_id or uuid.uuid4().hex,
@@ -107,6 +124,7 @@ class HybridRouteGate:
             task_type=task_type,
             decision=decision,
             policy_version=self._policy_version,
+            failure_reason=egress_failure,
             project_id=project_id,
             fields_sent=fields_sent,
             fields_removed=fields_removed,
