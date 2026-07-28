@@ -107,15 +107,17 @@ class CachingVlmReader:
         normalizer_version: str = NORMALIZER_VERSION,
         reasoning_effort: str = "",
         cache_namespace: str = "",
+        cache_project: str = "",
     ) -> None:
         self._reader = reader
         self._store = store
         self._model = model
         self._reasoning_effort = reasoning_effort
-        # Isolation scope folded into the key (e.g. tenant). The advisory contour
-        # is not yet tenant-aware; a tenant-scoped consumer MUST pass its tenant
-        # here so cache entries never cross tenants.
+        # Isolation scope folded into the key (e.g. tenant + project). The advisory
+        # contour is not yet tenant-aware; a tenant-scoped consumer MUST pass its
+        # tenant (and optional project) here so cache entries never cross tenants.
         self._namespace = cache_namespace
+        self._project = cache_project
         self._provenance = {
             "endpoint": endpoint,
             "request_schema_hash": request_schema_hash,
@@ -129,6 +131,7 @@ class CachingVlmReader:
             prompt=prompt,
             model=self._model,
             namespace=self._namespace,
+            project=self._project,
             request_schema_hash=self._provenance["request_schema_hash"],
             normalizer_version=self._provenance["normalizer_version"],
             reasoning_effort=self._reasoning_effort,

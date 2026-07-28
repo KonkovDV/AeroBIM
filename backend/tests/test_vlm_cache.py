@@ -31,6 +31,7 @@ class VlmCacheKeyTests(unittest.TestCase):
         base = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
         for kwargs in (
             {"namespace": "tenant-a"},
+            {"project": "proj-a"},
             {"reasoning_effort": "high"},
             {"request_schema_hash": "schema-9"},
             {"normalizer_version": "9.9.9"},

@@ -684,7 +684,11 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
     # response for another. Fail closed: no namespace -> no persistent cache.
     reader: object = client
     cache_namespace = _safe_cache_namespace(settings.kimi_cache_namespace)
-    if settings.kimi_cache_dir and cache_namespace:
+    # A configured-but-invalid project fails closed (None); unset project -> "".
+    cache_project = (
+        _safe_cache_namespace(settings.kimi_cache_project) if settings.kimi_cache_project else ""
+    )
+    if settings.kimi_cache_dir and cache_namespace and cache_project is not None:
         from aerobim.infrastructure.adapters.caching_vlm_reader import (
             CachingVlmReader,
             FilesystemVlmResponseStore,
@@ -693,9 +697,11 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
             observations_schema_hash,
         )
 
-        # Physically scope the store under the namespace (defense in depth on top
-        # of the namespace already folded into the cache key).
+        # Physically scope the store under tenant/[project] (defense in depth on
+        # top of the namespace+project already folded into the cache key).
         store_root = Path(settings.kimi_cache_dir) / cache_namespace
+        if cache_project:
+            store_root = store_root / cache_project
         ttl_seconds = (
             settings.kimi_cache_ttl_days * 86400.0 if settings.kimi_cache_ttl_days else None
         )
@@ -707,6 +713,7 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
             request_schema_hash=observations_schema_hash(),
             reasoning_effort=settings.kimi_reasoning_effort,
             cache_namespace=cache_namespace,
+            cache_project=cache_project or "",
         )
     return RegionRestrictedVlmPipeline(
         region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),

@@ -122,6 +122,22 @@ class CachingVlmReaderTests(unittest.TestCase):
         _read(CachingVlmReader(inner, store, model="kimi-k3", cache_namespace="tenant-b"))
         self.assertEqual(inner.calls, 2)  # different tenant -> no shared cache
 
+    def test_project_isolation_no_cross_project_replay(self) -> None:
+        store = InMemoryVlmResponseStore()
+        inner = _CountingReader()
+        _read(
+            CachingVlmReader(
+                inner, store, model="kimi-k3", cache_namespace="t1", cache_project="p1"
+            )
+        )
+        self.assertEqual(inner.calls, 1)
+        _read(
+            CachingVlmReader(
+                inner, store, model="kimi-k3", cache_namespace="t1", cache_project="p2"
+            )
+        )
+        self.assertEqual(inner.calls, 2)  # same tenant, different project -> no shared cache
+
     def test_stored_entry_records_metrics(self) -> None:
         store = InMemoryVlmResponseStore()
         inner = _CountingReader()

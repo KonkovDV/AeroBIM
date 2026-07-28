@@ -40,17 +40,18 @@ def vlm_cache_key(
     prompt: str,
     model: str,
     namespace: str = "",
+    project: str = "",
     request_schema_hash: str = "",
     normalizer_version: str = "",
     reasoning_effort: str = "",
 ) -> str:
-    """Filename-safe key over the FULL request identity (act-grade, §2.1/§11).
+    """Filename-safe key over the FULL request identity (act-grade, §2.1/§7/§11).
 
     Beyond image/prompt/model it folds in the discriminators that change the
-    produced content: ``namespace`` (tenant / isolation scope), server-side
-    ``reasoning_effort``, our ``request_schema_hash`` and ``normalizer_version``.
-    Omitting these (the previous key) let a config change replay a STALE cached
-    answer for the same (image, prompt, model) and shared a cache across tenants.
+    produced content or its isolation scope: ``namespace`` (tenant) + ``project``,
+    server-side ``reasoning_effort``, our ``request_schema_hash`` and
+    ``normalizer_version``. Omitting these (the previous key) let a config change
+    replay a STALE cached answer and shared a cache across tenants/projects.
     ``model`` is a string id, not a weights hash — not proof of model determinism.
     """
     parts = "\n".join(
@@ -59,6 +60,7 @@ def vlm_cache_key(
             _sha256_text(prompt),
             model,
             namespace,
+            project,
             request_schema_hash,
             normalizer_version,
             reasoning_effort,
