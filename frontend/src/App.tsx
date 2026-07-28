@@ -1123,6 +1123,14 @@ export default function App() {
                         ) : issue.origin === "deterministic" ? (
                           <span className="origin-pill origin-deterministic">deterministic</span>
                         ) : null}
+                        {typeof issue.confidence === "number" && issue.confidence < 0.6 ? (
+                          <span
+                            className="confidence-pill confidence-low"
+                            title="Low self-reported (uncalibrated) confidence — requires human review"
+                          >
+                            low confidence {issue.confidence.toFixed(2)}
+                          </span>
+                        ) : null}
                         {typeof issue.priority === "number" && issue.priority > 0 ? (
                           <span className="issue-priority">P{issue.priority}</span>
                         ) : null}

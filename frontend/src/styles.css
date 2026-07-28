@@ -697,6 +697,22 @@ input {
   opacity: 0.85;
 }
 
+.confidence-pill {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.confidence-pill.confidence-low {
+  background: rgba(154, 103, 0, 0.14);
+  color: #9a6700;
+  border: 1px dashed #9a6700;
+}
+
 .triage-band {
   padding: 4px 8px;
   border-radius: 999px;
