@@ -16,6 +16,12 @@ from aerobim.domain.hybrid.data_classification import (
     most_restrictive,
     rank,
 )
+from aerobim.domain.hybrid.privacy_guard import (
+    MaskResult,
+    PrivacyGuard,
+    TokenVault,
+    truncate_flagged,
+)
 from aerobim.domain.hybrid.trust_policy import (
     RouteDecision,
     RouteStatus,
@@ -27,13 +33,17 @@ __all__ = [
     "AuditSecretLeakError",
     "DataClassification",
     "HybridAuditEvent",
+    "MaskResult",
+    "PrivacyGuard",
     "RouteDecision",
     "RouteStatus",
     "RouteTarget",
+    "TokenVault",
     "build_route_audit_event",
     "classify_object",
     "decide_route",
     "most_restrictive",
     "rank",
     "redact_audit_fields",
+    "truncate_flagged",
 ]
