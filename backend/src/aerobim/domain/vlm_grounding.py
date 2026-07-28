@@ -195,6 +195,16 @@ class VlmRegionReadResult:
     dropped_count: int = 0
 
 
+# Image-based prompt-injection hardening (arXiv 2603.03637; MDPI Electronics
+# 14(10):1907, 2025; OWASP LLM Top-10 2025). A hostile image can steer the model
+# to flood the advisory surface or emit a huge payload. The verdict is already
+# out of reach (advisory-only, our normalizer ignores the model's value), so
+# these are resource/noise bounds — fail-closed, drop-not-whole.
+_MAX_OBSERVATIONS_PER_REGION = 128
+_MAX_RAW_VALUE_CHARS = 512
+_MAX_EVIDENCE_NOTE_CHARS = 512
+
+
 def ground_vlm_region_observations(
     raw: object,
     *,
@@ -236,6 +246,9 @@ def ground_vlm_region_observations(
     hitl = 0
     dropped = 0
     for observation_raw in observations_raw:
+        if len(grounded) >= _MAX_OBSERVATIONS_PER_REGION:
+            dropped += 1  # over per-region budget — injected flood guard
+            continue
         if not isinstance(observation_raw, dict):
             dropped += 1
             continue
@@ -245,6 +258,9 @@ def ground_vlm_region_observations(
             dropped += 1
             continue
         raw_value = str(observation_raw.get("raw_value", "") or "")
+        if len(raw_value) > _MAX_RAW_VALUE_CHARS:
+            dropped += 1  # oversized payload — injection/garbage guard
+            continue
         confidence = _clamp_unit(observation_raw.get("confidence"))
         low = confidence < min_confidence
         if low:
@@ -257,7 +273,9 @@ def ground_vlm_region_observations(
                 bbox_rel=bbox,
                 confidence=confidence,
                 hitl_required=low,
-                evidence_note=str(observation_raw.get("evidence_note", "") or ""),
+                evidence_note=str(observation_raw.get("evidence_note", "") or "")[
+                    :_MAX_EVIDENCE_NOTE_CHARS
+                ],
             )
         )
 
@@ -265,7 +283,7 @@ def ground_vlm_region_observations(
     if not readable and not grounded:
         reason = str(raw.get("unreadable_reason") or "region marked unreadable")
     elif dropped:
-        reason = f"{dropped} observation(s) dropped (invalid kind/bbox_rel)"
+        reason = f"{dropped} observation(s) dropped (invalid/oversized/over-budget)"
     return VlmRegionReadResult(
         sheet_id=sheet_id,
         region_id=region_id,
