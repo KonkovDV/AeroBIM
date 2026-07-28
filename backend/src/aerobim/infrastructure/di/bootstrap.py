@@ -5,6 +5,7 @@ from pathlib import Path
 from aerobim.application.services.agentic_review_orchestrator import AgenticReviewOrchestrator
 from aerobim.application.services.compliance_agent_orchestrator import ComplianceAgentOrchestrator
 from aerobim.application.services.determinism_gate import DeterminismGate
+from aerobim.application.services.hybrid_route_gate import HybridRouteGate
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.application.use_cases.analyze_project_package_jobs import (
     AnalyzeProjectPackageJobRunner,
@@ -243,6 +244,16 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.ADVISORY_VLM_PIPELINE,
         lambda current: _build_advisory_vlm_pipeline(current),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    # Hybrid AI fail-closed pre-gate (P1-wire): classify -> policy -> (mask) -> audit.
+    # Like ADVISORY_VLM_PIPELINE it is AVAILABLE but DELIBERATELY NOT consumed by the
+    # verdict use case (OFF==ON). Registered mask-less (no PrivacyGuard) by default:
+    # a deployment that configures a tenant salt injects a guard; until then external
+    # egress of a payload is fail-closed (masked=None -> may_call_external=False).
+    container.register(
+        Tokens.HYBRID_ROUTE_GATE,
+        lambda _container: HybridRouteGate(),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
