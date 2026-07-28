@@ -222,5 +222,45 @@ class AnalyzeProjectPackageJobRunnerCancelTests(unittest.TestCase):
         self.assertIsNone(final.report_id)  # never published as a completed report
 
 
+class AnalyzeProjectPackageJobConcurrencyTests(unittest.TestCase):
+    def test_concurrent_submit_same_key_creates_exactly_one_job(self) -> None:
+        # §4.3: concurrent submits with the same idempotency key + tenant must not
+        # double-create; the store lock serialises create+dedup so all callers
+        # converge on ONE job id and exactly one job is persisted.
+        import threading
+
+        store = InMemoryAnalyzeProjectPackageJobStore()
+        workers = 16
+        barrier = threading.Barrier(workers)
+        results: list[str] = []
+        results_lock = threading.Lock()
+
+        def submit(i: int) -> None:
+            job = AnalyzeProjectPackageJob(
+                job_id=f"job-{i:03d}",
+                request_id=f"req-{i}",
+                status=JobStatus.QUEUED,
+                created_at="2026-04-19T00:00:00+00:00",
+                idempotency_key="same-key",
+                tenant_id="t1",
+            )
+            barrier.wait()  # release all threads together to maximise contention
+            created = store.create(job)
+            with results_lock:
+                results.append(created)
+
+        threads = [threading.Thread(target=submit, args=(i,)) for i in range(workers)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        self.assertEqual(len(results), workers)
+        self.assertEqual(len(set(results)), 1)  # all callers converged on one winner
+        winner = results[0]
+        stored = [f"job-{i:03d}" for i in range(workers) if store.get(f"job-{i:03d}") is not None]
+        self.assertEqual(stored, [winner])  # exactly one job persisted (no double-insert)
+
+
 if __name__ == "__main__":
     unittest.main()
