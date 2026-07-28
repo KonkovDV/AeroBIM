@@ -62,6 +62,12 @@ jobs:
           def check(lock_name: str, extras: list[str]) -> None:
               before = Path(lock_name).read_text(encoding="utf-8")
               out = Path(f"{lock_name}.check.txt")
+              # Seed the check output with the committed lock so uv PRESERVES
+              # satisfying pins (pip-tools semantics; no --upgrade). The gate then
+              # flags only a genuine pyproject<->lock divergence (dep added/removed/
+              # constraint changed), not a mere upstream patch release — Dependabot
+              # owns freshness/security bumps via PRs; locks stay fully hash-pinned.
+              out.write_text(before, encoding="utf-8")
               cmd = [
                   sys.executable, "-m", "uv", "pip", "compile",
                   "--python", "3.12",
