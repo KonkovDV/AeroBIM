@@ -21,7 +21,8 @@
 - **Исправление:** новый `kimi_cache_namespace` (только из доверенной deployment-конфигурации — не из тела запроса/имени файла/sheet_id/ответа модели). Постоянный кэш строится **только** при валидном namespace; иначе — **fail-closed: кэш отключён** (никогда не общий). Namespace валидируется (`[A-Za-z0-9._-]`, 1–64, без `.`/`..`, без разделителей) и физически изолирует каталог (`kimi_cache_dir/<namespace>`) поверх namespace-в-ключе.
 - **Тесты (регресс):** `tests/test_advisory_cache_tenant_isolation.py` — отключение без namespace; включение и физическая изоляция с namespace; разные арендаторы → разные корни; path-unsafe namespace → fail-closed; unit на `_safe_cache_namespace`.
 - **Критерий готовности:** ruff/mypy зелёные; тесты зелёные; вердикт не изменился (advisory вне verdict-пути); новых claims нет.
-- **Остаётся (не в этом коммите, тема «cache»):** TTL и явная политика удаления; ограничение прав на каталог кэша; защита от симлинков на уровне store; привязка namespace к проверенной личности в реальном потребителе (когда контур будет подключён).
+- **Закрыто позже (тема «cache», коммит ee37926):** key-safety (sha256-hex, без traversal), symlink-refusal, TTL + удаление, owner-only perms на store — с регресс-тестами. Symlink/TTL/key-safety **доказаны на Linux** через Docker (`python:3.12-slim`, Debian 13 trixie): 14/14 cache-тестов, `test_symlink_target_is_refused` PASSED (не skipped). Артефакт: `audit/evidence/vlm-cache-linux-store-proof-2026-07-28.json`.
+- **Остаётся:** привязка namespace к проверенной личности в реальном потребителе (когда контур будет подключён); symlink-тест на Windows по-прежнему skip (нет `os.symlink` без привилегии) — покрыт Linux-доказательством.
 
 ## Проверено и подтверждено как уже закрытое (без изменений)
 
