@@ -18,6 +18,7 @@ Honesty / secret-safety (§13 «нельзя писать в аудит», §25)
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
@@ -30,11 +31,17 @@ _FORBIDDEN_AUDIT_KEYS = frozenset(
     {
         "api_key",
         "apikey",
+        "x_api_key",
         "authorization",
         "bearer",
         "token",
         "access_token",
+        "refresh_token",
+        "id_token",
+        "session_token",
         "secret",
+        "secret_key",
+        "client_secret",
         "password",
         "credential",
         "credentials",
@@ -42,6 +49,29 @@ _FORBIDDEN_AUDIT_KEYS = frozenset(
         "reasoning_content",
     }
 )
+_NON_ALNUM = re.compile(r"[^a-z0-9]")
+
+
+def _normalize_key(key: object) -> str:
+    """Lowercase + strip separators so api-key / x_api_key / apiKey all collapse."""
+    return _NON_ALNUM.sub("", str(key).lower())
+
+
+_FORBIDDEN_NORMALIZED = frozenset(_normalize_key(k) for k in _FORBIDDEN_AUDIT_KEYS)
+
+
+def _is_forbidden_key(key: object) -> bool:
+    return _normalize_key(key) in _FORBIDDEN_NORMALIZED
+
+
+def _redact_value(value: Any) -> Any:
+    """Recurse into mappings AND lists/tuples so list-nested secrets are redacted."""
+    if isinstance(value, Mapping):
+        return redact_audit_fields(value)
+    if isinstance(value, (list, tuple)):
+        return [_redact_value(item) for item in value]
+    return value
+
 
 _STATUS_TIER = {
     RouteStatus.LOCAL: "local",
@@ -57,17 +87,14 @@ class AuditSecretLeakError(RuntimeError):
 
 
 def redact_audit_fields(fields: Mapping[str, Any] | None) -> dict[str, Any]:
-    """Drop forbidden keys (case-insensitive), recursively, from a metadata mapping."""
+    """Drop forbidden keys (normalized) recursively, incl. list-nested mappings."""
     if not fields:
         return {}
     safe: dict[str, Any] = {}
     for key, value in fields.items():
-        if str(key).strip().lower() in _FORBIDDEN_AUDIT_KEYS:
+        if _is_forbidden_key(key):
             continue
-        if isinstance(value, Mapping):
-            safe[str(key)] = redact_audit_fields(value)
-        else:
-            safe[str(key)] = value
+        safe[str(key)] = _redact_value(value)
     return safe
 
 
@@ -111,8 +138,9 @@ class HybridAuditEvent:
     latency_ms: float | None = None
     cost: float | None = None
     failure_reason: str | None = None
-    # Hybrid AI never decides the engineering verdict (ADR-001) — fixed by construction.
-    verdict_impact: str = field(default="none")
+    # Hybrid AI never decides the engineering verdict (ADR-001). init=False makes it
+    # structurally unbypassable — not even via direct construction.
+    verdict_impact: str = field(default="none", init=False)
 
     def to_audit_dict(self) -> dict[str, Any]:
         """JSON-safe record; redacts ``usage`` and FAILS CLOSED on any forbidden key."""
@@ -165,10 +193,17 @@ class HybridAuditEvent:
 
 def _assert_no_forbidden_keys(payload: Mapping[str, Any]) -> None:
     for key, value in payload.items():
-        if str(key).strip().lower() in _FORBIDDEN_AUDIT_KEYS:
+        if _is_forbidden_key(key):
             raise AuditSecretLeakError(f"forbidden key in audit record: {key!r}")
-        if isinstance(value, Mapping):
-            _assert_no_forbidden_keys(value)
+        _assert_value_has_no_forbidden_keys(value)
+
+
+def _assert_value_has_no_forbidden_keys(value: Any) -> None:
+    if isinstance(value, Mapping):
+        _assert_no_forbidden_keys(value)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _assert_value_has_no_forbidden_keys(item)
 
 
 def build_route_audit_event(
@@ -208,6 +243,11 @@ def build_route_audit_event(
     }
     allowed_fields = HybridAuditEvent.__dataclass_fields__
     safe_meta = {k: v for k, v in metadata.items() if k in allowed_fields and k not in explicit}
+    # Redact secrets at CONSTRUCTION (not only at serialization) so the in-memory
+    # event / its repr / asdict can never carry a secret (Red Team MEDIUM).
+    usage_meta = safe_meta.get("usage")
+    if isinstance(usage_meta, Mapping):
+        safe_meta["usage"] = redact_audit_fields(usage_meta)
     return HybridAuditEvent(
         event_id=event_id,
         timestamp=timestamp,
