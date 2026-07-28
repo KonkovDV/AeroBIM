@@ -107,6 +107,27 @@ class HybridAuditEventTests(unittest.TestCase):
         self.assertEqual(base.event_content_hash(), same.event_content_hash())
         self.assertNotEqual(base.event_content_hash(), changed.event_content_hash())
 
+    def test_list_nested_secret_is_redacted_and_detected(self) -> None:
+        # Red Team HIGH: a secret inside a list of dicts must be redacted AND, if
+        # planted, must trip the fail-closed serializer (recurse into lists/tuples).
+        safe = redact_audit_fields({"attempts": [{"api_key": "sk-x", "ok": 1}, {"ok": 2}]})
+        self.assertEqual(safe, {"attempts": [{"ok": 1}, {"ok": 2}]})
+        with self.assertRaises(AuditSecretLeakError):
+            _assert_no_forbidden_keys({"usage": {"attempts": [{"token": "leak"}]}})
+
+    def test_usage_redacted_at_construction_not_only_serialization(self) -> None:
+        # Red Team MEDIUM: the in-memory event must not carry a secret.
+        decision = decide_route(classification=_C.PUBLIC, target=_T.PUBLIC, tenant_id="tenant-a")
+        event = _event(decision, usage={"choices": [{"api_key": "sk-leak"}], "prompt_tokens": 3})
+        self.assertNotIn("api_key", repr(event))
+        self.assertEqual(event.usage, {"choices": [{}], "prompt_tokens": 3})
+
+    def test_forbidden_key_variants_are_redacted(self) -> None:
+        safe = redact_audit_fields(
+            {"refresh_token": "r", "client_secret": "c", "x-api-key": "k", "keep": 1}
+        )
+        self.assertEqual(safe, {"keep": 1})
+
 
 if __name__ == "__main__":
     unittest.main()
