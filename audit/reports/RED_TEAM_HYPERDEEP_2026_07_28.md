@@ -51,3 +51,17 @@ RuntimeError` — держится под `-O` и при будущем рефа
 - Вердикт — только детерминированный движок; **advisory OFF==ON**; fail-closed.
 - Новых публичных claims нет; формулировки честные (реплей ≠ детерминизм модели).
 - **Checkpoint = NO_GO.**
+
+## Второй проход — весь код + вся документация (2026-07-28)
+
+Расширенный адверсариальный проход по всей кодовой базе и документации. **Существенных ошибок не найдено** — фиксы не фабрикую.
+
+| Проверка | Результат |
+|---------|----------|
+| Гейты | ruff format (373) + ruff check + mypy (**218**) + pytest (**1295 passed, 8 skipped, 144 subtests**) + baseline drift + markdown-links — **все зелёные** |
+| Doc-honesty | каждый рисковый claim (`>90%` / DWG / MEP delivered / production-ready / «reads like human») — **только** в запрещающем/негативном контексте (Claims Lock / «Not claimed» / NOT_VERIFIED / RT-00X open); противоречий claim↔код нет |
+| Согласованность чисел | нет устаревших хардкод-счётчиков (README-сниппет в допуске; frontend 29 синхронизирован; исторические снимки помечены датой) |
+| Test-integrity | нет полых `assert True`/`xfail`; **8 skip'ов — честные env-гейты** (symlink-privilege Windows ×4, optional extras ezdxf/docling/ifcclash, PyJWT); OpenAPI-snapshot **PASSED** (контракт не дрейфует) |
+| Безопасность (1-й проход) | fail-closed подтверждён; OIDC-build `assert`→`raise` уже исправлен |
+
+**Вывод:** код и документация в чистом, внутренне-согласованном и честном состоянии. Исправлять нечего; **Checkpoint = NO_GO** (внешние RT-001/002/003 — не кодом).
