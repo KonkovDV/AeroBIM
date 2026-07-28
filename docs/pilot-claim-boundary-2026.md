@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.4.0"
-last_updated: "2026-07-19"
+version: "1.5.0"
+last_updated: "2026-07-28"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -34,7 +34,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
 | BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |
-| Browser review shell (3D + 2D evidence) | Frontend vitest **25** passed; `run_live_review_smoke` |
+| Browser review shell (3D + 2D evidence) | Frontend vitest **29** passed; `run_live_review_smoke` |
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
 | Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
@@ -48,6 +48,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Infra failure honesty (RT-C) | Unexpected exceptions in quantity / load / MEP probe → capability **FAILED** + traceback log (not soft WARNING/NOT_VERIFIED) |
 | Mixed CAD package honesty (RT-D) | Unparsed `.dwg` in package with successful `.dxf` → `capabilities.dwg_dxf=FAILED` (DXF success must not mask DWG) |
 | Advisory isolation (RT-E / RT-017) | Same non-empty package: advisory ON vs OFF → identical deterministic findings + identical `summary.passed`; only advisory remarks/warnings may differ |
+| HITL §12 visual distinction | Advisory candidate vs confirmed finding, low-confidence cue, `review_required` outcome — visually distinct + vitest; text XSS prevented by React (no `dangerouslySetInnerHTML`); preview MIME allowlist (`api.ts`) |
+| Hyper-deep Red Team static audit (2026-07-28) | `audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md` — no new exploitable defect; verdict single-source (`summary_passed_from_outcome`); advisory OFF==ON re-confirmed; OIDC validator build fail-closed without `assert` |
 | Non-dev auth fail-closed (RT-F) | `AEROBIM_ENV != development` + empty bearer + no OIDC → Settings/bootstrap refuse start |
 | RT-001 protocol readiness (engineering) | Customer labels template + `dual_independent` method + agreement-template + runbook `--agreement-json`; **publishable still HOLD** without customer corpus |
 | RT-002 schema↔loader parity | `customer_approved`/`approved` require full `approval` object in JSON Schema (ref-only rejected) |

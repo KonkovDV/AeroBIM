@@ -2,7 +2,7 @@
 
 Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` | `ADVISORY_ONLY` | `NOT_RUNTIME_CONNECTED` | `MISSING` | `BLOCKED_BY_CUSTOMER_DATA`
 
-**Refresh:** 2026-07-19 Red Team docs pass (`main`). Checkpoint **NO_GO** (RT-001/002/003).  
+**Refresh:** 2026-07-28 session (HITL §12 review-shell hardening; frontend vitest **29**; advisory-isolation / verdict-ownership re-confirmed by hyper-deep Red Team audit — `RED_TEAM_HYPERDEEP_2026_07_28.md`). Prior: 2026-07-19 Red Team docs pass (`main`). Checkpoint **NO_GO** (RT-001/002/003).  
 Historical narrative freezes (`c0c4b2b` / `8efbef8`) are superseded for rows marked below.
 
 | # | Требование ТЗ | Код | Runtime path | Тест / команда | Реальные данные | Статус | Риск |
@@ -29,8 +29,8 @@ Historical narrative freezes (`c0c4b2b` / `8efbef8`) are superseded for rows mar
 | 20 | RU-замечания | RemarkGenerator | analyze attach | remark tests | fixture | VERIFIED_FIXTURE_ONLY | LOW |
 | 21 | EN-замечания | RemarkGenerator | same | partial | fixture | PARTIAL | MED |
 | 22 | Критичность / приоритет | severity + priority | compute_issue_priority | priority tests | fixture | VERIFIED_FIXTURE_ONLY | MED |
-| 23 | Подсветка зон | ProblemZone + frontend overlay | report + UI | frontend vitest **25** passed | fixture | VERIFIED_FIXTURE_ONLY | MED |
-| 24 | Редактор замечаний HITL | review-events API | POST review-events | API + UI tests | fixture | VERIFIED_FIXTURE_ONLY | MED |
+| 23 | Подсветка зон | ProblemZone + frontend overlay | report + UI | frontend vitest **29** passed | fixture | VERIFIED_FIXTURE_ONLY | MED |
+| 24 | Редактор замечаний HITL | review-events API | POST review-events | API + UI tests; §12 advisory/low-confidence/review-required визуальное различение | fixture | VERIFIED_FIXTURE_ONLY | MED |
 | 25 | BCF | export_bcf / export_bcf3 | export endpoints | structural T1 + dual consumers | no CDE import | PARTIAL | HIGH |
 | 26 | SLA ≤30 мин | measure_package_sla | CLI | tool + fixture honesty JSON | fixture | FIXTURE_ONLY; customer НЕ ДОКАЗАНО | HIGH |
 
