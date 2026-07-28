@@ -1,0 +1,53 @@
+{
+  "artifact_type": "aerobim_hybrid_routing_policy_tests",
+  "schema_version": "1.0.0",
+  "generated_against_head": "2296caa",
+  "note": "Evidence ships in the commit that adds domain/hybrid; generated against working tree at HEAD 2296caa.",
+  "date": "2026-07-28",
+  "environment": {
+    "python": "3.12",
+    "local": "windows",
+    "ci": "ubuntu-latest (mirrored via pytest)"
+  },
+  "evidence_level": "confirmed by unit test",
+  "test_file": "backend/tests/test_hybrid_trust_policy.py",
+  "test_count": 13,
+  "policy_version": "1.0.0",
+  "components": [
+    "domain/hybrid/data_classification.py",
+    "domain/hybrid/trust_policy.py"
+  ],
+  "verdict_impact": "none (domain-pure; does not touch summary.passed; ADR-001)",
+  "class_x_target_matrix": {
+    "note": "status with a verified tenant; owner_consent/private_mode_confirmed=false unless noted",
+    "PUBLIC": {"LOCAL": "LOCAL", "PRIVATE": "PRIVATE", "PUBLIC": "PUBLIC_MASKED"},
+    "INTERNAL": {
+      "LOCAL": "LOCAL",
+      "PRIVATE": "PRIVATE",
+      "PUBLIC": "HUMAN_REVIEW (PUBLIC_MASKED only with owner_consent)"
+    },
+    "CONFIDENTIAL": {
+      "LOCAL": "LOCAL",
+      "PRIVATE": "BLOCKED (PRIVATE only with private_mode_confirmed)",
+      "PUBLIC": "BLOCKED"
+    },
+    "RESTRICTED": {
+      "LOCAL": "LOCAL",
+      "PRIVATE": "BLOCKED (PRIVATE only with private_mode_confirmed)",
+      "PUBLIC": "BLOCKED"
+    },
+    "SECRET": {"LOCAL": "BLOCKED", "PRIVATE": "BLOCKED", "PUBLIC": "BLOCKED"}
+  },
+  "fail_closed_defaults": {
+    "unknown_tenant": "BLOCKED (no external call)",
+    "unknown_object_kind": "classify_object -> CONFIDENTIAL (never PUBLIC)",
+    "blocked_or_human_review": "external_call == false (never egresses)",
+    "public_egress_for_confidential_restricted_secret": "always BLOCKED (T1 invariant)"
+  },
+  "limitations": [
+    "This proves the domain-pure decision matrix only; it is NOT wired into the live request path yet.",
+    "Masking (Privacy Guard) is P1: PUBLIC_MASKED means egress-eligible-after-masking, not anonymized.",
+    "No customer-data or live-model evidence; fixture/unit level only.",
+    "Does not close RT-001/002/003; Checkpoint remains NO_GO."
+  ]
+}
