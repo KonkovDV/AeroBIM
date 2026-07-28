@@ -18,8 +18,10 @@ from aerobim.domain.vlm_cache import (
     VlmResponseStore,
     build_cache_entry,
     entry_content_if_intact,
+    entry_matches_request,
     vlm_cache_key,
 )
+from aerobim.domain.vlm_normalize import NORMALIZER_VERSION
 from aerobim.infrastructure.adapters.kimi_k3_advisory_client import KimiReadResult
 
 
@@ -58,17 +60,38 @@ class FilesystemVlmResponseStore:
 class CachingVlmReader:
     """Region reader that caches responses for deterministic replay (§2.1)."""
 
-    def __init__(self, reader: _RegionReader, store: VlmResponseStore, *, model: str) -> None:
+    def __init__(
+        self,
+        reader: _RegionReader,
+        store: VlmResponseStore,
+        *,
+        model: str,
+        endpoint: str = "",
+        request_schema_hash: str = "",
+        provider_snapshot: str = "",
+        normalizer_version: str = NORMALIZER_VERSION,
+    ) -> None:
         self._reader = reader
         self._store = store
         self._model = model
+        self._provenance = {
+            "endpoint": endpoint,
+            "request_schema_hash": request_schema_hash,
+            "provider_snapshot": provider_snapshot,
+            "normalizer_version": normalizer_version,
+        }
 
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
     ) -> KimiReadResult:
         key = vlm_cache_key(image_bytes=image_bytes, prompt=prompt, model=self._model)
-        cached = entry_content_if_intact(self._store.get(key))
-        if cached is not None:
+        entry = self._store.get(key)
+        cached = entry_content_if_intact(entry)
+        # Two-layer integrity: golden content hash AND the entry's request hashes
+        # must match THIS (image, prompt, model) — else fail closed to a miss.
+        if cached is not None and entry_matches_request(
+            entry, image_bytes=image_bytes, prompt=prompt, model=self._model
+        ):
             return KimiReadResult(
                 content=cached, usage={"cache": "hit"}, determinism_basis="vlm_cache_replay"
             )
@@ -82,7 +105,11 @@ class CachingVlmReader:
         self._store.put(
             key,
             build_cache_entry(
-                image_bytes=image_bytes, prompt=prompt, model=self._model, content=result.content
+                image_bytes=image_bytes,
+                prompt=prompt,
+                model=self._model,
+                content=result.content,
+                provenance=self._provenance,
             ),
         )
         return result

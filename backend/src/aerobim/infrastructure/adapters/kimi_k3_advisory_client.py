@@ -116,6 +116,13 @@ _OBSERVATIONS_SCHEMA: dict[str, Any] = {
 }
 
 
+def observations_schema_hash() -> str:
+    """Stable hash of the §4 observations schema (recorded in cache provenance)."""
+    from aerobim.domain.vlm_cache import content_sha256
+
+    return content_sha256(_OBSERVATIONS_SCHEMA)
+
+
 @dataclass(frozen=True)
 class KimiModelProfile:
     """Per-model request-shaping capabilities (avoids breaking the tier-C vLLM path)."""
@@ -420,6 +427,7 @@ __all__ = [
     "Transport",
     "VlmAdvisoryClient",
     "kimi_k3_api_profile",
+    "observations_schema_hash",
     "profile_for",
     "vllm_vlm_profile",
 ]
