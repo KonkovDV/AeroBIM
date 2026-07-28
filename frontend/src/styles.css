@@ -713,6 +713,34 @@ input {
   border: 1px dashed #9a6700;
 }
 
+.outcome-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.outcome-badge.outcome-pass {
+  color: var(--pass);
+  background: var(--pass-soft);
+}
+
+.outcome-badge.outcome-warn {
+  color: var(--warning);
+  background: var(--warning-soft);
+}
+
+/* Review-required is NOT a verdict: amber + dashed to signal "awaiting human review". */
+.outcome-badge.outcome-review {
+  color: #9a6700;
+  background: rgba(154, 103, 0, 0.12);
+  border: 1px dashed #9a6700;
+}
+
+.outcome-badge.outcome-block {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
 .triage-band {
   padding: 4px 8px;
   border-radius: 999px;
