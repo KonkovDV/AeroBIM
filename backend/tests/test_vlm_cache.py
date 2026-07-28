@@ -26,6 +26,21 @@ class VlmCacheKeyTests(unittest.TestCase):
         self.assertNotEqual(base, vlm_cache_key(image_bytes=b"img", prompt="P", model="kimi-k3"))
         self.assertNotEqual(base, vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-vl"))
 
+    def test_key_discriminates_new_scopes(self) -> None:
+        # Config/isolation scope must change the key (no stale replay, no cross-tenant).
+        base = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        for kwargs in (
+            {"namespace": "tenant-a"},
+            {"reasoning_effort": "high"},
+            {"request_schema_hash": "schema-9"},
+            {"normalizer_version": "9.9.9"},
+        ):
+            self.assertNotEqual(
+                base,
+                vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3", **kwargs),
+                kwargs,
+            )
+
 
 class ContentHashTests(unittest.TestCase):
     def test_hash_stable_across_key_ordering(self) -> None:
@@ -77,6 +92,27 @@ class CacheEntryTests(unittest.TestCase):
             entry_matches_request(entry, image_bytes=b"img", prompt="p", model="kimi-vl")
         )
         self.assertFalse(entry_matches_request("nope", image_bytes=b"img", prompt="p", model="m"))
+
+    def test_entry_records_metrics_and_format(self) -> None:
+        entry = build_cache_entry(
+            image_bytes=b"img",
+            prompt="p",
+            model="kimi-k3",
+            content={"x": 1},
+            usage={"prompt_tokens": 10},
+            latency_ms=12.5,
+            recorded_at="2026-07-28T00:00:00+00:00",
+            namespace="t1",
+            reasoning_effort="high",
+        )
+        self.assertEqual(entry["cache_format_version"], "2")
+        self.assertEqual(entry["namespace"], "t1")
+        self.assertEqual(entry["reasoning_effort"], "high")
+        self.assertEqual(entry["metrics"]["usage"]["prompt_tokens"], 10)
+        self.assertEqual(entry["metrics"]["latency_ms"], 12.5)
+        self.assertIn("recorded_at", entry["metrics"])
+        # Golden hash still covers content only (timestamp/usage don't break it).
+        self.assertEqual(entry_content_if_intact(entry), {"x": 1})
 
 
 class InMemoryStoreTests(unittest.TestCase):

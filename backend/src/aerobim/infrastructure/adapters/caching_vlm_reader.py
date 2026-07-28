@@ -11,7 +11,9 @@ entry is ignored and treated as a miss. Advisory-only — never on the verdict p
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
+from time import perf_counter
 from typing import Any, Protocol
 
 from aerobim.domain.vlm_cache import (
@@ -70,10 +72,17 @@ class CachingVlmReader:
         request_schema_hash: str = "",
         provider_snapshot: str = "",
         normalizer_version: str = NORMALIZER_VERSION,
+        reasoning_effort: str = "",
+        cache_namespace: str = "",
     ) -> None:
         self._reader = reader
         self._store = store
         self._model = model
+        self._reasoning_effort = reasoning_effort
+        # Isolation scope folded into the key (e.g. tenant). The advisory contour
+        # is not yet tenant-aware; a tenant-scoped consumer MUST pass its tenant
+        # here so cache entries never cross tenants.
+        self._namespace = cache_namespace
         self._provenance = {
             "endpoint": endpoint,
             "request_schema_hash": request_schema_hash,
@@ -81,10 +90,21 @@ class CachingVlmReader:
             "normalizer_version": normalizer_version,
         }
 
+    def _key(self, image_bytes: bytes, prompt: str) -> str:
+        return vlm_cache_key(
+            image_bytes=image_bytes,
+            prompt=prompt,
+            model=self._model,
+            namespace=self._namespace,
+            request_schema_hash=self._provenance["request_schema_hash"],
+            normalizer_version=self._provenance["normalizer_version"],
+            reasoning_effort=self._reasoning_effort,
+        )
+
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
     ) -> KimiReadResult:
-        key = vlm_cache_key(image_bytes=image_bytes, prompt=prompt, model=self._model)
+        key = self._key(image_bytes, prompt)
         entry = self._store.get(key)
         cached = entry_content_if_intact(entry)
         # Two-layer integrity: golden content hash AND the entry's request hashes
@@ -95,6 +115,7 @@ class CachingVlmReader:
             return KimiReadResult(
                 content=cached, usage={"cache": "hit"}, determinism_basis="vlm_cache_replay"
             )
+        started = perf_counter()
         result = self._reader.read_region(
             image_bytes,
             media_type=media_type,
@@ -102,6 +123,7 @@ class CachingVlmReader:
             region_id=region_id,
             prompt=prompt,
         )
+        latency_ms = round((perf_counter() - started) * 1000.0, 3)
         self._store.put(
             key,
             build_cache_entry(
@@ -110,6 +132,11 @@ class CachingVlmReader:
                 model=self._model,
                 content=result.content,
                 provenance=self._provenance,
+                usage=result.usage,
+                latency_ms=latency_ms,
+                recorded_at=datetime.now(tz=UTC).isoformat(),
+                namespace=self._namespace,
+                reasoning_effort=self._reasoning_effort,
             ),
         )
         return result
