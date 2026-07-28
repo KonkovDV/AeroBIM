@@ -596,7 +596,15 @@ def _build_bcf_api_client(settings: Settings):
 def _build_oidc_validator(settings: Settings) -> OidcTokenValidator | None:
     if not settings.oidc_enabled:
         return None
-    assert settings.oidc_issuer and settings.oidc_audience and settings.oidc_jwks_url
+    # Defense-in-depth: never gate a security-config invariant on `assert` (it is
+    # stripped under `python -O`). `oidc_enabled` already implies all three are set,
+    # but an explicit guard stays fail-closed under -O and any future refactor of
+    # the property, refusing to build a validator with partial config.
+    if not (settings.oidc_issuer and settings.oidc_audience and settings.oidc_jwks_url):
+        raise RuntimeError(
+            "OIDC enabled but issuer/audience/jwks_url incomplete; refusing to build "
+            "an OIDC validator with partial security config"
+        )
     return OidcTokenValidator(
         issuer=settings.oidc_issuer,
         audience=settings.oidc_audience,
