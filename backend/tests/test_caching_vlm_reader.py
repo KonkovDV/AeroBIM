@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aerobim.domain.vlm_cache import InMemoryVlmResponseStore, vlm_cache_key
+from aerobim.domain.vlm_cache import InMemoryVlmResponseStore, build_cache_entry, vlm_cache_key
 from aerobim.infrastructure.adapters.caching_vlm_reader import (
     CachingVlmReader,
     FilesystemVlmResponseStore,
@@ -59,6 +59,37 @@ class CachingVlmReaderTests(unittest.TestCase):
         result = _read(reader)
         self.assertEqual(inner.calls, 1)  # corrupt entry ignored → underlying called
         self.assertEqual(result.content, _CONTENT)
+
+    def test_request_mismatch_fails_closed_to_miss(self) -> None:
+        # Golden hash valid, but the stored entry was produced for a DIFFERENT image
+        # (second integrity layer): must be treated as a miss, not replayed.
+        inner = _CountingReader()
+        store = InMemoryVlmResponseStore()
+        key = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        store.put(
+            key,
+            build_cache_entry(
+                image_bytes=b"DIFFERENT", prompt="p", model="kimi-k3", content={"ok": True}
+            ),
+        )
+        reader = CachingVlmReader(inner, store, model="kimi-k3")
+        result = _read(reader)  # image_bytes=b"img" -> entry_matches_request False
+        self.assertEqual(inner.calls, 1)
+        self.assertEqual(result.content, _CONTENT)
+
+    def test_stored_entry_records_provenance(self) -> None:
+        inner = _CountingReader()
+        store = InMemoryVlmResponseStore()
+        reader = CachingVlmReader(
+            inner, store, model="kimi-k3", endpoint="https://x/v1", request_schema_hash="sh"
+        )
+        _read(reader)
+        key = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        entry = store.get(key)
+        assert entry is not None
+        self.assertEqual(entry["provenance"]["endpoint"], "https://x/v1")
+        self.assertEqual(entry["provenance"]["request_schema_hash"], "sh")
+        self.assertIn("normalizer_version", entry["provenance"])
 
     def test_filesystem_store_enables_cross_instance_replay(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

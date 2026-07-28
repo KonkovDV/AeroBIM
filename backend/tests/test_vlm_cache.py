@@ -9,6 +9,7 @@ from aerobim.domain.vlm_cache import (
     build_cache_entry,
     content_sha256,
     entry_content_if_intact,
+    entry_matches_request,
     vlm_cache_key,
 )
 
@@ -50,6 +51,32 @@ class CacheEntryTests(unittest.TestCase):
         self.assertIsNone(entry_content_if_intact("not-a-dict"))
         self.assertIsNone(entry_content_if_intact({"content": {"x": 1}}))  # no hash
         self.assertIsNone(entry_content_if_intact({"content_sha256": "z"}))  # no content
+
+    def test_reproducibility_split_and_provenance(self) -> None:
+        entry = build_cache_entry(
+            image_bytes=b"img",
+            prompt="p",
+            model="kimi-k3",
+            content={"x": 1},
+            provenance={"endpoint": "https://x/v1", "request_schema_hash": "abc", "empty": ""},
+        )
+        self.assertEqual(entry["reproducibility"]["replay_reproducibility"], "guaranteed")
+        self.assertIn("unverified", entry["reproducibility"]["model_determinism"])
+        self.assertEqual(entry["provenance"]["endpoint"], "https://x/v1")
+        self.assertNotIn("empty", entry["provenance"])  # blank values dropped
+
+    def test_entry_matches_request_second_layer(self) -> None:
+        entry = build_cache_entry(image_bytes=b"img", prompt="p", model="kimi-k3", content={"x": 1})
+        self.assertTrue(
+            entry_matches_request(entry, image_bytes=b"img", prompt="p", model="kimi-k3")
+        )
+        self.assertFalse(
+            entry_matches_request(entry, image_bytes=b"OTHER", prompt="p", model="kimi-k3")
+        )
+        self.assertFalse(
+            entry_matches_request(entry, image_bytes=b"img", prompt="p", model="kimi-vl")
+        )
+        self.assertFalse(entry_matches_request("nope", image_bytes=b"img", prompt="p", model="m"))
 
 
 class InMemoryStoreTests(unittest.TestCase):

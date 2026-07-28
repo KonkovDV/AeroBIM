@@ -665,11 +665,16 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
             CachingVlmReader,
             FilesystemVlmResponseStore,
         )
+        from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
+            observations_schema_hash,
+        )
 
         reader = CachingVlmReader(
             client,
             FilesystemVlmResponseStore(Path(settings.kimi_cache_dir)),
             model=settings.kimi_model,
+            endpoint=settings.kimi_api_base_url or "",
+            request_schema_hash=observations_schema_hash(),
         )
     return RegionRestrictedVlmPipeline(
         region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),

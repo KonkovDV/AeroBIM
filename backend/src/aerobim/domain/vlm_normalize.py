@@ -13,6 +13,9 @@ import re
 _WS = re.compile(r"\s+")
 _ALLOWED_KINDS = frozenset({"text", "dimension", "designation", "table_row", "stamp_field"})
 
+NORMALIZER_VERSION = "1.0.0"
+"""Bump when a rule below changes output; recorded in cache provenance (§2.1)."""
+
 
 def is_allowed_kind(kind: str) -> bool:
     return kind.strip().lower() in _ALLOWED_KINDS
@@ -37,4 +40,4 @@ def normalize_observation_value(kind: str, raw_value: str) -> str | None:
     return _WS.sub(" ", text)
 
 
-__all__ = ["is_allowed_kind", "normalize_observation_value"]
+__all__ = ["NORMALIZER_VERSION", "is_allowed_kind", "normalize_observation_value"]
