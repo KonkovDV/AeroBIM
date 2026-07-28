@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 import unittest
 
-from aerobim.domain.hybrid import PrivacyGuard, TokenVault, truncate_flagged
+from aerobim.domain.hybrid import PrivacyGuard, PrivacyLeakError, TokenVault, truncate_flagged
 
 
 def _guard(vault: TokenVault | None = None) -> PrivacyGuard:
@@ -103,6 +103,47 @@ class PrivacyGuardTests(unittest.TestCase):
     def test_salt_required(self) -> None:
         with self.assertRaises(ValueError):
             PrivacyGuard(tenant_salt="")
+
+    def test_cross_field_leak_is_rejected(self) -> None:
+        # Red Team HIGH: a KEPT field carrying another field's raw value must fail closed.
+        guard = _guard()
+        with self.assertRaises(PrivacyLeakError):
+            guard.mask_payload(
+                {"global_id": "GID-SECRET-123", "note": "issue on GID-SECRET-123"},
+                tenant_id="tenant-a",
+                rules={"global_id": "tokenize:global_id", "note": "keep"},
+            )
+
+    def test_nested_keep_is_rejected(self) -> None:
+        # Red Team HIGH: keep on a container would egress unlisted nested fields.
+        guard = _guard()
+        with self.assertRaises(ValueError):
+            guard.mask_payload(
+                {"meta": {"owner_email": "x@y.z", "gid": "GID-SECRET"}},
+                tenant_id="tenant-a",
+                rules={"meta": "keep"},
+            )
+
+    def test_control_char_tenant_rejected(self) -> None:
+        # Red Team MEDIUM: \x1f in tenant/kind previously enabled a hash collision.
+        guard = _guard()
+        with self.assertRaises(ValueError):
+            guard.tokenize("v", tenant_id="a\x1fb", kind="global_id")
+        with self.assertRaises(ValueError):
+            guard.tokenize("v", tenant_id="tenant-a", kind="k\x1fx")
+
+    def test_vault_collision_is_detected(self) -> None:
+        # Red Team MEDIUM: overwriting a token with a different original must fail.
+        vault = TokenVault()
+        vault.put(tenant_id="tenant-a", token="TKN_X_1", original="first")
+        vault.put(tenant_id="tenant-a", token="TKN_X_1", original="first")  # idempotent OK
+        with self.assertRaises(ValueError):
+            vault.put(tenant_id="tenant-a", token="TKN_X_1", original="second")
+
+    def test_token_digest_is_128_bit(self) -> None:
+        guard = _guard()
+        token = guard.tokenize("GID-1", tenant_id="tenant-a", kind="global_id")
+        self.assertEqual(len(token.rsplit("_", 1)[1]), 32)  # 128-bit hex
 
 
 if __name__ == "__main__":
