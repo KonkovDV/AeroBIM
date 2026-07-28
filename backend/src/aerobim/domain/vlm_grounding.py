@@ -15,6 +15,11 @@ Academic posture (Jul 2026):
   action abstention), never as accepted fact.
 - Neuro-symbolic guardrail: the VLM candidate is verified/decided downstream by
   deterministic rules (Castagnone 2026, MDPI Buildings 16(3):534).
+- Layered injection defense with observability: single filters are broken by
+  adaptive attacks (Zhan et al. NAACL 2025 Findings), so authority/verdict keys
+  in a response are ignored AND surfaced (``control_fields_ignored``) for
+  monitoring (OWASP LLM Top-10 2025). Verbal confidence stays display-only —
+  answer and confidence are internally decoupled (Seo et al. ACL 2026).
 """
 
 from __future__ import annotations
@@ -195,6 +200,7 @@ class VlmRegionReadResult:
     reason: str | None = None
     hitl_count: int = 0
     dropped_count: int = 0
+    control_fields_ignored: tuple[str, ...] = ()
 
 
 # Image-based prompt-injection hardening (arXiv 2603.03637; MDPI Electronics
@@ -205,6 +211,25 @@ class VlmRegionReadResult:
 _MAX_OBSERVATIONS_PER_REGION = 128
 _MAX_RAW_VALUE_CHARS = 512
 _MAX_EVIDENCE_NOTE_CHARS = 512
+
+# Injection observability (OWASP LLM Top-10 2025 LLM01; Zhan et al. NAACL 2025
+# Findings — adaptive attacks defeat single filters, so DETECT attempts, not just
+# drop them). These authority/verdict keys are never read into a decision; if a
+# response emits them (top-level or per-observation) we ignore their values but
+# surface the key NAMES so operators can see an over-reach / injection attempt.
+_CONTROL_FIELD_KEYS = frozenset(
+    {
+        "verdict",
+        "passed",
+        "summary_passed",
+        "severity",
+        "approval",
+        "approval_status",
+        "compliance",
+        "decision",
+        "hitl_required",
+    }
+)
 
 
 def ground_vlm_region_observations(
@@ -252,7 +277,17 @@ def ground_vlm_region_observations(
     grounded: list[VlmObservation] = []
     hitl = 0
     dropped = 0
+    # Surface (never apply) any authority/verdict keys the model tried to emit.
+    control_seen: set[str] = {
+        str(key).lower() for key in raw if str(key).lower() in _CONTROL_FIELD_KEYS
+    }
     for observation_raw in observations_raw:
+        if isinstance(observation_raw, dict):
+            control_seen.update(
+                str(key).lower()
+                for key in observation_raw
+                if str(key).lower() in _CONTROL_FIELD_KEYS
+            )
         if len(grounded) >= _MAX_OBSERVATIONS_PER_REGION:
             dropped += 1  # over per-region budget — injected flood guard
             continue
@@ -305,6 +340,7 @@ def ground_vlm_region_observations(
         reason=reason,
         hitl_count=hitl,
         dropped_count=dropped,
+        control_fields_ignored=tuple(sorted(control_seen)),
     )
 
 
