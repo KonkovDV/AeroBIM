@@ -618,4 +618,29 @@ describe("App", () => {
     expect(cards[0].textContent).toContain("SPATIAL-CRITICAL");
     expect(cards[1].textContent).toContain("SPATIAL-NEGLIGIBLE");
   });
+
+  it("marks advisory-origin issues as candidates, distinct from confirmed deterministic findings", async () => {
+    const report = buildReport();
+    report.issues = [
+      { ...buildIssue({ rule_id: "ADV-CAND-001", severity: "error", message: "model region reading" }), origin: "advisory" },
+      { ...buildIssue({ rule_id: "DET-CONF-001", severity: "error", message: "engine confirmed finding" }), origin: "deterministic" },
+    ];
+    fetchReportMock.mockResolvedValue(report);
+
+    render(<App />);
+
+    const advisoryCard = await screen.findByRole("button", { name: /ADV-CAND-001/i });
+    const deterministicCard = screen.getByRole("button", { name: /DET-CONF-001/i });
+
+    // Advisory observation is visually marked as a candidate needing review — §12:
+    // it must not read as a confirmed verdict/error.
+    expect(advisoryCard.className).toContain("issue-card--advisory");
+    expect(within(advisoryCard).getByText(/advisory candidate/i)).toBeTruthy();
+    expect(within(advisoryCard).getByTitle(/not a confirmed verdict/i)).toBeTruthy();
+
+    // A deterministic finding carries no advisory-candidate cue.
+    expect(deterministicCard.className).not.toContain("issue-card--advisory");
+    expect(within(deterministicCard).queryByText(/advisory candidate/i)).toBeNull();
+    expect(within(deterministicCard).getByText("deterministic")).toBeTruthy();
+  });
 });

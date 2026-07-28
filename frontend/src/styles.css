@@ -662,6 +662,41 @@ input {
   color: var(--accent-strong);
 }
 
+.origin-pill {
+  margin-left: auto;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.origin-pill.origin-deterministic {
+  background: rgba(15, 118, 110, 0.12);
+  color: var(--accent-strong);
+}
+
+.origin-pill.origin-advisory {
+  background: rgba(154, 103, 0, 0.14);
+  color: #9a6700;
+  border: 1px dashed #9a6700;
+}
+
+/* An advisory candidate is NOT a confirmed verdict: mark the card and de-emphasise
+   its severity pill (outline, not solid fill) so a reviewer cannot mistake an
+   advisory observation for a deterministic error (HITL §12). */
+.issue-card--advisory {
+  border-left: 3px dashed #9a6700;
+}
+
+.issue-card--advisory .severity-pill {
+  background: transparent;
+  border: 1px dashed currentColor;
+  opacity: 0.85;
+}
+
 .triage-band {
   padding: 4px 8px;
   border-radius: 999px;

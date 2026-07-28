@@ -1092,7 +1092,7 @@ export default function App() {
                     <button
                       key={`${issue.rule_id}-${index}`}
                       type="button"
-                      className={`issue-card ${index === selectedIssueIndex ? "active" : ""}`}
+                      className={`issue-card ${index === selectedIssueIndex ? "active" : ""} ${issue.origin === "advisory" ? "issue-card--advisory" : ""}`}
                       onClick={() => {
                         startTransition(() => {
                           setSelectedIssueIndex(index);
@@ -1114,9 +1114,14 @@ export default function App() {
                           <span className="issue-priority">HITL</span>
                         ) : null}
                         {issue.origin === "advisory" ? (
-                          <span className="issue-priority">advisory</span>
+                          <span
+                            className="origin-pill origin-advisory"
+                            title="Advisory candidate — requires human review; not a confirmed verdict"
+                          >
+                            advisory candidate
+                          </span>
                         ) : issue.origin === "deterministic" ? (
-                          <span className="issue-priority">deterministic</span>
+                          <span className="origin-pill origin-deterministic">deterministic</span>
                         ) : null}
                         {typeof issue.priority === "number" && issue.priority > 0 ? (
                           <span className="issue-priority">P{issue.priority}</span>
