@@ -49,27 +49,35 @@ def build_region_smoke_report(
             "hitl_low_confidence": sum(1 for obs in read.observations if obs.hitl_required),
             "degraded": read.degraded,
             "determinism_basis": read.determinism_basis,
+            "crop_sha256": read.crop_sha256,
             "reason": read.reason,
         }
         for read in result.reads
     ]
     produced = any(entry["observations"] for entry in reads)
     if result.skipped_vlm:
-        status = "SKIPPED_VLM"
+        status = "skipped_vlm"
     elif produced:
-        status = "OK"
+        # NOT a quality PASS: only that a real response round-tripped through our
+        # parser. Quality/completeness/coordinates vs a reference are unproven.
+        status = "roundtrip_ok"
     else:
-        status = "DEGRADED"
+        status = "degraded"
     return {
         "status": status,
         "sheet_id": result.sheet_id,
         "skipped_vlm": result.skipped_vlm,
         "reason": result.reason,
-        "regions_read": len(reads),
+        "regions_detected": result.regions_detected,
+        "regions_planned": result.regions_planned,
+        "regions_read": result.regions_read,
+        "regions_truncated": result.regions_truncated,
+        "truncation_reason": result.truncation_reason,
+        "region_plan_sha256": result.region_plan_sha256,
         "reads": reads,
         "claim_boundary": (
-            "advisory candidate regions only; cv_human_level MISSING; "
-            "verdict stays with the deterministic engine and the expert"
+            "roundtrip only, NOT a quality PASS; advisory candidate regions; "
+            "cv_human_level MISSING; verdict stays with the deterministic engine and the expert"
         ),
     }
 
@@ -88,8 +96,17 @@ def _build_pipeline(
             CachingVlmReader,
             FilesystemVlmResponseStore,
         )
+        from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
+            observations_schema_hash,
+        )
 
-        reader = CachingVlmReader(client, FilesystemVlmResponseStore(Path(cache_dir)), model=model)
+        reader = CachingVlmReader(
+            client,
+            FilesystemVlmResponseStore(Path(cache_dir)),
+            model=model,
+            endpoint=base_url,
+            request_schema_hash=observations_schema_hash(),
+        )
     return RegionRestrictedVlmPipeline(
         region_detector=HeuristicLayoutRegionDetector(),
         reader=reader,  # type: ignore[arg-type]
@@ -151,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0 if report["status"] == "OK" else 1
+    return 0 if report["status"] == "roundtrip_ok" else 1
 
 
 if __name__ == "__main__":

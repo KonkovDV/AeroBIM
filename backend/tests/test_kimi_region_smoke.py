@@ -98,12 +98,17 @@ class RegionSmokeReportTests(unittest.TestCase):
             report = build_region_smoke_report(
                 _pipeline(reader, PyMuPDFRegionCropper(dpi=72)), _source(tmp)
             )
-        self.assertEqual(report["status"], "OK")
+        self.assertEqual(report["status"], "roundtrip_ok")
         self.assertEqual(reader.calls, 1)
+        self.assertEqual(report["regions_detected"], 1)
+        self.assertEqual(report["regions_planned"], 1)
         self.assertEqual(report["regions_read"], 1)
+        self.assertEqual(report["regions_truncated"], 0)
+        self.assertTrue(report["region_plan_sha256"])
         self.assertEqual(report["reads"][0]["observations"], 1)
         self.assertEqual(report["reads"][0]["determinism_basis"], "live")
-        self.assertIn("cv_human_level MISSING", report["claim_boundary"])
+        self.assertTrue(report["reads"][0]["crop_sha256"])  # real crop hashed
+        self.assertIn("NOT a quality PASS", report["claim_boundary"])
 
     def test_cache_replay_second_run_avoids_call(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

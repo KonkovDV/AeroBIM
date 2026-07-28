@@ -148,6 +148,12 @@ class RegionRestrictedPipelineTests(unittest.TestCase):
         result = pipe.read_sheet(_source(), text_layer_present=False)
         self.assertEqual(reader.calls, 1)
         self.assertEqual(len(result.reads), 1)
+        # Truncation must be accounted, not silent (audit trail).
+        self.assertEqual(result.regions_detected, 5)
+        self.assertEqual(result.regions_planned, 5)
+        self.assertEqual(result.regions_read, 1)
+        self.assertEqual(result.regions_truncated, 4)
+        self.assertIsNotNone(result.truncation_reason)
 
     def test_reader_error_degrades_that_region_not_the_sheet(self) -> None:
         reader = _FakeReader(raise_exc=KimiAdvisoryError("boom", reason_code="TRUNCATED"))

@@ -13,6 +13,7 @@ observations and without a whole-sheet read.
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -59,6 +60,7 @@ class RegionRead:
     degraded: bool
     reason: str | None
     determinism_basis: str = "unavailable"
+    crop_sha256: str = ""
 
 
 @dataclass(frozen=True)
@@ -68,6 +70,17 @@ class SheetReadResult:
     reason: str
     reads: tuple[RegionRead, ...] = ()
     degraded: bool = True  # candidates only; cv_human_level remains MISSING
+    regions_detected: int = 0
+    regions_planned: int = 0
+    regions_read: int = 0
+    regions_truncated: int = 0
+    truncation_reason: str | None = None
+    region_plan_sha256: str = ""
+
+
+def _region_plan_sha256(tasks: tuple[RegionReadTask, ...]) -> str:
+    payload = ";".join(f"{task.region_id}:{task.bbox_xyxy}" for task in tasks)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 class RegionRestrictedVlmPipeline:
@@ -122,20 +135,42 @@ class RegionRestrictedVlmPipeline:
 
         regions = self._region_detector.detect(source.path, sheet_id=source.sheet_id)
         plan = plan_region_reads(text_layer_present=text_layer_present, regions=regions)
+        detected = len(regions)
         if plan.skip_vlm:
-            return SheetReadResult(sheet_id=sheet_id, skipped_vlm=True, reason=plan.reason)
+            return SheetReadResult(
+                sheet_id=sheet_id,
+                skipped_vlm=True,
+                reason=plan.reason,
+                regions_detected=detected,
+            )
 
-        reads = tuple(
-            self._read_one(source, sheet_id, task) for task in plan.tasks[: self._max_regions]
-        )
+        planned = len(plan.tasks)
+        selected = plan.tasks[: self._max_regions]
+        truncated = planned - len(selected)
+        reads = tuple(self._read_one(source, sheet_id, task) for task in selected)
         return SheetReadResult(
-            sheet_id=sheet_id, skipped_vlm=False, reason=plan.reason, reads=reads
+            sheet_id=sheet_id,
+            skipped_vlm=False,
+            reason=plan.reason,
+            reads=reads,
+            regions_detected=detected,
+            regions_planned=planned,
+            regions_read=len(selected),
+            regions_truncated=truncated,
+            truncation_reason=(
+                f"max_regions={self._max_regions} budget: {truncated} region(s) not read"
+                if truncated
+                else None
+            ),
+            region_plan_sha256=_region_plan_sha256(plan.tasks),
         )
 
     def _read_one(self, source: DrawingSource, sheet_id: str, task: RegionReadTask) -> RegionRead:
         assert self._cropper is not None and self._reader is not None  # narrowed by caller
+        crop_sha = ""
         try:
             crop_bytes, media_type = self._cropper.crop(source, bbox_xyxy=task.bbox_xyxy)
+            crop_sha = hashlib.sha256(crop_bytes).hexdigest()
             read = self._reader.read_region(
                 crop_bytes,
                 media_type=media_type,
@@ -144,11 +179,21 @@ class RegionRestrictedVlmPipeline:
                 prompt=self._prompt,
             )
         except KimiAdvisoryError as exc:
-            return RegionRead(task.region_id, (), True, f"read failed ({exc.reason_code})")
+            return RegionRead(
+                task.region_id, (), True, f"read failed ({exc.reason_code})", crop_sha256=crop_sha
+            )
         except (OSError, ValueError) as exc:
-            return RegionRead(task.region_id, (), True, f"crop/read failed: {exc}")
+            return RegionRead(
+                task.region_id, (), True, f"crop/read failed: {exc}", crop_sha256=crop_sha
+            )
         except Exception as exc:  # noqa: BLE001 — transport/SSRF must fail closed
-            return RegionRead(task.region_id, (), True, f"transport error (fail-closed): {exc}")
+            return RegionRead(
+                task.region_id,
+                (),
+                True,
+                f"transport error (fail-closed): {exc}",
+                crop_sha256=crop_sha,
+            )
 
         grounded = ground_vlm_region_observations(
             read.content,
@@ -157,9 +202,20 @@ class RegionRestrictedVlmPipeline:
             min_confidence=self._min_confidence,
         )
         if not grounded.parse_ok:
-            return RegionRead(task.region_id, (), True, f"schema deviation: {grounded.reason}")
+            return RegionRead(
+                task.region_id,
+                (),
+                True,
+                f"schema deviation: {grounded.reason}",
+                crop_sha256=crop_sha,
+            )
         return RegionRead(
-            task.region_id, grounded.observations, True, grounded.reason, read.determinism_basis
+            task.region_id,
+            grounded.observations,
+            True,
+            grounded.reason,
+            read.determinism_basis,
+            crop_sha,
         )
 
 
