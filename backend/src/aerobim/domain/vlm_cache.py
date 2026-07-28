@@ -16,6 +16,9 @@ import hashlib
 import json
 from typing import Any, Protocol
 
+_CACHE_FORMAT_VERSION = "2"
+"""Bump when the key formula or entry layout changes (invalidates old entries)."""
+
 
 def _sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -31,14 +34,36 @@ def content_sha256(content: dict[str, Any]) -> str:
     return _sha256_text(canonical)
 
 
-def vlm_cache_key(*, image_bytes: bytes, prompt: str, model: str) -> str:
-    """Single filename-safe key over (image sha256, prompt sha256, model snapshot).
+def vlm_cache_key(
+    *,
+    image_bytes: bytes,
+    prompt: str,
+    model: str,
+    namespace: str = "",
+    request_schema_hash: str = "",
+    normalizer_version: str = "",
+    reasoning_effort: str = "",
+) -> str:
+    """Filename-safe key over the FULL request identity (act-grade, §2.1/§11).
 
-    ``model`` is the snapshot identifier we control (model id / pinned tag) — not
-    a cryptographic weights hash; it is recorded verbatim so replays are scoped
-    to the exact model string used.
+    Beyond image/prompt/model it folds in the discriminators that change the
+    produced content: ``namespace`` (tenant / isolation scope), server-side
+    ``reasoning_effort``, our ``request_schema_hash`` and ``normalizer_version``.
+    Omitting these (the previous key) let a config change replay a STALE cached
+    answer for the same (image, prompt, model) and shared a cache across tenants.
+    ``model`` is a string id, not a weights hash — not proof of model determinism.
     """
-    parts = f"{_sha256_bytes(image_bytes)}\n{_sha256_text(prompt)}\n{model}"
+    parts = "\n".join(
+        (
+            _sha256_bytes(image_bytes),
+            _sha256_text(prompt),
+            model,
+            namespace,
+            request_schema_hash,
+            normalizer_version,
+            reasoning_effort,
+        )
+    )
     return _sha256_text(parts)
 
 
@@ -49,19 +74,29 @@ def build_cache_entry(
     model: str,
     content: dict[str, Any],
     provenance: dict[str, Any] | None = None,
+    usage: dict[str, Any] | None = None,
+    latency_ms: float | None = None,
+    recorded_at: str | None = None,
+    namespace: str = "",
+    reasoning_effort: str = "",
 ) -> dict[str, Any]:
-    """Provenance-carrying cache entry (content + three hashes + golden hash).
+    """Act-grade cache entry: content + identity hashes + golden hash + metrics.
 
     ``reproducibility`` states honestly what the cache proves: byte-identical
     **replay** of THIS stored response is guaranteed, but model determinism is
     NOT — ``model`` is a string id, not a weights-snapshot / server-version hash.
     ``provenance`` (endpoint, provider_snapshot, request_schema_hash,
-    normalizer_version) is recorded verbatim for the audit trail.
+    normalizer_version) and ``metrics`` (usage / latency_ms / recorded_at) are
+    recorded verbatim for the audit trail. Timestamp/usage are supplied by the
+    caller so this stays a pure function (the golden hash covers ``content`` only).
     """
     entry: dict[str, Any] = {
+        "cache_format_version": _CACHE_FORMAT_VERSION,
         "image_sha256": _sha256_bytes(image_bytes),
         "prompt_sha256": _sha256_text(prompt),
         "model": model,
+        "namespace": namespace,
+        "reasoning_effort": reasoning_effort,
         "content": content,
         "content_sha256": content_sha256(content),
         "reproducibility": {
@@ -71,6 +106,15 @@ def build_cache_entry(
     }
     if provenance:
         entry["provenance"] = {key: value for key, value in provenance.items() if value}
+    metrics: dict[str, Any] = {}
+    if usage is not None:
+        metrics["usage"] = usage
+    if latency_ms is not None:
+        metrics["latency_ms"] = latency_ms
+    if recorded_at is not None:
+        metrics["recorded_at"] = recorded_at
+    if metrics:
+        entry["metrics"] = metrics
     return entry
 
 

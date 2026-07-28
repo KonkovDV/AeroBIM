@@ -106,6 +106,7 @@ def _build_pipeline(
             model=model,
             endpoint=base_url,
             request_schema_hash=observations_schema_hash(),
+            reasoning_effort=reasoning,
         )
     return RegionRestrictedVlmPipeline(
         region_detector=HeuristicLayoutRegionDetector(),

@@ -675,6 +675,7 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
             model=settings.kimi_model,
             endpoint=settings.kimi_api_base_url or "",
             request_schema_hash=observations_schema_hash(),
+            reasoning_effort=settings.kimi_reasoning_effort,
         )
     return RegionRestrictedVlmPipeline(
         region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),

@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.domain.vlm_cache import InMemoryVlmResponseStore, build_cache_entry, vlm_cache_key
+from aerobim.domain.vlm_normalize import NORMALIZER_VERSION
 from aerobim.infrastructure.adapters.caching_vlm_reader import (
     CachingVlmReader,
     FilesystemVlmResponseStore,
@@ -53,7 +54,9 @@ class CachingVlmReaderTests(unittest.TestCase):
     def test_tampered_entry_fails_closed_to_miss(self) -> None:
         inner = _CountingReader()
         store = InMemoryVlmResponseStore()
-        key = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        key = vlm_cache_key(
+            image_bytes=b"img", prompt="p", model="kimi-k3", normalizer_version=NORMALIZER_VERSION
+        )
         store.put(key, {"content": {"x": 1}, "content_sha256": "wrong-hash"})
         reader = CachingVlmReader(inner, store, model="kimi-k3")
         result = _read(reader)
@@ -65,7 +68,9 @@ class CachingVlmReaderTests(unittest.TestCase):
         # (second integrity layer): must be treated as a miss, not replayed.
         inner = _CountingReader()
         store = InMemoryVlmResponseStore()
-        key = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        key = vlm_cache_key(
+            image_bytes=b"img", prompt="p", model="kimi-k3", normalizer_version=NORMALIZER_VERSION
+        )
         store.put(
             key,
             build_cache_entry(
@@ -84,12 +89,55 @@ class CachingVlmReaderTests(unittest.TestCase):
             inner, store, model="kimi-k3", endpoint="https://x/v1", request_schema_hash="sh"
         )
         _read(reader)
-        key = vlm_cache_key(image_bytes=b"img", prompt="p", model="kimi-k3")
+        key = vlm_cache_key(
+            image_bytes=b"img",
+            prompt="p",
+            model="kimi-k3",
+            request_schema_hash="sh",
+            normalizer_version=NORMALIZER_VERSION,
+        )
         entry = store.get(key)
         assert entry is not None
         self.assertEqual(entry["provenance"]["endpoint"], "https://x/v1")
         self.assertEqual(entry["provenance"]["request_schema_hash"], "sh")
         self.assertIn("normalizer_version", entry["provenance"])
+
+    def test_reasoning_effort_change_avoids_stale_replay(self) -> None:
+        # Config change (low->high) with same image/prompt/model must NOT replay
+        # the stale cached answer — different key.
+        store = InMemoryVlmResponseStore()
+        inner = _CountingReader()
+        _read(CachingVlmReader(inner, store, model="kimi-k3", reasoning_effort="low"))
+        self.assertEqual(inner.calls, 1)
+        _read(CachingVlmReader(inner, store, model="kimi-k3", reasoning_effort="high"))
+        self.assertEqual(inner.calls, 2)
+
+    def test_namespace_isolation_no_cross_tenant_replay(self) -> None:
+        store = InMemoryVlmResponseStore()
+        inner = _CountingReader()
+        _read(CachingVlmReader(inner, store, model="kimi-k3", cache_namespace="tenant-a"))
+        self.assertEqual(inner.calls, 1)
+        _read(CachingVlmReader(inner, store, model="kimi-k3", cache_namespace="tenant-b"))
+        self.assertEqual(inner.calls, 2)  # different tenant -> no shared cache
+
+    def test_stored_entry_records_metrics(self) -> None:
+        store = InMemoryVlmResponseStore()
+        inner = _CountingReader()
+        reader = CachingVlmReader(inner, store, model="kimi-k3", reasoning_effort="low")
+        _read(reader)
+        key = vlm_cache_key(
+            image_bytes=b"img",
+            prompt="p",
+            model="kimi-k3",
+            reasoning_effort="low",
+            normalizer_version=NORMALIZER_VERSION,
+        )
+        entry = store.get(key)
+        assert entry is not None
+        self.assertEqual(entry["cache_format_version"], "2")
+        self.assertEqual(entry["reasoning_effort"], "low")
+        self.assertIn("latency_ms", entry["metrics"])
+        self.assertIn("recorded_at", entry["metrics"])
 
     def test_filesystem_store_enables_cross_instance_replay(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
