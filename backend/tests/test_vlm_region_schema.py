@@ -179,6 +179,18 @@ class RegionObservationGroundingTests(unittest.TestCase):
         for banned in ("passed", "verdict", "severity", "approval", "compliance"):
             self.assertFalse(hasattr(obs, banned), banned)
         self.assertTrue(obs.hitl_required)  # uncalibrated — model could not clear review
+        # Layered defense + observability (Zhan et al. NAACL 2025; OWASP LLM 2025):
+        # the smuggled authority keys are ignored yet SURFACED (names only) so an
+        # injection / over-reach attempt is visible to monitoring — never applied.
+        self.assertEqual(
+            set(res.control_fields_ignored),
+            {"passed", "verdict", "severity", "approval", "compliance"},
+        )
+
+    def test_clean_response_surfaces_no_control_fields(self) -> None:
+        raw = {"observations": [_obs([0.1, 0.1, 0.4, 0.3])]}
+        res = ground_vlm_region_observations(raw, sheet_id="S1", region_id="r1")
+        self.assertEqual(res.control_fields_ignored, ())
 
     def test_evidence_note_truncation_is_flagged(self) -> None:
         # §17.5: truncation must not silently hide an attack/corruption payload.
