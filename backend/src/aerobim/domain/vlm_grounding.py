@@ -180,6 +180,7 @@ class VlmObservation:
     hitl_required: bool
     confidence_calibrated: bool = False
     evidence_note: str = ""
+    evidence_note_truncated: bool = False
 
 
 @dataclass(frozen=True)
@@ -273,6 +274,9 @@ def ground_vlm_region_observations(
         needs_hitl = confidence < min_confidence or not confidence_calibrated
         if needs_hitl:
             hitl += 1
+        # §17.5: truncating evidence_note must not silently hide an attack/corruption
+        # payload — keep a bounded note but flag that truncation happened.
+        note_raw = str(observation_raw.get("evidence_note", "") or "")
         grounded.append(
             VlmObservation(
                 kind=kind,
@@ -282,9 +286,8 @@ def ground_vlm_region_observations(
                 confidence=confidence,
                 hitl_required=needs_hitl,
                 confidence_calibrated=confidence_calibrated,
-                evidence_note=str(observation_raw.get("evidence_note", "") or "")[
-                    :_MAX_EVIDENCE_NOTE_CHARS
-                ],
+                evidence_note=note_raw[:_MAX_EVIDENCE_NOTE_CHARS],
+                evidence_note_truncated=len(note_raw) > _MAX_EVIDENCE_NOTE_CHARS,
             )
         )
 
