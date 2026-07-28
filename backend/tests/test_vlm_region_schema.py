@@ -41,11 +41,11 @@ def _obs(bbox, *, kind="designation", raw="Ст-1", conf=0.9, extra=None):  # no
 
 
 class RegionObservationGroundingTests(unittest.TestCase):
-    def test_valid_observations_grounded_with_our_normalization(self) -> None:
+    def test_all_candidates_hitl_when_uncalibrated(self) -> None:
         raw = {
             "readable": True,
             "observations": [
-                _obs([0.1, 0.1, 0.4, 0.3], raw="ст 1"),
+                _obs([0.1, 0.1, 0.4, 0.3], raw="ст 1"),  # conf 0.9
                 _obs([0.0, 0.0, 0.5, 0.5], kind="dimension", raw="2 400,0", conf=0.5),
             ],
         }
@@ -54,8 +54,26 @@ class RegionObservationGroundingTests(unittest.TestCase):
         self.assertEqual(len(res.observations), 2)
         self.assertEqual(res.observations[0].normalized_value, "СТ1")
         self.assertEqual(res.observations[1].normalized_value, "2400.0")
-        self.assertEqual(res.hitl_count, 1)  # 0.5 < 0.6 → abstain
-        self.assertTrue(res.observations[1].hitl_required)
+        # Verbalized confidence is uncalibrated by default → EVERY candidate HITL.
+        self.assertEqual(res.hitl_count, 2)
+        self.assertTrue(all(o.hitl_required for o in res.observations))
+        self.assertFalse(res.observations[0].confidence_calibrated)
+
+    def test_calibrated_source_applies_threshold(self) -> None:
+        raw = {
+            "observations": [
+                _obs([0.1, 0.1, 0.4, 0.3], raw="ст 1", conf=0.9),
+                _obs([0.0, 0.0, 0.5, 0.5], kind="dimension", raw="2 400,0", conf=0.5),
+            ]
+        }
+        res = ground_vlm_region_observations(
+            raw, sheet_id="AR-01", region_id="stamp", confidence_calibrated=True
+        )
+        # Only with an explicitly calibrated source does the threshold clear HITL.
+        self.assertEqual(res.hitl_count, 1)
+        self.assertFalse(res.observations[0].hitl_required)  # 0.9 cleared
+        self.assertTrue(res.observations[1].hitl_required)  # 0.5 < 0.6
+        self.assertTrue(res.observations[0].confidence_calibrated)
 
     def test_model_normalized_value_is_ignored(self) -> None:
         raw = {

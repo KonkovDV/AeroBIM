@@ -178,6 +178,7 @@ class VlmObservation:
     bbox_rel: tuple[float, float, float, float]
     confidence: float
     hitl_required: bool
+    confidence_calibrated: bool = False
     evidence_note: str = ""
 
 
@@ -211,16 +212,21 @@ def ground_vlm_region_observations(
     sheet_id: str,
     region_id: str,
     min_confidence: float = _DEFAULT_MIN_CONFIDENCE,
+    confidence_calibrated: bool = False,
 ) -> VlmRegionReadResult:
     """Ground the §4 observations schema; fail-closed only on structural deviation.
 
     Per §4: an observation with an invalid kind or out-of-range/degenerate
-    ``bbox_rel`` is **dropped** (not the whole answer); ``confidence`` is clamped
-    and below-threshold reads are flagged ``hitl_required`` (abstention); and the
-    ``normalized_value`` is recomputed by OUR deterministic normalizer — the
-    model's own normalized_value is ignored (paraphrase-divergence defense).
-    Top-level structural problems (not an object, no ``observations`` array)
-    fail closed with ``parse_ok=False``.
+    ``bbox_rel`` is **dropped** (not the whole answer); the ``normalized_value`` is
+    recomputed by OUR deterministic normalizer — the model's own value is ignored
+    (paraphrase-divergence defense). Top-level structural problems fail closed.
+
+    Abstention: a VLM's **verbalized** ``confidence`` is uncalibrated (EMNLP 2025
+    main.74 "Seeing is Believing"; arXiv 2504.14848; LLM confidence surveys — high
+    self-reported confidence is a poor guide to correctness). So unless a
+    ``confidence_calibrated`` source is explicitly configured, EVERY candidate is
+    flagged ``hitl_required`` and the numeric confidence is display/ranking only;
+    high self-reported confidence must never silently clear expert review.
     """
 
     if not isinstance(raw, dict):
@@ -262,8 +268,10 @@ def ground_vlm_region_observations(
             dropped += 1  # oversized payload — injection/garbage guard
             continue
         confidence = _clamp_unit(observation_raw.get("confidence"))
-        low = confidence < min_confidence
-        if low:
+        # Uncalibrated verbalized confidence must not clear expert review: HITL
+        # every candidate unless a calibrated confidence source is configured.
+        needs_hitl = confidence < min_confidence or not confidence_calibrated
+        if needs_hitl:
             hitl += 1
         grounded.append(
             VlmObservation(
@@ -272,7 +280,8 @@ def ground_vlm_region_observations(
                 normalized_value=normalize_observation_value(kind, raw_value),
                 bbox_rel=bbox,
                 confidence=confidence,
-                hitl_required=low,
+                hitl_required=needs_hitl,
+                confidence_calibrated=confidence_calibrated,
                 evidence_note=str(observation_raw.get("evidence_note", "") or "")[
                     :_MAX_EVIDENCE_NOTE_CHARS
                 ],
