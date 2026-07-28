@@ -667,4 +667,18 @@ describe("App", () => {
     expect(within(highCard).queryByText(/low confidence/i)).toBeNull();
     expect(within(noneCard).queryByText(/low confidence/i)).toBeNull();
   });
+
+  it("renders REVIEW_REQUIRED as a distinct outcome badge, not a pass/verdict", async () => {
+    const report = buildReport();
+    report.summary = { ...report.summary, outcome: "review_required", passed: false };
+    fetchReportMock.mockResolvedValue(report);
+
+    render(<App />);
+
+    const badge = await screen.findByText("REVIEW_REQUIRED");
+    // §12: an unconfirmed result must be visually distinct from a confirmed pass/block.
+    expect(badge.className).toContain("outcome-review");
+    expect(badge.className).not.toContain("outcome-pass");
+    expect(badge.className).not.toContain("outcome-block");
+  });
 });

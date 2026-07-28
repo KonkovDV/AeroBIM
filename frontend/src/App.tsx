@@ -233,6 +233,25 @@ function formatPackageOutcome(outcome: PackageOutcome | null | undefined, passed
   }
 }
 
+/** Colour class for the outcome badge so REVIEW_REQUIRED is visually distinct from
+ *  a confirmed PASS/BLOCKED verdict (HITL §12: an unconfirmed result must not read
+ *  as a pass or a hard failure). */
+function outcomeClass(outcome: PackageOutcome | null | undefined, passed: boolean): string {
+  switch (outcome) {
+    case "pass":
+      return "outcome-pass";
+    case "pass_with_warnings":
+      return "outcome-warn";
+    case "review_required":
+      return "outcome-review";
+    case "blocked":
+    case "failed":
+      return "outcome-block";
+    default:
+      return passed ? "outcome-pass" : "outcome-block";
+  }
+}
+
 function reportSortWeight(report: ReportSummaryEntry): [number, string] {
   const timestamp = Number.isNaN(Date.parse(report.created_at)) ? 0 : Date.parse(report.created_at);
   return [-timestamp, report.report_id];
@@ -1017,7 +1036,12 @@ export default function App() {
               <div className="summary-grid">
                 <article className="summary-tile">
                   <span>Status</span>
-                  <strong>
+                  <strong
+                    className={`outcome-badge ${outcomeClass(
+                      selectedReport.summary.outcome,
+                      selectedReport.summary.passed,
+                    )}`}
+                  >
                     {formatPackageOutcome(
                       selectedReport.summary.outcome,
                       selectedReport.summary.passed,
