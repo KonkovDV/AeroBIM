@@ -168,6 +168,15 @@ class Settings:
     When set, advisory region reads are cached by (sha256 image + sha256 prompt +
     model) for byte-identical golden-hash replay. Advisory-only; off by default.
     """
+    kimi_cache_namespace: str | None = None
+    """Explicit tenant/project isolation scope for the VLM response cache (§5).
+
+    MUST be a trusted deployment-config value derived from tenant_id / project_id
+    — never taken from the request body, filename, sheet_id, or the model's
+    response. When ``kimi_cache_dir`` is set but this is empty or path-unsafe, the
+    persistent cache is DISABLED (fail-closed: a cache is never shared across
+    tenants). Allowed chars: ``[A-Za-z0-9._-]``, 1-64 (no ``.``/``..``).
+    """
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -383,6 +392,9 @@ class Settings:
             ),
             kimi_max_image_bytes=_read_int("AEROBIM_KIMI_MAX_IMAGE_BYTES", 32 * 1024 * 1024),
             kimi_cache_dir=(os.getenv("AEROBIM_KIMI_CACHE_DIR") or "").strip() or None,
+            kimi_cache_namespace=(
+                (os.getenv("AEROBIM_KIMI_CACHE_NAMESPACE") or "").strip() or None
+            ),
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
