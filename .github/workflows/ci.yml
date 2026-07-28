@@ -176,6 +176,11 @@ jobs:
             --questions ../samples/benchmarks/ifc-qa-ru/questions-fixture.json \
             --ifc ../samples/ifc/wall-pset-qto-pass.ifc \
             --min-accuracy 0.5
+      - name: Verify advisory drawing-grounding harness fidelity (fixture-only)
+        run: |
+          python -m aerobim.tools.evaluate_drawing_advisory_grounding \
+            --cases ../samples/benchmarks/drawing-advisory/cases-synthetic.json \
+            --min-fidelity 1.0
 
   frontend:
     runs-on: ubuntu-latest
