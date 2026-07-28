@@ -183,6 +183,14 @@ class Settings:
     On read, an entry older than the TTL is treated as a miss and deleted
     (explicit deletion policy). ``None`` keeps entries until the dir is cleared.
     """
+    kimi_cache_project: str | None = None
+    """Optional project sub-scope for the VLM response cache (§7).
+
+    Folded into the cache key + physical store dir under the tenant namespace so
+    two projects of the same tenant never share cached answers. Same trusted-config
+    rule as ``kimi_cache_namespace``; when set but path-unsafe the cache is DISABLED
+    (fail-closed). Empty = no project boundary (tenant-level scope only).
+    """
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -402,6 +410,7 @@ class Settings:
                 (os.getenv("AEROBIM_KIMI_CACHE_NAMESPACE") or "").strip() or None
             ),
             kimi_cache_ttl_days=_read_optional_int("AEROBIM_KIMI_CACHE_TTL_DAYS"),
+            kimi_cache_project=((os.getenv("AEROBIM_KIMI_CACHE_PROJECT") or "").strip() or None),
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (

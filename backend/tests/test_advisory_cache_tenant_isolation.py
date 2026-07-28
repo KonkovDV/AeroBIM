@@ -93,6 +93,34 @@ class AdvisoryCacheTenantIsolationTests(unittest.TestCase):
             )
             self.assertNotIsInstance(reader, CachingVlmReader, bad)
 
+    def test_cache_scoped_by_project(self) -> None:
+        from aerobim.infrastructure.adapters.caching_vlm_reader import CachingVlmReader
+
+        reader = self._reader(
+            _ready_settings(
+                kimi_cache_dir="var/kimi-cache",
+                kimi_cache_namespace="tenant-a",
+                kimi_cache_project="proj-x",
+            )
+        )
+        self.assertIsInstance(reader, CachingVlmReader)
+        root = str(reader._store._root)
+        self.assertIn("tenant-a", root)
+        self.assertIn("proj-x", root)
+
+    def test_invalid_project_fails_closed(self) -> None:
+        from aerobim.infrastructure.adapters.caching_vlm_reader import CachingVlmReader
+
+        reader = self._reader(
+            _ready_settings(
+                kimi_cache_dir="var/kimi-cache",
+                kimi_cache_namespace="tenant-a",
+                kimi_cache_project="../evil",
+            )
+        )
+        # A configured-but-path-unsafe project must not silently drop to tenant scope.
+        self.assertNotIsInstance(reader, CachingVlmReader)
+
 
 if __name__ == "__main__":
     unittest.main()
