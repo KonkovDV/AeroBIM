@@ -12,7 +12,7 @@ claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evid
 **Checkpoint:** **`NO_GO`** ([CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md))  
 **Claims SSOT:** [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [pilot-claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
 
-> **Refresh 2026-07-28:** актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json), session-консолидация ([RED_TEAM_REMEDIATION_STATUS_2026_07_28](../audit/reports/RED_TEAM_REMEDIATION_STATUS_2026_07_28.md)) и [гиперглубокий аудит](../audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md). Текущее: pytest **1295 passed / 8 skipped**, mypy **218**, frontend vitest **29**, CI зелёный. Цифры в §1 ниже — снимок 2026-07-19/20 (не переписываю исторические прогоны). Checkpoint **NO_GO**.
+> **Refresh 2026-07-28:** актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json), session-консолидация ([RED_TEAM_REMEDIATION_STATUS_2026_07_28](../audit/reports/RED_TEAM_REMEDIATION_STATUS_2026_07_28.md)) и [гиперглубокий аудит](../audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md). Текущее: pytest **1366 passed / 8 skipped / 144 subtests**, mypy **226**, frontend vitest **29**, CI зелёный. Добавлен **Hybrid AI P0/P1 routing-фундамент** (domain-pure, verdict-neutral, НЕ в пути вердикта) — [HYBRID_AI_FINAL_REPORT](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md). Цифры в §1 ниже — снимок 2026-07-19/20 (не переписываю исторические прогоны). Checkpoint **NO_GO**.
 
 ## 1. Gate runs (this audit)
 
@@ -40,6 +40,7 @@ Baseline snapshot: [`evidence/runtime-baseline-latest.json`](evidence/runtime-ba
 | Capabilities honesty | `CapabilityState`: ok/skipped/failed/missing/not_verified/not_implemented | confirmed code |
 | Sign-off profiles | development/fixture/samolet_pilot/production; non-dev→production default | confirmed code + tests |
 | Shared-gate | `summary.passed` bool; AI/OCR cannot flip | confirmed code + tests |
+| Hybrid AI foundation | `domain/hybrid/*` + `HybridRouteGate`; verdict-neutral (OFF==ON), not in verdict path | confirmed code + 53 tests |
 | BCF export | 2.1 stable, 3.0 experimental structural | confirmed code + T1 JSON |
 | CDE import | STATUS NOT_VERIFIED | needs customer |
 | Frontend | review shell 3D+2D+HITL remarks | confirmed code + vitest |
@@ -75,6 +76,7 @@ Legend: **code** · **test** · **runtime** · **benchmark** · **README-only** 
 | SSRF outbound guard | code+test | JWKS/bSI/OpenCDE |
 | HITL remark edit | code+test | Does not flip Shared-gate alone |
 | Evidence bundle CLI | code+test | `export_evidence_bundle` + fixture pack |
+| Hybrid AI routing foundation | code+test (53) | Domain-pure, fail-closed, verdict-neutral (OFF==ON); NOT in verdict/live egress; masking ≠ anonymity |
 | Package multi-status enum | planned (Wave2) | Today: derive from `passed`+capabilities |
 
 ## 4. README drift (must not claim)

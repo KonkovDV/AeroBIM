@@ -2,7 +2,7 @@
 title: "AeroBIM Target Hybrid Architecture for Samolet TechLab TZ"
 status: active
 version: "1.1.0"
-last_updated: "2026-07-19"
+last_updated: "2026-07-28"
 tags: [aerobim, architecture, openbim, tz, sota-2026, hybrid-ai]
 claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002/003 evidenced. ADR-001 owns summary.passed wording."
 ---
@@ -13,6 +13,8 @@ claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002
 **Not in scope:** full adapter implementations; claims of product accuracy >90%; CDE-ready BCF; customer SLA.
 
 **Authority alignment:** preserves existing four contours in `domain/architecture.py` (`INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING`). Semantic owner of `summary.passed` = deterministic outputs; physical writer = EvidenceAssembler (ADR-001). AI/OCR cannot flip Shared-gate; Shared-gate ≠ Published.
+
+**Implemented P0/P1 (2026-07-28):** the secure data-routing foundation of this target now exists in code — `domain/hybrid/*` (5-level data classification, fail-closed policy engine, secret-safe audit event, privacy guard) + `HybridRouteGate` (application). It is domain/application-pure, verdict-neutral (OFF==ON) and **deliberately NOT wired into the verdict / live egress** (advisory-contour scaffold; masking ≠ anonymity; Checkpoint NO_GO). See [`../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md).
 
 ---
 

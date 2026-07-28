@@ -2,7 +2,7 @@
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-07-24"
+last_updated: "2026-07-28"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003."
 ---
 
@@ -39,6 +39,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Independent calc correctness | — | Сверка переданных результатов и источников, не расчётный решатель |
 | BCF ready for CDE | RT-008 T2 | Structural ZIP **AVAILABLE**; CDE import **NOT_VERIFIED** ([ladder](architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)); requires log+screenshot+hashes |
 | Production-ready / external academic audit | — | Self-audit + NO_GO |
+| Hybrid AI makes the public API safe for customer data / masking = anonymity | — | Route only *policy-eligible*; masking reduces disclosure, not anonymity; contour NOT wired to verdict / live egress |
 
 ## Allowed with evidence pointers
 
@@ -53,6 +54,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | HITL remark edit | frontend + review-events API |
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
+| Hybrid AI routing foundation (classify/policy/guard/audit/gate) | `domain/hybrid/*` + 53 tests; domain-pure, verdict-neutral (OFF==ON), fail-closed, NOT in the verdict path — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
 
 ## Run manifest (iteration 2026-07-21)
 

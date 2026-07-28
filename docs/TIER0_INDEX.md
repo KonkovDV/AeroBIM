@@ -2,7 +2,7 @@
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
 version: "4.1.0"
-last_updated: "2026-07-19"
+last_updated: "2026-07-28"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Red Team docs pass 2026-07-19."
 ---
@@ -26,6 +26,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Red Team
 | [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Allowed vs forbidden claims |
 | [`benchmark-evidence-2026.md`](benchmark-evidence-2026.md) | Fixture metrics boundaries |
 | [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md) | Pilot phases 0–5 |
+| [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI routing foundation (verdict-neutral, NO_GO) |
 | [`README.md`](README.md) | Full jury map |
 
 Operator / debug / archive documentation is **not** on GitHub (kept in `.local/engineering-docs/`).
