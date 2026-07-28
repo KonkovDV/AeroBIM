@@ -52,7 +52,7 @@
 - **Redis `SET NX` (§4.3) — исправление предыдущей неточности:** Redis-бэкенд стора **СУЩЕСТВУЕТ** (`RedisAnalyzeProjectPackageJobStore`, выбирается при `AEROBIM_REDIS_URL`) и использует `set(nx=True)` (**SET NX**) для атомарного клейма idempotency-индекса И создания job-ключа, плюс WATCH/MULTI compare-and-set для переходов. Дефолт/тесты — `InMemory` (Lock + `can_transition` + дедуп). Добавлен конкурентный тест (16 потоков, один idempotency-key → ровно одна job).
 - **Известное ограничение (low):** per-tenant concurrency-лимит в `SubmitJob` — TOCTOU (`count_active_for_tenant` и `create` в разных lock-скоупах) → под burst возможен overshoot на 1+. Это **мягкая квота**, не граница безопасности/вердикта; не фикшу половинчато (InMemory-only оставил бы Redis несогласованным). Атомарность самого create-дедупа — доказана тестом.
 - **Lockfile drift-гейт (рекуррентная тайм-бомба) — устранена:** CI-проверка теперь **засеивает** выходной файл закоммиченным локом перед `uv pip compile` (без `--upgrade`) → uv **сохраняет** удовлетворяющие пины (pip-tools-семантика). Гейт ловит только реальное расхождение pyproject↔lock (dep добавлен/удалён/сменён constraint), а не апстрим-патч. Доказано локально дискриминирующим прогоном (seed=fastapi 0.140.7 при доступной 0.140.8 → сохранён 0.140.7). Hash-pinning и pip-audit сохранены; свежесть/security-bumps — за Dependabot (PR-канал).
-- **Frontend HITL визуальное различие (§12):** advisory-наблюдение vs подтверждённая находка — отдельный фронтенд-домен, не покрыт этим backend-проходом.
+- **Frontend HITL (§12) — ЗАКРЫТО (frontend-волны):** advisory-кандидат vs подтверждённая находка, low-confidence cue, review_required-бейдж — визуально различены + vitest (`6a3779f`, `acd91b0`, `2ac9d94`); XSS через текст предотвращён React (нет `dangerouslySetInnerHTML`); MIME/Blob-guard уже был (`api.ts`, RTATOM-F05).
 - **RT-001/002/003** — внешние (ниже).
 
 ## Внешние блокеры (нельзя закрыть кодом)
@@ -75,3 +75,22 @@
 - «кэш защищён» / «данные изолированы» без оговорки — корректно: «изолировано в пределах проверенного сценария указанными отрицательными тестами».
 - «результат детерминирован» для модели — корректно: «повторно воспроизводится сохранённый ответ при совпадении входов и версий».
 - Checkpoint остаётся **NO_GO** (RT-001/002/003 открыты).
+
+## Полная сводка сессии 2026-07-28 (от и до)
+
+Консолидация всей работы сессии (`223ecc8..f9c2231` на main). Всё закоммичено, запушено, **CI зелёный** (`f9c2231`). Инварианты целы: вердикт — только детерминированный движок, **advisory OFF==ON**, fail-closed; **новых claims нет**.
+
+**Финальные цифры:** backend — 1303+ test functions (1293 pytest passed, 8 skipped, 144 subtests); frontend — 29 vitest; ruff/mypy/build зелёные.
+
+| Тема | Сделано | Ключевые коммиты |
+|------|--------|----------------|
+| Deps/CI | pytest 9.x (CVE), Node20→Node24 SHA-pinned actions, relock fastapi/tqdm, **lockfile drift-гейт seed-preserve** (снята тайм-бомба) | `150090e`, `847d566`, `b119fc0`, `490e320`/`1aaf7d7` |
+| Advisory-кэш (act-grade) | ключ с дискриминаторами + provenance + сплит replay/model-determinism + metrics | `c7981d3`, `a844f2c`, `05e37f4` |
+| Кэш-изоляция/безопасность | tenant fail-closed, project sub-scope, key-safety/symlink/TTL/perms, hash-per-field, Linux Docker-доказательство | `ab7da56`, `e80e551`, `ee37926`, `cc6a9f7`, `d14e298` |
+| Prompt-injection/grounding | image-капы + containment, uncalibrated confidence→HITL, запрет control-полей + evidence_note truncation flag, BCF-инъекция инертна | `0f9ddb1`, `dda0f58`, `efb0c7b`, `15a44c5` |
+| Object-ACL (cross-tenant→404) | report/IFC/BCF/review (были) + export json/html + jobs get/cancel + drawing-preview | `3d121df`, `6a228bd` |
+| Фоновые задания §9 | idempotency-дедуп (tenant-scoped) + cancel/no-resurrection + mid-run discard + concurrency (16 потоков) | `6670fb2`, `d614235`, `2e31dd5` |
+| Storage §8 | zip/XML-bomb negative-тесты (гварды были; size-до-памяти в uploads) | `b2d6b03` |
+| Frontend HITL §12 | advisory-кандидат, low-confidence, review_required — визуально + vitest | `6a3779f`, `acd91b0`, `2ac9d94` |
+
+**Остаётся (только внешний вход / политика):** живой tier-A Kimi-смоук (ключ оператора); RT-001/002/003 (артефакты заказчика); project-level ACL (проектное решение, не баг); concurrency-лимит TOCTOU (мягкая квота). Ничего из этого не закрывается кодом без внешнего входа. **Checkpoint — NO_GO.**
