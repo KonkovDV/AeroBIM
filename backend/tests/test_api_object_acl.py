@@ -119,6 +119,36 @@ class ApiObjectAclTests(unittest.TestCase):
             )
             self.assertEqual(response_kpi.status_code, 404, response_kpi.text)
 
+    def test_cross_tenant_json_export_denied(self) -> None:
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(storage=Path(tmp), tenant="tenant-a")
+            report_id = self._seed_report(container, tenant_id="tenant-b")
+            response = client.get(
+                f"/v1/reports/{report_id}/export/json",
+                headers={"Authorization": "Bearer secret-token"},
+            )
+            self.assertEqual(response.status_code, 404, response.text)
+
+    def test_cross_tenant_html_export_denied(self) -> None:
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(storage=Path(tmp), tenant="tenant-a")
+            report_id = self._seed_report(container, tenant_id="tenant-b")
+            response = client.get(
+                f"/v1/reports/{report_id}/export/html",
+                headers={"Authorization": "Bearer secret-token"},
+            )
+            self.assertEqual(response.status_code, 404, response.text)
+
     def test_same_tenant_report_allowed(self) -> None:
         try:
             from fastapi.testclient import TestClient  # noqa: F401
