@@ -75,7 +75,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | MEP system-aware clash | Not verified / blocked | fixture_only | Unconfigured DI; RT-003 OPEN; co-presence ≠ connection |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
-| Frontend vitest review-shell | Green in CI | release-readiness | **25** passed (`frontend` CI job) |
+| Frontend vitest review-shell | Green in CI | release-readiness | **29** passed (`frontend` CI job) |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
 
 ## IFC Release Compatibility

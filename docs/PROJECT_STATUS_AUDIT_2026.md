@@ -2,7 +2,7 @@
 title: "AeroBIM Project Status Audit 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-07-19"
+last_updated: "2026-07-28"
 claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ customer value."
 ---
 
@@ -11,6 +11,8 @@ claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evid
 **Author relationship:** self  
 **Checkpoint:** **`NO_GO`** ([CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md))  
 **Claims SSOT:** [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [pilot-claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
+
+> **Refresh 2026-07-28:** актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json), session-консолидация ([RED_TEAM_REMEDIATION_STATUS_2026_07_28](../audit/reports/RED_TEAM_REMEDIATION_STATUS_2026_07_28.md)) и [гиперглубокий аудит](../audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md). Текущее: pytest **1295 passed / 8 skipped**, mypy **218**, frontend vitest **29**, CI зелёный. Цифры в §1 ниже — снимок 2026-07-19/20 (не переписываю исторические прогоны). Checkpoint **NO_GO**.
 
 ## 1. Gate runs (this audit)
 
