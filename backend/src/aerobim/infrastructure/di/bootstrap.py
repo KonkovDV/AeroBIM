@@ -636,6 +636,26 @@ def _build_drawing_analyzer_port(current: Container):
     )
 
 
+_CACHE_NAMESPACE_ALLOWED = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-"
+)
+
+
+def _safe_cache_namespace(value: str | None) -> str | None:
+    """Validated tenant/project cache scope, or None (fail-closed) (§5).
+
+    Rejects empty / oversized / path-unsafe values so a namespace can never
+    traverse the cache root (``..``, separators) or be silently blank. Callers
+    treat None as “do not build a persistent cache” rather than sharing one.
+    """
+    candidate = (value or "").strip()
+    if not (1 <= len(candidate) <= 64) or candidate in {".", ".."}:
+        return None
+    if any(ch not in _CACHE_NAMESPACE_ALLOWED for ch in candidate):
+        return None
+    return candidate
+
+
 def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipeline:
     """Region-restricted advisory VLM; fail-closed and NOT on the verdict path.
 
@@ -658,9 +678,13 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
         model=settings.kimi_model,
         reasoning_effort=settings.kimi_reasoning_effort,
     )
-    # §2.1: deterministic act-grade replay when a cache dir is configured.
+    # §2.1/§5: deterministic act-grade replay ONLY with a trusted tenant scope.
+    # The pipeline is a process singleton with no per-request identity, so a
+    # persistent cache without a validated namespace could replay one tenant's
+    # response for another. Fail closed: no namespace -> no persistent cache.
     reader: object = client
-    if settings.kimi_cache_dir:
+    cache_namespace = _safe_cache_namespace(settings.kimi_cache_namespace)
+    if settings.kimi_cache_dir and cache_namespace:
         from aerobim.infrastructure.adapters.caching_vlm_reader import (
             CachingVlmReader,
             FilesystemVlmResponseStore,
@@ -669,13 +693,17 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
             observations_schema_hash,
         )
 
+        # Physically scope the store under the namespace (defense in depth on top
+        # of the namespace already folded into the cache key).
+        store_root = Path(settings.kimi_cache_dir) / cache_namespace
         reader = CachingVlmReader(
             client,
-            FilesystemVlmResponseStore(Path(settings.kimi_cache_dir)),
+            FilesystemVlmResponseStore(store_root),
             model=settings.kimi_model,
             endpoint=settings.kimi_api_base_url or "",
             request_schema_hash=observations_schema_hash(),
             reasoning_effort=settings.kimi_reasoning_effort,
+            cache_namespace=cache_namespace,
         )
     return RegionRestrictedVlmPipeline(
         region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),
