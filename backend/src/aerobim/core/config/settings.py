@@ -177,6 +177,12 @@ class Settings:
     persistent cache is DISABLED (fail-closed: a cache is never shared across
     tenants). Allowed chars: ``[A-Za-z0-9._-]``, 1-64 (no ``.``/``..``).
     """
+    kimi_cache_ttl_days: int | None = None
+    """Optional TTL (days) for cached VLM responses (§5.10).
+
+    On read, an entry older than the TTL is treated as a miss and deleted
+    (explicit deletion policy). ``None`` keeps entries until the dir is cleared.
+    """
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -395,6 +401,7 @@ class Settings:
             kimi_cache_namespace=(
                 (os.getenv("AEROBIM_KIMI_CACHE_NAMESPACE") or "").strip() or None
             ),
+            kimi_cache_ttl_days=_read_optional_int("AEROBIM_KIMI_CACHE_TTL_DAYS"),
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (

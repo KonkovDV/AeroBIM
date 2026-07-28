@@ -696,9 +696,12 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
         # Physically scope the store under the namespace (defense in depth on top
         # of the namespace already folded into the cache key).
         store_root = Path(settings.kimi_cache_dir) / cache_namespace
+        ttl_seconds = (
+            settings.kimi_cache_ttl_days * 86400.0 if settings.kimi_cache_ttl_days else None
+        )
         reader = CachingVlmReader(
             client,
-            FilesystemVlmResponseStore(store_root),
+            FilesystemVlmResponseStore(store_root, ttl_seconds=ttl_seconds),
             model=settings.kimi_model,
             endpoint=settings.kimi_api_base_url or "",
             request_schema_hash=observations_schema_hash(),
