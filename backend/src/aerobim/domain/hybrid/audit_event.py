@@ -215,6 +215,7 @@ def build_route_audit_event(
     task_type: str,
     decision: RouteDecision,
     policy_version: str = "1.0.0",
+    failure_reason: str | None = None,
     **metadata: Any,
 ) -> HybridAuditEvent:
     """Build an audit event from a :class:`RouteDecision` (verdict_impact fixed none).
@@ -261,7 +262,9 @@ def build_route_audit_event(
         policy_version=policy_version,
         human_review_required=decision.status is RouteStatus.HUMAN_REVIEW,
         cache_hit=bool(metadata.get("cache_hit", False)),
-        failure_reason=(decision.reason if decision.status is RouteStatus.BLOCKED else None),
+        failure_reason=(
+            failure_reason or (decision.reason if decision.status is RouteStatus.BLOCKED else None)
+        ),
         **safe_meta,
     )
 
