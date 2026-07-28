@@ -1,0 +1,27 @@
+{
+  "artifact": "vlm-cache-linux-store-proof",
+  "date": "2026-07-28",
+  "purpose": "Offline Linux proof for the RT 2026-07-28 cache hardening (FilesystemVlmResponseStore): sha256-hex key-safety, symlink refusal, TTL deletion. Upgrades the Windows-only 'skipped' note to a real Linux run.",
+  "reproduce": "docker run --rm -v <repo>:/work -w /work/backend -e PYTHONPATH=/work/backend/src python:3.12-slim sh -c \"pip install -q pytest && python -m pytest tests/test_caching_vlm_reader.py -v -rs\"",
+  "environment": {
+    "runner": "docker python:3.12-slim",
+    "python": "3.12.13",
+    "os": "Debian GNU/Linux 13 (trixie)",
+    "kernel": "Linux 6.6.87.2-microsoft-standard-WSL2 x86_64",
+    "pytest": "9.1.1",
+    "network_used": true
+  },
+  "target": "backend/tests/test_caching_vlm_reader.py",
+  "result": {
+    "collected": 14,
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "duration_s": 0.6,
+    "symlink_test": "test_symlink_target_is_refused PASSED (ran on Linux, not skipped)",
+    "ttl_test": "test_ttl_expiry_is_a_miss_and_deletes PASSED",
+    "key_safety_test": "test_unsafe_key_fails_closed PASSED"
+  },
+  "scope": "Proves the store's key-safety / symlink-refusal / TTL-deletion behaviour on Linux only. NOT a proof of end-to-end pilot quality and does not change the deterministic verdict; advisory cache remains off the verdict path.",
+  "windows_note": "On Windows os.symlink needs privilege, so test_symlink_target_is_refused skips locally; this Docker run exercises the guard on Linux."
+}
