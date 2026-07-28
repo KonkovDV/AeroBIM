@@ -643,4 +643,28 @@ describe("App", () => {
     expect(within(deterministicCard).queryByText(/advisory candidate/i)).toBeNull();
     expect(within(deterministicCard).getByText("deterministic")).toBeTruthy();
   });
+
+  it("flags low self-reported confidence on the issue card, not when high or absent", async () => {
+    const report = buildReport();
+    report.issues = [
+      { ...buildIssue({ rule_id: "LOWCONF-001", message: "uncertain reading" }), confidence: 0.42 },
+      { ...buildIssue({ rule_id: "HIGHCONF-001", message: "clear reading" }), confidence: 0.95 },
+      { ...buildIssue({ rule_id: "NOCONF-001", message: "reading without score" }), confidence: null },
+    ];
+    fetchReportMock.mockResolvedValue(report);
+
+    render(<App />);
+
+    const lowCard = await screen.findByRole("button", { name: /LOWCONF-001/i });
+    const highCard = screen.getByRole("button", { name: /HIGHCONF-001/i });
+    const noneCard = screen.getByRole("button", { name: /NOCONF-001/i });
+
+    // Low self-reported confidence is surfaced as a review cue (§12), labelled
+    // uncalibrated so it is not read as a calibrated probability.
+    expect(within(lowCard).getByText(/low confidence/i)).toBeTruthy();
+    expect(within(lowCard).getByTitle(/uncalibrated/i)).toBeTruthy();
+    // High or absent confidence carries no low-confidence warning.
+    expect(within(highCard).queryByText(/low confidence/i)).toBeNull();
+    expect(within(noneCard).queryByText(/low confidence/i)).toBeNull();
+  });
 });
