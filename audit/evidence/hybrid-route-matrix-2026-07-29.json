@@ -1,0 +1,690 @@
+{
+  "artifact": "hybrid-route-matrix",
+  "note": "fixture/matrix evidence; not product accuracy; verdict-neutral (OFF==ON); masking != anonymity; Checkpoint NO_GO",
+  "rows": [
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "ifc",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "ifc",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "ifc",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "ifc",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "ifc",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "ifc",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "drawing",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "drawing",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "drawing",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "drawing",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "drawing",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "drawing",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "calculation",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "calculation",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "calculation",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "calculation",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "calculation",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "calculation",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "customer_corpus",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "customer_corpus",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "customer_corpus",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "customer_corpus",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "customer_corpus",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "customer_corpus",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "samolet_data",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "samolet_data",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "samolet_data",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "samolet_data",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "samolet_data",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "samolet_data",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "pii",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "pii",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "pii",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "pii",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "pii",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "restricted",
+      "external": false,
+      "kind": "pii",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "api_key",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "api_key",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "api_key",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "api_key",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "api_key",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "api_key",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "token",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "token",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "token",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "token",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "token",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "secret",
+      "external": false,
+      "kind": "token",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "public",
+      "external": false,
+      "kind": "public_fixture",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "public",
+      "external": false,
+      "kind": "public_fixture",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "public",
+      "external": false,
+      "kind": "public_fixture",
+      "model_tier": "private",
+      "requires_human_review": false,
+      "route_status": "private",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "public",
+      "external": false,
+      "kind": "public_fixture",
+      "model_tier": "private",
+      "requires_human_review": false,
+      "route_status": "private",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "public",
+      "external": true,
+      "kind": "public_fixture",
+      "model_tier": "public",
+      "requires_human_review": false,
+      "route_status": "public_masked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "public",
+      "external": true,
+      "kind": "public_fixture",
+      "model_tier": "public",
+      "requires_human_review": false,
+      "route_status": "public_masked",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "internal",
+      "external": false,
+      "kind": "internal_doc",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "internal",
+      "external": false,
+      "kind": "internal_doc",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "internal",
+      "external": false,
+      "kind": "internal_doc",
+      "model_tier": "private",
+      "requires_human_review": false,
+      "route_status": "private",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "internal",
+      "external": false,
+      "kind": "internal_doc",
+      "model_tier": "private",
+      "requires_human_review": false,
+      "route_status": "private",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "internal",
+      "external": false,
+      "kind": "internal_doc",
+      "model_tier": "local",
+      "requires_human_review": true,
+      "route_status": "human_review",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "internal",
+      "external": false,
+      "kind": "internal_doc",
+      "model_tier": "local",
+      "requires_human_review": true,
+      "route_status": "human_review",
+      "target": "public",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "unknown_kind",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "unknown_kind",
+      "model_tier": "local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "target": "local",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "unknown_kind",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "unknown_kind",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "private",
+      "task": "table_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "unknown_kind",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "drawing_read"
+    },
+    {
+      "classification": "confidential",
+      "external": false,
+      "kind": "unknown_kind",
+      "model_tier": null,
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "target": "public",
+      "task": "table_read"
+    }
+  ],
+  "summary": {
+    "external_cells": 2,
+    "external_only_for_public_route": true,
+    "total_cells": 66,
+    "unknown_tenant_external_cells": 0
+  },
+  "tenant": "tenant-a",
+  "unknown_tenant": [
+    {
+      "external": false,
+      "route_status": "blocked",
+      "target": "local"
+    },
+    {
+      "external": false,
+      "route_status": "blocked",
+      "target": "private"
+    },
+    {
+      "external": false,
+      "route_status": "blocked",
+      "target": "public"
+    }
+  ]
+}
