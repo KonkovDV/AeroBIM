@@ -54,7 +54,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | HITL remark edit | frontend + review-events API |
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
-| Hybrid AI routing foundation (classify/policy/guard/audit/gate) | `domain/hybrid/*` + 53 tests; domain-pure, verdict-neutral (OFF==ON), fail-closed, NOT in the verdict path — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
+| Hybrid AI routing foundation (classify/policy/guard/audit/gate) | `domain/hybrid/*` + 61 tests; domain-pure, verdict-neutral (OFF==ON), fail-closed, NOT in the verdict path — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
 
 ## Run manifest (iteration 2026-07-21)
 

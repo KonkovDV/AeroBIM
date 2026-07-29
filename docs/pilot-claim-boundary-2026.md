@@ -81,7 +81,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Multipart document upload | `POST /v1/uploads` → storage-relative path |
 | EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |
 | Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark`) |
-| Hybrid AI routing foundation (eng) | `domain/hybrid/*` classify/policy/guard/audit + `HybridRouteGate`; domain-pure, verdict-neutral (OFF==ON), fail-closed; 53 tests |
+| Hybrid AI routing foundation (eng) | `domain/hybrid/*` classify/policy/guard/audit + `HybridRouteGate`; domain-pure, verdict-neutral (OFF==ON), fail-closed; 61 tests |
 
 ## Planned (do not claim as deployed)
 

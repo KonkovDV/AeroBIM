@@ -143,17 +143,18 @@ privacy-leakage, policy-violation, replay). Доверительные инте�
 P0 ✅ (классификация, policy, tenant-scoped route, public-block, ACL, кэш-изоляция,
 secret-guard, audit-event, OFF==ON, no-model-route-override, injection, лимиты). P1 ✅
 (Privacy Guard, маскирование/токенизация, restore-таблица, версии policy/mask, статусы
-маршрута, композитный гейт) / ⏳ (живое подключение pre-gate). P2 ⏳ (роутер/адаптеры/
-snapshot/replay-bundle). **P3 не начат** (TEE/FHE/MPC/ZK/агенты).
+маршрута + композитный гейт) / ⏳ (живое подключение pre-gate). P2 ⏳ (роутер/адаптеры/
+локальное обнаружение сущностей ✅ базлайн `sensitive_entities.py`; snapshot/replay-bundle). **P3 не начат** (TEE/FHE/MPC/ZK/агенты).
 
 ## 26. Изменённые/добавленные файлы
-`domain/hybrid/{data_classification,trust_policy,audit_event,privacy_guard,__init__}.py`;
+`domain/hybrid/{data_classification,trust_policy,audit_event,privacy_guard,sensitive_entities,__init__}.py`;
 `application/services/hybrid_route_gate.py`; `core/di/tokens.py` (+HYBRID_ROUTE_GATE);
 `infrastructure/di/bootstrap.py` (+регистрация); 4 companion-дока; README baseline.
 
-## 27. Добавленные тесты (53 hybrid)
+## 27. Добавленные тесты (61 hybrid)
 `test_hybrid_trust_policy.py` (13) · `test_hybrid_audit_event.py` (11) ·
-`test_hybrid_privacy_guard.py` (16) · `test_hybrid_route_gate.py` (13) — fail-closed матрица,
+`test_hybrid_privacy_guard.py` (16) · `test_hybrid_route_gate.py` (13) ·
+`test_hybrid_sensitive_entities.py` (8) — fail-closed матрица,
 never-downgrade, secret-safe audit, leak/re-id/обход маскирования, verdict-neutrality, DI-resolve.
 
 ## 28. Созданные артефакты

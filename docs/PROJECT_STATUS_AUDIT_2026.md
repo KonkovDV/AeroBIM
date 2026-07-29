@@ -76,7 +76,7 @@ Legend: **code** · **test** · **runtime** · **benchmark** · **README-only** 
 | SSRF outbound guard | code+test | JWKS/bSI/OpenCDE |
 | HITL remark edit | code+test | Does not flip Shared-gate alone |
 | Evidence bundle CLI | code+test | `export_evidence_bundle` + fixture pack |
-| Hybrid AI routing foundation | code+test (53) | Domain-pure, fail-closed, verdict-neutral (OFF==ON); NOT in verdict/live egress; masking ≠ anonymity |
+| Hybrid AI routing foundation | code+test (61) | Domain-pure, fail-closed, verdict-neutral (OFF==ON); NOT in verdict/live egress; masking ≠ anonymity |
 | Package multi-status enum | planned (Wave2) | Today: derive from `passed`+capabilities |
 
 ## 4. README drift (must not claim)
