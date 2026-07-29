@@ -44,7 +44,7 @@ def _issue(
 
 
 def synthetic_scenario() -> dict[str, Any]:
-    """Return (source_ids, issues, capabilities, scope) as a coverage report dict."""
+    """Build a fixed SYNTHETIC package and return its coverage map as a dict."""
     capabilities = ReportCapabilities(
         ifc_validation=CapabilityStatus(CapabilityState.OK),
         ifc_schema=CapabilityStatus(CapabilityState.OK),
@@ -69,7 +69,11 @@ def synthetic_scenario() -> dict[str, Any]:
     coverage = build_check_coverage(
         source_ids=source_ids, issues=issues, capabilities=capabilities, scope=scope
     )
-    return coverage.to_dict()
+    report = coverage.to_dict()
+    # Self-declare in-band so a detached artifact can never be mistaken for a real run.
+    report["corpus"] = "synthetic"
+    report["disclaimer"] = "synthetic fixture; no customer data; not product accuracy"
+    return report
 
 
 def main(argv: list[str] | None = None) -> int:
