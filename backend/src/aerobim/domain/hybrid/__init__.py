@@ -23,6 +23,13 @@ from aerobim.domain.hybrid.privacy_guard import (
     TokenVault,
     truncate_flagged,
 )
+from aerobim.domain.hybrid.sensitive_entities import (
+    DetectedEntity,
+    EntityKind,
+    detect_entities,
+    scan_payload,
+    suggest_mask_rules,
+)
 from aerobim.domain.hybrid.trust_policy import (
     RouteDecision,
     RouteStatus,
@@ -33,6 +40,8 @@ from aerobim.domain.hybrid.trust_policy import (
 __all__ = [
     "AuditSecretLeakError",
     "DataClassification",
+    "DetectedEntity",
+    "EntityKind",
     "HybridAuditEvent",
     "MaskResult",
     "PrivacyGuard",
@@ -44,8 +53,11 @@ __all__ = [
     "build_route_audit_event",
     "classify_object",
     "decide_route",
+    "detect_entities",
     "most_restrictive",
     "rank",
     "redact_audit_fields",
+    "scan_payload",
+    "suggest_mask_rules",
     "truncate_flagged",
 ]
