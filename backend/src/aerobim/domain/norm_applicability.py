@@ -88,9 +88,11 @@ _INDETERMINATE = "indeterminate"
 def _match_dimension(allowed: tuple[str, ...], value: str | None) -> str:
     if not allowed:
         return _MATCH  # unconstrained dimension matches anything
-    if value is None:
-        return _INDETERMINATE  # constrained but context unknown -> cannot decide
-    return _MATCH if value in allowed else _MISMATCH
+    if value is None or not value.strip():
+        return _INDETERMINATE  # constrained but context unknown/blank -> cannot decide
+    needle = value.strip().casefold()
+    # Case/whitespace-insensitive; both sides must share a canonical vocabulary/script.
+    return _MATCH if any(needle == item.strip().casefold() for item in allowed) else _MISMATCH
 
 
 def _exception_state(exception: ApplicabilityException, context: ProjectContext) -> str:
@@ -131,6 +133,13 @@ def evaluate_applicability(
     # an exception we cannot rule out (indeterminate) forces UNKNOWN.
     indeterminate_exception = False
     for exception in applicability.exceptions:
+        if not (exception.building_types or exception.disciplines or exception.stages):
+            # A degenerate exception would match everything (silent kill-switch); a
+            # default-constructed one is far more likely malformed data -> expert.
+            return ApplicabilityResult(
+                ApplicabilityStatus.UNKNOWN,
+                ("exception has no constrained dimension — malformed rule data, expert required",),
+            )
         state = _exception_state(exception, context)
         if state == _MATCH:
             reason = exception.reason or "exception matches context"
