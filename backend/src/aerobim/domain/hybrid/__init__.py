@@ -16,6 +16,13 @@ from aerobim.domain.hybrid.data_classification import (
     most_restrictive,
     rank,
 )
+from aerobim.domain.hybrid.model_router import (
+    ModelProfile,
+    ModelRouter,
+    ModelSelection,
+    ModelTier,
+    ProviderRegistry,
+)
 from aerobim.domain.hybrid.privacy_guard import (
     MaskResult,
     PrivacyGuard,
@@ -44,8 +51,13 @@ __all__ = [
     "EntityKind",
     "HybridAuditEvent",
     "MaskResult",
+    "ModelProfile",
+    "ModelRouter",
+    "ModelSelection",
+    "ModelTier",
     "PrivacyGuard",
     "PrivacyLeakError",
+    "ProviderRegistry",
     "RouteDecision",
     "RouteStatus",
     "RouteTarget",
