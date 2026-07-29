@@ -44,6 +44,8 @@ class ExportDrawingContourTests(unittest.TestCase):
 
     def test_self_declared_synthetic_and_verdict_neutral(self) -> None:
         self.assertEqual(self.report["corpus"], "synthetic")
+        self.assertIn("no customer data", self.report["disclaimer"])
+        self.assertIn("not product accuracy", self.report["disclaimer"])
         self.assertNotIn('"passed"', json.dumps(self.report))
 
     def test_reproducible_vs_committed_artifact(self) -> None:

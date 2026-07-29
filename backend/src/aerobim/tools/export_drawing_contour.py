@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from aerobim.domain.drawing_region_assessment import assess_drawing_region
+from aerobim.domain.drawing_region_assessment import RegionAction, assess_drawing_region
 from aerobim.domain.region_quality import RegionQualitySignals
 
 # Synthetic, de-identified regions: (label, text, dpi, skew, has_text, chars).
@@ -37,7 +37,7 @@ _SCENARIO: tuple[dict[str, Any], ...] = (
 def synthetic_scenario() -> dict[str, Any]:
     """Build a fixed SYNTHETIC sheet and return the drawing-contour assessment."""
     regions: list[dict[str, Any]] = []
-    counts = {"auto_read": 0, "expert_review": 0}
+    counts = {action.value: 0 for action in RegionAction}
     by_quality: dict[str, int] = {}
     by_type: dict[str, int] = {}
     for spec in _SCENARIO:
