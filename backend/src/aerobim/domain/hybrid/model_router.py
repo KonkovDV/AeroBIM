@@ -124,8 +124,13 @@ class ProviderRegistry:
                 task_routes[(tier, str(task))] = str(pname)
 
         hr = config.get("human_review_profile")
-        if hr is not None and str(hr) not in profiles:
-            raise ValueError(f"human_review_profile references unknown profile {hr!r}")
+        if hr is not None:
+            if str(hr) not in profiles:
+                raise ValueError(f"human_review_profile references unknown profile {hr!r}")
+            if profiles[str(hr)].tier is not ModelTier.LOCAL:
+                raise ValueError(
+                    f"human_review_profile {hr!r} must be LOCAL tier (review stays local)"
+                )
 
         return cls(
             profiles=profiles,
@@ -150,8 +155,13 @@ class ModelRouter:
 
     def select(self, *, decision: RouteDecision, task_type: str) -> ModelSelection:
         if decision.status is RouteStatus.HUMAN_REVIEW:
+            hr_profile = self._registry.human_review_profile()
+            if hr_profile is not None and hr_profile.tier is not ModelTier.LOCAL:
+                # Defense-in-depth: never hand out a non-local profile for HR, even if
+                # a directly-built registry bypassed from_config validation.
+                hr_profile = None
             return ModelSelection(
-                profile=self._registry.human_review_profile(),
+                profile=hr_profile,
                 reason="human review required",
                 requires_human_review=True,
             )

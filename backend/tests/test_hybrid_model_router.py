@@ -135,6 +135,35 @@ class ModelRouterTests(unittest.TestCase):
         second = router.select(decision=decision, task_type="drawing_read")
         self.assertEqual(first, second)
 
+    def test_from_config_rejects_non_local_human_review(self) -> None:
+        # Red Team MEDIUM: human_review profile must be LOCAL tier (review stays local).
+        bad = copy.deepcopy(_CONFIG)
+        bad["human_review_profile"] = "public_kimi_k3"
+        with self.assertRaises(ValueError):
+            ProviderRegistry.from_config(bad)
+
+    def test_from_config_rejects_task_route_tier_mismatch(self) -> None:
+        bad = copy.deepcopy(_CONFIG)
+        bad["task_routes"]["local"] = {"x": "public_kimi_k3"}  # public profile in local slot
+        with self.assertRaises(ValueError):
+            ProviderRegistry.from_config(bad)
+
+    def test_human_review_mistier_profile_yields_no_profile(self) -> None:
+        # Red Team MEDIUM defense-in-depth: directly-built registry with a PUBLIC hr
+        # profile must NOT hand out that profile under HUMAN_REVIEW.
+        registry = ProviderRegistry(
+            profiles={"pub": ModelProfile("pub", ModelTier.PUBLIC, "x", "y")},
+            task_routes={},
+            tier_defaults={},
+            human_review_profile_name="pub",
+        )
+        sel = ModelRouter(registry).select(
+            decision=_decide(_C.INTERNAL, _T.PUBLIC), task_type="drawing_read"
+        )
+        self.assertIsNone(sel.profile)
+        self.assertTrue(sel.requires_human_review)
+        self.assertFalse(sel.external)
+
 
 if __name__ == "__main__":
     unittest.main()
