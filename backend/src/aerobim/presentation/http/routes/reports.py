@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from aerobim.application.services.review_kpi import summarize_review_events
 from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import PathJailError, reject_symlinks
-from aerobim.domain.check_coverage import coverage_from_report
+from aerobim.domain.check_coverage import coverage_from_report, derive_report_scope
 from aerobim.domain.models import ReportListFilters, ReviewEvent
 from aerobim.domain.object_acl import AuthPrincipal, principal_may_access_report
 from aerobim.domain.review_state_machine import (
@@ -92,7 +92,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         ctx.assert_report_access(report, principal)
-        return coverage_from_report(report).to_dict()
+        return coverage_from_report(report, scope=derive_report_scope(report)).to_dict()
 
     @router.post("/v1/reports/{report_id}/review-events")
     def append_review_event(

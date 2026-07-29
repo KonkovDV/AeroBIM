@@ -268,10 +268,50 @@ def coverage_from_report(
     )
 
 
+def _capability_ok(capability: object) -> bool:
+    return isinstance(capability, CapabilityStatus) and capability.status is CapabilityState.OK
+
+
+def derive_report_scope(report: ValidationReport) -> dict[FindingCategory, set[str]]:
+    """Provable per-source scope derived from a report's DECLARED inputs + capabilities.
+
+    A declared requirement source is in scope for a family whose check provably ran (its
+    capability is OK) and which processes requirement content: IFC_VALIDATION / IDS /
+    CROSS_DOCUMENT. Drawing sheets are in scope for DRAWING_VALIDATION when raster ran.
+    SPATIAL (clash) is element/model-level, NOT per-document, so it is intentionally not
+    per-source scoped here (doc/sheet sources stay NOT_CHECKED for SPATIAL). Conservative:
+    scope is granted only when the capability is OK, so CHECKED_OK stays honest.
+    """
+    caps = report.capabilities if report.capabilities is not None else ReportCapabilities()
+    doc_sources = {req.source for req in report.requirements if req.source}
+    sheet_sources: set[str] = set()
+    for annotation in report.drawing_annotations:
+        if annotation.sheet_id:
+            sheet_sources.add(annotation.sheet_id)
+    for region in report.drawing_regions:
+        if region.sheet_id:
+            sheet_sources.add(region.sheet_id)
+    for asset in report.drawing_assets:
+        if asset.sheet_id:
+            sheet_sources.add(asset.sheet_id)
+
+    scope: dict[FindingCategory, set[str]] = {}
+    if _capability_ok(caps.ifc_validation):
+        scope[FindingCategory.IFC_VALIDATION] = doc_sources
+    if _capability_ok(caps.ids):
+        scope[FindingCategory.IDS_VALIDATION] = doc_sources
+    if _capability_ok(caps.section_pairing):
+        scope[FindingCategory.CROSS_DOCUMENT] = doc_sources
+    if _capability_ok(caps.raster):
+        scope[FindingCategory.DRAWING_VALIDATION] = sheet_sources
+    return scope
+
+
 __all__ = [
     "CheckCoverageMap",
     "CoverageStatus",
     "SourceCoverage",
     "build_check_coverage",
     "coverage_from_report",
+    "derive_report_scope",
 ]

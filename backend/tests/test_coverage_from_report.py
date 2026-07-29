@@ -11,7 +11,7 @@ import json
 import unittest
 from pathlib import Path
 
-from aerobim.domain.check_coverage import CoverageStatus, coverage_from_report
+from aerobim.domain.check_coverage import CoverageStatus, coverage_from_report, derive_report_scope
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -124,6 +124,35 @@ class CoverageFromReportTests(unittest.TestCase):
         cov = coverage_from_report(report, scope={_IDS: {"req-doc"}})
         row = next(r for r in cov.rows if r.source_id == "req-doc")
         self.assertEqual(row.status_for(_IDS), CoverageStatus.CHECKED_OK)
+
+    def test_derive_scope_enables_real_checked_ok(self) -> None:
+        report = _report(
+            requirements=(ParsedRequirement(rule_id="r", source="spec"),),
+            capabilities=ReportCapabilities(
+                ifc_validation=CapabilityStatus(CapabilityState.OK),
+                ifc_schema=CapabilityStatus(CapabilityState.OK),
+            ),
+        )
+        cov = coverage_from_report(report, scope=derive_report_scope(report))
+        row = next(r for r in cov.rows if r.source_id == "spec")
+        self.assertEqual(row.status_for(_IFC), CoverageStatus.CHECKED_OK)
+
+    def test_derive_scope_excludes_spatial_per_source(self) -> None:
+        # SPATIAL (clash) is model/element-level, not per-document.
+        report = _report(
+            requirements=(ParsedRequirement(rule_id="r", source="spec"),),
+            capabilities=ReportCapabilities(clash=CapabilityStatus(CapabilityState.OK)),
+        )
+        scope = derive_report_scope(report)
+        self.assertNotIn(FindingCategory.SPATIAL, scope)
+        row = next(
+            r for r in coverage_from_report(report, scope=scope).rows if r.source_id == "spec"
+        )
+        self.assertEqual(row.status_for(FindingCategory.SPATIAL), CoverageStatus.NOT_CHECKED)
+
+    def test_derive_scope_omits_family_when_capability_not_ok(self) -> None:
+        report = _report(requirements=(ParsedRequirement(rule_id="r", source="spec"),))
+        self.assertEqual(derive_report_scope(report), {})
 
 
 if __name__ == "__main__":
