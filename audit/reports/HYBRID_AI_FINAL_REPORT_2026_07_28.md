@@ -151,10 +151,10 @@ secret-guard, audit-event, OFF==ON, no-model-route-override, injection, лими
 `application/services/hybrid_route_gate.py`; `tools/export_hybrid_route_matrix.py`; `core/di/tokens.py` (+HYBRID_ROUTE_GATE);
 `infrastructure/di/bootstrap.py` (+регистрация HYBRID_ROUTE_GATE + HYBRID_MODEL_ROUTER); `core/config/settings.py` (+hybrid_provider_config_path); 4 companion-дока; README baseline.
 
-## 27. Добавленные тесты (85 hybrid)
+## 27. Добавленные тесты (87 hybrid)
 `test_hybrid_trust_policy.py` (13) · `test_hybrid_audit_event.py` (11) ·
 `test_hybrid_privacy_guard.py` (16) · `test_hybrid_route_gate.py` (13) ·
-`test_hybrid_sensitive_entities.py` (8) · `test_hybrid_model_router.py` (19) ·
+`test_hybrid_sensitive_entities.py` (8) · `test_hybrid_model_router.py` (21) ·
 `test_hybrid_route_matrix.py` (5) — fail-closed матрица,
 never-downgrade, secret-safe audit, leak/re-id/обход маскирования, verdict-neutrality, DI-resolve.
 
