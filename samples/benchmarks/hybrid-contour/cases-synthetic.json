@@ -1,0 +1,74 @@
+{
+  "note": "Synthetic / de-identified cases for the Hybrid AI contour bench (P3). No real customer data. Not product accuracy; masking != anonymity; verdict-neutral; Checkpoint NO_GO.",
+  "cases": [
+    {
+      "name": "local-ifc-no-payload",
+      "kind": "ifc",
+      "target": "local",
+      "tenant": "tenant-a"
+    },
+    {
+      "name": "public-masked-egress",
+      "kind": "public_fixture",
+      "target": "public",
+      "tenant": "tenant-a",
+      "payload": {
+        "q": "check wall thickness",
+        "gid": "3n8vP2aQ9zXcVbNmLkJhG0",
+        "coord": "123.45678"
+      }
+    },
+    {
+      "name": "confidential-public-blocked",
+      "kind": "ifc",
+      "target": "public",
+      "tenant": "tenant-a",
+      "payload": {
+        "gid": "3n8vP2aQ9zXcVbNmLkJhG0"
+      }
+    },
+    {
+      "name": "restricted-local",
+      "kind": "customer_corpus",
+      "target": "local",
+      "tenant": "tenant-a"
+    },
+    {
+      "name": "unknown-tenant-blocked",
+      "kind": "public_fixture",
+      "target": "public",
+      "tenant": "",
+      "payload": {
+        "q": "x"
+      }
+    },
+    {
+      "name": "internal-private-masked",
+      "kind": "internal_doc",
+      "target": "private",
+      "tenant": "tenant-a",
+      "payload": {
+        "note": "internal note",
+        "gid": "AbCdEf012345678901aZbc"
+      }
+    },
+    {
+      "name": "internal-public-human-review",
+      "kind": "internal_doc",
+      "target": "public",
+      "tenant": "tenant-a",
+      "payload": {
+        "q": "x"
+      }
+    },
+    {
+      "name": "secret-blocked",
+      "kind": "api_key",
+      "target": "public",
+      "tenant": "tenant-a",
+      "payload": {
+        "k": "v"
+      }
+    }
+  ]
+}
