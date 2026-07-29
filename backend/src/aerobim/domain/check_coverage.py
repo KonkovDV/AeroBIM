@@ -29,6 +29,7 @@ from aerobim.domain.models import (
     FindingCategory,
     ReportCapabilities,
     ValidationIssue,
+    ValidationReport,
 )
 
 
@@ -232,9 +233,42 @@ def build_check_coverage(
     return CheckCoverageMap(rows=tuple(rows))
 
 
+def coverage_from_report(
+    report: ValidationReport,
+    *,
+    scope: Mapping[FindingCategory, AbstractSet[str]] | None = None,
+) -> CheckCoverageMap:
+    """Build a coverage map from a report's DECLARED inputs + findings (verdict-neutral).
+
+    ``source_ids`` = declared requirement sources + drawing sheet ids. Engine-internal
+    finding source ids (e.g. ``clash``) that are not declared inputs surface in the
+    ``(unattributed)`` row (never silently dropped). ``scope`` is optional: until the
+    analyze use case captures per-source scope, pass ``None`` — a source with no finding
+    then reads NOT_CHECKED (honest: not known to be in scope), never a fabricated
+    CHECKED_OK. Does NOT read or set ``summary.passed`` (ADR-001).
+    """
+    declared: list[str] = []
+    for requirement in report.requirements:
+        if requirement.source:
+            declared.append(requirement.source)
+    for annotation in report.drawing_annotations:
+        if annotation.sheet_id:
+            declared.append(annotation.sheet_id)
+    for region in report.drawing_regions:
+        if region.sheet_id:
+            declared.append(region.sheet_id)
+    return build_check_coverage(
+        source_ids=declared,
+        issues=report.issues,
+        capabilities=report.capabilities,
+        scope=scope,
+    )
+
+
 __all__ = [
     "CheckCoverageMap",
     "CoverageStatus",
     "SourceCoverage",
     "build_check_coverage",
+    "coverage_from_report",
 ]
