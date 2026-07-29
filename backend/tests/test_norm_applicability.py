@@ -84,6 +84,34 @@ class NormApplicabilityTests(unittest.TestCase):
         self.assertEqual(record["status"], "not_applicable")
         self.assertIn("not 'passed'", record["note"])
 
+    def test_blank_context_is_unknown_not_silent_skip(self) -> None:
+        # Red Team MEDIUM: empty string is unknown, not a known mismatch.
+        result = evaluate_applicability(_RESIDENTIAL_AR, ProjectContext(building_type="  "))
+        self.assertEqual(result.status, ApplicabilityStatus.UNKNOWN)
+
+    def test_blank_exception_context_is_unknown_not_silent_apply(self) -> None:
+        applicability = RuleApplicability(
+            building_types=("residential",),
+            exceptions=(ApplicabilityException(stages=("PD",)),),
+        )
+        result = evaluate_applicability(
+            applicability, ProjectContext(building_type="residential", stage="")
+        )
+        self.assertEqual(result.status, ApplicabilityStatus.UNKNOWN)
+
+    def test_degenerate_exception_is_unknown(self) -> None:
+        applicability = RuleApplicability(
+            building_types=("residential",), exceptions=(ApplicabilityException(),)
+        )
+        result = evaluate_applicability(applicability, ProjectContext(building_type="residential"))
+        self.assertEqual(result.status, ApplicabilityStatus.UNKNOWN)
+
+    def test_case_and_whitespace_insensitive_match(self) -> None:
+        result = evaluate_applicability(
+            _RESIDENTIAL_AR, ProjectContext(building_type=" Residential ", discipline="ar")
+        )
+        self.assertEqual(result.status, ApplicabilityStatus.APPLICABLE)
+
 
 if __name__ == "__main__":
     unittest.main()
