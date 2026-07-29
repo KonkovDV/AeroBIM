@@ -1,0 +1,82 @@
+{
+  "artifact": "drawing-contour",
+  "corpus": "synthetic",
+  "disclaimer": "synthetic fixture; no customer data; not product accuracy",
+  "note": "quality gate -> (if readable) type classifier; bad/unknown/ambiguous -> expert review, never auto-read; verdict-neutral (does NOT set summary.passed, ADR-001)",
+  "regions": [
+    {
+      "action": "auto_read",
+      "label": "titleblock",
+      "quality": "readable",
+      "reasons": [
+        "readable and typed as stamp"
+      ],
+      "region_type": "stamp"
+    },
+    {
+      "action": "auto_read",
+      "label": "spec",
+      "quality": "readable",
+      "reasons": [
+        "readable and typed as specification"
+      ],
+      "region_type": "specification"
+    },
+    {
+      "action": "expert_review",
+      "label": "low-quality-node",
+      "quality": "low_quality",
+      "reasons": [
+        "region not auto-readable (quality=low_quality)",
+        "dpi 120 below recommended 150.0"
+      ],
+      "region_type": null
+    },
+    {
+      "action": "expert_review",
+      "label": "unreadable-scan",
+      "quality": "unreadable",
+      "reasons": [
+        "region not auto-readable (quality=unreadable)",
+        "dpi 50 below unreadable floor 72.0"
+      ],
+      "region_type": null
+    },
+    {
+      "action": "expert_review",
+      "label": "ambiguous",
+      "quality": "readable",
+      "reasons": [
+        "region type could not be determined (no match or ambiguous)"
+      ],
+      "region_type": "unknown"
+    },
+    {
+      "action": "expert_review",
+      "label": "no-signal",
+      "quality": "review_required",
+      "reasons": [
+        "region not auto-readable (quality=review_required)",
+        "no quality signals provided"
+      ],
+      "region_type": null
+    }
+  ],
+  "summary": {
+    "actions": {
+      "auto_read": 2,
+      "expert_review": 4
+    },
+    "by_quality": {
+      "low_quality": 1,
+      "readable": 3,
+      "review_required": 1,
+      "unreadable": 1
+    },
+    "by_type": {
+      "specification": 1,
+      "stamp": 1,
+      "unknown": 1
+    }
+  }
+}
