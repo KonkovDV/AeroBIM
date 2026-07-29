@@ -1,0 +1,121 @@
+{
+  "artifact": "hybrid-contour-bench",
+  "note": "deterministic contour only; NO network/model call; not model quality and not product accuracy; latency is environment-specific; masking != anonymity; verdict-neutral; Checkpoint NO_GO",
+  "rows": [
+    {
+      "classification": "confidential",
+      "egress_bytes": 0,
+      "external": false,
+      "fields_removed": [],
+      "fields_sent": [],
+      "model_tier": "local",
+      "name": "local-ifc-no-payload",
+      "requires_human_review": false,
+      "route_status": "local",
+      "verdict_impact": "none"
+    },
+    {
+      "classification": "public",
+      "egress_bytes": 146,
+      "external": true,
+      "fields_removed": [],
+      "fields_sent": [
+        "q",
+        "gid",
+        "coord"
+      ],
+      "model_tier": "public",
+      "name": "public-masked-egress",
+      "requires_human_review": false,
+      "route_status": "public_masked",
+      "verdict_impact": "none"
+    },
+    {
+      "classification": "confidential",
+      "egress_bytes": 0,
+      "external": false,
+      "fields_removed": [],
+      "fields_sent": [],
+      "model_tier": null,
+      "name": "confidential-public-blocked",
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "verdict_impact": "none"
+    },
+    {
+      "classification": "restricted",
+      "egress_bytes": 0,
+      "external": false,
+      "fields_removed": [],
+      "fields_sent": [],
+      "model_tier": "local",
+      "name": "restricted-local",
+      "requires_human_review": false,
+      "route_status": "local",
+      "verdict_impact": "none"
+    },
+    {
+      "classification": "public",
+      "egress_bytes": 0,
+      "external": false,
+      "fields_removed": [],
+      "fields_sent": [],
+      "model_tier": null,
+      "name": "unknown-tenant-blocked",
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "verdict_impact": "none"
+    },
+    {
+      "classification": "internal",
+      "egress_bytes": 82,
+      "external": false,
+      "fields_removed": [],
+      "fields_sent": [
+        "note",
+        "gid"
+      ],
+      "model_tier": "private",
+      "name": "internal-private-masked",
+      "requires_human_review": false,
+      "route_status": "private",
+      "verdict_impact": "none"
+    },
+    {
+      "classification": "internal",
+      "egress_bytes": 0,
+      "external": false,
+      "fields_removed": [],
+      "fields_sent": [],
+      "model_tier": "local",
+      "name": "internal-public-human-review",
+      "requires_human_review": true,
+      "route_status": "human_review",
+      "verdict_impact": "none"
+    },
+    {
+      "classification": "secret",
+      "egress_bytes": 0,
+      "external": false,
+      "fields_removed": [],
+      "fields_sent": [],
+      "model_tier": null,
+      "name": "secret-blocked",
+      "requires_human_review": false,
+      "route_status": "blocked",
+      "verdict_impact": "none"
+    }
+  ],
+  "summary": {
+    "cases": 8,
+    "cross_tenant_restore_leaks": 0,
+    "egress_bytes_total": 228,
+    "external_cases": 1,
+    "external_only_for_public": true,
+    "latency_ms_total_env_specific": 0.297,
+    "raw_value_leaks": 0,
+    "restore_fidelity": 1.0,
+    "restore_total": 3,
+    "verdict_impact_all_none": true
+  }
+}
