@@ -246,6 +246,27 @@ class ModelRouterProviderConfigTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 _build_model_router(self._settings(str(path)))
 
+    def test_empty_config_fails_closed(self) -> None:
+        # Red Team LOW: empty {} would silently disable even local -> require profiles.
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from aerobim.infrastructure.di.bootstrap import _build_model_router
+
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "empty.json"
+            path.write_text(json.dumps({}), encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                _build_model_router(self._settings(str(path)))
+
+    def test_bootstrap_fails_loud_on_bad_provider_config(self) -> None:
+        # Red Team MEDIUM: a set-but-missing config must fail at BOOT (eager resolve).
+        from aerobim.infrastructure.di.bootstrap import bootstrap_container
+
+        with self.assertRaises(RuntimeError):
+            bootstrap_container(self._settings("/nonexistent/does-not-exist.json"))
+
 
 if __name__ == "__main__":
     unittest.main()
