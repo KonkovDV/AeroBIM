@@ -76,7 +76,10 @@ def assess_drawing_region(
             quality=quality.quality,
             classification=None,
             action=RegionAction.EXPERT_REVIEW,
-            reasons=(f"region not auto-readable (quality={quality.quality.value})",),
+            reasons=(
+                f"region not auto-readable (quality={quality.quality.value})",
+                *quality.reasons,
+            ),
         )
 
     classification = classify_region(
