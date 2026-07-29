@@ -184,5 +184,68 @@ class ModelRouterTests(unittest.TestCase):
         self.assertFalse(public.external)
 
 
+_FILE_CONFIG = {
+    "profiles": {
+        "local_vlm": {"tier": "local", "provider": "onprem", "model_id": "l"},
+        "private_vlm": {"tier": "private", "provider": "ru", "model_id": "p"},
+        "public_vlm": {"tier": "public", "provider": "pub", "model_id": "k"},
+        "human_review": {"tier": "local", "provider": "human", "model_id": "e"},
+    },
+    "tier_defaults": {"local": "local_vlm", "private": "private_vlm", "public": "public_vlm"},
+    "human_review_profile": "human_review",
+}
+
+
+class ModelRouterProviderConfigTests(unittest.TestCase):
+    def _settings(self, path: str | None = None):  # noqa: ANN202
+        from dataclasses import replace
+
+        from aerobim.core.config.settings import Settings
+
+        return replace(Settings.from_env(), hybrid_provider_config_path=path)
+
+    def test_no_config_is_local_only_failclosed(self) -> None:
+        from aerobim.infrastructure.di.bootstrap import _build_model_router
+
+        router = _build_model_router(self._settings(None))
+        pub = router.select(decision=_decide(_C.PUBLIC, _T.PUBLIC), task_type="drawing_read")
+        self.assertFalse(pub.external)
+        self.assertTrue(pub.requires_human_review)
+
+    def test_config_file_enables_public_tier(self) -> None:
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from aerobim.infrastructure.di.bootstrap import _build_model_router
+
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "providers.json"
+            path.write_text(json.dumps(_FILE_CONFIG), encoding="utf-8")
+            router = _build_model_router(self._settings(str(path)))
+        pub = router.select(decision=_decide(_C.PUBLIC, _T.PUBLIC), task_type="drawing_read")
+        assert pub.profile is not None
+        self.assertTrue(pub.external)
+        self.assertIs(pub.profile.tier, ModelTier.PUBLIC)
+
+    def test_missing_config_path_fails_closed_loud(self) -> None:
+        from aerobim.infrastructure.di.bootstrap import _build_model_router
+
+        with self.assertRaises(RuntimeError):
+            _build_model_router(self._settings("/nonexistent/does-not-exist.json"))
+
+    def test_invalid_config_fails_closed_loud(self) -> None:
+        import tempfile
+        from pathlib import Path
+
+        from aerobim.infrastructure.di.bootstrap import _build_model_router
+
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "bad.json"
+            path.write_text("{ not json", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                _build_model_router(self._settings(str(path)))
+
+
 if __name__ == "__main__":
     unittest.main()
