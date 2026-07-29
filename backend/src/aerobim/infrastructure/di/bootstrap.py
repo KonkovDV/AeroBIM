@@ -267,6 +267,10 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lambda current: _build_model_router(current.resolve(Tokens.SETTINGS)),
         lifecycle=Lifecycle.SINGLETON,
     )
+    # Fail LOUD at boot (not lazily) when a provider config is set: resolve now so a
+    # missing/invalid config raises during bootstrap, not on some later first use.
+    if runtime_settings.hybrid_provider_config_path:
+        container.resolve(Tokens.HYBRID_MODEL_ROUTER)
     container.register(
         Tokens.REQUIREMENT_TO_IDS_COMPILER,
         lambda current: DeterministicRequirementToIdsCompiler(
@@ -639,9 +643,11 @@ def _build_model_router(settings: Settings) -> ModelRouter:
         raise RuntimeError(f"AEROBIM_HYBRID_PROVIDER_CONFIG not found: {path}")
     try:
         data = json.loads(config_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
+        if not isinstance(data, dict) or not data.get("profiles"):
+            raise ValueError("provider config has no 'profiles'")
+        return ModelRouter(ProviderRegistry.from_config(data))
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         raise RuntimeError(f"invalid hybrid provider config {path!r}: {exc}") from exc
-    return ModelRouter(ProviderRegistry.from_config(data))
 
 
 def _build_oidc_validator(settings: Settings) -> OidcTokenValidator | None:
