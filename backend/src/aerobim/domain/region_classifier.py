@@ -13,6 +13,7 @@ specification — спецификация; explication — экспликаци
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any
@@ -34,18 +35,32 @@ class RegionType(StrEnum):
     """No confident match, or an ambiguous tie — never a guess."""
 
 
-# Deterministic Russian keyword hints per type (lower-cased substring match).
+# Deterministic Russian keyword hints per type. Matched with a LEFT word boundary so a
+# stem cannot bleed mid-word (e.g. "механизм." never matches "изм."); collision-prone
+# short stems (гип⊂гипсокартон, листов⊂листовая, generic марка) are dropped.
 _KEYWORDS: dict[RegionType, tuple[str, ...]] = {
-    RegionType.STAMP: ("стадия", "изм.", "разраб", "н.контр", "гип", "гап", "листов"),
-    RegionType.SPECIFICATION: ("спецификация", "поз.", "наименование", "кол.", "марка"),
-    RegionType.EXPLICATION: ("экспликация", "помещен", "категория помещен"),
+    RegionType.STAMP: ("стадия", "изм.", "разраб", "н.контр"),
+    RegionType.SPECIFICATION: ("спецификация", "поз.", "наименование", "кол."),
+    RegionType.EXPLICATION: ("экспликация", "помещен"),
     RegionType.LEGEND: ("условные обозначения", "легенда"),
     RegionType.NODE: ("узел",),
     RegionType.SECTION: ("разрез",),
     RegionType.FACADE: ("фасад",),
-    RegionType.PLAN: ("план ",),
+    RegionType.PLAN: ("план",),
     RegionType.SCHEDULE: ("график", "ведомость"),
 }
+
+# Keywords that must match as a WHOLE word (prevents e.g. "планировка" -> PLAN).
+_WHOLE_WORD_KEYWORDS = frozenset({"план", "узел", "разрез", "фасад", "легенда", "график"})
+_WORD_CHAR = r"[0-9A-Za-zА-Яа-яЁё]"
+
+
+def _keyword_matches(keyword: str, lowered: str) -> bool:
+    """Match keyword with a left word boundary (whole-word ones also need a right one)."""
+    pattern = rf"(?<!{_WORD_CHAR}){re.escape(keyword)}"
+    if keyword in _WHOLE_WORD_KEYWORDS:
+        pattern += rf"(?!{_WORD_CHAR})"
+    return re.search(pattern, lowered) is not None
 
 
 @dataclass(frozen=True)
@@ -89,22 +104,22 @@ def classify_region(
     scores: dict[RegionType, int] = {}
     matched: dict[RegionType, tuple[str, ...]] = {}
     for region_type, keywords in _KEYWORDS.items():
-        hits = tuple(kw for kw in keywords if kw in lowered)
+        hits = tuple(kw for kw in keywords if _keyword_matches(kw, lowered))
         if hits:
             scores[region_type] = len(hits)
             matched[region_type] = hits
 
-    if not scores and has_table_structure:
-        scores[RegionType.TABLE] = 1
-        matched[RegionType.TABLE] = ("table-structure",)
-
-    if (
-        not scores
-        and numeric_ratio is not None
-        and numeric_ratio >= min_numeric_ratio_for_dimension
-    ):
-        scores[RegionType.DIMENSION_CHAIN] = 1
-        matched[RegionType.DIMENSION_CHAIN] = (f"numeric_ratio>={min_numeric_ratio_for_dimension}",)
+    # Structure hints apply only when no keyword matched; both hints add scores
+    # independently so a both-hints region falls through to the tie -> UNKNOWN path.
+    if not scores:
+        if has_table_structure:
+            scores[RegionType.TABLE] = 1
+            matched[RegionType.TABLE] = ("table-structure",)
+        if numeric_ratio is not None and numeric_ratio >= min_numeric_ratio_for_dimension:
+            scores[RegionType.DIMENSION_CHAIN] = 1
+            matched[RegionType.DIMENSION_CHAIN] = (
+                f"numeric_ratio>={min_numeric_ratio_for_dimension}",
+            )
 
     if not scores:
         return RegionClassification(RegionType.UNKNOWN, 0.0, ())

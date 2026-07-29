@@ -75,6 +75,17 @@ class RegionClassifierTests(unittest.TestCase):
         self.assertNotIn('"passed"', json.dumps(record))
         self.assertEqual(record["region_type"], "node")
 
+    def test_substring_collisions_do_not_produce_labels(self) -> None:
+        # Red Team MEDIUM: short stems must not bleed into common words.
+        self.assertEqual(_t("Перегородки из гипсокартона"), RegionType.UNKNOWN)
+        self.assertEqual(_t("Сталь листовая ГОСТ 19903"), RegionType.UNKNOWN)
+        self.assertEqual(_t("Планировка участка"), RegionType.UNKNOWN)
+
+    def test_both_structure_hints_is_ambiguous_unknown(self) -> None:
+        # Red Team MEDIUM #1: table + numeric hints together -> tie -> UNKNOWN, not TABLE.
+        result = classify_region("", has_table_structure=True, numeric_ratio=0.95)
+        self.assertEqual(result.region_type, RegionType.UNKNOWN)
+
 
 if __name__ == "__main__":
     unittest.main()
