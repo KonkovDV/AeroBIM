@@ -257,6 +257,9 @@ def coverage_from_report(
     for region in report.drawing_regions:
         if region.sheet_id:
             declared.append(region.sheet_id)
+    for asset in report.drawing_assets:
+        if asset.sheet_id:
+            declared.append(asset.sheet_id)
     return build_check_coverage(
         source_ids=declared,
         issues=report.issues,

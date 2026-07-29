@@ -95,6 +95,27 @@ class CoverageFromReportTests(unittest.TestCase):
         report = _report(requirements=(ParsedRequirement(rule_id="r", source="req-doc"),))
         self.assertNotIn('"passed"', json.dumps(coverage_from_report(report).to_dict()))
 
+    def test_coverage_invariant_under_verdict_flip(self) -> None:
+        # Flipping summary.passed must not change the coverage map (verdict-neutral).
+        reqs = (ParsedRequirement(rule_id="r", source="req-doc"),)
+        issues = (_issue("req-doc", _IFC),)
+        passed = _report(requirements=reqs, issues=issues)
+        failed = ValidationReport(
+            report_id=passed.report_id,
+            request_id=passed.request_id,
+            ifc_path=passed.ifc_path,
+            created_at=passed.created_at,
+            requirements=reqs,
+            issues=issues,
+            summary=ValidationSummary(
+                requirement_count=1, issue_count=1, error_count=1, warning_count=0, passed=False
+            ),
+            capabilities=passed.capabilities,
+        )
+        self.assertEqual(
+            coverage_from_report(passed).to_dict(), coverage_from_report(failed).to_dict()
+        )
+
     def test_explicit_scope_enables_checked_ok(self) -> None:
         report = _report(
             requirements=(ParsedRequirement(rule_id="r", source="req-doc"),),
