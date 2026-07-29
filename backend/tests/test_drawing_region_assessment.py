@@ -41,6 +41,7 @@ class DrawingRegionAssessmentTests(unittest.TestCase):
             text="Узел А", quality_signals=RegionQualitySignals(dpi=120, has_text=True)
         )
         self.assertEqual(result.action, RegionAction.EXPERT_REVIEW)
+        self.assertEqual(result.quality, RegionQuality.LOW_QUALITY)
         self.assertIsNone(result.classification)
 
     def test_readable_but_unknown_type_is_expert_review(self) -> None:
@@ -63,6 +64,14 @@ class DrawingRegionAssessmentTests(unittest.TestCase):
         self.assertEqual(record["action"], "auto_read")
         self.assertEqual(record["quality"], "readable")
         self.assertIsNotNone(record["classification"])
+
+    def test_to_dict_serializes_none_classification(self) -> None:
+        record = assess_drawing_region(
+            text="Узел А", quality_signals=RegionQualitySignals(dpi=50, has_text=True)
+        ).to_dict()
+        json.dumps(record)
+        self.assertIsNone(record["classification"])
+        self.assertEqual(record["action"], "expert_review")
 
 
 if __name__ == "__main__":
