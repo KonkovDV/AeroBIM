@@ -149,6 +149,38 @@ class ApiObjectAclTests(unittest.TestCase):
             )
             self.assertEqual(response.status_code, 404, response.text)
 
+    def test_cross_tenant_coverage_denied(self) -> None:
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(storage=Path(tmp), tenant="tenant-a")
+            report_id = self._seed_report(container, tenant_id="tenant-b")
+            response = client.get(
+                f"/v1/reports/{report_id}/coverage",
+                headers={"Authorization": "Bearer secret-token"},
+            )
+            self.assertEqual(response.status_code, 404, response.text)
+
+    def test_same_tenant_coverage_ok_and_verdict_neutral(self) -> None:
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(storage=Path(tmp), tenant="tenant-a")
+            report_id = self._seed_report(container, tenant_id="tenant-a")
+            response = client.get(
+                f"/v1/reports/{report_id}/coverage",
+                headers={"Authorization": "Bearer secret-token"},
+            )
+            self.assertEqual(response.status_code, 200, response.text)
+            self.assertEqual(response.json()["artifact"], "check-coverage-map")
+            self.assertNotIn('"passed"', response.text)  # verdict-neutral
+
     def _seed_job(self, container, *, tenant_id: str) -> str:
         from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
