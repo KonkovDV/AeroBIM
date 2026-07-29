@@ -26,6 +26,8 @@ def _issue(
     category: FindingCategory = FindingCategory.IFC_VALIDATION,
     element_guid: str | None = None,
     finding_id: str | None = None,
+    target_ref: str | None = None,
+    source_id: str | None = None,
 ) -> ValidationIssue:
     return ValidationIssue(
         rule_id=rule_id,
@@ -34,6 +36,8 @@ def _issue(
         category=category,
         element_guid=element_guid,
         finding_id=finding_id,
+        target_ref=target_ref,
+        source_id=source_id,
     )
 
 
@@ -107,6 +111,31 @@ class RevisionDiffTests(unittest.TestCase):
             _report("new", [_issue("Rb", finding_id="fb"), _issue("Ra", finding_id="fa")]),
         )
         self.assertEqual(list(diff.newly_reported), sorted(diff.newly_reported))
+
+    def test_composite_key_without_finding_id_distinguishes_fields(self) -> None:
+        diff = compare_report_revisions(
+            _report("old", []),
+            _report("new", [_issue("R", target_ref="a"), _issue("R", target_ref="b")]),
+        )
+        self.assertEqual(diff.summary()["newly_reported"], 2)
+
+    def test_pipe_injection_keys_stay_distinct(self) -> None:
+        # Red Team MEDIUM: a '|' inside fields must not collapse two findings into one key.
+        diff = compare_report_revisions(
+            _report("old", []),
+            _report(
+                "new",
+                [
+                    _issue("R", target_ref="sysA|sysB", source_id="c"),
+                    _issue("R", target_ref="sysA", source_id="sysB|c"),
+                ],
+            ),
+        )
+        self.assertEqual(diff.summary()["newly_reported"], 2)
+
+    def test_empty_vs_empty_is_all_zero(self) -> None:
+        diff = compare_report_revisions(_report("old", []), _report("new", []))
+        self.assertEqual(sum(diff.summary().values()), 0)
 
 
 if __name__ == "__main__":
