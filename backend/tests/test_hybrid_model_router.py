@@ -164,6 +164,25 @@ class ModelRouterTests(unittest.TestCase):
         self.assertTrue(sel.requires_human_review)
         self.assertFalse(sel.external)
 
+    def test_di_router_available_and_local_only_by_default(self) -> None:
+        from aerobim.core.config.settings import Settings
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.infrastructure.di.bootstrap import bootstrap_container
+
+        container = bootstrap_container(Settings.from_env())
+        router = container.resolve(Tokens.HYBRID_MODEL_ROUTER)
+        self.assertIsInstance(router, ModelRouter)
+        # LOCAL route -> local profile, no external egress.
+        local = router.select(decision=_decide(_C.CONFIDENTIAL, _T.LOCAL), task_type="drawing_read")
+        assert local.profile is not None
+        self.assertIs(local.profile.tier, ModelTier.LOCAL)
+        self.assertFalse(local.external)
+        # PUBLIC route -> no public profile in the default registry -> fail-closed HR, no egress.
+        public = router.select(decision=_decide(_C.PUBLIC, _T.PUBLIC), task_type="drawing_read")
+        self.assertIsNone(public.profile)
+        self.assertTrue(public.requires_human_review)
+        self.assertFalse(public.external)
+
 
 if __name__ == "__main__":
     unittest.main()
