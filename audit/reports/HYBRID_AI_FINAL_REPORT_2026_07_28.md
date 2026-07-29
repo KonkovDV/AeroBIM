@@ -144,17 +144,17 @@ P0 ✅ (классификация, policy, tenant-scoped route, public-block, A
 secret-guard, audit-event, OFF==ON, no-model-route-override, injection, лимиты). P1 ✅
 (Privacy Guard, маскирование/токенизация, restore-таблица, версии policy/mask, статусы
 маршрута + композитный гейт) / ⏳ (живое подключение pre-gate). P2 ⏳ (адаптеры провайдеров/
-локальное обнаружение сущностей ✅ `sensitive_entities.py`; маршрутизатор моделей ✅ `model_router.py`; snapshot/replay-bundle). **P3 не начат** (TEE/FHE/MPC/ZK/агенты).
+локальное обнаружение сущностей ✅ `sensitive_entities.py`; маршрутизатор моделей ✅ `model_router.py`; provider-конфиг из Settings ✅; snapshot/replay-bundle). **P3 не начат** (TEE/FHE/MPC/ZK/агенты).
 
 ## 26. Изменённые/добавленные файлы
 `domain/hybrid/{data_classification,trust_policy,audit_event,privacy_guard,sensitive_entities,model_router,__init__}.py`;
 `application/services/hybrid_route_gate.py`; `tools/export_hybrid_route_matrix.py`; `core/di/tokens.py` (+HYBRID_ROUTE_GATE);
-`infrastructure/di/bootstrap.py` (+регистрация HYBRID_ROUTE_GATE + HYBRID_MODEL_ROUTER); 4 companion-дока; README baseline.
+`infrastructure/di/bootstrap.py` (+регистрация HYBRID_ROUTE_GATE + HYBRID_MODEL_ROUTER); `core/config/settings.py` (+hybrid_provider_config_path); 4 companion-дока; README baseline.
 
-## 27. Добавленные тесты (81 hybrid)
+## 27. Добавленные тесты (85 hybrid)
 `test_hybrid_trust_policy.py` (13) · `test_hybrid_audit_event.py` (11) ·
 `test_hybrid_privacy_guard.py` (16) · `test_hybrid_route_gate.py` (13) ·
-`test_hybrid_sensitive_entities.py` (8) · `test_hybrid_model_router.py` (15) ·
+`test_hybrid_sensitive_entities.py` (8) · `test_hybrid_model_router.py` (19) ·
 `test_hybrid_route_matrix.py` (5) — fail-closed матрица,
 never-downgrade, secret-safe audit, leak/re-id/обход маскирования, verdict-neutrality, DI-resolve.
 
