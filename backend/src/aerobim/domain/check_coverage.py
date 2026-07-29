@@ -1,18 +1,24 @@
 """Check-coverage map (P0): per-source × check-family status (competitive brief P0.1/P0.5).
 
 Делает ключевое различие явным ПО КАЖДОМУ ИСТОЧНИКУ: «нарушений не найдено» — это НЕ
-то же самое, что «не проверялось». Источник получает ``CHECKED_OK`` по семейству
-проверок ТОЛЬКО если эта проверка реально выполнялась (capability OK) и находок нет;
-если проверка не выполнялась — источник ``NOT_CHECKED`` (никогда не «тихий OK»).
+то же самое, что «не проверялось».
 
-Domain-pure, **VERDICT-NEUTRAL**: это наблюдаемость/отчётность, выведенная из
-детерминированного отчёта; НЕ выставляет и не меняет ``summary.passed`` (ADR-001).
-Английские термины: coverage map — карта покрытия; family — семейство проверок.
+Честность (после Red Team): ``CHECKED_OK`` выставляется ТОЛЬКО когда (а) вызывающий
+явно передал ``scope`` и источник входит в область данного семейства, И (б) ВСЕ
+возможности семейства = OK, И (в) находок нет. Без scope или при частично-выполненной
+проверке — ``NOT_CHECKED`` (глобальный OK возможности сам по себе НЕ значит, что данный
+источник проверялся). Находки с неизвестным/``None`` источником не исчезают — они
+попадают в строку ``(unattributed)``.
+
+Domain-pure, **VERDICT-NEUTRAL**: наблюдаемость, выведенная из детерминированного
+отчёта; НЕ выставляет и не меняет ``summary.passed`` (ADR-001). Термины: coverage map —
+карта покрытия; family — семейство проверок; scope — область проверки.
 """
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
+from collections.abc import Set as AbstractSet
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any
@@ -30,25 +36,28 @@ class CoverageStatus(StrEnum):
     """Явный статус покрытия источника по семейству проверок."""
 
     CHECKED_OK = "checked_ok"
-    """Проверка выполнялась и находок нет (НЕ выставляется, если проверка не шла)."""
+    """Проверка выполнялась НА ЭТОМ ИСТОЧНИКЕ (scope) и находок нет."""
     CHECKED_FINDINGS = "checked_findings"
-    """Проверка выполнялась и есть детерминированные находки."""
+    """Есть детерминированные находки."""
     NOT_CHECKED = "not_checked"
-    """Проверка не выполнялась — «нет находок» здесь не значит «нет нарушений»."""
+    """Проверка не выполнялась / область неизвестна — «нет находок» ≠ «нет нарушений»."""
     INSUFFICIENT_DATA = "insufficient_data"
-    """Проверка запускалась, но не завершилась (capability FAILED)."""
+    """Проверка запускалась, но не завершилась (какая-то возможность семейства FAILED)."""
     REQUIRES_EXPERT = "requires_expert"
     """Только advisory-находки — требуется подтверждение эксперта."""
 
 
-# Семейство проверок -> поле ReportCapabilities, говорящее, ВЫПОЛНЯЛАСЬ ли проверка.
-_FAMILY_CAPABILITY: dict[FindingCategory, str] = {
-    FindingCategory.IFC_VALIDATION: "ifc_validation",
-    FindingCategory.IDS_VALIDATION: "ids",
-    FindingCategory.DRAWING_VALIDATION: "raster",
-    FindingCategory.CROSS_DOCUMENT: "section_pairing",
-    FindingCategory.SPATIAL: "clash",
+# Семейство -> НАБОР полей ReportCapabilities, влияющих на это семейство. CHECKED_OK
+# требует, чтобы ВСЕ они были OK (worst-state агрегация); любой FAILED -> INSUFFICIENT_DATA.
+_FAMILY_CAPABILITIES: dict[FindingCategory, tuple[str, ...]] = {
+    FindingCategory.IFC_VALIDATION: ("ifc_validation", "ifc_schema"),
+    FindingCategory.IDS_VALIDATION: ("ids",),
+    FindingCategory.DRAWING_VALIDATION: ("raster",),
+    FindingCategory.CROSS_DOCUMENT: ("section_pairing",),
+    FindingCategory.SPATIAL: ("clash", "mep_system_clash"),
 }
+
+_UNATTRIBUTED = "(unattributed)"
 
 
 @dataclass(frozen=True)
@@ -83,8 +92,9 @@ class CheckCoverageMap:
         return {
             "artifact": "check-coverage-map",
             "note": (
-                "per-source check coverage; 'no findings' != 'not checked'; "
-                "verdict-neutral — does NOT set summary.passed (ADR-001)"
+                "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK "
+                "requires explicit scope + all family capabilities OK; verdict-neutral — "
+                "does NOT set summary.passed (ADR-001)"
             ),
             "sources": [
                 {
@@ -98,27 +108,81 @@ class CheckCoverageMap:
         }
 
 
-def _capability_for(
+def _family_states(
     capabilities: ReportCapabilities, family: FindingCategory
-) -> CapabilityStatus | None:
-    field = _FAMILY_CAPABILITY.get(family)
-    if field is None:
-        return None
-    value = getattr(capabilities, field, None)
-    return value if isinstance(value, CapabilityStatus) else None
+) -> list[CapabilityState]:
+    states: list[CapabilityState] = []
+    for field in _FAMILY_CAPABILITIES.get(family, ()):
+        value = getattr(capabilities, field, None)
+        if isinstance(value, CapabilityStatus):
+            states.append(value.status)
+    return states
 
 
 def _status_without_findings(
-    capability: CapabilityStatus | None,
+    capabilities: ReportCapabilities,
+    family: FindingCategory,
+    source_id: str,
+    scope: Mapping[FindingCategory, AbstractSet[str]] | None,
 ) -> tuple[CoverageStatus, str | None]:
-    if capability is None:
+    states = _family_states(capabilities, family)
+    if not states:
         return CoverageStatus.NOT_CHECKED, "no capability mapping for this check family"
-    if capability.status is CapabilityState.OK:
+    if any(state is CapabilityState.FAILED for state in states):
+        return CoverageStatus.INSUFFICIENT_DATA, "a check in this family failed"
+    if not all(state is CapabilityState.OK for state in states):
+        # SKIPPED / MISSING / NOT_VERIFIED / NOT_IMPLEMENTED -> not fully run.
+        return CoverageStatus.NOT_CHECKED, "check family did not fully run"
+    # All family capabilities OK: CHECKED_OK still requires EXPLICIT per-source scope,
+    # otherwise a global OK would falsely mark an out-of-scope source as checked.
+    if scope is None or family not in scope:
+        return CoverageStatus.NOT_CHECKED, "check ran but per-source scope is unknown"
+    if source_id in scope[family]:
         return CoverageStatus.CHECKED_OK, None
-    if capability.status is CapabilityState.FAILED:
-        return CoverageStatus.INSUFFICIENT_DATA, capability.reason
-    # SKIPPED / MISSING / NOT_VERIFIED / NOT_IMPLEMENTED -> the check did not run.
-    return CoverageStatus.NOT_CHECKED, capability.reason
+    return CoverageStatus.NOT_CHECKED, "check ran but this source was not in its scope"
+
+
+def _has_finding(
+    issues: Sequence[ValidationIssue], source_id: str, family: FindingCategory, *, advisory: bool
+) -> bool:
+    for issue in issues:
+        if issue.source_id != source_id or issue.category is not family:
+            continue
+        # Exclusion-based: unknown/None origin counts as deterministic (never dropped).
+        is_advisory = issue.origin == "advisory"
+        if is_advisory == advisory:
+            return True
+    return False
+
+
+def _unattributed_row(
+    issues: Sequence[ValidationIssue], known: AbstractSet[str]
+) -> SourceCoverage | None:
+    det_families: set[FindingCategory] = set()
+    adv_families: set[FindingCategory] = set()
+    for issue in issues:
+        if issue.source_id in known:
+            continue  # attributed to a listed source (None/"" are never in `known`)
+        if issue.origin == "advisory":
+            adv_families.add(issue.category)
+        else:
+            det_families.add(issue.category)
+    if not det_families and not adv_families:
+        return None
+    fam_status: list[tuple[FindingCategory, CoverageStatus]] = []
+    fam_reason: list[tuple[FindingCategory, str]] = []
+    for family in FindingCategory:
+        if family in det_families:
+            fam_status.append((family, CoverageStatus.CHECKED_FINDINGS))
+            fam_reason.append((family, "finding not attributed to a listed source id"))
+        elif family in adv_families:
+            fam_status.append((family, CoverageStatus.REQUIRES_EXPERT))
+            fam_reason.append((family, "advisory finding not attributed to a listed source id"))
+        else:
+            fam_status.append((family, CoverageStatus.NOT_CHECKED))
+    return SourceCoverage(
+        source_id=_UNATTRIBUTED, families=tuple(fam_status), reasons=tuple(fam_reason)
+    )
 
 
 def build_check_coverage(
@@ -126,45 +190,43 @@ def build_check_coverage(
     source_ids: Sequence[str],
     issues: Sequence[ValidationIssue],
     capabilities: ReportCapabilities | None = None,
+    scope: Mapping[FindingCategory, AbstractSet[str]] | None = None,
 ) -> CheckCoverageMap:
     """Derive a per-source × check-family coverage map (verdict-neutral).
 
-    Rules per (source_id, family): a deterministic finding -> CHECKED_FINDINGS;
-    advisory-only finding -> REQUIRES_EXPERT; no finding + capability OK -> CHECKED_OK;
-    + capability FAILED -> INSUFFICIENT_DATA; otherwise (not run) -> NOT_CHECKED.
+    Per (source, family): a deterministic finding -> CHECKED_FINDINGS; advisory-only ->
+    REQUIRES_EXPERT; no finding + all family capabilities OK + source in ``scope[family]``
+    -> CHECKED_OK; a FAILED family capability -> INSUFFICIENT_DATA; otherwise NOT_CHECKED.
+    Findings whose ``source_id`` is unknown/None are surfaced in an ``(unattributed)`` row
+    so a real finding can never silently vanish while other rows read CHECKED_OK.
     """
     caps = capabilities if capabilities is not None else ReportCapabilities()
     unique_sources = list(dict.fromkeys(sid for sid in source_ids if sid))
+    known = set(unique_sources)
 
     rows: list[SourceCoverage] = []
     for sid in unique_sources:
         fam_status: list[tuple[FindingCategory, CoverageStatus]] = []
         fam_reason: list[tuple[FindingCategory, str]] = []
         for family in FindingCategory:
-            deterministic = any(
-                issue.source_id == sid
-                and issue.category is family
-                and (issue.origin or "deterministic") == "deterministic"
-                for issue in issues
-            )
-            advisory = any(
-                issue.source_id == sid and issue.category is family and issue.origin == "advisory"
-                for issue in issues
-            )
-            if deterministic:
+            if _has_finding(issues, sid, family, advisory=False):
                 status: CoverageStatus = CoverageStatus.CHECKED_FINDINGS
                 reason: str | None = None
-            elif advisory:
+            elif _has_finding(issues, sid, family, advisory=True):
                 status = CoverageStatus.REQUIRES_EXPERT
                 reason = "advisory-only findings require expert confirmation"
             else:
-                status, reason = _status_without_findings(_capability_for(caps, family))
+                status, reason = _status_without_findings(caps, family, sid, scope)
             fam_status.append((family, status))
             if reason:
                 fam_reason.append((family, reason))
         rows.append(
             SourceCoverage(source_id=sid, families=tuple(fam_status), reasons=tuple(fam_reason))
         )
+
+    unattributed = _unattributed_row(issues, known)
+    if unattributed is not None:
+        rows.append(unattributed)
     return CheckCoverageMap(rows=tuple(rows))
 
 
