@@ -128,6 +128,10 @@ def _status_without_findings(
     states = _family_states(capabilities, family)
     if not states:
         return CoverageStatus.NOT_CHECKED, "no capability mapping for this check family"
+    # Known-out-of-scope: this source was not part of this check at all, regardless of
+    # the family's global capability state (a family failure does not concern it).
+    if scope is not None and family in scope and source_id not in scope[family]:
+        return CoverageStatus.NOT_CHECKED, "source not in scope of this check"
     if any(state is CapabilityState.FAILED for state in states):
         return CoverageStatus.INSUFFICIENT_DATA, "a check in this family failed"
     if not all(state is CapabilityState.OK for state in states):
@@ -137,9 +141,7 @@ def _status_without_findings(
     # otherwise a global OK would falsely mark an out-of-scope source as checked.
     if scope is None or family not in scope:
         return CoverageStatus.NOT_CHECKED, "check ran but per-source scope is unknown"
-    if source_id in scope[family]:
-        return CoverageStatus.CHECKED_OK, None
-    return CoverageStatus.NOT_CHECKED, "check ran but this source was not in its scope"
+    return CoverageStatus.CHECKED_OK, None
 
 
 def _has_finding(
