@@ -1,5 +1,7 @@
 {
   "artifact": "check-coverage-map",
+  "corpus": "synthetic",
+  "disclaimer": "synthetic fixture; no customer data; not product accuracy",
   "note": "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope + all family capabilities OK; verdict-neutral — does NOT set summary.passed (ADR-001)",
   "sources": [
     {

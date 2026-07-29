@@ -41,9 +41,10 @@ class ExportCheckCoverageTests(unittest.TestCase):
         self.assertIn("(unattributed)", source_ids)
 
     def test_verdict_neutral(self) -> None:
-        self.assertNotIn("passed", self.report)
+        self.assertNotIn('"passed"', json.dumps(self.report))  # no verdict key anywhere
         self.assertNotIn("summary_passed", self.report)
         self.assertIn("verdict-neutral", self.report["note"])
+        self.assertEqual(self.report["corpus"], "synthetic")
 
     def test_reproducible_vs_committed_artifact(self) -> None:
         self.assertTrue(_ARTIFACT.exists(), "check-coverage evidence artifact missing")
