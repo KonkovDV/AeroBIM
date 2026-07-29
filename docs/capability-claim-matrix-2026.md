@@ -55,6 +55,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
 | Hybrid AI routing foundation (classify/policy/guard/audit/gate) | `domain/hybrid/*` + 80+ tests; domain-pure, verdict-neutral (OFF==ON), fail-closed, NOT in the verdict path — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
+| Per-source check-coverage map (checked / not-checked / findings / requires-expert) | `domain/check_coverage.py` + 16 tests; verdict-neutral observability; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope; not wired into the report yet |
 
 ## Run manifest (iteration 2026-07-21)
 

@@ -26,6 +26,7 @@
 | Solibri replacement | disclaimer in pilot-claim-boundary | n/a | Yes | LOW if held | Do not claim replacement |
 | Platform / automated compliance | marketing tone risk | mixed | n/a | HIGH | “Bounded openBIM Shared-gate assistant; not full compliance engine” |
 | Hybrid AI routing foundation | `domain/hybrid/*` + 80+ tests | fixture | Yes | MED if misread as delivered | Domain-pure fail-closed foundation; verdict-neutral (OFF==ON); NOT in verdict/live egress; masking ≠ anonymity |
+| Per-source check-coverage map | `domain/check_coverage.py` + 16 tests | fixture | Yes | LOW | Verdict-neutral observability; 'no findings' != 'not checked'; CHECKED_OK requires scope; not wired into report yet |
 
 Inventory JSON: [`../evidence/claims-inventory.json`](../evidence/claims-inventory.json)  
 Intake gate (all false): [`../evidence/customer-intake-gate.json`](../evidence/customer-intake-gate.json)  
