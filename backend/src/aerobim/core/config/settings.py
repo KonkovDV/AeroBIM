@@ -191,6 +191,14 @@ class Settings:
     rule as ``kimi_cache_namespace``; when set but path-unsafe the cache is DISABLED
     (fail-closed). Empty = no project boundary (tenant-level scope only).
     """
+    hybrid_provider_config_path: str | None = None
+    """Optional path to a JSON provider config for the Hybrid AI model router (P2).
+
+    Deployment-config only (trusted). When set, the DI ``HYBRID_MODEL_ROUTER`` loads its
+    ProviderRegistry from this file (enabling private/public model tiers); when unset the
+    router stays LOCAL-ONLY fail-closed (no external egress). A set path that is
+    missing/invalid fails closed LOUD at bootstrap (RuntimeError).
+    """
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -411,6 +419,9 @@ class Settings:
             ),
             kimi_cache_ttl_days=_read_optional_int("AEROBIM_KIMI_CACHE_TTL_DAYS"),
             kimi_cache_project=((os.getenv("AEROBIM_KIMI_CACHE_PROJECT") or "").strip() or None),
+            hybrid_provider_config_path=(
+                (os.getenv("AEROBIM_HYBRID_PROVIDER_CONFIG") or "").strip() or None
+            ),
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (

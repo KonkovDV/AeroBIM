@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from aerobim.application.services.agentic_review_orchestrator import AgenticReviewOrchestrator
@@ -263,26 +264,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     # external egress by default. Swapping models = config change, not a core change.
     container.register(
         Tokens.HYBRID_MODEL_ROUTER,
-        lambda _container: ModelRouter(
-            ProviderRegistry.from_config(
-                {
-                    "profiles": {
-                        "local_default": {
-                            "tier": "local",
-                            "provider": "onprem",
-                            "model_id": "local-default",
-                        },
-                        "human_review": {
-                            "tier": "local",
-                            "provider": "human",
-                            "model_id": "expert",
-                        },
-                    },
-                    "tier_defaults": {"local": "local_default"},
-                    "human_review_profile": "human_review",
-                }
-            )
-        ),
+        lambda current: _build_model_router(current.resolve(Tokens.SETTINGS)),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -631,6 +613,35 @@ def _build_bcf_api_client(settings: Settings):
             api_version=settings.bcf_api_version,
         )
     return UnconfiguredBcfApiClient()
+
+
+_DEFAULT_MODEL_ROUTER_CONFIG = {
+    "profiles": {
+        "local_default": {"tier": "local", "provider": "onprem", "model_id": "local-default"},
+        "human_review": {"tier": "local", "provider": "human", "model_id": "expert"},
+    },
+    "tier_defaults": {"local": "local_default"},
+    "human_review_profile": "human_review",
+}
+
+
+def _build_model_router(settings: Settings) -> ModelRouter:
+    """Hybrid AI model router from deployment config, else LOCAL-ONLY fail-closed.
+
+    A configured provider-config path that is missing/invalid fails closed LOUD
+    (RuntimeError) rather than silently enabling or disabling external tiers.
+    """
+    path = settings.hybrid_provider_config_path
+    if not path:
+        return ModelRouter(ProviderRegistry.from_config(_DEFAULT_MODEL_ROUTER_CONFIG))
+    config_path = Path(path)
+    if not config_path.is_file():
+        raise RuntimeError(f"AEROBIM_HYBRID_PROVIDER_CONFIG not found: {path}")
+    try:
+        data = json.loads(config_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(f"invalid hybrid provider config {path!r}: {exc}") from exc
+    return ModelRouter(ProviderRegistry.from_config(data))
 
 
 def _build_oidc_validator(settings: Settings) -> OidcTokenValidator | None:
