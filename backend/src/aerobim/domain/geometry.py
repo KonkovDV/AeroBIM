@@ -85,6 +85,27 @@ def _shoelace(ring: list[Point]) -> float:
     return total / 2.0
 
 
+def _ring_self_intersects(ring: list[Point]) -> bool:
+    """True if any pair of NON-adjacent edges of the closed ring intersects.
+
+    Shoelace area is only meaningful for a simple (non-self-intersecting) polygon; a
+    bowtie would otherwise produce a confident but meaningless (even cancelled-to-zero)
+    area. Adjacent edges share a vertex by construction and are not self-intersections.
+    """
+    n = len(ring)
+    edges = [(ring[i], ring[(i + 1) % n]) for i in range(n)]
+    for i in range(n):
+        for j in range(i + 1, n):
+            adjacent = j == i + 1 or (i == 0 and j == n - 1)
+            if adjacent:
+                continue
+            a1, a2 = edges[i]
+            b1, b2 = edges[j]
+            if segments_intersect(a1, a2, b1, b2):
+                return True
+    return False
+
+
 def measure_polygon_area(
     polyline: Polyline, *, unit: str | None = None, tol: float = 1e-6
 ) -> Measurement:
@@ -102,7 +123,19 @@ def measure_polygon_area(
         return Measurement(
             "area", None, unit, GeometryStatus.INCOMPLETE, ("open contour; area undefined",)
         )
+    if _ring_self_intersects(ring):
+        return Measurement(
+            "area",
+            None,
+            unit,
+            GeometryStatus.INVALID,
+            ("self-intersecting contour; shoelace area undefined",),
+        )
     area = abs(_shoelace(ring))
+    if area <= tol * tol:
+        return Measurement(
+            "area", None, unit, GeometryStatus.INCOMPLETE, ("degenerate contour; near-zero area",)
+        )
     if unit is None:
         return Measurement(
             "area",
@@ -146,9 +179,14 @@ def _on_segment(a: Point, b: Point, p: Point) -> bool:
 
 
 def segments_intersect(p1: Point, p2: Point, p3: Point, p4: Point) -> bool:
-    """True if segment p1p2 intersects p3p4 (proper crossing or collinear touch)."""
+    """True if segment p1p2 intersects p3p4 (proper crossing or collinear touch).
+
+    Raises ``ValueError`` on a non-finite coordinate: an invalid segment has no honest
+    intersection answer, so callers get a loud failure rather than a silent ``False``
+    that would read as 'no clash'. Pre-gate geometry via ``validate_geometry_document``.
+    """
     if not all(_finite(p) for p in (p1, p2, p3, p4)):
-        return False
+        raise ValueError("non-finite coordinate in segment")
     d1, d2 = _orient(p3, p4, p1), _orient(p3, p4, p2)
     d3, d4 = _orient(p1, p2, p3), _orient(p1, p2, p4)
     if ((d1 > 0) != (d2 > 0)) and ((d3 > 0) != (d4 > 0)):

@@ -52,6 +52,18 @@ class GeometryTests(unittest.TestCase):
         )
         self.assertEqual(m.status, GeometryStatus.INVALID)
 
+    def test_area_self_intersecting_is_invalid(self) -> None:
+        # Red Team HIGH: a bowtie must NOT return a confident (cancelled) area with OK.
+        bowtie = Polyline(points=((0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 1.0)), closed=True)
+        m = measure_polygon_area(bowtie, unit="mm")
+        self.assertEqual(m.status, GeometryStatus.INVALID)
+        self.assertIsNone(m.value)
+
+    def test_area_collinear_degenerate_is_incomplete(self) -> None:
+        collinear = Polyline(points=((0.0, 0.0), (1.0, 1.0), (2.0, 2.0)), closed=True)
+        m = measure_polygon_area(collinear, unit="mm")
+        self.assertEqual(m.status, GeometryStatus.INCOMPLETE)
+
     def test_length_of_polyline(self) -> None:
         m = measure_polyline_length(Polyline(points=((0.0, 0.0), (0.0, 3.0))), unit="m")
         self.assertEqual(m.status, GeometryStatus.OK)
@@ -75,10 +87,9 @@ class GeometryTests(unittest.TestCase):
     def test_segments_do_not_intersect_parallel(self) -> None:
         self.assertFalse(segments_intersect((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)))
 
-    def test_segments_intersect_non_finite_is_false(self) -> None:
-        self.assertFalse(
+    def test_segments_intersect_non_finite_raises(self) -> None:
+        with self.assertRaises(ValueError):
             segments_intersect((0.0, 0.0), (float("nan"), 2.0), (0.0, 2.0), (2.0, 0.0))
-        )
 
     def test_polylines_intersect(self) -> None:
         a = Polyline(points=((0.0, 0.0), (2.0, 2.0)))
