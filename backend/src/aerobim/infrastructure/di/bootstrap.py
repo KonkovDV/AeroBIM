@@ -22,6 +22,7 @@ from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container, Lifecycle
 from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import resolve_storage_path
+from aerobim.domain.hybrid.model_router import ModelRouter, ProviderRegistry
 from aerobim.domain.models import Severity, ToleranceConfig
 from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
 from aerobim.infrastructure.adapters.bsi_validation_service import (
@@ -254,6 +255,34 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.HYBRID_ROUTE_GATE,
         lambda _container: HybridRouteGate(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    # Hybrid AI model router (P2): AVAILABLE + config-driven, but (like HYBRID_ROUTE_GATE)
+    # NOT consumed by the verdict use case. Default registry is local-only (fail-closed):
+    # private/public tiers require a deployment-provided provider config, so there is no
+    # external egress by default. Swapping models = config change, not a core change.
+    container.register(
+        Tokens.HYBRID_MODEL_ROUTER,
+        lambda _container: ModelRouter(
+            ProviderRegistry.from_config(
+                {
+                    "profiles": {
+                        "local_default": {
+                            "tier": "local",
+                            "provider": "onprem",
+                            "model_id": "local-default",
+                        },
+                        "human_review": {
+                            "tier": "local",
+                            "provider": "human",
+                            "model_id": "expert",
+                        },
+                    },
+                    "tier_defaults": {"local": "local_default"},
+                    "human_review_profile": "human_review",
+                }
+            )
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
