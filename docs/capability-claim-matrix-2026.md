@@ -56,6 +56,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
 | Hybrid AI routing foundation (classify/policy/guard/audit/gate) | `domain/hybrid/*` + 80+ tests; domain-pure, verdict-neutral (OFF==ON), fail-closed, NOT in the verdict path — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
 | Per-source check-coverage map (checked / not-checked / findings / requires-expert) | `domain/check_coverage.py` + 16 tests; verdict-neutral observability; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope; not wired into the report yet |
+| Advisory domain modules (drawing region quality/type/assessment, revision diff, norm applicability) | `domain/{region_quality,region_classifier,drawing_region_assessment,revision_diff,norm_applicability}.py` + tests; domain-pure, verdict-neutral (do NOT set summary.passed), fixture-only, NOT wired into ingestion/verdict; bad/unknown/ambiguous → escalate, never a silent OK/guess |
 
 ## Run manifest (iteration 2026-07-21)
 
