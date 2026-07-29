@@ -148,17 +148,19 @@ secret-guard, audit-event, OFF==ON, no-model-route-override, injection, лими
 
 ## 26. Изменённые/добавленные файлы
 `domain/hybrid/{data_classification,trust_policy,audit_event,privacy_guard,sensitive_entities,model_router,__init__}.py`;
-`application/services/hybrid_route_gate.py`; `core/di/tokens.py` (+HYBRID_ROUTE_GATE);
+`application/services/hybrid_route_gate.py`; `tools/export_hybrid_route_matrix.py`; `core/di/tokens.py` (+HYBRID_ROUTE_GATE);
 `infrastructure/di/bootstrap.py` (+регистрация); 4 companion-дока; README baseline.
 
-## 27. Добавленные тесты (75 hybrid)
+## 27. Добавленные тесты (80 hybrid)
 `test_hybrid_trust_policy.py` (13) · `test_hybrid_audit_event.py` (11) ·
 `test_hybrid_privacy_guard.py` (16) · `test_hybrid_route_gate.py` (13) ·
-`test_hybrid_sensitive_entities.py` (8) · `test_hybrid_model_router.py` (14) — fail-closed матрица,
+`test_hybrid_sensitive_entities.py` (8) · `test_hybrid_model_router.py` (14) ·
+`test_hybrid_route_matrix.py` (5) — fail-closed матрица,
 never-downgrade, secret-safe audit, leak/re-id/обход маскирования, verdict-neutrality, DI-resolve.
 
 ## 28. Созданные артефакты
-`audit/evidence/hybrid-routing-policy-tests-2026-07-28.json` (матрица+fail-closed+limitations).
+`audit/evidence/hybrid-routing-policy-tests-2026-07-28.json` (матрица+fail-closed+limitations) +
+`audit/evidence/hybrid-route-matrix-2026-07-29.json` (полная матрица class×target×task; external только для PUBLIC; воспроизводимо).
 Остальные из §22 (tenant-isolation/prompt-injection/masking/off-equals-on/replay/egress) —
 **покрыты тестами**; отдельные JSON — по мере P1-wire на живом пути (честно: пока не materialized).
 
