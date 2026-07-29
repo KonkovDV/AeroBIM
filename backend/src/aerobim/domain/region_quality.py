@@ -13,6 +13,7 @@ auto-reading, not the engineering verdict.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any
@@ -71,31 +72,38 @@ class RegionQualityResult:
         }
 
 
+def _finite(value: float | None) -> float | None:
+    """Treat None and non-finite (NaN/±inf) as UNKNOWN — never silently good."""
+    return value if value is not None and math.isfinite(value) else None
+
+
 def assess_region_quality(
     signals: RegionQualitySignals,
     thresholds: RegionQualityThresholds | None = None,
 ) -> RegionQualityResult:
     """Assess a region's quality (worst-severity wins; READABLE needs positive evidence)."""
     t = thresholds if thresholds is not None else RegionQualityThresholds()
-    if all(
-        value is None
-        for value in (signals.dpi, signals.skew_deg, signals.has_text, signals.text_char_count)
-    ):
+    # Normalize non-finite (NaN/±inf) numeric signals to None: a corrupt/failed
+    # measurement is UNKNOWN, never silently good (NaN comparisons are all False,
+    # which would otherwise fall through to READABLE — the exact hole this gate closes).
+    dpi = _finite(signals.dpi)
+    skew_deg = _finite(signals.skew_deg)
+    if all(value is None for value in (dpi, skew_deg, signals.has_text, signals.text_char_count)):
         return RegionQualityResult(RegionQuality.REVIEW_REQUIRED, ("no quality signals provided",))
 
     verdicts: list[RegionQuality] = []
     reasons: list[str] = []
 
-    if signals.dpi is not None:
-        if signals.dpi < t.unreadable_dpi:
+    if dpi is not None:
+        if dpi < t.unreadable_dpi:
             verdicts.append(RegionQuality.UNREADABLE)
-            reasons.append(f"dpi {signals.dpi} below unreadable floor {t.unreadable_dpi}")
-        elif signals.dpi < t.low_dpi:
+            reasons.append(f"dpi {dpi} below unreadable floor {t.unreadable_dpi}")
+        elif dpi < t.low_dpi:
             verdicts.append(RegionQuality.LOW_QUALITY)
-            reasons.append(f"dpi {signals.dpi} below recommended {t.low_dpi}")
+            reasons.append(f"dpi {dpi} below recommended {t.low_dpi}")
 
-    if signals.skew_deg is not None:
-        skew = abs(signals.skew_deg)
+    if skew_deg is not None:
+        skew = abs(skew_deg)
         if skew > t.unreadable_skew_deg:
             verdicts.append(RegionQuality.UNREADABLE)
             reasons.append(f"skew {skew}° exceeds unreadable max {t.unreadable_skew_deg}°")
@@ -117,9 +125,10 @@ def assess_region_quality(
 
     # No negative trigger. READABLE requires POSITIVE resolution evidence — otherwise
     # we cannot confirm readability and must fail safe to expert review.
-    if signals.dpi is None:
+    if dpi is None:
         return RegionQualityResult(
-            RegionQuality.REVIEW_REQUIRED, ("resolution unknown; cannot confirm readable",)
+            RegionQuality.REVIEW_REQUIRED,
+            ("resolution unknown or invalid; cannot confirm readable",),
         )
     return RegionQualityResult(
         RegionQuality.READABLE, ("all known quality signals within thresholds",)
