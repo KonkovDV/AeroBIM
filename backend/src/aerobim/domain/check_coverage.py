@@ -28,6 +28,7 @@ from aerobim.domain.models import (
     CapabilityStatus,
     FindingCategory,
     ReportCapabilities,
+    RuleScope,
     ValidationIssue,
     ValidationReport,
 )
@@ -273,17 +274,27 @@ def _capability_ok(capability: object) -> bool:
 
 
 def derive_report_scope(report: ValidationReport) -> dict[FindingCategory, set[str]]:
-    """Provable per-source scope derived from a report's DECLARED inputs + capabilities.
+    """Per-source scope derived from a report by EVIDENCE OF PROCESSING (not co-occurrence).
 
-    A declared requirement source is in scope for a family whose check provably ran (its
-    capability is OK) and which processes requirement content: IFC_VALIDATION / IDS /
-    CROSS_DOCUMENT. Drawing sheets are in scope for DRAWING_VALIDATION when raster ran.
-    SPATIAL (clash) is element/model-level, NOT per-document, so it is intentionally not
-    per-source scoped here (doc/sheet sources stay NOT_CHECKED for SPATIAL). Conservative:
-    scope is granted only when the capability is OK, so CHECKED_OK stays honest.
+    Honest derivation (after Red Team): a source is scoped for a family only when the
+    report shows that family actually processed it.
+    - IFC_VALIDATION: only sources contributing an IFC-scoped rule (the IFC validator skips
+      drawing-annotation rules), and only when ``ifc_validation`` is OK.
+    - DRAWING_VALIDATION: only sheets with extracted annotations/regions (evidence of OCR
+      yield — NOT asset-only/zero-yield sheets), and only when ``raster`` is OK.
+    - IDS and CROSS_DOCUMENT are intentionally NOT auto-scoped: an OK ``ids`` proves the IDS
+      XML was validated against the model (not that a requirement source was processed), and
+      ``section_pairing`` proves only the PD/RD pair. Those stay NOT_CHECKED honestly until
+      the analyze use case records true per-source scope. SPATIAL is element/model-level.
     """
     caps = report.capabilities if report.capabilities is not None else ReportCapabilities()
-    doc_sources = {req.source for req in report.requirements if req.source}
+    ifc_sources = {
+        req.source
+        for req in report.requirements
+        if req.source and req.rule_scope in (RuleScope.IFC_PROPERTY, RuleScope.IFC_QUANTITY)
+    }
+    # Only sheets with processing evidence (annotations/regions); assets register file
+    # presence, not OCR yield, so a zero-yield sheet must not look auto-read.
     sheet_sources: set[str] = set()
     for annotation in report.drawing_annotations:
         if annotation.sheet_id:
@@ -291,17 +302,10 @@ def derive_report_scope(report: ValidationReport) -> dict[FindingCategory, set[s
     for region in report.drawing_regions:
         if region.sheet_id:
             sheet_sources.add(region.sheet_id)
-    for asset in report.drawing_assets:
-        if asset.sheet_id:
-            sheet_sources.add(asset.sheet_id)
 
     scope: dict[FindingCategory, set[str]] = {}
     if _capability_ok(caps.ifc_validation):
-        scope[FindingCategory.IFC_VALIDATION] = doc_sources
-    if _capability_ok(caps.ids):
-        scope[FindingCategory.IDS_VALIDATION] = doc_sources
-    if _capability_ok(caps.section_pairing):
-        scope[FindingCategory.CROSS_DOCUMENT] = doc_sources
+        scope[FindingCategory.IFC_VALIDATION] = ifc_sources
     if _capability_ok(caps.raster):
         scope[FindingCategory.DRAWING_VALIDATION] = sheet_sources
     return scope

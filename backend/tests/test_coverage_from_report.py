@@ -15,9 +15,11 @@ from aerobim.domain.check_coverage import CoverageStatus, coverage_from_report, 
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
+    DrawingAsset,
     FindingCategory,
     ParsedRequirement,
     ReportCapabilities,
+    RuleScope,
     Severity,
     ValidationIssue,
     ValidationReport,
@@ -46,6 +48,7 @@ def _report(
     requirements: tuple[ParsedRequirement, ...] = (),
     issues: tuple[ValidationIssue, ...] = (),
     capabilities: ReportCapabilities | None = None,
+    drawing_assets: tuple[DrawingAsset, ...] = (),
 ) -> ValidationReport:
     return ValidationReport(
         report_id="rep",
@@ -62,6 +65,7 @@ def _report(
             passed=True,
         ),
         capabilities=capabilities,
+        drawing_assets=drawing_assets,
     )
 
 
@@ -153,6 +157,59 @@ class CoverageFromReportTests(unittest.TestCase):
     def test_derive_scope_omits_family_when_capability_not_ok(self) -> None:
         report = _report(requirements=(ParsedRequirement(rule_id="r", source="spec"),))
         self.assertEqual(derive_report_scope(report), {})
+
+    def test_ids_and_cross_document_are_not_auto_scoped(self) -> None:
+        # Red Team HIGH-2/MEDIUM-1: an OK ids/section_pairing does not prove a requirement
+        # source was processed -> must NOT auto-scope (stays NOT_CHECKED honestly).
+        report = _report(
+            requirements=(ParsedRequirement(rule_id="r", source="spec"),),
+            capabilities=ReportCapabilities(
+                ids=CapabilityStatus(CapabilityState.OK),
+                section_pairing=CapabilityStatus(CapabilityState.OK),
+            ),
+        )
+        scope = derive_report_scope(report)
+        self.assertNotIn(_IDS, scope)
+        self.assertNotIn(FindingCategory.CROSS_DOCUMENT, scope)
+        row = next(
+            r for r in coverage_from_report(report, scope=scope).rows if r.source_id == "spec"
+        )
+        self.assertEqual(row.status_for(_IDS), CoverageStatus.NOT_CHECKED)
+
+    def test_drawing_annotation_only_source_not_ifc_scoped(self) -> None:
+        # Red Team HIGH-1: the IFC validator skips drawing-annotation rules.
+        report = _report(
+            requirements=(
+                ParsedRequirement(
+                    rule_id="r", source="sheet.pdf", rule_scope=RuleScope.DRAWING_ANNOTATION
+                ),
+            ),
+            capabilities=ReportCapabilities(
+                ifc_validation=CapabilityStatus(CapabilityState.OK),
+                ifc_schema=CapabilityStatus(CapabilityState.OK),
+            ),
+        )
+        scope = derive_report_scope(report)
+        self.assertEqual(scope.get(_IFC, set()), set())
+        row = next(
+            r for r in coverage_from_report(report, scope=scope).rows if r.source_id == "sheet.pdf"
+        )
+        self.assertEqual(row.status_for(_IFC), CoverageStatus.NOT_CHECKED)
+
+    def test_asset_only_sheet_not_drawing_scoped(self) -> None:
+        # Red Team MEDIUM-2: asset registers file presence, not OCR yield.
+        report = _report(
+            capabilities=ReportCapabilities(raster=CapabilityStatus(CapabilityState.OK)),
+            drawing_assets=(DrawingAsset(asset_id="A1", sheet_id="A-101"),),
+        )
+        scope = derive_report_scope(report)
+        self.assertEqual(scope.get(FindingCategory.DRAWING_VALIDATION, set()), set())
+        row = next(
+            r for r in coverage_from_report(report, scope=scope).rows if r.source_id == "A-101"
+        )
+        self.assertEqual(
+            row.status_for(FindingCategory.DRAWING_VALIDATION), CoverageStatus.NOT_CHECKED
+        )
 
 
 if __name__ == "__main__":
