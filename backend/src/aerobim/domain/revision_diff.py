@@ -9,10 +9,14 @@ IFC element-GUID delta (appeared / disappeared elements).
 нет в новой» — это НЕ утверждение «исправлено» (проверка могла просто не выполниться;
 сверяйте с картой покрытия). Сравниваются ТОЛЬКО находки + элементы, на которые они
 ссылаются, а не полный инвентарь IFC. Не читает и не выставляет ``summary.passed`` (ADR-001).
+
+Ограничение схемы ключа: если у одной и той же находки ``finding_id`` появляется между
+ревизиями, она отобразится и как ``no_longer_reported``, и как ``newly_reported`` (churn).
 """
 
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -31,7 +35,9 @@ def _finding_key(issue: ValidationIssue) -> str:
         issue.target_ref or "",
         issue.source_id or "",
     )
-    return "key:" + "|".join(parts)
+    # json.dumps is delimiter-proof: a '|' inside any field cannot shift key
+    # boundaries and collapse two distinct findings into one (false still_reported).
+    return "key:" + json.dumps(parts, ensure_ascii=True, separators=(",", ":"))
 
 
 def _finding_keys(issues: Sequence[ValidationIssue]) -> set[str]:
