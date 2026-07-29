@@ -307,7 +307,17 @@ def derive_report_scope(report: ValidationReport) -> dict[FindingCategory, set[s
     if _capability_ok(caps.ifc_validation):
         scope[FindingCategory.IFC_VALIDATION] = ifc_sources
     if _capability_ok(caps.raster):
-        scope[FindingCategory.DRAWING_VALIDATION] = sheet_sources
+        # DRAWING_VALIDATION findings are attributed to the requirement source (e.g. spec.pdf),
+        # NOT the sheet id. If any such finding is attributed off-sheet, granting per-sheet
+        # DRAWING scope would let a sheet read CHECKED_OK while a drawing finding exists ->
+        # omit DRAWING scope entirely (sheets stay NOT_CHECKED honestly).
+        offsheet_drawing_finding = any(
+            issue.category is FindingCategory.DRAWING_VALIDATION
+            and issue.source_id not in sheet_sources
+            for issue in report.issues
+        )
+        if not offsheet_drawing_finding:
+            scope[FindingCategory.DRAWING_VALIDATION] = sheet_sources
     return scope
 
 

@@ -16,6 +16,7 @@ from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
     DrawingAsset,
+    DrawingRegionRef,
     FindingCategory,
     ParsedRequirement,
     ReportCapabilities,
@@ -49,6 +50,7 @@ def _report(
     issues: tuple[ValidationIssue, ...] = (),
     capabilities: ReportCapabilities | None = None,
     drawing_assets: tuple[DrawingAsset, ...] = (),
+    drawing_regions: tuple[DrawingRegionRef, ...] = (),
 ) -> ValidationReport:
     return ValidationReport(
         report_id="rep",
@@ -66,6 +68,7 @@ def _report(
         ),
         capabilities=capabilities,
         drawing_assets=drawing_assets,
+        drawing_regions=drawing_regions,
     )
 
 
@@ -209,6 +212,42 @@ class CoverageFromReportTests(unittest.TestCase):
         )
         self.assertEqual(
             row.status_for(FindingCategory.DRAWING_VALIDATION), CoverageStatus.NOT_CHECKED
+        )
+
+    def test_offsheet_drawing_finding_blocks_sheet_checked_ok(self) -> None:
+        # Deep Red Team: DRAWING findings are attributed to the requirement source, not the
+        # sheet id -> a sheet must NOT read CHECKED_OK while such a finding exists off-sheet.
+        region = DrawingRegionRef(
+            sheet_id="sheet-12", bbox_xyxy=(0.0, 0.0, 1.0, 1.0), confidence=0.9, modality="ocr"
+        )
+        report = _report(
+            issues=(_issue("spec.pdf", FindingCategory.DRAWING_VALIDATION),),
+            capabilities=ReportCapabilities(raster=CapabilityStatus(CapabilityState.OK)),
+            drawing_regions=(region,),
+        )
+        scope = derive_report_scope(report)
+        self.assertNotIn(FindingCategory.DRAWING_VALIDATION, scope)
+        row = next(
+            r for r in coverage_from_report(report, scope=scope).rows if r.source_id == "sheet-12"
+        )
+        self.assertEqual(
+            row.status_for(FindingCategory.DRAWING_VALIDATION), CoverageStatus.NOT_CHECKED
+        )
+
+    def test_clean_sheet_checked_ok_without_offsheet_drawing_finding(self) -> None:
+        region = DrawingRegionRef(
+            sheet_id="sheet-12", bbox_xyxy=(0.0, 0.0, 1.0, 1.0), confidence=0.9, modality="ocr"
+        )
+        report = _report(
+            capabilities=ReportCapabilities(raster=CapabilityStatus(CapabilityState.OK)),
+            drawing_regions=(region,),
+        )
+        scope = derive_report_scope(report)
+        row = next(
+            r for r in coverage_from_report(report, scope=scope).rows if r.source_id == "sheet-12"
+        )
+        self.assertEqual(
+            row.status_for(FindingCategory.DRAWING_VALIDATION), CoverageStatus.CHECKED_OK
         )
 
 
