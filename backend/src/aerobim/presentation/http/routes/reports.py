@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from aerobim.application.services.review_kpi import summarize_review_events
 from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import PathJailError, reject_symlinks
+from aerobim.domain.check_coverage import coverage_from_report
 from aerobim.domain.models import ReportListFilters, ReviewEvent
 from aerobim.domain.object_acl import AuthPrincipal, principal_may_access_report
 from aerobim.domain.review_state_machine import (
@@ -78,6 +79,20 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         ctx.assert_report_access(report, principal)
         return ctx.serialize_public_report(report)
+
+    @router.get("/v1/reports/{report_id}/coverage")
+    def get_report_coverage(
+        report_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        # Read-only, verdict-neutral: per-source check-coverage derived on-the-fly from
+        # the stored report ('no findings' != 'not checked'). Never sets summary.passed.
+        ctx.validate_report_id(report_id)
+        report = audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        ctx.assert_report_access(report, principal)
+        return coverage_from_report(report).to_dict()
 
     @router.post("/v1/reports/{report_id}/review-events")
     def append_review_event(
