@@ -1,16 +1,16 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.1.0",
-  "commit_sha": "824c4a5d9fcdc7db01726ca413d4c41d8a0c2f8e",
-  "generated_at": "2026-07-28T19:53:34.977546+00:00",
+  "commit_sha": "2a917c4e2ba87776b222b7866846e269c549b754",
+  "generated_at": "2026-07-29T09:50:16.075316+00:00",
   "corpus_kind": "fixture",
   "backend": {
-    "tests_collected": 1373,
+    "tests_collected": 1384,
     "tests_passed": null,
     "tests_skipped": null,
-    "source_loc": 39563,
-    "test_loc": 29503,
-    "test_functions": 1373
+    "source_loc": 39736,
+    "test_loc": 29621,
+    "test_functions": 1384
   },
   "frontend": {
     "tests_passed": 29,
@@ -24,10 +24,10 @@
     "build": "UNKNOWN"
   },
   "metrics": {
-    "backend_src_loc": 39563,
-    "backend_test_loc": 29503,
-    "backend_test_functions": 1373,
+    "backend_src_loc": 39736,
+    "backend_test_loc": 29621,
+    "backend_test_functions": 1384,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~39563 LOC; tests ~29503 LOC; 1373+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
+  "readme_snippet": "Backend src ~39736 LOC; tests ~29621 LOC; 1384+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
 }
