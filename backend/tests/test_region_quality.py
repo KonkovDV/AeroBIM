@@ -7,6 +7,7 @@ severity wins; only READABLE is usable_for_auto_read. Verdict-neutral.
 from __future__ import annotations
 
 import json
+import math
 import unittest
 
 from aerobim.domain.region_quality import (
@@ -75,6 +76,23 @@ class RegionQualityTests(unittest.TestCase):
         self.assertNotIn('"passed"', json.dumps(record))
         self.assertEqual(record["quality"], "readable")
         self.assertTrue(record["usable_for_auto_read"])
+
+    def test_nan_dpi_is_never_readable(self) -> None:
+        # Red Team HIGH: NaN comparisons are all False; NaN dpi must NOT fall through to READABLE.
+        result = assess_region_quality(RegionQualitySignals(dpi=float("nan"), has_text=True))
+        self.assertEqual(result.quality, RegionQuality.REVIEW_REQUIRED)
+        self.assertFalse(result.usable_for_auto_read())
+
+    def test_inf_dpi_is_never_readable(self) -> None:
+        result = assess_region_quality(RegionQualitySignals(dpi=math.inf, has_text=True))
+        self.assertFalse(result.usable_for_auto_read())
+
+    def test_nan_skew_normalizes_to_unknown(self) -> None:
+        # NaN skew is treated as unknown (like None): with known-good dpi -> READABLE.
+        self.assertEqual(_q(dpi=300, skew_deg=float("nan"), has_text=True), RegionQuality.READABLE)
+
+    def test_boundary_dpi_floor_is_low_quality(self) -> None:
+        self.assertEqual(_q(dpi=72, has_text=True), RegionQuality.LOW_QUALITY)
 
 
 if __name__ == "__main__":
