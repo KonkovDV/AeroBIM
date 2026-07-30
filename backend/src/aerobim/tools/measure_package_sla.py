@@ -161,12 +161,11 @@ def package_scale(
     ifc_bytes = sum(_bytes(entry) for entry in referenced if _path(entry).lower().endswith(".ifc"))
     largest_input_bytes = max((_bytes(entry) for entry in referenced), default=0)
 
-    drawing_count = 0
-    for scope in (manifest, manifest.get("request")):
-        if isinstance(scope, dict):
-            drawings = scope.get("drawings")
-            if isinstance(drawings, list):
-                drawing_count += len(drawings)
+    # Drawings live in one scope (nested "request" preferred); count once (RT-3).
+    request_scope = manifest.get("request")
+    request_drawings = request_scope.get("drawings") if isinstance(request_scope, dict) else None
+    drawings = request_drawings if isinstance(request_drawings, list) else manifest.get("drawings")
+    drawing_count = len(drawings) if isinstance(drawings, list) else 0
 
     is_representative = (
         total_input_bytes >= REPRESENTATIVE_MIN_INPUT_BYTES

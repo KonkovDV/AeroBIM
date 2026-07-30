@@ -47,3 +47,17 @@ def test_measure_sla_emits_package_scale_for_pilot_pack() -> None:
     assert result["representative_scale"] is False
     # request-nested inputs are now resolved into the inventory.
     assert int(scale["input_files"]) >= 1
+
+
+def test_package_scale_drawing_count_no_double_count() -> None:
+    # RT-3: drawings referenced in both manifest and request scopes are counted once.
+    inventory = [
+        {"path": "packs/p.json", "bytes": 100},
+        {"path": "a.ifc", "bytes": 10},
+    ]
+    manifest = {
+        "drawings": [{"path": "top.txt"}],
+        "request": {"drawings": [{"path": "r.txt"}, {"path": "r2.txt"}]},
+    }
+    scale = package_scale(inventory, manifest=manifest)
+    assert scale["drawing_count"] == 2
