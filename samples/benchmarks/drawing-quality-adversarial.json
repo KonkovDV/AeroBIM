@@ -1,0 +1,76 @@
+{
+  "artifact_type": "drawing_quality_adversarial_fixtures",
+  "schema_version": "1.0.0",
+  "note": "Adversarial drawing-region quality signals (TR-233 / Red Team A5). Each case MUST assess to a non-READABLE quality (usable_for_auto_read=false): a bad or unknown scan is never 'no violations'. Signal-level fixtures only: the system does NOT do human-level CV (cv_human_level=MISSING) -- a stamp/handwriting/bad scan is modeled via the degraded signals it produces (low dpi, skew, few recognized chars, corrupt NaN/inf, or absent signals), not by recognizing the stamp itself. NaN/inf encoded as strings ('nan'/'inf') to keep valid JSON.",
+  "cases": [
+    {
+      "id": "low-dpi-60-scan",
+      "description": "60 dpi scan below the unreadable floor",
+      "signals": {
+        "dpi": 60.0,
+        "has_text": true,
+        "text_char_count": 40
+      }
+    },
+    {
+      "id": "skewed-20deg",
+      "description": "heavily skewed page (20 degrees)",
+      "signals": {
+        "dpi": 300.0,
+        "skew_deg": 20.0,
+        "has_text": true,
+        "text_char_count": 40
+      }
+    },
+    {
+      "id": "blank-no-text",
+      "description": "OCR found no text (blank or failed extraction)",
+      "signals": {
+        "dpi": 300.0,
+        "has_text": false
+      }
+    },
+    {
+      "id": "handwriting-few-chars",
+      "description": "handwritten note: OCR recognizes almost nothing",
+      "signals": {
+        "dpi": 300.0,
+        "has_text": true,
+        "text_char_count": 1
+      }
+    },
+    {
+      "id": "stamp-over-text",
+      "description": "stamp over text: mild skew plus reduced recognized text",
+      "signals": {
+        "dpi": 300.0,
+        "skew_deg": 6.0,
+        "has_text": true,
+        "text_char_count": 2
+      }
+    },
+    {
+      "id": "nan-inf-corrupt",
+      "description": "corrupt/failed measurements (NaN/inf) with text must not fall through to readable",
+      "signals": {
+        "dpi": "nan",
+        "skew_deg": "inf",
+        "has_text": true,
+        "text_char_count": 50
+      }
+    },
+    {
+      "id": "unknown-resolution",
+      "description": "text present but resolution unknown -> cannot confirm readable",
+      "signals": {
+        "has_text": true,
+        "text_char_count": 50
+      }
+    },
+    {
+      "id": "no-signals",
+      "description": "no quality signals provided at all",
+      "signals": {}
+    }
+  ]
+}
