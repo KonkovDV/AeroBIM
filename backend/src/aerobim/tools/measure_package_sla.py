@@ -43,21 +43,36 @@ def _pack_file_inventory(pack_path: Path) -> list[dict[str, object]]:
 
     root = pack_path.parent
     candidates: list[Path] = []
-    for key in ("ifc_path", "ids_path", "drawing_path", "calculation_path"):
-        raw = manifest.get(key)
-        if isinstance(raw, str) and raw.strip():
-            candidates.append(Path(raw))
-    for key in ("drawings", "requirements", "assets"):
-        raw = manifest.get(key)
-        if isinstance(raw, list):
-            for item in raw:
-                if isinstance(item, str):
-                    candidates.append(Path(item))
-                elif isinstance(item, dict):
-                    for nested in ("path", "ifc_path", "drawing_path"):
-                        value = item.get(nested)
-                        if isinstance(value, str) and value.strip():
-                            candidates.append(Path(value))
+    # Packs may nest input paths under a "request" object; scan both scopes so the
+    # inventory reflects the real referenced files, not just the manifest itself.
+    scopes = [manifest]
+    request = manifest.get("request")
+    if isinstance(request, dict):
+        scopes.append(request)
+    single_keys = (
+        "ifc_path",
+        "ids_path",
+        "drawing_path",
+        "calculation_path",
+        "requirement_path",
+        "technical_spec_path",
+    )
+    for scope in scopes:
+        for key in single_keys:
+            raw = scope.get(key)
+            if isinstance(raw, str) and raw.strip():
+                candidates.append(Path(raw))
+        for key in ("drawings", "requirements", "assets"):
+            raw = scope.get(key)
+            if isinstance(raw, list):
+                for item in raw:
+                    if isinstance(item, str):
+                        candidates.append(Path(item))
+                    elif isinstance(item, dict):
+                        for nested in ("path", "ifc_path", "drawing_path"):
+                            value = item.get(nested)
+                            if isinstance(value, str) and value.strip():
+                                candidates.append(Path(value))
 
     seen: set[str] = {str(pack_path.resolve())}
     for rel in candidates:
@@ -115,6 +130,63 @@ def _machine_fingerprint_complete(machine: dict[str, object]) -> bool:
     )
 
 
+REPRESENTATIVE_MIN_INPUT_BYTES = 1_048_576  # 1 MiB of referenced input files
+REPRESENTATIVE_MIN_INPUT_FILES = 3
+
+
+def package_scale(
+    inventory: list[dict[str, object]],
+    *,
+    manifest: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Aggregate package scale so a trivially small pack cannot be mistaken for a
+    real-scale SLA run (Red Team A2/A13). Observability only: verdict-neutral and
+    non-gating -- it surfaces size, it does not pass/fail the run.
+    """
+
+    manifest = manifest or {}
+    # inventory[0] is the pack manifest file itself; the rest are referenced inputs.
+    referenced = inventory[1:] if inventory else []
+
+    def _bytes(entry: dict[str, object]) -> int:
+        value = entry.get("bytes")
+        return int(value) if isinstance(value, int | float) else 0
+
+    def _path(entry: dict[str, object]) -> str:
+        value = entry.get("path")
+        return value if isinstance(value, str) else ""
+
+    input_files = len(referenced)
+    total_input_bytes = sum(_bytes(entry) for entry in referenced)
+    ifc_bytes = sum(_bytes(entry) for entry in referenced if _path(entry).lower().endswith(".ifc"))
+    largest_input_bytes = max((_bytes(entry) for entry in referenced), default=0)
+
+    drawing_count = 0
+    for scope in (manifest, manifest.get("request")):
+        if isinstance(scope, dict):
+            drawings = scope.get("drawings")
+            if isinstance(drawings, list):
+                drawing_count += len(drawings)
+
+    is_representative = (
+        total_input_bytes >= REPRESENTATIVE_MIN_INPUT_BYTES
+        and input_files >= REPRESENTATIVE_MIN_INPUT_FILES
+    )
+    return {
+        "input_files": input_files,
+        "total_input_bytes": total_input_bytes,
+        "ifc_bytes": ifc_bytes,
+        "largest_input_bytes": largest_input_bytes,
+        "drawing_count": drawing_count,
+        "source_count": input_files,
+        "is_representative": is_representative,
+        "thresholds": {
+            "min_input_bytes": REPRESENTATIVE_MIN_INPUT_BYTES,
+            "min_input_files": REPRESENTATIVE_MIN_INPUT_FILES,
+        },
+    }
+
+
 def measure_package_sla(
     pack_path: Path,
     *,
@@ -156,6 +228,13 @@ def measure_package_sla(
     inventory = _pack_file_inventory(pack_path)
     package_sha256 = _sha256_file(pack_path)
     machine = _machine_fingerprint()
+    try:
+        manifest_for_scale = json.loads(pack_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        manifest_for_scale = {}
+    if not isinstance(manifest_for_scale, dict):
+        manifest_for_scale = {}
+    package_scale_summary = package_scale(inventory, manifest=manifest_for_scale)
 
     if resolved_claim == "customer_measurable":
         missing: list[str] = []
@@ -229,6 +308,8 @@ def measure_package_sla(
         "package_sha256": package_sha256,
         "pack_hash": package_sha256,
         "file_inventory": inventory,
+        "package_scale": package_scale_summary,
+        "representative_scale": bool(package_scale_summary["is_representative"]),
         "machine": machine,
         "machine_fingerprint": machine,
         "mandatory_capabilities_complete": mandatory_capabilities_complete,
