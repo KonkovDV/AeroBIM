@@ -2,7 +2,8 @@
 
 **Status:** locked for Samolet TechLab Task 07 public wording.  
 **Checkpoint verdict:** `NO_GO` until RT-001/002/003 closed with customer evidence.  
-**Last Red Team docs pass:** 2026-07-19 (`main` @ post-remediation + jury-pack trim).
+**Last Red Team docs pass:** 2026-07-19 (`main` @ post-remediation + jury-pack trim).  
+**Claims Lock v2 sync (2026-07-30, `main` @ `98c6701`):** coverage / revision diff / geometry core wording added (P1 features shipped 2026-07-29).
 
 ## Forbidden public wording (until evidence exists)
 
@@ -26,6 +27,12 @@
 - «нет автоматического вердикта» without clarifying Shared-gate `summary.passed` (see ADR-001)
 - Treating co-presence MEP graph edges as connection / system-membership proof
 - Treating fixture_only / ENG_FIXTURE as customer-validated MEP
+- «geometry core анализирует DWG/DXF» — `domain/geometry.py` measures already-extracted primitives only (not a CAD/DWG/DXF parser)
+- Treating an INVALID / INCOMPLETE / UNIT_UNKNOWN geometry measurement as «0 violations» (no silent zero)
+- «coverage подтверждает корректность документации» — coverage is checked-scope evidence only, not proof of correctness
+- Claiming coverage changes or is read by `summary.passed` (coverage is verdict-neutral, read-only)
+- «revision diff показывает исправленные замечания» — `no_longer_reported` ≠ resolved (the check may not have re-run)
+- «маскирование = анонимизация» / hybrid contour makes the public API safe for customer data (masking reduces disclosure, not anonymity; contour NOT wired to verdict / live egress)
 
 ## Allowed wording
 
@@ -48,6 +55,9 @@
 - Outbound JWKS / bSI / OpenCDE fetches pass SSRF URL guard
 - Hard geometric IFC clash **when** evidenced — separate from MEP system-aware (RT-003 OPEN)
 - `GET /v1/system/capabilities` schema **1.3.0** `direction_contracts` for four gap directions
+- Deterministic 2D geometry core over **already-extracted** primitives with explicit trust states (OK / INCOMPLETE / UNIT_UNKNOWN / INVALID); verdict-neutral (`domain/geometry.py`)
+- Per-source check-coverage map (CHECKED_OK / NOT_CHECKED / INSUFFICIENT_DATA by processing evidence); verdict-neutral, ACL-scoped, read-only `GET /v1/reports/{id}/coverage`; not persisted in the report
+- Verdict-neutral revision diff (newly / no-longer / still reported findings, delimiter-proof keys); does NOT set `summary.passed`
 - Checkpoint remains **NO_GO** until RT-001/002/003
 
 ## Evidence pointers (public)

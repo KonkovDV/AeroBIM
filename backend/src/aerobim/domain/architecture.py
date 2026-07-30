@@ -183,6 +183,18 @@ CONTOUR_PORTS: dict[Contour, tuple[str, ...]] = {
 }
 
 
+# CONTOUR_PORTS names that are intentionally reserved: they document a planned
+# architectural seam but have no concrete Protocol/class yet. Every other
+# CONTOUR_PORTS name MUST resolve to a declared symbol (enforced by
+# tests/test_contour_ports_classification.py) so the architecture map cannot
+# drift ahead of the code -- the "port fantasy" red-team guard.
+RESERVED_PORTS: frozenset[str] = frozenset(
+    {
+        "AdvisoryTextAssist",
+    }
+)
+
+
 def assert_precision_publishable(claim: PrecisionClaim) -> None:
     if not claim.publishable:
         raise ValueError(
