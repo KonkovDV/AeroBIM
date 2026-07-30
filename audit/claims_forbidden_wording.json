@@ -1,0 +1,36 @@
+{
+  "artifact_type": "claims_forbidden_wording",
+  "schema_version": "1.0.0",
+  "note": "SSOT for the public-docs claims-drift guard (TR-401 / Red Team A1). Derived from audit/reports/CLAIMS_LOCK_2026_07_17.md. Each phrase is forbidden as an AFFIRMATIVE product claim; every occurrence in a scanned file must sit on a line that also carries a negation/honesty marker (e.g. 'Not claimed', 'Forbidden', 'Blocked', 'Missing'). Enforced by backend/tests/test_claims_forbidden_wording_guard.py.",
+  "scanned_files": [
+    "README.md"
+  ],
+  "forbidden_affirmative_phrases": [
+    "accuracy >90%",
+    "dwg-ready",
+    "cde-ready",
+    "cde interoperable",
+    "human-level cv",
+    "production-ready",
+    "mep delivered",
+    "mep system clash delivered"
+  ],
+  "negation_markers": [
+    "not claimed",
+    "forbidden",
+    "until evidenced",
+    "until t2",
+    "missing",
+    "not implemented",
+    "not verified",
+    "not_verified",
+    "blocked",
+    "planned",
+    "never",
+    "≠",
+    "out of scope",
+    "no_go",
+    "not wired",
+    "not a "
+  ]
+}
