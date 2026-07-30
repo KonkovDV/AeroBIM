@@ -33,6 +33,9 @@ from aerobim.domain.models import (
     ValidationReport,
 )
 
+COVERAGE_ALGORITHM_VERSION = "1.0.0"
+"""Bump when the coverage derivation changes so frozen snapshots stay interpretable."""
+
 
 class CoverageStatus(StrEnum):
     """Явный статус покрытия источника по семейству проверок."""
@@ -322,6 +325,7 @@ def derive_report_scope(report: ValidationReport) -> dict[FindingCategory, set[s
 
 
 __all__ = [
+    "COVERAGE_ALGORITHM_VERSION",
     "CheckCoverageMap",
     "CoverageStatus",
     "SourceCoverage",

@@ -25,6 +25,11 @@ from aerobim.application.services.capability_policy import (
 )
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.check_coverage import (
+    COVERAGE_ALGORITHM_VERSION,
+    coverage_from_report,
+    derive_report_scope,
+)
 from aerobim.domain.run_manifest import build_run_manifest
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
@@ -370,6 +375,7 @@ def export_evidence_bundle(
         "report.html": True,
         "logs_snippet.txt": True,
         "run_manifest.json": True,
+        "check_coverage.json": True,
         "README.md": True,
     }
     package_sha = next(
@@ -383,6 +389,24 @@ def export_evidence_bundle(
         package_sha256=package_sha,
         code_version=code_meta["label"],
     )
+    coverage_map = coverage_from_report(report, scope=derive_report_scope(report))
+    report_content_sha256 = hashlib.sha256(
+        json.dumps(report_payload, ensure_ascii=False, sort_keys=True, default=str).encode("utf-8")
+    ).hexdigest()
+    check_coverage_snapshot = {
+        "artifact": "check-coverage-snapshot",
+        "note": (
+            "Frozen per-source check-coverage map at bundle creation. Verdict-neutral "
+            "(ADR-001): 'no findings' != 'not checked'. algorithm_version + report "
+            "binding keep the snapshot reproducible even if the coverage derivation "
+            "later changes."
+        ),
+        "algorithm_version": COVERAGE_ALGORITHM_VERSION,
+        "report_id": report.report_id,
+        "reproducibility_hash": run_manifest.reproducibility_hash,
+        "report_content_sha256": report_content_sha256,
+        "coverage": coverage_map.to_dict(),
+    }
     manifest = {
         "artifact_type": "aerobim_evidence_bundle",
         "schema_version": _SCHEMA_VERSION,
@@ -437,6 +461,10 @@ def export_evidence_bundle(
     )
     (output_dir / "run_manifest.json").write_text(
         json.dumps(run_manifest.as_dict(), indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    (output_dir / "check_coverage.json").write_text(
+        json.dumps(check_coverage_snapshot, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
     (output_dir / "report.html").write_text(
