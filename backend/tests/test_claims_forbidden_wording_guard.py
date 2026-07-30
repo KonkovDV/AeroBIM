@@ -6,10 +6,14 @@ forbidden affirmative claim (Red Team attack A1)."""
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _SSOT = _REPO_ROOT / "audit" / "claims_forbidden_wording.json"
+# Strip inline Markdown (emphasis/code/link markup) so a forbidden phrase cannot
+# hide as e.g. `production-**ready**` and slip past the substring guard (RT-1).
+_MARKDOWN_MARKUP = re.compile(r"[*_`~\[\]()]")
 
 
 def _string_list(value: object) -> list[str]:
@@ -39,10 +43,25 @@ def test_forbidden_phrases_only_in_negation_context() -> None:
         path = _REPO_ROOT / rel
         text = path.read_text(encoding="utf-8")
         for lineno, raw in enumerate(text.splitlines(), start=1):
-            line = raw.lower()
+            line = _MARKDOWN_MARKUP.sub("", raw.lower())
             for phrase in phrases:
                 if phrase in line and not any(marker in line for marker in markers):
                     violations.append(f"{rel}:{lineno}: forbidden affirmative claim {phrase!r}")
     assert not violations, "Claims drift (negate the line or remove the claim):\n" + "\n".join(
         violations
     )
+
+
+def test_markdown_obfuscated_phrase_is_still_caught() -> None:
+    # RT-1: markup must not let a forbidden affirmative claim slip past the guard.
+    markers = [m.lower() for m in _string_list(_load_ssot()["negation_markers"])]
+    normalized = _MARKDOWN_MARKUP.sub("", "AeroBIM is production-**ready** today".lower())
+    assert "production-ready" in normalized
+    assert not any(marker in normalized for marker in markers)
+
+
+def test_planned_and_never_are_not_bare_negation_markers() -> None:
+    # RT-2: overly permissive bare markers removed so an affirmative claim cannot ride them.
+    markers = [m.lower() for m in _string_list(_load_ssot()["negation_markers"])]
+    assert "planned" not in markers
+    assert "never" not in markers
