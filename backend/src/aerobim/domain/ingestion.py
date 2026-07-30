@@ -64,36 +64,69 @@ def _conflict_kind_for(left: DocumentIdentity, right: DocumentIdentity) -> Confl
 def detect_revision_merge_conflicts(
     sources: list[RequirementSource],
 ) -> list[ValidationIssue]:
-    """Emit explicit VERSION_MISMATCH / AMBIGUOUS issues — never silently merge revisions."""
+    """Emit explicit VERSION_MISMATCH / AMBIGUOUS issues — never silently merge revisions.
+
+    TR-242: divergent content for one identity is also not a silent merge. Two sources that
+    are the SAME logical document with the SAME-or-absent revision but DIFFERENT content
+    hashes surface as an AMBIGUOUS_MAPPING warning (HITL), so two different files cannot
+    quietly collapse into one "revision".
+    """
 
     identities = [identity_from_requirement_source(source) for source in sources if source]
     issues: list[ValidationIssue] = []
     seen_pairs: set[tuple[str, str, str, str]] = set()
+    seen_hash_pairs: set[tuple[str, str, str, str]] = set()
     for index, left in enumerate(identities):
         for right in identities[index + 1 :]:
-            if not revisions_conflict(left, right):
+            if not same_logical_document(left, right):
                 continue
-            key = (
-                left.source_id.casefold(),
-                left.doc_type.casefold(),
-                left.revision or "",
-                right.revision or "",
-            )
-            if key in seen_pairs or (key[0], key[1], key[3], key[2]) in seen_pairs:
+            if revisions_conflict(left, right):
+                key = (
+                    left.source_id.casefold(),
+                    left.doc_type.casefold(),
+                    left.revision or "",
+                    right.revision or "",
+                )
+                if key in seen_pairs or (key[0], key[1], key[3], key[2]) in seen_pairs:
+                    continue
+                seen_pairs.add(key)
+                kind = _conflict_kind_for(left, right)
+                issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-REVISION-MERGE",
+                        severity=Severity.ERROR,
+                        message=(
+                            f"Silent revision merge blocked: document "
+                            f"{left.doc_type}/{left.source_id} compares "
+                            f"revision {left.revision!r} vs {right.revision!r}"
+                        ),
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        conflict_kind=kind,
+                        source_id=left.source_id,
+                        evidence_modality="ingestion",
+                    )
+                )
                 continue
-            seen_pairs.add(key)
-            kind = _conflict_kind_for(left, right)
+            left_hash = (left.sha256 or "").strip().casefold()
+            right_hash = (right.sha256 or "").strip().casefold()
+            if not left_hash or not right_hash or left_hash == right_hash:
+                continue
+            lo, hi = sorted((left_hash, right_hash))
+            hash_key = (left.source_id.casefold(), left.doc_type.casefold(), lo, hi)
+            if hash_key in seen_hash_pairs:
+                continue
+            seen_hash_pairs.add(hash_key)
             issues.append(
                 ValidationIssue(
-                    rule_id="AEROBIM-REVISION-MERGE",
-                    severity=Severity.ERROR,
+                    rule_id="AEROBIM-REVISION-HASH",
+                    severity=Severity.WARNING,
                     message=(
-                        f"Silent revision merge blocked: document "
-                        f"{left.doc_type}/{left.source_id} compares "
-                        f"revision {left.revision!r} vs {right.revision!r}"
+                        f"Divergent content for one document revision: "
+                        f"{left.doc_type}/{left.source_id} revision {left.revision!r} "
+                        "has two different content hashes (requires HITL; not a silent merge)"
                     ),
                     category=FindingCategory.CROSS_DOCUMENT,
-                    conflict_kind=kind,
+                    conflict_kind=ConflictKind.AMBIGUOUS_MAPPING,
                     source_id=left.source_id,
                     evidence_modality="ingestion",
                 )
