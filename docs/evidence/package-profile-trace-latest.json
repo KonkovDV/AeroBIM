@@ -4,19 +4,19 @@
   "pack_id": "project-package-baseline",
   "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-baseline.json",
   "request_id": "profile-project-package-baseline",
-  "analyze_total_ms": 505.814,
+  "analyze_total_ms": 503.997,
   "summary_passed": false,
   "summary_outcome": "blocked",
-  "reproducibility_hash": "6ea002dea523315779318027911d16f7cd23c7b072b19c96bc92d03b31b0e47b",
+  "reproducibility_hash": "46f9002013191c363debf9b13e11f99608314e66a1b99a5da93b9b73fa7ab975",
   "contour_trace": {
     "schema_version": "1.0.0",
     "elapsed_seconds": {
-      "ai_advisory": 0.0038710999997420004,
-      "deterministic_validation": 0.4967706999996153,
-      "evidence_reporting": 0.004720100001577521,
-      "ingestion": 0.00042329999996582046
+      "ai_advisory": 0.002946700000393321,
+      "deterministic_validation": 0.49599900000066555,
+      "evidence_reporting": 0.004582700001265039,
+      "ingestion": 0.00043700000060198363
     },
-    "total_elapsed_seconds": 0.505785,
+    "total_elapsed_seconds": 0.503965,
     "stage_budget_minutes": {
       "ingestion_minutes": 5.0,
       "deterministic_validation_minutes": 18.0,
