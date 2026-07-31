@@ -32,6 +32,10 @@
 - «coverage подтверждает корректность документации» — coverage is checked-scope evidence only, not proof of correctness
 - Claiming coverage changes or is read by `summary.passed` (coverage is verdict-neutral, read-only)
 - «revision diff показывает исправленные замечания» — `no_longer_reported` ≠ resolved (the check may not have re-run)
+- «AeroBIM целиком под MIT» / MIT without third-party license disclosure (PyMuPDF is AGPL-3.0/commercial **dual**, mandatory core; IfcOpenShell/IfcTester LGPL-3.0+) — see `audit/dependency_license_inventory.json`
+- «интеграция с 10D» / «integrated with 10D» / «S.Project integration» before ladder **T5** (production integration approved by customer); T0–T5 ladder applies
+- «в реестре российского ПО» / «российское ПО» as status — until a legal gap analysis exists
+- «УКЭП проверена» / «подпись документа проверена» — QUALIFIED_SIGNATURE_VALIDATION is **missing** (no cryptographic adapter/tests); hash-provenance ≠ signature validation
 - «маскирование = анонимизация» / hybrid contour makes the public API safe for customer data (masking reduces disclosure, not anonymity; contour NOT wired to verdict / live egress)
 
 ## Allowed wording
@@ -58,6 +62,8 @@
 - Deterministic 2D geometry core over **already-extracted** primitives with explicit trust states (OK / INCOMPLETE / UNIT_UNKNOWN / INVALID); verdict-neutral (`domain/geometry.py`)
 - Per-source check-coverage map (CHECKED_OK / NOT_CHECKED / INSUFFICIENT_DATA by processing evidence); verdict-neutral, ACL-scoped, read-only `GET /v1/reports/{id}/coverage`; not persisted in the report
 - Verdict-neutral revision diff (newly / no-longer / still reported findings, delimiter-proof keys); does NOT set `summary.passed`
+- «MIT for AeroBIM's own code; third-party components under their own licenses» (with inventory pointer)
+- BCF integration ladder **T0–T5**: T0 structural ZIP · T1 dual-consumer · T2 customer test-env import · T3 IFC GUID/viewpoint binding · T4 round-trip lifecycle · T5 production integration approved — each tier claimable only with its evidence
 - Checkpoint remains **NO_GO** until RT-001/002/003
 
 ## Evidence pointers (public)
