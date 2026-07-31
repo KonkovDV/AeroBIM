@@ -1,0 +1,41 @@
+{
+  "artifact_type": "injected_defects_level_b",
+  "schema_version": "1.0.0",
+  "date": "2026-07-31",
+  "note": "P-012 Level B: programmatically injected defects with deterministic expected outcomes. expected_status=detected cases MUST yield the expected finding; known_undetected cases document VERIFIED detection boundaries (probe 2026-07-31: free-text numeric mutation in the calculation narrative produced an EMPTY finding delta on the pilot pack) — they are honesty regression anchors, not aspirations. Enforced by backend/tests/test_injected_defects_level_b.py.",
+  "defects": [
+    {
+      "defect_id": "LB-001-load-value-mismatch",
+      "mutation_type": "observed value != expected in canonical LOAD row",
+      "calculation_text": "W1|wind load|12.5|kN|9.0",
+      "expected_finding": "AEROBIM-LOAD-MISMATCH",
+      "expected_severity": "warning",
+      "expected_status": "detected"
+    },
+    {
+      "defect_id": "LB-002-unit-scale-mismatch",
+      "mutation_type": "same number, unit scaled 1000x (12.5 kN vs 12500 kN)",
+      "calculation_text": "W2|wind load|12.5|kN|12500",
+      "expected_finding": "AEROBIM-LOAD-MISMATCH",
+      "expected_severity": "warning",
+      "expected_status": "detected"
+    },
+    {
+      "defect_id": "LB-003-si-equivalent-not-false-flagged",
+      "mutation_type": "control: 12.5 kN written as 12500 N must NOT mismatch",
+      "calculation_text": "W3|wind load|12.5|kN|12.5",
+      "expected_finding": null,
+      "expected_severity": null,
+      "expected_status": "control_clean"
+    },
+    {
+      "defect_id": "LB-004-freetext-area-mutation",
+      "mutation_type": "numeric area lowered inside free-text narrative (16.8 -> 1.0)",
+      "calculation_text": "Помещение 102 (спальня): S = 1.0 м2 — соответствует (требуется 18.5 м2)",
+      "expected_finding": "AEROBIM-LOAD-FORMAT",
+      "expected_severity": "info",
+      "expected_status": "known_undetected",
+      "boundary": "Free-text numbers are NOT сверка: only canonical LOAD rows / JSON loads are compared. VERIFIED by pipeline probe 2026-07-31 (empty delta). Closing this needs the narrative quantity extractor wired into calculation match — tracked as an honest limitation, never claimed."
+    }
+  ]
+}

@@ -69,6 +69,11 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 
 - F-109 частично закрыт: добавлено сигнальное ядро `domain/extraction_integrity.py` (+ адверсариальные фикстуры и тесты). Статус P-003 повышен до «signal-core done»; render-vs-extract адаптер и PDF red-team corpus остаются NOT VERIFIED (P2).
 
+## 5b. Addendum (продолжение той же даты)
+
+- P-012 Level B засеян: каталог injected defects (`samples/benchmarks/injected-defects-level-b.json`) + тесты. Обнаружена и закреплена как honesty-граница VERIFIED-находка probe: **числа в free-text расчёте не сверяются** (пустая delta findings при мутации 16.8→1.0 на пилот-паке); сверка работает только по каноническим LOAD-строкам/JSON. Формулировка «сверка расчётов» обязана уточнять формат.
+- P-014: docs/sla-benchmark-protocol-2026.md; P-017/P-018/P-004: outbound guard + governance/AI-safety доки (см. коммиты 7c3b85a, d55d617).
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
