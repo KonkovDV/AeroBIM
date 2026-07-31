@@ -1,7 +1,7 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-31T21:16:09.531858+00:00",
+  "generated_at": "2026-07-31T21:18:30.143122+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART schemas carry attribution and a review_pending license status rather than an invented one",
   "file_count": 134,
   "vendored_count": 11,
@@ -764,8 +764,8 @@
     },
     {
       "path": "DATASET_MANIFEST.json",
-      "sha256": "58f93ae96789cd16388d2b49cb7c1be1a33560c0413ada403f582e7abd48ba6f",
-      "bytes": 69083,
+      "sha256": "807042df38172819cb66b3f56d36cb2b6af7f6acbb833a36e5be6d52f650f2c7",
+      "bytes": 71278,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -956,8 +956,8 @@
     },
     {
       "path": "ifc/README.md",
-      "sha256": "e8ea44906c324b3c9552cdbe1e3df46814632ff5a347a9bbb5d959d9689e8822",
-      "bytes": 204,
+      "sha256": "f6025b8458e0e3870d4f000a2f68bbd8838c7e37441c7e2ecb4cd5e383d5d24e",
+      "bytes": 330,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
