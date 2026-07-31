@@ -443,6 +443,7 @@ jobs:
         run: |
           mkdir -p ../artifacts/release-attestation
           python -m aerobim.tools.export_release_attestation \
+            --test-run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
             --out ../artifacts/release-attestation/release-attestation.json
       - name: Upload release attestation artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -479,8 +480,17 @@ jobs:
         run: python -m aerobim.tools.offline_bundle verify
       - name: Offline install+runtime smoke (rmi tag; docker load; run --network none; API)
         run: python -m aerobim.tools.offline_bundle smoke
-      - name: Upload offline-bundle manifest (image tar intentionally NOT uploaded, ~850 MiB)
+      - name: Complete release attestation (binds built image digest + CI run id)
+        run: |
+          IMAGE_ID=$(python -c "import json; print(json.load(open('../artifacts/offline-bundle/BUNDLE_MANIFEST.json'))['image_id'])")
+          python -m aerobim.tools.export_release_attestation \
+            --docker-digest "$IMAGE_ID" \
+            --test-run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --out ../artifacts/offline-bundle/release-attestation-complete.json
+      - name: Upload offline-bundle manifest + complete attestation (image tar NOT uploaded, ~850 MiB)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: offline-bundle-manifest
-          path: artifacts/offline-bundle/BUNDLE_MANIFEST.json
+          path: |
+            artifacts/offline-bundle/BUNDLE_MANIFEST.json
+            artifacts/offline-bundle/release-attestation-complete.json
