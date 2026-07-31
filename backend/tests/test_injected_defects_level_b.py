@@ -23,10 +23,12 @@ _CATALOG = _REPO_ROOT / "samples" / "benchmarks" / "injected-defects-level-b.jso
 
 
 def _defects() -> list[dict[str, object]]:
+    """Calculation-text defects only; IFC mutations live in
+    test_injected_ifc_defects_level_b.py."""
     data = json.loads(_CATALOG.read_text(encoding="utf-8"))
     defects = data["defects"]
     assert isinstance(defects, list) and defects
-    return [d for d in defects if isinstance(d, dict)]
+    return [d for d in defects if isinstance(d, dict) and "calculation_text" in d]
 
 
 def _verify(calculation_text: str):

@@ -74,6 +74,11 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 - P-012 Level B засеян: каталог injected defects (`samples/benchmarks/injected-defects-level-b.json`) + тесты. Обнаружена и закреплена как honesty-граница VERIFIED-находка probe: **числа в free-text расчёте не сверяются** (пустая delta findings при мутации 16.8→1.0 на пилот-паке); сверка работает только по каноническим LOAD-строкам/JSON. Формулировка «сверка расчётов» обязана уточнять формат.
 - P-014: docs/sla-benchmark-protocol-2026.md; P-017/P-018/P-004: outbound guard + governance/AI-safety доки (см. коммиты 7c3b85a, d55d617).
 
+## 5c. Addendum (Level B, волна 2 — IFC-мутации)
+
+- LB-005/006 (missing pset relation, wrong FireRating) детектируются IDS-путём.
+- **LB-007 VERIFIED vacuous pass:** подмена класса IFCWALL→IFCCOLUMN даёт passed=True / 0 issues в IDS-only прогоне — «нет элемента» читается как «соответствует». Компенсирующий контроль VERIFIED: structured requirement с ожиданием сущности даёт ERROR «No elements found for entity IFCWALL». Пилот-паки обязаны сочетать IDS с entity-presence требованиями; закреплено honesty-якорем в test_injected_ifc_defects_level_b.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
