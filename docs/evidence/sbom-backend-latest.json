@@ -3,7 +3,7 @@
   "specVersion": "1.5",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-07-31T21:09:24.324663+00:00",
+    "timestamp": "2026-07-31T21:16:10.278774+00:00",
     "tools": [
       {
         "name": "aerobim-export-dependency-sbom",
