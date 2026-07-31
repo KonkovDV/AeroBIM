@@ -60,9 +60,7 @@ def _wrap_single_page(
         + b"endstream\nendobj\n"
     )
     if with_font:
-        objects.append(
-            b"5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj\n"
-        )
+        objects.append(b"5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj\n")
 
     out = bytearray(b"%PDF-1.4\n")
     offsets = [0]
@@ -75,10 +73,9 @@ def _wrap_single_page(
     for off in offsets[1:]:
         out.extend(f"{off:010d} 00000 n \n".encode("ascii"))
     out.extend(
-        (
-            f"trailer<< /Size {len(offsets)} /Root 1 0 R >>\n"
-            f"startxref\n{xref_pos}\n%%EOF\n"
-        ).encode("ascii")
+        (f"trailer<< /Size {len(offsets)} /Root 1 0 R >>\nstartxref\n{xref_pos}\n%%EOF\n").encode(
+            "ascii"
+        )
     )
     return bytes(out)
 

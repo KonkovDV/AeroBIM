@@ -4,8 +4,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 from pdf_fixtures import write_text_pdf
+
+from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
 
 class _FakeOcrResult:
