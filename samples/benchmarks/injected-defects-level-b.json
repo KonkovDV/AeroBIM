@@ -2,7 +2,7 @@
   "artifact_type": "injected_defects_level_b",
   "schema_version": "1.0.0",
   "date": "2026-07-31",
-  "note": "P-012 Level B: programmatically injected defects with deterministic expected outcomes. expected_status=detected cases MUST yield the expected finding; known_undetected cases document VERIFIED detection boundaries (probe 2026-07-31: free-text numeric mutation in the calculation narrative produced an EMPTY finding delta on the pilot pack) — they are honesty regression anchors, not aspirations. Enforced by backend/tests/test_injected_defects_level_b.py.",
+  "note": "P-012 Level B: programmatically injected defects with deterministic expected outcomes. expected_status=detected cases MUST yield the expected finding; known_undetected cases document VERIFIED detection boundaries (probe 2026-07-31: free-text numeric mutation in the calculation narrative produced an EMPTY finding delta on the pilot pack) — they are honesty regression anchors, not aspirations. Enforced by backend/tests/test_injected_defects_level_b.py. LB-005..007 add IFC mutations; LB-007 documents the IDS vacuous-pass boundary with its verified compensating control (entity-presence requirement).",
   "defects": [
     {
       "defect_id": "LB-001-load-value-mismatch",
@@ -36,6 +36,34 @@
       "expected_severity": "info",
       "expected_status": "known_undetected",
       "boundary": "Free-text numbers are NOT сверка: only canonical LOAD rows / JSON loads are compared. VERIFIED by pipeline probe 2026-07-31 (empty delta). Closing this needs the narrative quantity extractor wired into calculation match — tracked as an honest limitation, never claimed."
+    },
+    {
+      "defect_id": "LB-005-ifc-missing-property-relation",
+      "mutation_type": "drop IFCRELDEFINESBYPROPERTIES (wall loses Pset_WallCommon)",
+      "base_fixture": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "ids": "samples/ids/wall-fire-rating.ids",
+      "expected_finding": "IDS-Wall Fire Rating",
+      "expected_severity": "error",
+      "expected_status": "detected"
+    },
+    {
+      "defect_id": "LB-006-ifc-wrong-property-value",
+      "mutation_type": "FireRating REI60 -> REI45",
+      "base_fixture": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "ids": "samples/ids/wall-fire-rating.ids",
+      "expected_finding": "IDS-Wall Fire Rating",
+      "expected_severity": "error",
+      "expected_status": "detected"
+    },
+    {
+      "defect_id": "LB-007-ifc-class-swap-vacuous-pass",
+      "mutation_type": "IFCWALL -> IFCCOLUMN (entity vanishes from IDS applicability)",
+      "base_fixture": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "ids": "samples/ids/wall-fire-rating.ids",
+      "expected_finding": null,
+      "expected_severity": null,
+      "expected_status": "known_undetected_ids_only",
+      "boundary": "VERIFIED probe 2026-07-31: IDS-only run yields passed=True with 0 issues (vacuous pass: the spec applies to walls; no walls -> nothing to fail). Missing element != compliant. Compensating control VERIFIED: a structured requirement expecting IFCWALL (SAM-001-style) yields 'No elements found for entity IFCWALL' ERROR and passed=False. Pilot packs must therefore pair IDS with entity-presence requirements."
     }
   ]
 }
