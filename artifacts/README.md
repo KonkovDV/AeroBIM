@@ -2,7 +2,7 @@
 
 This folder is **gitignored**. Contents are produced by:
 
-- [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — `benchmark-smoke`, `samolet-sla-smoke`, `extraction-quality`
+- [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) — `benchmark-smoke`, `samolet-fixture-sla-smoke`, `extraction-quality`
 - Local runs of `benchmark_project_package` / `measure_package_sla`
 
 Do not commit JSON from this directory — paths and timings are machine-specific and go stale.

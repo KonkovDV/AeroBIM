@@ -96,6 +96,23 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 | «PyMuPDF всё ещё обязательный Core при license=MIT» | ПОДТВЕРЖДЕНО (известный LIC-001) | решение Artifex/миграция/extra — за владельцем; disclosure в README/README.ru; pyproject получил pointer-комментарий |
 | «license/SBOM/offline-гейты не видны» | ЧАСТИЧНО | license-gate есть (pytest в CI: test_dependency_license_gate + isolation guard); **SBOM добавлен этой волной** (`docs/evidence/sbom-backend-latest.json`, CycloneDX-format, venv-scoped, генератор `export_dependency_sbom` без сторонних инструментов + pytest-гейт покрытия core-зависимостей); offline-гейты честно остаются NOT VERIFIED (P-002, F-108) |
 
+## 5g. Addendum — triage второго внешнего red-team (P0-регресс supply-chain)
+
+| Утверждение | Вердикт | Факты (проверено 2026-07-31) |
+|---|---|---|
+| Docker игнорирует lock, нет --require-hashes | **ОПРОВЕРГНУТО** | Dockerfile L6-9: COPY requirements-lock.txt; pip install --require-hashes -r lock; проект --no-deps |
+| Base image не pinned по digest | **ОПРОВЕРГНУТО** | обе стадии: python:3.12-slim@sha256:57cd7c3a... |
+| CI: pip install ruff / -e .[dev,raster] без хешей; actions по тегам @v4/@v5 | **ОПРОВЕРГНУТО** | grep по всем workflow: 0 floating installs, 0 тегов; всё --require-hashes + SHA-pinned |
+| freeze SHA 8a314d8 устарел | **ОПРОВЕРГНУТО** (факт не совпадает) | в CRITICAL_BLOCKERS operational freeze = f2615e7 |
+| README: DEBUG default true, нет NO_GO, MIT без disclosure | **ОПРОВЕРГНУТО** | NO_GO-баннер L9; AEROBIM_DEBUG=false; disclosure в License-секции |
+| OCI label licenses=MIT вводит в заблуждение | **ПОДТВЕРЖДЕНО → исправлено** | label заменён SPDX-выражением MIT AND LGPL-3.0-or-later AND (AGPL-3.0-only OR LicenseRef-Artifex-Commercial) |
+| Job samolet-sla-smoke читается как customer evidence | **ПОДТВЕРЖДЕНО → исправлено** | переименован в samolet-fixture-sla-smoke (job, step, artifact); сам артефакт всегда нёс claim_level=fixture_only |
+| Нет RELEASE_ATTESTATION | **ПОДТВЕРЖДЕНО → закрыто инструментом** | export_release_attestation (commit/tree/locks/ClaimsLock/SBOM/baseline sha256; docker_digest и test_run_id честно null вне release-пайплайна) + 2 теста |
+| EXTRACTION_INTEGRITY gate отсутствует в вердикт-пайплайне | ПОДТВЕРЖДЕНО (известная граница) | сигнальное ядро есть (5a), wiring в capability — P2; не заявляется |
+| Offline NOT VERIFIED; dataset manifest; semantic-injection fixtures | ПОДТВЕРЖДЕНО (известные P1/P2) | см. F-108, P-010/011, план P1 |
+
+Вывод triage: заявленный «P0-регресс supply-chain» не подтверждён текущим main (вероятно, устаревший снапшот — второй подобный случай); реальные остатки — label/имя job/attestation — закрыты этой волной.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
