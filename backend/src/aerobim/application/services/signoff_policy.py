@@ -27,6 +27,7 @@ _PASS_BLOCKING_CAPABILITY_FIELDS: tuple[str, ...] = (
     "dwg_dxf",
     "mep_system_clash",
     "quantity",
+    "extraction_integrity",
 )
 
 

@@ -32,6 +32,8 @@ _CAPABILITY_FIELDS = (
     "unit_scale",
     "quantity_consistency",
     "load_evidence",
+    # Pass-blocking capability must be part of the reproducibility binding.
+    "extraction_integrity",
 )
 
 

@@ -827,6 +827,15 @@ class FilesystemAuditStore:
                     CapabilityState.SKIPPED, "quantity consistency not evaluated"
                 ),
             ),
+            extraction_integrity=self._reconstruct_capability_status(
+                data.get("extraction_integrity"),
+                default=CapabilityStatus(
+                    CapabilityState.NOT_VERIFIED,
+                    "extraction-integrity signals are not produced by the "
+                    "ingestion layer yet (signal core present, not wired); "
+                    "extracted text must not be presumed render-consistent",
+                ),
+            ),
         )
 
     def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:

@@ -27,6 +27,9 @@ _PASS_BLOCKING_FAILED_FIELDS: tuple[str, ...] = (
     "dwg_dxf",
     "mep_system_clash",
     "quantity",
+    # LB/P-003: a FAILED extraction-integrity gate (render vs extract mismatch)
+    # must never read as a clean pass; default NOT_VERIFIED stays non-blocking.
+    "extraction_integrity",
 )
 
 # Required capabilities: only OK is acceptable (Master Prompt §6).
