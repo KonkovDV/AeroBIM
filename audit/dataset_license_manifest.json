@@ -30,14 +30,34 @@
     },
     {
       "asset_id": "open-buildingsmart-sample-test-files",
-      "path": null,
+      "path": "samples/ifc/public/buildingsmart-sample-test-files/",
       "source_url": "https://github.com/buildingSMART/Sample-Test-Files",
       "dataset_class": "public_real",
-      "license": "unclear_in_sprint_inventory",
-      "spdx": "NOASSERTION",
-      "redistribution": "unknown",
-      "public_benchmark": "INTERNAL_ONLY_LICENSE_REVIEW",
-      "notes": "Do not vendor into public pack until license/redistribution cleared"
+      "license": "CC-BY-4.0",
+      "spdx": "CC-BY-4.0",
+      "redistribution": "allowed_with_attribution",
+      "public_benchmark": "allowed_with_attribution",
+      "notes": "Vendored 2026-08-01: wall-with-opening-and-window.ifc + tessellated-item.ifc + LICENSE; see folder README attribution"
+    },
+    {
+      "asset_id": "bsi-wall-with-opening-and-window",
+      "path": "samples/ifc/public/buildingsmart-sample-test-files/wall-with-opening-and-window.ifc",
+      "source_url": "https://github.com/buildingSMART/Sample-Test-Files",
+      "dataset_class": "public_real",
+      "license": "CC-BY-4.0",
+      "spdx": "CC-BY-4.0",
+      "redistribution": "allowed_with_attribution",
+      "public_benchmark": "allowed_with_attribution"
+    },
+    {
+      "asset_id": "bsi-tessellated-item",
+      "path": "samples/ifc/public/buildingsmart-sample-test-files/tessellated-item.ifc",
+      "source_url": "https://github.com/buildingSMART/Sample-Test-Files",
+      "dataset_class": "public_real",
+      "license": "CC-BY-4.0",
+      "spdx": "CC-BY-4.0",
+      "redistribution": "allowed_with_attribution",
+      "public_benchmark": "allowed_with_attribution"
     },
     {
       "asset_id": "ids-test-suite",

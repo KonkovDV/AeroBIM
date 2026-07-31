@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-31T20:49:54.671675+00:00",
+  "generated_at": "2026-07-31T21:16:09.531858+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART schemas carry attribution and a review_pending license status rather than an invented one",
-  "file_count": 130,
+  "file_count": 134,
   "vendored_count": 11,
   "files": [
     {
@@ -764,7 +764,7 @@
     },
     {
       "path": "DATASET_MANIFEST.json",
-      "sha256": "536f93db6b3fb402e6460cc78352cb75e6ae5d3db3084c289694d5741246e59d",
+      "sha256": "58f93ae96789cd16388d2b49cb7c1be1a33560c0413ada403f582e7abd48ba6f",
       "bytes": 69083,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -904,6 +904,54 @@
       "attribution_required": true,
       "redistribution": "verify against buildingSMART license before re-publishing",
       "production_use": "schema validation only",
+      "personal_data": false
+    },
+    {
+      "path": "ifc/public/buildingsmart-sample-test-files/LICENSE",
+      "sha256": "3e20c50b6edfdb4be207f64495586115d0574c8394538109d74f79e1d8976d18",
+      "bytes": 317,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "ifc/public/buildingsmart-sample-test-files/README.md",
+      "sha256": "f789eff47fbd21bee2706ccad6b74da2070df47ee6f73fc0097305ced5a3cff3",
+      "bytes": 865,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "ifc/public/buildingsmart-sample-test-files/tessellated-item.ifc",
+      "sha256": "758974f7d558f11b8d8121816954179def32594ed7eafcd1faae70ee0a8e5946",
+      "bytes": 5199,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "ifc/public/buildingsmart-sample-test-files/wall-with-opening-and-window.ifc",
+      "sha256": "73b0e45d931d5dc13bfee5fdc7bd80f796526445458b2de74c4168d209097832",
+      "bytes": 12492,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
       "personal_data": false
     },
     {

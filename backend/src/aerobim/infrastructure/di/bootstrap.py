@@ -82,15 +82,15 @@ from aerobim.infrastructure.adapters.narrative_rule_synthesizer import Narrative
 from aerobim.infrastructure.adapters.object_store_norm_pack_version_store import (
     ObjectStoreNormRulePackVersionStore,
 )
+from aerobim.infrastructure.adapters.ocr_aware_extraction_integrity_producer import (
+    OcrAwareExtractionIntegrityProducer,
+)
 from aerobim.infrastructure.adapters.ocr_fallback_multimodal_drawing_pipeline import (
     OcrFallbackMultimodalDrawingPipeline,
 )
 from aerobim.infrastructure.adapters.oda_cad_model_ingestor import OdaCadModelIngestor
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.pdfium_region_cropper import PdfiumRegionCropper
-from aerobim.infrastructure.adapters.pdfminer_extraction_integrity_producer import (
-    PdfMinerExtractionIntegrityProducer,
-)
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
 from aerobim.infrastructure.adapters.pymupdf_extraction_integrity_producer import (
     PyMuPDFExtractionIntegrityProducer,
@@ -811,7 +811,8 @@ def _build_extraction_integrity_producer(current: Container):
         return DisabledPdfExtractionIntegrityProducer()
     if backend == "pymupdf":
         return PyMuPDFExtractionIntegrityProducer()
-    return PdfMinerExtractionIntegrityProducer()
+    # Default: text-layer (pdfminer) + optional OCR when RapidOCR is installed.
+    return OcrAwareExtractionIntegrityProducer()
 
 
 def _build_region_cropper(current: Container):
