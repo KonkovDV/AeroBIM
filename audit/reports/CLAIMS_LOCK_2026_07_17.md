@@ -64,6 +64,7 @@
 - Verdict-neutral revision diff (newly / no-longer / still reported findings, delimiter-proof keys); does NOT set `summary.passed`
 - «MIT for AeroBIM's own code; third-party components under their own licenses» (with inventory pointer)
 - BCF integration ladder **T0–T5**: T0 structural ZIP · T1 dual-consumer · T2 customer test-env import · T3 IFC GUID/viewpoint binding · T4 round-trip lifecycle · T5 production integration approved — each tier claimable only with its evidence
+- Signal-level extraction-integrity core (`domain/extraction_integrity.py`): 'text not extracted' != 'text absent'; hidden/invisible text never trusted unmarked; verdict-neutral; **NOT** a render-vs-extract product capability and NOT wired into ingestion/verdict
 - Checkpoint remains **NO_GO** until RT-001/002/003
 
 ## Evidence pointers (public)

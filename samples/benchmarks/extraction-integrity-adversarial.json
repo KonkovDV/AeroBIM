@@ -1,0 +1,75 @@
+{
+  "artifact_type": "extraction_integrity_adversarial_fixtures",
+  "schema_version": "1.0.0",
+  "note": "P-003 adversarial extraction-integrity signal cases. Signal-level ONLY: the system does not claim render-vs-extract product capability; a hostile PDF is modeled via the signals its extraction would produce. Every case must assess non-OK (trusted_as_evidence=false). Safe markers only, no live payloads.",
+  "cases": [
+    {
+      "id": "rendered-but-empty-extraction",
+      "description": "scanned page renders text, extractor yields nothing",
+      "signals": {
+        "extracted_char_count": 0,
+        "rendered_text_present": true
+      }
+    },
+    {
+      "id": "white-on-white-hidden-layer",
+      "description": "hidden chars from white-on-white / render mode 3 layer",
+      "signals": {
+        "extracted_char_count": 500,
+        "hidden_text_char_count": 200
+      }
+    },
+    {
+      "id": "zero-size-font-injection",
+      "description": "zero-size font text present in extraction layer",
+      "signals": {
+        "extracted_char_count": 120,
+        "hidden_text_char_count": 40
+      }
+    },
+    {
+      "id": "text-outside-page-bounds",
+      "description": "extracted text positioned outside the visible page",
+      "signals": {
+        "extracted_char_count": 300,
+        "offpage_text_char_count": 80
+      }
+    },
+    {
+      "id": "duplicated-text-layers",
+      "description": "same region carries two conflicting text layers",
+      "signals": {
+        "extracted_char_count": 300,
+        "duplicated_layer_count": 1
+      }
+    },
+    {
+      "id": "ocr-extraction-disagreement",
+      "description": "OCR sees far more text than the extractor",
+      "signals": {
+        "extracted_char_count": 50,
+        "ocr_char_count": 400
+      }
+    },
+    {
+      "id": "corrupt-nan-counts",
+      "description": "non-finite counters from a failed measurement",
+      "signals": {
+        "extracted_char_count": "nan",
+        "hidden_text_char_count": "inf"
+      }
+    },
+    {
+      "id": "no-signals",
+      "description": "ingestion supplied no integrity signals at all",
+      "signals": {}
+    },
+    {
+      "id": "empty-and-unknown-rendering",
+      "description": "nothing extracted, rendering evidence unknown",
+      "signals": {
+        "extracted_char_count": 0
+      }
+    }
+  ]
+}
