@@ -68,6 +68,7 @@
 - IDS pass на пакете без entity-presence требований не эквивалентен «элементы присутствуют и соответствуют»: пустая applicability даёт vacuous pass (LB-007); пилот-паки сочетают IDS с requirement-ожиданием сущностей
 - Дубликат GlobalId детектируется как **WARNING** (`AEROBIM-GUID-DUPLICATE`, schema pre-gate; LB-011 закрыт 2026-07-31); проверка warning-level и verdict-neutral — «блокирующая проверка уникальности GUID» не заявляется
 - `extraction_integrity` capability wired (default **NOT_VERIFIED**: сигналы ingestion-слоем ещё не производятся; FAILED блокирует pass) — «render-vs-extract проверка PDF реализована» по-прежнему НЕ заявляется
+- «Offline runtime smoke пройден» (образ стартует и обслуживает API при --network none; evidence 2026-07-31) — допустимо; «развёртывание в закрытом контуре подтверждено» — НЕТ до offline-install/bundle proof (P-002)
 - Checkpoint remains **NO_GO** until RT-001/002/003
 
 ## Evidence pointers (public)
