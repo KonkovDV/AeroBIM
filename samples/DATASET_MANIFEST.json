@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-31T08:15:21.196551+00:00",
+  "generated_at": "2026-07-31T20:46:17.754872+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART schemas carry attribution and a review_pending license status rather than an invented one",
-  "file_count": 118,
+  "file_count": 130,
   "vendored_count": 11,
   "files": [
     {
@@ -367,6 +367,18 @@
       "personal_data": false
     },
     {
+      "path": "benchmarks/llm-advisory/sprint-2-1-cases.json",
+      "sha256": "73173b5123d2c76ce7d7e03a59d7c97b0f42c76b0e4a437f5ef695e248c04dbb",
+      "bytes": 4907,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "benchmarks/loin-rule-metadata.json",
       "sha256": "bf5f5a9bb41088d94d0adaea164d99075db8bc79412d86d598455f7295d752fc",
       "bytes": 1303,
@@ -559,6 +571,126 @@
       "personal_data": false
     },
     {
+      "path": "benchmarks/sprint-2-1/baseline-package.json",
+      "sha256": "caabb88c4c2fea49321be114a9eebfde0f01731649c1c1ed1e15fc25203b9fe2",
+      "bytes": 1284,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/expected/findings.json",
+      "sha256": "a1a3ea8d0bfd5eb4be2b07fcbcc29ea96140344ba3a0373795d6dced1fc9a427",
+      "bytes": 758,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/labels/README.json",
+      "sha256": "e455725a59394463196141c7bb9e77fe0e1881ce14c42321a8a984edd90b6c95",
+      "bytes": 124,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/LICENSES.md",
+      "sha256": "89f8b657243df9a92f0bb0080d219aec059a438358c02cbb00de8948cc4fdbe5",
+      "bytes": 553,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/manifest.json",
+      "sha256": "1dcdf2e4e251af51cfce63fa9ffe4f4f4f9d2bee63fa9808954f421fa01d854a",
+      "bytes": 6694,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/mutations/mutation-manifest.json",
+      "sha256": "a57b7a03dfa9f67c0bd0ec0da269b6b37939f8a2ae5cb0d4d172c726185d8e81",
+      "bytes": 2554,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/package-baseline-open.json",
+      "sha256": "c9c50bd9d5d330d4d89aee922ae00206b4d25392547c5a8b51daa44c8c7fd882",
+      "bytes": 777,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/package-baseline-synthetic.json",
+      "sha256": "60c678fc96fb3b8b96f7188ba1dfe6cfe284c2ff75cc91b2f73610484e12cfd9",
+      "bytes": 620,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/README.md",
+      "sha256": "5d0fd0186d94fff7189a095757a970b253b4db66f9cc87f7aed91fb4e714e3ed",
+      "bytes": 1326,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/sprint-2-1/source-provenance.json",
+      "sha256": "e91491e0802682e133b7c7a2db1d5001739256c5bfccc80c0bf0bef28ce6d7be",
+      "bytes": 1563,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "cad/minimal-entities.dxf",
       "sha256": "38a1f180317075624a0cb2819406eb905c655bacff0ce86cede57687a57d7307",
       "bytes": 183,
@@ -622,6 +754,18 @@
       "path": "customer/README.md",
       "sha256": "56a67a1f788bac1e3fc4f90b20fd9458c54df63ce026d49c4d6da946cddae265",
       "bytes": 518,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "DATASET_MANIFEST.json",
+      "sha256": "31a5621dd906ba8329b0f97a00632b68b99024e01cad751096fe6ee013ac2504",
+      "bytes": 62728,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

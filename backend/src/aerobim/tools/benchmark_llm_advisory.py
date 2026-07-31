@@ -30,17 +30,19 @@ def run_cases(cases_path: Path) -> dict[str, Any]:
         if not isinstance(case, dict):
             continue
         case_id = str(case.get("case_id") or "")
-        context = case.get("input_context") if isinstance(case.get("input_context"), dict) else {}
+        raw_ctx = case.get("input_context")
+        context: dict[str, Any] = raw_ctx if isinstance(raw_ctx, dict) else {}
         policy = LlmDataPolicy(
             allow_customer_data=False,
             allow_synthetic_public=True,
             retention_unknown=True,
         )
+        findings = context.get("deterministic_findings") or []
         request = LlmRequest(
             request_id=f"s21-{case_id}",
             evidence_refs=tuple(str(x) for x in (context.get("evidence_refs") or [])),
             deterministic_findings=tuple(
-                item for item in (context.get("deterministic_findings") or []) if isinstance(item, dict)
+                item for item in findings if isinstance(item, dict)
             ),
             requirements=tuple(str(x) for x in (context.get("requirements") or [])),
             data_policy=policy,
@@ -91,8 +93,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     report = run_cases(args.cases.resolve())
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"ok": True, "rows": len(report["rows"]), "output": str(args.output)}, indent=2))
+    payload = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
+    args.output.write_text(payload, encoding="utf-8")
+    summary = {"ok": True, "rows": len(report["rows"]), "output": str(args.output)}
+    print(json.dumps(summary, indent=2))
     return 0
 
 

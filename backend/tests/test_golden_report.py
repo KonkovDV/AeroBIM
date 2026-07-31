@@ -14,10 +14,9 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
 # Pinned on project-package-baseline.json @ development profile (fixture only).
-# 2026-07-31 (second conscious refresh): RT-EI-04 -- the capability digest now
-# mirrors the full pass-blocking set (phantom quantity_consistency/load_evidence
-# removed; quantity/raster/ifc_schema/norm_rule_packs/section_pairing joined).
-GOLDEN_BASELINE_REPRO_HASH = "46f9002013191c363debf9b13e11f99608314e66a1b99a5da93b9b73fa7ab975"
+# 2026-07-31 (third conscious refresh): extraction_integrity producer wired into
+# report capabilities (text-layer signals only; not product OCR/render claim).
+GOLDEN_BASELINE_REPRO_HASH = "6a8210331404f3501dd966a98bf12e2bbc5830e20f434e12c0f4e77977915bfd"
 
 
 class GoldenReportTests(unittest.TestCase):
