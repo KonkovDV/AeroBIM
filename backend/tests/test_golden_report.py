@@ -14,7 +14,9 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
 # Pinned on project-package-baseline.json @ development profile (fixture only).
-GOLDEN_BASELINE_REPRO_HASH = "746343939b16732f4d0476d6b61284861054be7cef4e6bade07fafdcc93a4884"
+# 2026-07-31: consciously refreshed -- extraction_integrity joined the
+# pass-blocking capability set and therefore the reproducibility digest.
+GOLDEN_BASELINE_REPRO_HASH = "6ea002dea523315779318027911d16f7cd23c7b072b19c96bc92d03b31b0e47b"
 
 
 class GoldenReportTests(unittest.TestCase):

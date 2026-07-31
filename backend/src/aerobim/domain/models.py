@@ -140,6 +140,12 @@ class ReportCapabilities:
     quantity: CapabilityStatus = CapabilityStatus(
         CapabilityState.SKIPPED, "quantity consistency not evaluated"
     )
+    extraction_integrity: CapabilityStatus = CapabilityStatus(
+        CapabilityState.NOT_VERIFIED,
+        "extraction-integrity signals are not produced by the ingestion layer yet "
+        "(signal core domain/extraction_integrity.py present, not wired); "
+        "extracted text must not be presumed render-consistent",
+    )
 
 
 class ConflictKind(StrEnum):

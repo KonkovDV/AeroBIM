@@ -113,6 +113,10 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 
 Вывод triage: заявленный «P0-регресс supply-chain» не подтверждён текущим main (вероятно, устаревший снапшот — второй подобный случай); реальные остатки — label/имя job/attestation — закрыты этой волной.
 
+## 5h. Addendum — EXTRACTION_INTEGRITY wired (P1 обоих внешних отчётов)
+
+- `ReportCapabilities.extraction_integrity`: default NOT_VERIFIED (честно: сигналы не производятся ingestion-слоем), FAILED входит в pass-blocking список во всех профилях; персистентные отчёты без поля реконструируются в NOT_VERIFIED. Golden reproducibility hash обновлён осознанно (capability digest вырос на поле). Producer сигналов (hidden-text скан PDF) — P2.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
