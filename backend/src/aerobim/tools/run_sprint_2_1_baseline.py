@@ -57,9 +57,7 @@ def _score_mutations(mutations: dict[str, Any]) -> dict[str, Any]:
     # Without a live analyze of mutated copies, we report *declared* ground-truth
     # inventory only (engineering baseline), not measured TP/FP.
     finding = sum(
-        1
-        for d in defects
-        if isinstance(d, dict) and d.get("expected_status") == "finding"
+        1 for d in defects if isinstance(d, dict) and d.get("expected_status") == "finding"
     )
     not_verifiable = sum(
         1 for d in defects if isinstance(d, dict) and d.get("expected_status") == "not_verifiable"

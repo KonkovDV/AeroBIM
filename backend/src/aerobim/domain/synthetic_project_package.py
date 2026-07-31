@@ -105,7 +105,9 @@ def generate_synthetic_package(
                 expected_evidence_refs=[source],
                 expected_status="finding",
                 input_hash=input_hash,
-                output_hash=hashlib.sha256(f"{pkg.seed}:{defect}:{input_hash}".encode()).hexdigest(),
+                output_hash=hashlib.sha256(
+                    f"{pkg.seed}:{defect}:{input_hash}".encode()
+                ).hexdigest(),
                 seed=pkg.seed + index,
             )
         )
