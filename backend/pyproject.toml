@@ -7,6 +7,9 @@ name = "aerobim-backend"
 version = "0.1.0"
 description = "AeroBIM backend for cross-modal IFC, IDS, drawing, and specification validation"
 requires-python = ">=3.12"
+# MIT covers AeroBIM's OWN code only; third-party components keep their own
+# licenses (pymupdf: AGPL-3.0/Artifex dual, LIC-001). SSOT:
+# audit/dependency_license_inventory.json + docs/license-policy-2026.md.
 license = { text = "MIT" }
 classifiers = [
   "License :: OSI Approved :: MIT License",
