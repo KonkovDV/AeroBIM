@@ -133,6 +133,11 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 - Инструмент: build → `docker save`; verify → пересчёт sha256 каждого файла против BUNDLE_MANIFEST; smoke → `rmi` тега + `load` + `--network none` API. Docker-free логика манифеста (build_manifest/verify_manifest: детект подмены и пропажи файла) покрыта 4 unit-тестами.
 - Граница честности: **bare-metal / no-Docker** установка (wheelhouse на хосте без Docker) остаётся NOT VERIFIED; tar (851 МБ) gitignored, регенерируется инструментом.
 
+## 5l. Addendum — offline bundle в CI (непрерывная проверка)
+
+- Джоб `offline-bundle-smoke` в ci.yml: на каждый push/PR в main прогоняет `offline_bundle build/verify/smoke` на `ubuntu-latest` (GitHub-hosted раннер уже несёт Docker — self-hosted не требуется; для air-gapped меняется только `runs-on`). Так offline install+runtime доказывается непрерывно, а не одноразово (evidence 5k). Artifact — только BUNDLE_MANIFEST.json; tar (~850 MiB) намеренно не выгружается.
+- Граница честности неизменна: доказан контур С Docker; bare-metal без Docker остаётся NOT VERIFIED. Зелёный статус джоба производит сам GitHub Actions — локально проверены YAML и работоспособность инструмента (5k).
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
