@@ -24,6 +24,10 @@ WORKDIR /app
 
 COPY --from=builder /install /usr/local
 COPY --from=builder /build/src/ src/
+# LOIN export-enrichment metadata lives in repo samples/ (outside this build
+# context) and is NOT shipped: the resolver fail-softs to 'no LOIN metadata'
+# with a visible degrade flag (verdict-neutral enrichment only). Mount
+# /samples/benchmarks/loin-rule-metadata.json to enable it in containers.
 
 RUN mkdir -p var/reports && chown -R aerobim:aerobim /app
 

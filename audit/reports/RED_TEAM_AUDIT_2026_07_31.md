@@ -121,6 +121,12 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 
 - Подтверждён pre-existing дефект из ревью 5h: `_CAPABILITY_FIELDS` содержал фантомные имена (`quantity_consistency`, `load_evidence`), которые getattr молча отбрасывал — pass-blocking `quantity`, `raster`, `ifc_schema`, `norm_rule_packs`, `section_pairing` НЕ входили в reproducibility digest. Список приведён к точному зеркалу `_PASS_BLOCKING_FAILED_FIELDS` (13 полей); синхронизацию и отсутствие фантомов держит guard-тест (test_run_manifest_capability_digest, 3 теста). Golden hash обновлён осознанно второй раз за день; trace-evidence регенерирован.
 
+## 5j. Addendum — offline runtime smoke (F-108 частично закрыт)
+
+- **VERIFIED:** production-образ (lock+hashes, digest-pinned base) запускается и обслуживает API при `--network none`: health 200, capabilities 200 (bearer), 401 без bearer, healthy-healthcheck; ни DNS, ни outbound, ни загрузки моделей на старте. Evidence: `audit/evidence/offline-runtime-smoke-2026-07-31.json` (claim_level=runtime_smoke_only).
+- **Реальный дефект, пойманный первым прогоном:** образ вообще не стартовал — LoinMetadataResolver падал на import-time чтении samples-манифеста, которого нет в образе (контейнер ни разу не запускали до этого smoke). Исправлено fail-soft деградацией (enrichment verdict-neutral) + 3 regression-теста.
+- Граница честности: offline INSTALL/BUILD (wheelhouse, установка без сети) остаётся NOT VERIFIED — P-002 закрыт только в runtime-части.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
