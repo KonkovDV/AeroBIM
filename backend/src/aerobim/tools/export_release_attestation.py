@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -42,21 +43,38 @@ def _git(*args: str) -> str:
     return completed.stdout.strip() if completed.returncode == 0 else ""
 
 
-def build_attestation() -> dict[str, object]:
+def build_attestation(
+    *, docker_digest: str | None = None, test_run_id: str | None = None
+) -> dict[str, object]:
+    """Bind the evidence set to one commit. Pipeline fields (docker_digest,
+    test_run_id) are pure inputs -- the library never reads the environment, so
+    a bare call is deterministic and CI-independent; the CLI does env plumbing.
+
+    RTV-02: null is disambiguated by ``field_semantics`` -- for evidence hashes
+    null means the tracked file is MISSING; for pipeline fields null means
+    NOT_RUN in this attestation context (never 'verified and absent')."""
+
     payload: dict[str, object] = {
         "artifact_type": "aerobim_release_attestation",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "commit": _git("rev-parse", "HEAD"),
         "tree_sha": _git("rev-parse", "HEAD^{tree}"),
         "working_tree_clean": _git("status", "--porcelain") == "",
+        "field_semantics": {
+            "evidence_sha256": "sha256 of the tracked file, or null == file MISSING",
+            "docker_digest": "built image digest, or null == NOT_RUN in this context",
+            "test_run_id": "CI run id, or null == NOT_RUN in this context",
+            "commit_tree": "empty string == git unavailable (non-repo checkout)",
+        },
         "note": (
-            "binds the evidence set to one commit; regenerate per release/CI run; "
-            "docker_digest and test_run_id are filled by the release pipeline "
-            "(null here means 'not part of this attestation run', never 'verified')"
+            "binds the evidence set to one commit; regenerate per release/CI run. "
+            "docker_digest/test_run_id come from the release pipeline via "
+            "--docker-digest/--test-run-id or GITHUB_RUN_ID; null == NOT_RUN in "
+            "this context, never 'verified'. See field_semantics."
         ),
-        "docker_digest": None,
-        "test_run_id": None,
+        "docker_digest": docker_digest,
+        "test_run_id": test_run_id,
     }
     for key, rel in _TRACKED.items():
         path = _REPO_ROOT / rel
@@ -67,8 +85,21 @@ def build_attestation() -> dict[str, object]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export release attestation JSON")
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument(
+        "--docker-digest",
+        default=os.environ.get("AEROBIM_RELEASE_DOCKER_DIGEST"),
+        help="built image digest to bind (release pipeline)",
+    )
+    parser.add_argument(
+        "--test-run-id",
+        default=os.environ.get("GITHUB_RUN_ID"),
+        help="CI test run id to bind (defaults to env GITHUB_RUN_ID)",
+    )
     args = parser.parse_args()
-    payload = build_attestation()
+    payload = build_attestation(
+        docker_digest=args.docker_digest or None,
+        test_run_id=args.test_run_id or None,
+    )
     serialized = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.out is not None:
         args.out.parent.mkdir(parents=True, exist_ok=True)

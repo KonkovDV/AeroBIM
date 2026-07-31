@@ -27,3 +27,20 @@ def test_attestation_never_fakes_pipeline_fields() -> None:
     # leave them null rather than inventing values.
     assert payload["docker_digest"] is None
     assert payload["test_run_id"] is None
+
+
+def test_pipeline_fields_are_bound_when_provided() -> None:
+    # RTV-01: the release pipeline must be able to bind the built image digest
+    # and the CI run id (previously hardcoded null even in CI).
+    payload = build_attestation(docker_digest="sha256:deadbeef", test_run_id="42-1")
+    assert payload["docker_digest"] == "sha256:deadbeef"
+    assert payload["test_run_id"] == "42-1"
+
+
+def test_field_semantics_disambiguates_null() -> None:
+    # RTV-02: null must not conflate "file missing" with "pipeline field not run".
+    payload = build_attestation()
+    semantics = payload["field_semantics"]
+    assert isinstance(semantics, dict)
+    assert "MISSING" in semantics["evidence_sha256"]
+    assert "NOT_RUN" in semantics["docker_digest"]
