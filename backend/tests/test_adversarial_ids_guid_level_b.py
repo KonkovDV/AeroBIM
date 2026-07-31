@@ -3,8 +3,9 @@
 Probe-verified 2026-07-31 against the clean rei60+IDS baseline:
 - malformed / wrong-namespace / empty IDS  -> ids capability FAILED, passed=False
   (fail-closed: a broken rule source can never green-pass);
-- duplicate GlobalId (both walls pset-compliant) -> passed=True / 0 issues:
-  GUID uniqueness is NOT checked -- honesty anchor until a real check lands.
+- duplicate GlobalId (both walls pset-compliant) -> AEROBIM-GUID-DUPLICATE
+  WARNING (verdict-neutral: passed stays True). Closed consciously 2026-07-31;
+  the former known-undetected anchor was updated together with the catalog.
 """
 
 from __future__ import annotations
@@ -76,11 +77,9 @@ class AdversarialIdsAndGuidLevelBTests(unittest.TestCase):
     def test_lb010_empty_ids_fails_closed(self) -> None:
         self._assert_ids_fail_closed("", "AEROBIM-IDS-AUDIT")
 
-    def test_lb011_duplicate_guid_is_currently_undetected_anchor(self) -> None:
-        # Honesty anchor (VERIFIED probe): two walls sharing one GlobalId, both
-        # pset-compliant, read as a clean pass. GUID uniqueness is not checked.
-        # If a uniqueness check ever lands, this fails so the catalog, Claims
-        # wording, and pilot guidance get updated consciously.
+    def test_lb011_duplicate_guid_yields_warning_verdict_neutral(self) -> None:
+        # LB-011 closed consciously: the schema pre-gate now emits a WARNING per
+        # duplicated GlobalId. Verdict-neutral by design -- passed stays True.
         base = IFC_BASE.read_text(encoding="utf-8")
         assert _WALL_LINE in base
         mutated = base.replace(
@@ -91,8 +90,15 @@ class AdversarialIdsAndGuidLevelBTests(unittest.TestCase):
         ifc_path = self._tmp() / "dup-guid.ifc"
         ifc_path.write_text(mutated, encoding="utf-8")
         report = self._run(ifc_path, IDS_PATH)
+        duplicates = [i for i in report.issues if i.rule_id == "AEROBIM-GUID-DUPLICATE"]
+        self.assertEqual(len(duplicates), 1)
+        self.assertEqual(duplicates[0].element_guid, "38FRviGan7WhU9JrK165gm")
+        self.assertTrue(report.summary.passed)  # WARNING never flips the verdict
+
+    def test_unique_guids_produce_no_duplicate_warning_control(self) -> None:
+        report = self._run(IFC_BASE, IDS_PATH)
+        self.assertFalse(any(i.rule_id == "AEROBIM-GUID-DUPLICATE" for i in report.issues))
         self.assertTrue(report.summary.passed)
-        self.assertEqual(report.summary.issue_count, 0)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,7 @@ from aerobim.domain.models import (
     DrawingSource,
     ParsedRequirement,
     ReportCapabilities,
+    Severity,
     ValidationIssue,
 )
 
@@ -97,10 +98,12 @@ def build_report_capabilities(
             ifc_schema = CapabilityStatus(
                 CapabilityState.SKIPPED, "IFC schema pre-gate not configured"
             )
-    elif schema_issues:
+    elif schema_errors := [i for i in schema_issues if i.severity is Severity.ERROR]:
+        # WARNING-level pre-gate findings (e.g. duplicated GlobalId) stay findings
+        # only; FAILED is reserved for ERROR severity (LB-011 semantics).
         ifc_schema = CapabilityStatus(
             CapabilityState.FAILED,
-            schema_issues[0].message if schema_issues else "schema pre-gate failed",
+            schema_errors[0].message,
             external_ref=schema_request_id,
         )
     elif require_bsi_schema:

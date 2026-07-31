@@ -89,9 +89,10 @@
     {
       "defect_id": "LB-011-ifc-duplicate-guid",
       "mutation_type": "second IFCWALL with the SAME GlobalId, both pset-compliant",
-      "expected_finding": null,
-      "expected_status": "known_undetected",
-      "boundary": "VERIFIED probe 2026-07-31: duplicate GlobalId yields passed=True / 0 issues — GUID uniqueness is not checked anywhere in the pipeline. GUID is the anchor for BCF topics, revision diff element sets, and traceability; a silent duplicate can split/merge findings across elements. Candidate check: ifc_schema/ingestion-level GUID-uniqueness WARNING. Until then: honesty anchor, never claimed."
+      "expected_finding": "AEROBIM-GUID-DUPLICATE",
+      "expected_status": "detected",
+      "boundary": "RESOLVED 2026-07-31 (same audit day): duplicate GlobalId now surfaces as a WARNING from the IFC schema pre-gate (BasicIfcSchemaValidator streaming scan). Warning-level by design: verdict-neutral, existing pack verdicts unchanged. Original finding: duplicate GUIDs passed silently.",
+      "expected_severity": "warning"
     }
   ]
 }
