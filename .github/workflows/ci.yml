@@ -449,3 +449,38 @@ jobs:
         with:
           name: release-attestation
           path: artifacts/release-attestation/release-attestation.json
+
+  offline-bundle-smoke:
+    # ubuntu-latest GitHub-hosted runners already ship a working Docker daemon,
+    # so no self-hosted runner is required to prove offline install+runtime.
+    # For a genuinely air-gapped runner, swap `runs-on` for your self-hosted
+    # label -- the steps below are identical (build has network; the proof is
+    # docker load from tar + --network none runtime).
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Docker version (diagnostics)
+        run: docker version
+      - name: Offline bundle build (docker build + docker save tar + sha256 manifest)
+        run: python -m aerobim.tools.offline_bundle build
+      - name: Offline bundle verify (recompute sha256 of every file vs manifest)
+        run: python -m aerobim.tools.offline_bundle verify
+      - name: Offline install+runtime smoke (rmi tag; docker load; run --network none; API)
+        run: python -m aerobim.tools.offline_bundle smoke
+      - name: Upload offline-bundle manifest (image tar intentionally NOT uploaded, ~850 MiB)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: offline-bundle-manifest
+          path: artifacts/offline-bundle/BUNDLE_MANIFEST.json
