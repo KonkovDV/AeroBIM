@@ -7,6 +7,12 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Eng readiness **improved** (F–L): publishable precision gates, SLA `customer_measurable` refuse-without-evidence, BCF T0–T4 ladder + empty T2 template, revision finding compare, pilot threat model, open-core ADR — **without** inventing customer corpus, CDE screenshots, or SLA customer packs.
 
+## Open engineering/legal blockers (2026-07-31 audit)
+
+| ID | Severity | Status | Summary |
+|---|---|---|---|
+| LIC-001 | HIGH | **OPEN — legal review required** | `pymupdf==1.27.2.3` wheel metadata: «Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License»; it is a MANDATORY core dependency used on the server path. Engineering fact (VERIFIED 2026-07-31 via importlib.metadata); NOT a legal conclusion. Options: Artifex commercial license / backend migration (pypdfium2, pdfminer.six) with functional-equivalence tests / isolate as optional extra. Gate: `backend/tests/test_dependency_license_gate.py`. |
+
 ## Engineering readiness improved (2026-07-21 F–L)
 
 | Track | Eng status | Customer evidence |
