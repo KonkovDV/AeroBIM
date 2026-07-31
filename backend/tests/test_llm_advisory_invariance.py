@@ -31,9 +31,7 @@ class LlmAdvisoryInvarianceTests(unittest.TestCase):
     def test_provider_contract(self) -> None:
         for name in ("kimi", "qwen", "gemma"):
             provider = MockLlmProvider(provider=name, model=f"{name}-mock")
-            response = provider.generate(
-                LlmRequest(request_id=f"c-{name}", evidence_refs=("e:1",))
-            )
+            response = provider.generate(LlmRequest(request_id=f"c-{name}", evidence_refs=("e:1",)))
             self.assertEqual(response.provider, name)
             self.assertTrue(response.schema_valid)
             self.assertEqual(response.status, "advisory")
