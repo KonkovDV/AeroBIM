@@ -88,6 +88,14 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 
 - Реализована GUID-uniqueness проверка в `BasicIfcSchemaValidator` (streaming-скан rooted-сущностей, WARNING `AEROBIM-GUID-DUPLICATE`, cap 10, verdict-neutral). LB-011 переведён known_undetected → detected; якорь-тест обновлён осознанно вместе с каталогом и Claims Lock — ровно тот workflow, ради которого якоря вводились.
 
+## 5f. Addendum — triage внешней перепроверки (raw main)
+
+| Утверждение внешней проверки | Вердикт | Факты |
+|---|---|---|
+| «CI ставит зависимости обычным pip install без --require-hashes» | **ОПРОВЕРГНУТО** | все 9 джобов ci.yml + release-readiness + academic-benchmark используют `pip install --require-hashes -r requirements-dev-lock.txt` (lock: 1453 sha256-хеша), pinned `pip==25.2`, `-e . --no-deps`, отдельный pip-audit 2.9.0; residual (floating pip bootstrap, unhashed uv) задокументирован в комментариях workflow |
+| «PyMuPDF всё ещё обязательный Core при license=MIT» | ПОДТВЕРЖДЕНО (известный LIC-001) | решение Artifex/миграция/extra — за владельцем; disclosure в README/README.ru; pyproject получил pointer-комментарий |
+| «license/SBOM/offline-гейты не видны» | ЧАСТИЧНО | license-gate есть (pytest в CI: test_dependency_license_gate + isolation guard); **SBOM добавлен этой волной** (`docs/evidence/sbom-backend-latest.json`, CycloneDX-format, venv-scoped, генератор `export_dependency_sbom` без сторонних инструментов + pytest-гейт покрытия core-зависимостей); offline-гейты честно остаются NOT VERIFIED (P-002, F-108) |
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
