@@ -1,0 +1,62 @@
+{
+  "artifact_type": "dataset_license_manifest",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-31",
+  "claim_level": "engineering_baseline_only",
+  "customer_evidence": false,
+  "policy": {
+    "unknown_redistribution_blocks_public_benchmark": true,
+    "customer_confidential_forbidden_in_public_pack": true
+  },
+  "entries": [
+    {
+      "asset_id": "ifc-walls-multi",
+      "path": "samples/ifc/walls-multi-entity.ifc",
+      "dataset_class": "fixture",
+      "license": "repo-fixture",
+      "spdx": "LicenseRef-AeroBIM-Fixture",
+      "redistribution": "allowed",
+      "public_benchmark": "allowed",
+      "notes": "In-repo fixture"
+    },
+    {
+      "asset_id": "ids-walls-multi",
+      "path": "samples/ids/walls-multi-entity.ids",
+      "dataset_class": "fixture",
+      "license": "repo-fixture",
+      "spdx": "LicenseRef-AeroBIM-Fixture",
+      "redistribution": "allowed",
+      "public_benchmark": "allowed"
+    },
+    {
+      "asset_id": "open-buildingsmart-sample-test-files",
+      "path": null,
+      "source_url": "https://github.com/buildingSMART/Sample-Test-Files",
+      "dataset_class": "public_real",
+      "license": "unclear_in_sprint_inventory",
+      "spdx": "NOASSERTION",
+      "redistribution": "unknown",
+      "public_benchmark": "INTERNAL_ONLY_LICENSE_REVIEW",
+      "notes": "Do not vendor into public pack until license/redistribution cleared"
+    },
+    {
+      "asset_id": "ids-test-suite",
+      "path": null,
+      "source_url": "https://github.com/buildingSMART/IDS",
+      "dataset_class": "public_real",
+      "license": "unclear_in_sprint_inventory",
+      "spdx": "NOASSERTION",
+      "redistribution": "unknown",
+      "public_benchmark": "INTERNAL_ONLY_LICENSE_REVIEW"
+    },
+    {
+      "asset_id": "schependomlaan",
+      "path": null,
+      "dataset_class": "public_real",
+      "license": "unclear_in_sprint_inventory",
+      "spdx": "NOASSERTION",
+      "redistribution": "unknown",
+      "public_benchmark": "INTERNAL_ONLY_LICENSE_REVIEW"
+    }
+  ]
+}

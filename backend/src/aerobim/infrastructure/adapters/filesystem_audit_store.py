@@ -831,8 +831,9 @@ class FilesystemAuditStore:
                 data.get("extraction_integrity"),
                 default=CapabilityStatus(
                     CapabilityState.NOT_VERIFIED,
-                    "extraction-integrity signals are not produced by the "
-                    "ingestion layer yet (signal core present, not wired); "
+                    "extraction-integrity not evaluated for this report "
+                    "(PDF text-layer producer runs on analyze when PDF drawings are present; "
+                    "default until probe result is attached); "
                     "extracted text must not be presumed render-consistent",
                 ),
             ),

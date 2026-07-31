@@ -3,7 +3,7 @@
   "schema_version": "1.0.0",
   "verified_at": "2026-07-31",
   "verification_method": "importlib.metadata on the project venv (wheel License-Expression / License field / classifiers). Entries with verified=false are upstream declarations NOT verified locally (extras not installed in this venv).",
-  "note": "Engineering inventory, NOT a legal opinion. Any copyleft/dual-commercial entry requires legal review before redistribution / SaaS claims. Enforced by backend/tests/test_dependency_license_gate.py.",
+  "note": "Engineering inventory, NOT a legal opinion. Versions aligned to requirements-lock.txt (CI/Docker SSOT). Local developer venvs may lag; gate compares inventory lock_version to lock file. Any copyleft/dual-commercial entry requires legal review before redistribution / SaaS claims. Enforced by backend/tests/test_dependency_license_gate.py.",
   "risk_classes": {
     "permissive": "MIT/BSD/Apache/PSF-class; no redistribution blocker known",
     "weak_copyleft": "LGPL-class; dynamic linking assumed; legal review recommended",
@@ -14,14 +14,16 @@
     {
       "name": "pymupdf",
       "scope": "core",
-      "installed_version": "1.27.2.3",
+      "installed_version": "1.28.0",
       "license_metadata": "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License",
       "spdx_guess": "AGPL-3.0-only OR LicenseRef-Artifex-Commercial",
       "risk_class": "strong_copyleft_or_commercial",
       "verified": true,
       "legal_review_required": true,
       "usage": "mandatory core; server path (raster_drawing_analyzer, filesystem_audit_store HTML export) + tools",
-      "mitigation_options": "commercial license; or migrate PDF text backend (pypdfium2/pdfminer.six) with functional-equivalence tests; or isolate as optional extra"
+      "mitigation_options": "commercial license; or migrate PDF text backend (pypdfium2/pdfminer.six) with functional-equivalence tests; or isolate as optional extra",
+      "lock_version": "1.28.0",
+      "verification_note": "PyPI info.license for PyMuPDF 1.28.0 checked 2026-07-31 via pypi.org/pypi/PyMuPDF/1.28.0/json"
     },
     {
       "name": "ifcopenshell",
@@ -33,7 +35,8 @@
       "verified": true,
       "legal_review_required": true,
       "usage": "mandatory core; IFC validation kernel",
-      "mitigation_options": "dynamic linking; keep unmodified; disclose"
+      "mitigation_options": "dynamic linking; keep unmodified; disclose",
+      "lock_version": "0.8.5"
     },
     {
       "name": "ifctester",
@@ -45,55 +48,60 @@
       "verified": true,
       "legal_review_required": true,
       "usage": "mandatory core; IDS validation",
-      "mitigation_options": "same as ifcopenshell"
+      "mitigation_options": "same as ifcopenshell",
+      "lock_version": "0.8.5"
     },
     {
       "name": "fastapi",
       "scope": "core",
-      "installed_version": "0.140.0",
+      "installed_version": "0.140.8",
       "license_metadata": "MIT",
       "spdx_guess": "MIT",
       "risk_class": "permissive",
       "verified": true,
       "legal_review_required": false,
       "usage": "HTTP API",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "0.140.8"
     },
     {
       "name": "starlette",
       "scope": "core",
-      "installed_version": "1.0.0",
+      "installed_version": "1.3.1",
       "license_metadata": "BSD-3-Clause",
       "spdx_guess": "BSD-3-Clause",
       "risk_class": "permissive",
       "verified": true,
       "legal_review_required": false,
       "usage": "ASGI",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "1.3.1"
     },
     {
       "name": "uvicorn",
       "scope": "core",
-      "installed_version": "0.46.0",
+      "installed_version": "0.51.0",
       "license_metadata": "BSD-3-Clause",
       "spdx_guess": "BSD-3-Clause",
       "risk_class": "permissive",
       "verified": true,
       "legal_review_required": false,
       "usage": "server",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "0.51.0"
     },
     {
       "name": "pydantic",
       "scope": "core-transitive",
-      "installed_version": "2.13.3",
+      "installed_version": "2.13.4",
       "license_metadata": "MIT",
       "spdx_guess": "MIT",
       "risk_class": "permissive",
       "verified": true,
       "legal_review_required": false,
       "usage": "schemas",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "2.13.4"
     },
     {
       "name": "defusedxml",
@@ -105,7 +113,8 @@
       "verified": true,
       "legal_review_required": false,
       "usage": "safe XML",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "0.7.1"
     },
     {
       "name": "python-multipart",
@@ -117,31 +126,34 @@
       "verified": true,
       "legal_review_required": false,
       "usage": "uploads",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "0.0.32"
     },
     {
       "name": "rapidocr",
       "scope": "extra:raster",
-      "installed_version": null,
+      "installed_version": "3.9.2",
       "license_metadata": "Apache-2.0 (upstream declaration)",
       "spdx_guess": "Apache-2.0",
       "risk_class": "permissive",
       "verified": false,
       "legal_review_required": false,
       "usage": "optional OCR",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "3.9.2"
     },
     {
       "name": "onnxruntime",
       "scope": "extra:raster",
-      "installed_version": null,
+      "installed_version": "1.28.0",
       "license_metadata": "MIT (upstream declaration)",
       "spdx_guess": "MIT",
       "risk_class": "permissive",
       "verified": false,
       "legal_review_required": false,
       "usage": "optional OCR runtime",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "1.28.0"
     },
     {
       "name": "ifcclash",
@@ -182,14 +194,15 @@
     {
       "name": "pillow",
       "scope": "extra:vision",
-      "installed_version": null,
+      "installed_version": "12.3.0",
       "license_metadata": "MIT-CMU/HPND (upstream declaration)",
       "spdx_guess": "HPND",
       "risk_class": "permissive",
       "verified": false,
       "legal_review_required": false,
       "usage": "optional imaging",
-      "mitigation_options": ""
+      "mitigation_options": "",
+      "lock_version": "12.3.0"
     },
     {
       "name": "boto3",
@@ -305,5 +318,6 @@
     "Docker base images — UNKNOWN until image SBOM",
     "VLM/LLM model weights — no weights shipped in repo (advisory contour not wired)"
   ],
-  "frontend_verified_at": "2026-07-31"
+  "frontend_verified_at": "2026-07-31",
+  "lock_ssot": "backend/requirements-lock.txt"
 }

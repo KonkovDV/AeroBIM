@@ -138,6 +138,58 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 - Джоб `offline-bundle-smoke` в ci.yml: на каждый push/PR в main прогоняет `offline_bundle build/verify/smoke` на `ubuntu-latest` (GitHub-hosted раннер уже несёт Docker — self-hosted не требуется; для air-gapped меняется только `runs-on`). Так offline install+runtime доказывается непрерывно, а не одноразово (evidence 5k). Artifact — только BUNDLE_MANIFEST.json; tar (~850 MiB) намеренно не выгружается.
 - Граница честности неизменна: доказан контур С Docker; bare-metal без Docker остаётся NOT VERIFIED. Зелёный статус джоба производит сам GitHub Actions — локально проверены YAML и работоспособность инструмента (5k).
 
+## 5m. Re-audit cycle (evening 2026-07-31) — свежая перепроверка P-001…P-020
+
+**Метод:** не доверять executive summary §1 без сверки с HEAD. HEAD git: `64c69b4`. Working tree dirty (sprint-2.1 + этот цикл).
+
+### Исправления фактов в §1 (STALE → current)
+
+| ID | Было в §1 | Сейчас | Класс |
+|---|---|---|---|
+| F-108 offline | NOT VERIFIED (нет скриптов) | **STALE**: image-track build/verify/smoke + CI job существуют; bare-metal NOT VERIFIED | VERIFIED code; smoke Docker this cycle = NOT_REPRODUCED |
+| F-109 extraction | capability отсутствует | **STALE**: `extraction_integrity` wired, FAILED blocks pass; producer still incomplete | VERIFIED |
+| F-101 PyMuPDF version | 1.27.2.3 | **DRIFT found**: lock=`1.28.0`, inventory was 1.27.2.3, local venv 1.27.2.2 | VERIFIED then **FIXED** inventory+gate |
+
+### P-001 re-verify (этот цикл)
+
+- `pymupdf` в `pyproject.toml` dependencies (core), не только extra.
+- 6 прямых `import pymupdf` в adapters/tools.
+- Docker: `pip install --require-hashes -r requirements-lock.txt` → pymupdf входит в image.
+- PyPI 1.28.0 license string dual AGPL/Artifex (HTTPS 2026-07-31).
+- Artifex public licensing page: AGPL or commercial ([artifex.com/licensing](https://artifex.com/licensing)) — PUBLIC CLAIM; **не** юридическое заключение по SaaS.
+- Fix: inventory synced to lock; `test_inventory_core_versions_match_requirements_lock` added.
+- Tests this cycle: **7** license-gate + **2** isolation = pass (see §8).
+
+### Остальные P (кратко)
+
+| P | Вердикт | Доказательство / gap |
+|---|---|---|
+| P-002 | PARTIAL | offline image-track VERIFIED historically; bare-metal NOT VERIFIED; Docker smoke this cycle not re-run |
+| P-003 | PARTIAL | signal+gate VERIFIED; live render-vs-extract producer NOT VERIFIED |
+| P-004 | PARTIAL | hybrid+LLM advisory not in verdict; fixtures exist; full agent tool surface limited |
+| P-005 | missing crypto | 63-ФЗ exists (pravo.gov.ru); AeroBIM УКЭП validation missing |
+| P-006 | T2+ blocked | questionnaire exists; no 10D integration claim found in affirmative form |
+| P-007 | boundary OK | calc correctness not_implemented; no fake AnalysisModelIngestor |
+| P-008…P-013 | BLOCKED/PARTIAL | governance/catalog/sizing docs added; customer corpus absent |
+| P-014 | PARTIAL | SLA protocol+schema exist; customer SLA OPEN |
+| P-015 | PARTIAL | Claims Lock 2026-07-31 dated freeze added; README MIT badge still present but disclosure section exists |
+| P-016 | VERIFIED core | capabilities API + failed blocks pass |
+| P-017 | NOT_REPRODUCED_FULL | security suite exists; full battery not re-run this cycle |
+| P-018…P-020 | docs/gap | registry gap + governance docs; competitor claims = PUBLIC CLAIM only |
+
+### Docs created/updated this cycle
+
+Claims Lock 2026-07-31; DEPENDENCY/SECURITY/DATA_GOVERNANCE/REGISTRY/CDE/EXTRACTION/CUSTOMER_DATA audits; offline/extraction/signature/norm/calc/dataset/annotation/corpus/red-team docs; CRITICAL_BLOCKERS LIC-001 version; license inventory + gate.
+
+### 5n. Security regression re-run (evening 2026-07-31)
+
+- **REPRODUCED:** 18 security-related suites → `190 passed, 1 skipped, 0 failed` (~6s).
+- Evidence: `docs/evidence/security-rerun-2026-07-31.json`, report `SECURITY_AUDIT_2026_07_31.md`.
+- Controls covered: path jail, cross-tenant ACL, SSRF outbound invariant, ZIP/XXE bombs, upload sniff/limits, prompt-injection/advisory invariance, hybrid privacy, fail-closed remediation.
+- **NOT_IN_SCOPE:** PyMuPDF subprocess sandbox; external pen-test; production multi-tenant certification.
+- **CI:** job `security-regression` added to `.github/workflows/ci.yml` (engineering regression only; claim_level=engineering_regression_only).
+- Customer checkpoint remains **NO_GO**.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
@@ -147,7 +199,11 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 
 ## 7. Go/No-Go
 
-**NO_GO** (без изменений): RT-001/002/003 открыты + новый **LIC-001** (лицензионный блокер
-уровня release: обязательная AGPL/commercial-dual зависимость при MIT-позиционировании).
-Статус изменится на GO_WITH_BLOCKERS после: юридического заключения по LIC-001 (или миграции
-PDF-бэкенда), и на GO — после customer evidence по RT-001/002/003 и BCF T2.
+**NO_GO** (без изменений для customer sign-off): RT-001/002/003 открыты.
+
+**Engineering:** `GO_WITH_BLOCKERS` допустим только как внутренний статус релиза **после** явного
+принятия LIC-001 владельцем (юр. заключение / Artifex / миграция) — до того release claims
+с MIT-only позиционированием запрещены Claims Lock.
+
+Статус customer → GO только после: RT-001/002/003 evidence + BCF T2 (если CDE в scope) +
+письменного license decision по LIC-001.

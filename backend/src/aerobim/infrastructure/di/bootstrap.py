@@ -25,6 +25,7 @@ from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import resolve_storage_path
 from aerobim.domain.hybrid.model_router import ModelRouter, ProviderRegistry
 from aerobim.domain.models import Severity, ToleranceConfig
+from aerobim.domain.pdf_backend import resolve_pdf_backend
 from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
 from aerobim.infrastructure.adapters.bsi_validation_service import (
     HttpBsiValidationService,
@@ -35,6 +36,9 @@ from aerobim.infrastructure.adapters.deterministic_requirement_interpreter impor
 )
 from aerobim.infrastructure.adapters.deterministic_requirement_to_ids_compiler import (
     DeterministicRequirementToIdsCompiler,
+)
+from aerobim.infrastructure.adapters.disabled_pdf_extraction_integrity_producer import (
+    DisabledPdfExtractionIntegrityProducer,
 )
 from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
     DoclingOfficeDocumentIngestor,
@@ -84,6 +88,9 @@ from aerobim.infrastructure.adapters.ocr_fallback_multimodal_drawing_pipeline im
 from aerobim.infrastructure.adapters.oda_cad_model_ingestor import OdaCadModelIngestor
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
+from aerobim.infrastructure.adapters.pymupdf_extraction_integrity_producer import (
+    PyMuPDFExtractionIntegrityProducer,
+)
 from aerobim.infrastructure.adapters.pymupdf_region_cropper import PyMuPDFRegionCropper
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 from aerobim.infrastructure.adapters.redis_analyze_project_package_job_store import (
@@ -161,6 +168,15 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.RASTER_DRAWING_ANALYZER,
         lambda _container: RasterDrawingAnalyzer(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.EXTRACTION_INTEGRITY_PRODUCER,
+        lambda current: (
+            DisabledPdfExtractionIntegrityProducer()
+            if resolve_pdf_backend(current.resolve(Tokens.SETTINGS).pdf_backend) == "none"
+            else PyMuPDFExtractionIntegrityProducer()
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     tolerance = ToleranceConfig()
@@ -493,6 +509,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             mep_federated_scope_path=_resolve_mep_federated_scope_path(
                 current.resolve(Tokens.SETTINGS)
             ),
+            extraction_integrity_producer=current.resolve(Tokens.EXTRACTION_INTEGRITY_PRODUCER),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

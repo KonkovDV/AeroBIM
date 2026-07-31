@@ -1,0 +1,49 @@
+{
+  "audit_date": "2026-07-31",
+  "head": "64c69b4f9cdd99779e9aac91ec87078367190339",
+  "tree_sha": "c8b51c78cac3a68af0ccc1308b78c6f8b3326ef6",
+  "working_tree_clean": true,
+  "base_commit": "514b2aa9a2fa10440f75daae46abd595de892d7a",
+  "base_commit_is_ancestor": true,
+  "python": "3.13.7",
+  "node": "v24.11.0",
+  "docker": "29.5.2",
+  "existing_datasets": [
+    "samples/DATASET_MANIFEST.json",
+    "samples/benchmarks/project-package-baseline.json",
+    "samples/benchmarks/injected-defects-level-b.json",
+    "samples/benchmarks/detection-precision/",
+    "samples/benchmarks/drawing-advisory/",
+    "samples/benchmarks/hybrid-contour/"
+  ],
+  "existing_benchmark_packs": [
+    "project-package-baseline",
+    "project-package-techlab-demo",
+    "injected-defects-level-b",
+    "drawing-quality-adversarial",
+    "extraction-integrity-adversarial"
+  ],
+  "existing_llm_ports": [
+    "domain/hybrid/*",
+    "HybridRouteGate",
+    "kimi_k3_advisory_client (opt-in, not in verdict path)",
+    "ADVISORY_VLM_PIPELINE DI (deliberately unused by Analyze UC)"
+  ],
+  "existing_customer_discovery_docs": [
+    "docs/partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md",
+    "docs/pilot/CUSTOMER_KICKOFF_MAP_2026_07_26.md",
+    "docs/pilot-protocol-samolet-2026.md"
+  ],
+  "known_blockers": [
+    "RT-001 customer accuracy corpus OPEN",
+    "RT-002 approved norm pack OPEN",
+    "RT-003 federated MEP OPEN",
+    "LIC-001 PyMuPDF dual license legal OPEN",
+    "BCF T2 CDE import NOT_VERIFIED",
+    "Native DWG MISSING",
+    "calculation_correctness NOT_IMPLEMENTED",
+    "Checkpoint NO_GO"
+  ],
+  "evidence_class": "VERIFIED",
+  "notes": "Sprint 2.1 start inventory. Tip is newer than 514b2aa; work proceeds on HEAD."
+}

@@ -31,14 +31,15 @@ unknown блокирует) и `backend/tests/test_license_isolation_guard.py`
 
 ## LIC-001 (PyMuPDF) — дерево решений
 
-VERIFIED 2026-07-31: `pymupdf==1.27.2.3` — «Dual Licensed - GNU AFFERO GPL 3.0
-or Artifex Commercial License», обязательная core-зависимость, серверный путь.
+VERIFIED 2026-07-31: lock SSOT `pymupdf==1.28.0` — «Dual Licensed - GNU AFFERO GPL 3.0
+or Artifex Commercial License» (PyPI metadata), обязательная core-зависимость, серверный путь.
+Inventory обязан совпадать с `requirements-lock.txt` (CI-гейт drift).
 
 | Опция | Стоимость | Эффект | Статус |
 |---|---|---|---|
 | A. Коммерческая лицензия Artifex | деньги, договор | снимает блокер, код не трогаем | ждёт юр./бюджет |
 | B. Миграция text-бэкенда (pypdfium2 — Apache/BSD-класс; pdfminer.six — MIT) | инженерия: порт + адаптер + тесты функц. эквивалентности (текст, координаты, RU/EN) | снимает блокер для text path; raster-crop путь мигрирует отдельно | не начата; seam уже изолирован |
-| C. Изоляция в optional extra `[pdf-agpl]` с fail-closed degrade | средняя | core становится AGPL-free; PDF-функции честно skipped без extra | не начата |
+| C. Изоляция в optional extra `[pdf-agpl]` с fail-closed degrade | средняя | core становится AGPL-free; PDF-функции честно skipped без extra | **STARTED Phase 1** — port/seam + `AEROBIM_PDF_BACKEND=none` for EI producer; see `docs/license-pymupdf-isolation-plan-2026.md` |
 | D. AGPL-компилаенс всего продукта | открыть всё под AGPL | конфликт с текущим MIT-позиционированием | отвергается по умолчанию |
 
 Решение принимает владелец проекта после юридической консультации; до решения

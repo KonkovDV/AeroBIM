@@ -70,6 +70,7 @@ class IngestionBundle:
     norm_pack_capability: CapabilityStatus
     norm_pack_issues: tuple[ValidationIssue, ...]
     annotation_ifc_links: tuple[AnnotationIfcLink, ...] = ()
+    extraction_integrity: CapabilityStatus | None = None
 
 
 @dataclass(frozen=True)
@@ -157,6 +158,7 @@ class IngestionOrchestrator:
             )
         )
         drawing_assets = tuple(self._host._collect_drawing_assets(request))
+        extraction_integrity = self._host._probe_extraction_integrity(request)
         return IngestionBundle(
             request=request,
             requirements=requirements,
@@ -170,6 +172,7 @@ class IngestionOrchestrator:
             norm_pack_capability=norm_pack_capability,
             norm_pack_issues=tuple(norm_pack_issues),
             annotation_ifc_links=annotation_ifc_links,
+            extraction_integrity=extraction_integrity,
         )
 
 
@@ -398,6 +401,7 @@ class EvidenceAssembler:
             mep_system_clash=deterministic.mep_capability,
             calculation_match=deterministic.calculation_match,
             quantity_capability=deterministic.quantity_capability,
+            extraction_integrity=ingested.extraction_integrity,
         )
         enforce_honesty_capabilities(capabilities)
         policy = build_signoff_policy(

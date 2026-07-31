@@ -364,6 +364,10 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "BCF ZIP structural AVAILABLE (T0/T1); CDE import NOT_VERIFIED (T2) — "
                 "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md"
             ),
+            "llm_advisory": (
+                "Advisory-only hybrid contour; cannot set summary.passed / outcome; "
+                "customer data default deny; cloud policy often CLOUD_DATA_POLICY_UNKNOWN"
+            ),
         },
         "honesty": honesty,
         "direction_contracts": directions,
@@ -371,6 +375,17 @@ def build_system_capabilities_payload() -> dict[str, object]:
         "mep_intake": mep_intake,
         "auth_bff": auth_bff,
         "customer_intake_gate": intake,
+        "llm_advisory": {
+            "status": "disabled",
+            "advisory_only": True,
+            "affects_summary_passed": False,
+            "customer_data_default": "deny",
+            "providers_mock_tested": ["kimi", "qwen", "gemma"],
+            "claim_boundary": (
+                "Mock/contract tests only unless explicit egress profile; "
+                "not product accuracy; not customer data to cloud by default"
+            ),
+        },
         "forbidden_ok_states": {
             "dwg_dxf": [CapabilityState.OK.value],
             "cv_human_level": [CapabilityState.OK.value],

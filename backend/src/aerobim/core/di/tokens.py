@@ -7,6 +7,7 @@ class Tokens:
     SECTION_DIFF_ANALYZER = "section_diff_analyzer"
     DRAWING_ANALYZER = "drawing_analyzer"
     RASTER_DRAWING_ANALYZER = "raster_drawing_analyzer"
+    EXTRACTION_INTEGRITY_PRODUCER = "extraction_integrity_producer"
     IFC_VALIDATOR = "ifc_validator"
     IDS_VALIDATOR = "ids_validator"
     CLASH_DETECTOR = "clash_detector"

@@ -1,0 +1,50 @@
+{
+  "artifact_type": "sprint_2_1_source_provenance",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-31",
+  "claim_level": "engineering_baseline_only",
+  "policy": {
+    "unknown_license_blocks_public_release": true,
+    "customer_confidential_forbidden_in_public_benchmark": true,
+    "synthetic_never_equals_customer": true
+  },
+  "entries": [
+    {
+      "path_glob": "samples/ifc/*",
+      "dataset_class": "fixture",
+      "license": "AeroBIM repo fixture",
+      "redistribution": "allowed",
+      "attribution": "AeroBIM authors"
+    },
+    {
+      "path_glob": "samples/ids/*",
+      "dataset_class": "fixture",
+      "license": "AeroBIM repo fixture",
+      "redistribution": "allowed",
+      "attribution": "AeroBIM authors"
+    },
+    {
+      "path_glob": "samples/ids-xsd/*",
+      "dataset_class": "third_party_vendored",
+      "license": "buildingSMART — review_pending",
+      "redistribution": "restricted",
+      "status": "INTERNAL_ONLY_LICENSE_REVIEW",
+      "attribution": "buildingSMART International"
+    },
+    {
+      "path_glob": "samples/bcf-xsd/*",
+      "dataset_class": "third_party_vendored",
+      "license": "buildingSMART — review_pending",
+      "redistribution": "restricted",
+      "status": "INTERNAL_ONLY_LICENSE_REVIEW",
+      "attribution": "buildingSMART International"
+    },
+    {
+      "path_glob": "samples/benchmarks/injected-defects-level-b.json",
+      "dataset_class": "synthetic",
+      "license": "AeroBIM repo fixture",
+      "redistribution": "allowed",
+      "ground_truth": "present"
+    }
+  ]
+}
