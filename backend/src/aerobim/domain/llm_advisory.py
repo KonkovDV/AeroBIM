@@ -149,10 +149,7 @@ class MockLlmProvider:
             for phrase in forbidden_phrases
             if any(phrase in item for item in request.requirements)
         )
-        draft = (
-            "Advisory remark grounded in deterministic findings only. "
-            "Expert review required."
-        )
+        draft = "Advisory remark grounded in deterministic findings only. Expert review required."
         if unsupported:
             draft = "Refused: unsupported product claim in prompt context."
         return LlmResponse(

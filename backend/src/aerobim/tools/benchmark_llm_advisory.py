@@ -41,9 +41,7 @@ def run_cases(cases_path: Path) -> dict[str, Any]:
         request = LlmRequest(
             request_id=f"s21-{case_id}",
             evidence_refs=tuple(str(x) for x in (context.get("evidence_refs") or [])),
-            deterministic_findings=tuple(
-                item for item in findings if isinstance(item, dict)
-            ),
+            deterministic_findings=tuple(item for item in findings if isinstance(item, dict)),
             requirements=tuple(str(x) for x in (context.get("requirements") or [])),
             data_policy=policy,
         )
