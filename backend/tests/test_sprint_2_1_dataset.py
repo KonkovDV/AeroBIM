@@ -45,11 +45,13 @@ class Sprint21DatasetTests(unittest.TestCase):
             self.assertEqual(a["mutations"], b["mutations"])
 
     def test_mutation_ground_truth(self) -> None:
-        mutations = json.loads((S21 / "mutations" / "mutation-manifest.json").read_text(encoding="utf-8"))
+        path = S21 / "mutations" / "mutation-manifest.json"
+        mutations = json.loads(path.read_text(encoding="utf-8"))
         self.assertTrue(mutations.get("ssot"))
+        allowed = {"finding", "review_required", "not_verifiable"}
         for defect in mutations["defects"]:
             self.assertIn(defect["mutation_type"], mutations["mutation_catalog"])
-            self.assertIn(defect["expected_status"], {"finding", "review_required", "not_verifiable"})
+            self.assertIn(defect["expected_status"], allowed)
 
     def test_source_immutability(self) -> None:
         """Pack files must remain unchanged relative to manifest hashes."""

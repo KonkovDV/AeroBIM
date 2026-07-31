@@ -1,14 +1,14 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-31T20:46:17.754872+00:00",
+  "generated_at": "2026-07-31T20:49:54.671675+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART schemas carry attribution and a review_pending license status rather than an invented one",
   "file_count": 130,
   "vendored_count": 11,
   "files": [
     {
       "path": "bcf-xsd/README.md",
-      "sha256": "052d0a9bc4fb5215c1b0d8c7215468965d14cb8da2ae41e5fae7ef93907afae9",
+      "sha256": "6df383172935ebdff7d4b892ec6d4b6fe890431f86fdd3f7763b3a5d1fbad392",
       "bytes": 829,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -20,7 +20,7 @@
     },
     {
       "path": "bcf-xsd/release_2_1/markup.xsd",
-      "sha256": "86302bec976f29575b82adfdb57617264062375329dd70290dbacd0853cf165c",
+      "sha256": "15e9af22065870d93ad45431147748adc5b32ef830d6dfe7b4eb10cf5e6c4441",
       "bytes": 6815,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -32,7 +32,7 @@
     },
     {
       "path": "bcf-xsd/release_2_1/version.xsd",
-      "sha256": "de739f01d7cf1285cacbddbfd14f26b6a99adc71f396fdf44e4601937b3b0ab0",
+      "sha256": "bb1d108e349423fef4a69ecc1648797e7e73a18ee994bcdf98f978a6a3adf899",
       "bytes": 461,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -44,7 +44,7 @@
     },
     {
       "path": "bcf-xsd/release_2_1/visinfo.xsd",
-      "sha256": "4dc45af87c11217e7b0252c6561ae744c055bb47329548dca4357bb8aec0c694",
+      "sha256": "ab11687511d9595fc136bcec57b4f640f0e8364d913f9b54c8dc267a13c6f247",
       "bytes": 7403,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -56,7 +56,7 @@
     },
     {
       "path": "bcf-xsd/release_3_0/extensions.xsd",
-      "sha256": "5551f83d99e1c82de61201071756f118c8a429afba969e3ebdd95abeb5fe6141",
+      "sha256": "df9b49fc2368aba41cec8259fad266fe82d735b5319469834e7fe19bf0d83153",
       "bytes": 2939,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -68,7 +68,7 @@
     },
     {
       "path": "bcf-xsd/release_3_0/markup.xsd",
-      "sha256": "e274d9020ec30b6ea05eb5ebde875d3859319cc5324df030f7e5579a4287d631",
+      "sha256": "6c80f1c566ace8b405ae0ab530438aec2014bf35dd14cfc3c4cf0c5aa0b9d169",
       "bytes": 9095,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -80,7 +80,7 @@
     },
     {
       "path": "bcf-xsd/release_3_0/shared-types.xsd",
-      "sha256": "c5cb0526cae1b38820f1b1311115a189c5df600431cf9d87c9a96b53efe1b725",
+      "sha256": "93d20dfcc6d7f451ae85a8277559b0347478c278218a42f0ef41dcc5550a2090",
       "bytes": 560,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -92,7 +92,7 @@
     },
     {
       "path": "bcf-xsd/release_3_0/version.xsd",
-      "sha256": "6663e7acaef740ca49e81df01f14d075bc136952282e7df40219584bc62a82c3",
+      "sha256": "cef0dcc112239457776cab33a5adeed0cf61c344e05bb5c6c4674c2df3643fa6",
       "bytes": 294,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -104,7 +104,7 @@
     },
     {
       "path": "bcf-xsd/release_3_0/visinfo.xsd",
-      "sha256": "683c20f6d06daaa16f8c93ef1dc6bdabcecf66ff1548a6c4d24b6f3b8b476222",
+      "sha256": "0855bc002310b4a9decd67b1b21631bd2e0368f0878183da8448e34d807e7418",
       "bytes": 10002,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -140,7 +140,7 @@
     },
     {
       "path": "benchmarks/benchmark-extraction-quality.json",
-      "sha256": "411c453e9742de71d88d6d58e877003baa43d68a9f59abdd7a5bc33ee59baefe",
+      "sha256": "edca35064bce149d32c1456c9c3649d43677ff917e249a426380a86d428c9291",
       "bytes": 665,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -164,7 +164,7 @@
     },
     {
       "path": "benchmarks/bsdd-pilot-terms.json",
-      "sha256": "c680b269e4e23806285c4aba6f854db742f445439e2f288a2d0ebaefdfd0ccbc",
+      "sha256": "31aae35a9d415a1cf5af0d769e29dda0459235adc33a785b6fde452b8c0b6f06",
       "bytes": 1233,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -272,7 +272,7 @@
     },
     {
       "path": "benchmarks/detection-precision/ranking-labels-template.json",
-      "sha256": "02a7ebf13f0aa76340f3157dea6ab636ad87f7a6791c3cbf6eb4fb6b025dd70f",
+      "sha256": "9a7321564cf08696b5e63a5a4618ecbbeea9e0c09815f55fd2dd786af35f5c4f",
       "bytes": 1961,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -284,7 +284,7 @@
     },
     {
       "path": "benchmarks/drawing-advisory/cases-synthetic.json",
-      "sha256": "15f3b3d9f7e49eda942dbf74de0710f20407dac484aa1a1c0d033a249a65320a",
+      "sha256": "5207d93c0ffe1770b683a63486c957eaa2a4e023333ed8c703ab4f5348d34c40",
       "bytes": 4316,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -332,7 +332,7 @@
     },
     {
       "path": "benchmarks/hybrid-contour/cases-synthetic.json",
-      "sha256": "342e99afc9d77efbaf9ad559e48d34e31e0913979e66edea3ad6b27f6b8afe1d",
+      "sha256": "ec0b9bc01672108a8e76ff065ffd16a26222b50b1b8afb85de6a4f3afb127134",
       "bytes": 1775,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -380,7 +380,7 @@
     },
     {
       "path": "benchmarks/loin-rule-metadata.json",
-      "sha256": "bf5f5a9bb41088d94d0adaea164d99075db8bc79412d86d598455f7295d752fc",
+      "sha256": "7369be04f621936262cf6a7fb67ec87a369a1672c63b5b061289f5180d0c0fd7",
       "bytes": 1303,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -392,7 +392,7 @@
     },
     {
       "path": "benchmarks/project-package-ablation-a0.json",
-      "sha256": "420678ac303c55eb7f3963a4f2cbaa436b7a27e781d07b4e98aedb9ba72de200",
+      "sha256": "8680cbe253ddfca32931f68e11e9845bd2a98c6641edac061740e9d4950d6b89",
       "bytes": 457,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -404,7 +404,7 @@
     },
     {
       "path": "benchmarks/project-package-ablation-a1.json",
-      "sha256": "a039b10892b36a5e16f8692ca95526fb34ca801265b780d5fe5a3d47a7a48221",
+      "sha256": "96d93b2e98e040a27cd607b7ae5685c2273fa510887c649a1c2668ce4980c194",
       "bytes": 503,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -416,7 +416,7 @@
     },
     {
       "path": "benchmarks/project-package-ablation-a2.json",
-      "sha256": "8d49fd61f3763cbc6b50820083f582c4b5158a8f45708c22d0605e237362a574",
+      "sha256": "03c837d6696485a4c73bf6ce5eb98c9bb1d74d253199ba042033b8f0877ef5b4",
       "bytes": 609,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -428,7 +428,7 @@
     },
     {
       "path": "benchmarks/project-package-ablation-a3.json",
-      "sha256": "62b8455cc4478c8e1c1d3532f8aaa2c4e3009b3a8d4ddf29c727e4b9257008e0",
+      "sha256": "a666895d38c65ddcee59bf567c1b0af4812b194f06ed6401ee81ed54c597fbb8",
       "bytes": 954,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -464,7 +464,7 @@
     },
     {
       "path": "benchmarks/project-package-pilot-moscow-v1.json",
-      "sha256": "bb41905c7c1c7c88bcb03fd00d73b0b0b1b60fa401ba6e9402b85f98878f62cc",
+      "sha256": "9401a07814e20cb2cb64d8776f3c7359b50cef87bad3df83ad859e0a18901a43",
       "bytes": 1096,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -692,7 +692,7 @@
     },
     {
       "path": "cad/minimal-entities.dxf",
-      "sha256": "38a1f180317075624a0cb2819406eb905c655bacff0ce86cede57687a57d7307",
+      "sha256": "ed6c088f707801e525ff3ea2fb8734fd1af284307490b9b1dd7a7a4fc9a154af",
       "bytes": 183,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -764,8 +764,8 @@
     },
     {
       "path": "DATASET_MANIFEST.json",
-      "sha256": "31a5621dd906ba8329b0f97a00632b68b99024e01cad751096fe6ee013ac2504",
-      "bytes": 62728,
+      "sha256": "536f93db6b3fb402e6460cc78352cb75e6ae5d3db3084c289694d5741246e59d",
+      "bytes": 69083,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -896,7 +896,7 @@
     },
     {
       "path": "ids-xsd/README.md",
-      "sha256": "eff294d674754107ef4c2872ada4c7cc100f4c75cbbb5d9135aa600441273abd",
+      "sha256": "9138e9ed26063db29b2a05bb2cb2bac60c611bb0c83e642b97f3b9ccc3eb41de",
       "bytes": 761,
       "provenance": "third_party_vendored",
       "source": "buildingSMART International (BCF 2.1/3.0 and IDS 1.0 XML schemas)",
@@ -944,7 +944,7 @@
     },
     {
       "path": "ifc/wall-pset-ifc2x3.ifc",
-      "sha256": "e13045b15358f307c62f12fb2da2a8896d7f9c7882db372fffe623806cc89640",
+      "sha256": "cc99c9db89a40af595ba84f92506bcba8ecccd0d61ba15d5571f358542e5621a",
       "bytes": 997,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -956,7 +956,7 @@
     },
     {
       "path": "ifc/wall-pset-ifc4x3.ifc",
-      "sha256": "4ba0bdbe02db391b71c14978a2de10042dbf14c79ae7c048a7013ef2d753f07a",
+      "sha256": "d6b69bfa55c081d6d4edeaf976812670b00066d69f5336849a5c8184ceed0039",
       "bytes": 1005,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -1124,7 +1124,7 @@
     },
     {
       "path": "requirements/russian-fixture-beam-steel.txt",
-      "sha256": "529b6094bba0b20224625063fee6532a9cbeb560baaf924cf73eec947c0744a7",
+      "sha256": "f731d5580f30c51df794a9a96de550ee24f5a212e6323537dfee965a651a0e27",
       "bytes": 509,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -1148,7 +1148,7 @@
     },
     {
       "path": "requirements/russian-fixture-facade-glazing.txt",
-      "sha256": "c454f1ce0409b541ed4c284ba25fd75ac04a1268e337e7ce97223af8f8a6ce82",
+      "sha256": "4083e166bb18f99a86dee0d4f549531ec001643e16b2eba5fad0789d5e8e62c9",
       "bytes": 577,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -1172,7 +1172,7 @@
     },
     {
       "path": "requirements/russian-fixture-foundation.txt",
-      "sha256": "1f28e14c4966e33be8a4251319681e3e8b21bc421db830e75051f1dd54067f6e",
+      "sha256": "fb7dfc51e58dc98829dd77e1e03abf1c2d08023647652600821d9a0dd31b30bc",
       "bytes": 526,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -1184,7 +1184,7 @@
     },
     {
       "path": "requirements/russian-fixture-roof-thermal.txt",
-      "sha256": "46b6a7e74b2deb528df66afa20e5a2cf04b3e27fedbc12e0bc4fd872f4d48a7f",
+      "sha256": "3e26d5f2437040a2c6ae39e7080e44ac9c9ad2826966c290cc3db49c397bba34",
       "bytes": 560,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -1196,7 +1196,7 @@
     },
     {
       "path": "requirements/russian-fixture-slab-span.txt",
-      "sha256": "353105fece389f83787cb0f3159fafe2dbd459a1ae965c6adde1914034a4e0cb",
+      "sha256": "2dc50f3309f582d44d12ad262f35adcb8678eb833cc476067c59df1d187bd170",
       "bytes": 555,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -1208,7 +1208,7 @@
     },
     {
       "path": "requirements/russian-fixture-stair-evac.txt",
-      "sha256": "8a672da96a78f2ad5edd9351db28cf1586c0c5ad275cbf64e636090124b778e2",
+      "sha256": "64c881410797e7a4b70118f0c3de06d993c16ac3b0b61578fbd46ba27cf19b17",
       "bytes": 539,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -1220,7 +1220,7 @@
     },
     {
       "path": "requirements/russian-fixture-ventilation-space.txt",
-      "sha256": "7c7426e28f00417ad135bc19122b501c937a07413fa8f79cd5e7940bcda046ea",
+      "sha256": "add4368e6d24ddb56edf02600dd51298d6add183575c5e81747f2c6e713f4aa9",
       "bytes": 569,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
