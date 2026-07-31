@@ -26,7 +26,7 @@ from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
     HeuristicLayoutRegionDetector,
 )
-from aerobim.infrastructure.adapters.pymupdf_region_cropper import PyMuPDFRegionCropper
+from aerobim.infrastructure.adapters.pdfium_region_cropper import PdfiumRegionCropper
 from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
     RegionRestrictedVlmPipeline,
 )
@@ -111,7 +111,7 @@ def _build_pipeline(
     return RegionRestrictedVlmPipeline(
         region_detector=HeuristicLayoutRegionDetector(),
         reader=reader,  # type: ignore[arg-type]
-        cropper=PyMuPDFRegionCropper(),
+        cropper=PdfiumRegionCropper(),
         ready=True,
     )
 

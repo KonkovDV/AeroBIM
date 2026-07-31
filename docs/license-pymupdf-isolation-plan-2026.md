@@ -1,33 +1,33 @@
 # LIC-001 PyMuPDF isolation / migration plan (2026)
 
-**Status:** STARTED (Phase 1) — engineering, not legal clearance.  
-**Selected default path:** **Option C phased** (isolate behind port → optional `[pdf]` extra → fail-closed without PDF).  
-**Alternatives remain open:** A (Artifex commercial), B (pypdfium2/pdfminer migration).
+**Status:** Option B **OWNER-SELECTED** (2026-07-31) — production core PDF path migrated.  
+**Decision:** migrate off AGPL PyMuPDF to permissive `pypdfium2` + `pdfminer.six` (+ Pillow).  
+**Residual:** optional `pdf-agpl` extra keeps PyMuPDF for legacy fixture/tools only; not in Docker runtime lock.
 
-## Why Option C first
+## Why Option B
 
-- Does not require budget/legal to *start*.
-- Shrinks AGPL surface for future AGPL-free core builds.
-- Keeps current Docker/CI working while `pymupdf` remains installed.
-- Does **not** claim LIC-001 closed.
+- Owner directed license change away from AGPL dual-licensed core dependency.
+- Shrinks production AGPL surface without Artifex commercial contract.
+- Phase 1 seam (`AEROBIM_PDF_BACKEND`) retained: `pdfium` (default) | `pymupdf` | `none`.
 
 ## Phases
 
 | Phase | Deliverable | Acceptance | Status |
 |---|---|---|---|
-| 1 | Port seam + plan + Claims honesty | all PyMuPDF imports still only in `infrastructure/adapters` + `tools`; EI producer behind `ExtractionIntegritySignalProducer` | **IN PROGRESS** |
-| 2 | Optional extra `[pdf]` + Docker still installs it; core can build without pymupdf for non-PDF profiles | `pip install -e .` without `[pdf]` → PDF capabilities SKIPPED/FAILED honestly | NOT STARTED |
-| 3 | Functional equivalence suite (text, bbox, RU/EN, crop) vs pypdfium2/pdfminer candidate | golden fixtures; CI gate | NOT STARTED |
-| 4 | Owner picks A or B or stay on C+Artifex | legal/budget decision recorded | BLOCKED (owner) |
+| 1 | Port seam + plan + Claims honesty | EI producer selectable; adapters isolated | DONE |
+| 2 | Optional `[pdf-agpl]` + core without pymupdf | runtime lock has no pymupdf; Docker image AGPL-free for PDF | **DONE** |
+| 3 | Functional adapters (text, crop, preview) on pdfium/pdfminer | focused tests + CI | **DONE** (honest: not full OCR-vs-render product) |
+| 4 | Owner picks A or B | recorded | **DONE — B** |
 
 ## Non-goals
 
-- Declaring AGPL inapplicable
-- Shipping AGPL-free production image in Phase 1
-- Claiming PDF parity after a stub swap
+- Declaring “no third-party license obligations”
+- Claiming byte-identical crop/text parity with PyMuPDF
+- Shipping AGPL PyMuPDF in production image
 
 ## Related
 
 - `docs/license-policy-2026.md`
 - `audit/reports/CRITICAL_BLOCKERS.md` LIC-001
 - `backend/tests/test_license_isolation_guard.py`
+- `backend/tests/test_pdfium_region_cropper.py`

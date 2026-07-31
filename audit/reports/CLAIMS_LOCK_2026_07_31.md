@@ -7,7 +7,9 @@
 ## Allowed (with evidence)
 
 - MIT **только** для собственного кода AeroBIM; сторонние компоненты — под своими лицензиями (`audit/dependency_license_inventory.json`).
-- PyMuPDF = dual AGPL-3.0 / Artifex commercial; lock `==1.28.0`; LIC-001 OPEN (legal review).
+- PyMuPDF = dual AGPL-3.0 / Artifex commercial; **optional `pdf-agpl` only** after
+  LIC-001 Option B (2026-07-31). Production core PDF = pypdfium2 + pdfminer.six.
+  Not a court opinion; disclosure of third-party licenses still required.
 - Offline **image-track** install+runtime smoke (Docker load + `--network none`) — eng evidence; bare-metal wheelhouse NOT VERIFIED.
 - `extraction_integrity` capability: default `not_verified` without PDF/producer; PDF text-layer producer on analyze path can set OK / NOT_VERIFIED / FAILED; `FAILED` blocks `summary.passed`; **not** a full render-vs-extract product.
 - BCF ZIP structural (T0/T1) with evidence; CDE import T2+ NOT_VERIFIED.

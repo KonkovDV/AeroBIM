@@ -31,19 +31,21 @@ unknown блокирует) и `backend/tests/test_license_isolation_guard.py`
 
 ## LIC-001 (PyMuPDF) — дерево решений
 
-VERIFIED 2026-07-31: lock SSOT `pymupdf==1.28.0` — «Dual Licensed - GNU AFFERO GPL 3.0
-or Artifex Commercial License» (PyPI metadata), обязательная core-зависимость, серверный путь.
-Inventory обязан совпадать с `requirements-lock.txt` (CI-гейт drift).
+VERIFIED 2026-07-31 lock SSOT historically `pymupdf==1.28.0` (dual AGPL/Artifex).
+**Owner decision 2026-07-31: Option B** — production core PDF path uses
+`pypdfium2` + `pdfminer.six` (+ Pillow). PyMuPDF remains only as optional
+`pdf-agpl` (dev/tools), absent from `requirements-lock.txt` / Docker runtime.
 
 | Опция | Стоимость | Эффект | Статус |
 |---|---|---|---|
-| A. Коммерческая лицензия Artifex | деньги, договор | снимает блокер, код не трогаем | ждёт юр./бюджет |
-| B. Миграция text-бэкенда (pypdfium2 — Apache/BSD-класс; pdfminer.six — MIT) | инженерия: порт + адаптер + тесты функц. эквивалентности (текст, координаты, RU/EN) | снимает блокер для text path; raster-crop путь мигрирует отдельно | не начата; seam уже изолирован |
-| C. Изоляция в optional extra `[pdf-agpl]` с fail-closed degrade | средняя | core становится AGPL-free; PDF-функции честно skipped без extra | **STARTED Phase 1** — port/seam + `AEROBIM_PDF_BACKEND=none` for EI producer; see `docs/license-pymupdf-isolation-plan-2026.md` |
-| D. AGPL-компилаенс всего продукта | открыть всё под AGPL | конфликт с текущим MIT-позиционированием | отвергается по умолчанию |
+| A. Коммерческая лицензия Artifex | деньги, договор | снимает блокер, код не трогаем | не выбрана |
+| B. Миграция (pypdfium2 / pdfminer.six) | инженерия | core PDF без AGPL | **SELECTED / DONE (eng)** |
+| C. Изоляция в optional extra | средняя | core AGPL-free с degrade | superseded by B (extra retained as `pdf-agpl`) |
+| D. AGPL-комплаенс всего продукта | открыть всё под AGPL | конфликт с MIT-позиционированием | отвергается |
 
-Решение принимает владелец проекта после юридической консультации; до решения
-LIC-001 остаётся OPEN в CRITICAL_BLOCKERS и checkpoint-статус не улучшается.
+LIC-001 в CRITICAL_BLOCKERS: **ENGINEERING_CLEARED_FOR_CORE_PDF** — residual:
+optional AGPL extra must not be reintroduced into runtime lock without owner
+decision; disclosure still required for all third-party components.
 
 ## Не заявляем (Claims Lock)
 

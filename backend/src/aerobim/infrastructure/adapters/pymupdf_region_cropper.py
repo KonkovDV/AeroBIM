@@ -1,14 +1,7 @@
 """§3 layer-2 crop adapter: extract ONE region to PNG bytes via PyMuPDF.
 
-Implements the ``RegionCropper`` protocol used by ``RegionRestrictedVlmPipeline``.
-PyMuPDF is a shipped core dependency (unlike Pillow), so this needs no optional
-extra. The crop is deterministic; a degenerate / out-of-bounds rectangle fails
-closed with ``ValueError`` (the orchestrator then degrades only that region).
-
-Coordinate contract: ``bbox_xyxy`` is interpreted in the SAME space as the
-page rectangle (PyMuPDF points) unless ``coordinate_system="normalized-0-1"``,
-in which case it is scaled by the page rect. The caller is responsible for
-emitting region boxes in the matching space (the layout detector's convention).
+Optional AGPL path (``pdf-agpl`` extra / ``AEROBIM_PDF_BACKEND=pymupdf``).
+Production default is ``PdfiumRegionCropper`` (LIC-001 Option B).
 """
 
 from __future__ import annotations
@@ -43,7 +36,9 @@ class PyMuPDFRegionCropper:
         try:
             import pymupdf
         except ModuleNotFoundError as exc:  # pragma: no cover - shipped core dep
-            raise RuntimeError("Region cropping requires PyMuPDF (core dependency)") from exc
+            raise RuntimeError(
+                "Region cropping requires PyMuPDF. Install the optional 'pdf-agpl' extra."
+            ) from exc
 
         with pymupdf.open(source.path) as document:
             if not 0 <= self._page_number < document.page_count:

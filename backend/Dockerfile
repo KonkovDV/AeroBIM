@@ -14,9 +14,10 @@ FROM python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd
 LABEL org.opencontainers.image.source="https://github.com/KonkovDV/AeroBIM"
 LABEL org.opencontainers.image.description="AeroBIM cross-modal BIM validation backend"
 # SPDX expression covers own code (MIT) plus mandatory third-party terms:
-# PyMuPDF is AGPL-3.0-only OR Artifex commercial (LIC-001, legal review open);
-# IfcOpenShell/IfcTester are LGPL-3.0-or-later. SSOT: audit/dependency_license_inventory.json
-LABEL org.opencontainers.image.licenses="MIT AND LGPL-3.0-or-later AND (AGPL-3.0-only OR LicenseRef-Artifex-Commercial)"
+# Core PDF path is permissive (pypdfium2 Apache/BSD + pdfminer.six MIT + Pillow).
+# IfcOpenShell/IfcTester are LGPL-3.0-or-later. Optional pdf-agpl (PyMuPDF) is NOT
+# in the production image. SSOT: audit/dependency_license_inventory.json
+LABEL org.opencontainers.image.licenses="MIT AND LGPL-3.0-or-later AND Apache-2.0 AND BSD-3-Clause"
 
 RUN groupadd -r aerobim && useradd -r -g aerobim -s /sbin/nologin aerobim
 
