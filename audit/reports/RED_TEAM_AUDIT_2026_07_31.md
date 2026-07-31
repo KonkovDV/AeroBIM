@@ -127,6 +127,12 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 - **Реальный дефект, пойманный первым прогоном:** образ вообще не стартовал — LoinMetadataResolver падал на import-time чтении samples-манифеста, которого нет в образе (контейнер ни разу не запускали до этого smoke). Исправлено fail-soft деградацией (enrichment verdict-neutral) + 3 regression-теста.
 - Граница честности: offline INSTALL/BUILD (wheelhouse, установка без сети) остаётся NOT VERIFIED — P-002 закрыт только в runtime-части.
 
+## 5k. Addendum — offline INSTALL bundle (P-002 image-track закрыт)
+
+- **VERIFIED:** `aerobim.tools.offline_bundle` build/verify/smoke. Образ собран из hash-lock wheels + digest-pinned base, сохранён в tar (~850 МБ, sha256 в манифесте), локальный тег **удалён**, образ восстановлен **только из tar** (`docker load`) и обслужен при `--network none`: health 200, capabilities 200. Т.е. доказан offline INSTALL (не только runtime из 5j). Evidence: `audit/evidence/offline-bundle-smoke-2026-07-31.json`.
+- Инструмент: build → `docker save`; verify → пересчёт sha256 каждого файла против BUNDLE_MANIFEST; smoke → `rmi` тега + `load` + `--network none` API. Docker-free логика манифеста (build_manifest/verify_manifest: детект подмены и пропажи файла) покрыта 4 unit-тестами.
+- Граница честности: **bare-metal / no-Docker** установка (wheelhouse на хосте без Docker) остаётся NOT VERIFIED; tar (851 МБ) gitignored, регенерируется инструментом.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
