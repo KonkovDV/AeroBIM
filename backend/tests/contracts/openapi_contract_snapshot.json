@@ -610,6 +610,48 @@
         "title": "HonestyCapabilityStatus",
         "type": "object"
       },
+      "LlmAdvisoryCapability": {
+        "description": "Honesty surface for advisory LLM (verdict-neutral).",
+        "properties": {
+          "advisory_only": {
+            "default": true,
+            "title": "Advisory Only",
+            "type": "boolean"
+          },
+          "affects_summary_passed": {
+            "default": false,
+            "title": "Affects Summary Passed",
+            "type": "boolean"
+          },
+          "claim_boundary": {
+            "title": "Claim Boundary",
+            "type": "string"
+          },
+          "customer_data_default": {
+            "default": "deny",
+            "title": "Customer Data Default",
+            "type": "string"
+          },
+          "providers_mock_tested": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Providers Mock Tested",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "claim_boundary"
+        ],
+        "title": "LlmAdvisoryCapability",
+        "type": "object"
+      },
       "NormRuleHitlEventRequest": {
         "properties": {
           "approval_ref": {
@@ -888,6 +930,9 @@
           "honesty": {
             "$ref": "#/components/schemas/HonestyCapabilities"
           },
+          "llm_advisory": {
+            "$ref": "#/components/schemas/LlmAdvisoryCapability"
+          },
           "mep_intake": {
             "additionalProperties": true,
             "title": "Mep Intake",
@@ -915,6 +960,7 @@
           "mep_intake",
           "auth_bff",
           "customer_intake_gate",
+          "llm_advisory",
           "forbidden_ok_states",
           "forbidden_claim_phrases",
           "notes"
