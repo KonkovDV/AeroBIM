@@ -69,6 +69,23 @@ def test_copyleft_and_commercial_entries_flag_legal_review() -> None:
     )
 
 
+def test_frontend_runtime_dependencies_are_classified() -> None:
+    # Direct runtime deps of the browser shell must carry a license classification;
+    # dev tooling (vite/vitest/types) is not shipped and stays out of scope.
+    package_json = _REPO_ROOT / "frontend" / "package.json"
+    payload = json.loads(package_json.read_text(encoding="utf-8"))
+    runtime = {name.lower() for name in (payload.get("dependencies") or {})}
+    missing = sorted(runtime - set(_inventory()))
+    assert not missing, f"Frontend runtime deps without license classification: {missing}"
+
+
+def test_web_ifc_mpl_is_acknowledged() -> None:
+    # VERIFIED 2026-07-31: web-ifc 0.0.77 declares MPL-2.0 (file-level copyleft).
+    item = _inventory()["web-ifc"]
+    assert item["risk_class"] == "weak_copyleft"
+    assert item["legal_review_required"] is True
+
+
 def test_pymupdf_dual_license_is_acknowledged() -> None:
     # VERIFIED 2026-07-31 from installed wheel metadata: pymupdf 1.27.x declares
     # "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License" and is a

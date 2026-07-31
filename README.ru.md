@@ -172,4 +172,4 @@ Backend src ~42140 LOC; tests ~31952 LOC; 1569+ test functions; extraction macro
 
 MIT — см. [LICENSE](LICENSE) — для собственного кода AeroBIM.
 
-Сторонние компоненты сохраняют свои лицензии: **PyMuPDF** — dual AGPL-3.0 / Artifex commercial (обязательная core-зависимость; требуется юридическая проверка перед распространением/SaaS-заявлениями), **IfcOpenShell / IfcTester** — LGPL-3.0+. Реестр: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json).
+Сторонние компоненты сохраняют свои лицензии: **PyMuPDF** — dual AGPL-3.0 / Artifex commercial (обязательная core-зависимость; требуется юридическая проверка перед распространением/SaaS-заявлениями), **IfcOpenShell / IfcTester** — LGPL-3.0+, **web-ifc** — MPL-2.0. Реестр: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json).
