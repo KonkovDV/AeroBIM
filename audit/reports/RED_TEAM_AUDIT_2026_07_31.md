@@ -79,6 +79,11 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 - LB-005/006 (missing pset relation, wrong FireRating) детектируются IDS-путём.
 - **LB-007 VERIFIED vacuous pass:** подмена класса IFCWALL→IFCCOLUMN даёт passed=True / 0 issues в IDS-only прогоне — «нет элемента» читается как «соответствует». Компенсирующий контроль VERIFIED: structured requirement с ожиданием сущности даёт ERROR «No elements found for entity IFCWALL». Пилот-паки обязаны сочетать IDS с entity-presence требованиями; закреплено honesty-якорем в test_injected_ifc_defects_level_b.
 
+## 5d. Addendum (Level B, волна 3 — adversarial IDS + GUID)
+
+- LB-008/009/010 VERIFIED fail-closed: malformed / чужой namespace / пустой IDS дают `ids=FAILED` и passed=False (AEROBIM-IDS-AUDIT / AEROBIM-IDS-XSD-INVALID) — сломанный источник правил не может зелёно пройти.
+- **LB-011 VERIFIED known-undetected:** два IFCWALL с одним GlobalId (оба pset-корректные) → passed=True / 0 issues — уникальность GUID нигде не проверяется, при том что GUID — якорь BCF-топиков, revision diff и трассируемости. Кандидат: ingestion/ifc_schema GUID-uniqueness WARNING (P1). До реализации — honesty-якорь в test_adversarial_ids_guid_level_b.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
