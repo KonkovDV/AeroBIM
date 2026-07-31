@@ -439,3 +439,13 @@ jobs:
         with:
           name: openapi-schema
           path: artifacts/openapi.json
+      - name: Release attestation (binds commit/tree/locks/ClaimsLock/SBOM hashes)
+        run: |
+          mkdir -p ../artifacts/release-attestation
+          python -m aerobim.tools.export_release_attestation \
+            --out ../artifacts/release-attestation/release-attestation.json
+      - name: Upload release attestation artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-attestation
+          path: artifacts/release-attestation/release-attestation.json
