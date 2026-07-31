@@ -101,12 +101,15 @@ class ValidateIfcAgainstIdsUseCase:
         error_count = severity_counts[Severity.ERROR]
         warning_count = severity_counts[Severity.WARNING]
 
+        # WARNING-level pre-gate findings (e.g. duplicated GlobalId, LB-011) must
+        # not read as a failed schema gate: FAILED is reserved for ERROR severity.
+        schema_errors = [i for i in schema_issues if i.severity is Severity.ERROR]
         if self._ifc_schema_validator is None:
             schema_cap = CapabilityStatus(
                 CapabilityState.SKIPPED, "IFC schema pre-gate not configured"
             )
-        elif schema_issues:
-            schema_cap = CapabilityStatus(CapabilityState.FAILED, schema_issues[0].message)
+        elif schema_errors:
+            schema_cap = CapabilityStatus(CapabilityState.FAILED, schema_errors[0].message)
         else:
             schema_cap = CapabilityStatus(CapabilityState.OK)
 

@@ -84,6 +84,10 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 - LB-008/009/010 VERIFIED fail-closed: malformed / чужой namespace / пустой IDS дают `ids=FAILED` и passed=False (AEROBIM-IDS-AUDIT / AEROBIM-IDS-XSD-INVALID) — сломанный источник правил не может зелёно пройти.
 - **LB-011 VERIFIED known-undetected:** два IFCWALL с одним GlobalId (оба pset-корректные) → passed=True / 0 issues — уникальность GUID нигде не проверяется, при том что GUID — якорь BCF-топиков, revision diff и трассируемости. Кандидат: ingestion/ifc_schema GUID-uniqueness WARNING (P1). До реализации — honesty-якорь в test_adversarial_ids_guid_level_b.
 
+## 5e. Addendum (LB-011 закрыт)
+
+- Реализована GUID-uniqueness проверка в `BasicIfcSchemaValidator` (streaming-скан rooted-сущностей, WARNING `AEROBIM-GUID-DUPLICATE`, cap 10, verdict-neutral). LB-011 переведён known_undetected → detected; якорь-тест обновлён осознанно вместе с каталогом и Claims Lock — ровно тот workflow, ради которого якоря вводились.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;

@@ -23,6 +23,10 @@ _FILE_SCHEMA_RE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 
+# Rooted-entity line: first attribute is the 22-char IfcGloballyUniqueId.
+_ENTITY_GUID_RE = re.compile(r"^#\d+\s*=\s*IFC[A-Z0-9_]+\s*\(\s*'([^']{22})'")
+_MAX_DUPLICATE_REPORTS = 10
+
 
 class BasicIfcSchemaValidator:
     """Checks ISO-10303-21 envelope and FILE_SCHEMA identity without full EXPRESS."""
@@ -105,4 +109,55 @@ class BasicIfcSchemaValidator:
                         observed_value=schema_token,
                     )
                 )
+        issues.extend(self._scan_duplicate_guids(ifc_path))
+        return issues
+
+    def _scan_duplicate_guids(self, ifc_path: Path) -> list[ValidationIssue]:
+        """WARNING per duplicated GlobalId (LB-011): GUID anchors BCF topics,
+        revision-diff element sets and traceability, so a silent duplicate can
+        split or merge findings across elements. Warning-level by design:
+        verdict-neutral, never flips ``summary.passed`` on existing packs.
+        Streaming line scan (no full-file buffering; IFC cap is 256 MiB)."""
+
+        seen: dict[str, int] = {}
+        try:
+            with ifc_path.open("r", encoding="utf-8", errors="replace") as handle:
+                for line in handle:
+                    match = _ENTITY_GUID_RE.match(line)
+                    if match is not None:
+                        guid = match.group(1)
+                        seen[guid] = seen.get(guid, 0) + 1
+        except OSError:
+            # Unreadable file already produced an ERROR in the envelope checks.
+            return []
+        duplicates = [(guid, count) for guid, count in seen.items() if count > 1]
+        issues = [
+            ValidationIssue(
+                rule_id="AEROBIM-GUID-DUPLICATE",
+                severity=Severity.WARNING,
+                message=(
+                    f"GlobalId {guid!r} is used by {count} rooted entities; GUID must be "
+                    "unique (anchors BCF topics, revision diff, and traceability)"
+                ),
+                category=FindingCategory.IFC_VALIDATION,
+                origin="deterministic",
+                element_guid=guid,
+                observed_value=str(count),
+                expected_value="1",
+            )
+            for guid, count in duplicates[:_MAX_DUPLICATE_REPORTS]
+        ]
+        if len(duplicates) > _MAX_DUPLICATE_REPORTS:
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-GUID-DUPLICATE",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"{len(duplicates) - _MAX_DUPLICATE_REPORTS} further duplicated "
+                        "GlobalIds suppressed (cap prevents finding flood)"
+                    ),
+                    category=FindingCategory.IFC_VALIDATION,
+                    origin="deterministic",
+                )
+            )
         return issues
