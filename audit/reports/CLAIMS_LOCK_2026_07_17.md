@@ -66,6 +66,7 @@
 - BCF integration ladder **T0–T5**: T0 structural ZIP · T1 dual-consumer · T2 customer test-env import · T3 IFC GUID/viewpoint binding · T4 round-trip lifecycle · T5 production integration approved — each tier claimable only with its evidence
 - Signal-level extraction-integrity core (`domain/extraction_integrity.py`): 'text not extracted' != 'text absent'; hidden/invisible text never trusted unmarked; verdict-neutral; **NOT** a render-vs-extract product capability and NOT wired into ingestion/verdict
 - IDS pass на пакете без entity-presence требований не эквивалентен «элементы присутствуют и соответствуют»: пустая applicability даёт vacuous pass (LB-007); пилот-паки сочетают IDS с requirement-ожиданием сущностей
+- «Трассируемость по GUID» не подразумевает проверку уникальности GlobalId: дубликат GUID сейчас не детектируется (LB-011); формулировки о GUID-якорях сопровождаются этой оговоркой до появления uniqueness-проверки
 - Checkpoint remains **NO_GO** until RT-001/002/003
 
 ## Evidence pointers (public)
