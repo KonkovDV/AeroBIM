@@ -37,6 +37,15 @@
 - «в реестре российского ПО» / «российское ПО» as status — until a legal gap analysis exists
 - «УКЭП проверена» / «подпись документа проверена» — QUALIFIED_SIGNATURE_VALIDATION is **missing** (no cryptographic adapter/tests); hash-provenance ≠ signature validation
 - «маскирование = анонимизация» / hybrid contour makes the public API safe for customer data (masking reduces disclosure, not anonymity; contour NOT wired to verdict / live egress)
+- «точность продукта выше 90%» as Sprint 2.1 baseline result
+- «подтверждено на реальных проектах Самолёта» without RT-001 customer corpus + adjudication
+- «SLA ≤30 минут для любого комплекта» (fixture/scoped ≠ customer)
+- «полная проверка проектной документации»
+- «проверка корректности расчётов» / independent calculation correctness
+- «готовая интеграция с CDE» / CDE_READY from BCF alone
+- «LLM понимает чертёж как инженер»
+- «облачный API безопасен для customer data» without written policy + DPA evidence
+- «заказчики заинтересованы» if no verified contact occurred
 
 ## Allowed wording
 
@@ -68,8 +77,13 @@
 - IDS pass на пакете без entity-presence требований не эквивалентен «элементы присутствуют и соответствуют»: пустая applicability даёт vacuous pass (LB-007); пилот-паки сочетают IDS с requirement-ожиданием сущностей
 - Дубликат GlobalId детектируется как **WARNING** (`AEROBIM-GUID-DUPLICATE`, schema pre-gate; LB-011 закрыт 2026-07-31); проверка warning-level и verdict-neutral — «блокирующая проверка уникальности GUID» не заявляется
 - `extraction_integrity` capability wired (default **NOT_VERIFIED**: сигналы ingestion-слоем ещё не производятся; FAILED блокирует pass) — «render-vs-extract проверка PDF реализована» по-прежнему НЕ заявляется
+- `extraction_integrity` PDF text-layer producer wired on analyze path (2026-07-31 evening): clean PDF → OK; hidden/zero-size → NOT_VERIFIED; FAILED still blocks pass — still **not** a full render-vs-extract product claim
 - «Offline install+runtime bundle пройден» (образ восстановлен из tar через docker load после удаления тега и обслужен при --network none; evidence 2026-07-31) — допустимо для контура С Docker; «bare-metal установка без Docker подтверждена» — НЕТ (wheelhouse NOT VERIFIED)
 - Checkpoint remains **NO_GO** until RT-001/002/003
+- Sprint 2.1: инженерный baseline на public/synthetic package (reproducible on declared commit + manifest)
+- Sprint 2.1: система фиксирует deterministic findings и capability statuses
+- Sprint 2.1: LLM только как advisory layer; model comparison на synthetic/public (mock in CI)
+- Sprint 2.1 claims boundary: `audit/sprint-2-1-claims-boundary.md`
 
 ## Evidence pointers (public)
 

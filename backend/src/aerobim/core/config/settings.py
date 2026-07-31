@@ -120,6 +120,12 @@ class Settings:
     """When true (and remote URL unset), emit a local schema-pack certificate id."""
     remark_locale: str = "ru"
     """Product remark language: ``ru`` | ``en`` (``AEROBIM_REMARK_LOCALE``)."""
+    pdf_backend: str = "pymupdf"
+    """PDF engine for text-layer probes: ``pymupdf`` | ``none`` (``AEROBIM_PDF_BACKEND``).
+
+    LIC-001 Phase 1 isolation seam — ``none`` disables PyMuPDF on the EI producer
+    path only; full optional-extra isolation is Phase 2. Not a legal clearance.
+    """
     norm_rule_pack_path: str | None = None
     """Storage-relative path to a default norm/rule pack (``AEROBIM_NORM_RULE_PACK``).
 
@@ -395,6 +401,8 @@ class Settings:
             bsi_api_token=(os.getenv("AEROBIM_BSI_API_TOKEN") or "").strip() or None,
             bsi_local_cert=bsi_local_cert,
             remark_locale=(os.getenv("AEROBIM_REMARK_LOCALE") or "ru").strip().lower() or "ru",
+            pdf_backend=(os.getenv("AEROBIM_PDF_BACKEND") or "pymupdf").strip().lower()
+            or "pymupdf",
             norm_rule_pack_path=(os.getenv("AEROBIM_NORM_RULE_PACK") or "").strip() or None,
             allow_anonymous_dev=_read_bool("AEROBIM_ALLOW_ANONYMOUS_DEV", False),
             oda_cad_enabled=_read_bool("AEROBIM_ODA_CAD_ENABLED", False),

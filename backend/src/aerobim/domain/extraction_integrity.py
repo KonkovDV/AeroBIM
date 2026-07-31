@@ -21,7 +21,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from aerobim.domain.models import CapabilityStatus
 
 
 class ExtractionIntegrityStatus(StrEnum):
@@ -63,6 +66,30 @@ class ExtractionIntegrityResult:
     def trusted_as_evidence(self) -> bool:
         """Only OK text may enter cross-document/LLM paths without escalation."""
         return self.status is ExtractionIntegrityStatus.OK
+
+    def to_capability_status(self) -> CapabilityStatus:
+        """Map integrity assessment onto report capability vocabulary.
+
+        CapabilityState has no REVIEW_REQUIRED/WARNING — those become NOT_VERIFIED
+        (expert attention) without silently looking like OK. FAILED stays FAILED
+        (pass-blocking). OK stays OK.
+        """
+
+        from aerobim.domain.models import CapabilityState, CapabilityStatus
+
+        reason = "; ".join(self.reasons) if self.reasons else None
+        if self.status is ExtractionIntegrityStatus.OK:
+            return CapabilityStatus(
+                CapabilityState.OK,
+                reason or "PDF text-layer signals consistent",
+            )
+        if self.status is ExtractionIntegrityStatus.FAILED:
+            return CapabilityStatus(CapabilityState.FAILED, reason)
+        # warning / review_required → not_verified (usable only with expert eyes)
+        return CapabilityStatus(
+            CapabilityState.NOT_VERIFIED,
+            reason or f"extraction-integrity={self.status.value}",
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -166,10 +193,36 @@ def assess_extraction_integrity(
     )
 
 
+_STATUS_RANK = {
+    ExtractionIntegrityStatus.OK: 0,
+    ExtractionIntegrityStatus.WARNING: 1,
+    ExtractionIntegrityStatus.REVIEW_REQUIRED: 2,
+    ExtractionIntegrityStatus.FAILED: 3,
+}
+
+
+def merge_integrity_results(
+    results: tuple[ExtractionIntegrityResult, ...],
+) -> ExtractionIntegrityResult:
+    """Worst-severity wins across PDF sources in one package."""
+
+    if not results:
+        return ExtractionIntegrityResult(
+            ExtractionIntegrityStatus.REVIEW_REQUIRED,
+            ("no extraction-integrity results",),
+        )
+    worst = max(results, key=lambda item: _STATUS_RANK[item.status])
+    reasons: list[str] = []
+    for item in results:
+        reasons.extend(item.reasons)
+    return ExtractionIntegrityResult(worst.status, tuple(dict.fromkeys(reasons)))
+
+
 __all__ = [
     "ExtractionIntegrityResult",
     "ExtractionIntegritySignals",
     "ExtractionIntegrityStatus",
     "ExtractionIntegrityThresholds",
     "assess_extraction_integrity",
+    "merge_integrity_results",
 ]

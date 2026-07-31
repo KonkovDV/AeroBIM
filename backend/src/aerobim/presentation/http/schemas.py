@@ -168,6 +168,17 @@ class CustomerIntakeGateSnapshot(BaseModel):
     source: str | None = None
 
 
+class LlmAdvisoryCapability(BaseModel):
+    """Honesty surface for advisory LLM (verdict-neutral)."""
+
+    status: str
+    advisory_only: bool = True
+    affects_summary_passed: bool = False
+    customer_data_default: str = "deny"
+    providers_mock_tested: list[str] = []
+    claim_boundary: str
+
+
 class SystemCapabilitiesResponse(BaseModel):
     """Full 1.3.0 payload of ``GET /v1/system/capabilities``."""
 
@@ -180,6 +191,7 @@ class SystemCapabilitiesResponse(BaseModel):
     mep_intake: dict[str, object]
     auth_bff: AuthBffStatus
     customer_intake_gate: CustomerIntakeGateSnapshot
+    llm_advisory: LlmAdvisoryCapability
     forbidden_ok_states: dict[str, list[str]]
     forbidden_claim_phrases: list[str]
     notes: list[str]

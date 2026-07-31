@@ -87,10 +87,29 @@ def test_web_ifc_mpl_is_acknowledged() -> None:
 
 
 def test_pymupdf_dual_license_is_acknowledged() -> None:
-    # VERIFIED 2026-07-31 from installed wheel metadata: pymupdf 1.27.x declares
-    # "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License" and is a
+    # VERIFIED 2026-07-31: PyPI + wheel metadata for locked pymupdf declare
+    # "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License" and it is a
     # MANDATORY core dependency -- the inventory must never silently drop this.
     item = _inventory()["pymupdf"]
     assert item["risk_class"] == "strong_copyleft_or_commercial"
     assert item["legal_review_required"] is True
     assert item["scope"] == "core"
+
+
+def test_inventory_core_versions_match_requirements_lock() -> None:
+    """Inventory versions must track CI/Docker lock SSOT (catches LIC-001 drift)."""
+
+    lock_text = (_REPO_ROOT / "backend" / "requirements-lock.txt").read_text(encoding="utf-8")
+    inventory = _inventory()
+    drifts: list[str] = []
+    for name, item in inventory.items():
+        if str(item.get("scope")) not in {"core", "core-transitive", "extra:raster"}:
+            continue
+        match = re.search(rf"^{re.escape(name)}==([^\s\\\\]+)", lock_text, flags=re.M | re.I)
+        if match is None:
+            continue
+        lock_ver = match.group(1)
+        inv_ver = str(item.get("lock_version") or item.get("installed_version") or "")
+        if inv_ver != lock_ver:
+            drifts.append(f"{name}: inventory={inv_ver!r} lock={lock_ver!r}")
+    assert not drifts, "License inventory drifted from requirements-lock.txt:\n" + "\n".join(drifts)

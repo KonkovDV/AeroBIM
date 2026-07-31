@@ -28,6 +28,7 @@ from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.drawing_annotation_validation import (
     DrawingAnnotationValidator,
 )
+from aerobim.application.services.extraction_integrity_probe import probe_extraction_integrity
 from aerobim.application.services.mep_scope_probe import MepScopeProbe
 from aerobim.application.services.package_ingestion import PackageIngestionService
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
@@ -66,6 +67,7 @@ from aerobim.domain.ports import (
     ClashDetector,
     DrawingAnalyzer,
     ExternalEvidenceVerifier,
+    ExtractionIntegritySignalProducer,
     IdsDocumentAuditor,
     IdsValidator,
     IfcSchemaValidator,
@@ -152,6 +154,7 @@ class AnalyzeProjectPackageUseCase:
         review_event_store: ReviewEventStore | None = None,
         customer_intake_gate_path: Path | None = None,
         mep_federated_scope_path: Path | None = None,
+        extraction_integrity_producer: ExtractionIntegritySignalProducer | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -201,6 +204,7 @@ class AnalyzeProjectPackageUseCase:
         self._review_event_store = review_event_store
         self._customer_intake_gate_path = customer_intake_gate_path
         self._mep_federated_scope_path = mep_federated_scope_path
+        self._extraction_integrity_producer = extraction_integrity_producer
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
@@ -514,6 +518,7 @@ class AnalyzeProjectPackageUseCase:
         mep_system_clash: CapabilityStatus | None = None,
         calculation_match: CapabilityStatus | None = None,
         quantity_capability: CapabilityStatus | None = None,
+        extraction_integrity: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
         return build_report_capabilities(
             requirements=requirements,
@@ -532,10 +537,17 @@ class AnalyzeProjectPackageUseCase:
             mep_system_clash=mep_system_clash,
             calculation_match=calculation_match,
             quantity_capability=quantity_capability,
+            extraction_integrity=extraction_integrity,
             ids_validator_configured=self._ids_validator is not None,
             ifc_schema_validator_configured=self._ifc_schema_validator is not None,
             require_bsi_schema=self._require_bsi_schema,
             raster_analyzer_configured=self._raster_drawing_analyzer is not None,
+        )
+
+    def _probe_extraction_integrity(self, request: ValidationRequest) -> CapabilityStatus:
+        return probe_extraction_integrity(
+            self._extraction_integrity_producer,
+            request.drawing_sources,
         )
 
     def _submit_bsi_validation(self, ifc_path) -> tuple[str | None, list[ValidationIssue]]:

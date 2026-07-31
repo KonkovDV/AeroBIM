@@ -1,33 +1,33 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.1.0",
-  "commit_sha": "2c1264265de58c899906325d3a190401564e99eb",
-  "generated_at": "2026-07-31T15:07:23.630242+00:00",
+  "commit_sha": "64c69b4f9cdd99779e9aac91ec87078367190339",
+  "generated_at": "2026-07-31T20:43:00.708879+00:00",
   "corpus_kind": "fixture",
   "backend": {
-    "tests_collected": 1613,
+    "tests_collected": 1641,
     "tests_passed": null,
     "tests_skipped": null,
-    "source_loc": 42727,
-    "test_loc": 32705,
-    "test_functions": 1613
+    "source_loc": 43758,
+    "test_loc": 33180,
+    "test_functions": 1641
   },
   "frontend": {
-    "tests_passed": 29,
+    "tests_passed": null,
     "note": "Recorded from last CI/local vitest run when provided via --frontend-tests-passed"
   },
   "quality_gates": {
-    "ruff": "PASS",
-    "mypy": "PASS",
-    "pytest": "PASS",
-    "vitest": "PASS",
+    "ruff": "UNKNOWN",
+    "mypy": "UNKNOWN",
+    "pytest": "UNKNOWN",
+    "vitest": "UNKNOWN",
     "build": "UNKNOWN"
   },
   "metrics": {
-    "backend_src_loc": 42727,
-    "backend_test_loc": 32705,
-    "backend_test_functions": 1613,
+    "backend_src_loc": 43758,
+    "backend_test_loc": 33180,
+    "backend_test_functions": 1641,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~42727 LOC; tests ~32705 LOC; 1613+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
+  "readme_snippet": "Backend src ~43758 LOC; tests ~33180 LOC; 1641+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
 }

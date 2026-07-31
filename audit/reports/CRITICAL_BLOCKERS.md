@@ -11,7 +11,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 | ID | Severity | Status | Summary |
 |---|---|---|---|
-| LIC-001 | HIGH | **OPEN — legal review required** | `pymupdf==1.27.2.3` wheel metadata: «Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License»; it is a MANDATORY core dependency used on the server path. Engineering fact (VERIFIED 2026-07-31 via importlib.metadata); NOT a legal conclusion. Options: Artifex commercial license / backend migration (pypdfium2, pdfminer.six) with functional-equivalence tests / isolate as optional extra. Gate: `backend/tests/test_dependency_license_gate.py`. |
+| LIC-001 | HIGH | **OPEN — legal review required** (Phase 1 isolation STARTED) | Lock SSOT `pymupdf==1.28.0`; dual AGPL/Artifex. Mandatory core still. Phase 1: EI producer selectable via `AEROBIM_PDF_BACKEND=none` (no pymupdf import on that path); plan `docs/license-pymupdf-isolation-plan-2026.md`. Options A/B/C Phase 2+ remain. Gate: `test_dependency_license_gate.py` + `test_pdf_backend_isolation.py`. |
 
 ## Engineering readiness improved (2026-07-21 F–L)
 

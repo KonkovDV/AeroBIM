@@ -11,6 +11,7 @@ from aerobim.domain.consistency import (
     PackageManifest,
     QuantityClaim,
 )
+from aerobim.domain.extraction_integrity import ExtractionIntegritySignals
 
 # Re-export MEP port for contour/DI discovery (implementation stays in domain.mep).
 from aerobim.domain.mep import MepSystemGraphProvider as MepSystemGraphProvider
@@ -307,6 +308,12 @@ class MultimodalDrawingPipeline(Protocol):
         *,
         mode: Literal["auto", "ocr_only", "detector_vlm"] = "auto",
     ) -> MultimodalDrawingResult: ...
+
+
+class ExtractionIntegritySignalProducer(Protocol):
+    """Produce integrity SIGNALS for one PDF (infrastructure; domain assesses)."""
+
+    def produce(self, path: Path) -> ExtractionIntegritySignals: ...
 
 
 class RequirementToIdsCompiler(Protocol):

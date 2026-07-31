@@ -40,6 +40,7 @@ def build_report_capabilities(
     mep_system_clash: CapabilityStatus | None = None,
     calculation_match: CapabilityStatus | None = None,
     quantity_capability: CapabilityStatus | None = None,
+    extraction_integrity: CapabilityStatus | None = None,
     ids_validator_configured: bool,
     ifc_schema_validator_configured: bool,
     require_bsi_schema: bool,
@@ -173,4 +174,12 @@ def build_report_capabilities(
         calculation_match=calculation_match
         or CapabilityStatus(CapabilityState.SKIPPED, "numeric calculation match not evaluated"),
         quantity=quantity,
+        extraction_integrity=extraction_integrity
+        or CapabilityStatus(
+            CapabilityState.NOT_VERIFIED,
+            "extraction-integrity not evaluated for this report "
+            "(PDF text-layer producer runs on analyze when PDF drawings are present; "
+            "default until probe result is attached); "
+            "extracted text must not be presumed render-consistent",
+        ),
     )

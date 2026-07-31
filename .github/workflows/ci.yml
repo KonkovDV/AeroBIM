@@ -494,3 +494,138 @@ jobs:
           path: |
             artifacts/offline-bundle/BUNDLE_MANIFEST.json
             artifacts/offline-bundle/release-attestation-complete.json
+
+  # Sprint 2.1 gates: dataset/license/baseline/LLM contract (mock only; no API keys; no customer data).
+  sprint-2-1-gates:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: dataset-manifest
+        run: pytest tests/test_sprint_2_1_dataset.py -v --tb=short
+      - name: license-inventory
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.loads(Path("../audit/dataset_license_manifest.json").read_text(encoding="utf-8"))
+          assert payload["artifact_type"] == "dataset_license_manifest"
+          for row in payload["entries"]:
+              if row.get("redistribution") == "unknown":
+                  assert row.get("public_benchmark") == "INTERNAL_ONLY_LICENSE_REVIEW", row
+          print("license-inventory OK")
+          PY
+      - name: sprint-2-1-baseline
+        run: |
+          mkdir -p ../artifacts/sprint-2-1
+          python -m aerobim.tools.run_sprint_2_1_baseline \
+            --pack ../samples/benchmarks/sprint-2-1/baseline-package.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --output ../artifacts/sprint-2-1/baseline.json \
+            --report ../artifacts/sprint-2-1/baseline.md
+          pytest tests/test_sprint_2_1_baseline.py -v --tb=short
+      - name: llm-advisory-contract
+        run: |
+          python -m aerobim.tools.benchmark_llm_advisory \
+            --cases ../samples/benchmarks/llm-advisory/sprint-2-1-cases.json \
+            --output ../artifacts/sprint-2-1/llm-comparison.json
+      - name: llm-advisory-invariance
+        run: pytest tests/test_llm_advisory_invariance.py -v --tb=short
+      - name: prompt-injection-fixtures
+        run: pytest tests/test_llm_prompt_injection.py tests/test_llm_evidence_bounded.py -v --tb=short
+      - name: Upload sprint-2-1 artifacts
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sprint-2-1-baseline
+          path: artifacts/sprint-2-1/
+          if-no-files-found: warn
+
+  # Security regression battery (engineering). Not a production multi-tenant certification.
+  security-regression:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Security regression battery
+        run: |
+          mkdir -p ../artifacts/security-rerun
+          pytest \
+            tests/test_api_security.py \
+            tests/test_api_object_acl.py \
+            tests/test_security_bomb_guards.py \
+            tests/test_security_hardening_2026_07_27.py \
+            tests/test_rt_phase4_security.py \
+            tests/test_outbound_guard_invariant.py \
+            tests/test_mutation_kills_path_jail.py \
+            tests/test_mutation_kills_object_acl.py \
+            tests/test_upload_content_security.py \
+            tests/test_advisory_cache_tenant_isolation.py \
+            tests/test_rt_phase8_tenancy.py \
+            tests/test_rt_norm_pack_tenancy.py \
+            tests/test_hybrid_privacy_guard.py \
+            tests/test_llm_prompt_injection.py \
+            tests/test_llm_advisory_invariance.py \
+            tests/test_llm_evidence_bounded.py \
+            tests/test_p0_remediation_fail_closed.py \
+            tests/test_rt_remediation_post.py \
+            tests/test_extraction_integrity.py \
+            tests/test_extraction_integrity_capability.py \
+            tests/test_extraction_integrity_producer.py \
+            -q --tb=short \
+            | tee ../artifacts/security-rerun/pytest-security.out.txt
+      - name: Write security-rerun claim-safe summary
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import UTC, datetime
+          from pathlib import Path
+          out = Path("../artifacts/security-rerun")
+          out.mkdir(parents=True, exist_ok=True)
+          payload = {
+            "artifact_type": "security_rerun_ci",
+            "schema_version": "1.0.0",
+            "generated_at": datetime.now(tz=UTC).isoformat(),
+            "claim_level": "engineering_regression_only",
+            "customer_evidence": False,
+            "forbidden_claims": [
+              "production multi-tenant security certification",
+              "penetration test complete",
+            ],
+            "note": "Mirrors local security battery; see audit/reports/SECURITY_AUDIT_2026_07_31.md",
+          }
+          (out / "run_manifest.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+          )
+          print("security-rerun summary OK")
+          PY
+      - name: Upload security-rerun artifacts
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: security-rerun
+          path: artifacts/security-rerun/
+          if-no-files-found: warn

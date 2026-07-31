@@ -1,0 +1,62 @@
+{
+  "artifact_type": "llm_provider_policy",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-31",
+  "default_profile": "default_deny_customer",
+  "api_key_env": [
+    "AEROBIM_LLM_API_KEY",
+    "AEROBIM_LLM_PROVIDER",
+    "AEROBIM_LLM_MODEL",
+    "AEROBIM_LLM_BASE_URL"
+  ],
+  "forbidden_key_storage": [
+    "git",
+    ".env committed",
+    "logs",
+    "evidence bundle",
+    "prompt persistence",
+    "exception messages"
+  ],
+  "providers": [
+    {
+      "provider": "kimi",
+      "models": ["kimi-mock", "CLOUD_DATA_POLICY_UNKNOWN"],
+      "data_retention": "CLOUD_DATA_POLICY_UNKNOWN",
+      "training_use": "CLOUD_DATA_POLICY_UNKNOWN",
+      "data_residency": "CLOUD_DATA_POLICY_UNKNOWN",
+      "dpa": "CLOUD_DATA_POLICY_UNKNOWN",
+      "customer_data": "deny_by_default",
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "deterministic_only"
+    },
+    {
+      "provider": "qwen",
+      "models": ["qwen-mock", "CLOUD_DATA_POLICY_UNKNOWN"],
+      "data_retention": "CLOUD_DATA_POLICY_UNKNOWN",
+      "training_use": "CLOUD_DATA_POLICY_UNKNOWN",
+      "data_residency": "CLOUD_DATA_POLICY_UNKNOWN",
+      "dpa": "CLOUD_DATA_POLICY_UNKNOWN",
+      "customer_data": "deny_by_default",
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "deterministic_only"
+    },
+    {
+      "provider": "gemma",
+      "models": ["gemma-mock", "CLOUD_DATA_POLICY_UNKNOWN"],
+      "data_retention": "CLOUD_DATA_POLICY_UNKNOWN",
+      "training_use": "CLOUD_DATA_POLICY_UNKNOWN",
+      "data_residency": "CLOUD_DATA_POLICY_UNKNOWN",
+      "dpa": "CLOUD_DATA_POLICY_UNKNOWN",
+      "customer_data": "deny_by_default",
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "deterministic_only"
+    }
+  ],
+  "invariants": [
+    "LLM cannot set summary.passed",
+    "LLM cannot change summary.outcome",
+    "LLM cannot approve norm packs",
+    "LLM cannot suppress deterministic findings",
+    "customer egress default deny"
+  ]
+}
