@@ -13,17 +13,57 @@
   "dependencies": [
     {
       "name": "pymupdf",
-      "scope": "core",
+      "scope": "extra:pdf-agpl",
       "installed_version": "1.28.0",
       "license_metadata": "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License",
       "spdx_guess": "AGPL-3.0-only OR LicenseRef-Artifex-Commercial",
       "risk_class": "strong_copyleft_or_commercial",
       "verified": true,
       "legal_review_required": true,
-      "usage": "mandatory core; server path (raster_drawing_analyzer, filesystem_audit_store HTML export) + tools",
-      "mitigation_options": "commercial license; or migrate PDF text backend (pypdfium2/pdfminer.six) with functional-equivalence tests; or isolate as optional extra",
+      "usage": "optional pdf-agpl only (legacy tools / fixture generators); NOT in production runtime lock after LIC-001 Option B",
+      "mitigation_options": "do not install pdf-agpl in production; prefer pdfium/pdfminer core path",
       "lock_version": "1.28.0",
-      "verification_note": "PyPI info.license for PyMuPDF 1.28.0 checked 2026-07-31 via pypi.org/pypi/PyMuPDF/1.28.0/json"
+      "verification_note": "Owner selected Option B 2026-07-31: core PDF migrated off PyMuPDF"
+    },
+    {
+      "name": "pypdfium2",
+      "scope": "core",
+      "installed_version": "5.12.1",
+      "license_metadata": "Apache-2.0 OR BSD-3-Clause (plus PDFium dependency licenses shipped in wheel)",
+      "spdx_guess": "Apache-2.0 OR BSD-3-Clause",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "core PDF render/crop (LIC-001 Option B)",
+      "mitigation_options": "",
+      "lock_version": "5.12.1",
+      "verification_note": "PyPI / upstream README 2026-07-31"
+    },
+    {
+      "name": "pdfminer.six",
+      "scope": "core",
+      "installed_version": "20260107",
+      "license_metadata": "MIT",
+      "spdx_guess": "MIT",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "core PDF text-layer extraction + EI producer",
+      "mitigation_options": "",
+      "lock_version": "20260107"
+    },
+    {
+      "name": "pillow",
+      "scope": "core",
+      "installed_version": "12.3.0",
+      "license_metadata": "HPND-style / MIT-like (Pillow)",
+      "spdx_guess": "MIT-CMU",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "core PNG encode for PDF crop/preview",
+      "mitigation_options": "",
+      "lock_version": "12.3.0"
     },
     {
       "name": "ifcopenshell",
@@ -190,19 +230,6 @@
       "legal_review_required": false,
       "usage": "optional DXF",
       "mitigation_options": ""
-    },
-    {
-      "name": "pillow",
-      "scope": "extra:vision",
-      "installed_version": "12.3.0",
-      "license_metadata": "MIT-CMU/HPND (upstream declaration)",
-      "spdx_guess": "HPND",
-      "risk_class": "permissive",
-      "verified": false,
-      "legal_review_required": false,
-      "usage": "optional imaging",
-      "mitigation_options": "",
-      "lock_version": "12.3.0"
     },
     {
       "name": "boto3",

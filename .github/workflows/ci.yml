@@ -16,7 +16,7 @@ permissions:
 # Residual: floating pip bootstrap before pin; uv install after lock is unhashed but version-pinned.
 # Regenerate locks (Linux/CI target — ifcopenshell needs manylinux_2_31):
 #   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=raster -o requirements-lock.txt pyproject.toml
-#   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=dev --extra=raster -o requirements-dev-lock.txt pyproject.toml
+#   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=dev --extra=raster --extra=pdf-agpl -o requirements-dev-lock.txt pyproject.toml
 
 jobs:
   lint:
@@ -91,7 +91,7 @@ jobs:
               print(f"{lock_name} pin set OK")
 
           check("requirements-lock.txt", ["--extra=raster"])
-          check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster"])
+          check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster", "--extra=pdf-agpl"])
           PY
       - name: Runtime baseline README drift check
         run: python -m aerobim.tools.export_runtime_baseline --check-readme

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import logging
 import os
@@ -345,10 +346,10 @@ class FilesystemAuditStore:
         tenant_id: str | None = None,
     ) -> list[DrawingAsset]:
         try:
-            import pymupdf
+            import pypdfium2 as pdfium
         except ModuleNotFoundError as exc:
             raise RuntimeError(
-                "Drawing asset preview generation requires PyMuPDF. Install the 'raster' extra."
+                "Drawing asset preview generation requires pypdfium2 (core PDF backend)."
             ) from exc
 
         source_path = asset.source_path
@@ -363,7 +364,6 @@ class FilesystemAuditStore:
                     report_id,
                     asset,
                     source_path,
-                    pymupdf,
                     tenant_id=tenant_id,
                 )
             ]
@@ -372,33 +372,41 @@ class FilesystemAuditStore:
 
         def _render_pdf_pages() -> list[DrawingAsset]:
             pages: list[DrawingAsset] = []
-            with pymupdf.open(source_path) as document:
-                for page_index, page in enumerate(document, start=1):
-                    if asset.page_number is not None and page_index != asset.page_number:
+            document = pdfium.PdfDocument(str(source_path))
+            try:
+                for page_index in range(len(document)):
+                    page_number = page_index + 1
+                    if asset.page_number is not None and page_number != asset.page_number:
                         continue
-                    pix = page.get_pixmap(dpi=144, annots=False)
+                    page = document[page_index]
+                    bitmap = page.render(scale=144 / 72.0)
+                    image = bitmap.to_pil()
+                    buffer = io.BytesIO()
+                    image.save(buffer, format="PNG")
                     persisted_asset_id = asset.asset_id
-                    if document.page_count > 1 or asset.page_number is None:
-                        persisted_asset_id = f"{asset.asset_id}-page-{page_index:03d}"
+                    if len(document) > 1 or asset.page_number is None:
+                        persisted_asset_id = f"{asset.asset_id}-page-{page_number:03d}"
                     stored_filename = f"{persisted_asset_id}.png"
                     object_key = self._store_preview_bytes(
                         report_id,
                         stored_filename,
-                        pix.tobytes("png"),
+                        buffer.getvalue(),
                         tenant_id=tenant_id,
                     )
                     pages.append(
                         DrawingAsset(
                             asset_id=persisted_asset_id,
                             sheet_id=asset.sheet_id,
-                            page_number=page_index,
+                            page_number=page_number,
                             media_type="image/png",
-                            coordinate_width=float(page.rect.width),
-                            coordinate_height=float(page.rect.height),
+                            coordinate_width=float(page.get_width()),
+                            coordinate_height=float(page.get_height()),
                             stored_filename=stored_filename,
                             object_key=object_key,
                         )
                     )
+            finally:
+                document.close()
             return pages
 
         with ThreadPoolExecutor(max_workers=1) as pool:
@@ -416,7 +424,6 @@ class FilesystemAuditStore:
         report_id: str,
         asset: DrawingAsset,
         source_path: Path,
-        pymupdf_module,
         *,
         tenant_id: str | None = None,
     ) -> DrawingAsset:
@@ -441,9 +448,11 @@ class FilesystemAuditStore:
             height = asset.coordinate_height
             if width is None or height is None:
                 try:
-                    pix = pymupdf_module.Pixmap(str(source_path))
-                    width = float(pix.width)
-                    height = float(pix.height)
+                    from PIL import Image
+
+                    with Image.open(source_path) as image:
+                        width = float(image.width)
+                        height = float(image.height)
                 except Exception:  # noqa: BLE001
                     width = width
                     height = height
@@ -458,12 +467,23 @@ class FilesystemAuditStore:
                 object_key=object_key,
             )
 
-        pix = pymupdf_module.Pixmap(str(source_path))
+        # Non-PDF exotic rasters: convert via Pillow when possible.
+        try:
+            from PIL import Image
+        except ModuleNotFoundError as exc:
+            raise RuntimeError(
+                "Raster preview conversion requires Pillow (core dependency)."
+            ) from exc
+        with Image.open(source_path) as image:
+            buffer = io.BytesIO()
+            image.convert("RGB").save(buffer, format="PNG")
+            width = float(image.width)
+            height = float(image.height)
         stored_filename = f"{asset.asset_id}.png"
         object_key = self._store_preview_bytes(
             report_id,
             stored_filename,
-            pix.tobytes("png"),
+            buffer.getvalue(),
             tenant_id=tenant_id,
         )
         return DrawingAsset(
@@ -471,8 +491,8 @@ class FilesystemAuditStore:
             sheet_id=asset.sheet_id,
             page_number=asset.page_number or 1,
             media_type="image/png",
-            coordinate_width=float(pix.width),
-            coordinate_height=float(pix.height),
+            coordinate_width=width,
+            coordinate_height=height,
             stored_filename=stored_filename,
             object_key=object_key,
         )

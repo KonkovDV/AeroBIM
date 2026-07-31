@@ -87,13 +87,21 @@ def test_web_ifc_mpl_is_acknowledged() -> None:
 
 
 def test_pymupdf_dual_license_is_acknowledged() -> None:
-    # VERIFIED 2026-07-31: PyPI + wheel metadata for locked pymupdf declare
-    # "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License" and it is a
-    # MANDATORY core dependency -- the inventory must never silently drop this.
+    # VERIFIED 2026-07-31 / Option B 2026-07-31: PyMuPDF remains dual AGPL/Artifex
+    # but is no longer a core dependency — optional ``pdf-agpl`` only.
     item = _inventory()["pymupdf"]
     assert item["risk_class"] == "strong_copyleft_or_commercial"
     assert item["legal_review_required"] is True
-    assert item["scope"] == "core"
+    assert item["scope"] == "extra:pdf-agpl"
+
+
+def test_core_pdf_stack_is_permissive() -> None:
+    inventory = _inventory()
+    for name in ("pypdfium2", "pdfminer.six", "pillow"):
+        item = inventory[name]
+        assert item["risk_class"] == "permissive", name
+        assert item["scope"] == "core", name
+        assert item["legal_review_required"] is False, name
 
 
 def test_inventory_core_versions_match_requirements_lock() -> None:

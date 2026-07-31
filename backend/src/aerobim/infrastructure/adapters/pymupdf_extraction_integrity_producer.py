@@ -20,7 +20,8 @@ class PyMuPDFExtractionIntegrityProducer:
             import pymupdf
         except ModuleNotFoundError as exc:
             raise RuntimeError(
-                "Extraction-integrity PDF probe requires PyMuPDF (core dependency)"
+                "Extraction-integrity PDF probe requires PyMuPDF. "
+                "Install the optional 'pdf-agpl' extra or use AEROBIM_PDF_BACKEND=pdfium."
             ) from exc
 
         extracted = 0

@@ -11,7 +11,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 | ID | Severity | Status | Summary |
 |---|---|---|---|
-| LIC-001 | HIGH | **OPEN — legal review required** (Phase 1 isolation STARTED) | Lock SSOT `pymupdf==1.28.0`; dual AGPL/Artifex. Mandatory core still. Phase 1: EI producer selectable via `AEROBIM_PDF_BACKEND=none` (no pymupdf import on that path); plan `docs/license-pymupdf-isolation-plan-2026.md`. Options A/B/C Phase 2+ remain. Gate: `test_dependency_license_gate.py` + `test_pdf_backend_isolation.py`. |
+| LIC-001 | HIGH | **ENGINEERING_CLEARED_FOR_CORE_PDF** (Option B owner-selected 2026-07-31) | Production PDF path: `pypdfium2` + `pdfminer.six` (+ Pillow). PyMuPDF optional `pdf-agpl` only; absent from runtime lock/Docker. Residual: do not reintroduce AGPL into runtime without owner decision; not a court opinion. Gate: `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`. |
 
 ## Engineering readiness improved (2026-07-21 F–L)
 

@@ -91,36 +91,30 @@ class RasterDrawingAnalyzer:
         sheet_id: str,
     ) -> list[DrawingAnnotation]:
         try:
-            import pymupdf
+            from pdfminer.high_level import extract_pages
+            from pdfminer.layout import LTPage
         except ModuleNotFoundError as exc:
             raise RuntimeError(
-                "PDF drawing analysis requires PyMuPDF. Install the 'raster' extra."
+                "PDF drawing analysis requires pdfminer.six (core PDF backend)."
             ) from exc
 
         annotations: list[DrawingAnnotation] = []
 
         def _extract() -> list[DrawingAnnotation]:
             extracted: list[DrawingAnnotation] = []
-            with pymupdf.open(pdf_path) as document:
-                for page_number, page in enumerate(document, start=1):
-                    blocks = page.get_text("blocks", sort=True)
-                    for block in blocks:
-                        if len(block) < 5:
-                            continue
-                        x0, y0, x1, y1, text = block[:5]
-                        if not isinstance(text, str) or not text.strip():
-                            continue
-                        region = _TextRegion(
-                            text=text,
-                            page_number=page_number,
-                            x=float(x0),
-                            y=float(y0),
-                            width=max(float(x1) - float(x0), 0.0),
-                            height=max(float(y1) - float(y0), 0.0),
-                        )
-                        extracted.extend(
-                            self._extract_annotations_from_region(region, sheet_id, pdf_path)
-                        )
+            for page_number, page in enumerate(extract_pages(str(pdf_path)), start=1):
+                if not isinstance(page, LTPage):
+                    continue
+                page_h = float(page.bbox[3] - page.bbox[1])
+                extracted.extend(
+                    self._annotations_from_pdfminer_page(
+                        page,
+                        sheet_id=sheet_id,
+                        pdf_path=pdf_path,
+                        page_number=page_number,
+                        page_h=page_h,
+                    )
+                )
             return extracted
 
         with ThreadPoolExecutor(max_workers=1) as pool:
@@ -132,6 +126,49 @@ class RasterDrawingAnalyzer:
                     f"PDF analysis timed out after {_PDF_OPEN_TIMEOUT_S:.0f}s: {pdf_path}"
                 ) from exc
         return self._deduplicate_annotations(annotations)
+
+    def _annotations_from_pdfminer_page(
+        self,
+        page: object,
+        *,
+        sheet_id: str,
+        pdf_path: Path,
+        page_number: int,
+        page_h: float,
+    ) -> list[DrawingAnnotation]:
+        from pdfminer.layout import LTTextContainer
+
+        extracted: list[DrawingAnnotation] = []
+
+        def _walk(obj: object) -> None:
+            if isinstance(obj, LTTextContainer):
+                text = (obj.get_text() or "").strip()
+                if text:
+                    x0, y0, x1, y1 = obj.bbox
+                    # pdfminer y origin is bottom-left; convert to top-left
+                    # page-point space to match historical PyMuPDF annotations.
+                    top = page_h - float(y1)
+                    region = _TextRegion(
+                        text=text,
+                        page_number=page_number,
+                        x=float(x0),
+                        y=top,
+                        width=max(float(x1) - float(x0), 0.0),
+                        height=max(float(y1) - float(y0), 0.0),
+                    )
+                    extracted.extend(
+                        self._extract_annotations_from_region(region, sheet_id, pdf_path)
+                    )
+                return
+            if hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes)):
+                try:
+                    for child in obj:  # type: ignore[union-attr]
+                        _walk(child)
+                except TypeError:
+                    return
+
+        _walk(page)
+        return extracted
 
     def _analyze_raster(
         self,

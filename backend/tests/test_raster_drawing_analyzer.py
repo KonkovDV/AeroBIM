@@ -4,9 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import pymupdf
-
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
+from pdf_fixtures import write_text_pdf
 
 
 class _FakeOcrResult:
@@ -25,15 +24,8 @@ class _FakeOcrEngine:
 
 class RasterDrawingAnalyzerTests(unittest.TestCase):
     def test_pdf_blocks_are_converted_into_drawing_annotations(self) -> None:
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-            pdf_path = Path(tmp.name)
-
-        try:
-            document = pymupdf.open()
-            page = document.new_page()
-            page.insert_text((72, 72), "WALL-01 thickness 250 mm")
-            document.save(pdf_path)
-            document.close()
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = write_text_pdf(Path(tmp) / "wall.pdf", "WALL-01 thickness 250 mm")
 
             analyzer = RasterDrawingAnalyzer()
             annotations = analyzer.analyze_image(pdf_path, sheet_id="A-101")
@@ -50,8 +42,6 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
             self.assertEqual(annotation.problem_zone.page_number, 1)
             self.assertGreater(annotation.problem_zone.width, 0)
             self.assertGreater(annotation.problem_zone.height, 0)
-        finally:
-            pdf_path.unlink(missing_ok=True)
 
     def test_raster_ocr_result_is_converted_into_drawing_annotations(self) -> None:
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:

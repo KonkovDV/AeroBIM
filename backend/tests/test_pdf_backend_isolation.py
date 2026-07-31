@@ -15,7 +15,8 @@ from aerobim.infrastructure.adapters.disabled_pdf_extraction_integrity_producer 
 
 class PdfBackendIsolationTests(unittest.TestCase):
     def test_resolve_pdf_backend(self) -> None:
-        self.assertEqual(resolve_pdf_backend(None), "pymupdf")
+        self.assertEqual(resolve_pdf_backend(None), "pdfium")
+        self.assertEqual(resolve_pdf_backend("pdfium"), "pdfium")
         self.assertEqual(resolve_pdf_backend("pymupdf"), "pymupdf")
         self.assertEqual(resolve_pdf_backend("none"), "none")
         self.assertEqual(resolve_pdf_backend("OFF"), "none")

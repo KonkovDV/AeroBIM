@@ -1,19 +1,28 @@
-"""PDF backend selection (LIC-001 Phase 1 — isolation seam, not AGPL clearance)."""
+"""PDF backend selection (LIC-001 Option B — permissive default)."""
 
 from __future__ import annotations
 
 from typing import Literal
 
-PdfBackendKind = Literal["pymupdf", "none"]
+PdfBackendKind = Literal["pdfium", "pymupdf", "none"]
 
 
 def resolve_pdf_backend(raw: str | None) -> PdfBackendKind:
-    """Map config/env to a backend kind. Unknown → pymupdf (current production default)."""
+    """Map config/env to a backend kind.
 
-    value = (raw or "pymupdf").strip().lower()
+    Default is ``pdfium`` (pypdfium2 + pdfminer.six). ``pymupdf`` remains only
+    when the optional ``pdf-agpl`` extra is installed. Unknown values fall back
+    to ``pdfium``.
+    """
+
+    value = (raw or "pdfium").strip().lower()
     if value in {"none", "off", "disabled"}:
         return "none"
-    return "pymupdf"
+    if value in {"pymupdf", "fitz", "agpl"}:
+        return "pymupdf"
+    if value in {"pdfium", "pypdfium2", "pdfminer", "permissive"}:
+        return "pdfium"
+    return "pdfium"
 
 
 __all__ = ["PdfBackendKind", "resolve_pdf_backend"]

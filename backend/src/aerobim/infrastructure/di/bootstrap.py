@@ -87,6 +87,10 @@ from aerobim.infrastructure.adapters.ocr_fallback_multimodal_drawing_pipeline im
 )
 from aerobim.infrastructure.adapters.oda_cad_model_ingestor import OdaCadModelIngestor
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
+from aerobim.infrastructure.adapters.pdfium_region_cropper import PdfiumRegionCropper
+from aerobim.infrastructure.adapters.pdfminer_extraction_integrity_producer import (
+    PdfMinerExtractionIntegrityProducer,
+)
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
 from aerobim.infrastructure.adapters.pymupdf_extraction_integrity_producer import (
     PyMuPDFExtractionIntegrityProducer,
@@ -172,11 +176,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     )
     container.register(
         Tokens.EXTRACTION_INTEGRITY_PRODUCER,
-        lambda current: (
-            DisabledPdfExtractionIntegrityProducer()
-            if resolve_pdf_backend(current.resolve(Tokens.SETTINGS).pdf_backend) == "none"
-            else PyMuPDFExtractionIntegrityProducer()
-        ),
+        lambda current: _build_extraction_integrity_producer(current),
         lifecycle=Lifecycle.SINGLETON,
     )
     tolerance = ToleranceConfig()
@@ -800,9 +800,25 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
     return RegionRestrictedVlmPipeline(
         region_detector=current.resolve(Tokens.DRAWING_REGION_DETECTOR),
         reader=reader,  # type: ignore[arg-type]
-        cropper=PyMuPDFRegionCropper(),
+        cropper=_build_region_cropper(current),
         ready=True,
     )
+
+
+def _build_extraction_integrity_producer(current: Container):
+    backend = resolve_pdf_backend(current.resolve(Tokens.SETTINGS).pdf_backend)
+    if backend == "none":
+        return DisabledPdfExtractionIntegrityProducer()
+    if backend == "pymupdf":
+        return PyMuPDFExtractionIntegrityProducer()
+    return PdfMinerExtractionIntegrityProducer()
+
+
+def _build_region_cropper(current: Container):
+    backend = resolve_pdf_backend(current.resolve(Tokens.SETTINGS).pdf_backend)
+    if backend == "pymupdf":
+        return PyMuPDFRegionCropper()
+    return PdfiumRegionCropper()
 
 
 def _build_audit_report_store(current: Container):
