@@ -24,11 +24,16 @@ def _entries() -> dict[str, dict[str, object]]:
 
 
 def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    data = path.read_bytes()
+    # Match committed LF text on Windows CRLF worktrees (see export_samples_manifest).
+    if b"\r\n" in data and b"\x00" not in data[:8192]:
+        try:
+            data.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+        else:
+            data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def test_every_samples_file_is_listed_and_hashes_match() -> None:

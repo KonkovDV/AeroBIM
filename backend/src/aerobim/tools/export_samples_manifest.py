@@ -24,12 +24,22 @@ _SAMPLES = _REPO_ROOT / "samples"
 _VENDORED_PREFIXES = ("bcf-xsd/", "ids-xsd/")
 
 
+def _looks_text(data: bytes) -> bool:
+    if b"\x00" in data[:8192]:
+        return False
+    try:
+        data.decode("utf-8")
+    except UnicodeDecodeError:
+        return False
+    return True
+
+
 def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    """Hash bytes as committed on Linux CI (LF text), not Windows CRLF worktrees."""
+    data = path.read_bytes()
+    if b"\r\n" in data and _looks_text(data):
+        data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def _entry(path: Path) -> dict[str, object]:

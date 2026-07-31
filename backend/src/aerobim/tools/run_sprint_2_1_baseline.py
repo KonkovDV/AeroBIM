@@ -56,7 +56,11 @@ def _score_mutations(mutations: dict[str, Any]) -> dict[str, Any]:
         return {"tp": 0, "fp": 0, "fn": 0, "precision": None, "recall": None, "f1": None}
     # Without a live analyze of mutated copies, we report *declared* ground-truth
     # inventory only (engineering baseline), not measured TP/FP.
-    finding = sum(1 for d in defects if isinstance(d, dict) and d.get("expected_status") == "finding")
+    finding = sum(
+        1
+        for d in defects
+        if isinstance(d, dict) and d.get("expected_status") == "finding"
+    )
     not_verifiable = sum(
         1 for d in defects if isinstance(d, dict) and d.get("expected_status") == "not_verifiable"
     )
@@ -253,7 +257,8 @@ def main(argv: list[str] | None = None) -> int:
         run_analyze=bool(args.run_analyze),
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    payload = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
+    args.output.write_text(payload, encoding="utf-8")
     _write_markdown(report, args.report)
     if args.pdf is not None:
         # Do not invent a binary PDF. Record blocker next to requested path.
@@ -263,7 +268,12 @@ def main(argv: list[str] | None = None) -> int:
             "PDF_GENERATION_BLOCKED\nSee companion Markdown/HTML report.\n",
             encoding="utf-8",
         )
-    print(json.dumps({"ok": True, "output": str(args.output), "report": str(args.report)}, indent=2))
+    summary = {
+        "ok": True,
+        "output": str(args.output),
+        "report": str(args.report),
+    }
+    print(json.dumps(summary, indent=2))
     return 0
 
 
