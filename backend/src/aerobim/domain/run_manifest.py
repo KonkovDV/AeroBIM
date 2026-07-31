@@ -22,17 +22,25 @@ class _ReportLike(Protocol):
     capabilities: Any | None
 
 
+# Mirror of application capability_policy._PASS_BLOCKING_FAILED_FIELDS: every
+# pass-blocking capability must be part of the reproducibility binding. Kept as
+# a literal because domain must not import application; the sync (and the
+# existence of every name on ReportCapabilities) is enforced by
+# tests/test_run_manifest_capability_digest.py. RT-EI-04 removed the phantom
+# names quantity_consistency/load_evidence that getattr() silently dropped.
 _CAPABILITY_FIELDS = (
     "clash",
     "ids",
     "ifc_validation",
-    "dwg_dxf",
-    "calculation_match",
-    "mep_system_clash",
     "unit_scale",
-    "quantity_consistency",
-    "load_evidence",
-    # Pass-blocking capability must be part of the reproducibility binding.
+    "raster",
+    "ifc_schema",
+    "norm_rule_packs",
+    "section_pairing",
+    "calculation_match",
+    "dwg_dxf",
+    "mep_system_clash",
+    "quantity",
     "extraction_integrity",
 )
 

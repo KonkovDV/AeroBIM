@@ -117,6 +117,10 @@ P-019 юридический gap-анализ; P-020 верифицирован�
 
 - `ReportCapabilities.extraction_integrity`: default NOT_VERIFIED (честно: сигналы не производятся ingestion-слоем), FAILED входит в pass-blocking список во всех профилях; персистентные отчёты без поля реконструируются в NOT_VERIFIED. Golden reproducibility hash обновлён осознанно (capability digest вырос на поле). Producer сигналов (hidden-text скан PDF) — P2.
 
+## 5i. Addendum — RT-EI-04 закрыт (digest drift)
+
+- Подтверждён pre-existing дефект из ревью 5h: `_CAPABILITY_FIELDS` содержал фантомные имена (`quantity_consistency`, `load_evidence`), которые getattr молча отбрасывал — pass-blocking `quantity`, `raster`, `ifc_schema`, `norm_rule_packs`, `section_pairing` НЕ входили в reproducibility digest. Список приведён к точному зеркалу `_PASS_BLOCKING_FAILED_FIELDS` (13 полей); синхронизацию и отсутствие фантомов держит guard-тест (test_run_manifest_capability_digest, 3 теста). Golden hash обновлён осознанно второй раз за день; trace-evidence регенерирован.
+
 ## 6. Что запросить у Самолёта (сводно)
 
 Состав эталонного комплекта; IFC + PDF + ТЗ + нормы + расчёты + ревизии; два эксперта;
