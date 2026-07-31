@@ -402,4 +402,4 @@ Release-readiness benchmark rails now support `benchmark_threshold_mode` (`advis
 
 [MIT](LICENSE) — applies to AeroBIM's **own code**.
 
-Third-party components keep their own licenses: **PyMuPDF** is dual-licensed AGPL-3.0 / Artifex commercial (mandatory core dependency; legal review required before redistribution/SaaS claims), **IfcOpenShell / IfcTester** are LGPL-3.0-or-later. Machine-readable inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · audit: [`audit/reports/DEPENDENCY_LICENSE_AUDIT_2026_07_31.md`](audit/reports/DEPENDENCY_LICENSE_AUDIT_2026_07_31.md).
+Third-party components keep their own licenses: **PyMuPDF** is dual-licensed AGPL-3.0 / Artifex commercial (mandatory core dependency; legal review required before redistribution/SaaS claims), **IfcOpenShell / IfcTester** are LGPL-3.0-or-later, **web-ifc** is MPL-2.0. Machine-readable inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · audit: [`audit/reports/DEPENDENCY_LICENSE_AUDIT_2026_07_31.md`](audit/reports/DEPENDENCY_LICENSE_AUDIT_2026_07_31.md).

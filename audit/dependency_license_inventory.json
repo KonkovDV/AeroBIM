@@ -250,11 +250,60 @@
       "legal_review_required": false,
       "usage": "optional job store client",
       "mitigation_options": ""
+    },
+    {
+      "name": "react",
+      "scope": "frontend",
+      "installed_version": "19.2.5",
+      "license_metadata": "MIT",
+      "spdx_guess": "MIT",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "browser review shell (runtime dependency)",
+      "mitigation_options": ""
+    },
+    {
+      "name": "react-dom",
+      "scope": "frontend",
+      "installed_version": "19.2.5",
+      "license_metadata": "MIT",
+      "spdx_guess": "MIT",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "browser review shell (runtime dependency)",
+      "mitigation_options": ""
+    },
+    {
+      "name": "three",
+      "scope": "frontend",
+      "installed_version": "0.183.2",
+      "license_metadata": "MIT",
+      "spdx_guess": "MIT",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "browser review shell (runtime dependency)",
+      "mitigation_options": ""
+    },
+    {
+      "name": "web-ifc",
+      "scope": "frontend",
+      "installed_version": "0.0.77",
+      "license_metadata": "MPL-2.0",
+      "spdx_guess": "MPL-2.0",
+      "risk_class": "weak_copyleft",
+      "verified": true,
+      "legal_review_required": true,
+      "usage": "browser review shell (runtime dependency)",
+      "mitigation_options": "MPL-2.0 is file-level copyleft: keep web-ifc unmodified, disclose"
     }
   ],
   "out_of_scope_unknowns": [
-    "frontend npm dependency tree (web-ifc, three.js and transitive) — UNKNOWN until npm license scan",
+    "frontend npm TRANSITIVE tree (direct deps verified 2026-07-31 from node_modules package.json; dev tooling not shipped)",
     "Docker base images — UNKNOWN until image SBOM",
     "VLM/LLM model weights — no weights shipped in repo (advisory contour not wired)"
-  ]
+  ],
+  "frontend_verified_at": "2026-07-31"
 }
