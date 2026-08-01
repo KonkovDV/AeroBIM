@@ -1,36 +1,42 @@
 ---
 title: "AeroBIM Documentation — TechLab jury surface"
 status: active
-version: "3.1.0"
-last_updated: "2026-07-28"
+version: "3.2.0"
+last_updated: "2026-08-01"
 tags: [aerobim, documentation, samolet, techlab, jury]
-claim_boundary: "Public GitHub = TechLab jury pack only. Red Team docs pass 2026-07-19. Operator/debug docs are local (.local/)."
+claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng readiness ≠ customer GO. Operator/debug docs are local (.local/)."
 ---
 
 # Documentation (TechLab jury)
 
-Checkpoint: **`NO_GO`** — [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+Checkpoint: **`NO_GO`** — [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).  
+Aug 2026 eng readiness: [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).
 
 Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, and citeable fixtures. Operator runbooks, Red Team phase dumps, and  archive live under `.local/` (not published).
 
-**Red Team docs pass (2026-07-19):** Claims Lock / blockers / runtime matrix / ADR-001 / SECURITY aligned with post-remediation fail-closed, ACL 404, SSRF guard, and Shared-gate `summary.passed` wording. Customer blockers RT-001/002/003 remain open.
+**Red Team docs pass (2026-07-19 + eng remediations through 2026-08-01):** Claims Lock / blockers / runtime matrix / ADR-001 / SECURITY aligned with fail-closed, ACL 404, SSRF guard, Shared-gate `summary.passed`, LIC-001 Option B, P2-04 GUID presence, P2-02 geometry honesty. Customer blockers RT-001/002/003 remain open.
 
 ## Read first
 
 | File | Role |
 |------|------|
+| [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng status** (LIC-001 / P2 / offline) |
 | [`docs.md`](docs.md) | **Jury memo (RU)** |
 | [`samolet.md`](samolet.md) | Strategy × Samolet 10D |
 | [`tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Customer TZ v2.0 |
 | [`tz/README.md`](tz/README.md) | Full TZ pack index |
 | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) | Verified vs planned |
 | [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | Forbidden wording |
+| [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md) | Eng freeze 2026-07-31 |
 | [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 |
 | [`architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | Architecture |
 | [`architecture/ADR-001-verdict-ownership-2026.md`](architecture/ADR-001-verdict-ownership-2026.md) | Who owns `summary.passed` |
 | [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | R1–R15 |
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness / form |
 | [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | MEP honesty |
+| [`roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md`](roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) | Geometry honesty deepen |
+| [`license-policy-2026.md`](license-policy-2026.md) | LIC-001 Option B |
+| [`offline-deployment-2026.md`](offline-deployment-2026.md) | Docker offline; bare-metal deferred |
 
 ## Supporting (still jury-facing)
 

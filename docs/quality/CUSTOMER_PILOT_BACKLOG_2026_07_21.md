@@ -20,8 +20,8 @@ SSOT: [`../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WO
 
 | Bucket | Items |
 |---|---|
-| **Works (fixture-proven)** | Package analyze; IFC/IDS/cross-doc; `PackageOutcome`; intake fail-closed; provenance; BCF ZIP T1 + MEP topics; HITL; ACL 404; SSRF; jobs; precision/SLA gates (eng); revision merge; run manifest; golden hash; stage timeout; **IFC parse cache + spatial index**; **annotation↔IFC claimed-GUID presence confirm**; **federated IfcSystem graph + clearance matrix eval (fixture)** |
-| **Experimental** | OpenCDE BCF API; IfcSystemAwareClash probe; IFC KG advisory; compliance agent tool traces |
+| **Works (fixture-proven)** | Package analyze; IFC/IDS/cross-doc; `PackageOutcome`; intake fail-closed; provenance; BCF ZIP T1 + MEP topics; HITL; ACL 404; SSRF; jobs; precision/SLA gates (eng); revision merge; run manifest; golden hash; stage timeout; **IFC parse cache + spatial index**; **annotation↔IFC claimed-GUID presence confirm**; **core PDF pypdfium2/pdfminer (LIC-001 Option B)**; **federated IfcSystem graph + clearance matrix eval (fixture)**; Docker offline image-track |
+| **Experimental** | OpenCDE BCF API; IfcSystemAwareClash probe + AABB broadphase (`geometry_verified=False`); IFC KG advisory; compliance agent tool traces |
 | **Planned** | POST-05 OIDC BFF; full federated MEP **geometry** intersection |
 | **Needs customer** | RT-001 corpus + κ/α; RT-002 approved norm pack; RT-003 federated MEP + signed matrix; CDE T2; customer SLA pack |
 | **Not claimable** | >90% accuracy; ≤30 min customer SLA; native DWG; MEP delivered; calc correctness; CDE-ready BCF |
@@ -54,7 +54,7 @@ P0-01..09 complete (run manifest, timeouts, golden, tool registry scaffold, prof
 | ID | Task | Status |
 |---|---|---|
 | P2-01 | IFC parse session + spatial index | **ENG_DONE** |
-| P2-02 | Federated graph + matrix + BCF honesty | **ENG_PARTIAL** (edge_kinds + exception honesty; geometry NOT_VERIFIED; RT-003 OPEN) |
+| P2-02 | Federated graph + matrix + BCF honesty | **ENG_PARTIAL** (edge_kinds + AABB broadphase; geometry NOT_VERIFIED; RT-003 OPEN) |
 | P2-03 | Sheet identity + drift | **ENG_DONE** (OCR title-block still partial) |
 | P2-04 | Annotation↔IFC matching | **ENG_DONE** (presence check vs spatial index; not human-adjudicated) |
 | P2-05 | Pilot env runbook + ENG_FIXTURE scope | **ENG_DONE** |
@@ -67,7 +67,7 @@ P0-01..09 complete (run manifest, timeouts, golden, tool registry scaffold, prof
 | ID | Task | Status |
 |---|---|---|
 | P2-01 | IFC parse session + spatial index + cache stats | **ENG_DONE** |
-| P2-02 | Federated IfcSystem graph + clearance matrix + BCF honesty | **ENG_PARTIAL** (edge provenance + analyze integration; geometry still NOT_VERIFIED) |
+| P2-02 | Federated IfcSystem graph + clearance matrix + BCF honesty | **ENG_PARTIAL** (edge provenance + AABB filter + analyze integration; geometry still NOT_VERIFIED) |
 | P2-03 | Sheet identity + annotation sheet drift | **ENG_DONE** |
 | P2-04 | Annotation↔IFC matching + report persistence | **ENG_DONE** (claimed GUID confirmed in index only) |
 | P2-05 | `SAMOLET_PILOT_ENV_RUNBOOK` + ENG_FIXTURE scope | **ENG_DONE** |

@@ -1,18 +1,19 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.1.0"
-last_updated: "2026-07-28"
+version: "4.2.0"
+last_updated: "2026-08-01"
 tags: [aerobim, documentation, tier-0, techlab]
-claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Red Team docs pass 2026-07-19."
+claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
 # Tier-0 (TechLab jury)
 
-**`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md) · [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
+**`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md) · [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · eng freeze [CLAIMS_LOCK_2026_07_31](../audit/reports/CLAIMS_LOCK_2026_07_31.md) · [claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
 
 | Surface | Role |
 |---------|------|
+| [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng readiness** (LIC-001 / P2-04 / P2-02 / offline) — not Checkpoint GO |
 | [`docs.md`](docs.md) | Jury technical justification (RU) |
 | [`AeroBIM.pdf`](AeroBIM.pdf) | Printable jury pack (export of memo) |
 | [`samolet.md`](samolet.md) | Samolet strategy |
@@ -26,7 +27,12 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Red Team
 | [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Allowed vs forbidden claims |
 | [`benchmark-evidence-2026.md`](benchmark-evidence-2026.md) | Fixture metrics boundaries |
 | [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md) | Pilot phases 0–5 |
+| [`license-policy-2026.md`](license-policy-2026.md) | LIC-001 Option B (core PDF off PyMuPDF) |
+| [`offline-deployment-2026.md`](offline-deployment-2026.md) | Docker offline VERIFIED; bare-metal DEFERRED |
+| [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | MEP honesty / RT-003 |
+| [`roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md`](roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) | Geometry honesty deepen |
+| [`evidence/README.md`](evidence/README.md) | Citeable fixtures + wall-guid pin |
 | [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI routing foundation (verdict-neutral, NO_GO) |
-| [`README.md`](README.md) | Full jury map |
+| [`../README.md`](../README.md) · [`../README.ru.md`](../README.ru.md) | Product README (EN/RU) |
 
 Operator / debug / archive documentation is **not** on GitHub (kept in `.local/engineering-docs/`).

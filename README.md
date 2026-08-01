@@ -12,11 +12,17 @@
 > **RT-001** (customer accuracy corpus), **RT-002** (approved norm pack), **RT-003** (federated MEP scope) —
 > see [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
 > Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
+> dated eng freeze: [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) ·
 > verified vs planned: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) ·
+> **Aug 2026 eng status:** [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) ·
 > Tier-0 docs: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) ·
 > verdict ownership: [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md).
 > Forbidden until evidenced: product accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, independent calc *correctness*.
-
+>
+> **Engineering readiness improved (2026-07 → 2026-08)** without closing customer blockers:
+> LIC-001 Option B (core PDF off AGPL PyMuPDF), OCR-aware extraction integrity, P2-04 claimed-GUID presence confirm,
+> P2-02 MEP edge provenance + optional AABB broadphase (still `geometry_verified=False`), Docker offline track.
+> Fixture GO ≠ Checkpoint GO.
 Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + cross-document evidence).
 
 AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidence for *Shared*, not contractual *Published* authorization). It fuses IFC property/quantity checks, IDS, drawings, and calculation text into a single report with explicit capability honesty, finding provenance, and BCF **ZIP export**. Independent CDE import and customer accuracy claims remain **out of scope until evidenced**. Architecture SSOT: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
@@ -31,17 +37,17 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 | **Needs customer** | RT-001/002/003 — checkpoint **NO_GO** |
 | **Not claimed** | Forbidden wording until dual evidence |
 
-**What works:** project-package analyze; IFC/IDS/cross-doc; `summary.passed` Shared-gate ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); pilot/production fail-closed profiles; ACL 404; SSRF outbound guard; provenance stamp/persist; BCF 2.1/3.0 structural ZIP; HITL review-events; evidence bundle CLI (`python -m aerobim.tools.export_evidence_bundle`); pytest / vitest counts SSOT via [runtime baseline](docs/evidence/runtime-baseline-latest.json) (`frontend.tests_passed` when recorded; else see baseline/CI).
+**What works:** project-package analyze; IFC/IDS/cross-doc; `summary.passed` Shared-gate ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); pilot/production fail-closed profiles; ACL 404; SSRF outbound guard; provenance stamp/persist; BCF 2.1/3.0 structural ZIP; HITL review-events; evidence bundle CLI (`python -m aerobim.tools.export_evidence_bundle`); **annotation claimed-GUID presence confirm** (P2-04); **core PDF via pypdfium2/pdfminer** (LIC-001 Option B); Docker offline-bundle smoke; pytest / vitest counts SSOT via [runtime baseline](docs/evidence/runtime-baseline-latest.json) (`frontend.tests_passed` when recorded; else see baseline/CI).
 
-**Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold.
+**Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold; MEP federated ENG_FIXTURE graph + AABB broadphase (capability stays `NOT_VERIFIED`).
 
 **Available (eng):** `PackageOutcome` on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`); run manifest + reproducibility hash; stage timeout budgets; **Hybrid AI routing foundation** (5-level data classification + fail-closed policy engine + secret-safe audit event + privacy guard + composed pre-gate) — domain-pure, verdict-neutral (OFF==ON), **NOT in the verdict path** (advisory-contour scaffold; masking ≠ anonymity; Checkpoint **NO_GO**).
 
-**Planned:** Stage-3 finding field expansion; profiling-driven performance wave.
+**Planned:** Stage-3 finding field expansion; profiling-driven performance wave; customer-gated RT-001/002/003 evidence.
 
 **Needs customer:** RT-001 accuracy corpus · RT-002 approved norms · RT-003 federated MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)).
 
-**Not claimed:** product accuracy >90%; customer ≤30 min SLA; native DWG; MEP system clash delivered; independent calc *correctness*; CDE-ready BCF. See [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md) · [benchmark-evidence](docs/benchmark-evidence-2026.md).
+**Not claimed:** product accuracy >90%; customer ≤30 min SLA; native DWG; MEP system clash delivered; independent calc *correctness*; CDE-ready BCF; bare-metal offline without Docker; AABB/connects = verified geometric clash. See [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [ENGINEERING_STATUS_2026_08](docs/ENGINEERING_STATUS_2026_08.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md) · [benchmark-evidence](docs/benchmark-evidence-2026.md).
 
 ## Key Capabilities
 
@@ -53,7 +59,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | IDS 1.0 validation (IfcTester) | Available | fixture | Requested path fail-closed when misconfigured |
 | Cross-document contradiction detection | Available | fixture | `ConflictKind` taxonomy (subset) |
 | Configurable contradiction severity policy | Available | fixture | — |
-| Drawing annotation ↔ IFC cross-validation | Available | fixture | Raster OCR path optional |
+| Drawing annotation ↔ IFC cross-validation | Available | fixture | Claimed GUID → `ifc_guid` only after spatial-index presence (P2-04); not human-adjudicated |
 | ISO 12006-3 tolerance algebra (ε-band) | Available | fixture | — |
 | Narrative text → requirements (deterministic regex) | Available | fixture | Not an LLM sign-off contour |
 | Russian AEC extraction benchmark (fixture corpus) | Available | fixture | macro_f1 on fixtures ≠ product accuracy |
@@ -67,12 +73,15 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | HTML / JSON report export | Available | fixture | — |
 | Browser IFC viewer (`web-ifc` + Three.js) | Available | fixture | — |
 | 2D problem-zone overlay | Available | fixture | — |
-| Deterministic PDF text (PyMuPDF) | Available | core | — |
-| Image OCR (RapidOCR) | Optional extra | optional-extra | `.[raster]`; zero-yield → FAILED when requested |
+| Deterministic PDF text/crop (pypdfium2 + pdfminer) | Available | core | LIC-001 Option B; default `AEROBIM_PDF_BACKEND=pdfium` |
+| Optional PyMuPDF | Optional extra | `pdf-agpl` | AGPL/Artifex dual; **not** in runtime lock/Docker |
+| Image OCR (RapidOCR) | Optional extra | optional-extra | `.[raster]`; EI OCR-aware signals PARTIAL; zero-yield → FAILED when requested |
+| Extraction integrity capability | Available | fixture | Text-layer + optional OCR disagreement WARNING; not product visual integrity |
 | DWG native analysis | Missing / Failed | — | Fail-closed; never OK; PDF/IFC = derived input with provenance only |
 | DXF via CadModelIngestor | Partial / Not verified | fixture | Optional ezdxf; honesty never OK; ≠ DWG support |
 | Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` (OCR degrade ≠ VLM) |
-| MEP system-aware clash | Not verified / blocked | fixture_only | Unconfigured DI; RT-003 OPEN; co-presence ≠ connection |
+| MEP system-aware clash | Not verified / blocked | fixture_only | ENG_PARTIAL: edge_kinds + AABB broadphase; always `geometry_verified=False`; RT-003 OPEN |
+| Offline Docker image-track | Available | eng | `offline_bundle` smoke; bare-metal **DEFERRED** |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
 | Frontend vitest review-shell | Green in CI | release-readiness | **29** passed (`frontend` CI job) |
@@ -206,24 +215,37 @@ python -m aerobim.tools.export_runtime_baseline
 python -m aerobim.tools.export_evidence_bundle \
   --pack ../samples/benchmarks/project-package-techlab-demo.json \
   --output ../artifacts/evidence-bundle/techlab-demo
+
+# P2-04 wall-guid presence demo (fixture GO pin)
+python -m aerobim.tools.export_evidence_bundle \
+  --pack ../samples/benchmarks/project-package-wall-guid-demo.json \
+  --output ../artifacts/evidence-bundle/checkpoint2-wall-guid
 ```
 
 | Topic | Document |
 |---|---|
 | Claims lock (forbidden / allowed wording) | [audit/reports/CLAIMS_LOCK_2026_07_17.md](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
+| Claims lock — eng freeze 2026-07-31 | [audit/reports/CLAIMS_LOCK_2026_07_31.md](audit/reports/CLAIMS_LOCK_2026_07_31.md) |
 | Claims × evidence matrix | [audit/reports/CLAIMS_EVIDENCE_MATRIX.md](audit/reports/CLAIMS_EVIDENCE_MATRIX.md) |
 | Critical blockers / checkpoint | [audit/reports/CRITICAL_BLOCKERS.md](audit/reports/CRITICAL_BLOCKERS.md) |
+| Engineering status (Aug 2026) | [docs/ENGINEERING_STATUS_2026_08.md](docs/ENGINEERING_STATUS_2026_08.md) |
 | Claim boundary (pilot / publication) | [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) |
 | Project status audit | [docs/PROJECT_STATUS_AUDIT_2026.md](docs/PROJECT_STATUS_AUDIT_2026.md) |
 | Capability × claim matrix | [docs/capability-claim-matrix-2026.md](docs/capability-claim-matrix-2026.md) |
+| License policy (LIC-001 Option B) | [docs/license-policy-2026.md](docs/license-policy-2026.md) |
+| Offline deployment (Docker track) | [docs/offline-deployment-2026.md](docs/offline-deployment-2026.md) |
+| Extraction integrity | [docs/extraction-integrity-2026.md](docs/extraction-integrity-2026.md) |
+| MEP system-aware clash gap | [docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) |
+| P2-02 geometry honesty plan | [docs/roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md](docs/roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) |
+| Checkpoint #2 evidence pin | [docs/evidence/checkpoint2-evidence-bundle-latest.json](docs/evidence/checkpoint2-evidence-bundle-latest.json) |
 | Benchmark evidence boundaries | [docs/benchmark-evidence-2026.md](docs/benchmark-evidence-2026.md) |
 | Samolet pilot protocol | [docs/pilot-protocol-samolet-2026.md](docs/pilot-protocol-samolet-2026.md) |
 | Hybrid AI routing foundation (design + final report) | [audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
 | Reproducibility (FAIR) | [docs/REPRODUCIBILITY-2026.md](docs/REPRODUCIBILITY-2026.md) |
 | Extraction corpus / IAA | [`samples/benchmarks/annotation/README.md`](samples/benchmarks/annotation/README.md) · RU GT in `samples/benchmarks/` |
 | Benchmark packs | [samples/benchmarks/README.md](samples/benchmarks/README.md) |
+| Public buildingSMART IFC samples (CC BY 4.0) | [samples/ifc/public/buildingsmart-sample-test-files/](samples/ifc/public/buildingsmart-sample-test-files/) |
 | Audit evidence (T1 BCF, SLA 1.2, intake gate) | [audit/evidence/](audit/evidence/) |
-
 Throughput and F1 figures are environment-specific and **fixture-scoped** unless `corpus_kind=customer` and adjudication gates pass. Publish pack paths, CLI flags, machine fingerprint, and artifact hashes with any performance claim. Cite via [CITATION.cff](CITATION.cff) or [docs/CITATION.bib](docs/CITATION.bib).
 
 ## API Endpoints
@@ -303,6 +325,10 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `false` | Opt-in anonymous API in development/test only (`from_env`) |
 | `AEROBIM_CLASH_AFFECTS_PASS` | `false` | Soft only in development/fixture; forced `true` under pilot/production sign-off |
 | `AEROBIM_REQUIRE_CLASH` | `false` | Soft only in development/fixture; forced under pilot/production |
+| `AEROBIM_REQUIRE_MEP_SYSTEM_CLASH` | `false` | When true, MEP `NOT_VERIFIED` blocks Shared-gate pass |
+| `AEROBIM_MEP_FEDERATED_SCOPE_PATH` | *(unset)* | Federated MEP scope JSON (VERIFIED customer or ENG_FIXTURE) |
+| `AEROBIM_MEP_AABB_FILTER` | `true` | Optional AABB broadphase for MEP matrix pairs; still `geometry_verified=False` |
+| `AEROBIM_PDF_BACKEND` | `pdfium` | Core PDF: `pdfium` / `none`; optional legacy `pymupdf` only with `pdf-agpl` |
 | `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC size (256 MiB, aligned with bSI Validation Service) |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_DB_URL` | *(unset)* | Optional Postgres URL for report summary indexing |
@@ -347,9 +373,11 @@ Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architectu
 | Samolet strategy | [`docs/samolet.md`](docs/samolet.md) |
 | TZ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
 | Claims lock | [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
+| Eng freeze / status | [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) · [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) |
 | Checkpoint | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · **NO_GO** |
 | Project status audit | [`docs/PROJECT_STATUS_AUDIT_2026.md`](docs/PROJECT_STATUS_AUDIT_2026.md) |
 | Capability × claim matrix | [`docs/capability-claim-matrix-2026.md`](docs/capability-claim-matrix-2026.md) |
+| License / offline | [`docs/license-policy-2026.md`](docs/license-policy-2026.md) · [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md) |
 | Benchmark evidence | [`docs/benchmark-evidence-2026.md`](docs/benchmark-evidence-2026.md) |
 | Pilot protocol | [`docs/pilot-protocol-samolet-2026.md`](docs/pilot-protocol-samolet-2026.md) |
 | Claim boundary | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) |
@@ -394,12 +422,20 @@ Release-readiness benchmark rails now support `benchmark_threshold_mode` (`advis
 - **Python 3.12+**, **FastAPI**, **Uvicorn**
 - **IfcOpenShell** / **IfcTester** / **IfcClash** (buildingSMART toolchain)
 - **web-ifc** + **Three.js** for browser-side IFC review
-- **PyMuPDF** for deterministic PDF text; **RapidOCR** only when `.[raster]` is installed
+- **pypdfium2** + **pdfminer.six** for core PDF (LIC-001 Option B); optional **PyMuPDF** only via `pdf-agpl`
+- **RapidOCR** only when `.[raster]` is installed (EI OCR-aware signals PARTIAL)
 - **Docling** (optional, document parsing)
 - 5-layer Clean Architecture, constructor DI, Protocol ports
 
 ## License
 
-[MIT](LICENSE) — applies to AeroBIM's **own code**.
+MIT for **AeroBIM-authored** code. Third-party components keep their own licenses:
 
-Third-party components keep their own licenses: **PyMuPDF** is dual-licensed AGPL-3.0 / Artifex commercial (mandatory core dependency; legal review required before redistribution/SaaS claims), **IfcOpenShell / IfcTester** are LGPL-3.0-or-later, **web-ifc** is MPL-2.0. Machine-readable inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · policy: [`docs/license-policy-2026.md`](docs/license-policy-2026.md).
+- **pypdfium2** / **pdfminer.six** / **Pillow** — production PDF path (permissive; see inventory)
+- **PyMuPDF** — dual AGPL-3.0 / Artifex commercial; **optional `pdf-agpl` only** (absent from runtime lock / Docker after LIC-001 Option B)
+- **IfcOpenShell / IfcTester** — LGPL-3.0-or-later
+- **web-ifc** — MPL-2.0
+
+Machine-readable inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · policy: [`docs/license-policy-2026.md`](docs/license-policy-2026.md).  
+**Not a court opinion.** Do not claim “entire product is MIT” without third-party disclosure.
+
