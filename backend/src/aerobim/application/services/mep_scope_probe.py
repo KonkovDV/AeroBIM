@@ -144,6 +144,14 @@ class MepScopeProbe:
                 suffix += f"; scope_memo_ref={scope.scope_memo_ref}"
         if mep_issues:
             suffix += f"; matrix_findings={len(mep_issues)}"
+        edge_kinds = getattr(graph, "edge_kinds", ()) or ()
+        if edge_kinds:
+            connects = sum(1 for *_rest, kind in edge_kinds if kind == "connects")
+            co_presence = sum(1 for *_rest, kind in edge_kinds if kind == "co_presence")
+            suffix += (
+                f"; edge_basis connects={connects} co_presence={co_presence} "
+                "(not geometry-verified)"
+            )
         return (
             CapabilityStatus(
                 CapabilityState.NOT_VERIFIED,
@@ -213,7 +221,8 @@ class MepScopeProbe:
             )
         try:
             matrix = load_mep_clearance_matrix(candidate)
-            # Graph edges are co-presence only until a geometry probe exists.
+            # Graph edges are co-presence and/or IFC connects topology — not
+            # geometric intersection until a gated geometry_verified path exists.
             findings = evaluate_matrix_against_graph(graph, matrix)
         except Exception as exc:
             _logger.exception("MEP clearance matrix evaluation failed")

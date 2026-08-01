@@ -20,6 +20,7 @@ MepExceptionKind = Literal[
 ]
 
 MepIntersectionVerdict = Literal["allowed", "forbidden", "unclassified"]
+MepEdgeKind = Literal["co_presence", "connects", "unknown"]
 
 
 class MepClearanceClass(StrEnum):
@@ -54,14 +55,22 @@ class MepSystemNode:
 
 @dataclass(frozen=True)
 class MepSystemGraph:
-    """Connectivity graph derived from IFC system assignments."""
+    """Connectivity graph derived from IFC system assignments.
+
+    ``edges`` are candidates for matrix evaluation. ``edge_kinds`` records whether
+    a pair comes from co-presence (same file systems cartesian) or IFC connects
+    relationships. Neither kind proves geometric clash (buildingSMART / IfcClash:
+    AABB/broadphase ≠ verified intersection).
+    """
 
     nodes: tuple[MepSystemNode, ...]
     edges: tuple[tuple[str, str], ...]
-    """Undirected pairs of system_id connected via shared elements / ports."""
+    """Undirected pairs of system_id (co-presence and/or connects)."""
     source_ifc: str | None = None
     synthetic: bool = False
     """True when built by a synthetic/@sota-stub provider — never product evidence."""
+    edge_kinds: tuple[tuple[str, str, MepEdgeKind], ...] = ()
+    """Provenance per undirected pair; empty → treat all edges as co_presence."""
 
 
 @dataclass(frozen=True)
@@ -133,11 +142,24 @@ class MepClashFinding:
     exception_kinds: tuple[MepExceptionKind, ...] = ()
     min_clearance_m: float | None = None
     capability_hint: Literal["error", "not_verified", "info"] = "error"
+    edge_basis: MepEdgeKind = "unknown"
 
 
 def _pair_key(system_a: str, system_b: str) -> tuple[str, str]:
     left, right = sorted((system_a.strip(), system_b.strip()), key=str.casefold)
     return left, right
+
+
+def edge_kind_for_pair(graph: MepSystemGraph, system_a: str, system_b: str) -> MepEdgeKind:
+    """Resolve edge provenance; prefers ``connects`` over ``co_presence``."""
+
+    key = _pair_key(system_a, system_b)
+    kinds = {_pair_key(a, b): kind for a, b, kind in graph.edge_kinds}
+    if key in kinds:
+        return kinds[key]
+    if key in {_pair_key(a, b) for a, b in graph.edges}:
+        return "co_presence"
+    return "unknown"
 
 
 def lookup_clearance_rule(
@@ -159,12 +181,15 @@ def evaluate_system_pair(
     matrix: MepClashMatrix,
     source_ifc: str | None = None,
     intersecting: bool = True,
+    edge_basis: MepEdgeKind = "unknown",
 ) -> MepClashFinding | None:
     """Evaluate one system pair against the clearance matrix.
 
     - allowed intersection → no finding (``None``)
     - forbidden intersection → finding with provenance (capability_hint=error)
     - unclassified pair → NOT_VERIFIED-shaped finding (never confident ERROR)
+    - ``exception_kinds`` are stamped on the finding; issue mapping records them as
+      NOT_VERIFIED without geometry (Solibri-style exceptions need geometry/opening)
     """
 
     if not intersecting:
@@ -205,10 +230,17 @@ def evaluate_system_pair(
             allowed_intersection=None,
             priority=0,
             capability_hint="not_verified",
+            edge_basis=edge_basis,
         )
 
     if rule.allowed_intersection:
         return None
+
+    exceptions = rule.exception_kinds
+    exception_note = ""
+    if exceptions:
+        kinds = ",".join(exceptions)
+        exception_note = f"; exception_kinds=[{kinds}] declared but NOT geometry-validated"
 
     return MepClashFinding(
         finding_id=f"mep-forbidden-{a_id}-{b_id}",
@@ -218,7 +250,8 @@ def evaluate_system_pair(
         message=(
             f"Forbidden intersection {a_id!r}↔{b_id!r} "
             f"(clearance_class={rule.clearance_class.value}; "
-            f"priority={rule.priority})"
+            f"priority={rule.priority}; edge_basis={edge_basis}"
+            f"{exception_note})"
         ),
         discipline_a=discipline_a or rule.discipline_a,
         discipline_b=discipline_b or rule.discipline_b,
@@ -230,9 +263,10 @@ def evaluate_system_pair(
         clearance_class=rule.clearance_class,
         allowed_intersection=False,
         priority=rule.priority,
-        exception_kinds=rule.exception_kinds,
+        exception_kinds=exceptions,
         min_clearance_m=rule.min_clearance_m,
         capability_hint="error",
+        edge_basis=edge_basis,
     )
 
 
@@ -245,7 +279,9 @@ def evaluate_matrix_against_graph(
     """Evaluate all undirected system pairs (edges or cartesian of nodes).
 
     When ``intersecting_pairs`` is provided, only those pairs are treated as
-    geometrically intersecting; others are skipped (no finding).
+    candidates; others are skipped (no finding). Passing pairs from AABB/IfcClash
+    still requires ``geometry_verified=True`` at issue mapping — co-presence and
+    broadphase are not geometric proof (IfcOpenShell docs / OSArch 2026).
     """
 
     nodes = {node.system_id: node for node in graph.nodes}
@@ -271,6 +307,7 @@ def evaluate_matrix_against_graph(
                     message="Pair references unknown system node — NOT_VERIFIED",
                     source_ifc=graph.source_ifc,
                     capability_hint="not_verified",
+                    edge_basis=edge_kind_for_pair(graph, left, right),
                 )
             )
             continue
@@ -280,6 +317,7 @@ def evaluate_matrix_against_graph(
             matrix=matrix,
             source_ifc=graph.source_ifc,
             intersecting=True,
+            edge_basis=edge_kind_for_pair(graph, left, right),
         )
         if finding is not None:
             findings.append(finding)
@@ -528,12 +566,11 @@ def mep_finding_to_issue(
     verdict = finding.verdict
     hint = finding.capability_hint
     message = finding.message
+    edge = finding.edge_basis or "unknown"
     if not geometry_verified and verdict == "forbidden":
         verdict = "unclassified"
         hint = "not_verified"
-        message = (
-            f"{finding.message} — co-presence only; geometry intersection NOT_VERIFIED (RT-003)"
-        )
+        message = f"{finding.message} — {edge} only; geometry intersection NOT_VERIFIED (RT-003)"
     if matrix_synthetic and verdict == "forbidden":
         verdict = "unclassified"
         hint = "not_verified"
@@ -553,6 +590,23 @@ def mep_finding_to_issue(
         rule_id = "AEROBIM-MEP-FINDING"
 
     guids = tuple(guid for guid in (finding.element_guid_a, finding.element_guid_b) if guid)
+    evidence = [
+        *guids,
+        (
+            "claim_boundary:geometry_NOT_VERIFIED"
+            if not geometry_verified
+            else "claim_boundary:geometry_verified"
+        ),
+        (
+            "claim_boundary:matrix_synthetic"
+            if matrix_synthetic
+            else "claim_boundary:matrix_customer_or_unknown"
+        ),
+        f"edge_basis:{edge}",
+    ]
+    if finding.exception_kinds:
+        evidence.append("exception_kinds:" + ",".join(finding.exception_kinds))
+        evidence.append("claim_boundary:exceptions_NOT_VERIFIED")
     return ValidationIssue(
         rule_id=rule_id,
         severity=severity,
@@ -562,19 +616,7 @@ def mep_finding_to_issue(
         target_ref=f"{finding.system_a}|{finding.system_b}",
         source_id=finding.source_ifc or "mep-system-clash",
         finding_id=finding.finding_id,
-        evidence_refs=(
-            *guids,
-            (
-                "claim_boundary:geometry_NOT_VERIFIED"
-                if not geometry_verified
-                else "claim_boundary:geometry_verified"
-            ),
-            (
-                "claim_boundary:matrix_synthetic"
-                if matrix_synthetic
-                else "claim_boundary:matrix_customer_or_unknown"
-            ),
-        ),
+        evidence_refs=tuple(evidence),
         origin="deterministic",
     )
 

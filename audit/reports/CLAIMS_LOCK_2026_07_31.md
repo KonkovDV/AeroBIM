@@ -17,6 +17,7 @@
 - LLM/VLM advisory only; cannot set `summary.passed`.
 - Sprint 2.1 engineering baseline on public/fixture/synthetic package only.
 - Annotation↔IFC `ifc_guid` on report: only when annotation **claimed** a GUID (`claimed_guid:` evidence) **and** spatial index confirms presence — **not** human-adjudicated matching; region_overlap never sets guid.
+- MEP graph `edge_kinds` (`co_presence` / `connects`) and matrix findings with `geometry_verified=False` — eng honesty only; **not** MEP delivered / not RT-003 closed.
 
 ## Forbidden
 
