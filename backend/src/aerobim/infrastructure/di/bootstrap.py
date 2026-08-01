@@ -58,6 +58,7 @@ from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
 )
 from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
 from aerobim.infrastructure.adapters.hybrid_drawing_analyzer import HybridDrawingAnalyzer
+from aerobim.infrastructure.adapters.ifc_aabb_mep_pair_filter import IfcAabbMepPairFilter
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
 from aerobim.infrastructure.adapters.ifc_quantity_consistency_adapter import (
@@ -211,6 +212,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             scope_path=_resolve_mep_federated_scope_path(current.resolve(Tokens.SETTINGS)),
             repo_root=Path(__file__).resolve().parents[5],
         ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.MEP_AABB_PAIR_FILTER,
+        lambda _container: IfcAabbMepPairFilter(),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -509,6 +515,8 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             mep_federated_scope_path=_resolve_mep_federated_scope_path(
                 current.resolve(Tokens.SETTINGS)
             ),
+            mep_aabb_pair_filter=current.resolve(Tokens.MEP_AABB_PAIR_FILTER),
+            mep_aabb_filter_enabled=current.resolve(Tokens.SETTINGS).mep_aabb_filter_enabled,
             extraction_integrity_producer=current.resolve(Tokens.EXTRACTION_INTEGRITY_PRODUCER),
         ),
         lifecycle=Lifecycle.SINGLETON,

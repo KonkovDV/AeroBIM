@@ -41,6 +41,7 @@ from aerobim.domain.mep import (
     MepSystemGraph,
     MepSystemGraphProvider,
 )
+from aerobim.domain.mep_aabb import MepAabbPairFilter
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -156,6 +157,8 @@ class AnalyzeProjectPackageUseCase:
         review_event_store: ReviewEventStore | None = None,
         customer_intake_gate_path: Path | None = None,
         mep_federated_scope_path: Path | None = None,
+        mep_aabb_pair_filter: MepAabbPairFilter | None = None,
+        mep_aabb_filter_enabled: bool = True,
         extraction_integrity_producer: ExtractionIntegritySignalProducer | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
@@ -206,6 +209,8 @@ class AnalyzeProjectPackageUseCase:
         self._review_event_store = review_event_store
         self._customer_intake_gate_path = customer_intake_gate_path
         self._mep_federated_scope_path = mep_federated_scope_path
+        self._mep_aabb_pair_filter = mep_aabb_pair_filter
+        self._mep_aabb_filter_enabled = mep_aabb_filter_enabled
         self._extraction_integrity_producer = extraction_integrity_producer
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
@@ -255,6 +260,8 @@ class AnalyzeProjectPackageUseCase:
             self._mep_system_graph_provider,
             self._mep_federated_scope_path,
             self._repo_root,
+            aabb_filter=self._mep_aabb_pair_filter,
+            aabb_filter_enabled=self._mep_aabb_filter_enabled,
         )
 
     def _ingestion_service(self) -> PackageIngestionService:

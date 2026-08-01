@@ -146,6 +146,13 @@ class Settings:
     """Signed scope memo ref required with MEP system clash (``AEROBIM_MEP_SCOPE_MEMO_REF``)."""
     mep_federated_scope_path: str | None = None
     """JSON scope manifest for federated MEP IFC paths (``AEROBIM_MEP_FEDERATED_SCOPE_PATH``)."""
+    mep_aabb_filter_enabled: bool = True
+    """Optional AABB broadphase for MEP matrix pairs (``AEROBIM_MEP_AABB_FILTER``).
+
+    Default on: when IFC geometry yields AABBs, shrink candidate pairs. Still
+    ``geometry_verified=False`` — AABB ≠ clash. When geometry missing, falls back
+    to co_presence/connects edges.
+    """
     ifc_parse_cache_dir: str | None = None
     """Optional IFC parse cache directory (``AEROBIM_IFC_PARSE_CACHE_DIR``) — NFR SLA."""
     hybrid_drawing_enabled: bool = True
@@ -410,6 +417,7 @@ class Settings:
             mep_federated_scope_path=(
                 (os.getenv("AEROBIM_MEP_FEDERATED_SCOPE_PATH") or "").strip() or None
             ),
+            mep_aabb_filter_enabled=_read_bool("AEROBIM_MEP_AABB_FILTER", True),
             ifc_parse_cache_dir=(os.getenv("AEROBIM_IFC_PARSE_CACHE_DIR") or "").strip() or None,
             hybrid_drawing_enabled=_read_bool("AEROBIM_HYBRID_DRAWING_ENABLED", True),
             kimi_k3_enabled=_read_bool("AEROBIM_KIMI_K3_ENABLED", False),
