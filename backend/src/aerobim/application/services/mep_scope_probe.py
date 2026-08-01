@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 
 from aerobim.domain.mep import (
@@ -17,6 +18,7 @@ from aerobim.domain.mep import (
     MepSystemGraphProvider,
     load_federated_mep_scope,
 )
+from aerobim.domain.mep_aabb import MepAabbPairFilter, skipped_aabb_result
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -48,10 +50,15 @@ class MepScopeProbe:
         provider: MepSystemGraphProvider | None,
         scope_path: Path | None,
         repo_root: Callable[[], Path],
+        aabb_filter: MepAabbPairFilter | None = None,
+        *,
+        aabb_filter_enabled: bool = True,
     ) -> None:
         self._provider = provider
         self._scope_path = scope_path
         self._repo_root = repo_root
+        self._aabb_filter = aabb_filter
+        self._aabb_filter_enabled = aabb_filter_enabled
 
     def load_scope(self) -> FederatedMepScope | None:
         path = self._scope_path
@@ -152,6 +159,17 @@ class MepScopeProbe:
                 f"; edge_basis connects={connects} co_presence={co_presence} "
                 "(not geometry-verified)"
             )
+        aabb_token = next(
+            (
+                ref
+                for issue in mep_issues
+                for ref in (issue.evidence_refs or ())
+                if str(ref).startswith("aabb_filter:")
+            ),
+            None,
+        )
+        if aabb_token:
+            suffix += f"; {aabb_token}"
         return (
             CapabilityStatus(
                 CapabilityState.NOT_VERIFIED,
@@ -223,7 +241,18 @@ class MepScopeProbe:
             matrix = load_mep_clearance_matrix(candidate)
             # Graph edges are co-presence and/or IFC connects topology — not
             # geometric intersection until a gated geometry_verified path exists.
-            findings = evaluate_matrix_against_graph(graph, matrix)
+            # Optional AABB broadphase may shrink candidates; still NOT verified.
+            aabb = skipped_aabb_result()
+            intersecting_pairs = None
+            if self._aabb_filter_enabled and self._aabb_filter is not None:
+                aabb = self._aabb_filter.filter_pairs(graph)
+                if aabb.status == "applied":
+                    intersecting_pairs = set(aabb.pairs)
+            findings = evaluate_matrix_against_graph(
+                graph,
+                matrix,
+                intersecting_pairs=intersecting_pairs,
+            )
         except Exception as exc:
             _logger.exception("MEP clearance matrix evaluation failed")
             return (
@@ -236,11 +265,21 @@ class MepScopeProbe:
                     origin="deterministic",
                 ),
             )
-        return tuple(
-            mep_finding_to_issue(
+        issues: list[ValidationIssue] = []
+        for finding in findings:
+            issue = mep_finding_to_issue(
                 finding,
                 matrix_synthetic=bool(matrix.synthetic),
                 geometry_verified=False,
             )
-            for finding in findings
-        )
+            issues.append(
+                replace(
+                    issue,
+                    evidence_refs=(
+                        *issue.evidence_refs,
+                        aabb.evidence_token,
+                        f"aabb_filter_reason:{aabb.reason}",
+                    ),
+                )
+            )
+        return tuple(issues)

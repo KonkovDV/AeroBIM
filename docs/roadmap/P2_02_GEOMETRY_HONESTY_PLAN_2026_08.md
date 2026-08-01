@@ -27,6 +27,7 @@
 | G3 | Honor `exception_kinds` as **advisory demotion** when geometry unverified | Exceptions not validated |
 | G4 | Guardrail tests: analyze path never `geometry_verified=True`; ENG_FIXTURE never FORBIDDEN ERROR | — |
 | G5 | Docs + research pointers in gap roadmap | RT-003 OPEN |
+| G6 | Optional AABB broadphase → `intersecting_pairs` (default on; fallback when no geom) | Still `geometry_verified=False` |
 
 ## Explicitly out of scope
 

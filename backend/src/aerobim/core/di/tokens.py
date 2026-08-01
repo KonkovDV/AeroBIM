@@ -33,6 +33,7 @@ class Tokens:
     NORM_RULE_PACK_VERSION_STORE = "norm_rule_pack_version_store"
     APPLY_NORM_RULE_HITL_EVENT_USE_CASE = "apply_norm_rule_hitl_event_use_case"
     MEP_SYSTEM_GRAPH_PROVIDER = "mep_system_graph_provider"
+    MEP_AABB_PAIR_FILTER = "mep_aabb_pair_filter"
     CAD_MODEL_INGESTOR = "cad_model_ingestor"
     OFFICE_DOCUMENT_INGESTOR = "office_document_ingestor"
     DETERMINISM_GATE = "determinism_gate"

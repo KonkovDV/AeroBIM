@@ -23,6 +23,10 @@ AeroBIM has a generic IFC clash adapter and emits geometry results as
 - **Edge provenance:** `MepSystemGraph.edge_kinds` labels pairs as `co_presence`
   (cartesian systems in one IFC) or `connects` (`IfcRelConnects*`) — **neither is
   geometric clash** (aligned with IfcClash AABB≠intersection; buildingSMART clash UCM);
+- **Optional AABB broadphase** (`AEROBIM_MEP_AABB_FILTER`, default on): when IFC
+  members yield tessellatable geometry, matrix candidates shrink to AABB-overlapping
+  system pairs; evidence `aabb_filter:applied|unavailable|skipped`. Still
+  ``geometry_verified=False`` — AABB ≠ Solibri/IfcClash verified clash;
 - Issue evidence stamps `edge_basis:…`, `claim_boundary:geometry_NOT_VERIFIED`, and
   `claim_boundary:exceptions_NOT_VERIFIED` when matrix rows declare exceptions;
 - Analyze probe **hardcodes** `geometry_verified=False` — ERROR `AEROBIM-MEP-FORBIDDEN`
