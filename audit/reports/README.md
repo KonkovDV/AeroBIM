@@ -18,4 +18,4 @@ Red Team **phase dumps are not published**. This folder is the claims / blockers
 | [`TZ_RUNTIME_MATRIX.md`](TZ_RUNTIME_MATRIX.md) | Runtime capability matrix |
 | [`HYBRID_AI_FINAL_REPORT_2026_07_28.md`](HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI foundation (verdict-neutral) |
 
-**Docs pass (2026-07-19 + eng refresh 2026-08-01):** jury-pack honesty; LIC-001 Option B; P2-04/P2-02 eng remediations documented in [`../docs/ENGINEERING_STATUS_2026_08.md`](../docs/ENGINEERING_STATUS_2026_08.md). Product checkpoint unchanged: **NO_GO**.
+**Docs pass (2026-07-19 + eng refresh 2026-08-01):** jury-pack honesty; LIC-001 Option B; P2-04/P2-02 eng remediations documented in [`../../docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md). Product checkpoint unchanged: **NO_GO**.
