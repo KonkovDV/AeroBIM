@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.5.0"
-last_updated: "2026-07-28"
+version: "1.6.0"
+last_updated: "2026-08-01"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -12,7 +12,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 
 **Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
 **TZ preparation SSOT:** [`tz/README.md`](tz/README.md).  
-**Forbidden wording SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).  
+**Forbidden wording SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md).  
+**Eng readiness (not Checkpoint GO):** [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md).  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 close ([`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md)).
 
 ## TZ MVP scope (honest framing)
@@ -82,6 +83,10 @@ This document separates **verified repository evidence** from **roadmap intent**
 | EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |
 | Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark`) |
 | Hybrid AI routing foundation (eng) | `domain/hybrid/*` classify/policy/guard/audit + `HybridRouteGate`; domain-pure, verdict-neutral (OFF==ON), fail-closed; 80+ tests |
+| Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | Production PDF path; PyMuPDF optional `pdf-agpl` only — not a court opinion |
+| Annotation claimed-GUID → `ifc_guid` (P2-04) | Presence confirm via spatial index only; wall-guid demo evidence pin |
+| MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + optional AABB; always `geometry_verified=False`; capability stays `NOT_VERIFIED` |
+| Docker offline image-track | `offline_bundle` smoke; bare-metal **DEFERRED** |
 
 ## Planned (do not claim as deployed)
 
@@ -99,7 +104,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
 | Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |
-| System-aware MEP clash (routing/clearances) | Explicit gap `MEP-CLASH-001`; generic clash only |
+| System-aware MEP clash (routing/clearances) | Explicit gap `MEP-CLASH-001`; edge_kinds/AABB ≠ verified geometric clash; RT-003 OPEN |
+| Bare-metal offline without Docker | DEFERRED; Docker track only |
 | IfcLLM / GraphRAG multi-hop IFC QA | **Not shipped** — I9 remains advisory scaffold; stub/relational fixture ≠ product KG |
 | Production rollout / confirmed revenue | Requires customer documents outside repo |
 | Hybrid AI live pre-gate wiring / model router / masking-on-egress | Foundation done (P0/P1); live consumption + router = post-P1/P2; not deployed |
@@ -143,8 +149,11 @@ Keep aligned with:
 - [partners/TECHLAB_SAMOLET_APPLICATION_2026.md](partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
 - [README.md](../README.md) Scientific Reporting Standard section
 - [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
+- [roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md](roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md)
+- [ENGINEERING_STATUS_2026_08.md](ENGINEERING_STATUS_2026_08.md)
 - [architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — architecture SSOT
 - [architecture/ADR-001-verdict-ownership-2026.md](architecture/ADR-001-verdict-ownership-2026.md) — `summary.passed` ownership
 - [../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) — Hybrid AI routing foundation (P0/P1, verdict-neutral)
 - [../samples/benchmarks/detection-precision/](../samples/benchmarks/detection-precision/) — precision harness fixtures
 - [../audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md) — allowed / forbidden wording
+- [../audit/reports/CLAIMS_LOCK_2026_07_31.md](../audit/reports/CLAIMS_LOCK_2026_07_31.md) — eng freeze

@@ -6,11 +6,27 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+> ## Checkpoint: `NO_GO`
+>
+> Samolet TechLab Task 07 **не** готов к customer sign-off. Открытые блокеры:
+> **RT-001** (корпус точности), **RT-002** (утверждённый нормативный пакет), **RT-003** (federated MEP-скоуп) —
+> см. [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
+> SSOT формулировок: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
+> eng freeze: [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) ·
+> verified vs planned: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) ·
+> **Eng-статус авг 2026:** [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) ·
+> карта docs: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) ·
+> владение вердиктом: [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md).
+> Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.
+>
+> **Инженерная готовность выросла (2026-07 → 2026-08)** без закрытия customer-блокеров:
+> LIC-001 Option B (core PDF без AGPL PyMuPDF), OCR-aware extraction integrity, P2-04 claimed-GUID presence,
+> P2-02 MEP edge provenance + optional AABB broadphase (всё ещё `geometry_verified=False`), Docker offline track.
+> Fixture GO ≠ Checkpoint GO.
+
 Открытый **ассистент критериев приёмки** для openBIM-комплектов (IFC + IDS + междокументные доказательства).
 
-AeroBIM выполняет детерминированную проверку в логике Shared-gate (рамка ISO 19650: доказательства для состояния *Shared*, не контрактная авторизация *Published*). Сводка объединяет IFC, IDS, чертежи и тексты расчётов с явной честностью capabilities, provenance findings и экспортом BCF **ZIP**. Независимый импорт в CDE и customer accuracy остаются **вне утверждений**, пока нет доказательств.
-
-> **Checkpoint:** статус Samolet TechLab Task 07 — **`NO_GO`**, пока нет customer corpus, утверждённого нормативного пакета и federated MEP-скоупа ([RT-001/002/003](audit/reports/CRITICAL_BLOCKERS.md)). SSOT формулировок: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) · карта docs: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · жюри: [`docs/docs.md`](docs/docs.md) · стратегия: [`docs/samolet.md`](docs/samolet.md).
+AeroBIM выполняет детерминированную проверку в логике Shared-gate (рамка ISO 19650: доказательства для состояния *Shared*, не контрактная авторизация *Published*). Сводка объединяет IFC, IDS, чертежи и тексты расчётов с явной честностью capabilities, provenance findings и экспортом BCF **ZIP**. Независимый импорт в CDE и customer accuracy остаются **вне утверждений**, пока нет доказательств. Архитектура: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
 ## Карта статуса (честно)
 
@@ -18,19 +34,22 @@ AeroBIM выполняет детерминированную проверку �
 |---|---|
 | **Работает** | Доказано на fixtures / репозитории |
 | **Экспериментально** | Код есть; не customer-proven |
+| **Доступно (eng)** | Инженерно готово; не customer GO |
 | **План** | Отложено (Wave 2+) |
 | **Нужен заказчик** | RT-001/002/003 — checkpoint **NO_GO** |
 | **Не заявляется** | Запрещённые формулировки до dual evidence |
 
-**Работает:** analyze project-package; IFC/IDS/cross-doc; Shared-gate `summary.passed` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); fail-closed pilot/production; ACL 404; SSRF; provenance; BCF ZIP 2.1/3.0 structural; HITL; CLI `export_evidence_bundle`; счётчики pytest / vitest — SSOT в [runtime baseline](docs/evidence/runtime-baseline-latest.json) (`frontend.tests_passed` при записи; иначе см. baseline/CI).
+**Работает:** analyze project-package; IFC/IDS/cross-doc; Shared-gate `summary.passed` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); fail-closed pilot/production; ACL 404; SSRF; provenance; BCF ZIP 2.1/3.0 structural; HITL; CLI `export_evidence_bundle`; **annotation claimed-GUID presence** (P2-04); **core PDF через pypdfium2/pdfminer** (LIC-001 Option B); Docker offline-bundle smoke; счётчики pytest / vitest — SSOT в [runtime baseline](docs/evidence/runtime-baseline-latest.json).
 
-**Экспериментально:** OpenCDE BCF API push; optional clash/OCR; IFC KG scaffold.
+**Экспериментально:** OpenCDE BCF API push; optional clash/OCR; IFC KG scaffold; MEP federated ENG_FIXTURE graph + AABB broadphase (capability остаётся `NOT_VERIFIED`).
 
-**План:** enum пакетного исхода; расширение Stage-3 полей finding.
+**Доступно (eng):** `PackageOutcome` на `summary.outcome`; run manifest + reproducibility hash; Hybrid AI routing foundation (verdict-neutral, OFF==ON, **НЕ** в пути вердикта); Checkpoint **NO_GO**.
+
+**План:** расширение Stage-3 полей finding; profiling-driven performance; customer-gated RT-001/002/003.
 
 **Нужен заказчик:** RT-001 corpus · RT-002 нормы · RT-003 MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)).
 
-**Не заявляется:** точность >90%; SLA ≤30 мин на customer; native DWG; MEP delivered; корректность расчётов; CDE-ready BCF. См. [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md).
+**Не заявляется:** точность >90%; SLA ≤30 мин на customer; native DWG; MEP delivered; корректность расчётов; CDE-ready BCF; bare-metal offline без Docker; AABB/connects = verified geometric clash. См. [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [ENGINEERING_STATUS_2026_08](docs/ENGINEERING_STATUS_2026_08.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md).
 
 ## Основные возможности
 
@@ -41,7 +60,7 @@ AeroBIM выполняет детерминированную проверку �
 | Проверка свойств/величин IFC (IfcOpenShell) | Доступно | fixture | IFC2x3 / IFC4 / IFC4x3 |
 | IDS 1.0 (IfcTester) | Доступно | fixture | Fail-closed при запросе без валидатора |
 | Междокументные противоречия | Доступно | fixture | Таксономия `ConflictKind` (подмножество) |
-| Аннотации чертежа ↔ IFC | Доступно | fixture | OCR-путь опционален |
+| Аннотации чертежа ↔ IFC | Доступно | fixture | Claimed GUID → `ifc_guid` только после presence в spatial index (P2-04); не human-adjudicated |
 | Допуски ISO 12006-3 (ε) | Доступно | fixture | — |
 | Извлечение требований (regex) | Доступно | fixture | Не LLM-контур подписания |
 | Бенчмарк извлечения RU AEC | Доступно | fixture | macro_f1 ≠ product accuracy |
@@ -50,15 +69,20 @@ AeroBIM выполняет детерминированную проверку �
 | Честность capabilities | Доступно | fixture | FAILED блокирует `passed`; `/v1/system/capabilities` |
 | Provenance finding | Доступно | fixture | Persist reject без `finding_id`/`evidence_refs` |
 | Tenant/object ACL | Доступно | fixture | Principal + `tenant_id` отчёта |
-| Экспорт BCF 2.1/3.0 ZIP | Доступно (T0/T1) | fixture | Структурный ZIP **AVAILABLE**; **CDE import NOT_VERIFIED (T2)** — лестница T0–T4 |
+| Экспорт BCF 2.1/3.0 ZIP | Доступно (T0/T1) | fixture | Структурный ZIP **AVAILABLE**; **CDE import NOT_VERIFIED (T2)** |
 | OpenCDE BCF API push | Foundation | experimental | Не заменяет T2 |
+| Детерминированный PDF (pypdfium2 + pdfminer) | Доступно | core | LIC-001 Option B; `AEROBIM_PDF_BACKEND=pdfium` |
+| Опциональный PyMuPDF | Optional extra | `pdf-agpl` | AGPL/Artifex; **не** в runtime lock/Docker |
+| OCR (RapidOCR) | Optional extra | optional-extra | `.[raster]`; EI OCR-aware PARTIAL |
+| Extraction integrity | Доступно | fixture | Text-layer + optional OCR disagreement; не product visual integrity |
 | Vitest review-shell | Зелёный в CI | release-readiness | **29** passed (`frontend` CI job) |
 | DWG native | Missing / Failed | — | Fail-closed; never OK; PDF/IFC = только derived input |
 | DXF (CadModelIngestor) | Partial / Not verified | fixture | Optional ezdxf; ≠ поддержка DWG |
 | CV human-level | Missing | — | OCR degrade ≠ VLM |
-| MEP system-aware clash | Not verified / blocked | fixture_only | Unconfigured DI; RT-003 OPEN; co-presence ≠ connection |
-| Корректность расчётов | Not implemented | — | сверка переданных результатов и источников, не расчётный решатель |
-| Hybrid AI routing foundation (классификация/policy/guard/audit/gate) | Доступно (eng) | fixture | Domain-pure, fail-closed, verdict-neutral (OFF==ON); НЕ в пути вердикта / live egress; маскирование ≠ анонимность; Checkpoint NO_GO |
+| MEP system-aware clash | Not verified / blocked | fixture_only | ENG_PARTIAL: edge_kinds + AABB; всегда `geometry_verified=False`; RT-003 OPEN |
+| Offline Docker image-track | Доступно | eng | `offline_bundle` smoke; bare-metal **DEFERRED** |
+| Корректность расчётов | Not implemented | — | сверка источников, не расчётный решатель |
+| Hybrid AI routing foundation | Доступно (eng) | fixture | Domain-pure, fail-closed, verdict-neutral; НЕ в пути вердикта; Checkpoint NO_GO |
 | Точность >90% / утверждённые нормы | Blocked | customer | См. Claims Lock |
 
 ## Совместимость с IFC
@@ -97,6 +121,7 @@ pip install -e ".[dev,raster]"
 # pip install -e ".[clash]"
 # pip install -e ".[docling]"
 # pip install -e ".[enterprise]"
+# pip install -e ".[pdf-agpl]"   # optional legacy PyMuPDF only
 
 pytest tests -q
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
@@ -115,7 +140,7 @@ python -m mypy src
 pytest tests -q
 ```
 
-## Бенчмарки и воспроизводимость
+## Бенчмарки и доказательства
 
 ```bash
 cd backend
@@ -126,7 +151,26 @@ python -m aerobim.tools.export_runtime_baseline
 python -m aerobim.tools.export_evidence_bundle \
   --pack ../samples/benchmarks/project-package-techlab-demo.json \
   --output ../artifacts/evidence-bundle/techlab-demo
+
+# P2-04 wall-guid presence demo (fixture GO pin)
+python -m aerobim.tools.export_evidence_bundle \
+  --pack ../samples/benchmarks/project-package-wall-guid-demo.json \
+  --output ../artifacts/evidence-bundle/checkpoint2-wall-guid
 ```
+
+| Тема | Документ |
+|---|---|
+| Claims lock | [audit/reports/CLAIMS_LOCK_2026_07_17.md](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
+| Eng freeze 2026-07-31 | [audit/reports/CLAIMS_LOCK_2026_07_31.md](audit/reports/CLAIMS_LOCK_2026_07_31.md) |
+| Блокеры / NO_GO | [audit/reports/CRITICAL_BLOCKERS.md](audit/reports/CRITICAL_BLOCKERS.md) |
+| Eng-статус авг 2026 | [docs/ENGINEERING_STATUS_2026_08.md](docs/ENGINEERING_STATUS_2026_08.md) |
+| Граница утверждений | [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) |
+| Capability × claim | [docs/capability-claim-matrix-2026.md](docs/capability-claim-matrix-2026.md) |
+| License policy (LIC-001) | [docs/license-policy-2026.md](docs/license-policy-2026.md) |
+| Offline (Docker) | [docs/offline-deployment-2026.md](docs/offline-deployment-2026.md) |
+| MEP gap | [docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) |
+| P2-02 geometry honesty | [docs/roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md](docs/roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) |
+| Checkpoint #2 pin | [docs/evidence/checkpoint2-evidence-bundle-latest.json](docs/evidence/checkpoint2-evidence-bundle-latest.json) |
 
 Граница утверждений: [docs/pilot-claim-boundary-2026.md](docs/pilot-claim-boundary-2026.md) · [docs/capability-claim-matrix-2026.md](docs/capability-claim-matrix-2026.md) · [docs/pilot-protocol-samolet-2026.md](docs/pilot-protocol-samolet-2026.md).  
 SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK_2026_07_17.md](audit/reports/CLAIMS_LOCK_2026_07_17.md).  
@@ -139,6 +183,7 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 | Нужно | Документ |
 |------|----------|
 | Старт | [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · [`docs/README.md`](docs/README.md) |
+| Eng-статус (авг 2026) | [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) |
 | Жюри (RU) | [`docs/docs.md`](docs/docs.md) |
 | Стратегия × Самолёт | [`docs/samolet.md`](docs/samolet.md) |
 | ТЗ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
@@ -156,6 +201,8 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 | `POST` | `/v1/analyze/project-package` | Мультимодальный анализ |
 | `GET` | `/v1/reports/{id}/export/bcf` | Экспорт BCF ZIP |
 
+Ключевые env (фрагмент): `AEROBIM_PDF_BACKEND=pdfium` (default), `AEROBIM_MEP_AABB_FILTER=true` (optional AABB; всё ещё `geometry_verified=False`). Полная таблица — в [README.md](README.md).
+
 ## Git-коммиты
 
 ```bash
@@ -168,8 +215,24 @@ powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: 
 Backend src ~44161 LOC; tests ~33396 LOC; 1649+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
 <!-- AEROBIM_RUNTIME_BASELINE:END -->
 
+## Стек
+
+- **Python 3.12+**, **FastAPI**, **Uvicorn**
+- **IfcOpenShell** / **IfcTester** / **IfcClash** (buildingSMART)
+- **web-ifc** + **Three.js** для browser IFC review
+- **pypdfium2** + **pdfminer.six** для core PDF (LIC-001 Option B); опциональный **PyMuPDF** только через `pdf-agpl`
+- **RapidOCR** при `.[raster]` (EI OCR-aware PARTIAL)
+- **Docling** (optional)
+- 5-слойная Clean Architecture, constructor DI, Protocol ports
+
 ## Лицензия
 
-MIT — см. [LICENSE](LICENSE) — для собственного кода AeroBIM.
+MIT для **кода AeroBIM**. Сторонние компоненты сохраняют свои лицензии:
 
-Сторонние компоненты сохраняют свои лицензии: **PyMuPDF** — dual AGPL-3.0 / Artifex commercial (обязательная core-зависимость; требуется юридическая проверка перед распространением/SaaS-заявлениями), **IfcOpenShell / IfcTester** — LGPL-3.0+, **web-ifc** — MPL-2.0. Реестр: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json).
+- **pypdfium2** / **pdfminer.six** / **Pillow** — production PDF (permissive; см. inventory)
+- **PyMuPDF** — dual AGPL-3.0 / Artifex commercial; **только optional `pdf-agpl`** (нет в runtime lock / Docker после LIC-001 Option B)
+- **IfcOpenShell / IfcTester** — LGPL-3.0+
+- **web-ifc** — MPL-2.0
+
+Реестр: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · политика: [`docs/license-policy-2026.md`](docs/license-policy-2026.md).  
+**Не юридическое заключение.** Не заявлять «весь продукт — MIT» без disclosure сторонних компонентов.

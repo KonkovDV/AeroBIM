@@ -1,18 +1,20 @@
 ---
 title: "AeroBIM Project Status Audit 2026"
 status: active
-version: "1.0.0"
-last_updated: "2026-07-28"
-claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ customer value."
+version: "1.1.0"
+last_updated: "2026-08-01"
+claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ customer value. Eng readiness ≠ Checkpoint GO."
 ---
 
 # PROJECT STATUS AUDIT — AeroBIM (2026-07-19)
 
 **Author relationship:** self  
 **Checkpoint:** **`NO_GO`** ([CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md))  
-**Claims SSOT:** [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [pilot-claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
+**Claims SSOT:** [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · eng freeze [CLAIMS_LOCK_2026_07_31](../audit/reports/CLAIMS_LOCK_2026_07_31.md) · [pilot-claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) · [ENGINEERING_STATUS_2026_08](ENGINEERING_STATUS_2026_08.md)
 
-> **Refresh 2026-07-28:** актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json), session-консолидация ([RED_TEAM_REMEDIATION_STATUS_2026_07_28](../audit/reports/RED_TEAM_REMEDIATION_STATUS_2026_07_28.md)) и [гиперглубокий аудит](../audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md). Текущее: pytest **1366 passed / 8 skipped / 144 subtests**, mypy **226**, frontend vitest **29**, CI зелёный. Добавлен **Hybrid AI P0/P1 routing-фундамент** (domain-pure, verdict-neutral, НЕ в пути вердикта) — [HYBRID_AI_FINAL_REPORT](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md). Цифры в §1 ниже — снимок 2026-07-19/20 (не переписываю исторические прогоны). Checkpoint **NO_GO**.
+> **Refresh 2026-08-01:** eng remediations landed on `main` (HEAD `8f02baf`): LIC-001 Option B (core PDF `pypdfium2`+`pdfminer`; PyMuPDF `pdf-agpl` only); OCR-aware EI; public CC BY IFC samples; **P2-04** claimed-GUID → `ifc_guid` only after spatial-index presence; **P2-02** `edge_kinds` + optional AABB broadphase (`geometry_verified=False`); Docker offline track VERIFIED / bare-metal **DEFERRED**. Checkpoint remains **NO_GO** (RT-001/002/003 OPEN). See [ENGINEERING_STATUS_2026_08](ENGINEERING_STATUS_2026_08.md).
+>
+> **Refresh 2026-07-28:** актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json), session-консолидация ([RED_TEAM_REMEDIATION_STATUS_2026_07_28](../audit/reports/RED_TEAM_REMEDIATION_STATUS_2026_07_28.md)) и [гиперглубокий аудит](../audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md). Добавлен **Hybrid AI P0/P1 routing-фундамент** (domain-pure, verdict-neutral, НЕ в пути вердикта) — [HYBRID_AI_FINAL_REPORT](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md). Цифры в §1 ниже — снимок 2026-07-19/20 (не переписываю исторические прогоны). Checkpoint **NO_GO**.
 
 ## 1. Gate runs (this audit)
 
@@ -57,9 +59,11 @@ Legend: **code** · **test** · **runtime** · **benchmark** · **README-only** 
 | IFC property/quantity (2x3/4/4x3) | code+test+benchmark | Fixture corpus; not product accuracy |
 | IDS 1.0 | code+test | Fail-closed when requested misconfigured |
 | Cross-document contradictions | code+test | ConflictKind subset |
-| Drawing annotation ↔ IFC | code+test | Text/PDF paths; OCR optional-extra |
+| Drawing annotation ↔ IFC | code+test | P2-04: claimed GUID → `ifc_guid` only after spatial-index presence; OCR optional-extra |
+| Core PDF (pypdfium2/pdfminer) | code+test | LIC-001 Option B; PyMuPDF optional `pdf-agpl` only |
 | Clash (IfcClash) | code+test | Optional extra; pilot/production require_clash |
-| MEP system-aware clash | needs_customer + eng foundation | DI Unconfigured → NOT_VERIFIED; domain matrix eval (RT-003 OPEN) |
+| MEP system-aware clash | needs_customer + eng foundation | ENG_PARTIAL: edge_kinds + AABB broadphase; always `geometry_verified=False`; RT-003 OPEN |
+| Offline Docker image-track | code+test (eng) | VERIFIED; bare-metal DEFERRED |
 | Native DWG | broken/not claimed | Honesty never OK as product DWG |
 | DXF EntityGraph | code+test (optional `[cad]`) | Partial; never masks DWG failure |
 | Calculation **сверка** | code+test | Correctness NOT_IMPLEMENTED |
