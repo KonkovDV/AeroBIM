@@ -11,7 +11,7 @@ SSOT: [`../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WO
 | Stream | Jul 28–31 target | Status |
 |--------|------------------|--------|
 | 1 Protocol + dual-blind labeling | Protocol taxonomy + expert instruction | **DRAFT_READY** — needs Samolet sign-off |
-| 2 Demo + evidence bundle | Fixture-reproducible demo | **ENG_PARTIAL** — runbook ready; live bundle on schedule 1–3 Aug |
+| 2 Demo + evidence bundle | Fixture-reproducible demo | **ENG_PARTIAL** — P2-04 wall-guid bundle pinned; live CDE T2 still RT-008 |
 | 3 Norm pack + RASE | Template + schema RASE fields | **DRAFT_READY** — customer pack still RT-002 OPEN |
 | 4 Harness TP/FP/FN + κ | One-shot precision + agreement | **ENG_PARTIAL** — tools exist; nDCG **implemented** (`evaluate_ranking_quality`, tie-aware + CI, 2026-07-26) |
 | 5 TZ traceability matrix | No empty TBD; Claims Lock | **ENG_PARTIAL** — matrix exists; refresh owners 28–31 Jul |
@@ -54,7 +54,7 @@ P0-01..09 complete (run manifest, timeouts, golden, tool registry scaffold, prof
 | ID | Task | Status |
 |---|---|---|
 | P2-01 | IFC parse session + spatial index | **ENG_DONE** |
-| P2-02 | Federated graph + matrix + BCF honesty | **ENG_PARTIAL** (geometry NOT_VERIFIED; RT-003 OPEN) |
+| P2-02 | Federated graph + matrix + BCF honesty | **ENG_PARTIAL** (analyze-path integration test; geometry NOT_VERIFIED; RT-003 OPEN) |
 | P2-03 | Sheet identity + drift | **ENG_DONE** (OCR title-block still partial) |
 | P2-04 | Annotation↔IFC matching | **ENG_DONE** (presence check vs spatial index; not human-adjudicated) |
 | P2-05 | Pilot env runbook + ENG_FIXTURE scope | **ENG_DONE** |

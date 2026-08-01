@@ -1,0 +1,3 @@
+# P2-04 fixture: claimed IFC GlobalId on wall-pset-qto-pass.ifc (3ZAR7ASd14MuxcHc7_fqIb)
+WALL-GUID-OK|AR-01|Wall PQ|FireRating|REI60||1|10|20|100|50|3ZAR7ASd14MuxcHc7_fqIb
+WALL-GUID-BAD|AR-01|Wall PQ|FireRating|REI60||1|10|20|100|50|ZZZZZZZZZZZZZZZZZZZZZZ

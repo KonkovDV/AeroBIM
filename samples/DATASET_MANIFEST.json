@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-31T21:18:30.143122+00:00",
+  "generated_at": "2026-08-01T09:58:13.052380+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART schemas carry attribution and a review_pending license status rather than an invented one",
-  "file_count": 134,
+  "file_count": 137,
   "vendored_count": 11,
   "files": [
     {
@@ -463,6 +463,18 @@
       "personal_data": false
     },
     {
+      "path": "benchmarks/project-package-mep-eng-fixture.json",
+      "sha256": "a17ca808e870886d11c0fd0da1d7b1015370eac82b9095f21489d8aced623a36",
+      "bytes": 628,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "benchmarks/project-package-pilot-moscow-v1.json",
       "sha256": "9401a07814e20cb2cb64d8776f3c7359b50cef87bad3df83ad859e0a18901a43",
       "bytes": 1096,
@@ -526,6 +538,18 @@
       "path": "benchmarks/project-package-techlab-structure.json",
       "sha256": "9899e851a408e12772cf2862da43300f0ce2483ab83b096ccf0c7b08a3a5a090",
       "bytes": 710,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/project-package-wall-guid-demo.json",
+      "sha256": "bcbb0a3249e9845f77be944522a455880bcbf758341f66a7b653848bee10ea4b",
+      "bytes": 602,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -764,7 +788,7 @@
     },
     {
       "path": "DATASET_MANIFEST.json",
-      "sha256": "807042df38172819cb66b3f56d36cb2b6af7f6acbb833a36e5be6d52f650f2c7",
+      "sha256": "f8cabe56c461c3192f80e2e07b4d82680377bdef6094825e3d6c6ff1defc99f9",
       "bytes": 71278,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -802,6 +826,18 @@
       "path": "drawings/techlab-annotations.txt",
       "sha256": "3b589b5d2e4b08b92aabbf319f4fa9c07869739a24cde40413881ec726d44075",
       "bytes": 260,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "drawings/wall-pset-annotation-with-guid.txt",
+      "sha256": "ef58e3edc04a911eaa7932d308ca5ae66025732e4c84d83f300628c0efcce1a4",
+      "bytes": 256,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

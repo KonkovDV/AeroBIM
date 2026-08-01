@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-wall-guid-demo",
+  "description": "P2-04 fixture: claimed annotation GUID presence confirm on wall-pset IFC (not human-adjudicated).",
+  "project_name": "Wall GUID Demo",
+  "discipline": "architecture",
+  "request": {
+    "ifc_path": "samples/ifc/wall-pset-qto-pass.ifc",
+    "requirement_path": "samples/requirements/techlab-demo-rules.txt",
+    "drawings": [
+      {
+        "path": "samples/drawings/wall-pset-annotation-with-guid.txt",
+        "sheet_id": "AR-01",
+        "format": "text"
+      }
+    ]
+  }
+}

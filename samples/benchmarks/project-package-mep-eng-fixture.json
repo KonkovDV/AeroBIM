@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-mep-eng-fixture",
+  "description": "ENG_FIXTURE federated MEP scope + hvac-sprinkler IFC — matrix eval honesty only (NOT_VERIFIED; RT-003 OPEN).",
+  "project_name": "MEP Eng Fixture",
+  "discipline": "mep",
+  "request": {
+    "ifc_path": "samples/mep/hvac-sprinkler-systems.ifc",
+    "requirement_path": "samples/requirements/techlab-demo-rules.txt",
+    "mep_federated_scope_path": "samples/mep/federated-scope-verified-fixture.json"
+  },
+  "runtime": {
+    "require_mep_system_clash": true,
+    "signoff_profile": "samolet_pilot"
+  }
+}

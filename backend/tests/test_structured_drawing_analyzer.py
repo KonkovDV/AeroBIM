@@ -25,6 +25,17 @@ class StructuredDrawingAnalyzerTests(unittest.TestCase):
         self.assertIsNotNone(annotations[0].problem_zone)
         self.assertEqual(annotations[0].problem_zone.sheet_id, "A-101")
 
+    def test_analyze_parses_optional_element_guid_column(self) -> None:
+        analyzer = StructuredDrawingAnalyzer()
+        guid = "3ZAR7ASd14MuxcHc7_fqIb"
+        annotations = analyzer.analyze(
+            DrawingSource(text=f"ANN-002|AR-01|Wall PQ|FireRating|REI60||1|10|20|100|50|{guid}")
+        )
+        self.assertEqual(len(annotations), 1)
+        zone = annotations[0].problem_zone
+        self.assertIsNotNone(zone)
+        self.assertEqual(zone.element_guid, guid)
+
 
 if __name__ == "__main__":
     unittest.main()

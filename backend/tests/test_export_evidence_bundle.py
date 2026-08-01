@@ -84,6 +84,35 @@ class ExportEvidenceBundleTests(unittest.TestCase):
             else:
                 self.assertIsNone(timings["time_to_first_finding_ms"])
 
+    def test_export_wall_guid_demo_includes_annotation_ifc_links(self) -> None:
+        from aerobim.tools.export_evidence_bundle import export_evidence_bundle
+
+        repo_root = Path(__file__).resolve().parents[2]
+        pack_path = repo_root / "samples" / "benchmarks" / "project-package-wall-guid-demo.json"
+        if not pack_path.is_file():
+            self.skipTest("wall-guid demo pack missing")
+        try:
+            import ifcopenshell  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("ifcopenshell not installed")
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output_dir = Path(temporary_directory) / "bundle"
+            storage_dir = Path(temporary_directory) / "storage"
+            manifest = export_evidence_bundle(
+                pack_path=pack_path,
+                output_dir=output_dir,
+                storage_dir=storage_dir,
+            )
+            report = json.loads((output_dir / "report.json").read_text(encoding="utf-8"))
+            links = report.get("annotation_ifc_links") or []
+            self.assertIsInstance(links, list)
+            self.assertGreaterEqual(len(links), 1)
+            confirmed = [link for link in links if link.get("ifc_guid")]
+            self.assertTrue(confirmed, msg="expected at least one confirmed annotation_ifc_link")
+            self.assertIn("reproducibility_hash", manifest)
+            self.assertTrue(manifest["reproducibility_hash"])
+
 
 if __name__ == "__main__":
     unittest.main()
