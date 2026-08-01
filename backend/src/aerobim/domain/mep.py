@@ -248,10 +248,10 @@ def evaluate_system_pair(
         system_b=b_id,
         verdict="forbidden",
         message=(
-            f"Forbidden intersection {a_id!r}↔{b_id!r} "
+            f"Matrix-forbidden pair {a_id!r}↔{b_id!r} "
             f"(clearance_class={rule.clearance_class.value}; "
             f"priority={rule.priority}; edge_basis={edge_basis}"
-            f"{exception_note})"
+            f"{exception_note}) — not a verified geometric clash"
         ),
         discipline_a=discipline_a or rule.discipline_a,
         discipline_b=discipline_b or rule.discipline_b,
