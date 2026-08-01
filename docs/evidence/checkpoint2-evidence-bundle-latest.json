@@ -1,0 +1,22 @@
+{
+  "artifact_type": "checkpoint2_evidence_pin",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-01T00:00:00Z",
+  "claim_boundary": "Fixture GO only — not customer RT-001/002/003; annotation ifc_guid = claimed GUID presence in spatial index.",
+  "pack_id": "project-package-wall-guid-demo",
+  "pack_path": "samples/benchmarks/project-package-wall-guid-demo.json",
+  "export_command": "cd backend && python -m aerobim.tools.export_evidence_bundle --pack ../samples/benchmarks/project-package-wall-guid-demo.json --output ../artifacts/evidence-bundle/checkpoint2-wall-guid",
+  "report_id": "5966211afed64099b1f6f3502e782337",
+  "summary_passed": false,
+  "derived_outcome": "FAILED",
+  "reproducibility_hash": "9092e76db1f478746c777471053ebcc435bc7ea91d2eae42d755a40c669f986b",
+  "annotation_ifc_links_confirmed": true,
+  "output_file_sha256": {
+    "report.json": "0331c21708cbc719503f232f5bc13a204921048e34d00c68578c16a818904887"
+  },
+  "p2_tracks": {
+    "P2-04": "ENG_DONE — report integration + wall-guid demo pack",
+    "P2-02": "ENG_PARTIAL — mep analyze integration test (ENG_FIXTURE scope)"
+  },
+  "checkpoint_verdict": "NO_GO"
+}

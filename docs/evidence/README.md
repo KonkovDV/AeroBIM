@@ -2,7 +2,7 @@
 title: "Citeable evidence (jury / FAIR)"
 status: active
 version: "2.2.0"
-last_updated: "2026-07-19"
+last_updated: "2026-08-01"
 ---
 
 # Evidence fixtures
@@ -11,6 +11,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 
 | File | Role |
 |------|------|
+| [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / test baseline |
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA (not customer) |
 | [`tz-matrix-status-latest.json`](tz-matrix-status-latest.json) | TZ matrix status |
@@ -20,6 +21,16 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 
 ```bash
 cd backend
+python -m aerobim.tools.export_evidence_bundle \
+  --pack ../samples/benchmarks/project-package-wall-guid-demo.json \
+  --output ../artifacts/evidence-bundle/checkpoint2-wall-guid
+```
+
+P2-04 pin (annotation `ifc_guid` presence): see [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json).
+
+Legacy techlab demo:
+
+```bash
 python -m aerobim.tools.export_evidence_bundle \
   --pack ../samples/benchmarks/project-package-techlab-demo.json \
   --output ../artifacts/evidence-bundle/techlab-demo

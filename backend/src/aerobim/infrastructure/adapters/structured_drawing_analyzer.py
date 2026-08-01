@@ -68,6 +68,7 @@ class StructuredDrawingAnalyzer:
                     str(item.get("y", "")),
                     str(item.get("width", "")),
                     str(item.get("height", "")),
+                    str(item.get("element_guid", "")),
                 ],
             )
             annotations.append(
@@ -96,6 +97,9 @@ class StructuredDrawingAnalyzer:
         y = self._to_float(zone_parts[2])
         width = self._to_float(zone_parts[3])
         height = self._to_float(zone_parts[4])
+        element_guid = (
+            zone_parts[5].strip() if len(zone_parts) > 5 and zone_parts[5].strip() else None
+        )
         if page_number is None and x is None and y is None and width is None and height is None:
             return None
 
@@ -106,6 +110,7 @@ class StructuredDrawingAnalyzer:
             y=y,
             width=width,
             height=height,
+            element_guid=element_guid,
         )
 
     def _load_text(self, source_path: Path) -> str:

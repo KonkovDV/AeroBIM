@@ -260,7 +260,7 @@ class AnnotationIfcMatchingTests(unittest.TestCase):
         self.assertIsNone(confirmed.ifc_guid)
         self.assertIn("claimed_guid:ZZZZZZZZZZZZZZZZZZZZZZ", confirmed.evidence_ref)
 
-    def test_region_overlap_never_confirms_guid(self) -> None:
+    def test_region_overlap_never_confirms_guid_without_claim(self) -> None:
         ann = DrawingAnnotation(
             annotation_id="ann-region",
             sheet_id="AR-01",
@@ -287,6 +287,41 @@ class AnnotationIfcMatchingTests(unittest.TestCase):
         confirmed = confirm_annotation_ifc_links(links, index)
         self.assertEqual(confirmed[0].match_basis, "region_overlap")
         self.assertIsNone(confirmed[0].ifc_guid)
+
+    def test_region_overlap_preserves_claimed_guid_in_evidence(self) -> None:
+        ann = DrawingAnnotation(
+            annotation_id="ann-region-claim",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            measure_name="Width",
+            observed_value="300",
+            problem_zone=ProblemZone(
+                x=100.0,
+                y=100.0,
+                width=80.0,
+                height=80.0,
+                element_guid=WALL_GUID,
+            ),
+        )
+        region = DrawingRegionRef(
+            sheet_id="AR-01",
+            bbox_xyxy=(110.0, 110.0, 200.0, 200.0),
+            confidence=0.85,
+            modality="detector",
+            page_width=1000.0,
+            page_height=1000.0,
+        )
+        links = match_annotations_to_regions((ann,), (region,))
+        self.assertIn("claimed_guid:", links[0].evidence_ref)
+        self.assertIn("region:", links[0].evidence_ref)
+        index = IfcSpatialIndex(
+            elements={
+                WALL_GUID: IfcSpatialElement(WALL_GUID, "IfcWall", "Wall PQ", ()),
+            },
+            systems={},
+        )
+        confirmed = confirm_link_against_spatial_index(links[0], index)
+        self.assertEqual(confirmed.ifc_guid, WALL_GUID)
 
     def test_confirm_guid_on_public_buildingsmart_ifc(self) -> None:
         if not PUBLIC_WALL_IFC.exists():

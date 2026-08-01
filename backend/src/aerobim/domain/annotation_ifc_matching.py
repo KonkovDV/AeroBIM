@@ -120,6 +120,14 @@ def match_annotations_to_regions(
                 best_iou = iou
                 best_region = region
         if best_region is not None and best_iou >= iou_threshold:
+            evidence = (
+                f"region:{best_region.sheet_id}:{','.join(str(v) for v in best_region.bbox_xyxy)}"
+            )
+            zone = annotation.problem_zone
+            if zone is not None and zone.element_guid:
+                claimed = zone.element_guid.strip()
+                if claimed:
+                    evidence = f"claimed_guid:{claimed}#{evidence}"
             links.append(
                 AnnotationIfcLink(
                     annotation_id=annotation.annotation_id,
@@ -128,10 +136,7 @@ def match_annotations_to_regions(
                     ifc_guid=None,
                     match_basis="region_overlap",
                     confidence=round(min(0.95, best_iou), 4),
-                    evidence_ref=(
-                        f"region:{best_region.sheet_id}:"
-                        f"{','.join(str(v) for v in best_region.bbox_xyxy)}"
-                    ),
+                    evidence_ref=evidence,
                 )
             )
         else:
