@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Literal
+from dataclasses import dataclass, replace
+from typing import Literal, Protocol
 
 from aerobim.domain.drawing_region_hitl import annotation_bbox_xyxy, intersection_over_union
 from aerobim.domain.models import DrawingAnnotation, DrawingRegionRef, ParsedRequirement
 
 MatchBasis = Literal["target_ref", "sheet+measure", "region_overlap"]
+
+
+class _GuidLookup(Protocol):
+    def lookup(self, global_id: str) -> object | None: ...
 
 
 @dataclass(frozen=True)
@@ -135,8 +139,51 @@ def match_annotations_to_regions(
     return links
 
 
+def claimed_guid_from_evidence(evidence_ref: str) -> str | None:
+    """Parse ``claimed_guid:<guid>#...`` provenance; never invents GUIDs."""
+
+    if not evidence_ref.startswith("claimed_guid:"):
+        return None
+    rest = evidence_ref.removeprefix("claimed_guid:")
+    guid = rest.split("#", maxsplit=1)[0].strip()
+    return guid or None
+
+
+def confirm_link_against_spatial_index(
+    link: AnnotationIfcLink,
+    spatial_index: _GuidLookup,
+) -> AnnotationIfcLink:
+    """Set ``ifc_guid`` only when claimed GUID is present in the model index.
+
+    Region-overlap / target_ref candidates stay ``ifc_guid=None``. Missing or
+    wrong claimed GUIDs keep provenance evidence unchanged and leave guid unset.
+    Pre-set ``ifc_guid`` values are never trusted without ``claimed_guid:`` evidence.
+    """
+
+    claimed = claimed_guid_from_evidence(link.evidence_ref)
+    if not claimed:
+        if link.ifc_guid is not None:
+            return replace(link, ifc_guid=None)
+        return link
+    if spatial_index.lookup(claimed) is None:
+        return replace(link, ifc_guid=None)
+    return replace(link, ifc_guid=claimed)
+
+
+def confirm_annotation_ifc_links(
+    links: tuple[AnnotationIfcLink, ...] | list[AnnotationIfcLink],
+    spatial_index: _GuidLookup | None,
+) -> list[AnnotationIfcLink]:
+    if spatial_index is None:
+        return list(links)
+    return [confirm_link_against_spatial_index(link, spatial_index) for link in links]
+
+
 __all__ = [
     "AnnotationIfcLink",
+    "claimed_guid_from_evidence",
+    "confirm_annotation_ifc_links",
+    "confirm_link_against_spatial_index",
     "link_annotation_to_ifc_target",
     "match_annotations_to_regions",
 ]

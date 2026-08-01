@@ -10,12 +10,13 @@
 - PyMuPDF = dual AGPL-3.0 / Artifex commercial; **optional `pdf-agpl` only** after
   LIC-001 Option B (2026-07-31). Production core PDF = pypdfium2 + pdfminer.six.
   Not a court opinion; disclosure of third-party licenses still required.
-- Offline **image-track** install+runtime smoke (Docker load + `--network none`) — eng evidence; bare-metal wheelhouse NOT VERIFIED.
+- Offline **image-track** install+runtime smoke (Docker load + `--network none`) — eng evidence; bare-metal **DEFERRED** (owner: Docker sufficient).
 - `extraction_integrity` capability: default `not_verified` without PDF/producer; PDF text-layer producer on analyze path can set OK / NOT_VERIFIED / FAILED; `FAILED` blocks `summary.passed`; **not** a full render-vs-extract product.
 - BCF ZIP structural (T0/T1) with evidence; CDE import T2+ NOT_VERIFIED.
 - Calculation **сверка** PARTIAL; **корректность** NOT_IMPLEMENTED.
 - LLM/VLM advisory only; cannot set `summary.passed`.
 - Sprint 2.1 engineering baseline on public/fixture/synthetic package only.
+- Annotation↔IFC `ifc_guid` on report: only when annotation **claimed** a GUID (`claimed_guid:` evidence) **and** spatial index confirms presence — **not** human-adjudicated matching; region_overlap never sets guid.
 
 ## Forbidden
 

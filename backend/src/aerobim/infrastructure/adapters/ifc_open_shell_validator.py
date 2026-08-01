@@ -51,6 +51,20 @@ class IfcOpenShellValidator:
     def __init__(self, tolerance: ToleranceConfig | None = None) -> None:
         self._tolerance = tolerance or ToleranceConfig()
 
+    def spatial_index_for(self, ifc_path: Path) -> Any | None:
+        """Return cached IFC spatial index for guid presence checks (P2-04)."""
+
+        if not ifc_path.exists():
+            return None
+        try:
+            from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_session
+        except Exception:  # noqa: BLE001
+            return None
+        try:
+            return open_ifc_session(ifc_path).spatial_index
+        except Exception:  # noqa: BLE001 — missing ifcopenshell / parse failure
+            return None
+
     def validate(
         self,
         ifc_path: Path,

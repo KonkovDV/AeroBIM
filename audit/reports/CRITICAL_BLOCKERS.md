@@ -17,6 +17,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 | Track | Eng status | Customer evidence |
 |---|---|---|
+| P2-04 Annotation↔IFC | **ENG_DONE** (claimed GUID presence vs spatial index; not adjudicated) | RT-001 **OPEN** |
 | F Precision publishable gates | Hardened (held-out + FN + κ/α) | RT-001 **OPEN** |
 | G ≤30 min SLA claim gate | Schema 1.3.0 refuse without pack/machine/caps | Customer SLA **OPEN** |
 | H BCF T0–T4 | Ladder formalized; T2 template empty | RT-008 T2 **NOT_VERIFIED** |

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Protocol
+from typing import Literal, Protocol, runtime_checkable
 
 from aerobim.domain.bcf_api import BcfApiPushResult
 from aerobim.domain.cad_ingest import CadIngestResult
@@ -92,6 +92,13 @@ class IfcValidator(Protocol):
         ifc_path: Path,
         requirements: Sequence[ParsedRequirement],
     ) -> list[ValidationIssue]: ...
+
+
+@runtime_checkable
+class IfcSpatialIndexProvider(Protocol):
+    """Optional port extension: GUID presence checks for annotation↔IFC links (P2-04)."""
+
+    def spatial_index_for(self, ifc_path: Path) -> object | None: ...
 
 
 class IdsValidator(Protocol):
