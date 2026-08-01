@@ -8,6 +8,8 @@ import unittest
 from pathlib import Path
 
 from aerobim.domain.annotation_ifc_matching import (
+    confirm_annotation_ifc_links,
+    confirm_link_against_spatial_index,
     link_annotation_to_ifc_target,
     match_annotations_to_regions,
 )
@@ -44,6 +46,15 @@ from aerobim.infrastructure.adapters.scoped_mep_system_graph_provider import (
 REPO = Path(__file__).resolve().parents[2]
 WALL_IFC = REPO / "samples" / "ifc" / "wall-pset-qto-pass.ifc"
 WALL_GUID = "3ZAR7ASd14MuxcHc7_fqIb"
+PUBLIC_WALL_IFC = (
+    REPO
+    / "samples"
+    / "ifc"
+    / "public"
+    / "buildingsmart-sample-test-files"
+    / "wall-with-opening-and-window.ifc"
+)
+PUBLIC_WALL_GUID = "3ZYW59sxj8lei475l7EhLU"
 MEP_IFC = REPO / "samples" / "mep" / "hvac-sprinkler-systems.ifc"
 MATRIX_TEMPLATE = REPO / "samples" / "mep" / "clearance-matrix-template.json"
 VERIFIED_SCOPE = REPO / "samples" / "mep" / "federated-scope-verified-fixture.json"
@@ -194,6 +205,187 @@ class AnnotationIfcMatchingTests(unittest.TestCase):
         link = link_annotation_to_ifc_target(ann, requirements=(req,))
         self.assertEqual(link.match_basis, "sheet+measure")
         self.assertIsNone(link.ifc_guid)
+
+    def test_confirm_guid_present_in_synthetic_index(self) -> None:
+        ann = DrawingAnnotation(
+            annotation_id="ann-confirm",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            measure_name="FireRating",
+            observed_value="REI60",
+            problem_zone=ProblemZone(
+                sheet_id="AR-01",
+                x=10.0,
+                y=20.0,
+                width=100.0,
+                height=50.0,
+                element_guid=WALL_GUID,
+            ),
+        )
+        link = link_annotation_to_ifc_target(ann)
+        index = IfcSpatialIndex(
+            elements={
+                WALL_GUID: IfcSpatialElement(WALL_GUID, "IfcWall", "Wall PQ", ()),
+            },
+            systems={},
+        )
+        confirmed = confirm_link_against_spatial_index(link, index)
+        self.assertEqual(confirmed.ifc_guid, WALL_GUID)
+        self.assertIn("claimed_guid:", confirmed.evidence_ref)
+
+    def test_confirm_guid_absent_keeps_none(self) -> None:
+        ann = DrawingAnnotation(
+            annotation_id="ann-missing",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            measure_name="FireRating",
+            observed_value="REI60",
+            problem_zone=ProblemZone(
+                sheet_id="AR-01",
+                x=10.0,
+                y=20.0,
+                width=100.0,
+                height=50.0,
+                element_guid="ZZZZZZZZZZZZZZZZZZZZZZ",
+            ),
+        )
+        link = link_annotation_to_ifc_target(ann)
+        index = IfcSpatialIndex(
+            elements={
+                WALL_GUID: IfcSpatialElement(WALL_GUID, "IfcWall", "Wall PQ", ()),
+            },
+            systems={},
+        )
+        confirmed = confirm_link_against_spatial_index(link, index)
+        self.assertIsNone(confirmed.ifc_guid)
+        self.assertIn("claimed_guid:ZZZZZZZZZZZZZZZZZZZZZZ", confirmed.evidence_ref)
+
+    def test_region_overlap_never_confirms_guid(self) -> None:
+        ann = DrawingAnnotation(
+            annotation_id="ann-region",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            measure_name="Width",
+            observed_value="300",
+            problem_zone=ProblemZone(x=100.0, y=100.0, width=80.0, height=80.0),
+        )
+        region = DrawingRegionRef(
+            sheet_id="AR-01",
+            bbox_xyxy=(110.0, 110.0, 200.0, 200.0),
+            confidence=0.85,
+            modality="detector",
+            page_width=1000.0,
+            page_height=1000.0,
+        )
+        links = match_annotations_to_regions((ann,), (region,))
+        index = IfcSpatialIndex(
+            elements={
+                WALL_GUID: IfcSpatialElement(WALL_GUID, "IfcWall", "Wall PQ", ()),
+            },
+            systems={},
+        )
+        confirmed = confirm_annotation_ifc_links(links, index)
+        self.assertEqual(confirmed[0].match_basis, "region_overlap")
+        self.assertIsNone(confirmed[0].ifc_guid)
+
+    def test_confirm_guid_on_public_buildingsmart_ifc(self) -> None:
+        if not PUBLIC_WALL_IFC.exists():
+            self.skipTest("public buildingSMART IFC missing")
+        try:
+            import ifcopenshell  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("ifcopenshell not installed")
+        reset_ifc_parse_cache_for_tests()
+        session = open_ifc_session(PUBLIC_WALL_IFC)
+        self.assertIsNotNone(session.spatial_index.lookup(PUBLIC_WALL_GUID))
+        ann = DrawingAnnotation(
+            annotation_id="ann-public",
+            sheet_id="AR-01",
+            target_ref="Wall for Test Example",
+            measure_name="Name",
+            observed_value="Wall",
+            problem_zone=ProblemZone(
+                sheet_id="AR-01",
+                x=1.0,
+                y=1.0,
+                width=10.0,
+                height=10.0,
+                element_guid=PUBLIC_WALL_GUID,
+            ),
+        )
+        link = link_annotation_to_ifc_target(ann)
+        confirmed = confirm_link_against_spatial_index(link, session.spatial_index)
+        self.assertEqual(confirmed.ifc_guid, PUBLIC_WALL_GUID)
+
+    def test_confirm_skips_when_index_none(self) -> None:
+        ann = DrawingAnnotation(
+            annotation_id="ann-none-index",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            measure_name="FireRating",
+            observed_value="REI60",
+            problem_zone=ProblemZone(
+                sheet_id="AR-01",
+                x=10.0,
+                y=20.0,
+                width=100.0,
+                height=50.0,
+                element_guid=WALL_GUID,
+            ),
+        )
+        link = link_annotation_to_ifc_target(ann)
+        confirmed = confirm_annotation_ifc_links((link,), None)
+        self.assertEqual(len(confirmed), 1)
+        self.assertIsNone(confirmed[0].ifc_guid)
+
+    def test_confirm_strips_preset_guid_without_claimed_evidence(self) -> None:
+        from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink
+
+        link = AnnotationIfcLink(
+            annotation_id="ann-bypass",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            ifc_guid=WALL_GUID,
+            match_basis="target_ref",
+            confidence=0.55,
+            evidence_ref="drawing:AR-01:Wall PQ",
+        )
+        index = IfcSpatialIndex(
+            elements={
+                WALL_GUID: IfcSpatialElement(WALL_GUID, "IfcWall", "Wall PQ", ()),
+            },
+            systems={},
+        )
+        confirmed = confirm_link_against_spatial_index(link, index)
+        self.assertIsNone(confirmed.ifc_guid)
+
+    def test_confirm_guid_on_fixture_wall_ifc(self) -> None:
+        if not WALL_IFC.exists():
+            self.skipTest("wall fixture IFC missing")
+        try:
+            import ifcopenshell  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("ifcopenshell not installed")
+        reset_ifc_parse_cache_for_tests()
+        session = open_ifc_session(WALL_IFC)
+        ann = DrawingAnnotation(
+            annotation_id="ann-fixture",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            measure_name="FireRating",
+            observed_value="REI60",
+            problem_zone=ProblemZone(
+                sheet_id="AR-01",
+                x=1.0,
+                y=1.0,
+                width=10.0,
+                height=10.0,
+                element_guid=WALL_GUID,
+            ),
+        )
+        link = link_annotation_to_ifc_target(ann)
+        confirmed = confirm_link_against_spatial_index(link, session.spatial_index)
+        self.assertEqual(confirmed.ifc_guid, WALL_GUID)
 
 
 class FederatedMepGraphTests(unittest.TestCase):

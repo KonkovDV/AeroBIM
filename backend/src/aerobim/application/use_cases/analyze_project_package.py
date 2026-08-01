@@ -32,6 +32,7 @@ from aerobim.application.services.extraction_integrity_probe import probe_extrac
 from aerobim.application.services.mep_scope_probe import MepScopeProbe
 from aerobim.application.services.package_ingestion import PackageIngestionService
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
+from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink
 from aerobim.domain.architecture import Contour
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
 from aerobim.domain.errors import ClashCapabilityError
@@ -71,6 +72,7 @@ from aerobim.domain.ports import (
     IdsDocumentAuditor,
     IdsValidator,
     IfcSchemaValidator,
+    IfcSpatialIndexProvider,
     IfcValidator,
     LoadEvidenceVerifier,
     LogicConsistencyAnalyzer,
@@ -836,6 +838,24 @@ class AnalyzeProjectPackageUseCase:
         for issue in issues:
             enriched.append(replace(issue, remark=self._remark_generator.generate(issue)))
         return enriched
+
+    def _confirm_annotation_ifc_links(
+        self,
+        links: Sequence[AnnotationIfcLink],
+        ifc_path: Path,
+    ) -> tuple[AnnotationIfcLink, ...]:
+        """Presence-check claimed annotation GUIDs against IFC spatial index."""
+
+        from aerobim.domain.annotation_ifc_matching import confirm_annotation_ifc_links
+
+        if not links:
+            return ()
+        validator = self._ifc_validator
+        if isinstance(validator, IfcSpatialIndexProvider):
+            index = validator.spatial_index_for(ifc_path)
+        else:
+            index = None
+        return tuple(confirm_annotation_ifc_links(links, index))
 
     def _matches_annotation(
         self, requirement: ParsedRequirement, annotation: DrawingAnnotation
