@@ -57,6 +57,8 @@ class SignatureEnvelope:
     signers: tuple[SignatureSigner, ...] = ()
     signing_time: str | None = None
     content_path_hint: str | None = None
+    content_hashes: tuple[tuple[str, str], ...] = ()
+    package_hashes: tuple[tuple[str, str], ...] = ()
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any]) -> SignatureEnvelope:
@@ -79,12 +81,16 @@ class SignatureEnvelope:
                         signature_value=_optional_str(entry.get("signature_value")),
                     )
                 )
+        content_hashes = _parse_hash_map(payload.get("content_hashes"))
+        package_hashes = _parse_hash_map(payload.get("package_hashes"))
         return cls(
             schema=str(payload.get("schema") or "").strip(),
             content_sha256=str(payload.get("content_sha256") or "").strip().lower(),
             signers=tuple(signers),
             signing_time=_optional_str(payload.get("signing_time")),
             content_path_hint=_optional_str(payload.get("content_path_hint")),
+            content_hashes=content_hashes,
+            package_hashes=package_hashes,
         )
 
 
@@ -139,11 +145,13 @@ def assess_signature_envelope(
     required_roles: Sequence[str] | Sequence[SignerRoleRequirement] = (),
     *,
     signing_time: datetime | str | None = None,
+    observed_package_hashes: Mapping[str, str] | None = None,
 ) -> SignatureAuditResult:
     """Assess detached envelope structure, hash integrity, roles, and cert window.
 
     ``trust_chain_status`` is always ``not_verified``. ``overall_status`` is ``ok``
-    only when structure, integrity, roles (and validity window when checked) pass.
+    only when structure, integrity, roles, signature field presence (no crypto verify),
+    optional package/content hash binding, and validity window (when checked) pass.
     Never claims legal УКЭП validity.
     """
 
@@ -151,6 +159,8 @@ def assess_signature_envelope(
     structure_ok = True
     integrity_ok = True
     roles_complete = True
+    signatures_present = True
+    package_bind_ok = True
     validity_window_ok: bool | None = None
 
     if envelope is None:
@@ -192,6 +202,33 @@ def assess_signature_envelope(
             roles_complete = False
             reasons.append(f"missing_required_role:{req.role}")
 
+    for signer in envelope.signers:
+        if not signer.signature_alg:
+            signatures_present = False
+            reasons.append(f"missing_signature_alg:{signer.role}")
+        if not signer.signature_value:
+            signatures_present = False
+            reasons.append(f"missing_signature_value:{signer.role}")
+
+    declared_hashes = _merge_hash_maps(envelope.content_hashes, envelope.package_hashes)
+    if declared_hashes:
+        if not observed_package_hashes:
+            package_bind_ok = False
+            reasons.append("package_hashes_unbound:no_observed_hashes")
+        else:
+            observed = {
+                str(key).strip(): str(value).strip().lower()
+                for key, value in observed_package_hashes.items()
+            }
+            for path, expected in declared_hashes:
+                actual = observed.get(path)
+                if actual is None:
+                    package_bind_ok = False
+                    reasons.append(f"package_hash_missing:{path}")
+                elif actual != expected:
+                    package_bind_ok = False
+                    reasons.append(f"package_hash_mismatch:{path}")
+
     check_time = _coerce_datetime(signing_time)
     if check_time is None and envelope.signing_time:
         check_time = _coerce_datetime(envelope.signing_time)
@@ -210,7 +247,14 @@ def assess_signature_envelope(
 
     window_ok = True if validity_window_ok is None else validity_window_ok
     overall: OverallStatus = (
-        "ok" if structure_ok and integrity_ok and roles_complete and window_ok else "failed"
+        "ok"
+        if structure_ok
+        and integrity_ok
+        and roles_complete
+        and signatures_present
+        and package_bind_ok
+        and window_ok
+        else "failed"
     )
     if overall == "ok":
         reasons.append("engineering_envelope_checks_ok")
@@ -264,6 +308,28 @@ def _optional_str(value: object) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def _parse_hash_map(value: object) -> tuple[tuple[str, str], ...]:
+    if not isinstance(value, Mapping):
+        return ()
+    out: list[tuple[str, str]] = []
+    for raw_key, raw_val in value.items():
+        key = str(raw_key).strip()
+        digest = str(raw_val or "").strip().lower()
+        if key and digest:
+            out.append((key, digest))
+    return tuple(out)
+
+
+def _merge_hash_maps(
+    *maps: tuple[tuple[str, str], ...],
+) -> tuple[tuple[str, str], ...]:
+    merged: dict[str, str] = {}
+    for mapping in maps:
+        for path, digest in mapping:
+            merged[path] = digest
+    return tuple(merged.items())
 
 
 def _coerce_datetime(value: datetime | str | None) -> datetime | None:

@@ -1,14 +1,14 @@
 ---
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
-version: "1.2.0"
-last_updated: "2026-08-02"
+version: "1.3.0"
+last_updated: "2026-08-03"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
 # Capability × Claim Matrix (TechLab / Samolet)
 
-Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md), eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md), [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md), [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md), and P0 rollup [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
+Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md), eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md), [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md), [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md), P0 rollup [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md), and residuals [`quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md`](quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md).
 
 API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_contracts`, `bcf_t2`, `mep_intake`).
 
@@ -46,7 +46,9 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Entire product is MIT (no third-party disclosure) | — | MIT for AeroBIM code; PDF/IFC stack has own licenses (LIC-001 Option B) |
 | Production-ready / external academic audit | — | Self-audit + NO_GO |
 | Hybrid AI makes the public API safe for customer data / masking = anonymity | — | Route only *policy-eligible*; masking reduces disclosure, not anonymity; WP-02 advisory pre-gate ≠ verdict path / anonymity guarantee |
-| Open-corpora binary match / timing = product accuracy | RT-001 | WP-06 regression/timing only; honest n=7; never >90% |
+| Open-corpora binary match / timing = product accuracy | RT-001 | WP-06 regression/timing only; fixture n=7 + BSI IDS n=290 (CC BY-ND); never >90% |
+| OIDC BFF / SSO ready | POST-05 Phase 3 IdP | Phase 2 stubs only; `auth_bff.status=NOT_IMPLEMENTED` |
+| УКЭП / trust chain verified | crypto adapter missing | Envelope presence/hash audit only; `trust_chain=not_verified` |
 | Wilson interim planner output = publishable customer precision | RT-001 | WP-07 `demonstrates_interim_target_publishable=false`; protocol only |
 
 ## Allowed with evidence pointers
@@ -67,7 +69,10 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Detached signature envelope (WP-03) | `qualified_signature` ENG_PARTIAL; trust_chain NOT_VERIFIED — never «УКЭП проверена» |
 | Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + journal; RT-002 OPEN |
 | Package completeness inventory (WP-05) | Soft opt-in; fixture-grade; no native DWG |
-| Open corpora profiles (WP-06) | `samples/benchmarks/open-corpora/`; honest n=7; CI smoke pins |
+| Open corpora profiles (WP-06) | `samples/benchmarks/open-corpora/`; fixture n=7 + BSI IDS `regression-bsi` n=290 (CC BY-ND unmodified); CI smoke pins |
+| OIDC BFF Phase 2 stubs (POST-05) | login/callback/logout + CSRF; status stays NOT_IMPLEMENTED — Phase 3 IdP pending |
+| BCF T2 checklist verifier | `--checklist` dry-run; STATUS stays NOT_VERIFIED until real CDE evidence |
+| VLM kimi smoke PUBLIC egress gate | `vlm_smoke_gate` before client; blocked → zero bytes |
 | Quality measurement protocol (WP-07) | [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md); interim 0.60; never >90% |
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`; inventory + [`license-policy-2026.md`](license-policy-2026.md) |
 | Annotation claimed-GUID presence (P2-04) | spatial-index lookup; wall-guid demo pin [`evidence/checkpoint2-evidence-bundle-latest.json`](evidence/checkpoint2-evidence-bundle-latest.json) |

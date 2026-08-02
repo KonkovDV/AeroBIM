@@ -1489,6 +1489,129 @@
         "summary": "Get Auth Bff Status"
       }
     },
+    "/v1/auth/callback": {
+      "get": {
+        "description": "Phase 2 stub: validate CSRF state; never issue production SSO session cookie.",
+        "operationId": "auth_callback_stub_v1_auth_callback_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Auth Callback Stub"
+      }
+    },
+    "/v1/auth/login": {
+      "get": {
+        "description": "Phase 2 stub: issue CSRF state; no production IdP redirect or session cookie.",
+        "operationId": "auth_login_stub_v1_auth_login_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "redirect_uri",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Redirect Uri"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Auth Login Stub"
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "description": "Phase 2 stub: honesty only — does not clear global CSRF state or sessions.\n\nPublic logout must not wipe process-wide CSRF ``state`` (anonymous DoS).\nPhase 3 will bind logout to a verified session cookie.",
+        "operationId": "auth_logout_stub_v1_auth_logout_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Auth Logout Stub"
+      }
+    },
     "/v1/norm-packs/{pack_id}/rule-events": {
       "post": {
         "operationId": "post_norm_rule_hitl_event_v1_norm_packs__pack_id__rule_events_post",

@@ -2,7 +2,7 @@
 title: "BCF T2 CDE-import runbook (pilot)"
 status: active
 version: "1.0.0"
-last_updated: "2026-07-25"
+last_updated: "2026-08-03"
 claim_boundary: "Runbook only — executing it requires a real customer/pilot CDE session. T2 stays NOT_VERIFIED until the pack verifies (RT-008)."
 ---
 
@@ -13,6 +13,11 @@ imports into an external CDE. Consumer reality (Jul 2026): BIMcollab accepts
 BCF **3.0** import since 2026-02-20; Trimble Connect imports BCF **2.1**.
 Both exporters are XSD-validated locally against official buildingSMART
 schemas (Waves C–E), so a T2 failure isolates consumer-side behavior.
+
+**Eng readiness:** `python -m aerobim.tools.verify_bcf_t2_evidence --checklist`
+prints required artifacts without flipping `claim_allowed`. Tracked
+`audit/evidence/cde-import-proof/STATUS.json` remains **NOT_VERIFIED** until a
+real CDE session supplies log + screenshot + hashes.
 
 ## Preconditions
 
@@ -43,13 +48,16 @@ schemas (Waves C–E), so a T2 failure isolates consumer-side behavior.
 
 ## Verification gate (fail-closed)
 
-6. Run:
+6. Dry-run checklist (no claim flip):
+   `python -m aerobim.tools.verify_bcf_t2_evidence --checklist`
+   Lists required artifacts with descriptions; `claim_allowed` stays false.
+7. Run:
    `python -m aerobim.tools.verify_bcf_t2_evidence --dir audit/evidence/cde-import-proof/<date> --structural-evidence audit/evidence/bcf-structural-handoff-<date>.json`
    - exit 0 + `claim_allowed=true` requires: all files present, **every hash
      recomputes**, and `bcf_zip_sha256` matches a T1 digest (artifact binding);
    - any mismatch keeps `NOT_VERIFIED` — do not edit hashes to fit; re-run the
      import with the correct archive instead.
-7. Commit the pack + verification JSON output. Update
+8. Commit the pack + verification JSON output. Update
    `audit/evidence/cde-import-proof/STATUS.json` only via this gate.
 
 ## Wording discipline

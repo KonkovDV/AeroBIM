@@ -41,7 +41,15 @@ UPDATE_ENV = "AEROBIM_UPDATE_OPENAPI_SNAPSHOT"
 
 # Public, unauthenticated surface. Adding a path here is a security decision
 # and must be reviewed together with the route change.
-ALLOW_NO_AUTH = frozenset({"/health", "/v1/auth/bff"})
+ALLOW_NO_AUTH = frozenset(
+    {
+        "/health",
+        "/v1/auth/bff",
+        "/v1/auth/login",
+        "/v1/auth/callback",
+        "/v1/auth/logout",
+    }
+)
 
 _HOST_CALL = re.compile(r"self\._host\.(_?[a-zA-Z_]+)\(")
 

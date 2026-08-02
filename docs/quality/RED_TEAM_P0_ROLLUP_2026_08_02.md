@@ -40,9 +40,9 @@ claim_boundary: "Self red-team rollup. Checkpoint NO_GO. Not external audit / no
 
 ## Highest residual risks
 
-1. **RT-WP02-03** — non-analyze VLM/opt-in smoke paths must re-check gate before any future PUBLIC egress.  
-2. **RT-WP01-01** — baseline env fingerprint is generator host, not CI matrix attestation.  
-3. **RT-WP07-03** — mitigated with `demonstrates_interim_target_publishable=false`; human Claims Lock still required for any publish.
+1. **RT-WP01-01** — baseline env fingerprint is generator host, not CI matrix attestation.  
+2. **RT-WP07-03** — mitigated with `demonstrates_interim_target_publishable=false`; human Claims Lock still required for any publish.  
+3. **RT-WP02-03** — MITIGATED on Analyze + kimi smoke (`vlm_smoke_gate`); any *new* PUBLIC egress path must still re-check gate.
 
 ## Verdict
 

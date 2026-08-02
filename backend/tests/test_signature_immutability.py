@@ -183,6 +183,64 @@ class SignatureImmutabilityDomainTests(unittest.TestCase):
         self.assertFalse(result.structure_ok)
         self.assertEqual(result.overall_status, "failed")
 
+    def test_missing_signature_alg_or_value_fails(self) -> None:
+        envelope = SignatureEnvelope(
+            schema=ENVELOPE_SCHEMA_V1,
+            content_sha256="abc",
+            signers=(
+                SignatureSigner(role="author", signature_alg="alg-only"),
+                SignatureSigner(role="reviewer", signature_value="value-only"),
+            ),
+        )
+        result = assess_signature_envelope(envelope, "abc", ())
+        self.assertEqual(result.overall_status, "failed")
+        self.assertIn("missing_signature_value:author", result.reasons)
+        self.assertIn("missing_signature_alg:reviewer", result.reasons)
+
+    def test_package_hash_mismatch_fails(self) -> None:
+        envelope = SignatureEnvelope(
+            schema=ENVELOPE_SCHEMA_V1,
+            content_sha256="abc",
+            signers=(
+                SignatureSigner(
+                    role="author",
+                    signature_alg="fixture",
+                    signature_value="placeholder",
+                ),
+            ),
+            content_hashes=(("content.txt", "deadbeef" * 8),),
+        )
+        result = assess_signature_envelope(
+            envelope,
+            "abc",
+            (),
+            observed_package_hashes={"content.txt": "0" * 64},
+        )
+        self.assertEqual(result.overall_status, "failed")
+        self.assertIn("package_hash_mismatch:content.txt", result.reasons)
+
+    def test_package_hash_bind_ok(self) -> None:
+        digest = "abc"
+        envelope = SignatureEnvelope(
+            schema=ENVELOPE_SCHEMA_V1,
+            content_sha256=digest,
+            signers=(
+                SignatureSigner(
+                    role="author",
+                    signature_alg="fixture",
+                    signature_value="placeholder",
+                ),
+            ),
+            package_hashes=(("content.txt", digest),),
+        )
+        result = assess_signature_envelope(
+            envelope,
+            digest,
+            (),
+            observed_package_hashes={"content.txt": digest},
+        )
+        self.assertEqual(result.overall_status, "ok")
+
 
 class JsonDetachedSignatureAuditorTests(unittest.TestCase):
     def test_adapter_good_and_missing(self) -> None:
@@ -205,6 +263,46 @@ class JsonDetachedSignatureAuditorTests(unittest.TestCase):
             before = content_path.read_bytes()
             auditor.audit(content_path, required_roles=("author",))
             self.assertEqual(content_path.read_bytes(), before)
+
+    def test_package_hash_paths_are_jailed(self) -> None:
+        """Crafted envelope paths must not read files outside the content directory."""
+
+        from aerobim.infrastructure.adapters.json_detached_signature_auditor import (
+            _observed_package_hashes,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            content = base / "pkg" / "content.txt"
+            content.parent.mkdir(parents=True)
+            content.write_text("payload", encoding="utf-8")
+            secret = base / "secret.txt"
+            secret.write_text("top-secret", encoding="utf-8")
+            digest = content_sha256_hex(content)
+            envelope = SignatureEnvelope(
+                schema=ENVELOPE_SCHEMA_V1,
+                content_sha256=digest,
+                signers=(
+                    SignatureSigner(
+                        role="author",
+                        signature_alg="fixture",
+                        signature_value="placeholder",
+                    ),
+                ),
+                package_hashes=(
+                    ("../secret.txt", "0" * 64),
+                    (str(secret.resolve()), "0" * 64),
+                ),
+            )
+            observed = _observed_package_hashes(
+                content,
+                envelope,
+                primary_digest=digest,
+            )
+            assert observed is not None
+            self.assertNotIn("../secret.txt", observed)
+            self.assertNotIn(str(secret.resolve()), observed)
+            self.assertEqual(observed.get("content.txt"), digest)
 
 
 class SignatureUseCaseWiringTests(unittest.TestCase):

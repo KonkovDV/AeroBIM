@@ -41,3 +41,16 @@ def test_manifest_declares_honest_scope(tmp_path: Path) -> None:
     manifest = build_manifest(_make_bundle(tmp_path), image_id="sha256:test")
     assert manifest["claim_level"] == "image_bundle_only"
     assert "NOT VERIFIED" in str(manifest["scope_honesty"])
+
+
+def test_wheelhouse_writes_deferred_artifact(tmp_path: Path, monkeypatch) -> None:
+    from aerobim.tools import offline_bundle as bundle
+
+    monkeypatch.setattr(bundle, "_BUNDLE_DIR", tmp_path)
+    exit_code = bundle.cmd_wheelhouse()
+    assert exit_code == 2
+    artifact = tmp_path / "wheelhouse-DEFERRED.json"
+    assert artifact.is_file()
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    assert payload["status"] == "DEFERRED"
+    assert payload["exit_code"] == 2

@@ -1,7 +1,7 @@
 {
   "artifact_type": "dataset_license_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-31",
+  "generated_at": "2026-08-02",
   "claim_level": "engineering_baseline_only",
   "customer_evidence": false,
   "policy": {
@@ -60,14 +60,15 @@
       "public_benchmark": "allowed_with_attribution"
     },
     {
-      "asset_id": "ids-test-suite",
-      "path": null,
-      "source_url": "https://github.com/buildingSMART/IDS",
+      "asset_id": "ids-bsi-testcases",
+      "path": "samples/ids/buildingsmart-testcases",
+      "source_url": "https://github.com/buildingSMART/IDS/tree/016bbadce0d227d8eabbbc3e8b2b3788590b8a97/Documentation/ImplementersDocumentation/TestCases",
       "dataset_class": "public_real",
-      "license": "unclear_in_sprint_inventory",
-      "spdx": "NOASSERTION",
-      "redistribution": "unknown",
-      "public_benchmark": "INTERNAL_ONLY_LICENSE_REVIEW"
+      "license": "CC-BY-ND-4.0",
+      "spdx": "CC-BY-ND-4.0",
+      "redistribution": "allowed_with_attribution_no_derivatives",
+      "public_benchmark": "allowed_with_attribution_no_derivatives",
+      "notes": "Vendored 278 pass-/fail- IDS×IFC pairs with SHA pins; see NOTICE and IMPORT_PINS.json"
     },
     {
       "asset_id": "schependomlaan",

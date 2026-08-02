@@ -8,7 +8,7 @@
 | File | Purpose |
 |---|---|
 | `content.txt` | Small content blob for hash integrity demos |
-| `content.txt.sig.json` | Good example envelope (`aerobim_detached_signature_envelope_v1`) matching the content hash |
+| `content.txt.sig.json` | Good example envelope (`aerobim_detached_signature_envelope_v1`) matching the content hash; each signer includes `signature_alg` + `signature_value` (presence-only, no crypto verify) |
 
 ## Forbidden claims
 

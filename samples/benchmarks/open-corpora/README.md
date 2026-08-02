@@ -1,19 +1,27 @@
 # Open corpora measurability profiles (WP-06)
 
-Three reproducible profiles for engineering measurability on **open / fixture** data.
+Reproducible profiles for engineering measurability on **open / fixture** data.
 
 | Profile | Measures | Does **not** measure |
 |---|---|---|
-| `regression` | Binary IDS↔IFC pass/fail vs pinned expected outcomes | Product accuracy, expert TP/FP |
+| `regression` | Binary IDS↔IFC pass/fail vs pinned expected outcomes (fixture n=7) | Product accuracy, expert TP/FP |
+| `regression-bsi` | Unmodified buildingSMART IDS TestCases (CC BY-ND 4.0); **honest_case_count=290** | Product accuracy; not a marketing ≥250 claim if N drifts |
 | `pilot-approx` | Package analyze wall-clock on public IFC + residential inventory | Customer SLA, precision |
 | `load` | AR/KZH section-pairing + MEP federated timing | Verified geometric clash (RT-003 OPEN) |
 
-## Honest inventory (regression)
+## Honest inventory
 
-The repo does **not** contain ≥250 official IDS/IFC pass-fail cases.  
-Pinned binary cases today: **7** (see `profiles/regression.json` → `honest_case_count`).
+| Corpus | Count | License |
+|---|---|---|
+| Fixture regression | **7** (`profiles/regression.json`) | repo fixtures |
+| buildingSMART IDS TestCases | **290** (`profiles/regression-bsi.json`) | **CC BY-ND 4.0** unmodified (`samples/ids/buildingsmart-testcases/NOTICE`) |
 
-External buildingSMART IDS test suites with hundreds of cases are **not vendored** here; expanding past 7 requires an explicit license-cleared import with SHA pins.
+Import / refresh BSI suite:
+
+```bash
+cd backend
+python -m aerobim.tools.import_buildingsmart_ids_testcases --write-profile --update-manifest
+```
 
 ## Claim boundary (every artifact)
 
@@ -23,13 +31,10 @@ Open sets lack expert TP/FP labels → **regression and timing only**, never pro
 
 ```bash
 cd backend
-# Full three-profile run (writes artifacts/open-corpora/)
 python -m aerobim.tools.run_open_corpora_profiles
-
-# Cheap smoke: pin verification only (CI-friendly)
 python -m aerobim.tools.run_open_corpora_profiles --mode smoke
 ```
 
 ## CI
 
-CI wires `--mode smoke` (pin check). Full live analyze/IDS regression is **manual** or an optional local job — not claimed as customer evidence.
+CI wires `--mode smoke` (pin check). Full live analyze/IDS regression is **manual** — not customer evidence.

@@ -8,6 +8,8 @@ Safety: this makes a real outbound call. Run it ONLY on non-NDA / open sample
 images (tier A). Requires ``AEROBIM_KIMI_API_BASE_URL`` + ``AEROBIM_KIMI_API_KEY``;
 without them it prints a NOT_RUN status and exits 2 (skip, never a fake pass).
 The verdict path is untouched — this is an advisory read only.
+
+WP-02 residual: ``HybridRouteGate`` MUST pass before constructing the Kimi client.
 """
 
 from __future__ import annotations
@@ -15,7 +17,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
@@ -23,11 +27,23 @@ from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
     KimiK3AdvisoryClient,
 )
 from aerobim.infrastructure.adapters.kimi_vlm_drawing_pipeline import KimiVlmDrawingPipeline
+from aerobim.tools.vlm_smoke_gate import (
+    evaluate_vlm_smoke_egress,
+    gate_blocks_external,
+    smoke_tenant_id,
+)
 
 _SKIP_EXIT = 2
+_BLOCKED_EXIT = 3
 
 
-def run_smoke(image: Path, *, sheet_id: str) -> dict[str, object]:
+def run_smoke(
+    image: Path,
+    *,
+    sheet_id: str,
+    tenant_id: str | None = None,
+    client_factory: Callable[..., Any] | None = None,
+) -> dict[str, object]:
     base_url = (os.getenv("AEROBIM_KIMI_API_BASE_URL") or "").strip()
     api_key = (os.getenv("AEROBIM_KIMI_API_KEY") or "").strip()
     model = (os.getenv("AEROBIM_KIMI_MODEL") or "kimi-k3").strip() or "kimi-k3"
@@ -42,9 +58,29 @@ def run_smoke(image: Path, *, sheet_id: str) -> dict[str, object]:
     if not image.is_file():
         return {"status": "NOT_RUN", "reason": f"image not found: {image}"}
 
-    client = KimiK3AdvisoryClient(
-        base_url=base_url, api_key=api_key, model=model, reasoning_effort=reasoning
+    tenant = smoke_tenant_id(tenant_id)
+    gate_result = evaluate_vlm_smoke_egress(
+        tenant_id=tenant,
+        sheet_id=sheet_id,
+        image_name=image.name,
     )
+    if gate_blocks_external(gate_result):
+        return {
+            "status": "BLOCKED_BY_GATE",
+            "reason": gate_result.decision.reason,
+            "may_call_external": False,
+            "egress_bytes_estimate": gate_result.egress_bytes_estimate,
+            "claim_boundary": ("HybridRouteGate refused PUBLIC VLM egress; zero bytes to Kimi"),
+        }
+
+    if client_factory is not None:
+        client = client_factory(
+            base_url=base_url, api_key=api_key, model=model, reasoning=reasoning
+        )
+    else:
+        client = KimiK3AdvisoryClient(
+            base_url=base_url, api_key=api_key, model=model, reasoning_effort=reasoning
+        )
     pipeline = KimiVlmDrawingPipeline(client, ready=True, model_id=model)
     try:
         result = pipeline.analyze(DrawingSource(path=image, sheet_id=sheet_id), mode="auto")
@@ -60,6 +96,7 @@ def run_smoke(image: Path, *, sheet_id: str) -> dict[str, object]:
         "hitl_low_confidence": sum(1 for r in result.regions if r.hitl_required),
         "degraded": result.degraded,
         "reason": result.reason,
+        "may_call_external": True,
         "claim_boundary": "advisory candidate regions only; verdict stays deterministic",
     }
 
@@ -68,12 +105,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--image", type=Path, required=True, help="OPEN-DATA image (png/jpg/webp)")
     parser.add_argument("--sheet-id", default="SMOKE-01")
+    parser.add_argument("--tenant-id", default=None, help="Hybrid tenant (default open-data-smoke)")
     args = parser.parse_args(argv)
 
-    report = run_smoke(args.image, sheet_id=args.sheet_id)
+    report = run_smoke(args.image, sheet_id=args.sheet_id, tenant_id=args.tenant_id)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if report["status"] == "NOT_RUN":
         return _SKIP_EXIT
+    if report["status"] == "BLOCKED_BY_GATE":
+        return _BLOCKED_EXIT
     return 0 if report["status"] == "OK" else 1
 
 

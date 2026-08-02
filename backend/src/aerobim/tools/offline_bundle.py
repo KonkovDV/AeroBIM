@@ -8,9 +8,10 @@ target host still needs Docker itself; bare-metal wheelhouse install remains
 NOT VERIFIED and is not claimed.
 
 Subcommands:
-  build   -> artifacts/offline-bundle/ (image tar + locks + BUNDLE_MANIFEST.json)
-  verify  -> recompute sha256 of every bundle file against the manifest
-  smoke   -> docker rmi tag; docker load -i tar; run --network none; API checks
+  build      -> artifacts/offline-bundle/ (image tar + locks + BUNDLE_MANIFEST.json)
+  verify     -> recompute sha256 of every bundle file against the manifest
+  smoke      -> docker rmi tag; docker load -i tar; run --network none; API checks
+  wheelhouse -> DEFERRED honesty artifact (bare-metal pip install NOT VERIFIED)
 """
 
 from __future__ import annotations
@@ -171,11 +172,46 @@ def cmd_smoke() -> int:
         _docker("rm", "-f", container)
 
 
+def cmd_wheelhouse() -> int:
+    """Bare-metal wheelhouse path — explicitly DEFERRED (honesty artifact only)."""
+
+    _BUNDLE_DIR.mkdir(parents=True, exist_ok=True)
+    artifact_path = _BUNDLE_DIR / "wheelhouse-DEFERRED.json"
+    payload = {
+        "artifact_type": "aerobim_offline_wheelhouse",
+        "schema_version": "1.0.0",
+        "status": "DEFERRED",
+        "exit_code": 2,
+        "claim_level": "not_verified",
+        "scope_honesty": (
+            "Bare-metal pip wheelhouse offline install is DEFERRED. "
+            "Docker image-track bundle (build/verify/smoke) is the verified path; "
+            "do not claim bare-metal offline-ready without wheelhouse evidence."
+        ),
+        "verified_path": "docker image bundle (offline_bundle build|verify|smoke)",
+        "deferred_path": "pip wheelhouse + venv install without Docker",
+    }
+    artifact_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print("DEFERRED: bare-metal wheelhouse offline install is not verified.")
+    print(f"honesty artifact: {artifact_path}")
+    return 2
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Offline deployment bundle (image-based)")
-    parser.add_argument("command", choices=("build", "verify", "smoke"))
+    parser.add_argument("command", choices=("build", "verify", "smoke", "wheelhouse"))
     args = parser.parse_args()
-    sys.exit({"build": cmd_build, "verify": cmd_verify, "smoke": cmd_smoke}[args.command]())
+    sys.exit(
+        {
+            "build": cmd_build,
+            "verify": cmd_verify,
+            "smoke": cmd_smoke,
+            "wheelhouse": cmd_wheelhouse,
+        }[args.command]()
+    )
 
 
 if __name__ == "__main__":

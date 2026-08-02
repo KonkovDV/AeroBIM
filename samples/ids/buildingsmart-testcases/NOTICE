@@ -1,0 +1,8 @@
+buildingSMART IDS TestCases
+Source: https://github.com/buildingSMART/IDS
+License: Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)
+https://creativecommons.org/licenses/by-nd/4.0/
+
+These files are redistributed unmodified for implementer regression testing.
+Do not modify TestCases contents. Attribution must be preserved.
+AeroBIM claim boundary: regression/timing only — NOT product accuracy.
