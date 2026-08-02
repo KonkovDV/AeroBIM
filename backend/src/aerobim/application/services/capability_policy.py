@@ -30,6 +30,9 @@ _PASS_BLOCKING_FAILED_FIELDS: tuple[str, ...] = (
     # LB/P-003: a FAILED extraction-integrity gate (render vs extract mismatch)
     # must never read as a clean pass; default NOT_VERIFIED stays non-blocking.
     "extraction_integrity",
+    # WP-03: FAILED qualified_signature (missing required envelope / integrity)
+    # blocks pass; default MISSING / NOT_VERIFIED stay non-blocking.
+    "qualified_signature",
 )
 
 # Required capabilities: only OK is acceptable (Master Prompt §6).

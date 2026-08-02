@@ -41,6 +41,7 @@ def build_report_capabilities(
     calculation_match: CapabilityStatus | None = None,
     quantity_capability: CapabilityStatus | None = None,
     extraction_integrity: CapabilityStatus | None = None,
+    qualified_signature: CapabilityStatus | None = None,
     ids_validator_configured: bool,
     ifc_schema_validator_configured: bool,
     require_bsi_schema: bool,
@@ -181,5 +182,12 @@ def build_report_capabilities(
             "(PDF text-layer producer runs on analyze when PDF drawings are present; "
             "default until probe result is attached); "
             "extracted text must not be presumed render-consistent",
+        ),
+        qualified_signature=qualified_signature
+        or CapabilityStatus(
+            CapabilityState.MISSING,
+            "qualified signature / УКЭП not evaluated for this report; "
+            "when evaluated, trust_chain_status remains not_verified "
+            "(no accredited CA/TSP access) — never a legal validity claim",
         ),
     )

@@ -97,6 +97,8 @@ class DeterministicBundle:
     calculation_match: CapabilityStatus
     logic_issues: tuple[ValidationIssue, ...]
     engine_issues: tuple[ValidationIssue, ...]
+    signature_capability: CapabilityStatus | None = None
+    signature_issues: tuple[ValidationIssue, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -243,6 +245,7 @@ class DeterministicValidationOrchestrator:
         )
         load_issues, calculation_match = self._host._run_load_evidence(request)
         logic_issues = self._host._run_logic_consistency(request)
+        signature_capability, signature_issues = self._host._run_signature_audit(request)
         engine_issues = tuple(
             [
                 *schema_issues_t,
@@ -263,6 +266,7 @@ class DeterministicValidationOrchestrator:
                 *load_issues,
                 *logic_issues,
                 *ingested.region_hitl_issues,
+                *signature_issues,
             ]
         )
         return DeterministicBundle(
@@ -288,6 +292,8 @@ class DeterministicValidationOrchestrator:
             calculation_match=calculation_match,
             logic_issues=tuple(logic_issues),
             engine_issues=engine_issues,
+            signature_capability=signature_capability,
+            signature_issues=tuple(signature_issues),
         )
 
 
@@ -472,6 +478,7 @@ class EvidenceAssembler:
             calculation_match=deterministic.calculation_match,
             quantity_capability=deterministic.quantity_capability,
             extraction_integrity=ingested.extraction_integrity,
+            qualified_signature=deterministic.signature_capability,
         )
         enforce_honesty_capabilities(capabilities)
         policy = build_signoff_policy(

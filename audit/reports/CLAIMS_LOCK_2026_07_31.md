@@ -19,6 +19,7 @@
 - Annotation↔IFC `ifc_guid` on report: only when annotation **claimed** a GUID (`claimed_guid:` evidence) **and** spatial index confirms presence — **not** human-adjudicated matching; region_overlap never sets guid.
 - MEP graph `edge_kinds` (`co_presence` / `connects`) and matrix findings with `geometry_verified=False` — eng honesty only; **not** MEP delivered / not RT-003 closed.
 - Optional MEP AABB broadphase (`aabb_filter:applied`) shrinks candidates only; **not** verified geometric clash.
+- Наличие откреплённой подписи (envelope), целостность хеша содержимого и полнота ролей подписантов проверяются на fixture envelope (`samples/signatures/`, capability `qualified_signature` ENG_PARTIAL). `trust_chain_status` всегда `not_verified`.
 
 ## Forbidden
 
@@ -29,7 +30,7 @@
 - MEP system-aware clash delivered / full MEP clash
 - independent calculation correctness / «проверка корректности расчётов»
 - CDE_READY / BCF готов для СОД / integrated with 10D / S.Project integration (before ladder T5 + evidence)
-- УКЭП проверена / подпись документа проверена (QUALIFIED_SIGNATURE_VALIDATION = missing)
+- УКЭП проверена / подпись документа проверена / юридическая значимость квалифицированной подписи (trust chain = NOT_VERIFIED; ENG_PARTIAL ≠ legal OK)
 - российское ПО / реестр российского ПО without legal gap analysis
 - masking = anonymization
 - OCR/VLM = engineer understanding

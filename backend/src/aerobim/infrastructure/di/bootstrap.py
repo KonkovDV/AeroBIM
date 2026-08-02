@@ -69,6 +69,9 @@ from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterId
 from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store import (
     InMemoryAnalyzeProjectPackageJobStore,
 )
+from aerobim.infrastructure.adapters.json_detached_signature_auditor import (
+    JsonDetachedSignatureAuditor,
+)
 from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
@@ -178,6 +181,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.EXTRACTION_INTEGRITY_PRODUCER,
         lambda current: _build_extraction_integrity_producer(current),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.DOCUMENT_SIGNATURE_AUDITOR,
+        lambda _container: JsonDetachedSignatureAuditor(),
         lifecycle=Lifecycle.SINGLETON,
     )
     tolerance = ToleranceConfig()
@@ -518,6 +526,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             mep_aabb_filter_enabled=current.resolve(Tokens.SETTINGS).mep_aabb_filter_enabled,
             extraction_integrity_producer=current.resolve(Tokens.EXTRACTION_INTEGRITY_PRODUCER),
             hybrid_route_gate=current.resolve(Tokens.HYBRID_ROUTE_GATE),
+            document_signature_auditor=current.resolve(Tokens.DOCUMENT_SIGNATURE_AUDITOR),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

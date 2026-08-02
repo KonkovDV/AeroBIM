@@ -56,3 +56,4 @@ class Tokens:
     ODA_CAD_MODEL_INGESTOR = "oda_cad_model_ingestor"
     HYBRID_ROUTE_GATE = "hybrid_route_gate"
     HYBRID_MODEL_ROUTER = "hybrid_model_router"
+    DOCUMENT_SIGNATURE_AUDITOR = "document_signature_auditor"
