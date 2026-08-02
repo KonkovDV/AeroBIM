@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0.0",
+  "profile_id": "open-corpora-regression",
+  "profile_kind": "regression",
+  "description": "Binary IDS↔IFC pass/fail fixtures already in-repo. Expected outcomes are deterministic engine regression labels — not expert TP/FP product labels.",
+  "honest_case_count": 7,
+  "target_case_count_note": "WP-06 asks for >250 official pass/fail/incorrect cases when available. This repo currently pins 7 binary IDS×IFC pairs. No license-cleared >250 suite is vendored; do not invent or claim a larger count.",
+  "claim_boundary": "Open/fixture regression only. Binary expected outcomes are fixture ground truth for engine pass/fail — not adjudicated TP/FP and never product accuracy (>90% forbidden).",
+  "cases": [
+    {
+      "case_id": "fire-rating-pass",
+      "ids_path": "samples/ids/wall-fire-rating.ids",
+      "ifc_path": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "expected_passed": true,
+      "pins": {
+        "ids_sha256": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99",
+        "ifc_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785"
+      }
+    },
+    {
+      "case_id": "fire-rating-fail",
+      "ids_path": "samples/ids/wall-fire-rating.ids",
+      "ifc_path": "samples/ifc/wall-fire-rating-rei30.ifc",
+      "expected_passed": false,
+      "pins": {
+        "ids_sha256": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99",
+        "ifc_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b"
+      }
+    },
+    {
+      "case_id": "multi-entity-fail",
+      "ids_path": "samples/ids/walls-multi-entity.ids",
+      "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+      "expected_passed": false,
+      "pins": {
+        "ids_sha256": "4ab52e9c93e0669cd8165af406a51a6b7d2554f7ee3a4adee6c2e307b847a932",
+        "ifc_sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe"
+      }
+    },
+    {
+      "case_id": "qto-pass",
+      "ids_path": "samples/ids/wall-pset-qto.ids",
+      "ifc_path": "samples/ifc/wall-pset-qto-pass.ifc",
+      "expected_passed": true,
+      "pins": {
+        "ids_sha256": "3c233493e9679d24307a89a4b4098822db39c3d88b03bdff7c99e332e5d7fb2f",
+        "ifc_sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d"
+      }
+    },
+    {
+      "case_id": "qto-fail",
+      "ids_path": "samples/ids/wall-pset-qto.ids",
+      "ifc_path": "samples/ifc/wall-pset-qto-missing-qto.ifc",
+      "expected_passed": false,
+      "pins": {
+        "ids_sha256": "3c233493e9679d24307a89a4b4098822db39c3d88b03bdff7c99e332e5d7fb2f",
+        "ifc_sha256": "ac83226af3e876a2a104973596075a63ba2b93c649d02d122c95a84af05570b0"
+      }
+    },
+    {
+      "case_id": "samolet-fire-rating-pass",
+      "ids_path": "samples/ids/samolet-fire-rating.ids",
+      "ifc_path": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "expected_passed": true,
+      "pins": {
+        "ids_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
+        "ifc_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785"
+      }
+    },
+    {
+      "case_id": "samolet-fire-rating-fail",
+      "ids_path": "samples/ids/samolet-fire-rating.ids",
+      "ifc_path": "samples/ifc/wall-fire-rating-rei30.ifc",
+      "expected_passed": false,
+      "pins": {
+        "ids_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
+        "ifc_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b"
+      }
+    }
+  ]
+}

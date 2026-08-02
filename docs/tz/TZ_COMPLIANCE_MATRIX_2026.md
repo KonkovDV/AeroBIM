@@ -2,7 +2,7 @@
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
 version: "1.2.0"
-last_updated: "2026-07-31"
+last_updated: "2026-08-02"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -20,6 +20,9 @@ Offline: [`../offline-deployment-2026.md`](../offline-deployment-2026.md).
 Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrity-2026.md).
 Eng status (Aug 2026): [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
 Red Team WP-01..03: [`../quality/RED_TEAM_WP01_03_2026_08_02.md`](../quality/RED_TEAM_WP01_03_2026_08_02.md).
+Red Team WP-04/05: [`../quality/RED_TEAM_WP04_05_2026_08_02.md`](../quality/RED_TEAM_WP04_05_2026_08_02.md).
+Red Team WP-06..08: [`../quality/RED_TEAM_WP06_08_2026_08_02.md`](../quality/RED_TEAM_WP06_08_2026_08_02.md).
+P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
 
 **Status legend:** `done` | `partial` | `missing` | `blocked` (needs Samolet)  
 **Phase legend:** `MVP` (sign-off deterministic) | `P0`–`P4` (implementation waves)
@@ -163,7 +166,7 @@ Manifest: [`samples/tz-appendix/MANIFEST.json`](../../samples/tz-appendix/MANIFE
 | Phase | Focus |
 |-------|-------|
 | **MVP** | Deterministic IFC/IDS/cross-doc/clash + OCR baseline + templates + browser review |
-| **P0 (Checkpoint #2 eng)** | WP-01 runtime baseline complete (`e6fe139`); WP-02 HybridRouteGate advisory pre-gate (`8d321ad`); WP-03 signature envelope ENG_PARTIAL (`a4c3702`); WP-04..08 in flight |
+| **P0 (Checkpoint #2 eng)** | WP-01..08 eng package landed (baseline complete; HybridRouteGate; signature ENG_PARTIAL; norm v2; completeness; open-corpora n=7 honest; quality protocol 0.60; README/baseline sync). RT-001/002/003 still OPEN → Checkpoint **NO_GO** |
 | **P0** | Multipart upload, remarks UI (list/filter/edit), EN remarks |
 | **P1** | Norm packs, section pairing, detection precision harness — engineering scaffolds landed; customer pack/corpus still required |
 | **P2** | DXF/DWG thin adapter, OCR deepen, CV advisory |

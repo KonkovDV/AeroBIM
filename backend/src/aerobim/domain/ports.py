@@ -34,9 +34,9 @@ from aerobim.domain.models import (
     ValidationRequest,
 )
 from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
+from aerobim.domain.package_completeness import PackageCompletenessReport, PackageInventory
 from aerobim.domain.section_pairing import SectionPairingReport
 from aerobim.domain.signature_immutability import SignatureAuditResult
-from aerobim.domain.package_completeness import PackageCompletenessReport, PackageInventory
 
 
 class RequirementExtractor(Protocol):

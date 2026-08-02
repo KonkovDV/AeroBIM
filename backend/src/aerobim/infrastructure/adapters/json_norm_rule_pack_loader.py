@@ -138,11 +138,7 @@ class JsonNormRulePackLoader:
             for index, rule in enumerate(payload.get("rules") or []):
                 if not isinstance(rule, dict):
                     continue
-                clause = (
-                    rule.get("clause_number")
-                    or rule.get("norm_clause")
-                    or rule.get("clause")
-                )
+                clause = rule.get("clause_number") or rule.get("norm_clause") or rule.get("clause")
                 if not (isinstance(clause, str) and clause.strip()):
                     raise ValueError(
                         f"rules[{index}] must include clause_number/norm_clause/clause "
@@ -433,9 +429,7 @@ class JsonNormRulePackLoader:
         if ifc_entity and not object_type:
             object_type = ifc_entity
         target_ref = self._optional_string(payload.get("target_ref"), f"{prefix}target_ref")
-        property_set = self._optional_string(
-            payload.get("property_set"), f"{prefix}property_set"
-        )
+        property_set = self._optional_string(payload.get("property_set"), f"{prefix}property_set")
         property_name = self._optional_string(
             payload.get("property_name"), f"{prefix}property_name"
         )
@@ -449,9 +443,7 @@ class JsonNormRulePackLoader:
             payload.get("norm_edition"), f"{prefix}norm_edition", max_length=128
         )
         norm_clause = self._optional_string(
-            payload.get("clause_number")
-            or payload.get("norm_clause")
-            or payload.get("clause"),
+            payload.get("clause_number") or payload.get("norm_clause") or payload.get("clause"),
             f"{prefix}clause_number",
             max_length=128,
         )
@@ -468,9 +460,7 @@ class JsonNormRulePackLoader:
             max_length=32,
         )
         if criticality is not None and criticality not in _CRITICALITY_VALUES:
-            raise ValueError(
-                f"{prefix}criticality must be one of {sorted(_CRITICALITY_VALUES)}"
-            )
+            raise ValueError(f"{prefix}criticality must be one of {sorted(_CRITICALITY_VALUES)}")
 
         evidence_required_raw = payload.get("evidence_required")
         evidence_required: bool | None
@@ -490,9 +480,7 @@ class JsonNormRulePackLoader:
         elif execution_mode_raw in {"deterministic", "expert_required"}:
             execution_mode = execution_mode_raw
         else:
-            raise ValueError(
-                f"{prefix}execution_mode must be deterministic|expert_required"
-            )
+            raise ValueError(f"{prefix}execution_mode must be deterministic|expert_required")
 
         journal = parse_expert_confirmation_journal(
             payload.get("expert_confirmation_journal"),
@@ -572,9 +560,7 @@ class JsonNormRulePackLoader:
         # Pack manifest is the authority for approval_status; default synthetic.
         stamped_status = approval_status or "synthetic"
         if status is not RulePackStatus.APPROVED and stamped_status == "customer_approved":
-            raise ValueError(
-                f"{prefix}cannot claim customer_approved under draft/synthetic pack"
-            )
+            raise ValueError(f"{prefix}cannot claim customer_approved under draft/synthetic pack")
         stamped_ref = rule_approval_ref or approval_reference
         if stamped_status == "customer_approved" and not stamped_ref:
             raise ValueError(

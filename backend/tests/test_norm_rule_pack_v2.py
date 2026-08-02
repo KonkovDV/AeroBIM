@@ -102,7 +102,9 @@ class NormPackV2LoaderAndGateTests(unittest.TestCase):
         self.assertTrue(is_rule_checkable(confirmed, pack=pack))
         self.assertEqual(confirmed.norm_clause, "7.1.2")
         self.assertIsNotNone(confirmed.rase)
-        self.assertEqual(confirmed.rase.exclusion, "Technical shafts marked out of scope in scope memo")
+        self.assertEqual(
+            confirmed.rase.exclusion, "Technical shafts marked out of scope in scope memo"
+        )
 
         expert = by_id["V2-AR-FIRE-RATING-EXPERT-001"]
         self.assertEqual(expert.execution_mode, "expert_required")

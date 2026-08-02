@@ -21,10 +21,6 @@ from aerobim.domain.derived_cad_provenance import (
     verify_derived_provenance_sidecar,
 )
 from aerobim.domain.ingestion import stamp_requirement_source
-from aerobim.domain.norm_rule_eligibility import (
-    filter_checkable_requirements,
-    list_expert_required_rules,
-)
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -40,6 +36,10 @@ from aerobim.domain.models import (
     SourceKind,
     ValidationIssue,
     ValidationRequest,
+)
+from aerobim.domain.norm_rule_eligibility import (
+    filter_checkable_requirements,
+    list_expert_required_rules,
 )
 from aerobim.domain.ports import (
     CadModelIngestor,

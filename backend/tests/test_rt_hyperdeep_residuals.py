@@ -261,9 +261,12 @@ class AdvisoryIsolationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             ifc = Path(temporary_directory) / "m.ifc"
             ifc.write_text("ISO-10303-21;", encoding="utf-8")
+            from aerobim.application.services.hybrid_route_gate import HybridRouteGate
+
             uc = _minimal_uc(
                 ifc_validator=ifc_validator,
                 advisory_issues=(advisory_ok,),
+                hybrid_route_gate=HybridRouteGate(),
             )
             report = uc.execute(
                 ValidationRequest(
@@ -272,15 +275,25 @@ class AdvisoryIsolationTests(unittest.TestCase):
                     requirement_source=RequirementSource(
                         text="R1|IFCWALL|Pset_WallCommon|FireRating|REI60\n"
                     ),
+                    tenant_id="tenant-adv-isolation",
                 )
             )
         self.assertFalse(report.summary.passed)
+        issue_view = [(i.rule_id, i.severity.value, i.origin) for i in report.issues]
         self.assertTrue(
-            any(i.severity is Severity.ERROR and i.rule_id == "ENG-ERR" for i in report.issues)
+            any(i.severity is Severity.ERROR and i.rule_id == "ENG-ERR" for i in report.issues),
+            msg=(
+                f"expected engine ERROR ENG-ERR; issues={issue_view} "
+                f"divergences={report.divergences} traces={report.tool_traces}"
+            ),
         )
         self.assertTrue(
             any(i.rule_id == "AEROBIM-DETERMINISM-DIVERGENCE" for i in report.issues)
-            or any(d.resolution == "engine_wins" for d in report.divergences)
+            or any(d.resolution == "engine_wins" for d in report.divergences),
+            msg=(
+                f"expected determinism divergence; issues={issue_view} "
+                f"divergences={report.divergences}"
+            ),
         )
 
 

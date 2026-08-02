@@ -30,9 +30,7 @@ from aerobim.infrastructure.adapters.json_package_inventory_loader import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 COMPLETE_INVENTORY = REPO_ROOT / "samples" / "packages" / "residential-complete-inventory.json"
-MISSING_PZ_INVENTORY = (
-    REPO_ROOT / "samples" / "packages" / "residential-missing-pz-inventory.json"
-)
+MISSING_PZ_INVENTORY = REPO_ROOT / "samples" / "packages" / "residential-missing-pz-inventory.json"
 
 
 class _Empty:
@@ -127,9 +125,7 @@ class PackageCompletenessDomainTests(unittest.TestCase):
             }
         )
         report = assess_package_completeness(inventory)
-        dwg_issues = [
-            i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-UNSUPPORTED-FORMAT"
-        ]
+        dwg_issues = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-UNSUPPORTED-FORMAT"]
         self.assertEqual(len(dwg_issues), 1)
         self.assertIn("native DWG", dwg_issues[0].message)
         self.assertNotIn("DWG-ready", dwg_issues[0].message)
@@ -152,9 +148,7 @@ class PackageCompletenessUseCaseWiringTests(unittest.TestCase):
                     require_package_completeness=True,
                 )
             )
-            missing = [
-                i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-MISSING-SECTION"
-            ]
+            missing = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-MISSING-SECTION"]
             self.assertEqual(len(missing), 1)
             self.assertIn("PZ", missing[0].message)
             assert report.capabilities is not None
@@ -185,9 +179,7 @@ class PackageCompletenessUseCaseWiringTests(unittest.TestCase):
                 )
             )
             assert report.capabilities is not None
-            self.assertEqual(
-                report.capabilities.package_completeness.status, CapabilityState.OK
-            )
+            self.assertEqual(report.capabilities.package_completeness.status, CapabilityState.OK)
             self.assertFalse(
                 any(i.rule_id == "AEROBIM-PACKAGE-MISSING-SECTION" for i in report.issues)
             )
@@ -213,9 +205,7 @@ class PackageCompletenessUseCaseWiringTests(unittest.TestCase):
 
     def test_failed_package_completeness_blocks_pass_under_hard_profile(self) -> None:
         caps = ReportCapabilities(
-            package_completeness=CapabilityStatus(
-                CapabilityState.FAILED, "missing PZ"
-            )
+            package_completeness=CapabilityStatus(CapabilityState.FAILED, "missing PZ")
         )
         for profile in ("samolet_pilot", "production"):
             policy = build_signoff_policy(profile=profile)

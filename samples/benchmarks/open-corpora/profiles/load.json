@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "profile_id": "open-corpora-load",
+  "profile_kind": "load",
+  "description": "Paired AR/KZH PD↔RD section fixtures for cross-doc timing, plus federated MEP eng fixture for clash-path timing (honesty: RT-003 OPEN).",
+  "claim_boundary": "Open/fixture timing only. Section pairing and MEP federated path are engineering rails — not verified geometric clash OK and not product accuracy.",
+  "section_pairs": [
+    {
+      "pair_id": "ar-pd-rd",
+      "discipline": "AR",
+      "pd_section_path": "samples/sections/ar-pd-synthetic.json",
+      "rd_section_path": "samples/sections/ar-rd-synthetic.json",
+      "pins": {
+        "pd_sha256": "8e3dfcf16966055bc13e673fe9846d1a0118213ab99f97c7bd161cae48b0c7b4",
+        "rd_sha256": "b50237679d1e453f3b0774fb4295016a716929047221963e78eb6f24c997b6c0"
+      }
+    },
+    {
+      "pair_id": "kzh-pd-rd",
+      "discipline": "KZH",
+      "pd_section_path": "samples/sections/kzh-pd-synthetic.json",
+      "rd_section_path": "samples/sections/kzh-rd-synthetic.json",
+      "pins": {
+        "pd_sha256": "27f80fa5825660b97c7426026ced4f31cacbba799a776c4492e1c566af29fb02",
+        "rd_sha256": "32863134f946f61b4de8bdb72bce2e7b27436758f10c3c8ffc2cca4ced9d5d3f"
+      }
+    }
+  ],
+  "mep_pack": {
+    "pack_id": "project-package-mep-eng-fixture",
+    "ifc_path": "samples/mep/hvac-sprinkler-systems.ifc",
+    "requirement_path": "samples/requirements/techlab-demo-rules.txt",
+    "mep_federated_scope_path": "samples/mep/federated-scope-verified-fixture.json",
+    "pins": {
+      "ifc_sha256": "35b499476ae537e2bed66953aa095360830cdf5ce5346ac6c1642dc420bc9b5b",
+      "requirement_sha256": "ff331a2056124811b0460679bcc16cbfbde22256e0cf6a5d717fd79b708bf0a3",
+      "mep_federated_scope_sha256": "40a826cd9914df855b1e6538b4451cf7eb472eb98a061cf2e36aac58c58017c4"
+    },
+    "note": "ENG_FIXTURE federated MEP path timing; never mep_system_clash=OK (RT-003 OPEN)."
+  }
+}

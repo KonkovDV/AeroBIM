@@ -1,0 +1,27 @@
+{
+  "artifact_type": "open_corpora_profiles_manifest",
+  "schema_version": "1.0.0",
+  "claim_boundary": "Open sets lack expert TP/FP labels -> regression/timing only, NOT product accuracy. Never claim >90%.",
+  "profiles": [
+    {
+      "profile_id": "open-corpora-regression",
+      "path": "samples/benchmarks/open-corpora/profiles/regression.json",
+      "kind": "regression"
+    },
+    {
+      "profile_id": "open-corpora-pilot-approx",
+      "path": "samples/benchmarks/open-corpora/profiles/pilot-approx.json",
+      "kind": "pilot_approx"
+    },
+    {
+      "profile_id": "open-corpora-load",
+      "path": "samples/benchmarks/open-corpora/profiles/load.json",
+      "kind": "load"
+    }
+  ],
+  "ci": {
+    "smoke_mode": "python -m aerobim.tools.run_open_corpora_profiles --mode smoke",
+    "full_run": "python -m aerobim.tools.run_open_corpora_profiles --mode full",
+    "note": "CI uses smoke (pin verification). Full IDS/analyze run is manual or optional local."
+  }
+}

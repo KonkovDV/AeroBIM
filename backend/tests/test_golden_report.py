@@ -16,7 +16,7 @@ from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_ro
 # Pinned on project-package-baseline.json @ development profile (fixture only).
 # 2026-07-31 (third conscious refresh): extraction_integrity producer wired into
 # report capabilities (text-layer signals only; not product OCR/render claim).
-GOLDEN_BASELINE_REPRO_HASH = "6a8210331404f3501dd966a98bf12e2bbc5830e20f434e12c0f4e77977915bfd"
+GOLDEN_BASELINE_REPRO_HASH = "aa641ac5b7583415b7fcc483922001444c60dcd7c0c562060d14408e8a16555d"
 
 
 class GoldenReportTests(unittest.TestCase):

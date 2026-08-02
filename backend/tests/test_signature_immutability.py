@@ -142,9 +142,7 @@ class SignatureImmutabilityDomainTests(unittest.TestCase):
 
     def test_tampered_content_fails_integrity(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            content_path, _, digest = _write_pair(
-                Path(tmp), tamper_hash="0" * 64
-            )
+            content_path, _, digest = _write_pair(Path(tmp), tamper_hash="0" * 64)
             envelope = SignatureEnvelope.from_mapping(
                 json.loads(
                     content_path.with_suffix(content_path.suffix + ".sig.json").read_text(
@@ -228,13 +226,9 @@ class SignatureUseCaseWiringTests(unittest.TestCase):
                     required_signer_roles=("author",),
                 )
             )
-            self.assertTrue(
-                any(i.rule_id == "AEROBIM-SIGNATURE-MISSING" for i in report.issues)
-            )
+            self.assertTrue(any(i.rule_id == "AEROBIM-SIGNATURE-MISSING" for i in report.issues))
             assert report.capabilities is not None
-            self.assertEqual(
-                report.capabilities.qualified_signature.status, CapabilityState.FAILED
-            )
+            self.assertEqual(report.capabilities.qualified_signature.status, CapabilityState.FAILED)
             self.assertFalse(report.summary.passed)
             policy = build_signoff_policy(profile="fixture")
             self.assertIn(
@@ -305,9 +299,7 @@ class SignatureUseCaseWiringTests(unittest.TestCase):
 
     def test_failed_qualified_signature_blocks_pass(self) -> None:
         caps = ReportCapabilities(
-            qualified_signature=CapabilityStatus(
-                CapabilityState.FAILED, "missing_envelope"
-            )
+            qualified_signature=CapabilityStatus(CapabilityState.FAILED, "missing_envelope")
         )
         for profile in ("development", "fixture", "samolet_pilot", "production"):
             policy = build_signoff_policy(profile=profile)

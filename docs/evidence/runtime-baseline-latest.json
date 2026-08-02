@@ -1,20 +1,20 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.0",
-  "commit_sha": "a6870039959b81a7eb3554c93eabf3b73118161f",
-  "tree_sha": "bf2812830949bc46d0a20f94bc29f8906c2a66f8",
+  "commit_sha": "4f0eecaba83024b2d1e79dcc11f366f9ee94d69b",
+  "tree_sha": "ded111be19e4adc90e8303f010ef1b0c1148940c",
   "working_tree_clean": false,
-  "generated_at": "2026-08-02T20:28:25.930880+00:00",
+  "generated_at": "2026-08-02T21:05:45.685691+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 1676,
-    "tests_passed": 1669,
+    "tests_collected": 1722,
+    "tests_passed": 1715,
     "tests_skipped": 7,
     "tests_failed": 0,
-    "source_loc": 45033,
-    "test_loc": 34231,
-    "test_functions": 1678
+    "source_loc": 47704,
+    "test_loc": 35329,
+    "test_functions": 1724
   },
   "frontend": {
     "tests_passed": 29,
@@ -37,10 +37,10 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 45033,
-    "backend_test_loc": 34231,
-    "backend_test_functions": 1678,
+    "backend_src_loc": 47704,
+    "backend_test_loc": 35329,
+    "backend_test_functions": 1724,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~45033 LOC; tests ~34231 LOC; 1678+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
+  "readme_snippet": "Backend src ~47704 LOC; tests ~35329 LOC; 1724+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
 }
