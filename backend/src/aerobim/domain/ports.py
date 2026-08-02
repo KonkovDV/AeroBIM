@@ -95,10 +95,17 @@ class IfcValidator(Protocol):
 
 
 @runtime_checkable
+class GuidLookup(Protocol):
+    """Minimal spatial-index presence check used by annotation GUID confirm."""
+
+    def lookup(self, guid: str) -> object | None: ...
+
+
+@runtime_checkable
 class IfcSpatialIndexProvider(Protocol):
     """Optional port extension: GUID presence checks for annotation↔IFC links (P2-04)."""
 
-    def spatial_index_for(self, ifc_path: Path) -> object | None: ...
+    def spatial_index_for(self, ifc_path: Path) -> GuidLookup | None: ...
 
 
 class IdsValidator(Protocol):

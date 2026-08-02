@@ -157,17 +157,19 @@ class ExportRuntimeBaselineTests(unittest.TestCase):
 
         backend = Path(__file__).resolve().parents[1]
         baseline = export_runtime_baseline(backend_root=backend, commit_sha="test")
-        self.assertEqual(baseline["schema_version"], "1.1.0")
+        self.assertEqual(baseline["schema_version"], "1.2.0")
         backend_block = baseline["backend"]
         assert isinstance(backend_block, dict)
         self.assertGreater(int(backend_block["test_functions"]), 0)
         self.assertEqual(backend_block["test_functions"], backend_block["tests_collected"])
+        self.assertIsNone(backend_block["tests_passed"])
         metrics = baseline["metrics"]
         assert isinstance(metrics, dict)
         self.assertGreater(int(metrics["backend_src_loc"]), 1000)
         self.assertGreater(int(metrics["backend_test_functions"]), 100)
         self.assertIn("readme_snippet", baseline)
         self.assertIn("quality_gates", baseline)
+        self.assertIn("environment", baseline)
         self.assertEqual(baseline["frontend"]["tests_passed"], None)
 
 

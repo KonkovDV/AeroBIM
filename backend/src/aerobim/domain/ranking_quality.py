@@ -28,10 +28,10 @@ evidence (RT-001); nDCG orders review effort, it never changes severities or
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-_GAIN_FNS = {
+_GAIN_FNS: dict[str, Callable[[int], float]] = {
     "exponential": lambda rel: float((1 << int(rel)) - 1),
     "linear": float,
 }

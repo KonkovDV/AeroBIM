@@ -12,7 +12,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | File | Role |
 |------|------|
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
-| [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / test baseline |
+| [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; WP-01 complete required in CI) |
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA (not customer) |
 | [`tz-matrix-status-latest.json`](tz-matrix-status-latest.json) | TZ matrix status |
 | [`benchmark-report-2026-05-21.md`](benchmark-report-2026-05-21.md) | Academic benchmark snapshot |

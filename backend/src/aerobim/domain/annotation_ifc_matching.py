@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from typing import Literal, Protocol
 
@@ -176,7 +177,7 @@ def confirm_link_against_spatial_index(
 
 
 def confirm_annotation_ifc_links(
-    links: tuple[AnnotationIfcLink, ...] | list[AnnotationIfcLink],
+    links: Sequence[AnnotationIfcLink],
     spatial_index: _GuidLookup | None,
 ) -> list[AnnotationIfcLink]:
     if spatial_index is None:
