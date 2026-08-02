@@ -35,6 +35,7 @@ from aerobim.domain.models import (
 )
 from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
 from aerobim.domain.section_pairing import SectionPairingReport
+from aerobim.domain.signature_immutability import SignatureAuditResult
 
 
 class RequirementExtractor(Protocol):
@@ -345,3 +346,15 @@ class NormCorpusRetriever(Protocol):
     """Keyword/RAG-style retrieve over local norm corpus; citations required."""
 
     def retrieve(self, query: str, *, top_k: int = 8) -> list[NormPassage]: ...
+
+
+class DocumentSignatureAuditor(Protocol):
+    """Detached envelope audit: presence / hash / roles — never legal УКЭП."""
+
+    def audit(
+        self,
+        content_path: Path,
+        *,
+        envelope_path: Path | None = None,
+        required_roles: Sequence[str] = (),
+    ) -> SignatureAuditResult: ...

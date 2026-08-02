@@ -68,6 +68,7 @@ from aerobim.domain.ports import (
     BsiValidationService,
     CadModelIngestor,
     ClashDetector,
+    DocumentSignatureAuditor,
     DrawingAnalyzer,
     ExternalEvidenceVerifier,
     ExtractionIntegritySignalProducer,
@@ -162,6 +163,7 @@ class AnalyzeProjectPackageUseCase:
         mep_aabb_filter_enabled: bool = True,
         extraction_integrity_producer: ExtractionIntegritySignalProducer | None = None,
         hybrid_route_gate: HybridRouteGate | None = None,
+        document_signature_auditor: DocumentSignatureAuditor | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -215,6 +217,7 @@ class AnalyzeProjectPackageUseCase:
         self._mep_aabb_filter_enabled = mep_aabb_filter_enabled
         self._extraction_integrity_producer = extraction_integrity_producer
         self._hybrid_route_gate = hybrid_route_gate
+        self._document_signature_auditor = document_signature_auditor
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
@@ -531,6 +534,7 @@ class AnalyzeProjectPackageUseCase:
         calculation_match: CapabilityStatus | None = None,
         quantity_capability: CapabilityStatus | None = None,
         extraction_integrity: CapabilityStatus | None = None,
+        qualified_signature: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
         return build_report_capabilities(
             requirements=requirements,
@@ -550,11 +554,98 @@ class AnalyzeProjectPackageUseCase:
             calculation_match=calculation_match,
             quantity_capability=quantity_capability,
             extraction_integrity=extraction_integrity,
+            qualified_signature=qualified_signature,
             ids_validator_configured=self._ids_validator is not None,
             ifc_schema_validator_configured=self._ifc_schema_validator is not None,
             require_bsi_schema=self._require_bsi_schema,
             raster_analyzer_configured=self._raster_drawing_analyzer is not None,
         )
+
+    def _run_signature_audit(
+        self, request: ValidationRequest
+    ) -> tuple[CapabilityStatus | None, list[ValidationIssue]]:
+        """Optional detached-envelope audit on ifc_path (deterministic contour).
+
+        Runs when ``signature_envelope_path`` is set or ``require_signature_audit``.
+        Never claims УКЭП legal validity; trust chain stays not_verified.
+        """
+
+        should_run = request.require_signature_audit or request.signature_envelope_path is not None
+        if not should_run:
+            return None, []
+
+        from aerobim.domain.signature_immutability import (
+            CLAIM_BOUNDARY,
+            missing_envelope_result,
+        )
+
+        auditor = self._document_signature_auditor
+        if auditor is None:
+            if request.require_signature_audit:
+                reason = (
+                    "signature audit required but DocumentSignatureAuditor not configured; "
+                    f"{CLAIM_BOUNDARY}"
+                )
+                return (
+                    CapabilityStatus(CapabilityState.FAILED, reason),
+                    [
+                        ValidationIssue(
+                            rule_id="AEROBIM-SIGNATURE-MISSING",
+                            severity=Severity.ERROR,
+                            message=reason,
+                            category=FindingCategory.IFC_VALIDATION,
+                            source_id="signature-audit",
+                            origin="deterministic",
+                            evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
+                        )
+                    ],
+                )
+            return None, []
+
+        result = auditor.audit(
+            request.ifc_path,
+            envelope_path=request.signature_envelope_path,
+            required_roles=request.required_signer_roles,
+        )
+        capability = result.to_capability_status()
+        issues: list[ValidationIssue] = []
+        if request.require_signature_audit and "missing_envelope" in result.reasons:
+            # Explicit missing required envelope: FAILED + blocking ERROR.
+            failed = missing_envelope_result(reason="missing_envelope")
+            capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                "; ".join([*failed.reasons, failed.claim_boundary]),
+            )
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-SIGNATURE-MISSING",
+                    severity=Severity.ERROR,
+                    message=(
+                        "Required detached signature envelope missing next to content "
+                        f"(or at signature_envelope_path); {CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="signature-audit",
+                    origin="deterministic",
+                    evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
+                )
+            )
+        elif result.overall_status == "failed":
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-SIGNATURE-AUDIT",
+                    severity=Severity.ERROR,
+                    message=(
+                        "Detached signature envelope audit failed "
+                        f"({', '.join(result.reasons)}); {CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="signature-audit",
+                    origin="deterministic",
+                    evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
+                )
+            )
+        return capability, issues
 
     def _probe_extraction_integrity(self, request: ValidationRequest) -> CapabilityStatus:
         return probe_extraction_integrity(

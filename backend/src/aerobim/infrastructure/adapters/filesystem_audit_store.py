@@ -857,6 +857,15 @@ class FilesystemAuditStore:
                     "extracted text must not be presumed render-consistent",
                 ),
             ),
+            qualified_signature=self._reconstruct_capability_status(
+                data.get("qualified_signature"),
+                default=CapabilityStatus(
+                    CapabilityState.MISSING,
+                    "qualified signature / УКЭП not evaluated for this report; "
+                    "when evaluated, trust_chain_status remains not_verified "
+                    "(no accredited CA/TSP access) — never a legal validity claim",
+                ),
+            ),
         )
 
     def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:

@@ -147,6 +147,12 @@ class ReportCapabilities:
         "default until probe result is attached); "
         "extracted text must not be presumed render-consistent",
     )
+    qualified_signature: CapabilityStatus = CapabilityStatus(
+        CapabilityState.MISSING,
+        "qualified signature / УКЭП not evaluated for this report; "
+        "when evaluated, trust_chain_status remains not_verified "
+        "(no accredited CA/TSP access) — never a legal validity claim",
+    )
 
 
 class ConflictKind(StrEnum):
@@ -477,6 +483,12 @@ class ValidationRequest:
     rd_section_path: Path | None = None
     tenant_id: str | None = None
     project_id: str | None = None
+    signature_envelope_path: Path | None = None
+    """Optional detached signature envelope (``.sig.json``) for content audit."""
+    required_signer_roles: tuple[str, ...] = ()
+    """Signer roles that must appear in the envelope when signature audit runs."""
+    require_signature_audit: bool = False
+    """When True, missing envelope → FAILED ``qualified_signature`` + ERROR issue."""
 
 
 @dataclass(frozen=True)

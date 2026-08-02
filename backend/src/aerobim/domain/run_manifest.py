@@ -42,6 +42,7 @@ _CAPABILITY_FIELDS = (
     "mep_system_clash",
     "quantity",
     "extraction_integrity",
+    "qualified_signature",
 )
 
 
