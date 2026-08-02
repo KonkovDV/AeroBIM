@@ -3,12 +3,13 @@
 Single entry point that turns a (data object, requested tier, tenant) into an
 auditable ROUTING decision — classify → policy → (mask on egress) → audit event.
 
-Invariants (brief §16):
+Invariants (brief §16 / WP-02):
 - **Verdict-neutral**: the gate returns a routing decision + optional masked payload
   + a ``HybridAuditEvent`` (``verdict_impact="none"``). It has no ``summary.passed``
-  and cannot change the deterministic verdict (ADR-001). It is deliberately NOT wired
-  into ``AnalyzeProjectPackageUseCase`` — like ``ADVISORY_VLM_PIPELINE`` it is an
-  available advisory-contour component, so OFF==ON holds by construction.
+  and cannot change the deterministic verdict (ADR-001).
+- **Advisory pre-gate**: ``AdvisoryOrchestrator`` MUST evaluate this gate before
+  creating any advisory observation. A blocked / non-allowed decision suppresses
+  advisory findings entirely (not created-with-flag).
 - **Fail-closed egress**: external egress requires masking. If a payload must leave
   but no PrivacyGuard / mask rules are available, ``masked`` is ``None`` and
   ``may_call_external`` is ``False`` — never send unmasked bytes.
@@ -18,6 +19,7 @@ Invariants (brief §16):
 
 from __future__ import annotations
 
+import json
 import uuid
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -37,11 +39,24 @@ class HybridGateResult:
     decision: RouteDecision
     audit_event: HybridAuditEvent
     masked: dict[str, Any] | None = None
+    egress_bytes_estimate: int = 0
+    """UTF-8 size of the masked payload that would leave (0 if no egress)."""
 
     @property
     def may_call_external(self) -> bool:
         """True only when the route egresses AND a safe (masked) payload is ready."""
         return self.decision.external_call and self.masked is not None
+
+    @property
+    def may_create_advisory(self) -> bool:
+        """True when advisory observations may be produced for this route."""
+        return self.decision.allowed
+
+
+def _egress_bytes_estimate(masked: dict[str, Any] | None) -> int:
+    if masked is None:
+        return 0
+    return len(json.dumps(masked, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
 
 
 class HybridRouteGate:
@@ -116,6 +131,7 @@ class HybridRouteGate:
                     fields_removed = result.fields_removed
                     mask_version = result.mask_version
 
+        egress_bytes = _egress_bytes_estimate(masked)
         event = build_route_audit_event(
             event_id=event_id or uuid.uuid4().hex,
             timestamp=timestamp or datetime.now(tz=UTC).isoformat(),
@@ -129,8 +145,14 @@ class HybridRouteGate:
             fields_sent=fields_sent,
             fields_removed=fields_removed,
             mask_version=mask_version,
+            usage={"egress_bytes_estimate": egress_bytes},
         )
-        return HybridGateResult(decision=decision, audit_event=event, masked=masked)
+        return HybridGateResult(
+            decision=decision,
+            audit_event=event,
+            masked=masked,
+            egress_bytes_estimate=egress_bytes,
+        )
 
 
 __all__ = [
