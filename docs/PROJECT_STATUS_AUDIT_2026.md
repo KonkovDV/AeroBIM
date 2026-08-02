@@ -14,7 +14,7 @@ claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evid
 
 > **Refresh 2026-08-01:** eng remediations landed on `main` (HEAD `8f02baf`): LIC-001 Option B (core PDF `pypdfium2`+`pdfminer`; PyMuPDF `pdf-agpl` only); OCR-aware EI; public CC BY IFC samples; **P2-04** claimed-GUID → `ifc_guid` only after spatial-index presence; **P2-02** `edge_kinds` + optional AABB broadphase (`geometry_verified=False`); Docker offline track VERIFIED / bare-metal **DEFERRED**. Checkpoint remains **NO_GO** (RT-001/002/003 OPEN). See [ENGINEERING_STATUS_2026_08](ENGINEERING_STATUS_2026_08.md).
 >
-> **Refresh 2026-07-28:** актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json), session-консолидация ([RED_TEAM_REMEDIATION_STATUS_2026_07_28](../audit/reports/RED_TEAM_REMEDIATION_STATUS_2026_07_28.md)) и [гиперглубокий аудит](../audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md). Добавлен **Hybrid AI P0/P1 routing-фундамент** (domain-pure, verdict-neutral, НЕ в пути вердикта) — [HYBRID_AI_FINAL_REPORT](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md). Цифры в §1 ниже — снимок 2026-07-19/20 (не переписываю исторические прогоны). Checkpoint **NO_GO**.
+> **Refresh 2026-08-02:** P0 TechLab eng package WP-01…08 landed under Claims Lock — [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md) · Red Team [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md). Актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json). Hybrid AI: WP-02 advisory pre-gate on Analyze (verdict-neutral, OFF==ON). Цифры в §1 ниже — исторический снимок 2026-07-19/20 (не переписываю). Checkpoint **NO_GO**.
 
 ## 1. Gate runs (this audit)
 
@@ -42,7 +42,7 @@ Baseline snapshot: [`evidence/runtime-baseline-latest.json`](evidence/runtime-ba
 | Capabilities honesty | `CapabilityState`: ok/skipped/failed/missing/not_verified/not_implemented | confirmed code |
 | Sign-off profiles | development/fixture/samolet_pilot/production; non-dev→production default | confirmed code + tests |
 | Shared-gate | `summary.passed` bool; AI/OCR cannot flip | confirmed code + tests |
-| Hybrid AI foundation | `domain/hybrid/*` + `HybridRouteGate`; verdict-neutral (OFF==ON), not in verdict path | confirmed code + 53 tests |
+| Hybrid AI foundation + WP-02 advisory pre-gate | `HybridRouteGate` on Analyze advisory; verdict-neutral (OFF==ON); never sets `summary.passed` | confirmed code + tests |
 | BCF export | 2.1 stable, 3.0 experimental structural | confirmed code + T1 JSON |
 | CDE import | STATUS NOT_VERIFIED | needs customer |
 | Frontend | review shell 3D+2D+HITL remarks | confirmed code + vitest |
@@ -80,7 +80,7 @@ Legend: **code** · **test** · **runtime** · **benchmark** · **README-only** 
 | SSRF outbound guard | code+test | JWKS/bSI/OpenCDE |
 | HITL remark edit | code+test | Does not flip Shared-gate alone |
 | Evidence bundle CLI | code+test | `export_evidence_bundle` + fixture pack |
-| Hybrid AI routing foundation | code+test (80+) | Domain-pure, fail-closed, verdict-neutral (OFF==ON); NOT in verdict/live egress; masking ≠ anonymity |
+| Hybrid AI + WP-02 advisory pre-gate | code+test | Gate before Analyze advisory observations; OFF==ON for `summary.passed`; masking ≠ anonymity |
 | Package multi-status enum | planned (Wave2) | Today: derive from `passed`+capabilities |
 
 ## 4. README drift (must not claim)

@@ -1,8 +1,8 @@
 ---
 title: "AI safety and document ingestion 2026 (P-004)"
 status: active
-version: "1.0.0"
-date: "2026-07-31"
+version: "1.1.0"
+date: "2026-08-02"
 claim_boundary: "Границы доверия по фактическому коду; adversarial-корпус для live-LLM — P3."
 ---
 
@@ -23,8 +23,9 @@ claim_boundary: "Границы доверия по фактическому к�
 - Содержимое документа не может изменить `summary.passed`: вердикт считается
   только из error_count + capabilities (`SignOffCapabilityPolicy`); advisory
   OFF==ON тест.
-- LLM/VLM не в вердикт-пайплайне; hybrid gate «DELIBERATELY NOT consumed»;
-  ModelRouter default local-only; без PrivacyGuard `may_call_external=False`.
+- LLM/VLM не в вердикт-пайплайне; **WP-02** `HybridRouteGate` — обязательный
+  advisory pre-gate на Analyze (blocked → нет observations); ModelRouter
+  default local-only; без PrivacyGuard `may_call_external=False`.
 - Документ не может вызвать внешний инструмент: исходящие вызовы только через
   SSRF-guard (`test_outbound_guard_invariant`); агентский tool-вызов из текста
   документа отсутствует как механизм.

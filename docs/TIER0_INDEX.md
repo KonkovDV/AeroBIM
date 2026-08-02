@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.2.0"
-last_updated: "2026-08-01"
+version: "4.3.0"
+last_updated: "2026-08-02"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -13,7 +13,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 | Surface | Role |
 |---------|------|
-| [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng readiness** (LIC-001 / P2-04 / P2-02 / offline) — not Checkpoint GO |
+| [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng readiness** (P0 WP-01…08 + LIC-001 / P2 / offline) — not Checkpoint GO |
+| [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) | P0 Red Team rollup (self-audit; NO_GO) |
 | [`docs.md`](docs.md) | Jury technical justification (RU) |
 | [`AeroBIM.pdf`](AeroBIM.pdf) | Printable jury pack (export of memo) |
 | [`samolet.md`](samolet.md) | Samolet strategy |
@@ -25,6 +26,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness |
 | [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md) | Self-audit / gate status |
 | [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Allowed vs forbidden claims |
+| [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality protocol |
+| [`../samples/benchmarks/open-corpora/README.md`](../samples/benchmarks/open-corpora/README.md) | WP-06 open corpora |
 | [`benchmark-evidence-2026.md`](benchmark-evidence-2026.md) | Fixture metrics boundaries |
 | [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md) | Pilot phases 0–5 |
 | [`license-policy-2026.md`](license-policy-2026.md) | LIC-001 Option B (core PDF off PyMuPDF) |
@@ -32,7 +35,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | MEP honesty / RT-003 |
 | [`roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md`](roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) | Geometry honesty deepen |
 | [`evidence/README.md`](evidence/README.md) | Citeable fixtures + wall-guid pin |
-| [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI routing foundation (verdict-neutral, NO_GO) |
+| [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI design; WP-02 pre-gate landed after report |
 | [`../README.md`](../README.md) · [`../README.ru.md`](../README.ru.md) | Product README (EN/RU) |
 
-Operator / debug / archive documentation is **not** on GitHub (kept in `.local/engineering-docs/`).
+Operator / debug / archive documentation is **not** on GitHub (kept in `.local/engineering-docs/`). Curated jury-facing Red Team summaries live under [`quality/`](quality/).

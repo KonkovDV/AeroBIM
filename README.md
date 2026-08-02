@@ -20,8 +20,11 @@
 > Forbidden until evidenced: product accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, independent calc *correctness*.
 >
 > **Engineering readiness improved (2026-07 → 2026-08)** without closing customer blockers:
-> LIC-001 Option B (core PDF off AGPL PyMuPDF), OCR-aware extraction integrity, P2-04 claimed-GUID presence confirm,
-> P2-02 MEP edge provenance + optional AABB broadphase (still `geometry_verified=False`), Docker offline track.
+> LIC-001 Option B; P2-04 / P2-02 honesty; Docker offline track; **P0 TechLab eng package WP-01…08**
+> (runtime baseline, Hybrid advisory pre-gate, signature envelope, norm pack v2, package completeness,
+> open-corpora n=7, quality protocol interim 0.60, README/baseline sync) — see
+> [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) ·
+> Red Team rollup [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
 > Fixture GO ≠ Checkpoint GO.
 Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + cross-document evidence).
 
@@ -41,7 +44,7 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 
 **Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold; MEP federated ENG_FIXTURE graph + AABB broadphase (capability stays `NOT_VERIFIED`).
 
-**Available (eng):** `PackageOutcome` on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`); run manifest + reproducibility hash; stage timeout budgets; **Hybrid AI routing foundation** (5-level data classification + fail-closed policy engine + secret-safe audit event + privacy guard + composed pre-gate) — domain-pure, verdict-neutral (OFF==ON), **NOT in the verdict path** (advisory-contour scaffold; masking ≠ anonymity; Checkpoint **NO_GO**).
+**Available (eng):** `PackageOutcome` on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`); run manifest + reproducibility hash; stage timeout budgets; **Hybrid AI routing** (classify/policy/guard/audit + **WP-02 `HybridRouteGate` advisory pre-gate** on Analyze) — domain-pure, verdict-neutral (OFF==ON), **never sets `summary.passed`**; masking ≠ anonymity; PUBLIC VLM egress still residual; Checkpoint **NO_GO**.
 
 **Planned:** Stage-3 finding field expansion; profiling-driven performance wave; customer-gated RT-001/002/003 evidence.
 
@@ -85,7 +88,10 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
 | Frontend vitest review-shell | Green in CI | release-readiness | **29** passed (`frontend` CI job) |
-| Hybrid AI routing foundation (classify/policy/guard/audit/gate) | Available (eng) | fixture | Domain-pure, fail-closed, verdict-neutral (OFF==ON); NOT wired to verdict / live egress; masking ≠ anonymity; Checkpoint NO_GO |
+| Hybrid AI routing + advisory pre-gate (WP-02) | Available (eng) | fixture | Gate before advisory observations; OFF==ON for `summary.passed`; masking ≠ anonymity; Checkpoint NO_GO |
+| Detached signature envelope (WP-03) | ENG_PARTIAL | fixture | Hash/roles audit; trust_chain always NOT_VERIFIED — never «УКЭП проверена» |
+| Norm pack v2 eligibility (WP-04) | Available (eng) | fixture | RASE + execution_mode + expert journal; RT-002 OPEN |
+| Package completeness inventory (WP-05) | Available (eng) | fixture | Soft opt-in; no native DWG; not PP-87 / customer intake |
 | Open corpora measurability (WP-06) | Available (eng) | fixture/open | 3 pinned profiles; honest regression n=7; CI smoke pins only — not product accuracy |
 | Quality measurement protocol (WP-07) | Available (eng) | protocol | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
@@ -366,7 +372,7 @@ Backend src ~47704 LOC; tests ~35329 LOC; 1724+ test functions; extraction macro
 
 ## Documentation
 
-Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architecture. Operator runbooks, Red Team dumps, and archive stay in `.local/` (not published).
+Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architecture + curated eng status / Red Team summaries under `docs/quality/`. Operator runbooks, phase RT dumps, and archive stay in `.local/` (not published).
 
 | Need | Document |
 |------|----------|
@@ -376,9 +382,12 @@ Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architectu
 | TZ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
 | Claims lock | [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
 | Eng freeze / status | [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) · [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) |
+| P0 Red Team rollup | [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) |
 | Checkpoint | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · **NO_GO** |
 | Project status audit | [`docs/PROJECT_STATUS_AUDIT_2026.md`](docs/PROJECT_STATUS_AUDIT_2026.md) |
 | Capability × claim matrix | [`docs/capability-claim-matrix-2026.md`](docs/capability-claim-matrix-2026.md) |
+| Quality protocol (WP-07) | [`docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) |
+| Open corpora (WP-06) | [`samples/benchmarks/open-corpora/README.md`](samples/benchmarks/open-corpora/README.md) |
 | License / offline | [`docs/license-policy-2026.md`](docs/license-policy-2026.md) · [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md) |
 | Benchmark evidence | [`docs/benchmark-evidence-2026.md`](docs/benchmark-evidence-2026.md) |
 | Pilot protocol | [`docs/pilot-protocol-samolet-2026.md`](docs/pilot-protocol-samolet-2026.md) |

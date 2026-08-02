@@ -20,8 +20,11 @@
 > Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.
 >
 > **Инженерная готовность выросла (2026-07 → 2026-08)** без закрытия customer-блокеров:
-> LIC-001 Option B (core PDF без AGPL PyMuPDF), OCR-aware extraction integrity, P2-04 claimed-GUID presence,
-> P2-02 MEP edge provenance + optional AABB broadphase (всё ещё `geometry_verified=False`), Docker offline track.
+> LIC-001 Option B; P2-04 / P2-02 honesty; Docker offline; **P0 eng-пакет WP-01…08**
+> (baseline, Hybrid advisory pre-gate, envelope подписи, norm pack v2, completeness,
+> open-corpora n=7, quality protocol interim 0.60, sync README/baseline) —
+> [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) ·
+> Red Team [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
 > Fixture GO ≠ Checkpoint GO.
 
 Открытый **ассистент критериев приёмки** для openBIM-комплектов (IFC + IDS + междокументные доказательства).
@@ -43,7 +46,7 @@ AeroBIM выполняет детерминированную проверку �
 
 **Экспериментально:** OpenCDE BCF API push; optional clash/OCR; IFC KG scaffold; MEP federated ENG_FIXTURE graph + AABB broadphase (capability остаётся `NOT_VERIFIED`).
 
-**Доступно (eng):** `PackageOutcome` на `summary.outcome`; run manifest + reproducibility hash; Hybrid AI routing foundation (verdict-neutral, OFF==ON, **НЕ** в пути вердикта); Checkpoint **NO_GO**.
+**Доступно (eng):** `PackageOutcome` на `summary.outcome`; run manifest + reproducibility hash; **Hybrid AI + WP-02 `HybridRouteGate` advisory pre-gate** на Analyze (verdict-neutral, OFF==ON, **никогда** не ставит `summary.passed`); masking ≠ anonymity; Checkpoint **NO_GO**.
 
 **План:** расширение Stage-3 полей finding; profiling-driven performance; customer-gated RT-001/002/003.
 
@@ -82,7 +85,10 @@ AeroBIM выполняет детерминированную проверку �
 | MEP system-aware clash | Not verified / blocked | fixture_only | ENG_PARTIAL: edge_kinds + AABB; всегда `geometry_verified=False`; RT-003 OPEN |
 | Offline Docker image-track | Доступно | eng | `offline_bundle` smoke; bare-metal **DEFERRED** |
 | Корректность расчётов | Not implemented | — | сверка источников, не расчётный решатель |
-| Hybrid AI routing foundation | Доступно (eng) | fixture | Domain-pure, fail-closed, verdict-neutral; НЕ в пути вердикта; Checkpoint NO_GO |
+| Hybrid AI + advisory pre-gate (WP-02) | Доступно (eng) | fixture | Gate до advisory observations; OFF==ON для `summary.passed`; Checkpoint NO_GO |
+| Envelope подписи (WP-03) | ENG_PARTIAL | fixture | Hash/roles; trust_chain NOT_VERIFIED — никогда «УКЭП проверена» |
+| Norm pack v2 (WP-04) | Доступно (eng) | fixture | RASE + journal; RT-002 OPEN |
+| Completeness inventory (WP-05) | Доступно (eng) | fixture | Soft opt-in; не native DWG; не PP-87 |
 | Open corpora (WP-06) | Доступно (eng) | fixture/open | 3 профиля; честный regression n=7; CI smoke pins — не product accuracy |
 | Quality protocol (WP-07) | Доступно (eng) | protocol | Wilson P/R + planner; interim 0.60; никогда >90% |
 | Точность >90% / утверждённые нормы | Blocked | customer | См. Claims Lock |
@@ -180,17 +186,20 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 
 ## Документация (пакет для жюри Техлаба)
 
-На GitHub — **только** код и материалы для жюри Task 07. Служебные runbook’и, archive и Red Team dumps не публикуются.
+На GitHub — **только** код и материалы для жюри Task 07 (+ curated eng status / Red Team summaries в `docs/quality/`). Служебные runbook’и, phase RT dumps и archive не публикуются.
 
 | Нужно | Документ |
 |------|----------|
 | Старт | [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · [`docs/README.md`](docs/README.md) |
 | Eng-статус (авг 2026) | [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) |
+| P0 Red Team rollup | [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) |
 | Жюри (RU) | [`docs/docs.md`](docs/docs.md) |
 | Стратегия × Самолёт | [`docs/samolet.md`](docs/samolet.md) |
 | ТЗ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
 | Блокеры / NO_GO | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) |
 | Граница утверждений | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) |
+| Quality protocol (WP-07) | [`docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) |
+| Open corpora (WP-06) | [`samples/benchmarks/open-corpora/README.md`](samples/benchmarks/open-corpora/README.md) |
 | Архитектура | [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) |
 | Hybrid AI (дизайн + финальный отчёт) | [`audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
 

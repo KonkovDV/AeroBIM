@@ -1,13 +1,13 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.2.0"
-last_updated: "2026-08-01"
+version: "2.3.0"
+last_updated: "2026-08-02"
 ---
 
 # Evidence fixtures
 
-Only **citeable** snapshots for TechLab review and reproducibility. Phase-command dumps stay under `.local/`.
+Only **citeable** snapshots for TechLab review and reproducibility. Phase-command dumps stay under `.local/`. Curated Red Team summaries: [`../quality/`](../quality/).
 
 | File | Role |
 |------|------|
@@ -16,6 +16,13 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA (not customer) |
 | [`tz-matrix-status-latest.json`](tz-matrix-status-latest.json) | TZ matrix status |
 | [`benchmark-report-2026-05-21.md`](benchmark-report-2026-05-21.md) | Academic benchmark snapshot |
+
+Related (not under `docs/evidence/`):
+
+| Path | Role |
+|------|------|
+| [`../../samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/) | WP-06 open-corpora profiles (regression/timing only) |
+| [`../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality protocol |
 
 ## Reproducible package evidence bundle
 
