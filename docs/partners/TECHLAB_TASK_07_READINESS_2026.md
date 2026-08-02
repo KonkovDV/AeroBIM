@@ -1,8 +1,8 @@
 ---
 title: "TechLab Samolet Task 07 Readiness 2026"
 status: active
-version: "1.2.0"
-last_updated: "2026-07-19"
+version: "1.3.0"
+last_updated: "2026-08-02"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
@@ -13,6 +13,7 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Prize:** paid pilot testing fund **2 000 000 ₽**  
 **Task page:** https://i.moscow/techlab/samolet  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
+**Eng status (Aug 2026):** [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) · P0 Red Team [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).  
 **Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [`AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md`](AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md)
 
 Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED_BY_CUSTOMER_DATA` | `MISSING` | `NOT_VERIFIED`.
@@ -24,18 +25,18 @@ Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED
 | Work with **2D drawings** | Structured annotations + PDF/OCR baseline + 2D overlay | PARTIAL (CV deferred; OCR optional-extra) |
 | Work with **BIM models** | IFC + IDS + schema pre-gate + optional clash | VERIFIED_FIXTURE_ONLY |
 | Work with **TZ + calculations** | Narrative/structured extract + cross-doc + OpenRebar **сверка** | PARTIAL (correctness NOT_IMPLEMENTED) |
-| Compare docs vs calcs / TZ / sections / norms | Cross-doc + IDS + JSON norm packs + PD↔RD pairing | PARTIAL (customer pack TBD) |
+| Compare docs vs calcs / TZ / sections / norms | Cross-doc + IDS + norm pack v2 eligibility + PD↔RD pairing + completeness inventory | PARTIAL (customer pack TBD; RT-002 OPEN) |
 | Detect clashes | IfcClash + `SPATIAL-*`; `require_clash` fail-closed | PARTIAL (generic; MEP NOT_VERIFIED) |
 | Calc / dimension / area errors | Quantity algebra + cross-doc | VERIFIED_FIXTURE_ONLY (bounded) |
-| Logic gaps / missing elements | IDS `exists` + property checks | VERIFIED_FIXTURE_ONLY |
+| Logic gaps / missing elements | IDS `exists` + property checks + package completeness (soft opt-in) | VERIFIED_FIXTURE_ONLY |
 | Highlight problem zones | `problem_zone` + drawing overlay | VERIFIED_FIXTURE_ONLY |
 | Prioritize remarks | `compute_issue_priority` + Samolet profile | VERIFIED_FIXTURE_ONLY |
 | Generate designer comments | RU/EN templates + HITL edit | VERIFIED_FIXTURE_ONLY |
 | Speed up review | SLA rail ≤30 min on agreed pack | FIXTURE_ONLY measured; customer pack BLOCKED |
-| Expert remains in the loop | Claim boundary + review-events / adjudication | VERIFIED_FIXTURE_ONLY |
+| Expert remains in the loop | Claim boundary + review-events / adjudication + quality protocol (WP-07) | VERIFIED_FIXTURE_ONLY |
 | MVP with visualization + reports | Browser shell + JSON/HTML/BCF **export** | VERIFIED_FIXTURE_ONLY (CDE import NOT_VERIFIED) |
-| Resources: PD/RD, BIM, TZ/standards, typical errors | Appendix + catalog + mapping tool | PARTIAL → customer intake |
-| Competencies BIM/CAD, CV/OCR, AI/ML | BIM/OCR when extras present; CV/LLM advisory only | honest split |
+| Resources: PD/RD, BIM, TZ/standards, typical errors | Appendix + catalog + open-corpora profiles (n=7 honest) | PARTIAL → customer intake |
+| Competencies BIM/CAD, CV/OCR, AI/ML | BIM/OCR when extras present; CV/LLM advisory + HybridRouteGate pre-gate | honest split |
 | Stack at team discretion | Python FastAPI + React + openBIM | VERIFIED_FIXTURE_ONLY |
 
 ## 2. Product stance (matches sponsor quote)
@@ -54,7 +55,8 @@ AeroBIM is **decision-support**, not a licensed-engineer replacement. Sign-off p
 - BCF 2.1/3.0 export + OpenCDE push foundation  
 - **Track A5 demo path** — `aerobim-run-demo-path` (upload→analyze→HTML/BCF on fixture)  
 - Extraction F1 gate, ablation A0–A3, SLA measurement tool  
-- Backend pytest suite (see latest local run; optional extras may skip)
+- **P0 eng package WP-01…08** — runtime baseline, HybridRouteGate advisory pre-gate, signature envelope, norm pack v2, package completeness, open-corpora (honest n=7), quality protocol (interim 0.60), README/baseline sync  
+- Backend pytest suite (see [runtime baseline](../evidence/runtime-baseline-latest.json); optional extras may skip)
 
 ### Needs Samolet pilot corpus (cannot fake in git)
 

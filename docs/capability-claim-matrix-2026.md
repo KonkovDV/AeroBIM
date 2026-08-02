@@ -1,14 +1,14 @@
 ---
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
-version: "1.1.0"
-last_updated: "2026-08-01"
+version: "1.2.0"
+last_updated: "2026-08-02"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
 # Capability × Claim Matrix (TechLab / Samolet)
 
-Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md), eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md), [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md), and [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md).
+Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md), eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md), [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md), [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md), and P0 rollup [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
 
 API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_contracts`, `bcf_t2`, `mep_intake`).
 
@@ -45,7 +45,9 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Bare-metal offline-ready (any air-gap) | — | Docker image-track only; bare-metal **DEFERRED** |
 | Entire product is MIT (no third-party disclosure) | — | MIT for AeroBIM code; PDF/IFC stack has own licenses (LIC-001 Option B) |
 | Production-ready / external academic audit | — | Self-audit + NO_GO |
-| Hybrid AI makes the public API safe for customer data / masking = anonymity | — | Route only *policy-eligible*; masking reduces disclosure, not anonymity; contour NOT wired to verdict / live egress |
+| Hybrid AI makes the public API safe for customer data / masking = anonymity | — | Route only *policy-eligible*; masking reduces disclosure, not anonymity; WP-02 advisory pre-gate ≠ verdict path / anonymity guarantee |
+| Open-corpora binary match / timing = product accuracy | RT-001 | WP-06 regression/timing only; honest n=7; never >90% |
+| Wilson interim planner output = publishable customer precision | RT-001 | WP-07 `demonstrates_interim_target_publishable=false`; protocol only |
 
 ## Allowed with evidence pointers
 
@@ -60,7 +62,13 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | HITL remark edit | frontend + review-events API |
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
-| Hybrid AI routing foundation (classify/policy/guard/audit/gate) | `domain/hybrid/*` + 80+ tests; domain-pure, verdict-neutral (OFF==ON), fail-closed, NOT in the verdict path — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
+| Hybrid AI routing + WP-02 advisory pre-gate | `domain/hybrid/*` + `HybridRouteGate` on Analyze advisory; OFF==ON; never sets `summary.passed` — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) · [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md) |
+| Runtime baseline complete (WP-01) | `docs/evidence/runtime-baseline-latest.json` schema 1.2.0; CI `--check-complete` / `--check-readme` |
+| Detached signature envelope (WP-03) | `qualified_signature` ENG_PARTIAL; trust_chain NOT_VERIFIED — never «УКЭП проверена» |
+| Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + journal; RT-002 OPEN |
+| Package completeness inventory (WP-05) | Soft opt-in; fixture-grade; no native DWG |
+| Open corpora profiles (WP-06) | `samples/benchmarks/open-corpora/`; honest n=7; CI smoke pins |
+| Quality measurement protocol (WP-07) | [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md); interim 0.60; never >90% |
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`; inventory + [`license-policy-2026.md`](license-policy-2026.md) |
 | Annotation claimed-GUID presence (P2-04) | spatial-index lookup; wall-guid demo pin [`evidence/checkpoint2-evidence-bundle-latest.json`](evidence/checkpoint2-evidence-bundle-latest.json) |
 | MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + `AEROBIM_MEP_AABB_FILTER`; always `geometry_verified=False` — [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) |

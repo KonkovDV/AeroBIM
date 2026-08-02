@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.6.0"
-last_updated: "2026-08-01"
+version: "1.7.0"
+last_updated: "2026-08-02"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -82,7 +82,12 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Multipart document upload | `POST /v1/uploads` → storage-relative path |
 | EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |
 | Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark`) |
-| Hybrid AI routing foundation (eng) | `domain/hybrid/*` classify/policy/guard/audit + `HybridRouteGate`; domain-pure, verdict-neutral (OFF==ON), fail-closed; 80+ tests |
+| Hybrid AI routing + WP-02 advisory pre-gate (eng) | `HybridRouteGate` mandatory before Analyze advisory observations; domain-pure, verdict-neutral (OFF==ON), fail-closed; never sets `summary.passed` |
+| Detached signature envelope (WP-03) | Presence/hash/roles; `qualified_signature` ENG_PARTIAL; trust_chain always NOT_VERIFIED |
+| Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + `execution_mode` + expert journal; fixture ≠ customer pack (RT-002 OPEN) |
+| Package completeness inventory (WP-05) | Soft opt-in inventory checks; no native DWG claim; fixture-grade only |
+| Open corpora profiles (WP-06) | 3 pinned profiles; honest regression n=7; regression/timing only — not product accuracy |
+| Quality measurement protocol (WP-07) | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | Production PDF path; PyMuPDF optional `pdf-agpl` only — not a court opinion |
 | Annotation claimed-GUID → `ifc_guid` (P2-04) | Presence confirm via spatial index only; wall-guid demo evidence pin |
 | MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + optional AABB; always `geometry_verified=False`; capability stays `NOT_VERIFIED` |
@@ -108,7 +113,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Bare-metal offline without Docker | DEFERRED; Docker track only |
 | IfcLLM / GraphRAG multi-hop IFC QA | **Not shipped** — I9 remains advisory scaffold; stub/relational fixture ≠ product KG |
 | Production rollout / confirmed revenue | Requires customer documents outside repo |
-| Hybrid AI live pre-gate wiring / model router / masking-on-egress | Foundation done (P0/P1); live consumption + router = post-P1/P2; not deployed |
+| Hybrid AI PUBLIC VLM egress + PrivacyGuard salt-on-egress | WP-02 advisory pre-gate landed on Analyze; PUBLIC VLM / mask-on-egress still residual (masking ≠ anonymity) |
 
 ## Non-claims (explicit boundaries)
 
@@ -120,7 +125,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 6. TZ wording «точность >90%» is an **evaluation target**, not a verified product claim, until precision/recall is published from a labeled customer corpus.
 7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer” (see Claims Lock / this claim boundary).
 9. AeroBIM does **not** claim IfcLLM / GraphRAG product capability. I9 is an **advisory scaffold** (port + allowlisted query + fixture QA); multi-hop GraphRAG is unshipped.
-10. AeroBIM does **not** claim the Hybrid AI routing contour is wired into the verdict, nor that masking guarantees anonymity — it is a domain-pure, fail-closed **foundation** (verdict-neutral, OFF==ON; not in the live egress path).
+10. AeroBIM does **not** claim Hybrid AI is in the verdict path, nor that masking guarantees anonymity — WP-02 wires `HybridRouteGate` as an **advisory pre-gate** only (verdict-neutral, OFF==ON; blocked → no advisory observation).
 
 ## Reproducibility baseline
 

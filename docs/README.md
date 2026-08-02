@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Documentation — TechLab jury surface"
 status: active
-version: "3.2.0"
-last_updated: "2026-08-01"
+version: "3.3.0"
+last_updated: "2026-08-02"
 tags: [aerobim, documentation, samolet, techlab, jury]
 claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng readiness ≠ customer GO. Operator/debug docs are local (.local/)."
 ---
@@ -10,17 +10,19 @@ claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng r
 # Documentation (TechLab jury)
 
 Checkpoint: **`NO_GO`** — [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).  
-Aug 2026 eng readiness: [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).
+Aug 2026 eng readiness: [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).  
+P0 eng package WP-01…08 Red Team rollup: [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
 
-Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, and citeable fixtures. Operator runbooks, Red Team phase dumps, and  archive live under `.local/` (not published).
+Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and curated eng/Red Team summaries under `docs/quality/`. Operator runbooks, phase Red Team dumps, and  archive live under `.local/` (not published).
 
-**Red Team docs pass (2026-07-19 + eng remediations through 2026-08-01):** Claims Lock / blockers / runtime matrix / ADR-001 / SECURITY aligned with fail-closed, ACL 404, SSRF guard, Shared-gate `summary.passed`, LIC-001 Option B, P2-04 GUID presence, P2-02 geometry honesty. Customer blockers RT-001/002/003 remain open.
+**Red Team / eng remediations through 2026-08-02:** Claims Lock / blockers / ADR-001 / SECURITY aligned with fail-closed Shared-gate; P0 WP-01…08 eng-delivered under Claims Lock. Customer blockers RT-001/002/003 remain open.
 
 ## Read first
 
 | File | Role |
 |------|------|
-| [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng status** (LIC-001 / P2 / offline) |
+| [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng status** (P0 WP-01…08 + LIC-001 / P2 / offline) |
+| [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) | P0 Red Team rollup (self; Checkpoint NO_GO) |
 | [`docs.md`](docs.md) | **Jury memo (RU)** |
 | [`samolet.md`](samolet.md) | Strategy × Samolet 10D |
 | [`tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Customer TZ v2.0 |
@@ -37,6 +39,8 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md`](roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) | Geometry honesty deepen |
 | [`license-policy-2026.md`](license-policy-2026.md) | LIC-001 Option B |
 | [`offline-deployment-2026.md`](offline-deployment-2026.md) | Docker offline; bare-metal deferred |
+| [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality measurement protocol |
+| [`../samples/benchmarks/open-corpora/README.md`](../samples/benchmarks/open-corpora/README.md) | WP-06 open corpora profiles |
 
 ## Supporting (still jury-facing)
 
@@ -60,5 +64,9 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`pilot/NORM_PACK_RASE_GUIDE_2026.md`](pilot/NORM_PACK_RASE_GUIDE_2026.md) | Norm pack + RASE |
 | [`pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md`](pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md) | Demo evidence + precision harness |
 | [`pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md`](pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md) | DWG / MEP / calc / BCF→СОД gap + priority |
-| [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI routing foundation (design + final report; verdict-neutral, NO_GO) |
+| [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI design report; WP-02 advisory pre-gate landed after report |
+| [`quality/RED_TEAM_WP01_03_2026_08_02.md`](quality/RED_TEAM_WP01_03_2026_08_02.md) | Red Team WP-01..03 |
+| [`quality/RED_TEAM_WP04_05_2026_08_02.md`](quality/RED_TEAM_WP04_05_2026_08_02.md) | Red Team WP-04/05 |
+| [`quality/RED_TEAM_WP06_08_2026_08_02.md`](quality/RED_TEAM_WP06_08_2026_08_02.md) | Red Team WP-06..08 |
 | [`TIER0_INDEX.md`](TIER0_INDEX.md) | Compact map |
+| [`ai-safety-and-document-ingestion-2026.md`](ai-safety-and-document-ingestion-2026.md) | Trust boundaries / AI safety |
