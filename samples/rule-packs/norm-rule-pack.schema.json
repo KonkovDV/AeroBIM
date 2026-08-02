@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://aerobim.dev/schemas/norm-rule-pack-1.0.0.json",
+  "$id": "https://aerobim.dev/schemas/norm-rule-pack-2.0.0.json",
   "title": "AeroBIM norm rule pack",
-  "description": "Machine-readable acceptance criteria. When status is approved or customer_approved, a full approval object plus document metadata and pack_hash are mandatory. approval_ref alone is never sufficient. Synthetic/fixture packs must carry claim_labels and cannot claim customer_approved.",
+  "description": "Machine-readable acceptance criteria (WP-04). schema_version 1.0.0 = legacy fixtures; 2.0.0 = second-generation RASE + execution_mode + expert_confirmation_journal. When status is approved or customer_approved, a full approval object plus document metadata and pack_hash are mandatory. approval_ref / customer_approval_ref alone is never sufficient. Synthetic/fixture packs must carry claim_labels and cannot claim customer_approved. Fixture customer_approved examples do NOT close RT-002.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -16,7 +16,7 @@
     "rules"
   ],
   "properties": {
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "enum": ["1.0.0", "2.0.0"] },
     "pack_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
     "version": { "type": "string", "minLength": 1, "maxLength": 64 },
     "title": { "type": "string", "minLength": 1, "maxLength": 256 },
@@ -33,6 +33,18 @@
       "maxLength": 128,
       "description": "Optional pack edition string; distinct from per-rule norm_edition / approval.document_edition"
     },
+    "norm_edition": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Pack-level norm edition (WP-04); required for schema 2.0.0"
+    },
+    "norm_edition_date": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Pack-level edition/effective date (ISO date preferred); required for schema 2.0.0"
+    },
     "disciplines": {
       "type": "array",
       "minItems": 1,
@@ -40,7 +52,17 @@
       "items": { "type": "string", "minLength": 1, "maxLength": 64 }
     },
     "status": {
-      "enum": ["synthetic-template", "synthetic", "draft", "approved", "customer_approved", "retired"]
+      "enum": [
+        "synthetic-template",
+        "synthetic",
+        "draft",
+        "approved",
+        "customer_approved",
+        "retired",
+        "expired",
+        "inapplicable",
+        "expert_required"
+      ]
     },
     "claim_labels": {
       "type": "array",
@@ -112,6 +134,12 @@
       "maxLength": 512,
       "description": "Jury-facing approval id. Never sufficient alone for customer_approved/approved — full approval object required."
     },
+    "customer_approval_ref": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "WP-04 alias for approval_ref; never sufficient alone without approval object."
+    },
     "customer_action_required": { "type": "string" },
     "rules": {
       "type": "array",
@@ -169,9 +197,63 @@
           "required": ["status"]
         }
       }
+    },
+    {
+      "if": {
+        "properties": { "schema_version": { "const": "2.0.0" } },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "required": ["norm_edition", "norm_edition_date"],
+        "properties": {
+          "norm_edition": { "type": "string", "minLength": 1 },
+          "norm_edition_date": { "type": "string", "minLength": 1 },
+          "rules": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/rule_v2" }
+          }
+        }
+      }
     }
   ],
   "$defs": {
+    "expert_confirmation_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confirmed_by", "confirmed_at", "decision"],
+      "properties": {
+        "confirmed_by": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp of expert confirmation"
+        },
+        "decision": { "enum": ["confirmed", "rejected", "deferred"] },
+        "note": { "type": ["string", "null"], "maxLength": 2000 }
+      }
+    },
+    "rase": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "RASE: requirement / applicability / selection / exclusion (exception is legacy alias)",
+      "required": ["requirement", "applicability", "selection"],
+      "properties": {
+        "requirement": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "applicability": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "selection": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "exclusion": { "type": ["string", "null"], "maxLength": 2000 },
+        "exception": {
+          "type": ["string", "null"],
+          "maxLength": 2000,
+          "description": "Legacy alias for exclusion"
+        }
+      },
+      "anyOf": [
+        { "required": ["exclusion"] },
+        { "required": ["exception"] }
+      ]
+    },
     "rule": {
       "type": "object",
       "additionalProperties": false,
@@ -182,6 +264,11 @@
           "enum": ["ifc-property", "ifc-quantity", "drawing-annotation"]
         },
         "ifc_entity": { "type": "string", "minLength": 1 },
+        "object_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "WP-04 object type; often mirrors ifc_entity"
+        },
         "target_ref": { "type": "string", "minLength": 1 },
         "property_set": { "type": "string", "minLength": 1 },
         "property_name": { "type": "string", "minLength": 1 },
@@ -189,7 +276,18 @@
         "expected_value": { "type": ["string", "number", "boolean", "null"] },
         "unit": { "type": "string", "minLength": 1 },
         "evidence_text": { "type": "string" },
+        "requirement_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000,
+          "description": "Normative requirement statement (RASE R)"
+        },
         "instructions": { "type": "string" },
+        "source": {
+          "type": ["string", "null"],
+          "maxLength": 256,
+          "description": "WP-04 source document id; alias of norm_source"
+        },
         "norm_source": { "type": ["string", "null"], "maxLength": 256 },
         "norm_edition": { "type": ["string", "null"], "maxLength": 128 },
         "norm_clause": {
@@ -202,15 +300,41 @@
           "maxLength": 128,
           "description": "Alias for norm_clause"
         },
+        "clause_number": {
+          "type": ["string", "null"],
+          "maxLength": 128,
+          "description": "WP-04 alias for norm_clause"
+        },
         "approval_status": {
           "type": ["string", "null"],
           "enum": ["synthetic", "draft", "customer_approved", null]
         },
         "approval_ref": { "type": ["string", "null"], "maxLength": 512 },
+        "customer_approval_ref": {
+          "type": ["string", "null"],
+          "maxLength": 512,
+          "description": "WP-04 per-rule customer approval ref alias"
+        },
+        "discipline": { "type": ["string", "null"], "minLength": 1, "maxLength": 64 },
+        "stage": { "type": ["string", "null"], "minLength": 1, "maxLength": 64 },
+        "criticality": {
+          "type": ["string", "null"],
+          "enum": ["critical", "warning", "info", null]
+        },
         "severity": {
           "type": ["string", "null"],
           "enum": ["critical", "warning", "info", null],
-          "description": "Pilot severity hint; runtime may map to Finding severity"
+          "description": "Legacy alias for criticality"
+        },
+        "evidence_required": { "type": ["boolean", "null"] },
+        "execution_mode": {
+          "type": ["string", "null"],
+          "enum": ["deterministic", "expert_required", null],
+          "description": "deterministic enters checking only after expert journal; expert_required is list-only"
+        },
+        "expert_confirmation_journal": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/expert_confirmation_entry" }
         },
         "finding_class": {
           "type": ["string", "null"],
@@ -225,23 +349,56 @@
             null
           ]
         },
-        "rase": {
-          "type": ["object", "null"],
-          "additionalProperties": false,
-          "description": "RASE decomposition: interpretative R/A/E vs executable Selection",
-          "properties": {
-            "requirement": { "type": "string", "minLength": 1, "maxLength": 2000 },
-            "applicability": { "type": "string", "minLength": 1, "maxLength": 2000 },
-            "selection": { "type": "string", "minLength": 1, "maxLength": 2000 },
-            "exception": { "type": ["string", "null"], "maxLength": 2000 }
-          }
-        },
+        "rase": { "$ref": "#/$defs/rase" },
         "test_example_ref": {
           "type": ["string", "null"],
           "maxLength": 512,
           "description": "Pointer to fixture finding / unit test id for this rule"
         }
       }
+    },
+    "rule_v2": {
+      "allOf": [
+        { "$ref": "#/$defs/rule" },
+        {
+          "type": "object",
+          "required": [
+            "rule_id",
+            "requirement_text",
+            "rase",
+            "object_type",
+            "discipline",
+            "stage",
+            "criticality",
+            "evidence_required",
+            "execution_mode",
+            "expert_confirmation_journal"
+          ],
+          "properties": {
+            "execution_mode": { "enum": ["deterministic", "expert_required"] },
+            "evidence_required": { "type": "boolean" },
+            "criticality": { "enum": ["critical", "warning", "info"] },
+            "discipline": { "type": "string", "minLength": 1 },
+            "stage": { "type": "string", "minLength": 1 },
+            "object_type": { "type": "string", "minLength": 1 },
+            "requirement_text": { "type": "string", "minLength": 1 },
+            "rase": { "$ref": "#/$defs/rase" },
+            "expert_confirmation_journal": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/expert_confirmation_entry" }
+            }
+          },
+          "anyOf": [
+            { "required": ["source"] },
+            { "required": ["norm_source"] }
+          ],
+          "anyOf": [
+            { "required": ["clause_number"] },
+            { "required": ["norm_clause"] },
+            { "required": ["clause"] }
+          ]
+        }
+      ]
     }
   }
 }

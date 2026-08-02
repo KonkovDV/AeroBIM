@@ -57,3 +57,4 @@ class Tokens:
     HYBRID_ROUTE_GATE = "hybrid_route_gate"
     HYBRID_MODEL_ROUTER = "hybrid_model_router"
     DOCUMENT_SIGNATURE_AUDITOR = "document_signature_auditor"
+    PACKAGE_INVENTORY_LOADER = "package_inventory_loader"

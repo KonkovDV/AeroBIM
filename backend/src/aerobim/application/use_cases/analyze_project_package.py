@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Iterable, Sequence
 from dataclasses import replace
@@ -83,6 +84,7 @@ from aerobim.domain.ports import (
     NarrativeRuleSynthesizer,
     NormRulePackLoader,
     OfficeDocumentIngestor,
+    PackageInventoryLoader,
     QuantityConsistencyChecker,
     RasterDrawingAnalyzer,
     RemarkGenerator,
@@ -164,6 +166,7 @@ class AnalyzeProjectPackageUseCase:
         extraction_integrity_producer: ExtractionIntegritySignalProducer | None = None,
         hybrid_route_gate: HybridRouteGate | None = None,
         document_signature_auditor: DocumentSignatureAuditor | None = None,
+        package_inventory_loader: PackageInventoryLoader | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -218,6 +221,7 @@ class AnalyzeProjectPackageUseCase:
         self._extraction_integrity_producer = extraction_integrity_producer
         self._hybrid_route_gate = hybrid_route_gate
         self._document_signature_auditor = document_signature_auditor
+        self._package_inventory_loader = package_inventory_loader
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
@@ -535,6 +539,7 @@ class AnalyzeProjectPackageUseCase:
         quantity_capability: CapabilityStatus | None = None,
         extraction_integrity: CapabilityStatus | None = None,
         qualified_signature: CapabilityStatus | None = None,
+        package_completeness: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
         return build_report_capabilities(
             requirements=requirements,
@@ -555,6 +560,7 @@ class AnalyzeProjectPackageUseCase:
             quantity_capability=quantity_capability,
             extraction_integrity=extraction_integrity,
             qualified_signature=qualified_signature,
+            package_completeness=package_completeness,
             ids_validator_configured=self._ids_validator is not None,
             ifc_schema_validator_configured=self._ifc_schema_validator is not None,
             require_bsi_schema=self._require_bsi_schema,
@@ -646,6 +652,104 @@ class AnalyzeProjectPackageUseCase:
                 )
             )
         return capability, issues
+
+    def _run_package_completeness(
+        self, request: ValidationRequest
+    ) -> tuple[CapabilityStatus | None, list[ValidationIssue]]:
+        """Optional WP-05 package completeness (soft opt-in via request flag/path).
+
+        Runs when ``require_package_completeness`` or ``package_inventory_path`` is set.
+        Missing mandatory PD section → precise ERROR naming the section.
+        Never claims native DWG or statutory PP-87 exhaustiveness.
+        """
+
+        should_run = (
+            request.require_package_completeness or request.package_inventory_path is not None
+        )
+        if not should_run:
+            return None, []
+
+        from aerobim.domain.package_completeness import CLAIM_BOUNDARY
+
+        loader = self._package_inventory_loader
+        inventory_path = request.package_inventory_path
+        if inventory_path is None:
+            reason = (
+                "package completeness required but package_inventory_path not provided; "
+                f"{CLAIM_BOUNDARY}"
+            )
+            return (
+                CapabilityStatus(CapabilityState.FAILED, reason),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-PACKAGE-INVENTORY-MISSING",
+                        severity=Severity.ERROR,
+                        message=reason,
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id="package-completeness",
+                        origin="deterministic",
+                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
+                    )
+                ],
+            )
+        if loader is None:
+            reason = (
+                "package completeness requested but PackageInventoryLoader not configured; "
+                f"{CLAIM_BOUNDARY}"
+            )
+            return (
+                CapabilityStatus(CapabilityState.FAILED, reason),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-PACKAGE-INVENTORY-MISSING",
+                        severity=Severity.ERROR,
+                        message=reason,
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id="package-completeness",
+                        origin="deterministic",
+                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
+                    )
+                ],
+            )
+
+        try:
+            report = loader.assess(inventory_path)
+        except FileNotFoundError:
+            reason = (
+                f"Package inventory not found at {inventory_path}; {CLAIM_BOUNDARY}"
+            )
+            return (
+                CapabilityStatus(CapabilityState.FAILED, reason),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-PACKAGE-INVENTORY-MISSING",
+                        severity=Severity.ERROR,
+                        message=reason,
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id="package-completeness",
+                        origin="deterministic",
+                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
+                    )
+                ],
+            )
+        except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
+            reason = f"Package inventory unreadable ({exc}); {CLAIM_BOUNDARY}"
+            return (
+                CapabilityStatus(CapabilityState.FAILED, reason),
+                [
+                    ValidationIssue(
+                        rule_id="AEROBIM-PACKAGE-INVENTORY-UNREADABLE",
+                        severity=Severity.ERROR,
+                        message=reason,
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        source_id="package-completeness",
+                        origin="deterministic",
+                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
+                    )
+                ],
+            )
+
+        return report.to_capability_status(), list(report.issues)
 
     def _probe_extraction_integrity(self, request: ValidationRequest) -> CapabilityStatus:
         return probe_extraction_integrity(

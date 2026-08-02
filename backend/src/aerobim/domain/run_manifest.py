@@ -43,6 +43,7 @@ _CAPABILITY_FIELDS = (
     "quantity",
     "extraction_integrity",
     "qualified_signature",
+    "package_completeness",
 )
 
 

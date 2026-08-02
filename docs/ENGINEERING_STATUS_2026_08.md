@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 last_updated: "2026-08-02"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture != customer."
 ---
@@ -17,6 +17,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
+| **WP-05 package completeness** | Declared inventory: mandatory PD sections, format honesty (no native DWG), cipher/specs/schedules, PD↔RD pairing; soft opt-in via request flag | Fixture-grade only; not PP-87 / customer intake |
+| **WP-04 norm pack v2** | Schema 2.0.0 RASE + `execution_mode` + expert confirmation journal; loader fail-closed without `customer_approved`+approval; `list_expert_required_norm_rules` | RT-002 OPEN; fixture ≠ customer pack |
 | **WP-03 signature envelope** | Detached `.sig.json` presence/hash/roles; `qualified_signature` ENG_PARTIAL; trust_chain always NOT_VERIFIED | Never «УКЭП проверена» |
 | **WP-02 Hybrid advisory pre-gate** | `HybridRouteGate` mandatory before advisory observations; blocked → no findings; egress bytes on audit | Not verdict path; Checkpoint NO_GO |
 | **WP-01 runtime baseline** | Schema 1.2.0: passed/skipped/failed + gates + env fingerprint; CI `--check-complete` | Not Checkpoint GO |

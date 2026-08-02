@@ -31,6 +31,39 @@ class ManifestLogicConsistencyAdapter:
                 )
             )
 
+        # WP-05 hints on PackageManifest: unpaired declared sections (WARNING here;
+        # fail-closed ERROR lives in package_completeness when opted in).
+        pd_set = {code.strip().upper() for code in manifest.present_pd_sections if code.strip()}
+        rd_set = {code.strip().upper() for code in manifest.present_rd_sections if code.strip()}
+        for code in sorted(pd_set - rd_set):
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-LOGIC-UNPAIRED-PD-SECTION",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"Declared PD section {code} has no matching RD section in package "
+                        "topology hints"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    source_id="logic-consistency",
+                    target_ref=code,
+                )
+            )
+
+        if any(fmt.strip().casefold() == "dwg" for fmt in manifest.declared_formats):
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-LOGIC-NATIVE-DWG-DECLARED",
+                    severity=Severity.WARNING,
+                    message=(
+                        "Package topology declares native DWG; AeroBIM does not analyze "
+                        "native DWG — use IFC/PDF/DXF exchange formats"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    source_id="logic-consistency",
+                )
+            )
+
         if manifest.drawing_count > 0:
             missing_sheets = sum(1 for sheet in manifest.drawing_sheet_ids if not sheet.strip())
             if missing_sheets:

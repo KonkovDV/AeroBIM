@@ -33,6 +33,9 @@ _PASS_BLOCKING_FAILED_FIELDS: tuple[str, ...] = (
     # WP-03: FAILED qualified_signature (missing required envelope / integrity)
     # blocks pass; default MISSING / NOT_VERIFIED stay non-blocking.
     "qualified_signature",
+    # WP-05: FAILED package_completeness (missing mandatory section / pairing)
+    # blocks pass; default SKIPPED stays non-blocking (soft opt-in).
+    "package_completeness",
 )
 
 # Required capabilities: only OK is acceptable (Master Prompt §6).
