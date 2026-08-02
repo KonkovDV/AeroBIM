@@ -10,6 +10,9 @@ Safety: makes real outbound calls; run ONLY on non-NDA / open sample images.
 Requires ``AEROBIM_KIMI_API_BASE_URL`` + ``AEROBIM_KIMI_API_KEY``; without them
 it prints NOT_RUN and exits 2 (a skip, never a fabricated pass). Advisory only —
 the deterministic verdict is untouched.
+
+WP-02 residual: ``HybridRouteGate`` MUST pass (PUBLIC + mask) before any client
+is constructed; blocked → zero bytes to Kimi.
 """
 
 from __future__ import annotations
@@ -30,8 +33,14 @@ from aerobim.infrastructure.adapters.pdfium_region_cropper import PdfiumRegionCr
 from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
     RegionRestrictedVlmPipeline,
 )
+from aerobim.tools.vlm_smoke_gate import (
+    evaluate_vlm_smoke_egress,
+    gate_blocks_external,
+    smoke_tenant_id,
+)
 
 _SKIP_EXIT = 2
+_BLOCKED_EXIT = 3
 
 
 def build_region_smoke_report(
@@ -120,6 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--image", type=Path, required=True, help="OPEN-DATA sheet (pdf/png/jpg)")
     parser.add_argument("--sheet-id", default="SMOKE-01")
+    parser.add_argument("--tenant-id", default=None, help="Hybrid tenant (default open-data-smoke)")
     parser.add_argument("--cache-dir", default=None, help="§2.1 cache dir (enables replay)")
     parser.add_argument("--out", type=Path, default=None, help="artifact path (JSON)")
     args = parser.parse_args(argv)
@@ -147,6 +157,23 @@ def main(argv: list[str] | None = None) -> int:
     if not args.image.is_file():
         print(json.dumps({"status": "NOT_RUN", "reason": f"image not found: {args.image}"}))
         return _SKIP_EXIT
+
+    tenant = smoke_tenant_id(args.tenant_id)
+    gate_result = evaluate_vlm_smoke_egress(
+        tenant_id=tenant,
+        sheet_id=args.sheet_id,
+        image_name=args.image.name,
+    )
+    if gate_blocks_external(gate_result):
+        blocked = {
+            "status": "BLOCKED_BY_GATE",
+            "reason": gate_result.decision.reason,
+            "may_call_external": False,
+            "egress_bytes_estimate": gate_result.egress_bytes_estimate,
+            "claim_boundary": ("HybridRouteGate refused PUBLIC VLM egress; zero bytes to Kimi"),
+        }
+        print(json.dumps(blocked, ensure_ascii=False, indent=2))
+        return _BLOCKED_EXIT
 
     pipeline = _build_pipeline(
         base_url=base_url, api_key=api_key, model=model, reasoning=reasoning, cache_dir=cache_dir

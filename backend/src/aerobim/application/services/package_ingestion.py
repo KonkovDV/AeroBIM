@@ -158,10 +158,22 @@ class PackageIngestionService:
             last_reason = result.reason
             if result.supported:
                 if result.format_resolved == "dwg":
-                    pass
+                    # Native DWG can never be supported — fail-closed even if a
+                    # misconfigured ingestor returns supported=True (STUB-ODA-CAD-001).
+                    all_dwg_supported = False
+                    last_dwg_reason = result.reason or "native DWG parser is not implemented"
+                    issues.append(
+                        ValidationIssue(
+                            rule_id="AEROBIM-CAD-DWG-IMPOSSIBLE-SUPPORTED",
+                            severity=Severity.WARNING,
+                            message=last_dwg_reason,
+                            category=FindingCategory.DRAWING_VALIDATION,
+                            source_id=source.path.name if source.path is not None else "cad",
+                        )
+                    )
                 else:
                     saw_supported_dxf = True
-                annotations.extend(result.annotations)
+                    annotations.extend(result.annotations)
             elif is_dwg or result.format_resolved == "dwg":
                 # DWG conversion MVP: an explicitly declared + hash-verified derived
                 # substitute registers the pair instead of failing the package.

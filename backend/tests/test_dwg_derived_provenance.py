@@ -254,6 +254,48 @@ class AnalyzeDerivedRouteTests(unittest.TestCase):
             )
         )
 
+    def test_impossible_supported_dwg_fails_closed(self) -> None:
+        """Misconfigured ingestor returning supported+dwg must never look OK."""
+
+        class _BrokenDwgIngestor:
+            def ingest(self, path, *, sheet_id=None):
+                from aerobim.domain.cad_ingest import CadIngestResult
+
+                return CadIngestResult(
+                    annotations=(),
+                    format_resolved="dwg",
+                    entity_count=0,
+                    degraded=False,
+                    supported=True,
+                    reason=None,
+                )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "plan.dwg"
+            source.write_bytes(b"AC1032")
+            ifc = root / "m.ifc"
+            ifc.write_text("ISO-10303-21;", encoding="utf-8")
+            report = _minimal_uc(cad_model_ingestor=_BrokenDwgIngestor()).execute(
+                ValidationRequest(
+                    request_id="dwg-impossible-supported",
+                    ifc_path=ifc,
+                    requirement_source=RequirementSource(
+                        text="R1|IFCWALL|Pset_WallCommon|FireRating|REI60\n"
+                    ),
+                    drawing_sources=(DrawingSource(path=source, sheet_id="DWG1"),),
+                )
+            )
+        capability = report.capabilities.dwg_dxf  # type: ignore[attr-defined]
+        self.assertEqual(capability.status, CapabilityState.FAILED)
+        self.assertNotEqual(capability.status, CapabilityState.OK)
+        impossible = [
+            issue
+            for issue in report.issues  # type: ignore[attr-defined]
+            if issue.rule_id == "AEROBIM-CAD-DWG-IMPOSSIBLE-SUPPORTED"
+        ]
+        self.assertEqual(len(impossible), 1)
+
     def test_verified_sidecar_registers_derived_route_never_ok(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

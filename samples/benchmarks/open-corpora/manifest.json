@@ -17,6 +17,11 @@
       "profile_id": "open-corpora-load",
       "path": "samples/benchmarks/open-corpora/profiles/load.json",
       "kind": "load"
+    },
+    {
+      "profile_id": "open-corpora-regression-bsi",
+      "path": "samples/benchmarks/open-corpora/profiles/regression-bsi.json",
+      "kind": "regression"
     }
   ],
   "ci": {

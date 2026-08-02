@@ -6,14 +6,14 @@
 ## VERIFIED in AeroBIM (ENG_PARTIAL)
 
 - Input file hashes (sha256) in reports / evidence bundles / package provenance paths exist in code.
-- Detached signature envelope schema `aerobim_detached_signature_envelope_v1`: presence, content SHA-256 integrity, and required signer-role completeness are assessed on fixture envelopes (`samples/signatures/`).
+- Detached signature envelope schema `aerobim_detached_signature_envelope_v1`: presence, content SHA-256 integrity, required signer-role completeness, **presence-only** `signature_alg` / `signature_value` (no crypto verify), and optional multi-file `package_hashes` / `content_hashes` binding are assessed on fixture envelopes (`samples/signatures/`).
 - Claims Lock forbids «УКЭП проверена» / «подпись документа проверена» as legal claims.
 
 ## NOT VERIFIED / missing
 
 | Function | Status |
 |---|---|
-| Cryptographic signature validation (CMS/CAdES/etc.) | missing |
+| Cryptographic signature validation (CMS/CAdES/etc.) | **missing** (crypto adapter not shipped) |
 | Certificate / CRL / OCSP / trust chain | **NOT_VERIFIED** (always; no accredited CA/TSP access) |
 | Signer authority beyond role-label presence | missing |
 | UI «drawn signature» as validation | forbidden |
@@ -21,7 +21,7 @@
 
 ## Engineering rule
 
-Original bytes must not be rewritten; derived previews are not originals; hash mismatch → blocking finding when that check is enabled (`require_signature_audit` / `signature_envelope_path`). Trust chain remains **NOT_VERIFIED** even when envelope presence/integrity/roles pass — never upgrade to legal «УКЭП проверена».
+Original bytes must not be rewritten; derived previews are not originals; hash mismatch → blocking finding when that check is enabled (`require_signature_audit` / `signature_envelope_path`). Trust chain remains **NOT_VERIFIED** even when envelope presence/integrity/roles/signature-field presence pass — never upgrade to legal «УКЭП проверена». Any future CMS/CAdES adapter must use a **new** capability name, not flip `qualified_signature` to OK.
 
 **Legal note:** this document is engineering boundary, not legal advice for customer УКЭП process.
 

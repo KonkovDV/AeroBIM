@@ -144,6 +144,22 @@ class T2ArtifactBindingTests(unittest.TestCase):
         self.assertFalse(report["bcf_binding"]["checked"])
         self.assertTrue(report["claim_allowed"])
 
+    def test_missing_artifacts_reason_names_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            report = verify_bcf_t2_evidence_dir(root)
+        self.assertFalse(report["claim_allowed"])
+        self.assertIn("import-log.txt", report["reason"])
+        self.assertIn("screenshot.png", report["reason"])
+
+    def test_checklist_dry_run_never_claim_allowed(self) -> None:
+        from aerobim.tools.verify_bcf_t2_evidence import build_t2_checklist_report
+
+        report = build_t2_checklist_report()
+        self.assertTrue(report["dry_run"])
+        self.assertFalse(report["claim_allowed"])
+        self.assertEqual(len(report["checklist"]), 5)
+
 
 if __name__ == "__main__":
     unittest.main()

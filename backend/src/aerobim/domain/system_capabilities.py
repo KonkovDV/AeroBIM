@@ -154,6 +154,8 @@ def build_auth_bff_capability() -> dict[str, object]:
         "status": "NOT_IMPLEMENTED",
         "design": "docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md",
         "dev_proxy": "Vite loopback Authorization inject only",
+        "phase_2_stubs": "login/callback/logout with CSRF state (no production session)",
+        "phase_3_pending": "HttpOnly session cookie + IdP wiring",
     }
 
 

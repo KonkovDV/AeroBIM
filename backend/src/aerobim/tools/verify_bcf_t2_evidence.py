@@ -30,6 +30,56 @@ _FORBIDDEN_CLAIMS = frozenset(
     }
 )
 
+_CHECKLIST_ITEMS: tuple[tuple[str, str], ...] = (
+    (
+        "import-log.txt",
+        "CDE import log or timestamped operator note (product, version, topic count)",
+    ),
+    ("screenshot.png", "CDE UI screenshot with imported topics visible"),
+    ("hashes.json", "SHA-256 of import-log.txt, screenshot.png, and bcf_zip_sha256"),
+    ("STATUS.json", "status=VERIFIED and claim_allowed=true only after real import"),
+    ("T1 structural evidence", "bcf_zip_sha256 must match T1 structural-handoff digest"),
+)
+
+
+def build_t2_checklist_report(*, directory: Path | None = None) -> dict[str, Any]:
+    """Dry-run checklist — no claim_allowed flip; surfaces required artifacts."""
+
+    present: list[str] = []
+    missing: list[str] = []
+    if directory is not None:
+        present = [name for name in _REQUIRED if (directory / name).is_file()]
+        missing = [name for name in _REQUIRED if name not in present]
+    return {
+        "artifact_type": "bcf_t2_evidence_checklist",
+        "schema_version": "1.0.0",
+        "tier": "T2",
+        "dry_run": True,
+        "claim_allowed": False,
+        "status": "not_verified",
+        "reason": "checklist dry-run — customer CDE import environment is not provided",
+        "required_files": list(_REQUIRED),
+        "present_files": present,
+        "missing_files": missing,
+        "checklist": [
+            {"artifact": name, "description": description} for name, description in _CHECKLIST_ITEMS
+        ],
+        "forbidden_claims": sorted(_FORBIDDEN_CLAIMS),
+        "directory": str(directory) if directory is not None else None,
+    }
+
+
+def _missing_artifact_reason(missing: list[str]) -> str:
+    if not missing:
+        return "customer CDE import environment is not provided"
+    labels = ", ".join(missing)
+    hints = "; ".join(
+        f"{name}: {next(desc for art, desc in _CHECKLIST_ITEMS if art == name)}"
+        for name in missing
+        if any(art == name for art, _ in _CHECKLIST_ITEMS)
+    )
+    return f"missing T2 artifacts ({labels}) — {hints}"
+
 
 def _sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -173,7 +223,7 @@ def verify_bcf_t2_evidence_dir(
     if complete:
         reason = "T2 evidence complete"
     elif missing:
-        reason = "customer CDE import environment is not provided"
+        reason = _missing_artifact_reason(missing)
     elif hash_mismatches:
         reason = f"T2 hash verification failed: {'; '.join(hash_mismatches)}"
     elif not binding_ok:
@@ -220,8 +270,19 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="T1 structural-handoff JSON to bind the BCF digest against",
     )
+    parser.add_argument(
+        "--checklist",
+        action="store_true",
+        help="Dry-run: print required T2 artifacts checklist (never claim_allowed)",
+    )
     parser.add_argument("--json", action="store_true", help="Print JSON only")
     args = parser.parse_args(argv)
+    if args.checklist:
+        report = build_t2_checklist_report(
+            directory=args.dir.resolve() if args.dir else None,
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0
     report = verify_bcf_t2_evidence_dir(
         args.dir.resolve(),
         structural_evidence=(

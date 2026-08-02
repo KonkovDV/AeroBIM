@@ -12,9 +12,12 @@ Commands (from `backend/`):
 python -m aerobim.tools.offline_bundle build
 python -m aerobim.tools.offline_bundle verify
 python -m aerobim.tools.offline_bundle smoke
+python -m aerobim.tools.offline_bundle wheelhouse  # exit 2 — DEFERRED honesty artifact
 ```
 
 `smoke` path: `docker rmi` tag → `docker load` from tar → run container `--network none` → health + capabilities HTTP checks.
+
+`wheelhouse` writes `artifacts/offline-bundle/wheelhouse-DEFERRED.json` and exits **2** — bare-metal pip wheelhouse is explicitly DEFERRED, not verified.
 
 CI: `.github/workflows/ci.yml` job `offline-bundle-smoke` (on `main`).
 
@@ -22,7 +25,7 @@ CI: `.github/workflows/ci.yml` job `offline-bundle-smoke` (on `main`).
 
 | Item | Status |
 |---|---|
-| Bare-metal wheelhouse install without Docker | **DEFERRED** — owner: Docker path sufficient |
+| Bare-metal wheelhouse install without Docker | **DEFERRED** — owner: Docker path sufficient; `python -m aerobim.tools.offline_bundle wheelhouse` writes honesty artifact and exits 2 |
 | Full npm cache offline frontend rebuild inside bundle | UNKNOWN / check current bundle manifest |
 | Hugging Face / cloud LLM in offline mode | N/A — default deny; advisory optional |
 

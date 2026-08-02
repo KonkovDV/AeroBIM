@@ -9,6 +9,7 @@ Never rewrites original content bytes. Never claims УКЭП legal validity —
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -19,6 +20,8 @@ from aerobim.domain.signature_immutability import (
     content_sha256_hex,
     missing_envelope_result,
 )
+
+_DRIVE_ABS = re.compile(r"^[A-Za-z]:[\\/]")
 
 
 class JsonDetachedSignatureAuditor:
@@ -68,9 +71,51 @@ class JsonDetachedSignatureAuditor:
         # Read-only hash of original content — never rewrite content bytes.
         digest = content_sha256_hex(content_path)
         envelope = SignatureEnvelope.from_mapping(payload)
+        observed_hashes = _observed_package_hashes(
+            content_path,
+            envelope,
+            primary_digest=digest,
+        )
         return assess_signature_envelope(
             envelope,
             digest,
             required_roles,
             signing_time=envelope.signing_time,
+            observed_package_hashes=observed_hashes,
         )
+
+
+def _observed_package_hashes(
+    content_path: Path,
+    envelope: SignatureEnvelope,
+    *,
+    primary_digest: str,
+) -> dict[str, str] | None:
+    """Build observed hash map when envelope declares package/content bindings.
+
+    Paths are jailed under ``content_path.parent`` — absolute paths and ``..``
+    traversal outside the content directory are ignored (no out-of-jail reads).
+    """
+
+    declared = {path: digest for path, digest in envelope.content_hashes}
+    declared.update({path: digest for path, digest in envelope.package_hashes})
+    if not declared:
+        return None
+    observed: dict[str, str] = {}
+    base_dir = content_path.parent.resolve()
+    for path, _expected in declared.items():
+        if Path(path).is_absolute() or _DRIVE_ABS.match(path) or path.startswith("\\\\"):
+            continue
+        try:
+            candidate = (base_dir / path).resolve()
+        except OSError:
+            continue
+        if not candidate.is_relative_to(base_dir):
+            continue
+        if candidate.is_file():
+            observed[path] = content_sha256_hex(candidate)
+    # Always include the audited content under its basename when listed or implied.
+    observed.setdefault(content_path.name, primary_digest)
+    if envelope.content_path_hint:
+        observed.setdefault(envelope.content_path_hint.strip(), primary_digest)
+    return observed

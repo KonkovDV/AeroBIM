@@ -10,11 +10,12 @@ anchors:
 
 # POST-05: OIDC BFF design (honesty spike)
 
-**Status:** **DESIGNED / NOT_IMPLEMENTED**
+**Status:** **DESIGNED / NOT_IMPLEMENTED** (Phase 2 CSRF stubs landed; Phase 3 pending)
 
-This document is the Wave A3 design spike only. It does **not** ship login/callback/logout
-code, IdP registration, session store, or reverse-proxy cookie termination. Frontend and
-API must keep reporting `auth_bff.status = NOT_IMPLEMENTED` until phases 2–3 land.
+This document is the Wave A3 design spike. Phase 2 stub routes (`/v1/auth/login`,
+`/v1/auth/callback`, `/v1/auth/logout`) ship CSRF state binding only — no IdP
+registration, no production session cookie, and no reverse-proxy cookie termination.
+Frontend and API must keep reporting `auth_bff.status = NOT_IMPLEMENTED` until Phase 3.
 
 ## Problem
 
@@ -52,8 +53,8 @@ Normative choices (Jul 2026 BCP):
 
 | Phase | Scope | Status |
 |---|---|---|
-| **1** | Design + honesty surface (`auth_bff`, this doc, `GET /v1/auth/bff` → 501) | **THIS SPIKE** |
-| **2** | Stub `/v1/auth/login` + callback + logout with CSRF `state` store (no production IdP) | NOT_IMPLEMENTED |
+| **1** | Design + honesty surface (`auth_bff`, this doc, `GET /v1/auth/bff` → 501) | **DONE** |
+| **2** | Stub `/v1/auth/login` + callback + logout with CSRF `state` store (no production IdP) | **STUBS LANDED** (`infrastructure/auth/oidc_bff_stubs.py`); `auth_bff.status` still **NOT_IMPLEMENTED** |
 | **3** | Production reverse-proxy cookie session + IdP wiring + FE removal of any bearer inject | NOT_IMPLEMENTED |
 
 ## Honesty surface
@@ -64,19 +65,27 @@ Capabilities payload (`schema_version` ≥ 1.2.0):
 "auth_bff": {
   "status": "NOT_IMPLEMENTED",
   "design": "docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md",
-  "dev_proxy": "Vite loopback Authorization inject only"
+  "dev_proxy": "Vite loopback Authorization inject only",
+  "phase_2_stubs": "login/callback/logout with CSRF state (no production session)",
+  "phase_3_pending": "HttpOnly session cookie + IdP wiring"
 }
 ```
 
 Public probe: `GET /v1/auth/bff` returns the same JSON with **HTTP 501** (no bearer required)
 so the frontend can discover the gap without treating absence as “auth ready”.
 
-## Out of scope (this spike)
+## Out of scope (Phase 2 stubs)
 
 - Full IdP integration tests / Keycloak / Entra registration
 - Real PKCE code exchange, refresh rotation, JWKS session binding
-- Cookie session store implementation
+- Production HttpOnly session cookie store
 - Changing `/v1/*` bearer `Depends` to cookie-only auth
+
+Phase 2 routes (all **501** except CSRF reject **400**):
+
+- `GET /v1/auth/login` — issues one-time `state`
+- `GET /v1/auth/callback?state=…` — validates state; no session cookie
+- `POST /v1/auth/logout` — clears in-memory CSRF store only
 
 ## Acceptance for later phases
 
