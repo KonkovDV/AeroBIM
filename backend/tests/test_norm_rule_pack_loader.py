@@ -27,7 +27,17 @@ def _approved_payload_from_intake() -> dict:
     payload["status"] = "customer_approved"
     payload["claim_labels"] = ["customer-evidence"]
     payload["jurisdiction"] = "RF"
+    payload["rules"][0]["clause_number"] = "7.1.2"
     payload["rules"][0]["norm_clause"] = "7.1.2"
+    # Deterministic checking still needs an expert journal entry (WP-04).
+    payload["rules"][0]["expert_confirmation_journal"] = [
+        {
+            "confirmed_by": "customer-qa",
+            "confirmed_at": "2026-08-02T12:00:00+03:00",
+            "decision": "confirmed",
+            "note": "Fixture journal for loader tests; does not close RT-002",
+        }
+    ]
     payload["approval"] = {
         "approved_by": "customer-qa",
         "approval_date": "2026-07-17T12:00:00+03:00",
@@ -38,6 +48,7 @@ def _approved_payload_from_intake() -> dict:
         "scope_reference": "SIGNED-MEMO-REF",
     }
     payload["approval_ref"] = "SIGNED-MEMO-REF"
+    payload["customer_approval_ref"] = "SIGNED-MEMO-REF"
     payload["pack_hash"] = compute_norm_pack_content_hash(payload)
     return payload
 
@@ -122,6 +133,8 @@ class JsonNormRulePackLoaderTests(unittest.TestCase):
         self.assertEqual(pack.document_title, "Samolet residential AR norms")
         self.assertEqual(pack.rules[0].norm_clause, "7.1.2")
         self.assertEqual(pack.rules[0].approval_status, "customer_approved")
+        self.assertEqual(pack.schema_version, "2.0.0")
+        self.assertIsNotNone(pack.customer_approval_ref)
 
     def test_norm_provenance_reaches_validation_issue(self) -> None:
         from aerobim.domain.models import (

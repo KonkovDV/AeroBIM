@@ -35,7 +35,12 @@ class QuantityClaim:
 
 @dataclass(frozen=True)
 class PackageManifest:
-    """Lightweight package topology for logical consistency checks."""
+    """Lightweight package topology for logical consistency checks.
+
+    WP-05 extends this with optional declared section / format hints so
+    completeness assessment can reuse the same topology without inventing a
+    parallel package model. Missing optional fields stay empty (not assumed OK).
+    """
 
     request_id: str
     ifc_path: Path
@@ -49,6 +54,12 @@ class PackageManifest:
     rd_section_path: Path | None
     revision: str | None
     stage: str | None
+    present_pd_sections: tuple[str, ...] = ()
+    present_rd_sections: tuple[str, ...] = ()
+    declared_formats: tuple[str, ...] = ()
+    has_specification: bool = False
+    has_schedule: bool = False
+    sheet_ciphers: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

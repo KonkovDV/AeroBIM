@@ -36,6 +36,7 @@ from aerobim.domain.models import (
 from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
 from aerobim.domain.section_pairing import SectionPairingReport
 from aerobim.domain.signature_immutability import SignatureAuditResult
+from aerobim.domain.package_completeness import PackageCompletenessReport, PackageInventory
 
 
 class RequirementExtractor(Protocol):
@@ -358,3 +359,11 @@ class DocumentSignatureAuditor(Protocol):
         envelope_path: Path | None = None,
         required_roles: Sequence[str] = (),
     ) -> SignatureAuditResult: ...
+
+
+class PackageInventoryLoader(Protocol):
+    """Load declared package inventory JSON for completeness assessment (WP-05)."""
+
+    def load(self, inventory_path: Path) -> PackageInventory: ...
+
+    def assess(self, inventory_path: Path) -> PackageCompletenessReport: ...

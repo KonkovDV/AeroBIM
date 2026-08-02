@@ -20,6 +20,7 @@
 - MEP graph `edge_kinds` (`co_presence` / `connects`) and matrix findings with `geometry_verified=False` — eng honesty only; **not** MEP delivered / not RT-003 closed.
 - Optional MEP AABB broadphase (`aabb_filter:applied`) shrinks candidates only; **not** verified geometric clash.
 - Наличие откреплённой подписи (envelope), целостность хеша содержимого и полнота ролей подписантов проверяются на fixture envelope (`samples/signatures/`, capability `qualified_signature` ENG_PARTIAL). `trust_chain_status` всегда `not_verified`.
+- Norm pack schema 2.0.0 (RASE + `execution_mode` + `expert_confirmation_journal`): loader fail-closed without `customer_approved` + full approval object; LLM-drafted text is not checkable without expert journal; `expert_required` rules are list-only (`list_expert_required_norm_rules`). **RT-002 remains OPEN** — fixture/draft packs ≠ customer-approved evidence.
 
 ## Forbidden
 

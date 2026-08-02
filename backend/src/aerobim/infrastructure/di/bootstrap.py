@@ -72,6 +72,9 @@ from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store
 from aerobim.infrastructure.adapters.json_detached_signature_auditor import (
     JsonDetachedSignatureAuditor,
 )
+from aerobim.infrastructure.adapters.json_package_inventory_loader import (
+    JsonPackageInventoryLoader,
+)
 from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
@@ -186,6 +189,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.DOCUMENT_SIGNATURE_AUDITOR,
         lambda _container: JsonDetachedSignatureAuditor(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.PACKAGE_INVENTORY_LOADER,
+        lambda _container: JsonPackageInventoryLoader(),
         lifecycle=Lifecycle.SINGLETON,
     )
     tolerance = ToleranceConfig()
@@ -527,6 +535,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             extraction_integrity_producer=current.resolve(Tokens.EXTRACTION_INTEGRITY_PRODUCER),
             hybrid_route_gate=current.resolve(Tokens.HYBRID_ROUTE_GATE),
             document_signature_auditor=current.resolve(Tokens.DOCUMENT_SIGNATURE_AUDITOR),
+            package_inventory_loader=current.resolve(Tokens.PACKAGE_INVENTORY_LOADER),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

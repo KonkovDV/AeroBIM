@@ -21,6 +21,10 @@ from aerobim.domain.derived_cad_provenance import (
     verify_derived_provenance_sidecar,
 )
 from aerobim.domain.ingestion import stamp_requirement_source
+from aerobim.domain.norm_rule_eligibility import (
+    filter_checkable_requirements,
+    list_expert_required_rules,
+)
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -337,11 +341,18 @@ class PackageIngestionService:
                     f"Duplicate norm rule pack requested: {pack.pack_id}@{pack.version}"
                 )
             seen_packs.add(identity)
-            requirements.extend(pack.rules)
+            # WP-04: only expert-confirmed deterministic rules enter checking;
+            # expert_required rules are listed in the capability reason, not auto-checked.
+            checkable = filter_checkable_requirements(pack.rules, pack=pack)
+            expert_n = len(list_expert_required_rules(pack))
+            requirements.extend(checkable)
             if pack.status is not RulePackStatus.APPROVED or pack.advisory_only:
                 non_approved = True
             pack_refs.append(
-                f"{pack.pack_id}@{pack.version}[{pack.status.value}] sha256:{pack.sha256[:12]}"
+                f"{pack.pack_id}@{pack.version}[{pack.status.value}] "
+                f"sha256:{pack.sha256[:12]} "
+                f"checkable:{len(checkable)}/{len(pack.rules)} "
+                f"expert_required:{expert_n}"
             )
         # Ensure every norm-pack rule carries a pack-manifest approval badge.
         stamped: list[ParsedRequirement] = []

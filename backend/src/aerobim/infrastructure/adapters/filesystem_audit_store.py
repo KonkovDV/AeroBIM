@@ -866,6 +866,13 @@ class FilesystemAuditStore:
                     "(no accredited CA/TSP access) — never a legal validity claim",
                 ),
             ),
+            package_completeness=self._reconstruct_capability_status(
+                data.get("package_completeness"),
+                default=CapabilityStatus(
+                    CapabilityState.SKIPPED,
+                    "package completeness not requested",
+                ),
+            ),
         )
 
     def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:

@@ -19,7 +19,7 @@ License / LIC-001: [`../license-policy-2026.md`](../license-policy-2026.md).
 Offline: [`../offline-deployment-2026.md`](../offline-deployment-2026.md).
 Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrity-2026.md).
 Eng status (Aug 2026): [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
-Red Team WP-01..03: [`../../audit/reports/RED_TEAM_WP01_03_2026_08_02.md`](../../audit/reports/RED_TEAM_WP01_03_2026_08_02.md).
+Red Team WP-01..03: [`../quality/RED_TEAM_WP01_03_2026_08_02.md`](../quality/RED_TEAM_WP01_03_2026_08_02.md).
 
 **Status legend:** `done` | `partial` | `missing` | `blocked` (needs Samolet)  
 **Phase legend:** `MVP` (sign-off deterministic) | `P0`–`P4` (implementation waves)

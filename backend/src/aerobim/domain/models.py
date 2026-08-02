@@ -3,14 +3,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.package_outcome import PackageOutcome
 from aerobim.domain.quantity import QuantityValue
 
+if TYPE_CHECKING:
+    from aerobim.domain.norm_rule_eligibility import ExpertConfirmationEntry, RaseRoles
+
 DocStatus = Literal["WIP", "Shared", "Published", "Archived"]
 NormApprovalStatus = Literal["synthetic", "draft", "customer_approved"]
+NormExecutionMode = Literal["deterministic", "expert_required"]
 
 
 class Severity(StrEnum):
@@ -29,12 +33,21 @@ class SourceKind(StrEnum):
 
 
 class RulePackStatus(StrEnum):
-    """Approval state of a machine-readable acceptance-criteria pack."""
+    """Lifecycle state of a machine-readable acceptance-criteria pack.
+
+    Positive / sign-off-capable norm checking is possible only for
+    ``APPROVED`` (JSON ``customer_approved`` / legacy ``approved``) with a
+    full approval object. ``EXPIRED`` / ``INAPPLICABLE`` / ``EXPERT_REQUIRED``
+    are fail-closed for positive outcomes (advisory_only).
+    """
 
     SYNTHETIC_TEMPLATE = "synthetic-template"
     DRAFT = "draft"
     APPROVED = "approved"
     RETIRED = "retired"
+    EXPIRED = "expired"
+    INAPPLICABLE = "inapplicable"
+    EXPERT_REQUIRED = "expert_required"
 
 
 def approval_status_from_pack(status: RulePackStatus) -> NormApprovalStatus:
@@ -152,6 +165,10 @@ class ReportCapabilities:
         "qualified signature / УКЭП not evaluated for this report; "
         "when evaluated, trust_chain_status remains not_verified "
         "(no accredited CA/TSP access) — never a legal validity claim",
+    )
+    package_completeness: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED,
+        "package completeness not requested",
     )
 
 
@@ -302,11 +319,23 @@ class ParsedRequirement:
     norm_edition: str | None = None
     """Edition / year of the cited norm."""
     norm_clause: str | None = None
-    """Clause / item reference inside the norm."""
+    """Clause / item reference inside the norm (clause_number alias)."""
     approval_status: NormApprovalStatus | None = None
     """Pack-level approval badge stamped onto each rule (default synthetic)."""
     approval_ref: str | None = None
     """Customer approval id / scope memo reference; required when customer_approved."""
+    requirement_text: str | None = None
+    """Normative requirement statement (RASE R / evidence_text when absent)."""
+    object_type: str | None = None
+    """Target object type (often mirrors ifc_entity)."""
+    discipline: str | None = None
+    stage: str | None = None
+    criticality: str | None = None
+    evidence_required: bool | None = None
+    execution_mode: NormExecutionMode | None = None
+    """deterministic = auto-check after expert journal; expert_required = list only."""
+    expert_confirmation_journal: tuple[ExpertConfirmationEntry, ...] = ()
+    rase: RaseRoles | None = None
 
 
 @dataclass(frozen=True)
@@ -316,6 +345,9 @@ class NormRulePack:
     ``confidence`` on individual rules describes extraction certainty only.  The
     pack status remains the authority for whether the criteria were approved by
     a customer; loading a draft or synthetic template does not make it normative.
+    Schema 2.0.0 adds RASE / execution_mode / expert confirmation journal; those
+    gates live in ``domain.norm_rule_eligibility`` (WP-04). RT-002 stays OPEN
+    until a real customer-approved pack exists outside fixtures.
     """
 
     pack_id: str
@@ -338,6 +370,13 @@ class NormRulePack:
     approval_date: str | None = None
     advisory_only: bool = False
     """True for draft/synthetic packs — never customer_approved sign-off capable."""
+    schema_version: str = "1.0.0"
+    norm_edition: str | None = None
+    """Pack-level norm edition (distinct from per-rule norm_edition)."""
+    norm_edition_date: str | None = None
+    """Pack-level edition/effective date string."""
+    customer_approval_ref: str | None = None
+    """Jury-facing customer approval reference (mirrors approval_reference)."""
 
 
 @dataclass(frozen=True)
@@ -489,6 +528,10 @@ class ValidationRequest:
     """Signer roles that must appear in the envelope when signature audit runs."""
     require_signature_audit: bool = False
     """When True, missing envelope → FAILED ``qualified_signature`` + ERROR issue."""
+    package_inventory_path: Path | None = None
+    """Optional package inventory JSON for WP-05 completeness assessment."""
+    require_package_completeness: bool = False
+    """Soft opt-in: when True (or inventory path set), run package completeness."""
 
 
 @dataclass(frozen=True)

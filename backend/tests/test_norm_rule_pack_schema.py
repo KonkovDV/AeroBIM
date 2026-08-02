@@ -90,6 +90,14 @@ class NormRulePackSchemaTests(unittest.TestCase):
             "customer_approved with approval_ref only must fail schema",
         )
         base["rules"][0]["norm_clause"] = "7.1.2"
+        base["rules"][0]["clause_number"] = "7.1.2"
+        base["rules"][0]["expert_confirmation_journal"] = [
+            {
+                "confirmed_by": "customer-qa",
+                "confirmed_at": "2026-07-17T12:00:00+03:00",
+                "decision": "confirmed",
+            }
+        ]
         base["approval"] = {
             "approved_by": "customer-qa",
             "approval_date": "2026-07-17T12:00:00+03:00",
@@ -99,6 +107,8 @@ class NormRulePackSchemaTests(unittest.TestCase):
             "effective_date": "2026-07-01",
             "scope_reference": "SIGNED-MEMO-REF",
         }
+        base["approval_ref"] = "SIGNED-MEMO-REF"
+        base["customer_approval_ref"] = "SIGNED-MEMO-REF"
         base["pack_hash"] = compute_norm_pack_content_hash(base)
         errors_ok = list(validator.iter_errors(base))
         self.assertEqual(errors_ok, [], [e.message for e in errors_ok])

@@ -42,6 +42,7 @@ def build_report_capabilities(
     quantity_capability: CapabilityStatus | None = None,
     extraction_integrity: CapabilityStatus | None = None,
     qualified_signature: CapabilityStatus | None = None,
+    package_completeness: CapabilityStatus | None = None,
     ids_validator_configured: bool,
     ifc_schema_validator_configured: bool,
     require_bsi_schema: bool,
@@ -189,5 +190,10 @@ def build_report_capabilities(
             "qualified signature / УКЭП not evaluated for this report; "
             "when evaluated, trust_chain_status remains not_verified "
             "(no accredited CA/TSP access) — never a legal validity claim",
+        ),
+        package_completeness=package_completeness
+        or CapabilityStatus(
+            CapabilityState.SKIPPED,
+            "package completeness not requested",
         ),
     )
