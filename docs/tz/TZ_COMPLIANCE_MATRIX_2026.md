@@ -163,6 +163,7 @@ Manifest: [`samples/tz-appendix/MANIFEST.json`](../../samples/tz-appendix/MANIFE
 | Phase | Focus |
 |-------|-------|
 | **MVP** | Deterministic IFC/IDS/cross-doc/clash + OCR baseline + templates + browser review |
+| **P0 (Checkpoint #2 eng)** | WP-01 runtime baseline complete (`e6fe139`); WP-02 HybridRouteGate advisory pre-gate (`8d321ad`); WP-03 signature envelope ENG_PARTIAL (`a4c3702`); WP-04..08 in flight |
 | **P0** | Multipart upload, remarks UI (list/filter/edit), EN remarks |
 | **P1** | Norm packs, section pairing, detection precision harness — engineering scaffolds landed; customer pack/corpus still required |
 | **P2** | DXF/DWG thin adapter, OCR deepen, CV advisory |
