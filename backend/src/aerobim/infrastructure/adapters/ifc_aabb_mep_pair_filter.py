@@ -10,7 +10,8 @@ Always pair with ``geometry_verified=False`` on analyze.
 from __future__ import annotations
 
 import logging
-from typing import Any
+from pathlib import Path
+from typing import Any, cast
 
 from aerobim.domain.mep import MepSystemGraph
 from aerobim.domain.mep_aabb import (
@@ -33,8 +34,9 @@ class IfcAabbMepPairFilter:
         self._eps_m = eps_m
 
     def filter_pairs(self, graph: MepSystemGraph) -> AabbFilterResult:
-        edge_pairs = {
-            tuple(sorted((a.strip(), b.strip()), key=str.casefold)) for a, b in graph.edges
+        edge_pairs: set[tuple[str, str]] = {
+            cast(tuple[str, str], tuple(sorted((a.strip(), b.strip()), key=str.casefold)))
+            for a, b in graph.edges
         }
         if not edge_pairs:
             return unavailable_aabb_result(
@@ -52,7 +54,7 @@ class IfcAabbMepPairFilter:
         guid_boxes: dict[str, AxisAlignedBox3d] = {}
         for path in paths:
             try:
-                session = open_ifc_session(path)
+                session = open_ifc_session(Path(path))
             except Exception as exc:  # noqa: BLE001
                 _logger.info("AABB filter: cannot open %s: %s", path, exc)
                 continue

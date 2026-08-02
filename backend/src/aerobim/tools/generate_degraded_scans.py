@@ -27,7 +27,7 @@ import hashlib
 import json
 import random
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pymupdf
 
@@ -58,8 +58,10 @@ def _apply_salt_pepper(pixmap: pymupdf.Pixmap, *, percent: float, seed: int) -> 
     callers must hand in a fresh render per variant.
     """
 
-    width = pixmap.width
-    pixel_count = width * pixmap.height
+    # pymupdf stubs sometimes type Pixmap.width/height as Callable; coerce via Any.
+    width = int(cast(Any, pixmap.width))
+    height = int(cast(Any, pixmap.height))
+    pixel_count = width * height
     flips = int(pixel_count * percent / 100.0)
     rng = random.Random(seed)
     for _ in range(flips):

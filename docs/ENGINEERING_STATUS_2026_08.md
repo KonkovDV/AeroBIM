@@ -1,14 +1,15 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-01"
-claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture ≠ customer."
+version: "1.1.0"
+last_updated: "2026-08-02"
+claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture != customer."
 ---
 
-# Engineering Status — 2026-08-01
+# Engineering Status — 2026-08-02
 
-**HEAD (docs refresh):** `8f02baf`  
+**HEAD (docs refresh):** regenerate via `export_runtime_baseline` (see evidence artifact)  
+**last_updated:** 2026-08-02  
 **Checkpoint:** **`NO_GO`** — RT-001 / RT-002 / RT-003 remain OPEN  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)
 
@@ -16,6 +17,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
+| **WP-01 runtime baseline** | Schema 1.2.0: passed/skipped/failed + gates + env fingerprint; CI `--check-complete` | Not Checkpoint GO |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |
 | **Extraction integrity** | OCR-aware signals when `raster` present; FAIL blocks pass | Not product render-vs-extract |
 | **Public IFC corpus** | CC BY 4.0 buildingSMART samples under `samples/ifc/public/` | Not customer corpus (RT-001) |

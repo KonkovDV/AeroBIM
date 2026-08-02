@@ -1,33 +1,46 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
-  "schema_version": "1.1.0",
-  "commit_sha": "af4c0bacb7dc6d87affd37ccc90eca56e5dd5a7d",
-  "generated_at": "2026-07-31T21:16:09.738780+00:00",
+  "schema_version": "1.2.0",
+  "commit_sha": "a6870039959b81a7eb3554c93eabf3b73118161f",
+  "tree_sha": "bf2812830949bc46d0a20f94bc29f8906c2a66f8",
+  "working_tree_clean": false,
+  "generated_at": "2026-08-02T20:28:25.930880+00:00",
   "corpus_kind": "fixture",
+  "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 1649,
-    "tests_passed": null,
-    "tests_skipped": null,
-    "source_loc": 44161,
-    "test_loc": 33396,
-    "test_functions": 1649
+    "tests_collected": 1676,
+    "tests_passed": 1669,
+    "tests_skipped": 7,
+    "tests_failed": 0,
+    "source_loc": 45033,
+    "test_loc": 34231,
+    "test_functions": 1678
   },
   "frontend": {
-    "tests_passed": null,
+    "tests_passed": 29,
     "note": "Recorded from last CI/local vitest run when provided via --frontend-tests-passed"
   },
   "quality_gates": {
-    "ruff": "UNKNOWN",
-    "mypy": "UNKNOWN",
-    "pytest": "UNKNOWN",
-    "vitest": "UNKNOWN",
-    "build": "UNKNOWN"
+    "ruff": "PASS",
+    "mypy": "PASS",
+    "pytest": "PASS",
+    "vitest": "PASS",
+    "build": "PASS"
+  },
+  "environment": {
+    "python_version": "3.13.7",
+    "python_implementation": "CPython",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "system": "Windows",
+    "machine": "AMD64",
+    "lockfile_sha256": "7401d81b37a7b32e5b42a4fddfc54aed01f0b46ff8e6f0f856a84fa929d94417",
+    "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 44161,
-    "backend_test_loc": 33396,
-    "backend_test_functions": 1649,
+    "backend_src_loc": 45033,
+    "backend_test_loc": 34231,
+    "backend_test_functions": 1678,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~44161 LOC; tests ~33396 LOC; 1649+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
+  "readme_snippet": "Backend src ~45033 LOC; tests ~34231 LOC; 1678+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
 }
