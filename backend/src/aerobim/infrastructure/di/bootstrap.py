@@ -270,20 +270,19 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lambda current: _build_advisory_vlm_pipeline(current),
         lifecycle=Lifecycle.SINGLETON,
     )
-    # Hybrid AI fail-closed pre-gate (P1-wire): classify -> policy -> (mask) -> audit.
-    # Like ADVISORY_VLM_PIPELINE it is AVAILABLE but DELIBERATELY NOT consumed by the
-    # verdict use case (OFF==ON). Registered mask-less (no PrivacyGuard) by default:
-    # a deployment that configures a tenant salt injects a guard; until then external
-    # egress of a payload is fail-closed (masked=None -> may_call_external=False).
+    # Hybrid AI fail-closed pre-gate (WP-02): classify -> policy -> (mask) -> audit.
+    # Consumed by AdvisoryOrchestrator as a mandatory pre-gate (not by the verdict path).
+    # Registered mask-less (no PrivacyGuard) by default: external egress of a payload
+    # stays fail-closed (masked=None -> may_call_external=False) until a deployment
+    # injects a tenant-scoped PrivacyGuard.
     container.register(
         Tokens.HYBRID_ROUTE_GATE,
         lambda _container: HybridRouteGate(),
         lifecycle=Lifecycle.SINGLETON,
     )
-    # Hybrid AI model router (P2): AVAILABLE + config-driven, but (like HYBRID_ROUTE_GATE)
-    # NOT consumed by the verdict use case. Default registry is local-only (fail-closed):
-    # private/public tiers require a deployment-provided provider config, so there is no
-    # external egress by default. Swapping models = config change, not a core change.
+    # Hybrid AI model router (P2): AVAILABLE + config-driven, but NOT on the verdict path.
+    # Default registry is local-only (fail-closed): private/public tiers require a
+    # deployment-provided provider config, so there is no external egress by default.
     container.register(
         Tokens.HYBRID_MODEL_ROUTER,
         lambda current: _build_model_router(current.resolve(Tokens.SETTINGS)),
@@ -518,6 +517,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             mep_aabb_pair_filter=current.resolve(Tokens.MEP_AABB_PAIR_FILTER),
             mep_aabb_filter_enabled=current.resolve(Tokens.SETTINGS).mep_aabb_filter_enabled,
             extraction_integrity_producer=current.resolve(Tokens.EXTRACTION_INTEGRITY_PRODUCER),
+            hybrid_route_gate=current.resolve(Tokens.HYBRID_ROUTE_GATE),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

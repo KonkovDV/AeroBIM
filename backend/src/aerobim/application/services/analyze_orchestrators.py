@@ -106,6 +106,8 @@ class AdvisoryBundle:
     reconciled_issues: tuple[ValidationIssue, ...]
     divergences: tuple[DivergenceRecord, ...]
     tool_traces: tuple[dict[str, object], ...] = ()
+    advisory_suppressed: bool = False
+    """True when HybridRouteGate blocked advisory observation creation (WP-02)."""
 
 
 class IngestionOrchestrator:
@@ -290,7 +292,12 @@ class DeterministicValidationOrchestrator:
 
 
 class AdvisoryOrchestrator:
-    """AI_ADVISORY — agent + DeterminismGate; never writes summary.passed alone."""
+    """AI_ADVISORY — agent + DeterminismGate; never writes summary.passed alone.
+
+    WP-02: ``HybridRouteGate`` is a mandatory pre-gate. When the route is not
+    allowed, no advisory observation is created (empty findings / no agent run),
+    and a gate audit row is recorded on ``tool_traces``.
+    """
 
     def __init__(self, host: AnalyzeProjectPackageUseCase) -> None:
         self._host = host
@@ -301,14 +308,24 @@ class AdvisoryOrchestrator:
         deterministic: DeterministicBundle,
         ingested: IngestionBundle | None = None,
     ) -> AdvisoryBundle:
+        gate_trace, allowed = self._evaluate_hybrid_pre_gate(request)
         agent_advisory: tuple[ValidationIssue, ...] = ()
         advisory_ids_draft = None
-        tool_traces: tuple[dict[str, object], ...] = ()
-        if self._host._compliance_agent is not None:
-            agent_result = self._host._compliance_agent.run(request)
-            agent_advisory = agent_result.advisory_issues
-            advisory_ids_draft = agent_result.ids_draft
-            tool_traces = tuple(agent_result.tool_traces or ())
+        tool_traces: list[dict[str, object]] = []
+        if gate_trace is not None:
+            tool_traces.append(gate_trace)
+
+        if allowed:
+            if self._host._compliance_agent is not None:
+                agent_result = self._host._compliance_agent.run(request)
+                agent_advisory = agent_result.advisory_issues
+                advisory_ids_draft = agent_result.ids_draft
+                tool_traces.extend(agent_result.tool_traces or ())
+            injected = self._host._advisory_issues
+        else:
+            # Fail closed: do not create advisory observations (including injected ones).
+            injected = ()
+
         # Wave J: ground advisory references against the deterministic universe.
         evidence_universe = build_evidence_universe(
             engine_issues=deterministic.engine_issues,
@@ -319,18 +336,71 @@ class AdvisoryOrchestrator:
         reconciled_issues, divergences = self._host._determinism_gate.reconcile(
             engine_issues=list(deterministic.engine_issues),
             advisory_issues=merge_advisory_sequences(
-                self._host._advisory_issues,
+                injected,
                 agent_advisory,
             ),
             evidence_universe=evidence_universe,
         )
         return AdvisoryBundle(
-            advisory_issues=agent_advisory,
-            advisory_ids_draft=advisory_ids_draft,
+            advisory_issues=agent_advisory if allowed else (),
+            advisory_ids_draft=advisory_ids_draft if allowed else None,
             reconciled_issues=tuple(reconciled_issues),
             divergences=tuple(divergences),
-            tool_traces=tool_traces,
+            tool_traces=tuple(tool_traces),
+            advisory_suppressed=not allowed,
         )
+
+    def _evaluate_hybrid_pre_gate(
+        self, request: ValidationRequest
+    ) -> tuple[dict[str, object] | None, bool]:
+        """Return (audit_trace, may_create_advisory). Missing gate → suppress."""
+
+        from aerobim.domain.hybrid.trust_policy import RouteTarget
+
+        gate = getattr(self._host, "_hybrid_route_gate", None)
+        if gate is None:
+            return (
+                {
+                    "tool": "hybrid_route_gate",
+                    "status": "blocked",
+                    "reason": "hybrid_route_gate not configured; advisory suppressed",
+                    "egress_bytes_estimate": 0,
+                    "verdict_impact": "none",
+                },
+                False,
+            )
+        tenant_id = (request.tenant_id or "").strip()
+        result = gate.evaluate(
+            object_kind=_advisory_object_kind(request),
+            target=RouteTarget.LOCAL,
+            tenant_id=tenant_id,
+            task_type="advisory_compliance_agent",
+            request_id=request.request_id,
+            project_id=request.project_id,
+            payload=None,
+        )
+        trace = {
+            "tool": "hybrid_route_gate",
+            "status": result.decision.status.value,
+            "allowed": result.may_create_advisory,
+            "may_call_external": result.may_call_external,
+            "reason": result.decision.reason,
+            "classification": result.decision.classification.value,
+            "target": result.decision.target.value,
+            "egress_bytes_estimate": result.egress_bytes_estimate,
+            "verdict_impact": result.audit_event.verdict_impact,
+            "event_id": result.audit_event.event_id,
+        }
+        return trace, result.may_create_advisory
+
+
+def _advisory_object_kind(request: ValidationRequest) -> str:
+    """Conservative object kind for advisory routing (never PUBLIC by default)."""
+
+    path = str(getattr(request, "ifc_path", "") or "").replace("\\", "/").lower()
+    if "/samples/" in path or "/fixtures/" in path or "fixture" in path:
+        return "public_fixture"
+    return "ifc"
 
 
 class EvidenceAssembler:

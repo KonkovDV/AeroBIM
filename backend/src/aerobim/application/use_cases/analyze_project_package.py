@@ -29,6 +29,7 @@ from aerobim.application.services.drawing_annotation_validation import (
     DrawingAnnotationValidator,
 )
 from aerobim.application.services.extraction_integrity_probe import probe_extraction_integrity
+from aerobim.application.services.hybrid_route_gate import HybridRouteGate
 from aerobim.application.services.mep_scope_probe import MepScopeProbe
 from aerobim.application.services.package_ingestion import PackageIngestionService
 from aerobim.application.services.spatial_predicates import issues_from_clash_results
@@ -160,6 +161,7 @@ class AnalyzeProjectPackageUseCase:
         mep_aabb_pair_filter: MepAabbPairFilter | None = None,
         mep_aabb_filter_enabled: bool = True,
         extraction_integrity_producer: ExtractionIntegritySignalProducer | None = None,
+        hybrid_route_gate: HybridRouteGate | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -212,6 +214,7 @@ class AnalyzeProjectPackageUseCase:
         self._mep_aabb_pair_filter = mep_aabb_pair_filter
         self._mep_aabb_filter_enabled = mep_aabb_filter_enabled
         self._extraction_integrity_producer = extraction_integrity_producer
+        self._hybrid_route_gate = hybrid_route_gate
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)

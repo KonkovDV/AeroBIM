@@ -17,6 +17,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
+| **WP-02 Hybrid advisory pre-gate** | `HybridRouteGate` mandatory before advisory observations; blocked → no findings; egress bytes on audit | Not verdict path; Checkpoint NO_GO |
 | **WP-01 runtime baseline** | Schema 1.2.0: passed/skipped/failed + gates + env fingerprint; CI `--check-complete` | Not Checkpoint GO |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |
 | **Extraction integrity** | OCR-aware signals when `raster` present; FAIL blocks pass | Not product render-vs-extract |
