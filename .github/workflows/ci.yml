@@ -181,6 +181,14 @@ jobs:
           python -m aerobim.tools.evaluate_drawing_advisory_grounding \
             --cases ../samples/benchmarks/drawing-advisory/cases-synthetic.json \
             --min-fidelity 1.0
+      - name: Open corpora pin smoke + quality protocol stats (WP-06/07; not product accuracy)
+        run: |
+          mkdir -p ../artifacts/open-corpora
+          python -m aerobim.tools.run_open_corpora_profiles --mode smoke
+          python -m aerobim.tools.compute_quality_protocol_stats \
+            --tp 5 --fp 5 --fn 2 \
+            --expected-p 0.75 --margin 0.08 \
+            --output ../artifacts/open-corpora/quality-protocol-stats-smoke.json
 
   frontend:
     runs-on: ubuntu-latest

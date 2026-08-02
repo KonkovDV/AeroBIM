@@ -72,10 +72,10 @@ from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store
 from aerobim.infrastructure.adapters.json_detached_signature_auditor import (
     JsonDetachedSignatureAuditor,
 )
+from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
 from aerobim.infrastructure.adapters.json_package_inventory_loader import (
     JsonPackageInventoryLoader,
 )
-from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore

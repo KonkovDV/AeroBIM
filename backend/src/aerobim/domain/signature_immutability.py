@@ -116,10 +116,7 @@ class SignatureAuditResult:
         # prefer NOT_VERIFIED over a silent legal-looking OK for qualified_signature.
         return CapabilityStatus(
             CapabilityState.NOT_VERIFIED,
-            (
-                "envelope presence/integrity/roles ok on fixture path; "
-                f"{reason}"
-            ),
+            (f"envelope presence/integrity/roles ok on fixture path; {reason}"),
         )
 
 

@@ -337,9 +337,7 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
                         )
                     )
 
-    has_spec = any(
-        a.role == "specification" or a.has_specification for a in inventory.artifacts
-    )
+    has_spec = any(a.role == "specification" or a.has_specification for a in inventory.artifacts)
     has_schedule = any(a.role == "schedule" or a.has_schedule for a in inventory.artifacts)
     if inventory.require_specifications and not has_spec:
         issues.append(

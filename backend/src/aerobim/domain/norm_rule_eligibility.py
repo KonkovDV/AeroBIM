@@ -144,9 +144,7 @@ def list_expert_required_rules(
 ) -> tuple[ParsedRequirement, ...]:
     """Rules that cannot be auto-checked (execution_mode=expert_required)."""
 
-    return tuple(
-        rule for rule in pack.rules if rule.execution_mode == "expert_required"
-    )
+    return tuple(rule for rule in pack.rules if rule.execution_mode == "expert_required")
 
 
 def list_awaiting_expert_confirmation(
@@ -247,9 +245,7 @@ def parse_expert_confirmation_journal(
         if not isinstance(confirmed_at, str) or not confirmed_at.strip():
             raise ValueError(f"{prefix}.confirmed_at must be a non-empty string")
         if decision not in {"confirmed", "rejected", "deferred"}:
-            raise ValueError(
-                f"{prefix}.decision must be one of confirmed|rejected|deferred"
-            )
+            raise ValueError(f"{prefix}.decision must be one of confirmed|rejected|deferred")
         note = item.get("note")
         if note is not None and (not isinstance(note, str) or not note.strip()):
             raise ValueError(f"{prefix}.note must be a non-empty string when provided")

@@ -715,9 +715,7 @@ class AnalyzeProjectPackageUseCase:
         try:
             report = loader.assess(inventory_path)
         except FileNotFoundError:
-            reason = (
-                f"Package inventory not found at {inventory_path}; {CLAIM_BOUNDARY}"
-            )
+            reason = f"Package inventory not found at {inventory_path}; {CLAIM_BOUNDARY}"
             return (
                 CapabilityStatus(CapabilityState.FAILED, reason),
                 [

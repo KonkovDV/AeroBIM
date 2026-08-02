@@ -328,6 +328,15 @@ def export_runtime_baseline(
 
 def _check_readme_markers(repo: Path) -> list[str]:
     errors: list[str] = []
+    artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
+    expected_snippet: str | None = None
+    if artifact.exists():
+        try:
+            stored = json.loads(artifact.read_text(encoding="utf-8"))
+            if isinstance(stored, dict) and isinstance(stored.get("readme_snippet"), str):
+                expected_snippet = stored["readme_snippet"].strip()
+        except json.JSONDecodeError:
+            errors.append("Invalid runtime-baseline-latest.json while checking README snippets")
     for name in ("README.md", "README.ru.md"):
         path = repo / name
         if not path.exists():
@@ -338,6 +347,20 @@ def _check_readme_markers(repo: Path) -> list[str]:
             errors.append(
                 f"{name} missing {_BASELINE_MARKER_BEGIN} marker; "
                 "insert generated snippet before claiming LOC/test counts."
+            )
+            continue
+        if expected_snippet is None:
+            continue
+        begin = text.find(_BASELINE_MARKER_BEGIN)
+        end = text.find("<!-- AEROBIM_RUNTIME_BASELINE:END -->", begin)
+        if end < 0:
+            errors.append(f"{name} missing AEROBIM_RUNTIME_BASELINE:END marker")
+            continue
+        block = text[begin:end]
+        if expected_snippet not in block:
+            errors.append(
+                f"{name} runtime baseline snippet drifts from "
+                "docs/evidence/runtime-baseline-latest.json readme_snippet (WP-08)"
             )
     return errors
 

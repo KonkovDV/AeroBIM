@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.2.0"
+version: "1.3.0"
 last_updated: "2026-08-02"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture != customer."
 ---
@@ -17,6 +17,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
+| **WP-07 quality protocol** | Protocol doc + `compute_quality_protocol_stats` (Wilson P/R + sample-size planner); nDCG via existing `evaluate_ranking_quality`; interim target 0.60 | Not adjudicated customer precision; never >90% |
+| **WP-06 open corpora** | Three pinned profiles under `samples/benchmarks/open-corpora/` (honest regression n=7, not ≥250); `run_open_corpora_profiles` smoke in CI; full run manual | Regression/timing only — no expert TP/FP |
 | **WP-05 package completeness** | Declared inventory: mandatory PD sections, format honesty (no native DWG), cipher/specs/schedules, PD↔RD pairing; soft opt-in via request flag | Fixture-grade only; not PP-87 / customer intake |
 | **WP-04 norm pack v2** | Schema 2.0.0 RASE + `execution_mode` + expert confirmation journal; loader fail-closed without `customer_approved`+approval; `list_expert_required_norm_rules` | RT-002 OPEN; fixture ≠ customer pack |
 | **WP-03 signature envelope** | Detached `.sig.json` presence/hash/roles; `qualified_signature` ENG_PARTIAL; trust_chain always NOT_VERIFIED | Never «УКЭП проверена» |
@@ -40,11 +42,13 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 | [`license-policy-2026.md`](license-policy-2026.md) | LIC-001 Option B |
 | [`extraction-integrity-2026.md`](extraction-integrity-2026.md) | EI signals + OCR PARTIAL |
 | [`quality/CUSTOMER_PILOT_BACKLOG_2026_07_21.md`](quality/CUSTOMER_PILOT_BACKLOG_2026_07_21.md) | P2 backlog statuses |
+| [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality measurement protocol |
+| [`../samples/benchmarks/open-corpora/README.md`](../samples/benchmarks/open-corpora/README.md) | WP-06 open corpora profiles |
 | [`evidence/checkpoint2-evidence-bundle-latest.json`](evidence/checkpoint2-evidence-bundle-latest.json) | Fixture GO pin |
 
 ## Forbidden (unchanged)
 
-Product accuracy >90%; customer SLA ≤30 min; native DWG; MEP delivered / `mep_system_clash=OK`; CDE_READY BCF; independent calc correctness; MIT-without-disclosure; bare-metal offline-ready; AABB/connects = verified geometric clash.
+Product accuracy >90%; customer SLA ≤30 min; native DWG; MEP delivered / `mep_system_clash=OK`; CDE_READY BCF; independent calc correctness; MIT-without-disclosure; bare-metal offline-ready; AABB/connects = verified geometric clash; open-corpora binary match / timing as product precision.
 
 ## Reproduce wall-guid demo
 

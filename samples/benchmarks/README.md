@@ -30,6 +30,17 @@ Each pack references fixtures under `samples/` and stays license-safe.
 
 Threshold profile: `benchmark-thresholds.json` (advisory and enforced modes).
 
+## Open corpora (WP-06)
+
+Pinned profiles under `open-corpora/` — regression (honest IDS/IFC binary count), pilot-approx timing, load (AR/KZH + MEP).  
+Claim boundary: regression/timing only — **not** product accuracy.
+
+```bash
+python -m aerobim.tools.run_open_corpora_profiles --mode smoke   # CI
+python -m aerobim.tools.run_open_corpora_profiles --mode full    # manual
+python -m aerobim.tools.compute_quality_protocol_stats --tp 83 --fp 28 --fn 10
+```
+
 ## Commands (from `backend/`)
 
 ```bash
