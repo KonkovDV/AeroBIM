@@ -276,6 +276,8 @@ class DrawingRegionRef:
     """Explicit coordinate system, e.g. ``page-pixel`` or ``normalized-0-1``."""
     page_width: float | None = None
     page_height: float | None = None
+    layout_role: str | None = None
+    """Optional layout prior: ``content`` | ``title_block`` | ``stamp`` (PII risk)."""
 
 
 @dataclass(frozen=True)

@@ -92,6 +92,100 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertFalse(plan.skip_vlm)
         self.assertEqual(len(plan.tasks), 2)
 
+    def test_stamp_layout_role_excluded_by_default(self) -> None:
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 1.0, 0.85),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.55, 0.85, 1.0, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="stamp",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertFalse(plan.skip_vlm)
+        self.assertEqual(len(plan.tasks), 1)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
+        self.assertEqual(plan.tasks[0].layout_role, "content")
+        self.assertIn("stamp crop", plan.reason)
+
+    def test_stamp_only_sheet_skips_vlm(self) -> None:
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.55, 0.85, 1.0, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="stamp",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
+
+    def test_stamp_exclude_can_be_disabled(self) -> None:
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.55, 0.85, 1.0, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="stamp",
+            ),
+        ]
+        plan = plan_region_reads(
+            text_layer_present=False,
+            regions=regions,
+            exclude_stamp_regions=False,
+        )
+        self.assertFalse(plan.skip_vlm)
+        self.assertEqual(len(plan.tasks), 1)
+        self.assertEqual(plan.stamp_regions_excluded, 0)
+
+    def test_unlabeled_normalized_stamp_bbox_excluded(self) -> None:
+        """Defense in depth: missing layout_role must not bypass stamp prior."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 1.0, 0.85),
+                confidence=0.9,
+                modality="detector",
+            ),
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.55, 0.85, 1.0, 1.0),
+                confidence=0.9,
+                modality="detector",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertFalse(plan.skip_vlm)
+        self.assertEqual(len(plan.tasks), 1)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
+        self.assertEqual(plan.tasks[0].bbox_xyxy, (0.0, 0.0, 1.0, 0.85))
+
+    def test_pixel_bbox_without_role_not_false_positive(self) -> None:
+        """Page-pixel crops without role cannot use the normalized prior."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(550.0, 850.0, 1000.0, 1000.0),
+                confidence=0.9,
+                modality="detector",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertFalse(plan.skip_vlm)
+        self.assertEqual(len(plan.tasks), 1)
+        self.assertEqual(plan.stamp_regions_excluded, 0)
+
 
 class RegionRestrictedPipelineTests(unittest.TestCase):
     def _pipeline(self, *, reader, cropper, detector, ready=True, max_regions=24):  # noqa: ANN001

@@ -24,6 +24,7 @@
 - Fixture SLA as customer комплект ≤30 мин
 - «I9 DONE», «GraphRAG готов», «IfcLLM в AeroBIM» — I9 is **advisory scaffold** only
 - Closing RT-001/002/003 without customer evidence
+- Treating grant token quota increase as progress on RT-001 / Checkpoint GO
 - «нет автоматического вердикта» without clarifying Shared-gate `summary.passed` (see ADR-001)
 - Treating co-presence MEP graph edges as connection / system-membership proof
 - Treating fixture_only / ENG_FIXTURE as customer-validated MEP
@@ -61,6 +62,9 @@
 - Hybrid drawing = detector **priors / future YOLO** + OCR degrade (not human-level CV)
 - Relational IFC KG advisory fixture scores ≠ IfcLLM product accuracy
 - Advisory ON/OFF must not change deterministic findings or `summary.passed`
+- **Report reproducibility = deterministic core** (ADR-001): LLM output is not an input to the verdict; on re-run the annotation is **presented** from provenance (prompt/response hashes), not re-generated. Vendor P₁/P₂ probes measure provider behaviour; they are not a FAIR publication gate
+- Yandex AI Studio grant tokens are **not** the RT-001 bottleneck (~1% of grant for one WP-07 Wilson measure); deficit = adjudicators + customer corpus — do not claim «quota increase = Checkpoint progress»
+- Cloud VLM stamp crops are RESTRICTED (signatory PII); default exclude `layout_role=stamp` before C0/C1 Studio calls unless DPA / C2
 - `summary.passed` = automatic **Shared-gate** from deterministic engine + blocking capabilities (ADR-001); **not** Shared→Published / contractual fitness; OCR/LLM cannot flip it; expert confirms findings for handoff
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash/MEP/bSI/unit_scale)
 - Explicit `AEROBIM_SIGNOFF_PROFILE=samolet_pilot` likewise fail-closes required MEP/clash/BSI/audit corruption

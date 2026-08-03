@@ -76,6 +76,7 @@ class SheetReadResult:
     regions_truncated: int = 0
     truncation_reason: str | None = None
     region_plan_sha256: str = ""
+    stamp_regions_excluded: int = 0
 
 
 def _region_plan_sha256(tasks: tuple[RegionReadTask, ...]) -> str:
@@ -96,6 +97,7 @@ class RegionRestrictedVlmPipeline:
         min_confidence: float = 0.60,
         max_regions: int = _DEFAULT_MAX_REGIONS,
         prompt: str = _DEFAULT_REGION_PROMPT,
+        exclude_stamp_regions: bool = True,
     ) -> None:
         self._region_detector = region_detector
         self._reader = reader
@@ -104,6 +106,7 @@ class RegionRestrictedVlmPipeline:
         self._min_confidence = min_confidence
         self._max_regions = max_regions
         self._prompt = prompt
+        self._exclude_stamp_regions = exclude_stamp_regions
 
     @property
     def ready(self) -> bool:
@@ -134,7 +137,11 @@ class RegionRestrictedVlmPipeline:
             )
 
         regions = self._region_detector.detect(source.path, sheet_id=source.sheet_id)
-        plan = plan_region_reads(text_layer_present=text_layer_present, regions=regions)
+        plan = plan_region_reads(
+            text_layer_present=text_layer_present,
+            regions=regions,
+            exclude_stamp_regions=self._exclude_stamp_regions,
+        )
         detected = len(regions)
         if plan.skip_vlm:
             return SheetReadResult(
@@ -142,6 +149,7 @@ class RegionRestrictedVlmPipeline:
                 skipped_vlm=True,
                 reason=plan.reason,
                 regions_detected=detected,
+                stamp_regions_excluded=plan.stamp_regions_excluded,
             )
 
         planned = len(plan.tasks)
@@ -163,6 +171,7 @@ class RegionRestrictedVlmPipeline:
                 else None
             ),
             region_plan_sha256=_region_plan_sha256(plan.tasks),
+            stamp_regions_excluded=plan.stamp_regions_excluded,
         )
 
     def _read_one(self, source: DrawingSource, sheet_id: str, task: RegionReadTask) -> RegionRead:
