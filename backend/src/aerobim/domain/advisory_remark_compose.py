@@ -7,9 +7,10 @@ Cannot invent findings; verdict_impact is structurally none.
 from __future__ import annotations
 
 import json
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Literal
 
-from aerobim.domain.llm_advisory import LlmDataPolicy, LlmRequest, LlmResponse
+from aerobim.domain.llm_advisory import LlmDataPolicy, LlmProvider, LlmRequest, LlmResponse
 from aerobim.domain.models import GeneratedRemark, ValidationIssue
 
 PROMPT_VERSION = "advisory-remark-compose/v1"
@@ -17,6 +18,22 @@ CLAIM_BOUNDARY = (
     "Advisory remark draft only. ai_generated=true; expert confirmation required. "
     "Never sets summary.passed. Not product accuracy. Not Qwen 3.8 product claim."
 )
+
+ComposeStatus = Literal["OK", "SKIPPED"]
+
+
+@dataclass(frozen=True)
+class RemarkComposeResult:
+    """Verdict-neutral compose outcome (CLI + Analyze overlay share this)."""
+
+    status: ComposeStatus
+    reason: str | None = None
+    remark: GeneratedRemark | None = None
+    response: LlmResponse | None = None
+    uncertainties: tuple[str, ...] = ()
+    provider: str | None = None
+    model: str | None = None
+    usage: dict[str, Any] | None = None
 
 REMARK_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -132,11 +149,102 @@ def parse_remark_response(
     )
 
 
+def compose_remark(
+    *,
+    findings: tuple[dict[str, Any], ...],
+    locale: str,
+    request_id: str,
+    provider: LlmProvider,
+    allow_customer_data: bool = False,
+) -> RemarkComposeResult:
+    """Invoke advisory LLM for remark drafts; never mutates verdict fields.
+
+    Unavailable / disabled / policy / schema failures → ``SKIPPED`` (not FAILED).
+    """
+
+    request = build_remark_llm_request(
+        request_id=request_id,
+        findings=findings,
+        locale=locale,
+        allow_customer_data=allow_customer_data,
+    )
+    response = provider.generate(request)
+    if response.status == "disabled":
+        return RemarkComposeResult(
+            status="SKIPPED",
+            reason="llm_local_disabled",
+            response=response,
+            uncertainties=tuple(response.uncertainties),
+            provider=response.provider,
+            model=response.model,
+            usage=dict(response.usage) if response.usage else None,
+        )
+    transport_skip = any(str(u).startswith("transport_error:") for u in response.uncertainties)
+    if transport_skip or response.status == "failed":
+        reason = "model_unavailable"
+        if any(str(u) == "truncated" for u in response.uncertainties):
+            reason = "response_truncated"
+        elif any(str(u) == "reasoning_only" for u in response.uncertainties):
+            reason = "reasoning_only"
+        elif any(str(u) == "schema_deviation" for u in response.uncertainties):
+            reason = "schema_deviation"
+        elif any(str(u).startswith("budget_exceeded") for u in response.uncertainties):
+            reason = "budget_exceeded"
+        return RemarkComposeResult(
+            status="SKIPPED",
+            reason=reason,
+            response=response,
+            uncertainties=tuple(response.uncertainties),
+            provider=response.provider,
+            model=response.model,
+            usage=dict(response.usage) if response.usage else None,
+        )
+    if response.status == "blocked_by_policy":
+        reason = "blocked_by_policy"
+        if any(str(u).startswith("budget_exceeded") for u in response.uncertainties):
+            reason = "budget_exceeded"
+        return RemarkComposeResult(
+            status="SKIPPED",
+            reason=reason,
+            response=response,
+            uncertainties=tuple(response.uncertainties),
+            provider=response.provider,
+            model=response.model,
+            usage=dict(response.usage) if response.usage else None,
+        )
+    if not response.schema_valid:
+        return RemarkComposeResult(
+            status="SKIPPED",
+            reason="schema_deviation",
+            response=response,
+            uncertainties=tuple(response.uncertainties),
+            provider=response.provider,
+            model=response.model,
+            usage=dict(response.usage) if response.usage else None,
+        )
+    remark = parse_remark_response(
+        response,
+        locale=locale,
+        fallback_evidence=request.evidence_refs,
+    )
+    return RemarkComposeResult(
+        status="OK",
+        remark=remark,
+        response=response,
+        uncertainties=tuple(response.uncertainties),
+        provider=response.provider,
+        model=response.model,
+        usage=dict(response.usage) if response.usage else None,
+    )
+
+
 __all__ = [
     "CLAIM_BOUNDARY",
     "PROMPT_VERSION",
     "REMARK_JSON_SCHEMA",
+    "RemarkComposeResult",
     "build_remark_llm_request",
+    "compose_remark",
     "finding_payload_from_issue",
     "parse_remark_response",
 ]

@@ -542,6 +542,8 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             hybrid_route_gate=current.resolve(Tokens.HYBRID_ROUTE_GATE),
             document_signature_auditor=current.resolve(Tokens.DOCUMENT_SIGNATURE_AUDITOR),
             package_inventory_loader=current.resolve(Tokens.PACKAGE_INVENTORY_LOADER),
+            llm_advisory_provider=current.resolve(Tokens.LLM_ADVISORY_PROVIDER),
+            remark_locale=current.resolve(Tokens.SETTINGS).remark_locale,
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

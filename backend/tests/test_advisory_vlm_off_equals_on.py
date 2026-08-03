@@ -85,6 +85,8 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
     def test_llm_studio_flag_does_not_change_verdict_on_uc_path(self) -> None:
         """Yandex Studio / local OpenAI-compat advisory must also leave verdict byte-identical."""
 
+        import json
+
         from aerobim.core.config.settings import Settings
         from aerobim.core.di.tokens import Tokens
         from aerobim.domain.llm_advisory import DisabledLlmProvider
@@ -119,10 +121,27 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
             container_off.resolve(Tokens.LLM_ADVISORY_PROVIDER),
             DisabledLlmProvider,
         )
-        self.assertIsInstance(
-            container_on.resolve(Tokens.LLM_ADVISORY_PROVIDER),
-            OpenAICompatLlmProvider,
-        )
+        provider_on = container_on.resolve(Tokens.LLM_ADVISORY_PROVIDER)
+        self.assertIsInstance(provider_on, OpenAICompatLlmProvider)
+
+        # Instant transport: wiring is under test; live Studio is operator Step 1.
+        def _transport(_url: str, _headers: dict[str, str], _body: bytes) -> bytes:
+            draft = {
+                "title": "Advisory",
+                "body": "Draft from deterministic finding.",
+                "locale": "ru",
+                "evidence_refs": ["deterministic"],
+            }
+            return json.dumps(
+                {
+                    "choices": [{"message": {"content": json.dumps(draft, ensure_ascii=False)}}],
+                    "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+                }
+            ).encode("utf-8")
+
+        provider_on._transport = _transport  # noqa: SLF001 — test seam
+        use_case_on = container_on.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
+        use_case_on._llm_advisory_provider = provider_on  # noqa: SLF001
 
         def verdict(container: object, tag: str) -> object:
             use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)

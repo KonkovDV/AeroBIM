@@ -124,10 +124,26 @@ class LlmLocalOffEqualsOnTests(unittest.TestCase):
             container_off.resolve(Tokens.LLM_ADVISORY_PROVIDER),
             DisabledLlmProvider,
         )
-        self.assertIsInstance(
-            container_on.resolve(Tokens.LLM_ADVISORY_PROVIDER),
-            OpenAICompatLlmProvider,
-        )
+        provider_on = container_on.resolve(Tokens.LLM_ADVISORY_PROVIDER)
+        self.assertIsInstance(provider_on, OpenAICompatLlmProvider)
+
+        def _transport(_url: str, _headers: dict[str, str], _body: bytes) -> bytes:
+            draft = {
+                "title": "Advisory",
+                "body": "Draft",
+                "locale": "ru",
+                "evidence_refs": ["x"],
+            }
+            return json.dumps(
+                {
+                    "choices": [{"message": {"content": json.dumps(draft)}}],
+                    "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+                }
+            ).encode("utf-8")
+
+        provider_on._transport = _transport  # noqa: SLF001 — test seam
+        use_case_on = container_on.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
+        use_case_on._llm_advisory_provider = provider_on  # noqa: SLF001
 
         def verdict(container: object, tag: str) -> object:
             use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
@@ -321,6 +337,10 @@ class YandexStudioCompatTests(unittest.TestCase):
         self.assertNotIn("seed", body)
         self.assertEqual(body["response_format"]["type"], "json_schema")
         self.assertEqual(
+            body["chat_template_kwargs"],
+            {"enable_thinking": False},
+        )
+        self.assertEqual(
             body["model"],
             "gpt://b1gfolder/qwen3-235b-a22b-fp8/v2026-08-01",
         )
@@ -334,10 +354,107 @@ class YandexStudioCompatTests(unittest.TestCase):
         self.assertTrue(response.usage.get("data_logging_disabled"))
         self.assertFalse(response.usage.get("reproducible"))
         self.assertFalse(response.usage.get("seed_sent"))
+        self.assertTrue(response.usage.get("thinking_disabled"))
+        self.assertEqual(response.usage.get("vendor_model_uri"), body["model"])
         self.assertEqual(response.usage.get("internal_request_id"), "r")
         self.assertEqual(response.usage.get("client_request_id"), headers["x-client-request-id"])
         self.assertIn("prompt_sha256", response.usage)
         self.assertIn("response_sha256", response.usage)
+
+    def test_unversioned_gpt_uri_allowed(self) -> None:
+        from aerobim.core.config.settings import resolve_llm_model_uri
+
+        self.assertEqual(
+            resolve_llm_model_uri(
+                model="gpt://b1gfolder/qwen3.6-35b-a3b",
+                revision=None,
+            ),
+            "gpt://b1gfolder/qwen3.6-35b-a3b",
+        )
+        provider = OpenAICompatLlmProvider(
+            base_url="https://llm.api.cloud.yandex.net/v1",
+            model="gpt://b1gfolder/qwen3.6-35b-a3b",
+            provider="yandex-ai-studio",
+            transport=lambda *_a: b"{}",
+        )
+        self.assertEqual(provider._model, "gpt://b1gfolder/qwen3.6-35b-a3b")
+
+    def test_reasoning_only_not_schema_deviation(self) -> None:
+        from aerobim.domain.advisory_remark_compose import build_remark_llm_request, compose_remark
+
+        def transport(_url: str, _headers: dict[str, str], _body: bytes) -> bytes:
+            return json.dumps(
+                {
+                    "model": "gpt://qwen3.6-35b-a3b/latest",
+                    "choices": [
+                        {
+                            "message": {
+                                "content": None,
+                                "reasoning_content": "thinking burned the budget…",
+                            }
+                        }
+                    ],
+                    "usage": {"prompt_tokens": 10, "completion_tokens": 512},
+                }
+            ).encode("utf-8")
+
+        provider = OpenAICompatLlmProvider(
+            base_url="https://llm.api.cloud.yandex.net/v1",
+            model="gpt://b1gfolder/qwen3.6-35b-a3b",
+            provider="yandex-ai-studio",
+            transport=transport,
+            disable_thinking=False,
+        )
+        response = provider.generate(
+            build_remark_llm_request(
+                request_id="r",
+                findings=({"finding_id": "x"},),
+            )
+        )
+        self.assertEqual(response.status, "failed")
+        self.assertIn("reasoning_only", response.uncertainties)
+        self.assertNotIn("schema_deviation", response.uncertainties)
+        self.assertEqual(response.usage.get("vendor_model_uri"), "gpt://qwen3.6-35b-a3b/latest")
+        result = compose_remark(
+            findings=({"finding_id": "x"},),
+            locale="ru",
+            request_id="r",
+            provider=provider,
+        )
+        self.assertEqual(result.status, "SKIPPED")
+        self.assertEqual(result.reason, "reasoning_only")
+
+    def test_strips_markdown_fence_around_json(self) -> None:
+        from aerobim.domain.advisory_remark_compose import build_remark_llm_request
+
+        draft = {
+            "title": "t",
+            "body": "b",
+            "locale": "ru",
+            "evidence_refs": ["x"],
+        }
+
+        def transport(_url: str, _headers: dict[str, str], _body: bytes) -> bytes:
+            fenced = "```json\n" + json.dumps(draft) + "\n```"
+            return json.dumps(
+                {
+                    "model": "gpt://b1gfolder/qwen3.6-35b-a3b/latest",
+                    "choices": [{"message": {"content": fenced}}],
+                    "usage": {"prompt_tokens": 1, "completion_tokens": 2},
+                }
+            ).encode("utf-8")
+
+        provider = OpenAICompatLlmProvider(
+            base_url="https://llm.api.cloud.yandex.net/v1",
+            model="gpt://b1gfolder/qwen3.6-35b-a3b",
+            provider="yandex-ai-studio",
+            transport=transport,
+        )
+        response = provider.generate(
+            build_remark_llm_request(request_id="r", findings=({"finding_id": "x"},))
+        )
+        self.assertEqual(response.status, "advisory")
+        self.assertTrue(response.schema_valid)
 
     def test_latest_alias_forbidden(self) -> None:
         from aerobim.core.config.settings import assert_llm_model_pin_no_aliases

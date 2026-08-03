@@ -22,8 +22,7 @@ from aerobim.core.di.tokens import Tokens
 from aerobim.domain.advisory_remark_compose import (
     CLAIM_BOUNDARY,
     PROMPT_VERSION,
-    build_remark_llm_request,
-    parse_remark_response,
+    compose_remark,
 )
 from aerobim.domain.hybrid.audit_event import build_route_audit_event
 from aerobim.domain.hybrid.data_classification import DataClassification
@@ -82,107 +81,41 @@ def compose_from_findings(
     settings: Settings | None = None,
 ) -> dict[str, Any]:
     resolved = settings or Settings.from_env()
-    request = build_remark_llm_request(
-        request_id=request_id,
+    result = compose_remark(
         findings=findings,
         locale=locale,
+        request_id=request_id,
+        provider=provider,
         allow_customer_data=False,
     )
-    response = provider.generate(request)
-    if response.status == "disabled":
-        return {
-            "status": "SKIPPED",
-            "reason": "llm_local_disabled",
-            "claim_boundary": CLAIM_BOUNDARY,
-            "prompt_version": PROMPT_VERSION,
-        }
-    transport_skip = any(
-        str(u).startswith("transport_error:") for u in response.uncertainties
-    )
-    # D-3: vendor retirement / transport / truncate must never become report capability FAILED.
-    if transport_skip or response.status == "failed":
-        reason = "model_unavailable"
-        if any(str(u) == "truncated" for u in response.uncertainties):
-            reason = "response_truncated"
-        elif any(str(u) == "schema_deviation" for u in response.uncertainties):
-            reason = "schema_deviation"
-        elif any(str(u).startswith("budget_exceeded") for u in response.uncertainties):
-            reason = "budget_exceeded"
-        return {
-            "status": "SKIPPED",
-            "reason": reason,
-            "uncertainties": list(response.uncertainties),
-            "claim_boundary": CLAIM_BOUNDARY,
-            "prompt_version": PROMPT_VERSION,
-            "provider": response.provider,
-            "model": response.model,
-            "usage": response.usage,
-            "audit_event": _advisory_audit_event(
-                request_id=request_id,
-                response=response,
-                settings=resolved,
-                failure_reason=reason,
-            ),
-        }
-    if response.status == "blocked_by_policy":
-        reason = "blocked_by_policy"
-        if any(str(u).startswith("budget_exceeded") for u in response.uncertainties):
-            reason = "budget_exceeded"
-        return {
-            "status": "SKIPPED",
-            "reason": reason,
-            "uncertainties": list(response.uncertainties),
-            "claim_boundary": CLAIM_BOUNDARY,
-            "prompt_version": PROMPT_VERSION,
-            "provider": response.provider,
-            "model": response.model,
-            "usage": response.usage,
-            "audit_event": _advisory_audit_event(
-                request_id=request_id,
-                response=response,
-                settings=resolved,
-                failure_reason=reason,
-            ),
-        }
-    if not response.schema_valid:
-        return {
-            "status": "SKIPPED",
-            "reason": "schema_deviation",
-            "uncertainties": list(response.uncertainties),
-            "claim_boundary": CLAIM_BOUNDARY,
-            "prompt_version": PROMPT_VERSION,
-            "provider": response.provider,
-            "model": response.model,
-            "usage": response.usage,
-            "audit_event": _advisory_audit_event(
-                request_id=request_id,
-                response=response,
-                settings=resolved,
-                failure_reason="schema_deviation",
-            ),
-        }
-    remark = parse_remark_response(
-        response,
-        locale=locale,
-        fallback_evidence=request.evidence_refs,
-    )
-    return {
-        "status": "OK",
+    base: dict[str, Any] = {
+        "status": result.status,
         "claim_boundary": CLAIM_BOUNDARY,
         "prompt_version": PROMPT_VERSION,
-        "verdict_impact": "none",
-        "ai_generated": True,
-        "expert_confirmation_required": True,
-        "provider": response.provider,
-        "model": response.model,
-        "usage": response.usage,
-        "remark": asdict(remark),
-        "audit_event": _advisory_audit_event(
-            request_id=request_id,
-            response=response,
-            settings=resolved,
-        ),
     }
+    if result.reason:
+        base["reason"] = result.reason
+    if result.uncertainties:
+        base["uncertainties"] = list(result.uncertainties)
+    if result.provider is not None:
+        base["provider"] = result.provider
+    if result.model is not None:
+        base["model"] = result.model
+    if result.usage is not None:
+        base["usage"] = result.usage
+    if result.response is not None:
+        base["audit_event"] = _advisory_audit_event(
+            request_id=request_id,
+            response=result.response,
+            settings=resolved,
+            failure_reason=result.reason if result.status == "SKIPPED" else None,
+        )
+    if result.status == "OK" and result.remark is not None:
+        base["verdict_impact"] = "none"
+        base["ai_generated"] = True
+        base["expert_confirmation_required"] = True
+        base["remark"] = asdict(result.remark)
+    return base
 
 
 def main(argv: list[str] | None = None) -> int:

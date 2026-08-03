@@ -49,13 +49,31 @@ class FileLlmTokenBudgetLedgerTests(unittest.TestCase):
             self.assertEqual(snap["budget_scope"], "file_shared_lock_degraded")
             self.assertIn("lock_degraded_reason", snap)
 
-    def test_snapshot_includes_lock_degraded_false_by_default(self) -> None:
+    def test_ledger_survives_process_restart(self) -> None:
+        """Acceptance #6: tokens_today persists across FileBackedLlmTokenBudget instances."""
+
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "budget.json"
-            budget = FileBackedLlmTokenBudget(path)
-            snap = budget.snapshot()
-            self.assertIn("lock_degraded", snap)
-            self.assertFalse(snap["lock_degraded"])
+            first = FileBackedLlmTokenBudget(
+                path,
+                max_tokens_per_call=4_096,
+                max_tokens_per_run=250_000,
+                max_tokens_per_day=600_000,
+            )
+            self.assertIsNone(first.check_before(estimated_tokens=1_000))
+            first.record(prompt_tokens=400, completion_tokens=100)
+            snap1 = first.snapshot()
+            self.assertEqual(snap1["tokens_today"], 500)
+
+            second = FileBackedLlmTokenBudget(
+                path,
+                max_tokens_per_call=4_096,
+                max_tokens_per_run=250_000,
+                max_tokens_per_day=600_000,
+            )
+            snap2 = second.snapshot()
+            self.assertEqual(snap2["tokens_today"], 500)
+            self.assertEqual(snap2["budget_scope"], "file_shared")
 
 
 if __name__ == "__main__":

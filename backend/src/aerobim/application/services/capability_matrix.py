@@ -196,4 +196,8 @@ def build_report_capabilities(
             CapabilityState.SKIPPED,
             "package completeness not requested",
         ),
+        llm_advisory=CapabilityStatus(
+            CapabilityState.SKIPPED,
+            "llm advisory remark compose not evaluated",
+        ),
     )
