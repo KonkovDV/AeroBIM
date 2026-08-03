@@ -423,7 +423,7 @@ AeroBIM решает конкретную задачу: уменьшает об�
 - Human-in-the-Loop rule generation: https://www.mdpi.com/2075-5309/16/4/719
 - AI in BIM clash management: https://www.mdpi.com/2075-5309/16/13/2623
 
-**Уровни чисел (не смешивать):** L1 open-bench baseline (`claim_level=open_bench_only`, см. [`quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) + [`evidence/ifc-bench-v1-smoke-latest.json`](evidence/ifc-bench-v1-smoke-latest.json) + [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json): live Yandex counting — five-field macro **0.4325**, **paper-comparable four-field** Door/Window/Bedroom/Toilet **0.5064** ≈ Gemini 3 Pro Table 1 mean **0.51** in AECV-Bench PDF; ≠ RT-001) · L2 fixture/open-corpora · L3 customer (RT-001). Source audit: [`research/SOURCE_VERIFICATION_REPORT_2026_08_04.md`](research/SOURCE_VERIFICATION_REPORT_2026_08_04.md) · [`research/CITATION_ERRATA_2026_08_04.md`](research/CITATION_ERRATA_2026_08_04.md).
+**Уровни чисел (не смешивать):** L1 open-bench (`claim_level=open_bench_only`) — AECV live: **`macro_bench_protocol=0.5065`** (4 класса как в статье) / `macro_extended=0.4325` (с Space; не сравнивать с Table 1); см. [`research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md) · [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json) · IFC-Bench smoke · L2 fixture · L3 RT-001. Source audit: [`research/SOURCE_VERIFICATION_REPORT_2026_08_04.md`](research/SOURCE_VERIFICATION_REPORT_2026_08_04.md).
 
 ### Конкуренты
 
