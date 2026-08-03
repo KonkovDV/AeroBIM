@@ -76,6 +76,26 @@ Default planning anchors (recompute if the customer changes assumptions):
 
 Exact binomial power is sawtoothed in n — nearby n are equivalent design points (`plan_adjudication_corpus`).
 
+## 4.1. LLM reproducibility probes (P₁ / P₂) — sample-size planning
+
+Vendor behaviour probes (deep analysis §2.1–2.2) split:
+
+| Property | Meaning | Experiment |
+|---|---|---|
+| **P₁** | Intra-session determinism at fixed URI / prompt / `temperature=0` | `k` repeats per prompt; share of prompts with identical response hashes |
+| **P₂** | Stability across time at same URI | Same prompts after Δ (e.g. 14 days); share matching original hashes |
+
+Plan `n` (distinct fixture prompts) with the **existing** Wilson / adjudication planners — do not invent `n` ad hoc:
+
+```bash
+# Same tools as §4 — e.g. expected p≈0.9, half-width 0.08, conf=0.95
+python -m aerobim.tools.compute_quality_protocol_stats \
+  --expected-p 0.9 --margin 0.08 --confidence 0.95
+# or plan_adjudication_corpus for power-aware nearby n
+```
+
+Publish the **lower Wilson bound**, not the point estimate. P₁/P₂ measure vendor behaviour; they are **not** a gate for report FAIR reproducibility (deterministic core + provenanced annotation — Claims Lock / `REPRODUCIBILITY-2026.md`).
+
 ## 5. Interim pilot confirmed-finding rate
 
 **Target:** TP / (TP + FP) ≥ **0.60** on the held-out adjudicated slice (Samolet / MIK interim contract — not ТЗ aspirational >0.90).

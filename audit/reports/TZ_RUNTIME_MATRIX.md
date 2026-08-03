@@ -25,7 +25,7 @@ Historical narrative freezes (`c0c4b2b` / `8efbef8`) are superseded for rows mar
 | 16 | Площади | quantity / property rules | IFC + cross-doc | quantity tests | fixture | VERIFIED_FIXTURE_ONLY | MED |
 | 17 | Размеры | same | same | same | fixture | VERIFIED_FIXTURE_ONLY | MED |
 | 18 | Отсутствующие элементы | IDS / IFC rules | when configured | IDS e2e fixtures | fixture | VERIFIED_FIXTURE_ONLY | MED |
-| 19 | Неэффективное использование пространства | — | — | — | — | MISSING | HIGH |
+| 19 | Неэффективное использование пространства | — | — | — | — | MISSING^[fn19] | HIGH |
 | 20 | RU-замечания | RemarkGenerator | analyze attach | remark tests | fixture | VERIFIED_FIXTURE_ONLY | LOW |
 | 21 | EN-замечания | RemarkGenerator | same | partial | fixture | PARTIAL | MED |
 | 22 | Критичность / приоритет | severity + priority | compute_issue_priority | priority tests | fixture | VERIFIED_FIXTURE_ONLY | MED |
@@ -59,3 +59,5 @@ MEP system-aware clash: NOT VERIFIED (DI-wired Unconfigured provider ≠ deliver
 ```text
 summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI/OCR cannot flip
 ```
+
+^[fn19]: Row 19 remains **MISSING** as product capability. **ADVISORY_ONLY** is *planned* via Yandex AI Studio multimodal VLM (`qwen3.6-35b-a3b`, KT#2 window) — **not claimed delivered**, not Checkpoint GO. See `docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md` §1.1.c / §5.3 and `docs/roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md` W2-06.

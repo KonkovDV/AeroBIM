@@ -17,6 +17,10 @@ See also: `docs/data-governance-2026.md`, `docs/ai-safety-and-document-ingestion
 - No-cloud / no-LLM modes: hybrid policy + capability disabled.
 - Deletion/purge: implement per deployment runbook — customer procedure BLOCKED until signed DPA.
 
+## Model-call audit primacy (Yandex AI Studio)
+
+Vendor Q&A states request history is **not retrievable** from platform logs (data stored anonymized, not account-bound). Therefore AeroBIM `audit_event` (prompt/response hashes, model URI, `x-data-logging-enabled: false` fact, token counters, correlation id) is the **primary** record of model calls — not a duplicate of vendor history. See deep analysis §1.5.a (`docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md`) and `audit/llm_provider_policy.json` (`vendor_request_history_retrievable: false`).
+
 ## Status
 
 Governance docs exist; customer-specific retention/DPA = BLOCKED.

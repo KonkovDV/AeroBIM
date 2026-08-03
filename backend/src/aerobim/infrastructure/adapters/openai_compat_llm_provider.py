@@ -8,7 +8,11 @@ change. Hard token budget fail-closed before any network call. Never sets
 
 from __future__ import annotations
 
+import hashlib
 import json
+import threading
+import time
+import urllib.error
 import urllib.request
 from collections.abc import Callable, Mapping
 from typing import Any, Literal
@@ -55,6 +59,8 @@ class OpenAICompatLlmProvider:
         extra_headers: Mapping[str, str] | None = None,
         auth_scheme: str = "Bearer",
         response_schema_mode: ResponseSchemaMode = "json_object",
+        max_concurrent: int = 4,
+        retries_429: int = 3,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._model = resolve_llm_model_uri(
@@ -82,6 +88,8 @@ class OpenAICompatLlmProvider:
         if mode not in {"json_schema", "json_object"}:
             raise ValueError(f"unsupported response_schema_mode: {response_schema_mode!r}")
         self._response_schema_mode: ResponseSchemaMode = mode  # type: ignore[assignment]
+        self._semaphore = threading.BoundedSemaphore(max(1, int(max_concurrent)))
+        self._retries_429 = max(0, int(retries_429))
         # Defense-in-depth: re-check even if Settings was built without from_env.
         if self._base_url:
             assert_llm_base_host_allowed(self._base_url, self._allowed_hosts)
@@ -104,12 +112,15 @@ class OpenAICompatLlmProvider:
             }
         return {"type": "json_object"}
 
-    def _request_headers(self) -> dict[str, str]:
+    def _request_headers(self, *, client_request_id: str | None = None) -> dict[str, str]:
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
             **self._extra_headers,
         }
+        if client_request_id:
+            # Yandex support correlation (DOC); primary audit is still AeroBIM audit_event.
+            headers["x-client-request-id"] = client_request_id
         if self._api_key:
             headers["Authorization"] = f"{self._auth_scheme} {self._api_key}"
         return headers
@@ -127,10 +138,31 @@ class OpenAICompatLlmProvider:
             "folder_id_set": bool(self._folder_id or self._extra_headers.get("x-folder-id")),
             "data_logging_header": logging_hdr,
             "data_logging_disabled": str(logging_hdr).lower() == "false",
-            "reproducible": False
-            if self._provider == "yandex-ai-studio"
-            else bool(self._send_seed and self._seed is not None),
+            "deterministic_intrasession": None,
+            "stable_across_time": None,
+            "reproducible": False,
         }
+
+    def _call_transport(self, url: str, headers: dict[str, str], body: bytes) -> bytes:
+        """Semaphore + 429 retry (D-1); cloud quota is shared across the org."""
+
+        attempts = self._retries_429 + 1
+        last_exc: BaseException | None = None
+        with self._semaphore:
+            for attempt in range(attempts):
+                try:
+                    return self._transport(url, headers, body)
+                except urllib.error.HTTPError as exc:
+                    last_exc = exc
+                    if exc.code == 429 and attempt + 1 < attempts:
+                        time.sleep(0.5 * (attempt + 1))
+                        continue
+                    raise
+                except Exception as exc:  # noqa: BLE001
+                    last_exc = exc
+                    raise
+        assert last_exc is not None
+        raise last_exc
 
     def _default_transport(self, url: str, headers: dict[str, str], body: bytes) -> bytes:
         from aerobim.core.security.outbound_url import (
@@ -220,10 +252,19 @@ class OpenAICompatLlmProvider:
         if self._seed is not None and self._send_seed:
             body_obj["seed"] = self._seed
         raw_body = json.dumps(body_obj, ensure_ascii=False).encode("utf-8")
-        headers = self._request_headers()
+        prompt_sha256 = hashlib.sha256(raw_body).hexdigest()
+        headers = self._request_headers(client_request_id=request.request_id)
+        audit_extra = {
+            "prompt_sha256": prompt_sha256,
+            "client_request_id": request.request_id,
+        }
 
         try:
-            raw = self._transport(f"{self._base_url}/chat/completions", headers, raw_body)
+            raw = self._call_transport(
+                f"{self._base_url}/chat/completions",
+                headers,
+                raw_body,
+            )
         except Exception as exc:  # noqa: BLE001 — advisory fail-closed
             return LlmResponse(
                 remark_draft="",
@@ -236,6 +277,7 @@ class OpenAICompatLlmProvider:
                 usage={
                     **self._budget.snapshot(),
                     **self._vendor_audit_fields(),
+                    **audit_extra,
                     **({"model_sha256": self._model_sha256} if self._model_sha256 else {}),
                 },
                 status="failed",
@@ -293,7 +335,13 @@ class OpenAICompatLlmProvider:
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
         )
-        usage = {**usage, **self._vendor_audit_fields()}
+        response_sha256 = hashlib.sha256(draft.encode("utf-8")).hexdigest()
+        usage = {
+            **usage,
+            **self._vendor_audit_fields(),
+            **audit_extra,
+            "response_sha256": response_sha256,
+        }
         if self._model_sha256:
             usage = {**usage, "model_sha256": self._model_sha256}
 

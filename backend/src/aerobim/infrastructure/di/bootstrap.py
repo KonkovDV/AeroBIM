@@ -741,6 +741,8 @@ def _build_llm_advisory_provider(settings: Settings):
             if settings.llm_response_format_mode.strip().lower() == "json_schema"
             else "json_object"
         ),
+        max_concurrent=settings.llm_max_concurrent,
+        retries_429=settings.llm_429_retries,
     )
 
 

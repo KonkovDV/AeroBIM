@@ -1,11 +1,12 @@
 ---
 title: "Qwen / Yandex AI Studio — KT#2 executable plan"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 last_updated: "2026-08-03"
 claim_boundary: "Engineering plan. Alibaba Max forbidden. Yandex Studio RF = T2 PUBLIC/INTERNAL. Checkpoint NO_GO."
 source_report: "docs/architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md"
 grant_note: "docs/architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md"
+deep_analysis: "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md"
 ---
 
 # Qwen + Yandex AI Studio — KT#2 plan (4–20 Aug 2026)
@@ -19,7 +20,7 @@ grant_note: "docs/architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md"
 | AI Studio on-prem / local vLLM | **Pilot T1** — CONFIDENTIAL/RESTRICTED path; change `base_url` only |
 | GPU T4 grant track | **OCR/PDF render** — not LLM |
 | Verdict / `summary.passed` | **UNTOUCHED** — OFF==ON |
-| Entry scenario | **5.1** remark compose → **5.2** TZ→IDS → **5.3** VLM (KT#3) |
+| Entry scenario | **5.1** remark compose → **5.2** TZ→IDS → **5.3** VLM (**KT#2** via `qwen3.6-35b-a3b` multimodal; not deferred to KT#3) |
 
 ## Week 1 — landed / hardening
 
@@ -40,12 +41,12 @@ grant_note: "docs/architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md"
 | W2-03 | `bench_hybrid_contour` + open-corpora timing; budget counters in artifacts |
 | W2-04 | T4 track: batch OCR/render for EXTRACTION_INTEGRITY corpora |
 | W2-05 | Claims Lock / matrix refresh for KT#2 drop |
+| W2-06 | Scenario **5.3** region-crop VLM on Studio multimodal `qwen3.6-35b-a3b` (PUBLIC/INTERNAL open/fixture crops only; stamp/PII crop controls before customer drawings) |
 
 ## KT#3 (Sep)
 
 - On-prem Studio or local 3.8-27B after SBOM/license; same-corpus rebench.
-- Scenario 5.3 region-crop VLM.
-- Watch grant expiry vs self-pay.
+- P₂ stability re-probe (+14d) and grant expiry vs self-pay (5.3 already in KT#2 window).
 
 ## Non-goals
 

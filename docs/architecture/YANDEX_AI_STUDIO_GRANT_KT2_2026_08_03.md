@@ -2,8 +2,9 @@
 title: "Yandex AI Studio grant — KT#2/KT#3 contour implications"
 date: 2026-08-03
 status: active
-version: "1.0.0"
+version: "1.1.0"
 claim_boundary: "Grant strategy note. Not Checkpoint GO. Vendor pricing = claims. Cloud Alibaba Max still forbidden."
+source_analysis: "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md"
 ---
 
 # Yandex grant: AI Studio + GPU T4 (2026-08-03)
@@ -32,12 +33,25 @@ Rough burn (vendor-order-of-magnitude): ~100 findings ≈ 250k tokens ≈ ~100 �
 ## Hard requirements before first Studio call
 
 1. **Budget caps (fail-closed):** max tokens per call / per run / per day; counters in usage/audit; exceed → no call.
-2. **Context 32k:** only structured findings enter the prompt (architecture already enforces this).
+2. **Structured findings only (not a 32k vendor limit):** Qwen on Studio has **262 144** context tokens (YandexGPT family is ~32k — not our path). Keep prompts to structured findings only for threat-model reasons: (i) minimize prompt-injection surface (`HYBRID_AI_THREAT_MODEL`); (ii) hold data class at INTERNAL; (iii) cost; (iv) provenance — the model must not see what it cannot cite. Do **not** justify this discipline by a non-applicable 32k cap.
 3. **Yandex Completions quirks (adapter):** `model` = `gpt://{folder}/{name}/{version}` (not bare `Qwen…`); `response_format.type=json_schema` + `REMARK_JSON_SCHEMA`; **do not send `seed`** until vendor confirms; send `x-folder-id` + `x-data-logging-enabled: false` (recorded in usage/audit).
 4. **Reproducibility:** Studio profile stays `reproducible=false` until `probe_llm_reproducibility` matches twice on a pinned version (not `latest`).
 5. **Activate grant / payment account before 2026-08-04**; check grant expiry vs KT#3 window.
 
 Operator checklist: folder ID, SA role `ai.languageModels.user`, API key scope `yc.ai.foundationModels.execute`, exact model version from AI Studio catalog.
+
+## Contour levels C0–C3 (SLA ≠ classification)
+
+ADR-002 remains the **open-core commercial boundary**. Studio routing uses an explicit contour ladder (see deep analysis §1.4). **C0 → C1 is an SLA measure, not a data-classification upgrade.**
+
+| Level | Realization | What it improves | Allowed classes |
+|---|---|---|---|
+| **C0** | Shared AI Studio instance (RF) | — | PUBLIC, INTERNAL |
+| **C1** | Dedicated AI Studio instance (RF) | latency, quotas, SLA predictability | PUBLIC, INTERNAL; **CONFIDENTIAL only with signed DPA** |
+| **C2** | AI Studio on-premises in customer contour | egress boundary | CONFIDENTIAL, RESTRICTED |
+| **C3** | External clouds outside RF | — | nothing; profile `NOT_VERIFIED` |
+
+Raising class to CONFIDENTIAL requires a legal instrument (DPA), not a dedicated compute SKU.
 
 ## Classification (hybrid contour — not ADR-002 open-core)
 
@@ -45,8 +59,8 @@ ADR-002 is the **open-core commercial boundary** (LICENSE stays MIT). The Studio
 
 | Contour label | Meaning for Studio |
 |---|---|
-| **T2 / private_shared** | Yandex AI Studio **cloud** (RF) — PUBLIC + INTERNAL open corpora for KT#2 |
-| **T1 / private on-prem** | AI Studio Docker/Helm / Stackland in Samolet contour — CONFIDENTIAL / RESTRICTED |
+| **T2 / private_shared** (≈ C0/C1 cloud) | Yandex AI Studio **cloud** (RF) — PUBLIC + INTERNAL open corpora for KT#2 |
+| **T1 / private on-prem** (≈ C2) | AI Studio Docker/Helm / Stackland in Samolet contour — CONFIDENTIAL / RESTRICTED |
 | Same adapter | `OpenAICompatLlmProvider`; only `AEROBIM_LLM_BASE_URL` (+ key) changes |
 
 See [`../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md`](../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md).
@@ -59,6 +73,7 @@ See [`../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md`](../../audit/r
 
 ## Pointers
 
+- Deep analysis: [`YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md`](YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md)
 - Feasibility: [`QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md`](QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md)
 - Plan: [`../roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md`](../roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md)
 - Routing policy: [`../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md`](../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md)

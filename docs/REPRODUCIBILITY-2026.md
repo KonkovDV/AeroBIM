@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Reproducibility 2026"
 status: active
-version: "1.0.0"
-last_updated: "2026-05-21"
+version: "1.1.0"
+last_updated: "2026-08-03"
 tags: [aerobim, reproducibility, FAIR, openBIM, academic]
 ---
 
@@ -96,6 +96,12 @@ Full publication rail: [`academic-publication-evidence-2026.md`](REPRODUCIBILITY
 | Claim boundary | pass | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) |
 
 Reference frameworks: [FAIR Software Checklist v0.2](https://fairsoftwarechecklist.net/v0.2/), CODE reusable research software (Scientific Data, 2026).
+
+## Claims Lock — report reproducibility vs model determinism
+
+**Report reproducibility is the deterministic core.** The language-model output is not an input to the verdict; it is stored as a provenanced annotation (prompt/response hashes, model URI, schema version, expert mark) and on re-run is **presented**, not re-generated. Vendor intra-session / across-time determinism probes measure provider behaviour; they are not a publication gate for FAIR report reproducibility.
+
+See deep analysis §2.3 (`docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md`).
 
 ## Explicit limits (do not overclaim)
 

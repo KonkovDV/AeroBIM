@@ -329,9 +329,89 @@ class YandexStudioCompatTests(unittest.TestCase):
         self.assertEqual(headers["Authorization"], "Bearer test-key")
         self.assertEqual(headers["x-data-logging-enabled"], "false")
         self.assertEqual(headers["x-folder-id"], "b1gfolder")
+        self.assertEqual(headers["x-client-request-id"], "r")
         self.assertTrue(response.usage.get("data_logging_disabled"))
         self.assertFalse(response.usage.get("reproducible"))
         self.assertFalse(response.usage.get("seed_sent"))
+        self.assertEqual(response.usage.get("client_request_id"), "r")
+        self.assertIn("prompt_sha256", response.usage)
+        self.assertIn("response_sha256", response.usage)
+
+    def test_latest_alias_forbidden(self) -> None:
+        from aerobim.core.config.settings import assert_llm_model_pin_no_aliases
+
+        with self.assertRaises(RuntimeError):
+            assert_llm_model_pin_no_aliases("gpt://b1g/qwen/latest")
+        with self.assertRaises(RuntimeError):
+            OpenAICompatLlmProvider(
+                base_url="https://llm.api.cloud.yandex.net/v1",
+                model="gpt://b1g/qwen/latest",
+                model_revision="latest",
+            )
+
+    def test_429_retries_then_succeeds(self) -> None:
+        import urllib.error
+
+        from aerobim.domain.advisory_remark_compose import build_remark_llm_request
+
+        calls = {"n": 0}
+
+        def transport(url: str, _headers: dict[str, str], _body: bytes) -> bytes:
+            calls["n"] += 1
+            if calls["n"] < 3:
+                raise urllib.error.HTTPError(
+                    url,
+                    429,
+                    "Too Many Requests",
+                    hdrs=urllib.error.HTTPError(url, 429, "", None, None).headers,  # type: ignore[arg-type]
+                    fp=None,
+                )
+            draft = {
+                "title": "t",
+                "body": "b",
+                "locale": "ru",
+                "evidence_refs": ["x"],
+            }
+            return json.dumps({"choices": [{"message": {"content": json.dumps(draft)}}]}).encode(
+                "utf-8"
+            )
+
+        # Build a real HTTPError without nested construction.
+        def transport2(url: str, _headers: dict[str, str], _body: bytes) -> bytes:
+            calls["n"] += 1
+            if calls["n"] < 3:
+                err = urllib.error.HTTPError(url, 429, "Too Many Requests", None, None)
+                raise err
+            draft = {
+                "title": "t",
+                "body": "b",
+                "locale": "ru",
+                "evidence_refs": ["x"],
+            }
+            return json.dumps({"choices": [{"message": {"content": json.dumps(draft)}}]}).encode(
+                "utf-8"
+            )
+
+        calls["n"] = 0
+        provider = OpenAICompatLlmProvider(
+            base_url="https://llm.api.cloud.yandex.net/v1",
+            model="gpt://b1g/qwen/v1",
+            model_revision="v1",
+            transport=transport2,
+            send_seed=False,
+            response_schema_mode="json_schema",
+            retries_429=3,
+            max_concurrent=2,
+        )
+        response = provider.generate(
+            build_remark_llm_request(
+                request_id="r429",
+                findings=({"finding_id": "x", "message": "m"},),
+                allow_customer_data=False,
+            )
+        )
+        self.assertEqual(response.status, "advisory")
+        self.assertEqual(calls["n"], 3)
 
 
 class LlmTokenBudgetTests(unittest.TestCase):
