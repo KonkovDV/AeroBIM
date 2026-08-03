@@ -42,12 +42,22 @@
 - Studio cloud path for CONFIDENTIAL / RESTRICTED customer data
 - customers «interested» without verified contact
 - offline-ready bare-metal without wheelhouse evidence
+- LLM/VLM remarks as non-synthetic / unmarked content (draft AI FZ / marking expectations — treat remarks as synthetic; UI must label)
+- AeroBIM as sole «operator» of AI system when deployed in customer contour (role = developer/supplier unless SaaS contract says otherwise — lock in pilot contract)
+- stamp/signatory ФИО as «не ПДн» / anonymized by masking alone (152-ФЗ; own Claims Lock: masking ≠ anonymization)
+- full PDF render-vs-extract / semantic-integrity product (arXiv-class gaps); `extraction_integrity` OK ≠ literature coverage
+- LLM→IDS compiler as peer-reviewed accuracy / Solibri-grade without published baseline compare + HITL (RT-002 / RT-023)
+- competitive «beats Solibri/Navisworks in РФ закупка» without Pilot-BIM / 10D framing + evidence
 
 ## Evidence pointers
 
 - Blockers: `CRITICAL_BLOCKERS.md`
 - License: `docs/license-policy-2026.md`, inventory JSON, `test_dependency_license_gate.py`
 - Offline: `docs/offline-deployment-2026.md`, `aerobim.tools.offline_bundle`
+  (image tar + SPDX-lite SBOM + INSTALL/MIRROR docs; bare-metal DEFERRED)
 - Extraction: `docs/extraction-integrity-2026.md`, `domain/extraction_integrity.py`
+  (digit-run text↔OCR collision ENG_PARTIAL when RapidOCR present; not literature closure)
 - Signature: `docs/signature-and-immutability-2026.md`
 - Full P-001…P-020 re-audit: `RED_TEAM_AUDIT_2026_07_31.md` §6 (reaudit addendum)
+- Remote Task 07 verify: `docs/quality/RED_TEAM_KT2_REMOTE_AUDIT_VERIFY_2026_08_03.md`
+- Citation errata (ASK-BIM venue): `docs/research/CITATION_ERRATA_2026_08_03.md`

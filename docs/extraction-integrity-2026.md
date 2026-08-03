@@ -15,15 +15,17 @@
   (pdfminer text-layer + optional RapidOCR on pypdfium2 renders when `raster` extra present)
 - Advisory ON/OFF must not flip `summary.passed` (hybrid / LLM advisory tests)
 
-## PARTIAL (engineering deepen, 2026-08-01)
+## PARTIAL (engineering deepen, 2026-08-03)
 
 | Signal | Status |
 |---|---|
 | Text-layer hidden / off-page / zero-size | VERIFIED (pdfminer path) |
-| Optional OCR char-count vs extracted ratio | ENG_PARTIAL — fills `ocr_char_count` when RapidOCR available; domain WARNING on disagreement |
+| Optional OCR char-count vs extracted ratio | ENG_PARTIAL — WARNING when RapidOCR present |
+| **Text-layer vs OCR digit-run collision** (≥3 digits) | **ENG_PARTIAL wired** — same-length spoof (visual «3000» / text «3300») → `FAILED` (pass-blocking); requires `raster`/OCR; not full literature coverage (arXiv:2606.15020) |
 | Full visual render-vs-extract product | **NOT VERIFIED** — forbidden claim |
 
 ## Forbidden claims
 
 «Render-vs-extract проверка PDF реализована как продукт» — запрещено.  
-«OCR vs text-layer wired» ≠ product-grade visual integrity / accuracy claim.
+«OCR vs text-layer wired» ≠ product-grade visual integrity / accuracy claim / 25-gap literature closure.  
+Digit-run collision with RapidOCR present ≠ OCR quality guarantee.

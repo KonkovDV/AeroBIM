@@ -25,6 +25,8 @@ Academic-grade uncertainty quantification for AeroBIM benchmark artifacts
 - **Cohen's kappa** (Cohen 1960) for two annotators, nominal labels.
 - **Krippendorff's alpha** (nominal; Krippendorff 2019, coincidence-matrix
   formulation) for >=2 annotators with missing labels.
+- **Gwet's AC1** (Gwet 2008) for two annotators — chance-corrected agreement
+  that is robust to the kappa paradox under high class imbalance (RT-026).
 
 Claim boundary: statistics quantify *fixture-corpus* uncertainty; they never
 upgrade fixture evidence to customer evidence (RT-001). All computations are
@@ -737,6 +739,35 @@ def cohen_kappa(labels_a: Sequence[str], labels_b: Sequence[str]) -> float:
     return (observed - expected) / (1 - expected)
 
 
+def gwet_ac1(labels_a: Sequence[str], labels_b: Sequence[str]) -> float:
+    """Gwet's AC1 (2008) for two annotators — imbalance-robust vs Cohen κ paradox.
+
+    pe = (1/(q-1)) * Σ_k π_k (1-π_k), where π_k is the average category
+    prevalence across both raters and q is the number of categories present.
+    """
+
+    if len(labels_a) != len(labels_b):
+        raise ValueError("gwet_ac1 requires equal-length label sequences")
+    if not labels_a:
+        raise ValueError("gwet_ac1 requires at least one item")
+    n = len(labels_a)
+    observed = sum(1 for a, b in zip(labels_a, labels_b, strict=True) if a == b) / n
+    categories = sorted(set(labels_a) | set(labels_b))
+    q = len(categories)
+    if q < 2:
+        return 1.0 if math.isclose(observed, 1.0) else 0.0
+    counts_a = Counter(labels_a)
+    counts_b = Counter(labels_b)
+    expected = 0.0
+    for label in categories:
+        pi = (counts_a[label] + counts_b[label]) / (2.0 * n)
+        expected += pi * (1.0 - pi)
+    expected /= q - 1
+    if math.isclose(expected, 1.0):
+        return 1.0 if math.isclose(observed, 1.0) else 0.0
+    return (observed - expected) / (1.0 - expected)
+
+
 def krippendorff_alpha_nominal(
     units: Sequence[Mapping[str, str | None]],
 ) -> float:
@@ -783,20 +814,21 @@ def agreement_artifact(
     *,
     kappa_threshold: float = 0.60,
     alpha_threshold: float = 0.67,
+    ac1_threshold: float = 0.60,
 ) -> dict[str, object]:
     """Build the agreement artifact consumed by the RT-001 publishability gate.
 
-    Emits ``cohen_kappa`` only when exactly two annotators labeled every
+    Emits ``cohen_kappa`` / ``gwet_ac1`` when exactly two annotators labeled every
     pairable unit; ``krippendorff_alpha`` always (>=2 annotators, missing
     tolerated). Thresholds follow the intake protocol (kappa>=0.60,
-    alpha>=0.67 per Krippendorff's customary cut-off).
+    alpha>=0.67 per Krippendorff's customary cut-off; AC1>=0.60 for imbalance).
     """
 
     annotators = sorted({name for unit in units for name in unit})
     alpha_value = krippendorff_alpha_nominal(units)
     payload: dict[str, object] = {
         "artifact_type": "annotation_agreement",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "annotators": annotators,
         "unit_count": len(units),
         "krippendorff_alpha": round(alpha_value, 6),
@@ -804,7 +836,7 @@ def agreement_artifact(
         "pass_alpha_0_67": alpha_value >= alpha_threshold,
         "claim_boundary": (
             "agreement on fixture/customer labels; never upgrades fixture "
-            "evidence to customer evidence (RT-001)"
+            "evidence to customer evidence (RT-001); report κ + α + AC1"
         ),
     }
     if len(annotators) == 2:
@@ -815,13 +847,16 @@ def agreement_artifact(
             if unit.get(first) is not None and unit.get(second) is not None
         ]
         if pairs:
-            kappa_value = cohen_kappa(
-                [str(a) for a, _ in pairs],
-                [str(b) for _, b in pairs],
-            )
+            left = [str(a) for a, _ in pairs]
+            right = [str(b) for _, b in pairs]
+            kappa_value = cohen_kappa(left, right)
+            ac1_value = gwet_ac1(left, right)
             payload["cohen_kappa"] = round(kappa_value, 6)
+            payload["gwet_ac1"] = round(ac1_value, 6)
             payload["kappa_threshold"] = kappa_threshold
+            payload["ac1_threshold"] = ac1_threshold
             payload["pass_threshold_0_60"] = kappa_value >= kappa_threshold
+            payload["pass_ac1_0_60"] = ac1_value >= ac1_threshold
     if "pass_threshold_0_60" not in payload:
         # Fall back to alpha for the kappa-position gate when kappa is
         # undefined (>2 annotators or no complete pairs).

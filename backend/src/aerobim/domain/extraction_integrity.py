@@ -19,12 +19,27 @@ whether extracted text may be TRUSTED as evidence, not the engineering verdict.
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from aerobim.domain.models import CapabilityStatus
+
+# Numeric spoof class (visual «3000» vs text-layer «3300»): char-count ratios miss
+# same-length substitutions. Collide digit runs of this length across channels.
+_DIGIT_RUN_RE = re.compile(r"\d{3,}")
+
+
+def extract_digit_runs(text: str) -> tuple[str, ...]:
+    """Sorted unique digit runs (≥3 digits) for deterministic channel collision.
+
+    Uniqueness avoids false FAILED from pdfminer/OCR duplicate spans of the same
+    number; the spoof class is different values (visual «3000» vs text «3300»).
+    """
+
+    return tuple(sorted(set(_DIGIT_RUN_RE.findall(text or ""))))
 
 
 class ExtractionIntegrityStatus(StrEnum):
@@ -50,6 +65,10 @@ class ExtractionIntegritySignals:
     """Chars from invisible layers: render mode 3, white-on-white, zero-size fonts."""
     offpage_text_char_count: int | None = None
     duplicated_layer_count: int | None = None
+    extracted_digit_runs: tuple[str, ...] | None = None
+    """Digit runs (≥3) from text-layer; None = channel not measured."""
+    ocr_digit_runs: tuple[str, ...] | None = None
+    """Digit runs (≥3) from OCR on rendered pages; None = OCR not measured."""
 
 
 @dataclass(frozen=True)
@@ -132,8 +151,26 @@ def assess_extraction_integrity(
     rendered = (
         signals.rendered_text_present if isinstance(signals.rendered_text_present, bool) else None
     )
+    text_digits = signals.extracted_digit_runs
+    ocr_digits = signals.ocr_digit_runs
+    if text_digits is not None and not isinstance(text_digits, tuple):
+        text_digits = None
+    if ocr_digits is not None and not isinstance(ocr_digits, tuple):
+        ocr_digits = None
 
-    if all(value is None for value in (extracted, ocr, hidden, offpage, duplicated, rendered)):
+    if all(
+        value is None
+        for value in (
+            extracted,
+            ocr,
+            hidden,
+            offpage,
+            duplicated,
+            rendered,
+            text_digits,
+            ocr_digits,
+        )
+    ):
         return ExtractionIntegrityResult(
             ExtractionIntegrityStatus.REVIEW_REQUIRED,
             ("no extraction-integrity signals provided",),
@@ -160,7 +197,25 @@ def assess_extraction_integrity(
         review = True
         reasons.append(f"duplicated text layers ({duplicated}); requires expert review")
 
-    # OCR and extraction disagree badly on a page that clearly has text.
+    # Channel collision: text-layer vs OCR digit runs (same-length spoof: 3000 vs 3300).
+    if text_digits is not None and ocr_digits is not None:
+        text_set = set(text_digits)
+        ocr_set = set(ocr_digits)
+        if text_set and ocr_set and text_set != ocr_set:
+            failed = True
+            reasons.append(
+                "text-layer vs OCR digit-run mismatch "
+                f"(text={sorted(text_set)}, ocr={sorted(ocr_set)}); "
+                "extracted numerics must not be trusted for cross-doc"
+            )
+        elif bool(text_set) != bool(ocr_set):
+            warning = True
+            reasons.append(
+                "digit runs present on only one channel "
+                f"(text={len(text_set)}, ocr={len(ocr_set)}); layers disagree"
+            )
+
+    # OCR and extraction disagree badly on volume (char-count only — misses same-len spoof).
     if extracted is not None and ocr is not None and ocr > 0:
         ratio = extracted / ocr
         if ratio < t.ocr_agreement_ratio:
@@ -224,5 +279,6 @@ __all__ = [
     "ExtractionIntegrityStatus",
     "ExtractionIntegrityThresholds",
     "assess_extraction_integrity",
+    "extract_digit_runs",
     "merge_integrity_results",
 ]

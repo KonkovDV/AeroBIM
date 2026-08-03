@@ -412,9 +412,24 @@ def _advisory_object_kind(request: ValidationRequest) -> str:
     """Conservative object kind for advisory routing (never PUBLIC by default)."""
 
     path = str(getattr(request, "ifc_path", "") or "").replace("\\", "/").lower()
-    if "/samples/" in path or "/fixtures/" in path or "fixture" in path:
+    # Leading slash so relative ``samples/...`` matches the same as absolute paths.
+    marked = f"/{path.lstrip('/')}"
+    if "/samples/" in marked or "/fixtures/" in marked or "fixture" in path:
         return "public_fixture"
     return "ifc"
+
+
+def _llm_overlay_route_target(provider: object):
+    """Studio/cloud OpenAI-compat → PUBLIC; local weights / mock → LOCAL (RT-030)."""
+
+    from aerobim.domain.hybrid.trust_policy import RouteTarget
+
+    name = str(
+        getattr(provider, "provider", None) or getattr(provider, "_provider", "") or ""
+    ).strip().lower()
+    if "yandex" in name or name in {"openai", "openai-compat", "openai_compat"}:
+        return RouteTarget.PUBLIC
+    return RouteTarget.LOCAL
 
 
 class EvidenceAssembler:
@@ -422,6 +437,65 @@ class EvidenceAssembler:
 
     def __init__(self, host: AnalyzeProjectPackageUseCase) -> None:
         self._host = host
+
+    def _evaluate_llm_overlay_gate(
+        self, request: ValidationRequest
+    ) -> tuple[bool, dict[str, object] | None]:
+        """HybridRouteGate before Studio/local remark overlay (RT-030 / WP-02 parity).
+
+        Missing gate → suppress. Cloud (Yandex) uses PUBLIC target — CONFIDENTIAL IFC
+        packages stay blocked (Claims Lock). Local/mock uses LOCAL.
+        """
+
+        from aerobim.domain.hybrid.trust_policy import RouteStatus
+        from aerobim.domain.llm_advisory import DisabledLlmProvider
+
+        provider = getattr(self._host, "_llm_advisory_provider", None)
+        if provider is None or isinstance(provider, DisabledLlmProvider):
+            return True, None
+
+        gate = getattr(self._host, "_hybrid_route_gate", None)
+        if gate is None:
+            return (
+                False,
+                {
+                    "tool": "hybrid_route_gate",
+                    "status": "blocked",
+                    "task_type": "advisory_remark_overlay",
+                    "reason": "hybrid_route_gate not configured; llm overlay suppressed",
+                    "egress_bytes_estimate": 0,
+                    "verdict_impact": "none",
+                },
+            )
+
+        target = _llm_overlay_route_target(provider)
+        tenant_id = (request.tenant_id or "").strip()
+        result = gate.evaluate(
+            object_kind=_advisory_object_kind(request),
+            target=target,
+            tenant_id=tenant_id,
+            task_type="advisory_remark_overlay",
+            request_id=request.request_id,
+            project_id=request.project_id,
+            payload=None,
+        )
+        allowed = result.may_create_advisory
+        if result.decision.status is RouteStatus.HUMAN_REVIEW:
+            allowed = False
+        trace = {
+            "tool": "hybrid_route_gate",
+            "status": result.decision.status.value,
+            "allowed": allowed,
+            "may_call_external": result.may_call_external,
+            "reason": result.decision.reason,
+            "classification": result.decision.classification.value,
+            "target": result.decision.target.value,
+            "task_type": "advisory_remark_overlay",
+            "egress_bytes_estimate": result.egress_bytes_estimate,
+            "verdict_impact": result.audit_event.verdict_impact,
+            "event_id": result.audit_event.event_id,
+        }
+        return allowed, trace
 
     def assemble(
         self,
@@ -464,10 +538,22 @@ class EvidenceAssembler:
             for issue in [*intake_issues, *advisory.reconciled_issues]
         )
         issues_with_remarks = tuple(self._host._attach_remarks(prioritized_issues))
-        issues_with_remarks, llm_advisory_capability = self._host._overlay_llm_remarks(
-            issues_with_remarks,
-            request_id=request.request_id,
-        )
+        overlay_traces: list[dict[str, object]] = []
+        may_overlay, overlay_trace = self._evaluate_llm_overlay_gate(request)
+        if overlay_trace is not None:
+            overlay_traces.append(overlay_trace)
+        if may_overlay:
+            issues_with_remarks, llm_advisory_capability = self._host._overlay_llm_remarks(
+                issues_with_remarks,
+                request_id=request.request_id,
+            )
+        else:
+            reason = (overlay_trace or {}).get("reason") or "hybrid_route_gate blocked"
+            llm_advisory_capability = CapabilityStatus(
+                CapabilityState.SKIPPED,
+                f"llm advisory skipped ({reason}); advisory drafts only; never sets "
+                "summary.passed; ai_generated requires expert confirmation",
+            )
         severity_counts = Counter(issue.severity for issue in issues_with_remarks)
         error_count = severity_counts[Severity.ERROR]
         warning_count = severity_counts[Severity.WARNING]
@@ -573,7 +659,7 @@ class EvidenceAssembler:
                     request.ifc_path,
                 )
             ),
-            tool_traces=advisory.tool_traces,
+            tool_traces=tuple([*advisory.tool_traces, *overlay_traces]),
         )
         # HITL trail before report persist: never save a report without audit events
         # when regions require HITL. Orphan events on save failure are reconcilesable;

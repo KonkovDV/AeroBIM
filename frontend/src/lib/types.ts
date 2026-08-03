@@ -58,6 +58,12 @@ export interface ValidationIssue {
   remark: {
     title: string;
     body: string;
+    /** Synthetic / LLM draft marker (RT-027 / Claims Lock). */
+    ai_generated?: boolean;
+    expert_confirmation_required?: boolean;
+    claim_boundary?: string | null;
+    provider?: string | null;
+    model?: string | null;
   } | null;
   conflict_kind?: string | null;
   priority?: number;

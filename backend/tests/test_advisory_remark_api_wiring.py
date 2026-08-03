@@ -205,7 +205,9 @@ class AdvisoryRemarkApiWiringTests(unittest.TestCase):
         use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
         self.assertIsInstance(use_case._llm_advisory_provider, DisabledLlmProvider)
 
-        report_off = use_case.execute(replace(request, request_id="wire-off"))
+        report_off = use_case.execute(
+            replace(request, request_id="wire-off", tenant_id=request.tenant_id or "tenant-fixture")
+        )
         self.assertEqual(report_off.capabilities.llm_advisory.status, CapabilityState.SKIPPED)
 
         class _JsonMock(MockLlmProvider):
@@ -225,7 +227,9 @@ class AdvisoryRemarkApiWiringTests(unittest.TestCase):
                 )
 
         use_case._llm_advisory_provider = _JsonMock(provider="mock", model="mock")
-        report_on = use_case.execute(replace(request, request_id="wire-on"))
+        report_on = use_case.execute(
+            replace(request, request_id="wire-on", tenant_id=request.tenant_id or "tenant-fixture")
+        )
         self.assertEqual(report_on.capabilities.llm_advisory.status, CapabilityState.OK)
         ai_remarks = [i for i in report_on.issues if i.remark and i.remark.ai_generated]
         self.assertGreater(len(ai_remarks), 0)

@@ -710,6 +710,12 @@ def _build_llm_advisory_provider(settings: Settings):
 
     if not settings.llm_local_ready():
         return DisabledLlmProvider()
+    if settings.llm_budget_ledger_path is None:
+        # RT-031: never arm Studio/local LLM with process-local day counters only.
+        raise RuntimeError(
+            "AEROBIM_LLM_BUDGET_LEDGER is required when LLM advisory is ready "
+            "(RT-031 fail-closed shared day cap)"
+        )
     from aerobim.infrastructure.adapters.file_llm_token_budget import FileBackedLlmTokenBudget
 
     budget_kwargs = {
@@ -718,13 +724,10 @@ def _build_llm_advisory_provider(settings: Settings):
         "max_tokens_per_day": settings.llm_max_tokens_per_day,
         "budget_tz": settings.llm_budget_tz,
     }
-    if settings.llm_budget_ledger_path is not None:
-        budget: LlmTokenBudget = FileBackedLlmTokenBudget(
-            settings.llm_budget_ledger_path,
-            **budget_kwargs,
-        )
-    else:
-        budget = LlmTokenBudget(**budget_kwargs)
+    budget: LlmTokenBudget = FileBackedLlmTokenBudget(
+        settings.llm_budget_ledger_path,
+        **budget_kwargs,
+    )
     extra_headers: dict[str, str] = {}
     if settings.llm_folder_id:
         extra_headers["x-folder-id"] = settings.llm_folder_id

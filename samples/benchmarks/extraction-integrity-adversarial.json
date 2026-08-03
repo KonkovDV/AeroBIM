@@ -52,6 +52,17 @@
       }
     },
     {
+      "id": "same-length-digit-spoof-3000-vs-3300",
+      "description": "visual 3000 vs text-layer 3300; char counts equal — digit collision must fail",
+      "signals": {
+        "extracted_char_count": 40,
+        "ocr_char_count": 40,
+        "rendered_text_present": true,
+        "extracted_digit_runs": ["3300"],
+        "ocr_digit_runs": ["3000"]
+      }
+    },
+    {
       "id": "corrupt-nan-counts",
       "description": "non-finite counters from a failed measurement",
       "signals": {

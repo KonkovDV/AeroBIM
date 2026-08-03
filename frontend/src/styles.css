@@ -944,6 +944,16 @@ input {
   line-height: 1.45;
 }
 
+.synthetic-content-mark {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--accent-strong);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text, inherit);
+}
+
 .export-actions a {
   display: inline-flex;
   align-items: center;

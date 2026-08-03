@@ -1,4 +1,4 @@
-"""Cohen's κ / Krippendorff's α helpers for multi-human adjudication CSVs."""
+"""Cohen's κ / Krippendorff's α / Gwet AC1 helpers for multi-human adjudication CSVs."""
 
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ from collections import Counter, defaultdict
 from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
+
+from aerobim.domain.eval_statistics import gwet_ac1 as domain_gwet_ac1
 
 
 def cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
@@ -30,6 +32,12 @@ def cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
     if abs(1.0 - p_e) < 1e-12:
         return 1.0 if p_o == 1.0 else 0.0
     return (p_o - p_e) / (1.0 - p_e)
+
+
+def gwet_ac1(labels_a: list[str], labels_b: list[str]) -> float:
+    """Gwet AC1 (imbalance-robust); delegates to domain SSOT."""
+
+    return domain_gwet_ac1(labels_a, labels_b)
 
 
 def krippendorff_alpha_nominal(units: Sequence[Sequence[str]]) -> float:
@@ -95,7 +103,7 @@ def _item_key(row: dict[str, str]) -> str:
 
 
 def measure_adjudication_csv(path: Path) -> dict[str, object]:
-    """Load adjudication CSV and compute Cohen's κ (pair) + Krippendorff α (all)."""
+    """Load adjudication CSV and compute κ (pair) + α (all) + Gwet AC1 (pair)."""
 
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
@@ -131,10 +139,11 @@ def measure_adjudication_csv(path: Path) -> dict[str, object]:
 
     kappa = cohen_kappa(paired_a, paired_b)
     alpha = krippendorff_alpha_nominal(alpha_units)
+    ac1 = gwet_ac1(paired_a, paired_b)
     matrix = {f"{a}/{b}": count for (a, b), count in sorted(confusion.items())}
     return {
         "artifact_type": "adjudicator_agreement",
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "source_csv": str(path.as_posix()),
         "adjudicator_a": a_id,
@@ -144,22 +153,25 @@ def measure_adjudication_csv(path: Path) -> dict[str, object]:
         "paired_items": len(paired_a),
         "alpha_units": len(alpha_units),
         "cohens_kappa": round(kappa, 4),
+        "gwet_ac1": round(ac1, 4),
         "krippendorff_alpha": round(alpha, 4),
         "confusion_matrix": matrix,
         "pass_threshold_0_60": kappa >= 0.60,
         "target_threshold_0_80": kappa >= 0.80,
+        "pass_ac1_0_60": ac1 >= 0.60,
         "pass_alpha_0_67": alpha >= 0.67,
         "notes": [
             "LLM assist does not count as an adjudicator",
             "Report confusion matrix with F1 for publishable PrecisionClaim",
             "Cohen κ uses first two adjudicator_id values (sorted); α uses all raters",
+            "Gwet AC1 required under class imbalance (κ paradox); see RT-026 protocol",
         ],
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Measure Cohen's κ and Krippendorff's α from adjudication CSV"
+        description="Measure Cohen's κ, Gwet AC1, and Krippendorff's α from adjudication CSV"
     )
     parser.add_argument("--csv", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=None)
@@ -175,7 +187,11 @@ def main() -> None:
     else:
         print(serialized)
 
-    if not payload["pass_threshold_0_60"] or not payload["pass_alpha_0_67"]:
+    if (
+        not payload["pass_threshold_0_60"]
+        or not payload["pass_alpha_0_67"]
+        or not payload["pass_ac1_0_60"]
+    ):
         raise SystemExit(2)
 
 

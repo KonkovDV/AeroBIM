@@ -1,13 +1,14 @@
 """Optional OCR-vs-text-layer enrichment for extraction-integrity (LIC-001 / P-003).
 
 Renders PDF pages via pypdfium2 and, when RapidOCR is installed (``raster`` extra),
-fills ``ocr_char_count`` so the domain assessor can warn on text-layer vs OCR
-disagreement.
+fills ``ocr_char_count`` and ``ocr_digit_runs`` so the domain assessor can collide
+text-layer vs OCR (char-volume WARNING; digit-run mismatch FAILED).
 
 Honest scope:
-- Engineering signal only — NOT a product-grade render-vs-extract claim.
+- Engineering signal — catches same-length numeric spoof (visual «3000» / text «3300»).
+- NOT a full product-grade render-vs-extract claim (OCR noise, limited pages).
 - If RapidOCR is missing, returns the base text-layer signals unchanged
-  (``ocr_char_count=None``).
+  (``ocr_char_count=None``, ``ocr_digit_runs=None``).
 """
 
 from __future__ import annotations
@@ -17,7 +18,10 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from aerobim.domain.extraction_integrity import ExtractionIntegritySignals
+from aerobim.domain.extraction_integrity import (
+    ExtractionIntegritySignals,
+    extract_digit_runs,
+)
 from aerobim.infrastructure.adapters.pdfminer_extraction_integrity_producer import (
     PdfMinerExtractionIntegrityProducer,
 )
@@ -42,9 +46,10 @@ class OcrAwareExtractionIntegrityProducer:
 
     def produce(self, path: Path) -> ExtractionIntegritySignals:
         base = self._text.produce(path)
-        ocr_chars = self._try_ocr_char_count(path)
-        if ocr_chars is None:
+        ocr = self._try_ocr(path)
+        if ocr is None:
             return base
+        ocr_chars, ocr_text = ocr
         rendered = base.rendered_text_present
         if ocr_chars > 0:
             rendered = True
@@ -52,9 +57,10 @@ class OcrAwareExtractionIntegrityProducer:
             base,
             ocr_char_count=ocr_chars,
             rendered_text_present=rendered,
+            ocr_digit_runs=extract_digit_runs(ocr_text),
         )
 
-    def _try_ocr_char_count(self, path: Path) -> int | None:
+    def _try_ocr(self, path: Path) -> tuple[int, str] | None:
         engine = self._resolve_ocr_engine()
         if engine is None:
             return None
@@ -67,7 +73,7 @@ class OcrAwareExtractionIntegrityProducer:
         except ModuleNotFoundError:
             return None
 
-        total = 0
+        parts: list[str] = []
         document = pdfium.PdfDocument(str(path))
         try:
             page_count = min(len(document), self._max_pages)
@@ -79,14 +85,13 @@ class OcrAwareExtractionIntegrityProducer:
                     continue
                 buffer = io.BytesIO()
                 image.save(buffer, format="PNG")
-                # RapidOCR accepts path or ndarray; write a temp-less path via bytes
-                # is unsupported — use a NamedTemporaryFile when needed.
-                total += self._ocr_png_bytes(engine, buffer.getvalue())
+                parts.append(self._ocr_png_bytes(engine, buffer.getvalue()))
         finally:
             document.close()
-        return total
+        text = "\n".join(parts)
+        return len(text.strip()), text
 
-    def _ocr_png_bytes(self, engine: Any, png: bytes) -> int:
+    def _ocr_png_bytes(self, engine: Any, png: bytes) -> str:
         import tempfile
 
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as handle:
@@ -97,7 +102,7 @@ class OcrAwareExtractionIntegrityProducer:
         finally:
             temp_path.unlink(missing_ok=True)
         texts = getattr(result, "txts", None) or ()
-        return sum(len(str(text).strip()) for text in texts)
+        return " ".join(str(text).strip() for text in texts if str(text).strip())
 
     def _resolve_ocr_engine(self) -> Any | None:
         if self._ocr_engine is not None:

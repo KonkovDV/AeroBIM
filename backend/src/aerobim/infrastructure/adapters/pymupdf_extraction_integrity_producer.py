@@ -9,7 +9,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from aerobim.domain.extraction_integrity import ExtractionIntegritySignals
+from aerobim.domain.extraction_integrity import (
+    ExtractionIntegritySignals,
+    extract_digit_runs,
+)
 
 
 class PyMuPDFExtractionIntegrityProducer:
@@ -28,12 +31,14 @@ class PyMuPDFExtractionIntegrityProducer:
         hidden = 0
         offpage = 0
         visible_glyphs = False
+        plain_all: list[str] = []
 
         with pymupdf.open(path) as document:
             for page in document:
                 page_rect = page.rect
                 # Visible extract path (same family as RasterDrawingAnalyzer).
                 plain = page.get_text("text") or ""
+                plain_all.append(plain)
                 extracted += len(plain.strip())
 
                 raw = page.get_text("dict") or {}
@@ -76,6 +81,7 @@ class PyMuPDFExtractionIntegrityProducer:
                                     continue
                             visible_glyphs = True
 
+        joined = "\n".join(plain_all)
         return ExtractionIntegritySignals(
             extracted_char_count=extracted,
             rendered_text_present=visible_glyphs if (extracted > 0 or visible_glyphs) else None,
@@ -83,6 +89,8 @@ class PyMuPDFExtractionIntegrityProducer:
             offpage_text_char_count=offpage,
             duplicated_layer_count=0,
             ocr_char_count=None,
+            extracted_digit_runs=extract_digit_runs(joined),
+            ocr_digit_runs=None,
         )
 
 

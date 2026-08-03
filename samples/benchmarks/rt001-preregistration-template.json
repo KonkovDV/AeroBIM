@@ -1,0 +1,51 @@
+{
+  "artifact_type": "rt001_preregistration",
+  "schema_version": "1.0.0",
+  "status": "DRAFT_TEMPLATE",
+  "checkpoint_hint": "NO_GO",
+  "claim_boundary": "Freeze before first rater opens scored cases. Template only — not a measured κ/α/AC1 claim. See docs/quality/RT001_LABELING_PROTOCOL_RT026_2026_08_03.md",
+  "protocol_ref": "docs/quality/RT001_LABELING_PROTOCOL_RT026_2026_08_03.md",
+  "label_schema": {
+    "schema_version": "TO_BE_SET",
+    "schema_path": "TO_BE_SET",
+    "schema_sha256": "TO_BE_SET_BEFORE_LABELING",
+    "frozen_at": null
+  },
+  "sample_plan": {
+    "n_planned": null,
+    "n_pilot": null,
+    "power_assumptions": "TO_BE_SET",
+    "stop_rule": "TO_BE_SET",
+    "wilson_planner_ref": "WP-07 quality measurement protocol"
+  },
+  "strata": [
+    {"axis": "discipline", "levels": ["AR", "ST", "MEP"], "counts": {}},
+    {"axis": "criticality", "levels": ["error", "warning"], "counts": {}},
+    {"axis": "modality", "levels": ["ifc", "drawing", "cross_doc"], "counts": {}},
+    {"axis": "claimed_guid", "levels": ["present", "absent", "na"], "counts": {}}
+  ],
+  "raters": {
+    "min_independent": 2,
+    "adjudicator_on_disagreement": true,
+    "llm_counts_as_rater": false,
+    "blind_to_advisory": true,
+    "named": []
+  },
+  "metrics": {
+    "primary": "krippendorff_alpha",
+    "imbalance_robust": "gwet_ac1",
+    "secondary": "cohens_kappa",
+    "also_report": ["raw_agreement", "per_stratum_alpha", "wilson_ci_prevalence", "adjudication_rate"]
+  },
+  "thresholds_draft": {
+    "pass_alpha_0_67": true,
+    "pass_ac1_0_60": true,
+    "pass_kappa_0_60_eng_gate": true,
+    "target_kappa_0_80_not_sole_gate": true
+  },
+  "forbidden": [
+    "kappa>0.8 alone without n/strata/prevalence/CI",
+    "post-hoc schema remap without version bump",
+    "advisory/LLM text as ground truth"
+  ]
+}
