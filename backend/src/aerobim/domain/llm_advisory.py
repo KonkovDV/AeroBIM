@@ -167,6 +167,25 @@ class MockLlmProvider:
         )
 
 
+class DisabledLlmProvider:
+    """Fail-closed placeholder when local LLM is not configured (SKIPPED, not FAILED)."""
+
+    def generate(self, request: LlmRequest) -> LlmResponse:
+        return LlmResponse(
+            remark_draft="",
+            severity_suggestion=None,
+            evidence_refs=request.evidence_refs,
+            confidence=None,
+            uncertainties=("llm_local_disabled",),
+            model="none",
+            provider="disabled",
+            usage={},
+            status="disabled",
+            schema_valid=True,
+            unsupported_claims=(),
+        )
+
+
 def llm_advisory_capability_status(
     *,
     configured: bool,
@@ -183,6 +202,7 @@ def llm_advisory_capability_status(
 
 
 __all__ = [
+    "DisabledLlmProvider",
     "FORBIDDEN_LLM_ACTIONS",
     "LLMRunManifest",
     "LlmAdvisoryStatus",

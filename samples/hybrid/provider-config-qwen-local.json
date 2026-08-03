@@ -1,0 +1,52 @@
+{
+  "artifact_type": "aerobim_hybrid_provider_config",
+  "schema_version": "1.0.0",
+  "claim_boundary": "Local open-weight advisory only. Cloud qwen3.8-max is NOT_VERIFIED and must never be the default. Advisory never sets summary.passed.",
+  "profiles": {
+    "private_qwen_local": {
+      "tier": "local",
+      "provider": "qwen-local",
+      "model_id": "Qwen3.6-27B",
+      "deterministic": false,
+      "notes": "OpenAI-compat vLLM/SGLang on-prem. Pin checkpoint via AEROBIM_LLM_MODEL_SHA256."
+    },
+    "local_vlm": {
+      "tier": "local",
+      "provider": "onprem",
+      "model_id": "local-vlm-v1",
+      "deterministic": false
+    },
+    "private_vlm": {
+      "tier": "private",
+      "provider": "ru-cloud",
+      "model_id": "private-vlm-v1",
+      "deterministic": false
+    },
+    "public_qwen38_max": {
+      "tier": "public",
+      "provider": "alibaba-model-studio",
+      "model_id": "qwen3.8-max",
+      "deterministic": false,
+      "notes": "FORBIDDEN default. Keep for honesty matrix only — NOT_VERIFIED; never route CONFIDENTIAL/RESTRICTED."
+    },
+    "public_kimi_k3": {
+      "tier": "public",
+      "provider": "kimi",
+      "model_id": "kimi-k3",
+      "deterministic": false
+    },
+    "human_review": {
+      "tier": "local",
+      "provider": "human",
+      "model_id": "expert",
+      "deterministic": true
+    }
+  },
+  "tier_defaults": {
+    "local": "private_qwen_local",
+    "private": "private_vlm",
+    "public": "public_kimi_k3"
+  },
+  "human_review_profile": "human_review",
+  "forbidden_defaults": ["public_qwen38_max"]
+}

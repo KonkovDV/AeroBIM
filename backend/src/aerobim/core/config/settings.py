@@ -212,6 +212,15 @@ class Settings:
     router stays LOCAL-ONLY fail-closed (no external egress). A set path that is
     missing/invalid fails closed LOUD at bootstrap (RuntimeError).
     """
+    llm_local_enabled: bool = False
+    """Opt-in local OpenAI-compat LLM (vLLM/Qwen) for advisory remark compose only."""
+    llm_base_url: str | None = None
+    llm_api_key: str | None = None
+    llm_provider: str = "qwen-local"
+    llm_model: str = "Qwen3.6-27B"
+    llm_model_sha256: str | None = None
+    """Optional checkpoint pin recorded in advisory usage / audit (never a secret)."""
+    llm_timeout_seconds: float = 60.0
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -226,6 +235,17 @@ class Settings:
         if self.signoff_profile in {"samolet_pilot", "production"}:
             return False
         return bool(self.kimi_api_base_url and self.kimi_api_key)
+
+    def llm_local_ready(self) -> bool:
+        """True when local OpenAI-compat advisory LLM may be invoked.
+
+        Fail-closed: disabled by default; requires explicit enable + base URL.
+        Does not authorize cloud Max / Model Studio — use only on-prem endpoints.
+        """
+
+        if not self.llm_local_enabled:
+            return False
+        return bool(self.llm_base_url)
 
     @property
     def is_dev_environment(self) -> bool:
@@ -437,6 +457,16 @@ class Settings:
             hybrid_provider_config_path=(
                 (os.getenv("AEROBIM_HYBRID_PROVIDER_CONFIG") or "").strip() or None
             ),
+            llm_local_enabled=_read_bool("AEROBIM_LLM_LOCAL_ENABLED", False),
+            llm_base_url=(os.getenv("AEROBIM_LLM_BASE_URL") or "").strip() or None,
+            llm_api_key=(os.getenv("AEROBIM_LLM_API_KEY") or "").strip() or None,
+            llm_provider=(os.getenv("AEROBIM_LLM_PROVIDER") or "qwen-local").strip()
+            or "qwen-local",
+            llm_model=(os.getenv("AEROBIM_LLM_MODEL") or "Qwen3.6-27B").strip() or "Qwen3.6-27B",
+            llm_model_sha256=(os.getenv("AEROBIM_LLM_MODEL_SHA256") or "").strip() or None,
+            llm_timeout_seconds=float(
+                (os.getenv("AEROBIM_LLM_TIMEOUT_SECONDS") or "60").strip() or "60"
+            ),
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
@@ -477,7 +507,14 @@ class Settings:
                     resolve_dns=resolve_dns,
                 )
             except UnsafeOutboundUrlError as exc:
-                raise RuntimeError(f"Unsafe outbound URL in {label}: {exc}") from exc
+                raise RuntimeError(f"{label} failed SSRF gate: {exc}") from exc
+
+        if settings.llm_base_url:
+            try:
+                # Local vLLM is typically http://127.0.0.1 — datastore host allowlist.
+                assert_safe_datastore_url(settings.llm_base_url)
+            except UnsafeOutboundUrlError as exc:
+                raise RuntimeError(f"AEROBIM_LLM_BASE_URL failed SSRF gate: {exc}") from exc
         # Redis / Postgres URLs: SSRF gate when not localhost / unix socket (RTATOM-I09/I10).
         for label, candidate in (
             ("AEROBIM_REDIS_URL", settings.redis_url),

@@ -58,3 +58,4 @@ class Tokens:
     HYBRID_MODEL_ROUTER = "hybrid_model_router"
     DOCUMENT_SIGNATURE_AUDITOR = "document_signature_auditor"
     PACKAGE_INVENTORY_LOADER = "package_inventory_loader"
+    LLM_ADVISORY_PROVIDER = "llm_advisory_provider"

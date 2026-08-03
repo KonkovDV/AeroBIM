@@ -627,10 +627,26 @@
             "title": "Claim Boundary",
             "type": "string"
           },
+          "cloud_max_status": {
+            "default": "NOT_VERIFIED",
+            "title": "Cloud Max Status",
+            "type": "string"
+          },
           "customer_data_default": {
             "default": "deny",
             "title": "Customer Data Default",
             "type": "string"
+          },
+          "local_profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Local Profile"
           },
           "providers_mock_tested": {
             "default": [],
