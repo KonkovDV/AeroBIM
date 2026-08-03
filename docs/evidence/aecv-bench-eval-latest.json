@@ -1,7 +1,7 @@
 {
   "artifact_type": "aecv_bench_eval",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-03T22:02:29.191769+00:00",
+  "generated_at": "2026-08-03T22:07:25.385105+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "AECV-Bench open_bench_only (arXiv:2601.04819). Drawing-literacy baseline on public floor plans. NOT AeroBIM product accuracy. Never >90% as product. Does not close RT-001.",
   "closes_rt001": false,
@@ -4601,7 +4601,7 @@
       }
     ],
     "min_image_bytes_vendor_reject": 12288,
-    "enriched_at": "2026-08-03T22:02:29.356305+00:00",
+    "enriched_at": "2026-08-03T22:07:25.577120+00:00",
     "enriched_from": "C:\\plans\\AeroBIM\\docs\\evidence\\aecv-bench-eval-latest.json"
   },
   "executive_summary": {
@@ -4617,6 +4617,8 @@
       "plans_scored": 117,
       "errors": 3,
       "macro_exact_match_rate": 0.4325,
+      "macro_exact_match_rate_paper_four_fields": 0.5064,
+      "macro_four_fields_note": "AECV-Bench paper Table 1 mean is over Door/Window/Bedroom/Toilet only. AeroBIM five-field macro also includes Space and is not directly comparable.",
       "macro_mape": 0.2408,
       "per_field": {
         "Door": {
@@ -4770,6 +4772,6 @@
       }
     }
   },
-  "output_sha256": "3a7135d084901c9c3197493904c55ea543330425f8f09795ed1588447ea10da9",
+  "output_sha256": "42a173f137ff15bf381d81bf6de79616109829111b91526bbcdff308c8519c38",
   "output_path": "..\\artifacts\\open-bench\\aecv-bench-eval.json"
 }
