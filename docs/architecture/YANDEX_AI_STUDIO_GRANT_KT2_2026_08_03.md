@@ -33,8 +33,11 @@ Rough burn (vendor-order-of-magnitude): ~100 findings ≈ 250k tokens ≈ ~100 �
 
 1. **Budget caps (fail-closed):** max tokens per call / per run / per day; counters in usage/audit; exceed → no call.
 2. **Context 32k:** only structured findings enter the prompt (architecture already enforces this).
-3. **Reproducibility experiment:** pin model URI+version; `temperature=0`; same prompt today vs +14 days; hash compare → `reproducible=true` only with evidence, else `partial` and keep out of customer evidence bundle.
-4. **Activate grant / payment account before 2026-08-04**; check grant expiry vs KT#3 window.
+3. **Yandex Completions quirks (adapter):** `model` = `gpt://{folder}/{name}/{version}` (not bare `Qwen…`); `response_format.type=json_schema` + `REMARK_JSON_SCHEMA`; **do not send `seed`** until vendor confirms; send `x-folder-id` + `x-data-logging-enabled: false` (recorded in usage/audit).
+4. **Reproducibility:** Studio profile stays `reproducible=false` until `probe_llm_reproducibility` matches twice on a pinned version (not `latest`).
+5. **Activate grant / payment account before 2026-08-04**; check grant expiry vs KT#3 window.
+
+Operator checklist: folder ID, SA role `ai.languageModels.user`, API key scope `yc.ai.foundationModels.execute`, exact model version from AI Studio catalog.
 
 ## Classification (hybrid contour — not ADR-002 open-core)
 

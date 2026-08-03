@@ -713,16 +713,34 @@ def _build_llm_advisory_provider(settings: Settings):
         max_tokens_per_run=settings.llm_max_tokens_per_run,
         max_tokens_per_day=settings.llm_max_tokens_per_day,
     )
+    extra_headers: dict[str, str] = {}
+    if settings.llm_folder_id:
+        extra_headers["x-folder-id"] = settings.llm_folder_id
+    # Always emit explicit logging preference for Studio / RF endpoints.
+    if settings.llm_provider.strip().lower() == "yandex-ai-studio" or settings.llm_folder_id:
+        extra_headers["x-data-logging-enabled"] = (
+            "true" if settings.llm_data_logging_enabled else "false"
+        )
     return OpenAICompatLlmProvider(
         base_url=settings.llm_base_url or "",
         model=settings.llm_model,
         api_key=settings.llm_api_key,
         provider=settings.llm_provider,
         model_sha256=settings.llm_model_sha256,
+        model_revision=settings.llm_model_revision,
+        folder_id=settings.llm_folder_id,
         timeout_seconds=settings.llm_timeout_seconds,
         budget=budget,
         max_completion_tokens=settings.llm_max_completion_tokens,
         allowed_hosts=frozenset(settings.llm_allowed_hosts),
+        extra_headers=extra_headers,
+        auth_scheme=settings.llm_auth_scheme,
+        send_seed=settings.llm_send_seed,
+        response_schema_mode=(
+            "json_schema"
+            if settings.llm_response_format_mode.strip().lower() == "json_schema"
+            else "json_object"
+        ),
     )
 
 

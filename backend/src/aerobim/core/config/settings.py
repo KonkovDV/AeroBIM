@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 _DEBUG_CORS_ORIGINS = (
@@ -89,6 +89,38 @@ def assert_llm_base_host_allowed(url: str, allowed_hosts: frozenset[str]) -> Non
             "(built-in + AEROBIM_LLM_ALLOWED_HOSTS). "
             "Add the on-prem / Studio hostname explicitly; never rely on SSRF alone."
         )
+
+
+def resolve_llm_model_uri(
+    *,
+    model: str,
+    revision: str | None = None,
+    folder_id: str | None = None,
+) -> str:
+    """Build Yandex ``gpt://folder/model/version`` URI when parts are separate.
+
+    If ``model`` is already a ``gpt://`` URI and ``revision`` is set, append /
+    replace a trailing ``latest`` segment. Loopback vLLM keeps bare model names.
+    """
+
+    raw = (model or "").strip()
+    rev = (revision or "").strip() or None
+    folder = (folder_id or "").strip() or None
+    if not raw:
+        return raw
+    if raw.startswith("gpt://"):
+        if not rev:
+            return raw
+        parts = raw.rstrip("/").split("/")
+        if parts and parts[-1] in {"latest", rev}:
+            parts[-1] = rev
+            return "/".join(parts)
+        return f"{raw.rstrip('/')}/{rev}"
+    if folder and rev:
+        return f"gpt://{folder}/{raw.strip('/')}/{rev}"
+    if folder:
+        return f"gpt://{folder}/{raw.strip('/')}"
+    return raw
 
 
 @dataclass(frozen=True)
@@ -280,6 +312,16 @@ class Settings:
     """Hard caps for advisory LLM (Yandex grant / repair-loop fail-closed)."""
     llm_allowed_hosts: tuple[str, ...] = tuple(sorted(_DEFAULT_LLM_ALLOWED_HOSTS))
     """Hostname allowlist for AEROBIM_LLM_BASE_URL (fail-closed beyond SSRF)."""
+    llm_folder_id: str | None = None
+    """Yandex Cloud folder ID (x-folder-id + gpt:// URI composition)."""
+    llm_auth_scheme: str = "Bearer"
+    """Authorization scheme: ``Bearer`` (OpenAI SDK style) or ``Api-Key`` (YC curl docs)."""
+    llm_send_seed: bool = True
+    """When false, omit ``seed`` (Yandex Completions may 400 on undocumented seed)."""
+    llm_response_format_mode: str = "json_object"
+    """``json_schema`` (Yandex preferred) or ``json_object`` (local vLLM)."""
+    llm_data_logging_enabled: bool = False
+    """When false, send ``x-data-logging-enabled: false`` (Yandex vendor privacy header)."""
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -537,7 +579,28 @@ class Settings:
             llm_allowed_hosts=tuple(
                 sorted(_parse_llm_allowed_hosts(os.getenv("AEROBIM_LLM_ALLOWED_HOSTS")))
             ),
+            llm_folder_id=(os.getenv("AEROBIM_LLM_FOLDER_ID") or "").strip() or None,
+            llm_auth_scheme=(os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip()
+            or "Bearer",
+            llm_send_seed=_read_bool("AEROBIM_LLM_SEND_SEED", True),
+            llm_response_format_mode=(
+                os.getenv("AEROBIM_LLM_RESPONSE_FORMAT_MODE") or "json_object"
+            ).strip()
+            or "json_object",
+            llm_data_logging_enabled=_read_bool("AEROBIM_LLM_DATA_LOGGING_ENABLED", False),
         )
+        # Yandex AI Studio defaults when provider is selected (operator may still override).
+        if settings.llm_provider.strip().lower() == "yandex-ai-studio":
+            settings = replace(
+                settings,
+                llm_send_seed=_read_bool("AEROBIM_LLM_SEND_SEED", False),
+                llm_response_format_mode=(
+                    os.getenv("AEROBIM_LLM_RESPONSE_FORMAT_MODE") or "json_schema"
+                ).strip()
+                or "json_schema",
+                llm_base_url=settings.llm_base_url
+                or "https://llm.api.cloud.yandex.net/v1",
+            )
         if settings.llm_local_enabled and not settings.llm_local_ready():
             raise RuntimeError(
                 "AEROBIM_LLM_LOCAL_ENABLED requires AEROBIM_LLM_BASE_URL and "
