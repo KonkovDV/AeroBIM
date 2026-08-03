@@ -25,6 +25,8 @@ class LlmTokenBudget:
     blocked_reason: str | None = None
     budget_tz: str = _DEFAULT_BUDGET_TZ
     budget_scope: str = "process_local"
+    lock_degraded: bool = False
+    """Set by file-backed adapter when cross-process lock cannot be held (RT-LEDGER-01)."""
 
     def _zone(self) -> ZoneInfo | Any:
         try:
@@ -100,6 +102,7 @@ class LlmTokenBudget:
             "day_key": self.day_key.isoformat(),
             "budget_tz": self.budget_tz,
             "budget_scope": self.budget_scope,
+            "lock_degraded": bool(self.lock_degraded),
             "blocked_reason": self.blocked_reason,
         }
         if include_last_charge is not None:

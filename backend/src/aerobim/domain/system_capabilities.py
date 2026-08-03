@@ -390,7 +390,11 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "token_budget_scope": "process_local_or_file_shared",
             "token_budget_note": (
                 "Day counters are process-local unless AEROBIM_LLM_BUDGET_LEDGER is set; "
-                "N workers without a ledger ≈ N× daily cap (RT-BUDGET-03)"
+                "N workers without a ledger ≈ N× daily cap (RT-BUDGET-03). "
+                "File ledger: stale .lock cleared by mtime; lock timeout sets "
+                "lock_degraded=true in usage (RT-LEDGER-01). "
+                "TOCTOU overshoot ≤ N×max_tokens_per_call between check and record "
+                "(RT-LEDGER-02; documented, not reserved)."
             ),
             "pii_gate": {
                 "active": True,

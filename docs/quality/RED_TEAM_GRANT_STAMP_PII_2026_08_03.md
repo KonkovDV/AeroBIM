@@ -21,6 +21,9 @@ claim_boundary: "Self red-team. Checkpoint NO_GO. PII gate active; effectiveness
 | RT-STAMP-14..16 | **MITIGATED** — `/Rotate` priors, overflow/area reject, role/crs/clip counters |
 | RT-META-01 | **MITIGATED** — opaque UUIDv4 `x-client-request-id` |
 
+| RT-LEDGER-01 stuck lock silent degrade | **MITIGATED** — stale mtime clear + `lock_degraded` in snapshot |
+| RT-LEDGER-02 check/record TOCTOU | **DOCUMENTED** — overshoot ≤ N×max_tokens_per_call (~16₽ at N=8); no reservation |
+
 ## Still open (external)
 
 RT-001 / RT-002 / RT-003 · Samolet sheet prior validation · DPA/C2 for CONFIDENTIAL
