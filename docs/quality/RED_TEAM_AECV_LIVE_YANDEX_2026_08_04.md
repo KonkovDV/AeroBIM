@@ -58,15 +58,24 @@ For advisory: empty/zero miss is safer than a confident wrong positive. Report b
 
 Harness is in the same ballpark as mid/frontier published counters — not a broken scorer, not paper-SOTA. Prompt/resolution remain open levers; do not sell 0.43 as product KPI.
 
-## Vendor min image size
+## Vendor image errors (corrected)
 
-Errors `2000-0008/09/12`: JPEG **8904 / 10542 / 10806** bytes → HTTP 400.  
-Documented floor: `MIN_IMAGE_BYTES_VENDOR_REJECT = 12 KiB` in `run_aecv_bench_eval.py`. Stamp crops must preflight this.
+Errors `2000-0008/09/12` are **WEBP** files named `*.jpg` sent as `image/jpeg` → HTTP 400.  
+Not a pure ~10 KiB size gate (synthetic JPEG ≈780 B → 200). Tool now sniffs magic bytes (`_image_mime`).
 
-## Token / ₽ reading (operator)
+## Token / ₽ reading (measured)
 
-Measured `prompt_tokens` on live body: **~644–3850** by file size; typical ~522 KB plan ≈ **2184**.  
-≈368k input tokens ÷ ~117 vision successes ≈ **~3.1k prompt/image** order-of-magnitude — matches operator check; full-sheet flood still wasteful → **region-crop is financial necessity**, but 5.3 remains economically plausible for stamp/explanatory crops (~₽ order, not grant-killer).
+| Measure | Value |
+|---|---|
+| Full sheet `prompt_tokens` | **2184** (522 KB PNG) |
+| Range by file | **644–3850** |
+| Long-side 1024 / 512 / 256 | **1065 / 297 / 105** (~quadratic) |
+| `completion_tokens` (think off) | **≈47** |
+| Tariff sketch | 200 ₽/M ⇒ ~0.44 ₽/sheet; 200 stamp crops ~20–30 ₽ |
+
+Region-crop: **PII necessity** + ~3× ₽ saving vs full sheets — not a grant-killer.
+
+Published baseline compare: live macro **0.433** vs best offline `gemini_3_pro_preview` **0.523** (Δ −0.091) — in `executive_summary`.
 
 ## Evidence
 

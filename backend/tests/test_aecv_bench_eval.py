@@ -136,6 +136,18 @@ class AecvBenchEvalTests(unittest.TestCase):
             exe["failure_mode_contrast"]["Window"]["mean_bias"], -2.5
         )
 
+    def test_image_mime_sniffs_webp_despite_jpg_extension(self) -> None:
+        from aerobim.tools.run_aecv_bench_eval import _image_mime
+
+        webp = b"RIFF\x20\x00\x00\x00WEBPVP8 " + b"\x00" * 16
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "plan.jpg"
+            path.write_bytes(webp)
+            self.assertEqual(_image_mime(path), "image/webp")
+            jpeg = Path(tmp) / "real.jpg"
+            jpeg.write_bytes(b"\xff\xd8\xff\xe0" + b"\x00" * 8)
+            self.assertEqual(_image_mime(jpeg), "image/jpeg")
+
     def test_yandex_vision_body_uses_chat_template_kwargs_not_toplevel(self) -> None:
         """Vendor rejects top-level enable_thinking (HTTP 400)."""
         from aerobim.tools.run_aecv_bench_eval import _call_openai_vision_counts

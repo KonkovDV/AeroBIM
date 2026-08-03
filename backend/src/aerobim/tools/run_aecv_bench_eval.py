@@ -34,9 +34,32 @@ CLAIM_BOUNDARY = (
 
 COUNT_FIELDS = ("Door", "Window", "Space", "Bedroom", "Toilet")
 
-# Vendor HTTP 400 observed on AECV plans ~9–11 KiB JPEG (2000-0008/09/12).
-# Stamp/crop path must stay above this floor or preflight-skip.
+# Soft floor: tiny binaries may still fail; AECV errors 2000-0008/09/12 were
+# WEBP bytes labeled ``.jpg`` sent as ``image/jpeg`` (MIME mismatch → HTTP 400),
+# not a pure byte-size gate (downsized JPEG ≈780 B still returned 200).
 MIN_IMAGE_BYTES_VENDOR_REJECT = 12 * 1024
+
+
+def _image_mime(path: Path) -> str:
+    """Sniff image MIME; do not trust extension (AECV ships WEBP as ``.jpg``)."""
+
+    head = path.read_bytes()[:32]
+    if head.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if head.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if len(head) >= 12 and head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        return "image/webp"
+    if head.startswith(b"GIF87a") or head.startswith(b"GIF89a"):
+        return "image/gif"
+    suffix = path.suffix.lower()
+    if suffix == ".png":
+        return "image/png"
+    if suffix in {".jpg", ".jpeg"}:
+        return "image/jpeg"
+    if suffix == ".webp":
+        return "image/webp"
+    return "application/octet-stream"
 
 
 def repo_root() -> Path:
@@ -204,8 +227,9 @@ def build_executive_summary(
         ),
         "vendor_min_image_bytes": MIN_IMAGE_BYTES_VENDOR_REJECT,
         "vendor_min_image_note": (
-            "Plans ~9–11 KiB JPEG returned HTTP 400 on Yandex Studio; "
-            "stamp/region crops must stay above this floor."
+            "AECV errors 2000-0008/09/12 were WEBP payloads with .jpg names "
+            "sent as image/jpeg (MIME mismatch → HTTP 400). Sniff magic bytes. "
+            "Byte-size alone is not the gate: synthetic JPEG ≈780 B still 200."
         ),
     }
     if isinstance(live, dict):
@@ -413,8 +437,7 @@ def _call_openai_vision_counts(
     auth_scheme: str = "Bearer",
 ) -> dict[str, Any]:
     image_b64 = base64.b64encode(image_path.read_bytes()).decode("ascii")
-    suffix = image_path.suffix.lower()
-    mime = "image/png" if suffix == ".png" else "image/jpeg"
+    mime = _image_mime(image_path)
     prompt = (
         "Count elements on this architectural floor plan. "
         "Return ONLY a JSON object with integer keys: "

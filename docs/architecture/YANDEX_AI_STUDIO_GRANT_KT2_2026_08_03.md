@@ -62,7 +62,7 @@ curl -s -H "Authorization: Bearer $YC_API_KEY" \
 
 **Thinking off (vendor-hard):** send `chat_template_kwargs: {"enable_thinking": false}`. Top-level `enable_thinking` / `extra_body.enable_thinking` → **HTTP 400** (`Unsupported parameter`). Without thinking off, `json_schema` burns completion into `reasoning_content` and returns empty `content` — mandatory for scenario 5.1 and for open-bench vision scoring.
 
-**Vision / open-bench (2026-08-04):** endpoint accepts Base64; **L1 AECV-Bench counting** on this model scored macro exact-match **0.4325** (120/117/3) — `claim_level=open_bench_only`, **≠ product accuracy**, **≠ RT-001**. Do not claim «мультимодальность пилота подтверждена». Evidence: `docs/evidence/aecv-bench-eval-latest.json`.
+**Vision / open-bench (2026-08-04):** endpoint accepts Base64; **L1 AECV-Bench counting** on this model scored macro exact-match **0.4325** (120/117/3) vs best published offline **0.523** (`gemini_3_pro_preview`) — `claim_level=open_bench_only`. Measured vision economics: full sheet **`prompt_tokens=2184`**, completion ≈**47** (think off), long-side 1024/512 → **1065/297** (≈quadratic). See grant ops v1.9. Do not claim «мультимодальность пилота подтверждена». Evidence: `docs/evidence/aecv-bench-eval-latest.json`.
 
 ### Pricing (operator-reported; verify on live catalog)
 

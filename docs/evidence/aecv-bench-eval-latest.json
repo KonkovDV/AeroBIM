@@ -1,7 +1,7 @@
 {
   "artifact_type": "aecv_bench_eval",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-03T21:58:14.923426+00:00",
+  "generated_at": "2026-08-03T22:02:29.191769+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "AECV-Bench open_bench_only (arXiv:2601.04819). Drawing-literacy baseline on public floor plans. NOT AeroBIM product accuracy. Never >90% as product. Does not close RT-001.",
   "closes_rt001": false,
@@ -4601,7 +4601,7 @@
       }
     ],
     "min_image_bytes_vendor_reject": 12288,
-    "enriched_at": "2026-08-03T21:58:15.107692+00:00",
+    "enriched_at": "2026-08-03T22:02:29.356305+00:00",
     "enriched_from": "C:\\plans\\AeroBIM\\docs\\evidence\\aecv-bench-eval-latest.json"
   },
   "executive_summary": {
@@ -4609,7 +4609,7 @@
     "closes_rt001": false,
     "note": "MAPE + mean_bias sit beside exact-match. zero_pred_when_expected_positive ≈ refusal/miss, not symmetric error. Compare live macro to offline published AECV model JSONs (same 120 plans).",
     "vendor_min_image_bytes": 12288,
-    "vendor_min_image_note": "Plans ~9–11 KiB JPEG returned HTTP 400 on Yandex Studio; stamp/region crops must stay above this floor.",
+    "vendor_min_image_note": "AECV errors 2000-0008/09/12 were WEBP payloads with .jpg names sent as image/jpeg (MIME mismatch → HTTP 400). Sniff magic bytes. Byte-size alone is not the gate: synthetic JPEG ≈780 B still 200.",
     "live": {
       "provider": "yandex-ai-studio",
       "model": "gpt://b1g56rei64gfdk5t2tvc/qwen3.6-35b-a3b",
@@ -4770,6 +4770,6 @@
       }
     }
   },
-  "output_sha256": "5605ca011ccc7db28a9c2a26760ff8b8f66370afe597f04115ac1dd57c1484e7",
+  "output_sha256": "3a7135d084901c9c3197493904c55ea543330425f8f09795ed1588447ea10da9",
   "output_path": "..\\artifacts\\open-bench\\aecv-bench-eval.json"
 }
