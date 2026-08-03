@@ -1,40 +1,26 @@
 ---
 title: "Red Team — Studio grant stamp/PII gate (2026-08-03)"
 status: active
-version: "1.4.0"
+version: "1.5.0"
 last_updated: "2026-08-03"
-claim_boundary: "Self red-team. Checkpoint NO_GO. Not external audit. Not DPA. Priors=hypothesis until customer sheets."
+claim_boundary: "Self red-team. Checkpoint NO_GO. PII gate active; effectiveness on real sheets NOT_MEASURED."
 ---
 
-# Red Team — Yandex Studio stamp/PII + claims (2026-08-03)
+# Red Team — Yandex Studio advisory contour (2026-08-03)
 
-**Author relationship:** self  
-**Scope:** region-restricted VLM PII gate · `/Rotate` · overflow clamp · coverage counters  
 **Checkpoint:** **NO_GO**  
-**Claim boundary:** «PII guard active» OK · «ПДн не уходят в облако» **not** claimable until Samolet sheet validation
+**Allowed claim:** «PII-гейт активен; эффективность на реальных листах не измерена»  
+**Forbidden claim:** «ПДн гарантированно не уходят в облако»
 
-## Attack surface
-
-| Threat | Path | Control |
-|---|---|---|
-| Signatory PII → Studio | region-crop VLM | Allowlist `content` + visual priors clipped in page space |
-| `/Rotate 90` landscape CAD | priors in visual space vs raw page | Map priors by rotate; unknown rotate → fail-closed |
-| CropBox < MediaBox overflow | norm > 1 escapes priors | Overflow >2% → exclude (no >1 residuals) |
-| Future roles silent drop | allowlist | `excluded_unknown_role` + coverage alarm in reason |
-| Kill-switch | ready + guard off | ValueError |
-| Grant = Checkpoint | claims | Forbidden |
-
-## Findings
+## Closed this wave
 
 | ID | Verdict |
 |---|---|
-| RT-STAMP-01..13 | **MITIGATED** (prior waves) |
-| RT-STAMP-14 `/Rotate` | **MITIGATED** — `priors_in_page_space` + `read_page_rotate_degrees`; None → skip VLM |
-| RT-STAMP-15 overflow | **MITIGATED** — `_finalize_normalized` reject / clamp |
-| RT-STAMP-16 counters / coverage | **MITIGATED** — `excluded_by_role` / `excluded_by_geometry` / `excluded_unknown_role` |
-| Customer prior validation | **OPEN** — fixtures ≠ Samolet sheets |
-| RT-001/002/003 | **OPEN** — external |
+| RT-BUDGET-01..04 | **MITIGATED** — `record_failed`, per-retry `check_before`, file ledger + `budget_tz` |
+| RT-INJ-01/02 | **MITIGATED** — no model severity; data delimiters; VLM ungrounded → zero observations |
+| RT-STAMP-14..16 | **MITIGATED** — `/Rotate` priors, overflow/area reject, role/crs/clip counters |
+| RT-META-01 | **MITIGATED** — opaque UUIDv4 `x-client-request-id` |
 
-## Verdict
+## Still open (external)
 
-Eng PII gate hardened through RT-STAMP-14..16. Checkpoint **NO_GO**. Do not claim RESTRICTED-safe cloud VLM without customer geometry + DPA/C2.
+RT-001 / RT-002 / RT-003 · Samolet sheet prior validation · DPA/C2 for CONFIDENTIAL

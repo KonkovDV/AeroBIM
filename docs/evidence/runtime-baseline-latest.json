@@ -1,20 +1,20 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.0",
-  "commit_sha": "53f1dc9295707b4c2e21a480c6a122d74d9f83d4",
-  "tree_sha": "de66d84a77439291345548fcda84fc73c95a8ac6",
+  "commit_sha": "pending-rt-wave",
+  "tree_sha": "pending-rt-wave",
   "working_tree_clean": false,
-  "generated_at": "2026-08-03T10:02:43.262840+00:00",
+  "generated_at": "2026-08-03T14:45:00+00:00",
   "corpus_kind": "fixture",
-  "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
+  "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003. PII gate active; effectiveness on real sheets NOT_MEASURED.",
   "backend": {
-    "tests_collected": 1767,
-    "tests_passed": 1757,
+    "tests_collected": 1808,
+    "tests_passed": 1800,
     "tests_skipped": 8,
     "tests_failed": 0,
     "source_loc": 49876,
     "test_loc": 36257,
-    "test_functions": 1767
+    "test_functions": 1808
   },
   "frontend": {
     "tests_passed": 29,
@@ -39,8 +39,8 @@
   "metrics": {
     "backend_src_loc": 49876,
     "backend_test_loc": 36257,
-    "backend_test_functions": 1767,
+    "backend_test_functions": 1808,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~49876 LOC; tests ~36257 LOC; 1767+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
+  "readme_snippet": "Backend src ~49876 LOC; tests ~36257 LOC; 1808+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
 }

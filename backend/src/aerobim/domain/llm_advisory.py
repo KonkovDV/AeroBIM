@@ -125,7 +125,7 @@ class MockLlmProvider:
         if deny_all:
             return LlmResponse(
                 remark_draft="",
-                severity_suggestion="review_required",
+                severity_suggestion=None,
                 evidence_refs=(),
                 confidence=None,
                 uncertainties=("blocked_by_policy",),
@@ -154,7 +154,7 @@ class MockLlmProvider:
             draft = "Refused: unsupported product claim in prompt context."
         return LlmResponse(
             remark_draft=draft,
-            severity_suggestion="warning" if request.deterministic_findings else "info",
+            severity_suggestion=None,
             evidence_refs=tuple(refs),
             confidence=None,
             uncertainties=("verbalized_confidence_uncalibrated",),

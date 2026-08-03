@@ -278,6 +278,8 @@ class DrawingRegionRef:
     page_height: float | None = None
     layout_role: str | None = None
     """Optional layout prior: ``content`` | ``title_block`` | ``stamp`` (PII risk)."""
+    page_rotation: int | None = None
+    """PDF ``/Rotate`` in {0,90,180,270}; None = unknown (PII fail-closed when required)."""
 
 
 @dataclass(frozen=True)
