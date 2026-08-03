@@ -2,7 +2,7 @@
 title: "Исследовательский отчёт AeroBIM — вопрос 2.1 и аудит цитирования"
 date: 2026-08-04
 status: verified_analysis
-version: "1.1.0"
+version: "1.2.0"
 claim_boundary: >-
   Сопоставление с опубликованными базовыми результатами. Не точность продукта,
   не закрытие RT-001. Checkpoint остаётся NO_GO. Публичное сравнение — только после
@@ -90,15 +90,20 @@ MAPE уже в `per_field` (Window 0.365 ≈ 36.5%).
 
 ---
 
-## Часть D — Статус остальных вопросов (сверка с verification pass)
+## Часть D — Статус остальных вопросов
 
-| Вопрос | В исходном черновике | После pass `cac5eb5` / этот commit |
-|---|---|---|
-| 2.2 разрешение | не исследован | измерен in-repo (токены); литература stamp-px **UNVERIFIED** |
-| 2.3 LLM→IDS | BuildThemis meta only | Perov DOI **VERIFIED** Crossref; полный текст Perov **не** читан здесь |
-| 2.4–2.6, 2.8 | не исследован | без изменений (UNVERIFIED / vendor) |
-| 2.7 регуляторика | «не исследован» | **частично VERIFIED**: ПП 331 (Garant), 243-ФЗ (pravo); реестр+foreign weights **PARTIAL** |
-| Structured AI $4.2M | «не проверен» | **VERIFIED** (getstructured.ai 2026-06-11 + ENR) |
+Полный свод: [`RESEARCH_QUESTIONS_2_2_TO_2_8_2026_08_04.md`](RESEARCH_QUESTIONS_2_2_TO_2_8_2026_08_04.md).
+
+| Вопрос | Статус (2026-08-04 v1.2) |
+|---|---|
+| 2.2 разрешение | in-repo tokens **VERIFIED**; Qwen2-VL Table 7 **VERIFIED**; stamp-px AEC **UNVERIFIED** |
+| 2.3 LLM→IDS | Perov DOI + abstract numbers **VERIFIED**; full PDF PARTIAL |
+| 2.4 eval protocols | AECV + ChartMuseum judge cost **VERIFIED**; AEC κ cost ratio **UNVERIFIED** |
+| 2.5 injection | MPI 4D + CSA ASR 64 % **PARTIAL**; no product ASR |
+| 2.6 ПДн | RKN 140 + PP 1154 **VERIFIED**; drawing cloud case law **UNVERIFIED** |
+| 2.7 регуляторика | 309-ФЗ primary **VERIFIED** (≠ blog UKЭП); письмо 4420 **VERIFIED** existence; реестр **PARTIAL** |
+| 2.8 deployments | MDPI HITL **VERIFIED**; vendor % **VENDOR** |
+| Structured AI $4.2M | **VERIFIED** (prior) |
 
 ---
 

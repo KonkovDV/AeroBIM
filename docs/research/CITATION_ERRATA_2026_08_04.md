@@ -49,7 +49,15 @@ claim_boundary: >-
 | `10.1016/j.autcon.2026.107043` | `docs/samolet.md` | **VERIFIED** |
 | arXiv:2601.04819 / 2603.29199 / 2605.30794 | `docs/docs.md` | **VERIFIED** (abs pages; full PDF for AECV) |
 
+## 309-ФЗ / УКЭП (operator decks)
+
+| Claim | Status | Action |
+|---|---|---|
+| «309-ФЗ ч.16 ст.55.5-1 = обязательная УКЭП ПД» | **OVERCLAIM** | Primary kremlin text: parts 15–16 = NRS notifications / negative-expertise reporting. Force date **01.03.2026**. |
+| УКЭП вместо ИУЛ на экспертизу | **VERIFIED** letter existence | Минстрой **30.01.2026 № 4420-КМ/14** + **63-ФЗ** — cite these, not «309 ч.16 = УКЭП» |
+
 ## Concrete file edits
+
 
 1. **External `research.md` (operator):** remove `…2026.103676`; keep `…2025.103676` with correct title; add AECV/AEC-Bench/MechVQA/BRAVO if still missing (obsolescence, not only fabrication).
 2. **`docs/docs.md`:** already uses `104735` (good). Add one-line note that paper AECV mean is **4 fields**; AeroBIM live five-field macro is not the paper’s headline number (see verification report).

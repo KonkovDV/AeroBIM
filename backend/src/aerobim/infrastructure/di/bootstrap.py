@@ -545,6 +545,8 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             llm_advisory_provider=current.resolve(Tokens.LLM_ADVISORY_PROVIDER),
             remark_locale=current.resolve(Tokens.SETTINGS).remark_locale,
             llm_advisory_max_issues=current.resolve(Tokens.SETTINGS).llm_advisory_max_issues,
+            llm_max_concurrent=current.resolve(Tokens.SETTINGS).llm_max_concurrent,
+            space_efficiency_advisory_enabled=True,
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

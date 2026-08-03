@@ -18,9 +18,11 @@ class MeasurePackageSlaTests(unittest.TestCase):
         result = measure_package_sla(pack, max_minutes=30.0, iterations=1, warmup_iterations=0)
 
         self.assertTrue(result["sla_pass"])
+        self.assertLessEqual(result["p95_minutes_observed"], 30.0)
         self.assertLessEqual(result["max_minutes_observed"], 30.0)
         self.assertEqual(result["artifact_type"], "samolet_package_sla")
-        self.assertEqual(result["schema_version"], "1.3.0")
+        self.assertEqual(result["schema_version"], "1.4.0")
+        self.assertEqual(result["sla_gate_metric"], "p95_minutes_observed")
         self.assertEqual(result["corpus_kind"], "fixture")
         self.assertEqual(result["claim_level"], "fixture_only")
         self.assertFalse(result["mandatory_capabilities_complete"])
@@ -34,6 +36,7 @@ class MeasurePackageSlaTests(unittest.TestCase):
         self.assertIn("warm_run", result)
         self.assertIn("command", result)
         self.assertIn("Fixture wall-clock only", result["allowed_wording"])
+        self.assertIn("p95_minutes", result["cold_run"])
 
     def test_rejects_customer_measurable_on_fixture_corpus(self) -> None:
         repo_root = Path(__file__).resolve().parents[2]
@@ -88,7 +91,7 @@ class MeasurePackageSlaTests(unittest.TestCase):
         self.assertTrue(result["mandatory_capabilities_complete"])
         self.assertTrue(result["pack_hash"])
         self.assertTrue(result["machine_fingerprint"]["os"])
-        self.assertEqual(result["allowed_wording"], "Customer package SLA measurement")
+        self.assertEqual(result["allowed_wording"], "Customer package SLA measurement (gate=p95)")
 
 
 if __name__ == "__main__":

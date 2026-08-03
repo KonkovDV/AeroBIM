@@ -1,14 +1,13 @@
-# Review pack — 2026-08-03 (grant + checklist remediation)
+# Review pack
 
 For reviewers who cannot rely on GitHub web cache.
 
-## Download these files from the repo
-
 | File | What it is |
 |------|------------|
-| [`aerobim-kt2-text.patch`](aerobim-kt2-text.patch) | Unified diff: eng residuals + Qwen W1 + Yandex grant + checklist remediation (text only; no bSI IDS binaries) |
-| [`aerobim-kt2-text.stat.txt`](aerobim-kt2-text.stat.txt) | `--stat` for the same range |
-| [`CHECKLIST_SELF_AUDIT.md`](CHECKLIST_SELF_AUDIT.md) | Self-run of your Red Team checklist |
+| [`aerobim-kt2-text.stat.txt`](aerobim-kt2-text.stat.txt) | Historical `--stat` snapshot (may lag HEAD) |
+| [`CHECKLIST_SELF_AUDIT.md`](CHECKLIST_SELF_AUDIT.md) | Self-run of Red Team checklist |
+
+**Removed (RT-W-05, 2026-08-04):** `aerobim-kt2-text.patch` — stale second source of truth that drifted from README. Use `git log` / `git diff` on `main` instead.
 
 ## Reproduce locally
 
@@ -16,14 +15,11 @@ For reviewers who cannot rely on GitHub web cache.
 git fetch origin
 git checkout main
 git log -5 --oneline
-# expected tip includes: feat(grant-checklist): …  and earlier feat(grant)/feat(qwen-local)/feat(residuals)
-
-git apply --check docs/review/aerobim-kt2-text.patch   # dry-run after reset to parent if needed
+git status
 ```
-
-Base for the patch: parent of `feat(residuals): close eng residuals wave` (`e96866d^` / `b08b43d`).
 
 ## Honesty
 
-- `e9c0afb3` is **not** in this clone’s object DB (likely a release tag/hash from another mirror). Use `git log -1 --format=%H` on `main` after fetch.
-- Binary IDS fixtures under `samples/ids/buildingsmart-testcases/` are **omitted** from the text patch (too large); they landed in `e96866d` — inspect via `git show e96866d --stat`.
+- Prefer live `main` over any checked-in patch.
+- Binary IDS fixtures under `samples/ids/buildingsmart-testcases/` are CC BY-ND — see `LICENSE_CC_BY_ND_4.0.txt` / `NOTICE` there.
+- Vendored BCF/IDS XSD: CC BY-ND 4.0 (RT-W-01 closed) under `samples/bcf-xsd/` and `samples/ids-xsd/`.

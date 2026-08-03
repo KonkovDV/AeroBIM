@@ -203,15 +203,31 @@ def load_benchmark_pack(manifest_path: Path, repo_root_path: Path | None = None)
     )
 
 
+def _percentile_nearest_rank(values: list[float], percentile: float) -> float:
+    """Inclusive nearest-rank percentile (p in 0..100). Single sample → that sample."""
+
+    if not values:
+        raise ValueError("percentile requires at least one value")
+    if percentile < 0 or percentile > 100:
+        raise ValueError("percentile must be in [0, 100]")
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return ordered[0]
+    rank = max(1, int(round(percentile / 100.0 * len(ordered))))
+    return ordered[min(rank, len(ordered)) - 1]
+
+
 def summarize_benchmark_runs(measured_runs: list[MeasuredRun]) -> dict[str, float]:
     if not measured_runs:
         raise ValueError("Benchmark summary requires at least one measured run")
     elapsed_values = [run["elapsed_ms"] for run in measured_runs]
     average_ms = round(mean(elapsed_values), 3)
+    p95_ms = round(_percentile_nearest_rank(elapsed_values, 95.0), 3)
     return {
         "min_ms": round(min(elapsed_values), 3),
         "max_ms": round(max(elapsed_values), 3),
         "avg_ms": average_ms,
+        "p95_ms": p95_ms,
         "reports_per_second": round(1000.0 / average_ms, 3) if average_ms > 0 else 0.0,
     }
 

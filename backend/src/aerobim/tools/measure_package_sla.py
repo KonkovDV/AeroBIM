@@ -267,25 +267,45 @@ def measure_package_sla(
             storage_dir=None,
         )
 
-    def _minutes(payload: dict[str, object]) -> tuple[float, float]:
+    def _minutes_full(payload: dict[str, object]) -> tuple[float, float, float]:
         summary = payload["summary"]
         if not isinstance(summary, dict):
             raise TypeError("benchmark summary must be a dict")
         max_ms = float(summary["max_ms"])
         avg_ms = float(summary["avg_ms"])
-        return round(max_ms / 60_000.0, 4), round(avg_ms / 60_000.0, 4)
+        p95_ms = float(summary.get("p95_ms", max_ms))
+        return (
+            round(max_ms / 60_000.0, 4),
+            round(avg_ms / 60_000.0, 4),
+            round(p95_ms / 60_000.0, 4),
+        )
 
-    cold_max, cold_avg = _minutes(cold_payload)
+    cold_max, cold_avg, cold_p95 = _minutes_full(cold_payload)
     warm_max: float | None = None
     warm_avg: float | None = None
+    warm_p95: float | None = None
     if warm_payload is not None:
-        warm_max, warm_avg = _minutes(warm_payload)
+        warm_max, warm_avg, warm_p95 = _minutes_full(warm_payload)
 
-    # Primary SLA observation uses cold run (worst realistic first-touch).
+    # Primary SLA gate uses cold p95 (shared cloud instances make avg unsafe).
     max_minutes_observed = cold_max
     avg_minutes_observed = cold_avg
-    sla_pass = max_minutes_observed <= max_minutes
+    p95_minutes_observed = cold_p95
+    sla_pass = p95_minutes_observed <= max_minutes
     stage_budget_consistent = abs(budget.total_minutes - max_minutes) <= 1e-6
+    advisory_budget_minutes = float(budget.ai_advisory_minutes)
+    advisory_share_ok = (
+        advisory_budget_minutes <= max_minutes + 1e-9 and advisory_budget_minutes >= 0.0
+    )
+
+    import os
+
+    llm_advisory_enabled = (os.getenv("AEROBIM_LLM_LOCAL_ENABLED") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
 
     resolved_command = command or (
         f"python -m aerobim.tools.measure_package_sla --pack {pack_path} "
@@ -295,15 +315,20 @@ def measure_package_sla(
 
     return {
         "artifact_type": "samolet_package_sla",
-        "schema_version": "1.3.0",
+        "schema_version": "1.4.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "customer_reference": "https://i.moscow/techlab/samolet",
         "sla_target_minutes": max_minutes,
         "sla_pass": sla_pass,
+        "sla_gate_metric": "p95_minutes_observed",
         "max_minutes_observed": max_minutes_observed,
         "avg_minutes_observed": avg_minutes_observed,
+        "p95_minutes_observed": p95_minutes_observed,
         "stage_budgets": budget.as_dict(),
         "stage_budget_consistent": stage_budget_consistent,
+        "advisory_budget_minutes": advisory_budget_minutes,
+        "advisory_budget_within_sla": advisory_share_ok,
+        "llm_advisory_enabled_env": llm_advisory_enabled,
         "package_sha256": package_sha256,
         "pack_hash": package_sha256,
         "file_inventory": inventory,
@@ -315,20 +340,22 @@ def measure_package_sla(
         "cold_run": {
             "max_minutes": cold_max,
             "avg_minutes": cold_avg,
+            "p95_minutes": cold_p95,
             "benchmark": cold_payload,
         },
         "warm_run": {
             "max_minutes": warm_max,
             "avg_minutes": warm_avg,
+            "p95_minutes": warm_p95,
             "benchmark": warm_payload,
         },
         "command": resolved_command,
         "corpus_kind": corpus_kind,
         "claim_level": resolved_claim,
         "allowed_wording": (
-            "Fixture wall-clock only; not customer комплект SLA"
+            "Fixture wall-clock only; gate=p95; not customer комплект SLA"
             if resolved_claim == "fixture_only"
-            else "Customer package SLA measurement"
+            else "Customer package SLA measurement (gate=p95)"
         ),
         "benchmark": cold_payload,
     }

@@ -2,7 +2,7 @@
 title: "Source verification report — research contour"
 date: 2026-08-04
 status: active
-version: "1.0.0"
+version: "1.1.0"
 claim_boundary: >-
   Verification protocol output. Checkpoint remains NO_GO.
   Live AECV stays open_bench_only. Foreign numbers are not AeroBIM product KPIs.
@@ -81,51 +81,47 @@ Per-field live: Door 0.231 / Window 0.137 / Space 0.137 / Bedroom 0.846 / Toilet
 
 **Measured in-repo (ops v1.9):** full sheet prompt **2184**; long-side 1024/512/256 → **1065/297/105** (≈quadratic). Completion ≈**47** with thinking off.
 
-**Literature this pass:** Qwen-VL tile/tokenization papers **not opened** here → stamp readability vs px remains **UNVERIFIED** in literature; engineering answer stays empirical (next: stamp-crop matrix at 512/1024).
+**Literature (v1.1):** Qwen2-VL arXiv:2409.12191 Table 7 **opened** — dynamic ~1924 tok ≈ top InfoVQA/OCRBench; fixed 64→3136 shows large OCR/InfoVQA swings. Stamp AEC title-block “min readable px” still **UNVERIFIED**.
 
-**Consequence:** Document measured tokens in grant ops (done). Do not claim a literature “minimum readable stamp px” without a VERIFIED source.
-
-**Not found:** peer-measured “stamp text readable at N px” for AEC title blocks.
+**Detail:** [`RESEARCH_QUESTIONS_2_2_TO_2_8_2026_08_04.md`](RESEARCH_QUESTIONS_2_2_TO_2_8_2026_08_04.md) §2.2.
 
 ---
 
 ### 2.3 LLM → machine-readable requirements
 
-**VERIFIED:** Perov et al. ICDMW 2025 DOI `10.1109/icdmw69685.2025.00203` (Crossref) — tool-augmented LLM→IDS style pipeline; prior errata quotes 138 reqs / high XML validity / repair-loop ablation (numbers from earlier baseline note — re-confirm abstract before deck use if citing exact %).
+**VERIFIED:** Perov et al. ICDMW 2025 DOI `10.1109/icdmw69685.2025.00203` (Crossref OK). Abstract numbers: 138 reqs; with repair **100 %** XML / **94.1 %** XSD / **77.5 %** Solibri-executable; without repair XML/XSD **62.8 % / 59.6 %**. Full IEEE PDF not opened this pass → tables PARTIAL until PDF.
 
-**PARTIAL / prior:** Ishigaki-IDS arXiv:2606.08545, Ishigaki-IDS-Bench 2605.22079, P4IR 2606.22402 (listed in 2026-08-03 errata; bodies not re-opened this session).
+**PARTIAL / prior:** Ishigaki-IDS, Ishigaki-IDS-Bench, P4IR; TUM Li F1 0.976 (thesis).
 
-**Direct answer:** Peer pipelines with numbers exist; AeroBIM must not claim uniqueness. Russian СП/ГОСТ/СанПиН-specific published end-to-end compilers: **none verified this pass** → gap is real and should be stated as such for RT-002 honesty.
-
-**Consequence:** Keep `LLM_TO_IDS_BASELINE_2026_08_03.md`; TZ wording = advisory + HITL + compare to Perov/Ishigaki, not “first compiler.”
+**Consequence:** Keep `LLM_TO_IDS_BASELINE_2026_08_03.md`; no uniqueness claim. РФ СП/ГОСТ end-to-end compiler still **not found**.
 
 ---
 
 ### 2.4 Evaluation protocols (hybrid vs dual labeling)
 
-**VERIFIED from AECV PDF:** automatic match + LLM-as-a-judge + human adjudication on edge cases for QA; counting uses exact-match + MAPE.
+**VERIFIED from AECV PDF:** counting exact-match+MAPE; QA auto + LLM-judge + human edge cases.
 
-**Not opened:** head-to-head studies of hybrid vs dual-expert κ with cost ratios for AEC counting → **UNVERIFIED**.
+**VERIFIED adjacent:** ChartMuseum — judge cost ~**$0.20**/run; human **93 %** vs best model **63 %** (not AEC counting).
 
-**Cohen κ in AEC object counting:** no primary source opened this pass → do not invent thresholds.
-
-**Consequence:** WP-07 may keep Wilson + dual expert for RT-001; LLM-judge stays triage-only (already Claims Lock). Cost claim “4× cheaper” **forbidden** until VERIFIED study.
+**Still UNVERIFIED:** AEC dual-expert κ + hybrid cost ratio → forbid “4× cheaper.”
 
 ---
 
 ### 2.5 Document / image injection
 
-**Not opened** primary papers this session → mitigations with measured efficacy remain **UNVERIFIED**.
+**PARTIAL→anchored:** MPI 4D taxonomy DOI `10.1109/qpain69676.2026.11545895` (≤75 % dimensional coverage claim; ~7.3 % classes documented). CSA note: typographic IPI peak ASR **64 %** (stealth). ARGUS CVPR 2026 = qualitative steering defense. No AeroBIM-measured ASR.
 
-**Consequence:** Keep fail-closed HybridRouteGate + stamp crop as engineering controls; do not cite fictional ASR numbers.
+**Consequence:** HybridRouteGate + stamp crop; no invented defense %.
 
 ---
 
 ### 2.6 Personal data on drawings
 
-**GOST 2.104** FIO in title block: domain knowledge; Roskomnadzor methods / court precedents for cloud PD on PD packages: **UNVERIFIED** this pass (no official method page opened).
+**VERIFIED:** RKN order **140** (19.06.2025) + PP **1154** (01.08.2025) methods/rules for depersonalization (Garant / Denuo / privacy-advocates opened).
 
-**Consequence:** Stamp-region crop remains product necessity for PII; cite GOST practice, not invented RKN “approved method.”
+**PARTIAL:** title-block FIO as common PD practice; no court case opened for “AR PDF in cloud VLM.”
+
+**Consequence:** Stamp crop = minimization hygiene; not “RKN-approved method for drawings.”
 
 ---
 
@@ -133,26 +129,26 @@ Per-field live: Door 0.231 / Window 0.137 / Space 0.137 / Bedroom 0.846 / Toilet
 
 | Topic | Status | Finding |
 |---|---|---|
-| ПП **331** ТИМ | **VERIFIED** (Garant text opened via fetch) | IM required for listed cases; housing/shared-construction expansions via later acts (2357 etc.) — use Garant/official text, not blogs alone |
-| ЕСИМ timelines | **PARTIAL** | Secondary industry articles only this pass |
-| ФЗ-309 / УКЭП for PD | **UNVERIFIED** this pass | Do not invent |
-| ИИ law | **VERIFIED** existence | **243-ФЗ** published 26.07.2026 on publication.pravo.gov.ru (doc 0001202607260003). Secondary analyses (opened): **not** universal mandatory labeling of all AI text; audio/visual warning *possibility* for large platforms; main force **01.09.2026**, art. 8–10 / marking delayed (**01.03.2027** per consultant draft text). March Минцифры longer draft ≠ enacted law |
-| Реестр российского ПО + foreign open weights on RF cloud | **PARTIAL** | Consulting/legal explainers (opened): OSS allowed if exclusive rights Russian and no critical foreign proprietary dependency; Yandex Cloud helps localization but does **not** auto-qualify. **No** opened Минцифры FAQ that explicitly blesses “foreign Qwen weights via Studio API” as registry-safe |
+| ПП **331** ТИМ | **VERIFIED** (Garant) | IM required for listed cases |
+| ЕСИМ timelines | **PARTIAL** | Secondary only |
+| **309-ФЗ** | **VERIFIED** primary kremlin.ru/acts/bank/52239 | Force **01.03.2026**. Art. 55.5-1 parts 15–16 = SRO notifications / negative-expertise reporting — **not** “UKЭП mandate text” |
+| УКЭП vs ИУЛ | **VERIFIED** letter existence | Минстрой **30.01.2026 № 4420-КМ/14** (Consultant/Garant): ИУЛ ≠ УКЭП; unsigned PD not accepted as e-document for expertise. Cite **63-ФЗ + letter**, not “309 ч.16 = УКЭП” |
+| ИИ law **243-ФЗ** | **VERIFIED** existence | ≠ March draft; marking delayed per prior secondary |
+| Реестр + foreign weights on Studio | **PARTIAL** | Do not pitch fully sovereign multimodal |
 
-**Direct answer for positioning before KT#3:**  
-(1) Do not pitch “fully sovereign AI” if runtime depends on foreign foundation weights through a cloud API — that is a **registry risk**, not a code bug.  
-(2) Prefer: *deterministic AeroBIM core (MIT) + optional advisory LLM; RF hosting; on-prem Studio path for CONFIDENTIAL; open weights as replaceable adapter.*  
-(3) Marking: AeroBIM’s `ai_generated` remark marking is **good product hygiene** and aligns with spirit of transparency, but do **not** claim it is mandated by 243-ФЗ for all B2B JSON.
-
-**Consequence:** Update decks that still echo the March draft; legal memo before KT#3 on registry path (PARTIAL → counsel).
+**Consequence:** Fix blog-derived 309↔UKЭП conflation before KT#3; registry counsel still required.
 
 ---
 
 ### 2.8 Industrial deployments with measured results
 
-**Not opened** independent measured case studies this pass. Structured AI blog claims “400+ issues in a 1,000-page set” — **vendor claim**, methodology not peer-reviewed → label **PARTIAL/vendor**.
+**VERIFIED peer:** MDPI Buildings `10.3390/buildings16040719` — 95.8 % / 98.3 % / −90 % effort (State Grid HITL); domain caveat (CN power; EN transfer 79.2 %).
 
-**Consequence:** No competitor-named accuracy slides for organizers; practice comparison only.
+**PARTIAL:** INFRA-M/Editorum 5240 m² (−72.1 % labor); IJIRMPS SEVEN/ACC (−45 % turnaround).
+
+**VENDOR:** Optellix 85 %, AI-BOB “days→minutes”, Structured AI “400+ issues” — label vendor.
+
+**Detail:** [`RESEARCH_QUESTIONS_2_2_TO_2_8_2026_08_04.md`](RESEARCH_QUESTIONS_2_2_TO_2_8_2026_08_04.md) §2.8.
 
 ---
 
@@ -181,6 +177,7 @@ Per-field live: Door 0.231 / Window 0.137 / Space 0.137 / Bedroom 0.846 / Toilet
 3. **If decks still cite March Минцифры mandatory universal AI labeling:** that **contradicts** enacted **243-ФЗ** as summarized in opened secondary + pravo publication record. Update before mentor/investor sends.
 4. **LLM→IDS “greenfield” tone:** Perov/Ishigaki existence **contradicts** any uniqueness claim; baselines must be cited.
 5. **Size-gate myth for AECV 400s:** earlier “≲10 KB rejected” **contradicted** by WEBP-as-JPEG finding — already corrected in code/docs; any leftover ops text must not revive the false gate.
+6. **309-ФЗ «ч.16 = УКЭП»:** industry blogs **contradict** kremlin primary text (parts 15–16 = NRS notifications). UKЭП posture = **63-ФЗ + Минстрой 4420-КМ/14**, co-timed with 01.03.2026 force date — not the wording of 55.5-1(16).
 
 ---
 

@@ -140,6 +140,7 @@ class DeterminismGate:
                         source_id=advisory.source_id or "ai-advisory",
                         confidence=advisory.confidence,
                         origin="advisory",
+                        remark=advisory.remark,
                     )
                 )
                 divergences.append(

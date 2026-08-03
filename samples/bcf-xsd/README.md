@@ -10,8 +10,12 @@ AeroBIM BCF exports (`bcf_consumers.verify_bcf_zip_structure`).
 
 Only the schemas needed for the files AeroBIM emits are vendored:
 `version.xsd`, `markup.xsd`, `visinfo.xsd` (+ `shared-types.xsd` and
-`extensions.xsd` included by release_3_0 schemas). Copyright buildingSMART
-International — see the upstream
-repository for licence terms. Do not edit these files; re-vendor from upstream.
+`extensions.xsd` included by release_3_0 schemas).
+
+**License:** CC BY-ND 4.0 (buildingSMART International Ltd.) — see
+`LICENSE_CC_BY_ND_4.0.txt` and `NOTICE`. Upstream:
+https://github.com/buildingSMART/BCF-XML/blob/release_3_0/LICENSE
+
+Do not edit these files; re-vendor from upstream. Attribution required.
 
 Claim boundary: XSD-valid ≠ CDE import proof (RT-008 T2 stays customer-gated).
