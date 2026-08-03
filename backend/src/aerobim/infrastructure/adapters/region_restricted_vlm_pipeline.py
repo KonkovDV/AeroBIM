@@ -99,6 +99,11 @@ class RegionRestrictedVlmPipeline:
         prompt: str = _DEFAULT_REGION_PROMPT,
         exclude_stamp_regions: bool = True,
     ) -> None:
+        if ready and not exclude_stamp_regions:
+            raise ValueError(
+                "PII guard (exclude_stamp_regions) cannot be disabled when the "
+                "region-restricted VLM pipeline is ready"
+            )
         self._region_detector = region_detector
         self._reader = reader
         self._cropper = cropper

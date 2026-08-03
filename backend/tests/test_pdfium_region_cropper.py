@@ -35,6 +35,18 @@ class PdfiumRegionCropperTests(unittest.TestCase):
             )
             self.assertTrue(payload.startswith(b"\x89PNG"))
 
+    def test_page_point_rejects_ambiguous_normalized_bbox(self) -> None:
+        """RT-STAMP-09: page-point cropper must not silently accept 0..1 boxes."""
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf = write_box_pdf(Path(tmp) / "box.pdf")
+            cropper = PdfiumRegionCropper(dpi=72, coordinate_system="page-point")
+            with self.assertRaises(ValueError) as ctx:
+                cropper.crop(
+                    DrawingSource(path=pdf, format="pdf"),
+                    bbox_xyxy=(0.0, 0.0, 1.0, 0.85),
+                )
+            self.assertIn("normalized-0-1", str(ctx.exception))
+
     def test_degenerate_bbox_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             pdf = write_box_pdf(Path(tmp) / "box.pdf")

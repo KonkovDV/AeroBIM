@@ -83,6 +83,7 @@ def build_region_smoke_report(
         "regions_truncated": result.regions_truncated,
         "truncation_reason": result.truncation_reason,
         "region_plan_sha256": result.region_plan_sha256,
+        "stamp_regions_excluded": result.stamp_regions_excluded,
         "reads": reads,
         "claim_boundary": (
             "roundtrip only, NOT a quality PASS; advisory candidate regions; "
@@ -120,7 +121,7 @@ def _build_pipeline(
     return RegionRestrictedVlmPipeline(
         region_detector=HeuristicLayoutRegionDetector(),
         reader=reader,  # type: ignore[arg-type]
-        cropper=PdfiumRegionCropper(),
+        cropper=PdfiumRegionCropper(coordinate_system="normalized-0-1"),
         ready=True,
     )
 

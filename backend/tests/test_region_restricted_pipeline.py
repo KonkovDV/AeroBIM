@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
-from aerobim.domain.region_read_plan import clip_pii_priors, plan_region_reads, subtract_aabb
+from aerobim.domain.region_read_plan import plan_region_reads, subtract_aabb
 from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
     KimiAdvisoryError,
     KimiReadResult,
@@ -78,8 +78,8 @@ def _source() -> DrawingSource:
     return DrawingSource(path=Path("plan.png"), sheet_id="AR-01")
 
 
-def _overlaps_stamp_prior(bbox: tuple[float, float, float, float]) -> bool:
-    sx0, sy0, sx1, sy1 = (0.55, 0.85, 1.0, 1.0)
+def _overlaps_bottom_pii_band(bbox: tuple[float, float, float, float]) -> bool:
+    sx0, sy0, sx1, sy1 = (0.0, 0.85, 1.0, 1.0)
     return not (bbox[2] <= sx0 or bbox[0] >= sx1 or bbox[3] <= sy0 or bbox[1] >= sy1)
 
 
@@ -220,7 +220,7 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertEqual(plan.stamp_regions_excluded, 1)
 
     def test_full_sheet_content_clips_stamp_prior(self) -> None:
-        """RT-STAMP-07: whole-sheet content must not send stamp zone."""
+        """RT-STAMP-07: whole-sheet content must not send bottom PII band."""
         regions = [
             DrawingRegionRef(
                 sheet_id="AR-01",
@@ -232,15 +232,13 @@ class RegionReadPlanTests(unittest.TestCase):
         ]
         plan = plan_region_reads(text_layer_present=False, regions=regions)
         self.assertFalse(plan.skip_vlm)
-        self.assertGreaterEqual(len(plan.tasks), 1)
-        for task in plan.tasks:
-            self.assertFalse(_overlaps_stamp_prior(task.bbox_xyxy), task.bbox_xyxy)
-        # Stamp prior fully removed from union of residuals.
-        residuals = clip_pii_priors((0.0, 0.0, 1.0, 1.0))
-        self.assertEqual(set(plan.tasks[i].bbox_xyxy for i in range(len(plan.tasks))), set(residuals))
+        self.assertEqual(len(plan.tasks), 1)
+        self.assertEqual(plan.tasks[0].bbox_xyxy, (0.0, 0.0, 1.0, 0.85))
+        self.assertEqual(plan.tasks[0].coordinate_system, "normalized-0-1")
+        self.assertFalse(_overlaps_bottom_pii_band(plan.tasks[0].bbox_xyxy))
 
-    def test_bottom_band_content_clips_stamp(self) -> None:
-        """Bottom strip must lose lower-right stamp, not pass via low overlap ratio."""
+    def test_bottom_band_content_fully_excluded(self) -> None:
+        """Bottom strip is entirely PII prior → no residual after clip."""
         regions = [
             DrawingRegionRef(
                 sheet_id="AR-01",
@@ -251,11 +249,22 @@ class RegionReadPlanTests(unittest.TestCase):
             ),
         ]
         plan = plan_region_reads(text_layer_present=False, regions=regions)
-        self.assertFalse(plan.skip_vlm)
-        for task in plan.tasks:
-            self.assertFalse(_overlaps_stamp_prior(task.bbox_xyxy), task.bbox_xyxy)
-        # Title-block prior also clipped from bottom band.
-        self.assertTrue(all(t.bbox_xyxy[0] >= 0.25 - 1e-9 for t in plan.tasks))
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
+
+    def test_middle_bottom_content_excluded(self) -> None:
+        """RT residual: middle-bottom inscription must not survive split priors."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.25, 0.85, 0.55, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
 
     def test_left_vertical_unlabeled_fail_closed(self) -> None:
         """Rotated/left title without role: allowlist deny (prior is not sole defense)."""
@@ -273,6 +282,19 @@ class RegionReadPlanTests(unittest.TestCase):
     def test_subtract_aabb_full_cover(self) -> None:
         self.assertEqual(subtract_aabb((0.55, 0.85, 1.0, 1.0), (0.55, 0.85, 1.0, 1.0)), ())
 
+    def test_invalid_bbox_fail_closed(self) -> None:
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.9, 0.9, 0.1, 0.1),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+
     def test_content_with_page_size_normalizes_and_clips(self) -> None:
         regions = [
             DrawingRegionRef(
@@ -288,7 +310,17 @@ class RegionReadPlanTests(unittest.TestCase):
         plan = plan_region_reads(text_layer_present=False, regions=regions)
         self.assertFalse(plan.skip_vlm)
         for task in plan.tasks:
-            self.assertFalse(_overlaps_stamp_prior(task.bbox_xyxy), task.bbox_xyxy)
+            self.assertFalse(_overlaps_bottom_pii_band(task.bbox_xyxy), task.bbox_xyxy)
+
+    def test_ready_pipeline_rejects_disabled_pii_guard(self) -> None:
+        with self.assertRaises(ValueError):
+            RegionRestrictedVlmPipeline(
+                region_detector=_FakeDetector(1),
+                reader=_FakeReader(),
+                cropper=_FakeCropper(),
+                ready=True,
+                exclude_stamp_regions=False,
+            )
 
 
 class RegionRestrictedPipelineTests(unittest.TestCase):

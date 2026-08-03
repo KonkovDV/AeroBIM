@@ -7,8 +7,8 @@ sent to the VLM. This module is pure: no I/O, no image handling.
 
 Cloud PII doctrine (aligned with ``data_classification`` / trust fail-closed):
 allowlist roles safe to send; unknown / stamp / title_block are excluded; for
-allowlisted crops, subtract layout PII priors (stamp + title block) from the
-bbox so a whole-sheet content crop cannot smuggle signatory ФИО.
+allowlisted crops, subtract the bottom inscription band (stamp + основная
+надпись) from the bbox so a whole-sheet content crop cannot smuggle signatory ФИО.
 """
 
 from __future__ import annotations
@@ -21,17 +21,17 @@ from aerobim.domain.models import DrawingRegionRef
 # Only these roles may leave the contour toward cloud VLM (after PII prior clip).
 _CLOUD_SAFE_LAYOUT_ROLES = frozenset({"content"})
 
-# HeuristicLayoutRegionDetector PII priors (normalized 0..1). Subtracted from
-# allowlisted crops so oversized boxes (incl. full sheet) cannot carry stamp /
-# main-inscription ФИО. Not a complete ГОСТ geometry model (RT-STAMP-06).
+# Full bottom inscription band (normalized 0..1): ГОСТ main inscription + stamp
+# occupy the lower strip; middle-bottom ФИО must not survive as a residual.
+# Left/rotated vertical title is NOT covered — RT-STAMP-06 remains OPEN.
 _PII_LAYOUT_PRIORS: tuple[tuple[float, float, float, float], ...] = (
-    (0.55, 0.85, 1.0, 1.0),  # stamp (lower-right)
-    (0.0, 0.85, 0.25, 1.0),  # title block / основная надпись (lower-left)
+    (0.0, 0.85, 1.0, 1.0),
 )
 _NORM_EPS = 1e-9
 _MIN_EDGE = 1e-4
 
 BBox = tuple[float, float, float, float]
+_NORMALIZED_CRS = "normalized-0-1"
 
 
 @dataclass(frozen=True)
@@ -39,6 +39,7 @@ class RegionReadTask:
     region_id: str
     bbox_xyxy: BBox
     layout_role: str | None = None
+    coordinate_system: str = _NORMALIZED_CRS
 
 
 @dataclass(frozen=True)
@@ -51,6 +52,10 @@ class RegionReadPlan:
 
 def _is_normalized_bbox(bbox: BBox) -> bool:
     return max(bbox) <= 1.0 + _NORM_EPS and min(bbox) >= 0.0 - _NORM_EPS
+
+
+def _is_valid_bbox(bbox: BBox) -> bool:
+    return bbox[2] - bbox[0] > _MIN_EDGE and bbox[3] - bbox[1] > _MIN_EDGE
 
 
 def _bbox_area(bbox: BBox) -> float:
@@ -98,12 +103,15 @@ def clip_pii_priors(bbox: BBox) -> tuple[BBox, ...]:
 def _normalized_bbox(region: DrawingRegionRef) -> BBox | None:
     """Return 0..1 bbox, or None when coordinates cannot be trusted for clipping."""
     bbox = region.bbox_xyxy
+    if not _is_valid_bbox(bbox):
+        return None
     if _is_normalized_bbox(bbox):
         return bbox
     pw, ph = region.page_width, region.page_height
     if pw is not None and ph is not None and pw > 0 and ph > 0:
         x0, y0, x1, y1 = bbox
-        return (x0 / pw, y0 / ph, x1 / pw, y1 / ph)
+        norm = (x0 / pw, y0 / ph, x1 / pw, y1 / ph)
+        return norm if _is_valid_bbox(norm) else None
     return None
 
 
@@ -112,11 +120,7 @@ def is_cloud_safe_layout_role(role: str | None) -> bool:
 
 
 def is_stamp_like_region(region: DrawingRegionRef) -> bool:
-    """True when the region must not be sent as-is under the PII guard.
-
-    Kept for callers/tests: not on the cloud-safe allowlist, or normalized crop
-    still intersects a PII prior before clipping.
-    """
+    """True when the region must not be sent as-is under the PII guard."""
     role = (region.layout_role or "").strip().lower() or None
     if not is_cloud_safe_layout_role(role):
         return True
@@ -137,13 +141,10 @@ def plan_region_reads(
 
     When ``exclude_stamp_regions`` is true (default) the cloud PII guard applies:
 
-    1. **Allowlist** — only ``layout_role=content`` may be queued (unknown /
-       stamp / title_block → exclude). Matches ``data_classification`` doctrine:
-       unknown does not lower restriction.
-    2. **Clip** — allowlisted bboxes have PII priors subtracted (not overlap-
-       ratio discard), so a full-sheet content crop cannot pass stamp ФИО.
-    3. **Fail-closed coordinates** — non-normalized bbox without page size
-       cannot be clipped → exclude even if role is ``content``.
+    1. **Allowlist** — only ``layout_role=content`` may be queued.
+    2. **Clip** — allowlisted bboxes have the bottom PII band subtracted.
+    3. **Fail-closed coordinates** — invalid / unnormalizable bbox → exclude.
+    4. Emitted tasks always carry ``coordinate_system=normalized-0-1``.
     """
     if text_layer_present:
         return RegionReadPlan(
@@ -156,11 +157,17 @@ def plan_region_reads(
         role = (region.layout_role or "").strip().lower() or None
         modality = region.modality or "region"
         if not exclude_stamp_regions:
+            crs = (
+                region.coordinate_system
+                if region.coordinate_system
+                else ("normalized-0-1" if _is_normalized_bbox(region.bbox_xyxy) else "page-point")
+            )
             tasks_list.append(
                 RegionReadTask(
                     region_id=f"r{index:02d}-{modality}",
                     bbox_xyxy=region.bbox_xyxy,
                     layout_role=role,
+                    coordinate_system=crs,
                 )
             )
             continue
@@ -171,7 +178,6 @@ def plan_region_reads(
 
         norm = _normalized_bbox(region)
         if norm is None:
-            # Pixel / unknown CRS without page size: cannot clip priors → deny.
             excluded += 1
             continue
 
@@ -187,6 +193,7 @@ def plan_region_reads(
                     region_id=f"r{index:02d}-{modality}{suffix}",
                     bbox_xyxy=part,
                     layout_role=role,
+                    coordinate_system=_NORMALIZED_CRS,
                 )
             )
 
