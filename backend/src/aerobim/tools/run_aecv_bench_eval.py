@@ -244,6 +244,25 @@ def build_executive_summary(
             ),
             "errors": live.get("errors"),
             "macro_exact_match_rate": summary.get("macro_exact_match_rate"),
+            "macro_exact_match_rate_paper_four_fields": (
+                round(
+                    sum(
+                        (per_field.get(f) or {}).get("exact_match_rate") or 0.0
+                        for f in ("Door", "Window", "Bedroom", "Toilet")
+                    )
+                    / 4,
+                    4,
+                )
+                if all(
+                    (per_field.get(f) or {}).get("exact_match_rate") is not None
+                    for f in ("Door", "Window", "Bedroom", "Toilet")
+                )
+                else None
+            ),
+            "macro_four_fields_note": (
+                "AECV-Bench paper Table 1 mean is over Door/Window/Bedroom/Toilet only. "
+                "AeroBIM five-field macro also includes Space and is not directly comparable."
+            ),
             "macro_mape": summary.get("macro_mape"),
             "per_field": {
                 field: {
