@@ -656,9 +656,25 @@
             "title": "Providers Mock Tested",
             "type": "array"
           },
+          "requires_model_revision": {
+            "default": false,
+            "title": "Requires Model Revision",
+            "type": "boolean"
+          },
           "status": {
             "title": "Status",
             "type": "string"
+          },
+          "studio_profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Studio Profile"
           }
         },
         "required": [

@@ -63,16 +63,15 @@ class OpenAICompatLlmProvider:
 
     def _default_transport(self, url: str, headers: dict[str, str], body: bytes) -> bytes:
         from aerobim.core.security.outbound_url import (
-            assert_safe_datastore_url,
+            safe_datastore_urlopen,
             safe_urlopen,
         )
 
         host = (urlparse(url).hostname or "").lower()
         request = urllib.request.Request(url, data=body, headers=headers, method="POST")
         if host in _LOOPBACK:
-            # Local vLLM: public SSRF guard rejects loopback — datastore allowlist.
-            assert_safe_datastore_url(url, resolve_dns=False)
-            with urllib.request.urlopen(request, timeout=self._timeout) as response:  # noqa: S310
+            # Local vLLM: public SSRF guard rejects loopback — datastore seam.
+            with safe_datastore_urlopen(request, timeout=self._timeout) as response:
                 return response.read(_MAX_RESPONSE_BYTES + 1)
         # Yandex AI Studio / remote private endpoint — DNS-pinned SSRF guard.
         with safe_urlopen(request, timeout=self._timeout) as response:

@@ -177,7 +177,9 @@ class LlmAdvisoryCapability(BaseModel):
     customer_data_default: str = "deny"
     providers_mock_tested: list[str] = []
     local_profile: str | None = None
+    studio_profile: str | None = None
     cloud_max_status: str = "NOT_VERIFIED"
+    requires_model_revision: bool = False
     claim_boundary: str
 
 

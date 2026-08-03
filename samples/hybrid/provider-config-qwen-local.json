@@ -1,19 +1,21 @@
 {
   "artifact_type": "aerobim_hybrid_provider_config",
   "schema_version": "1.1.0",
-  "claim_boundary": "Same OpenAI-compat adapter for loopback vLLM and Yandex AI Studio. Cloud Alibaba qwen3.8-max NOT_VERIFIED. Advisory never sets summary.passed. Studio cloud = PUBLIC/INTERNAL only; CONFIDENTIAL/RESTRICTED → on-prem Studio or local weights.",
+  "claim_boundary": "Same OpenAI-compat adapter for loopback vLLM and Yandex AI Studio. Cloud Alibaba qwen3.8-max NOT_VERIFIED. Advisory never sets summary.passed. Studio cloud = PUBLIC/INTERNAL only; CONFIDENTIAL/RESTRICTED → on-prem Studio or local weights. schema≥1.1 requires model_revision on non-deterministic profiles.",
   "profiles": {
     "private_qwen_local": {
       "tier": "local",
       "provider": "qwen-local",
       "model_id": "Qwen3.6-27B",
+      "model_revision": "qwen3.6-27b@local-weights-pin",
       "deterministic": false,
-      "notes": "Loopback vLLM/SGLang. Pin checkpoint via AEROBIM_LLM_MODEL_SHA256."
+      "notes": "Loopback vLLM/SGLang. Pin via model_revision + AEROBIM_LLM_MODEL_REVISION."
     },
     "private_yandex_ai_studio": {
       "tier": "private",
       "provider": "yandex-ai-studio",
-      "model_id": "qwen3-235b / pin URI+version",
+      "model_id": "qwen3-235b",
+      "model_revision": "yandex://ai-studio/qwen3-235b@2026-08",
       "deterministic": false,
       "notes": "KT#2 T2 private_shared RF cloud for PUBLIC/INTERNAL open corpora. Pilot T1 = same adapter, on-prem Studio base_url. Hard token caps required."
     },
@@ -21,18 +23,21 @@
       "tier": "local",
       "provider": "onprem",
       "model_id": "local-vlm-v1",
+      "model_revision": "local-vlm-v1@eng-fixture",
       "deterministic": false
     },
     "private_vlm": {
       "tier": "private",
       "provider": "ru-cloud",
       "model_id": "private-vlm-v1",
+      "model_revision": "private-vlm-v1@eng-fixture",
       "deterministic": false
     },
     "public_qwen38_max": {
       "tier": "public",
       "provider": "alibaba-model-studio",
       "model_id": "qwen3.8-max",
+      "model_revision": "alibaba://qwen3.8-max@NOT_VERIFIED",
       "deterministic": false,
       "notes": "FORBIDDEN default. NOT_VERIFIED; never route CONFIDENTIAL/RESTRICTED."
     },
@@ -40,6 +45,7 @@
       "tier": "public",
       "provider": "kimi",
       "model_id": "kimi-k3",
+      "model_revision": "kimi://k3@eng-fixture",
       "deterministic": false
     },
     "human_review": {

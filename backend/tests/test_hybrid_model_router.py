@@ -100,6 +100,12 @@ class ModelRouterTests(unittest.TestCase):
         self.assertTrue(sel.requires_human_review)
         self.assertFalse(sel.external)
 
+    def test_from_config_rejects_missing_model_revision_on_schema_1_1(self) -> None:
+        bad = copy.deepcopy(_CONFIG)
+        bad["schema_version"] = "1.1.0"
+        with self.assertRaises(ValueError):
+            ProviderRegistry.from_config(bad)
+
     def test_from_config_rejects_tier_mismatch(self) -> None:
         bad = copy.deepcopy(_CONFIG)
         bad["tier_defaults"]["local"] = "public_kimi_k3"  # public profile in local slot

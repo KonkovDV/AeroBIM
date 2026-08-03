@@ -112,6 +112,7 @@ class LlmLocalOffEqualsOnTests(unittest.TestCase):
             llm_local_enabled=True,
             llm_base_url="http://127.0.0.1:9/v1",
             llm_model="Qwen3.6-27B",
+            llm_model_revision="qwen3.6-27b@test-pin",
             llm_model_sha256="deadbeef",
         )
         self.assertFalse(off.llm_local_ready())
@@ -207,9 +208,16 @@ class ProviderConfigSampleTests(unittest.TestCase):
         self.assertIn("private_qwen_local", data["profiles"])
         self.assertIn("private_yandex_ai_studio", data["profiles"])
         self.assertIn("public_qwen38_max", data["profiles"])
+        self.assertEqual(
+            data["profiles"]["private_yandex_ai_studio"]["model_revision"],
+            "yandex://ai-studio/qwen3-235b@2026-08",
+        )
         self.assertEqual(data["tier_defaults"]["private"], "private_yandex_ai_studio")
         self.assertIn("public_qwen38_max", data["forbidden_defaults"])
         self.assertIn("OCR", data["grant_split"]["gpu_t4_use"])
+        from aerobim.domain.hybrid.model_router import ProviderRegistry
+
+        ProviderRegistry.from_config(data)
 
 
 class LlmTokenBudgetTests(unittest.TestCase):

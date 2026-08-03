@@ -315,7 +315,7 @@ presentation/  FastAPI HTTP API, correlation middleware
 
 Infrastructure now also includes an artifact `ObjectStore` seam plus an optional Postgres summary-index adapter for Iteration B.1.
 
-**20 domain ports** → **30 infrastructure adapters** → **28 DI tokens** — all wired in a single composition root (`bootstrap_container()`).
+**48 domain Protocol ports** → **67 infrastructure adapter modules** → **58 DI tokens** — wired in `bootstrap_container()`. Counts are live inventory (SSOT: `core/di/tokens.py` + `infrastructure/adapters/`); do not treat older 20/30/28 figures as current.
 Report payloads include an explicit `capabilities` object (`ok` / `skipped` / `failed`) so optional engines (clash, IDS, unit scale, raster, schema) cannot silently look like a clean PASS. **Any `FAILED` capability forces `summary.passed=false`.**
 
 ## Configuration
@@ -349,6 +349,18 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_S3_ACCESS_KEY_ID` | *(unset)* | Optional access key for S3-compatible storage |
 | `AEROBIM_S3_SECRET_ACCESS_KEY` | *(unset)* | Optional secret key for S3-compatible storage |
 | `AEROBIM_S3_PREFIX` | `aerobim` | Prefix applied to object keys in S3-compatible storage |
+| `AEROBIM_LLM_LOCAL_ENABLED` | `false` | Opt-in OpenAI-compat advisory LLM (vLLM / Yandex AI Studio); never sets `summary.passed` |
+| `AEROBIM_LLM_BASE_URL` | *(unset)* | Loopback or RF HTTPS OpenAI-compat base (`…/v1`); SSRF-gated at boot |
+| `AEROBIM_LLM_API_KEY` | *(unset)* | Optional bearer for Studio; never logged / never in `audit_event` |
+| `AEROBIM_LLM_PROVIDER` | `qwen-local` | Provider label (`qwen-local` / `yandex-ai-studio`) |
+| `AEROBIM_LLM_MODEL` | `Qwen3.6-27B` | Model id sent to `/chat/completions` |
+| `AEROBIM_LLM_MODEL_REVISION` | *(required if enabled)* | Pin URI+version; boot fails if enabled without it |
+| `AEROBIM_LLM_MODEL_SHA256` | *(unset)* | Optional checkpoint hash in usage/audit |
+| `AEROBIM_LLM_MAX_TOKENS_PER_CALL` | `4096` | Fail-closed token cap per call |
+| `AEROBIM_LLM_MAX_TOKENS_PER_RUN` | `500000` | Fail-closed token cap per process run |
+| `AEROBIM_LLM_MAX_TOKENS_PER_DAY` | `2000000` | Fail-closed token cap per calendar day |
+| `AEROBIM_LLM_MAX_COMPLETION_TOKENS` | `512` | Completion budget passed to the API |
+| `AEROBIM_HYBRID_PROVIDER_CONFIG` | *(unset)* | Path to hybrid provider JSON (`schema_version` ≥1.1 requires `model_revision`) |
 
 ## Project Structure
 
