@@ -80,7 +80,10 @@ class SheetReadResult:
 
 
 def _region_plan_sha256(tasks: tuple[RegionReadTask, ...]) -> str:
-    payload = ";".join(f"{task.region_id}:{task.bbox_xyxy}" for task in tasks)
+    payload = ";".join(
+        f"{task.region_id}:{task.coordinate_system}:{task.bbox_xyxy}:{task.layout_role or ''}"
+        for task in tasks
+    )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -183,6 +186,16 @@ class RegionRestrictedVlmPipeline:
         assert self._cropper is not None and self._reader is not None  # narrowed by caller
         crop_sha = ""
         try:
+            if (
+                self._exclude_stamp_regions
+                and task.coordinate_system != "normalized-0-1"
+            ):
+                return RegionRead(
+                    task.region_id,
+                    (),
+                    True,
+                    "PII guard requires normalized-0-1 task CRS; refuse crop",
+                )
             crop_bytes, media_type = self._cropper.crop(source, bbox_xyxy=task.bbox_xyxy)
             crop_sha = hashlib.sha256(crop_bytes).hexdigest()
             read = self._reader.read_region(

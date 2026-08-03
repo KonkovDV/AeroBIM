@@ -121,6 +121,7 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertEqual(len(plan.tasks), 1)
         self.assertEqual(plan.stamp_regions_excluded, 1)
         self.assertEqual(plan.tasks[0].layout_role, "content")
+        self.assertEqual(plan.tasks[0].bbox_xyxy, (0.10, 0.0, 1.0, 0.85))
         self.assertIn("PII", plan.reason)
 
     def test_stamp_only_sheet_skips_vlm(self) -> None:
@@ -220,7 +221,7 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertEqual(plan.stamp_regions_excluded, 1)
 
     def test_full_sheet_content_clips_stamp_prior(self) -> None:
-        """RT-STAMP-07: whole-sheet content must not send bottom PII band."""
+        """RT-STAMP-07/06: whole-sheet content loses bottom band and left title strip."""
         regions = [
             DrawingRegionRef(
                 sheet_id="AR-01",
@@ -233,10 +234,42 @@ class RegionReadPlanTests(unittest.TestCase):
         plan = plan_region_reads(text_layer_present=False, regions=regions)
         self.assertFalse(plan.skip_vlm)
         self.assertEqual(len(plan.tasks), 1)
-        self.assertEqual(plan.tasks[0].bbox_xyxy, (0.0, 0.0, 1.0, 0.85))
+        self.assertEqual(plan.tasks[0].bbox_xyxy, (0.10, 0.0, 1.0, 0.85))
         self.assertEqual(plan.tasks[0].coordinate_system, "normalized-0-1")
         self.assertFalse(_overlaps_bottom_pii_band(plan.tasks[0].bbox_xyxy))
+        self.assertGreaterEqual(plan.tasks[0].bbox_xyxy[0], 0.10 - 1e-9)
 
+    def test_left_vertical_content_clipped(self) -> None:
+        """RT-STAMP-06: left vertical title zone subtracted from allowlisted content."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 0.15, 0.45),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertFalse(plan.skip_vlm)
+        self.assertEqual(len(plan.tasks), 1)
+        self.assertEqual(plan.tasks[0].bbox_xyxy, (0.10, 0.0, 0.15, 0.45))
+
+    def test_page_pixel_small_values_not_auto_normalized(self) -> None:
+        """RT-STAMP-12: absolute CRS with values ≤1 must not fail-open as normalized."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.1, 0.1, 0.5, 0.8),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+                coordinate_system="page-pixel",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
     def test_bottom_band_content_fully_excluded(self) -> None:
         """Bottom strip is entirely PII prior → no residual after clip."""
         regions = [
@@ -311,6 +344,7 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertFalse(plan.skip_vlm)
         for task in plan.tasks:
             self.assertFalse(_overlaps_bottom_pii_band(task.bbox_xyxy), task.bbox_xyxy)
+            self.assertGreaterEqual(task.bbox_xyxy[0], 0.10 - 1e-9)
 
     def test_ready_pipeline_rejects_disabled_pii_guard(self) -> None:
         with self.assertRaises(ValueError):

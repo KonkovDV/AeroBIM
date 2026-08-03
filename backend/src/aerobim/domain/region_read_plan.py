@@ -7,8 +7,8 @@ sent to the VLM. This module is pure: no I/O, no image handling.
 
 Cloud PII doctrine (aligned with ``data_classification`` / trust fail-closed):
 allowlist roles safe to send; unknown / stamp / title_block are excluded; for
-allowlisted crops, subtract the bottom inscription band (stamp + основная
-надпись) from the bbox so a whole-sheet content crop cannot smuggle signatory ФИО.
+allowlisted crops, subtract layout PII priors (bottom inscription + left
+vertical title strip) so oversized content crops cannot smuggle signatory ФИО.
 """
 
 from __future__ import annotations
@@ -21,12 +21,24 @@ from aerobim.domain.models import DrawingRegionRef
 # Only these roles may leave the contour toward cloud VLM (after PII prior clip).
 _CLOUD_SAFE_LAYOUT_ROLES = frozenset({"content"})
 
-# Full bottom inscription band (normalized 0..1): ГОСТ main inscription + stamp
-# occupy the lower strip; middle-bottom ФИО must not survive as a residual.
-# Left/rotated vertical title is NOT covered — RT-STAMP-06 remains OPEN.
+# Normalized 0..1 PII priors (heuristic / ГОСТ-aligned, not a full geometry model).
+# Bottom band: main inscription + stamp. Left strip: vertical title block forms.
 _PII_LAYOUT_PRIORS: tuple[tuple[float, float, float, float], ...] = (
-    (0.0, 0.85, 1.0, 1.0),
+    (0.0, 0.85, 1.0, 1.0),  # bottom inscription / stamp
+    (0.0, 0.0, 0.10, 1.0),  # left vertical title strip
 )
+_ABSOLUTE_CRS = frozenset(
+    {
+        "page-point",
+        "page-points",
+        "page-pixel",
+        "page-pixels",
+        "px",
+        "pt",
+        "points",
+    }
+)
+_NORMALIZED_CRS_ALIASES = frozenset({"normalized-0-1", "normalized", "rel", "relative"})
 _NORM_EPS = 1e-9
 _MIN_EDGE = 1e-4
 
@@ -60,6 +72,10 @@ def _is_valid_bbox(bbox: BBox) -> bool:
 
 def _bbox_area(bbox: BBox) -> float:
     return max(bbox[2] - bbox[0], 0.0) * max(bbox[3] - bbox[1], 0.0)
+
+
+def _crs_token(value: str | None) -> str:
+    return (value or "").strip().lower().replace("_", "-")
 
 
 def subtract_aabb(outer: BBox, hole: BBox) -> tuple[BBox, ...]:
@@ -100,18 +116,38 @@ def clip_pii_priors(bbox: BBox) -> tuple[BBox, ...]:
     return remaining
 
 
+def _scale_to_normalized(bbox: BBox, page_width: float, page_height: float) -> BBox | None:
+    x0, y0, x1, y1 = bbox
+    norm = (x0 / page_width, y0 / page_height, x1 / page_width, y1 / page_height)
+    return norm if _is_valid_bbox(norm) else None
+
+
 def _normalized_bbox(region: DrawingRegionRef) -> BBox | None:
-    """Return 0..1 bbox, or None when coordinates cannot be trusted for clipping."""
+    """Return 0..1 bbox, or None when coordinates cannot be trusted for clipping.
+
+    Absolute CRS (``page-pixel`` / ``page-point``) never auto-promotes to
+    normalized even when all values are ≤1 — that was a fail-open (RT-STAMP-12).
+    """
     bbox = region.bbox_xyxy
     if not _is_valid_bbox(bbox):
         return None
+    crs = _crs_token(region.coordinate_system)
+    pw, ph = region.page_width, region.page_height
+    has_page = pw is not None and ph is not None and pw > 0 and ph > 0
+
+    if crs in _ABSOLUTE_CRS:
+        if not has_page:
+            return None
+        return _scale_to_normalized(bbox, float(pw), float(ph))
+
+    if crs in _NORMALIZED_CRS_ALIASES:
+        return bbox if _is_normalized_bbox(bbox) else None
+
+    # Unspecified CRS: accept only unambiguous normalized boxes; else need page.
     if _is_normalized_bbox(bbox):
         return bbox
-    pw, ph = region.page_width, region.page_height
-    if pw is not None and ph is not None and pw > 0 and ph > 0:
-        x0, y0, x1, y1 = bbox
-        norm = (x0 / pw, y0 / ph, x1 / pw, y1 / ph)
-        return norm if _is_valid_bbox(norm) else None
+    if has_page:
+        return _scale_to_normalized(bbox, float(pw), float(ph))
     return None
 
 
@@ -142,8 +178,8 @@ def plan_region_reads(
     When ``exclude_stamp_regions`` is true (default) the cloud PII guard applies:
 
     1. **Allowlist** — only ``layout_role=content`` may be queued.
-    2. **Clip** — allowlisted bboxes have the bottom PII band subtracted.
-    3. **Fail-closed coordinates** — invalid / unnormalizable bbox → exclude.
+    2. **Clip** — allowlisted bboxes have PII priors subtracted.
+    3. **Fail-closed coordinates** — invalid / absolute-without-page / unnormalizable → exclude.
     4. Emitted tasks always carry ``coordinate_system=normalized-0-1``.
     """
     if text_layer_present:
