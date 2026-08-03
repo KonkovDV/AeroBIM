@@ -1,0 +1,19 @@
+﻿ README.md                                          | 14 ++++-
+ audit/claims_forbidden_wording.json                |  4 +-
+ audit/reports/CLAIMS_LOCK_2026_07_31.md            |  3 +
+ backend/.env.example                               | 17 ++++++
+ backend/src/aerobim/core/config/settings.py        | 16 +++++-
+ backend/src/aerobim/core/security/outbound_url.py  | 14 +++++
+ backend/src/aerobim/domain/hybrid/model_router.py  | 27 ++++++++-
+ backend/src/aerobim/domain/system_capabilities.py  | 11 ++--
+ .../adapters/openai_compat_llm_provider.py         |  7 +--
+ backend/src/aerobim/presentation/http/schemas.py   |  2 +
+ .../src/aerobim/tools/compose_advisory_remark.py   | 21 +++++++
+ .../tests/contracts/openapi_contract_snapshot.json | 16 ++++++
+ backend/tests/test_advisory_vlm_off_equals_on.py   | 65 ++++++++++++++++++++++
+ backend/tests/test_hybrid_model_router.py          |  6 ++
+ backend/tests/test_outbound_guard_invariant.py     | 11 +++-
+ backend/tests/test_qwen_local_advisory.py          |  8 +++
+ docs/ENGINEERING_STATUS_2026_08.md                 |  2 +-
+ samples/hybrid/provider-config-qwen-local.json     | 12 +++-
+ 18 files changed, 235 insertions(+), 21 deletions(-)

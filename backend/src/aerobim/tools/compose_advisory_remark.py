@@ -96,6 +96,27 @@ def compose_from_findings(
             "claim_boundary": CLAIM_BOUNDARY,
             "prompt_version": PROMPT_VERSION,
         }
+    transport_skip = any(
+        str(u).startswith("transport_error:") for u in response.uncertainties
+    )
+    if transport_skip:
+        # Model unavailable → SKIPPED (capability honesty), not FAILED report contour.
+        return {
+            "status": "SKIPPED",
+            "reason": "model_unavailable",
+            "uncertainties": list(response.uncertainties),
+            "claim_boundary": CLAIM_BOUNDARY,
+            "prompt_version": PROMPT_VERSION,
+            "provider": response.provider,
+            "model": response.model,
+            "usage": response.usage,
+            "audit_event": _advisory_audit_event(
+                request_id=request_id,
+                response=response,
+                settings=resolved,
+                failure_reason="model_unavailable",
+            ),
+        }
     if response.status in {"failed", "blocked_by_policy"} or not response.schema_valid:
         reason = response.status
         if any(str(u).startswith("budget_exceeded") for u in response.uncertainties):

@@ -23,6 +23,7 @@ _ALLOWED = (
     "core/security/outbound_url.py",  # the guard implementation itself
     "tools/",  # developer tools may hit their own local server
 )
+_SAFE_URLOPEN_NAMES = ("safe_urlopen(", "safe_datastore_urlopen(")
 
 
 def _violations() -> list[str]:
@@ -33,6 +34,11 @@ def _violations() -> list[str]:
             continue
         text = path.read_text(encoding="utf-8")
         for match in _RAW.finditer(text):
+            # ``safe_datastore_urlopen(`` ends with ``urlopen(`` — not a bypass.
+            window_start = max(0, match.start() - len("safe_datastore_"))
+            prefix = text[window_start : match.end()]
+            if any(name in prefix for name in _SAFE_URLOPEN_NAMES):
+                continue
             found.append(f"{rel}: raw outbound call {match.group(0)!r}")
     return found
 
@@ -51,9 +57,10 @@ def test_guarded_adapters_actually_use_safe_urlopen() -> None:
         "infrastructure/adapters/bsi_validation_service.py",
         "infrastructure/adapters/http_bcf_api_client.py",
         "infrastructure/adapters/kimi_k3_advisory_client.py",
+        "infrastructure/adapters/openai_compat_llm_provider.py",
         "infrastructure/security/oidc_token_validator.py",
     ):
         text = (_SRC / rel).read_text(encoding="utf-8")
-        if "safe_urlopen" in text:
+        if "safe_urlopen" in text or "safe_datastore_urlopen" in text:
             users.append(rel)
-    assert len(users) == 4, f"expected 4 guarded outbound adapters, found: {users}"
+    assert len(users) == 5, f"expected 5 guarded outbound adapters, found: {users}"

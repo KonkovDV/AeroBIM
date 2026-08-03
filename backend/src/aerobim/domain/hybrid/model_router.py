@@ -51,6 +51,8 @@ class ModelProfile:
     provider: str
     model_id: str
     deterministic: bool = False
+    model_revision: str | None = None
+    """Pinned URI+version for non-deterministic profiles (schema ≥1.1.0)."""
 
 
 @dataclass(frozen=True)
@@ -90,14 +92,35 @@ class ProviderRegistry:
     @classmethod
     def from_config(cls, config: Mapping[str, Any]) -> ProviderRegistry:
         """Собрать реестр из конфига; fail-closed на несогласованности tier."""
+        schema = str(config.get("schema_version") or "1.0.0").strip() or "1.0.0"
+        try:
+            major, minor, *_rest = (int(part) for part in schema.split("."))
+        except ValueError as exc:
+            raise ValueError(f"invalid schema_version {schema!r}") from exc
+        require_revision = (major, minor) >= (1, 1)
+
         profiles: dict[str, ModelProfile] = {}
         for name, spec in dict(config.get("profiles", {})).items():
+            revision = str(spec.get("model_revision") or "").strip() or None
+            deterministic = bool(spec.get("deterministic", False))
+            provider = str(spec["provider"])
+            if (
+                require_revision
+                and not deterministic
+                and provider != "human"
+                and not revision
+            ):
+                raise ValueError(
+                    f"profile {name!r} missing model_revision "
+                    "(required for schema_version ≥1.1.0 non-deterministic profiles)"
+                )
             profiles[str(name)] = ModelProfile(
                 name=str(name),
                 tier=ModelTier(str(spec["tier"]).lower()),
-                provider=str(spec["provider"]),
+                provider=provider,
                 model_id=str(spec["model_id"]),
-                deterministic=bool(spec.get("deterministic", False)),
+                deterministic=deterministic,
+                model_revision=revision,
             )
 
         def _check(profile_name: str, tier: ModelTier, where: str) -> None:

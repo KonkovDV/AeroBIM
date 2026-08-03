@@ -82,6 +82,71 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
 
         self.assertEqual(verdict(container_off, "off"), verdict(container_on, "on"))
 
+    def test_llm_studio_flag_does_not_change_verdict_on_uc_path(self) -> None:
+        """Yandex Studio / local OpenAI-compat advisory must also leave verdict byte-identical."""
+
+        from aerobim.core.config.settings import Settings
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.domain.llm_advisory import DisabledLlmProvider
+        from aerobim.infrastructure.adapters.openai_compat_llm_provider import (
+            OpenAICompatLlmProvider,
+        )
+        from aerobim.infrastructure.di.bootstrap import bootstrap_container
+        from aerobim.tools.benchmark_project_package import load_benchmark_pack
+
+        repo_root = Path(__file__).resolve().parents[2]
+        pack_path = repo_root / "samples" / "benchmarks" / "project-package-baseline.json"
+        if not pack_path.exists():
+            self.skipTest("baseline benchmark pack missing")
+        request = load_benchmark_pack(pack_path, repo_root_path=repo_root).request
+
+        off = Settings.from_env()
+        on = replace(
+            off,
+            llm_local_enabled=True,
+            llm_base_url="http://127.0.0.1:8000/v1",
+            llm_provider="yandex-ai-studio",
+            llm_model="qwen3-235b",
+            llm_model_revision="yandex://ai-studio/qwen3-235b@test-pin",
+            llm_api_key="test-key-not-for-prod",
+        )
+        self.assertFalse(off.llm_local_ready())
+        self.assertTrue(on.llm_local_ready())
+
+        container_off = bootstrap_container(off)
+        container_on = bootstrap_container(on)
+        self.assertIsInstance(
+            container_off.resolve(Tokens.LLM_ADVISORY_PROVIDER),
+            DisabledLlmProvider,
+        )
+        self.assertIsInstance(
+            container_on.resolve(Tokens.LLM_ADVISORY_PROVIDER),
+            OpenAICompatLlmProvider,
+        )
+
+        def verdict(container: object, tag: str) -> object:
+            use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
+            report = use_case.execute(replace(request, request_id=f"llm-offon-{tag}"))
+            signature = tuple(
+                sorted(
+                    (
+                        issue.rule_id,
+                        issue.category.value,
+                        issue.severity.value,
+                        issue.origin or "",
+                    )
+                    for issue in report.issues
+                )
+            )
+            return (
+                report.summary.passed,
+                report.summary.error_count,
+                report.summary.warning_count,
+                signature,
+            )
+
+        self.assertEqual(verdict(container_off, "off"), verdict(container_on, "on"))
+
 
 if __name__ == "__main__":
     unittest.main()

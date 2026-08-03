@@ -22,6 +22,7 @@ from urllib.request import (
     OpenerDirector,
     Request,
     build_opener,
+    urlopen,
 )
 
 _BLOCKED_NETWORKS: tuple[ipaddress.IPv4Network | ipaddress.IPv6Network, ...] = (
@@ -236,6 +237,18 @@ def resolve_and_pin_outbound_url(
     )
 
 
+def safe_datastore_urlopen(request: Request, *, timeout: float):
+    """Loopback / unix-datastore ``urlopen`` after :func:`assert_safe_datastore_url`.
+
+    Public :func:`safe_urlopen` rejects loopback by design. Local vLLM must still
+    go through this seam so adapters never call raw ``urlopen`` themselves
+    (outbound-guard invariant).
+    """
+
+    assert_safe_datastore_url(request.full_url, resolve_dns=False)
+    return urlopen(request, timeout=timeout)  # noqa: S310 — guarded by datastore jail
+
+
 def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False):
     """``urlopen`` wrapper: SSRF host check, DNS pin, no redirects, no second DNS."""
 
@@ -306,5 +319,6 @@ __all__ = [
     "assert_safe_datastore_url",
     "assert_safe_outbound_url",
     "resolve_and_pin_outbound_url",
+    "safe_datastore_urlopen",
     "safe_urlopen",
 ]

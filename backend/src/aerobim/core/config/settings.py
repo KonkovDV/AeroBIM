@@ -218,8 +218,10 @@ class Settings:
     llm_api_key: str | None = None
     llm_provider: str = "qwen-local"
     llm_model: str = "Qwen3.6-27B"
+    llm_model_revision: str | None = None
+    """Required pin when LLM enabled (vendor URI + version). Fail-closed at boot."""
     llm_model_sha256: str | None = None
-    """Optional checkpoint pin recorded in advisory usage / audit (never a secret)."""
+    """Optional checkpoint hash recorded in advisory usage / audit (never a secret)."""
     llm_timeout_seconds: float = 60.0
     llm_max_tokens_per_call: int = 4_096
     llm_max_tokens_per_run: int = 500_000
@@ -244,14 +246,16 @@ class Settings:
     def llm_local_ready(self) -> bool:
         """True when OpenAI-compat advisory LLM may be invoked.
 
-        Fail-closed: disabled by default; requires explicit enable + base URL.
+        Fail-closed: disabled by default; requires enable + base URL + model_revision.
         Covers loopback vLLM and RF private endpoints (e.g. Yandex AI Studio).
         Does not authorize Alibaba cloud Max.
         """
 
         if not self.llm_local_enabled:
             return False
-        return bool(self.llm_base_url)
+        if not self.llm_base_url:
+            return False
+        return bool((self.llm_model_revision or "").strip())
 
     @property
     def is_dev_environment(self) -> bool:
@@ -469,6 +473,7 @@ class Settings:
             llm_provider=(os.getenv("AEROBIM_LLM_PROVIDER") or "qwen-local").strip()
             or "qwen-local",
             llm_model=(os.getenv("AEROBIM_LLM_MODEL") or "Qwen3.6-27B").strip() or "Qwen3.6-27B",
+            llm_model_revision=(os.getenv("AEROBIM_LLM_MODEL_REVISION") or "").strip() or None,
             llm_model_sha256=(os.getenv("AEROBIM_LLM_MODEL_SHA256") or "").strip() or None,
             llm_timeout_seconds=float(
                 (os.getenv("AEROBIM_LLM_TIMEOUT_SECONDS") or "60").strip() or "60"
@@ -478,6 +483,11 @@ class Settings:
             llm_max_tokens_per_day=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_DAY", 2_000_000),
             llm_max_completion_tokens=_read_int("AEROBIM_LLM_MAX_COMPLETION_TOKENS", 512),
         )
+        if settings.llm_local_enabled and not settings.llm_local_ready():
+            raise RuntimeError(
+                "AEROBIM_LLM_LOCAL_ENABLED requires AEROBIM_LLM_BASE_URL and "
+                "AEROBIM_LLM_MODEL_REVISION (pin URI+version at boot; fail-closed)"
+            )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
             UnsafeOutboundUrlError,

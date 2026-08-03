@@ -378,18 +378,21 @@ def build_system_capabilities_payload() -> dict[str, object]:
         "auth_bff": auth_bff,
         "customer_intake_gate": intake,
         "llm_advisory": {
-            "status": "disabled",
+            "status": "skipped",
             "advisory_only": True,
             "affects_summary_passed": False,
             "customer_data_default": "deny",
             "providers_mock_tested": ["kimi", "qwen", "gemma"],
             "local_profile": "private_qwen_local",
+            "studio_profile": "private_yandex_ai_studio",
             "cloud_max_status": "NOT_VERIFIED",
+            "requires_model_revision": True,
             "claim_boundary": (
                 "OpenAI-compat advisory (vLLM local or Yandex AI Studio RF) when "
-                "AEROBIM_LLM_LOCAL_ENABLED; token caps fail-closed; Alibaba Max "
-                "NOT_VERIFIED; Studio cloud = PUBLIC/INTERNAL only; never sets summary.passed; "
-                "ai_generated drafts require expert confirmation; not product accuracy"
+                "AEROBIM_LLM_LOCAL_ENABLED + AEROBIM_LLM_MODEL_REVISION; token caps "
+                "fail-closed; Alibaba Max NOT_VERIFIED; Studio cloud = PUBLIC/INTERNAL "
+                "only; never sets summary.passed; ai_generated drafts require expert "
+                "confirmation; unavailable model → SKIPPED not FAILED; not product accuracy"
             ),
         },
         "forbidden_ok_states": {
