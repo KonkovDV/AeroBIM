@@ -53,6 +53,11 @@ class PyMuPDFRegionCropper:
 
     def _clip_rect(self, pymupdf, page_rect, bbox: tuple[float, float, float, float]):  # noqa: ANN001
         x1, y1, x2, y2 = bbox
+        if self._coordinate_system == "page-point" and max(bbox) <= 1.0 and min(bbox) >= 0.0:
+            raise ValueError(
+                "bbox looks normalized-0-1 but cropper coordinate_system is page-point; "
+                "refuse ambiguous crop (set coordinate_system='normalized-0-1')"
+            )
         if self._coordinate_system == "normalized-0-1":
             x1, x2 = x1 * page_rect.width, x2 * page_rect.width
             y1, y2 = y1 * page_rect.height, y2 * page_rect.height

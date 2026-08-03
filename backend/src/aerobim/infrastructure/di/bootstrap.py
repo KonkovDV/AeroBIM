@@ -895,10 +895,12 @@ def _build_extraction_integrity_producer(current: Container):
 
 
 def _build_region_cropper(current: Container):
+    # Heuristic detector + PII plan emit normalized-0-1; page-point default would
+    # silently crop ~1pt boxes (RT-STAMP-09 / CRS mismatch).
     backend = resolve_pdf_backend(current.resolve(Tokens.SETTINGS).pdf_backend)
     if backend == "pymupdf":
-        return PyMuPDFRegionCropper()
-    return PdfiumRegionCropper()
+        return PyMuPDFRegionCropper(coordinate_system="normalized-0-1")
+    return PdfiumRegionCropper(coordinate_system="normalized-0-1")
 
 
 def _build_audit_report_store(current: Container):
