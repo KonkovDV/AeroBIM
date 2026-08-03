@@ -40,6 +40,56 @@ _PILOT_DEFAULT_MAX_UPLOADS_PER_DAY = 100
 _PILOT_DEFAULT_MAX_BYTES_PER_DAY = 10 * 1024 * 1024 * 1024  # 10 GiB
 _PILOT_DEFAULT_MAX_CONCURRENT_JOBS = 4
 
+_DEFAULT_LLM_ALLOWED_HOSTS: frozenset[str] = frozenset(
+    {
+        "localhost",
+        "127.0.0.1",
+        "::1",
+        # Yandex AI Studio OpenAI-compat (RF). On-prem adds via AEROBIM_LLM_ALLOWED_HOSTS.
+        "ai.api.cloud.yandex.net",
+        "llm.api.cloud.yandex.net",
+    }
+)
+_FORBIDDEN_LLM_HOST_MARKERS: tuple[str, ...] = (
+    "aliyuncs.com",
+    "dashscope",
+    "api.openai.com",
+    "openai.com",
+    "api.anthropic.com",
+)
+
+
+def _parse_llm_allowed_hosts(raw: str | None) -> frozenset[str]:
+    hosts = set(_DEFAULT_LLM_ALLOWED_HOSTS)
+    if raw:
+        for part in raw.split(","):
+            host = part.strip().lower()
+            if host:
+                hosts.add(host)
+    return frozenset(hosts)
+
+
+def assert_llm_base_host_allowed(url: str, allowed_hosts: frozenset[str]) -> None:
+    """Fail-closed host allowlist — SSRF alone must not authorize Alibaba Max."""
+
+    from urllib.parse import urlparse
+
+    host = (urlparse(url).hostname or "").lower()
+    if not host:
+        raise RuntimeError("AEROBIM_LLM_BASE_URL must include a hostname")
+    if any(marker in host for marker in _FORBIDDEN_LLM_HOST_MARKERS):
+        raise RuntimeError(
+            f"AEROBIM_LLM_BASE_URL host {host!r} is forbidden "
+            "(Alibaba/OpenAI/Anthropic public clouds are not authorized; "
+            "use loopback vLLM or Yandex AI Studio / on-prem allowlist)"
+        )
+    if host not in allowed_hosts:
+        raise RuntimeError(
+            f"AEROBIM_LLM_BASE_URL host {host!r} is not on the allowlist "
+            "(built-in + AEROBIM_LLM_ALLOWED_HOSTS). "
+            "Add the on-prem / Studio hostname explicitly; never rely on SSRF alone."
+        )
+
 
 @dataclass(frozen=True)
 class Settings:
@@ -228,6 +278,8 @@ class Settings:
     llm_max_tokens_per_day: int = 2_000_000
     llm_max_completion_tokens: int = 512
     """Hard caps for advisory LLM (Yandex grant / repair-loop fail-closed)."""
+    llm_allowed_hosts: tuple[str, ...] = tuple(sorted(_DEFAULT_LLM_ALLOWED_HOSTS))
+    """Hostname allowlist for AEROBIM_LLM_BASE_URL (fail-closed beyond SSRF)."""
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -482,6 +534,9 @@ class Settings:
             llm_max_tokens_per_run=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_RUN", 500_000),
             llm_max_tokens_per_day=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_DAY", 2_000_000),
             llm_max_completion_tokens=_read_int("AEROBIM_LLM_MAX_COMPLETION_TOKENS", 512),
+            llm_allowed_hosts=tuple(
+                sorted(_parse_llm_allowed_hosts(os.getenv("AEROBIM_LLM_ALLOWED_HOSTS")))
+            ),
         )
         if settings.llm_local_enabled and not settings.llm_local_ready():
             raise RuntimeError(
@@ -534,6 +589,10 @@ class Settings:
                 from urllib.parse import urlparse as _urlparse
 
                 host = (_urlparse(settings.llm_base_url).hostname or "").lower()
+                assert_llm_base_host_allowed(
+                    settings.llm_base_url,
+                    frozenset(settings.llm_allowed_hosts),
+                )
                 if host in {"localhost", "127.0.0.1", "::1"}:
                     assert_safe_datastore_url(settings.llm_base_url)
                 else:

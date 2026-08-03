@@ -100,6 +100,19 @@ class ModelRouterTests(unittest.TestCase):
         self.assertTrue(sel.requires_human_review)
         self.assertFalse(sel.external)
 
+    def test_from_config_rejects_forbidden_default(self) -> None:
+        bad = copy.deepcopy(_CONFIG)
+        bad["forbidden_defaults"] = ["public_kimi_k3"]
+        bad["tier_defaults"]["public"] = "public_kimi_k3"
+        with self.assertRaises(ValueError):
+            ProviderRegistry.from_config(bad)
+
+    def test_from_config_allows_local_profile_for_private_slot(self) -> None:
+        cfg = copy.deepcopy(_CONFIG)
+        cfg["tier_defaults"]["private"] = "local_vlm"
+        registry = ProviderRegistry.from_config(cfg)
+        self.assertEqual(registry.resolve(ModelTier.PRIVATE, "x").name, "local_vlm")
+
     def test_from_config_rejects_missing_model_revision_on_schema_1_1(self) -> None:
         bad = copy.deepcopy(_CONFIG)
         bad["schema_version"] = "1.1.0"

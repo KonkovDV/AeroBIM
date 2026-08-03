@@ -41,6 +41,16 @@ _STATUS_TIER: dict[RouteStatus, ModelTier] = {
     RouteStatus.PUBLIC_MASKED: ModelTier.PUBLIC,
 }
 
+_TIER_RANK: dict[ModelTier, int] = {
+    ModelTier.LOCAL: 0,
+    ModelTier.PRIVATE: 1,
+    ModelTier.PUBLIC: 2,
+}
+
+
+def _tier_rank(tier: ModelTier) -> int:
+    return _TIER_RANK[tier]
+
 
 @dataclass(frozen=True)
 class ModelProfile:
@@ -127,24 +137,35 @@ class ProviderRegistry:
             prof = profiles.get(profile_name)
             if prof is None:
                 raise ValueError(f"{where}: unknown profile {profile_name!r}")
-            if prof.tier is not tier:
+            # Narrower egress OK (LOCAL may fill PRIVATE); escalate forbidden.
+            if _tier_rank(prof.tier) > _tier_rank(tier):
                 raise ValueError(
                     f"{where}: profile {profile_name!r} tier {prof.tier.value} "
-                    f"!= slot {tier.value} (config cannot escalate egress)"
+                    f"exceeds slot {tier.value} (config cannot escalate egress)"
                 )
+
+        forbidden_defaults = {
+            str(name) for name in list(config.get("forbidden_defaults") or []) if str(name).strip()
+        }
 
         tier_defaults: dict[ModelTier, str] = {}
         for tkey, pname in dict(config.get("tier_defaults", {})).items():
             tier = ModelTier(str(tkey).lower())
-            _check(str(pname), tier, "tier_defaults")
-            tier_defaults[tier] = str(pname)
+            name = str(pname)
+            if name in forbidden_defaults:
+                raise ValueError(
+                    f"tier_defaults: profile {name!r} is listed in forbidden_defaults"
+                )
+            _check(name, tier, "tier_defaults")
+            tier_defaults[tier] = name
 
         task_routes: dict[tuple[ModelTier, str], str] = {}
         for tkey, tasks in dict(config.get("task_routes", {})).items():
             tier = ModelTier(str(tkey).lower())
             for task, pname in dict(tasks).items():
-                _check(str(pname), tier, "task_routes")
-                task_routes[(tier, str(task))] = str(pname)
+                name = str(pname)
+                _check(name, tier, "task_routes")
+                task_routes[(tier, str(task))] = name
 
         hr = config.get("human_review_profile")
         if hr is not None:
@@ -206,9 +227,9 @@ class ModelRouter:
                 reason=f"no configured model for {tier.value}/{task_type}",
                 requires_human_review=True,
             )
-        if profile.tier is not tier:
-            # Defense-in-depth: a registry built directly (bypassing from_config)
-            # must still never escalate egress beyond the decided route tier.
+        if _tier_rank(profile.tier) > _tier_rank(tier):
+            # Defense-in-depth: never escalate egress beyond the decided route tier.
+            # LOCAL may serve a PRIVATE slot (narrower); PUBLIC must not.
             return ModelSelection(
                 profile=None,
                 reason="profile tier exceeds route tier",
