@@ -383,9 +383,12 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "affects_summary_passed": False,
             "customer_data_default": "deny",
             "providers_mock_tested": ["kimi", "qwen", "gemma"],
+            "local_profile": "private_qwen_local",
+            "cloud_max_status": "NOT_VERIFIED",
             "claim_boundary": (
-                "Mock/contract tests only unless explicit egress profile; "
-                "not product accuracy; not customer data to cloud by default"
+                "Local open-weight advisory (finding→remark) when AEROBIM_LLM_LOCAL_ENABLED; "
+                "cloud qwen3.8-max forbidden/NOT_VERIFIED; never sets summary.passed; "
+                "ai_generated drafts require expert confirmation; not product accuracy"
             ),
         },
         "forbidden_ok_states": {

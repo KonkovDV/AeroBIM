@@ -240,6 +240,13 @@ class ProblemZone:
 class GeneratedRemark:
     title: str
     body: str
+    ai_generated: bool = False
+    expert_confirmation_required: bool = False
+    prompt_version: str | None = None
+    provider: str | None = None
+    model: str | None = None
+    evidence_refs: tuple[str, ...] = ()
+    claim_boundary: str | None = None
 
 
 @dataclass(frozen=True)

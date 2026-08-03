@@ -308,6 +308,12 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     # missing/invalid config raises during bootstrap, not on some later first use.
     if runtime_settings.hybrid_provider_config_path:
         container.resolve(Tokens.HYBRID_MODEL_ROUTER)
+    # Local OpenAI-compat LLM (Qwen via vLLM) — advisory remark compose only; not verdict.
+    container.register(
+        Tokens.LLM_ADVISORY_PROVIDER,
+        lambda current: _build_llm_advisory_provider(current.resolve(Tokens.SETTINGS)),
+        lifecycle=Lifecycle.SINGLETON,
+    )
     container.register(
         Tokens.REQUIREMENT_TO_IDS_COMPILER,
         lambda current: DeterministicRequirementToIdsCompiler(
@@ -687,10 +693,28 @@ def _build_model_router(settings: Settings) -> ModelRouter:
     try:
         data = json.loads(config_path.read_text(encoding="utf-8"))
         if not isinstance(data, dict) or not data.get("profiles"):
-            raise ValueError("provider config has no 'profiles'")
-        return ModelRouter(ProviderRegistry.from_config(data))
-    except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
-        raise RuntimeError(f"invalid hybrid provider config {path!r}: {exc}") from exc
+            raise ValueError("provider config must be an object with profiles")
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"AEROBIM_HYBRID_PROVIDER_CONFIG invalid: {path}: {exc}") from exc
+    return ModelRouter(ProviderRegistry.from_config(data))
+
+
+def _build_llm_advisory_provider(settings: Settings):
+    """Local Qwen/vLLM OpenAI-compat provider or disabled placeholder (not verdict)."""
+
+    from aerobim.domain.llm_advisory import DisabledLlmProvider
+    from aerobim.infrastructure.adapters.openai_compat_llm_provider import OpenAICompatLlmProvider
+
+    if not settings.llm_local_ready():
+        return DisabledLlmProvider()
+    return OpenAICompatLlmProvider(
+        base_url=settings.llm_base_url or "",
+        model=settings.llm_model,
+        api_key=settings.llm_api_key,
+        provider=settings.llm_provider,
+        model_sha256=settings.llm_model_sha256,
+        timeout_seconds=settings.llm_timeout_seconds,
+    )
 
 
 def _build_oidc_validator(settings: Settings) -> OidcTokenValidator | None:

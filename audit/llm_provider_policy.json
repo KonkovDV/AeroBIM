@@ -31,14 +31,15 @@
     },
     {
       "provider": "qwen",
-      "models": ["qwen-mock", "CLOUD_DATA_POLICY_UNKNOWN"],
-      "data_retention": "CLOUD_DATA_POLICY_UNKNOWN",
-      "training_use": "CLOUD_DATA_POLICY_UNKNOWN",
-      "data_residency": "CLOUD_DATA_POLICY_UNKNOWN",
-      "dpa": "CLOUD_DATA_POLICY_UNKNOWN",
-      "customer_data": "deny_by_default",
+      "models": ["qwen-mock", "Qwen3.6-27B", "CLOUD_DATA_POLICY_UNKNOWN"],
+      "data_retention": "LOCAL_WEIGHTS_WHEN_ONPREM",
+      "training_use": "forbidden",
+      "data_residency": "onprem_when_AEROBIM_LLM_LOCAL_ENABLED",
+      "dpa": "N/A_for_local_open_weight",
+      "customer_data": "deny_by_default_structured_findings_only",
       "synthetic_public": "allowed_under_explicit_profile",
-      "offline_fallback": "deterministic_only"
+      "offline_fallback": "deterministic_templates",
+      "notes": "Cloud qwen3.8-max NOT_VERIFIED/forbidden default. Local vLLM via AEROBIM_LLM_* only."
     },
     {
       "provider": "gemma",
