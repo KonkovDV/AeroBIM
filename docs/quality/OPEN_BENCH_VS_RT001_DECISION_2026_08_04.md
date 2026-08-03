@@ -34,8 +34,8 @@ claim_boundary: "Three number levels. Open-bench ≠ product accuracy. Checkpoin
 2. **AECV-Bench object counting**
    - Offline rescore of published model JSONs (120 plans).
    - **Live** Yandex AI Studio `qwen3.6-35b-a3b`: 120 attempted / 117 scored / 3 errors; macro exact-match **0.4325** (Door 0.23 / Window 0.14 / Space 0.14 / Bedroom 0.85 / Toilet 0.81).
-   - Evidence: [`../evidence/aecv-bench-eval-latest.json`](../evidence/aecv-bench-eval-latest.json) · Red Team note: [`RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md).
-   - Vendor quirk: send `chat_template_kwargs.enable_thinking=false` — top-level `enable_thinking` → HTTP 400.
+   - Evidence: [`../evidence/aecv-bench-eval-latest.json`](../evidence/aecv-bench-eval-latest.json) (`executive_summary`: MAPE, mean_bias, Bedroom refusal vs error, vs published Gemini/GPT macros) · Red Team note: [`RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md).
+   - Vendor quirk: send `chat_template_kwargs.enable_thinking=false` — top-level `enable_thinking` → HTTP 400. Images ≲12 KiB → HTTP 400 (`MIN_IMAGE_BYTES_VENDOR_REJECT`).
 3. **AEC-Bench** — inventory 196 tasks + prefetch sample; Harbor **agent trial NOT_RUN** (needs separate agent key; Docker + Harbor CLI ready).
 4. WP-06 open-corpora smoke remains L2.
 

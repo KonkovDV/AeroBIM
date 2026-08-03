@@ -34,6 +34,10 @@ CLAIM_BOUNDARY = (
 
 COUNT_FIELDS = ("Door", "Window", "Space", "Bedroom", "Toilet")
 
+# Vendor HTTP 400 observed on AECV plans ~9–11 KiB JPEG (2000-0008/09/12).
+# Stamp/crop path must stay above this floor or preflight-skip.
+MIN_IMAGE_BYTES_VENDOR_REJECT = 12 * 1024
+
 
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
@@ -116,6 +120,17 @@ def _aggregate(field_rows: list[FieldScore]) -> dict[str, Any]:
     for field, rows in by_field.items():
         scored = [r for r in rows if r.exact_match is not None]
         mape_vals = [r.abs_pct_error for r in scored if r.abs_pct_error is not None]
+        biases = [
+            (r.predicted - r.expected)
+            for r in scored
+            if r.predicted is not None and r.expected is not None
+        ]
+        # Refusal-style miss: model emits 0 while ground truth is positive.
+        positive_exp = [r for r in scored if (r.expected or 0) > 0]
+        zero_when_positive = [
+            r for r in positive_exp if r.predicted == 0
+        ]
+        zero_pred = [r for r in scored if r.predicted == 0]
         per_field[field] = {
             "n": len(scored),
             "exact_match_rate": (
@@ -124,6 +139,17 @@ def _aggregate(field_rows: list[FieldScore]) -> dict[str, Any]:
                 else None
             ),
             "mape": round(sum(mape_vals) / len(mape_vals), 4) if mape_vals else None,
+            "mean_bias": (
+                round(sum(biases) / len(biases), 4) if biases else None
+            ),
+            "zero_prediction_n": len(zero_pred),
+            "zero_pred_when_expected_positive_rate": (
+                round(len(zero_when_positive) / len(positive_exp), 4)
+                if positive_exp
+                else None
+            ),
+            "zero_pred_when_expected_positive_n": len(zero_when_positive),
+            "expected_positive_n": len(positive_exp),
         }
     all_scored = [r for r in field_rows if r.exact_match is not None]
     return {
@@ -133,8 +159,166 @@ def _aggregate(field_rows: list[FieldScore]) -> dict[str, Any]:
             if all_scored
             else None
         ),
+        "macro_mape": (
+            round(
+                sum(r.abs_pct_error for r in all_scored if r.abs_pct_error is not None)
+                / max(1, sum(1 for r in all_scored if r.abs_pct_error is not None)),
+                4,
+            )
+            if any(r.abs_pct_error is not None for r in all_scored)
+            else None
+        ),
         "per_field": per_field,
     }
+
+
+def rescore_live_plans(plans: list[dict[str, Any]]) -> tuple[dict[str, Any], list[FieldScore]]:
+    """Recompute aggregates from stored predicted/expected (no API calls)."""
+
+    field_rows: list[FieldScore] = []
+    for plan in plans:
+        if plan.get("status") not in {None, "ok"}:
+            continue
+        predicted = plan.get("predicted")
+        expected = plan.get("expected")
+        if not isinstance(predicted, dict) or not isinstance(expected, dict):
+            continue
+        field_rows.extend(score_counts(predicted, expected))
+    return _aggregate(field_rows), field_rows
+
+
+def build_executive_summary(
+    *,
+    live: dict[str, Any] | None,
+    offline: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Human-facing Red Team slice: MAPE/bias + published baseline comparison."""
+
+    out: dict[str, Any] = {
+        "claim_level": "open_bench_only",
+        "closes_rt001": False,
+        "note": (
+            "MAPE + mean_bias sit beside exact-match. "
+            "zero_pred_when_expected_positive ≈ refusal/miss, not symmetric error. "
+            "Compare live macro to offline published AECV model JSONs (same 120 plans)."
+        ),
+        "vendor_min_image_bytes": MIN_IMAGE_BYTES_VENDOR_REJECT,
+        "vendor_min_image_note": (
+            "Plans ~9–11 KiB JPEG returned HTTP 400 on Yandex Studio; "
+            "stamp/region crops must stay above this floor."
+        ),
+    }
+    if isinstance(live, dict):
+        summary = live.get("summary") or {}
+        per_field = summary.get("per_field") or {}
+        out["live"] = {
+            "provider": live.get("provider"),
+            "model": live.get("model"),
+            "plans_attempted": live.get("plans_attempted"),
+            "plans_scored": sum(
+                1 for p in (live.get("plans") or []) if p.get("status") == "ok"
+            ),
+            "errors": live.get("errors"),
+            "macro_exact_match_rate": summary.get("macro_exact_match_rate"),
+            "macro_mape": summary.get("macro_mape"),
+            "per_field": {
+                field: {
+                    "exact_match_rate": (per_field.get(field) or {}).get(
+                        "exact_match_rate"
+                    ),
+                    "mape": (per_field.get(field) or {}).get("mape"),
+                    "mean_bias": (per_field.get(field) or {}).get("mean_bias"),
+                    "zero_prediction_n": (per_field.get(field) or {}).get(
+                        "zero_prediction_n"
+                    ),
+                    "zero_pred_when_expected_positive_n": (per_field.get(field) or {}).get(
+                        "zero_pred_when_expected_positive_n"
+                    ),
+                    "zero_pred_when_expected_positive_rate": (
+                        per_field.get(field) or {}
+                    ).get("zero_pred_when_expected_positive_rate"),
+                }
+                for field in COUNT_FIELDS
+            },
+            "error_plans": [
+                {
+                    "plan_id": p.get("plan_id"),
+                    "detail": p.get("detail"),
+                    "image_bytes": p.get("image_bytes"),
+                }
+                for p in (live.get("plans") or [])
+                if p.get("status") == "error"
+            ],
+        }
+        # Window vs Space: same exact can hide different failure modes.
+        win = per_field.get("Window") or {}
+        space = per_field.get("Space") or {}
+        out["failure_mode_contrast"] = {
+            "Window": {
+                "exact_match_rate": win.get("exact_match_rate"),
+                "mape": win.get("mape"),
+                "mean_bias": win.get("mean_bias"),
+                "reading": "systematic undercount when mean_bias << 0",
+            },
+            "Space": {
+                "exact_match_rate": space.get("exact_match_rate"),
+                "mape": space.get("mape"),
+                "mean_bias": space.get("mean_bias"),
+                "reading": "near-zero bias ⇒ symmetric misses despite low exact",
+            },
+        }
+
+    if isinstance(offline, dict) and isinstance(offline.get("models"), dict):
+        ranked = sorted(
+            offline["models"].items(),
+            key=lambda kv: -(kv[1].get("macro_exact_match_rate") or -1.0),
+        )
+        top = [
+            {
+                "model": name,
+                "macro_exact_match_rate": payload.get("macro_exact_match_rate"),
+                "macro_mape": payload.get("macro_mape"),
+                "Door_exact": (payload.get("per_field") or {})
+                .get("Door", {})
+                .get("exact_match_rate"),
+                "Window_exact": (payload.get("per_field") or {})
+                .get("Window", {})
+                .get("exact_match_rate"),
+                "Bedroom_exact": (payload.get("per_field") or {})
+                .get("Bedroom", {})
+                .get("exact_match_rate"),
+            }
+            for name, payload in ranked[:8]
+        ]
+        live_macro = None
+        if isinstance(live, dict):
+            live_macro = (live.get("summary") or {}).get("macro_exact_match_rate")
+        best = top[0] if top else None
+        out["published_baseline_comparison"] = {
+            "source": "offline rescore of AECV-Bench per-plan published model JSONs",
+            "plans_scored": offline.get("plans_scored"),
+            "top_published": top,
+            "live_vs_best_published": {
+                "live_macro_exact_match_rate": live_macro,
+                "best_published_model": (best or {}).get("model"),
+                "best_published_macro_exact_match_rate": (best or {}).get(
+                    "macro_exact_match_rate"
+                ),
+                "delta_live_minus_best": (
+                    round(live_macro - best["macro_exact_match_rate"], 4)
+                    if live_macro is not None
+                    and best
+                    and best.get("macro_exact_match_rate") is not None
+                    else None
+                ),
+                "reading": (
+                    "Live Qwen macro in the same ballpark as mid/frontier published "
+                    "counting scores ⇒ harness plausible; large positive gap would "
+                    "implicate prompt/resolution, not just model class."
+                ),
+            },
+        }
+    return out
 
 
 def evaluate_offline_counting(
@@ -344,10 +528,25 @@ def evaluate_live_counting(
         )
         if not meta_path.is_file() or not images:
             continue
+        image_path = images[0]
+        image_bytes = image_path.stat().st_size
         expected = json.loads(meta_path.read_text(encoding="utf-8-sig"))
+        if image_bytes < MIN_IMAGE_BYTES_VENDOR_REJECT:
+            errors += 1
+            per_plan.append(
+                {
+                    "plan_id": folder.name,
+                    "status": "error",
+                    "detail": (
+                        f"preflight_skip_image_bytes<{MIN_IMAGE_BYTES_VENDOR_REJECT}"
+                    ),
+                    "image_bytes": image_bytes,
+                }
+            )
+            continue
         try:
             predicted = _call_openai_vision_counts(
-                image_path=images[0],
+                image_path=image_path,
                 model=model,
                 api_key=api_key,
                 base_url=base_url,
@@ -365,6 +564,7 @@ def evaluate_live_counting(
                     "field_exact": {
                         s.field: s.exact_match for s in scores
                     },
+                    "image_bytes": image_bytes,
                     "status": "ok",
                 }
             )
@@ -375,6 +575,7 @@ def evaluate_live_counting(
                     "plan_id": folder.name,
                     "status": "error",
                     "detail": str(exc)[:300],
+                    "image_bytes": image_bytes,
                 }
             )
 
@@ -385,6 +586,7 @@ def evaluate_live_counting(
         "model": model,
         "base_url": base_url,
         "folder_id_set": bool(folder_id),
+        "min_image_bytes_vendor_reject": MIN_IMAGE_BYTES_VENDOR_REJECT,
         "plans_attempted": len(per_plan),
         "errors": errors,
         "summary": _aggregate(field_rows),
@@ -438,10 +640,11 @@ def build_report(
     live_model: str,
     live_base_url: str,
     timeout_s: float,
+    enrich_live_from: Path | None = None,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "artifact_type": "aecv_bench_eval",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_level": "open_bench_only",
         "claim_boundary": CLAIM_BOUNDARY,
@@ -453,7 +656,7 @@ def build_report(
         },
         "drawing_qa": evaluate_qa_labels_inventory(dataset_root),
     }
-    if mode in {"offline", "both"}:
+    if mode in {"offline", "both", "enrich"}:
         payload["object_counting_offline"] = evaluate_offline_counting(
             dataset_root, limit=limit
         )
@@ -466,6 +669,48 @@ def build_report(
             base_url=live_base_url,
             timeout_s=timeout_s,
         )
+    if mode == "enrich":
+        if enrich_live_from is None or not enrich_live_from.is_file():
+            raise SystemExit("--enrich-live-from PATH required for --mode enrich")
+        prior = json.loads(enrich_live_from.read_text(encoding="utf-8"))
+        live = prior.get("object_counting_live")
+        if not isinstance(live, dict) or not isinstance(live.get("plans"), list):
+            raise SystemExit("enrich source missing object_counting_live.plans")
+        summary, _rows = rescore_live_plans(live["plans"])
+        live = dict(live)
+        live["summary"] = summary
+        live["min_image_bytes_vendor_reject"] = MIN_IMAGE_BYTES_VENDOR_REJECT
+        live["enriched_at"] = datetime.now(tz=UTC).isoformat()
+        live["enriched_from"] = str(enrich_live_from.resolve())
+        # Attach image_bytes for known tiny failures when dataset present.
+        root = counting_dir(dataset_root)
+        for plan in live["plans"]:
+            if plan.get("status") != "error":
+                continue
+            if plan.get("image_bytes") is not None:
+                continue
+            folder = root / str(plan.get("plan_id") or "")
+            if not folder.is_dir():
+                continue
+            images = sorted(
+                p
+                for p in folder.iterdir()
+                if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
+            )
+            if images:
+                plan["image_bytes"] = images[0].stat().st_size
+        payload["object_counting_live"] = live
+        if "drawing_qa" in prior and isinstance(prior["drawing_qa"], dict):
+            payload["drawing_qa"] = prior["drawing_qa"]
+
+    payload["executive_summary"] = build_executive_summary(
+        live=payload.get("object_counting_live")
+        if isinstance(payload.get("object_counting_live"), dict)
+        else None,
+        offline=payload.get("object_counting_offline")
+        if isinstance(payload.get("object_counting_offline"), dict)
+        else None,
+    )
     return payload
 
 
@@ -474,13 +719,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dataset-root", type=Path, default=None)
     parser.add_argument(
         "--mode",
-        choices=("offline", "live", "both"),
+        choices=("offline", "live", "both", "enrich"),
         default="offline",
     )
     parser.add_argument("--limit", type=int, default=None, help="Max plans (offline/live)")
     parser.add_argument("--live-model", default="gpt-4o-mini")
     parser.add_argument("--live-base-url", default="https://api.openai.com/v1")
     parser.add_argument("--timeout-seconds", type=float, default=90.0)
+    parser.add_argument(
+        "--enrich-live-from",
+        type=Path,
+        default=None,
+        help="With --mode enrich: recompute MAPE/bias + offline compare from saved live plans (no API spend)",
+    )
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--also-docs-evidence", action="store_true")
     args = parser.parse_args(argv)
@@ -496,6 +747,7 @@ def main(argv: list[str] | None = None) -> int:
         live_model=args.live_model,
         live_base_url=args.live_base_url,
         timeout_s=args.timeout_seconds,
+        enrich_live_from=args.enrich_live_from,
     )
     out = args.output or (
         repo_root() / "artifacts" / "open-bench" / "aecv-bench-eval.json"

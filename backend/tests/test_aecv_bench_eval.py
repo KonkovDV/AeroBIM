@@ -41,6 +41,101 @@ class AecvBenchEvalTests(unittest.TestCase):
         sample = next(iter(payload["models"].values()))
         self.assertIn("macro_exact_match_rate", sample)
 
+    def test_aggregate_includes_bias_and_zero_refusal(self) -> None:
+        from aerobim.tools.run_aecv_bench_eval import FieldScore, _aggregate
+
+        rows = [
+            FieldScore("Window", 5, 8, False, abs(5 - 8) / 8),
+            FieldScore("Window", 7, 10, False, abs(7 - 10) / 10),
+            FieldScore("Bedroom", 0, 2, False, 1.0),
+            FieldScore("Bedroom", 2, 2, True, 0.0),
+        ]
+        summary = _aggregate(rows)
+        self.assertAlmostEqual(summary["per_field"]["Window"]["mean_bias"], -3.0)
+        self.assertEqual(
+            summary["per_field"]["Bedroom"]["zero_pred_when_expected_positive_n"], 1
+        )
+        self.assertIn("mape", summary["per_field"]["Window"])
+        self.assertIsNotNone(summary.get("macro_mape"))
+
+    def test_executive_summary_compares_to_published(self) -> None:
+        from aerobim.tools.run_aecv_bench_eval import build_executive_summary
+
+        exe = build_executive_summary(
+            live={
+                "provider": "yandex-ai-studio",
+                "model": "gpt://x/qwen",
+                "plans_attempted": 2,
+                "errors": 0,
+                "summary": {
+                    "macro_exact_match_rate": 0.4,
+                    "macro_mape": 0.3,
+                    "per_field": {
+                        "Door": {
+                            "exact_match_rate": 0.2,
+                            "mape": 0.3,
+                            "mean_bias": -0.5,
+                            "zero_pred_when_expected_positive_n": 0,
+                            "zero_pred_when_expected_positive_rate": 0.0,
+                        },
+                        "Window": {
+                            "exact_match_rate": 0.1,
+                            "mape": 0.4,
+                            "mean_bias": -2.5,
+                            "zero_pred_when_expected_positive_n": 0,
+                            "zero_pred_when_expected_positive_rate": 0.0,
+                        },
+                        "Space": {
+                            "exact_match_rate": 0.1,
+                            "mape": 0.3,
+                            "mean_bias": 0.2,
+                            "zero_pred_when_expected_positive_n": 0,
+                            "zero_pred_when_expected_positive_rate": 0.0,
+                        },
+                        "Bedroom": {
+                            "exact_match_rate": 0.8,
+                            "mape": 0.1,
+                            "mean_bias": 0.0,
+                            "zero_pred_when_expected_positive_n": 1,
+                            "zero_pred_when_expected_positive_rate": 0.2,
+                        },
+                        "Toilet": {
+                            "exact_match_rate": 0.8,
+                            "mape": 0.1,
+                            "mean_bias": 0.0,
+                            "zero_pred_when_expected_positive_n": 0,
+                            "zero_pred_when_expected_positive_rate": 0.0,
+                        },
+                    },
+                },
+                "plans": [],
+            },
+            offline={
+                "plans_scored": 120,
+                "models": {
+                    "gemini_x": {
+                        "macro_exact_match_rate": 0.52,
+                        "macro_mape": 0.25,
+                        "per_field": {
+                            "Door": {"exact_match_rate": 0.4},
+                            "Window": {"exact_match_rate": 0.3},
+                            "Bedroom": {"exact_match_rate": 0.8},
+                        },
+                    }
+                },
+            },
+        )
+        self.assertEqual(exe["claim_level"], "open_bench_only")
+        self.assertAlmostEqual(
+            exe["published_baseline_comparison"]["live_vs_best_published"][
+                "delta_live_minus_best"
+            ],
+            0.4 - 0.52,
+        )
+        self.assertEqual(
+            exe["failure_mode_contrast"]["Window"]["mean_bias"], -2.5
+        )
+
     def test_yandex_vision_body_uses_chat_template_kwargs_not_toplevel(self) -> None:
         """Vendor rejects top-level enable_thinking (HTTP 400)."""
         from aerobim.tools.run_aecv_bench_eval import _call_openai_vision_counts
