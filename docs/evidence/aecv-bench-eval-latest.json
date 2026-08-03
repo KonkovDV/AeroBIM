@@ -1,7 +1,7 @@
 {
   "artifact_type": "aecv_bench_eval",
-  "schema_version": "1.0.0",
-  "generated_at": "2026-08-03T21:43:07.614396+00:00",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-08-03T21:58:14.923426+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "AECV-Bench open_bench_only (arXiv:2601.04819). Drawing-literacy baseline on public floor plans. NOT AeroBIM product accuracy. Never >90% as product. Does not close RT-001.",
   "closes_rt001": false,
@@ -42,6 +42,1553 @@
     ],
     "note": "Full LLM-as-a-judge re-score deferred; published CSVs present for offline audit. Live QA vision can be added with --mode live-qa."
   },
+  "object_counting_offline": {
+    "task": "object_counting",
+    "mode": "offline_rescore_published_predictions",
+    "plans_scored": 120,
+    "models": {
+      "amazon_nova_2_lite_v1": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.335,
+        "macro_mape": 0.4053,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.075,
+            "mape": 0.6075,
+            "mean_bias": 0.2417,
+            "zero_prediction_n": 3,
+            "zero_pred_when_expected_positive_rate": 0.0252,
+            "zero_pred_when_expected_positive_n": 3,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.0583,
+            "mape": 0.6138,
+            "mean_bias": -0.0417,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0333,
+            "zero_pred_when_expected_positive_n": 4,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1167,
+            "mape": 0.3453,
+            "mean_bias": 0.425,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.7,
+            "mape": 0.2549,
+            "mean_bias": 0.425,
+            "zero_prediction_n": 7,
+            "zero_pred_when_expected_positive_rate": 0.0092,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.725,
+            "mape": 0.2049,
+            "mean_bias": 0.025,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "claude_opus_45": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.4233,
+        "macro_mape": 0.2549,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1583,
+            "mape": 0.3132,
+            "mean_bias": -0.3833,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1583,
+            "mape": 0.3728,
+            "mean_bias": -2.25,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1333,
+            "mape": 0.3251,
+            "mean_bias": 1.5167,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.9083,
+            "mape": 0.0519,
+            "mean_bias": 0.1,
+            "zero_prediction_n": 9,
+            "zero_pred_when_expected_positive_rate": 0.0092,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7583,
+            "mape": 0.2111,
+            "mean_bias": 0.3,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0086,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "claude_opus_46": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.44,
+        "macro_mape": 0.2334,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.2167,
+            "mape": 0.2877,
+            "mean_bias": -0.6917,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1667,
+            "mape": 0.3446,
+            "mean_bias": -2.2917,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0083,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1833,
+            "mape": 0.2564,
+            "mean_bias": 0.8167,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.875,
+            "mape": 0.0839,
+            "mean_bias": 0.125,
+            "zero_prediction_n": 10,
+            "zero_pred_when_expected_positive_rate": 0.0183,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7583,
+            "mape": 0.1944,
+            "mean_bias": 0.2667,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0086,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "claude_sonnet_45": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.4033,
+        "macro_mape": 0.2751,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1583,
+            "mape": 0.3427,
+            "mean_bias": -0.3417,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1333,
+            "mape": 0.3707,
+            "mean_bias": -1.8083,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1417,
+            "mape": 0.3104,
+            "mean_bias": 1.1417,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.85,
+            "mape": 0.0987,
+            "mean_bias": 0.1333,
+            "zero_prediction_n": 11,
+            "zero_pred_when_expected_positive_rate": 0.0275,
+            "zero_pred_when_expected_positive_n": 3,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7333,
+            "mape": 0.2528,
+            "mean_bias": 0.3333,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0086,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "claude_sonnet_46": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.3883,
+        "macro_mape": 0.3421,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.2,
+            "mape": 0.3798,
+            "mean_bias": -1.5,
+            "zero_prediction_n": 17,
+            "zero_pred_when_expected_positive_rate": 0.1429,
+            "zero_pred_when_expected_positive_n": 17,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1083,
+            "mape": 0.4862,
+            "mean_bias": -2.975,
+            "zero_prediction_n": 17,
+            "zero_pred_when_expected_positive_rate": 0.1417,
+            "zero_pred_when_expected_positive_n": 17,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.2167,
+            "mape": 0.3626,
+            "mean_bias": -0.75,
+            "zero_prediction_n": 17,
+            "zero_pred_when_expected_positive_rate": 0.1417,
+            "zero_pred_when_expected_positive_n": 17,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.725,
+            "mape": 0.2117,
+            "mean_bias": -0.1833,
+            "zero_prediction_n": 27,
+            "zero_pred_when_expected_positive_rate": 0.1743,
+            "zero_pred_when_expected_positive_n": 19,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.6917,
+            "mape": 0.2701,
+            "mean_bias": -0.1417,
+            "zero_prediction_n": 22,
+            "zero_pred_when_expected_positive_rate": 0.1552,
+            "zero_pred_when_expected_positive_n": 18,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "cohere_command_a_vision": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.29,
+        "macro_mape": 0.5159,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1,
+            "mape": 0.6929,
+            "mean_bias": -3.2667,
+            "zero_prediction_n": 29,
+            "zero_pred_when_expected_positive_rate": 0.2437,
+            "zero_pred_when_expected_positive_n": 29,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.0833,
+            "mape": 0.6139,
+            "mean_bias": -6.1917,
+            "zero_prediction_n": 33,
+            "zero_pred_when_expected_positive_rate": 0.275,
+            "zero_pred_when_expected_positive_n": 33,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1167,
+            "mape": 0.4792,
+            "mean_bias": -4.1917,
+            "zero_prediction_n": 29,
+            "zero_pred_when_expected_positive_rate": 0.2417,
+            "zero_pred_when_expected_positive_n": 29,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.6,
+            "mape": 0.3676,
+            "mean_bias": -0.4583,
+            "zero_prediction_n": 33,
+            "zero_pred_when_expected_positive_rate": 0.2569,
+            "zero_pred_when_expected_positive_n": 28,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.55,
+            "mape": 0.4257,
+            "mean_bias": -0.3,
+            "zero_prediction_n": 32,
+            "zero_pred_when_expected_positive_rate": 0.25,
+            "zero_pred_when_expected_positive_n": 29,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "deepseek_vl2": {
+        "n_field_scores": 25,
+        "macro_exact_match_rate": 0.32,
+        "macro_mape": 0.556,
+        "per_field": {
+          "Door": {
+            "n": 5,
+            "exact_match_rate": 0.0,
+            "mape": 0.4456,
+            "mean_bias": -2.8,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 5
+          },
+          "Window": {
+            "n": 5,
+            "exact_match_rate": 0.0,
+            "mape": 1.1868,
+            "mean_bias": 3.0,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 5
+          },
+          "Space": {
+            "n": 5,
+            "exact_match_rate": 0.2,
+            "mape": 0.8808,
+            "mean_bias": 5.0,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 5
+          },
+          "Bedroom": {
+            "n": 5,
+            "exact_match_rate": 0.6,
+            "mape": 0.2,
+            "mean_bias": 0.4,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 5
+          },
+          "Toilet": {
+            "n": 5,
+            "exact_match_rate": 0.8,
+            "mape": 0.0667,
+            "mean_bias": -0.2,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 5
+          }
+        }
+      },
+      "gemini_31_pro": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.5117,
+        "macro_mape": 0.1662,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.3417,
+            "mape": 0.153,
+            "mean_bias": -0.1,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.3333,
+            "mape": 0.2059,
+            "mean_bias": -0.4417,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.15,
+            "mape": 0.2778,
+            "mean_bias": 0.4167,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.9083,
+            "mape": 0.0749,
+            "mean_bias": 0.075,
+            "zero_prediction_n": 10,
+            "zero_pred_when_expected_positive_rate": 0.0183,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.825,
+            "mape": 0.1194,
+            "mean_bias": 0.1667,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0086,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "gemini_3_pro_preview": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.5233,
+        "macro_mape": 0.1675,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.4,
+            "mape": 0.15,
+            "mean_bias": -0.3667,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.3417,
+            "mape": 0.2128,
+            "mean_bias": -0.5,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1417,
+            "mape": 0.2905,
+            "mean_bias": -0.05,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.9,
+            "mape": 0.0731,
+            "mean_bias": 0.0417,
+            "zero_prediction_n": 10,
+            "zero_pred_when_expected_positive_rate": 0.0183,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.8333,
+            "mape": 0.1111,
+            "mean_bias": 0.1417,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "glm_45v": {
+        "n_field_scores": 585,
+        "macro_exact_match_rate": 0.3812,
+        "macro_mape": 0.4042,
+        "per_field": {
+          "Door": {
+            "n": 117,
+            "exact_match_rate": 0.0684,
+            "mape": 0.6571,
+            "mean_bias": -5.8974,
+            "zero_prediction_n": 44,
+            "zero_pred_when_expected_positive_rate": 0.3707,
+            "zero_pred_when_expected_positive_n": 43,
+            "expected_positive_n": 116
+          },
+          "Window": {
+            "n": 117,
+            "exact_match_rate": 0.0427,
+            "mape": 0.8028,
+            "mean_bias": -7.5385,
+            "zero_prediction_n": 61,
+            "zero_pred_when_expected_positive_rate": 0.5214,
+            "zero_pred_when_expected_positive_n": 61,
+            "expected_positive_n": 117
+          },
+          "Space": {
+            "n": 117,
+            "exact_match_rate": 0.2137,
+            "mape": 0.2576,
+            "mean_bias": -0.7692,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 117
+          },
+          "Bedroom": {
+            "n": 117,
+            "exact_match_rate": 0.7692,
+            "mape": 0.1809,
+            "mean_bias": -0.2991,
+            "zero_prediction_n": 22,
+            "zero_pred_when_expected_positive_rate": 0.1226,
+            "zero_pred_when_expected_positive_n": 13,
+            "expected_positive_n": 106
+          },
+          "Toilet": {
+            "n": 117,
+            "exact_match_rate": 0.812,
+            "mape": 0.1225,
+            "mean_bias": 0.0,
+            "zero_prediction_n": 6,
+            "zero_pred_when_expected_positive_rate": 0.0177,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 113
+          }
+        }
+      },
+      "glm_46v": {
+        "n_field_scores": 570,
+        "macro_exact_match_rate": 0.407,
+        "macro_mape": 0.3282,
+        "per_field": {
+          "Door": {
+            "n": 114,
+            "exact_match_rate": 0.0965,
+            "mape": 0.4785,
+            "mean_bias": -4.0614,
+            "zero_prediction_n": 17,
+            "zero_pred_when_expected_positive_rate": 0.1416,
+            "zero_pred_when_expected_positive_n": 16,
+            "expected_positive_n": 113
+          },
+          "Window": {
+            "n": 114,
+            "exact_match_rate": 0.0263,
+            "mape": 0.6796,
+            "mean_bias": -6.3333,
+            "zero_prediction_n": 33,
+            "zero_pred_when_expected_positive_rate": 0.2895,
+            "zero_pred_when_expected_positive_n": 33,
+            "expected_positive_n": 114
+          },
+          "Space": {
+            "n": 114,
+            "exact_match_rate": 0.2368,
+            "mape": 0.2537,
+            "mean_bias": -0.614,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 114
+          },
+          "Bedroom": {
+            "n": 114,
+            "exact_match_rate": 0.8246,
+            "mape": 0.1354,
+            "mean_bias": -0.2018,
+            "zero_prediction_n": 15,
+            "zero_pred_when_expected_positive_rate": 0.0769,
+            "zero_pred_when_expected_positive_n": 8,
+            "expected_positive_n": 104
+          },
+          "Toilet": {
+            "n": 114,
+            "exact_match_rate": 0.8509,
+            "mape": 0.0936,
+            "mean_bias": -0.0614,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.009,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 111
+          }
+        }
+      },
+      "grok_41_fast": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.3683,
+        "macro_mape": 0.2894,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1,
+            "mape": 0.3513,
+            "mean_bias": -2.1917,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.175,
+            "mape": 0.4236,
+            "mean_bias": -1.7,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0083,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.175,
+            "mape": 0.2626,
+            "mean_bias": -1.5167,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.725,
+            "mape": 0.1747,
+            "mean_bias": -0.2333,
+            "zero_prediction_n": 15,
+            "zero_pred_when_expected_positive_rate": 0.0734,
+            "zero_pred_when_expected_positive_n": 8,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.6667,
+            "mape": 0.2347,
+            "mean_bias": -0.1417,
+            "zero_prediction_n": 10,
+            "zero_pred_when_expected_positive_rate": 0.0517,
+            "zero_pred_when_expected_positive_n": 6,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "mistral_large_2512": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.3167,
+        "macro_mape": 0.3986,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1,
+            "mape": 0.404,
+            "mean_bias": -2.0167,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.0917,
+            "mape": 0.5173,
+            "mean_bias": 0.3917,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1917,
+            "mape": 0.2875,
+            "mean_bias": -0.075,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.7417,
+            "mape": 0.2001,
+            "mean_bias": 0.1917,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0092,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.4583,
+            "mape": 0.584,
+            "mean_bias": 0.7833,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "mistral_medium_31": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.375,
+        "macro_mape": 0.3034,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.0667,
+            "mape": 0.4738,
+            "mean_bias": -4.2333,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.15,
+            "mape": 0.4398,
+            "mean_bias": -1.1583,
+            "zero_prediction_n": 2,
+            "zero_pred_when_expected_positive_rate": 0.0167,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1833,
+            "mape": 0.2858,
+            "mean_bias": 0.2333,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.7417,
+            "mape": 0.1653,
+            "mean_bias": -0.2,
+            "zero_prediction_n": 12,
+            "zero_pred_when_expected_positive_rate": 0.0459,
+            "zero_pred_when_expected_positive_n": 5,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7333,
+            "mape": 0.1521,
+            "mean_bias": 0.0167,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "mistral_pixtral_large": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.385,
+        "macro_mape": 0.312,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1333,
+            "mape": 0.4131,
+            "mean_bias": -2.3333,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0084,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1,
+            "mape": 0.4652,
+            "mean_bias": -3.275,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.2,
+            "mape": 0.2978,
+            "mean_bias": -0.4833,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.7833,
+            "mape": 0.1646,
+            "mean_bias": 0.0167,
+            "zero_prediction_n": 7,
+            "zero_pred_when_expected_positive_rate": 0.0092,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7083,
+            "mape": 0.2194,
+            "mean_bias": 0.175,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "nvidia_nemotron_nano_12b_v2_vl": {
+        "n_field_scores": 595,
+        "macro_exact_match_rate": 0.3597,
+        "macro_mape": 0.3099,
+        "per_field": {
+          "Door": {
+            "n": 119,
+            "exact_match_rate": 0.1261,
+            "mape": 0.406,
+            "mean_bias": -3.1429,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 118
+          },
+          "Window": {
+            "n": 119,
+            "exact_match_rate": 0.1597,
+            "mape": 0.4104,
+            "mean_bias": -3.4874,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Space": {
+            "n": 119,
+            "exact_match_rate": 0.1092,
+            "mape": 0.3335,
+            "mean_bias": -1.2857,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Bedroom": {
+            "n": 119,
+            "exact_match_rate": 0.6807,
+            "mape": 0.1835,
+            "mean_bias": -0.1513,
+            "zero_prediction_n": 9,
+            "zero_pred_when_expected_positive_rate": 0.0278,
+            "zero_pred_when_expected_positive_n": 3,
+            "expected_positive_n": 108
+          },
+          "Toilet": {
+            "n": 119,
+            "exact_match_rate": 0.7227,
+            "mape": 0.2164,
+            "mean_bias": 0.0084,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0174,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 115
+          }
+        }
+      },
+      "openai_gpt_4_vision": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.4267,
+        "macro_mape": 0.2363,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1583,
+            "mape": 0.2993,
+            "mean_bias": -0.875,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1167,
+            "mape": 0.4046,
+            "mean_bias": -3.7083,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.225,
+            "mape": 0.2316,
+            "mean_bias": -0.4667,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.8667,
+            "mape": 0.0744,
+            "mean_bias": -0.0083,
+            "zero_prediction_n": 10,
+            "zero_pred_when_expected_positive_rate": 0.0183,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7667,
+            "mape": 0.1715,
+            "mean_bias": 0.2333,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "openai_gpt_51": {
+        "n_field_scores": 595,
+        "macro_exact_match_rate": 0.4454,
+        "macro_mape": 0.2449,
+        "per_field": {
+          "Door": {
+            "n": 119,
+            "exact_match_rate": 0.2101,
+            "mape": 0.3198,
+            "mean_bias": 1.1261,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 118
+          },
+          "Window": {
+            "n": 119,
+            "exact_match_rate": 0.2017,
+            "mape": 0.2991,
+            "mean_bias": -0.2605,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Space": {
+            "n": 119,
+            "exact_match_rate": 0.1597,
+            "mape": 0.3494,
+            "mean_bias": 1.7227,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Bedroom": {
+            "n": 119,
+            "exact_match_rate": 0.8571,
+            "mape": 0.0786,
+            "mean_bias": 0.0504,
+            "zero_prediction_n": 9,
+            "zero_pred_when_expected_positive_rate": 0.0093,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 108
+          },
+          "Toilet": {
+            "n": 119,
+            "exact_match_rate": 0.7983,
+            "mape": 0.1779,
+            "mean_bias": 0.2689,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0087,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 115
+          }
+        }
+      },
+      "openai_gpt_52": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.485,
+        "macro_mape": 0.1957,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.2833,
+            "mape": 0.1978,
+            "mean_bias": -0.225,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.2583,
+            "mape": 0.2448,
+            "mean_bias": -1.9167,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.2167,
+            "mape": 0.2832,
+            "mean_bias": 1.3583,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.9083,
+            "mape": 0.0693,
+            "mean_bias": 0.075,
+            "zero_prediction_n": 10,
+            "zero_pred_when_expected_positive_rate": 0.0183,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7583,
+            "mape": 0.1833,
+            "mean_bias": 0.2583,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0086,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "openai_gpt_52_pro": {
+        "n_field_scores": 15,
+        "macro_exact_match_rate": 0.4667,
+        "macro_mape": 0.1644,
+        "per_field": {
+          "Door": {
+            "n": 3,
+            "exact_match_rate": 0.3333,
+            "mape": 0.059,
+            "mean_bias": -0.6667,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 3
+          },
+          "Window": {
+            "n": 3,
+            "exact_match_rate": 0.0,
+            "mape": 0.2798,
+            "mean_bias": -0.3333,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 3
+          },
+          "Space": {
+            "n": 3,
+            "exact_match_rate": 0.0,
+            "mape": 0.4833,
+            "mean_bias": 4.3333,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 3
+          },
+          "Bedroom": {
+            "n": 3,
+            "exact_match_rate": 1.0,
+            "mape": 0.0,
+            "mean_bias": 0.0,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 3
+          },
+          "Toilet": {
+            "n": 3,
+            "exact_match_rate": 1.0,
+            "mape": 0.0,
+            "mean_bias": 0.0,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 3
+          }
+        }
+      },
+      "openai_gpt_53": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.4267,
+        "macro_mape": 0.2584,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1833,
+            "mape": 0.3134,
+            "mean_bias": 0.925,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.175,
+            "mape": 0.2953,
+            "mean_bias": -1.4833,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1083,
+            "mape": 0.4113,
+            "mean_bias": 2.05,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.925,
+            "mape": 0.0482,
+            "mean_bias": 0.075,
+            "zero_prediction_n": 9,
+            "zero_pred_when_expected_positive_rate": 0.0092,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7417,
+            "mape": 0.2236,
+            "mean_bias": 0.2917,
+            "zero_prediction_n": 5,
+            "zero_pred_when_expected_positive_rate": 0.0086,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "openai_gpt_54": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.4617,
+        "macro_mape": 0.2284,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.3167,
+            "mape": 0.2259,
+            "mean_bias": -0.2417,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1417,
+            "mape": 0.3486,
+            "mean_bias": 1.15,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.2333,
+            "mape": 0.2629,
+            "mean_bias": 0.375,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.9,
+            "mape": 0.0836,
+            "mean_bias": 0.0667,
+            "zero_prediction_n": 11,
+            "zero_pred_when_expected_positive_rate": 0.0275,
+            "zero_pred_when_expected_positive_n": 3,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7167,
+            "mape": 0.2208,
+            "mean_bias": 0.3583,
+            "zero_prediction_n": 3,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "qwen3_vl_235b_a22b_instruct": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.375,
+        "macro_mape": 0.3394,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1417,
+            "mape": 0.4339,
+            "mean_bias": -3.9417,
+            "zero_prediction_n": 17,
+            "zero_pred_when_expected_positive_rate": 0.1345,
+            "zero_pred_when_expected_positive_n": 16,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.05,
+            "mape": 0.5244,
+            "mean_bias": -5.075,
+            "zero_prediction_n": 19,
+            "zero_pred_when_expected_positive_rate": 0.1583,
+            "zero_pred_when_expected_positive_n": 19,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.15,
+            "mape": 0.3526,
+            "mean_bias": -0.6917,
+            "zero_prediction_n": 10,
+            "zero_pred_when_expected_positive_rate": 0.0833,
+            "zero_pred_when_expected_positive_n": 10,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.7833,
+            "mape": 0.1785,
+            "mean_bias": -0.2083,
+            "zero_prediction_n": 21,
+            "zero_pred_when_expected_positive_rate": 0.1101,
+            "zero_pred_when_expected_positive_n": 12,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.75,
+            "mape": 0.2076,
+            "mean_bias": 0.0,
+            "zero_prediction_n": 13,
+            "zero_pred_when_expected_positive_rate": 0.0776,
+            "zero_pred_when_expected_positive_n": 9,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "qwen3_vl_235b_a22b_thinking": {
+        "n_field_scores": 40,
+        "macro_exact_match_rate": 0.45,
+        "macro_mape": 0.2905,
+        "per_field": {
+          "Door": {
+            "n": 8,
+            "exact_match_rate": 0.25,
+            "mape": 0.1152,
+            "mean_bias": -0.625,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 8
+          },
+          "Window": {
+            "n": 8,
+            "exact_match_rate": 0.125,
+            "mape": 0.5073,
+            "mean_bias": 0.5,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 8
+          },
+          "Space": {
+            "n": 8,
+            "exact_match_rate": 0.0,
+            "mape": 0.7678,
+            "mean_bias": 4.125,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 8
+          },
+          "Bedroom": {
+            "n": 8,
+            "exact_match_rate": 1.0,
+            "mape": 0.0,
+            "mean_bias": 0.0,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 8
+          },
+          "Toilet": {
+            "n": 8,
+            "exact_match_rate": 0.875,
+            "mape": 0.0625,
+            "mean_bias": 0.125,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 8
+          }
+        }
+      },
+      "qwen3_vl_8b_instruct": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.3883,
+        "macro_mape": 0.3133,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.0917,
+            "mape": 0.4665,
+            "mean_bias": -4.025,
+            "zero_prediction_n": 16,
+            "zero_pred_when_expected_positive_rate": 0.1345,
+            "zero_pred_when_expected_positive_n": 16,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1,
+            "mape": 0.5355,
+            "mean_bias": -4.525,
+            "zero_prediction_n": 18,
+            "zero_pred_when_expected_positive_rate": 0.15,
+            "zero_pred_when_expected_positive_n": 18,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.1833,
+            "mape": 0.279,
+            "mean_bias": -0.65,
+            "zero_prediction_n": 2,
+            "zero_pred_when_expected_positive_rate": 0.0167,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.7583,
+            "mape": 0.1496,
+            "mean_bias": -0.1667,
+            "zero_prediction_n": 9,
+            "zero_pred_when_expected_positive_rate": 0.0275,
+            "zero_pred_when_expected_positive_n": 3,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.8083,
+            "mape": 0.1361,
+            "mean_bias": 0.0167,
+            "zero_prediction_n": 6,
+            "zero_pred_when_expected_positive_rate": 0.0172,
+            "zero_pred_when_expected_positive_n": 2,
+            "expected_positive_n": 116
+          }
+        }
+      },
+      "qwen3_vl_8b_thinking": {
+        "n_field_scores": 570,
+        "macro_exact_match_rate": 0.3737,
+        "macro_mape": 0.3195,
+        "per_field": {
+          "Door": {
+            "n": 114,
+            "exact_match_rate": 0.114,
+            "mape": 0.3998,
+            "mean_bias": -1.9211,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0088,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 113
+          },
+          "Window": {
+            "n": 114,
+            "exact_match_rate": 0.0789,
+            "mape": 0.5074,
+            "mean_bias": -2.307,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0351,
+            "zero_pred_when_expected_positive_n": 4,
+            "expected_positive_n": 114
+          },
+          "Space": {
+            "n": 114,
+            "exact_match_rate": 0.1491,
+            "mape": 0.3151,
+            "mean_bias": 0.2544,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 114
+          },
+          "Bedroom": {
+            "n": 114,
+            "exact_match_rate": 0.7807,
+            "mape": 0.1735,
+            "mean_bias": -0.2456,
+            "zero_prediction_n": 21,
+            "zero_pred_when_expected_positive_rate": 0.125,
+            "zero_pred_when_expected_positive_n": 13,
+            "expected_positive_n": 104
+          },
+          "Toilet": {
+            "n": 114,
+            "exact_match_rate": 0.7456,
+            "mape": 0.2018,
+            "mean_bias": 0.1667,
+            "zero_prediction_n": 3,
+            "zero_pred_when_expected_positive_rate": 0.0091,
+            "zero_pred_when_expected_positive_n": 1,
+            "expected_positive_n": 110
+          }
+        }
+      },
+      "qwen_35_plus": {
+        "n_field_scores": 600,
+        "macro_exact_match_rate": 0.435,
+        "macro_mape": 0.246,
+        "per_field": {
+          "Door": {
+            "n": 120,
+            "exact_match_rate": 0.1667,
+            "mape": 0.3112,
+            "mean_bias": -2.375,
+            "zero_prediction_n": 1,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 119
+          },
+          "Window": {
+            "n": 120,
+            "exact_match_rate": 0.1167,
+            "mape": 0.4164,
+            "mean_bias": -3.7667,
+            "zero_prediction_n": 3,
+            "zero_pred_when_expected_positive_rate": 0.025,
+            "zero_pred_when_expected_positive_n": 3,
+            "expected_positive_n": 120
+          },
+          "Space": {
+            "n": 120,
+            "exact_match_rate": 0.2667,
+            "mape": 0.2195,
+            "mean_bias": -0.8333,
+            "zero_prediction_n": 0,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 120
+          },
+          "Bedroom": {
+            "n": 120,
+            "exact_match_rate": 0.8833,
+            "mape": 0.0768,
+            "mean_bias": 0.1,
+            "zero_prediction_n": 8,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 109
+          },
+          "Toilet": {
+            "n": 120,
+            "exact_match_rate": 0.7417,
+            "mape": 0.2062,
+            "mean_bias": 0.2333,
+            "zero_prediction_n": 4,
+            "zero_pred_when_expected_positive_rate": 0.0,
+            "zero_pred_when_expected_positive_n": 0,
+            "expected_positive_n": 116
+          }
+        }
+      }
+    },
+    "literature_note": "AECV-Bench reports OCR-strong / symbol-counting weak; compare Door/Window exact_match_rate vs Bedroom/Toilet."
+  },
   "object_counting_live": {
     "task": "object_counting",
     "mode": "live_vision",
@@ -54,31 +1601,57 @@
     "summary": {
       "n_field_scores": 585,
       "macro_exact_match_rate": 0.4325,
+      "macro_mape": 0.2408,
       "per_field": {
         "Door": {
           "n": 117,
           "exact_match_rate": 0.2308,
-          "mape": 0.322
+          "mape": 0.322,
+          "mean_bias": -0.7094,
+          "zero_prediction_n": 0,
+          "zero_pred_when_expected_positive_rate": 0.0,
+          "zero_pred_when_expected_positive_n": 0,
+          "expected_positive_n": 116
         },
         "Window": {
           "n": 117,
           "exact_match_rate": 0.1368,
-          "mape": 0.3647
+          "mape": 0.3647,
+          "mean_bias": -2.5812,
+          "zero_prediction_n": 2,
+          "zero_pred_when_expected_positive_rate": 0.0171,
+          "zero_pred_when_expected_positive_n": 2,
+          "expected_positive_n": 117
         },
         "Space": {
           "n": 117,
           "exact_match_rate": 0.1368,
-          "mape": 0.294
+          "mape": 0.294,
+          "mean_bias": 0.2137,
+          "zero_prediction_n": 0,
+          "zero_pred_when_expected_positive_rate": 0.0,
+          "zero_pred_when_expected_positive_n": 0,
+          "expected_positive_n": 117
         },
         "Bedroom": {
           "n": 117,
           "exact_match_rate": 0.8462,
-          "mape": 0.1276
+          "mape": 0.1276,
+          "mean_bias": -0.0342,
+          "zero_prediction_n": 16,
+          "zero_pred_when_expected_positive_rate": 0.0755,
+          "zero_pred_when_expected_positive_n": 8,
+          "expected_positive_n": 106
         },
         "Toilet": {
           "n": 117,
           "exact_match_rate": 0.812,
-          "mape": 0.0954
+          "mape": 0.0954,
+          "mean_bias": -0.1282,
+          "zero_prediction_n": 5,
+          "zero_pred_when_expected_positive_rate": 0.0088,
+          "zero_pred_when_expected_positive_n": 1,
+          "expected_positive_n": 113
         }
       }
     },
@@ -386,12 +1959,14 @@
       {
         "plan_id": "2000-0008",
         "status": "error",
-        "detail": "HTTP Error 400: Bad Request"
+        "detail": "HTTP Error 400: Bad Request",
+        "image_bytes": 10542
       },
       {
         "plan_id": "2000-0009",
         "status": "error",
-        "detail": "HTTP Error 400: Bad Request"
+        "detail": "HTTP Error 400: Bad Request",
+        "image_bytes": 8904
       },
       {
         "plan_id": "2000-0010",
@@ -446,7 +2021,8 @@
       {
         "plan_id": "2000-0012",
         "status": "error",
-        "detail": "HTTP Error 400: Bad Request"
+        "detail": "HTTP Error 400: Bad Request",
+        "image_bytes": 10806
       },
       {
         "plan_id": "2000-0013",
@@ -3023,8 +4599,177 @@
         },
         "status": "ok"
       }
-    ]
+    ],
+    "min_image_bytes_vendor_reject": 12288,
+    "enriched_at": "2026-08-03T21:58:15.107692+00:00",
+    "enriched_from": "C:\\plans\\AeroBIM\\docs\\evidence\\aecv-bench-eval-latest.json"
   },
-  "output_sha256": "d90b2c7bc8cadefbac69ec62a87cf3277cde85145b1cfa2b9d392df73e8d12c5",
-  "output_path": "..\\artifacts\\open-bench\\aecv-bench-eval-live.json"
+  "executive_summary": {
+    "claim_level": "open_bench_only",
+    "closes_rt001": false,
+    "note": "MAPE + mean_bias sit beside exact-match. zero_pred_when_expected_positive ≈ refusal/miss, not symmetric error. Compare live macro to offline published AECV model JSONs (same 120 plans).",
+    "vendor_min_image_bytes": 12288,
+    "vendor_min_image_note": "Plans ~9–11 KiB JPEG returned HTTP 400 on Yandex Studio; stamp/region crops must stay above this floor.",
+    "live": {
+      "provider": "yandex-ai-studio",
+      "model": "gpt://b1g56rei64gfdk5t2tvc/qwen3.6-35b-a3b",
+      "plans_attempted": 120,
+      "plans_scored": 117,
+      "errors": 3,
+      "macro_exact_match_rate": 0.4325,
+      "macro_mape": 0.2408,
+      "per_field": {
+        "Door": {
+          "exact_match_rate": 0.2308,
+          "mape": 0.322,
+          "mean_bias": -0.7094,
+          "zero_prediction_n": 0,
+          "zero_pred_when_expected_positive_n": 0,
+          "zero_pred_when_expected_positive_rate": 0.0
+        },
+        "Window": {
+          "exact_match_rate": 0.1368,
+          "mape": 0.3647,
+          "mean_bias": -2.5812,
+          "zero_prediction_n": 2,
+          "zero_pred_when_expected_positive_n": 2,
+          "zero_pred_when_expected_positive_rate": 0.0171
+        },
+        "Space": {
+          "exact_match_rate": 0.1368,
+          "mape": 0.294,
+          "mean_bias": 0.2137,
+          "zero_prediction_n": 0,
+          "zero_pred_when_expected_positive_n": 0,
+          "zero_pred_when_expected_positive_rate": 0.0
+        },
+        "Bedroom": {
+          "exact_match_rate": 0.8462,
+          "mape": 0.1276,
+          "mean_bias": -0.0342,
+          "zero_prediction_n": 16,
+          "zero_pred_when_expected_positive_n": 8,
+          "zero_pred_when_expected_positive_rate": 0.0755
+        },
+        "Toilet": {
+          "exact_match_rate": 0.812,
+          "mape": 0.0954,
+          "mean_bias": -0.1282,
+          "zero_prediction_n": 5,
+          "zero_pred_when_expected_positive_n": 1,
+          "zero_pred_when_expected_positive_rate": 0.0088
+        }
+      },
+      "error_plans": [
+        {
+          "plan_id": "2000-0008",
+          "detail": "HTTP Error 400: Bad Request",
+          "image_bytes": 10542
+        },
+        {
+          "plan_id": "2000-0009",
+          "detail": "HTTP Error 400: Bad Request",
+          "image_bytes": 8904
+        },
+        {
+          "plan_id": "2000-0012",
+          "detail": "HTTP Error 400: Bad Request",
+          "image_bytes": 10806
+        }
+      ]
+    },
+    "failure_mode_contrast": {
+      "Window": {
+        "exact_match_rate": 0.1368,
+        "mape": 0.3647,
+        "mean_bias": -2.5812,
+        "reading": "systematic undercount when mean_bias << 0"
+      },
+      "Space": {
+        "exact_match_rate": 0.1368,
+        "mape": 0.294,
+        "mean_bias": 0.2137,
+        "reading": "near-zero bias ⇒ symmetric misses despite low exact"
+      }
+    },
+    "published_baseline_comparison": {
+      "source": "offline rescore of AECV-Bench per-plan published model JSONs",
+      "plans_scored": 120,
+      "top_published": [
+        {
+          "model": "gemini_3_pro_preview",
+          "macro_exact_match_rate": 0.5233,
+          "macro_mape": 0.1675,
+          "Door_exact": 0.4,
+          "Window_exact": 0.3417,
+          "Bedroom_exact": 0.9
+        },
+        {
+          "model": "gemini_31_pro",
+          "macro_exact_match_rate": 0.5117,
+          "macro_mape": 0.1662,
+          "Door_exact": 0.3417,
+          "Window_exact": 0.3333,
+          "Bedroom_exact": 0.9083
+        },
+        {
+          "model": "openai_gpt_52",
+          "macro_exact_match_rate": 0.485,
+          "macro_mape": 0.1957,
+          "Door_exact": 0.2833,
+          "Window_exact": 0.2583,
+          "Bedroom_exact": 0.9083
+        },
+        {
+          "model": "openai_gpt_52_pro",
+          "macro_exact_match_rate": 0.4667,
+          "macro_mape": 0.1644,
+          "Door_exact": 0.3333,
+          "Window_exact": 0.0,
+          "Bedroom_exact": 1.0
+        },
+        {
+          "model": "openai_gpt_54",
+          "macro_exact_match_rate": 0.4617,
+          "macro_mape": 0.2284,
+          "Door_exact": 0.3167,
+          "Window_exact": 0.1417,
+          "Bedroom_exact": 0.9
+        },
+        {
+          "model": "qwen3_vl_235b_a22b_thinking",
+          "macro_exact_match_rate": 0.45,
+          "macro_mape": 0.2905,
+          "Door_exact": 0.25,
+          "Window_exact": 0.125,
+          "Bedroom_exact": 1.0
+        },
+        {
+          "model": "openai_gpt_51",
+          "macro_exact_match_rate": 0.4454,
+          "macro_mape": 0.2449,
+          "Door_exact": 0.2101,
+          "Window_exact": 0.2017,
+          "Bedroom_exact": 0.8571
+        },
+        {
+          "model": "claude_opus_46",
+          "macro_exact_match_rate": 0.44,
+          "macro_mape": 0.2334,
+          "Door_exact": 0.2167,
+          "Window_exact": 0.1667,
+          "Bedroom_exact": 0.875
+        }
+      ],
+      "live_vs_best_published": {
+        "live_macro_exact_match_rate": 0.4325,
+        "best_published_model": "gemini_3_pro_preview",
+        "best_published_macro_exact_match_rate": 0.5233,
+        "delta_live_minus_best": -0.0908,
+        "reading": "Live Qwen macro in the same ballpark as mid/frontier published counting scores ⇒ harness plausible; large positive gap would implicate prompt/resolution, not just model class."
+      }
+    }
+  },
+  "output_sha256": "5605ca011ccc7db28a9c2a26760ff8b8f66370afe597f04115ac1dd57c1484e7",
+  "output_path": "..\\artifacts\\open-bench\\aecv-bench-eval.json"
 }

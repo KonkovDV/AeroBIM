@@ -11,7 +11,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 
 | File | Role |
 |------|------|
-| [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV-Bench: offline rescore + **live** Yandex `qwen3.6-35b-a3b` counting (120/117/3; macro exact-match 0.4325; `open_bench_only`; ≠ RT-001) |
+| [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV-Bench: offline published baselines + live Yandex Qwen counting (120/117/3; macro exact 0.433; MAPE/bias/refusal in `executive_summary`; `open_bench_only`; ≠ RT-001) |
 | [`aec-bench-smoke-latest.json`](aec-bench-smoke-latest.json) | L1 AEC-Bench: 196-task inventory + prefetch sample; Harbor agent NOT_RUN (no agent key) |
 | [`ifc-bench-v1-smoke-latest.json`](ifc-bench-v1-smoke-latest.json) | L1 open-bench: IFC-Bench v1 deterministic countable subset (`claim_level=open_bench_only`; ≠ RT-001) |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
