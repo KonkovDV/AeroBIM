@@ -21,8 +21,9 @@ from aerobim.domain.advisory_remark_compose import PROMPT_VERSION, build_remark_
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
 CLAIM_BOUNDARY = (
-    "Reproducibility probe only. reproducible=true requires matching content hashes "
-    "across pinned model URI+version runs. partial ≠ product evidence. Never summary.passed."
+    "Reproducibility probe only. Splits P1 (deterministic_intrasession) vs P2 "
+    "(stable_across_time). Report verdict reproducibility is independent (ADR-001). "
+    "partial ≠ product evidence. Never summary.passed."
 )
 
 
@@ -30,7 +31,11 @@ def _content_sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def _run_once(provider: Any, findings: tuple[dict[str, Any], ...], request_id: str) -> dict[str, Any]:
+def _run_once(
+    provider: Any,
+    findings: tuple[dict[str, Any], ...],
+    request_id: str,
+) -> dict[str, Any]:
     request = build_remark_llm_request(
         request_id=request_id,
         findings=findings,
@@ -51,7 +56,19 @@ def _run_once(provider: Any, findings: tuple[dict[str, Any], ...], request_id: s
     }
 
 
-def compare_runs(baseline: dict[str, Any], current: dict[str, Any]) -> dict[str, Any]:
+def compare_runs(
+    baseline: dict[str, Any],
+    current: dict[str, Any],
+    *,
+    mode: str = "intrasession",
+) -> dict[str, Any]:
+    """Compare two probe runs.
+
+    ``mode=intrasession`` → P₁ (same session repeats).
+    ``mode=across_time`` → P₂ (Δ≈14d on pinned URI).
+    Legacy ``reproducible`` is true only when the active mode's property holds.
+    """
+
     match = (
         baseline.get("status") == "advisory"
         and current.get("status") == "advisory"
@@ -64,18 +81,25 @@ def compare_runs(baseline: dict[str, Any], current: dict[str, Any]) -> dict[str,
         status = "partial"
     else:
         status = "failed"
+    mode_norm = (mode or "intrasession").strip().lower()
+    p1 = match if mode_norm == "intrasession" else None
+    p2 = match if mode_norm == "across_time" else None
     return {
         "artifact_type": "llm_reproducibility_probe",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "prompt_version": PROMPT_VERSION,
         "claim_boundary": CLAIM_BOUNDARY,
+        "mode": mode_norm,
+        "deterministic_intrasession": p1,
+        "stable_across_time": p2,
         "reproducible": match,
         "status": status,
         "baseline": baseline,
         "current": current,
         "note": (
             "Keep partial/failed out of customer evidence bundle. "
-            "Re-run after ≥14 days on the same pinned model URI for KT evidence."
+            "P1 ≠ P2: run intrasession and across_time probes separately. "
+            "Report verdict reproducibility does not depend on model determinism (ADR-001)."
         ),
     }
 
@@ -94,6 +118,12 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=None,
         help="Default: <repo>/artifacts/llm-repro",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=("intrasession", "across_time"),
+        default="intrasession",
+        help="P1 intrasession vs P2 across_time (Δ≈14d)",
     )
     args = parser.parse_args(argv)
 
@@ -136,13 +166,19 @@ def main(argv: list[str] | None = None) -> int:
             "status": "baseline_only",
             "note": "Compare later with --baseline pointing at this file.",
         }
-        baseline_path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        baseline_path.write_text(
+            json.dumps(record, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
         print(json.dumps(record, ensure_ascii=False, indent=2))
         return 0 if current.get("status") == "advisory" else 1
 
     baseline_doc = json.loads(args.baseline.read_text(encoding="utf-8"))
-    baseline_run = baseline_doc.get("run") if isinstance(baseline_doc.get("run"), dict) else baseline_doc
-    report = compare_runs(baseline_run, current)
+    if isinstance(baseline_doc.get("run"), dict):
+        baseline_run = baseline_doc["run"]
+    else:
+        baseline_run = baseline_doc
+    report = compare_runs(baseline_run, current, mode=args.mode)
     report["model"] = settings.llm_model
     report["model_sha256"] = settings.llm_model_sha256
     out_path = out_dir / "compare.json"

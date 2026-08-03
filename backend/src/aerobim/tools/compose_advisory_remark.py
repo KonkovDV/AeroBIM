@@ -99,30 +99,17 @@ def compose_from_findings(
     transport_skip = any(
         str(u).startswith("transport_error:") for u in response.uncertainties
     )
-    if transport_skip:
-        # Model unavailable → SKIPPED (capability honesty), not FAILED report contour.
-        return {
-            "status": "SKIPPED",
-            "reason": "model_unavailable",
-            "uncertainties": list(response.uncertainties),
-            "claim_boundary": CLAIM_BOUNDARY,
-            "prompt_version": PROMPT_VERSION,
-            "provider": response.provider,
-            "model": response.model,
-            "usage": response.usage,
-            "audit_event": _advisory_audit_event(
-                request_id=request_id,
-                response=response,
-                settings=resolved,
-                failure_reason="model_unavailable",
-            ),
-        }
-    if response.status in {"failed", "blocked_by_policy"} or not response.schema_valid:
-        reason = response.status
-        if any(str(u).startswith("budget_exceeded") for u in response.uncertainties):
+    # D-3: vendor retirement / transport / truncate must never become report capability FAILED.
+    if transport_skip or response.status == "failed":
+        reason = "model_unavailable"
+        if any(str(u) == "truncated" for u in response.uncertainties):
+            reason = "response_truncated"
+        elif any(str(u) == "schema_deviation" for u in response.uncertainties):
+            reason = "schema_deviation"
+        elif any(str(u).startswith("budget_exceeded") for u in response.uncertainties):
             reason = "budget_exceeded"
         return {
-            "status": "FAILED",
+            "status": "SKIPPED",
             "reason": reason,
             "uncertainties": list(response.uncertainties),
             "claim_boundary": CLAIM_BOUNDARY,
@@ -135,6 +122,43 @@ def compose_from_findings(
                 response=response,
                 settings=resolved,
                 failure_reason=reason,
+            ),
+        }
+    if response.status == "blocked_by_policy":
+        reason = "blocked_by_policy"
+        if any(str(u).startswith("budget_exceeded") for u in response.uncertainties):
+            reason = "budget_exceeded"
+        return {
+            "status": "SKIPPED",
+            "reason": reason,
+            "uncertainties": list(response.uncertainties),
+            "claim_boundary": CLAIM_BOUNDARY,
+            "prompt_version": PROMPT_VERSION,
+            "provider": response.provider,
+            "model": response.model,
+            "usage": response.usage,
+            "audit_event": _advisory_audit_event(
+                request_id=request_id,
+                response=response,
+                settings=resolved,
+                failure_reason=reason,
+            ),
+        }
+    if not response.schema_valid:
+        return {
+            "status": "SKIPPED",
+            "reason": "schema_deviation",
+            "uncertainties": list(response.uncertainties),
+            "claim_boundary": CLAIM_BOUNDARY,
+            "prompt_version": PROMPT_VERSION,
+            "provider": response.provider,
+            "model": response.model,
+            "usage": response.usage,
+            "audit_event": _advisory_audit_event(
+                request_id=request_id,
+                response=response,
+                settings=resolved,
+                failure_reason="schema_deviation",
             ),
         }
     remark = parse_remark_response(

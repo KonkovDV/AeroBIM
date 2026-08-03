@@ -56,7 +56,10 @@
         "ai.api.cloud.yandex.net",
         "llm.api.cloud.yandex.net"
       ],
-      "notes": "KT#2 T2 private_shared cloud for open corpora only. Pilot T1 = on-prem Studio / same adapter base_url. Never tier_defaults.private. Host allowlist enforced in Settings.from_env."
+      "logging_disabled_header": "x-data-logging-enabled: false",
+      "vendor_request_history_retrievable": false,
+      "model_lifecycle": "uri_pinned_no_silent_swap",
+      "notes": "KT#2 T2 private_shared cloud for open corpora only. Pilot T1 = on-prem Studio / same adapter base_url. Never tier_defaults.private. Host allowlist enforced in Settings.from_env. AeroBIM audit_event is primary record of model calls (vendor history not retrievable)."
     },
     {
       "provider": "gemma",

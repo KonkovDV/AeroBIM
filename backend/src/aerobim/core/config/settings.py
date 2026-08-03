@@ -91,6 +91,23 @@ def assert_llm_base_host_allowed(url: str, allowed_hosts: frozenset[str]) -> Non
         )
 
 
+_FORBIDDEN_MODEL_ALIASES = frozenset({"latest", "rc"})
+
+
+def assert_llm_model_pin_no_aliases(*parts: str | None) -> None:
+    """Reject ``/latest`` and ``/rc`` aliases (D-5) — pin must be an explicit version."""
+
+    for part in parts:
+        if not part:
+            continue
+        tail = str(part).rstrip("/").split("/")[-1].strip().lower()
+        if tail in _FORBIDDEN_MODEL_ALIASES:
+            raise RuntimeError(
+                f"LLM model pin must not use alias {tail!r}; "
+                "set AEROBIM_LLM_MODEL_REVISION to an explicit catalog version"
+            )
+
+
 def resolve_llm_model_uri(
     *,
     model: str,
@@ -99,27 +116,38 @@ def resolve_llm_model_uri(
 ) -> str:
     """Build Yandex ``gpt://folder/model/version`` URI when parts are separate.
 
-    If ``model`` is already a ``gpt://`` URI and ``revision`` is set, append /
-    replace a trailing ``latest`` segment. Loopback vLLM keeps bare model names.
+    Floating aliases ``latest`` / ``rc`` are rejected in the *resolved* URI.
+    A ``gpt://…/latest`` base may be rewritten when ``revision`` is an explicit pin.
     """
 
-    raw = (model or "").strip()
     rev = (revision or "").strip() or None
+    if rev:
+        assert_llm_model_pin_no_aliases(rev)
+    raw = (model or "").strip()
     folder = (folder_id or "").strip() or None
     if not raw:
         return raw
     if raw.startswith("gpt://"):
         if not rev:
+            assert_llm_model_pin_no_aliases(raw)
             return raw
         parts = raw.rstrip("/").split("/")
-        if parts and parts[-1] in {"latest", rev}:
+        if parts and parts[-1].lower() in _FORBIDDEN_MODEL_ALIASES | {rev.lower()}:
             parts[-1] = rev
-            return "/".join(parts)
-        return f"{raw.rstrip('/')}/{rev}"
+            resolved = "/".join(parts)
+        else:
+            resolved = f"{raw.rstrip('/')}/{rev}"
+        assert_llm_model_pin_no_aliases(resolved)
+        return resolved
+    assert_llm_model_pin_no_aliases(raw)
     if folder and rev:
-        return f"gpt://{folder}/{raw.strip('/')}/{rev}"
+        resolved = f"gpt://{folder}/{raw.strip('/')}/{rev}"
+        assert_llm_model_pin_no_aliases(resolved)
+        return resolved
     if folder:
-        return f"gpt://{folder}/{raw.strip('/')}"
+        resolved = f"gpt://{folder}/{raw.strip('/')}"
+        assert_llm_model_pin_no_aliases(resolved)
+        return resolved
     return raw
 
 
@@ -322,6 +350,10 @@ class Settings:
     """``json_schema`` (Yandex preferred) or ``json_object`` (local vLLM)."""
     llm_data_logging_enabled: bool = False
     """When false, send ``x-data-logging-enabled: false`` (Yandex vendor privacy header)."""
+    llm_max_concurrent: int = 4
+    """Semaphore for parallel Studio calls (cloud quota is shared; default 4 of 10)."""
+    llm_429_retries: int = 3
+    """Retries on HTTP 429 with linear backoff before fail-closed SKIPPED."""
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -588,6 +620,8 @@ class Settings:
             ).strip()
             or "json_object",
             llm_data_logging_enabled=_read_bool("AEROBIM_LLM_DATA_LOGGING_ENABLED", False),
+            llm_max_concurrent=_read_int("AEROBIM_LLM_MAX_CONCURRENT", 4),
+            llm_429_retries=_read_int("AEROBIM_LLM_429_RETRIES", 3),
         )
         # Yandex AI Studio defaults when provider is selected (operator may still override).
         if settings.llm_provider.strip().lower() == "yandex-ai-studio":
@@ -606,6 +640,20 @@ class Settings:
                 "AEROBIM_LLM_LOCAL_ENABLED requires AEROBIM_LLM_BASE_URL and "
                 "AEROBIM_LLM_MODEL_REVISION (pin URI+version at boot; fail-closed)"
             )
+        if settings.llm_local_enabled:
+            try:
+                resolved = resolve_llm_model_uri(
+                    model=settings.llm_model,
+                    revision=settings.llm_model_revision,
+                    folder_id=settings.llm_folder_id,
+                )
+                assert_llm_model_pin_no_aliases(
+                    settings.llm_model,
+                    settings.llm_model_revision,
+                    resolved,
+                )
+            except RuntimeError:
+                raise
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
             UnsafeOutboundUrlError,

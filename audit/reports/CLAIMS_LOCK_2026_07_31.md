@@ -15,6 +15,7 @@
 - BCF ZIP structural (T0/T1) with evidence; CDE import T2+ NOT_VERIFIED.
 - Calculation **сверка** PARTIAL; **корректность** NOT_IMPLEMENTED.
 - LLM/VLM advisory only; cannot set `summary.passed`.
+- **Report reproducibility** is ensured by the deterministic core. The language-model output is not a verdict input; it is stored as a provenanced annotation with hashes and on re-run is presented, not re-generated (see deep analysis §2.3).
 - Yandex AI Studio / local OpenAI-compat advisory (`private_yandex_ai_studio` / `private_qwen_local`): same adapter, `base_url` swap; Studio cloud = PUBLIC/INTERNAL only (**never** `tier_defaults.private` — default private = local weights); host allowlist fail-closed (Alibaba Max blocked); token caps fail-closed; `model_revision` required when enabled; unavailable model → SKIPPED; Alibaba `qwen3.8-max` NOT_VERIFIED. See `docs/architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md`.
 - Sprint 2.1 engineering baseline on public/fixture/synthetic package only.
 - Annotation↔IFC `ifc_guid` on report: only when annotation **claimed** a GUID (`claimed_guid:` evidence) **and** spatial index confirms presence — **not** human-adjudicated matching; region_overlap never sets guid.
