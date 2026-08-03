@@ -33,6 +33,7 @@ Sample **before** first look at detections. Minimum strata axes:
 | Discipline | AR, KZH/KR, MEP, other-in-scope | Error rates differ by discipline |
 | Criticality | Critical, Warning, Info | Critical drives Shared-gate; do not pool blindly |
 | Finding class | clash, attribute, dimension, area, cross_document, missing_element, other | Aligns with expert instruction |
+| Cognitive axis (report with class) | Recognition / Reasoning / Judging / Formal-check | MechVQA (arXiv:2605.30794) + BRAVO layers; do **not** publish only a macro % |
 | Modality (optional) | IFC-native, PDF/scan, hybrid | OCR/VLM paths are advisory-only until grounded |
 
 **Allocation:** proportional to expected finding mass per stratum, with a floor so each critical stratum has enough labeled items for a stratum-local Wilson interval (see §4). Pre-register the allocation table in the pilot kickoff memo; do not re-weight after seeing system outputs.
@@ -116,6 +117,10 @@ Fixture / open-corpora binary match rates are **not** this metric.
 4. Residual conflicts → adjudication meeting (third expert or customer sponsor); write `adjudication_status=resolved` + final verdict.
 5. Items left `unresolved` are excluded from publishable precision.
 
+### 6.1 LLM-as-a-judge (triage only)
+
+AECV-Bench uses LLM-as-a-judge + human adjudication on edge cases. AeroBIM allows an LLM judge **only** as a queue/triage ranker to reduce expert load — **never** as publishable truth for RT-001 precision, and never as a substitute for κ/α. ChartMuseum (Tang et al. 2026) shows judges can mask perceptual errors; disputed and critical strata stay human-only (see also VLM protocol).
+
 ## 7. Ranking quality (nDCG)
 
 After graded labels (relevance 0/1/2) are adjudicated:
@@ -139,6 +144,8 @@ Method (implemented): tie-aware expected nDCG@5/10/full (McSherry–Najork 2008)
 | load | AR/KZH cross-doc + MEP federated path timing |
 
 Every open-corpora artifact carries: *open sets lack expert TP/FP → regression/timing only, NOT product accuracy*.
+
+L1 public benches (IFC-Bench smoke, AECV live counting, AEC-Bench inventory) are separate: see [`../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) and [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md).
 
 ## 9. Acceptance checklist (protocol ready for customer negotiation)
 

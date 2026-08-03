@@ -1,0 +1,122 @@
+{
+  "artifact_type": "ifc_bench_v1_smoke",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-03T21:45:51.857072+00:00",
+  "claim_level": "open_bench_only",
+  "claim_boundary": "IFC-Bench v1 open_bench_only: deterministic countable subset via IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001.",
+  "closes_rt001": false,
+  "benchmark": {
+    "name": "IFC-Bench-v1",
+    "citation": "Hellin et al., EC3 2025 / github.com/sylvainHellin/ifc-bench",
+    "dataset_root": "C:\\plans\\AeroBIM\\.local\\ifc-bench",
+    "questions_sha256": "a2e413d44f0f4c8ad174f2bbef154ae151f22eb7b83536bbbdb7a6f5d30e7877",
+    "question_count": 105,
+    "ifc_files": [
+      {
+        "path": "projects\\dental_clinic\\arc.ifc",
+        "sha256": "b90fe57b8aa9329d762a564770e697d4f7357677484e3a78ede4ab6d2163c0c0"
+      },
+      {
+        "path": "projects\\dental_clinic\\mep.ifc",
+        "sha256": "72bdbfeb104d044bcd1ae644f9a5c6e72fd7750c2fd15fe98de2c53a04850e8d"
+      },
+      {
+        "path": "projects\\dental_clinic\\str.ifc",
+        "sha256": "3351ee3bd19aea39167ba466237fe06de64ea391b0a31b0aacc017c84311e14d"
+      },
+      {
+        "path": "projects\\duplex\\arc.ifc",
+        "sha256": "707a032566dee8e969a44d95509be46d646440e2443624709f8d3ae2b45f4656"
+      },
+      {
+        "path": "projects\\duplex\\mep.ifc",
+        "sha256": "285f85de4424416ba6bade121588dbe0ae278fb4fdb0f4b782051cfdc7c92972"
+      }
+    ]
+  },
+  "summary": {
+    "total_questions": 105,
+    "scored": 7,
+    "matched": 7,
+    "mismatched": 0,
+    "skipped_unmapped_or_uncomparable": 98,
+    "errors": 0,
+    "exact_match_rate_on_scored": 1.0,
+    "note": "Rate is over the deterministic countable subset only (7/105 questions). Unmapped NL items are skipped."
+  },
+  "results": [
+    {
+      "question": "How many light fixtures are specified in the model?",
+      "project": "duplex",
+      "ifc_model": "mep",
+      "probe_id": "duplex_mep_light_fixture_count",
+      "predicted": 14,
+      "expected": 14.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many interior doors are there in this building?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_interior_door_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many X-RAY rooms are there in total?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_xray_space_count",
+      "predicted": 2,
+      "expected": 2.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many rooms are there in house A?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_house_a_space_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many rooms are there in the clinic ?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_space_count",
+      "predicted": 269,
+      "expected": 269.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many bedrooms are there?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_bedroom_count",
+      "predicted": 4,
+      "expected": 4.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many steps does the stair in house A have?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_stair_risers",
+      "predicted": 16,
+      "expected": 16.0,
+      "status": "matched",
+      "detail": null
+    }
+  ],
+  "skipped_count": 98,
+  "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\ifc-bench-v1-smoke.json",
+  "output_sha256": "34e736f787e0ac970127c2b3be5bba629eee5c30642156cfa53c2262be2479a7"
+}

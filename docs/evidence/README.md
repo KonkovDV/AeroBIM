@@ -1,8 +1,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.3.0"
-last_updated: "2026-08-02"
+version: "2.4.0"
+last_updated: "2026-08-04"
 ---
 
 # Evidence fixtures
@@ -11,6 +11,9 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 
 | File | Role |
 |------|------|
+| [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV-Bench: offline rescore + **live** Yandex `qwen3.6-35b-a3b` counting (120/117/3; macro exact-match 0.4325; `open_bench_only`; ≠ RT-001) |
+| [`aec-bench-smoke-latest.json`](aec-bench-smoke-latest.json) | L1 AEC-Bench: 196-task inventory + prefetch sample; Harbor agent NOT_RUN (no agent key) |
+| [`ifc-bench-v1-smoke-latest.json`](ifc-bench-v1-smoke-latest.json) | L1 open-bench: IFC-Bench v1 deterministic countable subset (`claim_level=open_bench_only`; ≠ RT-001) |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; WP-01 complete required in CI) |
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA (not customer) |
@@ -22,6 +25,8 @@ Related (not under `docs/evidence/`):
 | Path | Role |
 |------|------|
 | [`../../samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/) | WP-06 open-corpora profiles (regression/timing only) |
+| [`../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) | L1/L2/L3 number levels |
+| [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md) | Red Team reading of live AECV numbers |
 | [`../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality protocol |
 
 ## Reproducible package evidence bundle

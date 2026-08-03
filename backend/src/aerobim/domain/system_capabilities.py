@@ -413,9 +413,30 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "AEROBIM_LLM_LOCAL_ENABLED + AEROBIM_LLM_MODEL_REVISION; token caps "
                 "fail-closed; Alibaba Max NOT_VERIFIED; Studio cloud = PUBLIC/INTERNAL "
                 "only; never sets summary.passed; ai_generated drafts require expert "
-                "confirmation; unavailable model → SKIPPED not FAILED; not product accuracy; "
+                "confirmation; HTTP remark.content_marking + BCF provenance/label "
+                "carry ai_generated=true;expert_confirmation_required=true; "
+                "unavailable model → SKIPPED not FAILED; not product accuracy; "
                 "model never sets severity (deterministic policy owns it)"
             ),
+            "remark_shape": {
+                "title": "example",
+                "body": "example",
+                "ai_generated": True,
+                "expert_confirmation_required": True,
+                "content_marking": "ai_generated=true;expert_confirmation_required=true",
+                "claim_boundary": "advisory draft; expert confirmation required",
+                "provider": None,
+                "model": None,
+                "prompt_version": None,
+                "evidence_refs": [],
+            },
+            "content_marking_egress": {
+                "http_remark_field": "remark.ai_generated + remark.content_marking",
+                "bcf_description_provenance": (
+                    "ai_generated=true;expert_confirmation_required=true"
+                ),
+                "bcf_label": "ai_generated:true",
+            },
         },
         "forbidden_ok_states": {
             "dwg_dxf": [CapabilityState.OK.value],

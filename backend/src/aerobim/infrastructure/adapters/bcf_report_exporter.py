@@ -146,12 +146,14 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
         else:
             topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
         base_description = issue.remark.body if issue.remark is not None else (issue.message or "")
+        ai_generated = bool(issue.remark is not None and issue.remark.ai_generated)
         provenance_lines = [
             f"finding_id={issue.finding_id}" if issue.finding_id else None,
             f"source_id={issue.source_id}" if issue.source_id else None,
             (f"evidence_refs={','.join(issue.evidence_refs)}" if issue.evidence_refs else None),
             f"origin={issue.origin}" if issue.origin else None,
             f"ifc_globalid={issue.element_guid}" if issue.element_guid else None,
+            "ai_generated=true;expert_confirmation_required=true" if ai_generated else None,
             "claim_boundary:RT-003_OPEN;MEP_not_delivered;geometry_may_be_NOT_VERIFIED"
             if is_mep
             else None,
@@ -169,6 +171,7 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             for label in (
                 f"origin:{issue.origin}" if issue.origin else None,
                 f"category:{issue.category.value}" if issue.category else None,
+                "ai_generated:true" if ai_generated else None,
                 "mep:system-clash" if is_mep else None,
                 "mep:not_verified" if is_mep and is_template_or_unverified else None,
             )

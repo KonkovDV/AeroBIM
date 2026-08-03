@@ -2,6 +2,9 @@
 
 Wired into Analyze after template remarks. Never mutates severity / origin /
 ``summary.passed``. Unavailable model → capability SKIPPED (not FAILED).
+
+Call path is sequential today; ``AEROBIM_LLM_MAX_CONCURRENT`` / adapter
+``BoundedSemaphore`` is unused until September parallel fan-out.
 """
 
 from __future__ import annotations
@@ -16,7 +19,7 @@ from aerobim.domain.advisory_remark_compose import (
 from aerobim.domain.llm_advisory import DisabledLlmProvider, LlmProvider
 from aerobim.domain.models import CapabilityState, CapabilityStatus, ValidationIssue
 
-# Hard cap so a large pack cannot burn the day budget or hang CI on dead endpoints.
+# Default cap (~14k tok at ~440/finding). Override via AEROBIM_LLM_ADVISORY_MAX_ISSUES.
 _DEFAULT_MAX_ISSUES = 32
 
 _LLM_ADVISORY_CLAIM = (
@@ -38,6 +41,7 @@ def overlay_llm_remarks(
     Issues with ``origin=="advisory"`` are left unchanged (engine owns verdict text).
     """
 
+    total_findings = len(issues)
     if provider is None or isinstance(provider, DisabledLlmProvider):
         return (
             tuple(issues),
@@ -48,17 +52,14 @@ def overlay_llm_remarks(
         )
 
     locale_norm = "en" if (locale or "ru").strip().lower().startswith("en") else "ru"
+    cap = max(0, int(max_issues))
     enriched: list[ValidationIssue] = []
     composed = 0
     attempted = 0
     last_skip_reason: str | None = None
 
     for issue in issues:
-        if (
-            issue.origin == "advisory"
-            or attempted >= max_issues
-            or composed >= max_issues
-        ):
+        if issue.origin == "advisory" or attempted >= cap or composed >= cap:
             enriched.append(issue)
             continue
 
@@ -82,7 +83,10 @@ def overlay_llm_remarks(
             tuple(enriched),
             CapabilityStatus(
                 CapabilityState.OK,
-                f"advisory drafts attached ({composed}/{attempted}); {_LLM_ADVISORY_CLAIM}",
+                (
+                    f"advisory drafts attached ({composed}/{attempted} of "
+                    f"{total_findings} findings, cap={cap}); {_LLM_ADVISORY_CLAIM}"
+                ),
             ),
         )
     reason = last_skip_reason or "model_unavailable"
@@ -90,9 +94,12 @@ def overlay_llm_remarks(
         tuple(enriched),
         CapabilityStatus(
             CapabilityState.SKIPPED,
-            f"llm advisory skipped ({reason}); {_LLM_ADVISORY_CLAIM}",
+            (
+                f"llm advisory skipped ({reason}; 0/{attempted} of "
+                f"{total_findings} findings, cap={cap}); {_LLM_ADVISORY_CLAIM}"
+            ),
         ),
     )
 
 
-__all__ = ["overlay_llm_remarks"]
+__all__ = ["overlay_llm_remarks", "_DEFAULT_MAX_ISSUES"]

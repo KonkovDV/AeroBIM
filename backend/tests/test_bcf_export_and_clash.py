@@ -163,6 +163,44 @@ class BcfExportTests(unittest.TestCase):
             self.assertIn("IDS-TestRule-0", markup_xml)
             self.assertIn("guid-0", markup_xml)
 
+    def test_bcf_marks_ai_generated_remark_in_provenance_and_label(self) -> None:
+        from aerobim.domain.models import GeneratedRemark
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1, with_guid=True)
+        issue = report.issues[0]
+        marked = ValidationIssue(
+            rule_id=issue.rule_id,
+            severity=issue.severity,
+            message=issue.message,
+            category=issue.category,
+            element_guid=issue.element_guid,
+            finding_id="fid-ai-1",
+            origin="deterministic",
+            remark=GeneratedRemark(
+                title="AI draft",
+                body="Model-written remark body",
+                ai_generated=True,
+                expert_confirmation_required=True,
+            ),
+        )
+        report = ValidationReport(
+            report_id=report.report_id,
+            request_id=report.request_id,
+            ifc_path=report.ifc_path,
+            created_at=report.created_at,
+            requirements=report.requirements,
+            issues=(marked,),
+            summary=report.summary,
+        )
+        bcf_bytes = export_bcf(report)
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup = next(n for n in zf.namelist() if n.endswith("/markup.bcf"))
+            xml = zf.read(markup).decode("utf-8")
+            self.assertIn("Model-written remark body", xml)
+            self.assertIn("ai_generated=true;expert_confirmation_required=true", xml)
+            self.assertIn("ai_generated:true", xml)
+
     def test_bcf_markup_references_viewpoint_file(self) -> None:
         from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 

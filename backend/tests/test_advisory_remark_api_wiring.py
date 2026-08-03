@@ -70,6 +70,57 @@ class AdvisoryRemarkApiWiringTests(unittest.TestCase):
         self.assertEqual(issues[0].severity, issue.severity)
         self.assertEqual(issues[0].origin, issue.origin)
 
+    def test_overlay_capability_reason_includes_total_findings(self) -> None:
+        from aerobim.application.services.advisory_remark_overlay import overlay_llm_remarks
+        from aerobim.domain.llm_advisory import MockLlmProvider
+        from aerobim.domain.models import (
+            CapabilityState,
+            FindingCategory,
+            GeneratedRemark,
+            Severity,
+            ValidationIssue,
+        )
+
+        class _JsonMock(MockLlmProvider):
+            def generate(self, request):  # type: ignore[override]
+                base = super().generate(request)
+                draft = {
+                    "title": "Черновик",
+                    "body": "body",
+                    "locale": "ru",
+                    "evidence_refs": list(request.evidence_refs or ()),
+                }
+                return replace(
+                    base,
+                    remark_draft=json.dumps(draft, ensure_ascii=False),
+                    schema_valid=True,
+                    status="advisory",
+                )
+
+        issues_in = tuple(
+            ValidationIssue(
+                rule_id=f"R-{i}",
+                category=FindingCategory.IFC_VALIDATION,
+                severity=Severity.ERROR,
+                message=f"m{i}",
+                origin="deterministic",
+                remark=GeneratedRemark(title="t", body="b"),
+            )
+            for i in range(5)
+        )
+        _issues, capability = overlay_llm_remarks(
+            issues_in,
+            provider=_JsonMock(provider="mock", model="mock"),
+            request_id="cap-total",
+            max_issues=2,
+        )
+        self.assertEqual(capability.status, CapabilityState.OK)
+        reason = capability.reason or ""
+        self.assertIn("2/2 of 5 findings", reason)
+        self.assertIn("cap=2", reason)
+        ai_count = sum(1 for i in _issues if i.remark and i.remark.ai_generated)
+        self.assertEqual(ai_count, 2)
+
     def test_disabled_provider_skips_capability(self) -> None:
         from aerobim.application.services.advisory_remark_overlay import overlay_llm_remarks
         from aerobim.domain.llm_advisory import DisabledLlmProvider

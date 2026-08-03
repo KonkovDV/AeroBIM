@@ -35,6 +35,7 @@ from aerobim.domain.models import (
     AnalyzeProjectPackageJob,
     DrawingAsset,
     FindingCategory,
+    GeneratedRemark,
     JobStatus,
     Severity,
     ValidationIssue,
@@ -875,6 +876,31 @@ class PublicReportSerializationTests(unittest.TestCase):
             self.assertNotIn("ifc_path", data)
             self.assertNotIn("ifc_object_key", data)
             self.assertIn("loin_purpose", data["issues"][0])
+
+    def test_ai_generated_remark_gets_content_marking_on_http_egress(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(Path(tmp))
+            issue = ValidationIssue(
+                rule_id="R-AI-1",
+                severity=Severity.ERROR,
+                message="m",
+                category=FindingCategory.IFC_VALIDATION,
+                origin="deterministic",
+                remark=GeneratedRemark(
+                    title="AI",
+                    body="draft",
+                    ai_generated=True,
+                    expert_confirmation_required=True,
+                ),
+            )
+            report = _report(issues=(issue,))
+            data = ctx.serialize_public_report(report)
+            remark = data["issues"][0]["remark"]
+            self.assertTrue(remark["ai_generated"])
+            self.assertEqual(
+                remark["content_marking"],
+                "ai_generated=true;expert_confirmation_required=true",
+            )
 
 
 if __name__ == "__main__":

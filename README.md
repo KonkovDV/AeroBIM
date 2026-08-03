@@ -40,7 +40,7 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 | **Needs customer** | RT-001/002/003 — checkpoint **NO_GO** |
 | **Not claimed** | Forbidden wording until dual evidence |
 
-**What works:** project-package analyze; IFC/IDS/cross-doc; `summary.passed` Shared-gate ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); pilot/production fail-closed profiles; ACL 404; SSRF outbound guard; provenance stamp/persist; BCF 2.1/3.0 structural ZIP; HITL review-events; evidence bundle CLI (`python -m aerobim.tools.export_evidence_bundle`); **annotation claimed-GUID presence confirm** (P2-04); **core PDF via pypdfium2/pdfminer** (LIC-001 Option B); **HybridRouteGate advisory pre-gate** (WP-02); **detached signature envelope audit** (WP-03 ENG_PARTIAL); **norm pack v2 eligibility** (WP-04); **package completeness inventory** (WP-05); **open-corpora profiles** (WP-06 regression/timing only); **quality measurement protocol** (WP-07 Wilson planner; interim 0.60); Docker offline-bundle smoke; pytest / vitest counts SSOT via [runtime baseline](docs/evidence/runtime-baseline-latest.json) (`frontend.tests_passed` when recorded; else see baseline/CI).
+**What works:** project-package analyze; IFC/IDS/cross-doc; `summary.passed` Shared-gate ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); pilot/production fail-closed profiles; ACL 404; SSRF outbound guard; provenance stamp/persist; BCF 2.1/3.0 structural ZIP; HITL review-events; evidence bundle CLI (`python -m aerobim.tools.export_evidence_bundle`); **annotation claimed-GUID presence confirm** (P2-04); **core PDF via pypdfium2/pdfminer** (LIC-001 Option B); **HybridRouteGate advisory pre-gate** (WP-02); **detached signature envelope audit** (WP-03 ENG_PARTIAL); **norm pack v2 eligibility** (WP-04); **package completeness inventory** (WP-05); **open-corpora profiles** (WP-06 regression/timing only); **quality measurement protocol** (WP-07 Wilson planner; interim 0.60); **L1 open-bench** IFC-Bench smoke + AECV live counting on Yandex Qwen (`claim_level=open_bench_only`, ≠ RT-001 — [evidence](docs/evidence/README.md)); Docker offline-bundle smoke; pytest / vitest counts SSOT via [runtime baseline](docs/evidence/runtime-baseline-latest.json) (`frontend.tests_passed` when recorded; else see baseline/CI).
 
 **Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold; MEP federated ENG_FIXTURE graph + AABB broadphase (capability stays `NOT_VERIFIED`).
 
@@ -248,6 +248,7 @@ python -m aerobim.tools.export_evidence_bundle \
 | MEP system-aware clash gap | [docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) |
 | P2-02 geometry honesty plan | [docs/roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md](docs/roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) |
 | Checkpoint #2 evidence pin | [docs/evidence/checkpoint2-evidence-bundle-latest.json](docs/evidence/checkpoint2-evidence-bundle-latest.json) |
+| L1 open-bench (IFC / AECV / AEC) | [docs/evidence/README.md](docs/evidence/README.md) · [Red Team AECV live](docs/quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md) · [vs RT-001](docs/quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) |
 | Benchmark evidence boundaries | [docs/benchmark-evidence-2026.md](docs/benchmark-evidence-2026.md) |
 | Samolet pilot protocol | [docs/pilot-protocol-samolet-2026.md](docs/pilot-protocol-samolet-2026.md) |
 | Hybrid AI routing foundation (design + final report) | [audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
@@ -367,7 +368,8 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_LLM_BUDGET_TZ` | `Europe/Moscow` | IANA timezone for day-roll of the daily cap |
 | `AEROBIM_LLM_BUDGET_LEDGER` | *(unset)* | Shared JSON ledger path across workers; **required** for grant ops (without it: process-local ≈ N× day cap) |
 | `AEROBIM_LLM_MAX_COMPLETION_TOKENS` | `512` | Completion budget passed to the API |
-| `AEROBIM_LLM_MAX_CONCURRENT` | `4` | Semaphore for parallel Studio calls |
+| `AEROBIM_LLM_MAX_CONCURRENT` | `4` | Semaphore for parallel Studio calls (unused until overlay fan-out) |
+| `AEROBIM_LLM_ADVISORY_MAX_ISSUES` | `32` | Max findings to overlay with AI remark drafts per analyze |
 | `AEROBIM_LLM_429_RETRIES` | `3` | Linear backoff retries on HTTP 429 before SKIPPED |
 | `AEROBIM_LLM_ALLOWED_HOSTS` | *(built-in)* | Extra allowlisted hostnames (comma-separated); Alibaba/OpenAI always forbidden |
 | `AEROBIM_HYBRID_PROVIDER_CONFIG` | *(unset)* | Path to hybrid provider JSON (`schema_version` ≥1.1 requires `model_revision`) |
