@@ -43,6 +43,7 @@ class ExportEvidenceBundleTests(unittest.TestCase):
                 "report.html",
                 "logs_snippet.txt",
                 "README.md",
+                "package_source_hash_chain.json",
             ):
                 self.assertTrue((output_dir / name).is_file(), msg=name)
 
@@ -51,6 +52,15 @@ class ExportEvidenceBundleTests(unittest.TestCase):
             self.assertIn("runtime_settings", manifest)
             self.assertIn("output_file_sha256", manifest)
             self.assertTrue(manifest["output_file_sha256"].get("report.json"))
+            self.assertIn("package_source_hash_chain.json", manifest.get("artifacts") or {})
+            self.assertIn("package_source_hash_chain", manifest)
+            self.assertTrue(manifest["package_source_hash_chain"].get("chain_sha256"))
+            chain = json.loads(
+                (output_dir / "package_source_hash_chain.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(chain.get("artifact_type"), "package_source_hash_chain")
+            self.assertEqual(chain.get("package_id"), "project-package-techlab-demo")
+            self.assertGreaterEqual(int(chain.get("entry_count") or 0), 1)
             self.assertTrue((output_dir / "report.html").read_text(encoding="utf-8"))
             self.assertIn(
                 "summary_passed=", (output_dir / "logs_snippet.txt").read_text(encoding="utf-8")

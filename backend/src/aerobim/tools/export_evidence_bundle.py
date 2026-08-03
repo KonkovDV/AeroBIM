@@ -30,11 +30,12 @@ from aerobim.domain.check_coverage import (
     coverage_from_report,
     derive_report_scope,
 )
+from aerobim.domain.package_source_integrity import build_package_source_hash_chain
 from aerobim.domain.run_manifest import build_run_manifest
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
-_SCHEMA_VERSION = "1.0.0"
+_SCHEMA_VERSION = "1.1.0"
 _FORBIDDEN = (
     "customer accuracy >90%",
     "customer SLA <=30 min",
@@ -313,6 +314,13 @@ def export_evidence_bundle(
         )
 
     benchmark_pack = load_benchmark_pack(pack_path, repo_root_path=repo)
+    present_paths = [path for path in _collect_source_paths(pack_path, repo) if path.is_file()]
+    source_hash_chain = build_package_source_hash_chain(
+        root=repo,
+        paths=present_paths,
+        package_id=benchmark_pack.pack_id,
+    )
+
     settings = Settings.from_env()
     if storage_dir is not None:
         settings = replace(settings, storage_dir=storage_dir.resolve())
@@ -376,6 +384,7 @@ def export_evidence_bundle(
         "logs_snippet.txt": True,
         "run_manifest.json": True,
         "check_coverage.json": True,
+        "package_source_hash_chain.json": True,
         "README.md": True,
     }
     package_sha = next(
@@ -426,6 +435,12 @@ def export_evidence_bundle(
         "error_count": report.summary.error_count,
         "warning_count": report.summary.warning_count,
         "source_files": source_files,
+        "package_source_hash_chain": {
+            "chain_sha256": source_hash_chain.get("chain_sha256"),
+            "entry_count": source_hash_chain.get("entry_count"),
+            "status": source_hash_chain.get("status"),
+            "claim_boundary": source_hash_chain.get("claim_boundary"),
+        },
         "runtime_settings": runtime_settings,
         "forbidden_claims": list(_FORBIDDEN),
         "claim_boundary": (
@@ -467,6 +482,10 @@ def export_evidence_bundle(
         json.dumps(check_coverage_snapshot, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+    (output_dir / "package_source_hash_chain.json").write_text(
+        json.dumps(source_hash_chain, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
     (output_dir / "report.html").write_text(
         _render_bundle_html(
             report=report,
@@ -499,6 +518,7 @@ Code: `{code_meta["label"]}`
 ## Artifacts
 
 - `manifest.json` — pack identity, hashes, Shared-gate + derived outcome
+- `package_source_hash_chain.json` — read-only SHA-256 chain of pack sources (RT-021; not УКЭП)
 - `report.json` / `findings.json` / `capability_coverage.json`
 - `report.html` — offline review surface
 - `timings.json` / `logs_snippet.txt`
