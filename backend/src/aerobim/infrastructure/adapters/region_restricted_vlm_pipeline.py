@@ -25,6 +25,7 @@ from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
     KimiAdvisoryError,
     KimiReadResult,
 )
+from aerobim.infrastructure.adapters.pdf_page_orientation import read_page_rotate_degrees
 
 _DEFAULT_MAX_REGIONS = 24
 _DEFAULT_REGION_PROMPT = (
@@ -77,6 +78,10 @@ class SheetReadResult:
     truncation_reason: str | None = None
     region_plan_sha256: str = ""
     stamp_regions_excluded: int = 0
+    excluded_by_role: int = 0
+    excluded_by_geometry: int = 0
+    excluded_unknown_role: int = 0
+    page_rotate_degrees: int | None = None
 
 
 def _region_plan_sha256(tasks: tuple[RegionReadTask, ...]) -> str:
@@ -145,10 +150,16 @@ class RegionRestrictedVlmPipeline:
             )
 
         regions = self._region_detector.detect(source.path, sheet_id=source.sheet_id)
+        page_rotate = (
+            read_page_rotate_degrees(source.path)
+            if self._exclude_stamp_regions
+            else 0
+        )
         plan = plan_region_reads(
             text_layer_present=text_layer_present,
             regions=regions,
             exclude_stamp_regions=self._exclude_stamp_regions,
+            page_rotate_degrees=page_rotate,
         )
         detected = len(regions)
         if plan.skip_vlm:
@@ -158,6 +169,10 @@ class RegionRestrictedVlmPipeline:
                 reason=plan.reason,
                 regions_detected=detected,
                 stamp_regions_excluded=plan.stamp_regions_excluded,
+                excluded_by_role=plan.excluded_by_role,
+                excluded_by_geometry=plan.excluded_by_geometry,
+                excluded_unknown_role=plan.excluded_unknown_role,
+                page_rotate_degrees=page_rotate,
             )
 
         planned = len(plan.tasks)
@@ -180,6 +195,10 @@ class RegionRestrictedVlmPipeline:
             ),
             region_plan_sha256=_region_plan_sha256(plan.tasks),
             stamp_regions_excluded=plan.stamp_regions_excluded,
+            excluded_by_role=plan.excluded_by_role,
+            excluded_by_geometry=plan.excluded_by_geometry,
+            excluded_unknown_role=plan.excluded_unknown_role,
+            page_rotate_degrees=page_rotate,
         )
 
     def _read_one(self, source: DrawingSource, sheet_id: str, task: RegionReadTask) -> RegionRead:

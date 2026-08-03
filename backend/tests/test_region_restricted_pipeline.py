@@ -270,6 +270,95 @@ class RegionReadPlanTests(unittest.TestCase):
         plan = plan_region_reads(text_layer_present=False, regions=regions)
         self.assertTrue(plan.skip_vlm)
         self.assertEqual(plan.stamp_regions_excluded, 1)
+        self.assertEqual(plan.excluded_by_geometry, 1)
+
+    def test_rotate_90_maps_visual_bottom_to_page_left(self) -> None:
+        """RT-STAMP-14: /Rotate 90 must move bottom PII prior into page-left strip."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 1.0, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(
+            text_layer_present=False,
+            regions=regions,
+            page_rotate_degrees=90,
+        )
+        self.assertFalse(plan.skip_vlm)
+        self.assertEqual(len(plan.tasks), 1)
+        x0, y0, x1, y1 = plan.tasks[0].bbox_xyxy
+        self.assertAlmostEqual(x0, 0.15, places=9)
+        self.assertAlmostEqual(y0, 0.10, places=9)
+        self.assertAlmostEqual(x1, 1.0, places=9)
+        self.assertAlmostEqual(y1, 1.0, places=9)
+
+    def test_unknown_rotate_fail_closed(self) -> None:
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 1.0, 0.5),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(
+            text_layer_present=False,
+            regions=regions,
+            page_rotate_degrees=None,
+        )
+        self.assertTrue(plan.skip_vlm)
+        self.assertIn("/Rotate", plan.reason)
+        self.assertEqual(plan.excluded_by_geometry, 1)
+
+    def test_overflow_bbox_fail_closed(self) -> None:
+        """RT-STAMP-15: CropBox/MediaBox desync must not yield >1 residuals."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 3000.0, 4000.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+                coordinate_system="page-pixel",
+                page_width=2480.0,
+                page_height=3508.0,
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.excluded_by_geometry, 1)
+        self.assertEqual(plan.excluded_by_role, 0)
+
+    def test_unknown_role_coverage_alarm(self) -> None:
+        """RT-STAMP-16: unexpected roles are blocked with an explicit coverage signal."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.2, 0.2, 0.8, 0.6),
+                confidence=0.9,
+                modality="detector",
+                layout_role="legend",
+            ),
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.2, 0.2, 0.8, 0.6),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertFalse(plan.skip_vlm)
+        self.assertEqual(plan.excluded_by_role, 1)
+        self.assertEqual(plan.excluded_unknown_role, 1)
+        self.assertEqual(plan.excluded_by_geometry, 0)
+        self.assertIn("coverage alarm", plan.reason)
+
     def test_bottom_band_content_fully_excluded(self) -> None:
         """Bottom strip is entirely PII prior → no residual after clip."""
         regions = [
