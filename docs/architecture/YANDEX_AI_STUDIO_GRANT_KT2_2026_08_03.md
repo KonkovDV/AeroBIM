@@ -2,7 +2,7 @@
 title: "Yandex AI Studio grant — KT#2/KT#3 contour implications"
 date: 2026-08-03
 status: active
-version: "1.1.0"
+version: "1.2.0"
 claim_boundary: "Grant strategy note. Not Checkpoint GO. Vendor pricing = claims. Cloud Alibaba Max still forbidden."
 source_analysis: "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md"
 ---
@@ -35,10 +35,23 @@ Rough burn (vendor-order-of-magnitude): ~100 findings ≈ 250k tokens ≈ ~100 �
 1. **Budget caps (fail-closed):** max tokens per call / per run / per day; counters in usage/audit; exceed → no call.
 2. **Structured findings only (not a 32k vendor limit):** Qwen on Studio has **262 144** context tokens (YandexGPT family is ~32k — not our path). Keep prompts to structured findings only for threat-model reasons: (i) minimize prompt-injection surface (`HYBRID_AI_THREAT_MODEL`); (ii) hold data class at INTERNAL; (iii) cost; (iv) provenance — the model must not see what it cannot cite. Do **not** justify this discipline by a non-applicable 32k cap.
 3. **Yandex Completions quirks (adapter):** `model` = `gpt://{folder}/{name}/{version}` (not bare `Qwen…`); `response_format.type=json_schema` + `REMARK_JSON_SCHEMA`; **do not send `seed`** until vendor confirms; send `x-folder-id` + `x-data-logging-enabled: false` (recorded in usage/audit).
-4. **Reproducibility:** Studio profile stays `reproducible=false` until `probe_llm_reproducibility` matches twice on a pinned version (not `latest`).
-5. **Activate grant / payment account before 2026-08-04**; check grant expiry vs KT#3 window.
+4. **Report reproducibility ≠ model determinism:** verdict stays deterministic-core only (ADR-001). Studio vendor probes (P₁/P₂) measure provider behaviour; they are **not** a publication gate. Still pin exact model URI (no `/latest`/`/rc`).
+5. **Stamp/PII crop gate:** region-restricted VLM excludes `layout_role=stamp` by default (signatory PII → RESTRICTED). Do not send stamp crops on C0/C1 without DPA / C2.
+6. **Activate grant / payment account before 2026-08-04**; check grant expiry vs KT#3 window.
 
 Operator checklist: folder ID, SA role `ai.languageModels.user`, API key scope `yc.ai.foundationModels.execute`, exact model version from AI Studio catalog.
+
+## Bottleneck — grant is not RT-001
+
+One WP-07 Wilson measure (n≈111 at half-width ≤0.08) costs on the order of **~111 ₽** (~1% of the AI Studio track). Token quota is not the critical path.
+
+| Deficit | Blocks | Tracker ask |
+|---|---|---|
+| **Adjudicators** (2+) | RT-001 precision / expert TP/FP | Recruit / schedule adjudication — **do not** conflate with quota increase |
+| **Customer corpus** | RT-001/002/003 evidence | Intake package + labeled ground truth |
+| Token quota increase | Convenience / parallel burn | Useful, but **does not** move Checkpoint toward GO |
+
+Do not mix “need more grant tokens” with “need adjudicators + corpus” in the same tracker ask — defense will notice.
 
 ## Contour levels C0–C3 (SLA ≠ classification)
 
@@ -69,7 +82,11 @@ See [`../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md`](../../audit/r
 
 **Allowed:** «Пилотный advisory через Yandex AI Studio (RF) на открытых корпусах; тот же адаптер для on-prem Studio в контуре заказчика.»
 
-**Forbidden:** «Данные Самолёта уходят в облако» · «Qwen 3.8 Max» · «точность >90% от модели» · «ИИ проверяет нормы» без IDS+expert.
+**Forbidden:** «Данные Самолёта уходят в облако» · «Qwen 3.8 Max» · «точность >90% от модели» · «ИИ проверяет нормы» без IDS+expert · «увеличение квоты гранта = прогресс по RT-001».
+
+## Bottleneck reminder
+
+Grant tokens ≈ 1% cost of one WP-07 Wilson sample. Deficit for Checkpoint: **adjudicators + customer corpus**, not Studio ₽.
 
 ## Pointers
 

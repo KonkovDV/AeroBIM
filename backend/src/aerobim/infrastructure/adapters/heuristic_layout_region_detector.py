@@ -12,6 +12,9 @@ class HeuristicLayoutRegionDetector:
 
     Advisory only — low confidence, modality ``detector``. Does **not** claim
     human-level CV; ``cv_human_level`` must stay MISSING until labeled corpus F1.
+
+    ``layout_role=stamp`` marks the lower-right prior so cloud VLM can exclude it
+    (signatory PII → RESTRICTED without DPA / C2).
     """
 
     def detect(self, path: Path, *, sheet_id: str | None = None) -> list[DrawingRegionRef]:
@@ -25,17 +28,23 @@ class HeuristicLayoutRegionDetector:
                 bbox_xyxy=(0.0, 0.0, 1.0, 0.85),
                 confidence=0.35,
                 modality="detector",
+                layout_role="content",
             ),
             DrawingRegionRef(
                 sheet_id=sid,
                 bbox_xyxy=(0.55, 0.85, 1.0, 1.0),
                 confidence=0.4,
                 modality="detector",
+                layout_role="stamp",
             ),
             DrawingRegionRef(
                 sheet_id=sid,
                 bbox_xyxy=(0.0, 0.85, 0.25, 1.0),
                 confidence=0.3,
                 modality="detector",
+                layout_role="title_block",
             ),
         ]
+
+
+__all__ = ["HeuristicLayoutRegionDetector"]
