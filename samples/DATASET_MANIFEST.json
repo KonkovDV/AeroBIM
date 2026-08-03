@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-02T22:40:42.249623+00:00",
+  "generated_at": "2026-08-03T10:02:04.855904+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART schemas carry attribution and a review_pending license status rather than an invented one",
-  "file_count": 732,
+  "file_count": 733,
   "vendored_count": 11,
   "files": [
     {
@@ -860,8 +860,8 @@
     },
     {
       "path": "DATASET_MANIFEST.json",
-      "sha256": "72934b7ad67ca527ce97ed55293c860623d4f4a868eb456fa7412ac2af168629",
-      "bytes": 507392,
+      "sha256": "84a3d480960cb1aa2799947476af55dbbbf1f4d42a7e3186a2b80a48400a3e99",
+      "bytes": 421599,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -922,6 +922,18 @@
       "path": "drawings/wall-thickness.json",
       "sha256": "5cd8484beffbd35306ea95e7ed6009fd68be056b6f45ac4a409d2d64f1c52f81",
       "bytes": 361,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "hybrid/provider-config-qwen-local.json",
+      "sha256": "b886b792d47d9544e6f65ff46554d6b6d2deec977cf747c5c5b72db50d037413",
+      "bytes": 2863,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

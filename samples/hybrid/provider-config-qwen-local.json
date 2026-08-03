@@ -57,11 +57,16 @@
   },
   "tier_defaults": {
     "local": "private_qwen_local",
-    "private": "private_yandex_ai_studio",
+    "private": "private_qwen_local",
     "public": "public_kimi_k3"
   },
   "human_review_profile": "human_review",
-  "forbidden_defaults": ["public_qwen38_max"],
+  "forbidden_defaults": ["public_qwen38_max", "private_yandex_ai_studio"],
+  "notes": [
+    "private default = local weights (CONFIDENTIAL/RESTRICTED must not hit multitenant Studio).",
+    "private_yandex_ai_studio is forbidden as tier default; opt-in only via explicit task_routes for PUBLIC/INTERNAL open corpora.",
+    "public_qwen38_max remains forbidden as default."
+  ],
   "grant_split": {
     "ai_studio_rub": 16000,
     "gpu_t4_rub": 4000,

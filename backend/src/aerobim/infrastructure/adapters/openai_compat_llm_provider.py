@@ -97,9 +97,9 @@ class OpenAICompatLlmProvider:
                 unsupported_claims=(),
             )
 
-        # Estimate: findings JSON + overhead + completion cap (grant / repair-loop guard).
+        # Estimate overshoots for Cyrillic (grant fail-closed): chars/2 not chars/3.
         estimate = (
-            len(json.dumps(request.deterministic_findings, ensure_ascii=False)) // 3
+            len(json.dumps(request.deterministic_findings, ensure_ascii=False)) // 2
             + 400
             + self._max_completion_tokens
         )

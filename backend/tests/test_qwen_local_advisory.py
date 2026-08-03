@@ -212,12 +212,38 @@ class ProviderConfigSampleTests(unittest.TestCase):
             data["profiles"]["private_yandex_ai_studio"]["model_revision"],
             "yandex://ai-studio/qwen3-235b@2026-08",
         )
-        self.assertEqual(data["tier_defaults"]["private"], "private_yandex_ai_studio")
+        self.assertEqual(data["tier_defaults"]["private"], "private_qwen_local")
         self.assertIn("public_qwen38_max", data["forbidden_defaults"])
+        self.assertIn("private_yandex_ai_studio", data["forbidden_defaults"])
         self.assertIn("OCR", data["grant_split"]["gpu_t4_use"])
         from aerobim.domain.hybrid.model_router import ProviderRegistry
 
         ProviderRegistry.from_config(data)
+
+
+class LlmHostAllowlistTests(unittest.TestCase):
+    def test_alibaba_host_forbidden(self) -> None:
+        from aerobim.core.config.settings import (
+            _DEFAULT_LLM_ALLOWED_HOSTS,
+            assert_llm_base_host_allowed,
+        )
+
+        with self.assertRaises(RuntimeError):
+            assert_llm_base_host_allowed(
+                "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+                _DEFAULT_LLM_ALLOWED_HOSTS,
+            )
+
+    def test_yandex_studio_host_allowed(self) -> None:
+        from aerobim.core.config.settings import (
+            _DEFAULT_LLM_ALLOWED_HOSTS,
+            assert_llm_base_host_allowed,
+        )
+
+        assert_llm_base_host_allowed(
+            "https://ai.api.cloud.yandex.net/v1",
+            _DEFAULT_LLM_ALLOWED_HOSTS,
+        )
 
 
 class LlmTokenBudgetTests(unittest.TestCase):

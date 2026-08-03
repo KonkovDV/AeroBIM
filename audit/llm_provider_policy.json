@@ -42,6 +42,23 @@
       "notes": "Cloud qwen3.8-max NOT_VERIFIED/forbidden default. Local vLLM via AEROBIM_LLM_* only."
     },
     {
+      "provider": "yandex-ai-studio",
+      "models": ["qwen3-235b", "URI+version pin via AEROBIM_LLM_MODEL_REVISION"],
+      "data_retention": "VENDOR_POLICY_SEE_DPA",
+      "training_use": "forbidden_by_default_confirm_in_DPA",
+      "data_residency": "RF_Yandex_Cloud_or_onprem_Stackland",
+      "dpa": "REQUIRED_BEFORE_CUSTOMER_CONFIDENTIAL",
+      "customer_data": "deny_CONFIDENTIAL_RESTRICTED_on_multitenant_cloud",
+      "allowed_classifications": ["PUBLIC", "INTERNAL"],
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "local_weights_or_deterministic_templates",
+      "hosts_allowlisted": [
+        "ai.api.cloud.yandex.net",
+        "llm.api.cloud.yandex.net"
+      ],
+      "notes": "KT#2 T2 private_shared cloud for open corpora only. Pilot T1 = on-prem Studio / same adapter base_url. Never tier_defaults.private. Host allowlist enforced in Settings.from_env."
+    },
+    {
       "provider": "gemma",
       "models": ["gemma-mock", "CLOUD_DATA_POLICY_UNKNOWN"],
       "data_retention": "CLOUD_DATA_POLICY_UNKNOWN",
