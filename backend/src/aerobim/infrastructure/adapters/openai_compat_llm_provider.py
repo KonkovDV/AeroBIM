@@ -1,27 +1,30 @@
 """OpenAI-compatible LLM provider (vLLM / Yandex AI Studio) for advisory text.
 
 Supports ``private_qwen_local`` (loopback) and ``private_yandex_ai_studio`` (RF T2)
-via the same class — only ``base_url`` / caps change. Hard token budget fail-closed
-before any network call. Never sets ``summary.passed``. Alibaba Max out of scope.
+via the same class — ``base_url``, caps, response_format, seed, and vendor headers
+change. Hard token budget fail-closed before any network call. Never sets
+``summary.passed``. Alibaba Max out of scope.
 """
 
 from __future__ import annotations
 
 import json
 import urllib.request
-from collections.abc import Callable
-from typing import Any
+from collections.abc import Callable, Mapping
+from typing import Any, Literal
 from urllib.parse import urlparse
 
 from aerobim.core.config.settings import (
     _DEFAULT_LLM_ALLOWED_HOSTS,
     assert_llm_base_host_allowed,
+    resolve_llm_model_uri,
 )
 from aerobim.domain.advisory_remark_compose import REMARK_JSON_SCHEMA
 from aerobim.domain.llm_advisory import LlmRequest, LlmResponse
 from aerobim.domain.llm_token_budget import LlmTokenBudget
 
 Transport = Callable[[str, dict[str, str], bytes], bytes]
+ResponseSchemaMode = Literal["json_schema", "json_object"]
 
 _DEFAULT_TIMEOUT = 60.0
 _MAX_RESPONSE_BYTES = 1 * 1024 * 1024
@@ -39,26 +42,46 @@ class OpenAICompatLlmProvider:
         api_key: str | None = None,
         provider: str = "qwen-local",
         model_sha256: str | None = None,
+        model_revision: str | None = None,
+        folder_id: str | None = None,
         temperature: float = 0.0,
         seed: int | None = 0,
+        send_seed: bool = True,
         timeout_seconds: float = _DEFAULT_TIMEOUT,
         transport: Transport | None = None,
         budget: LlmTokenBudget | None = None,
         max_completion_tokens: int = 512,
         allowed_hosts: frozenset[str] | tuple[str, ...] | None = None,
+        extra_headers: Mapping[str, str] | None = None,
+        auth_scheme: str = "Bearer",
+        response_schema_mode: ResponseSchemaMode = "json_object",
     ) -> None:
         self._base_url = base_url.rstrip("/")
-        self._model = model
+        self._model = resolve_llm_model_uri(
+            model=model,
+            revision=model_revision,
+            folder_id=folder_id,
+        )
+        self._model_revision = (model_revision or "").strip() or None
+        self._folder_id = (folder_id or "").strip() or None
         self._api_key = api_key
         self._provider = provider
         self._model_sha256 = model_sha256
         self._temperature = temperature
         self._seed = seed
+        self._send_seed = bool(send_seed)
         self._timeout = timeout_seconds
         self._transport = transport or self._default_transport
         self._budget = budget or LlmTokenBudget()
         self._max_completion_tokens = max(1, int(max_completion_tokens))
         self._allowed_hosts = frozenset(allowed_hosts or _DEFAULT_LLM_ALLOWED_HOSTS)
+        self._extra_headers = {str(k): str(v) for k, v in dict(extra_headers or {}).items()}
+        scheme = (auth_scheme or "Bearer").strip() or "Bearer"
+        self._auth_scheme = scheme
+        mode = (response_schema_mode or "json_object").strip().lower()
+        if mode not in {"json_schema", "json_object"}:
+            raise ValueError(f"unsupported response_schema_mode: {response_schema_mode!r}")
+        self._response_schema_mode: ResponseSchemaMode = mode  # type: ignore[assignment]
         # Defense-in-depth: re-check even if Settings was built without from_env.
         if self._base_url:
             assert_llm_base_host_allowed(self._base_url, self._allowed_hosts)
@@ -69,6 +92,45 @@ class OpenAICompatLlmProvider:
             f"OpenAICompatLlmProvider(provider={self._provider!r}, model={self._model!r}, "
             f"host={host!r}, model_sha256={(self._model_sha256 or '')[:12]!r})"
         )
+
+    def _response_format(self) -> dict[str, Any]:
+        if self._response_schema_mode == "json_schema":
+            return {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "advisory_remark",
+                    "schema": REMARK_JSON_SCHEMA,
+                },
+            }
+        return {"type": "json_object"}
+
+    def _request_headers(self) -> dict[str, str]:
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            **self._extra_headers,
+        }
+        if self._api_key:
+            headers["Authorization"] = f"{self._auth_scheme} {self._api_key}"
+        return headers
+
+    def _vendor_audit_fields(self) -> dict[str, Any]:
+        """Non-secret vendor evidence for usage / audit_event (IB Samolet)."""
+
+        logging_hdr = self._extra_headers.get("x-data-logging-enabled")
+        return {
+            "model_uri": self._model,
+            "model_revision": self._model_revision,
+            "response_format_mode": self._response_schema_mode,
+            "seed_sent": bool(self._send_seed and self._seed is not None),
+            "auth_scheme": self._auth_scheme,
+            "folder_id_set": bool(self._folder_id or self._extra_headers.get("x-folder-id")),
+            "data_logging_header": logging_hdr,
+            "data_logging_disabled": str(logging_hdr).lower() == "false",
+            "reproducible": False
+            if self._provider == "yandex-ai-studio"
+            else bool(self._send_seed and self._seed is not None),
+        }
 
     def _default_transport(self, url: str, headers: dict[str, str], body: bytes) -> bytes:
         from aerobim.core.security.outbound_url import (
@@ -102,7 +164,7 @@ class OpenAICompatLlmProvider:
                 uncertainties=("blocked_by_policy",),
                 model=self._model,
                 provider=self._provider,
-                usage=self._budget.snapshot(),
+                usage={**self._budget.snapshot(), **self._vendor_audit_fields()},
                 status="blocked_by_policy",
                 schema_valid=True,
                 unsupported_claims=(),
@@ -124,7 +186,7 @@ class OpenAICompatLlmProvider:
                 uncertainties=(blocked,),
                 model=self._model,
                 provider=self._provider,
-                usage=self._budget.snapshot(),
+                usage={**self._budget.snapshot(), **self._vendor_audit_fields()},
                 status="blocked_by_policy",
                 schema_valid=True,
                 unsupported_claims=(),
@@ -153,17 +215,12 @@ class OpenAICompatLlmProvider:
                 },
                 {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
             ],
-            "response_format": {"type": "json_object"},
+            "response_format": self._response_format(),
         }
-        if self._seed is not None:
+        if self._seed is not None and self._send_seed:
             body_obj["seed"] = self._seed
         raw_body = json.dumps(body_obj, ensure_ascii=False).encode("utf-8")
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
-        if self._api_key:
-            headers["Authorization"] = f"Bearer {self._api_key}"
+        headers = self._request_headers()
 
         try:
             raw = self._transport(f"{self._base_url}/chat/completions", headers, raw_body)
@@ -178,6 +235,7 @@ class OpenAICompatLlmProvider:
                 provider=self._provider,
                 usage={
                     **self._budget.snapshot(),
+                    **self._vendor_audit_fields(),
                     **({"model_sha256": self._model_sha256} if self._model_sha256 else {}),
                 },
                 status="failed",
@@ -194,7 +252,7 @@ class OpenAICompatLlmProvider:
                 uncertainties=("truncated",),
                 model=self._model,
                 provider=self._provider,
-                usage=self._budget.snapshot(),
+                usage={**self._budget.snapshot(), **self._vendor_audit_fields()},
                 status="failed",
                 schema_valid=False,
                 unsupported_claims=(),
@@ -219,7 +277,7 @@ class OpenAICompatLlmProvider:
                 uncertainties=("schema_deviation",),
                 model=self._model,
                 provider=self._provider,
-                usage=self._budget.snapshot(),
+                usage={**self._budget.snapshot(), **self._vendor_audit_fields()},
                 status="failed",
                 schema_valid=False,
                 unsupported_claims=(),
@@ -235,6 +293,7 @@ class OpenAICompatLlmProvider:
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
         )
+        usage = {**usage, **self._vendor_audit_fields()}
         if self._model_sha256:
             usage = {**usage, "model_sha256": self._model_sha256}
 

@@ -210,7 +210,7 @@ class ProviderConfigSampleTests(unittest.TestCase):
         self.assertIn("public_qwen38_max", data["profiles"])
         self.assertEqual(
             data["profiles"]["private_yandex_ai_studio"]["model_revision"],
-            "yandex://ai-studio/qwen3-235b@2026-08",
+            "PIN_EXACT_VERSION_FROM_CATALOG_NOT_latest",
         )
         self.assertEqual(data["tier_defaults"]["private"], "private_qwen_local")
         self.assertIn("public_qwen38_max", data["forbidden_defaults"])
@@ -251,6 +251,87 @@ class LlmHostAllowlistTests(unittest.TestCase):
                 base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
                 model="qwen-max",
             )
+
+
+class YandexStudioCompatTests(unittest.TestCase):
+    def test_resolve_model_uri_appends_revision(self) -> None:
+        from aerobim.core.config.settings import resolve_llm_model_uri
+
+        self.assertEqual(
+            resolve_llm_model_uri(
+                model="gpt://b1gfolder/qwen3-235b-a22b-fp8",
+                revision="v2026-08-01",
+            ),
+            "gpt://b1gfolder/qwen3-235b-a22b-fp8/v2026-08-01",
+        )
+        self.assertEqual(
+            resolve_llm_model_uri(
+                model="gpt://b1gfolder/qwen3-235b-a22b-fp8/latest",
+                revision="v2026-08-01",
+            ),
+            "gpt://b1gfolder/qwen3-235b-a22b-fp8/v2026-08-01",
+        )
+
+    def test_yandex_body_uses_json_schema_omits_seed_and_sets_logging_header(self) -> None:
+        captured: dict[str, object] = {}
+
+        def transport(url: str, headers: dict[str, str], body: bytes) -> bytes:
+            captured["url"] = url
+            captured["headers"] = headers
+            captured["body"] = json.loads(body.decode("utf-8"))
+            draft = {
+                "title": "t",
+                "body": "b",
+                "locale": "ru",
+                "evidence_refs": ["x"],
+            }
+            return json.dumps({"choices": [{"message": {"content": json.dumps(draft)}}]}).encode(
+                "utf-8"
+            )
+
+        from aerobim.domain.advisory_remark_compose import build_remark_llm_request
+
+        provider = OpenAICompatLlmProvider(
+            base_url="https://llm.api.cloud.yandex.net/v1",
+            model="gpt://b1gfolder/qwen3-235b-a22b-fp8",
+            model_revision="v2026-08-01",
+            folder_id="b1gfolder",
+            api_key="test-key",
+            provider="yandex-ai-studio",
+            transport=transport,
+            send_seed=False,
+            response_schema_mode="json_schema",
+            auth_scheme="Bearer",
+            extra_headers={
+                "x-folder-id": "b1gfolder",
+                "x-data-logging-enabled": "false",
+            },
+        )
+        response = provider.generate(
+            build_remark_llm_request(
+                request_id="r",
+                findings=({"finding_id": "x", "message": "m"},),
+                locale="ru",
+                allow_customer_data=False,
+            )
+        )
+        self.assertEqual(response.status, "advisory")
+        body = captured["body"]
+        assert isinstance(body, dict)
+        self.assertNotIn("seed", body)
+        self.assertEqual(body["response_format"]["type"], "json_schema")
+        self.assertEqual(
+            body["model"],
+            "gpt://b1gfolder/qwen3-235b-a22b-fp8/v2026-08-01",
+        )
+        headers = captured["headers"]
+        assert isinstance(headers, dict)
+        self.assertEqual(headers["Authorization"], "Bearer test-key")
+        self.assertEqual(headers["x-data-logging-enabled"], "false")
+        self.assertEqual(headers["x-folder-id"], "b1gfolder")
+        self.assertTrue(response.usage.get("data_logging_disabled"))
+        self.assertFalse(response.usage.get("reproducible"))
+        self.assertFalse(response.usage.get("seed_sent"))
 
 
 class LlmTokenBudgetTests(unittest.TestCase):

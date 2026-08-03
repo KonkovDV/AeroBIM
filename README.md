@@ -353,8 +353,13 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_LLM_BASE_URL` | *(unset)* | Loopback or RF HTTPS OpenAI-compat base (`…/v1`); SSRF-gated at boot |
 | `AEROBIM_LLM_API_KEY` | *(unset)* | Optional bearer for Studio; never logged / never in `audit_event` |
 | `AEROBIM_LLM_PROVIDER` | `qwen-local` | Provider label (`qwen-local` / `yandex-ai-studio`) |
-| `AEROBIM_LLM_MODEL` | `Qwen3.6-27B` | Model id sent to `/chat/completions` |
-| `AEROBIM_LLM_MODEL_REVISION` | *(required if enabled)* | Pin URI+version; boot fails if enabled without it |
+| `AEROBIM_LLM_MODEL` | `Qwen3.6-27B` | Local bare id, or Yandex `gpt://{folder}/{model}` |
+| `AEROBIM_LLM_MODEL_REVISION` | *(required if enabled)* | Exact catalog version (not `latest`); composed into URI |
+| `AEROBIM_LLM_FOLDER_ID` | *(unset)* | Yandex folder → `x-folder-id` + URI composition |
+| `AEROBIM_LLM_AUTH_SCHEME` | `Bearer` | `Bearer` or `Api-Key` |
+| `AEROBIM_LLM_SEND_SEED` | `true` (`false` for Studio) | Omit `seed` when false (Yandex may 400) |
+| `AEROBIM_LLM_RESPONSE_FORMAT_MODE` | `json_object` (`json_schema` for Studio) | Yandex prefers `json_schema` + `REMARK_JSON_SCHEMA` |
+| `AEROBIM_LLM_DATA_LOGGING_ENABLED` | `false` | When false, send `x-data-logging-enabled: false` (audit-recorded) |
 | `AEROBIM_LLM_MODEL_SHA256` | *(unset)* | Optional checkpoint hash in usage/audit |
 | `AEROBIM_LLM_MAX_TOKENS_PER_CALL` | `4096` | Fail-closed token cap per call |
 | `AEROBIM_LLM_MAX_TOKENS_PER_RUN` | `500000` | Fail-closed token cap per process run |

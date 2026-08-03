@@ -14,10 +14,10 @@
     "private_yandex_ai_studio": {
       "tier": "private",
       "provider": "yandex-ai-studio",
-      "model_id": "qwen3-235b",
-      "model_revision": "yandex://ai-studio/qwen3-235b@2026-08",
+      "model_id": "gpt://{folder_id}/qwen3-235b-a22b-fp8/{version}",
+      "model_revision": "PIN_EXACT_VERSION_FROM_CATALOG_NOT_latest",
       "deterministic": false,
-      "notes": "KT#2 T2 private_shared RF cloud for PUBLIC/INTERNAL open corpora. Pilot T1 = same adapter, on-prem Studio base_url. Hard token caps required."
+      "notes": "KT#2 T2 private_shared RF cloud for PUBLIC/INTERNAL open corpora only. reproducible=false until probe_llm_reproducibility matches (no seed on Yandex Completions). Use json_schema + x-data-logging-enabled:false + x-folder-id. Never tier_defaults.private."
     },
     "local_vlm": {
       "tier": "local",
