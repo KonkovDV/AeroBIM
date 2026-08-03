@@ -41,7 +41,7 @@ deep_analysis: "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08
 | W2-03 | `bench_hybrid_contour` + open-corpora timing; budget counters in artifacts |
 | W2-04 | T4 track: batch OCR/render for EXTRACTION_INTEGRITY corpora |
 | W2-05 | Claims Lock / matrix refresh for KT#2 drop |
-| W2-06 | Scenario **5.3** region-crop VLM on Studio multimodal `qwen3.6-35b-a3b` (PUBLIC/INTERNAL open/fixture crops only). **Stamp/PII:** `plan_region_reads(exclude_stamp_regions=True)` + heuristic `layout_role=stamp` — default exclude before cloud call |
+| W2-06 | Scenario **5.3** region-crop VLM on Studio multimodal `qwen3.6-35b-a3b` (PUBLIC/INTERNAL open/fixture crops only). **PII:** allowlist `content` + clip stamp/title priors (`clip_pii_priors`); unknown/pixel-without-page fail-closed |
 
 ## KT#3 (Sep)
 
