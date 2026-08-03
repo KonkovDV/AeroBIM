@@ -63,7 +63,7 @@ External law/market citations from the remote text are **not re-verified here** 
 | RT-020 | PDF semantic integrity (render≠extract) | High (trust) | ENG_PARTIAL digit-run collision; literature OPEN |
 | RT-021 | УКЭП / ГрК vs envelope ENG_PARTIAL | High (law) | OPEN crypto; honesty MITIGATED; **hash-chain eng landed** |
 | RT-022 | Competitive framing / 10D CDE | Medium (sales) | OPEN |
-| RT-023 | LLM→IDS vs ITMO / Ishigaki baseline | Medium (claims) | OPEN — no SOTA claim |
+| RT-023 | LLM→IDS vs ITMO / Ishigaki baseline | Medium (claims) | **DOCUMENTED** — `docs/research/LLM_TO_IDS_BASELINE_2026_08_03.md`; no SOTA claim |
 | RT-024 | Buyer / value prop (ГИП vs hours) | Medium (sales) | OPEN |
 | RT-025 | ЕИСЖС / ПНСТ 909 pre-flight lane | Low–Med (product) | OPEN optional |
 | RT-026 | RT-001 inter-rater protocol | High (science) | **DRAFT + AC1 wired** — protocol + prereg template + Gwet AC1 |
