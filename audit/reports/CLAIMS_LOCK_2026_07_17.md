@@ -64,7 +64,7 @@
 - Advisory ON/OFF must not change deterministic findings or `summary.passed`
 - **Report reproducibility = deterministic core** (ADR-001): LLM output is not an input to the verdict; on re-run the annotation is **presented** from provenance (prompt/response hashes), not re-generated. Vendor P₁/P₂ probes measure provider behaviour; they are not a FAIR publication gate
 - Yandex AI Studio grant tokens are **not** the RT-001 bottleneck (~1% of grant for one WP-07 Wilson measure); deficit = adjudicators + customer corpus — do not claim «quota increase = Checkpoint progress»
-- Cloud VLM stamp crops are RESTRICTED (signatory PII); default exclude `layout_role=stamp` before C0/C1 Studio calls unless DPA / C2
+- Cloud VLM: only allowlisted `layout_role=content` after PII-prior clip; stamp/title_block/unknown and unclippable pixel bboxes are excluded (RESTRICTED signatory PII)
 - `summary.passed` = automatic **Shared-gate** from deterministic engine + blocking capabilities (ADR-001); **not** Shared→Published / contractual fitness; OCR/LLM cannot flip it; expert confirms findings for handoff
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash/MEP/bSI/unit_scale)
 - Explicit `AEROBIM_SIGNOFF_PROFILE=samolet_pilot` likewise fail-closes required MEP/clash/BSI/audit corruption

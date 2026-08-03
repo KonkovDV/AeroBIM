@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
-from aerobim.domain.region_read_plan import plan_region_reads
+from aerobim.domain.region_read_plan import clip_pii_priors, plan_region_reads, subtract_aabb
 from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
     KimiAdvisoryError,
     KimiReadResult,
@@ -29,12 +29,14 @@ _OBS = {
 
 
 def _regions(n: int) -> list[DrawingRegionRef]:
+    """Cloud-safe content bands (normalized) for orchestration tests."""
     return [
         DrawingRegionRef(
             sheet_id="AR-01",
-            bbox_xyxy=(0.0, 0.0, 10.0 * (i + 1), 10.0),
+            bbox_xyxy=(0.0, float(i) * 0.1, 0.5, float(i) * 0.1 + 0.08),
             confidence=0.9,
             modality="detector",
+            layout_role="content",
         )
         for i in range(n)
     ]
@@ -76,6 +78,11 @@ def _source() -> DrawingSource:
     return DrawingSource(path=Path("plan.png"), sheet_id="AR-01")
 
 
+def _overlaps_stamp_prior(bbox: tuple[float, float, float, float]) -> bool:
+    sx0, sy0, sx1, sy1 = (0.55, 0.85, 1.0, 1.0)
+    return not (bbox[2] <= sx0 or bbox[0] >= sx1 or bbox[3] <= sy0 or bbox[1] >= sy1)
+
+
 class RegionReadPlanTests(unittest.TestCase):
     def test_text_layer_skips_vlm(self) -> None:
         plan = plan_region_reads(text_layer_present=True, regions=_regions(3))
@@ -114,7 +121,7 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertEqual(len(plan.tasks), 1)
         self.assertEqual(plan.stamp_regions_excluded, 1)
         self.assertEqual(plan.tasks[0].layout_role, "content")
-        self.assertIn("stamp crop", plan.reason)
+        self.assertIn("PII", plan.reason)
 
     def test_stamp_only_sheet_skips_vlm(self) -> None:
         regions = [
@@ -124,6 +131,21 @@ class RegionReadPlanTests(unittest.TestCase):
                 confidence=0.9,
                 modality="detector",
                 layout_role="stamp",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
+
+    def test_title_block_excluded_allowlist(self) -> None:
+        """RT-STAMP-05: ГОСТ main inscription FIO — title_block not cloud-safe."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.85, 0.25, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="title_block",
             ),
         ]
         plan = plan_region_reads(text_layer_present=False, regions=regions)
@@ -149,8 +171,8 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertEqual(len(plan.tasks), 1)
         self.assertEqual(plan.stamp_regions_excluded, 0)
 
-    def test_unlabeled_normalized_stamp_bbox_excluded(self) -> None:
-        """Defense in depth: missing layout_role must not bypass stamp prior."""
+    def test_unlabeled_regions_fail_closed(self) -> None:
+        """Allowlist: unknown role is not cloud-safe (doctrine, not denylist)."""
         regions = [
             DrawingRegionRef(
                 sheet_id="AR-01",
@@ -166,25 +188,107 @@ class RegionReadPlanTests(unittest.TestCase):
             ),
         ]
         plan = plan_region_reads(text_layer_present=False, regions=regions)
-        self.assertFalse(plan.skip_vlm)
-        self.assertEqual(len(plan.tasks), 1)
-        self.assertEqual(plan.stamp_regions_excluded, 1)
-        self.assertEqual(plan.tasks[0].bbox_xyxy, (0.0, 0.0, 1.0, 0.85))
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.stamp_regions_excluded, 2)
 
-    def test_pixel_bbox_without_role_not_false_positive(self) -> None:
-        """Page-pixel crops without role cannot use the normalized prior."""
+    def test_pixel_bbox_without_role_fail_closed(self) -> None:
+        """RT-STAMP-08: unlabeled page-pixel crop must not fail-open."""
         regions = [
             DrawingRegionRef(
                 sheet_id="AR-01",
-                bbox_xyxy=(550.0, 850.0, 1000.0, 1000.0),
+                bbox_xyxy=(1700.0, 2400.0, 2380.0, 3150.0),
                 confidence=0.9,
                 modality="detector",
             ),
         ]
         plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
+
+    def test_content_pixel_bbox_without_page_size_fail_closed(self) -> None:
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(1700.0, 2400.0, 2380.0, 3150.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+        self.assertEqual(plan.stamp_regions_excluded, 1)
+
+    def test_full_sheet_content_clips_stamp_prior(self) -> None:
+        """RT-STAMP-07: whole-sheet content must not send stamp zone."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 1.0, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
         self.assertFalse(plan.skip_vlm)
-        self.assertEqual(len(plan.tasks), 1)
-        self.assertEqual(plan.stamp_regions_excluded, 0)
+        self.assertGreaterEqual(len(plan.tasks), 1)
+        for task in plan.tasks:
+            self.assertFalse(_overlaps_stamp_prior(task.bbox_xyxy), task.bbox_xyxy)
+        # Stamp prior fully removed from union of residuals.
+        residuals = clip_pii_priors((0.0, 0.0, 1.0, 1.0))
+        self.assertEqual(set(plan.tasks[i].bbox_xyxy for i in range(len(plan.tasks))), set(residuals))
+
+    def test_bottom_band_content_clips_stamp(self) -> None:
+        """Bottom strip must lose lower-right stamp, not pass via low overlap ratio."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.85, 1.0, 1.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertFalse(plan.skip_vlm)
+        for task in plan.tasks:
+            self.assertFalse(_overlaps_stamp_prior(task.bbox_xyxy), task.bbox_xyxy)
+        # Title-block prior also clipped from bottom band.
+        self.assertTrue(all(t.bbox_xyxy[0] >= 0.25 - 1e-9 for t in plan.tasks))
+
+    def test_left_vertical_unlabeled_fail_closed(self) -> None:
+        """Rotated/left title without role: allowlist deny (prior is not sole defense)."""
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 0.15, 0.45),
+                confidence=0.9,
+                modality="detector",
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertTrue(plan.skip_vlm)
+
+    def test_subtract_aabb_full_cover(self) -> None:
+        self.assertEqual(subtract_aabb((0.55, 0.85, 1.0, 1.0), (0.55, 0.85, 1.0, 1.0)), ())
+
+    def test_content_with_page_size_normalizes_and_clips(self) -> None:
+        regions = [
+            DrawingRegionRef(
+                sheet_id="AR-01",
+                bbox_xyxy=(0.0, 0.0, 2380.0, 3150.0),
+                confidence=0.9,
+                modality="detector",
+                layout_role="content",
+                page_width=2380.0,
+                page_height=3150.0,
+            ),
+        ]
+        plan = plan_region_reads(text_layer_present=False, regions=regions)
+        self.assertFalse(plan.skip_vlm)
+        for task in plan.tasks:
+            self.assertFalse(_overlaps_stamp_prior(task.bbox_xyxy), task.bbox_xyxy)
 
 
 class RegionRestrictedPipelineTests(unittest.TestCase):
