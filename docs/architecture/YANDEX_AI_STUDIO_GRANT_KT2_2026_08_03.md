@@ -36,7 +36,7 @@ Rough burn (vendor-order-of-magnitude): ~100 findings ≈ 250k tokens ≈ ~100 �
 2. **Structured findings only (not a 32k vendor limit):** Qwen on Studio has **262 144** context tokens (YandexGPT family is ~32k — not our path). Keep prompts to structured findings only for threat-model reasons: (i) minimize prompt-injection surface (`HYBRID_AI_THREAT_MODEL`); (ii) hold data class at INTERNAL; (iii) cost; (iv) provenance — the model must not see what it cannot cite. Do **not** justify this discipline by a non-applicable 32k cap.
 3. **Yandex Completions quirks (adapter):** `model` = `gpt://{folder}/{name}/{version}` (not bare `Qwen…`); `response_format.type=json_schema` + `REMARK_JSON_SCHEMA`; **do not send `seed`** until vendor confirms; send `x-folder-id` + `x-data-logging-enabled: false` (recorded in usage/audit).
 4. **Report reproducibility ≠ model determinism:** verdict stays deterministic-core only (ADR-001). Studio vendor probes (P₁/P₂) measure provider behaviour; they are **not** a publication gate. Still pin exact model URI (no `/latest`/`/rc`).
-5. **Stamp/PII crop gate:** region-restricted VLM excludes `layout_role=stamp` by default (signatory PII → RESTRICTED). Do not send stamp crops on C0/C1 without DPA / C2.
+5. **Stamp/PII crop gate:** cloud VLM allowlists `layout_role=content` only, then clips stamp/title priors from the bbox; unknown role and unclippable pixel crops fail closed. Do not send stamp/title crops on C0/C1 without DPA / C2.
 6. **Activate grant / payment account before 2026-08-04**; check grant expiry vs KT#3 window.
 
 Operator checklist: folder ID, SA role `ai.languageModels.user`, API key scope `yc.ai.foundationModels.execute`, exact model version from AI Studio catalog.
