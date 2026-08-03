@@ -340,6 +340,31 @@ class AdvisoryOrchestrator:
             # Fail closed: do not create advisory observations (including injected ones).
             injected = ()
 
+        # TZ row 19: local IFC space inventory candidates (no egress). Always eligible —
+        # HybridRouteGate only suppresses external/agent advisory, not local inventory.
+        space_candidates: tuple = ()
+        if getattr(self._host, "_space_efficiency_advisory_enabled", False):
+            from aerobim.domain.space_efficiency_advisory import (
+                build_space_efficiency_candidates,
+            )
+            from aerobim.infrastructure.adapters.ifc_space_inventory import (
+                extract_space_inventory,
+            )
+
+            spaces = extract_space_inventory(request.ifc_path)
+            space_candidates = build_space_efficiency_candidates(spaces)
+            if space_candidates:
+                tool_traces.append(
+                    {
+                        "tool": "space_efficiency_advisory",
+                        "status": "ok",
+                        "spaces": len(spaces),
+                        "candidates": len(space_candidates),
+                        "verdict_impact": "none",
+                        "claim": "ADVISORY_ONLY; no efficiency threshold; expert confirmation",
+                    }
+                )
+
         # Wave J: ground advisory references against the deterministic universe.
         evidence_universe = build_evidence_universe(
             engine_issues=deterministic.engine_issues,
@@ -352,6 +377,7 @@ class AdvisoryOrchestrator:
             advisory_issues=merge_advisory_sequences(
                 injected,
                 agent_advisory,
+                space_candidates,
             ),
             evidence_universe=evidence_universe,
         )

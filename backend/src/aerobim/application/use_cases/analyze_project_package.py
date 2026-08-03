@@ -171,6 +171,8 @@ class AnalyzeProjectPackageUseCase:
         llm_advisory_provider: LlmProvider | None = None,
         remark_locale: str = "ru",
         llm_advisory_max_issues: int = 32,
+        llm_max_concurrent: int = 4,
+        space_efficiency_advisory_enabled: bool = True,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -231,6 +233,8 @@ class AnalyzeProjectPackageUseCase:
             "en" if (remark_locale or "ru").strip().lower().startswith("en") else "ru"
         )
         self._llm_advisory_max_issues = max(0, int(llm_advisory_max_issues))
+        self._llm_max_concurrent = max(1, min(int(llm_max_concurrent), 10))
+        self._space_efficiency_advisory_enabled = bool(space_efficiency_advisory_enabled)
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
@@ -1067,6 +1071,7 @@ class AnalyzeProjectPackageUseCase:
             request_id=request_id,
             locale=self._remark_locale,
             max_issues=self._llm_advisory_max_issues,
+            max_workers=self._llm_max_concurrent,
         )
 
     def _confirm_annotation_ifc_links(

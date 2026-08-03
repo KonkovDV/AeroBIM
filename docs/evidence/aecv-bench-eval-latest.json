@@ -4630,6 +4630,18 @@
         ]
       },
       "macro_mape": 0.2408,
+      "mape_bench_protocol": 0.2274,
+      "mape_definition": {
+        "mape_bench_protocol": "Mean MAPE over Door/Window/Bedroom/Toilet only (paper Table 2 protocol).",
+        "macro_mape": "Five-field mean including Space — internal."
+      },
+      "publish_framing": {
+        "headline_metric": "macro_bench_protocol",
+        "allowed_claim": "Open model via RF cloud reaches frontier proprietary order on this task (open_bench_only).",
+        "forbidden_claim": "We beat Gemini / AeroBIM product accuracy = 0.51",
+        "comparability_gates_required": true,
+        "doc": "docs/research/AECV_PUBLISH_FRAMING_I5_2026_08_04.md"
+      },
       "per_field": {
         "Door": {
           "exact_match_rate": 0.2308,

@@ -368,8 +368,7 @@ class Settings:
     llm_max_concurrent: int = 4
     """Semaphore for parallel Studio calls (cloud quota is shared; default 4 of 10).
 
-    Note: overlay_llm_remarks is still sequential (Sept backlog); this only
-    bounds the adapter if callers introduce concurrency.
+    Bounds overlay_llm_remarks ThreadPool fan-out (hard-capped at 10 cloud quota).
     """
     llm_advisory_max_issues: int = 32
     """Max findings to overlay with AI drafts per analyze run (AEROBIM_LLM_ADVISORY_MAX_ISSUES).
