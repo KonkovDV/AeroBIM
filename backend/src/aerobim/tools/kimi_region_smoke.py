@@ -84,6 +84,10 @@ def build_region_smoke_report(
         "truncation_reason": result.truncation_reason,
         "region_plan_sha256": result.region_plan_sha256,
         "stamp_regions_excluded": result.stamp_regions_excluded,
+        "excluded_by_role": result.excluded_by_role,
+        "excluded_by_geometry": result.excluded_by_geometry,
+        "excluded_unknown_role": result.excluded_unknown_role,
+        "page_rotate_degrees": result.page_rotate_degrees,
         "reads": reads,
         "claim_boundary": (
             "roundtrip only, NOT a quality PASS; advisory candidate regions; "
