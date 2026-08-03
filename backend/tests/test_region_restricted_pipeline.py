@@ -271,6 +271,7 @@ class RegionReadPlanTests(unittest.TestCase):
         self.assertTrue(plan.skip_vlm)
         self.assertEqual(plan.stamp_regions_excluded, 1)
         self.assertEqual(plan.excluded_by_geometry, 1)
+        self.assertEqual(plan.excluded_by_crs, 1)
 
     def test_rotate_90_maps_visual_bottom_to_page_left(self) -> None:
         """RT-STAMP-14: /Rotate 90 must move bottom PII prior into page-left strip."""

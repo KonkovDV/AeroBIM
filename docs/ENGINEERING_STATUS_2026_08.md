@@ -22,7 +22,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 | Track | Eng status | Customer |
 |---|---|---|
 | **Eng residuals wave** | VLM smoke gate; signature deepen; OIDC Phase 2 stubs; BCF T2 checklist; DWG native fail-closed; BSI IDS n=290 CC BY-ND; bare-metal wheelhouse DEFERRED | Checkpoint NO_GO unchanged |
-| **Qwen local (KT#2 W1)** | PII allowlist+clip + `/Rotate` prior map + overflow fail-closed + split exclude counters (RT-STAMP-14..16); Red Team v1.4 | PUBLIC/INTERNAL; «guard active» ≠ «ПДн не уходят»; Checkpoint NO_GO |
+| **Qwen / Studio KT#2** | RT budget charge+retry+ledger; inj: no model severity; PII `/Rotate`+counters; opaque client UUID; Red Team v1.5 | Checkpoint NO_GO; PII effectiveness NOT_MEASURED |
 | **Open corpora + BSI IDS** | Fixture regression n=7 + BSI TestCases profile `regression-bsi` **honest_case_count=290** (CC BY-ND unmodified) | Regression only — not product accuracy |
 | **WP-07 quality protocol** | Protocol doc + `compute_quality_protocol_stats` (Wilson P/R + sample-size planner); nDCG via existing `evaluate_ranking_quality`; interim target 0.60 | Not adjudicated customer precision; never >90% |
 | **WP-06 open corpora** | Profiles under `samples/benchmarks/open-corpora/`; CI smoke pins | Regression/timing only — no expert TP/FP |

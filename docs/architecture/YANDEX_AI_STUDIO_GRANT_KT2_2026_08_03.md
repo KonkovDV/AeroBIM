@@ -32,11 +32,11 @@ Rough burn (vendor-order-of-magnitude): ~100 findings ≈ 250k tokens ≈ ~100 �
 
 ## Hard requirements before first Studio call
 
-1. **Budget caps (fail-closed):** max tokens per call / per run / per day; counters in usage/audit; exceed → no call.
-2. **Structured findings only (not a 32k vendor limit):** Qwen on Studio has **262 144** context tokens (YandexGPT family is ~32k — not our path). Keep prompts to structured findings only for threat-model reasons: (i) minimize prompt-injection surface (`HYBRID_AI_THREAT_MODEL`); (ii) hold data class at INTERNAL; (iii) cost; (iv) provenance — the model must not see what it cannot cite. Do **not** justify this discipline by a non-applicable 32k cap.
-3. **Yandex Completions quirks (adapter):** `model` = `gpt://{folder}/{name}/{version}` (not bare `Qwen…`); `response_format.type=json_schema` + `REMARK_JSON_SCHEMA`; **do not send `seed`** until vendor confirms; send `x-folder-id` + `x-data-logging-enabled: false` (recorded in usage/audit).
+1. **Budget caps (fail-closed):** max tokens per call / per run / per day; charge estimate on transport failure and on every 429 retry; optional `AEROBIM_LLM_BUDGET_LEDGER` for shared day counters across workers (without it: `budget_scope=process_local` — N workers ≈ N× daily cap); `AEROBIM_LLM_BUDGET_TZ` for day-roll (default UTC).
+2. **Structured findings only (not a 32k vendor limit):** Qwen on Studio has **262 144** context tokens (YandexGPT family is ~32k — not our path). Keep prompts to structured findings only for threat-model reasons: (i) minimize prompt-injection surface (`HYBRID_AI_THREAT_MODEL`); (ii) hold data class at INTERNAL; (iii) cost; (iv) provenance — the model must not see what it cannot cite. Document text is delimited as untrusted data; **model never sets severity**.
+3. **Yandex Completions quirks (adapter):** `model` = `gpt://{folder}/{name}/{version}` (not bare `Qwen…`); `response_format.type=json_schema` + `REMARK_JSON_SCHEMA`; **do not send `seed`** until vendor confirms; send `x-folder-id` + `x-data-logging-enabled: false` (recorded in usage/audit); `x-client-request-id` = opaque UUIDv4 only.
 4. **Report reproducibility ≠ model determinism:** verdict stays deterministic-core only (ADR-001). Studio vendor probes (P₁/P₂) measure provider behaviour; they are **not** a publication gate. Still pin exact model URI (no `/latest`/`/rc`).
-5. **Stamp/PII crop gate:** cloud VLM allowlists `layout_role=content` only, then clips stamp/title priors from the bbox; unknown role and unclippable pixel crops fail closed. Do not send stamp/title crops on C0/C1 without DPA / C2.
+5. **Stamp/PII crop gate:** allowlist `content` + visual priors mapped by PDF `/Rotate`; overflow CRS fail-closed; counters split by role/crs/clip. **Claim:** «PII-гейт активен; эффективность на реальных листах не измерена» — not «ПДн не уходят».
 6. **Activate grant / payment account before 2026-08-04**; check grant expiry vs KT#3 window.
 
 Operator checklist: folder ID, SA role `ai.languageModels.user`, API key scope `yc.ai.foundationModels.execute`, exact model version from AI Studio catalog.

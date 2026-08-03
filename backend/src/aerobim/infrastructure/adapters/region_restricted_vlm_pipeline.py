@@ -79,6 +79,8 @@ class SheetReadResult:
     region_plan_sha256: str = ""
     stamp_regions_excluded: int = 0
     excluded_by_role: int = 0
+    excluded_by_crs: int = 0
+    excluded_by_pii_clip: int = 0
     excluded_by_geometry: int = 0
     excluded_unknown_role: int = 0
     page_rotate_degrees: int | None = None
@@ -170,6 +172,8 @@ class RegionRestrictedVlmPipeline:
                 regions_detected=detected,
                 stamp_regions_excluded=plan.stamp_regions_excluded,
                 excluded_by_role=plan.excluded_by_role,
+                excluded_by_crs=plan.excluded_by_crs,
+                excluded_by_pii_clip=plan.excluded_by_pii_clip,
                 excluded_by_geometry=plan.excluded_by_geometry,
                 excluded_unknown_role=plan.excluded_unknown_role,
                 page_rotate_degrees=page_rotate,
@@ -196,6 +200,8 @@ class RegionRestrictedVlmPipeline:
             region_plan_sha256=_region_plan_sha256(plan.tasks),
             stamp_regions_excluded=plan.stamp_regions_excluded,
             excluded_by_role=plan.excluded_by_role,
+            excluded_by_crs=plan.excluded_by_crs,
+            excluded_by_pii_clip=plan.excluded_by_pii_clip,
             excluded_by_geometry=plan.excluded_by_geometry,
             excluded_unknown_role=plan.excluded_unknown_role,
             page_rotate_degrees=page_rotate,

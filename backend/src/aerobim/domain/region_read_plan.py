@@ -46,6 +46,8 @@ _NORM_EPS = 1e-9
 _MIN_EDGE = 1e-4
 # Outside [0,1] by more than this → CRS/CropBox desync (RT-STAMP-15).
 _OVERFLOW_TOL = 0.02
+# If clamping removes more than 1% of bbox area → treat as CRS desync (RT-STAMP-15).
+_CLAMP_AREA_CHANGE_MAX = 0.01
 
 BBox = tuple[float, float, float, float]
 _NORMALIZED_CRS = "normalized-0-1"
@@ -68,8 +70,12 @@ class RegionReadPlan:
     """Total excluded under PII guard (back-compat sum of role + geometry)."""
     excluded_by_role: int = 0
     """Not on cloud-safe allowlist (stamp/title/unknown)."""
+    excluded_by_crs: int = 0
+    """Unusable coordinates / absolute CRS / overflow (RT-STAMP-15/16)."""
+    excluded_by_pii_clip: int = 0
+    """Allowlisted region empty after PII prior clip."""
     excluded_by_geometry: int = 0
-    """CRS/rotate/overflow/empty-after-clip — signal detector or sheet mismatch."""
+    """Back-compat sum of ``excluded_by_crs`` + ``excluded_by_pii_clip``."""
     excluded_unknown_role: int = 0
     """Subset of role excludes that are not stamp/title_block (coverage alarm)."""
 
@@ -171,11 +177,19 @@ def _finalize_normalized(norm: BBox) -> BBox | None:
     """Clamp to [0,1]; reject significant out-of-page overflow (RT-STAMP-15)."""
     if any(c < -_OVERFLOW_TOL or c > 1.0 + _OVERFLOW_TOL for c in norm):
         return None
+    raw_area = _bbox_area(norm)
     clamped = (_clamp01(norm[0]), _clamp01(norm[1]), _clamp01(norm[2]), _clamp01(norm[3]))
     x0, y0 = min(clamped[0], clamped[2]), min(clamped[1], clamped[3])
     x1, y1 = max(clamped[0], clamped[2]), max(clamped[1], clamped[3])
     ordered = (x0, y0, x1, y1)
-    return ordered if _is_valid_bbox(ordered) else None
+    if not _is_valid_bbox(ordered):
+        return None
+    clamped_area = _bbox_area(ordered)
+    if raw_area > _MIN_EDGE * _MIN_EDGE:
+        lost = abs(raw_area - clamped_area) / raw_area
+        if lost > _CLAMP_AREA_CHANGE_MAX:
+            return None
+    return ordered
 
 
 def _scale_to_normalized(bbox: BBox, page_width: float, page_height: float) -> BBox | None:
@@ -251,7 +265,8 @@ def plan_region_reads(
         )
 
     excluded_role = 0
-    excluded_geom = 0
+    excluded_crs = 0
+    excluded_clip = 0
     excluded_unknown = 0
     tasks_list: list[RegionReadTask] = []
 
@@ -266,6 +281,7 @@ def plan_region_reads(
                 "VLM not invoked (fail-closed)"
             ),
             stamp_regions_excluded=n,
+            excluded_by_crs=n,
             excluded_by_geometry=n,
         )
 
@@ -298,12 +314,12 @@ def plan_region_reads(
 
         norm = _normalized_bbox(region)
         if norm is None:
-            excluded_geom += 1
+            excluded_crs += 1
             continue
 
         residuals = clip_pii_priors(norm, page_rotate_degrees=rotate)
         if not residuals:
-            excluded_geom += 1
+            excluded_clip += 1
             continue
 
         for part_i, part in enumerate(residuals):
@@ -317,6 +333,7 @@ def plan_region_reads(
                 )
             )
 
+    excluded_geom = excluded_crs + excluded_clip
     excluded_total = excluded_role + excluded_geom
     tasks = tuple(tasks_list)
     if not tasks:
@@ -324,7 +341,7 @@ def plan_region_reads(
         if excluded_total:
             reason = (
                 f"Layer 1: no cloud-safe regions after PII allowlist/clip "
-                f"(role={excluded_role}, geometry={excluded_geom}"
+                f"(role={excluded_role}, crs={excluded_crs}, pii_clip={excluded_clip}"
                 f"{f', unknown_role={excluded_unknown}' if excluded_unknown else ''}"
                 f"); VLM not invoked"
             )
@@ -333,13 +350,16 @@ def plan_region_reads(
             reason=reason,
             stamp_regions_excluded=excluded_total,
             excluded_by_role=excluded_role,
+            excluded_by_crs=excluded_crs,
+            excluded_by_pii_clip=excluded_clip,
             excluded_by_geometry=excluded_geom,
             excluded_unknown_role=excluded_unknown,
         )
     reason = f"Layer 1: {len(tasks)} region(s) queued for region-restricted VLM"
     if excluded_total:
         reason += (
-            f"; excluded role={excluded_role} geometry={excluded_geom}"
+            f"; excluded role={excluded_role} crs={excluded_crs} "
+            f"pii_clip={excluded_clip}"
             f"{f' unknown_role={excluded_unknown}' if excluded_unknown else ''} (PII guard)"
         )
     if excluded_unknown:
@@ -350,6 +370,8 @@ def plan_region_reads(
         tasks=tasks,
         stamp_regions_excluded=excluded_total,
         excluded_by_role=excluded_role,
+        excluded_by_crs=excluded_crs,
+        excluded_by_pii_clip=excluded_clip,
         excluded_by_geometry=excluded_geom,
         excluded_unknown_role=excluded_unknown,
     )

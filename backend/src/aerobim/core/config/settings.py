@@ -354,6 +354,10 @@ class Settings:
     """Semaphore for parallel Studio calls (cloud quota is shared; default 4 of 10)."""
     llm_429_retries: int = 3
     """Retries on HTTP 429 with linear backoff before fail-closed SKIPPED."""
+    llm_budget_tz: str = "UTC"
+    """IANA timezone for day-roll of ``max_tokens_per_day`` (AEROBIM_LLM_BUDGET_TZ)."""
+    llm_budget_ledger_path: Path | None = None
+    """Optional JSON ledger for cross-worker day counters (RT-BUDGET-03)."""
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -622,6 +626,12 @@ class Settings:
             llm_data_logging_enabled=_read_bool("AEROBIM_LLM_DATA_LOGGING_ENABLED", False),
             llm_max_concurrent=_read_int("AEROBIM_LLM_MAX_CONCURRENT", 4),
             llm_429_retries=_read_int("AEROBIM_LLM_429_RETRIES", 3),
+            llm_budget_tz=(os.getenv("AEROBIM_LLM_BUDGET_TZ") or "UTC").strip() or "UTC",
+            llm_budget_ledger_path=(
+                Path(raw_ledger)
+                if (raw_ledger := (os.getenv("AEROBIM_LLM_BUDGET_LEDGER") or "").strip())
+                else None
+            ),
         )
         # Yandex AI Studio defaults when provider is selected (operator may still override).
         if settings.llm_provider.strip().lower() == "yandex-ai-studio":

@@ -58,9 +58,11 @@ class _FakeDetector:
         return [
             DrawingRegionRef(
                 sheet_id="AR-01",
-                bbox_xyxy=(10.0, 10.0, 200.0, 120.0),
+                bbox_xyxy=(0.05, 0.05, 0.40, 0.30),
                 confidence=0.9,
                 modality="detector",
+                layout_role="content",
+                coordinate_system="normalized-0-1",
             )
         ]
 
@@ -96,7 +98,8 @@ class RegionSmokeReportTests(unittest.TestCase):
         reader = _CountingReader()
         with tempfile.TemporaryDirectory() as tmp:
             report = build_region_smoke_report(
-                _pipeline(reader, PyMuPDFRegionCropper(dpi=72)), _source(tmp)
+                _pipeline(reader, PyMuPDFRegionCropper(dpi=72, coordinate_system="normalized-0-1")),
+                _source(tmp),
             )
         self.assertEqual(report["status"], "roundtrip_ok")
         self.assertEqual(reader.calls, 1)

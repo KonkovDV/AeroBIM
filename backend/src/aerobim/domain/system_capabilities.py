@@ -387,12 +387,30 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "studio_profile": "private_yandex_ai_studio",
             "cloud_max_status": "NOT_VERIFIED",
             "requires_model_revision": True,
+            "token_budget_scope": "process_local_or_file_shared",
+            "token_budget_note": (
+                "Day counters are process-local unless AEROBIM_LLM_BUDGET_LEDGER is set; "
+                "N workers without a ledger ≈ N× daily cap (RT-BUDGET-03)"
+            ),
+            "pii_gate": {
+                "active": True,
+                "effectiveness_on_customer_sheets": "NOT_MEASURED",
+                "claim_boundary": (
+                    "PII gate active; effectiveness on real sheets not measured"
+                ),
+                "exclusion_counters": [
+                    "excluded_by_role",
+                    "excluded_by_geometry",
+                    "excluded_unknown_role",
+                ],
+            },
             "claim_boundary": (
                 "OpenAI-compat advisory (vLLM local or Yandex AI Studio RF) when "
                 "AEROBIM_LLM_LOCAL_ENABLED + AEROBIM_LLM_MODEL_REVISION; token caps "
                 "fail-closed; Alibaba Max NOT_VERIFIED; Studio cloud = PUBLIC/INTERNAL "
                 "only; never sets summary.passed; ai_generated drafts require expert "
-                "confirmation; unavailable model → SKIPPED not FAILED; not product accuracy"
+                "confirmation; unavailable model → SKIPPED not FAILED; not product accuracy; "
+                "model never sets severity (deterministic policy owns it)"
             ),
         },
         "forbidden_ok_states": {
