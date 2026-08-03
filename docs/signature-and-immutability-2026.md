@@ -7,6 +7,7 @@
 
 - Input file hashes (sha256) in reports / evidence bundles / package provenance paths exist in code.
 - Detached signature envelope schema `aerobim_detached_signature_envelope_v1`: presence, content SHA-256 integrity, required signer-role completeness, **presence-only** `signature_alg` / `signature_value` (no crypto verify), and optional multi-file `package_hashes` / `content_hashes` binding are assessed on fixture envelopes (`samples/signatures/`).
+- **Package source hash chain (RT-021 eng):** `aerobim.domain.package_source_integrity` + CLI `python -m aerobim.tools.emit_package_source_hash_chain emit|diff` — read-only SHA-256 inventory + chain digest so post-intake rewrite is detectable. Not УКЭП.
 - Claims Lock forbids «УКЭП проверена» / «подпись документа проверена» as legal claims.
 
 ## NOT VERIFIED / missing

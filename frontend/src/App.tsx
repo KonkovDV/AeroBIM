@@ -1207,6 +1207,12 @@ export default function App() {
                   <h3>Remark</h3>
                   {activeIssue ? (
                     <div className="remark-editor">
+                      {activeIssue.remark?.ai_generated ? (
+                        <p className="synthetic-content-mark" role="status">
+                          Синтетический контент (ИИ) · требуется подтверждение эксперта · не влияет на
+                          summary.passed
+                        </p>
+                      ) : null}
                       <p className="compact-copy">
                         <strong>{activeIssue.remark?.title ?? "Generated remark"}</strong>
                       </p>

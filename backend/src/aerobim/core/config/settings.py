@@ -372,7 +372,7 @@ class Settings:
     llm_budget_tz: str = "Europe/Moscow"
     """IANA timezone for day-roll of ``max_tokens_per_day`` (AEROBIM_LLM_BUDGET_TZ)."""
     llm_budget_ledger_path: Path | None = None
-    """Optional JSON ledger for cross-worker day counters (RT-BUDGET-03)."""
+    """Shared JSON day ledger (AEROBIM_LLM_BUDGET_LEDGER). Required when LLM ready (RT-031)."""
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -678,6 +678,11 @@ class Settings:
                 "AEROBIM_LLM_LOCAL_ENABLED requires AEROBIM_LLM_BASE_URL and either "
                 "AEROBIM_LLM_MODEL_REVISION (explicit version) or an unversioned "
                 "gpt://<folder>/<model> URI without /latest or /rc"
+            )
+        if settings.llm_local_ready() and settings.llm_budget_ledger_path is None:
+            raise RuntimeError(
+                "AEROBIM_LLM_BUDGET_LEDGER is required when LLM advisory is ready "
+                "(RT-031 fail-closed: shared day cap; process-local counters ×N workers)"
             )
         if settings.llm_local_enabled:
             try:

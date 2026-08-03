@@ -33,11 +33,13 @@ class AdjudicatorAgreementTests(unittest.TestCase):
         self.assertTrue(csv_path.exists())
         payload = measure_adjudication_csv(csv_path)
         self.assertEqual(payload["artifact_type"], "adjudicator_agreement")
-        self.assertEqual(payload["schema_version"], "1.1.0")
+        self.assertEqual(payload["schema_version"], "1.2.0")
         self.assertEqual(payload["paired_items"], 4)
         self.assertIn("confusion_matrix", payload)
         self.assertIn("krippendorff_alpha", payload)
+        self.assertIn("gwet_ac1", payload)
         self.assertIn("pass_alpha_0_67", payload)
+        self.assertIn("pass_ac1_0_60", payload)
         self.assertLess(float(payload["cohens_kappa"]), 1.0)
 
     def test_requires_two_adjudicators(self) -> None:

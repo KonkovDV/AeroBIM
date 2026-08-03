@@ -33,6 +33,8 @@ def _num(value: object) -> int | float | None:
 
 def _signals(raw: dict[str, object]) -> ExtractionIntegritySignals:
     rendered = raw.get("rendered_text_present")
+    text_digits = raw.get("extracted_digit_runs")
+    ocr_digits = raw.get("ocr_digit_runs")
     return ExtractionIntegritySignals(
         extracted_char_count=_num(raw.get("extracted_char_count")),  # type: ignore[arg-type]
         rendered_text_present=rendered if isinstance(rendered, bool) else None,
@@ -40,6 +42,8 @@ def _signals(raw: dict[str, object]) -> ExtractionIntegritySignals:
         hidden_text_char_count=_num(raw.get("hidden_text_char_count")),  # type: ignore[arg-type]
         offpage_text_char_count=_num(raw.get("offpage_text_char_count")),  # type: ignore[arg-type]
         duplicated_layer_count=_num(raw.get("duplicated_layer_count")),  # type: ignore[arg-type]
+        extracted_digit_runs=tuple(text_digits) if isinstance(text_digits, list) else None,
+        ocr_digit_runs=tuple(ocr_digits) if isinstance(ocr_digits, list) else None,
     )
 
 
@@ -80,10 +84,28 @@ def test_clean_extraction_is_ok_positive_control() -> None:
             hidden_text_char_count=0,
             offpage_text_char_count=0,
             duplicated_layer_count=0,
+            extracted_digit_runs=("200", "3000"),
+            ocr_digit_runs=("200", "3000"),
         )
     )
     assert result.status is ExtractionIntegrityStatus.OK
     assert result.trusted_as_evidence() is True
+
+
+def test_same_length_digit_spoof_is_failed() -> None:
+    # Visual «3000» vs text-layer «3300» — char counts match; digit collision fails.
+    result = assess_extraction_integrity(
+        ExtractionIntegritySignals(
+            extracted_char_count=40,
+            ocr_char_count=40,
+            rendered_text_present=True,
+            extracted_digit_runs=("3300",),
+            ocr_digit_runs=("3000",),
+        )
+    )
+    assert result.status is ExtractionIntegrityStatus.FAILED
+    assert result.trusted_as_evidence() is False
+    assert any("digit-run" in reason for reason in result.reasons)
 
 
 def test_no_signals_is_review_required_never_silent_ok() -> None:

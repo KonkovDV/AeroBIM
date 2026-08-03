@@ -40,8 +40,8 @@ Wired (`overlay_llm_remarks`). OFF==ON on UC path is non-vacuous once `LOCAL_ENA
 
 | Severity | Location | Finding |
 |---|---|---|
-| Medium | `settings.py` / `bootstrap._build_llm_advisory_provider` | `AEROBIM_LLM_BUDGET_LEDGER` documented as required for grant ops but **not fail-closed at boot** → N workers ≈ N× day cap on card-bound account |
-| Medium | `advisory_remark_overlay.py` | Analyze overlay calls Studio **without** `HybridRouteGate` / CLI hybrid audit parity |
+| Medium | `settings.py` / `bootstrap._build_llm_advisory_provider` | **MITIGATED (RT-031)** — ledger required when LLM ready; boot raises without `AEROBIM_LLM_BUDGET_LEDGER` |
+| Medium | `advisory_remark_overlay.py` | **MITIGATED (RT-030)** — `EvidenceAssembler` evaluates `HybridRouteGate` before overlay; Yandex→PUBLIC (CONFIDENTIAL blocked); local→LOCAL; audit in `tool_traces` |
 
 | Area | Verdict |
 |---|---|

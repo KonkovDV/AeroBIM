@@ -9,7 +9,9 @@ byte-identical.
 
 from __future__ import annotations
 
+import json
 import sys
+import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -111,6 +113,7 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
             llm_model="qwen3-235b",
             llm_model_revision="yandex://ai-studio/qwen3-235b@test-pin",
             llm_api_key="test-key-not-for-prod",
+            llm_budget_ledger_path=Path(tempfile.mkdtemp()) / "llm-budget.json",
         )
         self.assertFalse(off.llm_local_ready())
         self.assertTrue(on.llm_local_ready())
@@ -145,7 +148,13 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
 
         def verdict(container: object, tag: str) -> object:
             use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
-            report = use_case.execute(replace(request, request_id=f"llm-offon-{tag}"))
+            report = use_case.execute(
+                replace(
+                    request,
+                    request_id=f"llm-offon-{tag}",
+                    tenant_id=request.tenant_id or "tenant-fixture",
+                )
+            )
             signature = tuple(
                 sorted(
                     (

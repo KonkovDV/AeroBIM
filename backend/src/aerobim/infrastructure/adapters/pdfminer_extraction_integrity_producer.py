@@ -8,7 +8,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from aerobim.domain.extraction_integrity import ExtractionIntegritySignals
+from aerobim.domain.extraction_integrity import (
+    ExtractionIntegritySignals,
+    extract_digit_runs,
+)
 
 
 class PdfMinerExtractionIntegrityProducer:
@@ -27,6 +30,7 @@ class PdfMinerExtractionIntegrityProducer:
         hidden = 0
         offpage = 0
         visible_glyphs = False
+        all_plain: list[str] = []
 
         for page in extract_pages(str(path)):
             if not isinstance(page, LTPage):
@@ -71,8 +75,11 @@ class PdfMinerExtractionIntegrityProducer:
                         return
 
             _walk(page)
-            extracted += len("".join(plain_parts).strip())
+            page_text = "".join(plain_parts)
+            all_plain.append(page_text)
+            extracted += len(page_text.strip())
 
+        plain = "\n".join(all_plain)
         return ExtractionIntegritySignals(
             extracted_char_count=extracted,
             rendered_text_present=visible_glyphs if (extracted > 0 or visible_glyphs) else None,
@@ -80,6 +87,8 @@ class PdfMinerExtractionIntegrityProducer:
             offpage_text_char_count=offpage,
             duplicated_layer_count=0,
             ocr_char_count=None,
+            extracted_digit_runs=extract_digit_runs(plain),
+            ocr_digit_runs=None,
         )
 
 

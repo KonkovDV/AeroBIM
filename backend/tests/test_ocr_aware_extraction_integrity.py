@@ -66,6 +66,23 @@ class OcrAwareExtractionIntegrityTests(unittest.TestCase):
             any("OCR" in reason or "ocr" in reason.lower() for reason in result.reasons)
         )
 
+    def test_fake_ocr_digit_spoof_fails_probe(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            # Text layer embeds 3300; OCR of render reports 3000 (same length).
+            pdf = write_text_pdf(Path(tmp) / "spoof.pdf", "FireRating 3300")
+            producer = OcrAwareExtractionIntegrityProducer(
+                text_producer=PdfMinerExtractionIntegrityProducer(),
+                ocr_engine_factory=lambda: _FakeOcrEngine("FireRating 3000"),
+            )
+            status = probe_extraction_integrity(
+                producer,
+                (DrawingSource(path=pdf, format="pdf"),),
+            )
+            self.assertEqual(status.status, CapabilityState.FAILED)
+            signals = producer.produce(pdf)
+            self.assertEqual(signals.extracted_digit_runs, ("3300",))
+            self.assertEqual(signals.ocr_digit_runs, ("3000",))
+
     def test_fake_ocr_enriches_probe(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             pdf = write_text_pdf(Path(tmp) / "t.pdf", "WALL-01 thickness 200 mm")
@@ -82,6 +99,8 @@ class OcrAwareExtractionIntegrityTests(unittest.TestCase):
             signals = producer.produce(pdf)
             self.assertIsNotNone(signals.ocr_char_count)
             self.assertGreater(signals.ocr_char_count or 0, 0)
+            self.assertEqual(signals.extracted_digit_runs, ("200",))
+            self.assertEqual(signals.ocr_digit_runs, ("200",))
 
 
 if __name__ == "__main__":

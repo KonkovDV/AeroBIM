@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -114,6 +115,7 @@ class LlmLocalOffEqualsOnTests(unittest.TestCase):
             llm_model="Qwen3.6-27B",
             llm_model_revision="qwen3.6-27b@test-pin",
             llm_model_sha256="deadbeef",
+            llm_budget_ledger_path=Path(tempfile.mkdtemp()) / "llm-budget.json",
         )
         self.assertFalse(off.llm_local_ready())
         self.assertTrue(on.llm_local_ready())
@@ -147,7 +149,13 @@ class LlmLocalOffEqualsOnTests(unittest.TestCase):
 
         def verdict(container: object, tag: str) -> object:
             use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
-            report = use_case.execute(replace(request, request_id=f"llm-offon-{tag}"))
+            report = use_case.execute(
+                replace(
+                    request,
+                    request_id=f"llm-offon-{tag}",
+                    tenant_id=request.tenant_id or "tenant-fixture",
+                )
+            )
             signature = tuple(
                 sorted(
                     (
