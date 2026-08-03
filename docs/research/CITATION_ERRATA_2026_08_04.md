@@ -17,8 +17,8 @@ claim_boundary: >-
 
 | Citation | Where expected | Status | Action |
 |---|---|---|---|
-| `10.1016/j.aei.2025.103676` | External `research.md` (not in git); cited in Red Team notes | **VERIFIED** | Keep. Title: *Fine-tuning a large language model for automated code compliance…* (BuildThemis). Crossref + ScienceDirect abstract. Authors indexed as Shi/Solihin/Yeoh family in ACM/SD listings. |
-| `10.1016/j.aei.2026.103676` | Same twin pattern (year digit only) | **FABRICATED** | **Delete everywhere.** Crossref HTTP **404**. 2026 AEI article numbers in the 104xxx band; this “103676 twin” does not resolve. |
+| `10.1016/j.aei.2025.103676` | External `research.md` (not in git); cited in Red Team notes | **VERIFIED** DOI / **PARTIAL** if wrong title attached | Keep DOI. Correct title/authors: Shi/Solihin/Yeoh, *…automated code **compliance** of building regulations*, AEI 68(B), BuildThemis — not a bridge-VLM or “code checking in AEC” alias |
+| `10.1016/j.aei.2026.103676` | Same twin pattern (year digit only) | **FABRICATED** | **Delete everywhere.** Crossref HTTP **404**. Elsevier article numbers are not reused across years with a year-digit edit |
 | `10.1016/j.aei.2026.104735` | `docs/docs.md`, prior errata | **VERIFIED** | Keep. Crossref 2026: Zentgraf/Hagedorn et al., *A BIM-based framework for automated building code extraction…* |
 
 ## Non-academic claim (operator materials)

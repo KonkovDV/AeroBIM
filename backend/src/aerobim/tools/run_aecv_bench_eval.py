@@ -244,7 +244,8 @@ def build_executive_summary(
             ),
             "errors": live.get("errors"),
             "macro_exact_match_rate": summary.get("macro_exact_match_rate"),
-            "macro_exact_match_rate_paper_four_fields": (
+            "macro_extended": summary.get("macro_exact_match_rate"),
+            "macro_bench_protocol": (
                 round(
                     sum(
                         (per_field.get(f) or {}).get("exact_match_rate") or 0.0
@@ -259,10 +260,24 @@ def build_executive_summary(
                 )
                 else None
             ),
-            "macro_four_fields_note": (
-                "AECV-Bench paper Table 1 mean is over Door/Window/Bedroom/Toilet only. "
-                "AeroBIM five-field macro also includes Space and is not directly comparable."
-            ),
+            "macro_definition": {
+                "macro_bench_protocol": (
+                    "Mean exact-match over Door/Window/Bedroom/Toilet only — "
+                    "AECV-Bench paper Tables 1–2 protocol (arXiv:2601.04819 §3.1.1). "
+                    "Publish this for external compare."
+                ),
+                "macro_extended": (
+                    "Five-field mean including Space (prompt mentions Spaces/Rooms; "
+                    "paper does not score Space). Internal observation only; "
+                    "do not compare to Table 1 mean."
+                ),
+                "comparability_gates": [
+                    "prompt verbatim vs paper §3.1.2",
+                    "error plans: exclude vs count-as-miss (117 vs 120)",
+                    "infra: OpenRouter/Cohere vs Yandex Studio preprocess",
+                    "model id: not same as paper Qwen3-VL-8B",
+                ],
+            },
             "macro_mape": summary.get("macro_mape"),
             "per_field": {
                 field: {
@@ -293,6 +308,9 @@ def build_executive_summary(
                 if p.get("status") == "error"
             ],
         }
+        out["live"]["macro_exact_match_rate_paper_four_fields"] = out["live"][
+            "macro_bench_protocol"
+        ]
         # Window vs Space: same exact can hide different failure modes.
         win = per_field.get("Window") or {}
         space = per_field.get("Space") or {}

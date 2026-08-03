@@ -1,7 +1,7 @@
 {
   "artifact_type": "aecv_bench_eval",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-03T22:07:25.385105+00:00",
+  "generated_at": "2026-08-03T22:09:24.881879+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "AECV-Bench open_bench_only (arXiv:2601.04819). Drawing-literacy baseline on public floor plans. NOT AeroBIM product accuracy. Never >90% as product. Does not close RT-001.",
   "closes_rt001": false,
@@ -4601,7 +4601,7 @@
       }
     ],
     "min_image_bytes_vendor_reject": 12288,
-    "enriched_at": "2026-08-03T22:07:25.577120+00:00",
+    "enriched_at": "2026-08-03T22:09:25.051638+00:00",
     "enriched_from": "C:\\plans\\AeroBIM\\docs\\evidence\\aecv-bench-eval-latest.json"
   },
   "executive_summary": {
@@ -4617,8 +4617,18 @@
       "plans_scored": 117,
       "errors": 3,
       "macro_exact_match_rate": 0.4325,
-      "macro_exact_match_rate_paper_four_fields": 0.5064,
-      "macro_four_fields_note": "AECV-Bench paper Table 1 mean is over Door/Window/Bedroom/Toilet only. AeroBIM five-field macro also includes Space and is not directly comparable.",
+      "macro_extended": 0.4325,
+      "macro_bench_protocol": 0.5064,
+      "macro_definition": {
+        "macro_bench_protocol": "Mean exact-match over Door/Window/Bedroom/Toilet only — AECV-Bench paper Tables 1–2 protocol (arXiv:2601.04819 §3.1.1). Publish this for external compare.",
+        "macro_extended": "Five-field mean including Space (prompt mentions Spaces/Rooms; paper does not score Space). Internal observation only; do not compare to Table 1 mean.",
+        "comparability_gates": [
+          "prompt verbatim vs paper §3.1.2",
+          "error plans: exclude vs count-as-miss (117 vs 120)",
+          "infra: OpenRouter/Cohere vs Yandex Studio preprocess",
+          "model id: not same as paper Qwen3-VL-8B"
+        ]
+      },
       "macro_mape": 0.2408,
       "per_field": {
         "Door": {
@@ -4678,7 +4688,8 @@
           "detail": "HTTP Error 400: Bad Request",
           "image_bytes": 10806
         }
-      ]
+      ],
+      "macro_exact_match_rate_paper_four_fields": 0.5064
     },
     "failure_mode_contrast": {
       "Window": {
@@ -4772,6 +4783,6 @@
       }
     }
   },
-  "output_sha256": "42a173f137ff15bf381d81bf6de79616109829111b91526bbcdff308c8519c38",
+  "output_sha256": "c1eff350f3dbff9a247890798636208a75aea777f495bcebd14cf7a4a5102ac4",
   "output_path": "..\\artifacts\\open-bench\\aecv-bench-eval.json"
 }
