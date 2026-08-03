@@ -1,8 +1,8 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.0",
-  "commit_sha": "pending-rt-wave",
-  "tree_sha": "pending-rt-wave",
+  "commit_sha": "9ac2cac0e39597f1fd508c595de142f997cfdc67",
+  "tree_sha": "9ac2cac0e39597f1fd508c595de142f997cfdc67",
   "working_tree_clean": false,
   "generated_at": "2026-08-03T14:45:00+00:00",
   "corpus_kind": "fixture",
