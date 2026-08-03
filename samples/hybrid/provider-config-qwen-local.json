@@ -1,14 +1,21 @@
 {
   "artifact_type": "aerobim_hybrid_provider_config",
-  "schema_version": "1.0.0",
-  "claim_boundary": "Local open-weight advisory only. Cloud qwen3.8-max is NOT_VERIFIED and must never be the default. Advisory never sets summary.passed.",
+  "schema_version": "1.1.0",
+  "claim_boundary": "Same OpenAI-compat adapter for loopback vLLM and Yandex AI Studio. Cloud Alibaba qwen3.8-max NOT_VERIFIED. Advisory never sets summary.passed. Studio cloud = PUBLIC/INTERNAL only; CONFIDENTIAL/RESTRICTED → on-prem Studio or local weights.",
   "profiles": {
     "private_qwen_local": {
       "tier": "local",
       "provider": "qwen-local",
       "model_id": "Qwen3.6-27B",
       "deterministic": false,
-      "notes": "OpenAI-compat vLLM/SGLang on-prem. Pin checkpoint via AEROBIM_LLM_MODEL_SHA256."
+      "notes": "Loopback vLLM/SGLang. Pin checkpoint via AEROBIM_LLM_MODEL_SHA256."
+    },
+    "private_yandex_ai_studio": {
+      "tier": "private",
+      "provider": "yandex-ai-studio",
+      "model_id": "qwen3-235b / pin URI+version",
+      "deterministic": false,
+      "notes": "KT#2 T2 private_shared RF cloud for PUBLIC/INTERNAL open corpora. Pilot T1 = same adapter, on-prem Studio base_url. Hard token caps required."
     },
     "local_vlm": {
       "tier": "local",
@@ -27,7 +34,7 @@
       "provider": "alibaba-model-studio",
       "model_id": "qwen3.8-max",
       "deterministic": false,
-      "notes": "FORBIDDEN default. Keep for honesty matrix only — NOT_VERIFIED; never route CONFIDENTIAL/RESTRICTED."
+      "notes": "FORBIDDEN default. NOT_VERIFIED; never route CONFIDENTIAL/RESTRICTED."
     },
     "public_kimi_k3": {
       "tier": "public",
@@ -44,9 +51,14 @@
   },
   "tier_defaults": {
     "local": "private_qwen_local",
-    "private": "private_vlm",
+    "private": "private_yandex_ai_studio",
     "public": "public_kimi_k3"
   },
   "human_review_profile": "human_review",
-  "forbidden_defaults": ["public_qwen38_max"]
+  "forbidden_defaults": ["public_qwen38_max"],
+  "grant_split": {
+    "ai_studio_rub": 16000,
+    "gpu_t4_rub": 4000,
+    "gpu_t4_use": "OCR/PDF render for EXTRACTION_INTEGRITY — not LLM hosting"
+  }
 }

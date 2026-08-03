@@ -1,62 +1,60 @@
 ---
-title: "Qwen local advisory — KT#2 executable plan"
+title: "Qwen / Yandex AI Studio — KT#2 executable plan"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 last_updated: "2026-08-03"
-claim_boundary: "Engineering plan. Local open-weight advisory only. Cloud Max forbidden. Checkpoint NO_GO."
+claim_boundary: "Engineering plan. Alibaba Max forbidden. Yandex Studio RF = T2 PUBLIC/INTERNAL. Checkpoint NO_GO."
 source_report: "docs/architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md"
+grant_note: "docs/architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md"
 ---
 
-# Qwen local — KT#2 plan (4–20 Aug 2026)
+# Qwen + Yandex AI Studio — KT#2 plan (4–20 Aug 2026)
 
-## Decision lock (from report)
+## Decision lock
 
 | Choice | Status |
 |---|---|
-| Cloud `qwen3.8-max` / Model Studio | **FORBIDDEN** — profile `public_qwen38_max` = `NOT_VERIFIED`, never default |
-| Local open weights (3.6-27B / 35B-A3B now; 3.8-27B later) | **TARGET** |
-| Verdict path / `summary.passed` | **UNTOUCHED** — OFF==ON must stay green |
-| Entry scenario | **5.1** finding→remark RU/EN (then 5.2, then 5.3) |
+| Alibaba `qwen3.8-max` | **FORBIDDEN** — `public_qwen38_max` NOT_VERIFIED |
+| Yandex AI Studio cloud (RF grant) | **KT#2 T2** — PUBLIC/INTERNAL open corpora; same OpenAI-compat adapter |
+| AI Studio on-prem / local vLLM | **Pilot T1** — CONFIDENTIAL/RESTRICTED path; change `base_url` only |
+| GPU T4 grant track | **OCR/PDF render** — not LLM |
+| Verdict / `summary.passed` | **UNTOUCHED** — OFF==ON |
+| Entry scenario | **5.1** remark compose → **5.2** TZ→IDS → **5.3** VLM (KT#3) |
 
-## Week 1 (4–10 Aug) — in flight
+## Week 1 — landed / hardening
 
-| ID | Deliverable | Done when |
+| ID | Deliverable | Status |
 |---|---|---|
-| W1-01 | Sample provider config with `private_qwen_local` + stub `public_qwen38_max` | File under `samples/hybrid/` |
-| W1-02 | OpenAI-compat local LLM adapter (vLLM) + DI token | Tests with injectable transport; no network in CI |
-| W1-03 | Settings `AEROBIM_LLM_*` for local endpoint / model / checkpoint hash | Fail-closed when unset |
-| W1-04 | Domain compose: structured finding → `LlmRequest` → schema-guarded remark | Model cannot invent findings |
-| W1-05 | CLI `compose_advisory_remark` (opt-in; not Analyze default) | Draft marked `ai_generated` + expert required |
-| W1-06 | Capabilities honesty: `llm_advisory` reflects local/skipped/not_verified | SKIPPED ≠ FAILED for missing model |
-| W1-07 | OFF==ON extended for LLM local flag | CI gate |
-| W1-08 | Claims Lock / matrix allowed wording | No «Qwen 3.8 in product» |
-
-**Out of Week 1:** real vLLM install in customer air-gap (operator runbook only); VLM crops (5.3); TZ→IDS compiler (5.2).
+| W1-01…08 | Profile, adapter, compose CLI, OFF==ON, Claims wording | **Done** (`c52023c`) |
+| W1-09 | Token budget caps per call/run/day (fail-closed) | **Done** |
+| W1-10 | `private_yandex_ai_studio` profile + grant note | **Done** |
+| W1-11 | Operator: activate grant before 2026-08-04; pin model URI | Operator |
+| W1-12 | `audit_event.usage` + `probe_llm_reproducibility` scaffold | **Done** |
 
 ## Week 2 (11–20 Aug)
 
 | ID | Deliverable |
 |---|---|
-| W2-01 | Scenario 5.2: LLM candidates → existing IDS/XSD verifier → WP-04 expert journal |
-| W2-02 | `bench_hybrid_contour` metrics: latency, egress=0, schema-deviation |
-| W2-03 | Open-corpora timing pins (BSI regression already vendored) |
-| W2-04 | Claims Lock + capability matrix refresh for KT#2 drop |
+| W2-01 | Scenario 5.2: LLM candidates → IDS/XSD verifier → WP-04 journal |
+| W2-02 | Reproducibility experiment (`temperature=0`, +14d hash) → `reproducible` flag |
+| W2-03 | `bench_hybrid_contour` + open-corpora timing; budget counters in artifacts |
+| W2-04 | T4 track: batch OCR/render for EXTRACTION_INTEGRITY corpora |
+| W2-05 | Claims Lock / matrix refresh for KT#2 drop |
 
 ## KT#3 (Sep)
 
-- Migrate model id to Qwen3.8-27B **only** after SBOM/license gate + same-corpus rebench.
-- Scenario 5.3 region-crop VLM + extraction-integrity second signal.
-- Never claim Max / >90% / «ИИ проверяет нормы».
+- On-prem Studio or local 3.8-27B after SBOM/license; same-corpus rebench.
+- Scenario 5.3 region-crop VLM.
+- Watch grant expiry vs self-pay.
 
-## Non-goals (hard)
+## Non-goals
 
-Fine-tune · model-as-router · GraphRAG-as-product · autonomous agent pass · showing model output as a finding on demo.
+Fine-tune · model-as-router · GraphRAG-as-product · autonomous agent · model output as finding on demo · T4 for 27B LLM.
 
 ## Verification
 
 ```bash
 cd backend
-python -m pytest tests/test_advisory_vlm_off_equals_on.py tests/test_qwen_local_advisory.py -q
+python -m pytest tests/test_qwen_local_advisory.py tests/test_advisory_vlm_off_equals_on.py -q
 python -m aerobim.tools.compose_advisory_remark --help
-python -m aerobim.tools.export_runtime_baseline --check-readme --check-complete
 ```

@@ -700,13 +700,19 @@ def _build_model_router(settings: Settings) -> ModelRouter:
 
 
 def _build_llm_advisory_provider(settings: Settings):
-    """Local Qwen/vLLM OpenAI-compat provider or disabled placeholder (not verdict)."""
+    """OpenAI-compat advisory provider (vLLM / Yandex AI Studio) or disabled stub."""
 
     from aerobim.domain.llm_advisory import DisabledLlmProvider
+    from aerobim.domain.llm_token_budget import LlmTokenBudget
     from aerobim.infrastructure.adapters.openai_compat_llm_provider import OpenAICompatLlmProvider
 
     if not settings.llm_local_ready():
         return DisabledLlmProvider()
+    budget = LlmTokenBudget(
+        max_tokens_per_call=settings.llm_max_tokens_per_call,
+        max_tokens_per_run=settings.llm_max_tokens_per_run,
+        max_tokens_per_day=settings.llm_max_tokens_per_day,
+    )
     return OpenAICompatLlmProvider(
         base_url=settings.llm_base_url or "",
         model=settings.llm_model,
@@ -714,6 +720,8 @@ def _build_llm_advisory_provider(settings: Settings):
         provider=settings.llm_provider,
         model_sha256=settings.llm_model_sha256,
         timeout_seconds=settings.llm_timeout_seconds,
+        budget=budget,
+        max_completion_tokens=settings.llm_max_completion_tokens,
     )
 
 

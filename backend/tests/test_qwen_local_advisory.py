@@ -185,14 +185,18 @@ class ComposeToolTests(unittest.TestCase):
             locale="en",
             request_id="r",
             provider=provider,
+            settings=Settings.from_env(),
         )
         self.assertEqual(result["status"], "OK")
         self.assertTrue(result["ai_generated"])
         self.assertEqual(result["verdict_impact"], "none")
+        self.assertIn("audit_event", result)
+        self.assertEqual(result["audit_event"]["task_type"], "compose_advisory_remark")
+        self.assertIn("usage", result["audit_event"])
 
 
 class ProviderConfigSampleTests(unittest.TestCase):
-    def test_sample_config_has_local_and_forbidden_cloud(self) -> None:
+    def test_sample_config_has_local_studio_and_forbidden_cloud(self) -> None:
         path = (
             Path(__file__).resolve().parents[2]
             / "samples"
@@ -201,9 +205,58 @@ class ProviderConfigSampleTests(unittest.TestCase):
         )
         data = json.loads(path.read_text(encoding="utf-8"))
         self.assertIn("private_qwen_local", data["profiles"])
+        self.assertIn("private_yandex_ai_studio", data["profiles"])
         self.assertIn("public_qwen38_max", data["profiles"])
-        self.assertEqual(data["tier_defaults"]["local"], "private_qwen_local")
+        self.assertEqual(data["tier_defaults"]["private"], "private_yandex_ai_studio")
         self.assertIn("public_qwen38_max", data["forbidden_defaults"])
+        self.assertIn("OCR", data["grant_split"]["gpu_t4_use"])
+
+
+class LlmTokenBudgetTests(unittest.TestCase):
+    def test_per_call_and_per_run_fail_closed(self) -> None:
+        from aerobim.domain.llm_token_budget import LlmTokenBudget
+
+        budget = LlmTokenBudget(
+            max_tokens_per_call=100,
+            max_tokens_per_run=150,
+            max_tokens_per_day=10_000,
+        )
+        self.assertEqual(budget.check_before(estimated_tokens=101), "budget_exceeded:per_call")
+
+        budget2 = LlmTokenBudget(
+            max_tokens_per_call=1000,
+            max_tokens_per_run=100,
+            max_tokens_per_day=10_000,
+        )
+        budget2.record(prompt_tokens=80, completion_tokens=10)
+        self.assertEqual(budget2.check_before(estimated_tokens=20), "budget_exceeded:per_run")
+
+    def test_provider_blocks_before_transport(self) -> None:
+        from aerobim.domain.llm_token_budget import LlmTokenBudget
+
+        calls: list[int] = []
+
+        def transport(_url: str, _headers: dict[str, str], _body: bytes) -> bytes:
+            calls.append(1)
+            raise AssertionError("transport must not run when budget blocks")
+
+        provider = OpenAICompatLlmProvider(
+            base_url="http://127.0.0.1:8000/v1",
+            model="Qwen3.6-27B",
+            transport=transport,
+            budget=LlmTokenBudget(
+                max_tokens_per_call=10, max_tokens_per_run=10, max_tokens_per_day=10
+            ),
+            max_completion_tokens=8,
+        )
+        request = build_remark_llm_request(
+            request_id="budget",
+            findings=({"finding_id": "f", "message": "x" * 200},),
+        )
+        response = provider.generate(request)
+        self.assertEqual(response.status, "blocked_by_policy")
+        self.assertTrue(any("budget_exceeded" in u for u in response.uncertainties))
+        self.assertEqual(calls, [])
 
 
 if __name__ == "__main__":
