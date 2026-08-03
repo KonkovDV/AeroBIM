@@ -722,6 +722,7 @@ def _build_llm_advisory_provider(settings: Settings):
         timeout_seconds=settings.llm_timeout_seconds,
         budget=budget,
         max_completion_tokens=settings.llm_max_completion_tokens,
+        allowed_hosts=frozenset(settings.llm_allowed_hosts),
     )
 
 

@@ -13,6 +13,10 @@ from collections.abc import Callable
 from typing import Any
 from urllib.parse import urlparse
 
+from aerobim.core.config.settings import (
+    _DEFAULT_LLM_ALLOWED_HOSTS,
+    assert_llm_base_host_allowed,
+)
 from aerobim.domain.advisory_remark_compose import REMARK_JSON_SCHEMA
 from aerobim.domain.llm_advisory import LlmRequest, LlmResponse
 from aerobim.domain.llm_token_budget import LlmTokenBudget
@@ -41,6 +45,7 @@ class OpenAICompatLlmProvider:
         transport: Transport | None = None,
         budget: LlmTokenBudget | None = None,
         max_completion_tokens: int = 512,
+        allowed_hosts: frozenset[str] | tuple[str, ...] | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._model = model
@@ -53,6 +58,10 @@ class OpenAICompatLlmProvider:
         self._transport = transport or self._default_transport
         self._budget = budget or LlmTokenBudget()
         self._max_completion_tokens = max(1, int(max_completion_tokens))
+        self._allowed_hosts = frozenset(allowed_hosts or _DEFAULT_LLM_ALLOWED_HOSTS)
+        # Defense-in-depth: re-check even if Settings was built without from_env.
+        if self._base_url:
+            assert_llm_base_host_allowed(self._base_url, self._allowed_hosts)
 
     def __repr__(self) -> str:
         host = urlparse(self._base_url).hostname or "unknown"
@@ -67,6 +76,8 @@ class OpenAICompatLlmProvider:
             safe_urlopen,
         )
 
+        # Host allowlist again at call time (deny markers beat AEROBIM_LLM_ALLOWED_HOSTS).
+        assert_llm_base_host_allowed(url, self._allowed_hosts)
         host = (urlparse(url).hostname or "").lower()
         request = urllib.request.Request(url, data=body, headers=headers, method="POST")
         if host in _LOOPBACK:

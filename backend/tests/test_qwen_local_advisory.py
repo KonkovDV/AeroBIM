@@ -245,6 +245,13 @@ class LlmHostAllowlistTests(unittest.TestCase):
             _DEFAULT_LLM_ALLOWED_HOSTS,
         )
 
+    def test_adapter_rejects_alibaba_even_without_from_env(self) -> None:
+        with self.assertRaises(RuntimeError):
+            OpenAICompatLlmProvider(
+                base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+                model="qwen-max",
+            )
+
 
 class LlmTokenBudgetTests(unittest.TestCase):
     def test_per_call_and_per_run_fail_closed(self) -> None:
