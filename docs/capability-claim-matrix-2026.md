@@ -46,8 +46,9 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Entire product is MIT (no third-party disclosure) | — | MIT for AeroBIM code; PDF/IFC stack has own licenses (LIC-001 Option B) |
 | Production-ready / external academic audit | — | Self-audit + NO_GO |
 | Hybrid AI makes the public API safe for customer data / masking = anonymity | — | Route only *policy-eligible*; masking reduces disclosure, not anonymity; WP-02 advisory pre-gate ≠ verdict path / anonymity guarantee |
-| Cloud Qwen 3.8-Max / Model Studio in product | Contour + Claims Lock | Profile `public_qwen38_max` stays NOT_VERIFIED; never default; local open-weight only |
-| «Qwen 3.8 in product» without SBOM pin | Weights not in offline bundle | Speak of local open-weight advisory (3.6 now; 3.8-27B after license gate) |
+| Cloud Qwen 3.8-Max / Alibaba Model Studio in product | Contour + Claims Lock | Profile `public_qwen38_max` stays NOT_VERIFIED; never default |
+| Samolet CONFIDENTIAL via Yandex Studio *cloud* | Hybrid classification | Studio cloud = PUBLIC/INTERNAL only; on-prem Studio or local for RESTRICTED |
+| «Qwen 3.8 in product» without SBOM pin | Weights not in offline bundle | Local open-weight or Studio URI+version pin with evidence |
 | Open-corpora binary match / timing = product accuracy | RT-001 | WP-06 regression/timing only; fixture n=7 + BSI IDS n=290 (CC BY-ND); never >90% |
 | OIDC BFF / SSO ready | POST-05 Phase 3 IdP | Phase 2 stubs only; `auth_bff.status=NOT_IMPLEMENTED` |
 | УКЭП / trust chain verified | crypto adapter missing | Envelope presence/hash audit only; `trust_chain=not_verified` |
@@ -68,6 +69,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
 | Hybrid AI routing + WP-02 advisory pre-gate | `domain/hybrid/*` + `HybridRouteGate` on Analyze advisory; OFF==ON; never sets `summary.passed` — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) · [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md) |
 | Local Qwen advisory remark compose (KT#2 W1) | `private_qwen_local` + `OpenAICompatLlmProvider` + `compose_advisory_remark`; `ai_generated` + expert required; cloud Max NOT_VERIFIED — [`QWEN_LOCAL_KT2_PLAN`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) |
+| Yandex AI Studio grant path (KT#2 T2) | Same adapter; `private_yandex_ai_studio`; token caps; RF cloud for open corpora; on-prem for pilot — [`YANDEX_AI_STUDIO_GRANT`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md) |
 | Runtime baseline complete (WP-01) | `docs/evidence/runtime-baseline-latest.json` schema 1.2.0; CI `--check-complete` / `--check-readme` |
 | Detached signature envelope (WP-03) | `qualified_signature` ENG_PARTIAL; trust_chain NOT_VERIFIED — never «УКЭП проверена» |
 | Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + journal; RT-002 OPEN |

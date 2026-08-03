@@ -221,6 +221,11 @@ class Settings:
     llm_model_sha256: str | None = None
     """Optional checkpoint pin recorded in advisory usage / audit (never a secret)."""
     llm_timeout_seconds: float = 60.0
+    llm_max_tokens_per_call: int = 4_096
+    llm_max_tokens_per_run: int = 500_000
+    llm_max_tokens_per_day: int = 2_000_000
+    llm_max_completion_tokens: int = 512
+    """Hard caps for advisory LLM (Yandex grant / repair-loop fail-closed)."""
 
     def kimi_advisory_ready(self) -> bool:
         """True only when K3 advisory is safe to invoke.
@@ -237,10 +242,11 @@ class Settings:
         return bool(self.kimi_api_base_url and self.kimi_api_key)
 
     def llm_local_ready(self) -> bool:
-        """True when local OpenAI-compat advisory LLM may be invoked.
+        """True when OpenAI-compat advisory LLM may be invoked.
 
         Fail-closed: disabled by default; requires explicit enable + base URL.
-        Does not authorize cloud Max / Model Studio — use only on-prem endpoints.
+        Covers loopback vLLM and RF private endpoints (e.g. Yandex AI Studio).
+        Does not authorize Alibaba cloud Max.
         """
 
         if not self.llm_local_enabled:
@@ -467,6 +473,10 @@ class Settings:
             llm_timeout_seconds=float(
                 (os.getenv("AEROBIM_LLM_TIMEOUT_SECONDS") or "60").strip() or "60"
             ),
+            llm_max_tokens_per_call=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_CALL", 4_096),
+            llm_max_tokens_per_run=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_RUN", 500_000),
+            llm_max_tokens_per_day=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_DAY", 2_000_000),
+            llm_max_completion_tokens=_read_int("AEROBIM_LLM_MAX_COMPLETION_TOKENS", 512),
         )
         # SSRF gate for config-sourced outbound endpoints (fail closed at boot).
         from aerobim.core.security.outbound_url import (
@@ -511,8 +521,18 @@ class Settings:
 
         if settings.llm_base_url:
             try:
-                # Local vLLM is typically http://127.0.0.1 — datastore host allowlist.
-                assert_safe_datastore_url(settings.llm_base_url)
+                from urllib.parse import urlparse as _urlparse
+
+                host = (_urlparse(settings.llm_base_url).hostname or "").lower()
+                if host in {"localhost", "127.0.0.1", "::1"}:
+                    assert_safe_datastore_url(settings.llm_base_url)
+                else:
+                    # Yandex AI Studio / remote private HTTPS endpoint.
+                    assert_safe_outbound_url(
+                        settings.llm_base_url,
+                        allow_http=False,
+                        resolve_dns=env_name not in _DEV_ENVIRONMENTS,
+                    )
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"AEROBIM_LLM_BASE_URL failed SSRF gate: {exc}") from exc
         # Redis / Postgres URLs: SSRF gate when not localhost / unix socket (RTATOM-I09/I10).

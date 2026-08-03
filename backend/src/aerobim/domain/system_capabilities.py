@@ -386,8 +386,9 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "local_profile": "private_qwen_local",
             "cloud_max_status": "NOT_VERIFIED",
             "claim_boundary": (
-                "Local open-weight advisory (finding→remark) when AEROBIM_LLM_LOCAL_ENABLED; "
-                "cloud qwen3.8-max forbidden/NOT_VERIFIED; never sets summary.passed; "
+                "OpenAI-compat advisory (vLLM local or Yandex AI Studio RF) when "
+                "AEROBIM_LLM_LOCAL_ENABLED; token caps fail-closed; Alibaba Max "
+                "NOT_VERIFIED; Studio cloud = PUBLIC/INTERNAL only; never sets summary.passed; "
                 "ai_generated drafts require expert confirmation; not product accuracy"
             ),
         },
