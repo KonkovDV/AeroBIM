@@ -544,6 +544,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             package_inventory_loader=current.resolve(Tokens.PACKAGE_INVENTORY_LOADER),
             llm_advisory_provider=current.resolve(Tokens.LLM_ADVISORY_PROVIDER),
             remark_locale=current.resolve(Tokens.SETTINGS).remark_locale,
+            llm_advisory_max_issues=current.resolve(Tokens.SETTINGS).llm_advisory_max_issues,
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

@@ -409,7 +409,11 @@ AeroBIM решает конкретную задачу: уменьшает об�
 ### Бенчмарки и публикации
 
 - AECV-Bench: https://arxiv.org/abs/2601.04819
+- AEC-Bench (agentic; Apache 2.0): https://arxiv.org/abs/2603.29199 · https://github.com/nomic-ai/aec-bench
+- MechVQA (Recognition / Reasoning / Judging; ICML 2026): https://arxiv.org/abs/2605.30794
 - BRAVO Bench: https://mediatum.ub.tum.de/doc/1854636/document.pdf
+- IFC-Bench-v1 (Hellin et al.): https://github.com/sylvainHellin/ifc-bench · HF V2: https://huggingface.co/datasets/sylvainhellin/ifc-bench
+- Arch-Eval (Wu et al., Sci Rep 2025): https://www.nature.com/articles/s41598-025-98236-0
 - Perov et al., From Regulations to IDS: https://doi.org/10.1109/icdmw69685.2025.00203
 - IFC-QA: https://openreview.net/pdf?id=H6vTDjJMZ9
 - Zentgraf et al., Advanced Engineering Informatics, 2026: https://doi.org/10.1016/j.aei.2026.104735
@@ -418,6 +422,8 @@ AeroBIM решает конкретную задачу: уменьшает об�
 - Mirhosseini et al., Building Research & Information, 2026: https://doi.org/10.1080/09613218.2026.2637965
 - Human-in-the-Loop rule generation: https://www.mdpi.com/2075-5309/16/4/719
 - AI in BIM clash management: https://www.mdpi.com/2075-5309/16/13/2623
+
+**Уровни чисел (не смешивать):** L1 open-bench baseline (`claim_level=open_bench_only`, см. [`quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) + [`evidence/ifc-bench-v1-smoke-latest.json`](evidence/ifc-bench-v1-smoke-latest.json) + [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json): live Yandex `qwen3.6-35b-a3b` counting macro exact-match **0.4325**, ≠ RT-001) · L2 fixture/open-corpora regression · L3 customer adjudicated (RT-001). Red Team: [`quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md). AECV capability gradient (комнаты сильнее символов) — *open-bench*, не KPI AeroBIM.
 
 ### Конкуренты
 

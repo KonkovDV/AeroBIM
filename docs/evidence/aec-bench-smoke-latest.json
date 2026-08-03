@@ -1,0 +1,83 @@
+{
+  "artifact_type": "aec_bench_smoke",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-03T21:31:53.348774+00:00",
+  "claim_level": "open_bench_only",
+  "claim_boundary": "AEC-Bench open_bench_only (arXiv:2603.29199). Prefetch/inventory of public agentic tasks. Agent trial scores are NOT AeroBIM product accuracy and do not close RT-001.",
+  "closes_rt001": false,
+  "benchmark": {
+    "name": "AEC-Bench",
+    "arxiv": "2603.29199",
+    "dataset_root": "C:\\plans\\AeroBIM\\.local\\aec-bench",
+    "instance_count": 196,
+    "by_scope": {
+      "intradrawing": 89,
+      "intraproject": 64,
+      "intrasheet": 43
+    },
+    "by_family": {
+      "intradrawing/cross-reference-resolution": 51,
+      "intradrawing/cross-reference-tracing": 24,
+      "intradrawing/sheet-index-consistency": 14,
+      "intraproject/drawing-navigation": 12,
+      "intraproject/spec-drawing-sync": 16,
+      "intraproject/submittal-review": 36,
+      "intrasheet/detail-technical-review": 14,
+      "intrasheet/detail-title-accuracy": 15,
+      "intrasheet/note-callout-accuracy": 14
+    }
+  },
+  "prefetch": [
+    {
+      "status": "ok",
+      "scope": "intrasheet",
+      "family": "note-callout-accuracy",
+      "instance": "03addendum-joist-beam-mismatch",
+      "downloads": [
+        {
+          "dest": "sheet.pdf",
+          "status": "downloaded",
+          "bytes": 3894904,
+          "sha256": "5e0c0a92342a283e8715d31e415c74ebde27f5689e5b01bda39346fede45a780"
+        }
+      ]
+    },
+    {
+      "status": "ok",
+      "scope": "intrasheet",
+      "family": "note-callout-accuracy",
+      "instance": "25qa-unit-heater-mismatch",
+      "downloads": [
+        {
+          "dest": "sheet.pdf",
+          "status": "downloaded",
+          "bytes": 1606121,
+          "sha256": "fbb03b4557c1b57003cf66e2716e637b4baae6a048bc9ff2ae648061eec96343"
+        }
+      ]
+    },
+    {
+      "status": "ok",
+      "scope": "intrasheet",
+      "family": "note-callout-accuracy",
+      "instance": "armstrong-roofing-material-mismatch",
+      "downloads": [
+        {
+          "dest": "sheet.pdf",
+          "status": "downloaded",
+          "bytes": 740102,
+          "sha256": "a7d774e17a38791878e2a29564b79f98319a0002f75ac4dd708a07d67d37c630"
+        }
+      ]
+    }
+  ],
+  "agent_trial": {
+    "status": "NOT_RUN",
+    "reason": "Harbor CLI installed separately; Codex/Claude agent trial needs valid OPENAI_API_KEY or ANTHROPIC_API_KEY. Live AECV vision returned HTTP 401 with current OPENAI_API_KEY — do not start paid agent burn until the key is replaced.",
+    "openai_key_present": true,
+    "anthropic_key_present": false,
+    "harbor_hint": "%USERPROFILE%\\.local\\bin\\harbor.exe trials start --path tasks/<scope>/<family>/<instance> -a aec_bench.agents.codex_agent:CodexAgent -m openai/gpt-4o"
+  },
+  "output_sha256": "1356370b2d391d2462a9bb853da5701e6e039356b2610f9c2f6664cc06c6de9e",
+  "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\aec-bench-smoke.json"
+}

@@ -61,6 +61,8 @@ export interface ValidationIssue {
     /** Synthetic / LLM draft marker (RT-027 / Claims Lock). */
     ai_generated?: boolean;
     expert_confirmation_required?: boolean;
+    /** Egress mark when ai_generated (matches BCF provenance). */
+    content_marking?: string | null;
     claim_boundary?: string | null;
     provider?: string | null;
     model?: string | null;

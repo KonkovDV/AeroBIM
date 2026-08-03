@@ -2,8 +2,8 @@
 title: "Yandex AI Studio grant — KT#2/KT#3 contour implications"
 date: 2026-08-03
 status: active
-version: "1.3.0"
-claim_boundary: "Grant strategy note. Not Checkpoint GO. Card-bound → hard stop = revoke API key. Endpoint accepts images (HTTP 200); recognition quality NOT_MEASURED. enable_thinking=false is required for scenario 5.1 drafts."
+version: "1.4.0"
+claim_boundary: "Grant strategy note. Not Checkpoint GO. Card-bound → hard stop = revoke API key. Open-bench AECV counting measured 2026-08-04 (macro 0.4325) ≠ product accuracy. Thinking off only via chat_template_kwargs."
 source_analysis: "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md"
 ---
 
@@ -58,7 +58,11 @@ curl -s -H "Authorization: Bearer $YC_API_KEY" \
 | Qwen (esp. multimodal) present | Keep KT#2 scenario 5.3 on Studio |
 | Qwen absent | **Move 5.3 back to KT#3**; text advisory (5.1) on cheapest reliable text model now |
 
-**Live 2026-08-03:** `POST /v1/chat/completions` with `gpt://{folder}/qwen3.6-35b-a3b` returned **200** (Api-Key and Bearer). `GET /foundationModels/v1/models` → **404**. Config uses **unversioned** URI (never write `/latest`); record `vendor_model_uri` from the response. **Vision:** endpoint **accepts** Base64 images (HTTP 200); **recognition quality NOT_MEASURED** — do not claim «мультимодальность подтверждена». Scenario 5.3 remains *in scope for KT#2* pending a crop-with-known-content check. **`enable_thinking=false` is mandatory** for text remark compose (5.1): without it `json_schema` burns completion into `reasoning_content` and returns empty `content`.
+**Live 2026-08-03:** `POST /v1/chat/completions` with `gpt://{folder}/qwen3.6-35b-a3b` returned **200** (Api-Key and Bearer). `GET /foundationModels/v1/models` → **404**. Config uses **unversioned** URI (never write `/latest`); record `vendor_model_uri` from the response.
+
+**Thinking off (vendor-hard):** send `chat_template_kwargs: {"enable_thinking": false}`. Top-level `enable_thinking` / `extra_body.enable_thinking` → **HTTP 400** (`Unsupported parameter`). Without thinking off, `json_schema` burns completion into `reasoning_content` and returns empty `content` — mandatory for scenario 5.1 and for open-bench vision scoring.
+
+**Vision / open-bench (2026-08-04):** endpoint accepts Base64; **L1 AECV-Bench counting** on this model scored macro exact-match **0.4325** (120/117/3) — `claim_level=open_bench_only`, **≠ product accuracy**, **≠ RT-001**. Do not claim «мультимодальность пилота подтверждена». Evidence: `docs/evidence/aecv-bench-eval-latest.json`.
 
 ### Pricing (operator-reported; verify on live catalog)
 
@@ -109,6 +113,8 @@ Billing is at the **payment account** layer. Cloud `b1g29i9csghnoah26nne` / cata
 |---|---|---|
 | Synchronous generations per cloud | **10** concurrent (confirmed for this grant contour) | Cloud-wide, shared with other workloads |
 | Adapter limit | `BoundedSemaphore(4)` / `AEROBIM_LLM_MAX_CONCURRENT=4` | Fits with headroom for two parallel packs; **do not raise** without measuring 429 rate |
+| Overlay call path | **Sequential** today (`for issue in issues`) | Semaphore is unused on the call side; parallel fan-out is a **September** backlog item — not broken D-1, just not wired |
+| Draft cap | `AEROBIM_LLM_ADVISORY_MAX_ISSUES` (default 32) | Capability reason reports `composed/attempted of N findings`; raise toward 100 after console tariff × 6 000 ₽/mo budget |
 
 Operator checklist: cloud `b1g29i9csghnoah26nne`, folder `b1g56rei64gfdk5t2tvc`, SA `aerobim-ai-studio` + role `ai.languageModels.user`, API key scope `yc.ai.foundationModels.execute` (**show once → `.env` / secret store, never chat**), exact model URI+version from catalog, **budget 6 000 ₽/mo**, **ledger path set**.
 
@@ -170,7 +176,7 @@ If Probe A fails on `json_schema`, fall back to `json_object` in env and keep sc
 
 ## Analyze API wiring (KT#2 text contour)
 
-`/v1/analyze/project-package` overlays LLM drafts onto deterministic issues via `overlay_llm_remarks` after template remarks. Drafts live on `issue.remark` with `ai_generated=true` (separate from engine severity). `capabilities.llm_advisory` is OK when drafts attach, SKIPPED when the model is unavailable or disabled — never FAILED, never flips `summary.passed`.
+`/v1/analyze/project-package` overlays LLM drafts onto deterministic issues via `overlay_llm_remarks` after template remarks. Drafts live on `issue.remark` with `ai_generated=true` (separate from engine severity). HTTP serialize adds `remark.content_marking`; BCF topic description provenance and label carry the same mark. `capabilities.llm_advisory` is OK when drafts attach, SKIPPED when the model is unavailable or disabled — never FAILED, never flips `summary.passed`. OK reason includes total findings (`32/32 of 100 findings`) so a capped overlay is not read as full coverage.
 
 ## Bottleneck — grant is not RT-001
 

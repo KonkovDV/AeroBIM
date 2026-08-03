@@ -168,6 +168,32 @@ class CustomerIntakeGateSnapshot(BaseModel):
     source: str | None = None
 
 
+class IssueRemarkPublic(BaseModel):
+    """Shape of ``ValidationIssue.remark`` in analyze/report HTTP payloads.
+
+    When ``ai_generated`` is true, egress must carry ``content_marking`` so CDE
+    consumers can distinguish model drafts from template remarks (RT-027).
+    """
+
+    title: str
+    body: str
+    ai_generated: bool = False
+    expert_confirmation_required: bool = False
+    content_marking: str | None = Field(
+        default=None,
+        description=(
+            "Present when ai_generated; value "
+            "'ai_generated=true;expert_confirmation_required=true'. "
+            "Same string is written into BCF topic description provenance."
+        ),
+    )
+    claim_boundary: str | None = None
+    provider: str | None = None
+    model: str | None = None
+    prompt_version: str | None = None
+    evidence_refs: list[str] = Field(default_factory=list)
+
+
 class LlmAdvisoryCapability(BaseModel):
     """Honesty surface for advisory LLM (verdict-neutral)."""
 
@@ -181,6 +207,14 @@ class LlmAdvisoryCapability(BaseModel):
     cloud_max_status: str = "NOT_VERIFIED"
     requires_model_revision: bool = False
     claim_boundary: str
+    remark_shape: IssueRemarkPublic | None = Field(
+        default=None,
+        description="Documented shape of issue.remark on analyze/report JSON payloads.",
+    )
+    content_marking_egress: dict[str, str] | None = Field(
+        default=None,
+        description="Where AI content marking appears on HTTP and BCF export boundaries.",
+    )
 
 
 class SystemCapabilitiesResponse(BaseModel):

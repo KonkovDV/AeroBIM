@@ -1,0 +1,3030 @@
+{
+  "artifact_type": "aecv_bench_eval",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-03T21:43:07.614396+00:00",
+  "claim_level": "open_bench_only",
+  "claim_boundary": "AECV-Bench open_bench_only (arXiv:2601.04819). Drawing-literacy baseline on public floor plans. NOT AeroBIM product accuracy. Never >90% as product. Does not close RT-001.",
+  "closes_rt001": false,
+  "benchmark": {
+    "name": "AECV-Bench",
+    "arxiv": "2601.04819",
+    "dataset_root": "C:\\plans\\AeroBIM\\.local\\AECV-Bench"
+  },
+  "drawing_qa": {
+    "task": "drawing_qa",
+    "mode": "inventory_plus_published_result_csvs",
+    "label_files": 21,
+    "total_qa_pairs": 148,
+    "qa_pairs_by_bucket": {
+      "ocr_qa": 65,
+      "spatial_qa": 41,
+      "counting_qa": 42,
+      "comparative_qa": 0
+    },
+    "published_result_csvs": [
+      "qa_results_amazon_nova_2_lite_v1.csv",
+      "qa_results_claude_opus_45.csv",
+      "qa_results_claude_opus_46.csv",
+      "qa_results_claude_sonnet_46.csv",
+      "qa_results_cohere_command_a_vision.csv",
+      "qa_results_gemini_31_pro.csv",
+      "qa_results_gemini_3_pro_preview.csv",
+      "qa_results_glm_46v.csv",
+      "qa_results_grok_41_fast.csv",
+      "qa_results_mistral_large_2512.csv",
+      "qa_results_nvidia_nemotron_nano_12b_v2_vl.csv",
+      "qa_results_openai_gpt_4_vision.csv",
+      "qa_results_openai_gpt_52.csv",
+      "qa_results_openai_gpt_53.csv",
+      "qa_results_openai_gpt_54.csv",
+      "qa_results_qwen3_vl_8b_instruct.csv",
+      "qa_results_qwen_35_plus.csv"
+    ],
+    "note": "Full LLM-as-a-judge re-score deferred; published CSVs present for offline audit. Live QA vision can be added with --mode live-qa."
+  },
+  "object_counting_live": {
+    "task": "object_counting",
+    "mode": "live_vision",
+    "provider": "yandex-ai-studio",
+    "model": "gpt://b1g56rei64gfdk5t2tvc/qwen3.6-35b-a3b",
+    "base_url": "https://llm.api.cloud.yandex.net/v1",
+    "folder_id_set": true,
+    "plans_attempted": 120,
+    "errors": 3,
+    "summary": {
+      "n_field_scores": 585,
+      "macro_exact_match_rate": 0.4325,
+      "per_field": {
+        "Door": {
+          "n": 117,
+          "exact_match_rate": 0.2308,
+          "mape": 0.322
+        },
+        "Window": {
+          "n": 117,
+          "exact_match_rate": 0.1368,
+          "mape": 0.3647
+        },
+        "Space": {
+          "n": 117,
+          "exact_match_rate": 0.1368,
+          "mape": 0.294
+        },
+        "Bedroom": {
+          "n": 117,
+          "exact_match_rate": 0.8462,
+          "mape": 0.1276
+        },
+        "Toilet": {
+          "n": 117,
+          "exact_match_rate": 0.812,
+          "mape": 0.0954
+        }
+      }
+    },
+    "plans": [
+      {
+        "plan_id": "0000-0001",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 11,
+          "Space": 13,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "0000-0002",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 8,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "0000-0003",
+        "predicted": {
+          "Door": 4,
+          "Window": 3,
+          "Space": 6,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 4,
+          "Window": 2,
+          "Space": 5,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "0000-0004",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 13,
+          "Window": 14,
+          "Space": 15,
+          "Bedroom": 3,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "0000-0005",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 10,
+          "Space": 5,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0001",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 5,
+          "Space": 11,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0002",
+        "predicted": {
+          "Door": 6,
+          "Window": 4,
+          "Space": 8,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 8,
+          "Window": 6,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0003",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 8,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 6,
+          "Space": 5,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0004",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 18,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 14,
+          "Window": 11,
+          "Space": 14,
+          "Bedroom": 4,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0005",
+        "predicted": {
+          "Door": 5,
+          "Window": 4,
+          "Space": 8,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0006",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 10,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 5,
+          "Space": 9,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0007",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 3,
+          "Space": 9,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0008",
+        "status": "error",
+        "detail": "HTTP Error 400: Bad Request"
+      },
+      {
+        "plan_id": "2000-0009",
+        "status": "error",
+        "detail": "HTTP Error 400: Bad Request"
+      },
+      {
+        "plan_id": "2000-0010",
+        "predicted": {
+          "Door": 7,
+          "Window": 6,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 11,
+          "Window": 8,
+          "Space": 11,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0011",
+        "predicted": {
+          "Door": 7,
+          "Window": 5,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 11,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0012",
+        "status": "error",
+        "detail": "HTTP Error 400: Bad Request"
+      },
+      {
+        "plan_id": "2000-0013",
+        "predicted": {
+          "Door": 7,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 11,
+          "Window": 11,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0014",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 13,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "2000-0015",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 14,
+          "Window": 8,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0001",
+        "predicted": {
+          "Door": 7,
+          "Window": 3,
+          "Space": 8,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 7,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0002",
+        "predicted": {
+          "Door": 4,
+          "Window": 0,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 6,
+          "Space": 6,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0003",
+        "predicted": {
+          "Door": 10,
+          "Window": 4,
+          "Space": 10,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 11,
+          "Window": 8,
+          "Space": 8,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0004",
+        "predicted": {
+          "Door": 5,
+          "Window": 3,
+          "Space": 7,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 8,
+          "Space": 6,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0005",
+        "predicted": {
+          "Door": 7,
+          "Window": 3,
+          "Space": 10,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 8,
+          "Space": 8,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0006",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 8,
+          "Space": 6,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0007",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 8,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 8,
+          "Space": 7,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "3000-0008",
+        "predicted": {
+          "Door": 5,
+          "Window": 0,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 7,
+          "Space": 5,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0001",
+        "predicted": {
+          "Door": 10,
+          "Window": 8,
+          "Space": 14,
+          "Bedroom": 5,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 11,
+          "Window": 12,
+          "Space": 13,
+          "Bedroom": 5,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0002",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 15,
+          "Bedroom": 5,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 13,
+          "Space": 11,
+          "Bedroom": 5,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0003",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 13,
+          "Bedroom": 5,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 11,
+          "Window": 10,
+          "Space": 12,
+          "Bedroom": 5,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0004",
+        "predicted": {
+          "Door": 10,
+          "Window": 10,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 13,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0005",
+        "predicted": {
+          "Door": 10,
+          "Window": 8,
+          "Space": 9,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 7,
+          "Space": 9,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0006",
+        "predicted": {
+          "Door": 7,
+          "Window": 5,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 5,
+          "Space": 9,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0007",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 8,
+          "Window": 10,
+          "Space": 11,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0008",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 8,
+          "Window": 10,
+          "Space": 11,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0009",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 10,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0010",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 11,
+          "Window": 9,
+          "Space": 9,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0011",
+        "predicted": {
+          "Door": 10,
+          "Window": 8,
+          "Space": 9,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 11,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0012",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 11,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0013",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 15,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 11,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0014",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 12,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0015",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 16,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 18,
+          "Window": 13,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 4
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0016",
+        "predicted": {
+          "Door": 6,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 5,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "4000-0017",
+        "predicted": {
+          "Door": 7,
+          "Window": 5,
+          "Space": 9,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 6,
+          "Space": 9,
+          "Bedroom": 1,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0001",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 15,
+          "Window": 8,
+          "Space": 17,
+          "Bedroom": 1,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0002",
+        "predicted": {
+          "Door": 18,
+          "Window": 14,
+          "Space": 20,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 18,
+          "Window": 31,
+          "Space": 28,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0003",
+        "predicted": {
+          "Door": 10,
+          "Window": 14,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 10,
+          "Space": 11,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0004",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 10,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 11,
+          "Window": 10,
+          "Space": 17,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0005",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 18,
+          "Bedroom": 4,
+          "Toilet": 3
+        },
+        "expected": {
+          "Door": 19,
+          "Window": 14,
+          "Space": 22,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0006",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 15,
+          "Window": 14,
+          "Space": 17,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0007",
+        "predicted": {
+          "Door": 6,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 10,
+          "Space": 9,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0008",
+        "predicted": {
+          "Door": 5,
+          "Window": 3,
+          "Space": 7,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0009",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 14,
+          "Bedroom": 0,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 10,
+          "Space": 16,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0010",
+        "predicted": {
+          "Door": 24,
+          "Window": 16,
+          "Space": 28,
+          "Bedroom": 8,
+          "Toilet": 4
+        },
+        "expected": {
+          "Door": 30,
+          "Window": 26,
+          "Space": 39,
+          "Bedroom": 6,
+          "Toilet": 4
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0011",
+        "predicted": {
+          "Door": 14,
+          "Window": 18,
+          "Space": 16,
+          "Bedroom": 4,
+          "Toilet": 4
+        },
+        "expected": {
+          "Door": 21,
+          "Window": 20,
+          "Space": 24,
+          "Bedroom": 0,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0012",
+        "predicted": {
+          "Door": 24,
+          "Window": 18,
+          "Space": 20,
+          "Bedroom": 4,
+          "Toilet": 3
+        },
+        "expected": {
+          "Door": 34,
+          "Window": 23,
+          "Space": 28,
+          "Bedroom": 0,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0013",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 15,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 14,
+          "Window": 17,
+          "Space": 18,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0014",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 18,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 20,
+          "Window": 12,
+          "Space": 23,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0015",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 18,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 21,
+          "Window": 32,
+          "Space": 25,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0016",
+        "predicted": {
+          "Door": 14,
+          "Window": 18,
+          "Space": 20,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 16,
+          "Window": 25,
+          "Space": 23,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0017",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 16,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 14,
+          "Window": 7,
+          "Space": 19,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0018",
+        "predicted": {
+          "Door": 7,
+          "Window": 3,
+          "Space": 10,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 4,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0019",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 18,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 19,
+          "Window": 22,
+          "Space": 21,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0020",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 10,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 15,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": true,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0021",
+        "predicted": {
+          "Door": 6,
+          "Window": 4,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 8,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0022",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 5,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0023",
+        "predicted": {
+          "Door": 14,
+          "Window": 28,
+          "Space": 12,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 15,
+          "Window": 12,
+          "Space": 17,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0024",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 12,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 18,
+          "Window": 16,
+          "Space": 23,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0025",
+        "predicted": {
+          "Door": 18,
+          "Window": 12,
+          "Space": 24,
+          "Bedroom": 3,
+          "Toilet": 4
+        },
+        "expected": {
+          "Door": 22,
+          "Window": 18,
+          "Space": 30,
+          "Bedroom": 5,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0026",
+        "predicted": {
+          "Door": 10,
+          "Window": 8,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 18,
+          "Space": 13,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0027",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 10,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 13,
+          "Space": 14,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0028",
+        "predicted": {
+          "Door": 5,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 3,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0029",
+        "predicted": {
+          "Door": 3,
+          "Window": 2,
+          "Space": 2,
+          "Bedroom": 0,
+          "Toilet": 0
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 2,
+          "Space": 2,
+          "Bedroom": 0,
+          "Toilet": 0
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": true,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0030",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 9,
+          "Window": 6,
+          "Space": 9,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0031",
+        "predicted": {
+          "Door": 14,
+          "Window": 18,
+          "Space": 16,
+          "Bedroom": 4,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 14,
+          "Window": 34,
+          "Space": 18,
+          "Bedroom": 5,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0032",
+        "predicted": {
+          "Door": 7,
+          "Window": 5,
+          "Space": 10,
+          "Bedroom": 0,
+          "Toilet": 0
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 7,
+          "Space": 10,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0033",
+        "predicted": {
+          "Door": 14,
+          "Window": 10,
+          "Space": 16,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 18,
+          "Window": 16,
+          "Space": 18,
+          "Bedroom": 0,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0034",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 10,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 17,
+          "Space": 11,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": false,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "5000_0035",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 16,
+          "Window": 15,
+          "Space": 18,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0001",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 5,
+          "Space": 4,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0002",
+        "predicted": {
+          "Door": 6,
+          "Window": 2,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 5,
+          "Space": 5,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0003",
+        "predicted": {
+          "Door": 7,
+          "Window": 5,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 6,
+          "Window": 6,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": false
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0004",
+        "predicted": {
+          "Door": 5,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 4,
+          "Window": 5,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0005",
+        "predicted": {
+          "Door": 3,
+          "Window": 2,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 2,
+          "Window": 3,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0006",
+        "predicted": {
+          "Door": 6,
+          "Window": 7,
+          "Space": 7,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 10,
+          "Space": 7,
+          "Bedroom": 3,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0007",
+        "predicted": {
+          "Door": 10,
+          "Window": 14,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 14,
+          "Space": 6,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0008",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 14,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 8,
+          "Window": 11,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0009",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 2,
+          "Window": 7,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0010",
+        "predicted": {
+          "Door": 5,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 4,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0011",
+        "predicted": {
+          "Door": 4,
+          "Window": 3,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 2,
+          "Window": 3,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0012",
+        "predicted": {
+          "Door": 4,
+          "Window": 2,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 2,
+          "Window": 1,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0013",
+        "predicted": {
+          "Door": 5,
+          "Window": 3,
+          "Space": 8,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 2,
+          "Window": 1,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0014",
+        "predicted": {
+          "Door": 8,
+          "Window": 7,
+          "Space": 10,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 8,
+          "Space": 5,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0015",
+        "predicted": {
+          "Door": 7,
+          "Window": 2,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 5,
+          "Space": 6,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0016",
+        "predicted": {
+          "Door": 4,
+          "Window": 3,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 4,
+          "Window": 6,
+          "Space": 6,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0017",
+        "predicted": {
+          "Door": 4,
+          "Window": 5,
+          "Space": 6,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 6,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0018",
+        "predicted": {
+          "Door": 4,
+          "Window": 5,
+          "Space": 6,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 7,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0019",
+        "predicted": {
+          "Door": 4,
+          "Window": 6,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 7,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0020",
+        "predicted": {
+          "Door": 5,
+          "Window": 7,
+          "Space": 6,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 4,
+          "Window": 6,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0021",
+        "predicted": {
+          "Door": 5,
+          "Window": 10,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 8,
+          "Space": 5,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0022",
+        "predicted": {
+          "Door": 5,
+          "Window": 8,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 4,
+          "Window": 7,
+          "Space": 5,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0023",
+        "predicted": {
+          "Door": 5,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 10,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0024",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 12,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 8,
+          "Window": 9,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0025",
+        "predicted": {
+          "Door": 5,
+          "Window": 4,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 5,
+          "Window": 10,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0026",
+        "predicted": {
+          "Door": 7,
+          "Window": 4,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 2,
+          "Space": 7,
+          "Bedroom": 2,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0027",
+        "predicted": {
+          "Door": 3,
+          "Window": 4,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 4,
+          "Space": 3,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0028",
+        "predicted": {
+          "Door": 10,
+          "Window": 4,
+          "Space": 12,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 12,
+          "Window": 8,
+          "Space": 7,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0029",
+        "predicted": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 14,
+          "Bedroom": 4,
+          "Toilet": 3
+        },
+        "expected": {
+          "Door": 15,
+          "Window": 11,
+          "Space": 10,
+          "Bedroom": 4,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0030",
+        "predicted": {
+          "Door": 4,
+          "Window": 2,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 7,
+          "Window": 5,
+          "Space": 3,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0031",
+        "predicted": {
+          "Door": 10,
+          "Window": 12,
+          "Space": 13,
+          "Bedroom": 3,
+          "Toilet": 3
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 15,
+          "Space": 11,
+          "Bedroom": 3,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0032",
+        "predicted": {
+          "Door": 5,
+          "Window": 6,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 8,
+          "Space": 6,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0033",
+        "predicted": {
+          "Door": 4,
+          "Window": 6,
+          "Space": 8,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "expected": {
+          "Door": 4,
+          "Window": 8,
+          "Space": 5,
+          "Bedroom": 2,
+          "Toilet": 2
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0034",
+        "predicted": {
+          "Door": 7,
+          "Window": 3,
+          "Space": 10,
+          "Bedroom": 3,
+          "Toilet": 3
+        },
+        "expected": {
+          "Door": 10,
+          "Window": 6,
+          "Space": 7,
+          "Bedroom": 3,
+          "Toilet": 3
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0035",
+        "predicted": {
+          "Door": 4,
+          "Window": 5,
+          "Space": 7,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 2,
+          "Window": 2,
+          "Space": 5,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": false,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0036",
+        "predicted": {
+          "Door": 3,
+          "Window": 5,
+          "Space": 4,
+          "Bedroom": 0,
+          "Toilet": 0
+        },
+        "expected": {
+          "Door": 3,
+          "Window": 5,
+          "Space": 3,
+          "Bedroom": 0,
+          "Toilet": 0
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0037",
+        "predicted": {
+          "Door": 3,
+          "Window": 5,
+          "Space": 6,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 2,
+          "Window": 5,
+          "Space": 4,
+          "Bedroom": 1,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0038",
+        "predicted": {
+          "Door": 1,
+          "Window": 1,
+          "Space": 1,
+          "Bedroom": 0,
+          "Toilet": 0
+        },
+        "expected": {
+          "Door": 1,
+          "Window": 1,
+          "Space": 1,
+          "Bedroom": 0,
+          "Toilet": 0
+        },
+        "field_exact": {
+          "Door": true,
+          "Window": true,
+          "Space": true,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0039",
+        "predicted": {
+          "Door": 3,
+          "Window": 4,
+          "Space": 5,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "expected": {
+          "Door": 1,
+          "Window": 4,
+          "Space": 4,
+          "Bedroom": 0,
+          "Toilet": 1
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      },
+      {
+        "plan_id": "6000-0040",
+        "predicted": {
+          "Door": 2,
+          "Window": 3,
+          "Space": 2,
+          "Bedroom": 1,
+          "Toilet": 0
+        },
+        "expected": {
+          "Door": 0,
+          "Window": 3,
+          "Space": 1,
+          "Bedroom": 1,
+          "Toilet": 0
+        },
+        "field_exact": {
+          "Door": false,
+          "Window": true,
+          "Space": false,
+          "Bedroom": true,
+          "Toilet": true
+        },
+        "status": "ok"
+      }
+    ]
+  },
+  "output_sha256": "d90b2c7bc8cadefbac69ec62a87cf3277cde85145b1cfa2b9d392df73e8d12c5",
+  "output_path": "..\\artifacts\\open-bench\\aecv-bench-eval-live.json"
+}

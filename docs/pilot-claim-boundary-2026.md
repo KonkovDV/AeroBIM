@@ -31,7 +31,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Claim | Evidence source |
 |---|---|
 | Deterministic IFC + IDS + cross-document validation | `pytest` suite, benchmark packs |
-| Multimodal project-package analysis | `POST /v1/analyze/project-package`, benchmark manifests |
+| Multi-**source** project-package analysis (IFC+PDF+drawings+IDS) | `POST /v1/analyze/project-package`, benchmark manifests |
+| Vision endpoint accepts images | Grant smoke HTTP 200; **open-bench** AECV counting on Yandex Qwen measured (macro exact-match 0.4325, `open_bench_only`) — **not** product / RT-001 accuracy |
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
 | BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |

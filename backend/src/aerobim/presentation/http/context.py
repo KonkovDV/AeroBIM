@@ -63,6 +63,9 @@ _ALLOWED_PREVIEW_MEDIA_TYPES = frozenset(
     }
 )
 
+# Egress mark for AI remark drafts (HTTP JSON + BCF provenance must agree).
+_AI_CONTENT_MARKING = "ai_generated=true;expert_confirmation_required=true"
+
 
 def attachment_content_disposition(filename: str) -> str:
     """RFC 6266-ish attachment header; strip CR/LF and quotes from filename."""
@@ -308,12 +311,19 @@ class ApiContext:
     # -- Serialization -------------------------------------------------------
 
     def _enrich_issue_export(self, issue: dict[str, object]) -> dict[str, object]:
-        rule_id = str(issue.get("rule_id", ""))
+        enriched = dict(issue)
+        remark = enriched.get("remark")
+        if isinstance(remark, dict) and remark.get("ai_generated"):
+            enriched["remark"] = {
+                **remark,
+                "content_marking": remark.get("content_marking") or _AI_CONTENT_MARKING,
+            }
+        rule_id = str(enriched.get("rule_id", ""))
         loin = LOIN_RESOLVER.resolve(rule_id)
         if loin is None:
-            return issue
+            return enriched
         return {
-            **issue,
+            **enriched,
             "loin_purpose": loin.purpose,
             "loin_milestone": loin.milestone,
             "loin_actor": loin.actor,

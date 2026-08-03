@@ -610,6 +610,98 @@
         "title": "HonestyCapabilityStatus",
         "type": "object"
       },
+      "IssueRemarkPublic": {
+        "description": "Shape of ``ValidationIssue.remark`` in analyze/report HTTP payloads.\n\nWhen ``ai_generated`` is true, egress must carry ``content_marking`` so CDE\nconsumers can distinguish model drafts from template remarks (RT-027).",
+        "properties": {
+          "ai_generated": {
+            "default": false,
+            "title": "Ai Generated",
+            "type": "boolean"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "claim_boundary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claim Boundary"
+          },
+          "content_marking": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Present when ai_generated; value 'ai_generated=true;expert_confirmation_required=true'. Same string is written into BCF topic description provenance.",
+            "title": "Content Marking"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Refs",
+            "type": "array"
+          },
+          "expert_confirmation_required": {
+            "default": false,
+            "title": "Expert Confirmation Required",
+            "type": "boolean"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "prompt_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Version"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "IssueRemarkPublic",
+        "type": "object"
+      },
       "LlmAdvisoryCapability": {
         "description": "Honesty surface for advisory LLM (verdict-neutral).",
         "properties": {
@@ -631,6 +723,21 @@
             "default": "NOT_VERIFIED",
             "title": "Cloud Max Status",
             "type": "string"
+          },
+          "content_marking_egress": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Where AI content marking appears on HTTP and BCF export boundaries.",
+            "title": "Content Marking Egress"
           },
           "customer_data_default": {
             "default": "deny",
@@ -655,6 +762,17 @@
             },
             "title": "Providers Mock Tested",
             "type": "array"
+          },
+          "remark_shape": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IssueRemarkPublic"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Documented shape of issue.remark on analyze/report JSON payloads."
           },
           "requires_model_revision": {
             "default": false,

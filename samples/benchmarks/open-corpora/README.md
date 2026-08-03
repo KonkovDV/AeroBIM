@@ -27,6 +27,16 @@ python -m aerobim.tools.import_buildingsmart_ids_testcases --write-profile --upd
 
 Open sets lack expert TP/FP labels → **regression and timing only**, never product accuracy, never «>90%».
 
+**L1 open benches** (separate rail): IFC-Bench v1 deterministic smoke —
+
+```bash
+# once: git clone --depth 1 https://github.com/sylvainHellin/ifc-bench.git .local/ifc-bench
+cd backend
+python -m aerobim.tools.run_ifc_bench_smoke --also-docs-evidence
+```
+
+Decision: [`docs/quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../../../docs/quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md).
+
 ## Run
 
 ```bash

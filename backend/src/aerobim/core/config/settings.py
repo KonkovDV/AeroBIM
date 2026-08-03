@@ -366,7 +366,17 @@ class Settings:
     llm_data_logging_enabled: bool = False
     """When false, send ``x-data-logging-enabled: false`` (Yandex vendor privacy header)."""
     llm_max_concurrent: int = 4
-    """Semaphore for parallel Studio calls (cloud quota is shared; default 4 of 10)."""
+    """Semaphore for parallel Studio calls (cloud quota is shared; default 4 of 10).
+
+    Note: overlay_llm_remarks is still sequential (Sept backlog); this only
+    bounds the adapter if callers introduce concurrency.
+    """
+    llm_advisory_max_issues: int = 32
+    """Max findings to overlay with AI drafts per analyze run (AEROBIM_LLM_ADVISORY_MAX_ISSUES).
+
+    Default 32 ≈ 14k tokens at ~440/finding. Raise toward 100 after console
+    tariff × budget check (full pack ≈ 44k tokens).
+    """
     llm_429_retries: int = 3
     """Retries on HTTP 429 with linear backoff before fail-closed SKIPPED."""
     llm_budget_tz: str = "Europe/Moscow"
@@ -652,6 +662,7 @@ class Settings:
             or "json_object",
             llm_data_logging_enabled=_read_bool("AEROBIM_LLM_DATA_LOGGING_ENABLED", False),
             llm_max_concurrent=_read_int("AEROBIM_LLM_MAX_CONCURRENT", 4),
+            llm_advisory_max_issues=_read_int("AEROBIM_LLM_ADVISORY_MAX_ISSUES", 32),
             llm_429_retries=_read_int("AEROBIM_LLM_429_RETRIES", 3),
             llm_budget_tz=(os.getenv("AEROBIM_LLM_BUDGET_TZ") or "Europe/Moscow").strip()
             or "Europe/Moscow",
