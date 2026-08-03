@@ -170,6 +170,10 @@ class ReportCapabilities:
         CapabilityState.SKIPPED,
         "package completeness not requested",
     )
+    llm_advisory: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED,
+        "llm advisory remark compose not evaluated",
+    )
 
 
 class ConflictKind(StrEnum):

@@ -17,8 +17,8 @@ class LlmTokenBudget:
     """In-memory counters. File-backed variant lives in infrastructure (I7)."""
 
     max_tokens_per_call: int = 4_096
-    max_tokens_per_run: int = 500_000
-    max_tokens_per_day: int = 2_000_000
+    max_tokens_per_run: int = 100_000
+    max_tokens_per_day: int = 300_000
     tokens_this_run: int = 0
     tokens_today: int = 0
     day_key: date = field(default_factory=lambda: datetime.now(tz=UTC).date())

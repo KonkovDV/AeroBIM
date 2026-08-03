@@ -71,6 +71,7 @@ class OpenAICompatLlmProvider:
         response_schema_mode: ResponseSchemaMode = "json_object",
         max_concurrent: int = 4,
         retries_429: int = 3,
+        disable_thinking: bool | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._model = resolve_llm_model_uri(
@@ -100,6 +101,12 @@ class OpenAICompatLlmProvider:
         self._response_schema_mode: ResponseSchemaMode = mode  # type: ignore[assignment]
         self._semaphore = threading.BoundedSemaphore(max(1, int(max_concurrent)))
         self._retries_429 = max(0, int(retries_429))
+        # Studio Qwen thinking is a *correctness* gate for scenario 5.1, not a perf knob:
+        # without enable_thinking=false, json_schema burns max_tokens into reasoning_content
+        # and returns content=null → no remark draft (live 2026-08-03). Do not remove.
+        if disable_thinking is None:
+            disable_thinking = provider.strip().lower() == "yandex-ai-studio"
+        self._disable_thinking = bool(disable_thinking)
         if self._base_url:
             assert_llm_base_host_allowed(self._base_url, self._allowed_hosts)
 
@@ -270,6 +277,12 @@ class OpenAICompatLlmProvider:
             ],
             "response_format": self._response_format(),
         }
+        if self._disable_thinking:
+            # REQUIRED for Qwen-on-Studio remark compose (scenario 5.1). Live probe:
+            # json_schema without this → finish=length, content="", reasoning≈1.8k chars,
+            # completion=512 burned; with this → content JSON, reasoning_len=0.
+            # Not an optimization — removing it breaks drafts. See grant ops v1.5/v1.6.
+            body_obj["chat_template_kwargs"] = {"enable_thinking": False}
         if self._seed is not None and self._send_seed:
             body_obj["seed"] = self._seed
         raw_body = json.dumps(body_obj, ensure_ascii=False).encode("utf-8")
@@ -326,13 +339,18 @@ class OpenAICompatLlmProvider:
 
         try:
             payload = json.loads(raw.decode("utf-8"))
-            content = payload["choices"][0]["message"]["content"]
+            message = payload["choices"][0]["message"]
+            content = message.get("content")
+            reasoning = message.get("reasoning_content")
             if isinstance(content, list):
                 content = "".join(
                     part.get("text", "") if isinstance(part, dict) else str(part)
                     for part in content
                 )
             draft = str(content or "").strip()
+            draft = _strip_markdown_fence(draft)
+            reasoning_text = str(reasoning or "").strip()
+            vendor_model = str(payload.get("model") or self._model)
             raw_usage = payload.get("usage") if isinstance(payload.get("usage"), dict) else {}
         except (KeyError, IndexError, TypeError, ValueError, UnicodeDecodeError):
             self._budget.record_failed(estimated_tokens=estimate)
@@ -353,9 +371,27 @@ class OpenAICompatLlmProvider:
             **self._vendor_audit_fields(),
             **audit_extra,
             "response_sha256": response_sha256,
+            "vendor_model_uri": vendor_model,
+            "thinking_disabled": self._disable_thinking,
         }
         if self._model_sha256:
             usage = {**usage, "model_sha256": self._model_sha256}
+
+        # Thinking burned the completion budget: content empty, reasoning present.
+        if not draft and reasoning_text:
+            return LlmResponse(
+                remark_draft="",
+                severity_suggestion=None,
+                evidence_refs=request.evidence_refs,
+                confidence=None,
+                uncertainties=("reasoning_only",),
+                model=vendor_model,
+                provider=self._provider,
+                usage=usage,
+                status="failed",
+                schema_valid=False,
+                unsupported_claims=(),
+            )
 
         schema_valid = False
         unsupported: list[str] = []
@@ -386,13 +422,28 @@ class OpenAICompatLlmProvider:
             evidence_refs=request.evidence_refs,
             confidence=None,
             uncertainties=() if schema_valid else ("schema_deviation",),
-            model=self._model,
+            model=vendor_model,
             provider=self._provider,
             usage=usage,
             status="advisory" if schema_valid else "failed",
             schema_valid=schema_valid,
             unsupported_claims=tuple(unsupported),
         )
+
+
+def _strip_markdown_fence(text: str) -> str:
+    """Studio sometimes wraps JSON in ```json fences even with thinking off."""
+
+    raw = (text or "").strip()
+    if not raw.startswith("```"):
+        return raw
+    lines = raw.splitlines()
+    if len(lines) >= 2 and lines[0].startswith("```"):
+        lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        return "\n".join(lines).strip()
+    return raw
 
 
 __all__ = ["OpenAICompatLlmProvider"]

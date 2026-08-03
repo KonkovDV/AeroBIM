@@ -349,22 +349,26 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_S3_ACCESS_KEY_ID` | *(unset)* | Optional access key for S3-compatible storage |
 | `AEROBIM_S3_SECRET_ACCESS_KEY` | *(unset)* | Optional secret key for S3-compatible storage |
 | `AEROBIM_S3_PREFIX` | `aerobim` | Prefix applied to object keys in S3-compatible storage |
-| `AEROBIM_LLM_LOCAL_ENABLED` | `false` | Opt-in OpenAI-compat advisory LLM (vLLM / Yandex AI Studio); never sets `summary.passed` |
-| `AEROBIM_LLM_BASE_URL` | *(unset)* | Loopback or RF HTTPS OpenAI-compat base (`…/v1`); SSRF-gated at boot |
+| `AEROBIM_LLM_LOCAL_ENABLED` | `false` | Opt-in OpenAI-compat advisory LLM (vLLM / Yandex AI Studio); never sets `summary.passed`. When ready, `/v1/analyze/project-package` overlays `ai_generated` remark drafts (`capabilities.llm_advisory`) |
+| `AEROBIM_LLM_BASE_URL` | *(unset; Studio default when provider=`yandex-ai-studio`)* | Loopback or RF HTTPS OpenAI-compat base (`…/v1`); SSRF-gated at boot |
 | `AEROBIM_LLM_API_KEY` | *(unset)* | Optional bearer for Studio; never logged / never in `audit_event` |
 | `AEROBIM_LLM_PROVIDER` | `qwen-local` | Provider label (`qwen-local` / `yandex-ai-studio`) |
 | `AEROBIM_LLM_MODEL` | `Qwen3.6-27B` | Local bare id, or Yandex `gpt://{folder}/{model}` |
-| `AEROBIM_LLM_MODEL_REVISION` | *(required if enabled)* | Exact catalog version (not `latest`); composed into URI |
+| `AEROBIM_LLM_MODEL_REVISION` | *(required if enabled)* | Exact catalog version (not `latest`/`rc`); composed into URI |
 | `AEROBIM_LLM_FOLDER_ID` | *(unset)* | Yandex folder → `x-folder-id` + URI composition |
-| `AEROBIM_LLM_AUTH_SCHEME` | `Bearer` | `Bearer` or `Api-Key` |
+| `AEROBIM_LLM_AUTH_SCHEME` | `Bearer` | `Bearer` or `Api-Key` (confirm with live curl before first spend) |
 | `AEROBIM_LLM_SEND_SEED` | `true` (`false` for Studio) | Omit `seed` when false (Yandex may 400) |
 | `AEROBIM_LLM_RESPONSE_FORMAT_MODE` | `json_object` (`json_schema` for Studio) | Yandex prefers `json_schema` + `REMARK_JSON_SCHEMA` |
 | `AEROBIM_LLM_DATA_LOGGING_ENABLED` | `false` | When false, send `x-data-logging-enabled: false` (audit-recorded) |
 | `AEROBIM_LLM_MODEL_SHA256` | *(unset)* | Optional checkpoint hash in usage/audit |
 | `AEROBIM_LLM_MAX_TOKENS_PER_CALL` | `4096` | Fail-closed token cap per call |
-| `AEROBIM_LLM_MAX_TOKENS_PER_RUN` | `500000` | Fail-closed token cap per process run |
-| `AEROBIM_LLM_MAX_TOKENS_PER_DAY` | `2000000` | Fail-closed token cap per calendar day |
+| `AEROBIM_LLM_MAX_TOKENS_PER_RUN` | `100000` | Fail-closed per-run cap (~two measured 100-finding packs; measured ~44k tokens/pack with think off) |
+| `AEROBIM_LLM_MAX_TOKENS_PER_DAY` | `300000` | Fail-closed daily cap while card-bound (no `TRIAL_EXPIRED`). Convert to ₽ after console tariff for `qwen3.6-35b-a3b` |
+| `AEROBIM_LLM_BUDGET_TZ` | `Europe/Moscow` | IANA timezone for day-roll of the daily cap |
+| `AEROBIM_LLM_BUDGET_LEDGER` | *(unset)* | Shared JSON ledger path across workers; **required** for grant ops (without it: process-local ≈ N× day cap) |
 | `AEROBIM_LLM_MAX_COMPLETION_TOKENS` | `512` | Completion budget passed to the API |
+| `AEROBIM_LLM_MAX_CONCURRENT` | `4` | Semaphore for parallel Studio calls |
+| `AEROBIM_LLM_429_RETRIES` | `3` | Linear backoff retries on HTTP 429 before SKIPPED |
 | `AEROBIM_LLM_ALLOWED_HOSTS` | *(built-in)* | Extra allowlisted hostnames (comma-separated); Alibaba/OpenAI always forbidden |
 | `AEROBIM_HYBRID_PROVIDER_CONFIG` | *(unset)* | Path to hybrid provider JSON (`schema_version` ≥1.1 requires `model_revision`) |
 

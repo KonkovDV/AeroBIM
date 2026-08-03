@@ -464,6 +464,10 @@ class EvidenceAssembler:
             for issue in [*intake_issues, *advisory.reconciled_issues]
         )
         issues_with_remarks = tuple(self._host._attach_remarks(prioritized_issues))
+        issues_with_remarks, llm_advisory_capability = self._host._overlay_llm_remarks(
+            issues_with_remarks,
+            request_id=request.request_id,
+        )
         severity_counts = Counter(issue.severity for issue in issues_with_remarks)
         error_count = severity_counts[Severity.ERROR]
         warning_count = severity_counts[Severity.WARNING]
@@ -489,6 +493,7 @@ class EvidenceAssembler:
             qualified_signature=deterministic.signature_capability,
             package_completeness=deterministic.package_completeness_capability,
         )
+        capabilities = replace(capabilities, llm_advisory=llm_advisory_capability)
         enforce_honesty_capabilities(capabilities)
         policy = build_signoff_policy(
             profile=self._host._signoff_profile,

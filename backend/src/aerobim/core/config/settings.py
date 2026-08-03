@@ -95,7 +95,12 @@ _FORBIDDEN_MODEL_ALIASES = frozenset({"latest", "rc"})
 
 
 def assert_llm_model_pin_no_aliases(*parts: str | None) -> None:
-    """Reject ``/latest`` and ``/rc`` aliases (D-5) — pin must be an explicit version."""
+    """Reject ``/latest`` and ``/rc`` aliases (D-5).
+
+    Explicit catalog versions and **unversioned** ``gpt://folder/model`` URIs are
+    allowed. Operators must never write ``latest``/``rc`` by hand; the vendor may
+    still echo ``…/latest`` in the response — record that as ``vendor_model_uri``.
+    """
 
     for part in parts:
         if not part:
@@ -104,7 +109,8 @@ def assert_llm_model_pin_no_aliases(*parts: str | None) -> None:
         if tail in _FORBIDDEN_MODEL_ALIASES:
             raise RuntimeError(
                 f"LLM model pin must not use alias {tail!r}; "
-                "set AEROBIM_LLM_MODEL_REVISION to an explicit catalog version"
+                "use an unversioned gpt://folder/model URI or an explicit catalog version "
+                "(never write /latest or /rc)"
             )
 
 
@@ -114,10 +120,12 @@ def resolve_llm_model_uri(
     revision: str | None = None,
     folder_id: str | None = None,
 ) -> str:
-    """Build Yandex ``gpt://folder/model/version`` URI when parts are separate.
+    """Build Yandex ``gpt://folder/model[/version]`` URI when parts are separate.
 
-    Floating aliases ``latest`` / ``rc`` are rejected in the *resolved* URI.
-    A ``gpt://…/latest`` base may be rewritten when ``revision`` is an explicit pin.
+    Floating aliases ``latest`` / ``rc`` are rejected in the *configured* URI.
+    Unversioned ``gpt://folder/model`` is allowed when the catalog has no version
+    segment (Studio Qwen); pin honesty then relies on ``vendor_model_uri`` + hashes
+    from the live response (P₂ drift check).
     """
 
     rev = (revision or "").strip() or None
@@ -334,10 +342,17 @@ class Settings:
     """Optional checkpoint hash recorded in advisory usage / audit (never a secret)."""
     llm_timeout_seconds: float = 60.0
     llm_max_tokens_per_call: int = 4_096
-    llm_max_tokens_per_run: int = 500_000
-    llm_max_tokens_per_day: int = 2_000_000
+    llm_max_tokens_per_run: int = 100_000
+    llm_max_tokens_per_day: int = 300_000
     llm_max_completion_tokens: int = 512
-    """Hard caps for advisory LLM (Yandex grant / repair-loop fail-closed)."""
+    """Hard caps for advisory LLM (Yandex grant / repair-loop fail-closed).
+
+    Measured 2026-08-03 (think off): ~440 tokens/remark → ~44k/100 findings.
+    Run cap **100_000** ≈ two packs with headroom — stops a runaway repair-loop
+    that would otherwise burn five packs under the old 250k fuse.
+    Day **300_000** while card-bound (no TRIAL_EXPIRED). Convert to ₽ only after
+    console in/out tariff for ``qwen3.6-35b-a3b``.
+    """
     llm_allowed_hosts: tuple[str, ...] = tuple(sorted(_DEFAULT_LLM_ALLOWED_HOSTS))
     """Hostname allowlist for AEROBIM_LLM_BASE_URL (fail-closed beyond SSRF)."""
     llm_folder_id: str | None = None
@@ -354,7 +369,7 @@ class Settings:
     """Semaphore for parallel Studio calls (cloud quota is shared; default 4 of 10)."""
     llm_429_retries: int = 3
     """Retries on HTTP 429 with linear backoff before fail-closed SKIPPED."""
-    llm_budget_tz: str = "UTC"
+    llm_budget_tz: str = "Europe/Moscow"
     """IANA timezone for day-roll of ``max_tokens_per_day`` (AEROBIM_LLM_BUDGET_TZ)."""
     llm_budget_ledger_path: Path | None = None
     """Optional JSON ledger for cross-worker day counters (RT-BUDGET-03)."""
@@ -376,8 +391,9 @@ class Settings:
     def llm_local_ready(self) -> bool:
         """True when OpenAI-compat advisory LLM may be invoked.
 
-        Fail-closed: disabled by default; requires enable + base URL + model_revision.
-        Covers loopback vLLM and RF private endpoints (e.g. Yandex AI Studio).
+        Fail-closed: disabled by default; requires enable + base URL.
+        Pin: ``AEROBIM_LLM_MODEL_REVISION`` **or** an unversioned ``gpt://…/model``
+        URI without ``/latest``/``/rc`` (Studio models that have no version segment).
         Does not authorize Alibaba cloud Max.
         """
 
@@ -385,7 +401,18 @@ class Settings:
             return False
         if not self.llm_base_url:
             return False
-        return bool((self.llm_model_revision or "").strip())
+        if (self.llm_model_revision or "").strip():
+            return True
+        model = (self.llm_model or "").strip()
+        if model.startswith("gpt://"):
+            try:
+                assert_llm_model_pin_no_aliases(model)
+            except RuntimeError:
+                return False
+            # gpt://folder/name  (3+ segments after scheme) — unversioned studio pin
+            parts = model[len("gpt://") :].rstrip("/").split("/")
+            return len(parts) >= 2
+        return False
 
     @property
     def is_dev_environment(self) -> bool:
@@ -609,8 +636,8 @@ class Settings:
                 (os.getenv("AEROBIM_LLM_TIMEOUT_SECONDS") or "60").strip() or "60"
             ),
             llm_max_tokens_per_call=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_CALL", 4_096),
-            llm_max_tokens_per_run=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_RUN", 500_000),
-            llm_max_tokens_per_day=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_DAY", 2_000_000),
+            llm_max_tokens_per_run=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_RUN", 100_000),
+            llm_max_tokens_per_day=_read_int("AEROBIM_LLM_MAX_TOKENS_PER_DAY", 300_000),
             llm_max_completion_tokens=_read_int("AEROBIM_LLM_MAX_COMPLETION_TOKENS", 512),
             llm_allowed_hosts=tuple(
                 sorted(_parse_llm_allowed_hosts(os.getenv("AEROBIM_LLM_ALLOWED_HOSTS")))
@@ -626,7 +653,8 @@ class Settings:
             llm_data_logging_enabled=_read_bool("AEROBIM_LLM_DATA_LOGGING_ENABLED", False),
             llm_max_concurrent=_read_int("AEROBIM_LLM_MAX_CONCURRENT", 4),
             llm_429_retries=_read_int("AEROBIM_LLM_429_RETRIES", 3),
-            llm_budget_tz=(os.getenv("AEROBIM_LLM_BUDGET_TZ") or "UTC").strip() or "UTC",
+            llm_budget_tz=(os.getenv("AEROBIM_LLM_BUDGET_TZ") or "Europe/Moscow").strip()
+            or "Europe/Moscow",
             llm_budget_ledger_path=(
                 Path(raw_ledger)
                 if (raw_ledger := (os.getenv("AEROBIM_LLM_BUDGET_LEDGER") or "").strip())
@@ -647,8 +675,9 @@ class Settings:
             )
         if settings.llm_local_enabled and not settings.llm_local_ready():
             raise RuntimeError(
-                "AEROBIM_LLM_LOCAL_ENABLED requires AEROBIM_LLM_BASE_URL and "
-                "AEROBIM_LLM_MODEL_REVISION (pin URI+version at boot; fail-closed)"
+                "AEROBIM_LLM_LOCAL_ENABLED requires AEROBIM_LLM_BASE_URL and either "
+                "AEROBIM_LLM_MODEL_REVISION (explicit version) or an unversioned "
+                "gpt://<folder>/<model> URI without /latest or /rc"
             )
         if settings.llm_local_enabled:
             try:

@@ -63,6 +63,7 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationRequest,
 )
+from aerobim.domain.llm_advisory import LlmProvider
 from aerobim.domain.package_trace import PackageTraceCollector
 from aerobim.domain.ports import (
     AuditReportStore,
@@ -167,6 +168,8 @@ class AnalyzeProjectPackageUseCase:
         hybrid_route_gate: HybridRouteGate | None = None,
         document_signature_auditor: DocumentSignatureAuditor | None = None,
         package_inventory_loader: PackageInventoryLoader | None = None,
+        llm_advisory_provider: LlmProvider | None = None,
+        remark_locale: str = "ru",
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -222,6 +225,10 @@ class AnalyzeProjectPackageUseCase:
         self._hybrid_route_gate = hybrid_route_gate
         self._document_signature_auditor = document_signature_auditor
         self._package_inventory_loader = package_inventory_loader
+        self._llm_advisory_provider = llm_advisory_provider
+        self._remark_locale = (
+            "en" if (remark_locale or "ru").strip().lower().startswith("en") else "ru"
+        )
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
@@ -1041,6 +1048,23 @@ class AnalyzeProjectPackageUseCase:
         for issue in issues:
             enriched.append(replace(issue, remark=self._remark_generator.generate(issue)))
         return enriched
+
+    def _overlay_llm_remarks(
+        self,
+        issues: Iterable[ValidationIssue],
+        *,
+        request_id: str,
+    ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
+        """Attach AI remark drafts when LLM is ready; verdict fields unchanged."""
+
+        from aerobim.application.services.advisory_remark_overlay import overlay_llm_remarks
+
+        return overlay_llm_remarks(
+            tuple(issues),
+            provider=self._llm_advisory_provider,
+            request_id=request_id,
+            locale=self._remark_locale,
+        )
 
     def _confirm_annotation_ifc_links(
         self,

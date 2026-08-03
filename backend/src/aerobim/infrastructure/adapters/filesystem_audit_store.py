@@ -873,6 +873,13 @@ class FilesystemAuditStore:
                     "package completeness not requested",
                 ),
             ),
+            llm_advisory=self._reconstruct_capability_status(
+                data.get("llm_advisory"),
+                default=CapabilityStatus(
+                    CapabilityState.SKIPPED,
+                    "llm advisory remark compose not evaluated",
+                ),
+            ),
         )
 
     def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:
