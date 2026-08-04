@@ -28,7 +28,7 @@
 | Подписанное LOI Самолёта | 3.7 | [`LETTER_OF_INTEREST_SAMOLET_TEMPLATE_2026_08.md`](LETTER_OF_INTEREST_SAMOLET_TEMPLATE_2026_08.md) |
 | Препринт / Habr / пресс | 2.8 | Реестр: [`PRESS_MENTIONS_REGISTRY_2026_08.md`](PRESS_MENTIONS_REGISTRY_2026_08.md) — СМИ 03.08 = программа, не проект; нужны B1/B2 собственные статьи |
 | Фонд внедрения / рамка пилота | — | **20 млн ₽ на 10 задач**; 2 млн = доля задачи / платный пилот; цель — **коммерческое соглашение с партнёром** (не грант) |
-| Сегмент E (А101, Галс) | коммерция | Только через оператора: `.local/commercial-ops/SEGMENT_E_…` |
+| Сегмент E (другие девелоперы-партнёры программы) | коммерция | Только через оператора: `.local/commercial-ops/SEGMENT_E_…` (имена — не в публичном пакете) |
 | 4 схемы (контур, provenance, fail-closed, матрица) | 2.4 | [`diagrams/README.md`](diagrams/README.md) — Mermaid; экспорт PNG перед PDF-заявкой |
 
 ## Claims Lock (не снимать)

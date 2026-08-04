@@ -13,7 +13,7 @@ aliases:
 
 **Формат для трекера:** PDF в чат (`baseline-2026-08.pdf` = близнец этого MD).  
 **Checkpoint:** **NO_GO** (RT-001 / RT-002 / RT-003).  
-**Код на момент сборки MD:** дерево после `a0c07ff` + локальные правки Exp B / pack (зафиксировать SHA при выкладке).  
+**Код на момент сборки MD:** `99d7167` (после Exp B AR/VK + baseline pack). При пересборке PDF — обновить SHA.  
 **Оборудование AECV:** см. `docs/evidence/aecv-bench-eval-latest.json` (Yandex AI Studio, модель `qwen3.6-35b-a3b`).
 
 ---
