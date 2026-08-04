@@ -46,11 +46,17 @@ Lecture ledger: [`docs/research/INDUSTRY_LECTURE_NOTES_LEDGER.md`](../research/I
 
 ## Not done (with reasons)
 
-1. **Live multi-model bake-off** — API key absent in runner environment; harness shipped; re-run with key (budget ~50 ₽).  
-2. **Customer outreach numbers** — engineering prepared Claims Lock materials; operator must contact (table stays 0/0 without proof).  
-3. **CubiCasa / Renga / Минстрой vendoring** — inventory only; license GO required before copy.  
-4. **Planted clash + drawing↔model defects** — catalogued as not_planted_runnable; need fixtures next iteration.  
-5. **RT-001** — still open; needs real labeled customer/archive pack.
+1. **Live multi-model bake-off** — API key absent; harness shipped.  
+2. **Customer outreach numbers** — operator (table 0/0).  
+3. **IFC-Bench v2 full run** — pins + license policy landed; local checkout + honest scored/total not yet executed.  
+4. **BatchPlan / planted-on-real-IFC pipeline** — preferred over from-scratch synthetic; not wired yet.  
+5. **ifcdiff / TZ row 28** — note landed; 0.8.5 wheel has no `ifcdiff` entry point; port still TODO.  
+6. **KAAN / CubiCasa / Renga / Минстрой vendoring** — inventory/PARTIAL only.  
+7. **RT-001** — needs labeled customer/archive pack.
+
+## Follow-on from open-source search (2026-08-04)
+
+See [`docs/dataset/OPEN_SOURCE_SEARCH_RESULTS_2026_08_04.md`](../dataset/OPEN_SOURCE_SEARCH_RESULTS_2026_08_04.md): prefer IFC-Bench v2 + BatchPlan planting; wrap ifcdiff-family diff for TZ row 28.
 
 ## Claims Lock reminder
 

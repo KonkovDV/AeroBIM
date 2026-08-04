@@ -1,0 +1,40 @@
+{
+  "artifact_type": "ifc_bench_v2_import_pins",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-04",
+  "claim_level": "inventory_pin_only",
+  "closes_rt001": false,
+  "upstream": {
+    "huggingface": "https://huggingface.co/datasets/sylvainHellin/ifc-bench",
+    "github": "https://github.com/sylvainHellin/ifc-bench",
+    "qa_license": "CC BY 4.0",
+    "qa_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "paper_arxiv": "2605.01698"
+  },
+  "integrity": {
+    "ifc_bench_v2_csv_sha256": "8f08f5d04834a79310eb7de81f2d6812e74d53a01363affdb815bf86dfc4dbf4",
+    "ifc_bench_v1_csv_sha256": "f67a48770d74b6e0ff0868c923c3e1d976110350b2c439564d7ceccc16a46f35",
+    "eval_split": "questions/eval-split-hellin2026.csv",
+    "eval_split_test_n": 514,
+    "eval_split_train_n_note": "513 pre-dedup; HF notes train-side leak removal leaving 512 train ids with gap at id 21"
+  },
+  "counts_hf_card": {
+    "qa_pairs_v2": 1027,
+    "projects": 22,
+    "ifc_models": 51
+  },
+  "gplv3_models_exclude_from_mit_tree": [
+    "4351",
+    "ettenheim_gis",
+    "hitos",
+    "samuel_macalister_sample_house"
+  ],
+  "storage": {
+    "policy": "pin_or_local_checkout",
+    "local_root": ".local/ifc-bench",
+    "env": "AEROBIM_IFC_BENCH_ROOT",
+    "vendored_in_samples": false,
+    "reason": "Full tree ~2GB; pin hashes first; selective non-GPL model pull later"
+  },
+  "next_action": "Checkout upstream, verify CSV sha256, extend ifc-bench smoke for v2 with honest scored/total denominators"
+}
