@@ -63,7 +63,7 @@ AEROBIM_LLM_LOCAL_ENABLED=true   python -m aerobim.tools.measure_package_sla --p
 ## I.5 AECV publish
 
 **Файлы:** evidence JSON (`mape_bench_protocol`, `publish_framing`), `docs/research/AECV_PUBLISH_FRAMING_I5_2026_08_04.md`, evidence README.  
-Headline: **`macro_bench_protocol=0.5064`**, MAPE protocol ≈ **0.227**. B.5 gates listed. Forbidden: «обошли Gemini».
+Headline: **`macro_extended=0.4325`** (Table 1 metric), `macro_bench_protocol=0.5064` reference-only. B.5 gates listed. Forbidden: «обошли Gemini» / сравнение 4-классного mean с Table 1.
 
 ## I.6 Бюджет vs биллинг
 
