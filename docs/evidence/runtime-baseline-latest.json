@@ -1,20 +1,20 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.0",
-  "commit_sha": "9ac2cac0e39597f1fd508c595de142f997cfdc67",
-  "tree_sha": "9ac2cac0e39597f1fd508c595de142f997cfdc67",
-  "working_tree_clean": false,
-  "generated_at": "2026-08-03T14:45:00+00:00",
+  "commit_sha": "1436a4feef3f18b9047fa853628b0862ab22a487",
+  "tree_sha": "7748942898a09e5c415b876a40f96a46fcd030cd",
+  "working_tree_clean": true,
+  "generated_at": "2026-08-04T10:42:52.602024+00:00",
   "corpus_kind": "fixture",
-  "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003. PII gate active; effectiveness on real sheets NOT_MEASURED.",
+  "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 1808,
-    "tests_passed": 1800,
+    "tests_collected": 1863,
+    "tests_passed": 1855,
     "tests_skipped": 8,
     "tests_failed": 0,
-    "source_loc": 49876,
-    "test_loc": 36257,
-    "test_functions": 1808
+    "source_loc": 54757,
+    "test_loc": 38800,
+    "test_functions": 1863
   },
   "frontend": {
     "tests_passed": 29,
@@ -37,10 +37,10 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 49876,
-    "backend_test_loc": 36257,
-    "backend_test_functions": 1808,
+    "backend_src_loc": 54757,
+    "backend_test_loc": 38800,
+    "backend_test_functions": 1863,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~49876 LOC; tests ~36257 LOC; 1808+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
+  "readme_snippet": "Backend src ~54757 LOC; tests ~38800 LOC; 1863+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)"
 }
