@@ -350,7 +350,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_S3_ACCESS_KEY_ID` | *(unset)* | Optional access key for S3-compatible storage |
 | `AEROBIM_S3_SECRET_ACCESS_KEY` | *(unset)* | Optional secret key for S3-compatible storage |
 | `AEROBIM_S3_PREFIX` | `aerobim` | Prefix applied to object keys in S3-compatible storage |
-| `AEROBIM_LLM_ADVISORY_ENABLED` | `false` | **Development only:** opt-in OpenAI-compat advisory LLM; never sets `summary.passed`; ignored/`ready=false` under `samolet_pilot`/`production`. Alias: `AEROBIM_LLM_LOCAL_ENABLED` (deprecated name) |
+| `AEROBIM_LLM_ADVISORY_ENABLED` | `false` | **Development only:** opt-in OpenAI-compat advisory LLM; never sets `summary.passed`; ignored/`ready=false` under `samolet_pilot`/`production`. Deprecated alias `AEROBIM_LLM_LOCAL_ENABLED` logs a boot warning and is **removed after KT#3 (2026-09-21)** |
 | `AEROBIM_LLM_BASE_URL` | *(unset; Studio default when provider=`yandex-ai-studio`)* | Loopback or RF HTTPS OpenAI-compat base (`…/v1`); SSRF-gated at boot |
 | `AEROBIM_LLM_API_KEY` | *(unset)* | Optional bearer for Studio; never logged / never in `audit_event` |
 | `AEROBIM_LLM_PROVIDER` | `qwen-local` | Provider label (`qwen-local` / `yandex-ai-studio`) |

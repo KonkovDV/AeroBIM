@@ -61,6 +61,25 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             self.assertFalse(settings.llm_local_enabled)
             self.assertFalse(settings.llm_advisory_enabled)
 
+    def test_deprecated_local_alias_emits_warning_on_boot(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {
+                "AEROBIM_ENV": "development",
+                "AEROBIM_SIGNOFF_PROFILE": "development",
+                "AEROBIM_LLM_LOCAL_ENABLED": "false",
+            },
+            clear=False,
+        ):
+            os.environ.pop("AEROBIM_LLM_ADVISORY_ENABLED", None)
+            with self.assertLogs("aerobim.core.config.settings", level="WARNING") as cm:
+                Settings.from_env()
+            self.assertTrue(
+                any("AEROBIM_LLM_LOCAL_ENABLED is deprecated" in line for line in cm.output),
+                cm.output,
+            )
+            self.assertTrue(any("2026-09-21" in line for line in cm.output), cm.output)
+
 
 if __name__ == "__main__":
     unittest.main()
