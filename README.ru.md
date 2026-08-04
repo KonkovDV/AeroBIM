@@ -217,7 +217,7 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 | `POST` | `/v1/analyze/project-package` | Мультимодальный анализ |
 | `GET` | `/v1/reports/{id}/export/bcf` | Экспорт BCF ZIP |
 
-Ключевые env (фрагмент): `AEROBIM_PDF_BACKEND=pdfium` (default), `AEROBIM_MEP_AABB_FILTER=true` (optional AABB; всё ещё `geometry_verified=False`). Advisory LLM (opt-in): `AEROBIM_LLM_LOCAL_ENABLED` + unversioned `gpt://…/qwen3.6-35b-a3b` + `AEROBIM_LLM_BUDGET_LEDGER` + лимиты `MAX_TOKENS_PER_RUN=100000` / `MAX_TOKENS_PER_DAY=300000` (карта привязана → нет `TRIAL_EXPIRED`; `enable_thinking=false` обязателен для 5.1) — полная таблица в [README.md](README.md) Configuration. Живой inventory: **48 Protocol ports / 67 adapter modules / 58 DI tokens**.
+Ключевые env (фрагмент): `AEROBIM_PDF_BACKEND=pdfium` (default), `AEROBIM_MEP_AABB_FILTER=true` (optional AABB; всё ещё `geometry_verified=False`). Advisory LLM (**только development**, opt-in): `AEROBIM_LLM_ADVISORY_ENABLED` (+ устаревший алиас `AEROBIM_LLM_LOCAL_ENABLED`) + pinned `AEROBIM_LLM_MODEL_REVISION` **или** unversioned `gpt://…/model` без `/latest` + `AEROBIM_LLM_BUDGET_LEDGER` + лимиты `MAX_TOKENS_PER_RUN` / `MAX_TOKENS_PER_DAY`. На профилях `samolet_pilot` / `production` внешний advisory egress **запрещён** fail-closed. Полная таблица — [README.md](README.md) Configuration. Живой inventory: **48 Protocol ports / 67 adapter modules / 58 DI tokens**.
 
 ## Git-коммиты
 
