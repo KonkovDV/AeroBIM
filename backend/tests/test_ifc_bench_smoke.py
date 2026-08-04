@@ -34,13 +34,36 @@ class IfcBenchSmokeTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 evaluate_dataset(Path(tmp))
 
+    def test_path_escape_rejected(self) -> None:
+        from aerobim.tools.run_ifc_bench_smoke import evaluate_dataset
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            qdir = root / "questions"
+            qdir.mkdir()
+            # Traversal in project component; question still matches duplex probe map
+            # only if project==duplex — so inject unsafe component while keeping probe id
+            # via a forged project that still triggers the probe key after map lookup:
+            # force probe by using project=duplex and ifc_model with separator.
+            (qdir / "ifc-bench-v1.csv").write_text(
+                "id,question,answer,ifc_model,project,category\n"
+                "1,How many bedrooms are there?,There are 4 bedrooms.,arc,../outside,count\n",
+                encoding="utf-8",
+            )
+            (root / "projects").mkdir(parents=True)
+            payload = evaluate_dataset(root, version="v1")
+            errors = [r for r in payload["results"] if r["status"] == "error"]
+            self.assertTrue(errors)
+            self.assertTrue(
+                any("unsafe" in (e.get("detail") or "") for e in errors)
+            )
     def test_live_dataset_smoke_when_present(self) -> None:
         from aerobim.tools.run_ifc_bench_smoke import evaluate_dataset, repo_root
 
         root = repo_root() / ".local" / "ifc-bench"
         if not (root / "questions" / "ifc-bench-v1.csv").is_file():
             self.skipTest("IFC-Bench checkout not present under .local/ifc-bench")
-        payload = evaluate_dataset(root)
+        payload = evaluate_dataset(root, version="v1")
         self.assertEqual(payload["claim_level"], "open_bench_only")
         self.assertFalse(payload["closes_rt001"])
         self.assertGreaterEqual(payload["summary"]["scored"], 5)
@@ -49,6 +72,25 @@ class IfcBenchSmokeTests(unittest.TestCase):
         # Round-trip JSON for evidence shape.
         raw = json.dumps(payload)
         self.assertIn("open_bench_only", raw)
+
+    def test_live_v2_dataset_smoke_when_present(self) -> None:
+        from aerobim.tools.run_ifc_bench_smoke import evaluate_dataset, repo_root
+
+        root = repo_root() / ".local" / "ifc-bench-v2"
+        if not (root / "questions" / "ifc-bench-v2.csv").is_file():
+            self.skipTest("IFC-Bench v2 checkout not present under .local/ifc-bench-v2")
+        payload = evaluate_dataset(root, version="v2")
+        self.assertEqual(payload["claim_level"], "open_bench_only")
+        self.assertFalse(payload["closes_rt001"])
+        self.assertEqual(payload["benchmark"]["question_count"], 1026)
+        self.assertTrue(payload["benchmark"]["questions_sha256_matches_pin"])
+        self.assertGreaterEqual(payload["summary"]["scored"], 5)
+        self.assertEqual(payload["summary"]["mismatched"], 0)
+        self.assertLess(
+            payload["summary"]["scored"], payload["summary"]["total_questions"]
+        )
+        raw = json.dumps(payload)
+        self.assertIn("scored=", raw)
 
 
 if __name__ == "__main__":

@@ -76,6 +76,9 @@ from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormR
 from aerobim.infrastructure.adapters.json_package_inventory_loader import (
     JsonPackageInventoryLoader,
 )
+from aerobim.infrastructure.adapters.ifc_guid_attribute_diff import (
+    IfcGuidAttributeDiffAdapter,
+)
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
@@ -169,6 +172,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
                 else "warning"
             ),
         ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.IFC_MODEL_DIFF,
+        lambda _container: IfcGuidAttributeDiffAdapter(),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(

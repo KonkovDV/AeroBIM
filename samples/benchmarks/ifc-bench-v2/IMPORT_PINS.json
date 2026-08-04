@@ -1,6 +1,6 @@
 {
   "artifact_type": "ifc_bench_v2_import_pins",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "generated_at": "2026-08-04",
   "claim_level": "inventory_pin_only",
   "closes_rt001": false,
@@ -9,10 +9,15 @@
     "github": "https://github.com/sylvainHellin/ifc-bench",
     "qa_license": "CC BY 4.0",
     "qa_license_url": "https://creativecommons.org/licenses/by/4.0/",
-    "paper_arxiv": "2605.01698"
+    "paper_arxiv": "2605.01698",
+    "github_note": "GitHub archive is v1-only (commit d9950f8 archiving); v2 lives on HF"
   },
   "integrity": {
-    "ifc_bench_v2_csv_sha256": "8f08f5d04834a79310eb7de81f2d6812e74d53a01363affdb815bf86dfc4dbf4",
+    "ifc_bench_v2_csv_sha256_hf_card": "8f08f5d04834a79310eb7de81f2d6812e74d53a01363affdb815bf86dfc4dbf4",
+    "ifc_bench_v2_csv_sha256_measured_2026_08_04": "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b",
+    "ifc_bench_v2_csv_sha_note": "HF card pin is stale vs post-dedup download; AeroBIM pins the measured SHA",
+    "ifc_bench_v2_qa_rows_measured": 1026,
+    "ifc_bench_v2_qa_rows_hf_card": 1027,
     "ifc_bench_v1_csv_sha256": "f67a48770d74b6e0ff0868c923c3e1d976110350b2c439564d7ceccc16a46f35",
     "eval_split": "questions/eval-split-hellin2026.csv",
     "eval_split_test_n": 514,
@@ -31,10 +36,12 @@
   ],
   "storage": {
     "policy": "pin_or_local_checkout",
-    "local_root": ".local/ifc-bench",
+    "local_root_v1": ".local/ifc-bench",
+    "local_root_v2": ".local/ifc-bench-v2",
     "env": "AEROBIM_IFC_BENCH_ROOT",
     "vendored_in_samples": false,
     "reason": "Full tree ~2GB; pin hashes first; selective non-GPL model pull later"
   },
-  "next_action": "Checkout upstream, verify CSV sha256, extend ifc-bench smoke for v2 with honest scored/total denominators"
+  "smoke_evidence": "docs/evidence/ifc-bench-v2-smoke-latest.json",
+  "next_action": "Selective non-GPL IFC pull beyond duplex/dental; expand deterministic probe map"
 }

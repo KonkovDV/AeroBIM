@@ -80,4 +80,4 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn27]: Upload allowlist + Docling hydrate + DI + fail-closed without Docling are wired. **Not** `VERIFIED_FIXTURE_ONLY` until a real `.docx`/`.xlsx` round-trip fixture exists. `package_completeness` accepts declared `xlsx` only (not `docx`).
 
-^[fn28]: Enum + PD↔RD JSON section scaffold (row 12) and same-request revision-merge guard **emit** these kinds, but they do **not** satisfy TZ «сравнение версий и типов» as multi-package CDE compare. Product capability remains **MISSING** until package-vs-package compare ships (KT#3 II.3). Hiding this gap is worse than listing it.
+^[fn28]: Enum + PD↔RD JSON section scaffold (row 12) and same-request revision-merge guard **emit** these kinds, but they do **not** satisfy TZ «сравнение версий и типов» as multi-package CDE compare. Thin GUID/attribute IFC model-diff (`Tokens.IFC_MODEL_DIFF`, `samples/ifc/model-diff/`) is an engineering scaffold only — **not** CDE version management. Product capability remains **MISSING** until package-vs-package compare ships (KT#3 II.3). Hiding this gap is worse than listing it.
