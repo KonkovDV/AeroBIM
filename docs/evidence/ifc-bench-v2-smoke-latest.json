@@ -1,0 +1,120 @@
+{
+  "artifact_type": "ifc_bench_v2_smoke",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-08-04T10:40:28.986493+00:00",
+  "claim_level": "open_bench_only",
+  "claim_boundary": "IFC-Bench open_bench_only: deterministic countable subset via IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001.",
+  "closes_rt001": false,
+  "benchmark": {
+    "name": "IFC-Bench-v2",
+    "citation": "Hellin et al. — v1 EC3 2025 / GitHub archive; v2 HF sylvainHellin/ifc-bench + arXiv:2605.01698",
+    "dataset_root": "C:\\plans\\AeroBIM\\.local\\ifc-bench-v2",
+    "version": "v2",
+    "questions_path": "questions/ifc-bench-v2.csv",
+    "questions_sha256": "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b",
+    "questions_sha256_matches_pin": true,
+    "pinned_sha256_reference": "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b",
+    "question_count": 1026,
+    "ifc_files_present": 3,
+    "ifc_files": [
+      {
+        "path": "projects/dental_clinic/arc.ifc",
+        "sha256": "b90fe57b8aa9329d762a564770e697d4f7357677484e3a78ede4ab6d2163c0c0"
+      },
+      {
+        "path": "projects/duplex/arc.ifc",
+        "sha256": "707a032566dee8e969a44d95509be46d646440e2443624709f8d3ae2b45f4656"
+      },
+      {
+        "path": "projects/duplex/mep.ifc",
+        "sha256": "285f85de4424416ba6bade121588dbe0ae278fb4fdb0f4b782051cfdc7c92972"
+      }
+    ]
+  },
+  "summary": {
+    "total_questions": 1026,
+    "scored": 7,
+    "matched": 7,
+    "mismatched": 0,
+    "skipped_unmapped_or_uncomparable": 1019,
+    "errors": 0,
+    "exact_match_rate_on_scored": 1.0,
+    "denominator_note": "scored=7 of total_questions=1026; unmapped NL and non-numeric GT skipped; missing IFC → error",
+    "note": "Rate is over the deterministic countable subset only (7/1026 questions). Unmapped NL items are skipped."
+  },
+  "results": [
+    {
+      "question": "How many X-RAY rooms are there in total?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_xray_space_count",
+      "predicted": 1,
+      "expected": 1.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many rooms are there in the clinic ?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_space_count",
+      "predicted": 269,
+      "expected": 269.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many interior doors are there in this building?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_interior_door_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many rooms are there in house A?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_house_a_space_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many bedrooms are there?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_bedroom_count",
+      "predicted": 4,
+      "expected": 4.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many steps does the stair in house A have?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_stair_risers",
+      "predicted": 16,
+      "expected": 16.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "How many light fixtures are specified in the model, and what is the breakdown by type?",
+      "project": "duplex",
+      "ifc_model": "mep",
+      "probe_id": "duplex_mep_light_fixture_count",
+      "predicted": 14,
+      "expected": 14.0,
+      "status": "matched",
+      "detail": null
+    }
+  ],
+  "skipped_count": 1019,
+  "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\ifc-bench-v2-smoke.json",
+  "output_sha256": "a87dd39f604248748500b137b8675e17c20619b70b5e486caf0e7fed32cd539c"
+}

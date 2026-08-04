@@ -23,6 +23,10 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | Architecture |
 | [`architecture/ADR-001-verdict-ownership-2026.md`](architecture/ADR-001-verdict-ownership-2026.md) | `summary.passed` ownership |
 | [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | R1–R15 |
+| [`quality/RED_TEAM_JURY_PACK_2026_08_04.md`](quality/RED_TEAM_JURY_PACK_2026_08_04.md) | Red Team: jury pack + IFC-Bench v2 / model-diff |
+| [`partners/NOVATOR_JURY_PACK_2026_08.md`](partners/NOVATOR_JURY_PACK_2026_08.md) | **Верхний слой для жюри** (Новатор/Техлаб): экономика, матрица, питч, roadmap |
+| [`partners/GLOSSARY_JURY_RU_2026_08.md`](partners/GLOSSARY_JURY_RU_2026_08.md) | Глоссарий жаргона для заявки |
+| [`partners/diagrams/README.md`](partners/diagrams/README.md) | 4 схемы (контур, provenance, fail-closed, матрица) |
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness |
 | [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md) | Self-audit / gate status |
 | [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Allowed vs forbidden claims |

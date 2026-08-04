@@ -131,66 +131,73 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Engineering readiness (2026-07-21):** engineering foundation improved (domain + matrix eval + synthetic stub tests). **Product HOLD — RT-003 still OPEN** until customer federated IFC + signed scope memo. No invented federated model.  
 
 ### RT-004 — Clash SKIPPED does not block pass
-- **Severity:** CRITICAL  
+- **СТАТУС: ЗАКРЫТО** (remediation 2026-07-17; `require_clash` → SKIPPED clash ⇒ FAILED + `passed=false`)  
+- **Severity (historical defect prose below):** CRITICAL — do not treat as open  
 - **Category:** Capability honesty / False pass risk  
 - **Exact file:** `application/use_cases/analyze_project_package.py::_run_clash_detection`, `application/services/signoff_policy.py`  
-- **Observed:** missing optional clash stack → `CapabilityState.SKIPPED` → empty results → pass allowed  
+- **Observed (pre-fix):** missing optional clash stack → `CapabilityState.SKIPPED` → empty results → pass allowed  
 - **Expected:** For Samolet packages requiring clash, missing engine must be FAILED or explicit policy gate  
 - **Reproduction:** run analyze without `ifcclash` installed; inspect `capabilities.clash`  
-- **Impact:** Green report without geometric coordination work  
-- **Fix:** Profile flag `require_clash=true` for pilot packages; SKIPPED→FAILED under that profile  
-- **Verification:** negative test: require_clash + missing dep ⇒ `summary.passed=false`  
+- **Impact (pre-fix):** Green report without geometric coordination work  
+- **Fix applied:** Profile flag `require_clash=true` for pilot packages; SKIPPED→FAILED under that profile  
+- **Verification:** `tests/test_p0_remediation_fail_closed.py`  
 
 ### RT-005 — No tenant / object isolation
-- **Severity:** BLOCKER (security)  
+- **СТАТУС: ЗАКРЫТО** (remediation 2026-07-17; `AuthPrincipal` + `principal_may_access_report`; ACL 404 post-wave)  
+- **Severity (historical defect prose below):** BLOCKER (security) — do not treat as open  
 - **Category:** API security  
 - **Exact file:** `presentation/http/api.py` (`/v1/reports/{report_id}/source/ifc`, drawing preview, BCF export)  
-- **Observed:** Auth is shared bearer/OIDC; authorization is not project/tenant scoped; report UUID knowledge grants artifact access  
+- **Observed (pre-fix):** Auth is shared bearer/OIDC; authorization is not project/tenant scoped; report UUID knowledge grants artifact access  
 - **Expected:** object-level ACL / tenant binding  
-- **Reproduction:** authenticate with valid token; GET another report’s IFC by ID  
-- **Impact:** data leakage across projects in shared deployment  
-- **Fix:** bind reports to tenant/project; authorize before artifact fetch  
-- **Verification:** negative API test cross-tenant denied  
+- **Reproduction (pre-fix):** authenticate with valid token; GET another report’s IFC by ID  
+- **Impact (pre-fix):** data leakage across projects in shared deployment  
+- **Fix applied:** bind reports to tenant/project; authorize before artifact fetch; cross-tenant → 404  
+- **Verification:** ACL suite + `tests/test_rt_remediation_post.py`  
 
 ### RT-006 — Frontend tests failing
-- **Severity:** CRITICAL  
+- **СТАТУС: ЗАКРЫТО** (remediation 2026-07-17; frontend vitest in main CI)  
+- **Severity (historical defect prose below):** CRITICAL — do not treat as open  
 - **Category:** Reproducibility / Review UX  
 - **Exact file:** `frontend/src/App.test.tsx`  
-- **Observed:** `npm test` exit 1; 3 failures in review-shell smoke / filters / 2d panel  
+- **Observed (pre-fix):** `npm test` exit 1; 3 failures in review-shell smoke / filters / 2d panel  
 - **Expected:** green review shell tests in clean env  
 - **Reproduction:** `cd frontend && npm test`  
-- **Impact:** HITL review path not proven  
-- **Fix:** fix UI contract assertions; re-run until green  
-- **Verification:** `npm test` exit 0  
+- **Impact (pre-fix):** HITL review path not proven  
+- **Fix applied:** UI contract assertions; CI `frontend` job (`npm ci` + `npm test` + `npm run build`)  
+- **Verification:** vitest green in CI (see runtime baseline frontend.tests_passed)  
 
 ### RT-007 — Finding contract incomplete vs auditor mandate
-- **Severity:** CRITICAL  
+- **СТАТУС: ЗАКРЫТО** (remediation 2026-07-17; `finding_id` / `evidence_refs` / `source_id` stamp + persist reject)  
+- **Severity (historical defect prose below):** CRITICAL — do not treat as open  
 - **Category:** Domain contracts / Provenance  
 - **Exact file:** `domain/models.py::ValidationIssue`, `domain/architecture.py::EvidenceRef`  
-- **Observed:** Missing mandatory `finding_id`, `source_refs`, `evidence_refs`, `capability`, `document_identity` on findings; `EvidenceRef` exists but is not enforced on issues  
+- **Observed (pre-fix):** Missing mandatory `finding_id`, `source_refs`, `evidence_refs`, `capability`, `document_identity` on findings; `EvidenceRef` exists but is not enforced on issues  
 - **Expected:** every finding bindable to source+rule+evidence  
-- **Impact:** report can lose provenance; weak audit trail for Samolet  
-- **Fix:** extend ValidationIssue; migration for serializers; reject persist without evidence  
-- **Verification:** contract tests + mutation removing provenance must fail  
+- **Impact (pre-fix):** report can lose provenance; weak audit trail for Samolet  
+- **Fix applied:** extend ValidationIssue; reject persist without evidence  
+- **Verification:** contract / provenance tests  
 
 ### RT-008 — BCF interoperability not evidenced beyond unit ZIP
+- **СТАТУС: PARTIAL** (T1 structural ZIP evidenced; T2 CDE import **NOT_VERIFIED**)  
 - **Severity:** HIGH (CRITICAL if BCF claimed “ready for CDE”)  
 - **Category:** Reporting  
 - **Exact file:** `infrastructure/adapters/bcf_report_exporter.py`, dirty `bcf_consumers.py`  
 - **Observed:** Export ZIP + in-repo dual consumers/tests; **no** saved independent CDE import artifact  
 - **Expected:** structural + consumer import evidence under `audit/evidence/`  
-- **Impact:** handoff claim fails  
+- **Impact:** handoff claim fails if marketed as CDE-ready  
 - **Fix:** export sample → import in external tool → save screenshot/log hash  
 - **Verification:** evidence file referenced from matrix  
 
 ### RT-009 — Dirty tree / uncommitted seams treated as shipped
-- **Severity:** HIGH  
+- **СТАТУС: ЗАКРЫТО** (remediation freeze 2026-07-17; subsequent commits on clean tree)  
+- **Severity (historical defect prose below):** HIGH — do not treat as open  
 - **Category:** Release integrity  
-- **Exact file:** git status vs SHA `c0c4b2b`  
-- **Observed:** DocumentIdentity extension, revision-merge guard, idempotency, BCF consumers uncommitted  
+- **Exact file:** git status vs SHA `c0c4b2b` (historical)  
+- **Observed (pre-fix):** DocumentIdentity extension, revision-merge guard, idempotency, BCF consumers uncommitted  
 - **Expected:** checkpoint evaluates committed artifacts only, or explicitly freezes dirty tree  
-- **Impact:** false readiness if demo uses local dirty code  
-- **Fix:** commit atomic slices or revert; re-baseline  
+- **Impact (pre-fix):** false readiness if demo uses local dirty code  
+- **Fix applied:** commit atomic slices; re-baseline  
+- **Verification:** public `main` CI green; Claims Lock freeze SHAs documented above  
 
 ### RT-010 — Independent calculation verification absent
 - **Severity:** HIGH  

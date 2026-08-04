@@ -36,12 +36,11 @@ claim_boundary: >-
 - CSV sha256 (HF): v2 `8f08f5d04834a79310eb7de81f2d6812e74d53a01363affdb815bf86dfc4dbf4`  
 - Paper: arXiv:2605.01698; GNI 2026 Hellin/Nousias/Borrmann  
 
-**AeroBIM today:** v1 smoke 7 countable / 105. Next: pin v2 + recount comparable subset.
+**AeroBIM today:** v2 smoke landed — scored **7/1026** countable probes @ 1.0 on subset; measured CSV sha `e47ccd…` (HF card pin stale). Evidence: [`../evidence/ifc-bench-v2-smoke-latest.json`](../evidence/ifc-bench-v2-smoke-latest.json). Not product accuracy; does not close RT-001.
 
-### 1.2. KAAN — **PARTIAL**
+### 1.2. KAAN — **PARTIAL — do not vendor**
 
-800+ Dutch residential IFC + annotated plans (WKT), materials, spatial graphs.  
-Primary license URL not opened in this pass — **license GO before any copy**. Best candidate for cross-document compare once cleared.
+BatchPlan paper used **6** KAAN projects for tool development — **not** a redistributable open corpus. Primary open license **not found**. Record: [`KAAN_LICENSE_HONESTY_2026_08_04.md`](KAAN_LICENSE_HONESTY_2026_08_04.md).
 
 ### 1.3. OSArch Example Files — **PARTIAL**
 
@@ -69,7 +68,7 @@ Do not vendor until primary license read. Improves vision contour later; not RT-
 
 | Tool | Status | Role |
 |---|---|---|
-| **BatchPlan** (`github.com/byildiz/BatchPlan`) | PARTIAL (exists) | IFC → PNG plans; then plant mismatches |
+| **BatchPlan** (`github.com/byildiz/BatchPlan`) | PARTIAL (MIT tool; pythonocc blocker) | See [`BATCHPLAN_PROBE_2026_08_04.md`](BATCHPLAN_PROBE_2026_08_04.md) |
 | ResBIM | PARTIAL | Ready model+plan pairs |
 | SESYD / SFPI | PARTIAL | Methodology reference |
 
@@ -91,8 +90,7 @@ Does not replace Russian norm pack; measures pipeline before Samolet norms.
 
 ## 5. Пробел ТЗ «сравнение версий»
 
-IfcOpenShell ships **`ifcdiff`** (`ifcdiff old.ifc new.ifc`) alongside ifctester/ifcclash already in stack.  
-No new dependency. Work: port + severity mapping + matrix row 28 → implemented. See [`IFCDIFF_TZ_GAP_NOTE_2026_08_04.md`](IFCDIFF_TZ_GAP_NOTE_2026_08_04.md).
+Thin GUID/attribute IFC model-diff landed (no deepdiff). Wheel has no `ifcdiff` CLI. TZ row 28 remains **MISSING** for CDE package-vs-package compare. See [`IFCDIFF_TZ_GAP_NOTE_2026_08_04.md`](IFCDIFF_TZ_GAP_NOTE_2026_08_04.md).
 
 ---
 

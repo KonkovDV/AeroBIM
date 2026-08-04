@@ -5,31 +5,34 @@
 [![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+**AeroBIM** — открытый ассистент критериев приёмки для openBIM-комплектов: помогает эксперту найти расхождения между BIM-моделью, чертежами, ТЗ и правилами **до** стройки, с provenance каждой находки и детерминированным Shared-gate.
 
-> ## Checkpoint: `NO_GO`
->
-> Samolet TechLab Task 07 **не** готов к customer sign-off. Открытые блокеры:
-> **RT-001** (корпус точности), **RT-002** (утверждённый нормативный пакет), **RT-003** (federated MEP-скоуп) —
-> см. [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
-> SSOT формулировок: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
-> eng freeze: [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) ·
-> verified vs planned: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) ·
-> **Eng-статус авг 2026:** [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) ·
-> карта docs: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) ·
-> владение вердиктом: [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md).
-> Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.
->
-> **Инженерная готовность выросла (2026-07 → 2026-08)** без закрытия customer-блокеров:
-> LIC-001 Option B; P2-04 / P2-02 honesty; Docker offline; **P0 eng-пакет WP-01…08**
-> (baseline, Hybrid advisory pre-gate, envelope подписи, norm pack v2, completeness,
-> open-corpora n=7, quality protocol interim 0.60, sync README/baseline) —
-> [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) ·
-> Red Team [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
-> Fixture GO ≠ Checkpoint GO.
+### Проблема
 
-Открытый **ассистент критериев приёмки** для openBIM-комплектов (IFC + IDS + междокументные доказательства).
+Одна и та же величина живёт в модели, на листе PDF, в ТЗ и в таблице площадей. Файлы по отдельности выглядят корректно; ошибка всплывает при сопоставлении — часто уже на площадке.
 
-AeroBIM выполняет детерминированную проверку в логике Shared-gate (рамка ISO 19650: доказательства для состояния *Shared*, не контрактная авторизация *Published*). Сводка объединяет IFC, IDS, чертежи и тексты расчётов с явной честностью capabilities, provenance findings и экспортом BCF **ZIP**. Независимый импорт в CDE и customer accuracy остаются **вне утверждений**, пока нет доказательств. Архитектура: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
+### Что система делает
+
+Сопоставляет IFC / IDS, чертежи и тексты требований; показывает источники; формирует проект замечания; оставляет решение эксперту. Не заменяет специалиста и не авторизует Shared→Published.
+
+### Что уже работает (репозиторий / fixtures)
+
+Project-package analyze; IFC/IDS/cross-doc; Shared-gate `summary.passed` с fail-closed; provenance; BCF ZIP (структурный); HITL; Docker offline-bundle; CI. Подробная карта — ниже. Метрики LOC/тестов — [runtime baseline](docs/evidence/runtime-baseline-latest.json).
+
+### Для жюри / партнёров
+
+Верхний слой без внутреннего жаргона: [`docs/partners/NOVATOR_JURY_PACK_2026_08.md`](docs/partners/NOVATOR_JURY_PACK_2026_08.md) · меморандум [`docs/docs.md`](docs/docs.md) · Red Team [`docs/quality/RED_TEAM_JURY_PACK_2026_08_04.md`](docs/quality/RED_TEAM_JURY_PACK_2026_08_04.md).
+
+### Готовность к сдаче заказчику
+
+> **Checkpoint: `NO_GO`** — это **внутренний** статус готовности к *подписанию у заказчика*, а не оценка «система не работает».  
+> Он снимается только корпусом данных и утверждёнными нормами заказчика, которые мы **принципиально не имитируем**.  
+> Открыты: **RT-001** (точность на customer corpus), **RT-002** (норм-пак), **RT-003** (federated MEP) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
+> Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.  
+> SSOT: [Claims Lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) · [eng status авг 2026](docs/ENGINEERING_STATUS_2026_08.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md).  
+> Инженерная готовность выросла (WP-01…08 и др.) **без** закрытия customer-блокеров — Fixture GO ≠ Checkpoint GO.
+
+AeroBIM выполняет детерминированную проверку в логике Shared-gate (рамка ISO 19650: доказательства для состояния *Shared*, не контрактная авторизация *Published*). Независимый импорт в CDE и customer accuracy остаются **вне утверждений**, пока нет доказательств. Архитектура: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
 ## Карта статуса (честно)
 
@@ -225,7 +228,7 @@ powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: 
 
 <!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->
 <!-- regenerated by: python -m aerobim.tools.export_runtime_baseline -->
-Backend src ~54757 LOC; tests ~38800 LOC; 1863+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
+Backend src ~55075 LOC; tests ~38896 LOC; 1867+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
 <!-- AEROBIM_RUNTIME_BASELINE:END -->
 
 ## Стек

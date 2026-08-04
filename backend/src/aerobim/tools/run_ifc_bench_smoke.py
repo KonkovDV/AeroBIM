@@ -1,8 +1,8 @@
-"""IFC-Bench v1 smoke — deterministic IFC inventory vs public QA subset.
+"""IFC-Bench smoke — deterministic IFC inventory vs public QA subset.
 
+Supports v1 (GitHub archive) and v2 (Hugging Face dataset layout).
 Claim level: ``open_bench_only``. Does **not** close RT-001 / product accuracy.
-Requires a local checkout of https://github.com/sylvainHellin/ifc-bench
-(``AEROBIM_IFC_BENCH_ROOT`` or ``--dataset-root``). Models are CC BY 4.0.
+Requires local checkout under ``AEROBIM_IFC_BENCH_ROOT`` / ``.local/ifc-bench*``.
 
 Only countable / presence probes that map cleanly to IfcOpenShell queries are
 scored. Agentic NL questions remain ``skipped`` (out of deterministic scope).
@@ -23,8 +23,16 @@ from pathlib import Path
 from typing import Any
 
 CLAIM_BOUNDARY = (
-    "IFC-Bench v1 open_bench_only: deterministic countable subset via "
+    "IFC-Bench open_bench_only: deterministic countable subset via "
     "IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001."
+)
+
+# HF card listed this for an earlier snapshot; measured 2026-08-04 after dedup = e47c…
+_PINNED_V2_SHA_MEASURED = (
+    "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b"
+)
+_PINNED_V1_SHA_HF = (
+    "f67a48770d74b6e0ff0868c923c3e1d976110350b2c439564d7ceccc16a46f35"
 )
 
 _NUMBER_RE = re.compile(
@@ -101,7 +109,9 @@ def _is_external_door(door) -> bool | None:
 ProbeFn = Callable[[Any], float | int | str]
 
 
-def _probes_for_model(project: str, ifc_model: str) -> dict[str, tuple[str, ProbeFn]]:
+def _probes_for_model(
+    project: str, ifc_model: str, *, version: str = "v1"
+) -> dict[str, tuple[str, ProbeFn]]:
     """question substring (lower) → (probe_id, extractor)."""
 
     if project == "duplex" and ifc_model == "arc":
@@ -157,14 +167,29 @@ def _probes_for_model(project: str, ifc_model: str) -> dict[str, tuple[str, Prob
             ),
         }
     if project == "dental_clinic" and ifc_model == "arc":
-        return {
-            "how many x-ray rooms are there": (
-                "dental_arc_xray_space_count",
-                lambda m: sum(
+        # v1 GT counted X-RAY + X-RAY ALCOVE; v2 GT is room 2A12 only.
+        if version == "v2":
+
+            def _xray_count(m: Any) -> int:
+                return sum(
+                    1
+                    for s in m.by_type("IfcSpace")
+                    if (s.LongName or "").strip().lower() == "x-ray"
+                )
+
+        else:
+
+            def _xray_count(m: Any) -> int:
+                return sum(
                     1
                     for s in m.by_type("IfcSpace")
                     if "x-ray" in (s.LongName or "").lower()
-                ),
+                )
+
+        return {
+            "how many x-ray rooms are there": (
+                "dental_arc_xray_space_count",
+                _xray_count,
             ),
             "how many rooms are there in the clinic": (
                 "dental_arc_space_count",
@@ -174,12 +199,18 @@ def _probes_for_model(project: str, ifc_model: str) -> dict[str, tuple[str, Prob
     return {}
 
 
-def evaluate_dataset(dataset_root: Path) -> dict[str, Any]:
-    questions_path = dataset_root / "questions" / "ifc-bench-v1.csv"
+def evaluate_dataset(
+    dataset_root: Path, *, version: str = "v1"
+) -> dict[str, Any]:
+    version = version.strip().lower()
+    if version not in {"v1", "v2"}:
+        raise ValueError("version must be v1 or v2")
+    questions_path = dataset_root / "questions" / f"ifc-bench-{version}.csv"
     if not questions_path.is_file():
         raise FileNotFoundError(
             f"IFC-Bench questions missing: {questions_path}. "
-            "Clone https://github.com/sylvainHellin/ifc-bench and pass --dataset-root."
+            "For v2: download from Hugging Face sylvainHellin/ifc-bench "
+            "into .local/ifc-bench-v2 (GitHub archive is v1-only)."
         )
 
     with questions_path.open(encoding="utf-8", newline="") as fh:
@@ -190,11 +221,36 @@ def evaluate_dataset(dataset_root: Path) -> dict[str, Any]:
 
     for row in rows:
         question = (row.get("question") or "").strip()
-        answer = (row.get("answer") or "").strip()
+        answer = (row.get("ground_truth") or row.get("answer") or "").strip()
         project = (row.get("project") or "").strip()
         ifc_model = (row.get("ifc_model") or "").strip()
+        if (
+            not project
+            or not ifc_model
+            or ".." in project
+            or ".." in ifc_model
+            or "/" in project
+            or "\\" in project
+            or "/" in ifc_model
+            or "\\" in ifc_model
+            or Path(project).name != project
+            or Path(ifc_model).name != ifc_model
+        ):
+            results.append(
+                ProbeResult(
+                    question=question,
+                    project=project,
+                    ifc_model=ifc_model,
+                    probe_id="path_rejected",
+                    predicted=None,
+                    expected=_parse_expected_number(answer),
+                    status="error",
+                    detail="unsafe project/ifc_model path component",
+                )
+            )
+            continue
         q_lower = question.lower()
-        probes = _probes_for_model(project, ifc_model)
+        probes = _probes_for_model(project, ifc_model, version=version)
         matched_key = next((k for k in probes if k in q_lower), None)
         if matched_key is None:
             results.append(
@@ -212,7 +268,22 @@ def evaluate_dataset(dataset_root: Path) -> dict[str, Any]:
             continue
 
         probe_id, extractor = probes[matched_key]
-        ifc_path = dataset_root / "projects" / project / f"{ifc_model}.ifc"
+        projects_root = (dataset_root / "projects").resolve()
+        ifc_path = (dataset_root / "projects" / project / f"{ifc_model}.ifc").resolve()
+        if not ifc_path.is_relative_to(projects_root):
+            results.append(
+                ProbeResult(
+                    question=question,
+                    project=project,
+                    ifc_model=ifc_model,
+                    probe_id=probe_id,
+                    predicted=None,
+                    expected=_parse_expected_number(answer),
+                    status="error",
+                    detail="IFC path escapes dataset projects root",
+                )
+            )
+            continue
         if not ifc_path.is_file():
             results.append(
                 ProbeResult(
@@ -223,7 +294,7 @@ def evaluate_dataset(dataset_root: Path) -> dict[str, Any]:
                     predicted=None,
                     expected=_parse_expected_number(answer),
                     status="error",
-                    detail=f"missing IFC {ifc_path}",
+                    detail=f"missing IFC under projects/{project}/",
                 )
             )
             continue
@@ -276,22 +347,38 @@ def evaluate_dataset(dataset_root: Path) -> dict[str, Any]:
     skipped = [r for r in results if r.status == "skipped"]
     errors = [r for r in results if r.status == "error"]
 
-    ifc_files = sorted((dataset_root / "projects").rglob("*.ifc"))
+    projects_dir = dataset_root / "projects"
+    ifc_files = sorted(projects_dir.rglob("*.ifc")) if projects_dir.is_dir() else []
+    questions_sha = _sha256_file(questions_path)
+    pinned = _PINNED_V2_SHA_MEASURED if version == "v2" else _PINNED_V1_SHA_HF
     return {
-        "artifact_type": "ifc_bench_v1_smoke",
-        "schema_version": "1.0.0",
+        "artifact_type": f"ifc_bench_{version}_smoke",
+        "schema_version": "1.1.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_level": "open_bench_only",
         "claim_boundary": CLAIM_BOUNDARY,
         "closes_rt001": False,
         "benchmark": {
-            "name": "IFC-Bench-v1",
-            "citation": "Hellin et al., EC3 2025 / github.com/sylvainHellin/ifc-bench",
+            "name": f"IFC-Bench-{version}",
+            "citation": (
+                "Hellin et al. — v1 EC3 2025 / GitHub archive; "
+                "v2 HF sylvainHellin/ifc-bench + arXiv:2605.01698"
+            ),
             "dataset_root": str(dataset_root.resolve()),
-            "questions_sha256": _sha256_file(questions_path),
+            "version": version,
+            "questions_path": str(questions_path.relative_to(dataset_root)).replace(
+                "\\", "/"
+            ),
+            "questions_sha256": questions_sha,
+            "questions_sha256_matches_pin": questions_sha == pinned,
+            "pinned_sha256_reference": pinned,
             "question_count": len(rows),
+            "ifc_files_present": len(ifc_files),
             "ifc_files": [
-                {"path": str(p.relative_to(dataset_root)), "sha256": _sha256_file(p)}
+                {
+                    "path": str(p.relative_to(dataset_root)).replace("\\", "/"),
+                    "sha256": _sha256_file(p),
+                }
                 for p in ifc_files
             ],
         },
@@ -305,6 +392,10 @@ def evaluate_dataset(dataset_root: Path) -> dict[str, Any]:
             "exact_match_rate_on_scored": (
                 round(len(matched) / len(scored), 4) if scored else None
             ),
+            "denominator_note": (
+                f"scored={len(scored)} of total_questions={len(results)}; "
+                "unmapped NL and non-numeric GT skipped; missing IFC → error"
+            ),
             "note": (
                 "Rate is over the deterministic countable subset only "
                 f"({len(scored)}/{len(results)} questions). Unmapped NL items are skipped."
@@ -317,54 +408,62 @@ def evaluate_dataset(dataset_root: Path) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--dataset-root",
-        type=Path,
-        default=None,
-        help="Path to ifc-bench checkout (default: AEROBIM_IFC_BENCH_ROOT or .local/ifc-bench)",
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=None,
-        help="Write JSON artifact (default: artifacts/open-bench/ifc-bench-v1-smoke.json)",
-    )
-    parser.add_argument(
-        "--also-docs-evidence",
-        action="store_true",
-        help="Also copy a summary JSON to docs/evidence/ifc-bench-v1-smoke-latest.json",
-    )
+    parser.add_argument("--dataset-root", type=Path, default=None)
+    parser.add_argument("--version", choices=("v1", "v2"), default="v1")
+    parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument("--also-docs-evidence", action="store_true")
     args = parser.parse_args(argv)
 
     root = args.dataset_root
     if root is None:
         env = (os.getenv("AEROBIM_IFC_BENCH_ROOT") or "").strip()
-        root = Path(env) if env else repo_root() / ".local" / "ifc-bench"
+        if env:
+            root = Path(env)
+        elif args.version == "v2":
+            root = repo_root() / ".local" / "ifc-bench-v2"
+        else:
+            root = repo_root() / ".local" / "ifc-bench"
     root = root.resolve()
 
-    payload = evaluate_dataset(root)
-    out = args.output
-    if out is None:
-        out = repo_root() / "artifacts" / "open-bench" / "ifc-bench-v1-smoke.json"
+    payload = evaluate_dataset(root, version=args.version)
+    out = args.output or (
+        repo_root() / "artifacts" / "open-bench" / f"ifc-bench-{args.version}-smoke.json"
+    )
     out.parent.mkdir(parents=True, exist_ok=True)
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     out.write_text(text, encoding="utf-8")
     payload["output_path"] = str(out)
     payload["output_sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
-    # rewrite with output meta
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     out.write_text(text, encoding="utf-8")
 
     if args.also_docs_evidence:
-        evidence = repo_root() / "docs" / "evidence" / "ifc-bench-v1-smoke-latest.json"
+        evidence = (
+            repo_root()
+            / "docs"
+            / "evidence"
+            / f"ifc-bench-{args.version}-smoke-latest.json"
+        )
         evidence.write_text(text, encoding="utf-8")
         print(f"docs_evidence={evidence}")
 
     summary = payload["summary"]
-    print(json.dumps({"output": str(out), "summary": summary, "claim_level": "open_bench_only"}))
-    # Fail soft on empty scored set; hard-fail only if mapped probes mismatch.
+    pin_ok = bool(payload.get("benchmark", {}).get("questions_sha256_matches_pin"))
+    print(
+        json.dumps(
+            {
+                "output": str(out),
+                "version": args.version,
+                "summary": summary,
+                "questions_sha256_matches_pin": pin_ok,
+                "claim_level": "open_bench_only",
+            }
+        )
+    )
     if summary["scored"] == 0:
         return 2
+    if not pin_ok:
+        return 3
     if summary["mismatched"] or summary["errors"]:
         return 1
     return 0

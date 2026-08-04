@@ -5,6 +5,7 @@ class Tokens:
     NARRATIVE_RULE_SYNTHESIZER = "narrative_rule_synthesizer"
     NORM_RULE_PACK_LOADER = "norm_rule_pack_loader"
     SECTION_DIFF_ANALYZER = "section_diff_analyzer"
+    IFC_MODEL_DIFF = "ifc_model_diff"
     DRAWING_ANALYZER = "drawing_analyzer"
     RASTER_DRAWING_ANALYZER = "raster_drawing_analyzer"
     EXTRACTION_INTEGRITY_PRODUCER = "extraction_integrity_producer"

@@ -1,30 +1,36 @@
 # ifcdiff → TZ row 28 (version / doc-type compare)
 
-**Date:** 2026-08-04  
-**Status:** engineering note — not yet implemented  
-**Matrix:** [`audit/reports/TZ_RUNTIME_MATRIX.md`](../../audit/reports/TZ_RUNTIME_MATRIX.md) row **28 = MISSING**
+**Date:** 2026-08-04 (updated)  
+**Status:** thin port landed — TZ product row still **not** closed as CDE compare  
+**Matrix:** [`audit/reports/TZ_RUNTIME_MATRIX.md`](../../audit/reports/TZ_RUNTIME_MATRIX.md) row **28**
 
-## Finding
+## Finding (unchanged product gap)
 
-Tracker TZ requires «сравнение версий и типов документации». AeroBIM today only emits reserved kinds `STAGE_MISMATCH` / `VERSION_MISMATCH` on limited paths — not package-vs-package IFC diff.
+Tracker TZ requires «сравнение версий и типов документации» as multi-package CDE compare. Reserved kinds `STAGE_MISMATCH` / `VERSION_MISMATCH` alone do not satisfy that.
 
-## Existing dependency (no new packages)
+## Wheel reality
 
-IfcOpenShell **documents** `ifcdiff` next to `ifctester` / `ifcclash`. On the locked **0.8.5** wheel in this environment, there is **no** importable `ifcdiff` module and no `ifcdiff` console script on PATH.
+IfcOpenShell **documents** `ifcdiff` next to `ifctester` / `ifcclash`. On locked **0.8.5**, there is **no** importable `ifcdiff` module and no CLI on PATH. Upstream full `ifcdiff.py` pulls **deepdiff** — **not** added here.
 
-Honest options (still no *new* third-party product dependency):
+## What landed (engineering)
 
-1. Port the small `ifcdiff` utility from the IfcOpenShell upstream repo (same project family as the already-declared dependency) behind `IIfcModelDiff`.  
-2. Or implement a minimal GUID/attribute diff adapter using `ifcopenshell` APIs already installed.
+| Piece | Path |
+|---|---|
+| Port | `backend/src/aerobim/domain/ifc_model_diff.py` (`IfcModelDiff`) |
+| Adapter | `backend/src/aerobim/infrastructure/adapters/ifc_guid_attribute_diff.py` |
+| DI | `Tokens.IFC_MODEL_DIFF` |
+| Fixture | `samples/ifc/model-diff/revision-{a,b}.ifc` |
+| Test | `backend/tests/test_ifc_model_diff.py` |
 
-Then: map diff classes → CRITICAL/WARNING/INFO; flip matrix row 28 MISSING → VERIFIED_FIXTURE_ONLY with a two-revision fixture.
+Scope: GlobalId **add/remove** + `Name` / `ObjectType` / `Tag` / `Description` changes. Severity map: removed→critical, added→warning, attribute→info.
 
-## Claims Lock
+## Honesty / Claims Lock
 
-- Diff findings are engineering signals, not «документация одобрена».  
-- Does not close RT-001.  
-- Do not claim CDE version management.
+- Engineering signal only — not «документация одобрена».  
+- Does **not** close RT-001.  
+- Does **not** claim CDE version management.  
+- Matrix row 28 stays **MISSING** (or PARTIAL only if explicitly reclassified) until package-vs-package doc-type/version compare ships.
 
-## Estimate
+## Estimate remaining
 
-~1 day for thin port + fixture + matrix update after confirming the binary/API in the locked dependency version.
+~0.5–1 d to map findings into analyze pipeline + optional PARTIAL matrix bump with fixture evidence; full CDE compare remains larger.

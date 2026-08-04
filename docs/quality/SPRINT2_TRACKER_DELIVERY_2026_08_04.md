@@ -48,11 +48,14 @@ Lecture ledger: [`docs/research/INDUSTRY_LECTURE_NOTES_LEDGER.md`](../research/I
 
 1. **Live multi-model bake-off** — API key absent; harness shipped.  
 2. **Customer outreach numbers** — operator (table 0/0).  
-3. **IFC-Bench v2 full run** — pins + license policy landed; local checkout + honest scored/total not yet executed.  
-4. **BatchPlan / planted-on-real-IFC pipeline** — preferred over from-scratch synthetic; not wired yet.  
-5. **ifcdiff / TZ row 28** — note landed; 0.8.5 wheel has no `ifcdiff` entry point; port still TODO.  
-6. **KAAN / CubiCasa / Renga / Минстрой vendoring** — inventory/PARTIAL only.  
-7. **RT-001** — needs labeled customer/archive pack.
+3. **BatchPlan / planted-on-real-IFC pipeline** — MIT tool pinned; **pythonocc** blocker; not wired. See [`BATCHPLAN_PROBE_2026_08_04.md`](../dataset/BATCHPLAN_PROBE_2026_08_04.md). KAAN project data **do not vendor** ([`KAAN_LICENSE_HONESTY_2026_08_04.md`](../dataset/KAAN_LICENSE_HONESTY_2026_08_04.md)).  
+4. **ifcdiff / TZ row 28** — thin `Tokens.IFC_MODEL_DIFF` + fixture landed; matrix row 28 stays **MISSING** (CDE compare). See [`IFCDIFF_TZ_GAP_NOTE_2026_08_04.md`](../dataset/IFCDIFF_TZ_GAP_NOTE_2026_08_04.md).  
+5. **KAAN / CubiCasa / Renga / Минстрой vendoring** — inventory/PARTIAL only.  
+6. **RT-001** — needs labeled customer/archive pack.
+
+## Done this wave (honest denominators)
+
+- **IFC-Bench v2 smoke** — measured pin `e47ccd…`, scored **7/1026** @ 1.0 on countable subset; evidence [`ifc-bench-v2-smoke-latest.json`](../evidence/ifc-bench-v2-smoke-latest.json). Not full-bench accuracy.
 
 ## Follow-on from open-source search (2026-08-04)
 
