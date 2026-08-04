@@ -233,7 +233,7 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByRole("img", { name: /drawing evidence preview for a-102/i })).toBeTruthy();
-    expect(screen.getByText("BLOCKED")).toBeTruthy();
+    expect(screen.getByText(/BLOCKED/)).toBeTruthy();
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
     expect(within(viewer).getByText("issue")).toBeTruthy();
@@ -675,7 +675,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const badge = await screen.findByText("REVIEW_REQUIRED");
+    const badge = await screen.findByText(/REVIEW_REQUIRED/);
     // §12: an unconfirmed result must be visually distinct from a confirmed pass/block.
     expect(badge.className).toContain("outcome-review");
     expect(badge.className).not.toContain("outcome-pass");

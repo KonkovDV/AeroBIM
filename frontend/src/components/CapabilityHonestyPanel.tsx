@@ -14,6 +14,10 @@ const CAPABILITY_ORDER: Array<keyof ReportCapabilities> = [
   "mep_system_clash",
   "calculation_match",
   "calculation_correctness",
+  "package_completeness",
+  "llm_advisory",
+  "extraction_integrity",
+  "qualified_signature",
 ];
 
 const BLOCKING_STATES: ReadonlySet<CapabilityState> = new Set(["failed", "missing"]);

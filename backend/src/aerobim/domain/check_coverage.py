@@ -33,7 +33,7 @@ from aerobim.domain.models import (
     ValidationReport,
 )
 
-COVERAGE_ALGORITHM_VERSION = "1.0.0"
+COVERAGE_ALGORITHM_VERSION = "1.1.0"
 """Bump when the coverage derivation changes so frozen snapshots stay interpretable."""
 
 
@@ -51,6 +51,29 @@ class CoverageStatus(StrEnum):
     REQUIRES_EXPERT = "requires_expert"
     """Только advisory-находки — требуется подтверждение эксперта."""
 
+
+# Operator-facing labels (KT#2): do not invent a second SSOT — aliases over CoverageStatus.
+_OPERATOR_STATUS: dict[CoverageStatus, str] = {
+    CoverageStatus.CHECKED_OK: "done",
+    CoverageStatus.CHECKED_FINDINGS: "findings",
+    CoverageStatus.NOT_CHECKED: "not_done",
+    CoverageStatus.INSUFFICIENT_DATA: "partial",
+    CoverageStatus.REQUIRES_EXPERT: "needs_expert",
+}
+
+OPERATOR_STATUS_LEGEND: dict[str, str] = {
+    "done": "Проверка выполнена на этом источнике; нарушений не найдено",
+    "findings": "Проверка выполнена; есть детерминированные находки",
+    "not_done": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)",
+    "partial": "Проверка запускалась, данных или движка недостаточно",
+    "needs_expert": "Только advisory-сигнал — требуется эксперт",
+}
+
+
+def operator_status_for(status: CoverageStatus) -> str:
+    """Presentation alias for TIM / UI — same honesty as CoverageStatus."""
+
+    return _OPERATOR_STATUS[status]
 
 # Семейство -> НАБОР полей ReportCapabilities, влияющих на это семейство. CHECKED_OK
 # требует, чтобы ВСЕ они были OK (worst-state агрегация); любой FAILED -> INSUFFICIENT_DATA.
@@ -96,20 +119,32 @@ class CheckCoverageMap:
     def to_dict(self) -> dict[str, Any]:
         return {
             "artifact": "check-coverage-map",
+            "schema_version": COVERAGE_ALGORITHM_VERSION,
             "note": (
                 "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK "
                 "requires explicit scope + all family capabilities OK; verdict-neutral — "
-                "does NOT set summary.passed (ADR-001)"
+                "does NOT set summary.passed (ADR-001). operator_status is a presentation "
+                "alias (done/findings/not_done/partial/needs_expert), not a product claim."
             ),
+            "operator_legend": dict(OPERATOR_STATUS_LEGEND),
             "sources": [
                 {
                     "source_id": row.source_id,
                     "families": {fam.value: status.value for fam, status in row.families},
+                    "operator_status": {
+                        fam.value: operator_status_for(status) for fam, status in row.families
+                    },
                     "reasons": {fam.value: reason for fam, reason in row.reasons},
                 }
                 for row in self.rows
             ],
             "summary": self.summary(),
+            "operator_summary": {
+                operator_status_for(status): count
+                for status, count in (
+                    (CoverageStatus(k), v) for k, v in self.summary().items() if v
+                )
+            },
         }
 
 

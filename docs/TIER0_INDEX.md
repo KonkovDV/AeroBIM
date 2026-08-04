@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.3.0"
-last_updated: "2026-08-02"
+version: "4.4.0"
+last_updated: "2026-08-04"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -15,6 +15,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 |---------|------|
 | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng readiness** (P0 WP-01…08 + LIC-001 / P2 / offline) — not Checkpoint GO |
 | [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) | P0 Red Team rollup (self-audit; NO_GO) |
+| [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md) | **Red Team wave-2**: К0/tracker + commercial hygiene + coverage UI |
 | [`docs.md`](docs.md) | Jury technical justification (RU) |
 | [`AeroBIM.pdf`](AeroBIM.pdf) | Printable jury pack (export of memo) |
 | [`samolet.md`](samolet.md) | Samolet strategy |
@@ -24,7 +25,13 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`architecture/ADR-001-verdict-ownership-2026.md`](architecture/ADR-001-verdict-ownership-2026.md) | `summary.passed` ownership |
 | [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | R1–R15 |
 | [`quality/RED_TEAM_JURY_PACK_2026_08_04.md`](quality/RED_TEAM_JURY_PACK_2026_08_04.md) | Red Team: jury pack + IFC-Bench v2 / model-diff |
+| [`quality/TRACKER_MEETING_PACK_2026_08_07.md`](quality/TRACKER_MEETING_PACK_2026_08_07.md) | **К0** пакет к трек-встрече 07.08 (baseline PDF; leads локально) |
+| [`partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md`](partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md) | Протокол измерения/приёмки задачи №7 (ТИМ) |
+| [`partners/FOUR_CHECK_STATES_OPERATOR_2026_08.md`](partners/FOUR_CHECK_STATES_OPERATOR_2026_08.md) | Пять операторских состояний карты покрытия |
+| [`qa-defense-2026.md`](qa-defense-2026.md) | Заготовки ответов 20–30 с |
 | [`partners/NOVATOR_JURY_PACK_2026_08.md`](partners/NOVATOR_JURY_PACK_2026_08.md) | **Верхний слой для жюри** (Новатор/Техлаб): экономика, матрица, питч, roadmap |
+| [`partners/SEVEN_CONCLUSIONS_MULTIFRAME_PLAN_2026_08.md`](partners/SEVEN_CONCLUSIONS_MULTIFRAME_PLAN_2026_08.md) | Семь выводов × рамки; приоритет без инженерного обхода |
+| [`partners/KORTUNOV_QUESTION_P3_1_2026_08.md`](partners/KORTUNOV_QUESTION_P3_1_2026_08.md) | Вопрос IT-ментору: зрелость vs переинжиниринг |
 | [`partners/GLOSSARY_JURY_RU_2026_08.md`](partners/GLOSSARY_JURY_RU_2026_08.md) | Глоссарий жаргона для заявки |
 | [`partners/diagrams/README.md`](partners/diagrams/README.md) | 4 схемы (контур, provenance, fail-closed, матрица) |
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness |
@@ -42,4 +49,4 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI design; WP-02 pre-gate landed after report |
 | [`../README.md`](../README.md) · [`../README.ru.md`](../README.ru.md) | Product README (EN/RU) |
 
-Operator / debug / archive documentation is **not** on GitHub (kept in `.local/engineering-docs/`). Curated jury-facing Red Team summaries live under [`quality/`](quality/).
+Operator / debug / archive / commercial PII dumps are **not** on GitHub (`.local/`). Curated jury-facing Red Team summaries live under [`quality/`](quality/). Public `docs/customer-discovery/` = anonymized templates only.

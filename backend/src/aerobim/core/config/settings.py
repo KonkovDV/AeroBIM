@@ -33,6 +33,17 @@ def _read_bool(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _read_llm_advisory_enabled() -> bool:
+    """Prefer AEROBIM_LLM_ADVISORY_ENABLED; keep AEROBIM_LLM_LOCAL_ENABLED as alias.
+
+    Name ``LOCAL`` contradicted cloud Studio / egress use. Prefer ADVISORY;
+    LOCAL remains for one release as a deprecated synonym.
+    """
+
+    if os.getenv("AEROBIM_LLM_ADVISORY_ENABLED") is not None:
+        return _read_bool("AEROBIM_LLM_ADVISORY_ENABLED", False)
+    return _read_bool("AEROBIM_LLM_LOCAL_ENABLED", False)
+
 _DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
 _DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # aligned with bSI Validation Service
 # Baked pilot/production quotas when env unset (RTATOM-I20 / A2.3).
@@ -401,12 +412,15 @@ class Settings:
         """True when OpenAI-compat advisory LLM may be invoked.
 
         Fail-closed: disabled by default; requires enable + base URL.
-        Pin: ``AEROBIM_LLM_MODEL_REVISION`` **or** an unversioned ``gpt://…/model``
-        URI without ``/latest``/``/rc`` (Studio models that have no version segment).
+        ``samolet_pilot`` / ``production`` hard-disable external advisory egress
+        (customer closed contour). Pin: ``AEROBIM_LLM_MODEL_REVISION`` **or** an
+        unversioned ``gpt://…/model`` URI without ``/latest``/``/rc``.
         Does not authorize Alibaba cloud Max.
         """
 
         if not self.llm_local_enabled:
+            return False
+        if self.signoff_profile in {"samolet_pilot", "production"}:
             return False
         if not self.llm_base_url:
             return False
@@ -422,6 +436,12 @@ class Settings:
             parts = model[len("gpt://") :].rstrip("/").split("/")
             return len(parts) >= 2
         return False
+
+    @property
+    def llm_advisory_enabled(self) -> bool:
+        """Canonical name for the advisory-LLM enable flag (alias of llm_local_enabled)."""
+
+        return self.llm_local_enabled
 
     @property
     def is_dev_environment(self) -> bool:
@@ -633,7 +653,7 @@ class Settings:
             hybrid_provider_config_path=(
                 (os.getenv("AEROBIM_HYBRID_PROVIDER_CONFIG") or "").strip() or None
             ),
-            llm_local_enabled=_read_bool("AEROBIM_LLM_LOCAL_ENABLED", False),
+            llm_local_enabled=_read_llm_advisory_enabled(),
             llm_base_url=(os.getenv("AEROBIM_LLM_BASE_URL") or "").strip() or None,
             llm_api_key=(os.getenv("AEROBIM_LLM_API_KEY") or "").strip() or None,
             llm_provider=(os.getenv("AEROBIM_LLM_PROVIDER") or "qwen-local").strip()
@@ -684,11 +704,16 @@ class Settings:
                 or "https://llm.api.cloud.yandex.net/v1",
             )
         if settings.llm_local_enabled and not settings.llm_local_ready():
-            raise RuntimeError(
-                "AEROBIM_LLM_LOCAL_ENABLED requires AEROBIM_LLM_BASE_URL and either "
-                "AEROBIM_LLM_MODEL_REVISION (explicit version) or an unversioned "
-                "gpt://<folder>/<model> URI without /latest or /rc"
-            )
+            if settings.signoff_profile in {"samolet_pilot", "production"}:
+                # Profile hard-disables advisory egress; do not fail boot if flag left on.
+                pass
+            else:
+                raise RuntimeError(
+                    "AEROBIM_LLM_ADVISORY_ENABLED (or deprecated AEROBIM_LLM_LOCAL_ENABLED) "
+                    "requires AEROBIM_LLM_BASE_URL and either "
+                    "AEROBIM_LLM_MODEL_REVISION (explicit version) or an unversioned "
+                    "gpt://<folder>/<model> URI without /latest or /rc"
+                )
         if settings.llm_local_ready() and settings.llm_budget_ledger_path is None:
             raise RuntimeError(
                 "AEROBIM_LLM_BUDGET_LEDGER is required when LLM advisory is ready "

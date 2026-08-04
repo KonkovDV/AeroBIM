@@ -741,6 +741,66 @@ input {
   background: var(--danger-soft);
 }
 
+.coverage-map {
+  margin: 1rem 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border, #d0d7de);
+  border-radius: 8px;
+}
+
+.coverage-map-header h3 {
+  margin: 0 0 0.35rem;
+}
+
+.coverage-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+}
+
+.coverage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.coverage-table th,
+.coverage-table td {
+  border: 1px solid var(--border, #d0d7de);
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+}
+
+.coverage-table .cov-done {
+  background: rgba(26, 127, 55, 0.08);
+}
+
+.coverage-table .cov-findings {
+  background: rgba(207, 34, 46, 0.08);
+}
+
+.coverage-table .cov-not-done {
+  background: rgba(110, 118, 129, 0.08);
+}
+
+.coverage-table .cov-partial {
+  background: rgba(154, 103, 0, 0.1);
+}
+
+.coverage-table .cov-expert {
+  background: rgba(9, 105, 218, 0.08);
+}
+
+.cov-reason {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted, #656d76);
+  margin-top: 0.15rem;
+}
+
 .triage-band {
   padding: 4px 8px;
   border-radius: 999px;

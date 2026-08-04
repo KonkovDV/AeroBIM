@@ -37,6 +37,23 @@ artifacts/*
 # Local operator artifacts
 .local/
 
+# Accidental private dump at repo root (use .local/internal-docs/)
+/AeroBIM/
+
+# Commercial ops with contacts / outreach PII (live copies under .local/commercial-ops/)
+docs/customer-discovery/*.csv
+docs/customer-discovery/outreach-log.md
+docs/customer-discovery/letters-ready-to-send*.md
+docs/customer-discovery/call-list*.md
+docs/customer-discovery/VERIFICATION_*.md
+docs/customer-discovery/email-1-tone-sample*.md
+docs/customer-discovery/sprint*
+docs/customer-discovery/COMMERCIAL_TRACK_STEP1*
+docs/customer-discovery/COMMERCIAL_VALIDATION*
+docs/customer-discovery/form-messages*
+docs/customer-discovery/*.SUPERSEDED.md
+docs/customer-discovery/*.header-note.txt
+
 # Operator / debug (not TechLab jury surface)
 docs/archive/
 docs/ops/
