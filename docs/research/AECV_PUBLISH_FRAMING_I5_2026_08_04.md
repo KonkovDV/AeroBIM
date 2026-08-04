@@ -9,16 +9,19 @@ closes_rt001: false
 
 # I.5 — Публикация метрики AECV
 
-Источник чисел: [`docs/evidence/aecv-bench-eval-latest.json`](../evidence/aecv-bench-eval-latest.json) → `executive_summary.live`.
+Источник чисел: [`docs/evidence/aecv-bench-eval-latest.json`](../evidence/aecv-bench-eval-latest.json) → `object_counting_live.summary` / `executive_summary.live`.  
+Доказательство харнесса: [`aecv-scorer-validation-2026-08-04.md`](../evidence/aecv-scorer-validation-2026-08-04.md).
 
 ## Два macro (обязательно оба)
 
 | Ключ | Значение | Публиковать? |
 |---|---:|---|
-| **`macro_bench_protocol`** | **0.5064** | **Да** — mean exact-match Door/Window/Bedroom/Toilet (протокол статьи) |
-| `macro_extended` | 0.4325 | Нет как headline — включает Space |
+| **`macro_bench_protocol`** (= canonical `macro_exact_match_rate`) | **0.5064** | **Да** — 4 класса (проза статьи / live headline) |
+| `macro_extended` | 0.4325 | Внутренний / Table 1 alignment (5 полей, как upstream visualizer) |
 
-Округление для слайдов: **0.507** / **0.51** с оговоркой «four-class protocol».
+Округление для слайдов: **0.507** / **0.51** с оговоркой «four-class protocol» **и** воротами B.5.
+
+**Не смешивать ключи:** опубликованные Table 1 means совпадают с `macro_extended` (max \|Δ\|≤0.02), не с четырёхклассовым protocol у чужих моделей.
 
 ## MAPE (вторая метрика статьи)
 
@@ -46,10 +49,11 @@ closes_rt001: false
 
 ## Ворота B.5 (до публичной таблицы)
 
-1. Промпт дословно §3.1.2 статьи?
+1. Промпт дословно §3.1.2 статьи? (`prompt_verbatim` = PARTIAL until checked)
 2. Три error-плана: exclude (117) vs miss (120 → ~0.494)?
 3. OpenRouter/Cohere vs Yandex preprocess?
 4. Модель ≠ paper `Qwen3-VL-8B`.
+5. Не смешивать `macro_bench_protocol` (headline) с Table 1 row, выровненной по `macro_extended`.
 
 ## Разрешённая / запрещённая формулировка
 

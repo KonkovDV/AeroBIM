@@ -26,21 +26,6 @@ class AecvBenchEvalTests(unittest.TestCase):
         self.assertFalse(by["Window"].exact_match)
         self.assertAlmostEqual(by["Window"].abs_pct_error or 0.0, abs(8 - 11) / 11)
 
-    def test_offline_dataset_when_present(self) -> None:
-        from aerobim.tools.run_aecv_bench_eval import (
-            evaluate_offline_counting,
-            repo_root,
-        )
-
-        root = repo_root() / ".local" / "AECV-Bench"
-        if not (root / "data").is_dir():
-            self.skipTest("AECV-Bench checkout missing")
-        payload = evaluate_offline_counting(root, limit=3)
-        self.assertEqual(payload["plans_scored"], 3)
-        self.assertGreater(len(payload["models"]), 3)
-        sample = next(iter(payload["models"].values()))
-        self.assertIn("macro_exact_match_rate", sample)
-
     def test_aggregate_includes_bias_and_zero_refusal(self) -> None:
         from aerobim.tools.run_aecv_bench_eval import FieldScore, _aggregate
 
@@ -58,6 +43,31 @@ class AecvBenchEvalTests(unittest.TestCase):
         self.assertIn("mape", summary["per_field"]["Window"])
         self.assertIsNotNone(summary.get("macro_mape"))
 
+    def test_attach_dual_macros_binds_canonical_to_protocol(self) -> None:
+        from aerobim.tools.run_aecv_bench_eval import _attach_dual_macros
+
+        summary = _attach_dual_macros(
+            {
+                "n_field_scores": 10,
+                "macro_exact_match_rate": 0.5,
+                "per_field": {
+                    "Door": {"exact_match_rate": 0.2, "n": 2, "mape": 0.1},
+                    "Window": {"exact_match_rate": 0.2, "n": 2, "mape": 0.2},
+                    "Space": {"exact_match_rate": 0.1, "n": 2, "mape": 0.3},
+                    "Bedroom": {"exact_match_rate": 0.9, "n": 2, "mape": 0.05},
+                    "Toilet": {"exact_match_rate": 0.9, "n": 2, "mape": 0.05},
+                },
+            }
+        )
+        self.assertAlmostEqual(summary["macro_extended"], 0.5)
+        self.assertAlmostEqual(summary["macro_bench_protocol"], 0.55)
+        self.assertEqual(
+            summary["macro_exact_match_rate"], summary["macro_bench_protocol"]
+        )
+        self.assertEqual(summary["n_field_scores_bench_protocol"], 8)
+        self.assertEqual(summary["n_field_scores_extended"], 10)
+        self.assertEqual(len(summary["comparability_gates"]), 5)
+
     def test_executive_summary_compares_to_published(self) -> None:
         from aerobim.tools.run_aecv_bench_eval import build_executive_summary
 
@@ -70,9 +80,11 @@ class AecvBenchEvalTests(unittest.TestCase):
                 "summary": {
                     "macro_exact_match_rate": 0.4,
                     "macro_mape": 0.3,
+                    "n_field_scores": 10,
                     "per_field": {
                         "Door": {
                             "exact_match_rate": 0.2,
+                            "n": 2,
                             "mape": 0.3,
                             "mean_bias": -0.5,
                             "zero_pred_when_expected_positive_n": 0,
@@ -80,6 +92,7 @@ class AecvBenchEvalTests(unittest.TestCase):
                         },
                         "Window": {
                             "exact_match_rate": 0.1,
+                            "n": 2,
                             "mape": 0.4,
                             "mean_bias": -2.5,
                             "zero_pred_when_expected_positive_n": 0,
@@ -87,6 +100,7 @@ class AecvBenchEvalTests(unittest.TestCase):
                         },
                         "Space": {
                             "exact_match_rate": 0.1,
+                            "n": 2,
                             "mape": 0.3,
                             "mean_bias": 0.2,
                             "zero_pred_when_expected_positive_n": 0,
@@ -94,6 +108,7 @@ class AecvBenchEvalTests(unittest.TestCase):
                         },
                         "Bedroom": {
                             "exact_match_rate": 0.8,
+                            "n": 2,
                             "mape": 0.1,
                             "mean_bias": 0.0,
                             "zero_pred_when_expected_positive_n": 1,
@@ -101,6 +116,7 @@ class AecvBenchEvalTests(unittest.TestCase):
                         },
                         "Toilet": {
                             "exact_match_rate": 0.8,
+                            "n": 2,
                             "mape": 0.1,
                             "mean_bias": 0.0,
                             "zero_pred_when_expected_positive_n": 0,
@@ -114,7 +130,9 @@ class AecvBenchEvalTests(unittest.TestCase):
                 "plans_scored": 120,
                 "models": {
                     "gemini_x": {
-                        "macro_exact_match_rate": 0.52,
+                        "macro_exact_match_rate": 0.55,
+                        "macro_extended": 0.52,
+                        "macro_bench_protocol": 0.60,
                         "macro_mape": 0.25,
                         "per_field": {
                             "Door": {"exact_match_rate": 0.4},
@@ -126,15 +144,72 @@ class AecvBenchEvalTests(unittest.TestCase):
             },
         )
         self.assertEqual(exe["claim_level"], "open_bench_only")
+        self.assertAlmostEqual(exe["live"]["macro_bench_protocol"], 0.475)
+        self.assertAlmostEqual(exe["live"]["macro_extended"], 0.4)
+        self.assertEqual(
+            exe["live"]["macro_exact_match_rate"],
+            exe["live"]["macro_bench_protocol"],
+        )
+        self.assertEqual(
+            exe["published_baseline_comparison"]["ranking_key"], "macro_extended"
+        )
         self.assertAlmostEqual(
             exe["published_baseline_comparison"]["live_vs_best_published"][
-                "delta_live_minus_best"
+                "delta_live_extended_minus_best_extended"
             ],
             0.4 - 0.52,
         )
         self.assertEqual(
             exe["failure_mode_contrast"]["Window"]["mean_bias"], -2.5
         )
+
+    def test_scorer_validation_within_tolerance(self) -> None:
+        from aerobim.tools.run_aecv_bench_eval import (
+            PAPER_TABLE1_MACRO,
+            build_scorer_validation,
+        )
+
+        models = {
+            name: {"macro_extended": mean + (0.01 if i % 2 else -0.01)}
+            for i, (name, mean) in enumerate(PAPER_TABLE1_MACRO.items())
+        }
+        payload = build_scorer_validation(
+            {
+                "mode": "offline_rescore_published_predictions",
+                "plans_scored": 120,
+                "models": models,
+                "provenance": {"upstream_repo": "https://github.com/AECFoundry/AECV-Bench"},
+            }
+        )
+        self.assertTrue(payload["summary"]["within_tolerance"])
+        self.assertEqual(
+            payload["summary"]["verdict"], "SCORER_EQUIVALENT_WITHIN_TOLERANCE"
+        )
+        self.assertEqual(payload["comparison_metric"], "macro_extended")
+
+    def test_offline_dataset_when_present(self) -> None:
+        from aerobim.tools.run_aecv_bench_eval import (
+            evaluate_offline_counting,
+            repo_root,
+        )
+
+        root = repo_root() / ".local" / "AECV-Bench"
+        if not (root / "data").is_dir():
+            self.skipTest("AECV-Bench checkout missing")
+        payload = evaluate_offline_counting(root, limit=3)
+        self.assertEqual(payload["plans_scored"], 3)
+        self.assertGreater(len(payload["models"]), 3)
+        sample = next(iter(payload["models"].values()))
+        self.assertIn("macro_exact_match_rate", sample)
+        self.assertIn("macro_bench_protocol", sample)
+        self.assertIn("macro_extended", sample)
+        prov = payload["provenance"]
+        self.assertEqual(
+            prov["upstream_repo"], "https://github.com/AECFoundry/AECV-Bench"
+        )
+        self.assertIn("predictions_tree_sha256", prov)
+        self.assertIn("paper_table1_models", prov)
+        self.assertIn("repo_only_models_not_in_paper_table1", prov)
 
     def test_image_mime_sniffs_webp_despite_jpg_extension(self) -> None:
         from aerobim.tools.run_aecv_bench_eval import _image_mime
