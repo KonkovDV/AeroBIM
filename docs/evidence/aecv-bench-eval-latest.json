@@ -1,7 +1,7 @@
 {
   "artifact_type": "aecv_bench_eval",
   "schema_version": "1.2.0",
-  "generated_at": "2026-08-03T22:58:05.649089+00:00",
+  "generated_at": "2026-08-04T09:46:03.453621+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "AECV-Bench open_bench_only (arXiv:2601.04819). Drawing-literacy baseline on public floor plans. NOT AeroBIM product accuracy. Never >90% as product. Does not close RT-001.",
   "closes_rt001": false,
@@ -49,7 +49,7 @@
     "models": {
       "amazon_nova_2_lite_v1": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.3896,
+        "macro_exact_match_rate": 0.335,
         "macro_mape": 0.4053,
         "per_field": {
           "Door": {
@@ -105,7 +105,7 @@
         },
         "macro_bench_protocol": 0.3896,
         "macro_extended": 0.335,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.4203,
@@ -118,7 +118,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -131,15 +131,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "claude_opus_45": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4958,
+        "macro_exact_match_rate": 0.4233,
         "macro_mape": 0.2549,
         "per_field": {
           "Door": {
@@ -195,7 +195,7 @@
         },
         "macro_bench_protocol": 0.4958,
         "macro_extended": 0.4233,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2373,
@@ -208,7 +208,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -221,15 +221,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "claude_opus_46": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.5042,
+        "macro_exact_match_rate": 0.44,
         "macro_mape": 0.2334,
         "per_field": {
           "Door": {
@@ -285,7 +285,7 @@
         },
         "macro_bench_protocol": 0.5042,
         "macro_extended": 0.44,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2277,
@@ -298,7 +298,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -311,15 +311,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "claude_sonnet_45": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4687,
+        "macro_exact_match_rate": 0.4033,
         "macro_mape": 0.2751,
         "per_field": {
           "Door": {
@@ -375,7 +375,7 @@
         },
         "macro_bench_protocol": 0.4687,
         "macro_extended": 0.4033,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2662,
@@ -388,7 +388,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -401,15 +401,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "claude_sonnet_46": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4312,
+        "macro_exact_match_rate": 0.3883,
         "macro_mape": 0.3421,
         "per_field": {
           "Door": {
@@ -465,7 +465,7 @@
         },
         "macro_bench_protocol": 0.4312,
         "macro_extended": 0.3883,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.337,
@@ -478,7 +478,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -491,15 +491,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "cohere_command_a_vision": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.3333,
+        "macro_exact_match_rate": 0.29,
         "macro_mape": 0.5159,
         "per_field": {
           "Door": {
@@ -555,7 +555,7 @@
         },
         "macro_bench_protocol": 0.3333,
         "macro_extended": 0.29,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.525,
@@ -568,7 +568,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -581,15 +581,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "deepseek_vl2": {
         "n_field_scores": 25,
-        "macro_exact_match_rate": 0.35,
+        "macro_exact_match_rate": 0.32,
         "macro_mape": 0.556,
         "per_field": {
           "Door": {
@@ -645,7 +645,7 @@
         },
         "macro_bench_protocol": 0.35,
         "macro_extended": 0.32,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 20,
         "n_field_scores_extended": 25,
         "mape_bench_protocol": 0.4748,
@@ -658,7 +658,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -671,15 +671,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "gemini_31_pro": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.6021,
+        "macro_exact_match_rate": 0.5117,
         "macro_mape": 0.1662,
         "per_field": {
           "Door": {
@@ -735,7 +735,7 @@
         },
         "macro_bench_protocol": 0.6021,
         "macro_extended": 0.5117,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.1383,
@@ -748,7 +748,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -761,15 +761,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "gemini_3_pro_preview": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.6188,
+        "macro_exact_match_rate": 0.5233,
         "macro_mape": 0.1675,
         "per_field": {
           "Door": {
@@ -825,7 +825,7 @@
         },
         "macro_bench_protocol": 0.6188,
         "macro_extended": 0.5233,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.1367,
@@ -838,7 +838,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -851,15 +851,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "glm_45v": {
         "n_field_scores": 585,
-        "macro_exact_match_rate": 0.4231,
+        "macro_exact_match_rate": 0.3812,
         "macro_mape": 0.4042,
         "per_field": {
           "Door": {
@@ -915,7 +915,7 @@
         },
         "macro_bench_protocol": 0.4231,
         "macro_extended": 0.3812,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 468,
         "n_field_scores_extended": 585,
         "mape_bench_protocol": 0.4408,
@@ -928,7 +928,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -941,15 +941,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "glm_46v": {
         "n_field_scores": 570,
-        "macro_exact_match_rate": 0.4496,
+        "macro_exact_match_rate": 0.407,
         "macro_mape": 0.3282,
         "per_field": {
           "Door": {
@@ -1005,7 +1005,7 @@
         },
         "macro_bench_protocol": 0.4496,
         "macro_extended": 0.407,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 456,
         "n_field_scores_extended": 570,
         "mape_bench_protocol": 0.3468,
@@ -1018,7 +1018,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1031,15 +1031,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "grok_41_fast": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4167,
+        "macro_exact_match_rate": 0.3683,
         "macro_mape": 0.2894,
         "per_field": {
           "Door": {
@@ -1095,7 +1095,7 @@
         },
         "macro_bench_protocol": 0.4167,
         "macro_extended": 0.3683,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2961,
@@ -1108,7 +1108,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1121,15 +1121,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "mistral_large_2512": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.3479,
+        "macro_exact_match_rate": 0.3167,
         "macro_mape": 0.3986,
         "per_field": {
           "Door": {
@@ -1185,7 +1185,7 @@
         },
         "macro_bench_protocol": 0.3479,
         "macro_extended": 0.3167,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.4264,
@@ -1198,7 +1198,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1211,15 +1211,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "mistral_medium_31": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4229,
+        "macro_exact_match_rate": 0.375,
         "macro_mape": 0.3034,
         "per_field": {
           "Door": {
@@ -1275,7 +1275,7 @@
         },
         "macro_bench_protocol": 0.4229,
         "macro_extended": 0.375,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.3078,
@@ -1288,7 +1288,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1301,15 +1301,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "mistral_pixtral_large": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4312,
+        "macro_exact_match_rate": 0.385,
         "macro_mape": 0.312,
         "per_field": {
           "Door": {
@@ -1365,7 +1365,7 @@
         },
         "macro_bench_protocol": 0.4312,
         "macro_extended": 0.385,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.3156,
@@ -1378,7 +1378,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1391,15 +1391,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "nvidia_nemotron_nano_12b_v2_vl": {
         "n_field_scores": 595,
-        "macro_exact_match_rate": 0.4223,
+        "macro_exact_match_rate": 0.3597,
         "macro_mape": 0.3099,
         "per_field": {
           "Door": {
@@ -1455,7 +1455,7 @@
         },
         "macro_bench_protocol": 0.4223,
         "macro_extended": 0.3597,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 476,
         "n_field_scores_extended": 595,
         "mape_bench_protocol": 0.3041,
@@ -1468,7 +1468,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1481,15 +1481,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "openai_gpt_4_vision": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4771,
+        "macro_exact_match_rate": 0.4267,
         "macro_mape": 0.2363,
         "per_field": {
           "Door": {
@@ -1545,7 +1545,7 @@
         },
         "macro_bench_protocol": 0.4771,
         "macro_extended": 0.4267,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2374,
@@ -1558,7 +1558,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1571,15 +1571,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "openai_gpt_51": {
         "n_field_scores": 595,
-        "macro_exact_match_rate": 0.5168,
+        "macro_exact_match_rate": 0.4454,
         "macro_mape": 0.2449,
         "per_field": {
           "Door": {
@@ -1635,7 +1635,7 @@
         },
         "macro_bench_protocol": 0.5168,
         "macro_extended": 0.4454,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 476,
         "n_field_scores_extended": 595,
         "mape_bench_protocol": 0.2188,
@@ -1648,7 +1648,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1661,15 +1661,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "openai_gpt_52": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.552,
+        "macro_exact_match_rate": 0.485,
         "macro_mape": 0.1957,
         "per_field": {
           "Door": {
@@ -1725,7 +1725,7 @@
         },
         "macro_bench_protocol": 0.552,
         "macro_extended": 0.485,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.1738,
@@ -1738,7 +1738,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1751,15 +1751,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "openai_gpt_52_pro": {
         "n_field_scores": 15,
-        "macro_exact_match_rate": 0.5833,
+        "macro_exact_match_rate": 0.4667,
         "macro_mape": 0.1644,
         "per_field": {
           "Door": {
@@ -1815,7 +1815,7 @@
         },
         "macro_bench_protocol": 0.5833,
         "macro_extended": 0.4667,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 12,
         "n_field_scores_extended": 15,
         "mape_bench_protocol": 0.0847,
@@ -1828,7 +1828,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1841,15 +1841,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "openai_gpt_53": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.5062,
+        "macro_exact_match_rate": 0.4267,
         "macro_mape": 0.2584,
         "per_field": {
           "Door": {
@@ -1905,7 +1905,7 @@
         },
         "macro_bench_protocol": 0.5062,
         "macro_extended": 0.4267,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2201,
@@ -1918,7 +1918,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -1931,15 +1931,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "openai_gpt_54": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.5188,
+        "macro_exact_match_rate": 0.4617,
         "macro_mape": 0.2284,
         "per_field": {
           "Door": {
@@ -1995,7 +1995,7 @@
         },
         "macro_bench_protocol": 0.5188,
         "macro_extended": 0.4617,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2197,
@@ -2008,7 +2008,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -2021,15 +2021,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "qwen3_vl_235b_a22b_instruct": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4313,
+        "macro_exact_match_rate": 0.375,
         "macro_mape": 0.3394,
         "per_field": {
           "Door": {
@@ -2085,7 +2085,7 @@
         },
         "macro_bench_protocol": 0.4313,
         "macro_extended": 0.375,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.3361,
@@ -2098,7 +2098,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -2111,15 +2111,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "qwen3_vl_235b_a22b_thinking": {
         "n_field_scores": 40,
-        "macro_exact_match_rate": 0.5625,
+        "macro_exact_match_rate": 0.45,
         "macro_mape": 0.2905,
         "per_field": {
           "Door": {
@@ -2175,7 +2175,7 @@
         },
         "macro_bench_protocol": 0.5625,
         "macro_extended": 0.45,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 32,
         "n_field_scores_extended": 40,
         "mape_bench_protocol": 0.1712,
@@ -2188,7 +2188,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -2201,15 +2201,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "qwen3_vl_8b_instruct": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4396,
+        "macro_exact_match_rate": 0.3883,
         "macro_mape": 0.3133,
         "per_field": {
           "Door": {
@@ -2265,7 +2265,7 @@
         },
         "macro_bench_protocol": 0.4396,
         "macro_extended": 0.3883,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.3219,
@@ -2278,7 +2278,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -2291,15 +2291,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "qwen3_vl_8b_thinking": {
         "n_field_scores": 570,
-        "macro_exact_match_rate": 0.4298,
+        "macro_exact_match_rate": 0.3737,
         "macro_mape": 0.3195,
         "per_field": {
           "Door": {
@@ -2355,7 +2355,7 @@
         },
         "macro_bench_protocol": 0.4298,
         "macro_extended": 0.3737,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 456,
         "n_field_scores_extended": 570,
         "mape_bench_protocol": 0.3206,
@@ -2368,7 +2368,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -2381,15 +2381,15 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       },
       "qwen_35_plus": {
         "n_field_scores": 600,
-        "macro_exact_match_rate": 0.4771,
+        "macro_exact_match_rate": 0.435,
         "macro_mape": 0.246,
         "per_field": {
           "Door": {
@@ -2445,7 +2445,7 @@
         },
         "macro_bench_protocol": 0.4771,
         "macro_extended": 0.435,
-        "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+        "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
         "n_field_scores_bench_protocol": 480,
         "n_field_scores_extended": 600,
         "mape_bench_protocol": 0.2526,
@@ -2458,7 +2458,7 @@
           {
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
-            "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+            "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
           },
           {
             "id": "infrastructure",
@@ -2471,9 +2471,9 @@
             "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
           },
           {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
-            "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+            "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
           }
         ]
       }
@@ -2485,7 +2485,7 @@
       "predictions_source": "Per-plan model JSON predictions vendored in AECV-Bench dataset checkout (not regenerated by AeroBIM).",
       "predictions_tree_sha256": "b7049fa9c5753c5561b72a4d3d8a22092cb1396e27e0f4d0efb87dc5faaed0d6",
       "dataset_root": "C:\\plans\\AeroBIM\\.local\\AECV-Bench",
-      "fetched_at": "2026-08-03",
+      "fetched_at": "2026-08-04",
       "fetched_note": "Local checkout under AEROBIM_AECV_BENCH_ROOT or .local/AECV-Bench; record upstream_commit at eval time.",
       "paper_table1_models": [
         "amazon_nova_2_lite_v1",
@@ -2535,7 +2535,7 @@
     "errors": 3,
     "summary": {
       "n_field_scores": 585,
-      "macro_exact_match_rate": 0.5064,
+      "macro_exact_match_rate": 0.4325,
       "macro_mape": 0.2408,
       "per_field": {
         "Door": {
@@ -2591,7 +2591,7 @@
       },
       "macro_bench_protocol": 0.5064,
       "macro_extended": 0.4325,
-      "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+      "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
       "n_field_scores_bench_protocol": 468,
       "n_field_scores_extended": 585,
       "mape_bench_protocol": 0.2274,
@@ -2604,7 +2604,7 @@
         {
           "id": "error_plans_policy",
           "status": "DOCUMENTED",
-          "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+          "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
         },
         {
           "id": "infrastructure",
@@ -2617,9 +2617,9 @@
           "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
         },
         {
-          "id": "table1_vs_protocol_keys",
+          "id": "table1_metric_is_five_field",
           "status": "DOCUMENTED",
-          "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+          "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
         }
       ]
     },
@@ -5569,7 +5569,7 @@
       }
     ],
     "min_image_bytes_vendor_reject": 12288,
-    "enriched_at": "2026-08-03T22:58:05.957207+00:00",
+    "enriched_at": "2026-08-04T09:46:04.143671+00:00",
     "enriched_from": "C:\\plans\\AeroBIM\\docs\\evidence\\aecv-bench-eval-latest.json"
   },
   "executive_summary": {
@@ -5584,10 +5584,10 @@
       "plans_attempted": 120,
       "plans_scored": 117,
       "errors": 3,
-      "macro_exact_match_rate": 0.5064,
+      "macro_exact_match_rate": 0.4325,
       "macro_extended": 0.4325,
       "macro_bench_protocol": 0.5064,
-      "macro_definition": "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet; extended = five-field mean including Space (outside paper Tables 1–2)",
+      "macro_definition": "extended = five-field mean Door/Window/Space/Bedroom/Toilet (matches upstream visualizer mean_accuracy and Table 1 published means; live headline for external compare); bench_protocol = four-class mean Door/Window/Bedroom/Toilet (paper prose §3.1.1 / heatmap display fields — reference only, do not compare to Table 1)",
       "n_field_scores_bench_protocol": 468,
       "n_field_scores_extended": 585,
       "comparability_gates": [
@@ -5599,7 +5599,7 @@
         {
           "id": "error_plans_policy",
           "status": "DOCUMENTED",
-          "note": "Live scored 117/120 (3 HTTP errors excluded). Counting three misses as wrong ≈ 0.494 four-class mean."
+          "note": "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP labeled .jpg / MIME mismatch). Counting three plans as all-field misses ≈ 0.422 five-field mean (≈ 0.494 four-class reference)."
         },
         {
           "id": "infrastructure",
@@ -5612,17 +5612,18 @@
           "note": "Paper open baseline includes Qwen3-VL-8B-Instruct; AeroBIM live uses qwen3.6-35b-a3b (newer/larger)."
         },
         {
-          "id": "table1_vs_protocol_keys",
+          "id": "table1_metric_is_five_field",
           "status": "DOCUMENTED",
-          "note": "Published Table 1 means match AeroBIM macro_extended (5 fields incl. Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes Space. Paper prose / live headline use four-class macro_bench_protocol. Never mix keys in a compare row."
+          "note": "Table 1 published means match macro_extended (5 fields incl. Space) within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; heatmaps omit Space for display. Comparing four-class live means to Table 1 is a metric mismatch — forbidden."
         }
       ],
       "macro_mape": 0.2408,
       "mape_bench_protocol": 0.2274,
       "publish_framing": {
-        "headline_metric": "macro_bench_protocol",
-        "allowed_claim": "Open model via RF cloud reaches frontier proprietary order on this task (open_bench_only).",
-        "forbidden_claim": "We beat Gemini / AeroBIM product accuracy = 0.51",
+        "headline_metric": "macro_extended",
+        "headline_note": "Table 1–comparable five-field mean (Space included). macro_bench_protocol is four-class reference only.",
+        "allowed_claim": "Open model via RF cloud reaches frontier proprietary order on this task (open_bench_only); below Gemini/GPT-5.2, above Claude Opus 4.5 and open baselines on Table 1 metric.",
+        "forbidden_claim": "We beat Gemini / AeroBIM product accuracy = 0.51 / compare four-class live mean to Table 1",
         "comparability_gates_required": true,
         "doc": "docs/research/AECV_PUBLISH_FRAMING_I5_2026_08_04.md"
       },
@@ -5713,7 +5714,7 @@
         "predictions_source": "Per-plan model JSON predictions vendored in AECV-Bench dataset checkout (not regenerated by AeroBIM).",
         "predictions_tree_sha256": "b7049fa9c5753c5561b72a4d3d8a22092cb1396e27e0f4d0efb87dc5faaed0d6",
         "dataset_root": "C:\\plans\\AeroBIM\\.local\\AECV-Bench",
-        "fetched_at": "2026-08-03",
+        "fetched_at": "2026-08-04",
         "fetched_note": "Local checkout under AEROBIM_AECV_BENCH_ROOT or .local/AECV-Bench; record upstream_commit at eval time.",
         "paper_table1_models": [
           "amazon_nova_2_lite_v1",
@@ -5755,7 +5756,7 @@
           "model": "gemini_3_pro_preview",
           "macro_extended": 0.5233,
           "macro_bench_protocol": 0.6188,
-          "macro_exact_match_rate": 0.6188,
+          "macro_exact_match_rate": 0.5233,
           "macro_mape": 0.1675,
           "Door_exact": 0.4,
           "Window_exact": 0.3417,
@@ -5765,7 +5766,7 @@
           "model": "gemini_31_pro",
           "macro_extended": 0.5117,
           "macro_bench_protocol": 0.6021,
-          "macro_exact_match_rate": 0.6021,
+          "macro_exact_match_rate": 0.5117,
           "macro_mape": 0.1662,
           "Door_exact": 0.3417,
           "Window_exact": 0.3333,
@@ -5775,7 +5776,7 @@
           "model": "openai_gpt_52",
           "macro_extended": 0.485,
           "macro_bench_protocol": 0.552,
-          "macro_exact_match_rate": 0.552,
+          "macro_exact_match_rate": 0.485,
           "macro_mape": 0.1957,
           "Door_exact": 0.2833,
           "Window_exact": 0.2583,
@@ -5785,7 +5786,7 @@
           "model": "openai_gpt_52_pro",
           "macro_extended": 0.4667,
           "macro_bench_protocol": 0.5833,
-          "macro_exact_match_rate": 0.5833,
+          "macro_exact_match_rate": 0.4667,
           "macro_mape": 0.1644,
           "Door_exact": 0.3333,
           "Window_exact": 0.0,
@@ -5795,7 +5796,7 @@
           "model": "openai_gpt_54",
           "macro_extended": 0.4617,
           "macro_bench_protocol": 0.5188,
-          "macro_exact_match_rate": 0.5188,
+          "macro_exact_match_rate": 0.4617,
           "macro_mape": 0.2284,
           "Door_exact": 0.3167,
           "Window_exact": 0.1417,
@@ -5805,7 +5806,7 @@
           "model": "qwen3_vl_235b_a22b_thinking",
           "macro_extended": 0.45,
           "macro_bench_protocol": 0.5625,
-          "macro_exact_match_rate": 0.5625,
+          "macro_exact_match_rate": 0.45,
           "macro_mape": 0.2905,
           "Door_exact": 0.25,
           "Window_exact": 0.125,
@@ -5815,7 +5816,7 @@
           "model": "openai_gpt_51",
           "macro_extended": 0.4454,
           "macro_bench_protocol": 0.5168,
-          "macro_exact_match_rate": 0.5168,
+          "macro_exact_match_rate": 0.4454,
           "macro_mape": 0.2449,
           "Door_exact": 0.2101,
           "Window_exact": 0.2017,
@@ -5825,7 +5826,7 @@
           "model": "claude_opus_46",
           "macro_extended": 0.44,
           "macro_bench_protocol": 0.5042,
-          "macro_exact_match_rate": 0.5042,
+          "macro_exact_match_rate": 0.44,
           "macro_mape": 0.2334,
           "Door_exact": 0.2167,
           "Window_exact": 0.1667,
@@ -5845,14 +5846,14 @@
   "scorer_validation": {
     "artifact_type": "aecv_scorer_validation",
     "schema_version": "1.0.0",
-    "generated_at": "2026-08-03T22:58:05.957482+00:00",
+    "generated_at": "2026-08-04T09:46:04.143944+00:00",
     "claim_level": "open_bench_only",
     "closes_rt001": false,
-    "purpose": "Prove AeroBIM offline scorer equivalence to AECV-Bench published Table 1 means by re-scoring the authors' per-plan prediction JSONs.",
+    "purpose": "Show AeroBIM offline scorer reproduces AECV-Bench published Table 1 means (within stated tolerance) by re-scoring the authors' per-plan prediction JSONs on the same five-field metric.",
     "mode": "offline_rescore_published_predictions",
     "plans_scored": 120,
     "comparison_metric": "macro_extended",
-    "comparison_metric_note": "Five-field mean Door/Window/Space/Bedroom/Toilet. Matches upstream src/benchmark/visualizer.py mean_accuracy. Paper prose mentions four classes; heatmaps omit Space for display only.",
+    "comparison_metric_note": "Five-field mean Door/Window/Space/Bedroom/Toilet. Matches upstream src/benchmark/visualizer.py mean_accuracy. Paper prose mentions four classes; heatmaps omit Space for display only. Table 1 numbers are five-field — confirmed by offline rescore alignment.",
     "paper": {
       "arxiv": "2601.04819",
       "table": "Table 1 mean exact-match (published two-decimal means)"
@@ -5864,7 +5865,7 @@
       "predictions_source": "Per-plan model JSON predictions vendored in AECV-Bench dataset checkout (not regenerated by AeroBIM).",
       "predictions_tree_sha256": "b7049fa9c5753c5561b72a4d3d8a22092cb1396e27e0f4d0efb87dc5faaed0d6",
       "dataset_root": "C:\\plans\\AeroBIM\\.local\\AECV-Bench",
-      "fetched_at": "2026-08-03",
+      "fetched_at": "2026-08-04",
       "fetched_note": "Local checkout under AEROBIM_AECV_BENCH_ROOT or .local/AECV-Bench; record upstream_commit at eval time.",
       "paper_table1_models": [
         "amazon_nova_2_lite_v1",
@@ -5991,10 +5992,10 @@
       "stated_max_abs_delta_band": 0.02,
       "within_tolerance": true,
       "tolerance_justification": "Table 1 prints two decimals (quantization ≤0.005). Observed max |Δ|≈0.020 (nvidia 0.3597 vs 0.38); median ≈0.004. Gate tolerance 0.025 absorbs four-decimal float vs two-decimal print without claiming bit-identical author tooling.",
-      "verdict": "SCORER_EQUIVALENT_WITHIN_TOLERANCE"
+      "verdict": "SCORER_REPRODUCES_TABLE1_WITHIN_TOLERANCE"
     },
-    "defense_answer": "Before asking whether 0.51 is meaningful: the same scorer reproduces ten published Table 1 means within |Δ|≤0.02 (median ~0.004) when re-scoring the authors' own prediction files."
+    "defense_answer": "Before asking whether the live macro is meaningful: the same scorer reproduces ten published Table 1 means within |Δ|≤0.02 (median ~0.004) when re-scoring the authors' own prediction files on the five-field metric (Space included)."
   },
-  "output_sha256": "04afea0964d39a899b7d9fc1e2f30f151d412accd9b0d891d507f85e82b3e28d",
+  "output_sha256": "a10ea80f6fa65ac5b299e7dcfc4b53bfe727f1e75be63731eb08b8cb0b46084e",
   "output_path": "..\\artifacts\\open-bench\\aecv-bench-eval.json"
 }

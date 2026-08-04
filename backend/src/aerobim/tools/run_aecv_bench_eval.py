@@ -101,7 +101,13 @@ def _mean_field_rates(
 
 
 def _attach_dual_macros(summary: dict[str, Any]) -> dict[str, Any]:
-    """Publish protocol + extended macros; bind canonical name to protocol."""
+    """Publish extended + protocol macros; bind canonical name to Table 1 metric.
+
+    Author ``visualizer.py`` ``mean_accuracy`` averages five fields including Space.
+    Paper prose §3.1.1 mentions four classes; heatmaps omit Space for display only.
+    Table 1 published means align with five-field ``macro_extended`` — that is the
+    external-compare headline. Four-class ``macro_bench_protocol`` is reference only.
+    """
 
     per_field = summary.get("per_field") or {}
     if not isinstance(per_field, dict):
@@ -126,12 +132,15 @@ def _attach_dual_macros(summary: dict[str, Any]) -> dict[str, Any]:
     out = dict(summary)
     out["macro_bench_protocol"] = protocol
     out["macro_extended"] = extended
-    # Canonical publish name = paper protocol (RT-W-07).
-    out["macro_exact_match_rate"] = protocol
+    # Canonical publish name = Table 1–aligned five-field mean.
+    out["macro_exact_match_rate"] = extended
     out["macro_definition"] = (
-        "bench_protocol = mean exact-match over Door/Window/Bedroom/Toilet "
-        "(paper prose / live headline); extended = five-field mean including Space "
-        "(matches upstream visualizer mean_accuracy and Table 1 published means)"
+        "extended = five-field mean Door/Window/Space/Bedroom/Toilet "
+        "(matches upstream visualizer mean_accuracy and Table 1 published means; "
+        "live headline for external compare); "
+        "bench_protocol = four-class mean Door/Window/Bedroom/Toilet "
+        "(paper prose §3.1.1 / heatmap display fields — reference only, do not "
+        "compare to Table 1)"
     )
     out["n_field_scores_bench_protocol"] = n_protocol or None
     out["n_field_scores_extended"] = n_extended
@@ -149,8 +158,10 @@ def _attach_dual_macros(summary: dict[str, Any]) -> dict[str, Any]:
             "id": "error_plans_policy",
             "status": "DOCUMENTED",
             "note": (
-                "Live scored 117/120 (3 HTTP errors excluded). "
-                "Counting three misses as wrong ≈ 0.494 four-class mean."
+                "Live scored 117/120 (3 vendor HTTP 400 excluded: ~9–11 KB WEBP "
+                "labeled .jpg / MIME mismatch). "
+                "Counting three plans as all-field misses ≈ 0.422 five-field mean "
+                "(≈ 0.494 four-class reference)."
             ),
         },
         {
@@ -170,13 +181,13 @@ def _attach_dual_macros(summary: dict[str, Any]) -> dict[str, Any]:
             ),
         },
         {
-            "id": "table1_vs_protocol_keys",
+            "id": "table1_metric_is_five_field",
             "status": "DOCUMENTED",
             "note": (
-                "Published Table 1 means match AeroBIM macro_extended (5 fields incl. "
-                "Space) within |Δ|≤0.02; upstream visualizer mean_accuracy includes "
-                "Space. Paper prose / live headline use four-class macro_bench_protocol. "
-                "Never mix keys in a compare row."
+                "Table 1 published means match macro_extended (5 fields incl. Space) "
+                "within |Δ|≤0.02. Upstream visualizer mean_accuracy includes Space; "
+                "heatmaps omit Space for display. Comparing four-class live means to "
+                "Table 1 is a metric mismatch — forbidden."
             ),
         },
     ]
@@ -227,8 +238,9 @@ def build_scorer_validation(offline: dict[str, Any]) -> dict[str, Any]:
         "claim_level": "open_bench_only",
         "closes_rt001": False,
         "purpose": (
-            "Prove AeroBIM offline scorer equivalence to AECV-Bench published "
-            "Table 1 means by re-scoring the authors' per-plan prediction JSONs."
+            "Show AeroBIM offline scorer reproduces AECV-Bench published "
+            "Table 1 means (within stated tolerance) by re-scoring the authors' "
+            "per-plan prediction JSONs on the same five-field metric."
         ),
         "mode": offline.get("mode"),
         "plans_scored": offline.get("plans_scored"),
@@ -236,7 +248,8 @@ def build_scorer_validation(offline: dict[str, Any]) -> dict[str, Any]:
         "comparison_metric_note": (
             "Five-field mean Door/Window/Space/Bedroom/Toilet. Matches upstream "
             "src/benchmark/visualizer.py mean_accuracy. Paper prose mentions four "
-            "classes; heatmaps omit Space for display only."
+            "classes; heatmaps omit Space for display only. Table 1 numbers are "
+            "five-field — confirmed by offline rescore alignment."
         ),
         "paper": {
             "arxiv": "2601.04819",
@@ -258,15 +271,16 @@ def build_scorer_validation(offline: dict[str, Any]) -> dict[str, Any]:
                 "print without claiming bit-identical author tooling."
             ),
             "verdict": (
-                "SCORER_EQUIVALENT_WITHIN_TOLERANCE"
+                "SCORER_REPRODUCES_TABLE1_WITHIN_TOLERANCE"
                 if max_abs is not None and max_abs <= tolerance
                 else "SCORER_DIVERGENCE"
             ),
         },
         "defense_answer": (
-            "Before asking whether 0.51 is meaningful: the same scorer reproduces "
-            "ten published Table 1 means within |Δ|≤0.02 (median ~0.004) when "
-            "re-scoring the authors' own prediction files."
+            "Before asking whether the live macro is meaningful: the same scorer "
+            "reproduces ten published Table 1 means within |Δ|≤0.02 (median ~0.004) "
+            "when re-scoring the authors' own prediction files on the five-field "
+            "metric (Space included)."
         ),
     }
 
@@ -487,13 +501,19 @@ def build_executive_summary(
             "macro_mape": summary.get("macro_mape"),
             "mape_bench_protocol": summary.get("mape_bench_protocol"),
             "publish_framing": {
-                "headline_metric": "macro_bench_protocol",
+                "headline_metric": "macro_extended",
+                "headline_note": (
+                    "Table 1–comparable five-field mean (Space included). "
+                    "macro_bench_protocol is four-class reference only."
+                ),
                 "allowed_claim": (
                     "Open model via RF cloud reaches frontier proprietary order "
-                    "on this task (open_bench_only)."
+                    "on this task (open_bench_only); below Gemini/GPT-5.2, "
+                    "above Claude Opus 4.5 and open baselines on Table 1 metric."
                 ),
                 "forbidden_claim": (
-                    "We beat Gemini / AeroBIM product accuracy = 0.51"
+                    "We beat Gemini / AeroBIM product accuracy = 0.51 / "
+                    "compare four-class live mean to Table 1"
                 ),
                 "comparability_gates_required": True,
                 "doc": "docs/research/AECV_PUBLISH_FRAMING_I5_2026_08_04.md",

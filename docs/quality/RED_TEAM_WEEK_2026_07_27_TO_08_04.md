@@ -81,20 +81,20 @@ method: >-
 ### Task 0 · scorer validation → **CLOSED**
 
 Вынесено: [`docs/evidence/aecv-scorer-validation-2026-08-04.json`](../evidence/aecv-scorer-validation-2026-08-04.json) + [`.md`](../evidence/aecv-scorer-validation-2026-08-04.md).  
-Десять моделей Table 1: max \|Δ\|≈0.020, median≈0.004 → `SCORER_EQUIVALENT_WITHIN_TOLERANCE`.  
-Сверка идёт по `macro_extended` (5 полей) — так считает upstream `visualizer.mean_accuracy`.
+Десять моделей Table 1: max \|Δ\|≈0.020, median≈0.004 → `SCORER_REPRODUCES_TABLE1_WITHIN_TOLERANCE`.  
+Сверка по `macro_extended` (5 полей) — так считает upstream `visualizer.mean_accuracy`; Table 1 = пятиполевая.
 
 ### RT-W-06 · высокий · offline без provenance → **CLOSED**
 
 `object_counting_offline.provenance`: `upstream_repo`, `upstream_commit` (`1c88ec2…`), path pattern, `predictions_tree_sha256`, `fetched_at`, split `paper_table1_models` (10) / `repo_only_models_not_in_paper_table1` (17).
 
-### RT-W-07 · высокий · канонический macro занижен → **CLOSED**
+### RT-W-07 · высокий · канонический macro → **CLOSED (errata v2)**
 
-В `object_counting_live.summary` рядом:
-- `macro_bench_protocol` = **0.5064** (468 field-scores)
-- `macro_extended` = **0.4325** (585)
-- `macro_exact_match_rate` → привязан к protocol
-- `comparability_gates` (B.5 + table1_vs_protocol_keys)
+**Errata:** Table 1 = пятиполевая метрика (Space in upstream `mean_accuracy`).  
+В `object_counting_live.summary`:
+- **`macro_extended` / `macro_exact_match_rate` = 0.4325** (585) — headline vs Table 1
+- `macro_bench_protocol` = 0.5064 (468) — four-class reference only
+- `comparability_gates` (B.5 + `table1_metric_is_five_field`)
 
 ---
 
