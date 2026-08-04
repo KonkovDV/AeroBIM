@@ -8,9 +8,10 @@
 
 | # | Item | Status | Path |
 |---|---|---|---|
-| 1 | Synthetic baseline PDF + JSON (recall/precision/Wilson/p95 + limitations) | **DONE** | [`docs/evidence/sprint2-synthetic-baseline-2026-08-04.pdf`](../evidence/sprint2-synthetic-baseline-2026-08-04.pdf) · [`.json`](../evidence/sprint2-synthetic-baseline-2026-08-04.json) · [`.md`](../evidence/sprint2-synthetic-baseline-2026-08-04.md) |
-| 2 | Outreach contacts / demo agreed | **0 / 0** (operator) | [`docs/customer-discovery/sprint2-outreach-tracking.md`](../customer-discovery/sprint2-outreach-tracking.md) |
-| 3 | Demo protocol with 3-category AI-only | **DONE** | [`docs/customer-demo/completed-project-comparison-protocol.md`](../customer-demo/completed-project-comparison-protocol.md) |
+| 0 | **Пакет к трек-встрече 07.08 (К0)** | **INDEX** | [`TRACKER_MEETING_PACK_2026_08_07.md`](TRACKER_MEETING_PACK_2026_08_07.md) |
+| 1 | Tracker baseline PDF + TZ row map (+ synthetic twin) | **DONE** | [`docs/evidence/tracker-baseline-2026-08-07.pdf`](../evidence/tracker-baseline-2026-08-07.pdf) · [`.md`](../evidence/tracker-baseline-2026-08-07.md) · synthetic [`sprint2-synthetic-baseline-2026-08-04.pdf`](../evidence/sprint2-synthetic-baseline-2026-08-04.pdf) |
+| 2 | Outreach: org list 30+ / contacted / demo | **28 SSOT orgs / 0 / 0** (legacy sprint2 CSV=40 superseded) | локально (не в GH): `.local/commercial-ops/commercial-pipeline.csv` · `.local/commercial-ops/outreach-log.md` |
+| 3 | Demo protocol with 3-category AI-only | **DONE** | [`completed-project-comparison-protocol.md`](../customer-demo/completed-project-comparison-protocol.md) · RU [`DEMO_SCENARIO_TRACKER_RU_2026_08.md`](../customer-demo/DEMO_SCENARIO_TRACKER_RU_2026_08.md) |
 | 4 | Model bake-off table | **NOT_RUN** (no `AEROBIM_LLM_API_KEY` in this env) | [`docs/evidence/yandex-remarks-model-bakeoff-2026-08-04.json`](../evidence/yandex-remarks-model-bakeoff-2026-08-04.json) · harness `python -m aerobim.tools.run_yandex_remarks_bakeoff` |
 | 5 | What we did **not** finish | below | — |
 

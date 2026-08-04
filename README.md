@@ -331,7 +331,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_STORAGE_DIR` | `var/reports` | Report persistence directory |
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
 | `AEROBIM_ENV` | `development` | Environment name; non-dev requires bearer/OIDC (fail-closed) |
-| `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | Unset under non-dev → `production` fail-closed; `development`/`fixture`/`samolet_pilot`/`production` |
+| `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | **`samolet_pilot` / `production` = закрытый контур заказчика**: fail-closed capabilities; **внешний advisory LLM egress запрещён**. Unset under non-dev → `production`. Also: `development` / `fixture` |
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Bearer for `/v1/*`; required unless `AEROBIM_ALLOW_ANONYMOUS_DEV` |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `false` | Opt-in anonymous API in development/test only (`from_env`) |
 | `AEROBIM_CLASH_AFFECTS_PASS` | `false` | Soft only in development/fixture; forced `true` under pilot/production sign-off |
@@ -350,7 +350,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_S3_ACCESS_KEY_ID` | *(unset)* | Optional access key for S3-compatible storage |
 | `AEROBIM_S3_SECRET_ACCESS_KEY` | *(unset)* | Optional secret key for S3-compatible storage |
 | `AEROBIM_S3_PREFIX` | `aerobim` | Prefix applied to object keys in S3-compatible storage |
-| `AEROBIM_LLM_LOCAL_ENABLED` | `false` | Opt-in OpenAI-compat advisory LLM (vLLM / Yandex AI Studio); never sets `summary.passed`. When ready, `/v1/analyze/project-package` overlays `ai_generated` remark drafts (`capabilities.llm_advisory`) |
+| `AEROBIM_LLM_ADVISORY_ENABLED` | `false` | **Development only:** opt-in OpenAI-compat advisory LLM; never sets `summary.passed`; ignored/`ready=false` under `samolet_pilot`/`production`. Alias: `AEROBIM_LLM_LOCAL_ENABLED` (deprecated name) |
 | `AEROBIM_LLM_BASE_URL` | *(unset; Studio default when provider=`yandex-ai-studio`)* | Loopback or RF HTTPS OpenAI-compat base (`…/v1`); SSRF-gated at boot |
 | `AEROBIM_LLM_API_KEY` | *(unset)* | Optional bearer for Studio; never logged / never in `audit_event` |
 | `AEROBIM_LLM_PROVIDER` | `qwen-local` | Provider label (`qwen-local` / `yandex-ai-studio`) |

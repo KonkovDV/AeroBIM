@@ -165,6 +165,10 @@ export interface ReportCapabilities {
   mep_system_clash?: CapabilityStatus;
   calculation_match?: CapabilityStatus;
   calculation_correctness?: CapabilityStatus;
+  package_completeness?: CapabilityStatus;
+  llm_advisory?: CapabilityStatus;
+  extraction_integrity?: CapabilityStatus;
+  qualified_signature?: CapabilityStatus;
 }
 
 export interface DivergenceRecord {

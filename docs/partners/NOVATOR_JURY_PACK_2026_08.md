@@ -6,14 +6,18 @@
 
 ## Читать в этом порядке (15 минут эксперта)
 
-1. Этот индекс  
-2. [`../docs.md`](../docs.md) — меморандум (обновить перед подачей)  
-3. [`COMPETITIVE_MATRIX_2026_08.md`](COMPETITIVE_MATRIX_2026_08.md)  
-4. [`_TECHLAB_2026_08.md`](_TECHLAB_2026_08.md)  
-5. [`ROADMAP_3Y_2026_08.md`](ROADMAP_3Y_2026_08.md)  
-6. [`diagrams/README.md`](diagrams/README.md) — 4 схемы  
-7. [`GLOSSARY_JURY_RU_2026_08.md`](GLOSSARY_JURY_RU_2026_08.md)  
-8. При необходимости глубина: [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md)
+0. [`../quality/TRACKER_MEETING_PACK_2026_08_07.md`](../quality/TRACKER_MEETING_PACK_2026_08_07.md) — **К0** к трек-встрече 07.08  
+1. [`PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md`](PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md) — **протокол измерения и приёмки задачи №7** (для ТИМ-руководителя)  
+2. [`FOUR_CHECK_STATES_OPERATOR_2026_08.md`](FOUR_CHECK_STATES_OPERATOR_2026_08.md) — пять операторских состояний карты покрытия (+ исходы пакета)  
+3. [`OPEN_DEMO_BEFORE_CUSTOMER_CORPUS_2026_08.md`](OPEN_DEMO_BEFORE_CUSTOMER_CORPUS_2026_08.md) — демо на открытых данных  
+4. [`TZ_TBD_PROPOSALS_TASK07_2026_08.md`](TZ_TBD_PROPOSALS_TASK07_2026_08.md) — предложения к TBD (не «ТЗ v2»)  
+5. [`../qa-defense-2026.md`](../qa-defense-2026.md) — заготовки ответов 20–30 с  
+6. [`COMPETITIVE_MATRIX_2026_08.md`](COMPETITIVE_MATRIX_2026_08.md)  
+7. [`_TECHLAB_2026_08.md`](_TECHLAB_2026_08.md)  
+8. [`ROADMAP_3Y_2026_08.md`](ROADMAP_3Y_2026_08.md)  
+9. [`diagrams/README.md`](diagrams/README.md) — 4 схемы  
+10. [`GLOSSARY_JURY_RU_2026_08.md`](GLOSSARY_JURY_RU_2026_08.md)  
+11. [`../docs.md`](../docs.md) · [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md)
 
 ## Вне репозитория (критично для баллов)
 

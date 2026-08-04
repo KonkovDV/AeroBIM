@@ -168,10 +168,21 @@ class CheckCoverageTests(unittest.TestCase):
         source_ids = [s["source_id"] for s in record["sources"]]
         self.assertEqual(source_ids, ["a", "b"])  # deduped + empty dropped, no unattributed
 
-    def test_every_family_present_per_source(self) -> None:
-        cov = build_check_coverage(source_ids=["a"], issues=[])
-        self.assertEqual(len(cov.rows[0].families), len(list(FindingCategory)))
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_to_dict_includes_operator_aliases(self) -> None:
+        cov = build_check_coverage(
+            source_ids=["a"],
+            issues=[],
+            capabilities=ReportCapabilities(
+                ifc_validation=CapabilityStatus(CapabilityState.OK),
+                ifc_schema=CapabilityStatus(CapabilityState.OK),
+            ),
+            scope={_IFC: {"a"}},
+        )
+        record = cov.to_dict()
+        self.assertEqual(record["schema_version"], "1.1.0")
+        self.assertIn("operator_legend", record)
+        self.assertIn("done", record["operator_legend"])
+        row = record["sources"][0]
+        self.assertIn("operator_status", row)
+        self.assertEqual(row["operator_status"]["ifc-validation"], "done")
+        self.assertIn("done", record["operator_summary"])

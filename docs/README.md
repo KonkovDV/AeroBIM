@@ -13,7 +13,7 @@ Checkpoint: **`NO_GO`** — [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/r
 Aug 2026 eng readiness: [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).  
 P0 eng package WP-01…08 Red Team rollup: [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
 
-Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and curated eng/Red Team summaries under `docs/quality/`. Operator runbooks, phase Red Team dumps, and  archive live under `.local/` (not published).
+Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and curated eng/Red Team summaries under `docs/quality/`. Operator runbooks, phase Red Team dumps,  archive, team-private dumps (TZ/PPTX/photos), and commercial contact pipelines live under `.local/` (not published). Public `docs/customer-discovery/` = anonymized templates only.
 
 **Red Team / eng remediations through 2026-08-02:** Claims Lock / blockers / ADR-001 / SECURITY aligned with fail-closed Shared-gate; P0 WP-01…08 eng-delivered under Claims Lock. Customer blockers RT-001/002/003 remain open.
 
@@ -68,5 +68,6 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`quality/RED_TEAM_WP01_03_2026_08_02.md`](quality/RED_TEAM_WP01_03_2026_08_02.md) | Red Team WP-01..03 |
 | [`quality/RED_TEAM_WP04_05_2026_08_02.md`](quality/RED_TEAM_WP04_05_2026_08_02.md) | Red Team WP-04/05 |
 | [`quality/RED_TEAM_WP06_08_2026_08_02.md`](quality/RED_TEAM_WP06_08_2026_08_02.md) | Red Team WP-06..08 |
+| [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md) | Red Team wave-2: tracker К0 + commercial hygiene |
 | [`TIER0_INDEX.md`](TIER0_INDEX.md) | Compact map |
 | [`ai-safety-and-document-ingestion-2026.md`](ai-safety-and-document-ingestion-2026.md) | Trust boundaries / AI safety |

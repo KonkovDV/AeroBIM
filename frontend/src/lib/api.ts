@@ -107,6 +107,27 @@ export async function fetchReport(reportId: string): Promise<ValidationReport> {
   return readJson<ValidationReport>(`${apiBaseUrl}/v1/reports/${reportId}`);
 }
 
+export interface CheckCoverageSourceRow {
+  source_id: string;
+  families: Record<string, string>;
+  operator_status?: Record<string, string>;
+  reasons?: Record<string, string>;
+}
+
+export interface CheckCoverageMap {
+  artifact: string;
+  schema_version?: string;
+  note?: string;
+  operator_legend?: Record<string, string>;
+  sources: CheckCoverageSourceRow[];
+  summary?: Record<string, number>;
+  operator_summary?: Record<string, number>;
+}
+
+export async function fetchReportCoverage(reportId: string): Promise<CheckCoverageMap> {
+  return readJson<CheckCoverageMap>(`${apiBaseUrl}/v1/reports/${reportId}/coverage`);
+}
+
 export async function fetchReportIfcSource(reportId: string): Promise<Uint8Array> {
   const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId));
   return bytes;

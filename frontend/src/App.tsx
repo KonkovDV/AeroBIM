@@ -3,6 +3,7 @@ import { downloadExport, fetchReport, fetchReports, getApiBaseUrl, postReviewEve
 import type { ClashResult, PackageOutcome, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
 import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 import CapabilityHonestyPanel from "./components/CapabilityHonestyPanel";
+import CoverageMapPanel from "./components/CoverageMapPanel";
 import ProvenancePanel from "./components/ProvenancePanel";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
@@ -219,17 +220,17 @@ function formatTimestamp(value: string): string {
 function formatPackageOutcome(outcome: PackageOutcome | null | undefined, passed: boolean): string {
   switch (outcome) {
     case "pass":
-      return "PASS";
+      return "PASS — нарушений не найдено (проверки выполнены)";
     case "pass_with_warnings":
-      return "PASS_WITH_WARNINGS";
+      return "PASS_WITH_WARNINGS — есть предупреждения";
     case "review_required":
-      return "REVIEW_REQUIRED";
+      return "REVIEW_REQUIRED — требуется эксперт";
     case "blocked":
-      return "BLOCKED";
+      return "BLOCKED — проверка не завершена / данных недостаточно";
     case "failed":
-      return "FAILED";
+      return "FAILED — ошибки или fail-closed";
     default:
-      return passed ? "Passed" : "Failed";
+      return passed ? "Passed (legacy)" : "Failed (legacy)";
   }
 }
 
@@ -1078,6 +1079,8 @@ export default function App() {
                 capabilities={selectedReport.capabilities}
                 divergences={selectedReport.divergences}
               />
+
+              <CoverageMapPanel reportId={selectedReport.report_id} />
 
               <div className="issue-toolbar">
                 <label>
