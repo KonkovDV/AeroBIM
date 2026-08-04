@@ -11,7 +11,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 
 | File | Role |
 |------|------|
-| [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV: publish **`macro_bench_protocol=0.5064`** (~0.507) + **`mape_bench_protocol≈0.227`**; `macro_extended=0.4325` internal; B.5 gates before deck compare; `open_bench_only` |
+| [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV: publish **`macro_extended=0.4325`** (5 fields = Table 1 metric) + `macro_bench_protocol=0.5064` reference-only; scorer validation vs Table 1 max\|Δ\|≈0.02; B.5 gates; `open_bench_only` |
 | [`aec-bench-smoke-latest.json`](aec-bench-smoke-latest.json) | L1 AEC-Bench: 196-task inventory + prefetch sample; Harbor agent NOT_RUN (no agent key) |
 | [`ifc-bench-v1-smoke-latest.json`](ifc-bench-v1-smoke-latest.json) | L1 open-bench: IFC-Bench v1 deterministic countable subset (`claim_level=open_bench_only`; ≠ RT-001) |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |

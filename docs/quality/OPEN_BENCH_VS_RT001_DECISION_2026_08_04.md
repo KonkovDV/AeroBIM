@@ -37,18 +37,19 @@ AECV-Bench §6 (Kondratenko et al., arXiv:2601.04819, **VERIFIED** full text) li
 1. **IFC-Bench v1** — 7/7 countable → [`../evidence/ifc-bench-v1-smoke-latest.json`](../evidence/ifc-bench-v1-smoke-latest.json).
 2. **AECV-Bench object counting**
    - Live Yandex `qwen3.6-35b-a3b`: 120/117/3.
-   - **Publish:** `macro_bench_protocol` = **0.5065** (Door/Window/Bedroom/Toilet — paper protocol).
-   - **Internal:** `macro_extended` = **0.4325** (adds Space; not in Tables 1–2).
+   - **Publish:** `macro_extended` = **0.4325** (5 fields = Table 1 / upstream `mean_accuracy`).
+   - **Reference:** `macro_bench_protocol` = **0.5064** (4 classes; paper prose — do **not** compare to Table 1).
+   - Scorer validation: Table 1 reproduced within |Δ|≤0.02 on five-field metric.
    - MAPE + mean_bias in `executive_summary` (Window bias −2.58).
-   - Evidence: [`../evidence/aecv-bench-eval-latest.json`](../evidence/aecv-bench-eval-latest.json) · compare note: [`../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md).
-   - Public Table-1 compare only after comparability gates (prompt §3.1.2, error handling, infra, model id).
+   - Evidence: [`../evidence/aecv-bench-eval-latest.json`](../evidence/aecv-bench-eval-latest.json) · [`../evidence/aecv-scorer-validation-2026-08-04.md`](../evidence/aecv-scorer-validation-2026-08-04.md) · [`../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md).
+   - Public Table-1 compare only after B.5 gates; never mix four-class live with Table 1.
 3. **AEC-Bench** — inventory; Harbor agent NOT_RUN.
 4. WP-06 open-corpora = L2.
 
 ## Forbidden
 
 - Publishing L1/L2 as «точность AeroBIM» / «>90%» / Checkpoint GO.
-- Publishing only `macro_extended` next to paper means without stating Space.
+- Comparing four-class `macro_bench_protocol` to Table 1 means (metric mismatch).
 - Criticizing TechLab peers by name in organizer decks.
 
 ## Non-engineer one-liner

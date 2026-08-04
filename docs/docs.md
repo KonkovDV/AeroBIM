@@ -423,7 +423,7 @@ AeroBIM решает конкретную задачу: уменьшает об�
 - Human-in-the-Loop rule generation: https://www.mdpi.com/2075-5309/16/4/719
 - AI in BIM clash management: https://www.mdpi.com/2075-5309/16/13/2623
 
-**Уровни чисел (не смешивать):** L1 open-bench (`claim_level=open_bench_only`) — AECV live: **`macro_bench_protocol=0.5065`** (4 класса как в статье) / `macro_extended=0.4325` (с Space; не сравнивать с Table 1); см. [`research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md) · [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json) · IFC-Bench smoke · L2 fixture · L3 RT-001. Source audit: [`research/SOURCE_VERIFICATION_REPORT_2026_08_04.md`](research/SOURCE_VERIFICATION_REPORT_2026_08_04.md).
+**Уровни чисел (не смешивать):** L1 open-bench (`claim_level=open_bench_only`) — AECV live: **`macro_extended=0.4325`** (5 полей = метрика Table 1 / upstream `mean_accuracy`) / `macro_bench_protocol=0.5064` (4 класса, **справочно**, не против Table 1); см. [`research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md) · [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json) · [`evidence/aecv-scorer-validation-2026-08-04.md`](evidence/aecv-scorer-validation-2026-08-04.md) · IFC-Bench smoke · L2 fixture · L3 RT-001. Source audit: [`research/SOURCE_VERIFICATION_REPORT_2026_08_04.md`](research/SOURCE_VERIFICATION_REPORT_2026_08_04.md).
 
 ### Конкуренты
 

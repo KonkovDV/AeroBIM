@@ -25,12 +25,12 @@ claim_boundary: >-
 
 | Name | Definition | Value |
 |---|---|---:|
-| **`macro_bench_protocol`** | Mean EM over Door/Window/Bedroom/Toilet (paper Tables 1–2) | **0.5065** |
-| **`macro_extended`** | Five-field mean **including Space** | **0.4325** |
+| **`macro_extended`** (headline) | Five-field mean **including Space** = Table 1 / upstream `mean_accuracy` | **0.4325** |
+| `macro_bench_protocol` | Mean EM over Door/Window/Bedroom/Toilet (paper prose / heatmap display) | **0.5064** |
 
-Publish the first. The second understated the bench-comparable result by ~0.074.
+Publish the first against Table 1. The second is reference-only — comparing it to Table 1 is a metric mismatch.
 
-Attempted **120** / scored **117** / errors **3** (WEBP-as-JPEG MIME; sniff fixed). If errors counted as miss → ~0.494 — still GPT-5.2 ballpark; document treatment in artifact.
+Attempted **120** / scored **117** / errors **3** (WEBP-as-JPEG MIME; ~9–11 KB under 12 KB soft floor). If errors counted as miss → five-field ≈**0.422**.
 
 ## Per-field (exact / MAPE / bias)
 
@@ -38,16 +38,16 @@ Attempted **120** / scored **117** / errors **3** (WEBP-as-JPEG MIME; sniff fixe
 |---|---:|---:|---:|---|
 | Door | 0.231 | 0.322 | −0.71 | |
 | Window | 0.137 | 0.365 | **−2.58** | systematic undercount |
-| Space | 0.137 | 0.294 | +0.21 | **not** in paper mean |
+| Space | 0.137 | 0.294 | +0.21 | **in** Table 1 metric (upstream) |
 | Bedroom | 0.846 | 0.128 | −0.03 | 16× pred0; 8 refusal |
 | Toilet | 0.812 | 0.095 | −0.13 | |
 
 Gradient matches paper §4: text-anchored rooms ≫ symbol doors/windows.
 
-## vs paper Table 1 (internal until B.5 gates)
+## vs paper Table 1 (same five-field metric)
 
-`macro_bench_protocol` **0.507** ≈ Gemini 3 Pro **0.51**, above GPT-5.2 **0.49** and open Qwen3-VL-8B **0.39**.  
-Wording: newer open model on RF cloud reaches frontier **order** — not «we beat Gemini». Gates: prompt §3.1.2, error policy, infra, model id — [`../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md).
+`macro_extended` **0.4325** — below Gemini **0.51** / GPT-5.2 **0.49**, above Claude Opus 4.5 **0.42** and open GLM **0.39**.  
+Wording: open model on RF cloud reaches frontier **order** — not «we beat Gemini». Gates: prompt §3.1.2, error policy, infra, model id — [`../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](../research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md).
 
 ## Token economics (measured)
 

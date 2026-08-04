@@ -64,14 +64,14 @@ Paper abstract: strongest symbol counting often **0.40–0.55** mean EM; OCR QA 
 
 | Aggregation | Exact-match |
 |---|---:|
-| Five-field macro (Door/Window/**Space**/Bedroom/Toilet) | **0.4325** |
-| **Four-field macro (paper-comparable)** | **0.5064** |
+| **Five-field macro (Table 1 / upstream `mean_accuracy`)** | **0.4325** |
+| Four-field macro (paper prose / heatmap display — reference) | 0.5064 |
 
 Per-field live: Door 0.231 / Window 0.137 / Space 0.137 / Bedroom 0.846 / Toilet 0.812.
 
-**Direct answer:** On the paper’s four classes, live Qwen **0.51** sits with Gemini 3 Pro’s published **0.51** mean — harness is **not** obviously broken. The headline **0.43** is lower mainly because AeroBIM averages a fifth field (**Space**, exact 0.137) that Table 1 does not use. Door/Window remain weak vs Bedroom/Toilet — **agrees** with the paper’s symbol-vs-text gradient. Residual gaps vs published Gemini Door/Window (0.39/0.34 vs our 0.23/0.14) are model/prompt/resolution, not “invalid scoring.”
+**Direct answer (errata):** Table 1 published means align with the **five-field** metric (Space included). Live Qwen **0.4325** sits above Claude Opus 4.5 **0.42** and open GLM **0.39**, below Gemini **0.51** / GPT-5.2 **0.49**. The four-class **0.51** must **not** be compared to Table 1. Door/Window remain weak vs Bedroom/Toilet — **agrees** with the paper’s symbol-vs-text gradient. Scorer reproduces Table 1 within |Δ|≤0.02 on the five-field metric.
 
-**Consequence:** Always publish **both** macros; never defend 0.43 as “paper mean.” Update slides/evidence (`macro_exact_match_rate_paper_four_fields`).
+**Consequence:** Publish **`macro_extended`** as headline vs Table 1; keep four-class as reference only.
 
 **Not found in paper:** exact pixel resolution / resize policy for their API runs (protocol says unified prompts via OpenRouter; tile policy not specified numerically).
 
