@@ -4,13 +4,13 @@ base: 518fef8
 head: 29d66b8
 date: 2026-08-04
 status: active
-version: "1.1.0"
+version: "1.2.0"
 remediation: >-
-  RT-W-01/02/05 closed 2026-08-04 on working tree (post-29d66b8).
-  RT-W-03/04 remain process; Checkpoint NO_GO unchanged.
+  RT-W-01/02/05 closed earlier 2026-08-04. RT-W-06/07 + Task 0 scorer validation
+  closed post-733a445/f131974 wave. RT-W-03/04 remain process; Checkpoint NO_GO.
 method: >-
   Operator static audit (diff, greps, selective read, secrets, licenses).
-  Tests were not run in the auditor sandbox; local remediation tests ran for RT-W-02.
+  Local remediation tests: aecv_bench_eval + honesty_surface_contract.
 ---
 
 # Red Team: неделя 27 июля — 4 августа
@@ -78,6 +78,24 @@ method: >-
 
 Удалён `docs/review/aerobim-kt2-text.patch` (5116 строк, расходился с README).
 
+### Task 0 · scorer validation → **CLOSED**
+
+Вынесено: [`docs/evidence/aecv-scorer-validation-2026-08-04.json`](../evidence/aecv-scorer-validation-2026-08-04.json) + [`.md`](../evidence/aecv-scorer-validation-2026-08-04.md).  
+Десять моделей Table 1: max \|Δ\|≈0.020, median≈0.004 → `SCORER_EQUIVALENT_WITHIN_TOLERANCE`.  
+Сверка идёт по `macro_extended` (5 полей) — так считает upstream `visualizer.mean_accuracy`.
+
+### RT-W-06 · высокий · offline без provenance → **CLOSED**
+
+`object_counting_offline.provenance`: `upstream_repo`, `upstream_commit` (`1c88ec2…`), path pattern, `predictions_tree_sha256`, `fetched_at`, split `paper_table1_models` (10) / `repo_only_models_not_in_paper_table1` (17).
+
+### RT-W-07 · высокий · канонический macro занижен → **CLOSED**
+
+В `object_counting_live.summary` рядом:
+- `macro_bench_protocol` = **0.5064** (468 field-scores)
+- `macro_extended` = **0.4325** (585)
+- `macro_exact_match_rate` → привязан к protocol
+- `comparability_gates` (B.5 + table1_vs_protocol_keys)
+
 ---
 
 ## 3. Чего аудит не проверил
@@ -93,7 +111,5 @@ method: >-
 ## 4. Итог
 
 Неделя без находок первого класса по секретам/опасным конструкциям/LIC-001.
-Две высокие находки объединялись тем, что **заявления защищены слабее кода** —
-обе закрыты remediation выше до КТ#2.
-
-Checkpoint остаётся **NO_GO**.
+Волна после `733a445`: заявления (provenance offline, dual macro, scorer validation)
+закрыты вместе с honesty/XSD/patch. Checkpoint остаётся **NO_GO**.
