@@ -43,7 +43,7 @@ class AecvBenchEvalTests(unittest.TestCase):
         self.assertIn("mape", summary["per_field"]["Window"])
         self.assertIsNotNone(summary.get("macro_mape"))
 
-    def test_attach_dual_macros_binds_canonical_to_protocol(self) -> None:
+    def test_attach_dual_macros_binds_canonical_to_extended(self) -> None:
         from aerobim.tools.run_aecv_bench_eval import _attach_dual_macros
 
         summary = _attach_dual_macros(
@@ -62,7 +62,7 @@ class AecvBenchEvalTests(unittest.TestCase):
         self.assertAlmostEqual(summary["macro_extended"], 0.5)
         self.assertAlmostEqual(summary["macro_bench_protocol"], 0.55)
         self.assertEqual(
-            summary["macro_exact_match_rate"], summary["macro_bench_protocol"]
+            summary["macro_exact_match_rate"], summary["macro_extended"]
         )
         self.assertEqual(summary["n_field_scores_bench_protocol"], 8)
         self.assertEqual(summary["n_field_scores_extended"], 10)
@@ -148,7 +148,10 @@ class AecvBenchEvalTests(unittest.TestCase):
         self.assertAlmostEqual(exe["live"]["macro_extended"], 0.4)
         self.assertEqual(
             exe["live"]["macro_exact_match_rate"],
-            exe["live"]["macro_bench_protocol"],
+            exe["live"]["macro_extended"],
+        )
+        self.assertEqual(
+            exe["live"]["publish_framing"]["headline_metric"], "macro_extended"
         )
         self.assertEqual(
             exe["published_baseline_comparison"]["ranking_key"], "macro_extended"
@@ -183,7 +186,8 @@ class AecvBenchEvalTests(unittest.TestCase):
         )
         self.assertTrue(payload["summary"]["within_tolerance"])
         self.assertEqual(
-            payload["summary"]["verdict"], "SCORER_EQUIVALENT_WITHIN_TOLERANCE"
+            payload["summary"]["verdict"],
+            "SCORER_REPRODUCES_TABLE1_WITHIN_TOLERANCE",
         )
         self.assertEqual(payload["comparison_metric"], "macro_extended")
 
