@@ -1,0 +1,111 @@
+{
+  "artifact_type": "sprint2_synthetic_ground_truth",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-04",
+  "claim_level": "synthetic_only",
+  "closes_rt001": false,
+  "customer_evidence": false,
+  "limitation": "Measures only planted defects. Unplanted error classes remain unmeasured. Synthetic floor — not customer precision. Checkpoint NO_GO.",
+  "tz_error_classes": [
+    {
+      "tz_class": "geometric_clash_between_systems",
+      "coverage": "not_planted_runnable",
+      "reason": "hard_clash listed in mutation catalog; no deterministic planted IFC pair in this sprint. RT-003 OPEN for verified MEP clash.",
+      "defect_ids": []
+    },
+    {
+      "tz_class": "drawing_model_dimension_mismatch",
+      "coverage": "not_planted_runnable",
+      "reason": "drawing_annotation_mismatch in catalog; no runnable 2D↔IFC planted pair yet.",
+      "defect_ids": []
+    },
+    {
+      "tz_class": "incorrect_space_area",
+      "coverage": "partial",
+      "defect_ids": ["LB-001-load-value-mismatch"],
+      "note": "Canonical LOAD row mismatch is measured. Free-text area (LB-004) is known_undetected honesty boundary — not counted as FN for recall of planted detectable errors."
+    },
+    {
+      "tz_class": "missing_element_in_section",
+      "coverage": "partial",
+      "defect_ids": ["LB-007-compensating-entity-presence"],
+      "note": "IDS-only class-swap is vacuous pass (honesty). Compensating entity-presence requirement is the planted detectable case."
+    },
+    {
+      "tz_class": "tz_requirement_mismatch",
+      "coverage": "measured",
+      "defect_ids": ["LB-005-ifc-missing-property-relation", "LB-006-ifc-wrong-property-value"]
+    },
+    {
+      "tz_class": "specification_model_contradiction",
+      "coverage": "measured",
+      "defect_ids": ["LB-006-ifc-wrong-property-value"],
+      "note": "Wrong FireRating vs IDS requirement stands in for spec↔model contradiction on fixture."
+    }
+  ],
+  "planted_detectable": [
+    {
+      "defect_id": "LB-001-load-value-mismatch",
+      "tz_class": "incorrect_space_area",
+      "finding_class": "calculation_mismatch",
+      "match_key": "AEROBIM-LOAD-MISMATCH",
+      "expected_severity": "warning",
+      "locus": "calculation_row:W1",
+      "runner": "calculation_text"
+    },
+    {
+      "defect_id": "LB-002-unit-scale-mismatch",
+      "tz_class": "incorrect_space_area",
+      "finding_class": "calculation_mismatch",
+      "match_key": "AEROBIM-LOAD-MISMATCH",
+      "expected_severity": "warning",
+      "locus": "calculation_row:W2",
+      "runner": "calculation_text"
+    },
+    {
+      "defect_id": "LB-005-ifc-missing-property-relation",
+      "tz_class": "tz_requirement_mismatch",
+      "finding_class": "ids_requirement",
+      "match_key": "IDS-Wall Fire Rating",
+      "expected_severity": "error",
+      "locus": "ifc:wall-fire-rating-rei60",
+      "runner": "ifc_ids_mutation",
+      "mutation_id": "LB-005"
+    },
+    {
+      "defect_id": "LB-006-ifc-wrong-property-value",
+      "tz_class": "specification_model_contradiction",
+      "finding_class": "ids_requirement",
+      "match_key": "IDS-Wall Fire Rating",
+      "expected_severity": "error",
+      "locus": "ifc:wall-fire-rating-rei60",
+      "runner": "ifc_ids_mutation",
+      "mutation_id": "LB-006"
+    },
+    {
+      "defect_id": "LB-007-compensating-entity-presence",
+      "tz_class": "missing_element_in_section",
+      "finding_class": "missing_element",
+      "match_key": "ENTITY-PRESENCE-IFCWALL",
+      "expected_severity": "error",
+      "locus": "ifc:wall-fire-rating-rei60#class_swap",
+      "runner": "ifc_ids_mutation_with_presence",
+      "mutation_id": "LB-007"
+    },
+    {
+      "defect_id": "LB-011-ifc-duplicate-guid",
+      "tz_class": "tz_requirement_mismatch",
+      "finding_class": "schema_pregate",
+      "match_key": "AEROBIM-GUID-DUPLICATE",
+      "expected_severity": "warning",
+      "locus": "ifc:duplicate_guid",
+      "runner": "duplicate_guid",
+      "note": "Measured via existing Level-B IFC pre-gate tests; included in GT inventory; optional live probe in baseline runner."
+    }
+  ],
+  "honesty_anchors_not_in_recall_denominator": [
+    "LB-003-si-equivalent-not-false-flagged",
+    "LB-004-freetext-area-mutation",
+    "LB-007-ifc-class-swap-vacuous-pass"
+  ]
+}

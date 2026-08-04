@@ -1,79 +1,82 @@
 # Completed-project comparison protocol (customer demo)
 
-**Status:** draft for Sprint 2.1  
+**Status:** Sprint 2 active draft  
 **Meeting date:** `DATE_TO_BE_CONFIRMED`  
-**Claim level:** demo protocol only — not product accuracy evidence
+**Claim level:** demo protocol only — not product accuracy evidence  
+**Checkpoint:** NO_GO until customer adjudication corpus exists
 
 ## Purpose
 
-Compare AeroBIM findings against an expert / examination issue register on a **completed** project package provided by the customer under NDA, using two mandatory axes:
+Compare AeroBIM findings against an expert / examination issue register on a **completed** project package (NDA), on two axes required by the tracker:
 
-1. total finding count (after duplicate consolidation)
-2. severity / criticality agreement (via **mapping table**, never raw label equality)
+1. **Finding counts** — ours vs register vs intersection  
+2. **Criticality** — agreement on the intersection after severity mapping
 
-## Required customer inputs (when available)
+## Required customer inputs
 
-- IFC models (disciplines as released)
-- PDF drawings
-- technical requirements / ТЗ
-- calculation materials
-- final examination conclusion (if shareable)
-- internal review report / issue register
-- revision history
+- IFC / PDF / ТЗ / calculations as released  
+- Final examination conclusion **or** internal issue register  
+- Revision identifiers  
 
-Hashes and revisions are recorded before analysis.
+Hashes recorded before analysis.
 
-## Finding identity definitions
+## Finding identity
 
 | Term | Definition |
 |---|---|
-| finding identity | Stable key over (rule_family, primary_evidence_ref, object_guid_or_doc_locus, normalized_title) |
-| duplicate finding | Same identity within one AeroBIM run (or near-duplicate after template normalize) |
-| same issue across revisions | Shared identity across revision A/B; status may change |
-| severity mapping | Customer severity → AeroBIM CRITICAL/WARNING/INFO via agreed table |
-| expert-confirmed finding | Present in customer register **and** matched in AeroBIM |
-| AI-only finding | AeroBIM only; not in customer register |
-| customer-only finding | Customer register only; not reported by AeroBIM |
-| not-verifiable finding | Evidence insufficient for deterministic match |
-| out-of-scope finding | Outside declared check coverage / intake completeness |
+| finding identity | (rule_family, primary_evidence_ref, object_guid_or_doc_locus, normalized_title) |
+| matched | In register **and** AeroBIM (after identity + severity mapping) |
+| customer-only | Register only (FN vs expert register) |
+| AI-only | AeroBIM only — **see three categories below** |
 
-## Comparison table (fill per demo)
+## Three categories for AI-only (mandatory)
 
-| Category | Customer findings | AeroBIM findings | Matched | AI-only | Customer-only | Agreement |
+AI-only is **not** automatically a system error. Customer expert assigns one of:
+
+| Category | Meaning |
+|---|---|
+| `false_positive` | Not a real issue |
+| `non_essential` | Real but correctly omitted from the formal conclusion |
+| `expert_miss` | Real issue missed by the register — strongest pilot argument |
+
+**Without this adjudication, comparison numbers are not published.**
+
+## Severity scale (propose, then agree)
+
+AeroBIM default: CRITICAL / WARNING / INFO — see [`severity-taxonomy-draft.md`](severity-taxonomy-draft.md).  
+Map customer labels via an agreed table before scoring criticality agreement. Scale mismatch is a common false “poor compare”.
+
+## Comparison table (fill after adjudication only)
+
+| Category | Customer | AeroBIM | Matched | AI-only (adj.) | Customer-only | Agreement |
 |---|---:|---:|---:|---:|---:|---:|
 | Total | | | | | | |
 | Critical | | | | | | |
 | Warning | | | | | | |
 | Info | | | | | | |
 
-Agreement = matched / (matched + AI-only + customer-only) after mapping. Report separately for raw counts vs mapped severity.
+AI-only column may be split into FP / non_essential / expert_miss in the annex.
 
 ## Demo flow
 
-1. Show completed project composition.
-2. Record hashes and revisions.
-3. Show examination / issue register (customer).
-4. Load package into AeroBIM.
-5. Check intake completeness.
-6. Run deterministic checks.
-7. Show coverage map.
-8. Show findings with evidence.
-9. Match against customer register.
-10. Show disagreements.
-11. Show severity mapping.
-12. Show time-to-first-finding.
-13. Show total wall time.
-14. Export HTML/JSON/BCF.
-15. Hand disputed cases to expert.
+1. Package composition + hashes  
+2. Show customer register / conclusion  
+3. Intake completeness + deterministic run  
+4. Coverage map + evidence-linked findings  
+5. Match  
+6. **Adjudicate AI-only into three categories** (customer expert)  
+7. Severity mapping agreement  
+8. Wall-clock / p95 (no fixture SLA claims)  
+9. Export HTML/JSON/BCF  
 
-## Hard demo rules
+## Hard rules
 
-- Do not present synthetic findings as project defects.
-- Do not claim customer SLA ≤30 minutes from fixtures.
-- Do not claim CDE integration from BCF ZIP alone.
-- Do not let LLM advisory change `summary.passed`.
-- RT-001/002/003 remain open until customer evidence closes them.
+- No synthetic findings as project defects  
+- No «точность >90%» / product % from open benches  
+- LLM must not flip `summary.passed`  
+- PII-гейт / closed contour unchanged  
+- RT-001/002/003 stay open until customer evidence closes them  
 
 ## Evidence class
 
-`CUSTOMER_ONLY` for agreement metrics on real projects. Until then, this protocol is `AUTHOR_CLAIM` process design only.
+`CUSTOMER_ONLY` for published agreement metrics. Until adjudication, this file is process design only (`AUTHOR_CLAIM`).
