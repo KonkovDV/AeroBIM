@@ -410,7 +410,8 @@ def build_system_capabilities_payload() -> dict[str, object]:
             },
             "claim_boundary": (
                 "OpenAI-compat advisory (vLLM local or Yandex AI Studio RF) when "
-                "AEROBIM_LLM_LOCAL_ENABLED + AEROBIM_LLM_MODEL_REVISION; token caps "
+                "AEROBIM_LLM_ADVISORY_ENABLED (+ deprecated LOCAL alias until 2026-09-21) "
+                "+ AEROBIM_LLM_MODEL_REVISION or unversioned gpt:// pin; token caps "
                 "fail-closed; Alibaba Max NOT_VERIFIED; Studio cloud = PUBLIC/INTERNAL "
                 "only; never sets summary.passed; ai_generated drafts require expert "
                 "confirmation; HTTP remark.content_marking + BCF provenance/label "

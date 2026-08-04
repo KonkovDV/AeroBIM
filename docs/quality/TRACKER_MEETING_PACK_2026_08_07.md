@@ -20,7 +20,7 @@ claim_boundary: >-
 | 1 | Baseline **PDF** + соотнесение с критериями ТЗ | **готово к выкладке** | [`../evidence/tracker-baseline-2026-08-07.pdf`](../evidence/tracker-baseline-2026-08-07.pdf) · [`.md`](../evidence/tracker-baseline-2026-08-07.md) |
 | 2 | Список 30+ потенциальных заказчиков | **SSOT 28 орг.; контакты ЛПР — нет** (цель трекера 30+ ещё не добита) | локально: `.local/commercial-ops/commercial-pipeline.csv` (не в GH) |
 | 3 | Факт контактов (отправлено / ответили / демо) | **0 / 0 / 0** | локально: `.local/commercial-ops/outreach-log.md` (не в GH) |
-| 4 | Сценарий демо: завершённый проект → прогон → сравнение с экспертизой | **техпротокол готов**; `demo-format` ещё draft | [`../customer-demo/completed-project-comparison-protocol.md`](../customer-demo/completed-project-comparison-protocol.md) · [`DEMO_SCENARIO_TRACKER_RU_2026_08.md`](../customer-demo/DEMO_SCENARIO_TRACKER_RU_2026_08.md) · draft [`../customer-discovery/demo-format-2026-08.md`](../customer-discovery/demo-format-2026-08.md) |
+| 4 | Сценарий демо: завершённый проект → прогон → сравнение с экспертизой | **формат + 2 обходных эталона**; прогон OPEN | [`../demo-format-2026-08.md`](../demo-format-2026-08.md) · [`../customer-demo/completed-project-comparison-protocol.md`](../customer-demo/completed-project-comparison-protocol.md) |
 
 **Текст в чат + 45 с открытия:** [`TRACKER_FRIDAY_OPENING_2026_08_07.md`](TRACKER_FRIDAY_OPENING_2026_08_07.md)
 

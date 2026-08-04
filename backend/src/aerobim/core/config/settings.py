@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -37,12 +38,29 @@ def _read_llm_advisory_enabled() -> bool:
     """Prefer AEROBIM_LLM_ADVISORY_ENABLED; keep AEROBIM_LLM_LOCAL_ENABLED as alias.
 
     Name ``LOCAL`` contradicted cloud Studio / egress use. Prefer ADVISORY;
-    LOCAL remains for one release as a deprecated synonym.
+    LOCAL remains until end of KT#3 (remove after 2026-09-21), then delete.
     """
 
     if os.getenv("AEROBIM_LLM_ADVISORY_ENABLED") is not None:
         return _read_bool("AEROBIM_LLM_ADVISORY_ENABLED", False)
     return _read_bool("AEROBIM_LLM_LOCAL_ENABLED", False)
+
+
+# End of TechLab KT#3 window (3–21 Sep 2026). Delete LOCAL env alias after this date.
+_LLM_LOCAL_ALIAS_REMOVE_AFTER = "2026-09-21"
+
+
+def _warn_deprecated_llm_local_alias() -> None:
+    """Emit once-per-process warning if legacy LOCAL env is still set."""
+
+    if os.getenv("AEROBIM_LLM_LOCAL_ENABLED") is None:
+        return
+    logging.getLogger(__name__).warning(
+        "AEROBIM_LLM_LOCAL_ENABLED is deprecated; use AEROBIM_LLM_ADVISORY_ENABLED. "
+        "Alias will be removed after KT#3 (target %s). "
+        "Scripts and docs still on LOCAL will silently diverge.",
+        _LLM_LOCAL_ALIAS_REMOVE_AFTER,
+    )
 
 _DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
 _DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # aligned with bSI Validation Service
@@ -477,6 +495,7 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> Settings:
+        _warn_deprecated_llm_local_alias()
         debug = _read_bool("AEROBIM_DEBUG", False)
         raw_origins = os.getenv("AEROBIM_CORS_ORIGINS", "")
         if raw_origins:
