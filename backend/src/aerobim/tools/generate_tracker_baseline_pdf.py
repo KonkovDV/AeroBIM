@@ -1,66 +1,65 @@
-"""Generate tracker baseline PDF (Cyrillic) for 2026-08-07 meeting."""
+"""Generate baseline-2026-08.pdf (Cyrillic) for tracker chat."""
 from __future__ import annotations
 
 from pathlib import Path
 
 import pymupdf
 
-# tools → aerobim → src → backend → repo
 REPO = Path(__file__).resolve().parents[4]
-OUT = REPO / "docs" / "evidence" / "tracker-baseline-2026-08-07.pdf"
+OUT_PRIMARY = REPO / "docs" / "evidence" / "baseline-2026-08.pdf"
+OUT_ALIAS = REPO / "docs" / "evidence" / "tracker-baseline-2026-08-07.pdf"
 
 PAGES: list[list[str]] = [
     [
-        "AeroBIM — Baseline к трек-встрече 07.08.2026",
-        "Checkpoint: NO_GO (RT-001/002/003 открыты). Не точность продукта.",
+        "AeroBIM — baseline-2026-08 (трек-встреча / КТ#2)",
+        "Checkpoint: NO_GO. Не точность продукта. Не >90%. Не customer SLA.",
         "",
-        "1. Три уровня измерений (не смешивать)",
-        "L1 AECV-Bench (чужой протокол): macro_extended = 0.4325",
-        "   ЧЕЙ РЕЗУЛЬТАТ: конвейер AeroBIM + qwen3.6-35b / Yandex Studio",
-        "   (нарезка→извлечение→сборка), НЕ «AeroBIM лучше GPT»",
-        "   рядом Table 1: Gemini 0.51 · GPT-5.2 0.49 · Claude 0.42 · GLM 0.39",
-        "   claim_level=open_bench_only; ≠ продукт; ≠ RT-001",
-        "L2 Fixture SLA (measure_package_sla): p95 ≈ 0.53 с",
-        "   ≠ SLA ≤30 мин на комплекте заказчика",
-        "L3 Synthetic detection Sprint2: P=0.75 R=1.0 (n=6 planted)",
-        "   synthetic_only; n ниже планировщика half-width 0.08",
+        "1. Атрибуция 0,43 (первым)",
+        "Измеряли НЕ модель AeroBIM, а сквозной конвейер:",
+        "зонная нарезка → извлечение → сборка ответа",
+        "на открытой модели через РФ-облако (Qwen / Yandex Studio).",
+        "macro_extended = 0,4325 — в диапазоне фронтирных моделей AECV,",
+        "работающих напрямую. Не превосходство над GPT/Gemini.",
+        "Для заказчика без внешнего облака: конвейер не теряет качество",
+        "на модели, доступной в закрытом контуре. open_bench_only.",
         "",
-        "Стоимость: ~111 руб на Wilson n≈111 (grant notes).",
-        "Цифра «~11 руб / 100 замечаний» — НЕ подтверждена evidence; не публиковать.",
+        "Таблица авторов (чужие чертежи): Gemini 0,51 · GPT-5.2 0,49 ·",
+        "наш конвейер 0,43 · Claude 0,42 · GLM-4.6V 0,39.",
+        "Тот же скорер: |Δ| к Table 1 ≤ 0,02.",
         "",
-        "Evidence:",
-        "  docs/evidence/aecv-bench-eval-latest.json",
-        "  docs/evidence/samolet-sla-fixture-p95-2026-08-04.json",
-        "  docs/evidence/sprint2-synthetic-baseline-2026-08-04.json",
+        "L2 Fixture SLA p95 ≈ 0,53 с — НЕ показатель реального комплекта.",
+        "L3 Synthetic P=0,75 R=1,0 (n=6) — synthetic_only.",
+        "Стоимость: ~111 ₽ (Wilson n≈111). «~11 ₽/100» — НЕ публиковать.",
     ],
     [
-        "2. Построчное соотнесение с критериями ТЗ задачи №7",
+        "2. Критерии оценивания ТЗ → что измерено → чем → чего не хватает",
         "",
-        "Критерий ТЗ                  | Сейчас                         | Статус",
-        "Коллизии >90%                | протокол+harness; нет корпуса   | блокировано RT-001",
-        "Несоответствия >90%          | то же                           | блокировано RT-001",
-        "Ошибки расчёта нагрузок      | сверка чисел; не решатель       | не заявлено как solver",
-        "Замечания RU/EN              | шаблоны + advisory LLM          | инструмент есть",
-        "Стабильность                 | pytest + pin модели + hash      | измерено (инженерно)",
-        "UI / эксперт                 | review shell + карта покрытия   | инструмент есть",
-        "≤30 мин на комплект          | fixture p95 << 30 мин           | fixture only",
-        "Когнитивная нагрузка         | HITL KPI-протокол               | не измерено на пилоте",
-        "MEP / пересечения систем     | не в рабочем контуре            | gap RT-003",
-        "Утверждённый норм-пакет      | loader fail-closed без approval | блокировано RT-002",
-        "Native DWG                   | fail-closed                     | gap",
+        "Коллизии/несоответствия >90% | протокол+harness | WP-07 | корпус RT-001",
+        "Расчёт нагрузок | сверка чисел | cross-doc | не решатель",
+        "Замечания RU/EN | шаблоны+advisory | TemplateRemark | не замена эксперта",
+        "Стабильность | pytest+pin+hash | CI | —",
+        "≤30 мин | fixture p95 | measure_package_sla | customer pack+machine",
+        "MEP | NOT_VERIFIED | gap + Exp B ВК 13п.п. | федеративная модель RT-003",
+        "Нормы | fail-closed loader | + Exp B КР 17п.п. | approved pack RT-002",
+        "Native DWG | fail-closed | — | решение владельца",
         "",
-        "Вывод: «>90%» и «≤30 мин у Самолёта» — цели пилота.",
-        "Предлагаем общий протокол измерения для всех 5 команд (К1).",
+        "3. Что значит «точность >90%» (методика, не цифра)",
+        "Раздельные P и R; классы ошибок со своими целями;",
+        "отдельный recall по критическим; Wilson CI + n;",
+        "двойная слепая разметка; учёт FN; отложенная выборка;",
+        "воспроизводимость (commit, hash, оборудование).",
+        "Агрегат 90% вытягивается лёгкими классами — без разбивки не принимать.",
         "",
-        "3. Коммерческий трек (честно)",
-        "SSOT организаций: 28 (.local/commercial-ops/; не в GH)",
-        "Обязательство к сверке: ≥15 касаний; ≥20 орг. с вериф. контактом",
-        "(не обещать 30 ЛПР / 20 касаний без запаса)",
-        "Сейчас исходящие: 0 / 0 / 0 — телефон первый, почта параллельно",
+        "4. Exp B покрытие (не точность) — Киров ≠ Мордовия",
+        "Киров КР n=24: из коробки 0%; условно 42% = 17п.п. norm + 25п.п. комплект",
+        "Мордовия АР n=12: 17% из коробки (хрупко: ~8,3п.п./строка)",
+        "Мордовия ВК n=16: 25% из коробки; условно 50%; вне обл. 13%;",
+        "  RT-003 федеративная модель = 13п.п.",
+        "Тренд 0→17→25%. Смета: RT-001 протокол · RT-002=17 · RT-003=13.",
         "",
-        "Полный MD: docs/evidence/tracker-baseline-2026-08-07.md",
-        "Пакет: docs/quality/TRACKER_MEETING_PACK_2026_08_07.md",
-        "Opening: docs/quality/TRACKER_FRIDAY_OPENING_2026_08_07.md",    ],
+        "MD: docs/evidence/baseline-2026-08.md",
+        "Exp B: docs/evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md",
+    ],
 ]
 
 
@@ -79,16 +78,17 @@ def main() -> None:
     for lines in PAGES:
         page = doc.new_page(width=595, height=842)
         tw = pymupdf.TextWriter(page.rect)
-        y = 52.0
+        y = 48.0
         for line in lines:
-            tw.append((40, y), line, font=font, fontsize=10)
-            y += 14.0
+            tw.append((36, y), line, font=font, fontsize=9.5)
+            y += 13.0
         tw.write_text(page)
 
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    doc.save(OUT)
+    OUT_PRIMARY.parent.mkdir(parents=True, exist_ok=True)
+    doc.save(OUT_PRIMARY)
+    doc.save(OUT_ALIAS)
     doc.close()
-    print(f"wrote {OUT} bytes={OUT.stat().st_size} font={fontfile}")
+    print(f"wrote {OUT_PRIMARY} and alias {OUT_ALIAS.name} bytes={OUT_PRIMARY.stat().st_size}")
 
 
 if __name__ == "__main__":
