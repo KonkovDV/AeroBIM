@@ -1,8 +1,8 @@
 ---
 title: "Task 0 — deep repository audit (no-customer-data scenario)"
 date: 2026-08-05
-head: "c8fe19f+"
-claim_boundary: "Engineering inventory only. Checkpoint NO_GO. Not product accuracy. Task 3 partially closed A10."
+head: "fa08f20"
+claim_boundary: "Engineering inventory only. Checkpoint NO_GO. Not product accuracy. Superseded for mentor brief by docs/architecture/ARCHITECTURE_*_2026_08*."
 ports_delta: "0 (audit only)"
 adapters_delta: "0"
 tokens_delta: "0"
