@@ -72,9 +72,11 @@ BCF-лестница T0–T4, coverage/provenance) — ни один из чет
 публично такого не показывает; (3) открытый openBIM-стек (IFC 2x3/4/4x3 + IDS
 1.0 + BCF 2.1/3.0) без vendor lock-in.
 
-Три честные слабости: (1) нет native DWG и human-level CV — WAIVE и
-AI Project Control атакуют именно здесь; (2) нет ни одной customer-метрики —
-NormaChecker давит трекшном; (3) MEP system-aware clash не поставлен (RT-003).
+Три честные слабости: (1) нет native DWG и human-level CV — peer-класс
+«DWG/CV-first» атакует именно здесь; (2) нет ни одной customer-метрики —
+peer-класс «field-pilot traction» давит трекшном; (3) MEP system-aware clash
+не поставлен (RT-003). Имена участников задачи №7 в публичном репо не
+публикуем (Claims Lock / kitchen → `.local`).
 
 ---
 
@@ -904,7 +906,7 @@ protocol; REPRODUCIBILITY; ADR-001/002; threat model; KNOWN_BUGS
 Оговорка: данные о конкурентах — из их публичных заявлений; их числа НЕ
 проверены независимо и на веру не принимаются (симметрично нашему принципу).
 
-| Возможность | AeroBIM | AIDOX | WAIVE | AI Project Control | NormaChecker | Доказательство AeroBIM | Риск заявления конкурента |
+| Возможность | AeroBIM | Peer A (zone/OCR) | Peer B (DWG/CV) | Peer C (RF cloud stack) | Peer D (field pilots) | Доказательство AeroBIM | Риск заявления peer |
 |---|---|---|---|---|---|---|---|
 | DWG | нет (честно MISSING) | заявляет | заявляет (сильно) | заявляет | n/a | honesty never OK | лицензия CAD-stack (ODA/Teigha) |
 | DXF | partial (ezdxf optional) | ? | заявляет | ? | n/a | фикстуры TEXT/MTEXT | unit ambiguity |
@@ -927,7 +929,7 @@ protocol; REPRODUCIBILITY; ADR-001/002; threat model; KNOWN_BUGS
 | CDE | not verified | ? | нет | ? | ? | STATUS.json пуст | «CDE-ready» без import-proof |
 | HITL | state machine + KPI | ? | ? | ? | ? | tests | модель ответственности |
 
-Geometry core — честный конкурентный P2-ответ WAIVE: детерминированные
+Geometry core — честный конкурентный P2-ответ peer-классу «DWG/CV-first»: детерминированные
 измерения со статусами доверия. **Но это не DWG/DXF ingestion** — парсер
 остаётся отдельным адаптером за портом (P2, лицензия).
 
@@ -937,8 +939,8 @@ Geometry core — честный конкурентный P2-ответ WAIVE: �
 среди четырёх конкурентов; (3) открытый openBIM-стек + воспроизводимость
 (FAIR, frozen tags, hashed locks).
 
-**Три честные слабости:** (1) нет DWG и human-level CV (ось атаки WAIVE /
-AI Project Control); (2) ноль customer-метрик и трекшна (ось NormaChecker);
+**Три честные слабости:** (1) нет DWG и human-level CV (ось peer «DWG/CV-first»);
+(2) ноль customer-метрик и трекшна (ось peer «field-pilot traction»);
 (3) MEP system-aware не поставлен.
 
 **Закрыть до КТ#2:** representative-пак SLA с манифестом (ТР-502);
