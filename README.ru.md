@@ -5,34 +5,39 @@
 [![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-**AeroBIM** — открытый ассистент критериев приёмки для openBIM-комплектов: помогает эксперту найти расхождения между BIM-моделью, чертежами, ТЗ и правилами **до** стройки, с provenance каждой находки и детерминированным Shared-gate.
 
-### Проблема
+**AeroBIM** — открытый ассистент критериев приёмки для openBIM-комплектов: помогает эксперту найти расхождения между BIM-моделью, чертежами, ТЗ и правилами **до** стройки.
 
-Одна и та же величина живёт в модели, на листе PDF, в ТЗ и в таблице площадей. Файлы по отдельности выглядят корректно; ошибка всплывает при сопоставлении — часто уже на площадке.
+## Задача с примером
 
-### Что система делает
+На листе PDF в ведомости площадей — одно число, в IFC у стены с тем же GUID — другое. Файлы по отдельности «зелёные»; ошибка видна только при сопоставлении. AeroBIM поднимает находку с provenance до листа и до GUID, оставляет вердикт эксперту и не подписывает Shared→Published.
 
-Сопоставляет IFC / IDS, чертежи и тексты требований; показывает источники; формирует проект замечания; оставляет решение эксперту. Не заменяет специалиста и не авторизует Shared→Published.
+## Что уже работает
 
-### Что уже работает (репозиторий / fixtures)
+Project-package analyze; IFC / IDS / cross-doc; детерминированный Shared-gate `summary.passed` (fail-closed); provenance; структурный BCF ZIP; HITL; Docker offline-bundle; CI. Карта и таблица возможностей — в разделе **Техническая глубина**. Метрики LOC/тестов — [runtime baseline](docs/evidence/runtime-baseline-latest.json).
 
-Project-package analyze; IFC/IDS/cross-doc; Shared-gate `summary.passed` с fail-closed; provenance; BCF ZIP (структурный); HITL; Docker offline-bundle; CI. Подробная карта — ниже. Метрики LOC/тестов — [runtime baseline](docs/evidence/runtime-baseline-latest.json).
+## Где применимо
 
-### Для жюри / партнёров
+Проверка комплекта до стройки: экспертиза / ГИП / контроль качества документации; стык модели, чертежей и требований. Не замена СОД и не полевой журнал дефектов. Контур «Самолёта» и пилотная рамка — [`docs/docs.md`](docs/docs.md) · [`docs/samolet.md`](docs/samolet.md).
 
-Верхний слой без внутреннего жаргона: [`docs/partners/NOVATOR_JURY_PACK_2026_08.md`](docs/partners/NOVATOR_JURY_PACK_2026_08.md) · меморандум [`docs/docs.md`](docs/docs.md) · Red Team [`docs/quality/RED_TEAM_JURY_PACK_2026_08_04.md`](docs/quality/RED_TEAM_JURY_PACK_2026_08_04.md).
+Материалы для жюри / трекера (без коммерческой кухни): [`docs/docs.md`](docs/docs.md) · [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) · критерии мышления жюри МИК (не подача «Новатор» 2026): [`docs/partners/NOVATOR_JURY_PACK_2026_08.md`](docs/partners/NOVATOR_JURY_PACK_2026_08.md).
 
-### Готовность к сдаче заказчику
+## Статус готовности
 
-> **Checkpoint: `NO_GO`** — это **внутренний** статус готовности к *подписанию у заказчика*, а не оценка «система не работает».  
-> Он снимается только корпусом данных и утверждёнными нормами заказчика, которые мы **принципиально не имитируем**.  
+> **Checkpoint: `NO_GO`** — внутренний статус готовности к *подписанию у заказчика*, **не** оценка «система не работает».  
+> По-русски: код и fixtures есть; **нет** утверждённого корпуса заказчика, норм-пакета и federated MEP-scope — без них нельзя честно снять checkpoint.  
 > Открыты: **RT-001** (точность на customer corpus), **RT-002** (норм-пак), **RT-003** (federated MEP) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
 > Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.  
 > SSOT: [Claims Lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) · [eng status авг 2026](docs/ENGINEERING_STATUS_2026_08.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md).  
 > Инженерная готовность выросла (WP-01…08 и др.) **без** закрытия customer-блокеров — Fixture GO ≠ Checkpoint GO.
 
-AeroBIM выполняет детерминированную проверку в логике Shared-gate (рамка ISO 19650: доказательства для состояния *Shared*, не контрактная авторизация *Published*). Независимый импорт в CDE и customer accuracy остаются **вне утверждений**, пока нет доказательств. Архитектура: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
+AeroBIM выполняет детерминированную проверку в логике Shared-gate (рамка ISO 19650: доказательства для *Shared*, не контрактная авторизация *Published*). Независимый импорт в CDE и customer accuracy — **вне утверждений**, пока нет доказательств. Архитектура: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
+
+## Техническая глубина
+
+### Проблема (развёрнуто)
+
+Одна и та же величина живёт в модели, на листе PDF, в ТЗ и в таблице площадей. Файлы по отдельности выглядят корректно; ошибка всплывает при сопоставлении — часто уже на площадке. Система сопоставляет IFC / IDS, чертежи и тексты требований; показывает источники; формирует проект замечания; оставляет решение эксперту.
 
 ## Карта статуса (честно)
 
@@ -219,6 +224,58 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 
 Ключевые env (фрагмент): `AEROBIM_PDF_BACKEND=pdfium` (default), `AEROBIM_MEP_AABB_FILTER=true` (optional AABB; всё ещё `geometry_verified=False`). Advisory LLM (**только development**, opt-in): `AEROBIM_LLM_ADVISORY_ENABLED` (+ устаревший алиас `AEROBIM_LLM_LOCAL_ENABLED`) + pinned `AEROBIM_LLM_MODEL_REVISION` **или** unversioned `gpt://…/model` без `/latest` + `AEROBIM_LLM_BUDGET_LEDGER` + лимиты `MAX_TOKENS_PER_RUN` / `MAX_TOKENS_PER_DAY`. На профилях `samolet_pilot` / `production` внешний advisory egress **запрещён** fail-closed. Полная таблица — [README.md](README.md) Configuration. Живой inventory: **48 Protocol ports / 67 adapter modules / 58 DI tokens**.
 
+<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->
+AEROBIM_ALLOW_ANONYMOUS_DEV
+AEROBIM_API_BEARER_TOKEN
+AEROBIM_CLASH_AFFECTS_PASS
+AEROBIM_CORS_ORIGINS
+AEROBIM_CROSS_DOC_SEVERITY
+AEROBIM_DB_URL
+AEROBIM_DEBUG
+AEROBIM_ENV
+AEROBIM_HOST
+AEROBIM_HYBRID_PROVIDER_CONFIG
+AEROBIM_LLM_429_RETRIES
+AEROBIM_LLM_ADVISORY_ENABLED
+AEROBIM_LLM_ADVISORY_MAX_ISSUES
+AEROBIM_LLM_ALLOWED_HOSTS
+AEROBIM_LLM_API_KEY
+AEROBIM_LLM_AUTH_SCHEME
+AEROBIM_LLM_BASE_URL
+AEROBIM_LLM_BUDGET_LEDGER
+AEROBIM_LLM_BUDGET_TZ
+AEROBIM_LLM_DATA_LOGGING_ENABLED
+AEROBIM_LLM_FOLDER_ID
+AEROBIM_LLM_LOCAL_ENABLED
+AEROBIM_LLM_MAX_COMPLETION_TOKENS
+AEROBIM_LLM_MAX_CONCURRENT
+AEROBIM_LLM_MAX_TOKENS_PER_CALL
+AEROBIM_LLM_MAX_TOKENS_PER_DAY
+AEROBIM_LLM_MAX_TOKENS_PER_RUN
+AEROBIM_LLM_MODEL
+AEROBIM_LLM_MODEL_REVISION
+AEROBIM_LLM_MODEL_SHA256
+AEROBIM_LLM_PROVIDER
+AEROBIM_LLM_RESPONSE_FORMAT_MODE
+AEROBIM_LLM_SEND_SEED
+AEROBIM_MAX_IFC_BYTES
+AEROBIM_MEP_AABB_FILTER
+AEROBIM_MEP_FEDERATED_SCOPE_PATH
+AEROBIM_PDF_BACKEND
+AEROBIM_PORT
+AEROBIM_REPORT_TTL_DAYS
+AEROBIM_REQUIRE_CLASH
+AEROBIM_REQUIRE_MEP_SYSTEM_CLASH
+AEROBIM_S3_ACCESS_KEY_ID
+AEROBIM_S3_BUCKET
+AEROBIM_S3_ENDPOINT_URL
+AEROBIM_S3_PREFIX
+AEROBIM_S3_REGION
+AEROBIM_S3_SECRET_ACCESS_KEY
+AEROBIM_SIGNOFF_PROFILE
+AEROBIM_STORAGE_DIR
+<!-- AEROBIM_DOCUMENTED_ENV:END -->
+
 ## Git-коммиты
 
 ```bash
@@ -228,7 +285,7 @@ powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: 
 
 <!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->
 <!-- regenerated by: python -m aerobim.tools.export_runtime_baseline -->
-Backend src ~55075 LOC; tests ~38896 LOC; 1867+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
+Backend src ~55350 LOC; tests ~39019 LOC; 1872+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
 <!-- AEROBIM_RUNTIME_BASELINE:END -->
 
 ## Стек
