@@ -51,12 +51,27 @@ class ExpBCompletenessDemonstratorTests(unittest.TestCase):
             msg=[i.rule_id for i in pairing.issues],
         )
 
-    def test_orphan_calc_in_inventory_does_not_imply_unjustified_calc_rule(self) -> None:
-        """KR #4: declaring calculation in inventory ≠ runtime «unjustified in PD» check."""
+    def test_kr4_unjustified_calc_in_pd_fires(self) -> None:
+        """KR #4 LOGIC_ABSENT closed: PD calculation without justification marker."""
+        inv = self.loader.load(PACKAGES / "residential-unjustified-calc-pd-inventory.json")
+        report = assess_package_completeness(inv)
+        rule_ids = {i.rule_id for i in report.issues}
+        self.assertIn("AEROBIM-PACKAGE-UNJUSTIFIED-CALCULATION", rule_ids)
+
+    def test_kr2_technical_spec_missing_floor_partition_topics_fires(self) -> None:
+        """KR #2 LOGIC_ABSENT closed: ТЧ present but floors/partitions topics absent."""
+        inv = self.loader.load(PACKAGES / "residential-tech-spec-missing-topics-inventory.json")
+        report = assess_package_completeness(inv)
+        rule_ids = {i.rule_id for i in report.issues}
+        self.assertIn("AEROBIM-PACKAGE-TECHNICAL-SPEC-MISSING-TOPIC", rule_ids)
+
+    def test_orphan_calc_on_missing_kzh_also_fires_unjustified(self) -> None:
+        """Same KR #4 rule applies when calc is declared on incomplete packages."""
         inv = self.loader.load(PACKAGES / "residential-missing-kzh-inventory.json")
         report = assess_package_completeness(inv)
         rule_ids = {i.rule_id for i in report.issues}
-        self.assertNotIn("AEROBIM-PACKAGE-UNJUSTIFIED-CALCULATION", rule_ids)
+        self.assertIn("AEROBIM-PACKAGE-UNJUSTIFIED-CALCULATION", rule_ids)
+        self.assertIn("AEROBIM-PACKAGE-MISSING-SECTION", rule_ids)
 
 
 if __name__ == "__main__":

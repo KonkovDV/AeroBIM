@@ -1,0 +1,117 @@
+{
+  "schema": "aerobim_package_inventory_v1",
+  "project_id": "SYNTHETIC-RESIDENTIAL-UNJUSTIFIED-CALC-PD",
+  "mandatory_pd_sections": ["PZ", "AR", "KZH"],
+  "require_pd_rd_pairing": true,
+  "require_specifications": true,
+  "require_schedules": true,
+  "require_sheet_ciphers": true,
+  "check_technical_spec_floor_partition_topics": true,
+  "check_unjustified_pd_calculations": true,
+  "artifacts": [
+    {
+      "artifact_id": "pd-pz",
+      "role": "pd_section",
+      "discipline": "PZ",
+      "section_code": "PZ",
+      "stage": "PD",
+      "format": "pdf",
+      "cipher": "SYN-ПЗ-001"
+    },
+    {
+      "artifact_id": "rd-pz",
+      "role": "rd_section",
+      "discipline": "PZ",
+      "section_code": "PZ",
+      "stage": "RD",
+      "format": "pdf",
+      "cipher": "SYN-ПЗ-РД-001"
+    },
+    {
+      "artifact_id": "pd-ar",
+      "role": "pd_section",
+      "discipline": "AR",
+      "section_code": "AR",
+      "stage": "PD",
+      "format": "json",
+      "cipher": "SYN-АР-PD-001"
+    },
+    {
+      "artifact_id": "rd-ar",
+      "role": "rd_section",
+      "discipline": "AR",
+      "section_code": "AR",
+      "stage": "RD",
+      "format": "json",
+      "cipher": "SYN-АР-RD-001"
+    },
+    {
+      "artifact_id": "pd-kzh",
+      "role": "pd_section",
+      "discipline": "KZH",
+      "section_code": "KZH",
+      "stage": "PD",
+      "format": "json",
+      "cipher": "SYN-КЖ-PD-001"
+    },
+    {
+      "artifact_id": "rd-kzh",
+      "role": "rd_section",
+      "discipline": "KZH",
+      "section_code": "KZH",
+      "stage": "RD",
+      "format": "json",
+      "cipher": "SYN-КЖ-RD-001"
+    },
+    {
+      "artifact_id": "model-ifc",
+      "role": "ifc",
+      "format": "ifc",
+      "path_hint": "samples/ifc/public/"
+    },
+    {
+      "artifact_id": "spec-ar",
+      "role": "specification",
+      "discipline": "AR",
+      "format": "pdf",
+      "cipher": "SYN-АР-SPEC-001"
+    },
+    {
+      "artifact_id": "schedule-doors",
+      "role": "schedule",
+      "discipline": "AR",
+      "format": "xlsx",
+      "cipher": "SYN-АР-VED-001"
+    },
+    {
+      "artifact_id": "sheet-ar-01",
+      "role": "drawing",
+      "discipline": "AR",
+      "format": "pdf",
+      "cipher": "SYN-АР-SH-001",
+      "sheet_id": "AR-001",
+      "has_specification": true,
+      "has_schedule": true
+    },
+    {
+      "artifact_id": "tech-spec-ok",
+      "role": "technical_spec",
+      "discipline": "AR",
+      "stage": "PD",
+      "format": "pdf",
+      "cipher": "SYN-ТЧ-001",
+      "content_topics": ["полы", "перегородки", "general"]
+    },
+    {
+      "artifact_id": "calc-pd-unjustified",
+      "role": "calculation",
+      "discipline": "KZH",
+      "stage": "PD",
+      "format": "pdf",
+      "cipher": "SYN-КЖ-CALC-001",
+      "has_justification": false,
+      "path_hint": "intentional: calc in PD without justification (KR #4)"
+    }
+  ],
+  "claim_boundary": "Synthetic fixture for KR #4 LOGIC_ABSENT demonstrator. Inventory has_justification gate only; not engineering calc correctness."
+}

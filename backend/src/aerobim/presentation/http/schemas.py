@@ -30,7 +30,14 @@ class DrawingPayload(BaseModel):
 
 class AnalyzeProjectPackageRequest(BaseModel):
     request_id: str | None = None
-    ifc_path: str = Field(max_length=2048)
+    ifc_path: str | None = Field(
+        default=None,
+        max_length=2048,
+        description=(
+            "IFC model path. Omit for document/partial package mode "
+            "(drawings, ТЧ, calculations, package inventory). IFC capabilities SKIPPED."
+        ),
+    )
     requirement_text: str = Field(default="", max_length=50_000)
     requirement_path: str | None = Field(default=None, max_length=2048)
     ids_path: str | None = Field(default=None, max_length=2048)

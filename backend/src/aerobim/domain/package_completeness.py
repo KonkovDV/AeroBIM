@@ -93,6 +93,8 @@ class PackageArtifact:
     path_hint: str | None = None
     has_specification: bool = False
     has_schedule: bool = False
+    content_topics: tuple[str, ...] = ()
+    has_justification: bool = False
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any]) -> PackageArtifact:
@@ -113,6 +115,10 @@ class PackageArtifact:
             role = role_raw  # type: ignore[assignment]
         else:
             role = "other"
+        topics_raw = payload.get("content_topics") or payload.get("topics") or ()
+        topics: list[str] = []
+        if isinstance(topics_raw, Sequence) and not isinstance(topics_raw, (str, bytes)):
+            topics = [str(item).strip() for item in topics_raw if str(item).strip()]
         return cls(
             artifact_id=str(payload.get("artifact_id") or payload.get("id") or "").strip()
             or "unnamed",
@@ -126,6 +132,8 @@ class PackageArtifact:
             path_hint=_optional_str(payload.get("path_hint") or payload.get("path")),
             has_specification=bool(payload.get("has_specification", False)),
             has_schedule=bool(payload.get("has_schedule", False)),
+            content_topics=tuple(topics),
+            has_justification=bool(payload.get("has_justification", False)),
         )
 
 
@@ -141,6 +149,8 @@ class PackageInventory:
     require_specifications: bool = True
     require_schedules: bool = True
     require_sheet_ciphers: bool = True
+    check_technical_spec_floor_partition_topics: bool = True
+    check_unjustified_pd_calculations: bool = True
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any]) -> PackageInventory:
@@ -170,6 +180,12 @@ class PackageInventory:
             require_specifications=bool(payload.get("require_specifications", True)),
             require_schedules=bool(payload.get("require_schedules", True)),
             require_sheet_ciphers=bool(payload.get("require_sheet_ciphers", True)),
+            check_technical_spec_floor_partition_topics=bool(
+                payload.get("check_technical_spec_floor_partition_topics", True)
+            ),
+            check_unjustified_pd_calculations=bool(
+                payload.get("check_unjustified_pd_calculations", True)
+            ),
         )
 
 
@@ -364,6 +380,12 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
             )
         )
 
+    if inventory.check_technical_spec_floor_partition_topics:
+        issues.extend(_technical_spec_floor_partition_issues(inventory.artifacts))
+
+    if inventory.check_unjustified_pd_calculations:
+        issues.extend(_unjustified_pd_calculation_issues(inventory.artifacts))
+
     # Stable ordering for determinism.
     issues.sort(key=lambda item: (item.rule_id, item.target_ref or "", item.message))
     return PackageCompletenessReport(
@@ -372,6 +394,99 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
         unpaired_pd_sections=tuple(unpaired_pd),
         unsupported_formats=tuple(sorted(set(unsupported))),
     )
+
+
+_FLOOR_TOPIC_ALIASES = frozenset(
+    {
+        "floors",
+        "floor",
+        "floor_finishes",
+        "flooring",
+        "полы",
+        "пол",
+        "конструкции_полов",
+    }
+)
+_PARTITION_TOPIC_ALIASES = frozenset(
+    {
+        "partitions",
+        "partition",
+        "walls_partitions",
+        "перегородки",
+        "перегородка",
+        "внутренние_перегородки",
+    }
+)
+
+
+def _normalize_topic(raw: str) -> str:
+    return raw.strip().casefold().replace("-", "_").replace(" ", "_")
+
+
+def _technical_spec_floor_partition_issues(
+    artifacts: Sequence[PackageArtifact],
+) -> list[ValidationIssue]:
+    """KR #2: declared ТЧ must cover floors + partitions topics (inventory-level)."""
+    specs = [a for a in artifacts if a.role == "technical_spec"]
+    if not specs:
+        return []
+    union = {_normalize_topic(t) for a in specs for t in a.content_topics}
+    missing: list[str] = []
+    if not (union & _FLOOR_TOPIC_ALIASES):
+        missing.append("floors/полы")
+    if not (union & _PARTITION_TOPIC_ALIASES):
+        missing.append("partitions/перегородки")
+    if not missing:
+        return []
+    ids = ", ".join(a.artifact_id for a in specs)
+    return [
+        _issue(
+            rule_id="AEROBIM-PACKAGE-TECHNICAL-SPEC-MISSING-TOPIC",
+            severity=Severity.ERROR,
+            message=(
+                f"Technical specification artifact(s) [{ids}] omit declared topics "
+                f"{', '.join(missing)}; inventory-level content gate only "
+                f"(not OCR of ТЧ); {CLAIM_BOUNDARY}"
+            ),
+            source_id=specs[0].artifact_id,
+            target_ref="technical_spec",
+        )
+    ]
+
+
+def _is_pd_stage(stage: str | None) -> bool:
+    if not stage:
+        return False
+    folded = stage.strip().casefold()
+    return folded in {"pd", "пд", "project_documentation", "проектная"}
+
+
+def _unjustified_pd_calculation_issues(
+    artifacts: Sequence[PackageArtifact],
+) -> list[ValidationIssue]:
+    """KR #4: calculation declared in PD without justification marker."""
+    issues: list[ValidationIssue] = []
+    for artifact in artifacts:
+        if artifact.role != "calculation":
+            continue
+        if not _is_pd_stage(artifact.stage):
+            continue
+        if artifact.has_justification:
+            continue
+        issues.append(
+            _issue(
+                rule_id="AEROBIM-PACKAGE-UNJUSTIFIED-CALCULATION",
+                severity=Severity.ERROR,
+                message=(
+                    f"Calculation artifact {artifact.artifact_id!r} is declared in PD "
+                    "without has_justification=true; unjustified calc-in-PD inventory "
+                    f"gate only (not engineering correctness); {CLAIM_BOUNDARY}"
+                ),
+                source_id=artifact.artifact_id,
+                target_ref=artifact.discipline or artifact.section_code or "calculation",
+            )
+        )
+    return issues
 
 
 def _section_disciplines(

@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.1"
+version: "1.6.2"
 last_updated: "2026-08-05"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 # Engineering Status — 2026-08-05
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-05 · **v1.6.1** — env set gate (symdiff), live `architecture_inventory` in CI, ADR-002 **accepted**, Task 3 root-cause (#2/#4 LOGIC_ABSENT; #9/#10 MISSING_ATTRIBUTE); deferred rename `kimi_vlm_drawing_pipeline.py` → neutral on next touch  
+**last_updated:** 2026-08-05 · **v1.6.2** — KR ≈16.7% (#2+#4 LOGIC closed); Task 2 document-only analyze (`ifc_path` optional); env set gate + architecture_inventory CI; ADR-002 accepted; deferred `kimi_vlm_*` rename  
 **Checkpoint:** **`NO_GO`** — RT-001 / RT-002 / RT-003 remain OPEN  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
@@ -24,7 +24,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
-| **P4 Experiment B (KR→AR→VK) CLOSED** | KR **≈8.3**/≈33/33/25 after Task 3 (#3+#24 detectable); residual completeness: #2/#4 LOGIC_ABSENT ≈8.3pp backlog; #9/#10 MISSING_ATTRIBUTE ≈8.3pp условно; AR 17/25/42/17 (n=12); VK 25/50/13/13; RT-002≈17pp KR; RT-003=13pp VK | Friday speech synced; OV deferred KT#3; PNST 909 pin owner |
+| **P4 Experiment B (KR→AR→VK) CLOSED** | KR **≈16.7**/≈25/33/25 after #2+#4 LOGIC closed (#9/#10 MISSING_ATTRIBUTE ≈8.3pp); AR 17/25/42/17 (n=12); VK 25/50/13/13; RT-002≈17pp KR; RT-003=13pp VK | Friday speech synced; OV deferred KT#3; PNST 909 pin owner |
+| **Task 2 partial package** | `ifc_path` optional on analyze; document-only mode SKIPPED/NOT_VERIFIED for IFC engines; fail-closed if clash/MEP required | Not Checkpoint GO; not product accuracy |
 | **P4 Experiment A (Minstry reuse inverse)** | **NOT_RUN** — no legal pack in `.local/` | Blocked on owner pack |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
 | **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |

@@ -147,8 +147,31 @@ def build_project_package_request(
         storage_dir=storage_dir,
         principal=principal,
     )
-    ifc_resolved = resolve_path(payload.ifc_path, principal=principal)
-    enforce_ifc_size(ifc_resolved)
+    ifc_resolved: Path | None = None
+    if payload.ifc_path and str(payload.ifc_path).strip():
+        ifc_resolved = resolve_path(payload.ifc_path, principal=principal)
+        enforce_ifc_size(ifc_resolved)
+    else:
+        has_docs = bool(
+            payload.requirement_text
+            or payload.requirement_path
+            or payload.technical_spec_text
+            or payload.technical_spec_path
+            or payload.calculation_text
+            or payload.calculation_path
+            or payload.drawings
+            or payload.pd_section_path
+            or payload.rd_section_path
+            or payload.ids_path
+            or payload.norm_rule_pack_paths
+        )
+        # package_inventory is not on this schema yet — document inputs required.
+        if not has_docs:
+            raise ValueError(
+                "ifc_path omitted: provide at least one document input "
+                "(requirement, technical_spec, calculation, drawings, sections, ids, "
+                "or norm packs) for partial/document-only analyze"
+            )
     return ValidationRequest(
         request_id=payload.request_id or uuid4().hex,
         ifc_path=ifc_resolved,

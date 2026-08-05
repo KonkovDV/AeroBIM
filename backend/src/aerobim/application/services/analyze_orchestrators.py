@@ -194,6 +194,9 @@ class DeterministicValidationOrchestrator:
         ingested: IngestionBundle,
     ) -> DeterministicBundle:
         requirements = ingested.requirements
+        if request.ifc_path is None:
+            return self._run_document_only(request, ingested)
+
         schema_issues = list(self._host._collect_schema_issues(request.ifc_path))
         schema_request_id, schema_remote_issues = self._host._submit_bsi_validation(
             request.ifc_path
@@ -304,6 +307,144 @@ class DeterministicValidationOrchestrator:
             package_completeness_issues=tuple(package_completeness_issues),
         )
 
+    def _run_document_only(
+        self,
+        request: ValidationRequest,
+        ingested: IngestionBundle,
+    ) -> DeterministicBundle:
+        """Partial package: no IFC — skip model-bound engines; keep document checks."""
+        skip = CapabilityStatus(
+            CapabilityState.SKIPPED,
+            "ifc_path omitted — document/partial package mode; IFC engines not evaluated",
+        )
+        if getattr(self._host, "_require_clash", False):
+            clash_capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                "clash required but ifc_path omitted (document-only analyze)",
+            )
+            clash_issues: tuple[ValidationIssue, ...] = (
+                ValidationIssue(
+                    rule_id="AEROBIM-CLASH-CAPABILITY",
+                    severity=Severity.ERROR,
+                    message="Clash detection required but ifc_path was omitted",
+                    category=FindingCategory.SPATIAL,
+                    source_id="clash",
+                ),
+            )
+        else:
+            clash_capability = skip
+            clash_issues = ()
+        if getattr(self._host, "_require_mep_system_clash", False):
+            mep_capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                "MEP system clash required but ifc_path omitted",
+            )
+        else:
+            # Honesty surface: mep_system_clash must not use SKIPPED.
+            mep_capability = CapabilityStatus(
+                CapabilityState.NOT_VERIFIED,
+                "ifc_path omitted — MEP system graph not evaluated (document-only)",
+            )
+        requirements = ingested.requirements
+        ids_audit_issues = tuple(self._host._collect_ids_audit_issues(request))
+        # IDS against IFC cannot run without a model.
+        if request.ids_path is not None:
+            ids_issues = (
+                ValidationIssue(
+                    rule_id="AEROBIM-IDS-CAPABILITY",
+                    severity=Severity.ERROR,
+                    message="IDS validation requested but ifc_path was omitted",
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="ids",
+                ),
+            )
+        else:
+            ids_issues = ()
+        drawing_issues = tuple(
+            self._host._validate_drawing_annotations(requirements, ingested.drawing_annotations)
+        )
+        sheet_identity_issues = tuple(
+            [
+                *detect_missing_drawing_sheet_identity(request.drawing_sources),
+                *detect_annotation_sheet_identity_drift(
+                    request.drawing_sources,
+                    ingested.drawing_annotations,
+                ),
+            ]
+        )
+        cross_document_issues = tuple(
+            self._host._detect_cross_document_contradictions(requirements)
+        )
+        revision_merge_issues = tuple(
+            detect_revision_merge_conflicts(self._host._collect_identity_sources(request))
+        )
+        section_pairing_issues, section_pairing_capability = (
+            self._host._collect_section_pairing_issues(request)
+        )
+        reinforcement_mode = request.reinforcement_provenance_mode
+        if getattr(self._host, "_hard_signoff_profile", False):
+            reinforcement_mode = "enforced"
+        reinforcement_provenance_issues = tuple(
+            self._host._apply_openrebar_provenance_policy(
+                self._host._external_evidence_verifier.verify(request),
+                reinforcement_mode,
+            )
+        )
+        load_issues, calculation_match = self._host._run_load_evidence(request)
+        logic_issues = self._host._run_logic_consistency(request)
+        signature_capability, signature_issues = self._host._run_signature_audit(request)
+        package_completeness_capability, package_completeness_issues = (
+            self._host._run_package_completeness(request)
+        )
+        engine_issues = tuple(
+            [
+                *ids_audit_issues,
+                *ids_issues,
+                *drawing_issues,
+                *sheet_identity_issues,
+                *cross_document_issues,
+                *revision_merge_issues,
+                *section_pairing_issues,
+                *reinforcement_provenance_issues,
+                *clash_issues,
+                *ingested.norm_pack_issues,
+                *ingested.cad_issues,
+                *load_issues,
+                *logic_issues,
+                *ingested.region_hitl_issues,
+                *signature_issues,
+                *package_completeness_issues,
+            ]
+        )
+        return DeterministicBundle(
+            schema_issues=(),
+            schema_request_id=None,
+            ids_audit_issues=ids_audit_issues,
+            ids_issues=ids_issues,
+            ifc_issues=(),
+            drawing_issues=drawing_issues,
+            cross_document_issues=cross_document_issues,
+            revision_merge_issues=revision_merge_issues,
+            section_pairing_issues=tuple(section_pairing_issues),
+            section_pairing_capability=section_pairing_capability,
+            reinforcement_provenance_issues=reinforcement_provenance_issues,
+            clash_results=(),
+            clash_capability=clash_capability,
+            clash_issues=clash_issues,
+            mep_capability=mep_capability,
+            mep_issues=(),
+            quantity_issues=(),
+            quantity_capability=skip,
+            load_issues=tuple(load_issues),
+            calculation_match=calculation_match,
+            logic_issues=tuple(logic_issues),
+            engine_issues=engine_issues,
+            signature_capability=signature_capability,
+            signature_issues=tuple(signature_issues),
+            package_completeness_capability=package_completeness_capability,
+            package_completeness_issues=tuple(package_completeness_issues),
+        )
+
 
 class AdvisoryOrchestrator:
     """AI_ADVISORY — agent + DeterminismGate; never writes summary.passed alone.
@@ -343,7 +484,10 @@ class AdvisoryOrchestrator:
         # TZ row 19: local IFC space inventory candidates (no egress). Always eligible —
         # HybridRouteGate only suppresses external/agent advisory, not local inventory.
         space_candidates: tuple = ()
-        if getattr(self._host, "_space_efficiency_advisory_enabled", False):
+        if (
+            getattr(self._host, "_space_efficiency_advisory_enabled", False)
+            and request.ifc_path is not None
+        ):
             from aerobim.domain.space_efficiency_advisory import (
                 build_space_efficiency_candidates,
             )
@@ -605,6 +749,20 @@ class EvidenceAssembler:
             qualified_signature=deterministic.signature_capability,
             package_completeness=deterministic.package_completeness_capability,
         )
+        if request.ifc_path is None:
+            skip_ifc = CapabilityStatus(
+                CapabilityState.SKIPPED,
+                "ifc_path omitted — document/partial package mode",
+            )
+            capabilities = replace(
+                capabilities,
+                ifc_validation=skip_ifc,
+                ifc_schema=skip_ifc,
+                unit_scale=CapabilityStatus(
+                    CapabilityState.NOT_VERIFIED,
+                    "ifc_path omitted — IFC unit scale not probed",
+                ),
+            )
         capabilities = replace(capabilities, llm_advisory=llm_advisory_capability)
         enforce_honesty_capabilities(capabilities)
         policy = build_signoff_policy(

@@ -515,7 +515,8 @@ class ValidationSummary:
 @dataclass(frozen=True)
 class ValidationRequest:
     request_id: str
-    ifc_path: Path
+    ifc_path: Path | None
+    """IFC model path. ``None`` = document/partial package mode (drawings/ТЧ/calc/inventory)."""
     requirement_source: RequirementSource
     technical_spec_source: RequirementSource | None = None
     calculation_source: RequirementSource | None = None
@@ -553,7 +554,7 @@ class ValidationRequest:
 class ValidationReport:
     report_id: str
     request_id: str
-    ifc_path: Path
+    ifc_path: Path | None
     created_at: str
     requirements: tuple[ParsedRequirement, ...]
     issues: tuple[ValidationIssue, ...]
