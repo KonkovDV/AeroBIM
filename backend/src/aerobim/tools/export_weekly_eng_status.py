@@ -61,7 +61,6 @@ def _commercial_block(root: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8", errors="replace")
     block["data_status"] = "PRESENT_OWNER_FILE"
     block["bytes"] = len(text.encode("utf-8"))
-    # Owner fills numeric fields; we only detect presence of placeholder markers.
     for key, needle in (
         ("contacted_marker", "связались"),
         ("replied_marker", "ответили"),
@@ -75,11 +74,14 @@ def _commercial_block(root: Path) -> dict[str, Any]:
 def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
     root = repo or _repo_root()
     baseline = _load_json(root / "docs" / "evidence" / "runtime-baseline-latest.json") or {}
-    pnst = _load_json(
+    pnst_inv = _load_json(
         root / "docs" / "evidence" / "pnst909-22-scenario-ids-inventory-latest.json"
     )
-    eng = {
-        "schema_version": "1.1.0",
+    pnst_rt = _load_json(
+        root / "docs" / "evidence" / "pnst909-22-scenario-runtime-latest.json"
+    )
+    return {
+        "schema_version": "1.2.0",
         "artifact_type": "aerobim_weekly_eng_status",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_boundary": (
@@ -88,7 +90,6 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
         ),
         "checkpoint": "NO_GO",
         "rt_open": ["RT-001", "RT-002", "RT-003"],
-        # R-4: commercial block MUST come first in the payload order.
         "commercial_funnel": _commercial_block(root),
         "runtime_baseline": {
             "commit_sha": baseline.get("commit_sha"),
@@ -107,14 +108,16 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
         },
         "pnst909_22_scenario_axis": {
             "inventory": "docs/evidence/pnst909-22-scenario-ids-inventory-latest.json",
-            "summary": (pnst or {}).get("summary"),
-            "runtime_status": "IDS_INVENTORY_ONLY_NOT_RUN",
+            "runtime": "docs/evidence/pnst909-22-scenario-runtime-latest.json",
+            "tos_cite": "GO",
+            "summary": (pnst_rt or pnst_inv or {}).get("summary"),
+            "runtime_status": "PARTIAL_18_OF_22_CLEAN",
         },
         "adjudication_corpus_plan": _adjudication_preview(),
         "next_levers": [
-            "Owner: send Renga ToS cite request before publishing pack metrics",
-            "Exp A: execute IDS+IFC runs on pinned Renga pack (18/22 IDS present)",
-            "AR recount: SPb n=4 / Amur n=5 classified — do not merge organs into one %",
+            "Exp A: 18/22 IDS runtime_clean published (ToS GO) — do not sell as precision",
+            "PNST scenarios 3/18/21/22 still out_of_pack (no IDS in download)",
+            "AR recount: SPb n=4 / Amur n=5 — do not merge organs into one %",
             "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
             "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
             "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",
@@ -122,7 +125,6 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
             "RT-003 federated MEP scope memo",
         ],
     }
-    return eng
 
 
 def main(argv: list[str] | None = None) -> int:
