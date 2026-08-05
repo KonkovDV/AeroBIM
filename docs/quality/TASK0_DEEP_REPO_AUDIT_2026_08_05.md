@@ -1,8 +1,8 @@
 ---
 title: "Task 0 — deep repository audit (no-customer-data scenario)"
 date: 2026-08-05
-head: "95822a6"
-claim_boundary: "Engineering inventory only. Checkpoint NO_GO. Not product accuracy."
+head: "c8fe19f+"
+claim_boundary: "Engineering inventory only. Checkpoint NO_GO. Not product accuracy. Task 3 partially closed A10."
 ports_delta: "0 (audit only)"
 adapters_delta: "0"
 tokens_delta: "0"
@@ -15,13 +15,13 @@ loc_delta: "+0/-0 (report file only if committed later)"
 **Метод:** живой подсчёт LOC + три параллельных read-only аудита (архитектура / capabilities / tests+dead+RT).  
 **Правило шага:** не чинить. Этот документ — опора для задач 1–7.
 
-Живой inventory vs README.ru «48 / 67 / 58»:
+Живой inventory vs README (на момент аудита; README синхронизирован на недельном RT):
 
-| Метрика | README claim | Live @ `95822a6` |
+| Метрика | Было в README | Live |
 |---|---:|---:|
-| Public domain `Protocol` ports | 48 | **46** (−2; +3 private duck-types = 49 class hits) |
-| Adapter modules (`infrastructure/adapters/*.py` excl. `__init__`) | 67 | **71** (+4) |
-| DI tokens (`Tokens` attrs) | 58 | **58** |
+| Public domain `Protocol` ports | 48 | **46** |
+| Adapter modules | 67 | **71** |
+| DI tokens (`Tokens` attrs) | 58 | **59** |
 
 ---
 

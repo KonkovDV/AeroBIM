@@ -24,7 +24,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
-| **P4 Experiment B (KR→AR→VK) CLOSED** | KR 0/42/33/25; AR 17/25/42/17 (n=12); VK 25/50/13/13 after OOS recheck (#11→OOS); RT-002=17pp KR; RT-003=13pp VK | Friday pack locked; OV deferred KT#3; fuller AR after Fri |
+| **P4 Experiment B (KR→AR→VK) CLOSED** | KR **≈8.3**/≈33/33/25 after Task 3 (#3+#24 detectable on open/synthetic); AR 17/25/42/17 (n=12); VK 25/50/13/13; RT-002≈17pp KR; RT-003=13pp VK (open not confirmed) | Friday speech synced `c8fe19f`; OV deferred KT#3; PNST 909 pin owner |
 | **P4 Experiment A (Minstry reuse inverse)** | **NOT_RUN** — no legal pack in `.local/` | Blocked on owner pack |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
 | **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |
