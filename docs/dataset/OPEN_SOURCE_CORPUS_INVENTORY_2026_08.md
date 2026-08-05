@@ -13,10 +13,10 @@ Rule: same as BSI — verbatim NOTICE + pin, or link-only until license GO. No d
 
 | Источник | Что даёт | Чего не даёт |
 |---|---|---|
-| **Комплект МКД по ПНСТ 909-2024** (IFC по разделам + IDS, RU номенклатура) | Регресс IDS/свойств; российская номенклатура; межраздельный состав | Экспертную разметку TP/FP; publishable accuracy |
-| **Реестр ПД повторного применения Минстроя** | Эталон «человек сказал — замечаний, блокирующих положительное заключение, нет» **если** есть легальный комплект | Свободный скачиваемый IFC/PDF без лицензии; сейчас Experiment A = **NOT_RUN** |
-| **Закупочная документация на проектирование** | Язык требований заказчика; критерии приёмки для демо-скрипта | Размеченный корпус ошибок; не замена эталону экспертизы |
-| **Перечни типовых замечаний госэкспертиз** | Человеческий каталог классов ошибок (Experiment B: Киров КР, n=24) | Precision/recall; покрытие ≠ обнаружение на конкретном комплекте |
+| **Комплект МКД по ПНСТ 909-2024** (Renga, IFC+IDS, 22 сценария) | Регресс IDS/свойств; RU номенклатура; **Exp A + вторая ось покрытия** | Экспертную разметку TP/FP; publishable accuracy; ToS ≠ OSS license |
+| **Реестр ПД повторного применения Минстроя** | — | **DEAD для файлов** (ФЗ 275-ФЗ; ЕГРЗ). Exp A перенесён на Renga |
+| **Закупочная документация (zakupki.gov.ru)** | Язык ТЗ / разделы ПД / сметы в открытых архивах | IFC+IDS эталон; размеченный корпус |
+| **Перечни типовых замечаний госэкспертиз** | Человеческий каталог (Exp B: Киров КР; Мордовия АР/ВК; **план:** СПб АР + Амур) | Precision/recall |
 | buildingSMART IDS TestCases (n=290) | Регресс IDS CC BY-ND | Product accuracy; customer norms |
 | IFC-Bench v2 (pin) | Открытый QA-слой моделей | Customer TP/FP; не vendor GPLv3 в MIT tree |
 
@@ -29,9 +29,10 @@ Rule: same as BSI — verbatim NOTICE + pin, or link-only until license GO. No d
 | AeroBIM fixtures / Level-B | Yes | Fixture / MIT | In-tree | **READY** | Synthetic floor for Sprint 2 PDF |
 | **IFC-Bench v2** | Pin only | QA **CC BY 4.0**; models per-file (exclude GPLv3 from MIT tree) | `.local/ifc-bench-v2` + [`ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | **PINNED** | Measured 1026 QA rows; smoke 7/1026 scored @ 1.0 (`docs/evidence/ifc-bench-v2-smoke-latest.json`) |
 | Типовые замечания КР (Киров) | Evidence doc + `.local` PDF | Public PDF | Exp B evidence | **USED** | Coverage map only |
-| ПНСТ 909-2024 МКД | No (link/inventory) | Standard / publisher ToS | EXTERNAL | **PRIORITY** | IFC+IDS when licensed copy available |
-| Реестр Минстроя ПД повторного применения | No | License with rightsholder | `.local/minstroi-reuse/` when obtained | **BLOCKED** | Exp A NOT_RUN |
+| ПНСТ 909-2024 МКД (Renga) | No (link/inventory) | Publisher ToS («ознакомительные») | `.local/renga-pnst909/` | **PRIORITY / Exp A** | IFC+IDS; pin before metrics publish |
+| Реестр Минстроя ПД повторного применения | No | N/A (no download) | — | **DEAD_CHANNEL** | Exp A → Renga |
 | Закупки на проектирование | No | Public procurement | link_only | **INVENTORY** | Language of pain / acceptance |
+| СПб / Амур типовые ошибки АР | No | Public HTML | `.local/evidence-sources/` | **PLANNED** | Exp B AR recount |
 | KAAN residential IFC+plans | No | **No open primary** — [`KAAN_LICENSE_HONESTY_2026_08_04.md`](KAAN_LICENSE_HONESTY_2026_08_04.md) | pin_or_link_only | **PARTIAL** | Do not vendor |
 | OSArch open data directory | No | varies | link_only | **PARTIAL** | MEP rehearsal; ≠ RT-003 close |
 | BatchPlan / ResBIM | No | BatchPlan **MIT** + pythonocc — [`BATCHPLAN_PROBE_2026_08_04.md`](BATCHPLAN_PROBE_2026_08_04.md) | tool pin | **PARTIAL** | Preferred synthetic pipeline; not wired |

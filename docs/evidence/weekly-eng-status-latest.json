@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "artifact_type": "aerobim_weekly_eng_status",
-  "generated_at": "2026-08-05T14:52:20.691129+00:00",
+  "generated_at": "2026-08-05T14:58:43.585694+00:00",
   "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint NO_GO until RT-001/002/003. Fixture != customer accuracy.",
   "checkpoint": "NO_GO",
   "rt_open": [
@@ -120,9 +120,11 @@
     "note": "Do not publish contacted/replied/demo zeros or invented counts to GH"
   },
   "next_levers": [
+    "Owner: pin Renga PNST 909 pack to .local/renga-pnst909/ (Exp A + 22-scenario axis)",
+    "Exp B AR recount: SPb primary + Amur (reduce 8.3pp/row fragility)",
+    "Norm-pack edition: GOST R 21.101-2026 supersedes 2020 (in force since 2026-04-01)",
     "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
     "RT-002 customer-approved norm pack",
-    "RT-003 federated MEP scope memo",
-    "Owner: PNST 909 pin; off-disk .local backup"
+    "RT-003 federated MEP scope memo"
   ]
 }
