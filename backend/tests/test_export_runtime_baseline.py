@@ -8,7 +8,9 @@ import unittest
 from pathlib import Path
 
 from aerobim.tools.export_runtime_baseline import (
+    _check_architecture_inventory,
     _check_documented_env_sets,
+    _live_architecture_inventory,
     completeness_errors,
     export_runtime_baseline,
     parse_pytest_junit,
@@ -106,6 +108,12 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertIn("claim_boundary", baseline)
         self.assertIn("documented_env_vars", baseline)
         self.assertIsInstance(baseline["documented_env_vars"], list)
+        self.assertIn("architecture_inventory", baseline)
+        inv = baseline["architecture_inventory"]
+        assert isinstance(inv, dict)
+        for key in ("public_domain_protocols", "adapter_modules", "di_tokens"):
+            self.assertIsInstance(inv[key], int)
+            self.assertGreater(inv[key], 0)
         dumped = json.dumps(baseline)
         self.assertIn("UNKNOWN", dumped)
 
@@ -132,6 +140,60 @@ class DocumentedEnvSetTests(unittest.TestCase):
             (repo / "README.ru.md").write_text(readme, encoding="utf-8")
             errors = _check_documented_env_sets(repo)
             self.assertEqual(errors, [])
+
+    def test_equal_counts_different_names_fail_with_symdiff(self) -> None:
+        """Count equality must not pass — sets must match (symmetric difference)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "docs" / "evidence").mkdir(parents=True)
+            en = (
+                "## Configuration\n\n"
+                "| Variable | Default | Description |\n"
+                "|---|---|---|\n"
+                "| `AEROBIM_HOST` | `127.0.0.1` | Bind |\n"
+                "| `AEROBIM_PORT` | `8080` | Port |\n"
+                "\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->\n"
+                "AEROBIM_HOST\n"
+                "AEROBIM_PORT\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:END -->\n"
+                "\n## Other\n"
+            )
+            ru = (
+                "## Configuration\n\n"
+                "| Variable | Default | Description |\n"
+                "|---|---|---|\n"
+                "| `AEROBIM_HOST` | `127.0.0.1` | Bind |\n"
+                "| `AEROBIM_DEBUG` | `false` | Debug |\n"
+                "\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->\n"
+                "AEROBIM_HOST\n"
+                "AEROBIM_DEBUG\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:END -->\n"
+                "\n## Other\n"
+            )
+            (repo / "README.md").write_text(en, encoding="utf-8")
+            (repo / "README.ru.md").write_text(ru, encoding="utf-8")
+            errors = _check_documented_env_sets(repo)
+            self.assertTrue(errors, "equal cardinality with different names must fail")
+            blob = " ".join(errors)
+            self.assertIn("symmetric_difference", blob)
+            self.assertIn("AEROBIM_PORT", blob)
+            self.assertIn("AEROBIM_DEBUG", blob)
+
+
+class ArchitectureInventoryTests(unittest.TestCase):
+    def test_live_inventory_matches_readme_needles(self) -> None:
+        backend = Path(__file__).resolve().parents[1]
+        repo = backend.parent
+        live = _live_architecture_inventory(repo)
+        self.assertEqual(live["public_domain_protocols"], 46)
+        self.assertEqual(live["adapter_modules"], 71)
+        self.assertEqual(live["di_tokens"], 59)
+        # Without architecture_inventory in a temp artifact, check still validates README.
+        errors = _check_architecture_inventory(repo)
+        # Committed artifact must include live inventory after this gate lands.
+        self.assertEqual(errors, [])
 
 
 if __name__ == "__main__":

@@ -12,9 +12,9 @@
     "tests_passed": 1855,
     "tests_skipped": 8,
     "tests_failed": 0,
-    "source_loc": 55351,
-    "test_loc": 39082,
-    "test_functions": 1876
+    "source_loc": 55481,
+    "test_loc": 39144,
+    "test_functions": 1878
   },
   "frontend": {
     "tests_passed": 29,
@@ -37,12 +37,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 55351,
-    "backend_test_loc": 39082,
-    "backend_test_functions": 1876,
+    "backend_src_loc": 55481,
+    "backend_test_loc": 39144,
+    "backend_test_functions": 1878,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~55351 LOC; tests ~39082 LOC; 1876+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "Backend src ~55481 LOC; tests ~39144 LOC; 1878+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -93,5 +93,10 @@
     "AEROBIM_S3_SECRET_ACCESS_KEY",
     "AEROBIM_SIGNOFF_PROFILE",
     "AEROBIM_STORAGE_DIR"
-  ]
+  ],
+  "architecture_inventory": {
+    "public_domain_protocols": 46,
+    "adapter_modules": 71,
+    "di_tokens": 59
+  }
 }

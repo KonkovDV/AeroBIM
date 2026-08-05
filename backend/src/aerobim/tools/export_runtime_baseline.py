@@ -330,7 +330,61 @@ def export_runtime_baseline(
             f"(fixture corpus; not product accuracy)"
         ),
         "documented_env_vars": _configuration_env_names(repo / "README.md"),
+        "architecture_inventory": _live_architecture_inventory(repo),
     }
+
+
+def _live_architecture_inventory(repo: Path) -> dict[str, int]:
+    """Count public domain Protocols, adapter modules, and DI tokens from source."""
+    domain = repo / "backend" / "src" / "aerobim" / "domain"
+    adapters_root = repo / "backend" / "src" / "aerobim" / "infrastructure" / "adapters"
+    tokens_path = repo / "backend" / "src" / "aerobim" / "core" / "di" / "tokens.py"
+    private = {"_GuidLookup", "_HitlEventLike", "_ReportLike"}
+    ports: set[str] = set()
+    if domain.exists():
+        for path in domain.rglob("*.py"):
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            for match in re.finditer(r"^class\s+(\w+)\s*\([^)]*Protocol", text, re.M):
+                name = match.group(1)
+                if name not in private:
+                    ports.add(name)
+    adapters = 0
+    if adapters_root.exists():
+        adapters = sum(
+            1 for path in adapters_root.glob("*.py") if path.name != "__init__.py"
+        )
+    tokens = 0
+    if tokens_path.exists():
+        tokens = len(
+            set(
+                re.findall(
+                    r"^\s+([A-Z][A-Z0-9_]+)\s*=",
+                    tokens_path.read_text(encoding="utf-8"),
+                    re.M,
+                )
+            )
+        )
+    return {
+        "public_domain_protocols": len(ports),
+        "adapter_modules": adapters,
+        "di_tokens": tokens,
+    }
+
+
+def _all_aerobim_names_in_file(path: Path) -> list[str]:
+    if not path.exists():
+        return []
+    return sorted(set(re.findall(r"\bAEROBIM_[A-Z][A-Z0-9_]*\b", path.read_text(encoding="utf-8"))))
+
+
+def _symdiff_message(left_label: str, right_label: str, left: set[str], right: set[str]) -> str:
+    only_left = sorted(left - right)
+    only_right = sorted(right - left)
+    return (
+        f"{left_label} vs {right_label} AEROBIM_* set mismatch "
+        f"(symmetric_difference): only_in_{left_label}={only_left[:12]} "
+        f"only_in_{right_label}={only_right[:12]}"
+    )
 
 
 def _configuration_env_names(readme_path: Path) -> list[str]:
@@ -369,7 +423,7 @@ def _documented_env_marker_names(text: str) -> list[str] | None:
 
 
 def _check_documented_env_sets(repo: Path) -> list[str]:
-    """Fail if EN/RU README documented-env markers disagree with Configuration SSOT / baseline."""
+    """Fail on set inequality (symmetric difference), never on count equality alone."""
     errors: list[str] = []
     expected = _configuration_env_names(repo / "README.md")
     if not expected:
@@ -389,13 +443,16 @@ def _check_documented_env_sets(repo: Path) -> list[str]:
             else:
                 artifact_set = {str(x) for x in artifact_names}
                 if artifact_set != set(expected):
-                    only_cfg = sorted(set(expected) - artifact_set)
-                    only_art = sorted(artifact_set - set(expected))
                     errors.append(
-                        "documented_env_vars drift vs README.md Configuration: "
-                        f"only_in_config={only_cfg[:8]} only_in_artifact={only_art[:8]}"
+                        _symdiff_message(
+                            "config",
+                            "artifact",
+                            set(expected),
+                            artifact_set,
+                        )
                     )
 
+    marker_sets: dict[str, set[str]] = {}
     for name in ("README.md", "README.ru.md"):
         path = repo / name
         if not path.exists():
@@ -409,13 +466,84 @@ def _check_documented_env_sets(repo: Path) -> list[str]:
                 "(must list the same AEROBIM_* set as README.md Configuration)"
             )
             continue
+        marker_sets[name] = set(names)
         if set(names) != set(expected):
-            only_marker = sorted(set(names) - set(expected))
-            only_cfg = sorted(set(expected) - set(names))
             errors.append(
-                f"{name} documented-env set ≠ README.md Configuration: "
-                f"only_in_marker={only_marker[:8]} only_in_config={only_cfg[:8]}"
+                _symdiff_message(name, "README.md_Configuration", set(names), set(expected))
             )
+
+    if "README.md" in marker_sets and "README.ru.md" in marker_sets:
+        if marker_sets["README.md"] != marker_sets["README.ru.md"]:
+            errors.append(
+                _symdiff_message(
+                    "README.md_marker",
+                    "README.ru.md_marker",
+                    marker_sets["README.md"],
+                    marker_sets["README.ru.md"],
+                )
+            )
+
+    # Full-file unique names must also match (catches prose drift beyond the marker block).
+    en_all = set(_all_aerobim_names_in_file(repo / "README.md")) - _ENV_MARKER_NOISE
+    ru_all = set(_all_aerobim_names_in_file(repo / "README.ru.md")) - _ENV_MARKER_NOISE
+    if en_all and ru_all and en_all != ru_all:
+        errors.append(_symdiff_message("README.md_all", "README.ru.md_all", en_all, ru_all))
+
+    return errors
+
+
+def _check_architecture_inventory(repo: Path) -> list[str]:
+    """README must publish the live protocol/adapter/token counts from source."""
+    live = _live_architecture_inventory(repo)
+    errors: list[str] = []
+    artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
+    if artifact.exists():
+        try:
+            stored = json.loads(artifact.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            stored = None
+            errors.append("Invalid runtime-baseline-latest.json while checking architecture_inventory")
+        if isinstance(stored, dict):
+            art = stored.get("architecture_inventory")
+            if not isinstance(art, dict):
+                errors.append(
+                    "runtime-baseline-latest.json missing architecture_inventory "
+                    f"(live={live}; regenerate via export_runtime_baseline)"
+                )
+            else:
+                for key, value in live.items():
+                    if art.get(key) != value:
+                        errors.append(
+                            f"architecture_inventory.{key} drift: "
+                            f"artifact={art.get(key)!r} live={value}"
+                        )
+
+    needles = {
+        "public_domain_protocols": (
+            f"{live['public_domain_protocols']} domain Protocol",
+            f"{live['public_domain_protocols']} Protocol ports",
+        ),
+        "adapter_modules": (
+            f"{live['adapter_modules']} infrastructure adapter",
+            f"{live['adapter_modules']} adapter modules",
+        ),
+        "di_tokens": (
+            f"{live['di_tokens']} DI token",
+            f"{live['di_tokens']} DI tokens",
+        ),
+    }
+    for readme_name in ("README.md", "README.ru.md"):
+        path = repo / readme_name
+        if not path.exists():
+            errors.append(f"Missing {readme_name}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for key, variants in needles.items():
+            if not any(v in text for v in variants):
+                errors.append(
+                    f"{readme_name} missing live architecture_inventory.{key}="
+                    f"{live[key]} (expected one of {list(variants)})"
+                )
     return errors
 
 
@@ -456,6 +584,7 @@ def _check_readme_markers(repo: Path) -> list[str]:
                 "docs/evidence/runtime-baseline-latest.json readme_snippet (WP-08)"
             )
     errors.extend(_check_documented_env_sets(repo))
+    errors.extend(_check_architecture_inventory(repo))
     return errors
 
 
@@ -507,7 +636,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help=(
             "Fail if README.md / README.ru.md lack AEROBIM_RUNTIME_BASELINE markers, "
-            "documented-env name sets disagree with Configuration / baseline, "
+            "documented-env name *sets* disagree (symmetric difference, not counts), "
+            "live architecture_inventory (ports/adapters/tokens) missing from README/artifact, "
             "or committed artifact drifts beyond ±50 on loc/test_functions"
         ),
     )

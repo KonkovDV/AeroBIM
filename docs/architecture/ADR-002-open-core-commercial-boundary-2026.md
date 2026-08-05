@@ -1,11 +1,18 @@
 ---
 title: "ADR-002 — Open-core commercial boundary"
-status: proposed
+status: accepted
 date: 2026-07-21
-last_updated: "2026-07-21"
+last_updated: "2026-08-05"
+accepted_on: "2026-08-05"
 ---
 
 # ADR-002: Open-core commercial boundary
+
+## Status
+
+**Accepted** (2026-08-05) for TechLab packaging and investor/customer Q&A:
+the open-core commercial boundary is defined; LICENSE remains MIT until a
+separate license ADR. This does **not** claim delivered commercial features.
 
 ## Context
 
