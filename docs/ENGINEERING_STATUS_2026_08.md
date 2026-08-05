@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 # Engineering Status — 2026-08-05
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-05 · **v1.6.3** — Exp A → Renga ПНСТ 909; Minstry registry dead; AR recount plan SPb+Amur; **ГОСТ Р 21.101-2026** in force (replaces 2020); PNST 22-scenario axis planned  
+**last_updated:** 2026-08-05 · **v1.6.5** — N-1/N-2 GOST 21.101 (marks OS/ODD/MBT; edition config; п.8.2.4 GUID); PNST IDS inventory 18/22; AR SPb+Amur recount; DWG A/B/C memo; weekly commercial-first  
 **Checkpoint:** **`NO_GO`** — RT-001 / RT-002 / RT-003 remain OPEN  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
@@ -28,8 +28,9 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 | **Task 2 partial package** | `ifc_path` optional on analyze; document-only mode SKIPPED/NOT_VERIFIED for IFC engines; fail-closed if clash/MEP required | Not Checkpoint GO; not product accuracy |
 | **Task 7 weekly eng status** | `python -m aerobim.tools.export_weekly_eng_status` → `docs/evidence/weekly-eng-status-latest.json`; funnel = OWNER_ONLY | Never invent commercial counts |
 | **Task 4 adjudication plan** | `plan_adjudication_corpus` → recommended_n=111 for interim 0.60 @ expected 0.75 | Sizes labeling only; not precision |
-| **External P1/P4 research** | Renga PRIMARY; Exp A protocol rewritten; SPb+Amur AR recount planned; GOST R **21.101-2026** risk flagged | Owner pack pin + AR dump |
-| **P4 Experiment A (Renga ПНСТ 909)** | **NOT_RUN** — pack not pinned; Minstry reuse registry = **DEAD_CHANNEL** (ФЗ 275-ФЗ) | Owner: download Renga → `.local/renga-pnst909/`; ToS before publish |
+| **External P1/P4 research** | Renga pin + IDS inventory 18/22; SPb/Amur AR recount; GOST **21.101-2026** п.8.2.4 GUID | Owner: Renga ToS cite; DWG A/B/C |
+| **P4 Experiment A (Renga ПНСТ 909)** | Pack **PINNED**; IDS inventory **DONE**; **IFC runtime NOT_RUN** | Stub + `.local/`; ToS before publish metrics |
+| **Regulatory 21.101** | Marks OS/ODD/MBT; edition config; N-2 clause **8.2.4** | No full-compliance claim |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
 | **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |
 | **LOCAL→ADVISORY alias** | Boot WARNING; remove after 2026-09-21 | Docs must not reintroduce LOCAL-only |

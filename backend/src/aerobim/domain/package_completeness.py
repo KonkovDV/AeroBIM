@@ -18,6 +18,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from aerobim.domain.documentation_standard_edition import select_documentation_standard_edition
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -151,6 +152,10 @@ class PackageInventory:
     require_sheet_ciphers: bool = True
     check_technical_spec_floor_partition_topics: bool = True
     check_unjustified_pd_calculations: bool = True
+    # Label only — which GOST R 21.101 edition this inventory run claims to follow.
+    documentation_standard_edition: str | None = None
+    package_developed_on: str | None = None
+    documentation_standard_selection_source: str | None = None
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any]) -> PackageInventory:
@@ -171,6 +176,16 @@ class PackageInventory:
         else:
             mandatory = DEFAULT_RESIDENTIAL_MANDATORY_PD
 
+        explicit_edition = _optional_str(payload.get("documentation_standard_edition"))
+        developed_on = _optional_str(payload.get("package_developed_on"))
+        rule_raw = payload.get("documentation_standard_selection_rule")
+        rule = rule_raw if isinstance(rule_raw, Mapping) else None
+        edition, source = select_documentation_standard_edition(
+            package_developed_on=developed_on,
+            explicit_edition=explicit_edition,
+            rule=rule,
+        )
+
         return cls(
             schema=str(payload.get("schema") or "").strip() or INVENTORY_SCHEMA_V1,
             project_id=str(payload.get("project_id") or "").strip() or "unknown",
@@ -186,6 +201,9 @@ class PackageInventory:
             check_unjustified_pd_calculations=bool(
                 payload.get("check_unjustified_pd_calculations", True)
             ),
+            documentation_standard_edition=edition,
+            package_developed_on=developed_on,
+            documentation_standard_selection_source=source if edition else None,
         )
 
 
@@ -197,6 +215,7 @@ class PackageCompletenessReport:
     missing_pd_sections: tuple[str, ...] = ()
     unpaired_pd_sections: tuple[str, ...] = ()
     unsupported_formats: tuple[str, ...] = ()
+    documentation_standard_edition: str | None = None
     claim_boundary: str = CLAIM_BOUNDARY
 
     def to_capability_status(self) -> CapabilityStatus:
@@ -223,6 +242,13 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
     missing_pd: list[str] = []
     unpaired_pd: list[str] = []
     unsupported: list[str] = []
+    claim = CLAIM_BOUNDARY
+    if inventory.documentation_standard_edition:
+        claim = (
+            f"{CLAIM_BOUNDARY} documentation_standard_edition="
+            f"{inventory.documentation_standard_edition}"
+            f" (source={inventory.documentation_standard_selection_source or 'n/a'})."
+        )
 
     if inventory.schema != INVENTORY_SCHEMA_V1:
         issues.append(
@@ -393,6 +419,8 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
         missing_pd_sections=tuple(missing_pd),
         unpaired_pd_sections=tuple(unpaired_pd),
         unsupported_formats=tuple(sorted(set(unsupported))),
+        documentation_standard_edition=inventory.documentation_standard_edition,
+        claim_boundary=claim,
     )
 
 

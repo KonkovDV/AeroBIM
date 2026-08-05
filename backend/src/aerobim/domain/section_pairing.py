@@ -152,9 +152,24 @@ _DISCIPLINE_DEFS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
         "Low-current / communications (СС)",
         ("ss", "сс", "low-current", "слаботочные", "communications"),
     ),
-    ("PS", "Fire alarm (ПС/ОПС)", ("ps", "пс", "ops", "опс", "fire-alarm")),
+    ("PS", "Fire alarm (ПС)", ("ps", "пс", "ops", "опс", "fire-alarm", "пожарная-сигнализация")),
+    (
+        "OS",
+        "Security alarm (ОС)",
+        ("os", "ос", "security-alarm", "охранная-сигнализация", "охранная"),
+    ),
     ("TKH", "Technology (ТХ)", ("tkh", "тх", "tx", "technology", "технология")),
     ("PB", "Fire safety (ПБ)", ("pb", "пб", "fire-safety", "пожарная-безопасность", "мпб")),
+    (
+        "ODD",
+        "Traffic organization (ОДД)",
+        ("odd", "одд", "traffic", "organization-of-traffic", "организация-дорожного-движения"),
+    ),
+    (
+        "MBT",
+        "Site improvement / landscaping (МБТ)",
+        ("mbt", "мбт", "landscaping", "благоустройство", "мероприятия-по-благоустройству"),
+    ),
     ("OOS", "Environmental protection (ООС)", ("oos", "оос", "environmental", "экология")),
     ("PZ", "Explanatory note (ПЗ)", ("pz", "пз", "explanatory-note")),
 )
