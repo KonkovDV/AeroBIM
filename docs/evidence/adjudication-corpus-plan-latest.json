@@ -1,0 +1,68 @@
+{
+  "artifact_type": "adjudication_corpus_plan",
+  "schema_version": "1.0.0",
+  "inputs": {
+    "threshold": 0.6,
+    "expected_precision": 0.75,
+    "alpha": 0.05,
+    "target_power": 0.8,
+    "ci_half_width": 0.08
+  },
+  "power_design": {
+    "n": 62,
+    "p0": 0.6,
+    "p_true": 0.75,
+    "alpha": 0.05,
+    "critical_k": 44,
+    "attained_alpha": 0.049228,
+    "power": 0.812117,
+    "method": "exact_binomial_one_sided"
+  },
+  "wilson_width_n": 111,
+  "recommended_n": 111,
+  "recommended_n_note": "max(power design, CI-width design); exact binomial power is sawtoothed in n — nearby n are equivalent design points",
+  "decision_preview_at_recommended_n": [
+    {
+      "planning_rate": 0.6,
+      "successes": 67,
+      "trials": 111,
+      "alpha": 0.05,
+      "point": 0.603604,
+      "lower": 0.510609,
+      "upper": 0.689667,
+      "half_width": 0.089529,
+      "method": "wilson_score",
+      "demonstrates_threshold": false
+    },
+    {
+      "planning_rate": 0.75,
+      "successes": 83,
+      "trials": 111,
+      "alpha": 0.05,
+      "point": 0.747748,
+      "lower": 0.659598,
+      "upper": 0.819323,
+      "half_width": 0.079863,
+      "method": "wilson_score",
+      "demonstrates_threshold": true
+    },
+    {
+      "planning_rate": 0.85,
+      "successes": 94,
+      "trials": 111,
+      "alpha": 0.05,
+      "point": 0.846847,
+      "lower": 0.768364,
+      "upper": 0.902125,
+      "half_width": 0.06688,
+      "method": "wilson_score",
+      "demonstrates_threshold": true
+    }
+  ],
+  "anchors": [
+    "Wilson 1927 score interval",
+    "Brown, Cai & DasGupta 2001 (Statistical Science) — Wilson recommended",
+    "Miller 2024 arXiv 2411.00640 — power analysis for evals"
+  ],
+  "claim_boundary": "sizes the dual-expert labeling effort only; predicts no precision value; fixture evidence never becomes customer evidence (RT-001)"
+}
