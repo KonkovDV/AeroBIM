@@ -17,6 +17,10 @@ class WeeklyEngStatusTests(unittest.TestCase):
         self.assertEqual(payload["commercial_funnel"]["status"], "OWNER_ONLY")
         self.assertIn("No invented commercial funnel", payload["claim_boundary"])
         self.assertAlmostEqual(payload["coverage_map"]["kr_detectable_share_approx"], 0.167)
+        # R-4: commercial key must appear before eng blocks in insertion order.
+        keys = list(payload.keys())
+        self.assertLess(keys.index("commercial_funnel"), keys.index("runtime_baseline"))
+        self.assertIn(payload["commercial_funnel"]["data_status"], {"MISSING", "PRESENT_OWNER_FILE"})
 
 
 if __name__ == "__main__":

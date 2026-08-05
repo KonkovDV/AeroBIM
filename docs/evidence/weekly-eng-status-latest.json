@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "artifact_type": "aerobim_weekly_eng_status",
-  "generated_at": "2026-08-05T14:58:43.585694+00:00",
+  "generated_at": "2026-08-05T15:53:22.975766+00:00",
   "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint NO_GO until RT-001/002/003. Fixture != customer accuracy.",
   "checkpoint": "NO_GO",
   "rt_open": [
@@ -9,6 +9,20 @@
     "RT-002",
     "RT-003"
   ],
+  "commercial_funnel": {
+    "status": "OWNER_ONLY",
+    "path": ".local/commercial-ops/outreach-log.md",
+    "contacted": null,
+    "replied": null,
+    "demo_agreed": null,
+    "note": "Do not publish contacted/replied/demo zeros or invented counts to GH. If outreach-log absent, mark data_missing — never soft-pedal.",
+    "data_status": "PRESENT_OWNER_FILE",
+    "bytes": 1692,
+    "contacted_marker": false,
+    "replied_marker": false,
+    "demo_marker": false,
+    "print_as": "commercial block present (counts OWNER-filled only)"
+  },
   "runtime_baseline": {
     "commit_sha": "c8fe19fa344b116d88319a38fc1364c5fa0f350d",
     "schema_version": "1.2.1",
@@ -44,7 +58,31 @@
       "#9",
       "#10"
     ],
+    "ar_recount": "docs/evidence/EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_2026_08.md",
     "claim_level": "AUTHOR_CLAIM_coverage_map_not_precision"
+  },
+  "pnst909_22_scenario_axis": {
+    "inventory": "docs/evidence/pnst909-22-scenario-ids-inventory-latest.json",
+    "summary": {
+      "scenarios_total_pnst": 22,
+      "scenarios_with_ids": 18,
+      "scenarios_missing_ids": [
+        3,
+        18,
+        21,
+        22
+      ],
+      "ids_files_total": 45,
+      "runtime_executed": 0,
+      "coverage_class_counts": {
+        "ids_available": 18,
+        "out_of_pack": 4,
+        "fires": 0,
+        "conditional": 0,
+        "out_of_scope": 0
+      }
+    },
+    "runtime_status": "IDS_INVENTORY_ONLY_NOT_RUN"
   },
   "adjudication_corpus_plan": {
     "artifact_type": "adjudication_corpus_plan",
@@ -114,16 +152,13 @@
     ],
     "claim_boundary": "sizes the dual-expert labeling effort only; predicts no precision value; fixture evidence never becomes customer evidence (RT-001)"
   },
-  "commercial_funnel": {
-    "status": "OWNER_ONLY",
-    "path": ".local/commercial-ops/outreach-log.md",
-    "note": "Do not publish contacted/replied/demo zeros or invented counts to GH"
-  },
   "next_levers": [
-    "Owner: pin Renga PNST 909 pack to .local/renga-pnst909/ (Exp A + 22-scenario axis)",
-    "Exp B AR recount: SPb primary + Amur (reduce 8.3pp/row fragility)",
-    "Norm-pack edition: GOST R 21.101-2026 supersedes 2020 (in force since 2026-04-01)",
+    "Owner: send Renga ToS cite request before publishing pack metrics",
+    "Exp A: execute IDS+IFC runs on pinned Renga pack (18/22 IDS present)",
+    "AR recount: SPb n=4 / Amur n=5 classified — do not merge organs into one %",
+    "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
     "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
+    "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",
     "RT-002 customer-approved norm pack",
     "RT-003 federated MEP scope memo"
   ]

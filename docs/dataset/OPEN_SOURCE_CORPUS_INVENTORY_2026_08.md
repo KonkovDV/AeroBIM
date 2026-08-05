@@ -29,7 +29,7 @@ Rule: same as BSI — verbatim NOTICE + pin, or link-only until license GO. No d
 | AeroBIM fixtures / Level-B | Yes | Fixture / MIT | In-tree | **READY** | Synthetic floor for Sprint 2 PDF |
 | **IFC-Bench v2** | Pin only | QA **CC BY 4.0**; models per-file (exclude GPLv3 from MIT tree) | `.local/ifc-bench-v2` + [`ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | **PINNED** | Measured 1026 QA rows; smoke 7/1026 scored @ 1.0 (`docs/evidence/ifc-bench-v2-smoke-latest.json`) |
 | Типовые замечания КР (Киров) | Evidence doc + `.local` PDF | Public PDF | Exp B evidence | **USED** | Coverage map only |
-| ПНСТ 909-2024 МКД (Renga) | No (link/inventory) | Publisher ToS («ознакомительные») | `.local/renga-pnst909/` | **PRIORITY / Exp A** | IFC+IDS; pin before metrics publish |
+| ПНСТ 909-2024 МКД (Renga) | Local pin only (no GH vendor) | Publisher ToS («ознакомительные») | `.local/renga-pnst909/` (45 IDS / 198 IFC) | **PACK_PINNED / Exp A** | Stub [`RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](RENGA_PNST909_LOCAL_PIN_2026_08_05.md); ToS before metrics publish |
 | Реестр Минстроя ПД повторного применения | No | N/A (no download) | — | **DEAD_CHANNEL** | Exp A → Renga |
 | Закупки на проектирование | No | Public procurement | link_only | **INVENTORY** | Language of pain / acceptance |
 | СПб / Амур типовые ошибки АР | No | Public HTML | `.local/evidence-sources/` | **PLANNED** | Exp B AR recount |

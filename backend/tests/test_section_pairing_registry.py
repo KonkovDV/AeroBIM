@@ -32,9 +32,17 @@ class DisciplineRegistryTests(unittest.TestCase):
 
     def test_registry_covers_multiple_disciplines(self) -> None:
         codes = known_discipline_codes()
-        for expected in ("AR", "KZH", "KM", "OV", "VK", "EOM"):
+        for expected in ("AR", "KZH", "KM", "OV", "VK", "EOM", "PS", "OS", "PB", "ODD", "MBT"):
             self.assertIn(expected, codes)
         self.assertGreaterEqual(len(codes), 10)
+
+    def test_gost_2026_marks_resolve(self) -> None:
+        self.assertEqual(canonicalize_discipline("ОС").code, "OS")
+        self.assertEqual(canonicalize_discipline("охранная сигнализация").code, "OS")
+        self.assertEqual(canonicalize_discipline("ОДД").code, "ODD")
+        self.assertEqual(canonicalize_discipline("МБТ").code, "MBT")
+        self.assertEqual(canonicalize_discipline("ПС").code, "PS")
+        self.assertEqual(canonicalize_discipline("ПБ").code, "PB")
 
 
 class CanonicalKeyRegistryTests(unittest.TestCase):

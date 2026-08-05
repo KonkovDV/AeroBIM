@@ -1,8 +1,8 @@
 ---
 title: "Эксперимент А — прогон на комплекте Renga ПНСТ 909-2024"
 date: 2026-08-05
-status: NOT_RUN
-claim_level: blocked_pending_pack_pin
+status: PACK_PINNED_LOCAL
+claim_level: pack_ready_run_pending
 supersedes: EXPERIMENT_A_MINSTROI_INVERSE_2026_08.md
 claim_boundary: >-
   AUTHOR_CLAIM frequency of findings on a standards-oriented open pack.
@@ -11,7 +11,8 @@ claim_boundary: >-
 
 # Эксперимент А — перенос на комплект Renga (ПНСТ 909)
 
-**Статус:** `NOT_RUN` — комплект в репо **не вендорен**; нужен пин владельца в `.local/` с проверкой ToS.
+**Статус пакета:** `PACK_PINNED_LOCAL` (2026-08-05) — бинарники в `.local/renga-pnst909/` (gitignored); публичный stub [`../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md).  
+**Статус прогона:** всё ещё **NOT_RUN** (IDS/частотная карта не снята).
 
 ## Почему не реестр Минстроя
 
@@ -36,7 +37,9 @@ claim_boundary: >-
 | Содержание | IFC сводные/пораздельные; IDS; скрипты зон; сопоставления экспорта |
 | База | Реальный проект ООО «КС-Девелопмент», Ростов-на-Дону (по заявлению издателя) |
 | Правовой статус | «В ознакомительных целях»; «может свободно дорабатываться» — **≠** открытая лицензия. Внутренние измерения — да; публикация результатов / vendoring в GH — **уточнить у Renga** |
-| Хранение | `.local/renga-pnst909/<pin>/` — не в GH без ToS GO |
+| Хранение | `.local/renga-pnst909/pack/` + `pack/IFC/` — не в GH без ToS GO |
+| Пин (локально) | `NOTICE.md` + `PIN.json`: **45** IDS, **198** IFC (~9.6 GB), inventory SHA-256 в stub |
+| ToS | Ознакомительные цели ≠ OSS. Черновик запроса: `.local/renga-pnst909/OWNER_TOS_REQUEST_DRAFT.md` |
 
 ## Дополнительный массовый канал (не Exp A)
 
@@ -50,8 +53,13 @@ claim_boundary: >-
 4. Каждая находка: верная / вне области / ложная — **AUTHOR_CLAIM** only.  
 5. Не публиковать как customer precision; не смешивать с Exp B % без оговорки метода.
 
-## ТРЕБУЕТСЯ ОТ ВЛАДЕЛЬЦА
+## Сделано / осталось
 
-1. Скачать комплект Renga ПНСТ 909 → `.local/renga-pnst909/`.  
-2. Письменно зафиксировать: можно ли ссылаться / публиковать метрики (запрос в Renga при необходимости).  
-3. Не коммитить бинарники в GH без явного ToS GO.
+| Шаг | Статус |
+|---|---|
+| Скачать комплект → `.local/renga-pnst909/` | **DONE** |
+| NOTICE/ToS + PIN + inventory | **DONE** (локально) |
+| Публичный stub без бинарников | **DONE** → `docs/dataset/RENGA_PNST909_LOCAL_PIN_…` |
+| Запрос в Renga на цитирование метрик | **OWNER** — черновик готов |
+| Прогон Exp A (частота / IDS) | **NOT_RUN** |
+| Не коммитить бинарники в GH | **инвариант** |

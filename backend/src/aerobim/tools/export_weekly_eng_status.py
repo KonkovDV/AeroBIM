@@ -39,11 +39,47 @@ def _adjudication_preview() -> dict[str, Any] | None:
     return plan_adjudication_corpus()
 
 
+def _commercial_block(root: Path) -> dict[str, Any]:
+    """Commercial funnel first. Never invent numbers; empty = explicit zero/missing."""
+
+    path = root / ".local" / "commercial-ops" / "outreach-log.md"
+    block: dict[str, Any] = {
+        "status": "OWNER_ONLY",
+        "path": ".local/commercial-ops/outreach-log.md",
+        "contacted": None,
+        "replied": None,
+        "demo_agreed": None,
+        "note": (
+            "Do not publish contacted/replied/demo zeros or invented counts to GH. "
+            "If outreach-log absent, mark data_missing — never soft-pedal."
+        ),
+    }
+    if not path.is_file():
+        block["data_status"] = "MISSING"
+        block["print_as"] = "commercial block empty — no outreach-log.md"
+        return block
+    text = path.read_text(encoding="utf-8", errors="replace")
+    block["data_status"] = "PRESENT_OWNER_FILE"
+    block["bytes"] = len(text.encode("utf-8"))
+    # Owner fills numeric fields; we only detect presence of placeholder markers.
+    for key, needle in (
+        ("contacted_marker", "связались"),
+        ("replied_marker", "ответили"),
+        ("demo_marker", "договорились о демо"),
+    ):
+        block[key] = needle in text.casefold()
+    block["print_as"] = "commercial block present (counts OWNER-filled only)"
+    return block
+
+
 def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
     root = repo or _repo_root()
     baseline = _load_json(root / "docs" / "evidence" / "runtime-baseline-latest.json") or {}
+    pnst = _load_json(
+        root / "docs" / "evidence" / "pnst909-22-scenario-ids-inventory-latest.json"
+    )
     eng = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "artifact_type": "aerobim_weekly_eng_status",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_boundary": (
@@ -52,6 +88,8 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
         ),
         "checkpoint": "NO_GO",
         "rt_open": ["RT-001", "RT-002", "RT-003"],
+        # R-4: commercial block MUST come first in the payload order.
+        "commercial_funnel": _commercial_block(root),
         "runtime_baseline": {
             "commit_sha": baseline.get("commit_sha"),
             "schema_version": baseline.get("schema_version"),
@@ -64,19 +102,22 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
             "kr_detectable_share_approx": 0.167,
             "kr_detectable_rows": ["#2", "#3", "#4", "#24"],
             "kr_missing_attribute_rows": ["#9", "#10"],
+            "ar_recount": "docs/evidence/EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_2026_08.md",
             "claim_level": "AUTHOR_CLAIM_coverage_map_not_precision",
         },
-        "adjudication_corpus_plan": _adjudication_preview(),
-        "commercial_funnel": {
-            "status": "OWNER_ONLY",
-            "path": ".local/commercial-ops/outreach-log.md",
-            "note": "Do not publish contacted/replied/demo zeros or invented counts to GH",
+        "pnst909_22_scenario_axis": {
+            "inventory": "docs/evidence/pnst909-22-scenario-ids-inventory-latest.json",
+            "summary": (pnst or {}).get("summary"),
+            "runtime_status": "IDS_INVENTORY_ONLY_NOT_RUN",
         },
+        "adjudication_corpus_plan": _adjudication_preview(),
         "next_levers": [
-            "Owner: pin Renga PNST 909 pack to .local/renga-pnst909/ (Exp A + 22-scenario axis)",
-            "Exp B AR recount: SPb primary + Amur (reduce 8.3pp/row fragility)",
-            "Norm-pack edition: GOST R 21.101-2026 supersedes 2020 (in force since 2026-04-01)",
+            "Owner: send Renga ToS cite request before publishing pack metrics",
+            "Exp A: execute IDS+IFC runs on pinned Renga pack (18/22 IDS present)",
+            "AR recount: SPb n=4 / Amur n=5 classified — do not merge organs into one %",
+            "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
             "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
+            "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",
             "RT-002 customer-approved norm pack",
             "RT-003 federated MEP scope memo",
         ],
