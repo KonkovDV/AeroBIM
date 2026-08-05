@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.tools.export_runtime_baseline import (
+    _check_documented_env_sets,
     completeness_errors,
     export_runtime_baseline,
     parse_pytest_junit,
@@ -33,7 +34,7 @@ class ParsePytestJunitTests(unittest.TestCase):
 class CompletenessErrorsTests(unittest.TestCase):
     def _complete(self) -> dict:
         return {
-            "schema_version": "1.2.0",
+            "schema_version": "1.2.1",
             "commit_sha": "abc123",
             "tree_sha": "def456",
             "backend": {
@@ -93,7 +94,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
                 "lockfile_sha256": "abc",
             },
         )
-        self.assertEqual(baseline["schema_version"], "1.2.0")
+        self.assertEqual(baseline["schema_version"], "1.2.1")
         self.assertEqual(baseline["commit_sha"], "testsha")
         self.assertEqual(baseline["tree_sha"], "testtree")
         backend_block = baseline["backend"]
@@ -103,8 +104,34 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertIsNone(backend_block["tests_failed"])
         self.assertIn("environment", baseline)
         self.assertIn("claim_boundary", baseline)
+        self.assertIn("documented_env_vars", baseline)
+        self.assertIsInstance(baseline["documented_env_vars"], list)
         dumped = json.dumps(baseline)
         self.assertIn("UNKNOWN", dumped)
+
+
+class DocumentedEnvSetTests(unittest.TestCase):
+    def test_marker_noise_not_treated_as_env_name(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "docs" / "evidence").mkdir(parents=True)
+            readme = (
+                "## Configuration\n\n"
+                "| Variable | Default | Description |\n"
+                "|---|---|---|\n"
+                "| `AEROBIM_HOST` | `127.0.0.1` | Bind |\n"
+                "| `AEROBIM_PORT` | `8080` | Port |\n"
+                "\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->\n"
+                "AEROBIM_HOST\n"
+                "AEROBIM_PORT\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:END -->\n"
+                "\n## Project Structure\n"
+            )
+            (repo / "README.md").write_text(readme, encoding="utf-8")
+            (repo / "README.ru.md").write_text(readme, encoding="utf-8")
+            errors = _check_documented_env_sets(repo)
+            self.assertEqual(errors, [])
 
 
 if __name__ == "__main__":

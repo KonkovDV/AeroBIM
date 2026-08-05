@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import platform
+import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -19,11 +20,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-_SCHEMA_VERSION = "1.2.0"
+_SCHEMA_VERSION = "1.2.1"
 _QUALITY_GATE_KEYS = ("ruff", "mypy", "pytest", "vitest", "build")
 _ALLOWED_GATE_VALUES = frozenset({"PASS", "FAIL", "SKIPPED", "UNKNOWN", "NOT_RUN"})
 _COMPLETE_GATE_VALUE = "PASS"
 _BASELINE_MARKER_BEGIN = "<!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->"
+_ENV_DOC_MARKER_BEGIN = "<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->"
+_ENV_DOC_MARKER_END = "<!-- AEROBIM_DOCUMENTED_ENV:END -->"
+_ENV_DOC_LINE_RE = re.compile(r"^AEROBIM_[A-Z][A-Z0-9_]*$")
+_ENV_TABLE_CELL_RE = re.compile(r"`(AEROBIM_[A-Z][A-Z0-9_]*)`")
+_ENV_MARKER_NOISE = frozenset({"AEROBIM_DOCUMENTED_ENV", "AEROBIM_RUNTIME_BASELINE"})
 _DRIFT_KEYS = ("backend_src_loc", "backend_test_loc", "backend_test_functions")
 _DRIFT_TOLERANCE = 50
 
@@ -323,7 +329,94 @@ def export_runtime_baseline(
             f"{test_count}+ test functions; extraction macro_f1={f1_display} "
             f"(fixture corpus; not product accuracy)"
         ),
+        "documented_env_vars": _configuration_env_names(repo / "README.md"),
     }
+
+
+def _configuration_env_names(readme_path: Path) -> list[str]:
+    """Env names listed in README.md ``## Configuration`` table (SSOT for documented knobs)."""
+    if not readme_path.exists():
+        return []
+    text = readme_path.read_text(encoding="utf-8")
+    start = text.find("## Configuration")
+    if start < 0:
+        return []
+    end = text.find("\n## ", start + 3)
+    block = text[start:] if end < 0 else text[start:end]
+    names = set(_ENV_TABLE_CELL_RE.findall(block))
+    # Deprecated alias mentioned in prose inside the Configuration section.
+    if "AEROBIM_LLM_LOCAL_ENABLED" in block:
+        names.add("AEROBIM_LLM_LOCAL_ENABLED")
+    names -= _ENV_MARKER_NOISE
+    return sorted(names)
+
+
+def _documented_env_marker_names(text: str) -> list[str] | None:
+    begin = text.find(_ENV_DOC_MARKER_BEGIN)
+    if begin < 0:
+        return None
+    end = text.find(_ENV_DOC_MARKER_END, begin)
+    if end < 0:
+        return None
+    block = text[begin + len(_ENV_DOC_MARKER_BEGIN) : end]
+    names: set[str] = set()
+    for line in block.splitlines():
+        token = line.strip()
+        if _ENV_DOC_LINE_RE.match(token):
+            names.add(token)
+    names -= _ENV_MARKER_NOISE
+    return sorted(names)
+
+
+def _check_documented_env_sets(repo: Path) -> list[str]:
+    """Fail if EN/RU README documented-env markers disagree with Configuration SSOT / baseline."""
+    errors: list[str] = []
+    expected = _configuration_env_names(repo / "README.md")
+    if not expected:
+        return ["README.md ## Configuration has no AEROBIM_* names"]
+
+    artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
+    if artifact.exists():
+        try:
+            stored = json.loads(artifact.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            errors.append("Invalid runtime-baseline-latest.json while checking documented_env_vars")
+            stored = None
+        if isinstance(stored, dict) and "documented_env_vars" in stored:
+            artifact_names = stored.get("documented_env_vars")
+            if not isinstance(artifact_names, list):
+                errors.append("runtime-baseline-latest.json documented_env_vars must be a list")
+            else:
+                artifact_set = {str(x) for x in artifact_names}
+                if artifact_set != set(expected):
+                    only_cfg = sorted(set(expected) - artifact_set)
+                    only_art = sorted(artifact_set - set(expected))
+                    errors.append(
+                        "documented_env_vars drift vs README.md Configuration: "
+                        f"only_in_config={only_cfg[:8]} only_in_artifact={only_art[:8]}"
+                    )
+
+    for name in ("README.md", "README.ru.md"):
+        path = repo / name
+        if not path.exists():
+            errors.append(f"Missing {name}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        names = _documented_env_marker_names(text)
+        if names is None:
+            errors.append(
+                f"{name} missing {_ENV_DOC_MARKER_BEGIN}…{_ENV_DOC_MARKER_END} "
+                "(must list the same AEROBIM_* set as README.md Configuration)"
+            )
+            continue
+        if set(names) != set(expected):
+            only_marker = sorted(set(names) - set(expected))
+            only_cfg = sorted(set(expected) - set(names))
+            errors.append(
+                f"{name} documented-env set ≠ README.md Configuration: "
+                f"only_in_marker={only_marker[:8]} only_in_config={only_cfg[:8]}"
+            )
+    return errors
 
 
 def _check_readme_markers(repo: Path) -> list[str]:
@@ -362,6 +455,7 @@ def _check_readme_markers(repo: Path) -> list[str]:
                 f"{name} runtime baseline snippet drifts from "
                 "docs/evidence/runtime-baseline-latest.json readme_snippet (WP-08)"
             )
+    errors.extend(_check_documented_env_sets(repo))
     return errors
 
 
@@ -412,8 +506,9 @@ def main(argv: list[str] | None = None) -> int:
         "--check-readme",
         action="store_true",
         help=(
-            "Fail if README.md / README.ru.md lack AEROBIM_RUNTIME_BASELINE markers "
-            "or if committed artifact drifts beyond ±50 on loc/test_functions"
+            "Fail if README.md / README.ru.md lack AEROBIM_RUNTIME_BASELINE markers, "
+            "documented-env name sets disagree with Configuration / baseline, "
+            "or committed artifact drifts beyond ±50 on loc/test_functions"
         ),
     )
     parser.add_argument(
@@ -502,7 +597,7 @@ def main(argv: list[str] | None = None) -> int:
             for message in errors:
                 print(message, file=sys.stderr)
             return 1
-        print("README markers, runtime baseline drift, and completeness OK")
+        print("README markers, documented-env sets, runtime baseline drift, and completeness OK")
         return 0
 
     baseline = export_runtime_baseline(
