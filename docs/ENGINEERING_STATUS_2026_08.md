@@ -26,6 +26,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 |---|---|---|
 | **P4 Experiment B (KR→AR→VK) CLOSED** | KR **≈16.7**/≈25/33/25 after #2+#4 LOGIC closed (#9/#10 MISSING_ATTRIBUTE ≈8.3pp); AR 17/25/42/17 (n=12); VK 25/50/13/13; RT-002≈17pp KR; RT-003=13pp VK | Friday speech synced; OV deferred KT#3; PNST 909 pin owner |
 | **Task 2 partial package** | `ifc_path` optional on analyze; document-only mode SKIPPED/NOT_VERIFIED for IFC engines; fail-closed if clash/MEP required | Not Checkpoint GO; not product accuracy |
+| **Task 7 weekly eng status** | `python -m aerobim.tools.export_weekly_eng_status` → `docs/evidence/weekly-eng-status-latest.json`; funnel = OWNER_ONLY | Never invent commercial counts |
+| **Task 4 adjudication plan** | `plan_adjudication_corpus` → recommended_n=111 for interim 0.60 @ expected 0.75 | Sizes labeling only; not precision |
 | **P4 Experiment A (Minstry reuse inverse)** | **NOT_RUN** — no legal pack in `.local/` | Blocked on owner pack |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
 | **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |
