@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "artifact_type": "aerobim_weekly_eng_status",
-  "generated_at": "2026-08-05T15:53:22.975766+00:00",
+  "generated_at": "2026-08-05T20:06:21.578883+00:00",
   "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint NO_GO until RT-001/002/003. Fixture != customer accuracy.",
   "checkpoint": "NO_GO",
   "rt_open": [
@@ -24,12 +24,12 @@
     "print_as": "commercial block present (counts OWNER-filled only)"
   },
   "runtime_baseline": {
-    "commit_sha": "c8fe19fa344b116d88319a38fc1364c5fa0f350d",
+    "commit_sha": "2aa573be0c89a3fcc4862acce895e4b126a22fb2",
     "schema_version": "1.2.1",
     "metrics": {
-      "backend_src_loc": 55902,
-      "backend_test_loc": 39284,
-      "backend_test_functions": 1882,
+      "backend_src_loc": 56039,
+      "backend_test_loc": 39354,
+      "backend_test_functions": 1886,
       "extraction_macro_f1": 0.8600000000000001
     },
     "architecture_inventory": {
@@ -38,11 +38,11 @@
       "di_tokens": 59
     },
     "quality_gates": {
-      "ruff": "PASS",
-      "mypy": "PASS",
-      "pytest": "PASS",
-      "vitest": "PASS",
-      "build": "PASS"
+      "ruff": "UNKNOWN",
+      "mypy": "UNKNOWN",
+      "pytest": "UNKNOWN",
+      "vitest": "UNKNOWN",
+      "build": "UNKNOWN"
     }
   },
   "coverage_map": {
@@ -63,26 +63,23 @@
   },
   "pnst909_22_scenario_axis": {
     "inventory": "docs/evidence/pnst909-22-scenario-ids-inventory-latest.json",
+    "runtime": "docs/evidence/pnst909-22-scenario-runtime-latest.json",
+    "tos_cite": "GO",
     "summary": {
-      "scenarios_total_pnst": 22,
-      "scenarios_with_ids": 18,
-      "scenarios_missing_ids": [
-        3,
-        18,
-        21,
-        22
-      ],
-      "ids_files_total": 45,
-      "runtime_executed": 0,
+      "scenarios_total": 22,
+      "executed": 18,
       "coverage_class_counts": {
-        "ids_available": 18,
-        "out_of_pack": 4,
-        "fires": 0,
-        "conditional": 0,
-        "out_of_scope": 0
-      }
+        "runtime_clean": 18,
+        "out_of_pack": 4
+      },
+      "runtime_status_counts": {
+        "EXECUTED": 18,
+        "NO_IDS_IN_PACK": 4
+      },
+      "share_executed": 0.818,
+      "share_ids_available": 0.818
     },
-    "runtime_status": "IDS_INVENTORY_ONLY_NOT_RUN"
+    "runtime_status": "PARTIAL_18_OF_22_CLEAN"
   },
   "adjudication_corpus_plan": {
     "artifact_type": "adjudication_corpus_plan",
@@ -153,9 +150,9 @@
     "claim_boundary": "sizes the dual-expert labeling effort only; predicts no precision value; fixture evidence never becomes customer evidence (RT-001)"
   },
   "next_levers": [
-    "Owner: send Renga ToS cite request before publishing pack metrics",
-    "Exp A: execute IDS+IFC runs on pinned Renga pack (18/22 IDS present)",
-    "AR recount: SPb n=4 / Amur n=5 classified — do not merge organs into one %",
+    "Exp A: 18/22 IDS runtime_clean published (ToS GO) — do not sell as precision",
+    "PNST scenarios 3/18/21/22 still out_of_pack (no IDS in download)",
+    "AR recount: SPb n=4 / Amur n=5 — do not merge organs into one %",
     "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
     "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
     "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",

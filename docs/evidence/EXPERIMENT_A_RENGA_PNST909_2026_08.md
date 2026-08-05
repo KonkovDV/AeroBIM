@@ -1,8 +1,8 @@
 ---
 title: "Эксперимент А — прогон на комплекте Renga ПНСТ 909-2024"
 date: 2026-08-05
-status: PACK_PINNED_LOCAL
-claim_level: pack_ready_run_pending
+status: PARTIAL_RUN
+claim_level: pack_pinned_tos_go_runtime_partial
 supersedes: EXPERIMENT_A_MINSTROI_INVERSE_2026_08.md
 claim_boundary: >-
   AUTHOR_CLAIM frequency of findings on a standards-oriented open pack.
@@ -11,8 +11,9 @@ claim_boundary: >-
 
 # Эксперимент А — перенос на комплект Renga (ПНСТ 909)
 
-**Статус пакета:** `PACK_PINNED_LOCAL` (2026-08-05) — бинарники в `.local/renga-pnst909/` (gitignored); публичный stub [`../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md).  
-**Статус прогона:** всё ещё **NOT_RUN** (IDS/частотная карта не снята).
+**Статус пакета:** `PACK_PINNED_LOCAL` (2026-08-05).  
+**ToS cite:** **GO** (2026-08-05) — владелец: Renga подтвердила ссылку + агрегированные метрики покрытия.  
+**Статус прогона:** **PARTIAL_RUN** — IDS runtime на **18/22** сценариях (`runtime_clean`, 0 findings на эталоне); 4 сценария без IDS в комплекте. Evidence: [`pnst909-22-scenario-runtime-latest.json`](pnst909-22-scenario-runtime-latest.json).
 
 ## Почему не реестр Минстроя
 
@@ -58,8 +59,8 @@ claim_boundary: >-
 | Шаг | Статус |
 |---|---|
 | Скачать комплект → `.local/renga-pnst909/` | **DONE** |
-| NOTICE/ToS + PIN + inventory | **DONE** (локально) |
-| Публичный stub без бинарников | **DONE** → `docs/dataset/RENGA_PNST909_LOCAL_PIN_…` |
-| Запрос в Renga на цитирование метрик | **OWNER** — черновик готов |
-| Прогон Exp A (частота / IDS) | **NOT_RUN** |
+| NOTICE/ToS + PIN + inventory | **DONE** |
+| Публичный stub без бинарников | **DONE** |
+| Запрос в Renga на цитирование метрик | **GO** (2026-08-05) |
+| Прогон Exp A / IDS 22 сценария | **PARTIAL** — 18/22 executed clean; 4 out_of_pack |
 | Не коммитить бинарники в GH | **инвариант** |

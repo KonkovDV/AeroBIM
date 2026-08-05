@@ -33,9 +33,9 @@ docs/evidence/baseline-2026-08.pdf
   Мордовия ВК n=16: 25% «обнаруживается»; RT-003 ≈ 13п.п. федеративной модели — на open не подтверждено.
   Тренд ≈8→17→25% при оговорке: Киров ≠ Мордовия по методике перечня.
   Не говорить «закрыли 25 п.п. полноты» — подтверждены ≈16,7 п.п. класса полноты.
-  Exp A: pack PINNED locally (45 IDS/198 IFC); прогон NOT_RUN; ToS перед метриками.
-  АР СПб n=4 + Амур n=5 snapshotted в .local/; classify pending.
-  План: вторая ось = 22 сценария ПНСТ+IDS.
+  Exp A: ToS GO; IDS runtime 18/22 clean (0 findings on reference IFC); 4 out_of_pack.
+  АР СПб n=4 + Амур n=5 recount published; do not merge organs.
+  Вторая ось ПНСТ = aggregated coverage after ToS GO (not precision).
 
 2) Заказчики
 SSOT локально (.local). На момент письма: contacted/replied/demo =
@@ -44,7 +44,7 @@ SSOT локально (.local). На момент письма: contacted/replie
 
 3) Демо
 docs/demo-format-2026-08.md — шкала, правило 3 категорий, on-prem экспертиза;
-Exp B закрыт; Exp A pack pinned / run NOT_RUN.
+Exp B закрыт; Exp A PARTIAL_RUN 18/22 · ToS GO.
 
 4) «>90%»
 docs/partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md

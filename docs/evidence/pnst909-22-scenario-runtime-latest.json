@@ -1,0 +1,281 @@
+{
+  "artifact_type": "aerobim_pnst909_22_scenario_runtime",
+  "generated_at": "2026-08-05T20:04:31.762645+00:00",
+  "claim_boundary": "Aggregated PNST 909 IDS coverage on Renga open pack after ToS cite GO (2026-08-05). 18/22 scenarios: IDS validator EXECUTED with 0 findings on reference IFC. 4/22: no IDS in downloaded pack. AUTHOR_CLAIM coverage map — NOT product accuracy, NOT expert adjudication. Clean pack != customer precision. Checkpoint NO_GO.",
+  "tos_cite": "GO",
+  "tos_cite_date": "2026-08-05",
+  "source_pack": ".local/renga-pnst909/pack",
+  "validator": "IfcTesterIdsValidator / ifctester",
+  "summary": {
+    "scenarios_total": 22,
+    "executed": 18,
+    "coverage_class_counts": {
+      "runtime_clean": 18,
+      "out_of_pack": 4
+    },
+    "runtime_status_counts": {
+      "EXECUTED": 18,
+      "NO_IDS_IN_PACK": 4
+    },
+    "share_executed": 0.818,
+    "share_ids_available": 0.818
+  },
+  "scenarios": [
+    {
+      "scenario": 1,
+      "ids_path": "IDS/C1 Формирование данных для графической части ПД/IDS ПНСТ 909-2024 Сценарий С1 (Строительные элементы).ids",
+      "ifc_path": "IFC/C3 Формирование данных для текстовой части проектной документации в объеме__/По разделам/24-1-17_22_K1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 79631498,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 4.839,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 2,
+      "ids_path": "IDS/C2 Проверка согласованности проектных решений/IDS ПНСТ 909-2024 Сценарий С2 (Строительные элементы).ids",
+      "ifc_path": "IFC/C2 Проверка согласованности проектных решений/По разделам/24-1-17_22_K1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 79431515,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 4.322,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 3,
+      "ids_path": null,
+      "ifc_path": "IFC/C3 Формирование данных для текстовой части проектной документации в объеме__/По разделам/24-1-17_22_K1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 79631498,
+      "coverage_class": "out_of_pack",
+      "runtime_status": "NO_IDS_IN_PACK",
+      "issue_count": null,
+      "wall_clock_s": null
+    },
+    {
+      "scenario": 4,
+      "ids_path": "IDS/C4 Формирование расчетных моделей/IDS ПНСТ 909-2024 Сценарий С4 (Строительные элементы).ids",
+      "ifc_path": "IFC/C4 Формирование расчетных моделей/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 49758305,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.676,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 5,
+      "ids_path": "IDS/C5 Вариантное проектирование/IDS ПНСТ 909-2024 Сценарий С5 (Элементы пространственной структуры).ids",
+      "ifc_path": "IFC/C5 Вариантное проектирование/По разделам/24-1-17_22_K1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 44059112,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.304,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 6,
+      "ids_path": "IDS/C6 Формирование данных для текстовой и графической частей РД/IDS ПНСТ 909-2024 Сценарий С6 (Строительные элементы).ids",
+      "ifc_path": "IFC/C6 Формирование данных для текстовой и графической частей рабочей/По разделам/24-1-17_22_К1_C1_H_1_Rn87_I4021.ifc",
+      "ifc_bytes": 27053347,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 1.459,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 7,
+      "ids_path": "IDS/C7 Формирование ЦИМ жилого здания на основе оцифровки объекта/IDS ПНСТ 909-2024 Сценарий С7 (Элементы пространственной структуры).ids",
+      "ifc_path": "IFC/C7 Формирование ЦИМ жилого здания на основе оцифровки объекта/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 44059112,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.263,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 8,
+      "ids_path": "IDS/C8 Формирование данных для разработки сметной документации/IDS ПНСТ 909-2024 Сценарий С8 (Строительные элементы).ids",
+      "ifc_path": "IFC/C8 Формирование данных для разработки сметной документации/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 75389448,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 3.996,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 9,
+      "ids_path": "IDS/C9 Формирование данных для разработки календарного плана/IDS ПНСТ 909-2024 Сценарий С9 (Строительные элементы).ids",
+      "ifc_path": "IFC/C9 Формирование данных для разработки календарного плана/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 79495596,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 4.21,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 10,
+      "ids_path": "IDS/C10 Контроль хода строительства/IDS ПНСТ 909-2024 Сценарий С10 (Строительные элементы).ids",
+      "ifc_path": "IFC/C10 Контроль хода строительства/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 62528815,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 3.203,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 11,
+      "ids_path": "IDS/C11 Ведение исполнительной документации/IDS ПНСТ 909-2024 Сценарий С11 (Строительные элементы).ids",
+      "ifc_path": "IFC/C11 Ведение исполнительной документации/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 62528815,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 3.19,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 12,
+      "ids_path": "IDS/C12 Эксплуатация и обслуживание актива/IDS ПНСТ 909-2024 Сценарий С12 (Строительные элементы).ids",
+      "ifc_path": "IFC/C12 Эксплуатация и обслуживание актива/По разделам/24-1-17_22_К1_C1_H_1_Rn87_I4021.ifc",
+      "ifc_bytes": 31072980,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 1.621,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 13,
+      "ids_path": "IDS/C13 Мониторинг технического состояния и планирование обслуживания актива/IDS ПНСТ 909-2024 Сценарий С13 (Строительные элементы).ids",
+      "ifc_path": "IFC/C13 Мониторинг технического состояния и планирование обслуживания актива/По разделам/24-1-17_22_К1_C1_H_1_Rn87_I4021.ifc",
+      "ifc_bytes": 29012827,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 1.481,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 14,
+      "ids_path": "IDS/C14 Анализ объемно-планировочных решений/IDS ПНСТ 909-2024 Сценарий С14 (Строительные элементы).ids",
+      "ifc_path": "IFC/C14 Анализ объемно-планировочных решений/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 44059112,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.285,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 15,
+      "ids_path": "IDS/C15 Формирование данных для расчета ТЭП/IDS ПНСТ 909-2024 Сценарий С15 (Строительные элементы).ids",
+      "ifc_path": "IFC/C15 Формирование данных для расчета ТЭП/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 50137569,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.667,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 16,
+      "ids_path": "IDS/C16 Формирование сведений для подготовки проектной декларации/IDS ПНСТ 909-2024 Сценарий С16 (Строительные элементы).ids",
+      "ifc_path": "IFC/C16 Формирование сведений для подготовки проектной декларации/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 50151498,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.696,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 17,
+      "ids_path": "IDS/C17 Формирование сведений для подготовки паспорта МКД/IDS ПНСТ 909-2024 Сценарий С17 (Строительные элементы).ids",
+      "ifc_path": "IFC/C17 Формирование сведений для подготовки паспорта МКД/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 50573185,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.745,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 18,
+      "ids_path": null,
+      "ifc_path": "IFC/C18 Формирование сведений для оценки на соответствие «зеленым» параметрам согласно ГОСТ Р 70346/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 59449683,
+      "coverage_class": "out_of_pack",
+      "runtime_status": "NO_IDS_IN_PACK",
+      "issue_count": null,
+      "wall_clock_s": null
+    },
+    {
+      "scenario": 19,
+      "ids_path": "IDS/C19 Формирование сведений для подготовки разрешения на строительство/IDS ПНСТ 909-2024 Сценарий С19 (Строительные элементы).ids",
+      "ifc_path": "IFC/C19 Формирование сведений для подготовки разрешения на строительство/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 44079483,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.312,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 20,
+      "ids_path": "IDS/C20 Формирование сведений для подготовки разрешения на ввод в эксплуатацию/IDS ПНСТ 909-2024 Сценарий С20 (Строительные элементы).ids",
+      "ifc_path": "IFC/C20 Формирование сведений для подготовки разрешения на ввод в эксплуатацию/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 44071406,
+      "coverage_class": "runtime_clean",
+      "runtime_status": "EXECUTED",
+      "issue_count": 0,
+      "wall_clock_s": 2.292,
+      "error": null,
+      "notes": "IDS validator executed; 0 findings on Renga reference IFC (pack designed to satisfy IDS)"
+    },
+    {
+      "scenario": 21,
+      "ids_path": null,
+      "ifc_path": "IFC/C21 Формирование сведений о пожарно-технических характеристиках и системах ППЗ жилого здания/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 44107236,
+      "coverage_class": "out_of_pack",
+      "runtime_status": "NO_IDS_IN_PACK",
+      "issue_count": null,
+      "wall_clock_s": null
+    },
+    {
+      "scenario": 22,
+      "ids_path": null,
+      "ifc_path": "IFC/C22 Формирование сведений для оценки углеродного следа здания в соответствии с ГОСТ Р ИСО 14067__/По разделам/24-1-17_22_К1_C1_WS_1_Rn87_I4021.ifc",
+      "ifc_bytes": 44059112,
+      "coverage_class": "out_of_pack",
+      "runtime_status": "NO_IDS_IN_PACK",
+      "issue_count": null,
+      "wall_clock_s": null
+    }
+  ]
+}
