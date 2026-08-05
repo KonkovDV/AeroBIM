@@ -27,7 +27,7 @@
 | I | Revision compare findings | **DONE** (eng) | `compare_findings_across_revisions` + export helper | Customer revision packs (none invented) | Eng **да** |
 | J | HITL review flow | **DONE** | Full state machine + SSOT previous_state + FE filters | — | **Да** |
 | K | Security residuals | **DONE** (doc) | Pilot threat model + inventory tests; POST-05 residual | BFF implementation | Residual risk **да** |
-| L | Open-core model | **DONE** (ADR) | ADR-002 proposed; LICENSE unchanged MIT | Future license ADR if needed | **Да** |
+| L | Open-core model | **DONE** (ADR) | ADR-002 **accepted**; LICENSE unchanged MIT | Future license ADR if needed | **Да** |
 
 ## Already closed (do not reopen)
 

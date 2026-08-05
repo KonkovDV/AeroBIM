@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.0"
+version: "1.6.1"
 last_updated: "2026-08-05"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 # Engineering Status — 2026-08-05
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-05  
+**last_updated:** 2026-08-05 · **v1.6.1** — env set gate (symdiff), live `architecture_inventory` in CI, ADR-002 **accepted**, Task 3 root-cause (#2/#4 LOGIC_ABSENT; #9/#10 MISSING_ATTRIBUTE); deferred rename `kimi_vlm_drawing_pipeline.py` → neutral on next touch  
 **Checkpoint:** **`NO_GO`** — RT-001 / RT-002 / RT-003 remain OPEN  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
@@ -24,7 +24,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
-| **P4 Experiment B (KR→AR→VK) CLOSED** | KR **≈8.3**/≈33/33/25 after Task 3 (#3+#24 detectable on open/synthetic); AR 17/25/42/17 (n=12); VK 25/50/13/13; RT-002≈17pp KR; RT-003=13pp VK (open not confirmed) | Friday speech synced `c8fe19f`; OV deferred KT#3; PNST 909 pin owner |
+| **P4 Experiment B (KR→AR→VK) CLOSED** | KR **≈8.3**/≈33/33/25 after Task 3 (#3+#24 detectable); residual completeness: #2/#4 LOGIC_ABSENT ≈8.3pp backlog; #9/#10 MISSING_ATTRIBUTE ≈8.3pp условно; AR 17/25/42/17 (n=12); VK 25/50/13/13; RT-002≈17pp KR; RT-003=13pp VK | Friday speech synced; OV deferred KT#3; PNST 909 pin owner |
 | **P4 Experiment A (Minstry reuse inverse)** | **NOT_RUN** — no legal pack in `.local/` | Blocked on owner pack |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
 | **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |
@@ -39,7 +39,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 | **WP-04 norm pack v2** | Schema 2.0.0 RASE + `execution_mode` + expert confirmation journal; loader fail-closed without `customer_approved`+approval; `list_expert_required_norm_rules` | RT-002 OPEN; fixture ≠ customer pack |
 | **WP-03 signature envelope** | Presence/hash/roles + signature_alg/value presence + optional package hash bind; trust_chain always NOT_VERIFIED | Never «УКЭП проверена»; crypto adapter missing |
 | **WP-02 Hybrid advisory pre-gate** | Gate on Analyze advisory + kimi smoke PUBLIC egress | Not verdict path; Checkpoint NO_GO |
-| **WP-01 runtime baseline** | Schema 1.2.0: passed/skipped/failed + gates + env fingerprint; CI `--check-complete` | Not Checkpoint GO |
+| **WP-01 runtime baseline** | Schema 1.2.1: passed/skipped/failed + gates + env fingerprint + **documented_env set equality (symdiff)** + **architecture_inventory** (46/71/59) checked in CI `--check-readme` | Not Checkpoint GO |
+| **ADR-002 open-core** | **accepted** 2026-08-05; LICENSE stays MIT | Boundary defined; not commercial features delivered |
 | **OIDC BFF POST-05** | Phase 2 stubs (login/callback/logout + CSRF); `auth_bff` stays NOT_IMPLEMENTED | Phase 3 needs IdP |
 | **BCF T2** | Verifier `--checklist` dry-run; pack STATUS stays NOT_VERIFIED | Needs real CDE log/screenshot/hashes |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |

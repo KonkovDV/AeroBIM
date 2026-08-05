@@ -30,7 +30,7 @@
 
 - Claims Lock / Checkpoint NO_GO — [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)  
 - ADR-001 verdict ownership — [`docs/architecture/ADR-001-verdict-ownership-2026.md`](../architecture/ADR-001-verdict-ownership-2026.md)  
-- ADR-002 open-core (proposed) — architecture docs  
+- ADR-002 open-core (**accepted**) — architecture docs  
 - Место в контуре Самолёта — [`docs/docs.md`](../docs.md) §2  
 
 ## Запрещено выводить из этой таблицы
