@@ -246,7 +246,7 @@ class FilesystemAuditStore:
 
     def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
         data = asdict(report)
-        data["ifc_path"] = str(report.ifc_path)
+        data["ifc_path"] = str(report.ifc_path) if report.ifc_path is not None else ""
         data["ifc_object_key"] = report.ifc_object_key
         data["drawing_assets"] = [
             {
@@ -283,12 +283,12 @@ class FilesystemAuditStore:
     def _materialize_ifc_source(
         self,
         report_id: str,
-        ifc_path: Path,
+        ifc_path: Path | None,
         *,
         artifact_keys: list[str] | None = None,
         tenant_id: str | None = None,
     ) -> str | None:
-        if not ifc_path.exists() or not ifc_path.is_file():
+        if ifc_path is None or not ifc_path.exists() or not ifc_path.is_file():
             return None
         object_key = self._tenant_prefixed_key(
             kind="ifc-sources",
@@ -638,7 +638,11 @@ class FilesystemAuditStore:
         return ValidationReport(
             report_id=data["report_id"],
             request_id=data["request_id"],
-            ifc_path=Path(data["ifc_path"]),
+            ifc_path=(
+                Path(data["ifc_path"])
+                if data.get("ifc_path") not in (None, "")
+                else None
+            ),
             ifc_object_key=data.get("ifc_object_key"),
             created_at=data["created_at"],
             requirements=tuple(

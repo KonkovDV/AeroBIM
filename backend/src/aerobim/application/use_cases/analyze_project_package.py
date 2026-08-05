@@ -1077,13 +1077,13 @@ class AnalyzeProjectPackageUseCase:
     def _confirm_annotation_ifc_links(
         self,
         links: Sequence[AnnotationIfcLink],
-        ifc_path: Path,
+        ifc_path: Path | None,
     ) -> tuple[AnnotationIfcLink, ...]:
         """Presence-check claimed annotation GUIDs against IFC spatial index."""
 
         from aerobim.domain.annotation_ifc_matching import confirm_annotation_ifc_links
 
-        if not links:
+        if not links or ifc_path is None:
             return ()
         validator = self._ifc_validator
         if isinstance(validator, IfcSpatialIndexProvider):
