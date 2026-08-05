@@ -73,10 +73,12 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
             "note": "Do not publish contacted/replied/demo zeros or invented counts to GH",
         },
         "next_levers": [
+            "Owner: pin Renga PNST 909 pack to .local/renga-pnst909/ (Exp A + 22-scenario axis)",
+            "Exp B AR recount: SPb primary + Amur (reduce 8.3pp/row fragility)",
+            "Norm-pack edition: GOST R 21.101-2026 supersedes 2020 (in force since 2026-04-01)",
             "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
             "RT-002 customer-approved norm pack",
             "RT-003 federated MEP scope memo",
-            "Owner: PNST 909 pin; off-disk .local backup",
         ],
     }
     return eng

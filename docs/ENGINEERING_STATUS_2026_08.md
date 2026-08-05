@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.2"
+version: "1.6.3"
 last_updated: "2026-08-05"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 # Engineering Status — 2026-08-05
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-05 · **v1.6.2** — KR ≈16.7% (#2+#4 LOGIC closed); Task 2 document-only analyze (`ifc_path` optional); env set gate + architecture_inventory CI; ADR-002 accepted; deferred `kimi_vlm_*` rename  
+**last_updated:** 2026-08-05 · **v1.6.3** — Exp A → Renga ПНСТ 909; Minstry registry dead; AR recount plan SPb+Amur; **ГОСТ Р 21.101-2026** in force (replaces 2020); PNST 22-scenario axis planned  
 **Checkpoint:** **`NO_GO`** — RT-001 / RT-002 / RT-003 remain OPEN  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
@@ -17,7 +17,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 **Wave-2 Red Team (К0/commercial/coverage):** [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md)  
 **Studio stamp/PII Red Team:** [`quality/RED_TEAM_GRANT_STAMP_PII_2026_08_03.md`](quality/RED_TEAM_GRANT_STAMP_PII_2026_08_03.md)  
 **Qwen local:** [`architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md`](architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md) · [`roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) · [`architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md)  
-**Demo / P4:** [`demo-format-2026-08.md`](demo-format-2026-08.md) · Exp B [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · Exp A [`evidence/EXPERIMENT_A_MINSTROI_INVERSE_2026_08.md`](evidence/EXPERIMENT_A_MINSTROI_INVERSE_2026_08.md) · RT Friday [`quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md`](quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md)  
+**Demo / P4:** [`demo-format-2026-08.md`](demo-format-2026-08.md) · Exp B [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · Exp A [`evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md`](evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md) · RT Friday [`quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md`](quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md)  
 **Release aliases:** [`RELEASE_POLICY.md`](RELEASE_POLICY.md) — `LOCAL` env alias dies after КТ#3 **2026-09-21**
 
 ## What improved (engineering — not customer GO)
@@ -28,7 +28,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 | **Task 2 partial package** | `ifc_path` optional on analyze; document-only mode SKIPPED/NOT_VERIFIED for IFC engines; fail-closed if clash/MEP required | Not Checkpoint GO; not product accuracy |
 | **Task 7 weekly eng status** | `python -m aerobim.tools.export_weekly_eng_status` → `docs/evidence/weekly-eng-status-latest.json`; funnel = OWNER_ONLY | Never invent commercial counts |
 | **Task 4 adjudication plan** | `plan_adjudication_corpus` → recommended_n=111 for interim 0.60 @ expected 0.75 | Sizes labeling only; not precision |
-| **P4 Experiment A (Minstry reuse inverse)** | **NOT_RUN** — no legal pack in `.local/` | Blocked on owner pack |
+| **External P1/P4 research** | Renga PRIMARY; Exp A protocol rewritten; SPb+Amur AR recount planned; GOST R **21.101-2026** risk flagged | Owner pack pin + AR dump |
+| **P4 Experiment A (Renga ПНСТ 909)** | **NOT_RUN** — pack not pinned; Minstry reuse registry = **DEAD_CHANNEL** (ФЗ 275-ФЗ) | Owner: download Renga → `.local/renga-pnst909/`; ToS before publish |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
 | **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |
 | **LOCAL→ADVISORY alias** | Boot WARNING; remove after 2026-09-21 | Docs must not reintroduce LOCAL-only |

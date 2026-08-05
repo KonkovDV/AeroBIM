@@ -62,6 +62,7 @@ claim_boundary: >-
 
 ## ТРЕБУЕТСЯ ОТ ВЛАДЕЛЬЦА
 
-1. Пин лицензии / скачивание комплекта **ПНСТ 909** (Renga) в `.local/` или согласованный `samples/`.  
+1. Пин комплекта **ПНСТ 909** (Renga) в `.local/renga-pnst909/` + ToS note — вход для Exp A и оси 22 сценариев.  
 2. Не заявлять «25 п.п. закрыты» — закрыты **≈16,7 п.п.**; #9+#10 = MISSING_ATTRIBUTE → условно.  
-3. Rename deferred: `kimi_vlm_drawing_pipeline.py` → neutral при ближайшем касании модуля.
+3. Rename deferred: `kimi_vlm_drawing_pipeline.py` → neutral при ближайшем касании модуля.  
+4. АР: выгрузить СПб+Амур в `.local/` и пересчитать (план SSOT).

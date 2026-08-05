@@ -109,6 +109,6 @@ Evidence: `samolet-sla-fixture-p95-2026-08-04.json` · `sprint2-synthetic-baseli
 ## 6. Честные ограничения
 
 1. Нет размеченного корпуса → нет publishable precision.  
-2. Exp A (Минстрой «чистый») — **NOT_RUN**.  
+2. Exp A (Renga ПНСТ 909) — **NOT_RUN** (реестр Минстроя = dead channel).  
 3. Воронка — только владелец.  
 4. 0,43 ≠ точность продукта.
