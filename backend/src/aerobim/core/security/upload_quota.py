@@ -50,10 +50,16 @@ class FilesystemUploadQuotaStore:
         return datetime.now(tz=UTC).strftime("%Y-%m-%d")
 
     def _path(self, tenant_id: str, day: str) -> Path:
-        safe = (tenant_id or "anonymous").strip().replace("/", "_").replace(
-            "\\", "_"
-        ) or "anonymous"
-        folder = self._root / safe
+        from aerobim.core.security.path_jail import PathJailError, safe_storage_token
+
+        raw = (tenant_id or "anonymous").strip() or "anonymous"
+        try:
+            safe = safe_storage_token(raw)
+        except PathJailError as exc:
+            raise UploadQuotaExceeded(f"Invalid tenant for quota accounting: {exc}") from exc
+        folder = (self._root / safe).resolve()
+        if not folder.is_relative_to(self._root.resolve()):
+            raise UploadQuotaExceeded("Quota path escapes quotas root")
         folder.mkdir(parents=True, exist_ok=True)
         return folder / f"{day}.json"
 

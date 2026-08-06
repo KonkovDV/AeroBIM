@@ -60,3 +60,4 @@ class Tokens:
     DOCUMENT_SIGNATURE_AUDITOR = "document_signature_auditor"
     PACKAGE_INVENTORY_LOADER = "package_inventory_loader"
     LLM_ADVISORY_PROVIDER = "llm_advisory_provider"
+    IFC_SPACE_INVENTORY = "ifc_space_inventory"

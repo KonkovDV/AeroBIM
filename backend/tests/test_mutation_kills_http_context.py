@@ -333,8 +333,8 @@ class ResolveSafePathAclTests(unittest.TestCase):
             )
             self.assertIn("tenant-a", str(resolved))
 
-    def test_acl_on_foreign_prefix_is_403_and_traversal_is_400(self) -> None:
-        # Kills both NumberReplacer mutants on `403 if ... else 400` (L220).
+    def test_acl_on_foreign_prefix_is_404_and_traversal_is_400(self) -> None:
+        # Cross-tenant path probes must not oracle via 403 + prefix detail.
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), enforce_object_acl=True)
             foreign = _status(
@@ -342,8 +342,8 @@ class ResolveSafePathAclTests(unittest.TestCase):
                 "tenants/tenant-b/uploads/x.ifc",
                 principal=AuthPrincipal(tenant_id="tenant-a"),
             )
-            self.assertEqual(foreign.status_code, 403)
-            self.assertIn("tenant storage prefix", str(foreign.detail))
+            self.assertEqual(foreign.status_code, 404)
+            self.assertEqual(str(foreign.detail), "Object not found")
             traversal = _status(
                 ctx.resolve_safe_path,
                 "../outside.ifc",

@@ -333,7 +333,7 @@ presentation/  FastAPI HTTP API, correlation middleware
 
 Infrastructure now also includes an artifact `ObjectStore` seam plus an optional Postgres summary-index adapter for Iteration B.1.
 
-**46 domain Protocol ports** → **71 infrastructure adapter modules** → **59 DI tokens** — wired in `bootstrap_container()`. Counts are **live inventory** regenerated into `docs/evidence/runtime-baseline-latest.json` (`architecture_inventory`) and checked in CI via `export_runtime_baseline --check-readme` against README EN/RU; do not hand-edit older 20/30/28 or stale 48/67/58 figures.
+**47 domain Protocol ports** → **71 infrastructure adapter modules** → **60 DI tokens** — wired in `bootstrap_container()`. Counts are **live inventory** regenerated into `docs/evidence/runtime-baseline-latest.json` (`architecture_inventory`) and checked in CI via `export_runtime_baseline --check-readme` against README EN/RU; do not hand-edit older 20/30/28 or stale 48/67/58 figures.
 Report payloads include an explicit `capabilities` object (`ok` / `skipped` / `failed`) so optional engines (clash, IDS, unit scale, raster, schema) cannot silently look like a clean PASS. **Any `FAILED` capability forces `summary.passed=false`.**
 
 ## Configuration

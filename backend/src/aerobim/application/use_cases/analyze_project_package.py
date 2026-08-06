@@ -77,6 +77,7 @@ from aerobim.domain.ports import (
     IdsDocumentAuditor,
     IdsValidator,
     IfcSchemaValidator,
+    IfcSpaceInventoryExtractor,
     IfcSpatialIndexProvider,
     IfcValidator,
     LoadEvidenceVerifier,
@@ -173,6 +174,7 @@ class AnalyzeProjectPackageUseCase:
         llm_advisory_max_issues: int = 32,
         llm_max_concurrent: int = 4,
         space_efficiency_advisory_enabled: bool = True,
+        space_inventory_extractor: IfcSpaceInventoryExtractor | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -235,6 +237,7 @@ class AnalyzeProjectPackageUseCase:
         self._llm_advisory_max_issues = max(0, int(llm_advisory_max_issues))
         self._llm_max_concurrent = max(1, min(int(llm_max_concurrent), 10))
         self._space_efficiency_advisory_enabled = bool(space_efficiency_advisory_enabled)
+        self._space_inventory_extractor = space_inventory_extractor
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)
@@ -1060,6 +1063,7 @@ class AnalyzeProjectPackageUseCase:
         issues: Iterable[ValidationIssue],
         *,
         request_id: str,
+        allow_synthetic_public: bool = False,
     ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
         """Attach AI remark drafts when LLM is ready; verdict fields unchanged."""
 
@@ -1072,6 +1076,7 @@ class AnalyzeProjectPackageUseCase:
             locale=self._remark_locale,
             max_issues=self._llm_advisory_max_issues,
             max_workers=self._llm_max_concurrent,
+            allow_synthetic_public=allow_synthetic_public,
         )
 
     def _confirm_annotation_ifc_links(

@@ -12,6 +12,10 @@ from aerobim.domain.consistency import (
     QuantityClaim,
 )
 from aerobim.domain.extraction_integrity import ExtractionIntegritySignals
+from aerobim.domain.ifc_model_diff import (
+    IfcModelDiff as IfcModelDiff,
+)
+from aerobim.domain.ifc_model_diff import IfcModelDiffResult as IfcModelDiffResult
 
 # Re-export MEP port for contour/DI discovery (implementation stays in domain.mep).
 from aerobim.domain.mep import MepSystemGraphProvider as MepSystemGraphProvider
@@ -36,11 +40,8 @@ from aerobim.domain.models import (
 from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
 from aerobim.domain.package_completeness import PackageCompletenessReport, PackageInventory
 from aerobim.domain.section_pairing import SectionPairingReport
-from aerobim.domain.ifc_model_diff import (
-    IfcModelDiff as IfcModelDiff,
-)
-from aerobim.domain.ifc_model_diff import IfcModelDiffResult as IfcModelDiffResult
 from aerobim.domain.signature_immutability import SignatureAuditResult
+from aerobim.domain.space_efficiency_advisory import SpaceInventoryRow
 
 
 class RequirementExtractor(Protocol):
@@ -371,3 +372,9 @@ class PackageInventoryLoader(Protocol):
     def load(self, inventory_path: Path) -> PackageInventory: ...
 
     def assess(self, inventory_path: Path) -> PackageCompletenessReport: ...
+
+
+class IfcSpaceInventoryExtractor(Protocol):
+    """Local IfcSpace inventory for advisory space-efficiency candidates (no egress)."""
+
+    def extract(self, ifc_path: Path | str | None) -> tuple[SpaceInventoryRow, ...]: ...

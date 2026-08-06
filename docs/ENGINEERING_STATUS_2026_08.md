@@ -44,7 +44,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 | **WP-04 norm pack v2** | Schema 2.0.0 RASE + `execution_mode` + expert confirmation journal; loader fail-closed without `customer_approved`+approval; `list_expert_required_norm_rules` | RT-002 OPEN; fixture ≠ customer pack |
 | **WP-03 signature envelope** | Presence/hash/roles + signature_alg/value presence + optional package hash bind; trust_chain always NOT_VERIFIED | Never «УКЭП проверена»; crypto adapter missing |
 | **WP-02 Hybrid advisory pre-gate** | Gate on Analyze advisory + kimi smoke PUBLIC egress | Not verdict path; Checkpoint NO_GO |
-| **WP-01 runtime baseline** | Schema 1.2.1: passed/skipped/failed + gates + env fingerprint + **documented_env set equality (symdiff)** + **architecture_inventory** (46/71/59) checked in CI `--check-readme` | Not Checkpoint GO |
+| **WP-01 runtime baseline** | Schema 1.2.1: passed/skipped/failed + gates + env fingerprint + **documented_env set equality (symdiff)** + **architecture_inventory** (47/71/60) checked in CI `--check-readme` | Not Checkpoint GO |
 | **ADR-002 open-core** | **accepted** 2026-08-05; LICENSE stays MIT | Boundary defined; not commercial features delivered |
 | **OIDC BFF POST-05** | Phase 2 stubs (login/callback/logout + CSRF); `auth_bff` stays NOT_IMPLEMENTED | Phase 3 needs IdP |
 | **BCF T2** | Verifier `--checklist` dry-run; pack STATUS stays NOT_VERIFIED | Needs real CDE log/screenshot/hashes |

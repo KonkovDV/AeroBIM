@@ -484,18 +484,17 @@ class AdvisoryOrchestrator:
         # TZ row 19: local IFC space inventory candidates (no egress). Always eligible —
         # HybridRouteGate only suppresses external/agent advisory, not local inventory.
         space_candidates: tuple = ()
+        extractor = getattr(self._host, "_space_inventory_extractor", None)
         if (
             getattr(self._host, "_space_efficiency_advisory_enabled", False)
             and request.ifc_path is not None
+            and extractor is not None
         ):
             from aerobim.domain.space_efficiency_advisory import (
                 build_space_efficiency_candidates,
             )
-            from aerobim.infrastructure.adapters.ifc_space_inventory import (
-                extract_space_inventory,
-            )
 
-            spaces = extract_space_inventory(request.ifc_path)
+            spaces = extractor.extract(request.ifc_path)
             space_candidates = build_space_efficiency_candidates(spaces)
             if space_candidates:
                 tool_traces.append(
@@ -579,12 +578,16 @@ class AdvisoryOrchestrator:
 
 
 def _advisory_object_kind(request: ValidationRequest) -> str:
-    """Conservative object kind for advisory routing (never PUBLIC by default)."""
+    """Conservative object kind for advisory routing (never PUBLIC by default).
+
+    Only trusted corpus path *prefixes* may classify as public_fixture. Never
+    substring-match ``fixture`` in filenames (customer ``office_fixture_v2.ifc``).
+    """
 
     path = str(getattr(request, "ifc_path", "") or "").replace("\\", "/").lower()
     # Leading slash so relative ``samples/...`` matches the same as absolute paths.
     marked = f"/{path.lstrip('/')}"
-    if "/samples/" in marked or "/fixtures/" in marked or "fixture" in path:
+    if "/samples/" in marked or "/fixtures/" in marked:
         return "public_fixture"
     return "ifc"
 
@@ -713,9 +716,12 @@ class EvidenceAssembler:
         if overlay_trace is not None:
             overlay_traces.append(overlay_trace)
         if may_overlay:
+            # Only trusted corpus prefixes may authorize synthetic_public egress.
+            allow_synth = _advisory_object_kind(request) == "public_fixture"
             issues_with_remarks, llm_advisory_capability = self._host._overlay_llm_remarks(
                 issues_with_remarks,
                 request_id=request.request_id,
+                allow_synthetic_public=allow_synth,
             )
         else:
             reason = (overlay_trace or {}).get("reason") or "hybrid_route_gate blocked"

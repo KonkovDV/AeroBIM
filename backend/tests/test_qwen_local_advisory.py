@@ -49,6 +49,7 @@ class OpenAICompatLlmProviderTests(unittest.TestCase):
             request_id="t1",
             findings=({"finding_id": "f-1", "message": "REI missing"},),
             locale="ru",
+            allow_synthetic_public=True,
         )
         response = provider.generate(request)
         self.assertEqual(response.status, "advisory")
@@ -73,6 +74,7 @@ class OpenAICompatLlmProviderTests(unittest.TestCase):
         request = build_remark_llm_request(
             request_id="t2",
             findings=({"finding_id": "f-2"},),
+            allow_synthetic_public=True,
         )
         response = provider.generate(request)
         self.assertEqual(response.status, "failed")
@@ -337,6 +339,7 @@ class YandexStudioCompatTests(unittest.TestCase):
                 findings=({"finding_id": "x", "message": "m"},),
                 locale="ru",
                 allow_customer_data=False,
+                allow_synthetic_public=True,
             )
         )
         self.assertEqual(response.status, "advisory")
@@ -417,6 +420,7 @@ class YandexStudioCompatTests(unittest.TestCase):
             build_remark_llm_request(
                 request_id="r",
                 findings=({"finding_id": "x"},),
+                allow_synthetic_public=True,
             )
         )
         self.assertEqual(response.status, "failed")
@@ -428,6 +432,7 @@ class YandexStudioCompatTests(unittest.TestCase):
             locale="ru",
             request_id="r",
             provider=provider,
+            allow_synthetic_public=True,
         )
         self.assertEqual(result.status, "SKIPPED")
         self.assertEqual(result.reason, "reasoning_only")
@@ -459,7 +464,11 @@ class YandexStudioCompatTests(unittest.TestCase):
             transport=transport,
         )
         response = provider.generate(
-            build_remark_llm_request(request_id="r", findings=({"finding_id": "x"},))
+            build_remark_llm_request(
+                request_id="r",
+                findings=({"finding_id": "x"},),
+                allow_synthetic_public=True,
+            )
         )
         self.assertEqual(response.status, "advisory")
         self.assertTrue(response.schema_valid)
@@ -535,6 +544,7 @@ class YandexStudioCompatTests(unittest.TestCase):
                 request_id="r429",
                 findings=({"finding_id": "x", "message": "m"},),
                 allow_customer_data=False,
+                allow_synthetic_public=True,
             )
         )
         self.assertEqual(response.status, "advisory")
@@ -581,6 +591,7 @@ class LlmTokenBudgetTests(unittest.TestCase):
         request = build_remark_llm_request(
             request_id="budget",
             findings=({"finding_id": "f", "message": "x" * 200},),
+            allow_synthetic_public=True,
         )
         response = provider.generate(request)
         self.assertEqual(response.status, "blocked_by_policy")

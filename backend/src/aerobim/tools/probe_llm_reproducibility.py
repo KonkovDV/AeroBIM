@@ -41,6 +41,7 @@ def _run_once(
         findings=findings,
         locale="ru",
         allow_customer_data=False,
+        allow_synthetic_public=True,
     )
     response = provider.generate(request)
     draft = response.remark_draft or ""

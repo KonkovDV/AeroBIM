@@ -60,9 +60,15 @@ from aerobim.infrastructure.adapters.http_bcf_api_client import HttpBcfApiClient
 from aerobim.infrastructure.adapters.hybrid_drawing_analyzer import HybridDrawingAnalyzer
 from aerobim.infrastructure.adapters.ifc_aabb_mep_pair_filter import IfcAabbMepPairFilter
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+from aerobim.infrastructure.adapters.ifc_guid_attribute_diff import (
+    IfcGuidAttributeDiffAdapter,
+)
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
 from aerobim.infrastructure.adapters.ifc_quantity_consistency_adapter import (
     IfcQuantityConsistencyAdapter,
+)
+from aerobim.infrastructure.adapters.ifc_space_inventory import (
+    IfcOpenShellSpaceInventoryExtractor,
 )
 from aerobim.infrastructure.adapters.ifc_system_aware_clash import IfcSystemAwareClash
 from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
@@ -75,9 +81,6 @@ from aerobim.infrastructure.adapters.json_detached_signature_auditor import (
 from aerobim.infrastructure.adapters.json_norm_rule_pack_loader import JsonNormRulePackLoader
 from aerobim.infrastructure.adapters.json_package_inventory_loader import (
     JsonPackageInventoryLoader,
-)
-from aerobim.infrastructure.adapters.ifc_guid_attribute_diff import (
-    IfcGuidAttributeDiffAdapter,
 )
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
@@ -323,6 +326,11 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
+        Tokens.IFC_SPACE_INVENTORY,
+        lambda _current: IfcOpenShellSpaceInventoryExtractor(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
         Tokens.REQUIREMENT_TO_IDS_COMPILER,
         lambda current: DeterministicRequirementToIdsCompiler(
             requirement_extractor=current.resolve(Tokens.REQUIREMENT_EXTRACTOR)
@@ -555,6 +563,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
             llm_advisory_max_issues=current.resolve(Tokens.SETTINGS).llm_advisory_max_issues,
             llm_max_concurrent=current.resolve(Tokens.SETTINGS).llm_max_concurrent,
             space_efficiency_advisory_enabled=True,
+            space_inventory_extractor=current.resolve(Tokens.IFC_SPACE_INVENTORY),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

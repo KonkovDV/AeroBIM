@@ -271,6 +271,8 @@ class Adv04NoReclaimOnGetTests(unittest.TestCase):
 
 class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
     def _host(self) -> MagicMock:
+        from aerobim.domain.llm_advisory import DisabledLlmProvider
+
         host = MagicMock()
         host._priority_profile = "default"
         host._attach_remarks.side_effect = lambda issues: list(issues)
@@ -285,6 +287,17 @@ class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
         host._review_event_store = MagicMock()
         host._audit_report_store = MagicMock()
         host._audit_report_store.get.return_value = None
+        # Explicit disables — MagicMock auto-attrs would otherwise look "configured".
+        host._llm_advisory_provider = DisabledLlmProvider()
+        host._hybrid_route_gate = None
+
+        def _overlay(issues, *, request_id: str, allow_synthetic_public: bool = False):
+            return (
+                tuple(issues),
+                CapabilityStatus(CapabilityState.SKIPPED, "llm advisory not configured"),
+            )
+
+        host._overlay_llm_remarks.side_effect = _overlay
         return host
 
     def _bundles(self, request: ValidationRequest):
