@@ -210,6 +210,7 @@ def _normalized_bbox(region: DrawingRegionRef) -> BBox | None:
     if crs in _ABSOLUTE_CRS:
         if not has_page:
             return None
+        assert pw is not None and ph is not None
         return _scale_to_normalized(bbox, float(pw), float(ph))
 
     if crs in _NORMALIZED_CRS_ALIASES:
@@ -218,6 +219,7 @@ def _normalized_bbox(region: DrawingRegionRef) -> BBox | None:
     if _is_normalized_bbox(bbox):
         return _finalize_normalized(bbox)
     if has_page:
+        assert pw is not None and ph is not None
         return _scale_to_normalized(bbox, float(pw), float(ph))
     return None
 

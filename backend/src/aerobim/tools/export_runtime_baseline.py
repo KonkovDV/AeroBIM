@@ -350,9 +350,7 @@ def _live_architecture_inventory(repo: Path) -> dict[str, int]:
                     ports.add(name)
     adapters = 0
     if adapters_root.exists():
-        adapters = sum(
-            1 for path in adapters_root.glob("*.py") if path.name != "__init__.py"
-        )
+        adapters = sum(1 for path in adapters_root.glob("*.py") if path.name != "__init__.py")
     tokens = 0
     if tokens_path.exists():
         tokens = len(
@@ -502,7 +500,9 @@ def _check_architecture_inventory(repo: Path) -> list[str]:
             stored = json.loads(artifact.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             stored = None
-            errors.append("Invalid runtime-baseline-latest.json while checking architecture_inventory")
+            errors.append(
+                "Invalid runtime-baseline-latest.json while checking architecture_inventory"
+            )
         if isinstance(stored, dict):
             art = stored.get("architecture_inventory")
             if not isinstance(art, dict):

@@ -1374,8 +1374,10 @@ class ApiMalformedInputTests(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
 
     def test_analyze_missing_ifc_path_rejected(self) -> None:
+        # Document-only analyze allows omitted ifc_path, but empty body still fails
+        # closed (no requirements / IDS / package inputs) with 400 — not a silent pass.
         response = self.client.post("/v1/analyze/project-package", json={})
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
 
     def test_analyze_too_many_drawings_rejected(self) -> None:
         response = self.client.post(

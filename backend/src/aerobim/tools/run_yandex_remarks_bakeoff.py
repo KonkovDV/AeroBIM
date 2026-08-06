@@ -62,7 +62,8 @@ def _load_cases(path: Path, *, limit: int) -> list[dict[str, Any]]:
 
 
 def _findings_from_case(case: dict[str, Any]) -> tuple[dict[str, Any], ...]:
-    ctx = case.get("input_context") if isinstance(case.get("input_context"), dict) else {}
+    raw_ctx = case.get("input_context")
+    ctx: dict[str, Any] = raw_ctx if isinstance(raw_ctx, dict) else {}
     raw = ctx.get("deterministic_findings") or []
     if not isinstance(raw, list):
         return ()
@@ -228,9 +229,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     repo = _repo_root()
     day = datetime.now(tz=UTC).date().isoformat()
-    out = args.output or (
-        repo / "docs" / "evidence" / f"yandex-remarks-model-bakeoff-{day}.json"
-    )
+    out = args.output or (repo / "docs" / "evidence" / f"yandex-remarks-model-bakeoff-{day}.json")
     out.parent.mkdir(parents=True, exist_ok=True)
 
     key = (os.getenv("AEROBIM_LLM_API_KEY") or "").strip()
@@ -244,7 +243,10 @@ def main(argv: list[str] | None = None) -> int:
             "status": "NOT_RUN",
             "reason": "AEROBIM_LLM_API_KEY not set in this environment",
             "candidates": list(_CANDIDATES),
-            "budget_note": "Live bake-off deferred; mock compare remains artifacts/sprint-2-1/llm-comparison.json",
+            "budget_note": (
+                "Live bake-off deferred; mock compare remains "
+                "artifacts/sprint-2-1/llm-comparison.json"
+            ),
         }
         out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         md = out.with_suffix(".md")
@@ -274,9 +276,7 @@ def main(argv: list[str] | None = None) -> int:
     ]
     for row in report.get("models") or []:
         if "schema_pass_rate" not in row:
-            lines.append(
-                f"| {row.get('model')} | {row.get('status')} | — | — | — |"
-            )
+            lines.append(f"| {row.get('model')} | {row.get('status')} | — | — | — |")
             continue
         lines.append(
             f"| {row.get('model')} | {row.get('status')} | {row.get('schema_pass_rate')} | "

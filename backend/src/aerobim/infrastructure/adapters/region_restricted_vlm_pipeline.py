@@ -152,11 +152,7 @@ class RegionRestrictedVlmPipeline:
             )
 
         regions = self._region_detector.detect(source.path, sheet_id=source.sheet_id)
-        page_rotate = (
-            read_page_rotate_degrees(source.path)
-            if self._exclude_stamp_regions
-            else 0
-        )
+        page_rotate = read_page_rotate_degrees(source.path) if self._exclude_stamp_regions else 0
         plan = plan_region_reads(
             text_layer_present=text_layer_present,
             regions=regions,
@@ -211,10 +207,7 @@ class RegionRestrictedVlmPipeline:
         assert self._cropper is not None and self._reader is not None  # narrowed by caller
         crop_sha = ""
         try:
-            if (
-                self._exclude_stamp_regions
-                and task.coordinate_system != "normalized-0-1"
-            ):
+            if self._exclude_stamp_regions and task.coordinate_system != "normalized-0-1":
                 return RegionRead(
                     task.region_id,
                     (),

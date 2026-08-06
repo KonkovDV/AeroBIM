@@ -43,7 +43,7 @@ class PackageManifest:
     """
 
     request_id: str
-    ifc_path: Path
+    ifc_path: Path | None
     has_requirement_source: bool
     has_technical_spec: bool
     has_calculation_source: bool

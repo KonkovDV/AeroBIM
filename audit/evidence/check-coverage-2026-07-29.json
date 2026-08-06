@@ -1,93 +1,143 @@
 {
   "artifact": "check-coverage-map",
-  "corpus": "synthetic",
-  "disclaimer": "synthetic fixture; no customer data; not product accuracy",
-  "note": "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope + all family capabilities OK; verdict-neutral — does NOT set summary.passed (ADR-001)",
+  "schema_version": "1.1.0",
+  "note": "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope + all family capabilities OK; verdict-neutral — does NOT set summary.passed (ADR-001). operator_status is a presentation alias (done/findings/not_done/partial/needs_expert), not a product claim.",
+  "operator_legend": {
+    "done": "Проверка выполнена на этом источнике; нарушений не найдено",
+    "findings": "Проверка выполнена; есть детерминированные находки",
+    "not_done": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)",
+    "partial": "Проверка запускалась, данных или движка недостаточно",
+    "needs_expert": "Только advisory-сигнал — требуется эксперт"
+  },
   "sources": [
     {
+      "source_id": "model.ifc",
       "families": {
-        "cross-document": "checked_ok",
-        "drawing-validation": "not_checked",
-        "ids-validation": "not_checked",
         "ifc-validation": "checked_findings",
+        "ids-validation": "not_checked",
+        "drawing-validation": "not_checked",
+        "cross-document": "checked_ok",
         "spatial": "not_checked"
       },
+      "operator_status": {
+        "ifc-validation": "findings",
+        "ids-validation": "not_done",
+        "drawing-validation": "not_done",
+        "cross-document": "done",
+        "spatial": "not_done"
+      },
       "reasons": {
-        "drawing-validation": "source not in scope of this check",
         "ids-validation": "source not in scope of this check",
+        "drawing-validation": "source not in scope of this check",
         "spatial": "check family did not fully run"
-      },
-      "source_id": "model.ifc"
+      }
     },
     {
+      "source_id": "AR_RD_sheet12.pdf",
       "families": {
+        "ifc-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "drawing-validation": "not_checked",
         "cross-document": "requires_expert",
-        "drawing-validation": "not_checked",
-        "ids-validation": "not_checked",
-        "ifc-validation": "not_checked",
         "spatial": "not_checked"
       },
+      "operator_status": {
+        "ifc-validation": "not_done",
+        "ids-validation": "not_done",
+        "drawing-validation": "not_done",
+        "cross-document": "needs_expert",
+        "spatial": "not_done"
+      },
       "reasons": {
+        "ifc-validation": "source not in scope of this check",
+        "ids-validation": "source not in scope of this check",
+        "drawing-validation": "source not in scope of this check",
         "cross-document": "advisory-only findings require expert confirmation",
-        "drawing-validation": "source not in scope of this check",
-        "ids-validation": "source not in scope of this check",
-        "ifc-validation": "source not in scope of this check",
         "spatial": "source not in scope of this check"
-      },
-      "source_id": "AR_RD_sheet12.pdf"
+      }
     },
     {
+      "source_id": "req.ids",
       "families": {
-        "cross-document": "not_checked",
-        "drawing-validation": "not_checked",
+        "ifc-validation": "not_checked",
         "ids-validation": "checked_ok",
-        "ifc-validation": "not_checked",
-        "spatial": "not_checked"
-      },
-      "reasons": {
-        "cross-document": "source not in scope of this check",
-        "drawing-validation": "source not in scope of this check",
-        "ifc-validation": "source not in scope of this check",
-        "spatial": "source not in scope of this check"
-      },
-      "source_id": "req.ids"
-    },
-    {
-      "families": {
-        "cross-document": "not_checked",
-        "drawing-validation": "insufficient_data",
-        "ids-validation": "not_checked",
-        "ifc-validation": "not_checked",
-        "spatial": "not_checked"
-      },
-      "reasons": {
-        "cross-document": "source not in scope of this check",
-        "drawing-validation": "a check in this family failed",
-        "ids-validation": "source not in scope of this check",
-        "ifc-validation": "source not in scope of this check",
-        "spatial": "source not in scope of this check"
-      },
-      "source_id": "sheet-12"
-    },
-    {
-      "families": {
-        "cross-document": "not_checked",
         "drawing-validation": "not_checked",
-        "ids-validation": "not_checked",
+        "cross-document": "not_checked",
+        "spatial": "not_checked"
+      },
+      "operator_status": {
+        "ifc-validation": "not_done",
+        "ids-validation": "done",
+        "drawing-validation": "not_done",
+        "cross-document": "not_done",
+        "spatial": "not_done"
+      },
+      "reasons": {
+        "ifc-validation": "source not in scope of this check",
+        "drawing-validation": "source not in scope of this check",
+        "cross-document": "source not in scope of this check",
+        "spatial": "source not in scope of this check"
+      }
+    },
+    {
+      "source_id": "sheet-12",
+      "families": {
         "ifc-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "drawing-validation": "insufficient_data",
+        "cross-document": "not_checked",
+        "spatial": "not_checked"
+      },
+      "operator_status": {
+        "ifc-validation": "not_done",
+        "ids-validation": "not_done",
+        "drawing-validation": "partial",
+        "cross-document": "not_done",
+        "spatial": "not_done"
+      },
+      "reasons": {
+        "ifc-validation": "source not in scope of this check",
+        "ids-validation": "source not in scope of this check",
+        "drawing-validation": "a check in this family failed",
+        "cross-document": "source not in scope of this check",
+        "spatial": "source not in scope of this check"
+      }
+    },
+    {
+      "source_id": "(unattributed)",
+      "families": {
+        "ifc-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "drawing-validation": "not_checked",
+        "cross-document": "not_checked",
         "spatial": "checked_findings"
+      },
+      "operator_status": {
+        "ifc-validation": "not_done",
+        "ids-validation": "not_done",
+        "drawing-validation": "not_done",
+        "cross-document": "not_done",
+        "spatial": "findings"
       },
       "reasons": {
         "spatial": "finding not attributed to a listed source id"
-      },
-      "source_id": "(unattributed)"
+      }
     }
   ],
   "summary": {
-    "checked_findings": 2,
     "checked_ok": 2,
-    "insufficient_data": 1,
+    "checked_findings": 2,
     "not_checked": 19,
+    "insufficient_data": 1,
     "requires_expert": 1
-  }
+  },
+  "operator_summary": {
+    "done": 2,
+    "findings": 2,
+    "not_done": 19,
+    "partial": 1,
+    "needs_expert": 1
+  },
+  "corpus": "synthetic",
+  "disclaimer": "synthetic fixture; no customer data; not product accuracy"
 }

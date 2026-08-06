@@ -638,11 +638,7 @@ class FilesystemAuditStore:
         return ValidationReport(
             report_id=data["report_id"],
             request_id=data["request_id"],
-            ifc_path=(
-                Path(data["ifc_path"])
-                if data.get("ifc_path") not in (None, "")
-                else None
-            ),
+            ifc_path=(Path(data["ifc_path"]) if data.get("ifc_path") not in (None, "") else None),
             ifc_object_key=data.get("ifc_object_key"),
             created_at=data["created_at"],
             requirements=tuple(

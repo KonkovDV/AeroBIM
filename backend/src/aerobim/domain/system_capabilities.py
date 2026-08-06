@@ -399,9 +399,7 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "pii_gate": {
                 "active": True,
                 "effectiveness_on_customer_sheets": "NOT_MEASURED",
-                "claim_boundary": (
-                    "PII gate active; effectiveness on real sheets not measured"
-                ),
+                "claim_boundary": ("PII gate active; effectiveness on real sheets not measured"),
                 "exclusion_counters": [
                     "excluded_by_role",
                     "excluded_by_geometry",

@@ -114,12 +114,7 @@ class ProviderRegistry:
             revision = str(spec.get("model_revision") or "").strip() or None
             deterministic = bool(spec.get("deterministic", False))
             provider = str(spec["provider"])
-            if (
-                require_revision
-                and not deterministic
-                and provider != "human"
-                and not revision
-            ):
+            if require_revision and not deterministic and provider != "human" and not revision:
                 raise ValueError(
                     f"profile {name!r} missing model_revision "
                     "(required for schema_version ≥1.1.0 non-deterministic profiles)"
@@ -153,9 +148,7 @@ class ProviderRegistry:
             tier = ModelTier(str(tkey).lower())
             name = str(pname)
             if name in forbidden_defaults:
-                raise ValueError(
-                    f"tier_defaults: profile {name!r} is listed in forbidden_defaults"
-                )
+                raise ValueError(f"tier_defaults: profile {name!r} is listed in forbidden_defaults")
             _check(name, tier, "tier_defaults")
             tier_defaults[tier] = name
 

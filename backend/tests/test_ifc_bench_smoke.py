@@ -54,9 +54,8 @@ class IfcBenchSmokeTests(unittest.TestCase):
             payload = evaluate_dataset(root, version="v1")
             errors = [r for r in payload["results"] if r["status"] == "error"]
             self.assertTrue(errors)
-            self.assertTrue(
-                any("unsafe" in (e.get("detail") or "") for e in errors)
-            )
+            self.assertTrue(any("unsafe" in (e.get("detail") or "") for e in errors))
+
     def test_live_dataset_smoke_when_present(self) -> None:
         from aerobim.tools.run_ifc_bench_smoke import evaluate_dataset, repo_root
 
@@ -86,9 +85,7 @@ class IfcBenchSmokeTests(unittest.TestCase):
         self.assertTrue(payload["benchmark"]["questions_sha256_matches_pin"])
         self.assertGreaterEqual(payload["summary"]["scored"], 5)
         self.assertEqual(payload["summary"]["mismatched"], 0)
-        self.assertLess(
-            payload["summary"]["scored"], payload["summary"]["total_questions"]
-        )
+        self.assertLess(payload["summary"]["scored"], payload["summary"]["total_questions"])
         raw = json.dumps(payload)
         self.assertIn("scored=", raw)
 

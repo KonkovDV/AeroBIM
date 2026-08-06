@@ -75,6 +75,7 @@ def operator_status_for(status: CoverageStatus) -> str:
 
     return _OPERATOR_STATUS[status]
 
+
 # Семейство -> НАБОР полей ReportCapabilities, влияющих на это семейство. CHECKED_OK
 # требует, чтобы ВСЕ они были OK (worst-state агрегация); любой FAILED -> INSUFFICIENT_DATA.
 _FAMILY_CAPABILITIES: dict[FindingCategory, tuple[str, ...]] = {

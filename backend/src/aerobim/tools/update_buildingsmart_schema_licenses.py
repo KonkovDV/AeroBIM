@@ -20,8 +20,17 @@ NOTE = (
 
 
 def _sha(path: Path) -> tuple[str, int]:
+    """Match export_samples_manifest: hash LF-normalized text on Windows CRLF trees."""
     data = path.read_bytes()
-    return hashlib.sha256(data).hexdigest(), len(data)
+    size = len(data)
+    if b"\r\n" in data and b"\x00" not in data[:8192]:
+        try:
+            data.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+        else:
+            data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest(), size
 
 
 def main() -> None:

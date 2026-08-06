@@ -74,6 +74,35 @@ class ComplianceAgentOrchestrator:
         self._system_clash = system_clash
         self._max_steps = max(1, max_steps)
 
+    def _ifc_required_error(
+        self,
+        step: AgentToolStep,
+        *,
+        rule_id: str,
+        message: str,
+        category: FindingCategory,
+    ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
+        return (
+            AgentToolStep(
+                tool_name=step.tool_name,
+                rationale=step.rationale,
+                arguments=step.arguments,
+                status="error",
+                detail="ifc_path omitted",
+            ),
+            [
+                ValidationIssue(
+                    rule_id=rule_id,
+                    severity=Severity.INFO,
+                    message=message,
+                    category=category,
+                    source_id="compliance-agent",
+                )
+            ],
+            [],
+            None,
+        )
+
     def run(self, request: ValidationRequest) -> AgentRunResult:
         plan = self._plan(request)
         capped = len(plan) > self._max_steps
@@ -556,6 +585,13 @@ class ComplianceAgentOrchestrator:
         step: AgentToolStep,
     ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
         assert self._quantity_checker is not None
+        if request.ifc_path is None:
+            return self._ifc_required_error(
+                step,
+                rule_id="AEROBIM-AGENT-QTY-NO-IFC",
+                message="[advisory] Quantity tool requires ifc_path",
+                category=FindingCategory.IFC_VALIDATION,
+            )
         # Agent has no requirement extractor; empty claims → skipped (not false "ok").
         claims = claims_from_area_requirements(())
         if not claims:
@@ -639,6 +675,13 @@ class ComplianceAgentOrchestrator:
         step: AgentToolStep,
     ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
         assert self._clash_detector is not None
+        if request.ifc_path is None:
+            return self._ifc_required_error(
+                step,
+                rule_id="AEROBIM-AGENT-CLASH-NO-IFC",
+                message="[advisory] Clash tool requires ifc_path",
+                category=FindingCategory.SPATIAL,
+            )
         try:
             results = list(self._clash_detector.detect(request.ifc_path))
         except Exception as exc:  # noqa: BLE001
@@ -708,6 +751,13 @@ class ComplianceAgentOrchestrator:
         step: AgentToolStep,
     ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
         assert self._ifc_kg is not None
+        if request.ifc_path is None:
+            return self._ifc_required_error(
+                step,
+                rule_id="AEROBIM-AGENT-IFC-KG-NO-IFC",
+                message="[advisory] IFC KG query requires ifc_path",
+                category=FindingCategory.IFC_VALIDATION,
+            )
         question = step.arguments.get("question", "") or "list elements"
         try:
             result = self._ifc_kg.query_nl(question, ifc_path=request.ifc_path)
@@ -771,6 +821,13 @@ class ComplianceAgentOrchestrator:
         step: AgentToolStep,
     ) -> tuple[AgentToolStep, list[ValidationIssue], list[NormPassage], IdsCompileDraft | None]:
         assert self._system_clash is not None
+        if request.ifc_path is None:
+            return self._ifc_required_error(
+                step,
+                rule_id="AEROBIM-AGENT-MEP-CLASH-NO-IFC",
+                message="[advisory] MEP system clash tool requires ifc_path",
+                category=FindingCategory.SPATIAL,
+            )
         try:
             findings = list(self._system_clash.detect(request.ifc_path))
         except Exception as exc:  # noqa: BLE001

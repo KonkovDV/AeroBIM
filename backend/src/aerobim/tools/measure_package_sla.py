@@ -301,16 +301,13 @@ def measure_package_sla(
     import os
 
     llm_advisory_enabled = (
-        (os.getenv("AEROBIM_LLM_ADVISORY_ENABLED") or os.getenv("AEROBIM_LLM_LOCAL_ENABLED") or "")
-        .strip()
-        .lower()
-        in {
-            "1",
-            "true",
-            "yes",
-            "on",
-        }
-    )
+        os.getenv("AEROBIM_LLM_ADVISORY_ENABLED") or os.getenv("AEROBIM_LLM_LOCAL_ENABLED") or ""
+    ).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
 
     resolved_command = command or (
         f"python -m aerobim.tools.measure_package_sla --pack {pack_path} "

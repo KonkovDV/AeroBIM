@@ -63,6 +63,9 @@ class ValidateIfcAgainstIdsUseCase:
         if not requirements and not getattr(request, "ids_path", None):
             raise ValueError("No requirements were extracted from the provided source")
 
+        if request.ifc_path is None:
+            raise ValueError("ifc_path is required for IFC/IDS validation")
+
         schema_issues = (
             list(self._ifc_schema_validator.validate_schema(request.ifc_path))
             if self._ifc_schema_validator is not None
