@@ -1,0 +1,45 @@
+%PDF-1.4
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj
+3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources<< /Font<< /F1 5 0 R >> >> >>endobj
+4 0 obj<< /Length 2117 >>stream
+BT /F1 9 Tf 40 780 Td 11 TL
+(*** SYNTHETIC/FIXTURE ONLY ***) Tj
+T* (*** CUSTOMER ACCURACY NOT ESTABLISHED ***) Tj
+T* (AeroBIM Sprint 2 baseline report) Tj
+T* (1 Goal: synthetic detection baseline; checkpoint NO_GO) Tj
+T* (2 Commit: d96a59ac6704357336ae46f7d61f6435be4c6a2c) Tj
+T* (3 Dataset: samples/benchmarks/sprint2-synthetic-ground-truth.json manifest=samples/benchmarks/sprint2-dataset/MANIFEST.json) Tj
+T* (4 License: repo MIT fixtures; no customer packs) Tj
+T* (5 GT method: docs/pilot/SPRINT2_DETECTION_METRICS_METHOD_2026_08.md) Tj
+T* (6 Env: {'python': '3.13.7', 'platform': 'Windows-11-10.0.26200-SP0', 'implementation': 'CPython'}) Tj
+T* (7 Repro: export_sprint2_dataset_manifest + run_sprint2_synthetic_baseline) Tj
+T* (8 Speed: mean=0.457916 p95=2.705935) Tj
+T* (9 Quality: TP/FP/FN=6/2/0 P=0.75 R=1.0) Tj
+T* (10 Remarks: remarks_count=6) Tj
+T* (11 Clashes: clashes_count=0 \(honesty: not planted\)) Tj
+T* (12 Severity: {'error': 4, 'warning': 3}) Tj
+T* (13 Confusion: TP=6 FP=2 FN=0) Tj
+T* (14 Agreement/nDCG: N/A ? No dual-human adjudicator CSV in this synthetic baseline; measure_adjudicator_agreement requires customer/expert labels \(RT-001\)) Tj
+T* (15 Repro hash: 74e0eb2727d53cdce0d59cc32973eb425ee59cdf3cfc2f8cafcec1475eb80b86) Tj
+T* (16 Capabilities: {'clash': {'status': 'PARTIAL', 'note': 'fixture path exists; MEP system clash NOT_VERIFIED'}, 'ids': {'status': 'VERIFIED_FIXTURE_ONLY'}, 'ifc_validation': {'status': 'VERIFIED_FIXTURE_ONLY'}, 'llm_advisory': {'status': 'ADVISORY_ONLY', 'affects_summary_passed': False}, 'mep_system_clash': {'status': 'NOT_VERIFIED'}, 'native_dwg': {'status': 'MISSING'}, 'bcf_cde': {'status': 'PARTIAL', 'note': 'structural export only; not CDE-ready claim'}, 'customer_sla': {'status': 'BLOCKED_BY_CUSTOMER_DATA'}}) Tj
+T* (17 Claims: synthetic_only; customer_precision_claim_publishable=false; precision_claim_publishable=false; customer_accuracy_not_established=true) Tj
+T* (18 TZ map: see JSON twin tz_class_coverage) Tj
+T* (19 Limits: no customer packs; 90% NOT confirmed; RT-001 open; NO_GO) Tj
+T* (generated_at=2026-08-06T20:07:18.313444+00:00) Tj
+ET
+endstream
+endobj
+5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000056 00000 n 
+0000000111 00000 n 
+0000000233 00000 n 
+0000002400 00000 n 
+trailer<< /Size 6 /Root 1 0 R >>
+startxref
+2468
+%%EOF

@@ -37,6 +37,11 @@ artifacts/*
 # Local operator artifacts
 .local/
 
+# Accidental local tracker dumps / non-canonical baselines (keep under .local or regenerate)
+docs/evidence/AeroBIM_baseline_*.pdf
+docs/evidence/sprint2-synthetic-baseline-2026-08-0[6-9].*
+docs/evidence/sprint2-synthetic-baseline-2026-08-1*.*
+
 # Accidental private dump at repo root (use .local/internal-docs/)
 /AeroBIM/
 

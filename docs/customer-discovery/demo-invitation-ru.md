@@ -22,7 +22,7 @@ purpose: demo_invite_after_interest
 
 Если нужно перенести — напишите удобный слот.
 
-Коньков Дмитрий Викторович
+[OPERATOR_FULL_NAME]
 команда AeroBIM, программа «Техлаб Москва»
 тел.: [ТЕЛЕФОН]
 github.com/KonkovDV/AeroBIM

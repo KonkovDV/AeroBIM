@@ -37,5 +37,5 @@
 
 ## Контакт
 
-Коньков Дмитрий Викторович · команда AeroBIM · [ТЕЛЕФОН]  
+[OPERATOR_FULL_NAME] · команда AeroBIM · [ТЕЛЕФОН]  
 github.com/KonkovDV/AeroBIM

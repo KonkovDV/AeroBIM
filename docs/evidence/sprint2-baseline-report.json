@@ -1,0 +1,258 @@
+{
+  "artifact_type": "sprint2_synthetic_baseline",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-08-06T20:07:18.313444+00:00",
+  "commit_sha": "d96a59ac6704357336ae46f7d61f6435be4c6a2c",
+  "claim_level": "synthetic_only",
+  "customer_precision_claim_publishable": false,
+  "precision_claim_publishable": false,
+  "customer_accuracy_not_established": true,
+  "closes_rt001": false,
+  "customer_evidence": false,
+  "checkpoint": "NO_GO",
+  "method_doc": "docs/pilot/SPRINT2_DETECTION_METRICS_METHOD_2026_08.md",
+  "ground_truth": "samples/benchmarks/sprint2-synthetic-ground-truth.json",
+  "dataset_manifest": "samples/benchmarks/sprint2-dataset/MANIFEST.json",
+  "dataset_manifest_meta": {
+    "reproducibility_hash": "59f903a936a66625b50ea914241a808f63ea8a4243d20272926fbbe3cd56310f",
+    "case_count": 15,
+    "mode_b_classes": [
+      "cross_document_calc",
+      "drawing_pdf_ocr_degraded",
+      "ifc_ids_property"
+    ],
+    "claim_level": "synthetic_only"
+  },
+  "environment": {
+    "python": "3.13.7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "implementation": "CPython"
+  },
+  "tz_class_coverage": [
+    {
+      "tz_class": "geometric_clash_between_systems",
+      "coverage": "not_planted_runnable",
+      "reason": "hard_clash listed in mutation catalog; no deterministic planted IFC pair in this sprint. RT-003 OPEN for verified MEP clash.",
+      "defect_ids": []
+    },
+    {
+      "tz_class": "drawing_model_dimension_mismatch",
+      "coverage": "not_planted_runnable",
+      "reason": "drawing_annotation_mismatch in catalog; no runnable 2D↔IFC planted pair yet.",
+      "defect_ids": []
+    },
+    {
+      "tz_class": "incorrect_space_area",
+      "coverage": "partial",
+      "defect_ids": [
+        "LB-001-load-value-mismatch"
+      ],
+      "note": "Canonical LOAD row mismatch is measured. Free-text area (LB-004) is known_undetected honesty boundary — not counted as FN for recall of planted detectable errors."
+    },
+    {
+      "tz_class": "missing_element_in_section",
+      "coverage": "partial",
+      "defect_ids": [
+        "LB-007-compensating-entity-presence"
+      ],
+      "note": "IDS-only class-swap is vacuous pass (honesty). Compensating entity-presence requirement is the planted detectable case."
+    },
+    {
+      "tz_class": "tz_requirement_mismatch",
+      "coverage": "measured",
+      "defect_ids": [
+        "LB-005-ifc-missing-property-relation",
+        "LB-006-ifc-wrong-property-value"
+      ]
+    },
+    {
+      "tz_class": "specification_model_contradiction",
+      "coverage": "measured",
+      "defect_ids": [
+        "LB-006-ifc-wrong-property-value"
+      ],
+      "note": "Wrong FireRating vs IDS requirement stands in for spec↔model contradiction on fixture."
+    }
+  ],
+  "limitations": [
+    "Synthetic planted defects only; unplanted TZ classes unmeasured",
+    "Ground truth complete by construction for planted detectable set",
+    "No real customer packages",
+    "TZ 90% threshold NOT confirmed",
+    "Does not close RT-001",
+    "Geometric clashes_count=0 by honesty (no planted clash IFC pair)",
+    "Agreement kappa/alpha and nDCG: N/A (no dual-human / ranking labels in this run)"
+  ],
+  "reproducibility_hash": "74e0eb2727d53cdce0d59cc32973eb425ee59cdf3cfc2f8cafcec1475eb80b86",
+  "capabilities_snapshot": {
+    "clash": {
+      "status": "PARTIAL",
+      "note": "fixture path exists; MEP system clash NOT_VERIFIED"
+    },
+    "ids": {
+      "status": "VERIFIED_FIXTURE_ONLY"
+    },
+    "ifc_validation": {
+      "status": "VERIFIED_FIXTURE_ONLY"
+    },
+    "llm_advisory": {
+      "status": "ADVISORY_ONLY",
+      "affects_summary_passed": false
+    },
+    "mep_system_clash": {
+      "status": "NOT_VERIFIED"
+    },
+    "native_dwg": {
+      "status": "MISSING"
+    },
+    "bcf_cde": {
+      "status": "PARTIAL",
+      "note": "structural export only; not CDE-ready claim"
+    },
+    "customer_sla": {
+      "status": "BLOCKED_BY_CUSTOMER_DATA"
+    }
+  },
+  "metrics": {
+    "tp": 6,
+    "fp": 2,
+    "fn": 0,
+    "precision": 0.75,
+    "recall": 1.0,
+    "wilson_precision": {
+      "successes": 6,
+      "trials": 8,
+      "alpha": 0.05,
+      "point": 0.75,
+      "lower": 0.409275,
+      "upper": 0.928521,
+      "half_width": 0.259623,
+      "method": "wilson_score"
+    },
+    "wilson_recall": {
+      "successes": 6,
+      "trials": 6,
+      "alpha": 0.05,
+      "point": 1.0,
+      "lower": 0.609666,
+      "upper": 1.0,
+      "half_width": 0.195167,
+      "method": "wilson_score"
+    },
+    "n_planted_detectable": 6,
+    "n_below_planner_halfwidth_008": true,
+    "time_per_case_mean_s": 0.457916,
+    "time_per_case_p95_s": 2.705935,
+    "remarks_count": 6,
+    "clashes_count": 0,
+    "clashes_honesty_note": "clashes_count is 0: geometric_clash_between_systems is not_planted_runnable in sprint2-synthetic-ground-truth; do not interpret as product clash quality",
+    "severity_distribution": {
+      "error": 4,
+      "warning": 3
+    },
+    "agreement": {
+      "status": "N/A",
+      "reason": "No dual-human adjudicator CSV in this synthetic baseline; measure_adjudicator_agreement requires customer/expert labels (RT-001)"
+    },
+    "ndcg": {
+      "status": "N/A",
+      "reason": "No ranking relevance labels supplied to this runner"
+    },
+    "llm_overlay": {
+      "status": "not_run_in_synthetic_detection_baseline",
+      "note": "Detection TP/FP/FN are deterministic engine paths. LLM overlay is verdict-neutral; cost bake-off is Block 5."
+    }
+  },
+  "cases": [
+    {
+      "defect_id": "LB-001-load-value-mismatch",
+      "tp": true,
+      "fn": false,
+      "fp_rules": [],
+      "elapsed_s": 6.2e-05,
+      "detected_rules": [
+        "AEROBIM-LOAD-MISMATCH"
+      ],
+      "severities": [
+        "warning"
+      ],
+      "finding_kind": "remark"
+    },
+    {
+      "defect_id": "LB-002-unit-scale-mismatch",
+      "tp": true,
+      "fn": false,
+      "fp_rules": [],
+      "elapsed_s": 3e-05,
+      "detected_rules": [
+        "AEROBIM-LOAD-MISMATCH"
+      ],
+      "severities": [
+        "warning"
+      ],
+      "finding_kind": "remark"
+    },
+    {
+      "defect_id": "LB-005-ifc-missing-property-relation",
+      "tp": true,
+      "fn": false,
+      "fp_rules": [],
+      "elapsed_s": 2.705935,
+      "detected_rules": [
+        "IDS-Wall Fire Rating"
+      ],
+      "severities": [
+        "error"
+      ],
+      "finding_kind": "remark"
+    },
+    {
+      "defect_id": "LB-006-ifc-wrong-property-value",
+      "tp": true,
+      "fn": false,
+      "fp_rules": [],
+      "elapsed_s": 0.01258,
+      "detected_rules": [
+        "IDS-Wall Fire Rating"
+      ],
+      "severities": [
+        "error"
+      ],
+      "finding_kind": "remark"
+    },
+    {
+      "defect_id": "LB-007-compensating-entity-presence",
+      "tp": true,
+      "fn": false,
+      "fp_rules": [
+        "SAM-001"
+      ],
+      "elapsed_s": 0.013479,
+      "detected_rules": [
+        "SAM-001"
+      ],
+      "severities": [
+        "error"
+      ],
+      "finding_kind": "remark"
+    },
+    {
+      "defect_id": "LB-011-ifc-duplicate-guid",
+      "tp": true,
+      "fn": false,
+      "fp_rules": [
+        "IDS-Wall Fire Rating"
+      ],
+      "elapsed_s": 0.015409,
+      "detected_rules": [
+        "AEROBIM-GUID-DUPLICATE",
+        "IDS-Wall Fire Rating"
+      ],
+      "severities": [
+        "warning",
+        "error"
+      ],
+      "finding_kind": "remark"
+    }
+  ]
+}
