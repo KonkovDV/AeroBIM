@@ -1,0 +1,93 @@
+{
+  "artifact_type": "aerobim_release_status",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-06T20:15:00+00:00",
+  "commit_sha": "d96a59ac6704357336ae46f7d61f6435be4c6a2c",
+  "checkpoint": "NO_GO",
+  "claim_level": "synthetic_only",
+  "customer_precision_claim_publishable": false,
+  "precision_claim_publishable": false,
+  "customer_accuracy_not_established": true,
+  "verdict_candidate": "ENGINEERING_READY_CUSTOMER_BLOCKED",
+  "verdict": "ENGINEERING_READY_CUSTOMER_BLOCKED",
+  "gates": {
+    "ruff_format_check": "PASS",
+    "ruff_check": "PASS",
+    "mypy": "PASS",
+    "pytest_focused": {
+      "status": "PASS",
+      "passed": 19,
+      "note": "test_verify_release_evidence + test_sprint2_dataset_manifest + test_advisory_vlm_off_equals_on"
+    },
+    "pytest_full": {
+      "status": "PASS",
+      "passed": 1902,
+      "skipped": 8,
+      "subtests_passed": 159,
+      "duration_s": 26.72,
+      "note": "Live full suite at packaging time; differs from runtime-baseline-latest.json historical counts (2043/2052) — do not conflate"
+    },
+    "verify_release_evidence": "PASS",
+    "runtime_baseline_quality_gates": {
+      "ruff": "PASS",
+      "mypy": "PASS",
+      "pytest": "PASS",
+      "vitest": "PASS",
+      "build": "PASS"
+    }
+  },
+  "evidence_paths": {
+    "runtime_baseline": "docs/evidence/runtime-baseline-latest.json",
+    "sprint2_baseline_report_json": "docs/evidence/sprint2-baseline-report.json",
+    "sprint2_baseline_evidence_json": "docs/evidence/sprint2-baseline-evidence.json",
+    "sprint2_baseline_report_md": "docs/evidence/sprint2-baseline-report.md",
+    "sprint2_baseline_report_pdf": "docs/evidence/sprint2-baseline-report.pdf",
+    "sprint2_brief_md": "docs/evidence/SPRINT2_BASELINE_REPORT_2026-08-06.md",
+    "sprint2_brief_pdf": "docs/evidence/SPRINT2_BASELINE_REPORT_2026-08-06.pdf",
+    "release_evidence_index": "docs/quality/RELEASE_EVIDENCE_INDEX_2026-08-06.md",
+    "release_status_md": "docs/quality/RELEASE_STATUS_2026-08-06.md",
+    "hyperdeep_audit": "docs/quality/AEROBIM_HYPERDEEP_AUDIT_2026-08-06.md",
+    "customer_one_pager": "docs/customer/CUSTOMER_ONE_PAGER.md",
+    "customer_outreach_tracker": "docs/customer/CUSTOMER_OUTREACH_TRACKER.csv",
+    "customer_demo_protocol": "docs/customer/CUSTOMER_DEMO_PROTOCOL_2026-08-06.md",
+    "claims_lock": "audit/reports/CLAIMS_LOCK_2026_07_17.md",
+    "customer_intake_gate": "audit/evidence/customer-intake-gate.json",
+    "rt_hyperdeep_security": "docs/quality/RED_TEAM_HYPERDEEP_2026_08_06.md"
+  },
+  "customer_intake_gate": {
+    "status": "BLOCKED_NO_CUSTOMER_DATA",
+    "claim_level": "not_ready",
+    "precision_claim_publishable": false,
+    "path": "audit/evidence/customer-intake-gate.json"
+  },
+  "superseded_artifacts": [
+    {
+      "path": "docs/evidence/sprint2-synthetic-baseline-2026-08-04.md",
+      "status": "HISTORICAL/SUPERSEDED",
+      "superseded_by": "docs/evidence/SPRINT2_BASELINE_REPORT_2026-08-06.md"
+    },
+    {
+      "path": "docs/evidence/sprint2-synthetic-baseline-2026-08-04.pdf",
+      "status": "HISTORICAL/SUPERSEDED",
+      "superseded_by": "docs/evidence/SPRINT2_BASELINE_REPORT_2026-08-06.pdf"
+    },
+    {
+      "path": "docs/evidence/sprint2-synthetic-baseline-2026-08-04.json",
+      "status": "HISTORICAL/SUPERSEDED",
+      "superseded_by": "docs/evidence/sprint2-baseline-evidence.json"
+    },
+    {
+      "path": "docs/quality/SPRINT2_TRACKER_DELIVERY_2026_08_04.md",
+      "status": "HISTORICAL/SUPERSEDED",
+      "note": "Filenames and delivery checklist superseded by 2026-08-06 release index"
+    }
+  ],
+  "limitations": [
+    "Synthetic/fixture evidence only",
+    "Customer accuracy not established",
+    "Live Kimi/Qwen/Gemma bake-off not claimed PASS without keys",
+    "Full architecture test suite rewrite not claimed",
+    "Native DWG / delivered MEP / CDE-ready BCF / calc independence / customer SLA not claimed",
+    "Substantial Sprint 2 packaging remains uncommitted at audit time"
+  ]
+}

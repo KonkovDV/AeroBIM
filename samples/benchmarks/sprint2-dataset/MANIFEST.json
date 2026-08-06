@@ -1,0 +1,401 @@
+{
+  "artifact_type": "sprint2_dataset_manifest",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "claim_level": "synthetic_only",
+  "customer_precision_claim_publishable": false,
+  "customer_evidence": false,
+  "closes_rt001": false,
+  "checkpoint": "NO_GO",
+  "generator": "export_sprint2_dataset_manifest",
+  "seed": 20260806,
+  "mode_b_classes": [
+    "cross_document_calc",
+    "drawing_pdf_ocr_degraded",
+    "ifc_ids_property"
+  ],
+  "case_count": 15,
+  "reproducibility_hash": "59f903a936a66625b50ea914241a808f63ea8a4243d20272926fbbe3cd56310f",
+  "evidence_file_sha256": {
+    "samples/ifc/wall-fire-rating-rei60.ifc": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785",
+    "samples/ids/wall-fire-rating.ids": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99",
+    "samples/benchmarks/sprint2-synthetic-ground-truth.json": "359583f8a38a730b90524292f030a9a45e912f71307e74d5ecdcfef5d5540ded",
+    "samples/benchmarks/injected-defects-level-b.json": "f8d4d2afb8725b647586df6d9b5dfe0faf3519fd0aa9cdf5fe92ec30acd64dfc",
+    "samples/benchmarks/drawing-advisory/cases-synthetic.json": "15f3b3d9f7e49eda942dbf74de0710f20407dac484aa1a1c0d033a249a65320a"
+  },
+  "forbidden_claims": [
+    "product_accuracy",
+    "gt_90_percent",
+    "production_ready",
+    "native_dwg",
+    "delivered_mep_clash",
+    "calc_independence",
+    "cde_ready_bcf",
+    "customer_sla_from_fixtures"
+  ],
+  "cases": [
+    {
+      "case_id": "s2-degraded-scan-protocol",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "backend/src/aerobim/tools/generate_degraded_scans.py",
+      "expected_findings": [
+        "degraded_variant_manifest"
+      ],
+      "severity": "info",
+      "rule_id": "DEGRADED-SCAN-PROVENANCE",
+      "evidence_refs": [
+        "backend/src/aerobim/tools/generate_degraded_scans.py",
+        "docs/pilot/VLM_OCR_COMPARISON_PROTOCOL_2026_08.md"
+      ],
+      "ground_truth_source": "generate_degraded_scans (seed=20260726 default)",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260726,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Protocol reference case: regenerate PNG variants via generate_degraded_scans; not a customer scan",
+      "sha256": "23741fc589e0178257f39aa6d0f41adef114b4f92d063b6e91f03eaf7850c390"
+    },
+    {
+      "case_id": "s2-draw-clean-calibrated",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=True",
+        "hitl_count=0"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:clean-calibrated"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "17636fc3a17e3d79ac9b53417450077db4d3a3bf115658af7f643b4a462787c7"
+    },
+    {
+      "case_id": "s2-draw-injection-control-fields",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=False",
+        "hitl_count=1"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:injection-control-fields"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "1d46a09276adb8ff75560edff456aa08e864b7cb54b0a9a0204df726c58bd3a8"
+    },
+    {
+      "case_id": "s2-draw-low-confidence-calibrated",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=True",
+        "hitl_count=1"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:low-confidence-calibrated"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "cdc226bbdf66a0360a77deb88e027ac1c2284a6f51617f8aaf41d797e51f5115"
+    },
+    {
+      "case_id": "s2-draw-malformed-dropped",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=False",
+        "hitl_count=1"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:malformed-dropped"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "1d329da27cc94d9f1630d1c64b64af830277d790a73accb1a3d13fa16acc1171"
+    },
+    {
+      "case_id": "s2-draw-structural-deviation",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=False",
+        "hitl_count=None"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:structural-deviation"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "b52312584e330ed92c7a75861036912e947580b625a36d0156b45e036d761fa4"
+    },
+    {
+      "case_id": "s2-draw-text-normalization",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=True",
+        "hitl_count=0"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:text-normalization"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "ea7e53e0caab96d1fe00ff310b5b6c4830169ea92997a151d4615eae49ce69de"
+    },
+    {
+      "case_id": "s2-draw-uncalibrated-all-hitl",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=True",
+        "hitl_count=1"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:uncalibrated-all-hitl"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "f726c929d1757a8b323ca35f074729eec8e5bf180b062542f64c00da8f0f61ed"
+    },
+    {
+      "case_id": "s2-draw-unreadable-region",
+      "case_class": "drawing_pdf_ocr_degraded",
+      "source_package": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "expected_findings": [
+        "schema_conformant=True",
+        "hitl_count=0"
+      ],
+      "severity": "info",
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "evidence_refs": [
+        "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+        "drawing-advisory:unreadable-region"
+      ],
+      "ground_truth_source": "samples/benchmarks/drawing-advisory/cases-synthetic.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "Synthetic VLM/drawing-advisory fixture; not product OCR accuracy",
+      "sha256": "150023d59b710f65051de8cab8dadadb903b712df624515de43b45a25cd9feee"
+    },
+    {
+      "case_id": "s2-ifc-LB-005-ifc-missing-property-relation",
+      "case_class": "ifc_ids_property",
+      "source_package": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "expected_findings": [
+        "IDS-Wall Fire Rating"
+      ],
+      "severity": "error",
+      "rule_id": "IDS-Wall Fire Rating",
+      "evidence_refs": [
+        "samples/ifc/wall-fire-rating-rei60.ifc",
+        "samples/ids/wall-fire-rating.ids",
+        "gt:LB-005-ifc-missing-property-relation",
+        "mutation:LB-005"
+      ],
+      "ground_truth_source": "samples/benchmarks/sprint2-synthetic-ground-truth.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "runner=ifc_ids_mutation",
+      "sha256": "13906272e1886bd51a05b48759329b349a8db4a2de6aaf64f1325642c79d54fc"
+    },
+    {
+      "case_id": "s2-ifc-LB-006-ifc-wrong-property-value",
+      "case_class": "ifc_ids_property",
+      "source_package": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "expected_findings": [
+        "IDS-Wall Fire Rating"
+      ],
+      "severity": "error",
+      "rule_id": "IDS-Wall Fire Rating",
+      "evidence_refs": [
+        "samples/ifc/wall-fire-rating-rei60.ifc",
+        "samples/ids/wall-fire-rating.ids",
+        "gt:LB-006-ifc-wrong-property-value",
+        "mutation:LB-006"
+      ],
+      "ground_truth_source": "samples/benchmarks/sprint2-synthetic-ground-truth.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "runner=ifc_ids_mutation",
+      "sha256": "6d8de7ebe790bd75a63bfc506c5efb34ad15e761b3ed887136a5d180a9e717ae"
+    },
+    {
+      "case_id": "s2-ifc-LB-007-compensating-entity-presence",
+      "case_class": "ifc_ids_property",
+      "source_package": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "expected_findings": [
+        "ENTITY-PRESENCE-IFCWALL"
+      ],
+      "severity": "error",
+      "rule_id": "ENTITY-PRESENCE-IFCWALL",
+      "evidence_refs": [
+        "samples/ifc/wall-fire-rating-rei60.ifc",
+        "samples/ids/wall-fire-rating.ids",
+        "gt:LB-007-compensating-entity-presence",
+        "mutation:LB-007"
+      ],
+      "ground_truth_source": "samples/benchmarks/sprint2-synthetic-ground-truth.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "runner=ifc_ids_mutation_with_presence",
+      "sha256": "79c70e29cbae3ab32a6e0eaca529f61323c1fa88a7989d81769e5feb01dd2179"
+    },
+    {
+      "case_id": "s2-ifc-LB-011-ifc-duplicate-guid",
+      "case_class": "ifc_ids_property",
+      "source_package": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "expected_findings": [
+        "AEROBIM-GUID-DUPLICATE"
+      ],
+      "severity": "warning",
+      "rule_id": "AEROBIM-GUID-DUPLICATE",
+      "evidence_refs": [
+        "samples/ifc/wall-fire-rating-rei60.ifc",
+        "samples/ids/wall-fire-rating.ids",
+        "gt:LB-011-ifc-duplicate-guid",
+        "mutation:LB-011"
+      ],
+      "ground_truth_source": "samples/benchmarks/sprint2-synthetic-ground-truth.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "runner=duplicate_guid",
+      "sha256": "33164c36c8ea7934cee0349a1478c9f9950a42a059721f1f8d39b58a271e6def"
+    },
+    {
+      "case_id": "s2-xdoc-LB-001-load-value-mismatch",
+      "case_class": "cross_document_calc",
+      "source_package": "samples/benchmarks/injected-defects-level-b.json",
+      "expected_findings": [
+        "AEROBIM-LOAD-MISMATCH"
+      ],
+      "severity": "warning",
+      "rule_id": "AEROBIM-LOAD-MISMATCH",
+      "evidence_refs": [
+        "samples/benchmarks/injected-defects-level-b.json",
+        "gt:LB-001-load-value-mismatch",
+        "calculation_row:W1"
+      ],
+      "ground_truth_source": "samples/benchmarks/sprint2-synthetic-ground-truth.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "load/calc mismatch from Level-B / Sprint 2 planted set",
+      "sha256": "e86a12a91280add8a42dce294b6b3c454c3ebb5660da0cbb51cf37da3ae10bac"
+    },
+    {
+      "case_id": "s2-xdoc-LB-002-unit-scale-mismatch",
+      "case_class": "cross_document_calc",
+      "source_package": "samples/benchmarks/injected-defects-level-b.json",
+      "expected_findings": [
+        "AEROBIM-LOAD-MISMATCH"
+      ],
+      "severity": "warning",
+      "rule_id": "AEROBIM-LOAD-MISMATCH",
+      "evidence_refs": [
+        "samples/benchmarks/injected-defects-level-b.json",
+        "gt:LB-002-unit-scale-mismatch",
+        "calculation_row:W2"
+      ],
+      "ground_truth_source": "samples/benchmarks/sprint2-synthetic-ground-truth.json",
+      "generator": "export_sprint2_dataset_manifest",
+      "seed": 20260806,
+      "schema_version": "1.0.0",
+      "status": "synthetic",
+      "claim_level": "synthetic_only",
+      "customer_precision_claim_publishable": false,
+      "notes": "load/calc mismatch from Level-B / Sprint 2 planted set",
+      "sha256": "4b723b54ca7886132d26717e98a6772b7405e752d453aada272fe5200f89dbbc"
+    }
+  ]
+}

@@ -1,10 +1,12 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.1",
-  "commit_sha": "1804f62391ea2e06038a89f8917a650813416e32",
+  "commit_sha": "d96a59ac6704357336ae46f7d61f6435be4c6a2c",
+  "prior_metrics_commit_sha": "1804f62391ea2e06038a89f8917a650813416e32",
   "tree_sha": "15022980326167441ec165fb8cae23d76efb3182",
   "working_tree_clean": false,
   "generated_at": "2026-08-06T18:49:17.866317+00:00",
+  "release_pin_note": "commit_sha pinned to release HEAD d96a59a for Sprint 2 governance alignment; quality_gates/metrics snapshot originated in the 1804f62→d96a59a engineering window (Red Team hyperdeep + CI baseline fix). Not a claim that every metric row was re-executed on this tip.",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
