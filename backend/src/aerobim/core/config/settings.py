@@ -791,6 +791,14 @@ class Settings:
                 )
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"{label} failed SSRF gate: {exc}") from exc
+            if label == "AEROBIM_KIMI_API_BASE_URL":
+                try:
+                    assert_llm_base_host_allowed(
+                        candidate,
+                        frozenset(settings.llm_allowed_hosts),
+                    )
+                except RuntimeError as exc:
+                    raise RuntimeError(f"{label} failed LLM host allowlist: {exc}") from exc
 
         if settings.llm_base_url:
             try:

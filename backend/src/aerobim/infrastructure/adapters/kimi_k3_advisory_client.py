@@ -193,9 +193,21 @@ class VlmAdvisoryClient:
         timeout_seconds: float = _DEFAULT_TIMEOUT_SECONDS,
         max_response_bytes: int = _DEFAULT_MAX_RESPONSE_BYTES,
         transport: Transport | None = None,
+        allowed_hosts: frozenset[str] | None = None,
     ) -> None:
         if not base_url or not api_key:
             raise KimiAdvisoryError("VLM advisory client requires base_url and api_key")
+        # Enforce host allowlist only on the real network path. Injected transports
+        # are unit-test seams and must not require public DNS names on the allowlist.
+        if transport is None:
+            from aerobim.core.config.settings import assert_llm_base_host_allowed
+
+            hosts = allowed_hosts
+            if hosts is None:
+                from aerobim.core.config.settings import _DEFAULT_LLM_ALLOWED_HOSTS
+
+                hosts = _DEFAULT_LLM_ALLOWED_HOSTS
+            assert_llm_base_host_allowed(base_url, hosts)
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
         self._profile = profile or profile_for(model)
@@ -204,6 +216,7 @@ class VlmAdvisoryClient:
         self._timeout = timeout_seconds
         self._max_response_bytes = max_response_bytes
         self._transport = transport or self._default_transport
+        self._allowed_hosts = allowed_hosts
 
     def __repr__(self) -> str:  # never leak the key
         return f"VlmAdvisoryClient(base_url={self._base_url!r}, model={self._model!r})"

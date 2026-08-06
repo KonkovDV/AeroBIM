@@ -33,7 +33,13 @@ class LlmEvidenceBoundedTests(unittest.TestCase):
 
     def test_schema_validation(self) -> None:
         provider = MockLlmProvider(provider="kimi", model="kimi-mock")
-        response = provider.generate(LlmRequest(request_id="eb-2", evidence_refs=("e:1",)))
+        response = provider.generate(
+            LlmRequest(
+                request_id="eb-2",
+                evidence_refs=("e:1",),
+                data_policy=LlmDataPolicy(allow_synthetic_public=True),
+            )
+        )
         self.assertTrue(response.schema_valid)
         self.assertEqual(response.status, "advisory")
         self.assertIsNone(response.confidence)

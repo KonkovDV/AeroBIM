@@ -31,8 +31,11 @@ class PdfMinerExtractionIntegrityProducer:
         offpage = 0
         visible_glyphs = False
         all_plain: list[str] = []
+        max_pages = 200
 
-        for page in extract_pages(str(path)):
+        for page_index, page in enumerate(extract_pages(str(path))):
+            if page_index >= max_pages:
+                break
             if not isinstance(page, LTPage):
                 continue
             page_x0, page_y0, page_x1, page_y1 = page.bbox

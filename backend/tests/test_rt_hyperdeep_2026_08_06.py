@@ -44,6 +44,42 @@ class ClassifierPublicFixtureTests(unittest.TestCase):
         )
         self.assertEqual(_advisory_object_kind(request), "public_fixture")
 
+    def test_absolute_deploy_under_samples_with_tenants_stays_confidential(self) -> None:
+        # RT-WH-01: D:\work\samples\AeroBIM\var\…\tenants\… must not become public_fixture.
+        request = ValidationRequest(
+            request_id="rt-clf-abs",
+            ifc_path=Path(r"D:/work/samples/AeroBIM/var/reports/tenants/acme/uploads/model.ifc"),
+            requirement_source=RequirementSource(),
+            ids_path=Path("dummy.ids"),
+            tenant_id="acme",
+        )
+        self.assertEqual(_advisory_object_kind(request), "ifc")
+
+    def test_samples_customer_corpus_is_never_public(self) -> None:
+        request = ValidationRequest(
+            request_id="rt-clf-cust",
+            ifc_path=Path("samples/customer/nda-pack/model.ifc"),
+            requirement_source=RequirementSource(),
+            ids_path=Path("dummy.ids"),
+            tenant_id="acme",
+        )
+        self.assertEqual(_advisory_object_kind(request), "ifc")
+
+    def test_absolute_repo_samples_ifc_is_public_fixture(self) -> None:
+        request = ValidationRequest(
+            request_id="rt-clf-abs-ok",
+            ifc_path=Path(r"C:/plans/AeroBIM/samples/ifc/wall.ifc"),
+            requirement_source=RequirementSource(),
+            ids_path=Path("dummy.ids"),
+            tenant_id="tenant-a",
+        )
+        self.assertEqual(_advisory_object_kind(request), "public_fixture")
+
+    def test_llm_data_policy_default_denies_synthetic(self) -> None:
+        from aerobim.domain.llm_advisory import LlmDataPolicy
+
+        self.assertIs(LlmDataPolicy().allow_synthetic_public, False)
+
     def test_yandex_blocked_on_customer_fixture_named_upload(self) -> None:
         provider = OpenAICompatLlmProvider(
             base_url="http://127.0.0.1:9/v1",

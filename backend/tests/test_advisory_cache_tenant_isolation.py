@@ -25,7 +25,7 @@ def _ready_settings(**over: object):
     base = replace(
         Settings.from_env(),
         kimi_k3_enabled=True,
-        kimi_api_base_url="https://vlm.example.com/v1",
+        kimi_api_base_url="https://127.0.0.1:9/v1",
         kimi_api_key="test-key",
     )
     return replace(base, **over)

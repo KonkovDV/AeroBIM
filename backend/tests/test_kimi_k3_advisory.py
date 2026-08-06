@@ -234,10 +234,18 @@ class KimiClientTests(unittest.TestCase):
             base_url="https://kimi.example.com/v1",
             api_key="k",
             max_response_bytes=8,
+            allowed_hosts=frozenset({"kimi.example.com"}),
         )
         with patch.object(outbound_url, "safe_urlopen", lambda *a, **k: _FakeResp(oversized)):
             with self.assertRaises(KimiAdvisoryError):
                 client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
+
+    def test_default_transport_rejects_non_allowlisted_host(self) -> None:
+        with self.assertRaises(RuntimeError):
+            KimiK3AdvisoryClient(
+                base_url="https://evil.example.com/v1",
+                api_key="k",
+            )
 
     def test_nan_in_structured_content_rejected(self) -> None:
         # Red Team: json.loads accepts the NaN literal by default; the client must

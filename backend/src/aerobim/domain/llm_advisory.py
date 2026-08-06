@@ -30,7 +30,7 @@ class LlmDataPolicy:
     """Egress / retention policy for advisory LLM calls."""
 
     allow_customer_data: bool = False
-    allow_synthetic_public: bool = True
+    allow_synthetic_public: bool = False
     training_use_forbidden: bool = True
     retention_unknown: bool = True
     profile: str = "default_deny_customer"
