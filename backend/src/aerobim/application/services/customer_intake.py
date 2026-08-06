@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from aerobim.tools.validate_customer_intake_gate import (
+from aerobim.application.services.customer_intake_gate import (
     INTAKE_GATE_KEYS,
     default_gate_path,
     validate_customer_intake_gate,

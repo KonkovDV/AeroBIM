@@ -1,20 +1,20 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.1",
-  "commit_sha": "2aa573be0c89a3fcc4862acce895e4b126a22fb2",
-  "tree_sha": "3660092227fbef280aea9ae8f52fbfd29ed5d2a0",
+  "commit_sha": "c337c003da682a6c8498ac0b1c6c3d11c467c1fe",
+  "tree_sha": "ff25ebfa96e32a44de2f135def270a57d95c9056",
   "working_tree_clean": false,
-  "generated_at": "2026-08-05T19:50:21.978821+00:00",
+  "generated_at": "2026-08-06T17:40:46.809548+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 1886,
+    "tests_collected": 1895,
     "tests_passed": null,
     "tests_skipped": null,
     "tests_failed": null,
-    "source_loc": 56039,
-    "test_loc": 39354,
-    "test_functions": 1886
+    "source_loc": 56293,
+    "test_loc": 39493,
+    "test_functions": 1895
   },
   "frontend": {
     "tests_passed": null,
@@ -37,12 +37,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 56039,
-    "backend_test_loc": 39354,
-    "backend_test_functions": 1886,
+    "backend_src_loc": 56293,
+    "backend_test_loc": 39493,
+    "backend_test_functions": 1895,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~56039 LOC; tests ~39354 LOC; 1886+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "Backend src ~56293 LOC; tests ~39493 LOC; 1895+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -95,8 +95,8 @@
     "AEROBIM_STORAGE_DIR"
   ],
   "architecture_inventory": {
-    "public_domain_protocols": 46,
+    "public_domain_protocols": 47,
     "adapter_modules": 71,
-    "di_tokens": 59
+    "di_tokens": 60
   }
 }

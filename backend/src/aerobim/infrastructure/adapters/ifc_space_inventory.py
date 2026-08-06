@@ -60,4 +60,11 @@ def extract_space_inventory(ifc_path: Path | str | None) -> tuple[SpaceInventory
     return tuple(rows)
 
 
-__all__ = ["extract_space_inventory"]
+class IfcOpenShellSpaceInventoryExtractor:
+    """Adapter: IfcOpenShell → SpaceInventoryRow tuples (advisory only)."""
+
+    def extract(self, ifc_path: Path | str | None) -> tuple[SpaceInventoryRow, ...]:
+        return extract_space_inventory(ifc_path)
+
+
+__all__ = ["IfcOpenShellSpaceInventoryExtractor", "extract_space_inventory"]

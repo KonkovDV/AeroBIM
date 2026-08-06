@@ -220,8 +220,10 @@ class ApiContext:
             return resolved
         except PathJailError as exc:
             detail = str(exc)
-            status = 403 if "tenant storage prefix" in detail else 400
-            raise HTTPException(status_code=status, detail=detail) from exc
+            # Cross-tenant path probes must not oracle via 403 + prefix detail (RT-POST-02).
+            if "tenant storage prefix" in detail:
+                raise HTTPException(status_code=404, detail="Object not found") from exc
+            raise HTTPException(status_code=400, detail="Invalid storage path") from exc
 
     def enforce_ifc_size(self, ifc_path: Path) -> None:
         if not ifc_path.is_file():

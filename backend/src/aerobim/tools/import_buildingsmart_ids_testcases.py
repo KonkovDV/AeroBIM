@@ -150,13 +150,16 @@ def extract_testcases(zip_path: Path, extract_to: Path) -> Path:
         return text
 
     extract_to.mkdir(parents=True, exist_ok=True)
+    extract_root = extract_to.resolve()
     with zipfile.ZipFile(zip_path) as archive:
         for info in archive.infolist():
             # Skip absolute / traversal members
             name = info.filename.replace("\\", "/")
             if name.startswith("/") or ".." in name.split("/"):
                 continue
-            target = extract_to / name
+            target = (extract_to / name).resolve()
+            if not target.is_relative_to(extract_root):
+                continue
             if info.is_dir():
                 Path(_win(target)).mkdir(parents=True, exist_ok=True)
                 continue

@@ -9,7 +9,6 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from aerobim.core.security.path_jail import (
     PathJailError,
     reject_symlinks,
-    safe_storage_token,
     tenant_storage_prefix,
 )
 from aerobim.core.security.upload_content import UploadContentError, validate_upload_content
@@ -43,23 +42,36 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
         tenant_key = (
             principal.tenant_id or principal.subject or "anonymous"
         ).strip() or "anonymous"
-        tenant_seg = safe_storage_token(tenant_key)
+        try:
+            # Encode once via tenant_storage_prefix — never pass a pre-encoded segment.
+            tenant_prefix = tenant_storage_prefix(tenant_key)
+            tenant_seg = tenant_prefix.rstrip("/").rsplit("/", 1)[-1]
+        except PathJailError as exc:
+            raise HTTPException(status_code=400, detail="Invalid tenant identity") from exc
         raw_name = (file.filename or "upload.bin").replace("\\", "/").split("/")[-1]
         for banned in ':*?"<>|\r\n':
             raw_name = raw_name.replace(banned, "")
         safe_name = (raw_name.strip() or "upload.bin")[:180]
         upload_id = uuid4().hex
-        relative_path = f"{tenant_storage_prefix(tenant_seg)}uploads/{upload_id}/{safe_name}"
+        relative_path = f"{tenant_prefix}uploads/{upload_id}/{safe_name}"
+        base = settings.storage_dir.resolve()
         quarantine = (
             settings.storage_dir / "quarantine" / tenant_seg / upload_id / safe_name
         ).resolve()
-        target = (settings.storage_dir / relative_path).resolve()
-        base = settings.storage_dir.resolve()
+        try:
+            # Resolve through the jail before any write so ``..`` tokens cannot escape.
+            from aerobim.core.security.path_jail import resolve_storage_path
+
+            target = resolve_storage_path(relative_path, base=settings.storage_dir)
+        except PathJailError as exc:
+            raise HTTPException(status_code=400, detail="Invalid upload path") from exc
         quarantine.parent.mkdir(parents=True, exist_ok=True)
         try:
             reject_symlinks(quarantine.parent, base=base)
+            if not quarantine.resolve().is_relative_to(base):
+                raise PathJailError("Quarantine path escapes storage boundary")
         except PathJailError as exc:
-            raise HTTPException(status_code=409, detail=str(exc)) from exc
+            raise HTTPException(status_code=409, detail="Upload path rejected") from exc
 
         max_bytes = settings.max_upload_bytes
         total = 0

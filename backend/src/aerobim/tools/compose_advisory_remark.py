@@ -87,6 +87,7 @@ def compose_from_findings(
         request_id=request_id,
         provider=provider,
         allow_customer_data=False,
+        allow_synthetic_public=True,
     )
     base: dict[str, Any] = {
         "status": result.status,

@@ -77,6 +77,7 @@ def build_remark_llm_request(
     findings: tuple[dict[str, Any], ...],
     locale: str = "ru",
     allow_customer_data: bool = False,
+    allow_synthetic_public: bool = False,
 ) -> LlmRequest:
     locale_norm = "en" if (locale or "ru").strip().lower().startswith("en") else "ru"
     evidence: list[str] = []
@@ -103,7 +104,8 @@ def build_remark_llm_request(
         allowed_task="compose_or_rank_advisory_remark",
         data_policy=LlmDataPolicy(
             allow_customer_data=allow_customer_data,
-            allow_synthetic_public=True,
+            # Fail closed: synthetic_public must be explicit — never implied for customer findings.
+            allow_synthetic_public=allow_synthetic_public,
             training_use_forbidden=True,
             retention_unknown=False,
             profile="local_open_weight_advisory",
@@ -156,6 +158,7 @@ def compose_remark(
     request_id: str,
     provider: LlmProvider,
     allow_customer_data: bool = False,
+    allow_synthetic_public: bool = False,
 ) -> RemarkComposeResult:
     """Invoke advisory LLM for remark drafts; never mutates verdict fields.
 
@@ -167,6 +170,7 @@ def compose_remark(
         findings=findings,
         locale=locale,
         allow_customer_data=allow_customer_data,
+        allow_synthetic_public=allow_synthetic_public,
     )
     response = provider.generate(request)
     if response.status == "disabled":

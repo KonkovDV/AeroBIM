@@ -230,6 +230,7 @@ class AdvisoryRemarkApiWiringTests(unittest.TestCase):
             locale="ru",
             request_id="budget-day",
             provider=provider,
+            allow_synthetic_public=True,
         )
         self.assertEqual(result.status, "SKIPPED")
         self.assertEqual(result.reason, "budget_exceeded")

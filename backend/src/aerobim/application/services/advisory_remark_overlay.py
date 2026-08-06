@@ -38,10 +38,13 @@ def overlay_llm_remarks(
     locale: str = "ru",
     max_issues: int = _DEFAULT_MAX_ISSUES,
     max_workers: int = 1,
+    allow_synthetic_public: bool = False,
 ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
     """Replace template remarks with AI drafts when compose succeeds.
 
     Issues with ``origin=="advisory"`` are left unchanged (engine owns verdict text).
+    ``allow_synthetic_public`` must be True only after HybridRouteGate classifies a
+    trusted public corpus path (``/samples/`` or ``/fixtures/``).
     """
 
     total_findings = len(issues)
@@ -79,6 +82,7 @@ def overlay_llm_remarks(
             request_id=f"{request_id}:remark:{index + 1}",
             provider=provider,
             allow_customer_data=False,
+            allow_synthetic_public=allow_synthetic_public,
         )
         if result.status == "OK" and result.remark is not None:
             return index, replace(issue, remark=result.remark), None

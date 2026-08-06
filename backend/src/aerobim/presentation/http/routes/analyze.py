@@ -63,7 +63,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             )
         except FileNotFoundError as exc:
             logger.warning("validate_ifc file not found", request_id=request_id, detail=str(exc))
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
+            raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
             logger.warning("validate_ifc bad request", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -96,7 +96,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             )
             report = ctx.analyze_use_case.execute(request)
         except FileNotFoundError as exc:
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
+            raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         except RuntimeError as exc:
@@ -115,14 +115,16 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             )
             report_payload = load_openrebar_report_payload(report_path)
         except FileNotFoundError as exc:
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
+            raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
         metadata_payload = report_payload.get("metadata")
         metadata = metadata_payload if isinstance(metadata_payload, dict) else {}
+        # Storage-relative path only — never absolute host paths in API responses.
+        storage_rel = payload.reinforcement_report_path.replace("\\", "/")
         return {
-            "reinforcement_report_path": str(report_path),
+            "reinforcement_report_path": storage_rel,
             "provenance_digest": build_openrebar_provenance_digest(report_payload),
             "contract_id": report_payload.get("contractId"),
             "schema_version": report_payload.get("schemaVersion"),
@@ -151,7 +153,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 principal=principal,
             )
         except FileNotFoundError as exc:
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
+            raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

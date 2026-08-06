@@ -149,6 +149,7 @@ def run_bakeoff(
                 findings=findings,
                 locale="ru",
                 allow_customer_data=False,
+                allow_synthetic_public=True,
             )
             started = time.perf_counter()
             try:

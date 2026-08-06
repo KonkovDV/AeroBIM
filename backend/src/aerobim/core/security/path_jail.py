@@ -95,21 +95,25 @@ def reject_symlinks(path: Path, *, base: Path) -> None:
 def safe_storage_token(value: str) -> str:
     """Encode a tenant / pack token as a single reversible path segment.
 
-    Alphanumeric plus ``._-`` are kept; every other character becomes ``!{ord:02x}``
-    so ``Tenant/A`` and ``Tenant_A`` never collide. Input is NFKC-normalized first.
+    Alphanumeric plus ``_-`` are kept; ``.`` and other specials become ``!{ord:02x}``
+    so ``Tenant/A`` and ``Tenant_A`` never collide, and ``.`` / ``..`` cannot escape
+    storage joins. Input is NFKC-normalized first.
     """
     if "\x00" in value:
         raise PathJailError("Null bytes are not allowed in storage tokens")
     normalized = unicodedata.normalize("NFKC", value.strip())
+    if not normalized or normalized in {".", ".."}:
+        raise PathJailError("Empty or path-traversal storage token is not allowed")
     encoded: list[str] = []
     for ch in normalized:
-        if ch.isalnum() or ch in "._-":
+        # Keep alnum + _- only; encode '.' so ".." cannot survive as a path segment.
+        if ch.isalnum() or ch in "_-":
             encoded.append(ch)
         else:
             encoded.append(f"!{ord(ch):02x}")
     safe = "".join(encoded)
-    if not safe:
-        raise PathJailError("Empty storage token is not allowed")
+    if not safe or safe in {".", ".."}:
+        raise PathJailError("Empty or path-traversal storage token is not allowed")
     return safe
 
 
