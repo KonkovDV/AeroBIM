@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
@@ -578,18 +579,47 @@ class AdvisoryOrchestrator:
         return trace, result.may_create_advisory
 
 
+_PUBLIC_CORPUS_CHILDREN = frozenset(
+    {
+        "ifc",
+        "drawings",
+        "packages",
+        "ids",
+        "benchmarks",
+        "bcf-xsd",
+        "ids-xsd",
+        "requirements",
+        "mep",
+        "cad",
+        "config",
+    }
+)
+
+
 def _advisory_object_kind(request: ValidationRequest) -> str:
     """Conservative object kind for advisory routing (never PUBLIC by default).
 
-    Only trusted corpus path *prefixes* may classify as public_fixture. Never
-    substring-match ``fixture`` in filenames (customer ``office_fixture_v2.ifc``).
+    Trusted public fixtures are only repo corpus trees under discrete ``samples`` /
+    ``fixtures`` path components followed by a known public child (``ifc``, …).
+
+    Never classify from absolute-path substrings alone (deploy under
+    ``…/samples/AeroBIM/var/tenants/…`` must stay confidential). Never treat
+    ``samples/customer`` or tenant uploads as public.
     """
 
-    path = str(getattr(request, "ifc_path", "") or "").replace("\\", "/").lower()
-    # Leading slash so relative ``samples/...`` matches the same as absolute paths.
-    marked = f"/{path.lstrip('/')}"
-    if "/samples/" in marked or "/fixtures/" in marked:
-        return "public_fixture"
+    raw = getattr(request, "ifc_path", None)
+    if raw is None:
+        return "ifc"
+    parts = [part.lower() for part in Path(str(raw)).parts]
+    if "tenants" in parts or "uploads" in parts or "customer" in parts:
+        return "ifc"
+    for index, part in enumerate(parts):
+        if part not in {"samples", "fixtures"}:
+            continue
+        if index + 1 >= len(parts):
+            continue
+        if parts[index + 1] in _PUBLIC_CORPUS_CHILDREN:
+            return "public_fixture"
     return "ifc"
 
 

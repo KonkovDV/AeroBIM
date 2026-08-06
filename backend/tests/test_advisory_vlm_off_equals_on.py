@@ -41,7 +41,8 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
         on = replace(
             off,
             kimi_k3_enabled=True,
-            kimi_api_base_url="https://vlm.example.com/v1",
+            # Loopback host is on the product LLM allowlist (RT-WH-05).
+            kimi_api_base_url="https://127.0.0.1:9/v1",
             kimi_api_key="test-key",
         )
         # The flag must actually toggle — otherwise this test is vacuous.

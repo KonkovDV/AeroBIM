@@ -739,6 +739,15 @@ def _call_openai_vision_counts(
     folder_id: str | None = None,
     auth_scheme: str = "Bearer",
 ) -> dict[str, Any]:
+    from aerobim.core.config.settings import (
+        _DEFAULT_LLM_ALLOWED_HOSTS,
+        assert_llm_base_host_allowed,
+    )
+    from aerobim.core.security.outbound_url import safe_urlopen
+
+    # Product-forbidden hosts (OpenAI/Anthropic/Ali) must not be used from this tool.
+    assert_llm_base_host_allowed(base_url, _DEFAULT_LLM_ALLOWED_HOSTS)
+
     image_b64 = base64.b64encode(image_path.read_bytes()).decode("ascii")
     mime = _image_mime(image_path)
     prompt = (
@@ -791,7 +800,7 @@ def _call_openai_vision_counts(
         headers=headers,
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+    with safe_urlopen(req, timeout=timeout_s) as resp:
         payload = json.loads(resp.read().decode("utf-8"))
     content = payload["choices"][0]["message"]["content"]
     if isinstance(content, list):
@@ -825,17 +834,24 @@ def evaluate_live_counting(
         folder_id = yandex["folder_id"] or None
         auth_scheme = yandex["auth_scheme"]
         provider_label = "yandex-ai-studio"
-    else:
+    elif base_url.strip():
+        # Explicit --live-base-url must still pass product LLM host allowlist.
         openai_key = _openai_key()
         if not openai_key:
             raise RuntimeError(
-                "No live credentials: set AEROBIM_LLM_API_KEY (+ FOLDER_ID/MODEL) "
-                "for Yandex Studio, or OPENAI_API_KEY for OpenAI vision"
+                "No live credentials: set AEROBIM_LLM_API_KEY for Yandex Studio, "
+                "or OPENAI_API_KEY only with an allowlisted --live-base-url "
+                "(api.openai.com is forbidden)"
             )
         api_key = openai_key
         folder_id = None
         auth_scheme = "Bearer"
         provider_label = "openai_compat"
+    else:
+        raise RuntimeError(
+            "No live credentials: set AEROBIM_LLM_API_KEY (+ FOLDER_ID/MODEL) "
+            "for Yandex AI Studio. api.openai.com is product-forbidden."
+        )
 
     root = counting_dir(dataset_root)
     folders = sorted(p for p in root.iterdir() if p.is_dir())[: max(0, limit)]
@@ -1046,7 +1062,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--limit", type=int, default=None, help="Max plans (offline/live)")
     parser.add_argument("--live-model", default="gpt-4o-mini")
-    parser.add_argument("--live-base-url", default="https://api.openai.com/v1")
+    parser.add_argument(
+        "--live-base-url",
+        default="",
+        help=(
+            "OpenAI-compat base URL. Empty = use AEROBIM_LLM_* / Yandex settings. "
+            "api.openai.com is product-forbidden (host allowlist)."
+        ),
+    )
     parser.add_argument("--timeout-seconds", type=float, default=90.0)
     parser.add_argument(
         "--enrich-live-from",

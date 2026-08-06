@@ -260,7 +260,7 @@ class AecvBenchEvalTests(unittest.TestCase):
             img = Path(tmp) / "plan.png"
             img.write_bytes(png)
             with patch(
-                "aerobim.tools.run_aecv_bench_eval.urllib.request.urlopen",
+                "aerobim.core.security.outbound_url.safe_urlopen",
                 fake_urlopen,
             ):
                 _call_openai_vision_counts(

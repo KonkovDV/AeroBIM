@@ -34,7 +34,10 @@ class PyMuPDFExtractionIntegrityProducer:
         plain_all: list[str] = []
 
         with pymupdf.open(path) as document:
-            for page in document:
+            max_pages = 200
+            for page_index, page in enumerate(document):
+                if page_index >= max_pages:
+                    break
                 page_rect = page.rect
                 # Visible extract path (same family as RasterDrawingAnalyzer).
                 plain = page.get_text("text") or ""

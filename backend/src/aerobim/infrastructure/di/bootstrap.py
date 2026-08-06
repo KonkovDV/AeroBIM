@@ -873,6 +873,7 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
         api_key=settings.kimi_api_key or "",
         model=settings.kimi_model,
         reasoning_effort=settings.kimi_reasoning_effort,
+        allowed_hosts=frozenset(settings.llm_allowed_hosts),
     )
     # §2.1/§5: deterministic act-grade replay ONLY with a trusted tenant scope.
     # The pipeline is a process singleton with no per-request identity, so a
