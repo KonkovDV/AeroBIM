@@ -35,6 +35,7 @@ class RemarkComposeResult:
     model: str | None = None
     usage: dict[str, Any] | None = None
 
+
 REMARK_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
     "additionalProperties": False,

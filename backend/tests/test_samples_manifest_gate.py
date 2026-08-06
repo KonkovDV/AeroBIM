@@ -61,8 +61,8 @@ def test_vendored_buildingsmart_schemas_carry_attribution() -> None:
     for entry in vendored:
         assert entry["attribution_required"] is True
         assert "buildingSMART" in str(entry["source"])
-        # No invented license terms: status stays review_pending until legal review.
-        assert entry["license_status"] == "review_pending"
+        # RT-W-01: upstream BCF/IDS LICENSE is CC BY-ND 4.0 (see schema license tool).
+        assert entry["license_status"] == "cc_by_nd_4.0"
 
 
 def test_fixtures_never_claim_customer_evidence() -> None:

@@ -62,6 +62,7 @@ def _warn_deprecated_llm_local_alias() -> None:
         _LLM_LOCAL_ALIAS_REMOVE_AFTER,
     )
 
+
 _DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
 _DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # aligned with bSI Validation Service
 # Baked pilot/production quotas when env unset (RTATOM-I20 / A2.3).
@@ -691,8 +692,7 @@ class Settings:
                 sorted(_parse_llm_allowed_hosts(os.getenv("AEROBIM_LLM_ALLOWED_HOSTS")))
             ),
             llm_folder_id=(os.getenv("AEROBIM_LLM_FOLDER_ID") or "").strip() or None,
-            llm_auth_scheme=(os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip()
-            or "Bearer",
+            llm_auth_scheme=(os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip() or "Bearer",
             llm_send_seed=_read_bool("AEROBIM_LLM_SEND_SEED", True),
             llm_response_format_mode=(
                 os.getenv("AEROBIM_LLM_RESPONSE_FORMAT_MODE") or "json_object"
@@ -719,8 +719,7 @@ class Settings:
                     os.getenv("AEROBIM_LLM_RESPONSE_FORMAT_MODE") or "json_schema"
                 ).strip()
                 or "json_schema",
-                llm_base_url=settings.llm_base_url
-                or "https://llm.api.cloud.yandex.net/v1",
+                llm_base_url=settings.llm_base_url or "https://llm.api.cloud.yandex.net/v1",
             )
         if settings.llm_local_enabled and not settings.llm_local_ready():
             if settings.signoff_profile in {"samolet_pilot", "production"}:

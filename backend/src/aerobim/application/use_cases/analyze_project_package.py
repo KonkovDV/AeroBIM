@@ -38,6 +38,7 @@ from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink
 from aerobim.domain.architecture import Contour
 from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
 from aerobim.domain.errors import ClashCapabilityError
+from aerobim.domain.llm_advisory import LlmProvider
 from aerobim.domain.mep import (
     FederatedMepScope,
     MepSystemGraph,
@@ -63,7 +64,6 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationRequest,
 )
-from aerobim.domain.llm_advisory import LlmProvider
 from aerobim.domain.package_trace import PackageTraceCollector
 from aerobim.domain.ports import (
     AuditReportStore,
@@ -624,6 +624,25 @@ class AnalyzeProjectPackageUseCase:
                 )
             return None, []
 
+        if request.ifc_path is None:
+            if request.require_signature_audit:
+                reason = f"signature audit required but ifc_path omitted; {CLAIM_BOUNDARY}"
+                return (
+                    CapabilityStatus(CapabilityState.FAILED, reason),
+                    [
+                        ValidationIssue(
+                            rule_id="AEROBIM-SIGNATURE-MISSING",
+                            severity=Severity.ERROR,
+                            message=reason,
+                            category=FindingCategory.IFC_VALIDATION,
+                            source_id="signature-audit",
+                            origin="deterministic",
+                            evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
+                        )
+                    ],
+                )
+            return None, []
+
         result = auditor.audit(
             request.ifc_path,
             envelope_path=request.signature_envelope_path,
@@ -822,6 +841,16 @@ class AnalyzeProjectPackageUseCase:
                     rule_id="AEROBIM-IDS-CAPABILITY",
                     severity=Severity.ERROR,
                     message="IDS validation requested but no ids validator is configured",
+                    category=FindingCategory.IFC_VALIDATION,
+                    source_id="ids",
+                )
+            ]
+        if request.ifc_path is None:
+            return [
+                ValidationIssue(
+                    rule_id="AEROBIM-IDS-CAPABILITY",
+                    severity=Severity.ERROR,
+                    message="IDS validation requested but ifc_path was omitted",
                     category=FindingCategory.IFC_VALIDATION,
                     source_id="ids",
                 )

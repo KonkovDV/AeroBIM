@@ -220,9 +220,7 @@ def main(argv: list[str] | None = None) -> int:
         },
     }
 
-    out = args.output or (
-        repo_root() / "artifacts" / "open-bench" / "aec-bench-smoke.json"
-    )
+    out = args.output or (repo_root() / "artifacts" / "open-bench" / "aec-bench-smoke.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     text = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     report["output_sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -234,6 +232,8 @@ def main(argv: list[str] | None = None) -> int:
         evidence.write_text(text, encoding="utf-8")
         print(f"docs_evidence={evidence}")
 
+    agent_trial = report["agent_trial"]
+    assert isinstance(agent_trial, dict)
     print(
         json.dumps(
             {
@@ -243,7 +243,7 @@ def main(argv: list[str] | None = None) -> int:
                     {"instance": r.get("instance"), "status": r.get("status")}
                     for r in prefetch_results
                 ],
-                "agent_trial": report["agent_trial"]["status"],
+                "agent_trial": agent_trial["status"],
                 "claim_level": "open_bench_only",
             },
             ensure_ascii=False,

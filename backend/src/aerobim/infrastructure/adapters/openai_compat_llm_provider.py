@@ -263,9 +263,7 @@ class OpenAICompatLlmProvider:
             "response_schema": REMARK_JSON_SCHEMA,
         }
         user_content = (
-            f"{_DATA_BEGIN}\n"
-            f"{json.dumps(document_data, ensure_ascii=False)}\n"
-            f"{_DATA_END}"
+            f"{_DATA_BEGIN}\n{json.dumps(document_data, ensure_ascii=False)}\n{_DATA_END}"
         )
         body_obj: dict[str, Any] = {
             "model": self._model,

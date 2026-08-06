@@ -28,12 +28,8 @@ CLAIM_BOUNDARY = (
 )
 
 # HF card listed this for an earlier snapshot; measured 2026-08-04 after dedup = e47c…
-_PINNED_V2_SHA_MEASURED = (
-    "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b"
-)
-_PINNED_V1_SHA_HF = (
-    "f67a48770d74b6e0ff0868c923c3e1d976110350b2c439564d7ceccc16a46f35"
-)
+_PINNED_V2_SHA_MEASURED = "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b"
+_PINNED_V1_SHA_HF = "f67a48770d74b6e0ff0868c923c3e1d976110350b2c439564d7ceccc16a46f35"
 
 _NUMBER_RE = re.compile(
     r"(?P<n>\d+(?:\.\d+)?)\s*(?:sqm|m2|m²|rooms?|doors?|windows?|bedrooms?|"
@@ -134,11 +130,7 @@ def _probes_for_model(
             ),
             "how many interior doors are there": (
                 "duplex_arc_interior_door_count",
-                lambda m: sum(
-                    1
-                    for d in m.by_type("IfcDoor")
-                    if _is_external_door(d) is False
-                ),
+                lambda m: sum(1 for d in m.by_type("IfcDoor") if _is_external_door(d) is False),
             ),
             "how many steps does the stair in house a have": (
                 "duplex_arc_stair_risers",
@@ -159,10 +151,7 @@ def _probes_for_model(
                 lambda m: sum(
                     1
                     for f in m.by_type("IfcFlowTerminal")
-                    if any(
-                        k in (f.Name or "").lower()
-                        for k in ("pendant light", "sconce light")
-                    )
+                    if any(k in (f.Name or "").lower() for k in ("pendant light", "sconce light"))
                 ),
             ),
         }
@@ -181,9 +170,7 @@ def _probes_for_model(
 
             def _xray_count(m: Any) -> int:
                 return sum(
-                    1
-                    for s in m.by_type("IfcSpace")
-                    if "x-ray" in (s.LongName or "").lower()
+                    1 for s in m.by_type("IfcSpace") if "x-ray" in (s.LongName or "").lower()
                 )
 
         return {
@@ -199,9 +186,7 @@ def _probes_for_model(
     return {}
 
 
-def evaluate_dataset(
-    dataset_root: Path, *, version: str = "v1"
-) -> dict[str, Any]:
+def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, Any]:
     version = version.strip().lower()
     if version not in {"v1", "v2"}:
         raise ValueError("version must be v1 or v2")
@@ -308,9 +293,7 @@ def evaluate_dataset(
             if expected is None:
                 status = "skipped"
                 detail = "ground-truth answer has no comparable number"
-            elif isinstance(predicted, (int, float)) and _numbers_close(
-                predicted, expected
-            ):
+            elif isinstance(predicted, (int, float)) and _numbers_close(predicted, expected):
                 status = "matched"
                 detail = None
             else:
@@ -366,9 +349,7 @@ def evaluate_dataset(
             ),
             "dataset_root": str(dataset_root.resolve()),
             "version": version,
-            "questions_path": str(questions_path.relative_to(dataset_root)).replace(
-                "\\", "/"
-            ),
+            "questions_path": str(questions_path.relative_to(dataset_root)).replace("\\", "/"),
             "questions_sha256": questions_sha,
             "questions_sha256_matches_pin": questions_sha == pinned,
             "pinned_sha256_reference": pinned,
@@ -438,12 +419,7 @@ def main(argv: list[str] | None = None) -> int:
     out.write_text(text, encoding="utf-8")
 
     if args.also_docs_evidence:
-        evidence = (
-            repo_root()
-            / "docs"
-            / "evidence"
-            / f"ifc-bench-{args.version}-smoke-latest.json"
-        )
+        evidence = repo_root() / "docs" / "evidence" / f"ifc-bench-{args.version}-smoke-latest.json"
         evidence.write_text(text, encoding="utf-8")
         print(f"docs_evidence={evidence}")
 

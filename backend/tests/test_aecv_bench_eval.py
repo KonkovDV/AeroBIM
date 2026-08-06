@@ -37,9 +37,7 @@ class AecvBenchEvalTests(unittest.TestCase):
         ]
         summary = _aggregate(rows)
         self.assertAlmostEqual(summary["per_field"]["Window"]["mean_bias"], -3.0)
-        self.assertEqual(
-            summary["per_field"]["Bedroom"]["zero_pred_when_expected_positive_n"], 1
-        )
+        self.assertEqual(summary["per_field"]["Bedroom"]["zero_pred_when_expected_positive_n"], 1)
         self.assertIn("mape", summary["per_field"]["Window"])
         self.assertIsNotNone(summary.get("macro_mape"))
 
@@ -61,9 +59,7 @@ class AecvBenchEvalTests(unittest.TestCase):
         )
         self.assertAlmostEqual(summary["macro_extended"], 0.5)
         self.assertAlmostEqual(summary["macro_bench_protocol"], 0.55)
-        self.assertEqual(
-            summary["macro_exact_match_rate"], summary["macro_extended"]
-        )
+        self.assertEqual(summary["macro_exact_match_rate"], summary["macro_extended"])
         self.assertEqual(summary["n_field_scores_bench_protocol"], 8)
         self.assertEqual(summary["n_field_scores_extended"], 10)
         self.assertEqual(len(summary["comparability_gates"]), 5)
@@ -150,21 +146,15 @@ class AecvBenchEvalTests(unittest.TestCase):
             exe["live"]["macro_exact_match_rate"],
             exe["live"]["macro_extended"],
         )
-        self.assertEqual(
-            exe["live"]["publish_framing"]["headline_metric"], "macro_extended"
-        )
-        self.assertEqual(
-            exe["published_baseline_comparison"]["ranking_key"], "macro_extended"
-        )
+        self.assertEqual(exe["live"]["publish_framing"]["headline_metric"], "macro_extended")
+        self.assertEqual(exe["published_baseline_comparison"]["ranking_key"], "macro_extended")
         self.assertAlmostEqual(
             exe["published_baseline_comparison"]["live_vs_best_published"][
                 "delta_live_extended_minus_best_extended"
             ],
             0.4 - 0.52,
         )
-        self.assertEqual(
-            exe["failure_mode_contrast"]["Window"]["mean_bias"], -2.5
-        )
+        self.assertEqual(exe["failure_mode_contrast"]["Window"]["mean_bias"], -2.5)
 
     def test_scorer_validation_within_tolerance(self) -> None:
         from aerobim.tools.run_aecv_bench_eval import (
@@ -208,9 +198,7 @@ class AecvBenchEvalTests(unittest.TestCase):
         self.assertIn("macro_bench_protocol", sample)
         self.assertIn("macro_extended", sample)
         prov = payload["provenance"]
-        self.assertEqual(
-            prov["upstream_repo"], "https://github.com/AECFoundry/AECV-Bench"
-        )
+        self.assertEqual(prov["upstream_repo"], "https://github.com/AECFoundry/AECV-Bench")
         self.assertIn("predictions_tree_sha256", prov)
         self.assertIn("paper_table1_models", prov)
         self.assertIn("repo_only_models_not_in_paper_table1", prov)
@@ -285,9 +273,7 @@ class AecvBenchEvalTests(unittest.TestCase):
                     auth_scheme="Api-Key",
                 )
         body = captured["body"]
-        self.assertEqual(
-            body.get("chat_template_kwargs"), {"enable_thinking": False}
-        )
+        self.assertEqual(body.get("chat_template_kwargs"), {"enable_thinking": False})
         self.assertNotIn("enable_thinking", body)
         self.assertNotIn("extra_body", body)
 

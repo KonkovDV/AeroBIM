@@ -14,7 +14,11 @@ class DocumentationStandardEditionTests(unittest.TestCase):
         edition, source = select_documentation_standard_edition(
             package_developed_on="2025-01-01",
             explicit_edition="21.101-2026",
-            rule={"cutoff_exclusive": "2026-04-01", "before_cutoff": "21.101-2020", "on_or_after_cutoff": "21.101-2026"},
+            rule={
+                "cutoff_exclusive": "2026-04-01",
+                "before_cutoff": "21.101-2020",
+                "on_or_after_cutoff": "21.101-2026",
+            },
         )
         self.assertEqual(edition, "21.101-2026")
         self.assertEqual(source, "explicit_inventory_field")

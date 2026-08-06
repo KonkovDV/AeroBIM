@@ -35,9 +35,7 @@ class IfcModelDiffTests(unittest.TestCase):
         self.assertIn("added", kinds)
         self.assertIn("attribute_changed", kinds)
         renamed = [
-            e
-            for e in result.entries
-            if e.kind == "attribute_changed" and e.attribute == "Name"
+            e for e in result.entries if e.kind == "attribute_changed" and e.attribute == "Name"
         ]
         self.assertTrue(any(e.old_value == "Wall Rename Source" for e in renamed))
         self.assertTrue(any(e.new_value == "Wall Renamed" for e in renamed))

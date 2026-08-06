@@ -71,9 +71,17 @@
             "title": "Ids Path"
           },
           "ifc_path": {
-            "maxLength": 2048,
-            "title": "Ifc Path",
-            "type": "string"
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "IFC model path. Omit for document/partial package mode (drawings, ТЧ, calculations, package inventory). IFC capabilities SKIPPED.",
+            "title": "Ifc Path"
           },
           "information_container_id": {
             "anyOf": [
@@ -285,9 +293,6 @@
             "title": "Tenant Id"
           }
         },
-        "required": [
-          "ifc_path"
-        ],
         "title": "AnalyzeProjectPackageRequest",
         "type": "object"
       },

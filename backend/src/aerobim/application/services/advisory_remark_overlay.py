@@ -75,7 +75,9 @@ def overlay_llm_remarks(
     composed = 0
     attempted = len(eligible)
 
-    def _compose_one(index: int, issue: ValidationIssue) -> tuple[int, ValidationIssue | None, str | None]:
+    def _compose_one(
+        index: int, issue: ValidationIssue
+    ) -> tuple[int, ValidationIssue | None, str | None]:
         result = compose_remark(
             findings=(finding_payload_from_issue(issue),),
             locale=locale_norm,
@@ -98,9 +100,7 @@ def overlay_llm_remarks(
                 last_skip_reason = reason
     else:
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            futures = [
-                pool.submit(_compose_one, index, issue) for index, issue in eligible
-            ]
+            futures = [pool.submit(_compose_one, index, issue) for index, issue in eligible]
             for future in as_completed(futures):
                 idx, drafted, reason = future.result()
                 if drafted is not None:

@@ -12,8 +12,8 @@ from aerobim.domain.models import (
     ParsedRequirement,
     RequirementSource,
     SourceKind,
-    ValidationRequest,
     ValidationReport,
+    ValidationRequest,
 )
 
 

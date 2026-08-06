@@ -41,9 +41,7 @@ def _advisory_audit_event(
 
     host = urlparse(settings.llm_base_url or "").hostname or ""
     target = (
-        RouteTarget.LOCAL
-        if host in {"localhost", "127.0.0.1", "::1", ""}
-        else RouteTarget.PRIVATE
+        RouteTarget.LOCAL if host in {"localhost", "127.0.0.1", "::1", ""} else RouteTarget.PRIVATE
     )
     decision = decide_route(
         classification=DataClassification.INTERNAL,

@@ -77,9 +77,7 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
     pnst_inv = _load_json(
         root / "docs" / "evidence" / "pnst909-22-scenario-ids-inventory-latest.json"
     )
-    pnst_rt = _load_json(
-        root / "docs" / "evidence" / "pnst909-22-scenario-runtime-latest.json"
-    )
+    pnst_rt = _load_json(root / "docs" / "evidence" / "pnst909-22-scenario-runtime-latest.json")
     return {
         "schema_version": "1.2.0",
         "artifact_type": "aerobim_weekly_eng_status",

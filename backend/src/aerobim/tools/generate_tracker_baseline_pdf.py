@@ -2,6 +2,7 @@
 
 Text twin: docs/evidence/baseline-2026-08.md — keep in sync when regenerating.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -55,11 +56,13 @@ def _pages() -> list[list[tuple[str, float]]]:
             ("", 9.0),
             ("2. Другие замеры (не смешивать с 0,43)", 10.5),
             (
-                "Учебный пакет: время около 0,53 с (95-й перцентиль) - не время на реальном комплекте.",
+                "Учебный пакет: время около 0,53 с (95-й перцентиль) - "
+                "не время на реальном комплекте.",
                 9.0,
             ),
             (
-                "Учебные дефекты (6 шт.): доля верных среди найденных 0,75 / охват 1,0 - только синтетика.",
+                "Учебные дефекты (6 шт.): доля верных среди найденных 0,75 / "
+                "охват 1,0 - только синтетика.",
                 9.0,
             ),
             (
@@ -209,7 +212,7 @@ def _pages() -> list[list[tuple[str, float]]]:
     ]
 
 
-def main() -> None:
+def main() -> int:
     font_candidates = [
         Path(r"C:\Windows\Fonts\arial.ttf"),
         Path(r"C:\Windows\Fonts\segoeui.ttf"),
@@ -243,6 +246,7 @@ def main() -> None:
     doc.save(OUT_ALIAS, garbage=4, deflate=True)
     doc.close()
     print(f"wrote {OUT_PRIMARY} and alias {OUT_ALIAS.name} bytes={OUT_PRIMARY.stat().st_size}")
+    return 0
 
 
 if __name__ == "__main__":

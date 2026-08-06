@@ -20,7 +20,9 @@ class WeeklyEngStatusTests(unittest.TestCase):
         # R-4: commercial key must appear before eng blocks in insertion order.
         keys = list(payload.keys())
         self.assertLess(keys.index("commercial_funnel"), keys.index("runtime_baseline"))
-        self.assertIn(payload["commercial_funnel"]["data_status"], {"MISSING", "PRESENT_OWNER_FILE"})
+        self.assertIn(
+            payload["commercial_funnel"]["data_status"], {"MISSING", "PRESENT_OWNER_FILE"}
+        )
 
 
 if __name__ == "__main__":

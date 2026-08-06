@@ -33,9 +33,7 @@ def _repo_root() -> Path:
 
 def _mutate_ifc(base_text: str, mutation_id: str) -> str:
     if mutation_id == "LB-005":
-        return "\n".join(
-            line for line in base_text.splitlines() if not line.startswith("#8=")
-        )
+        return "\n".join(line for line in base_text.splitlines() if not line.startswith("#8="))
     if mutation_id == "LB-006":
         return base_text.replace("IFCLABEL('REI60')", "IFCLABEL('REI45')")
     if mutation_id == "LB-007":
@@ -97,14 +95,10 @@ def _run_calc_case(repo: Path, defect: dict[str, Any], catalog: dict[str, Any]) 
     }
 
 
-def _run_ifc_case(
-    repo: Path, defect: dict[str, Any], use_case: Any, tmp: Path
-) -> dict[str, Any]:
+def _run_ifc_case(repo: Path, defect: dict[str, Any], use_case: Any, tmp: Path) -> dict[str, Any]:
     defect_id = str(defect["defect_id"])
     mutation_id = str(defect.get("mutation_id") or "")
-    ifc_base = (repo / "samples" / "ifc" / "wall-fire-rating-rei60.ifc").read_text(
-        encoding="utf-8"
-    )
+    ifc_base = (repo / "samples" / "ifc" / "wall-fire-rating-rei60.ifc").read_text(encoding="utf-8")
     ids_path = repo / "samples" / "ids" / "wall-fire-rating.ids"
     ifc_path = tmp / f"{defect_id}.ifc"
     ifc_path.write_text(_mutate_ifc(ifc_base, mutation_id), encoding="utf-8")
@@ -124,8 +118,7 @@ def _run_ifc_case(
     expected = str(defect["match_key"])
     if expected == "ENTITY-PRESENCE-IFCWALL":
         hit = any(
-            "No elements found for entity IFCWALL" in (i.message or "")
-            for i in report.issues
+            "No elements found for entity IFCWALL" in (i.message or "") for i in report.issues
         )
         detected = [
             i.rule_id
@@ -253,9 +246,7 @@ def run_baseline(*, iterations: int = 5) -> dict[str, Any]:
 
     trials_prec = tp + fp
     trials_rec = tp + fn
-    wilson_p = (
-        wilson_interval(tp, trials_prec).as_dict() if trials_prec else None
-    )
+    wilson_p = wilson_interval(tp, trials_prec).as_dict() if trials_prec else None
     wilson_r = wilson_interval(tp, trials_rec).as_dict() if trials_rec else None
     case_times = [c["elapsed_s"] for c in cases_out]
     return {
@@ -286,9 +277,7 @@ def run_baseline(*, iterations: int = 5) -> dict[str, Any]:
             "wilson_recall": wilson_r,
             "n_planted_detectable": len(cases_out),
             "n_below_planner_halfwidth_008": True,
-            "time_per_case_mean_s": round(statistics.mean(case_times), 6)
-            if case_times
-            else None,
+            "time_per_case_mean_s": round(statistics.mean(case_times), 6) if case_times else None,
             "time_per_case_p95_s": _p95(case_times),
             "llm_overlay": {
                 "status": "not_run_in_synthetic_detection_baseline",
@@ -315,9 +304,7 @@ def main(argv: list[str] | None = None) -> int:
     out_json = args.output_json or (
         repo / "docs" / "evidence" / f"sprint2-synthetic-baseline-{day}.json"
     )
-    out_md = args.output_md or (
-        repo / "docs" / "evidence" / f"sprint2-synthetic-baseline-{day}.md"
-    )
+    out_md = args.output_md or (repo / "docs" / "evidence" / f"sprint2-synthetic-baseline-{day}.md")
     out_pdf = args.output_pdf or (
         repo / "docs" / "evidence" / f"sprint2-synthetic-baseline-{day}.pdf"
     )
@@ -335,8 +322,10 @@ def main(argv: list[str] | None = None) -> int:
         "## Metrics",
         "",
         f"- TP/FP/FN: **{m['tp']}/{m['fp']}/{m['fn']}**",
-        f"- precision: **{m['precision']}** (Wilson lower: {(m.get('wilson_precision') or {}).get('lower')})",
-        f"- recall: **{m['recall']}** (Wilson lower: {(m.get('wilson_recall') or {}).get('lower')})",
+        f"- precision: **{m['precision']}** "
+        f"(Wilson lower: {(m.get('wilson_precision') or {}).get('lower')})",
+        f"- recall: **{m['recall']}** "
+        f"(Wilson lower: {(m.get('wilson_recall') or {}).get('lower')})",
         f"- time_per_case_p95_s: **{m['time_per_case_p95_s']}**",
         f"- n_planted: {m['n_planted_detectable']} (below planner half-width 0.08 target)",
         "",
@@ -360,7 +349,11 @@ def main(argv: list[str] | None = None) -> int:
             "LIMITATIONS: synthetic only; no customer packs; 90% NOT confirmed; NO_GO",
         ],
     )
-    print(json.dumps({"json": str(out_json), "md": str(out_md), "pdf": str(out_pdf), "metrics": m}, indent=2))
+    print(
+        json.dumps(
+            {"json": str(out_json), "md": str(out_md), "pdf": str(out_pdf), "metrics": m}, indent=2
+        )
+    )
     return 0
 
 

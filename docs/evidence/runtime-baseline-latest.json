@@ -1,31 +1,31 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.1",
-  "commit_sha": "c337c003da682a6c8498ac0b1c6c3d11c467c1fe",
-  "tree_sha": "ff25ebfa96e32a44de2f135def270a57d95c9056",
+  "commit_sha": "1804f62391ea2e06038a89f8917a650813416e32",
+  "tree_sha": "15022980326167441ec165fb8cae23d76efb3182",
   "working_tree_clean": false,
-  "generated_at": "2026-08-06T17:40:46.809548+00:00",
+  "generated_at": "2026-08-06T18:49:17.866317+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 1895,
-    "tests_passed": null,
-    "tests_skipped": null,
-    "tests_failed": null,
-    "source_loc": 56293,
-    "test_loc": 39493,
+    "tests_collected": 2052,
+    "tests_passed": 2043,
+    "tests_skipped": 9,
+    "tests_failed": 0,
+    "source_loc": 56294,
+    "test_loc": 39492,
     "test_functions": 1895
   },
   "frontend": {
-    "tests_passed": null,
+    "tests_passed": 29,
     "note": "Recorded from last CI/local vitest run when provided via --frontend-tests-passed"
   },
   "quality_gates": {
-    "ruff": "UNKNOWN",
-    "mypy": "UNKNOWN",
-    "pytest": "UNKNOWN",
-    "vitest": "UNKNOWN",
-    "build": "UNKNOWN"
+    "ruff": "PASS",
+    "mypy": "PASS",
+    "pytest": "PASS",
+    "vitest": "PASS",
+    "build": "PASS"
   },
   "environment": {
     "python_version": "3.13.7",
@@ -37,12 +37,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 56293,
-    "backend_test_loc": 39493,
+    "backend_src_loc": 56294,
+    "backend_test_loc": 39492,
     "backend_test_functions": 1895,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~56293 LOC; tests ~39493 LOC; 1895+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "Backend src ~56294 LOC; tests ~39492 LOC; 1895+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",

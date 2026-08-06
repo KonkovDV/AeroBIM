@@ -110,7 +110,7 @@ def build_spdx_lite(*, lock_path: Path, image_id: str) -> dict[str, object]:
                 "filesAnalyzed": False,
                 "checksums": [
                     {"algorithm": "SHA256", "checksumValue": h.split(":", 1)[1]}
-                    for h in pkg["checksums"]  # type: ignore[union-attr]
+                    for h in (pkg["checksums"] if isinstance(pkg["checksums"], list) else [])
                     if isinstance(h, str) and h.startswith("SHA256:")
                 ],
             }
@@ -158,14 +158,18 @@ def write_install_docs(bundle_dir: Path) -> None:
                 "",
                 "| Source | Risk in RF contour | Mitigation |",
                 "|---|---|---|",
-                "| Docker Hub | IP blocks / rate limits | Transfer `aerobim-backend-image.tar`; optional GitVerse/Docker mirror |",
+                "| Docker Hub | IP blocks / rate limits | Transfer "
+                "`aerobim-backend-image.tar`; optional GitVerse/Docker mirror |",
                 "| PyPI | Outages | Hash locks inside image; do not pip-install on air-gap host |",
-                "| GitHub | Clone/push timeouts | Ship release pack + GitVerse mirror of this repo (operator) |",
+                "| GitHub | Clone/push timeouts | Ship release pack + "
+                "GitVerse mirror of this repo (operator) |",
                 "",
                 "GitVerse (from 2026-06-16 public claim): PyPI/Go/Crates/Docker Hub mirrors —",
-                "verify current operator docs before relying; AeroBIM does **not** claim a live mirror.",
+                "verify current operator docs before relying; AeroBIM does "
+                "**not** claim a live mirror.",
                 "",
-                "Owner decision: Docker-only offline is acceptable while bare-metal stays DEFERRED.",
+                "Owner decision: Docker-only offline is acceptable while "
+                "bare-metal stays DEFERRED.",
                 "",
             ]
         ),

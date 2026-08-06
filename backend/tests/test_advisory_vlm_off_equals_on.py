@@ -87,8 +87,6 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
     def test_llm_studio_flag_does_not_change_verdict_on_uc_path(self) -> None:
         """Yandex Studio / local OpenAI-compat advisory must also leave verdict byte-identical."""
 
-        import json
-
         from aerobim.core.config.settings import Settings
         from aerobim.core.di.tokens import Tokens
         from aerobim.domain.llm_advisory import DisabledLlmProvider

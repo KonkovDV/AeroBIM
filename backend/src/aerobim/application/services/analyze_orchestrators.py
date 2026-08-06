@@ -348,6 +348,7 @@ class DeterministicValidationOrchestrator:
         requirements = ingested.requirements
         ids_audit_issues = tuple(self._host._collect_ids_audit_issues(request))
         # IDS against IFC cannot run without a model.
+        ids_issues: tuple[ValidationIssue, ...]
         if request.ids_path is not None:
             ids_issues = (
                 ValidationIssue(
@@ -597,9 +598,11 @@ def _llm_overlay_route_target(provider: object):
 
     from aerobim.domain.hybrid.trust_policy import RouteTarget
 
-    name = str(
-        getattr(provider, "provider", None) or getattr(provider, "_provider", "") or ""
-    ).strip().lower()
+    name = (
+        str(getattr(provider, "provider", None) or getattr(provider, "_provider", "") or "")
+        .strip()
+        .lower()
+    )
     if "yandex" in name or name in {"openai", "openai-compat", "openai_compat"}:
         return RouteTarget.PUBLIC
     return RouteTarget.LOCAL

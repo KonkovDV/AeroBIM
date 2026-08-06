@@ -93,11 +93,7 @@ def build_package_source_hash_chain(
         "missing_paths": missing,
         "escaped_paths": escaped,
         "claim_boundary": CLAIM_BOUNDARY,
-        "status": (
-            "ok"
-            if entries_sorted and not missing and not escaped
-            else "incomplete"
-        ),
+        "status": ("ok" if entries_sorted and not missing and not escaped else "incomplete"),
     }
 
 

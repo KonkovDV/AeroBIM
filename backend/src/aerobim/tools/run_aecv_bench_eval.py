@@ -21,7 +21,7 @@ import os
 import re
 import urllib.error
 import urllib.request
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -88,9 +88,7 @@ def _predictions_tree_sha256(counting_root: Path) -> str:
     return digest.hexdigest()
 
 
-def _mean_field_rates(
-    per_field: dict[str, Any], fields: tuple[str, ...]
-) -> float | None:
+def _mean_field_rates(per_field: dict[str, Any], fields: tuple[str, ...]) -> float | None:
     rates: list[float] = []
     for field in fields:
         rate = (per_field.get(field) or {}).get("exact_match_rate")
@@ -118,16 +116,16 @@ def _attach_dual_macros(summary: dict[str, Any]) -> dict[str, Any]:
         extended = summary.get("macro_extended")
     protocol = _mean_field_rates(per_field, BENCH_PROTOCOL_FIELDS)
     n_extended = summary.get("n_field_scores")
-    n_protocol = sum(
-        int((per_field.get(f) or {}).get("n") or 0) for f in BENCH_PROTOCOL_FIELDS
-    )
+    n_protocol = sum(int((per_field.get(f) or {}).get("n") or 0) for f in BENCH_PROTOCOL_FIELDS)
     mape_vals = [
         (per_field.get(f) or {}).get("mape")
         for f in BENCH_PROTOCOL_FIELDS
         if (per_field.get(f) or {}).get("mape") is not None
     ]
     mape_protocol = (
-        round(sum(float(v) for v in mape_vals) / len(mape_vals), 4) if mape_vals else None
+        round(sum(float(v) for v in mape_vals if v is not None) / len(mape_vals), 4)
+        if mape_vals
+        else None
     )
     out = dict(summary)
     out["macro_bench_protocol"] = protocol
@@ -327,12 +325,7 @@ def default_dataset_root() -> Path:
 
 
 def counting_dir(dataset_root: Path) -> Path:
-    return (
-        dataset_root
-        / "data"
-        / "Use Case 1 - Object Counting"
-        / "1 - Full Datasets"
-    )
+    return dataset_root / "data" / "Use Case 1 - Object Counting" / "1 - Full Datasets"
 
 
 @dataclass(frozen=True)
@@ -352,9 +345,7 @@ def _mape_one(pred: int | None, exp: int | None) -> float | None:
     return abs(pred - exp) / abs(exp)
 
 
-def score_counts(
-    predicted: dict[str, Any], expected: dict[str, Any]
-) -> list[FieldScore]:
+def score_counts(predicted: dict[str, Any], expected: dict[str, Any]) -> list[FieldScore]:
     out: list[FieldScore] = []
     for field in COUNT_FIELDS:
         exp_raw = expected.get(field)
@@ -395,26 +386,18 @@ def _aggregate(field_rows: list[FieldScore]) -> dict[str, Any]:
         ]
         # Refusal-style miss: model emits 0 while ground truth is positive.
         positive_exp = [r for r in scored if (r.expected or 0) > 0]
-        zero_when_positive = [
-            r for r in positive_exp if r.predicted == 0
-        ]
+        zero_when_positive = [r for r in positive_exp if r.predicted == 0]
         zero_pred = [r for r in scored if r.predicted == 0]
         per_field[field] = {
             "n": len(scored),
             "exact_match_rate": (
-                round(sum(1 for r in scored if r.exact_match) / len(scored), 4)
-                if scored
-                else None
+                round(sum(1 for r in scored if r.exact_match) / len(scored), 4) if scored else None
             ),
             "mape": round(sum(mape_vals) / len(mape_vals), 4) if mape_vals else None,
-            "mean_bias": (
-                round(sum(biases) / len(biases), 4) if biases else None
-            ),
+            "mean_bias": (round(sum(biases) / len(biases), 4) if biases else None),
             "zero_prediction_n": len(zero_pred),
             "zero_pred_when_expected_positive_rate": (
-                round(len(zero_when_positive) / len(positive_exp), 4)
-                if positive_exp
-                else None
+                round(len(zero_when_positive) / len(positive_exp), 4) if positive_exp else None
             ),
             "zero_pred_when_expected_positive_n": len(zero_when_positive),
             "expected_positive_n": len(positive_exp),
@@ -485,17 +468,13 @@ def build_executive_summary(
             "provider": live.get("provider"),
             "model": live.get("model"),
             "plans_attempted": live.get("plans_attempted"),
-            "plans_scored": sum(
-                1 for p in (live.get("plans") or []) if p.get("status") == "ok"
-            ),
+            "plans_scored": sum(1 for p in (live.get("plans") or []) if p.get("status") == "ok"),
             "errors": live.get("errors"),
             "macro_exact_match_rate": summary.get("macro_exact_match_rate"),
             "macro_extended": summary.get("macro_extended"),
             "macro_bench_protocol": summary.get("macro_bench_protocol"),
             "macro_definition": summary.get("macro_definition"),
-            "n_field_scores_bench_protocol": summary.get(
-                "n_field_scores_bench_protocol"
-            ),
+            "n_field_scores_bench_protocol": summary.get("n_field_scores_bench_protocol"),
             "n_field_scores_extended": summary.get("n_field_scores_extended"),
             "comparability_gates": summary.get("comparability_gates"),
             "macro_mape": summary.get("macro_mape"),
@@ -520,20 +499,16 @@ def build_executive_summary(
             },
             "per_field": {
                 field: {
-                    "exact_match_rate": (per_field.get(field) or {}).get(
-                        "exact_match_rate"
-                    ),
+                    "exact_match_rate": (per_field.get(field) or {}).get("exact_match_rate"),
                     "mape": (per_field.get(field) or {}).get("mape"),
                     "mean_bias": (per_field.get(field) or {}).get("mean_bias"),
-                    "zero_prediction_n": (per_field.get(field) or {}).get(
-                        "zero_prediction_n"
-                    ),
+                    "zero_prediction_n": (per_field.get(field) or {}).get("zero_prediction_n"),
                     "zero_pred_when_expected_positive_n": (per_field.get(field) or {}).get(
                         "zero_pred_when_expected_positive_n"
                     ),
-                    "zero_pred_when_expected_positive_rate": (
-                        per_field.get(field) or {}
-                    ).get("zero_pred_when_expected_positive_rate"),
+                    "zero_pred_when_expected_positive_rate": (per_field.get(field) or {}).get(
+                        "zero_pred_when_expected_positive_rate"
+                    ),
                 }
                 for field in COUNT_FIELDS
             },
@@ -573,11 +548,12 @@ def build_executive_summary(
         # (upstream visualizer mean_accuracy includes Space).
         ranked = sorted(
             offline["models"].items(),
-            key=lambda kv: -(
-                kv[1].get("macro_extended")
-                if kv[1].get("macro_extended") is not None
-                else kv[1].get("macro_exact_match_rate")
-                or -1.0
+            key=lambda kv: (
+                -(
+                    kv[1].get("macro_extended")
+                    if kv[1].get("macro_extended") is not None
+                    else kv[1].get("macro_exact_match_rate") or -1.0
+                )
             ),
         )
         top = [
@@ -638,9 +614,7 @@ def build_executive_summary(
     return out
 
 
-def evaluate_offline_counting(
-    dataset_root: Path, *, limit: int | None = None
-) -> dict[str, Any]:
+def evaluate_offline_counting(dataset_root: Path, *, limit: int | None = None) -> dict[str, Any]:
     root = counting_dir(dataset_root)
     if not root.is_dir():
         raise FileNotFoundError(f"AECV counting dataset missing: {root}")
@@ -674,9 +648,7 @@ def evaluate_offline_counting(
             model = pred_path.stem
             models.setdefault(model, []).extend(score_counts(predicted, expected))
 
-    model_summaries = {
-        name: _aggregate(rows) for name, rows in sorted(models.items())
-    }
+    model_summaries = {name: _aggregate(rows) for name, rows in sorted(models.items())}
     paper_models = sorted(set(model_summaries) & set(PAPER_TABLE1_MACRO))
     repo_only_models = sorted(set(model_summaries) - set(PAPER_TABLE1_MACRO))
     commit = _git_commit(dataset_root)
@@ -693,8 +665,7 @@ def evaluate_offline_counting(
             "upstream_repo": "https://github.com/AECFoundry/AECV-Bench",
             "upstream_commit": commit,
             "predictions_path": (
-                "data/Use Case 1 - Object Counting/1 - Full Datasets/"
-                "{plan_id}/{model}.json"
+                "data/Use Case 1 - Object Counting/1 - Full Datasets/{plan_id}/{model}.json"
             ),
             "predictions_source": (
                 "Per-plan model JSON predictions vendored in AECV-Bench dataset "
@@ -742,9 +713,7 @@ def _yandex_settings() -> dict[str, str] | None:
     if not key:
         return None
     folder = (os.getenv("AEROBIM_LLM_FOLDER_ID") or "").strip()
-    base = (
-        os.getenv("AEROBIM_LLM_BASE_URL") or "https://llm.api.cloud.yandex.net/v1"
-    ).strip()
+    base = (os.getenv("AEROBIM_LLM_BASE_URL") or "https://llm.api.cloud.yandex.net/v1").strip()
     model = (os.getenv("AEROBIM_LLM_MODEL") or "").strip()
     if not model and folder:
         model = f"gpt://{folder}/qwen3.6-35b-a3b"
@@ -827,8 +796,7 @@ def _call_openai_vision_counts(
     content = payload["choices"][0]["message"]["content"]
     if isinstance(content, list):
         content = "".join(
-            part.get("text", "") if isinstance(part, dict) else str(part)
-            for part in content
+            part.get("text", "") if isinstance(part, dict) else str(part) for part in content
         )
     text = str(content or "").strip()
     if not text:
@@ -858,12 +826,13 @@ def evaluate_live_counting(
         auth_scheme = yandex["auth_scheme"]
         provider_label = "yandex-ai-studio"
     else:
-        api_key = _openai_key()
-        if not api_key:
+        openai_key = _openai_key()
+        if not openai_key:
             raise RuntimeError(
                 "No live credentials: set AEROBIM_LLM_API_KEY (+ FOLDER_ID/MODEL) "
                 "for Yandex Studio, or OPENAI_API_KEY for OpenAI vision"
             )
+        api_key = openai_key
         folder_id = None
         auth_scheme = "Bearer"
         provider_label = "openai_compat"
@@ -877,11 +846,7 @@ def evaluate_live_counting(
     for folder in folders:
         meta_path = folder / "metadata.json"
         images = sorted(
-            [
-                p
-                for p in folder.iterdir()
-                if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
-            ]
+            [p for p in folder.iterdir() if p.suffix.lower() in {".png", ".jpg", ".jpeg"}]
         )
         if not meta_path.is_file() or not images:
             continue
@@ -894,9 +859,7 @@ def evaluate_live_counting(
                 {
                     "plan_id": folder.name,
                     "status": "error",
-                    "detail": (
-                        f"preflight_skip_image_bytes<{MIN_IMAGE_BYTES_VENDOR_REJECT}"
-                    ),
+                    "detail": (f"preflight_skip_image_bytes<{MIN_IMAGE_BYTES_VENDOR_REJECT}"),
                     "image_bytes": image_bytes,
                 }
             )
@@ -918,14 +881,19 @@ def evaluate_live_counting(
                     "plan_id": folder.name,
                     "predicted": predicted,
                     "expected": expected,
-                    "field_exact": {
-                        s.field: s.exact_match for s in scores
-                    },
+                    "field_exact": {s.field: s.exact_match for s in scores},
                     "image_bytes": image_bytes,
                     "status": "ok",
                 }
             )
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        except (
+            urllib.error.URLError,
+            urllib.error.HTTPError,
+            TimeoutError,
+            json.JSONDecodeError,
+            KeyError,
+            TypeError,
+        ) as exc:
             errors += 1
             per_plan.append(
                 {
@@ -972,9 +940,7 @@ def evaluate_qa_labels_inventory(dataset_root: Path) -> dict[str, Any]:
                 continue
             by_task[key] = by_task.get(key, 0) + len(items)
             total_qa += len(items)
-    result_csvs = sorted(
-        (dataset_root / "benchmark_result_qa").glob("qa_results_*.csv")
-    )
+    result_csvs = sorted((dataset_root / "benchmark_result_qa").glob("qa_results_*.csv"))
     return {
         "task": "drawing_qa",
         "mode": "inventory_plus_published_result_csvs",
@@ -1014,9 +980,7 @@ def build_report(
         "drawing_qa": evaluate_qa_labels_inventory(dataset_root),
     }
     if mode in {"offline", "both", "enrich"}:
-        payload["object_counting_offline"] = evaluate_offline_counting(
-            dataset_root, limit=limit
-        )
+        payload["object_counting_offline"] = evaluate_offline_counting(dataset_root, limit=limit)
     if mode in {"live", "both"}:
         live_limit = 10 if limit is None else limit
         payload["object_counting_live"] = evaluate_live_counting(
@@ -1050,9 +1014,7 @@ def build_report(
             if not folder.is_dir():
                 continue
             images = sorted(
-                p
-                for p in folder.iterdir()
-                if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
+                p for p in folder.iterdir() if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
             )
             if images:
                 plan["image_bytes"] = images[0].stat().st_size
@@ -1069,9 +1031,7 @@ def build_report(
         else None,
     )
     offline_payload = payload.get("object_counting_offline")
-    if isinstance(offline_payload, dict) and isinstance(
-        offline_payload.get("models"), dict
-    ):
+    if isinstance(offline_payload, dict) and isinstance(offline_payload.get("models"), dict):
         payload["scorer_validation"] = build_scorer_validation(offline_payload)
     return payload
 
@@ -1092,7 +1052,10 @@ def main(argv: list[str] | None = None) -> int:
         "--enrich-live-from",
         type=Path,
         default=None,
-        help="With --mode enrich: recompute MAPE/bias + offline compare from saved live plans (no API spend)",
+        help=(
+            "With --mode enrich: recompute MAPE/bias + offline compare "
+            "from saved live plans (no API spend)"
+        ),
     )
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--also-docs-evidence", action="store_true")
@@ -1116,9 +1079,7 @@ def main(argv: list[str] | None = None) -> int:
         timeout_s=args.timeout_seconds,
         enrich_live_from=args.enrich_live_from,
     )
-    out = args.output or (
-        repo_root() / "artifacts" / "open-bench" / "aecv-bench-eval.json"
-    )
+    out = args.output or (repo_root() / "artifacts" / "open-bench" / "aecv-bench-eval.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     text = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     report["output_sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -1129,19 +1090,11 @@ def main(argv: list[str] | None = None) -> int:
         evidence = repo_root() / "docs" / "evidence" / "aecv-bench-eval-latest.json"
         evidence.write_text(text, encoding="utf-8")
         print(f"docs_evidence={evidence}")
-    if args.write_scorer_validation and isinstance(
-        report.get("scorer_validation"), dict
-    ):
+    if args.write_scorer_validation and isinstance(report.get("scorer_validation"), dict):
         day = "2026-08-04"
-        val_path = (
-            repo_root()
-            / "docs"
-            / "evidence"
-            / f"aecv-scorer-validation-{day}.json"
-        )
+        val_path = repo_root() / "docs" / "evidence" / f"aecv-scorer-validation-{day}.json"
         val_path.write_text(
-            json.dumps(report["scorer_validation"], ensure_ascii=False, indent=2)
-            + "\n",
+            json.dumps(report["scorer_validation"], ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
         print(f"scorer_validation={val_path}")
