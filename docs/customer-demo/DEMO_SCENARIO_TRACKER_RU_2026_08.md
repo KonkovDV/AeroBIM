@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "Сценарий демо для трекера (RU)"
 date: 2026-08-04

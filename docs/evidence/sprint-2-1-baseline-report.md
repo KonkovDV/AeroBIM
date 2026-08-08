@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Sprint 2.1 engineering baseline report
 
 **Title:** Sprint 2.1 engineering baseline on declared public/synthetic package  

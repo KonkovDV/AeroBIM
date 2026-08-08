@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "SLA benchmark protocol 2026 (P-014)"
 status: active

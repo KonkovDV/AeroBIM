@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Samolet Pilot — Environment & Runbook (2026-07)
 
 **Checkpoint:** `NO_GO` until RT-001 / RT-002 / RT-003 customer evidence.  

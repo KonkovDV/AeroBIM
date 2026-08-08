@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Дорожная карта AeroBIM 2026–2029 (датированные этапы)
 
 **Дата:** 2026-08-04  

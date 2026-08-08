@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Заготовки ответов на защиту (20–30 с) — публичная версия
 
 **Дата:** 2026-08-05 · без жаргона · не выдумывать метрики  

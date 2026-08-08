@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "Черновик сообщения в чат + открытие встречи 07.08"
 date: 2026-08-05

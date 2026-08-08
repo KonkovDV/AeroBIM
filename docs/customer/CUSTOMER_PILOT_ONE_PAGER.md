@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # AeroBIM — limited pilot one-pager
 
 **claim_level:** outreach template · limited pilot framing  

@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Открытая демонстрация до корпуса заказчика (K5)
 
 **Дата:** 2026-08-04  

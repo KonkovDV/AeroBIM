@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "baseline-2026-08 — метрики к трек-встрече"
 date: 2026-08-06

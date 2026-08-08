@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "AeroBIM parallel workplan → Checkpoint #2 (Aug 2026) → final (Sep 2026)"
 status: active

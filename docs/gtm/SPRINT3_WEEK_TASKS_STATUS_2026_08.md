@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "Sprint 3 — week tasks status (IFC metrics, expertise GT, open docs)"
 date: 2026-08-08

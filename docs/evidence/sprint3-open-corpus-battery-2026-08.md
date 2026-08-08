@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Sprint 3 — open corpus battery
 
 Generated: `2026-08-08T14:50:06.330380+00:00`

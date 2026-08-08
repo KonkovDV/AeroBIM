@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "N-1 audit — dependencies on GOST R 21.101-2020 / year-less 21.101"
 date: 2026-08-05

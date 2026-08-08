@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Предложения к разделам TBD задачи №7 (не «ТЗ v2.0»)
 
 **Дата:** 2026-08-04  

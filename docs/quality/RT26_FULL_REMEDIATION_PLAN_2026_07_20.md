@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # AeroBIM RT26 — Full Codebase Red Team Audit & Remediation Plan
 
 **Freeze SHA:** `f1742bc` (2026-07-20)  

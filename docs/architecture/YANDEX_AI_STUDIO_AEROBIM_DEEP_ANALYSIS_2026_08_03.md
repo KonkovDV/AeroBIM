@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "Yandex AI Studio в контуре AeroBIM — углублённый анализ"
 subtitle: "Трассировка на ТЗ Задачи №7, формальная модель воспроизводимости, ограничения платформы"

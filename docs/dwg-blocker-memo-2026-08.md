@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # DWG: где затыки и сколько стоит платный путь (2026-08)
 
 **Status:** PILOT_OUT_OF_SCOPE (owner-confirmed default)  

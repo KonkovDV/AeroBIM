@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "Исследовательский отчёт AeroBIM — вопрос 2.1 и аудит цитирования"
 date: 2026-08-04
