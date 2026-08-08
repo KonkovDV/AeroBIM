@@ -49,6 +49,9 @@ from aerobim.infrastructure.adapters.deterministic_requirement_to_ids_compiler i
 from aerobim.infrastructure.adapters.disabled_pdf_extraction_integrity_producer import (
     DisabledPdfExtractionIntegrityProducer,
 )
+from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
+    OfficeDocumentIngestor,
+)
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
@@ -112,9 +115,6 @@ from aerobim.infrastructure.adapters.ocr_fallback_multimodal_drawing_pipeline im
     OcrFallbackMultimodalDrawingPipeline,
 )
 from aerobim.infrastructure.adapters.oda_cad_model_ingestor import OdaCadModelIngestor
-from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
-    OfficeDocumentIngestor,
-)
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import OpenRebarEvidenceVerifier
 from aerobim.infrastructure.adapters.pdfium_region_cropper import PdfiumRegionCropper
 from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
