@@ -9,6 +9,7 @@ backend/.venv-pilot/
 .venv/
 .pytest_cache/
 .mypy_cache/
+.hypothesis/
 .ruff_cache/
 .coverage
 htmlcov/
