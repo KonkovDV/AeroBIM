@@ -127,7 +127,9 @@ class LintClaimsTests(unittest.TestCase):
     def test_claim_needs_boundary_flags_unframed_numeric_claim(self) -> None:
         sys.path.insert(0, str(_REPO / "scripts"))
         try:
-            from lint_claims import claim_needs_boundary_violations  # type: ignore[import-not-found]
+            from lint_claims import (
+                claim_needs_boundary_violations,  # type: ignore[import-not-found]
+            )
         finally:
             if sys.path and sys.path[0] == str(_REPO / "scripts"):
                 sys.path.pop(0)
