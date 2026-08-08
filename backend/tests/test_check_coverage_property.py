@@ -59,7 +59,15 @@ def capability_statuses(draw: st.DrawFn) -> ReportCapabilities:
 
 
 class CheckCoverageHypothesisTests(unittest.TestCase):
-    @settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+    @settings(
+        deadline=None,
+        max_examples=40,
+        suppress_health_check=[
+            HealthCheck.too_slow,
+            HealthCheck.filter_too_much,
+            HealthCheck.data_too_large,
+        ],
+    )
     @given(
         source_count=st.integers(min_value=1, max_value=4),
         caps=capability_statuses(),

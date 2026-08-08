@@ -28,7 +28,7 @@ def _rel(path: Path) -> str:
         return path.as_posix()
 
 
-_FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
+_FRONTMATTER_RE = re.compile(r"(?m)^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 _VERSION_FM_RE = re.compile(r'^version:\s*["\']?([^"\'\n]+)', re.MULTILINE)
 _LAST_UPDATED_FM_RE = re.compile(r'^last_updated:\s*["\']?([^"\'\n]+)', re.MULTILINE)
 _BODY_VERSION_RE = re.compile(r"\*\*v(\d+\.\d+\.\d+)\*\*")
@@ -47,6 +47,19 @@ def _parse_frontmatter(text: str) -> dict[str, str]:
         key, _, value = line.partition(":")
         out[key.strip()] = value.strip().strip('"').strip("'")
     return out
+
+
+def _git_is_shallow(repo: Path) -> bool:
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "--is-shallow-repository"],
+            cwd=repo,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+    return out == "true"
 
 
 def _git_last_commit_date(path: Path) -> date | None:
@@ -101,6 +114,9 @@ def _check_last_updated_freshness(path: Path, fm: dict[str, str]) -> list[str]:
         doc_date = date.fromisoformat(raw)
     except ValueError:
         return [f"{_rel(path)}: invalid last_updated={raw!r}"]
+    # Shallow CI checkouts often attribute untouched files to HEAD tip date.
+    if _git_is_shallow(_REPO):
+        return errors
     commit_date = _git_last_commit_date(path)
     if commit_date is None:
         return errors
