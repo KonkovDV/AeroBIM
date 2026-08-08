@@ -187,7 +187,7 @@ class HitlPreviousStateSsotTests(unittest.TestCase):
                     "previous_state": "opened",
                 },
             )
-            self.assertEqual(response.status_code, 400, response.text)
+            self.assertEqual(response.status_code, 409, response.text)
             self.assertIn("previous_state", response.text)
 
 

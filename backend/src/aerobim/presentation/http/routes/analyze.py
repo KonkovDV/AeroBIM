@@ -15,7 +15,9 @@ from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.errors import (
     public_bad_request_detail,
     public_service_unavailable_detail,
+    public_sync_analyze_disabled_detail,
 )
+from aerobim.domain.stage_timeout import StageTimeoutExceeded
 from aerobim.presentation.http.package_request_builders import (
     load_openrebar_report_payload,
 )
@@ -91,6 +93,11 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
+        if ctx.settings.disable_sync_package_analyze:
+            raise HTTPException(
+                status_code=409,
+                detail=public_sync_analyze_disabled_detail(),
+            )
         try:
             request = ctx.build_project_package_request(
                 payload,
@@ -106,6 +113,12 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except ValueError as exc:
             logger.warning("analyze_project_package bad request", detail=str(exc))
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
+        except StageTimeoutExceeded as exc:
+            logger.error("analyze_project_package stage timeout", detail=str(exc))
+            raise HTTPException(
+                status_code=504,
+                detail=public_service_unavailable_detail(),
+            ) from exc
         except RuntimeError as exc:
             logger.error("analyze_project_package runtime error", detail=str(exc))
             raise HTTPException(

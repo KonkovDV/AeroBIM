@@ -68,15 +68,25 @@ _AI_CONTENT_MARKING = "ai_generated=true;expert_confirmation_required=true"
 
 
 def attachment_content_disposition(filename: str) -> str:
-    """RFC 6266-ish attachment header; strip CR/LF and quotes from filename."""
-    safe = (
-        filename.replace('"', "")
-        .replace("\r", "")
-        .replace("\n", "")
+    """RFC 6266 / RFC 5987 attachment header with safe ASCII + UTF-8 fallback."""
+    from urllib.parse import quote
+
+    normalized = filename.replace("\x00", "").replace("\r", "").replace("\n", "")
+    ascii_safe = (
+        normalized.replace('"', "")
         .replace("\\", "_")
         .replace("/", "_")
+        .replace(";", "_")
     )
-    return f'attachment; filename="{safe}"'
+    ascii_safe = "".join(ch if ord(ch) < 128 and ch not in ('"', "\\") else "_" for ch in ascii_safe)
+    ascii_safe = (ascii_safe.strip() or "download").strip(" .")
+    utf8_encoded = quote(normalized, safe="")
+    if ascii_safe != normalized.strip():
+        return (
+            f'attachment; filename="{ascii_safe}"; '
+            f"filename*=UTF-8''{utf8_encoded}"
+        )
+    return f'attachment; filename="{ascii_safe}"'
 
 
 def safe_preview_media_type(raw: str | None) -> str:
@@ -153,7 +163,11 @@ class ApiContext:
             )
 
         if configured_token is not None and secrets.compare_digest(token, configured_token):
-            return AuthPrincipal(tenant_id=settings.api_tenant_id, subject="api-bearer")
+            return AuthPrincipal(
+                tenant_id=settings.api_tenant_id,
+                subject="api-bearer",
+                is_service_token=True,
+            )
 
         if oidc_ready:
             assert self.oidc_validator is not None

@@ -650,6 +650,10 @@ class ReviewEvent:
     resulting_state: str | None = None
     finding_id: str | None = None
     """Optional finding this review event attaches to."""
+    content_hash: str | None = None
+    """SHA-256 tamper-evidence digest (chained with previous_event_hash)."""
+    previous_event_hash: str | None = None
+    """Prior event content_hash or genesis marker for the first event."""
 
 
 @dataclass(frozen=True)
