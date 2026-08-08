@@ -127,11 +127,13 @@ def build_spdx_lite(*, lock_path: Path, image_id: str) -> dict[str, object]:
     }
 
 
-def _container_probe_script(*, token: str) -> str:
-    """In-container probes: health, auth gate, capabilities, egress block."""
+def _container_probe_command() -> str:
+    """In-container probes: health, auth gate, capabilities, egress block (token from env)."""
 
-    body = f"""import urllib.request, urllib.error, socket
-tok = {json.dumps(token)}
+    body = """import os, urllib.request, urllib.error, socket
+tok = os.environ.get("AEROBIM_API_BEARER_TOKEN", "")
+if not tok:
+    raise SystemExit("missing AEROBIM_API_BEARER_TOKEN")
 h = urllib.request.urlopen("http://127.0.0.1:8080/health", timeout=5)
 assert h.status == 200
 try:
@@ -142,7 +144,7 @@ else:
     raise SystemExit("unauthenticated capabilities must return 401")
 req = urllib.request.Request(
     "http://127.0.0.1:8080/v1/system/capabilities",
-    headers={{"Authorization": "Bearer " + tok}},
+    headers={"Authorization": "Bearer " + tok},
 )
 c = urllib.request.urlopen(req, timeout=5)
 assert c.status == 200
@@ -156,6 +158,13 @@ print("offline bundle probes: health+auth+egress OK")
 """
     encoded = base64.b64encode(body.encode("utf-8")).decode("ascii")
     return f"import base64; exec(base64.b64decode({encoded!r}))"
+
+
+def _container_probe_script(*, token: str = "") -> str:
+    """Backward-compatible alias; token is read from container env at runtime."""
+
+    _ = token
+    return _container_probe_command()
 
 
 def write_wheelhouse_artifact(bundle_dir: Path) -> None:
@@ -186,6 +195,8 @@ def write_wheelhouse_artifact(bundle_dir: Path) -> None:
 
 
 def write_install_scripts(bundle_dir: Path) -> None:
+    probe_cmd = _container_probe_command()
+    probe_shell = json.dumps(probe_cmd)
     (bundle_dir / _INSTALL_SH).write_text(
         "\n".join(
             [
@@ -223,9 +234,8 @@ def write_install_scripts(bundle_dir: Path) -> None:
                 '  "${IMAGE_TAG}"',
                 "",
                 'sleep 8',
-                "docker exec \"${CONTAINER}\" python -c 'import urllib.request; "
-                "urllib.request.urlopen(\"http://127.0.0.1:8080/health\",timeout=5)'",
-                'echo "Install OK. Probe: docker exec ${CONTAINER} python -c health-check"',
+                f'docker exec "${{CONTAINER}}" python -c {probe_shell}',
+                'echo "Install OK (full closed-contour probe passed)."',
                 "",
             ]
         ),
@@ -263,9 +273,8 @@ def write_install_scripts(bundle_dir: Path) -> None:
                 "  $ImageTag",
                 "",
                 'Start-Sleep -Seconds 8',
-                'docker exec $Container python -c "import urllib.request; '
-                "urllib.request.urlopen('http://127.0.0.1:8080/health',timeout=5)\"",
-                'Write-Host "Install OK. Use docker exec for API probes (host port-publish unreliable with --network none)."',
+                f"docker exec $Container python -c {probe_shell}",
+                'Write-Host "Install OK (full closed-contour probe passed)."',
                 "",
             ]
         ),
@@ -294,7 +303,9 @@ def write_install_docs(bundle_dir: Path) -> None:
                 "2. `docker load -i aerobim-backend-image.tar`",
                 "3. `docker run -d --rm --name aerobim-offline --network none \\`",
                 "   `-e AEROBIM_API_BEARER_TOKEN=<secret> aerobim-backend:offline-bundle`",
-                "4. Probe in-container: `docker exec aerobim-offline curl http://127.0.0.1:8080/health`",
+                "4. Full probe (install scripts run this automatically):",
+                "   `docker exec aerobim-offline python -c '<closed-contour probe>'`",
+                "   Checks health, 401 without auth, capabilities with bearer, egress block.",
                 "   (Host `-p` port mapping is **unreliable** with `--network none` on some engines.)",
                 "5. Recompute sha256 of files listed in BUNDLE_MANIFEST.json (or run verify).",
                 "",
@@ -359,6 +370,20 @@ def build_manifest(bundle_dir: Path, *, image_id: str) -> dict[str, object]:
         ),
         "files": files,
     }
+
+
+def verify_bundle_source_sync(bundle_dir: Path) -> list[str]:
+    """Detect bundle lock/Dockerfile drift from live backend source (builder-side)."""
+
+    problems: list[str] = []
+    for name in ("requirements-lock.txt", "requirements-dev-lock.txt", "Dockerfile"):
+        bundle_path = bundle_dir / name
+        backend_path = _BACKEND / name
+        if not bundle_path.is_file() or not backend_path.is_file():
+            continue
+        if sha256_file(bundle_path) != sha256_file(backend_path):
+            problems.append(f"bundle/backend drift: {name}")
+    return problems
 
 
 def verify_manifest(bundle_dir: Path) -> list[str]:
@@ -426,11 +451,11 @@ def cmd_build() -> int:
 
 
 def cmd_verify() -> int:
-    problems = verify_manifest(_BUNDLE_DIR)
+    problems = verify_manifest(_BUNDLE_DIR) + verify_bundle_source_sync(_BUNDLE_DIR)
     if problems:
         print("BUNDLE VERIFY FAILED:\n" + "\n".join(problems))
         return 1
-    print("bundle verified: all sha256 match")
+    print("bundle verified: all sha256 match; no bundle/backend drift")
     return 0
 
 
@@ -472,7 +497,7 @@ def cmd_smoke() -> int:
             container,
             "python",
             "-c",
-            _container_probe_script(token=token),
+            _container_probe_command(),
         )
         print(probe.stdout.strip() or probe.stderr[-400:])
         return 0 if probe.returncode == 0 else 1
@@ -483,11 +508,11 @@ def cmd_smoke() -> int:
 def cmd_closed_contour(*, run_smoke: bool = False) -> int:
     """И1 operator gate: manifest verify + optional docker smoke."""
 
-    problems = verify_manifest(_BUNDLE_DIR)
+    problems = verify_manifest(_BUNDLE_DIR) + verify_bundle_source_sync(_BUNDLE_DIR)
     if problems:
         print("CLOSED-CONTOUR VERIFY FAILED:\n" + "\n".join(problems))
         return 1
-    print("closed-contour: manifest sha256 OK")
+    print("closed-contour: manifest sha256 OK; no bundle/backend drift")
     if run_smoke:
         smoke_rc = cmd_smoke()
         if smoke_rc != 0:

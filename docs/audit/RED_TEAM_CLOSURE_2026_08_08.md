@@ -29,7 +29,7 @@ remediation_commit: pending
 | RT-HITL-001 | PARTIAL | **CLOSED** | read-modify-write under lock; concurrent append test |
 | RT-BLOCKERS-001 | VERIFIED | **CLOSED** | archive banner in `CRITICAL_BLOCKERS.md` |
 | RT-LIC-001 | NOT_VULNERABLE | **NOT_VULNERABLE** | unchanged |
-| RT-OFFLINE-001 | DEFERRED | **DEFERRED** | owner decision: Docker-only (unchanged) |
+| RT-OFFLINE-001 | CLOSED_DOCKER_TRACK | **CLOSED** | И1 Docker image-track; bare-metal wheelhouse OUT_OF_SCOPE |
 | RT-001/002/003 | OPEN | **OPEN** | customer evidence — not eng-fixable |
 
 ---
