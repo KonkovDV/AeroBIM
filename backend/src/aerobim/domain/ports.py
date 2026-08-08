@@ -39,6 +39,7 @@ from aerobim.domain.models import (
 )
 from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
 from aerobim.domain.package_completeness import PackageCompletenessReport, PackageInventory
+from aerobim.domain.review_event_append import ReviewEventAppendSpec
 from aerobim.domain.section_pairing import SectionPairingReport
 from aerobim.domain.signature_immutability import SignatureAuditResult
 from aerobim.domain.space_efficiency_advisory import SpaceInventoryRow
@@ -138,6 +139,8 @@ class ReviewEventStore(Protocol):
     def append(self, event: ReviewEvent) -> str: ...
 
     def list_for_report(self, report_id: str) -> list[ReviewEvent]: ...
+
+    def append_api_event(self, spec: ReviewEventAppendSpec) -> ReviewEvent: ...
 
 
 class NormRulePackVersionStore(Protocol):

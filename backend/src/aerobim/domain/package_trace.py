@@ -7,6 +7,7 @@ from time import perf_counter
 from typing import Any
 
 from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, Contour, StageBudget
+from aerobim.domain.stage_timeout import StageTimeoutExceeded, enforce_stage_timeout
 
 
 @dataclass
@@ -14,6 +15,7 @@ class PackageTraceCollector:
     """Records wall-time per contour during one analyze execute()."""
 
     stage_budget: StageBudget = field(default_factory=lambda: DEFAULT_PACKAGE_STAGE_BUDGET)
+    enforce_timeouts: bool = False
     _elapsed_seconds: dict[str, float] = field(default_factory=dict, init=False)
     _active: dict[str, float] = field(default_factory=dict, init=False)
 
@@ -101,7 +103,17 @@ class _ContourSpan:
     def __exit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
         if self._started_at is None:
             return
-        self._collector.record(self._contour, perf_counter() - self._started_at)
+        elapsed = perf_counter() - self._started_at
+        self._collector.record(self._contour, elapsed)
+        if self._collector.enforce_timeouts:
+            try:
+                enforce_stage_timeout(
+                    contour=self._contour,
+                    elapsed_seconds=elapsed,
+                    budget=self._collector.stage_budget,
+                )
+            except StageTimeoutExceeded:
+                raise
 
 
 __all__ = ["PackageTraceCollector"]

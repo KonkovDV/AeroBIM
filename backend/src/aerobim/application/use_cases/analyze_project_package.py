@@ -246,6 +246,8 @@ class AnalyzeProjectPackageUseCase:
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         collector: PackageTraceCollector | None = self._package_trace_collector
+        if collector is None and self._hard_signoff_profile:
+            collector = PackageTraceCollector(enforce_timeouts=True)
         if collector is None:
             ingested = self._ingestion.run(request)
             request = ingested.request

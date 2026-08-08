@@ -477,6 +477,24 @@ class Settings:
     def oidc_enabled(self) -> bool:
         return bool(self.oidc_issuer and self.oidc_audience and self.oidc_jwks_url)
 
+    @property
+    def enforce_hitl_reviewer_auth(self) -> bool:
+        """Block static bearer from expert HITL sign-off under pilot/production."""
+
+        return self.signoff_profile in {"samolet_pilot", "production"}
+
+    @property
+    def disable_sync_package_analyze(self) -> bool:
+        """Force async submit for heavy analyze under pilot/production."""
+
+        return self.signoff_profile in {"samolet_pilot", "production"}
+
+    @property
+    def enforce_stage_timeouts(self) -> bool:
+        """Fail closed when analyze contours exceed stage budgets."""
+
+        return self.signoff_profile in {"samolet_pilot", "production"}
+
     def require_secure_auth(self) -> None:
         """Fail closed: non-dev deployments must configure bearer and/or OIDC."""
         if self.is_dev_environment:

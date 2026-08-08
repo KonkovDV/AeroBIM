@@ -64,7 +64,10 @@ class UploadApiSecurityTests(unittest.TestCase):
                 files={"file": ("model.ifc", b"%PDF-1.7\n", "application/pdf")},
             )
             self.assertEqual(response.status_code, 415, response.text)
-            self.assertIn("Content mismatch", response.json()["detail"])
+            self.assertEqual(
+                response.json()["detail"],
+                "Upload content rejected",
+            )
 
     def test_upload_enforces_max_upload_bytes(self) -> None:
         try:
@@ -154,7 +157,7 @@ class UploadApiSecurityTests(unittest.TestCase):
                 files={"file": ("pack.zip", payload, "application/zip")},
             )
             self.assertEqual(response.status_code, 422, response.text)
-            self.assertIn("too many members", response.json()["detail"])
+            self.assertEqual(response.json()["detail"], "Upload archive rejected")
 
 
 if __name__ == "__main__":

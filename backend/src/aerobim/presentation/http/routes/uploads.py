@@ -4,11 +4,12 @@ import hashlib
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
 from aerobim.core.security.path_jail import (
     PathJailError,
     reject_symlinks,
+    sanitize_upload_filename,
     tenant_storage_prefix,
 )
 from aerobim.core.security.upload_content import UploadContentError, validate_upload_content
@@ -20,6 +21,15 @@ from aerobim.presentation.http.context import (
     UPLOAD_SNIFF_BYTES,
     ApiContext,
 )
+from aerobim.presentation.http.errors import (
+    public_upload_content_rejected_detail,
+    public_upload_object_store_failed_detail,
+    public_upload_promote_failed_detail,
+    public_upload_quota_exceeded_detail,
+    public_upload_too_large_detail,
+    public_upload_write_failed_detail,
+    public_upload_zip_rejected_detail,
+)
 
 
 def build_uploads_router(ctx: ApiContext) -> APIRouter:
@@ -29,6 +39,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
     @router.post("/v1/uploads")
     async def upload_document(
+        request: Request,
         file: Annotated[UploadFile, File(...)],
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
@@ -43,15 +54,38 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             principal.tenant_id or principal.subject or "anonymous"
         ).strip() or "anonymous"
         try:
-            # Encode once via tenant_storage_prefix — never pass a pre-encoded segment.
             tenant_prefix = tenant_storage_prefix(tenant_key)
             tenant_seg = tenant_prefix.rstrip("/").rsplit("/", 1)[-1]
         except PathJailError as exc:
             raise HTTPException(status_code=400, detail="Invalid tenant identity") from exc
-        raw_name = (file.filename or "upload.bin").replace("\\", "/").split("/")[-1]
-        for banned in ':*?"<>|\r\n':
-            raw_name = raw_name.replace(banned, "")
-        safe_name = (raw_name.strip() or "upload.bin")[:180]
+
+        max_bytes = settings.max_upload_bytes
+        content_length = request.headers.get("content-length")
+        if content_length:
+            try:
+                declared = int(content_length)
+            except ValueError:
+                declared = -1
+            if declared > max_bytes:
+                raise HTTPException(
+                    status_code=413,
+                    detail=public_upload_too_large_detail(),
+                )
+
+        try:
+            ctx.upload_quota_store.assert_can_accept(tenant_key, size_bytes=max_bytes)
+        except UploadQuotaExceeded as exc:
+            logger.warning("upload quota pre-check failed", tenant_id=tenant_key, detail=str(exc))
+            raise HTTPException(
+                status_code=429,
+                detail=public_upload_quota_exceeded_detail(),
+            ) from exc
+
+        try:
+            safe_name = sanitize_upload_filename(file.filename or "upload.bin")
+        except PathJailError as exc:
+            raise HTTPException(status_code=400, detail="Invalid upload filename") from exc
+
         upload_id = uuid4().hex
         relative_path = f"{tenant_prefix}uploads/{upload_id}/{safe_name}"
         base = settings.storage_dir.resolve()
@@ -59,7 +93,6 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             settings.storage_dir / "quarantine" / tenant_seg / upload_id / safe_name
         ).resolve()
         try:
-            # Resolve through the jail before any write so ``..`` tokens cannot escape.
             from aerobim.core.security.path_jail import resolve_storage_path
 
             target = resolve_storage_path(relative_path, base=settings.storage_dir)
@@ -73,7 +106,6 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
         except PathJailError as exc:
             raise HTTPException(status_code=409, detail="Upload path rejected") from exc
 
-        max_bytes = settings.max_upload_bytes
         total = 0
         digest = hashlib.sha256()
         sniff_buf = bytearray()
@@ -87,9 +119,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                     if total > max_bytes:
                         raise HTTPException(
                             status_code=413,
-                            detail=(
-                                f"Upload exceeds size limit ({total} bytes > {max_bytes} bytes)"
-                            ),
+                            detail=public_upload_too_large_detail(),
                         )
                     digest.update(chunk)
                     if len(sniff_buf) < UPLOAD_SNIFF_BYTES:
@@ -101,7 +131,11 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             raise
         except OSError as exc:
             quarantine.unlink(missing_ok=True)
-            raise HTTPException(status_code=500, detail=f"Upload write failed: {exc}") from exc
+            logger.error("upload write failed", detail=str(exc))
+            raise HTTPException(
+                status_code=500,
+                detail=public_upload_write_failed_detail(),
+            ) from exc
 
         if total == 0:
             quarantine.unlink(missing_ok=True)
@@ -121,18 +155,29 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                 inspect_zip_path(quarantine)
         except UploadContentError as exc:
             quarantine.unlink(missing_ok=True)
-            raise HTTPException(status_code=415, detail=str(exc)) from exc
+            logger.warning("upload content rejected", detail=str(exc))
+            raise HTTPException(
+                status_code=415,
+                detail=public_upload_content_rejected_detail(),
+            ) from exc
         except ZipBombError as exc:
             quarantine.unlink(missing_ok=True)
-            raise HTTPException(status_code=422, detail=str(exc)) from exc
+            logger.warning("upload zip rejected", detail=str(exc))
+            raise HTTPException(
+                status_code=422,
+                detail=public_upload_zip_rejected_detail(),
+            ) from exc
 
         try:
             quota = ctx.upload_quota_store.reserve(tenant_key, size_bytes=total)
         except UploadQuotaExceeded as exc:
             quarantine.unlink(missing_ok=True)
-            raise HTTPException(status_code=429, detail=str(exc)) from exc
+            logger.warning("upload quota reserve failed", tenant_id=tenant_key, detail=str(exc))
+            raise HTTPException(
+                status_code=429,
+                detail=public_upload_quota_exceeded_detail(),
+            ) from exc
 
-        # Promote out of quarantine only after content + zip checks pass.
         target.parent.mkdir(parents=True, exist_ok=True)
         try:
             reject_symlinks(target.parent, base=base)
@@ -147,8 +192,10 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                     tenant_id=tenant_key,
                     size_bytes=total,
                 )
+            logger.error("upload promote failed", detail=str(exc))
             raise HTTPException(
-                status_code=500, detail=f"Quarantine promote failed: {exc}"
+                status_code=500,
+                detail=public_upload_promote_failed_detail(),
             ) from exc
 
         if ctx.object_store is not None:
@@ -170,8 +217,10 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                         tenant_id=tenant_key,
                         size_bytes=total,
                     )
+                logger.error("object store put failed", detail=str(exc))
                 raise HTTPException(
-                    status_code=500, detail=f"Object store put failed: {exc}"
+                    status_code=500,
+                    detail=public_upload_object_store_failed_detail(),
                 ) from exc
 
         return {

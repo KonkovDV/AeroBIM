@@ -2,6 +2,7 @@
 
 RT-HYPER-002: corrupt JSONL lines are counted; fail-closed profiles raise.
 RT-P5: idempotency_key de-dupe, sequence numbers, exclusive append lock.
+RT-AUDIT-001/002: locked API append + hash chain tamper-evidence.
 """
 
 from __future__ import annotations
@@ -10,20 +11,32 @@ import json
 import logging
 import os
 import time
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 from aerobim.domain.models import ReviewEvent
+from aerobim.domain.review_event_append import HitlStateConflictError, ReviewEventAppendSpec
+from aerobim.domain.review_event_chain import genesis_previous_hash, review_event_content_hash
+from aerobim.domain.review_state_machine import (
+    HitlTransitionError,
+    assert_hitl_transition,
+    latest_hitl_state,
+)
 
 _logger = logging.getLogger(__name__)
 
 _MAX_LINE_BYTES = 256 * 1024
 _LOCK_ATTEMPTS = 50
 _LOCK_SLEEP_S = 0.02
+_NORM_PACK_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
 
 
 class AuditEventCorruptionError(RuntimeError):
     """Raised when audit_fail_closed=True and JSONL contains invalid lines."""
+
+
+class ReviewEventChainError(RuntimeError):
+    """Raised when hash-chain verification fails under fail-closed."""
 
 
 class FilesystemReviewEventStore:
@@ -41,15 +54,125 @@ class FilesystemReviewEventStore:
         target = self._path(event.report_id)
         return self._append_under_lock(target, event)
 
+    def append_api_event(self, spec: ReviewEventAppendSpec) -> ReviewEvent:
+        """Validate HITL transitions and assign sequence/hash under exclusive lock."""
+
+        target = self._path(spec.report_id)
+        lock_path = target.with_suffix(target.suffix + ".lock")
+        for _ in range(_LOCK_ATTEMPTS):
+            try:
+                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                try:
+                    os.write(fd, b"1")
+                finally:
+                    os.close(fd)
+                try:
+                    return self._append_api_under_lock(target, spec)
+                finally:
+                    lock_path.unlink(missing_ok=True)
+            except FileExistsError:
+                time.sleep(_LOCK_SLEEP_S)
+        raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
+
     def list_for_report(self, report_id: str) -> list[ReviewEvent]:
         return list(self._iter_events(report_id=report_id, raise_on_corrupt=self._fail_closed))
 
     def discard_report(self, report_id: str) -> None:
         """Compensating delete when report persist fails after HITL trail write."""
+
         target = self._path(report_id)
         lock_path = target.with_suffix(target.suffix + ".lock")
-        target.unlink(missing_ok=True)
-        lock_path.unlink(missing_ok=True)
+        for _ in range(_LOCK_ATTEMPTS):
+            try:
+                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                try:
+                    os.write(fd, b"1")
+                finally:
+                    os.close(fd)
+                try:
+                    target.unlink(missing_ok=True)
+                    return
+                finally:
+                    lock_path.unlink(missing_ok=True)
+            except FileExistsError:
+                time.sleep(_LOCK_SLEEP_S)
+        raise RuntimeError(f"Could not acquire review-event lock for discard {target.name}")
+
+    def _append_api_under_lock(self, target: Path, spec: ReviewEventAppendSpec) -> ReviewEvent:
+        existing = self._iter_events(
+            report_id=spec.report_id,
+            raise_on_corrupt=self._fail_closed,
+        )
+        existing_ids = {e.event_id for e in existing}
+        existing_keys = {e.idempotency_key for e in existing if e.idempotency_key}
+        idem = (spec.idempotency_key or "").strip() or None
+        event_id = (spec.event_id or "").strip() or None
+        if not event_id and idem:
+            import hashlib
+
+            event_id = hashlib.sha256(idem.encode("utf-8")).hexdigest()[:32]
+        if not event_id:
+            raise ValueError("event_id or idempotency_key is required")
+
+        if event_id in existing_ids:
+            return next(e for e in existing if e.event_id == event_id)
+        if idem and idem in existing_keys:
+            return next(e for e in existing if e.idempotency_key == idem)
+
+        server_state = latest_hitl_state(
+            existing,
+            spec.finding_id,
+            spec.issue_rule_id,
+        )
+        resulting_state: str | None = None
+        if spec.event_type not in _NORM_PACK_EVENT_TYPES:
+            client_previous = (spec.previous_state or "").strip() or None
+            if server_state is not None:
+                if spec.previous_state is None:
+                    raise HitlTransitionError(
+                        "previous_state is required when appending to existing HITL state"
+                    )
+                if client_previous != server_state:
+                    raise HitlStateConflictError(
+                        f"previous_state does not match server HITL state "
+                        f"(server={server_state!r}, client={client_previous!r})"
+                    )
+            try:
+                resulting_state = assert_hitl_transition(
+                    current=server_state,
+                    event_type=spec.event_type,
+                    actor=spec.actor,
+                    note=spec.note,
+                )
+            except HitlTransitionError:
+                raise
+
+        sequence = len(existing) + 1
+        previous_hash = (
+            existing[-1].content_hash
+            if existing and existing[-1].content_hash
+            else genesis_previous_hash()
+        )
+        draft = ReviewEvent(
+            event_id=event_id,
+            report_id=spec.report_id,
+            event_type=spec.event_type,  # type: ignore[arg-type]
+            created_at=spec.created_at,
+            issue_rule_id=spec.issue_rule_id,
+            actor=spec.actor,
+            note=spec.note,
+            latency_ms=spec.latency_ms,
+            idempotency_key=idem,
+            sequence_number=sequence,
+            previous_state=server_state,
+            resulting_state=resulting_state,
+            finding_id=spec.finding_id,
+            previous_event_hash=previous_hash,
+        )
+        content_hash = review_event_content_hash(draft, previous_event_hash=previous_hash)
+        stamped = replace(draft, content_hash=content_hash)
+        self._write_event_line(target, stamped)
+        return stamped
 
     def _append_under_lock(self, target: Path, event: ReviewEvent) -> str:
         """Read-modify-write under exclusive lock (RT-HITL-001)."""
@@ -79,30 +202,39 @@ class FilesystemReviewEventStore:
                             if e.idempotency_key == event.idempotency_key
                         )
 
-                    sequence = event.sequence_number
-                    if sequence is None:
-                        sequence = len(existing) + 1
-                    stamped = ReviewEvent(
-                        **{
-                            **event.__dict__,
-                            "sequence_number": sequence,
-                        }
+                    sequence = len(existing) + 1
+                    previous_hash = (
+                        existing[-1].content_hash
+                        if existing and existing[-1].content_hash
+                        else genesis_previous_hash()
                     )
-                    line = json.dumps(asdict(stamped), ensure_ascii=False) + "\n"
-                    if len(line.encode("utf-8")) > _MAX_LINE_BYTES:
-                        raise ValueError(
-                            f"Review event exceeds max line size ({_MAX_LINE_BYTES} bytes)"
+                    draft = replace(
+                        event,
+                        sequence_number=sequence,
+                        previous_event_hash=event.previous_event_hash or previous_hash,
+                    )
+                    if not draft.content_hash:
+                        content_hash = review_event_content_hash(
+                            draft,
+                            previous_event_hash=draft.previous_event_hash or previous_hash,
                         )
-                    with target.open("a", encoding="utf-8") as handle:
-                        handle.write(line)
-                        handle.flush()
-                        os.fsync(handle.fileno())
-                    return stamped.event_id
+                        draft = replace(draft, content_hash=content_hash)
+                    self._write_event_line(target, draft)
+                    return draft.event_id
                 finally:
                     lock_path.unlink(missing_ok=True)
             except FileExistsError:
                 time.sleep(_LOCK_SLEEP_S)
         raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
+
+    def _write_event_line(self, target: Path, event: ReviewEvent) -> None:
+        line = json.dumps(asdict(event), ensure_ascii=False) + "\n"
+        if len(line.encode("utf-8")) > _MAX_LINE_BYTES:
+            raise ValueError(f"Review event exceeds max line size ({_MAX_LINE_BYTES} bytes)")
+        with target.open("a", encoding="utf-8") as handle:
+            handle.write(line)
+            handle.flush()
+            os.fsync(handle.fileno())
 
     def _iter_events(self, *, report_id: str, raise_on_corrupt: bool) -> list[ReviewEvent]:
         target = self._path(report_id)
@@ -114,6 +246,7 @@ class FilesystemReviewEventStore:
         seen_ids: set[str] = set()
         seen_keys: set[str] = set()
         expected_seq = 1
+        expected_prev_hash = genesis_previous_hash()
         for line in target.read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue
@@ -141,6 +274,8 @@ class FilesystemReviewEventStore:
                     previous_state=data.get("previous_state"),
                     resulting_state=data.get("resulting_state"),
                     finding_id=data.get("finding_id"),
+                    content_hash=data.get("content_hash"),
+                    previous_event_hash=data.get("previous_event_hash"),
                 )
                 if event.event_id in seen_ids:
                     self.last_invalid_line_count += 1
@@ -149,12 +284,33 @@ class FilesystemReviewEventStore:
                     self.last_invalid_line_count += 1
                     continue
                 if event.sequence_number is not None and event.sequence_number != expected_seq:
-                    _logger.warning(
-                        "review-events sequence gap for %s: got %s expected %s",
-                        report_id,
-                        event.sequence_number,
-                        expected_seq,
+                    msg = (
+                        f"review-events sequence gap for {report_id}: "
+                        f"got {event.sequence_number} expected {expected_seq}"
                     )
+                    if raise_on_corrupt:
+                        raise ReviewEventChainError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
+                if event.content_hash:
+                    prev = event.previous_event_hash or genesis_previous_hash()
+                    if prev != expected_prev_hash:
+                        msg = (
+                            f"review-events hash-chain break for {report_id} "
+                            f"at seq {event.sequence_number}"
+                        )
+                        if raise_on_corrupt:
+                            raise ReviewEventChainError(msg)
+                        _logger.warning(msg)
+                        self.last_load_degraded = True
+                    recomputed = review_event_content_hash(event, previous_event_hash=prev)
+                    if recomputed != event.content_hash:
+                        msg = f"review-events content_hash mismatch for {report_id}"
+                        if raise_on_corrupt:
+                            raise ReviewEventChainError(msg)
+                        _logger.warning(msg)
+                        self.last_load_degraded = True
+                    expected_prev_hash = event.content_hash
                 seen_ids.add(event.event_id)
                 if event.idempotency_key:
                     seen_keys.add(event.idempotency_key)

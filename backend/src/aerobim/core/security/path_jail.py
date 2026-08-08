@@ -92,6 +92,28 @@ def reject_symlinks(path: Path, *, base: Path) -> None:
             raise PathJailError(f"Symlinks are not allowed in storage paths: {cursor}")
 
 
+def sanitize_upload_filename(filename: str, *, max_length: int = 180) -> str:
+    """Normalize a single upload filename component (not a storage path)."""
+
+    segment = _normalize_user_path(filename.replace("\\", "/").split("/")[-1]).strip()
+    if not segment or segment in {".", ".."}:
+        segment = "upload.bin"
+    for banned in ':*?"<>|\r\n;':
+        segment = segment.replace(banned, "")
+    segment = "".join(
+        ch
+        for ch in segment
+        if unicodedata.category(ch) not in {"Cf", "Cc"}
+    )
+    segment = segment.strip(" .") or "upload.bin"
+    if len(segment) > max_length:
+        segment = segment[:max_length]
+    stem = segment.split(".", 1)[0].rstrip(" ")
+    if stem.upper() in _WINDOWS_RESERVED_NAMES:
+        segment = f"_{segment}"
+    return segment
+
+
 def safe_storage_token(value: str) -> str:
     """Encode a tenant / pack token as a single reversible path segment.
 

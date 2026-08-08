@@ -14,6 +14,28 @@ class AuthPrincipal:
     tenant_id: str | None = None
     """Bound tenant; None means unrestricted (dev / ACL off)."""
     subject: str | None = None
+    is_service_token: bool = False
+    """True for static shared bearer — may be blocked from expert HITL writes."""
+
+
+HITL_EXPERT_EVENT_TYPES = frozenset(
+    {"accepted", "rejected", "edited", "edited_remark", "waived"}
+)
+
+
+def principal_may_append_hitl_event(
+    *,
+    enforce_hitl_reviewer_auth: bool,
+    principal: AuthPrincipal,
+    event_type: str,
+) -> bool:
+    """Deny static service tokens from expert sign-off events when enforced."""
+
+    if not enforce_hitl_reviewer_auth:
+        return True
+    if event_type not in HITL_EXPERT_EVENT_TYPES:
+        return True
+    return not principal.is_service_token
 
 
 def _tenants_match(left: str | None, right: str | None) -> bool:
@@ -75,7 +97,9 @@ def principal_may_access_norm_pack(
 
 __all__ = [
     "AuthPrincipal",
+    "HITL_EXPERT_EVENT_TYPES",
     "principal_may_access_job",
     "principal_may_access_norm_pack",
     "principal_may_access_report",
+    "principal_may_append_hitl_event",
 ]

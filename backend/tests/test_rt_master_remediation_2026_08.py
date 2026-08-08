@@ -59,7 +59,7 @@ class HitlConcurrentAppendTests(unittest.TestCase):
                     ReviewEvent(
                         event_id=f"evt-{index}",
                         report_id=report_id,
-                        event_type="region_confirmed",
+                        event_type="opened",
                         created_at="2026-08-08T00:00:00Z",
                     )
                 )
