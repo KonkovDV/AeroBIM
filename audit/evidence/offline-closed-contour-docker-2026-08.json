@@ -11,7 +11,7 @@
     "docker_client": "29.5.2",
     "platform": "Windows-11 / desktop-linux",
     "image_tag": "aerobim-backend:offline-bundle",
-    "commit_sha": "bffd8a0"
+    "commit_sha": "c0951f3"
   },
   "checks": [
     {"check": "RT-CC-H01 install script host port-publish removed", "result": "REMEDIATED"},
