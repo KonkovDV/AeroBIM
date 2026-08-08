@@ -2,8 +2,13 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from aerobim.domain.auth_roles import (
+    HITL_REVIEWER_ROLES,
+    NORM_PACK_EDITOR_ROLES,
+    principal_has_any_role,
+)
 from aerobim.domain.models import AnalyzeProjectPackageJob, ValidationReport
 
 
@@ -16,6 +21,8 @@ class AuthPrincipal:
     subject: str | None = None
     is_service_token: bool = False
     """True for static shared bearer — may be blocked from expert HITL writes."""
+    roles: frozenset[str] = field(default_factory=frozenset)
+    """Normalized role names from OIDC claims (casefold)."""
 
 
 HITL_EXPERT_EVENT_TYPES = frozenset(
@@ -26,16 +33,41 @@ HITL_EXPERT_EVENT_TYPES = frozenset(
 def principal_may_append_hitl_event(
     *,
     enforce_hitl_reviewer_auth: bool,
+    require_hitl_reviewer_roles: bool,
     principal: AuthPrincipal,
     event_type: str,
 ) -> bool:
-    """Deny static service tokens from expert sign-off events when enforced."""
+    """Deny static bearer and require reviewer roles for expert sign-off."""
 
     if not enforce_hitl_reviewer_auth:
         return True
     if event_type not in HITL_EXPERT_EVENT_TYPES:
         return True
-    return not principal.is_service_token
+    if principal.is_service_token:
+        return False
+    if require_hitl_reviewer_roles:
+        return principal_has_any_role(
+            principal_roles=principal.roles,
+            required=HITL_REVIEWER_ROLES,
+        )
+    return True
+
+
+def principal_may_edit_norm_pack(
+    *,
+    enforce_rbac: bool,
+    principal: AuthPrincipal,
+) -> bool:
+    """Gate norm-pack mutations on editor/reviewer/admin roles."""
+
+    if not enforce_rbac:
+        return True
+    if principal.is_service_token:
+        return False
+    return principal_has_any_role(
+        principal_roles=principal.roles,
+        required=NORM_PACK_EDITOR_ROLES,
+    )
 
 
 def _tenants_match(left: str | None, right: str | None) -> bool:
@@ -102,4 +134,5 @@ __all__ = [
     "principal_may_access_norm_pack",
     "principal_may_access_report",
     "principal_may_append_hitl_event",
+    "principal_may_edit_norm_pack",
 ]

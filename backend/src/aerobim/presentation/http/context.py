@@ -184,9 +184,16 @@ class ApiContext:
                         headers={"WWW-Authenticate": "Bearer"},
                     )
                 subject = claims.get("sub")
+                from aerobim.domain.auth_roles import extract_oidc_roles
+
+                roles = extract_oidc_roles(
+                    claims,
+                    roles_claim=settings.oidc_roles_claim,
+                )
                 return AuthPrincipal(
                     tenant_id=tenant,
                     subject=str(subject) if subject is not None else None,
+                    roles=roles,
                 )
             except HTTPException:
                 raise

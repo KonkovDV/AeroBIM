@@ -75,6 +75,7 @@ class HitlRbacTests(unittest.TestCase):
         self.assertFalse(
             principal_may_append_hitl_event(
                 enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
+                require_hitl_reviewer_roles=True,
                 principal=principal,
                 event_type="accepted",
             )
@@ -82,7 +83,8 @@ class HitlRbacTests(unittest.TestCase):
         self.assertTrue(
             principal_may_append_hitl_event(
                 enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
-                principal=AuthPrincipal(tenant_id="t1", subject="oidc-user"),
+                require_hitl_reviewer_roles=True,
+                principal=AuthPrincipal(tenant_id="t1", subject="oidc-user", roles=frozenset({"reviewer"})),
                 event_type="accepted",
             )
         )

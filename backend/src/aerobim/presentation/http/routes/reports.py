@@ -107,6 +107,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         ctx.assert_report_access(report, principal)
         if not principal_may_append_hitl_event(
             enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
+            require_hitl_reviewer_roles=settings.require_hitl_reviewer_roles,
             principal=principal,
             event_type=payload.event_type,
         ):

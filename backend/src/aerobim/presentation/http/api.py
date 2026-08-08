@@ -74,6 +74,7 @@ def create_http_app(container: Container):
         app,
         requests_per_minute=settings.http_rate_limit_per_minute,
         job_poll_per_minute=job_poll_per_minute,
+        redis_url=settings.redis_url,
     )
 
     ctx = ApiContext(container)

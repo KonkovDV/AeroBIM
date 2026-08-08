@@ -6,7 +6,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.object_acl import AuthPrincipal
+from aerobim.domain.object_acl import AuthPrincipal, principal_may_edit_norm_pack
 from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.schemas import NormRuleHitlEventRequest
 
@@ -23,6 +23,14 @@ def build_norm_packs_router(ctx: ApiContext) -> APIRouter:
     ) -> dict[str, object]:
         if not pack_id.strip() or len(pack_id) > 128:
             raise HTTPException(status_code=400, detail="Invalid pack_id")
+        if not principal_may_edit_norm_pack(
+            enforce_rbac=settings.enforce_norm_pack_rbac,
+            principal=principal,
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail="Norm-pack edits require editor/reviewer OIDC role",
+            )
         tenant_id = ctx.resolve_bound_tenant(principal)
         ctx.assert_norm_pack_access(principal, tenant_id=tenant_id)
         if payload.report_id:

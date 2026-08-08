@@ -106,12 +106,21 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+# S-band (bandit) deferred: S105 false positives on enum literals (OIDC_TOKEN_VALIDATOR, PASS, SECRET).
 
 [tool.ruff.format]
 quote-style = "double"
 
 [tool.mypy]
 python_version = "3.12"
+
+[[tool.mypy.overrides]]
+module = [
+  "aerobim.core.security.rate_limit_backend",
+  "aerobim.infrastructure.security.redis_rate_limiter",
+  "aerobim.domain.auth_roles",
+]
+strict = true
 
 [[tool.mypy.overrides]]
 module = [
