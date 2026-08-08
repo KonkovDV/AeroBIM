@@ -47,36 +47,97 @@ class IfcTesterIdsValidator:
             if spec_status:
                 continue
 
-            for requirement in spec.get("requirements", []):
+            requirements = spec.get("requirements") or []
+            cardinality = str(spec.get("cardinality") or "").lower()
+
+            # Prohibited specs fail when applicability matches; requirements[] may be empty.
+            if not requirements and cardinality == "prohibited":
+                total_applicable = int(spec.get("total_applicable") or 0)
+                if total_applicable > 0:
+                    applicable_entities = spec.get("applicable_entities") or []
+                    if applicable_entities:
+                        for entity in applicable_entities:
+                            issues.append(
+                                self._build_issue(
+                                    spec_name=spec_name,
+                                    facet_type="Specification",
+                                    description="Prohibited specification applicability matched",
+                                    entity_reason=(
+                                        "Applicability must not match for prohibited specs"
+                                    ),
+                                    entity_element=entity.get("element"),
+                                )
+                            )
+                    else:
+                        issues.append(
+                            self._build_issue(
+                                spec_name=spec_name,
+                                facet_type="Specification",
+                                description="Prohibited specification applicability matched",
+                                entity_reason=(
+                                    f"{total_applicable} applicable entit"
+                                    f"{'y' if total_applicable == 1 else 'ies'} matched"
+                                ),
+                                entity_element=None,
+                            )
+                        )
+                continue
+
+            for requirement in requirements:
                 if requirement.get("status", True):
                     continue
 
                 facet_type = requirement.get("facet_type", "")
                 description = requirement.get("description", "")
-                base_message = f"[IDS] {spec_name}: {facet_type}"
-                if description:
-                    base_message = f"{base_message} — {description}"
+                failed_entities = requirement.get("failed_entities") or []
 
-                for entity in requirement.get("failed_entities", []):
-                    entity_reason = entity.get("reason", "")
-                    entity_element = entity.get("element", "")
-                    element_guid = self._extract_guid(entity_element)
-
-                    message = base_message
-                    if entity_reason:
-                        message = f"{message} ({entity_reason})"
-
+                if failed_entities:
+                    for entity in failed_entities:
+                        issues.append(
+                            self._build_issue(
+                                spec_name=spec_name,
+                                facet_type=facet_type,
+                                description=description,
+                                entity_reason=str(entity.get("reason", "")),
+                                entity_element=entity.get("element"),
+                            )
+                        )
+                else:
+                    # Required spec with zero applicable entities reports status=false but no rows.
                     issues.append(
-                        ValidationIssue(
-                            rule_id=f"IDS-{spec_name}",
-                            severity=Severity.ERROR,
-                            message=message,
-                            category=FindingCategory.IDS_VALIDATION,
-                            element_guid=element_guid,
+                        self._build_issue(
+                            spec_name=spec_name,
+                            facet_type=facet_type,
+                            description=description,
+                            entity_reason="Requirement not satisfied",
+                            entity_element=None,
                         )
                     )
 
         return issues
+
+    def _build_issue(
+        self,
+        *,
+        spec_name: str,
+        facet_type: str,
+        description: str,
+        entity_reason: str,
+        entity_element: object,
+    ) -> ValidationIssue:
+        base_message = f"[IDS] {spec_name}: {facet_type}"
+        if description:
+            base_message = f"{base_message} — {description}"
+        if entity_reason:
+            base_message = f"{base_message} ({entity_reason})"
+
+        return ValidationIssue(
+            rule_id=f"IDS-{spec_name}",
+            severity=Severity.ERROR,
+            message=base_message,
+            category=FindingCategory.IDS_VALIDATION,
+            element_guid=self._extract_guid(entity_element),
+        )
 
     def _extract_guid(self, element_repr: object) -> str | None:
         if not element_repr:
