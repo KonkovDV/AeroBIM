@@ -444,6 +444,8 @@ _BASELINE_BINDING_PATHS = frozenset(
     {
         _BASELINE_ARTIFACT_REL,
         "backend/src/aerobim/tools/export_runtime_baseline.py",
+        "README.md",
+        "README.ru.md",
     }
 )
 

@@ -1,10 +1,10 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.3.0",
-  "commit_sha": "69069790d366430283be1a50c2703a4dff2e48e5",
-  "tree_sha": "b80049ae9c7c58f1bf08a49f7527341e94d62819",
+  "commit_sha": "57a7eda7accd128a0af7a367eb3eb59321696a27",
+  "tree_sha": "85327537b0425381b39223f80d37b913390a014e",
   "working_tree_clean": true,
-  "generated_at": "2026-08-08T19:58:23.338504+00:00",
+  "generated_at": "2026-08-08T19:58:59.307307+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
@@ -52,7 +52,7 @@
     "backend_test_functions": 1983,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=1973, frontend=29; commit 69069790d366; see docs/evidence/runtime-baseline-latest.json · src ~60752 LOC; tests ~41366 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=1973, frontend=29; commit 57a7eda7accd; see docs/evidence/runtime-baseline-latest.json · src ~60752 LOC; tests ~41366 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
