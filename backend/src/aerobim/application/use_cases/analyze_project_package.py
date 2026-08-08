@@ -308,7 +308,7 @@ class AnalyzeProjectPackageUseCase:
 
     def _maybe_hydrate_office_requirement_source(
         self, request: ValidationRequest
-    ) -> ValidationRequest:
+    ) -> tuple[ValidationRequest, CapabilityStatus | None]:
         return self._ingestion_service().maybe_hydrate_office_requirement_source(request)
 
     def _run_cad_ingest(
@@ -559,6 +559,7 @@ class AnalyzeProjectPackageUseCase:
         extraction_integrity: CapabilityStatus | None = None,
         qualified_signature: CapabilityStatus | None = None,
         package_completeness: CapabilityStatus | None = None,
+        office_ingest: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
         return build_report_capabilities(
             requirements=requirements,
@@ -580,6 +581,7 @@ class AnalyzeProjectPackageUseCase:
             extraction_integrity=extraction_integrity,
             qualified_signature=qualified_signature,
             package_completeness=package_completeness,
+            office_ingest=office_ingest,
             ids_validator_configured=self._ids_validator is not None,
             ifc_schema_validator_configured=self._ifc_schema_validator is not None,
             require_bsi_schema=self._require_bsi_schema,

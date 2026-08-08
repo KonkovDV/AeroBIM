@@ -328,6 +328,32 @@
       "mitigation_options": ""
     },
     {
+      "name": "openpyxl",
+      "scope": "core",
+      "installed_version": "3.1.5",
+      "license_metadata": "MIT",
+      "spdx_guess": "MIT",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "native .xlsx Office ingest (WP-R1)",
+      "mitigation_options": "",
+      "lock_version": "3.1.5"
+    },
+    {
+      "name": "python-docx",
+      "scope": "core",
+      "installed_version": "1.1.2",
+      "license_metadata": "MIT",
+      "spdx_guess": "MIT",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "native .docx Office ingest (WP-R1)",
+      "mitigation_options": "",
+      "lock_version": "1.1.2"
+    },
+    {
       "name": "web-ifc",
       "scope": "frontend",
       "installed_version": "0.0.77",

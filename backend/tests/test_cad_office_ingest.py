@@ -75,22 +75,20 @@ class CadOfficeIngestTests(unittest.TestCase):
         self.assertIn("R1|", source.text)
         self.assertEqual(source.source_kind, SourceKind.STRUCTURED_TEXT)
 
-    def test_office_docx_requires_docling(self) -> None:
+    def test_office_docx_native_without_docling(self) -> None:
+        try:
+            from docx import Document
+        except ModuleNotFoundError:
+            self.skipTest("python-docx not installed")
+
         ingestor = DoclingOfficeDocumentIngestor()
         with tempfile.TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "brief.docx"
-            path.write_bytes(b"PK\x03\x04fake")
-            try:
-                import docling  # noqa: F401
-            except ModuleNotFoundError:
-                with self.assertRaisesRegex(RuntimeError, "Docling"):
-                    ingestor.ingest(path)
-            else:
-                # Docling installed: may succeed or fail on corrupt zip — either is fine.
-                try:
-                    ingestor.ingest(path)
-                except Exception:  # noqa: BLE001
-                    pass
+            doc = Document()
+            doc.add_paragraph("Brief text for ingest")
+            doc.save(path)
+            source = ingestor.ingest(path)
+        self.assertIn("Brief text", source.text)
 
     def test_dwg_dxf_honesty_allows_not_verified_forbids_ok(self) -> None:
         assert_honesty_capabilities_not_silently_ok(

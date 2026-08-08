@@ -2401,6 +2401,59 @@
         "summary": "Export Report Json"
       }
     },
+    "/v1/reports/{report_id}/export/pdf": {
+      "get": {
+        "operationId": "export_report_pdf_v1_reports__report_id__export_pdf_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Report Pdf"
+      }
+    },
     "/v1/reports/{report_id}/review-events": {
       "get": {
         "operationId": "list_review_events_v1_reports__report_id__review_events_get",

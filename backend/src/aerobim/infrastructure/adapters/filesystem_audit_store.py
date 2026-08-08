@@ -882,6 +882,13 @@ class FilesystemAuditStore:
                     "llm advisory remark compose not evaluated",
                 ),
             ),
+            office_ingest=self._reconstruct_capability_status(
+                data.get("office_ingest"),
+                default=CapabilityStatus(
+                    CapabilityState.SKIPPED,
+                    "MS Office ingest not evaluated",
+                ),
+            ),
         )
 
     def _reconstruct_annotation(self, data: dict[str, Any]) -> DrawingAnnotation:

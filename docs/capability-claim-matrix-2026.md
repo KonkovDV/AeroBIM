@@ -84,7 +84,8 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`; inventory + [`license-policy-2026.md`](license-policy-2026.md) |
 | Annotation claimed-GUID presence (P2-04) | spatial-index lookup; wall-guid demo pin [`evidence/checkpoint2-evidence-bundle-latest.json`](evidence/checkpoint2-evidence-bundle-latest.json) |
 | MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + `AEROBIM_MEP_AABB_FILTER`; always `geometry_verified=False` — [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) |
-| Per-source check-coverage map (four presentation states) | `domain/check_coverage.py` + property test (I-8) + E2E MEP `not_checked`; `tz_gaps` (MEP/CV/DWG/space); HTML export coverage first page + frontend `CoverageMapPanel`; `GET /v1/reports/{id}/coverage` (ACL-scoped, verdict-neutral); `no_findings` impossible when check not executed |
+| Per-source check-coverage map (four presentation states) | `domain/check_coverage.py` + Hypothesis I-8; `tz_gaps`; HTML+PDF export coverage first page; frontend `CoverageMapPanel`; `GET /v1/reports/{id}/coverage` + `/export/pdf` |
+| Native MS Office ingest (WP-R1) | `python-docx`+`openpyxl` core path in `docling_office_document_ingestor`; `office_ingest` capability; legacy `.doc`/`.xls` fail-closed — `test_office_native_ingest` |
 | Advisory domain modules (drawing region quality/type/assessment, revision diff, norm applicability) | `domain/{region_quality,region_classifier,drawing_region_assessment,revision_diff,norm_applicability}.py` + tests; domain-pure, verdict-neutral (do NOT set summary.passed), fixture-only, NOT wired into ingestion/verdict; bad/unknown/ambiguous → escalate, never a silent OK/guess |
 
 ## Run manifest (iteration 2026-07-21)

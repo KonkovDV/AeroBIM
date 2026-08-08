@@ -174,6 +174,10 @@ class ReportCapabilities:
         CapabilityState.SKIPPED,
         "llm advisory remark compose not evaluated",
     )
+    office_ingest: CapabilityStatus = CapabilityStatus(
+        CapabilityState.SKIPPED,
+        "MS Office ingest not evaluated",
+    )
 
 
 class ConflictKind(StrEnum):

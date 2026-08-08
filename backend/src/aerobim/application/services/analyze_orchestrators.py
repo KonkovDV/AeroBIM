@@ -71,6 +71,7 @@ class IngestionBundle:
     region_hitl_issues: tuple[ValidationIssue, ...]
     norm_pack_capability: CapabilityStatus
     norm_pack_issues: tuple[ValidationIssue, ...]
+    office_capability: CapabilityStatus | None = None
     annotation_ifc_links: tuple[AnnotationIfcLink, ...] = ()
     extraction_integrity: CapabilityStatus | None = None
 
@@ -123,7 +124,7 @@ class IngestionOrchestrator:
         self._host = host
 
     def run(self, request: ValidationRequest) -> IngestionBundle:
-        request = self._host._maybe_hydrate_office_requirement_source(request)
+        request, office_capability = self._host._maybe_hydrate_office_requirement_source(request)
         structured_requirements = list(
             self._host._requirement_extractor.extract(request.requirement_source)
         )
@@ -179,6 +180,7 @@ class IngestionOrchestrator:
             region_hitl_issues=region_hitl_issues,
             norm_pack_capability=norm_pack_capability,
             norm_pack_issues=tuple(norm_pack_issues),
+            office_capability=office_capability,
             annotation_ifc_links=annotation_ifc_links,
             extraction_integrity=extraction_integrity,
         )
@@ -786,6 +788,7 @@ class EvidenceAssembler:
             extraction_integrity=ingested.extraction_integrity,
             qualified_signature=deterministic.signature_capability,
             package_completeness=deterministic.package_completeness_capability,
+            office_ingest=ingested.office_capability,
         )
         if request.ifc_path is None:
             skip_ifc = CapabilityStatus(

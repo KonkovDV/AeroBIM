@@ -84,21 +84,44 @@ class PackageIngestionService:
 
     def maybe_hydrate_office_requirement_source(
         self, request: ValidationRequest
-    ) -> ValidationRequest:
+    ) -> tuple[ValidationRequest, CapabilityStatus | None]:
         source = request.requirement_source
         if source.text.strip() or source.path is None or self._office_document_ingestor is None:
-            return request
-        if source.path.suffix.lower() not in OFFICE_SUFFIXES:
-            return request
-        hydrated = self._office_document_ingestor.ingest(source.path)
-        return replace(
-            request,
-            requirement_source=replace(
-                source,
-                text=hydrated.text,
-                source_kind=hydrated.source_kind,
-                doc_type=hydrated.doc_type or source.doc_type,
+            return request, None
+        suffix = source.path.suffix.lower()
+        if suffix not in OFFICE_SUFFIXES:
+            return request, None
+        try:
+            hydrated = self._office_document_ingestor.ingest(source.path)
+        except RuntimeError as exc:
+            reason = str(exc)
+            state = (
+                CapabilityState.NOT_VERIFIED
+                if "Docling optional" in reason or "available_as_derived_input" in reason
+                else CapabilityState.FAILED
+            )
+            return request, CapabilityStatus(state, reason)
+        except ValueError as exc:
+            return request, CapabilityStatus(CapabilityState.FAILED, str(exc))
+        subtype = suffix.lstrip(".")
+        engine = (
+            "python-docx" if suffix == ".docx" else "openpyxl" if suffix == ".xlsx" else "docling"
+        )
+        capability = CapabilityStatus(
+            CapabilityState.OK,
+            f"office_ingest:{subtype} via {engine}",
+        )
+        return (
+            replace(
+                request,
+                requirement_source=replace(
+                    source,
+                    text=hydrated.text,
+                    source_kind=hydrated.source_kind,
+                    doc_type=hydrated.doc_type or source.doc_type,
+                ),
             ),
+            capability,
         )
 
     def run_cad_ingest(
