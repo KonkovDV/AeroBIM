@@ -6,7 +6,7 @@
   "entries": [
     {
       "glob": "tests/**",
-      "rules": ["S101", "S105", "S106", "S107", "S108", "S110", "S311", "S314"],
+      "rules": ["S101", "S105", "S106", "S107", "S108", "S110", "S311", "S314", "S603"],
       "rationale": "Test fixtures use assert, dummy passwords, and non-crypto RNG by design."
     },
     {

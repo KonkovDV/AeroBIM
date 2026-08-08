@@ -666,7 +666,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn("report_sha256 mismatch", response.json().get("detail", ""))
+        self.assertEqual(response.json().get("detail", ""), "Invalid request")
 
     def test_analyze_project_package_rejects_conflicting_openrebar_inputs(self) -> None:
         ifc_path = self._write_ifc_fixture()
@@ -687,7 +687,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn("cannot be combined", response.json().get("detail", ""))
+        self.assertEqual(response.json().get("detail", ""), "Invalid request")
 
     def test_analyze_project_package_includes_openrebar_strategy_warning(self) -> None:
         ifc_path = self._write_ifc_fixture()

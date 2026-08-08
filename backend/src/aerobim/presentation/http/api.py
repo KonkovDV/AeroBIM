@@ -82,6 +82,7 @@ def create_http_app(container: Container) -> FastAPI:
         requests_per_minute=settings.http_rate_limit_per_minute,
         job_poll_per_minute=job_poll_per_minute,
         redis_url=settings.redis_url,
+        signoff_profile=settings.signoff_profile,
     )
 
     ctx = ApiContext(container)

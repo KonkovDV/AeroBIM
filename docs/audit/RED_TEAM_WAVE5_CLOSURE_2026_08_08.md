@@ -9,8 +9,20 @@ status: remediated
 | ID | Status | Fix |
 |---|---|---|
 | RT-GOV-004 | **CLOSED** | Ruff S-band enabled; inventory in `governance/ruff_s_band_inventory.json`; per-file noqa in `pyproject.toml` |
-| RT-GOV-003 | **CLOSED** | Commit-signature gate enforced in CI via `governance/commit_signing_policy.json` + `--min-ratio` ratchet |
+| RT-GOV-003 | **CLOSED** | Commit-signature gate enforced in CI via `governance/commit_signing_policy.json` + ratchet policy |
 | RT-GOV-005 | **CLOSED** | Mypy `--strict` on entire `src/aerobim` (305 files, 0 errors) |
+
+| RT-GOV-006 | **CLOSED** | FastAPI `response_model=None` for binary/stream routes (`Response \| FileResponse`) |
+| RT-GOV-007 | **CLOSED** | Rate-limit Redis keys hash bearer; pilot/prod fail-closed when Redis unavailable |
+| RT-GOV-008 | **CLOSED** | OIDC tenant claim rejects non-string values; analyze idempotency key normalized |
+
+## Post-Wave 5 hardening (2026-08-08)
+
+- `reports.py` / `exports.py`: `response_model=None` fixes FastAPI startup on union/binary responses.
+- `rate_limit.py`: SHA-256 fingerprint instead of bearer prefix in Redis keys.
+- `rate_limit_backend.py`: no silent in-process fallback under `samolet_pilot` / `production`.
+- `verify_commit_signatures.py`: missing policy file exits non-zero (fail-closed).
+- `scripts/verify_ruff_s_band_inventory.py`: CI drift gate vs `pyproject.toml`.
 
 ## Governance details
 
@@ -37,5 +49,6 @@ cd backend
 ruff check src tests
 python -m mypy src/aerobim --strict --ignore-missing-imports
 python scripts/verify_commit_signatures.py --policy ../governance/commit_signing_policy.json
-pytest tests/test_rt_wave3_remediation_2026_08.py tests/test_rt_wave4_remediation_2026_08.py -q
+pytest tests/test_rt_wave3_remediation_2026_08.py tests/test_rt_wave4_remediation_2026_08.py tests/test_rt_wave5_remediation_2026_08.py -q
+python scripts/verify_ruff_s_band_inventory.py
 ```

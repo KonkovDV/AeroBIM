@@ -5,12 +5,10 @@ from __future__ import annotations
 import unittest
 from unittest.mock import MagicMock
 
-from aerobim.core.security.rate_limit_backend import (
-    InProcessRateLimitBackend,
-    build_rate_limit_backend,
-)
+from aerobim.core.security.rate_limit_backend import InProcessRateLimitBackend
 from aerobim.domain.auth_roles import extract_oidc_roles, principal_has_any_role
 from aerobim.domain.object_acl import AuthPrincipal, principal_may_append_hitl_event
+from aerobim.infrastructure.security.rate_limit_factory import build_rate_limit_backend
 from aerobim.infrastructure.security.redis_rate_limiter import RedisRateLimitBackend
 
 

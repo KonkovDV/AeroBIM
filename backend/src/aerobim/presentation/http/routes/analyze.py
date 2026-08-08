@@ -180,7 +180,8 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except ValueError as exc:
             logger.warning("submit_analyze_project_package bad request", detail=str(exc))
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
-        if idempotency_key is not None and len(idempotency_key) > 128:
+        idem = (idempotency_key or "").strip() or None
+        if idem is not None and len(idem) > 128:
             raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
 
         from aerobim.application.use_cases.analyze_project_package_jobs import (
@@ -194,7 +195,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         try:
             job = submit_job_use_case.execute(
                 request,
-                idempotency_key=idempotency_key,
+                idempotency_key=idem,
                 max_concurrent_per_tenant=ctx.settings.max_concurrent_analyze_jobs_per_tenant,
             )
         except JobConcurrencyLimitError as exc:

@@ -101,7 +101,7 @@ class ReviewEventRequest(BaseModel):
     latency_ms: int | None = Field(default=None, ge=0, le=86_400_000)
     previous_state: str | None = Field(default=None, max_length=64)
     finding_id: str | None = Field(default=None, max_length=64)
-    idempotency_key: str | None = Field(default=None, max_length=256)
+    idempotency_key: str | None = Field(default=None, max_length=128)
 
 
 class NormRuleHitlEventRequest(BaseModel):
