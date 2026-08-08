@@ -16,7 +16,7 @@ claim_boundary: >-
 |---|--------|--------|----------------|
 | 1 | IFC-форматы: были ли прогоны + цифры точности/скорости | **Сделано (evidence)** | Да, IFC2X3/IFC4/IFC4X3. p95 стабилизирован (n=20). **Продуктовой точности нет** |
 | 2 | Датасеты с заключениями экспертизы vs baseline | **RU GT нет; Mumbai foreign ACC скачан** | ЕГРЗ не даёт пар. Mumbai 333 scrutiny↔concession на диске (CC BY). Нужен пакет «Самолёта» для RT-001 |
-| 3 | Расширить открытые датасеты, прогоны, фиксы | **В процессе** | SFC-A68 прогнан; OCR-баг numpy починен; construction-specs labels склонированы (без картинок в repo) |
+| 3 | Расширить открытые датасеты, прогоны, фиксы | **В процессе** | SFC-A68 прогнан; OCR-баг numpy починен; open-corpora regression **7/7** (2026-08-08); Red Team Waves 1–5b закрыты (`2a4d1f4`) |
 
 ---
 
@@ -91,6 +91,8 @@ Evidence: [`ifc-release-benchmark-2026-08.md`](../evidence/ifc-release-benchmark
 | BlueprintSymVL | on disk | inventory | — |
 | PIDQA | text only | inventory | — |
 | Construction-document-digitalization | cloned; **labels only**, images via Roboflow | labels inventoried; no PNG in zip | LICENSE unclear / incomplete assets |
+| Open-corpora regression (WP-06) | in-repo fixtures | **7/7 match** (2026-08-08) | evidence: [`sprint3-open-corpora-regression-2026-08.md`](../evidence/sprint3-open-corpora-regression-2026-08.md) |
+| Red Team engineering (Waves 1–5b) | closed | 1957 pytest pass; mypy strict; S-band | [`RED_TEAM_WAVE5_CLOSURE_2026_08_08.md`](../audit/RED_TEAM_WAVE5_CLOSURE_2026_08_08.md) |
 | ArchCAD-400K | HF gated | blocked | needs `hf auth login` |
 | PID_dataset Zenodo | 6.7 GB | not downloaded | size gate |
 
@@ -101,7 +103,7 @@ Evidence: [`ifc-release-benchmark-2026-08.md`](../evidence/ifc-release-benchmark
 1. **IFC2x3 / 4 / 4x3 открываются и гоняются** — p50 Analyze ~23–26 ms на fixture; крупные IFC2x3 open до ~0.5 s p95.
 2. **Точность продукта не заявлена**; IDS sample 95.8% — только engine conformance.
 3. **Экспертиза:** без данных «Самолёта» RU baseline blocked; Mumbai foreign ACC **скачан** (не заменяет RT-001).
-4. **Уже починили** реальный OCR-баг на SFC-A68.
+4. **Уже починили** реальный OCR-баг на SFC-A68; open-corpora regression 7/7; инженерный Red Team Waves 1–5b закрыт.
 
 ## Checkpoint
 

@@ -1,6 +1,6 @@
 # Sprint 3 — IFC metrics for next meeting
 
-Generated: `2026-08-08T07:37:03+00:00` (schema-suite restabilized)
+Generated: `2026-08-08T14:42:15+00:00` (schema-suite refreshed post-Red-Team)
 
 **Важно:** `accuracy_measured_product=false`. Число findings ≠ точность для заказчика.
 
@@ -15,9 +15,9 @@ default n=20 — иначе при n=5 nearest-rank p95 ≡ max (историч�
 
 | Schema | bytes | entities | p50 ms | p95 ms | max ms | spike max/p50 | issues (last) |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| IFC2X3 | 997 | 12 | 23.882 | 24.617 | 24.728 | 1.035 | 6 |
-| IFC4 | 997 | 12 | 23.379 | 24.203 | 24.976 | 1.068 | 4 |
-| IFC4X3 | 1005 | 12 | 23.384 | 24.535 | 24.823 | 1.062 | 4 |
+| IFC2X3 | 997 | 12 | 24.29 | 27.669 | 33.395 | 1.375 | 6 |
+| IFC4 | 997 | 12 | 23.995 | 25.141 | 27.926 | 1.164 | 4 |
+| IFC4X3 | 1005 | 12 | 23.699 | 25.485 | 26.762 | 1.129 | 4 |
 
 ## 3) Скорость открытия IFC (Ifcopenshell.open), расширенный корпус
 

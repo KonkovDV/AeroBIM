@@ -26,7 +26,7 @@ from aerobim.domain.models import (
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
 # Schema-suite defaults: with n=5 nearest-rank p95 ≡ max, so one OS/MEP spike
-# (seen historically on IFC4 iter 5 ≈ 568 ms) polluted the headline. n≥20 keeps
+# (seen historically on IFC4 iter 5 ~568 ms) polluted the headline. n>=20 keeps
 # p95 distinct from a single max outlier; warmup≥2 primes DI/IfcOpenShell/MEP path.
 SCHEMA_SUITE_DEFAULT_ITERATIONS = 20
 SCHEMA_SUITE_DEFAULT_WARMUP_ITERATIONS = 2
@@ -505,7 +505,7 @@ def benchmark_schema_suite(
             "Schema suite reuses one DI container, primes once, warms per pack, "
             f"gc.collect after warmup, and defaults to n={SCHEMA_SUITE_DEFAULT_ITERATIONS} "
             "so nearest-rank p95 is not identical to a single OS/MEP spike (historical "
-            "IFC4 n=5 max≈568ms)."
+            "IFC4 n=5 max~568ms)."
         ),
         "pack_results": pack_results,
     }
@@ -798,7 +798,18 @@ def main() -> None:
         tmp_path.write_text(serialized, encoding="utf-8")
         tmp_path.replace(args.output)
     else:
-        print(serialized)
+        _emit_stdout(serialized)
+
+
+def _emit_stdout(text: str) -> None:
+    import sys
+
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        print(text)
+    except (AttributeError, OSError, ValueError):
+        sys.stdout.buffer.write(text.encode("utf-8", errors="replace"))
+        sys.stdout.buffer.write(b"\n")
 
 
 if __name__ == "__main__":
