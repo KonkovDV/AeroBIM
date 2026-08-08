@@ -1,18 +1,20 @@
 # И1 closed-contour offline — Docker evidence (2026-08-08)
 
-**Status:** **CLOSED** (Docker image-track)  
-**JSON:** [`offline-closed-contour-docker-2026-08.json`](../evidence/offline-closed-contour-docker-2026-08.json)  
+**Status:** **CLOSED** (Docker image-track, hyperdeep audited)  
+**Hyperdeep report:** [`docs/audit/RED_TEAM_HYPERDEEP_CLOSED_CONTOUR_2026_08_08.md`](../audit/RED_TEAM_HYPERDEEP_CLOSED_CONTOUR_2026_08_08.md)  
+**JSON:** [`offline-closed-contour-docker-2026-08.json`](../../audit/evidence/offline-closed-contour-docker-2026-08.json)  
 **Runbook:** [`docs/offline-deployment-2026.md`](../../docs/offline-deployment-2026.md)
 
-## Commands (local, 2026-08-08)
+## Commands (local, 2026-08-08 hyperdeep pass)
 
 ```bash
 cd backend
-python -m aerobim.tools.offline_bundle build      # PASS
-python -m aerobim.tools.offline_bundle verify     # PASS
-python -m aerobim.tools.offline_bundle smoke      # PASS
-python -m aerobim.tools.offline_bundle closed-contour --smoke  # PASS
+python -m pytest tests/test_offline_bundle_manifest.py -q   # 12 passed
+python -m aerobim.tools.offline_bundle build                # PASS
+python -m aerobim.tools.offline_bundle closed-contour --smoke  # PASS probes OK
 ```
+
+Smoke probes: health 200, unauthenticated capabilities 401, bearer capabilities 200, egress to 1.1.1.1 blocked.
 
 ## Image
 

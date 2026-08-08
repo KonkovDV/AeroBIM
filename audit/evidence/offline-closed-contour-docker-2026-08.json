@@ -1,28 +1,29 @@
 {
   "artifact_type": "offline_closed_contour_docker",
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "date": "2026-08-08",
-  "generated_at": "2026-08-08T09:06:07+00:00",
+  "generated_at": "2026-08-08T09:30:00+00:00",
   "claim_level": "image_bundle_only",
   "i1_status": "CLOSED_DOCKER_TRACK",
-  "scope_honesty": "И1 closed-contour offline is VERIFIED via Docker image-track: build from hash-locked wheels, docker save tar, verify manifest sha256, docker rmi tag, docker load from tar only, run --network none, health + capabilities 200. Bare-metal pip wheelhouse is OUT_OF_SCOPE (not required). Image tar is gitignored under artifacts/*.",
+  "audit_id": "RT-HYPERDEEP-CC-2026-08-08",
+  "scope_honesty": "И1 closed-contour Docker VERIFIED after hyperdeep Red Team pass: build/verify/closed-contour --smoke with in-container probes (health, unauth 401, capabilities, egress block). Install scripts use docker exec (no host port-publish). Bearer token required; demo token lab-only.",
   "environment": {
     "docker_client": "29.5.2",
     "platform": "Windows-11 / desktop-linux",
     "image_tag": "aerobim-backend:offline-bundle",
-    "image_id": "sha256:c8512d54c6d029e5fa0d94d61499a99d81d848d42d19eccde303e292cc802206",
-    "image_tar_sha256": "4c97430d1e8e70fa24f9d69374fed8e34848c7c19fb9073e7305d9bb63bdeaf7",
-    "image_tar_bytes": 864927744,
-    "commit_sha": "98b16a2"
+    "image_id": "sha256:e988161c2f39c31c6a0300e00f36598047babf8452617b6da6771ce1efe4a033",
+    "image_tar_sha256": "550a6f59e94c7fa1c24313dd5a0b195c66866422a01a5702ad17ec507edc167b",
+    "image_tar_bytes": 864943104,
+    "commit_sha": "a71b6c6"
   },
   "checks": [
-    {"check": "offline_bundle build", "result": "PASS rc=0"},
-    {"check": "offline_bundle verify", "result": "PASS all sha256 match"},
-    {"check": "offline_bundle smoke (docker load + --network none)", "result": "PASS health+capabilities OK"},
-    {"check": "offline_bundle closed-contour --smoke", "result": "PASS"},
-    {"check": "unit tests test_offline_bundle_manifest", "result": "PASS 9/9"},
-    {"check": "install_offline.sh + install_offline.ps1 in manifest", "result": "PASS"}
+    {"check": "RT-CC-H01 install script host port-publish removed", "result": "REMEDIATED"},
+    {"check": "RT-CC-H02 demo token gate", "result": "REMEDIATED"},
+    {"check": "RT-CC-H03 smoke egress+auth probes", "result": "REMEDIATED"},
+    {"check": "offline_bundle closed-contour --smoke", "result": "PASS probes OK"},
+    {"check": "test_offline_bundle_manifest", "result": "PASS 12/12"}
   ],
   "operator_docs": "docs/offline-deployment-2026.md",
+  "hyperdeep_report": "docs/audit/RED_TEAM_HYPERDEEP_CLOSED_CONTOUR_2026_08_08.md",
   "supersedes": "audit/evidence/offline-bundle-smoke-2026-07-31.json"
 }

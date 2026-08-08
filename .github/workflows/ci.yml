@@ -488,6 +488,8 @@ jobs:
         run: python -m aerobim.tools.offline_bundle verify
       - name: Offline install+runtime smoke (rmi tag; docker load; run --network none; API)
         run: python -m aerobim.tools.offline_bundle smoke
+      - name: И1 closed-contour gate (verify + smoke)
+        run: python -m aerobim.tools.offline_bundle closed-contour --smoke
       - name: Complete release attestation (binds built image digest + CI run id)
         run: |
           IMAGE_ID=$(python -c "import json; print(json.load(open('../artifacts/offline-bundle/BUNDLE_MANIFEST.json'))['image_id'])")

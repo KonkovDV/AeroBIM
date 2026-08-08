@@ -3,9 +3,8 @@
 Honest scope: the bundle carries the production Docker image (saved tar built
 from hash-locked wheels + digest-pinned base), the dependency locks, Dockerfile
 and a sha256 manifest. `smoke` proves offline INSTALL (docker load from tar,
-after removing the tag) + offline RUNTIME (--network none API checks). The
-target host still needs Docker itself; bare-metal wheelhouse install remains
-NOT VERIFIED and is not claimed.
+after removing the tag) + offline RUNTIME (`--network none`, in-container probes).
+Bare-metal pip wheelhouse is OUT_OF_SCOPE for И1.
 
 Subcommands:
   build           -> artifacts/offline-bundle/ (image tar + locks + SBOM-lite + install scripts)
@@ -19,6 +18,7 @@ Subcommands:
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import re
@@ -39,13 +39,16 @@ _INSTALL = "INSTALL_OFFLINE.md"
 _MIRROR = "MIRROR_CHECKLIST.md"
 _INSTALL_SH = "install_offline.sh"
 _INSTALL_PS1 = "install_offline.ps1"
+_WHEELHOUSE_ARTIFACT = "wheelhouse-OUT_OF_SCOPE.json"
+_DEMO_TOKEN = "offline-bundle-token"
+_CONTAINER_NAME = "aerobim-offline"
 _BUNDLE_FILES = (
     _IMAGE_TAR,
     "requirements-lock.txt",
     "requirements-dev-lock.txt",
     "Dockerfile",
 )
-_DOC_FILES = (_INSTALL, _SBOM, _MIRROR, _INSTALL_SH, _INSTALL_PS1)
+_DOC_FILES = (_INSTALL, _SBOM, _MIRROR, _INSTALL_SH, _INSTALL_PS1, _WHEELHOUSE_ARTIFACT)
 
 _PIN_RE = re.compile(r"^([A-Za-z0-9_.\-]+)==([^\\\s#]+)")
 _HASH_RE = re.compile(r"--hash=sha256:([0-9a-fA-F]+)")
@@ -124,6 +127,64 @@ def build_spdx_lite(*, lock_path: Path, image_id: str) -> dict[str, object]:
     }
 
 
+def _container_probe_script(*, token: str) -> str:
+    """In-container probes: health, auth gate, capabilities, egress block."""
+
+    body = f"""import urllib.request, urllib.error, socket
+tok = {json.dumps(token)}
+h = urllib.request.urlopen("http://127.0.0.1:8080/health", timeout=5)
+assert h.status == 200
+try:
+    urllib.request.urlopen("http://127.0.0.1:8080/v1/system/capabilities", timeout=3)
+except urllib.error.HTTPError as exc:
+    assert exc.code == 401
+else:
+    raise SystemExit("unauthenticated capabilities must return 401")
+req = urllib.request.Request(
+    "http://127.0.0.1:8080/v1/system/capabilities",
+    headers={{"Authorization": "Bearer " + tok}},
+)
+c = urllib.request.urlopen(req, timeout=5)
+assert c.status == 200
+try:
+    socket.create_connection(("1.1.1.1", 80), 2).close()
+except OSError:
+    pass
+else:
+    raise SystemExit("egress not blocked under --network none")
+print("offline bundle probes: health+auth+egress OK")
+"""
+    encoded = base64.b64encode(body.encode("utf-8")).decode("ascii")
+    return f"import base64; exec(base64.b64decode({encoded!r}))"
+
+
+def write_wheelhouse_artifact(bundle_dir: Path) -> None:
+    payload = {
+        "artifact_type": "aerobim_offline_wheelhouse",
+        "schema_version": "1.1.0",
+        "status": "OUT_OF_SCOPE",
+        "exit_code": 2,
+        "claim_level": "not_required",
+        "scope_honesty": (
+            "Bare-metal pip wheelhouse offline install is OUT_OF_SCOPE for И1. "
+            "Docker image-track bundle (build|verify|smoke|closed-contour) is the "
+            "verified closed-contour path when the host provides Docker."
+        ),
+        "verified_path": "docker image bundle (offline_bundle build|verify|smoke|closed-contour)",
+        "out_of_scope_path": "pip wheelhouse + venv install without Docker",
+        "i1_status": "CLOSED_DOCKER_TRACK",
+    }
+    (bundle_dir / _WHEELHOUSE_ARTIFACT).write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    legacy = bundle_dir / "wheelhouse-DEFERRED.json"
+    legacy.write_text(
+        json.dumps({**payload, "status": "DEFERRED", "legacy_alias": True}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def write_install_scripts(bundle_dir: Path) -> None:
     (bundle_dir / _INSTALL_SH).write_text(
         "\n".join(
@@ -133,26 +194,38 @@ def write_install_scripts(bundle_dir: Path) -> None:
                 'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
                 'IMAGE_TAR="${SCRIPT_DIR}/aerobim-backend-image.tar"',
                 'IMAGE_TAG="aerobim-backend:offline-bundle"',
-                'TOKEN="${AEROBIM_API_BEARER_TOKEN:-offline-bundle-token}"',
-                'PORT="${AEROBIM_PORT:-8080}"',
+                'TOKEN="${AEROBIM_API_BEARER_TOKEN:-}"',
+                f'CONTAINER="{_CONTAINER_NAME}"',
+                'ALLOW_DEMO="${AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN:-}"',
                 "",
                 'if ! command -v docker >/dev/null 2>&1; then',
                 '  echo "Docker is required for the closed-contour install track." >&2',
+                "  exit 1",
+                "fi",
+                'if [ -z "${TOKEN}" ]; then',
+                '  echo "Set AEROBIM_API_BEARER_TOKEN before install (no default in production)." >&2',
+                "  exit 1",
+                "fi",
+                'if [ "${TOKEN}" = "' + _DEMO_TOKEN + '" ] && [ "${ALLOW_DEMO}" != "1" ]; then',
+                '  echo "Refusing demo token; set AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN=1 for lab only." >&2',
                 "  exit 1",
                 "fi",
                 "",
                 'echo "Loading image from tar (air-gap install)..."',
                 'docker load -i "${IMAGE_TAR}"',
                 "",
-                'echo "Starting backend (--network none) on port ${PORT}..."',
+                'docker rm -f "${CONTAINER}" >/dev/null 2>&1 || true',
+                'echo "Starting backend (--network none; API via docker exec only)..."',
                 "docker run -d --rm \\",
-                '  --name aerobim-offline \\',
+                '  --name "${CONTAINER}" \\',
                 "  --network none \\",
-                '  -p "${PORT}:8080" \\',
                 '  -e "AEROBIM_API_BEARER_TOKEN=${TOKEN}" \\',
                 '  "${IMAGE_TAG}"',
                 "",
-                'echo "Health: curl -H \"Authorization: Bearer ${TOKEN}\" http://127.0.0.1:${PORT}/health"',
+                'sleep 8',
+                "docker exec \"${CONTAINER}\" python -c 'import urllib.request; "
+                "urllib.request.urlopen(\"http://127.0.0.1:8080/health\",timeout=5)'",
+                'echo "Install OK. Probe: docker exec ${CONTAINER} python -c health-check"',
                 "",
             ]
         ),
@@ -166,8 +239,13 @@ def write_install_scripts(bundle_dir: Path) -> None:
                 '$BundleDir = Split-Path -Parent $MyInvocation.MyCommand.Path',
                 '$ImageTar = Join-Path $BundleDir "aerobim-backend-image.tar"',
                 '$ImageTag = "aerobim-backend:offline-bundle"',
-                'if (-not $env:AEROBIM_API_BEARER_TOKEN) { $env:AEROBIM_API_BEARER_TOKEN = "offline-bundle-token" }',
-                'if (-not $env:AEROBIM_PORT) { $env:AEROBIM_PORT = "8080" }',
+                f'$Container = "{_CONTAINER_NAME}"',
+                'if (-not $env:AEROBIM_API_BEARER_TOKEN) {',
+                '  throw "Set AEROBIM_API_BEARER_TOKEN before install (no default in production)."',
+                "}",
+                'if ($env:AEROBIM_API_BEARER_TOKEN -eq "' + _DEMO_TOKEN + '" -and $env:AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN -ne "1") {',
+                '  throw "Refusing demo token; set AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN=1 for lab only."',
+                "}",
                 "",
                 'if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {',
                 '  throw "Docker is required for the closed-contour install track."',
@@ -176,13 +254,18 @@ def write_install_scripts(bundle_dir: Path) -> None:
                 'Write-Host "Loading image from tar (air-gap install)..."',
                 'docker load -i $ImageTar',
                 "",
-                'Write-Host "Starting backend (--network none) on port $($env:AEROBIM_PORT)..."',
+                'docker rm -f $Container 2>$null | Out-Null',
+                'Write-Host "Starting backend (--network none; API via docker exec only)..."',
                 "docker run -d --rm `",
-                '  --name aerobim-offline `',
+                '  --name $Container `',
                 "  --network none `",
-                '  -p "$($env:AEROBIM_PORT):8080" `',
                 '  -e "AEROBIM_API_BEARER_TOKEN=$($env:AEROBIM_API_BEARER_TOKEN)" `',
                 "  $ImageTag",
+                "",
+                'Start-Sleep -Seconds 8',
+                'docker exec $Container python -c "import urllib.request; '
+                "urllib.request.urlopen('http://127.0.0.1:8080/health',timeout=5)\"",
+                'Write-Host "Install OK. Use docker exec for API probes (host port-publish unreliable with --network none)."',
                 "",
             ]
         ),
@@ -209,9 +292,11 @@ def write_install_docs(bundle_dir: Path) -> None:
                 "",
                 "1. Copy this directory to the host (USB / internal share).",
                 "2. `docker load -i aerobim-backend-image.tar`",
-                "3. `docker run --rm -p 8080:8080 --network none \\`",
-                "   `-e AEROBIM_API_BEARER_TOKEN=... aerobim-backend:offline-bundle`",
-                "4. Recompute sha256 of files listed in BUNDLE_MANIFEST.json (or run verify).",
+                "3. `docker run -d --rm --name aerobim-offline --network none \\`",
+                "   `-e AEROBIM_API_BEARER_TOKEN=<secret> aerobim-backend:offline-bundle`",
+                "4. Probe in-container: `docker exec aerobim-offline curl http://127.0.0.1:8080/health`",
+                "   (Host `-p` port mapping is **unreliable** with `--network none` on some engines.)",
+                "5. Recompute sha256 of files listed in BUNDLE_MANIFEST.json (or run verify).",
                 "",
                 "## SBOM",
                 "",
@@ -329,6 +414,7 @@ def cmd_build() -> int:
         (_BUNDLE_DIR / name).write_bytes((_BACKEND / name).read_bytes())
     write_install_docs(_BUNDLE_DIR)
     write_install_scripts(_BUNDLE_DIR)
+    write_wheelhouse_artifact(_BUNDLE_DIR)
     if cmd_sbom(image_id=image_id or "sha256:unknown") != 0:
         return 1
     manifest = build_manifest(_BUNDLE_DIR, image_id=image_id)
@@ -351,6 +437,7 @@ def cmd_verify() -> int:
 def cmd_smoke() -> int:
     """Offline install + runtime proof: rmi tag -> load from tar -> run --network none."""
     container = "aerobim-offline-bundle-smoke"
+    token = _DEMO_TOKEN
     _docker("rm", "-f", container)
     _docker("rmi", "-f", _IMAGE_TAG)
     load = _docker("load", "-i", str(_BUNDLE_DIR / _IMAGE_TAR))
@@ -365,7 +452,9 @@ def cmd_smoke() -> int:
         "--network",
         "none",
         "-e",
-        "AEROBIM_API_BEARER_TOKEN=offline-bundle-token",
+        f"AEROBIM_API_BEARER_TOKEN={token}",
+        "-e",
+        "AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN=1",
         _IMAGE_TAG,
     )
     if run.returncode != 0:
@@ -383,15 +472,7 @@ def cmd_smoke() -> int:
             container,
             "python",
             "-c",
-            (
-                "import urllib.request,urllib.error;"
-                "h=urllib.request.urlopen('http://127.0.0.1:8080/health',timeout=5);"
-                "assert h.status==200;"
-                "r=urllib.request.Request('http://127.0.0.1:8080/v1/system/capabilities',"
-                "headers={'Authorization':'Bearer offline-bundle-token'});"
-                "c=urllib.request.urlopen(r,timeout=5);assert c.status==200;"
-                "print('offline bundle smoke: health+capabilities OK')"
-            ),
+            _container_probe_script(token=token),
         )
         print(probe.stdout.strip() or probe.stderr[-400:])
         return 0 if probe.returncode == 0 else 1
@@ -424,32 +505,8 @@ def cmd_wheelhouse() -> int:
     """Bare-metal wheelhouse — OUT_OF_SCOPE when Docker closed-contour is verified."""
 
     _BUNDLE_DIR.mkdir(parents=True, exist_ok=True)
-    artifact_path = _BUNDLE_DIR / "wheelhouse-OUT_OF_SCOPE.json"
-    payload = {
-        "artifact_type": "aerobim_offline_wheelhouse",
-        "schema_version": "1.1.0",
-        "status": "OUT_OF_SCOPE",
-        "exit_code": 2,
-        "claim_level": "not_required",
-        "scope_honesty": (
-            "Bare-metal pip wheelhouse offline install is OUT_OF_SCOPE for И1. "
-            "Docker image-track bundle (build|verify|smoke|closed-contour) is the "
-            "verified closed-contour path when the host provides Docker."
-        ),
-        "verified_path": "docker image bundle (offline_bundle build|verify|smoke|closed-contour)",
-        "out_of_scope_path": "pip wheelhouse + venv install without Docker",
-        "i1_status": "CLOSED_DOCKER_TRACK",
-    }
-    artifact_path.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    # Keep legacy filename for grep/tests that expect honesty artifact.
-    legacy = _BUNDLE_DIR / "wheelhouse-DEFERRED.json"
-    legacy.write_text(
-        json.dumps({**payload, "status": "DEFERRED", "legacy_alias": True}, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    write_wheelhouse_artifact(_BUNDLE_DIR)
+    artifact_path = _BUNDLE_DIR / _WHEELHOUSE_ARTIFACT
     print("OUT_OF_SCOPE: bare-metal wheelhouse not required — use Docker image-track.")
     print(f"honesty artifact: {artifact_path}")
     return 2
