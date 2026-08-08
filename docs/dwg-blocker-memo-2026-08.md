@@ -5,7 +5,7 @@
 **Checkpoint:** NO_GO  
 **claim_boundary:** Native DWG remains **Missing/Failed** (fail-closed). This memo is engineering + legal framing for stakeholders — **not** a DWG-ready product claim.  
 **Code path today:** `EzdxfCadModelIngestor` returns `supported=False` for `.dwg`; honesty surface `native_dwg=missing` / `dwg_dxf=FAILED` when DWG is requested; FAILED CAD capability blocks `summary.passed` (ADR-001).  
-**Related:** [`docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md`](../tz/DWG_DECISION_OPTIONS_ABC_2026_08.md)
+**Related:** [`docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md`](tz/DWG_DECISION_OPTIONS_ABC_2026_08.md)
 
 ---
 
