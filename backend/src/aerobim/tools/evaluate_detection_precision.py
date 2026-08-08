@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -536,7 +537,7 @@ def _bucket_metrics(
     false_positives: frozenset[FindingKey],
     false_negatives: frozenset[FindingKey],
     *,
-    key_fn,
+    key_fn: Callable[[FindingKey], str],
 ) -> dict[str, dict[str, int | float]]:
     buckets = sorted(
         {

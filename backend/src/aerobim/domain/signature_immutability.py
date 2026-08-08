@@ -13,7 +13,10 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from aerobim.domain.models import CapabilityStatus
 
 ENVELOPE_SCHEMA_V1 = "aerobim_detached_signature_envelope_v1"
 
@@ -107,7 +110,7 @@ class SignatureAuditResult:
     claim_boundary: str
     reasons: tuple[str, ...] = ()
 
-    def to_capability_status(self):
+    def to_capability_status(self) -> CapabilityStatus:
         """Map audit onto report capability vocabulary (never pure legal OK)."""
 
         from aerobim.domain.models import CapabilityState, CapabilityStatus

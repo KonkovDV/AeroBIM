@@ -9,11 +9,18 @@ and includes the routers, keeping the historical public surface:
 ``create_http_app`` and ``_esc``.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
 
+if TYPE_CHECKING:
+    from fastapi import FastAPI
 
-def create_http_app(container: Container):
+
+def create_http_app(container: Container) -> FastAPI:
     try:
         from fastapi import FastAPI
         from fastapi.middleware.cors import CORSMiddleware

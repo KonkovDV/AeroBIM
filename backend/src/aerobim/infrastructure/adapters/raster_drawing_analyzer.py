@@ -162,7 +162,7 @@ class RasterDrawingAnalyzer:
                 return
             if hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes)):
                 try:
-                    for child in obj:  # type: ignore[union-attr]
+                    for child in obj:
                         _walk(child)
                 except TypeError:
                     return

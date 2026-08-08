@@ -15,7 +15,7 @@ Scope: Russian AEC fixture evaluation (Phase 2).
 from __future__ import annotations
 
 import json
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -60,36 +60,42 @@ def _normalize_ifc_entity(value: object) -> str:
     return f"ifc{normalized}"
 
 
+def _ground_truth_str(value: object, *, default: str = "") -> str:
+    if value is None:
+        return default
+    return str(value)
+
+
 def _requirement_matches(
     extracted: ParsedRequirement,
-    ground_truth: dict,
+    ground_truth: dict[str, object],
 ) -> bool:
     """Check if an extracted requirement matches a ground-truth entry."""
     extracted_entity = _normalize_ifc_entity(extracted.ifc_entity)
     ground_entity = _normalize_ifc_entity(ground_truth.get("ifc_entity"))
     if extracted_entity != ground_entity:
         return False
-    gt_property = (ground_truth.get("property_name") or "").lower()
+    gt_property = _ground_truth_str(ground_truth.get("property_name")).lower()
     if (extracted.property_name or "").lower() != gt_property:
         return False
-    if (extracted.expected_value or "").lower() != (
-        ground_truth.get("expected_value") or ""
+    if (extracted.expected_value or "").lower() != _ground_truth_str(
+        ground_truth.get("expected_value")
     ).lower():
         return False
     gt_property_set = ground_truth.get("property_set")
     if gt_property_set is not None:
-        if (extracted.property_set or "").lower() != gt_property_set.lower():
+        if (extracted.property_set or "").lower() != _ground_truth_str(gt_property_set).lower():
             return False
     gt_unit = ground_truth.get("unit")
     if gt_unit is not None and extracted.unit is not None:
-        if extracted.unit.strip().lower() != gt_unit.strip().lower():
+        if extracted.unit.strip().lower() != _ground_truth_str(gt_unit).strip().lower():
             return False
     return True
 
 
 def _match_requirements(
     extracted: Sequence[ParsedRequirement],
-    ground_truth: Sequence[dict],
+    ground_truth: Sequence[dict[str, object]],
 ) -> tuple[int, int, int]:
     """Return (true_positives, false_positives, false_negatives)."""
     matched_gt: set[int] = set()
@@ -116,7 +122,7 @@ def _match_requirements(
 def evaluate_fixture(
     fixture_id: str,
     extracted: Sequence[ParsedRequirement],
-    ground_truth: Sequence[dict],
+    ground_truth: Sequence[dict[str, object]],
 ) -> ExtractionMetricResult:
     """Evaluate a single fixture and return per-fixture metrics."""
     tp, fp, fn = _match_requirements(extracted, ground_truth)
@@ -136,7 +142,7 @@ def evaluate_fixture(
 
 def run_extraction_benchmark(
     ground_truth_path: Path,
-    extract_fn,
+    extract_fn: Callable[[Path], Sequence[ParsedRequirement]],
 ) -> ExtractionBenchmarkSummary:
     """Run the full benchmark suite against a ground-truth manifest.
 

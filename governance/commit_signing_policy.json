@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "date": "2026-08-08",
+  "enforce_ci": true,
+  "min_signed_ratio": 0.0,
+  "ratchet_target_ratio": 0.5,
+  "ratchet_effective_date": "2026-09-01",
+  "inspect_depth": 30,
+  "require_head_signed_on_release_tags": true,
+  "notes": "Ratchet increases required signed-commit ratio after 2026-09-01. Configure git commit.gpgsign=true locally."
+}

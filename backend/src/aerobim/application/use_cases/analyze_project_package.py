@@ -48,6 +48,7 @@ from aerobim.domain.mep_aabb import MepAabbPairFilter
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
+    ClashResult,
     ComparisonOperator,
     ConflictKind,
     DrawingAnnotation,
@@ -475,8 +476,8 @@ class AnalyzeProjectPackageUseCase:
         ).clash_affects_pass
 
     def _run_clash_detection(
-        self, ifc_path
-    ) -> tuple[tuple, CapabilityStatus, list[ValidationIssue]]:
+        self, ifc_path: Path
+    ) -> tuple[tuple[ClashResult, ...], CapabilityStatus, list[ValidationIssue]]:
         if self._clash_detector is None:
             if self._require_clash:
                 issue = ValidationIssue(
@@ -539,15 +540,15 @@ class AnalyzeProjectPackageUseCase:
     def _build_capabilities(
         self,
         *,
-        requirements,
-        ifc_issues,
-        ids_path,
-        ids_issues,
+        requirements: Sequence[ParsedRequirement],
+        ifc_issues: Sequence[ValidationIssue],
+        ids_path: Path | None,
+        ids_issues: Sequence[ValidationIssue],
         clash_capability: CapabilityStatus,
-        drawing_sources,
+        drawing_sources: Sequence[DrawingSource],
         drawing_annotation_count: int = 0,
-        schema_issues=(),
-        ids_audit_issues=(),
+        schema_issues: Sequence[ValidationIssue] = (),
+        ids_audit_issues: Sequence[ValidationIssue] = (),
         schema_request_id: str | None = None,
         norm_rule_packs: CapabilityStatus | None = None,
         section_pairing: CapabilityStatus | None = None,
@@ -792,7 +793,7 @@ class AnalyzeProjectPackageUseCase:
             request.drawing_sources,
         )
 
-    def _submit_bsi_validation(self, ifc_path) -> tuple[str | None, list[ValidationIssue]]:
+    def _submit_bsi_validation(self, ifc_path: Path) -> tuple[str | None, list[ValidationIssue]]:
         if self._bsi_validation_service is None:
             return None, []
         try:
@@ -810,7 +811,7 @@ class AnalyzeProjectPackageUseCase:
                 )
             ]
 
-    def _collect_schema_issues(self, ifc_path) -> list[ValidationIssue]:
+    def _collect_schema_issues(self, ifc_path: Path) -> list[ValidationIssue]:
         if self._ifc_schema_validator is None:
             return []
         return list(self._ifc_schema_validator.validate_schema(ifc_path))

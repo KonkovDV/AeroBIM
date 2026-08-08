@@ -7,6 +7,7 @@ capability to OK without an explicit probe (RT-POST-06).
 from __future__ import annotations
 
 from collections.abc import Sequence
+from pathlib import Path
 
 from aerobim.domain.models import (
     CapabilityState,
@@ -26,7 +27,7 @@ def build_report_capabilities(
     *,
     requirements: Sequence[ParsedRequirement],
     ifc_issues: Sequence[ValidationIssue],
-    ids_path,
+    ids_path: Path | None,
     ids_issues: Sequence[ValidationIssue],
     clash_capability: CapabilityStatus,
     drawing_sources: Sequence[DrawingSource],

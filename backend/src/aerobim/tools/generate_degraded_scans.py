@@ -68,7 +68,7 @@ def _apply_salt_pepper(pixmap: pymupdf.Pixmap, *, percent: float, seed: int) -> 
         pixel_index = rng.randrange(pixel_count)
         value = 0 if rng.random() < 0.5 else 255
         pixmap.set_pixel(pixel_index % width, pixel_index // width, (value, value, value))
-    return pixmap.tobytes("png")
+    return cast(bytes, pixmap.tobytes("png"))
 
 
 def generate_degraded_scans(

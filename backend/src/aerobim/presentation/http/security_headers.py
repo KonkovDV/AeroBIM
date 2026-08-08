@@ -2,6 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+    from starlette.requests import Request
+    from starlette.responses import Response
+
 _STRICT_CSP = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
 _HTML_CSP = (
     "default-src 'none'; style-src 'unsafe-inline'; img-src data:; "
@@ -9,14 +17,16 @@ _HTML_CSP = (
 )
 
 
-def add_security_headers_middleware(app) -> None:  # noqa: ANN001
+def add_security_headers_middleware(app: FastAPI) -> None:
     """Attach middleware that sets nosniff / CSP / referrer / frame denial headers."""
     from starlette.middleware.base import BaseHTTPMiddleware
-    from starlette.requests import Request
-    from starlette.responses import Response
 
     class _SecurityHeadersMiddleware(BaseHTTPMiddleware):
-        async def dispatch(self, request: Request, call_next) -> Response:  # noqa: ANN001
+        async def dispatch(
+            self,
+            request: Request,
+            call_next: Callable[[Request], Awaitable[Response]],
+        ) -> Response:
             response: Response = await call_next(request)
             response.headers.setdefault("X-Content-Type-Options", "nosniff")
             response.headers.setdefault("Referrer-Policy", "no-referrer")

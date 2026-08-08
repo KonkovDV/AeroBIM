@@ -293,7 +293,7 @@ def _iteration_request(request: ValidationRequest, phase: str, index: int) -> Va
 
 
 def run_benchmark(
-    analyze_use_case,
+    analyze_use_case: Any,
     request: ValidationRequest,
     iterations: int,
     warmup_iterations: int = 0,
@@ -636,7 +636,8 @@ def write_ifc_release_evidence(
         f"measured iterations={iterations}, warmup={warmup}. "
         "With n<20 nearest-rank p95 can equal max (historical IFC4 spike).",
         "",
-        "| Schema | Packs | bytes | entities | p50 ms | p95 ms | max ms | spike max/p50 | issues | reqs |",
+        "| Schema | Packs | bytes | entities | p50 ms | p95 ms | max ms | "
+        "spike max/p50 | issues | reqs |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for schema, metrics in sorted(by_schema.items()):

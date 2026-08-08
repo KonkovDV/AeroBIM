@@ -31,7 +31,7 @@ import json
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from aerobim.domain.vlm_response_schema import OBSERVATIONS_RESPONSE_SCHEMA
 
@@ -234,7 +234,7 @@ class VlmAdvisoryClient:
             raw = response.read(self._max_response_bytes + 1)
         if len(raw) > self._max_response_bytes:
             raise KimiAdvisoryError(f"VLM response exceeds {self._max_response_bytes}-byte cap")
-        return raw
+        return cast(bytes, raw)
 
     def _build_payload(
         self,

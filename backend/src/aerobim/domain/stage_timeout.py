@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from time import perf_counter
+from types import TracebackType
 from typing import Literal
 
 from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, Contour, StageBudget
@@ -60,7 +61,12 @@ class StageTimeoutGuard:
         self._started_at = perf_counter()
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> Literal[False]:  # noqa: ANN001
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> Literal[False]:
         if self._started_at is None:
             return False
         elapsed = perf_counter() - self._started_at

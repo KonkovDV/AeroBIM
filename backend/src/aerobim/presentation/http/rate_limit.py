@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING
+
 from aerobim.core.security.rate_limit_backend import RateLimitBackend, build_rate_limit_backend
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+    from starlette.requests import Request
+    from starlette.responses import Response
 
 _RATE_LIMITED_POST_PREFIXES = (
     "/v1/analyze/",
@@ -15,7 +23,7 @@ _WINDOW_SECONDS = 60.0
 
 
 def add_rate_limit_middleware(
-    app,  # noqa: ANN001
+    app: FastAPI,
     *,
     requests_per_minute: int,
     job_poll_per_minute: int = 0,
@@ -27,13 +35,16 @@ def add_rate_limit_middleware(
         return
 
     from starlette.middleware.base import BaseHTTPMiddleware
-    from starlette.requests import Request
-    from starlette.responses import JSONResponse, Response
+    from starlette.responses import JSONResponse
 
     backend: RateLimitBackend = build_rate_limit_backend(redis_url)
 
     class _RateLimitMiddleware(BaseHTTPMiddleware):
-        async def dispatch(self, request: Request, call_next) -> Response:  # noqa: ANN001
+        async def dispatch(
+            self,
+            request: Request,
+            call_next: Callable[[Request], Awaitable[Response]],
+        ) -> Response:
             path = request.url.path
             client = request.client.host if request.client else "unknown"
             auth = request.headers.get("authorization", "")
@@ -50,12 +61,15 @@ def add_rate_limit_middleware(
                         status_code=429,
                         content={"detail": "Rate limit exceeded"},
                     )
-                return await call_next(request)
+                response: Response = await call_next(request)
+                return response
 
             if request.method != "POST":
-                return await call_next(request)
+                response = await call_next(request)
+                return response
             if not any(path.startswith(prefix) for prefix in _RATE_LIMITED_POST_PREFIXES):
-                return await call_next(request)
+                response = await call_next(request)
+                return response
             if requests_per_minute > 0 and not backend.allow(
                 bucket="post",
                 key=key,
@@ -66,7 +80,8 @@ def add_rate_limit_middleware(
                     status_code=429,
                     content={"detail": "Rate limit exceeded"},
                 )
-            return await call_next(request)
+            response = await call_next(request)
+            return response
 
     app.add_middleware(_RateLimitMiddleware)
 

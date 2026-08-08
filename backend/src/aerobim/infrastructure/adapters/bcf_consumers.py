@@ -116,7 +116,9 @@ def consume_bcf3_zip(archive: bytes) -> list[BcfTopicContract]:
             has_viewpoint = viewpoint_name in zf.namelist()
             selected: list[str] = []
             if has_viewpoint:
-                vis_xml = read_zip_member_capped(zf, viewpoint_name).decode("utf-8", errors="replace")
+                vis_xml = read_zip_member_capped(zf, viewpoint_name).decode(
+                    "utf-8", errors="replace"
+                )
                 # BCF 3.0 uses IfcGuid attribute on Component.
                 needle = 'IfcGuid="'
                 start = 0
@@ -249,7 +251,11 @@ def verify_bcf_zip_structure(
 ) -> BcfStructuralVerification:
     """buildingSMART-style container checks (structure + well-formed XML)."""
 
-    from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_bytes, read_zip_member_capped
+    from aerobim.core.security.zip_limits import (
+        ZipBombError,
+        inspect_zip_bytes,
+        read_zip_member_capped,
+    )
 
     errors: list[str] = []
     digest = hashlib.sha256(archive).hexdigest()

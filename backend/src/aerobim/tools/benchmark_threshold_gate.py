@@ -15,7 +15,10 @@ def _as_float(value: object) -> float | None:
 
 
 def load_threshold_profile(profile_path: Path) -> dict[str, object]:
-    return json.loads(profile_path.read_text(encoding="utf-8"))
+    raw = json.loads(profile_path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError(f"Threshold profile must be a JSON object: {profile_path}")
+    return raw
 
 
 def resolve_threshold_packs(

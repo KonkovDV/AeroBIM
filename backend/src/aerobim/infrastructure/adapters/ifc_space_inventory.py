@@ -16,8 +16,8 @@ def extract_space_inventory(ifc_path: Path | str | None) -> tuple[SpaceInventory
     if not path.is_file():
         return ()
     try:
-        import ifcopenshell  # type: ignore[import-untyped]
-        import ifcopenshell.util.element as element_util  # type: ignore[import-untyped]
+        import ifcopenshell
+        import ifcopenshell.util.element as element_util
     except ImportError:
         return ()
 

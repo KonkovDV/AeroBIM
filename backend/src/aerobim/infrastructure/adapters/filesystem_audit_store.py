@@ -7,11 +7,13 @@ import logging
 import os
 import shutil
 import time
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeout
 from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from aerobim.core.security.path_jail import open_storage_file
 from aerobim.domain.finding_provenance import assert_finding_persistable, ensure_finding_provenance
@@ -146,7 +148,7 @@ class FilesystemAuditStore:
     def _commit_marker_path(self, report_id: str) -> Path:
         return self._reports_dir / f"{report_id}.committed.json"
 
-    def _iter_report_json_paths(self):
+    def _iter_report_json_paths(self) -> Iterator[Path]:
         for path in sorted(self._reports_dir.glob("*.json")):
             name = path.name
             if name.endswith(".committed.json") or name.endswith(".tmp"):
@@ -244,7 +246,7 @@ class FilesystemAuditStore:
             schema_version=report.schema_version,
         )
 
-    def _serialize_report(self, report: ValidationReport) -> dict[str, object]:
+    def _serialize_report(self, report: ValidationReport) -> dict[str, Any]:
         data = asdict(report)
         data["ifc_path"] = str(report.ifc_path) if report.ifc_path is not None else ""
         data["ifc_object_key"] = report.ifc_object_key
@@ -634,7 +636,7 @@ class FilesystemAuditStore:
 
         return apply_report_list_filters(entries, filters)
 
-    def _reconstruct_report(self, data: dict) -> ValidationReport:
+    def _reconstruct_report(self, data: dict[str, Any]) -> ValidationReport:
         return ValidationReport(
             report_id=data["report_id"],
             request_id=data["request_id"],
@@ -681,7 +683,7 @@ class FilesystemAuditStore:
             schema_version=str(data.get("schema_version") or "1.0.0"),
         )
 
-    def _reconstruct_requirement(self, data: dict) -> ParsedRequirement:
+    def _reconstruct_requirement(self, data: dict[str, Any]) -> ParsedRequirement:
         return ParsedRequirement(
             rule_id=data["rule_id"],
             ifc_entity=data.get("ifc_entity"),
@@ -711,7 +713,7 @@ class FilesystemAuditStore:
             approval_ref=data.get("approval_ref"),
         )
 
-    def _reconstruct_issue(self, data: dict) -> ValidationIssue:
+    def _reconstruct_issue(self, data: dict[str, Any]) -> ValidationIssue:
         problem_zone_data = data.get("problem_zone")
         remark_data = data.get("remark")
         return ValidationIssue(
@@ -752,7 +754,7 @@ class FilesystemAuditStore:
             origin=data.get("origin"),
         )
 
-    def _reconstruct_summary(self, data: dict) -> ValidationSummary:
+    def _reconstruct_summary(self, data: dict[str, Any]) -> ValidationSummary:
         from aerobim.domain.package_outcome import PackageOutcome
 
         raw_outcome = data.get("outcome")
@@ -882,7 +884,7 @@ class FilesystemAuditStore:
             ),
         )
 
-    def _reconstruct_annotation(self, data: dict) -> DrawingAnnotation:
+    def _reconstruct_annotation(self, data: dict[str, Any]) -> DrawingAnnotation:
         problem_zone_data = data.get("problem_zone")
         return DrawingAnnotation(
             annotation_id=data["annotation_id"],
@@ -895,7 +897,7 @@ class FilesystemAuditStore:
             source=data.get("source", "drawing-text"),
         )
 
-    def _reconstruct_divergence(self, data: dict) -> DivergenceRecord:
+    def _reconstruct_divergence(self, data: dict[str, Any]) -> DivergenceRecord:
         return DivergenceRecord(
             finding_key=data["finding_key"],
             engine_verdict=data["engine_verdict"],
@@ -903,7 +905,7 @@ class FilesystemAuditStore:
             resolution=data.get("resolution", "engine_wins"),
         )
 
-    def _reconstruct_ids_draft(self, data: dict | None) -> IdsCompileDraft | None:
+    def _reconstruct_ids_draft(self, data: dict[str, Any] | None) -> IdsCompileDraft | None:
         if not data:
             return None
         return IdsCompileDraft(
@@ -916,7 +918,7 @@ class FilesystemAuditStore:
             rase_summary=data.get("rase_summary"),
         )
 
-    def _reconstruct_drawing_region(self, data: dict) -> DrawingRegionRef:
+    def _reconstruct_drawing_region(self, data: dict[str, Any]) -> DrawingRegionRef:
         bbox = data.get("bbox_xyxy") or (0.0, 0.0, 0.0, 0.0)
         return DrawingRegionRef(
             sheet_id=data["sheet_id"],
@@ -927,7 +929,7 @@ class FilesystemAuditStore:
             hitl_reason=data.get("hitl_reason"),
         )
 
-    def _reconstruct_drawing_asset(self, data: dict) -> DrawingAsset:
+    def _reconstruct_drawing_asset(self, data: dict[str, Any]) -> DrawingAsset:
         return DrawingAsset(
             asset_id=data["asset_id"],
             sheet_id=data["sheet_id"],
@@ -940,7 +942,7 @@ class FilesystemAuditStore:
             source_path=Path(data["source_path"]) if data.get("source_path") else None,
         )
 
-    def _reconstruct_clash_result(self, data: dict) -> ClashResult:
+    def _reconstruct_clash_result(self, data: dict[str, Any]) -> ClashResult:
         return ClashResult(
             element_a_guid=data["element_a_guid"],
             element_b_guid=data["element_b_guid"],

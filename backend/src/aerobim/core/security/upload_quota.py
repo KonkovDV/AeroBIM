@@ -5,12 +5,16 @@ from __future__ import annotations
 import json
 import os
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TypeVar
 
 _LOCK_ATTEMPTS = 50
 _LOCK_SLEEP_S = 0.02
+
+_T = TypeVar("_T")
 
 
 class UploadQuotaExceeded(ValueError):
@@ -82,7 +86,7 @@ class FilesystemUploadQuotaStore:
         tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
         os.replace(str(tmp), str(path))
 
-    def _with_exclusive_lock(self, path: Path, fn):  # noqa: ANN001 — internal
+    def _with_exclusive_lock(self, path: Path, fn: Callable[[], _T]) -> _T:
         lock_path = path.with_suffix(path.suffix + ".lock")
         for _ in range(_LOCK_ATTEMPTS):
             try:

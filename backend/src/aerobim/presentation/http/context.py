@@ -30,7 +30,14 @@ from aerobim.core.security.path_jail import (
     tenant_storage_prefix,
 )
 from aerobim.core.security.upload_quota import FilesystemUploadQuotaStore
-from aerobim.domain.models import RequirementSource, SourceKind, ValidationRequest
+from aerobim.domain.models import (
+    AnalyzeProjectPackageJob,
+    DrawingAsset,
+    RequirementSource,
+    SourceKind,
+    ValidationReport,
+    ValidationRequest,
+)
 from aerobim.domain.object_acl import (
     AuthPrincipal,
     principal_may_access_job,
@@ -78,7 +85,9 @@ def attachment_content_disposition(filename: str) -> str:
         .replace("/", "_")
         .replace(";", "_")
     )
-    ascii_safe = "".join(ch if ord(ch) < 128 and ch not in ('"', "\\") else "_" for ch in ascii_safe)
+    ascii_safe = "".join(
+        ch if ord(ch) < 128 and ch not in ('"', "\\") else "_" for ch in ascii_safe
+    )
     ascii_safe = (ascii_safe.strip() or "download").strip(" .")
     utf8_encoded = quote(normalized, safe="")
     if ascii_safe != normalized.strip():
@@ -261,7 +270,7 @@ class ApiContext:
 
     # -- Object ACL assertions ---------------------------------------------
 
-    def assert_report_access(self, report, principal: AuthPrincipal) -> None:
+    def assert_report_access(self, report: ValidationReport, principal: AuthPrincipal) -> None:
         if principal_may_access_report(
             enforce_object_acl=self.settings.enforce_object_acl,
             principal=principal,
@@ -274,7 +283,7 @@ class ApiContext:
             detail=f"Report {getattr(report, 'report_id', '')} not found",
         )
 
-    def assert_job_access(self, job, principal: AuthPrincipal) -> None:
+    def assert_job_access(self, job: AnalyzeProjectPackageJob, principal: AuthPrincipal) -> None:
         if principal_may_access_job(
             enforce_object_acl=self.settings.enforce_object_acl,
             principal=principal,
@@ -353,7 +362,7 @@ class ApiContext:
             "loin_information_level": loin.information_level,
         }
 
-    def serialize_public_report(self, report) -> dict[str, Any]:
+    def serialize_public_report(self, report: ValidationReport) -> dict[str, Any]:
         data = asdict(report)
         data.pop("ifc_path", None)
         data.pop("ifc_object_key", None)
@@ -370,7 +379,9 @@ class ApiContext:
         data["iso19650"] = enrich_iso19650_metadata(report)
         return data
 
-    def serialize_analyze_project_package_job(self, job) -> dict[str, object]:
+    def serialize_analyze_project_package_job(
+        self, job: AnalyzeProjectPackageJob
+    ) -> dict[str, object]:
         payload = asdict(job)
         payload["status"] = job.status.value
         payload["status_url"] = f"/v1/analyze/project-package/jobs/{job.job_id}"
@@ -383,7 +394,7 @@ class ApiContext:
         self,
         object_key: str,
         *,
-        report,
+        report: ValidationReport,
         principal: AuthPrincipal,
     ) -> None:
         """When ACL is on, object keys must live under the tenant storage prefix."""
@@ -460,7 +471,7 @@ class ApiContext:
         asset_id: str,
         *,
         principal: AuthPrincipal | None = None,
-    ):
+    ) -> tuple[DrawingAsset, bytes | Path]:
         settings = self.settings
         report = self.audit_store.get(report_id)
         if report is None:

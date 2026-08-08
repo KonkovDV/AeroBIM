@@ -14,6 +14,7 @@ import re
 import socket
 import ssl
 from dataclasses import dataclass
+from typing import Any
 from urllib.error import URLError
 from urllib.parse import urlparse, urlunparse
 from urllib.request import (
@@ -254,7 +255,7 @@ def resolve_and_pin_outbound_url(
     )
 
 
-def safe_datastore_urlopen(request: Request, *, timeout: float):
+def safe_datastore_urlopen(request: Request, *, timeout: float) -> Any:
     """Loopback / unix-datastore ``urlopen`` after :func:`assert_safe_datastore_url`.
 
     Public :func:`safe_urlopen` rejects loopback by design. Local vLLM must still
@@ -266,7 +267,7 @@ def safe_datastore_urlopen(request: Request, *, timeout: float):
     return urlopen(request, timeout=timeout)  # noqa: S310 — guarded by datastore jail
 
 
-def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False):
+def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False) -> Any:
     """``urlopen`` wrapper: SSRF host check, DNS pin, no redirects, no second DNS."""
 
     pinned = resolve_and_pin_outbound_url(request.full_url, allow_http=allow_http, resolve_dns=True)
@@ -309,7 +310,7 @@ def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False):
                     tunnel = getattr(self, "_tunnel", None)
                     if callable(tunnel):
                         tunnel()
-                    sock = self.sock  # type: ignore[assignment]
+                    sock = self.sock
                 self.sock = context.wrap_socket(sock, server_hostname=server_hostname)
 
         class _PinnedHTTPSHandler(HTTPSHandler):

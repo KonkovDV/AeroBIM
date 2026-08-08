@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.responses import FileResponse
 
 from aerobim.application.services.review_kpi import summarize_review_events
 from aerobim.core.di.tokens import Tokens
@@ -183,9 +184,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
     def get_report_ifc_source(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
-    ):  # noqa: ANN201
-        from fastapi.responses import FileResponse
-
+    ) -> Response | FileResponse:
         ctx.validate_report_id(report_id)
         report = audit_store.get(report_id)
         if report is None:
@@ -218,9 +217,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         report_id: str,
         asset_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
-    ):  # noqa: ANN201
-        from fastapi.responses import FileResponse
-
+    ) -> Response | FileResponse:
         ctx.validate_report_id(report_id)
         ctx.validate_drawing_asset_id(asset_id)
         report = audit_store.get(report_id)

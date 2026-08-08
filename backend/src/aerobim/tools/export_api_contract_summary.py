@@ -3,10 +3,15 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING, NoReturn
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.models import ValidationRequest
 from aerobim.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
 from aerobim.presentation.http.api import create_http_app
 
@@ -26,16 +31,16 @@ class _NullLogger:
 
 
 class _NoOpValidateUseCase:
-    def execute(self, request):
+    def execute(self, request: ValidationRequest) -> NoReturn:
         raise RuntimeError("No-op validate use case for contract summary export")
 
 
 class _NoOpAnalyzeUseCase:
-    def execute(self, request):
+    def execute(self, request: ValidationRequest) -> NoReturn:
         raise RuntimeError("No-op analyze use case for contract summary export")
 
 
-def _build_contract_summary_app():
+def _build_contract_summary_app() -> tuple[FastAPI, Settings]:
     storage = Path("var").resolve()
     storage.mkdir(parents=True, exist_ok=True)
 
@@ -63,7 +68,7 @@ def _build_contract_summary_app():
     return create_http_app(container), settings
 
 
-def _collect_contract_summary(app) -> dict[str, object]:
+def _collect_contract_summary(app: FastAPI) -> dict[str, object]:
     openapi = app.openapi()
     paths = openapi.get("paths", {}) if isinstance(openapi, dict) else {}
 

@@ -6,6 +6,8 @@ Production default is ``PdfiumRegionCropper`` (LIC-001 Option B).
 
 from __future__ import annotations
 
+from typing import Any
+
 from aerobim.domain.models import DrawingSource
 
 _DEFAULT_DPI = 200
@@ -51,7 +53,12 @@ class PyMuPDFRegionCropper:
             pixmap = page.get_pixmap(clip=rect, dpi=dpi)
             return (pixmap.tobytes("png"), "image/png")
 
-    def _clip_rect(self, pymupdf, page_rect, bbox: tuple[float, float, float, float]):  # noqa: ANN001
+    def _clip_rect(
+        self,
+        pymupdf: Any,
+        page_rect: Any,
+        bbox: tuple[float, float, float, float],
+    ) -> Any:
         x1, y1, x2, y2 = bbox
         if self._coordinate_system == "page-point" and max(bbox) <= 1.0 and min(bbox) >= 0.0:
             raise ValueError(
@@ -67,7 +74,7 @@ class PyMuPDFRegionCropper:
             raise ValueError(f"degenerate/out-of-bounds crop rect for bbox={bbox}")
         return rect
 
-    def _bounded_dpi(self, rect) -> int:  # noqa: ANN001
+    def _bounded_dpi(self, rect: Any) -> int:
         """Cap the effective dpi so the longest rendered side stays within budget."""
         longest_pt = max(rect.width, rect.height)
         if longest_pt <= 0:

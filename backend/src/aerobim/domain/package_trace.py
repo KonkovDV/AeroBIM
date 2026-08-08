@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from time import perf_counter
+from types import TracebackType
 from typing import Any
 
 from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, Contour, StageBudget
@@ -19,7 +20,7 @@ class PackageTraceCollector:
     _elapsed_seconds: dict[str, float] = field(default_factory=dict, init=False)
     _active: dict[str, float] = field(default_factory=dict, init=False)
 
-    def span(self, contour: Contour):
+    def span(self, contour: Contour) -> _ContourSpan:
         return _ContourSpan(self, contour)
 
     def record(self, contour: Contour, elapsed_seconds: float) -> None:
@@ -100,7 +101,12 @@ class _ContourSpan:
         self._started_at = perf_counter()
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         if self._started_at is None:
             return
         elapsed = perf_counter() - self._started_at

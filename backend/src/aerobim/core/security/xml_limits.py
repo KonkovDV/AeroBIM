@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 from xml.etree.ElementTree import Element, ElementTree, ParseError
 
 DEFAULT_MAX_XML_BYTES = 16 * 1024 * 1024  # 16 MiB
@@ -13,7 +14,7 @@ class XmlBombError(ValueError):
     """Raised when XML input exceeds safe size or element-count limits."""
 
 
-def _require_defusedxml():
+def _require_defusedxml() -> tuple[Any, type[Exception]]:
     try:
         from defusedxml import ElementTree as DefusedET
         from defusedxml.common import DefusedXmlException
@@ -57,7 +58,7 @@ def safe_fromstring(
     except ParseError:
         raise
     _enforce_element_cap(root, max_elements=max_elements)
-    return root
+    return cast(Element, root)
 
 
 def safe_parse(
@@ -82,7 +83,7 @@ def safe_parse(
     except ParseError:
         raise
     _enforce_element_cap(tree.getroot(), max_elements=max_elements)
-    return tree
+    return cast(ElementTree, tree)
 
 
 __all__ = [

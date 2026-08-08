@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 from xml.etree.ElementTree import ParseError
 
 from aerobim.core.security.xml_limits import XmlBombError, safe_parse
@@ -88,7 +89,7 @@ def default_ids_xsd_path() -> Path | None:
 
 
 @lru_cache(maxsize=2)
-def _load_ids_schema(xsd_path: str):
+def _load_ids_schema(xsd_path: str) -> Any:
     """Build the XSD once per path; raises if xmlschema/schema are unusable.
 
     The official ids.xsd imports W3C base schemas by http URL; we remap those

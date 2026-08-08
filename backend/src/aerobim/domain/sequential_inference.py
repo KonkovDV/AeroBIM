@@ -34,6 +34,7 @@ from __future__ import annotations
 import math
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from typing import cast
 
 _LN_EPS = 1e-15
 
@@ -52,7 +53,7 @@ def calibrate_p_to_e(p_value: float, *, kappa: float = 0.5) -> float:
     if not 0.0 <= p_value <= 1.0:
         raise ValueError(f"p-value out of [0, 1]: {p_value}")
     p = max(p_value, _LN_EPS)
-    return kappa * p ** (kappa - 1.0)
+    return cast(float, kappa * p ** (kappa - 1.0))
 
 
 def calibrate_p_to_e_mixture(p_value: float) -> float:

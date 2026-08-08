@@ -186,7 +186,7 @@ def all_pins_ok(pin_results: list[dict[str, object]]) -> bool:
     return True
 
 
-def _bootstrap_use_case(storage_dir: Path, *, mep_scope: Path | None = None):
+def _bootstrap_use_case(storage_dir: Path, *, mep_scope: Path | None = None) -> tuple[Any, Any]:
     settings = Settings(
         application_name="aerobim-open-corpora",
         environment="test",
