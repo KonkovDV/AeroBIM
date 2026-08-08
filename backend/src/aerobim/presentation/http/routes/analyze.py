@@ -12,6 +12,10 @@ from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
 )
 from aerobim.presentation.http.context import ApiContext
+from aerobim.presentation.http.errors import (
+    public_bad_request_detail,
+    public_service_unavailable_detail,
+)
 from aerobim.presentation.http.package_request_builders import (
     load_openrebar_report_payload,
 )
@@ -66,10 +70,12 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
             logger.warning("validate_ifc bad request", request_id=request_id, detail=str(exc))
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         except RuntimeError as exc:
             logger.error("validate_ifc runtime error", request_id=request_id, detail=str(exc))
-            raise HTTPException(status_code=503, detail=str(exc)) from exc
+            raise HTTPException(
+                status_code=503, detail=public_service_unavailable_detail()
+            ) from exc
 
         logger.info(
             "validate_ifc completed",
@@ -98,9 +104,13 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            logger.warning("analyze_project_package bad request", detail=str(exc))
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         except RuntimeError as exc:
-            raise HTTPException(status_code=503, detail=str(exc)) from exc
+            logger.error("analyze_project_package runtime error", detail=str(exc))
+            raise HTTPException(
+                status_code=503, detail=public_service_unavailable_detail()
+            ) from exc
 
         return ctx.serialize_public_report(report)
 
@@ -117,9 +127,8 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-        metadata_payload = report_payload.get("metadata")
+            logger.warning("reinforcement_digest bad request", detail=str(exc))
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         metadata = metadata_payload if isinstance(metadata_payload, dict) else {}
         # Storage-relative path only — never absolute host paths in API responses.
         storage_rel = payload.reinforcement_report_path.replace("\\", "/")
@@ -155,9 +164,8 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-        key = idempotency_key.strip() if idempotency_key and idempotency_key.strip() else None
+            logger.warning("submit_analyze_project_package bad request", detail=str(exc))
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         if key is not None and len(key) > 128:
             raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
 

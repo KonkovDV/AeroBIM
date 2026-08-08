@@ -130,6 +130,28 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
         self.assertEqual(summary["max_ms"], 300.0)
         self.assertEqual(summary["avg_ms"], 200.0)
         self.assertGreater(summary["reports_per_second"], 0)
+        self.assertEqual(summary["sample_n"], 2)
+        self.assertTrue(summary["p95_equals_max"])
+        self.assertEqual(summary["spike_ratio_max_over_p50"], 3.0)
+
+    def test_summarize_p95_not_max_when_n_large_enough(self) -> None:
+        from aerobim.tools.benchmark_project_package import summarize_benchmark_runs
+
+        # 20 samples: 19×10ms + one 500ms spike → p95 should stay near steady-state.
+        runs = [
+            {
+                "elapsed_ms": 500.0 if index == 20 else 10.0,
+                "report_id": f"{index:032d}",
+                "issue_count": 0,
+                "requirement_count": 0,
+            }
+            for index in range(1, 21)
+        ]
+        summary = summarize_benchmark_runs(runs)
+        self.assertEqual(summary["sample_n"], 20)
+        self.assertEqual(summary["max_ms"], 500.0)
+        self.assertLess(summary["p95_ms"], summary["max_ms"])
+        self.assertFalse(summary["p95_equals_max"])
 
     def test_run_benchmark_executes_warmups_and_measured_runs(self) -> None:
         from aerobim.domain.models import RequirementSource, ValidationRequest
@@ -194,7 +216,15 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
             )
 
         self.assertEqual(payload["artifact_type"], "benchmark_project_package")
-        self.assertEqual(payload["schema_version"], "1.0.0")
+        self.assertEqual(payload["schema_version"], "1.2.0")
+        self.assertTrue(payload["customer_accuracy_not_established"])
+        self.assertEqual(payload["claim_level"], "fixture_only")
+        self.assertFalse(payload["accuracy_measured"])
+        self.assertIn("ifc_entity_count", payload)
+        self.assertIn("dependencies", payload)
+        self.assertIn("p50_ms", payload["summary"])
+        self.assertIn("p95_ms", payload["summary"])
+        self.assertIn("machine", payload)
         self.assertIn("generated_at", payload)
         self.assertIn("benchmark_pack", payload)
         benchmark_pack = payload["benchmark_pack"]

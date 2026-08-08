@@ -39,28 +39,7 @@ class FilesystemReviewEventStore:
 
     def append(self, event: ReviewEvent) -> str:
         target = self._path(event.report_id)
-        existing = self._iter_events(report_id=event.report_id, raise_on_corrupt=self._fail_closed)
-        existing_ids = {e.event_id for e in existing}
-        existing_keys = {e.idempotency_key for e in existing if e.idempotency_key}
-        if event.event_id in existing_ids:
-            return event.event_id
-        if event.idempotency_key and event.idempotency_key in existing_keys:
-            return next(e.event_id for e in existing if e.idempotency_key == event.idempotency_key)
-
-        sequence = event.sequence_number
-        if sequence is None:
-            sequence = len(existing) + 1
-        stamped = ReviewEvent(
-            **{
-                **event.__dict__,
-                "sequence_number": sequence,
-            }
-        )
-        line = json.dumps(asdict(stamped), ensure_ascii=False) + "\n"
-        if len(line.encode("utf-8")) > _MAX_LINE_BYTES:
-            raise ValueError(f"Review event exceeds max line size ({_MAX_LINE_BYTES} bytes)")
-        self._append_exclusive(target, line)
-        return stamped.event_id
+        return self._append_under_lock(target, event)
 
     def list_for_report(self, report_id: str) -> list[ReviewEvent]:
         return list(self._iter_events(report_id=report_id, raise_on_corrupt=self._fail_closed))
@@ -72,8 +51,11 @@ class FilesystemReviewEventStore:
         target.unlink(missing_ok=True)
         lock_path.unlink(missing_ok=True)
 
-    def _append_exclusive(self, target: Path, line: str) -> None:
+    def _append_under_lock(self, target: Path, event: ReviewEvent) -> str:
+        """Read-modify-write under exclusive lock (RT-HITL-001)."""
+
         lock_path = target.with_suffix(target.suffix + ".lock")
+        report_id = event.report_id
         for _ in range(_LOCK_ATTEMPTS):
             try:
                 fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
@@ -82,11 +64,40 @@ class FilesystemReviewEventStore:
                 finally:
                     os.close(fd)
                 try:
+                    existing = self._iter_events(
+                        report_id=report_id,
+                        raise_on_corrupt=self._fail_closed,
+                    )
+                    existing_ids = {e.event_id for e in existing}
+                    existing_keys = {e.idempotency_key for e in existing if e.idempotency_key}
+                    if event.event_id in existing_ids:
+                        return event.event_id
+                    if event.idempotency_key and event.idempotency_key in existing_keys:
+                        return next(
+                            e.event_id
+                            for e in existing
+                            if e.idempotency_key == event.idempotency_key
+                        )
+
+                    sequence = event.sequence_number
+                    if sequence is None:
+                        sequence = len(existing) + 1
+                    stamped = ReviewEvent(
+                        **{
+                            **event.__dict__,
+                            "sequence_number": sequence,
+                        }
+                    )
+                    line = json.dumps(asdict(stamped), ensure_ascii=False) + "\n"
+                    if len(line.encode("utf-8")) > _MAX_LINE_BYTES:
+                        raise ValueError(
+                            f"Review event exceeds max line size ({_MAX_LINE_BYTES} bytes)"
+                        )
                     with target.open("a", encoding="utf-8") as handle:
                         handle.write(line)
                         handle.flush()
                         os.fsync(handle.fileno())
-                    return
+                    return stamped.event_id
                 finally:
                     lock_path.unlink(missing_ok=True)
             except FileExistsError:

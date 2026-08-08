@@ -96,3 +96,8 @@ obj/
 Thumbs.db
 .idea/
 .vs/
+
+# Internal corpus must stay outside Git; block if accidentally copied under tree
+aerobim-internal-data/
+**/aerobim-internal-data/
+

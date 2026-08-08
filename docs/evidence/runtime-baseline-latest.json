@@ -1,33 +1,31 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.2.1",
-  "commit_sha": "d96a59ac6704357336ae46f7d61f6435be4c6a2c",
-  "prior_metrics_commit_sha": "1804f62391ea2e06038a89f8917a650813416e32",
-  "tree_sha": "15022980326167441ec165fb8cae23d76efb3182",
+  "commit_sha": "adbf79c34e223acd66f474d074877b524ca5e22f",
+  "tree_sha": "c37a99f075c0de650c804b9782425821363f8a61",
   "working_tree_clean": false,
-  "generated_at": "2026-08-06T18:49:17.866317+00:00",
-  "release_pin_note": "commit_sha pinned to release HEAD d96a59a for Sprint 2 governance alignment; quality_gates/metrics snapshot originated in the 1804f62→d96a59a engineering window (Red Team hyperdeep + CI baseline fix). Not a claim that every metric row was re-executed on this tip.",
+  "generated_at": "2026-08-07T18:51:05.611768+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2052,
-    "tests_passed": 2043,
-    "tests_skipped": 9,
-    "tests_failed": 0,
-    "source_loc": 56294,
-    "test_loc": 39492,
-    "test_functions": 1895
+    "tests_collected": 1924,
+    "tests_passed": null,
+    "tests_skipped": null,
+    "tests_failed": null,
+    "source_loc": 58525,
+    "test_loc": 40180,
+    "test_functions": 1924
   },
   "frontend": {
-    "tests_passed": 29,
+    "tests_passed": null,
     "note": "Recorded from last CI/local vitest run when provided via --frontend-tests-passed"
   },
   "quality_gates": {
-    "ruff": "PASS",
-    "mypy": "PASS",
-    "pytest": "PASS",
-    "vitest": "PASS",
-    "build": "PASS"
+    "ruff": "UNKNOWN",
+    "mypy": "UNKNOWN",
+    "pytest": "UNKNOWN",
+    "vitest": "UNKNOWN",
+    "build": "UNKNOWN"
   },
   "environment": {
     "python_version": "3.13.7",
@@ -39,12 +37,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 56294,
-    "backend_test_loc": 39492,
-    "backend_test_functions": 1895,
+    "backend_src_loc": 58525,
+    "backend_test_loc": 40180,
+    "backend_test_functions": 1924,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "Backend src ~56294 LOC; tests ~39492 LOC; 1895+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "Backend src ~58525 LOC; tests ~40180 LOC; 1924+ test functions; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -97,8 +95,8 @@
     "AEROBIM_STORAGE_DIR"
   ],
   "architecture_inventory": {
-    "public_domain_protocols": 47,
-    "adapter_modules": 71,
-    "di_tokens": 60
+    "public_domain_protocols": 48,
+    "adapter_modules": 72,
+    "di_tokens": 63
   }
 }

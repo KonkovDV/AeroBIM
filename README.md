@@ -59,7 +59,7 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 
 **What works:** project-package analyze; IFC/IDS/cross-doc; `summary.passed` Shared-gate ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); pilot/production fail-closed profiles; ACL 404; SSRF outbound guard; provenance stamp/persist; BCF 2.1/3.0 structural ZIP; HITL review-events; evidence bundle CLI (`python -m aerobim.tools.export_evidence_bundle`); **annotation claimed-GUID presence confirm** (P2-04); **core PDF via pypdfium2/pdfminer** (LIC-001 Option B); **HybridRouteGate advisory pre-gate** (WP-02); **detached signature envelope audit** (WP-03 ENG_PARTIAL); **norm pack v2 eligibility** (WP-04); **package completeness inventory** (WP-05); **open-corpora profiles** (WP-06 regression/timing only); **quality measurement protocol** (WP-07 Wilson planner; interim 0.60); **L1 open-bench** IFC-Bench smoke + AECV live counting on Yandex Qwen (`claim_level=open_bench_only`, ≠ RT-001 — [evidence](docs/evidence/README.md)); Docker offline-bundle smoke; pytest / vitest counts SSOT via [runtime baseline](docs/evidence/runtime-baseline-latest.json) (`frontend.tests_passed` when recorded; else see baseline/CI).
 
-**Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold; MEP federated ENG_FIXTURE graph + AABB broadphase (capability stays `NOT_VERIFIED`).
+**Experimental:** OpenCDE BCF API push; BCF 3.0 consumer path; optional clash/OCR extras; IFC KG advisory scaffold; MEP federated ENG_FIXTURE graph + AABB broadphase (capability stays `NOT_VERIFIED`); **advisory `LlmExtractionPort` (regex/Kimi/Qwen eval harness — never verdict)**.
 
 **Available (eng):** `PackageOutcome` on `summary.outcome` (`pass` / `pass_with_warnings` / `review_required` / `blocked` / `failed`); run manifest + reproducibility hash; stage timeout budgets; **Hybrid AI routing** (classify/policy/guard/audit + **WP-02 `HybridRouteGate` advisory pre-gate** on Analyze + **kimi smoke PUBLIC egress gate**) — domain-pure, verdict-neutral (OFF==ON), **never sets `summary.passed`**; masking ≠ anonymity; Checkpoint **NO_GO**.
 
@@ -333,7 +333,7 @@ presentation/  FastAPI HTTP API, correlation middleware
 
 Infrastructure now also includes an artifact `ObjectStore` seam plus an optional Postgres summary-index adapter for Iteration B.1.
 
-**47 domain Protocol ports** → **71 infrastructure adapter modules** → **60 DI tokens** — wired in `bootstrap_container()`. Counts are **live inventory** regenerated into `docs/evidence/runtime-baseline-latest.json` (`architecture_inventory`) and checked in CI via `export_runtime_baseline --check-readme` against README EN/RU; do not hand-edit older 20/30/28 or stale 48/67/58 figures.
+**48 domain Protocol ports** → **72 infrastructure adapter modules** → **63 DI tokens** — wired in `bootstrap_container()`. Counts are **live inventory** regenerated into `docs/evidence/runtime-baseline-latest.json` (`architecture_inventory`) and checked in CI via `export_runtime_baseline --check-readme` against README EN/RU; do not hand-edit older 20/30/28 or stale 47/71/60 figures.
 Report payloads include an explicit `capabilities` object (`ok` / `skipped` / `failed`) so optional engines (clash, IDS, unit scale, raster, schema) cannot silently look like a clean PASS. **Any `FAILED` capability forces `summary.passed=false`.**
 
 ## Configuration

@@ -1,0 +1,38 @@
+{
+  "artifact_type": "kimi_vs_qwen_sprint3",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-07T18:46:23.491204+00:00",
+  "claim_level": "fixture_only",
+  "customer_accuracy_not_established": true,
+  "live_provider": false,
+  "corpus_kind": "fixture",
+  "corpus_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\russian-aec-ground-truth.json",
+  "fixture_count": 10,
+  "models": {
+    "regex": "deterministic NarrativeRuleSynthesizer+StructuredRequirementExtractor",
+    "kimi": "NOT_RUN (OpenAI-compat Moonshot/Kimi when configured)",
+    "qwen": "NOT_RUN (vLLM/Yandex Studio Qwen when configured)"
+  },
+  "summary": {
+    "regex": {
+      "precision": 0.86,
+      "recall": 0.86,
+      "macro_f1": 0.86,
+      "hallucination_count": 0.0
+    },
+    "kimi": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "macro_f1": 0.0,
+      "hallucination_count": 0.0
+    },
+    "qwen": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "macro_f1": 0.0,
+      "hallucination_count": 0.0
+    }
+  },
+  "conclusion": "Live Kimi/Qwen extraction did not run (no API keys / provider not ready); only regex baseline scored on fixtures — LLM worth-it vs regex is not established.",
+  "sibling_evidence": "C:/plans/AeroBIM/docs/evidence/llm-extraction-kimi-vs-qwen-2026-08.json"
+}

@@ -176,11 +176,13 @@ class RasterDrawingAnalyzer:
         sheet_id: str,
     ) -> list[DrawingAnnotation]:
         engine = self._get_ocr_engine()
-        ocr_result = engine(image_path)
+        # RapidOCR accepts filesystem paths; keep Path for callers but coerce for engines.
+        ocr_result = engine(str(image_path))
 
-        boxes = getattr(ocr_result, "boxes", None) or []
-        texts = getattr(ocr_result, "txts", None) or ()
-        scores = getattr(ocr_result, "scores", None) or ()
+        # RapidOCR returns numpy ndarrays for boxes; `x or []` is ambiguous on arrays.
+        boxes = self._ocr_sequence(getattr(ocr_result, "boxes", None), default=())
+        texts = self._ocr_sequence(getattr(ocr_result, "txts", None), default=())
+        scores = self._ocr_sequence(getattr(ocr_result, "scores", None), default=())
         annotations: list[DrawingAnnotation] = []
 
         for index, (box, text) in enumerate(zip(boxes, texts, strict=False)):
@@ -202,6 +204,16 @@ class RasterDrawingAnalyzer:
             annotations.extend(self._extract_annotations_from_region(region, sheet_id, image_path))
 
         return self._deduplicate_annotations(annotations)
+
+    @staticmethod
+    def _ocr_sequence(value: Any, *, default: Any) -> Any:
+        """Normalize OCR sequence fields without truth-testing numpy arrays."""
+        if value is None:
+            return default
+        size = getattr(value, "size", None)
+        if isinstance(size, int):
+            return value if size > 0 else default
+        return value
 
     def _get_ocr_engine(self) -> Any:
         if self._ocr_engine is not None:

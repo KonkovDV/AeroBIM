@@ -254,6 +254,10 @@ class RedTeamSignoffRemediationTests(unittest.TestCase):
         self.assertEqual(status, CapabilityState.FAILED)
         self.assertNotEqual(status, CapabilityState.NOT_VERIFIED)
         self.assertNotEqual(status, CapabilityState.OK)
+        self.assertFalse(
+            report.summary.passed,
+            "mixed DWG+DXF must still block summary.passed when DWG is FAILED",
+        )
 
     def test_rt_e_advisory_on_off_same_engine_and_passed(self) -> None:
         from aerobim.tools.benchmark_project_package import load_benchmark_pack

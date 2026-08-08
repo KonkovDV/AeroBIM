@@ -187,9 +187,9 @@ class ArchitectureInventoryTests(unittest.TestCase):
         backend = Path(__file__).resolve().parents[1]
         repo = backend.parent
         live = _live_architecture_inventory(repo)
-        self.assertEqual(live["public_domain_protocols"], 47)
-        self.assertEqual(live["adapter_modules"], 71)
-        self.assertEqual(live["di_tokens"], 60)
+        self.assertEqual(live["public_domain_protocols"], 48)
+        self.assertEqual(live["adapter_modules"], 72)
+        self.assertEqual(live["di_tokens"], 63)
         # Without architecture_inventory in a temp artifact, check still validates README.
         errors = _check_architecture_inventory(repo)
         # Committed artifact must include live inventory after this gate lands.

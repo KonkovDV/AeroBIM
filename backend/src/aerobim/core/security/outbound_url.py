@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import http.client
 import ipaddress
+import re
 import socket
 import ssl
 from dataclasses import dataclass
@@ -58,6 +59,26 @@ class PinnedOutboundUrl:
 class _RejectRedirects(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
         raise UnsafeOutboundUrlError(f"Outbound HTTP redirects are not allowed ({code} → {newurl})")
+
+
+_NONCANONICAL_IPV4_HOST = re.compile(r"^(?:\d+|0x[0-9a-fA-F]+)$")
+
+
+def _parse_literal_ip_host(host: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address | None:
+    """Interpret hostname as IP, including decimal / ``0x`` integer encodings (RT-SSRF-001)."""
+
+    try:
+        return ipaddress.ip_address(host)
+    except ValueError:
+        pass
+    if _NONCANONICAL_IPV4_HOST.fullmatch(host):
+        try:
+            value = int(host, 0)
+            if 0 <= value <= 0xFFFFFFFF:
+                return ipaddress.ip_address(value)
+        except (ValueError, OverflowError):
+            return None
+    return None
 
 
 def _is_blocked_ip(address: str) -> bool:
@@ -189,22 +210,18 @@ def resolve_and_pin_outbound_url(
 
     port = parsed.port or (443 if parsed.scheme == "https" else 80)
 
-    # Literal IP in hostname.
-    try:
-        if _is_blocked_ip(host):
+    literal_ip = _parse_literal_ip_host(host)
+    if literal_ip is not None:
+        pinned = str(literal_ip)
+        if _is_blocked_ip(pinned):
             raise UnsafeOutboundUrlError(f"Outbound host resolves to blocked address: {host}")
-        # Literal IP host — pin to itself without DNS.
         return PinnedOutboundUrl(
             url=cleaned,
             hostname=host,
-            pinned_ip=str(ipaddress.ip_address(host)),
+            pinned_ip=pinned,
             port=port,
             scheme=parsed.scheme,
         )
-    except UnsafeOutboundUrlError:
-        raise
-    except ValueError:
-        pass
 
     pinned_ip = host
     if resolve_dns:

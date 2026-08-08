@@ -24,6 +24,7 @@ def create_http_app(container: Container):
     # guard above must stay the single failure point when it is missing.
     from aerobim.presentation.http.context import ApiContext
     from aerobim.presentation.http.correlation import add_correlation_middleware
+    from aerobim.presentation.http.rate_limit import add_rate_limit_middleware
     from aerobim.presentation.http.routes.analyze import build_analyze_router
     from aerobim.presentation.http.routes.exports import build_exports_router
     from aerobim.presentation.http.routes.norm_packs import build_norm_packs_router
@@ -61,6 +62,7 @@ def create_http_app(container: Container):
     )
     add_correlation_middleware(app)
     add_security_headers_middleware(app)
+    add_rate_limit_middleware(app, requests_per_minute=settings.http_rate_limit_per_minute)
 
     ctx = ApiContext(container)
 

@@ -222,7 +222,7 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 | `POST` | `/v1/analyze/project-package` | Мультимодальный анализ |
 | `GET` | `/v1/reports/{id}/export/bcf` | Экспорт BCF ZIP |
 
-Ключевые env (фрагмент): `AEROBIM_PDF_BACKEND=pdfium` (default), `AEROBIM_MEP_AABB_FILTER=true` (optional AABB; всё ещё `geometry_verified=False`). Advisory LLM (**только development**, opt-in): `AEROBIM_LLM_ADVISORY_ENABLED` (+ устаревший алиас `AEROBIM_LLM_LOCAL_ENABLED`) + pinned `AEROBIM_LLM_MODEL_REVISION` **или** unversioned `gpt://…/model` без `/latest` + `AEROBIM_LLM_BUDGET_LEDGER` + лимиты `MAX_TOKENS_PER_RUN` / `MAX_TOKENS_PER_DAY`. На профилях `samolet_pilot` / `production` внешний advisory egress **запрещён** fail-closed. Полная таблица — [README.md](README.md) Configuration. Живой inventory: **47 Protocol ports / 71 adapter modules / 60 DI tokens** (CI сверяет с `architecture_inventory` в runtime baseline, не руками).
+Ключевые env (фрагмент): `AEROBIM_PDF_BACKEND=pdfium` (default), `AEROBIM_MEP_AABB_FILTER=true` (optional AABB; всё ещё `geometry_verified=False`). Advisory LLM (**только development**, opt-in): `AEROBIM_LLM_ADVISORY_ENABLED` (+ устаревший алиас `AEROBIM_LLM_LOCAL_ENABLED`) + pinned `AEROBIM_LLM_MODEL_REVISION` **или** unversioned `gpt://…/model` без `/latest` + `AEROBIM_LLM_BUDGET_LEDGER` + лимиты `MAX_TOKENS_PER_RUN` / `MAX_TOKENS_PER_DAY`. На профилях `samolet_pilot` / `production` внешний advisory egress **запрещён** fail-closed. Полная таблица — [README.md](README.md) Configuration. Живой inventory: **48 Protocol ports / 72 adapter modules / 63 DI tokens** (CI сверяет с `architecture_inventory` в runtime baseline, не руками).
 
 <!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->
 AEROBIM_ALLOW_ANONYMOUS_DEV
