@@ -60,7 +60,7 @@ pytest (focused):
 | RT-001 customer GT | OPEN |
 | RT-002 signed norm pack | OPEN |
 | RT-003 MEP federated clash | OPEN |
-| И1 Docker closed-contour | **CLOSED** | `docs/ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md` |
+| И1 Docker closed-contour | **CLOSED** | `docs/offline-deployment-2026.md` + evidence JSON |
 | Bare-metal wheelhouse | **OUT_OF_SCOPE** | not required when Docker works |
 | RT-SECRET-001 git history scan | HYPOTHESIS — not run |
 | RT-OIDC-001 JWKS fuzz | HYPOTHESIS — bounded read sufficient |
