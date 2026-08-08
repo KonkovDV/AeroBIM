@@ -74,6 +74,18 @@ _ALLOWED_PREVIEW_MEDIA_TYPES = frozenset(
 _AI_CONTENT_MARKING = "ai_generated=true;expert_confirmation_required=true"
 
 
+def _oidc_tenant_from_claim(value: object) -> str:
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        raise HTTPException(
+            status_code=401,
+            detail="OIDC token tenant claim must be a string",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return value.strip()
+
+
 def attachment_content_disposition(filename: str) -> str:
     """RFC 6266 / RFC 5987 attachment header with safe ASCII + UTF-8 fallback."""
     from urllib.parse import quote
@@ -184,7 +196,7 @@ class ApiContext:
                 claims = self.oidc_validator.validate(token)
                 claim_name = (settings.oidc_tenant_claim or "tenant_id").strip() or "tenant_id"
                 tenant_claim = claims.get(claim_name)
-                tenant = str(tenant_claim).strip() if tenant_claim is not None else ""
+                tenant = _oidc_tenant_from_claim(tenant_claim)
                 if not tenant:
                     # RT A07: never fall back to api_tenant_id for OIDC principals.
                     raise HTTPException(

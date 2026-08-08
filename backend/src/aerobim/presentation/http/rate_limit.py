@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
 
-from aerobim.core.security.rate_limit_backend import RateLimitBackend, build_rate_limit_backend
+from aerobim.core.security.rate_limit_backend import RateLimitBackend
+from aerobim.infrastructure.security.rate_limit_factory import build_rate_limit_backend
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
@@ -28,6 +30,7 @@ def add_rate_limit_middleware(
     requests_per_minute: int,
     job_poll_per_minute: int = 0,
     redis_url: str | None = None,
+    signoff_profile: str = "development",
 ) -> None:
     """Attach per-client limiter for expensive routes (shared when Redis is configured)."""
 
@@ -37,7 +40,10 @@ def add_rate_limit_middleware(
     from starlette.middleware.base import BaseHTTPMiddleware
     from starlette.responses import JSONResponse
 
-    backend: RateLimitBackend = build_rate_limit_backend(redis_url)
+    backend: RateLimitBackend = build_rate_limit_backend(
+        redis_url,
+        signoff_profile=signoff_profile,
+    )
 
     class _RateLimitMiddleware(BaseHTTPMiddleware):
         async def dispatch(
@@ -48,7 +54,10 @@ def add_rate_limit_middleware(
             path = request.url.path
             client = request.client.host if request.client else "unknown"
             auth = request.headers.get("authorization", "")
-            key = f"{client}:{auth[:32]}"
+            auth_fingerprint = (
+                hashlib.sha256(auth.encode("utf-8")).hexdigest()[:16] if auth else "anon"
+            )
+            key = f"{client}:{auth_fingerprint}"
 
             if request.method == "GET" and path.startswith(_JOB_POLL_PREFIX):
                 if job_poll_per_minute > 0 and not backend.allow(

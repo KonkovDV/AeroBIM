@@ -17,14 +17,8 @@ def _repo_root() -> Path:
 
 def _load_policy(path: Path) -> dict[str, object]:
     if not path.is_file():
-        return {
-            "enforce_ci": False,
-            "min_signed_ratio": 0.0,
-            "ratchet_target_ratio": 0.5,
-            "ratchet_effective_date": "2026-09-01",
-            "inspect_depth": 30,
-            "require_head_signed_on_release_tags": False,
-        }
+        print(f"ERROR: policy file not found: {path}", file=sys.stderr)
+        raise SystemExit(1)
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -75,7 +69,11 @@ def _effective_min_ratio(policy: dict[str, object]) -> float:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--policy", type=Path, default=_repo_root() / "governance/commit_signing_policy.json")
+    parser.add_argument(
+        "--policy",
+        type=Path,
+        default=_repo_root() / "governance/commit_signing_policy.json",
+    )
     parser.add_argument("--depth", type=int, default=None)
     args = parser.parse_args()
 

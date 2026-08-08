@@ -180,7 +180,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         events = review_store.list_for_report(report_id)
         return {"report_id": report_id, "kpi": summarize_review_events(events)}
 
-    @router.get("/v1/reports/{report_id}/source/ifc")
+    @router.get("/v1/reports/{report_id}/source/ifc", response_model=None)
     def get_report_ifc_source(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
@@ -212,7 +212,10 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
             },
         )
 
-    @router.get("/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
+    @router.get(
+        "/v1/reports/{report_id}/drawing-assets/{asset_id}/preview",
+        response_model=None,
+    )
     def get_report_drawing_asset_preview(
         report_id: str,
         asset_id: str,

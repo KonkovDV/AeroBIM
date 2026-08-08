@@ -53,7 +53,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
             headers={"Content-Disposition": attachment_content_disposition(f"{report_id}.html")},
         )
 
-    @router.get("/v1/reports/{report_id}/export/bcf")
+    @router.get("/v1/reports/{report_id}/export/bcf", response_model=None)
     def export_report_bcf(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],

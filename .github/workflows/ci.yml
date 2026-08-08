@@ -97,6 +97,8 @@ jobs:
         run: python -m aerobim.tools.export_runtime_baseline --check-readme --check-complete
       - run: ruff check src tests
       - run: ruff format --check src tests
+      - name: Ruff S-band inventory drift check
+        run: python scripts/verify_ruff_s_band_inventory.py
 
   docs-links:
     runs-on: ubuntu-latest
@@ -610,6 +612,7 @@ jobs:
             tests/test_extraction_integrity_producer.py \
             tests/test_rt_wave3_remediation_2026_08.py \
             tests/test_rt_wave4_remediation_2026_08.py \
+            tests/test_rt_wave5_remediation_2026_08.py \
             -q --tb=short \
             | tee ../artifacts/security-rerun/pytest-security.out.txt
       - name: Write security-rerun claim-safe summary
