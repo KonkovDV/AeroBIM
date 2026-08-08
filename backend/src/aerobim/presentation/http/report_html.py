@@ -195,6 +195,36 @@ def _build_coverage_section(coverage: dict[str, Any]) -> str:
     )
 
 
+def coverage_lines_for_export(coverage: dict[str, Any]) -> list[str]:
+    """Plain-text coverage block for PDF export (WP-R4 first page)."""
+
+    lines: list[str] = []
+    tz_gaps = coverage.get("tz_gaps") or []
+    if tz_gaps:
+        lines.append("TZ gaps (honest not_checked):")
+        for gap in tz_gaps:
+            if not isinstance(gap, dict):
+                continue
+            lines.append(
+                f"  - {gap.get('label', '')}: {gap.get('status', '')} — {gap.get('reason', '')}"
+            )
+    sources = coverage.get("sources") or []
+    if sources:
+        lines.append("")
+        lines.append("Per-source coverage:")
+        for row in sources:
+            if not isinstance(row, dict):
+                continue
+            sid = row.get("source_id", "")
+            pres = row.get("presentation_status") or row.get("operator_status") or {}
+            if isinstance(pres, dict):
+                fam_bits = ", ".join(f"{k}={v}" for k, v in sorted(pres.items()))
+                lines.append(f"  {sid}: {fam_bits}")
+    if not lines:
+        lines.append("(no coverage data)")
+    return lines
+
+
 def render_report_html(report_id: str, data: dict[str, Any]) -> str:
     """Render the serialized public report payload as a standalone HTML page."""
     summary: dict[str, Any] = data["summary"]

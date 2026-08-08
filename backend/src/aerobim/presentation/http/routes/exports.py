@@ -15,6 +15,7 @@ from aerobim.presentation.http.context import (
     attachment_content_disposition,
 )
 from aerobim.presentation.http.report_html import render_report_html
+from aerobim.presentation.http.report_pdf import render_report_pdf_bytes
 from aerobim.presentation.http.schemas import PushBcfApiRequest
 
 
@@ -54,6 +55,26 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         return HTMLResponse(
             content=html,
             headers={"Content-Disposition": attachment_content_disposition(f"{report_id}.html")},
+        )
+
+    @router.get("/v1/reports/{report_id}/export/pdf")
+    def export_report_pdf(
+        report_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> Response:
+        ctx.validate_report_id(report_id)
+        report = audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+        ctx.assert_report_access(report, principal)
+        data: dict[str, Any] = ctx.serialize_public_report(report)
+        scope = derive_report_scope(report)
+        data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
+        pdf_bytes = render_report_pdf_bytes(report_id, data)
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": attachment_content_disposition(f"{report_id}.pdf")},
         )
 
     @router.get("/v1/reports/{report_id}/export/bcf", response_model=None)

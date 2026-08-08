@@ -5,7 +5,7 @@
   "note": "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope + all family capabilities OK; verdict-neutral — does NOT set summary.passed (ADR-001). operator_status uses WP-R4 aliases (no_findings/findings/not_checked/insufficient_data/expert_required).",
   "operator_legend": {
     "expert_required": "Только advisory-сигнал — требуется эксперт",
-    "findings": "Проверка выполнена; есть детерминированные находки (см. список)",
+    "findings": "Проверка выполнена; есть детерминированные находки (см. список) — execution outcome, not a TZ gap state",
     "insufficient_data": "Проверка запускалась, данных или движка недостаточно",
     "no_findings": "Проверка выполнена на этом источнике; нарушений не найдено",
     "not_checked": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)"

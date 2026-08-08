@@ -36,8 +36,9 @@ from aerobim.domain.models import (
 COVERAGE_ALGORITHM_VERSION = "1.2.0"
 """Bump when the coverage derivation changes so frozen snapshots stay interpretable."""
 
-# WP-R4 / KT#2: four honest gap states (TZ matrix holes + per-source cells).
-# Deterministic findings use operator alias ``findings`` (check ran; see issues list).
+# WP-R4 / KT#2: four honest gap states (TZ matrix holes). Per-source cells also use
+# operator alias ``findings`` when a check ran with deterministic hits — that is an
+# execution outcome, not a fifth gap state (see OPERATOR_STATUS_LEGEND).
 PRESENTATION_STATES: frozenset[str] = frozenset(
     {"no_findings", "not_checked", "insufficient_data", "expert_required"}
 )
@@ -107,7 +108,10 @@ _OPERATOR_STATUS: dict[CoverageStatus, str] = {
 
 OPERATOR_STATUS_LEGEND: dict[str, str] = {
     "no_findings": "Проверка выполнена на этом источнике; нарушений не найдено",
-    "findings": "Проверка выполнена; есть детерминированные находки (см. список)",
+    "findings": (
+        "Проверка выполнена; есть детерминированные находки (см. список) — "
+        "execution outcome, not a TZ gap state"
+    ),
     "not_checked": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)",
     "insufficient_data": "Проверка запускалась, данных или движка недостаточно",
     "expert_required": "Только advisory-сигнал — требуется эксперт",
@@ -121,7 +125,11 @@ def operator_status_for(status: CoverageStatus) -> str:
 
 
 def presentation_status_for(status: CoverageStatus) -> str:
-    """WP-R4 four-state view for gap-oriented filters (findings excluded — see issues)."""
+    """WP-R4 four-state view for gap-oriented filters.
+
+    ``CHECKED_FINDINGS`` returns operator alias ``findings`` (execution outcome).
+    That value is intentionally excluded from ``PRESENTATION_STATES`` (gap taxonomy).
+    """
 
     if status is CoverageStatus.CHECKED_FINDINGS:
         return "findings"

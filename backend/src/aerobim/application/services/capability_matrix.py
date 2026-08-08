@@ -44,6 +44,7 @@ def build_report_capabilities(
     extraction_integrity: CapabilityStatus | None = None,
     qualified_signature: CapabilityStatus | None = None,
     package_completeness: CapabilityStatus | None = None,
+    office_ingest: CapabilityStatus | None = None,
     ids_validator_configured: bool,
     ifc_schema_validator_configured: bool,
     require_bsi_schema: bool,
@@ -201,4 +202,6 @@ def build_report_capabilities(
             CapabilityState.SKIPPED,
             "llm advisory remark compose not evaluated",
         ),
+        office_ingest=office_ingest
+        or CapabilityStatus(CapabilityState.SKIPPED, "MS Office ingest not evaluated"),
     )

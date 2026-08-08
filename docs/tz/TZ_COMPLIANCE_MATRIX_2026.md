@@ -105,7 +105,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
-| Upload MS Office | partial | Optional Docling path; multipart upload for binaries | P0 done / Docling optional |
+| Upload MS Office | done | Native `.docx`/`.xlsx` via `python-docx`+`openpyxl` (MIT); Docling optional `[docling]`; legacy `.doc`/`.xls` fail-closed; `office_ingest` capability — `test_office_native_ingest` | P0 WP-R1 |
 | Upload PDF | partial | Path-based + raster + `POST /v1/uploads` | P0 |
 | Upload DWG | missing | — | P2 |
 | Upload BIM (IFC) | done | Path-based + multipart upload | MVP / P0 |
@@ -118,7 +118,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | Web UI | done | `frontend/` review shell | MVP |
 | Drawing overlay of errors | done | `DrawingEvidencePanel` | MVP |
 | Remarks panel: list / filter / priority / edit | done | Severity filter + remark editor → review-events | P0 |
-| Per-check coverage map (four states) | partial | `domain/check_coverage.py` (`no_findings` / `not_checked` / `insufficient_data` / `expert_required`); `tz_gaps` for MEP/CV/DWG/space-efficiency; HTML export first page + `CoverageMapPanel`; `GET /v1/reports/{id}/coverage`; `test_check_coverage_property` (I-8) | P0 WP-R4 |
+| Per-check coverage map (four states) | partial | `domain/check_coverage.py` (4 gap states + operator `findings`); HTML+PDF export first page; `CoverageMapPanel`; Hypothesis I-8; `GET /v1/reports/{id}/coverage` + `/export/pdf` | P0 WP-R4 |
 
 ## 5. Data sources and constraints
 

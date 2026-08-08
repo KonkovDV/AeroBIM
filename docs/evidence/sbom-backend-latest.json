@@ -3,7 +3,7 @@
   "specVersion": "1.5",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-07-31T21:16:10.278774+00:00",
+    "timestamp": "2026-08-08T20:21:06.849722+00:00",
     "tools": [
       {
         "name": "aerobim-export-dependency-sbom",
@@ -375,6 +375,19 @@
     },
     {
       "type": "library",
+      "name": "boltons",
+      "version": "21.0.0",
+      "purl": "pkg:pypi/boltons@21.0.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "boolean.py",
       "version": "5.0",
       "purl": "pkg:pypi/boolean.py@5.0",
@@ -382,6 +395,19 @@
         {
           "license": {
             "name": "BSD-2-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "bracex",
+      "version": "3.0.1",
+      "purl": "pkg:pypi/bracex@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
           }
         }
       ]
@@ -493,6 +519,19 @@
     {
       "type": "library",
       "name": "click",
+      "version": "8.4.2",
+      "purl": "pkg:pypi/click@8.4.2",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "click",
       "version": "8.2.1",
       "purl": "pkg:pypi/click@8.2.1",
       "licenses": [
@@ -512,6 +551,19 @@
         {
           "license": {
             "name": "Public Domain"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "click-option-group",
+      "version": "0.5.9",
+      "purl": "pkg:pypi/click-option-group@0.5.9",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
           }
         }
       ]
@@ -947,6 +999,32 @@
     },
     {
       "type": "library",
+      "name": "exceptiongroup",
+      "version": "1.2.2",
+      "purl": "pkg:pypi/exceptiongroup@1.2.2",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "face",
+      "version": "26.0.1",
+      "purl": "pkg:pypi/face@26.0.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "UNKNOWN"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "Faker",
       "version": "37.6.0",
       "purl": "pkg:pypi/faker@37.6.0",
@@ -1051,6 +1129,32 @@
     },
     {
       "type": "library",
+      "name": "glom",
+      "version": "25.12.0",
+      "purl": "pkg:pypi/glom@25.12.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "googleapis-common-protos",
+      "version": "1.75.0",
+      "purl": "pkg:pypi/googleapis-common-protos@1.75.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache Software License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "greenlet",
       "version": "3.2.4",
       "purl": "pkg:pypi/greenlet@3.2.4",
@@ -1129,6 +1233,19 @@
     },
     {
       "type": "library",
+      "name": "httpx-sse",
+      "version": "0.4.3",
+      "purl": "pkg:pypi/httpx-sse@0.4.3",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "hypothesis",
       "version": "6.138.15",
       "purl": "pkg:pypi/hypothesis@6.138.15",
@@ -1201,6 +1318,19 @@
         {
           "license": {
             "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "importlib_metadata",
+      "version": "8.7.1",
+      "purl": "pkg:pypi/importlib_metadata@8.7.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
           }
         }
       ]
@@ -1416,6 +1546,19 @@
     {
       "type": "library",
       "name": "jsonschema",
+      "version": "4.25.1",
+      "purl": "pkg:pypi/jsonschema@4.25.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "jsonschema",
       "version": "4.26.0",
       "purl": "pkg:pypi/jsonschema@4.26.0",
       "licenses": [
@@ -1617,6 +1760,19 @@
         {
           "license": {
             "name": "MIT OR Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "mcp",
+      "version": "1.23.3",
+      "purl": "pkg:pypi/mcp@1.23.3",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT License"
           }
         }
       ]
@@ -1896,6 +2052,136 @@
     },
     {
       "type": "library",
+      "name": "opentelemetry-api",
+      "version": "1.37.0",
+      "purl": "pkg:pypi/opentelemetry-api@1.37.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-exporter-otlp-proto-common",
+      "version": "1.37.0",
+      "purl": "pkg:pypi/opentelemetry-exporter-otlp-proto-common@1.37.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-exporter-otlp-proto-http",
+      "version": "1.37.0",
+      "purl": "pkg:pypi/opentelemetry-exporter-otlp-proto-http@1.37.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-instrumentation",
+      "version": "0.58b0",
+      "purl": "pkg:pypi/opentelemetry-instrumentation@0.58b0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-instrumentation-requests",
+      "version": "0.58b0",
+      "purl": "pkg:pypi/opentelemetry-instrumentation-requests@0.58b0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-instrumentation-threading",
+      "version": "0.58b0",
+      "purl": "pkg:pypi/opentelemetry-instrumentation-threading@0.58b0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-proto",
+      "version": "1.37.0",
+      "purl": "pkg:pypi/opentelemetry-proto@1.37.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-sdk",
+      "version": "1.37.0",
+      "purl": "pkg:pypi/opentelemetry-sdk@1.37.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-semantic-conventions",
+      "version": "0.58b0",
+      "purl": "pkg:pypi/opentelemetry-semantic-conventions@0.58b0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "opentelemetry-util-http",
+      "version": "0.58b0",
+      "purl": "pkg:pypi/opentelemetry-util-http@0.58b0",
+      "licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "ortools",
       "version": "9.15.6755",
       "purl": "pkg:pypi/ortools@9.15.6755",
@@ -2007,6 +2293,19 @@
         {
           "license": {
             "name": "MIT License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "peewee",
+      "version": "3.19.0",
+      "purl": "pkg:pypi/peewee@3.19.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "UNKNOWN"
           }
         }
       ]
@@ -2417,6 +2716,19 @@
     {
       "type": "library",
       "name": "PyJWT",
+      "version": "2.13.0",
+      "purl": "pkg:pypi/pyjwt@2.13.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "PyJWT",
       "version": "2.10.1",
       "purl": "pkg:pypi/pyjwt@2.10.1",
       "licenses": [
@@ -2605,6 +2917,19 @@
         {
           "license": {
             "name": "BSD License; Apache Software License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "python-docx",
+      "version": "1.2.0",
+      "purl": "pkg:pypi/python-docx@1.2.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT License"
           }
         }
       ]
@@ -2897,6 +3222,32 @@
     },
     {
       "type": "library",
+      "name": "ruamel.yaml",
+      "version": "0.19.1",
+      "purl": "pkg:pypi/ruamel.yaml@0.19.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "ruamel.yaml.clib",
+      "version": "0.2.15",
+      "purl": "pkg:pypi/ruamel.yaml.clib@0.2.15",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "ruff",
       "version": "0.16.0",
       "purl": "pkg:pypi/ruff@0.16.0",
@@ -2982,6 +3333,32 @@
         {
           "license": {
             "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "semantic-version",
+      "version": "2.10.0",
+      "purl": "pkg:pypi/semantic-version@2.10.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "semgrep",
+      "version": "1.172.0",
+      "purl": "pkg:pypi/semgrep@1.172.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "LGPL-2.1-or-later"
           }
         }
       ]
@@ -3164,6 +3541,32 @@
         {
           "license": {
             "name": "Apache Software License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "sse-starlette",
+      "version": "3.4.6",
+      "purl": "pkg:pypi/sse-starlette@3.4.6",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "starlette",
+      "version": "1.3.1",
+      "purl": "pkg:pypi/starlette@1.3.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
           }
         }
       ]
@@ -3560,6 +3963,19 @@
     },
     {
       "type": "library",
+      "name": "wcmatch",
+      "version": "8.5.2",
+      "purl": "pkg:pypi/wcmatch@8.5.2",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "wcwidth",
       "version": "0.2.14",
       "purl": "pkg:pypi/wcwidth@0.2.14",
@@ -3749,6 +4165,19 @@
         {
           "license": {
             "name": "Apache Software License"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "zipp",
+      "version": "4.1.0",
+      "purl": "pkg:pypi/zipp@4.1.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
           }
         }
       ]
