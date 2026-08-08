@@ -343,15 +343,15 @@
     {
       "name": "python-docx",
       "scope": "core",
-      "installed_version": "1.1.2",
+      "installed_version": "1.2.0",
+      "lock_version": "1.2.0",
       "license_metadata": "MIT",
       "spdx_guess": "MIT",
       "risk_class": "permissive",
       "verified": true,
       "legal_review_required": false,
       "usage": "native .docx Office ingest (WP-R1)",
-      "mitigation_options": "",
-      "lock_version": "1.1.2"
+      "mitigation_options": ""
     },
     {
       "name": "web-ifc",
