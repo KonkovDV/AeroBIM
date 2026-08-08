@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "buildingsmart_ids_known_upstream_edges",
+  "claim_boundary": "Engine/fixture regression notes only — not product accuracy. Do not greenwash by excluding cases from published match-rate without this label.",
+  "edges": [
+    {
+      "case_id": "pass-an_optional_attribute_passes_if_null",
+      "case_dir": "0017",
+      "ids_path": "cases/0017/pass-an_optional_attribute_passes_if_null.ids",
+      "ifc_path": "cases/0017/pass-an_optional_attribute_passes_if_null.ifc",
+      "bsi_filename_expected": "pass",
+      "ifctester_observed": "fail",
+      "classification": "upstream_ids_ifctester_edge",
+      "reason": "Optional attribute Name=Foobar with null Name on IfcWall: BSI TestCase filename expects pass; IfcTester 0.8.x treats null/empty attribute value as fail ('attribute value None is empty'). Spec/docs debate exists around optional+value facets (buildingSMART IDS issues on optionality).",
+      "aerobim_action": "Do not patch AeroBIM adapter to force-pass. Document mismatch; keep in sample denominator.",
+      "evidence": "docs/evidence/ids-case-0017-optional-null-2026-08.md"
+    }
+  ]
+}

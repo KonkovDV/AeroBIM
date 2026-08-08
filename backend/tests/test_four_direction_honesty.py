@@ -113,6 +113,62 @@ class NativeDwgHonestyTests(unittest.TestCase):
         policy = build_signoff_policy(profile="samolet_pilot")
         self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
 
+    def test_requested_dwg_path_fails_and_blocks_summary_passed(self) -> None:
+        """Sprint-2 stakeholder gate: requested DWG never greens summary.passed."""
+
+        from unittest.mock import MagicMock
+
+        from aerobim.application.use_cases.analyze_project_package import (
+            AnalyzeProjectPackageUseCase,
+        )
+        from aerobim.domain.models import DrawingSource, RequirementSource, ValidationRequest
+        from aerobim.infrastructure.adapters.docling_requirement_extractor import (
+            StructuredRequirementExtractor,
+        )
+        from aerobim.infrastructure.adapters.in_memory_audit_store import InMemoryAuditStore
+        from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
+            NarrativeRuleSynthesizer,
+        )
+        from aerobim.infrastructure.adapters.structured_drawing_analyzer import (
+            StructuredDrawingAnalyzer,
+        )
+        from aerobim.infrastructure.adapters.template_remark_generator import (
+            TemplateRemarkGenerator,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            ifc = root / "m.ifc"
+            ifc.write_text("ISO-10303-21;", encoding="utf-8")
+            dwg = root / "plan.dwg"
+            dwg.write_bytes(b"AC1015fake")
+            report = AnalyzeProjectPackageUseCase(
+                requirement_extractor=StructuredRequirementExtractor(),
+                narrative_rule_synthesizer=NarrativeRuleSynthesizer(),
+                drawing_analyzer=StructuredDrawingAnalyzer(),
+                ifc_validator=MagicMock(validate=MagicMock(return_value=[])),
+                remark_generator=TemplateRemarkGenerator(),
+                audit_report_store=InMemoryAuditStore(),
+                cad_model_ingestor=EzdxfCadModelIngestor(),
+            ).execute(
+                ValidationRequest(
+                    request_id="dwg-stakeholder-gate",
+                    ifc_path=ifc,
+                    requirement_source=RequirementSource(
+                        text="R1|IFCWALL|Pset_WallCommon|FireRating|REI60\n"
+                    ),
+                    drawing_sources=(DrawingSource(path=dwg, sheet_id="DWG1", format="dwg"),),
+                )
+            )
+
+        assert report.capabilities is not None
+        self.assertEqual(report.capabilities.dwg_dxf.status, CapabilityState.FAILED)
+        self.assertNotEqual(report.capabilities.dwg_dxf.status, CapabilityState.OK)
+        self.assertFalse(
+            report.summary.passed,
+            "requested DWG path must force summary.passed=false",
+        )
+
 
 class MepHonestyTests(unittest.TestCase):
     def test_unconfigured_provider_raises_gap(self) -> None:

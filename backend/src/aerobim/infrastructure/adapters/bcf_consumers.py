@@ -53,12 +53,12 @@ class BcfStructuralVerification:
 def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
     """Consumer A: namespace-aware ElementTree walk of BCF 2.1 ZIP."""
 
-    from aerobim.core.security.zip_limits import inspect_zip_bytes
+    from aerobim.core.security.zip_limits import inspect_zip_bytes, read_zip_member_capped
 
     inspect_zip_bytes(archive)
     topics: list[BcfTopicContract] = []
     with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:
-        version_raw = zf.read("bcf.version")
+        version_raw = read_zip_member_capped(zf, "bcf.version")
         version_root = safe_fromstring(version_raw)
         version_id = version_root.attrib.get("VersionId", "")
         if version_id and not version_id.startswith("2."):
@@ -67,7 +67,7 @@ def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
         markup_names = sorted(n for n in zf.namelist() if n.endswith("/markup.bcf"))
         for markup_name in markup_names:
             topic_guid = markup_name.split("/", 1)[0]
-            root = safe_fromstring(zf.read(markup_name))
+            root = safe_fromstring(read_zip_member_capped(zf, markup_name))
             topic_el = _find_local(root, "Topic")
             if topic_el is None:
                 raise ValueError(f"markup missing Topic: {markup_name}")
@@ -77,7 +77,7 @@ def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
             has_viewpoint = viewpoint_name in zf.namelist()
             selected: list[str] = []
             if has_viewpoint:
-                vis = safe_fromstring(zf.read(viewpoint_name))
+                vis = safe_fromstring(read_zip_member_capped(zf, viewpoint_name))
                 for component in vis.iter():
                     if _local(component.tag) == "Component":
                         guid = component.attrib.get("IfcGuid") or component.attrib.get("ifc_guid")
@@ -97,12 +97,12 @@ def consume_bcf21_zip(archive: bytes) -> list[BcfTopicContract]:
 def consume_bcf3_zip(archive: bytes) -> list[BcfTopicContract]:
     """Consumer B: string/tag-local scan of BCF 3.0 ZIP (no shared helper with A)."""
 
-    from aerobim.core.security.zip_limits import inspect_zip_bytes
+    from aerobim.core.security.zip_limits import inspect_zip_bytes, read_zip_member_capped
 
     inspect_zip_bytes(archive)
     topics: list[BcfTopicContract] = []
     with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:
-        version_text = zf.read("bcf.version").decode("utf-8", errors="replace")
+        version_text = read_zip_member_capped(zf, "bcf.version").decode("utf-8", errors="replace")
         if 'VersionId="3.0"' not in version_text and "VersionId='3.0'" not in version_text:
             # Accept DetailedVersion text fallback.
             if "3.0" not in version_text:
@@ -110,13 +110,13 @@ def consume_bcf3_zip(archive: bytes) -> list[BcfTopicContract]:
 
         for name in sorted(n for n in zf.namelist() if n.endswith("/markup.bcf")):
             topic_guid = name.split("/", 1)[0]
-            markup = zf.read(name).decode("utf-8", errors="replace")
+            markup = read_zip_member_capped(zf, name).decode("utf-8", errors="replace")
             title = _extract_tag_text(markup, "Title")
             viewpoint_name = f"{topic_guid}/viewpoint.bcfv"
             has_viewpoint = viewpoint_name in zf.namelist()
             selected: list[str] = []
             if has_viewpoint:
-                vis_xml = zf.read(viewpoint_name).decode("utf-8", errors="replace")
+                vis_xml = read_zip_member_capped(zf, viewpoint_name).decode("utf-8", errors="replace")
                 # BCF 3.0 uses IfcGuid attribute on Component.
                 needle = 'IfcGuid="'
                 start = 0
@@ -218,6 +218,8 @@ def _validate_against_xsd(
         errors.append(f"XSD schema load failed: {exc}")
         return "skipped"
 
+    from aerobim.core.security.zip_limits import read_zip_member_capped
+
     failures = 0
     checks: list[tuple[str, str]] = [("bcf.version", "version")]
     if "extensions" in schemas and "extensions.xml" in names:
@@ -232,7 +234,7 @@ def _validate_against_xsd(
         if member not in names:
             continue
         try:
-            schemas[kind].validate(io.BytesIO(zf.read(member)))
+            schemas[kind].validate(io.BytesIO(read_zip_member_capped(zf, member)))
         except Exception as exc:  # noqa: BLE001 — collect per-file findings
             failures += 1
             first_line = str(exc).strip().splitlines()[0] if str(exc).strip() else repr(exc)
@@ -247,7 +249,7 @@ def verify_bcf_zip_structure(
 ) -> BcfStructuralVerification:
     """buildingSMART-style container checks (structure + well-formed XML)."""
 
-    from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_bytes
+    from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_bytes, read_zip_member_capped
 
     errors: list[str] = []
     digest = hashlib.sha256(archive).hexdigest()
@@ -278,7 +280,7 @@ def verify_bcf_zip_structure(
                 errors.append("missing bcf.version")
             else:
                 try:
-                    root = safe_fromstring(zf.read("bcf.version"))
+                    root = safe_fromstring(read_zip_member_capped(zf, "bcf.version"))
                     version_id = root.attrib.get("VersionId", "") or ""
                     if not version_id:
                         errors.append("bcf.version missing VersionId")
@@ -294,14 +296,14 @@ def verify_bcf_zip_structure(
                 topic_guid = markup_name.split("/", 1)[0]
                 topic_guids.append(topic_guid)
                 try:
-                    safe_fromstring(zf.read(markup_name))
+                    safe_fromstring(read_zip_member_capped(zf, markup_name))
                 except (ParseError, XmlBombError) as exc:
                     errors.append(f"markup not well-formed: {markup_name}: {exc}")
                 viewpoint_name = f"{topic_guid}/viewpoint.bcfv"
                 if viewpoint_name in names:
                     viewpoint_count += 1
                     try:
-                        safe_fromstring(zf.read(viewpoint_name))
+                        safe_fromstring(read_zip_member_capped(zf, viewpoint_name))
                     except (ParseError, XmlBombError) as exc:
                         errors.append(f"viewpoint not well-formed: {viewpoint_name}: {exc}")
                 else:

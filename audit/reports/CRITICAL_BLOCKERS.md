@@ -94,6 +94,12 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 
 ---
 
+## Historical defect narratives (archived)
+
+> **Authority:** CLOSED tables above are authoritative. Sections below preserve pre-fix reproduction notes for audit trail only. **Do not treat “BLOCKER” / “CRITICAL” headings in this archive as open items** unless the ID is listed under “Still open for checkpoint” and absent from CLOSED tables.
+
+---
+
 ### RT-001 — Customer accuracy / >90% not evidenced
 - **Severity:** BLOCKER  
 - **Category:** Claims / Evaluation  

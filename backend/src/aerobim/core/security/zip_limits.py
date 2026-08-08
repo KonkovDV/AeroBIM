@@ -7,6 +7,8 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from aerobim.core.security.object_limits import read_stream_capped
+
 DEFAULT_MAX_MEMBERS = 256
 DEFAULT_MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
 DEFAULT_MAX_MEMBER_BYTES = 256 * 1024 * 1024
@@ -133,6 +135,36 @@ def inspect_zip_path(
         raise ZipBombError(f"Invalid ZIP archive: {exc}") from exc
 
 
+def read_zip_member_capped(
+    archive: zipfile.ZipFile,
+    name: str,
+    *,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+) -> bytes:
+    """Read one ZIP member with a streaming byte budget (RT-ZIP-001).
+
+    Central-directory ``file_size`` can lie; this caps actual decompressed bytes.
+    """
+
+    try:
+        info = archive.getinfo(name)
+    except KeyError as exc:
+        raise ZipBombError(f"ZIP member not found: {name!r}") from exc
+    if info.is_dir():
+        raise ZipBombError(f"ZIP member is a directory: {name!r}")
+    declared = int(info.file_size)
+    if declared > max_member_bytes:
+        raise ZipBombError(
+            f"ZIP member {name!r} too large ({declared} > {max_member_bytes})"
+        )
+    with archive.open(name, "r") as stream:
+        return read_stream_capped(
+            stream,
+            max_bytes=max_member_bytes,
+            content_length=declared,
+        )
+
+
 __all__ = [
     "DEFAULT_MAX_ARCHIVE_FILE_BYTES",
     "DEFAULT_MAX_COMPRESSION_RATIO",
@@ -143,4 +175,5 @@ __all__ = [
     "ZipInspection",
     "inspect_zip_bytes",
     "inspect_zip_path",
+    "read_zip_member_capped",
 ]

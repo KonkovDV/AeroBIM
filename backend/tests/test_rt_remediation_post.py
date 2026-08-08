@@ -62,6 +62,15 @@ class Post03SsrfGuardTests(unittest.TestCase):
         with self.assertRaises(UnsafeOutboundUrlError):
             assert_safe_outbound_url("http://example.com/x", resolve_dns=False)
 
+    def test_rejects_decimal_and_hex_loopback_literals(self) -> None:
+        for url in (
+            "http://2130706433/",
+            "http://0x7f000001/",
+        ):
+            with self.subTest(url=url):
+                with self.assertRaises(UnsafeOutboundUrlError):
+                    assert_safe_outbound_url(url, allow_http=True, resolve_dns=False)
+
 
 class Post06UnitScaleAndPilotSkippedTests(unittest.TestCase):
     def test_pilot_blocks_unverified_unit_scale_and_skipped_quantity(self) -> None:

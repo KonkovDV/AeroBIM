@@ -126,10 +126,11 @@ class HttpBcfApiClient:
             },
         )
         try:
+            from aerobim.core.security.object_limits import read_http_response_capped
             from aerobim.core.security.outbound_url import safe_urlopen
 
             with safe_urlopen(request, timeout=timeout_seconds) as response:
-                raw = response.read().decode("utf-8")
+                raw = read_http_response_capped(response).decode("utf-8")
                 if not raw.strip():
                     return {}
                 parsed = json.loads(raw)

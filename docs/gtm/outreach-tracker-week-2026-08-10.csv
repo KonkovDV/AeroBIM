@@ -1,0 +1,6 @@
+organization,segment,contact_role,contact_name,channel,date_contacted,response,demo_agreed,pilot_agreed,data_available,expert_available,NDA_required,next_step,owner,notes
+COMPANY_1,non-state expertise,quality lead,[CONTACT_NAME_1],email,2026-08-03,no_reply,no,no,no,unknown,yes,send_followup_email_week_2026-08-10,[OPERATOR_NAME],Placeholder row — intro sent 2026-08-03; no reply; do not invent real org
+COMPANY_2,design bureau,BIM manager,[CONTACT_NAME_2],email,2026-08-01,send_materials,no,no,no,unknown,no,reply_with_one_pager_and_schedule_question,[OPERATOR_NAME],Placeholder — asked for deck; route to one-pager vs demo per discovery script
+COMPANY_3,non-state expertise,deputy director,[CONTACT_NAME_3],phone,2026-07-28,interested,yes,no,no,yes,yes,propose_demo_slots_and_nda,[OPERATOR_NAME],Placeholder — demo agreed in principle; not scheduled; on-prem preferred
+COMPANY_4,design bureau,lead engineer,[CONTACT_NAME_4],video_call,2026-07-25,demo_done,no,no,no,yes,no,send_pilot_data_checklist_post_demo,[OPERATOR_NAME],Placeholder — open demo only; RT-001 corpus not started; Claims Lock NO_GO
+COMPANY_5,non-state expertise,head of expertise,[CONTACT_NAME_5],referral,2026-07-20,nda_blocked,no,no,no,yes,yes,exchange_nda_template_and_minimal_intake_list,[OPERATOR_NAME],Placeholder — expert available; data blocked pending NDA; see expertise-corpus-scan data checklist

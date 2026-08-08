@@ -84,6 +84,10 @@ from aerobim.infrastructure.adapters.json_package_inventory_loader import (
 )
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
 from aerobim.infrastructure.adapters.json_structured_logger import JsonStructuredLogger
+from aerobim.infrastructure.adapters.llm_extraction_adapters import (
+    OpenAICompatLlmExtractionAdapter,
+    RegexRequirementExtractionAdapter,
+)
 from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 from aerobim.infrastructure.adapters.manifest_logic_consistency_adapter import (
     ManifestLogicConsistencyAdapter,
@@ -323,6 +327,26 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     container.register(
         Tokens.LLM_ADVISORY_PROVIDER,
         lambda current: _build_llm_advisory_provider(current.resolve(Tokens.SETTINGS)),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    # Experimental advisory extraction — NEVER consumed by AnalyzeProjectPackageUseCase.
+    container.register(
+        Tokens.LLM_EXTRACTION_REGEX,
+        lambda _current: RegexRequirementExtractionAdapter(),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.LLM_EXTRACTION_KIMI,
+        lambda current: _build_llm_extraction_adapter(
+            current.resolve(Tokens.SETTINGS), provider_label="kimi"
+        ),
+        lifecycle=Lifecycle.SINGLETON,
+    )
+    container.register(
+        Tokens.LLM_EXTRACTION_QWEN,
+        lambda current: _build_llm_extraction_adapter(
+            current.resolve(Tokens.SETTINGS), provider_label="qwen"
+        ),
         lifecycle=Lifecycle.SINGLETON,
     )
     container.register(
@@ -719,6 +743,32 @@ def _build_model_router(settings: Settings) -> ModelRouter:
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         raise RuntimeError(f"AEROBIM_HYBRID_PROVIDER_CONFIG invalid: {path}: {exc}") from exc
     return ModelRouter(ProviderRegistry.from_config(data))
+
+
+def _build_llm_extraction_adapter(settings: Settings, *, provider_label: str):
+    """Advisory extraction adapter; skipped/offline when label not the active provider."""
+
+    label = provider_label.strip().lower()
+    configured = settings.llm_provider.strip().lower()
+    live = bool(
+        settings.llm_local_ready()
+        and (
+            configured == label
+            or configured.endswith(f"_{label}")
+            or configured.endswith(f"_{label}_local")
+            or label in configured.split("-")
+            or label in configured.split("_")
+        )
+    )
+    return OpenAICompatLlmExtractionAdapter(
+        provider=label,
+        base_url=settings.llm_base_url,
+        api_key=settings.llm_api_key,
+        model=settings.llm_model,
+        timeout_seconds=settings.llm_timeout_seconds,
+        allowed_hosts=frozenset(settings.llm_allowed_hosts),
+        live=live,
+    )
 
 
 def _build_llm_advisory_provider(settings: Settings):

@@ -1,0 +1,663 @@
+{
+  "artifact_type": "llm_extraction_kimi_vs_qwen",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-07T18:46:23.491204+00:00",
+  "claim_level": "fixture_only",
+  "customer_accuracy_not_established": true,
+  "live_provider": false,
+  "corpus_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\russian-aec-ground-truth.json",
+  "fixture_count": 10,
+  "summary": {
+    "regex": {
+      "precision": 0.86,
+      "recall": 0.86,
+      "macro_f1": 0.86,
+      "hallucination_count": 0.0
+    },
+    "kimi": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "macro_f1": 0.0,
+      "hallucination_count": 0.0
+    },
+    "qwen": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "macro_f1": 0.0,
+      "hallucination_count": 0.0
+    }
+  },
+  "fixtures": [
+    {
+      "fixture_id": "russian-wall-thermal",
+      "source_path": "samples/requirements/russian-fixture-wall-thermal.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 2.363,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 4,
+            "fp": 1,
+            "fn": 1,
+            "precision": 0.8,
+            "recall": 0.8,
+            "macro_f1": 0.8,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.004,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-column-load",
+      "source_path": "samples/requirements/russian-fixture-column-load.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.242,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "macro_f1": 1.0,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-fire-rating",
+      "source_path": "samples/requirements/russian-fixture-fire-rating.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.213,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 4,
+            "fp": 1,
+            "fn": 1,
+            "precision": 0.8,
+            "recall": 0.8,
+            "macro_f1": 0.8,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.001,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-slab-span",
+      "source_path": "samples/requirements/russian-fixture-slab-span.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.218,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "macro_f1": 1.0,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-roof-thermal",
+      "source_path": "samples/requirements/russian-fixture-roof-thermal.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.212,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 3,
+            "fp": 2,
+            "fn": 2,
+            "precision": 0.6,
+            "recall": 0.6,
+            "macro_f1": 0.6,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-foundation",
+      "source_path": "samples/requirements/russian-fixture-foundation.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.204,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "macro_f1": 1.0,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.001,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-facade-glazing",
+      "source_path": "samples/requirements/russian-fixture-facade-glazing.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.218,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 4,
+            "fp": 1,
+            "fn": 1,
+            "precision": 0.8,
+            "recall": 0.8,
+            "macro_f1": 0.8,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-stair-evac",
+      "source_path": "samples/requirements/russian-fixture-stair-evac.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.207,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 4,
+            "fp": 1,
+            "fn": 1,
+            "precision": 0.8,
+            "recall": 0.8,
+            "macro_f1": 0.8,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-ventilation-space",
+      "source_path": "samples/requirements/russian-fixture-ventilation-space.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.223,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 4,
+            "fp": 1,
+            "fn": 1,
+            "precision": 0.8,
+            "recall": 0.8,
+            "macro_f1": 0.8,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.001,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    },
+    {
+      "fixture_id": "russian-beam-steel",
+      "source_path": "samples/requirements/russian-fixture-beam-steel.txt",
+      "providers": {
+        "regex": {
+          "elapsed_ms": 0.199,
+          "live_provider": false,
+          "statuses": [
+            "ok"
+          ],
+          "metrics": {
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "macro_f1": 1.0,
+            "hallucination_count": 0,
+            "candidate_count": 5,
+            "gt_count": 5
+          },
+          "candidate_count": 5
+        },
+        "kimi": {
+          "elapsed_ms": 0.002,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        },
+        "qwen": {
+          "elapsed_ms": 0.001,
+          "live_provider": false,
+          "statuses": [
+            "skipped"
+          ],
+          "metrics": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "macro_f1": 0.0,
+            "hallucination_count": 0,
+            "candidate_count": 0,
+            "gt_count": 5
+          },
+          "candidate_count": 1
+        }
+      }
+    }
+  ],
+  "conclusion": "Live Kimi/Qwen extraction did not run (no API keys / provider not ready); only regex baseline scored on fixtures — LLM worth-it vs regex is not established."
+}

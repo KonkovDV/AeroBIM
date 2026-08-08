@@ -68,6 +68,38 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
         finally:
             image_path.unlink(missing_ok=True)
 
+    def test_numpy_ocr_boxes_do_not_crash_truth_test(self) -> None:
+        """RapidOCR returns ndarray boxes; `x or []` must not be used (SFC-A68)."""
+        try:
+            import numpy as np
+        except ModuleNotFoundError:
+            self.skipTest("numpy not installed")
+
+        class _NumpyOcrResult:
+            def __init__(self) -> None:
+                self.boxes = np.array(
+                    [[[10.0, 20.0], [110.0, 20.0], [110.0, 60.0], [10.0, 60.0]]],
+                    dtype=np.float32,
+                )
+                self.txts = ("WALL-NP-01 thickness 180 mm",)
+                self.scores = (0.95,)
+
+        class _NumpyOcrEngine:
+            def __call__(self, _image_path: object) -> _NumpyOcrResult:
+                return _NumpyOcrResult()
+
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+            tmp.write(b"\x89PNG\r\n\x1a\n")
+            image_path = Path(tmp.name)
+        try:
+            analyzer = RasterDrawingAnalyzer(ocr_engine_factory=_NumpyOcrEngine)
+            annotations = analyzer.analyze_image(image_path, sheet_id="NP-1")
+            self.assertEqual(len(annotations), 1)
+            self.assertEqual(annotations[0].target_ref, "WALL-NP-01")
+            self.assertEqual(annotations[0].observed_value, "180")
+        finally:
+            image_path.unlink(missing_ok=True)
+
 
 if __name__ == "__main__":
     unittest.main()

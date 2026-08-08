@@ -69,6 +69,7 @@ _DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # aligned with bSI Validation Servic
 _PILOT_DEFAULT_MAX_UPLOADS_PER_DAY = 100
 _PILOT_DEFAULT_MAX_BYTES_PER_DAY = 10 * 1024 * 1024 * 1024  # 10 GiB
 _PILOT_DEFAULT_MAX_CONCURRENT_JOBS = 4
+_DEFAULT_HTTP_RATE_LIMIT_PER_MINUTE = 120
 
 _DEFAULT_LLM_ALLOWED_HOSTS: frozenset[str] = frozenset(
     {
@@ -242,6 +243,12 @@ class Settings:
     """Optional cap on QUEUED+RUNNING analyze jobs per tenant.
 
     Env: ``AEROBIM_MAX_CONCURRENT_ANALYZE_JOBS_PER_TENANT``.
+    """
+    http_rate_limit_per_minute: int = 0
+    """Per-client POST rate limit for analyze/validate/upload routes (RT-RATE-001).
+
+    Env: ``AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE``. ``0`` disables. Production/pilot
+    default 120 when unset.
     """
     # OpenCDE BCF API 3.0 push (optional)
     bcf_api_base_url: str | None = None
@@ -589,6 +596,14 @@ class Settings:
             if max_concurrent_analyze_jobs_per_tenant is None:
                 max_concurrent_analyze_jobs_per_tenant = _PILOT_DEFAULT_MAX_CONCURRENT_JOBS
 
+        rate_limit_raw = (os.getenv("AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE") or "").strip()
+        if rate_limit_raw:
+            http_rate_limit_per_minute = int(rate_limit_raw)
+        elif profile_gate:
+            http_rate_limit_per_minute = _DEFAULT_HTTP_RATE_LIMIT_PER_MINUTE
+        else:
+            http_rate_limit_per_minute = 0
+
         settings = cls(
             application_name=os.getenv("AEROBIM_APP_NAME", "aerobim-backend"),
             environment=os.getenv("AEROBIM_ENV", "development"),
@@ -624,6 +639,7 @@ class Settings:
             max_uploads_per_tenant_day=max_uploads_per_tenant_day,
             max_upload_bytes_per_tenant_day=max_upload_bytes_per_tenant_day,
             max_concurrent_analyze_jobs_per_tenant=max_concurrent_analyze_jobs_per_tenant,
+            http_rate_limit_per_minute=http_rate_limit_per_minute,
             bcf_api_base_url=(os.getenv("AEROBIM_BCF_API_BASE_URL") or "").strip() or None,
             bcf_api_token=(os.getenv("AEROBIM_BCF_API_TOKEN") or "").strip() or None,
             bcf_api_project_id=(os.getenv("AEROBIM_BCF_API_PROJECT_ID") or "").strip() or None,
