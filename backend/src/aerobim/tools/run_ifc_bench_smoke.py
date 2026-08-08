@@ -87,13 +87,13 @@ def _numbers_close(a: float | int, b: float | int, *, tol: float = 0.01) -> bool
     return abs(float(a) - float(b)) <= tol
 
 
-def _open_ifc(path: Path):
+def _open_ifc(path: Path) -> Any:
     import ifcopenshell
 
     return ifcopenshell.open(str(path))
 
 
-def _is_external_door(door) -> bool | None:
+def _is_external_door(door: Any) -> bool | None:
     import ifcopenshell.util.element as el
 
     for vals in el.get_psets(door).values():

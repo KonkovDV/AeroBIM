@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from aerobim.domain.models import NormRulePack, ParsedRequirement
 
@@ -253,7 +253,7 @@ def parse_expert_confirmation_journal(
             ExpertConfirmationEntry(
                 confirmed_by=confirmed_by.strip(),
                 confirmed_at=confirmed_at.strip(),
-                decision=decision,  # type: ignore[arg-type]
+                decision=cast(ExpertDecision, decision),
                 note=note.strip() if isinstance(note, str) else None,
             )
         )

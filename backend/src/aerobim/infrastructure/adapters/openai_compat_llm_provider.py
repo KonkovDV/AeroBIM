@@ -16,7 +16,7 @@ import urllib.error
 import urllib.request
 import uuid
 from collections.abc import Callable, Mapping
-from typing import Any, Literal
+from typing import Any, Literal, cast
 from urllib.parse import urlparse
 
 from aerobim.core.config.settings import (
@@ -167,9 +167,9 @@ class OpenAICompatLlmProvider:
         request = urllib.request.Request(url, data=body, headers=headers, method="POST")
         if host in _LOOPBACK:
             with safe_datastore_urlopen(request, timeout=self._timeout) as response:
-                return response.read(_MAX_RESPONSE_BYTES + 1)
+                return cast(bytes, response.read(_MAX_RESPONSE_BYTES + 1))
         with safe_urlopen(request, timeout=self._timeout) as response:
-            return response.read(_MAX_RESPONSE_BYTES + 1)
+            return cast(bytes, response.read(_MAX_RESPONSE_BYTES + 1))
 
     def _blocked(
         self,

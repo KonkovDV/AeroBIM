@@ -4,6 +4,7 @@ from dataclasses import asdict
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.object_acl import AuthPrincipal
@@ -24,9 +25,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
     def export_report_json(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
-    ):  # noqa: ANN201
-        from fastapi.responses import JSONResponse
-
+    ) -> JSONResponse:
         ctx.validate_report_id(report_id)
         report = audit_store.get(report_id)
         if report is None:
@@ -41,9 +40,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
     def export_report_html(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
-    ):  # noqa: ANN201
-        from fastapi.responses import HTMLResponse
-
+    ) -> HTMLResponse:
         ctx.validate_report_id(report_id)
         report = audit_store.get(report_id)
         if report is None:
@@ -61,15 +58,13 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
         version: str = "2.1",
-    ):  # noqa: ANN201
+    ) -> Response:
         """Export report as BCF ZIP.
 
         Query parameter ``version`` selects the BCF schema version:
         - ``2.1`` (default) — stable BCF 2.1 export.
         - ``3`` or ``3.0`` — experimental BCF 3.0 export (buildingSMART BCF 3.0).
         """
-        from fastapi.responses import Response
-
         ctx.validate_report_id(report_id)
         report = audit_store.get(report_id)
         if report is None:

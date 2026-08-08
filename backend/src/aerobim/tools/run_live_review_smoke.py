@@ -8,6 +8,7 @@ import subprocess
 import time
 from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
 from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import ProxyHandler, build_opener, urlopen
@@ -103,7 +104,7 @@ def npm_command() -> str:
     return "npm.cmd" if os.name == "nt" else "npm"
 
 
-def open_http_url(url: str, timeout: float = 5.0):
+def open_http_url(url: str, timeout: float = 5.0) -> Any:
     hostname = urlparse(url).hostname
     if hostname in LOOPBACK_HOSTS:
         opener = build_opener(ProxyHandler({}))

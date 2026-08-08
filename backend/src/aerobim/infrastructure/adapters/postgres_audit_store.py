@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Coroutine
 from concurrent.futures import ThreadPoolExecutor
+from typing import Any
 
 from aerobim.domain.models import ReportListFilters, ReportSummaryEntry, ValidationReport
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
 
-def _run_coro(coro):
+def _run_coro[T](coro: Coroutine[Any, Any, T]) -> T:
     """Run an async coroutine from sync code without nesting ``asyncio.run`` unsafely."""
     try:
         asyncio.get_running_loop()

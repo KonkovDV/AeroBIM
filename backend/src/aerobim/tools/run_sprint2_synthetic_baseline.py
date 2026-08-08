@@ -72,7 +72,7 @@ def _mutate_ifc(base_text: str, mutation_id: str) -> str:
     raise ValueError(mutation_id)
 
 
-def _bootstrap_validate(repo: Path, tmp: Path):
+def _bootstrap_validate(repo: Path, tmp: Path) -> Any:
     settings = Settings(
         application_name="aerobim-sprint2-baseline",
         environment="test",

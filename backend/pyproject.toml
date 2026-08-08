@@ -105,21 +105,40 @@ testpaths = ["tests"]
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
-# S-band (bandit) deferred: S105 false positives on enum literals (OIDC_TOKEN_VALIDATOR, PASS, SECRET).
+select = ["E", "F", "I", "UP", "B", "S"]
+# S-band inventory: governance/ruff_s_band_inventory.json
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S107", "S108", "S110", "S311", "S314"]
+"src/aerobim/core/di/tokens.py" = ["S105"]
+"src/aerobim/domain/hybrid/data_classification.py" = ["S105"]
+"src/aerobim/domain/hybrid/sensitive_entities.py" = ["S105"]
+"src/aerobim/domain/package_outcome.py" = ["S105"]
+"src/aerobim/domain/eval_statistics.py" = ["S311"]
+"src/aerobim/tools/**" = ["S101", "S105", "S310", "S311", "S314", "S603", "S607", "E501"]
+"src/aerobim/application/services/compliance_agent_orchestrator.py" = ["S101"]
+"src/aerobim/application/services/package_ingestion.py" = ["S101"]
+"src/aerobim/domain/norm_rule_eligibility.py" = ["S101"]
+"src/aerobim/domain/region_read_plan.py" = ["S101"]
+"src/aerobim/domain/sequential_inference.py" = ["S101"]
+"src/aerobim/core/security/outbound_url.py" = ["S101", "S310"]
+"src/aerobim/infrastructure/adapters/bsi_validation_service.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/http_bcf_api_client.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/kimi_k3_advisory_client.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/llm_extraction_adapters.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/openai_compat_llm_provider.py" = ["S310"]
+"src/aerobim/infrastructure/security/oidc_token_validator.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/federated_ifc_mep_system_graph.py" = ["S112"]
+"src/aerobim/infrastructure/adapters/filesystem_audit_store.py" = ["S110"]
+"src/aerobim/infrastructure/adapters/ifc_aabb_mep_pair_filter.py" = ["S110"]
+"src/aerobim/presentation/http/context.py" = ["S101"]
+"src/aerobim/infrastructure/adapters/region_restricted_vlm_pipeline.py" = ["S101"]
 
 [tool.ruff.format]
 quote-style = "double"
 
 [tool.mypy]
 python_version = "3.12"
-
-[[tool.mypy.overrides]]
-module = [
-  "aerobim.core.security.rate_limit_backend",
-  "aerobim.infrastructure.security.redis_rate_limiter",
-  "aerobim.domain.auth_roles",
-]
 strict = true
 
 [[tool.mypy.overrides]]
@@ -142,5 +161,24 @@ module = [
   "pypdfium2.*",
   "pdfminer",
   "pdfminer.*",
+  "pymupdf",
+  "pymupdf.*",
+  "boto3",
+  "boto3.*",
+  "botocore",
+  "botocore.*",
+  "ifcopenshell",
+  "ifcopenshell.*",
+  "psutil",
+  "psutil.*",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+  "pymupdf",
+  "pymupdf.*",
+  "redis",
+  "redis.*",
+]
+follow_imports = "skip"

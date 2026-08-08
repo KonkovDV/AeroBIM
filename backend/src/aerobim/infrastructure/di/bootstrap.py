@@ -24,8 +24,17 @@ from aerobim.core.di.container import Container, Lifecycle
 from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import resolve_storage_path
 from aerobim.domain.hybrid.model_router import ModelRouter, ProviderRegistry
+from aerobim.domain.llm_advisory import LlmProvider
 from aerobim.domain.models import Severity, ToleranceConfig
 from aerobim.domain.pdf_backend import resolve_pdf_backend
+from aerobim.domain.ports import (
+    AnalyzeProjectPackageJobStore,
+    AuditReportStore,
+    BcfApiClient,
+    BsiValidationService,
+    ExtractionIntegritySignalProducer,
+    ObjectStore,
+)
 from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
 from aerobim.infrastructure.adapters.bsi_validation_service import (
     HttpBsiValidationService,
@@ -473,7 +482,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
     if bsi_service is not None:
         registered_bsi = bsi_service
 
-        def _resolve_bsi(_container: Container):
+        def _resolve_bsi(_container: Container) -> BsiValidationService:
             return registered_bsi
 
         container.register(
@@ -662,7 +671,7 @@ def _default_norm_corpus_roots(settings: Settings) -> list[Path]:
     return [path for path in roots if path.exists()] or [settings.storage_dir / "norm-corpus"]
 
 
-def _build_object_store(settings: Settings):
+def _build_object_store(settings: Settings) -> ObjectStore:
     if settings.s3_bucket:
         try:
             return S3ObjectStore(
@@ -692,7 +701,7 @@ def _build_object_store(settings: Settings):
     )
 
 
-def _build_job_store(settings: Settings):
+def _build_job_store(settings: Settings) -> AnalyzeProjectPackageJobStore:
     if settings.redis_url:
         try:
             return RedisAnalyzeProjectPackageJobStore(settings.redis_url)
@@ -704,7 +713,7 @@ def _build_job_store(settings: Settings):
     )
 
 
-def _build_bcf_api_client(settings: Settings):
+def _build_bcf_api_client(settings: Settings) -> BcfApiClient:
     if settings.bcf_api_base_url and settings.bcf_api_token:
         return HttpBcfApiClient(
             base_url=settings.bcf_api_base_url,
@@ -745,7 +754,9 @@ def _build_model_router(settings: Settings) -> ModelRouter:
     return ModelRouter(ProviderRegistry.from_config(data))
 
 
-def _build_llm_extraction_adapter(settings: Settings, *, provider_label: str):
+def _build_llm_extraction_adapter(
+    settings: Settings, *, provider_label: str
+) -> OpenAICompatLlmExtractionAdapter:
     """Advisory extraction adapter; skipped/offline when label not the active provider."""
 
     label = provider_label.strip().lower()
@@ -771,7 +782,7 @@ def _build_llm_extraction_adapter(settings: Settings, *, provider_label: str):
     )
 
 
-def _build_llm_advisory_provider(settings: Settings):
+def _build_llm_advisory_provider(settings: Settings) -> LlmProvider:
     """OpenAI-compat advisory provider (vLLM / Yandex AI Studio) or disabled stub."""
 
     from aerobim.domain.llm_advisory import DisabledLlmProvider
@@ -850,7 +861,7 @@ def _build_oidc_validator(settings: Settings) -> OidcTokenValidator | None:
     )
 
 
-def _build_bsi_validation_service(settings: Settings):
+def _build_bsi_validation_service(settings: Settings) -> BsiValidationService | None:
     if settings.bsi_validation_url and settings.bsi_api_token:
         return HttpBsiValidationService(
             base_url=settings.bsi_validation_url,
@@ -861,7 +872,7 @@ def _build_bsi_validation_service(settings: Settings):
     return None
 
 
-def _build_system_clash(settings: Settings):
+def _build_system_clash(settings: Settings) -> IfcSystemAwareClash | UnconfiguredSystemClash:
     if settings.mep_system_clash_enabled:
         return IfcSystemAwareClash(
             enabled=True,
@@ -870,7 +881,9 @@ def _build_system_clash(settings: Settings):
     return UnconfiguredSystemClash()
 
 
-def _build_drawing_analyzer_port(current: Container):
+def _build_drawing_analyzer_port(
+    current: Container,
+) -> HybridDrawingAnalyzer | MultimodalDrawingAnalyzerPort:
     settings = current.resolve(Tokens.SETTINGS)
     if settings.hybrid_drawing_enabled:
         return HybridDrawingAnalyzer(
@@ -970,7 +983,7 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
     )
 
 
-def _build_extraction_integrity_producer(current: Container):
+def _build_extraction_integrity_producer(current: Container) -> ExtractionIntegritySignalProducer:
     backend = resolve_pdf_backend(current.resolve(Tokens.SETTINGS).pdf_backend)
     if backend == "none":
         return DisabledPdfExtractionIntegrityProducer()
@@ -980,7 +993,7 @@ def _build_extraction_integrity_producer(current: Container):
     return OcrAwareExtractionIntegrityProducer()
 
 
-def _build_region_cropper(current: Container):
+def _build_region_cropper(current: Container) -> PyMuPDFRegionCropper | PdfiumRegionCropper:
     # Heuristic detector + PII plan emit normalized-0-1; page-point default would
     # silently crop ~1pt boxes (RT-STAMP-09 / CRS mismatch).
     backend = resolve_pdf_backend(current.resolve(Tokens.SETTINGS).pdf_backend)
@@ -989,7 +1002,7 @@ def _build_region_cropper(current: Container):
     return PdfiumRegionCropper(coordinate_system="normalized-0-1")
 
 
-def _build_audit_report_store(current: Container):
+def _build_audit_report_store(current: Container) -> AuditReportStore:
     settings = current.resolve(Tokens.SETTINGS)
     object_store = current.resolve(Tokens.OBJECT_STORE)
     payload_store = FilesystemAuditStore(

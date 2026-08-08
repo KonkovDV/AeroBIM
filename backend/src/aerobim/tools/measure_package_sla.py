@@ -101,7 +101,7 @@ def _pack_file_inventory(pack_path: Path) -> list[dict[str, object]]:
 def _machine_fingerprint() -> dict[str, object]:
     ram_gb: float | None = None
     try:
-        import psutil  # type: ignore[import-untyped]
+        import psutil
 
         ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
     except Exception:

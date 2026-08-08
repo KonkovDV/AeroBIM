@@ -8,8 +8,8 @@ import json
 from pathlib import Path
 
 from aerobim.tools.offline_bundle import (
-    _BUNDLE_FILES,
     _BACKEND,
+    _BUNDLE_FILES,
     _IMAGE_TAR,
     build_manifest,
     verify_bundle_source_sync,
@@ -168,7 +168,11 @@ def test_install_scripts_refuse_demo_token_without_flag(tmp_path: Path) -> None:
 
 
 def test_wheelhouse_artifact_in_manifest(tmp_path: Path) -> None:
-    from aerobim.tools.offline_bundle import write_install_docs, write_install_scripts, write_wheelhouse_artifact
+    from aerobim.tools.offline_bundle import (
+        write_install_docs,
+        write_install_scripts,
+        write_wheelhouse_artifact,
+    )
 
     for name in _BUNDLE_FILES:
         (tmp_path / name).write_bytes(f"content-of-{name}".encode())

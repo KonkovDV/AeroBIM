@@ -38,7 +38,7 @@ import hashlib
 import json
 import random
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pymupdf
 
@@ -113,7 +113,7 @@ def _render_sheet(content: dict[str, Any], rng: random.Random) -> bytes:
 
     payload = document.tobytes()
     document.close()
-    return payload
+    return cast(bytes, payload)
 
 
 def generate_vlm_fixture_corpus(

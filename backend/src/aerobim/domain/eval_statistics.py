@@ -38,7 +38,7 @@ from __future__ import annotations
 import math
 import random
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 
 _MIN_CLUSTERS_FOR_STABLE_CI = 5
@@ -234,7 +234,8 @@ def scalar_cluster_bootstrap_ci(
     )
 
 
-_METRIC_FNS = {
+_MetricFn = Callable[[Sequence[FixtureCounts]], float]
+_METRIC_FNS: dict[str, _MetricFn] = {
     "micro_precision": lambda sample: _micro_metrics(sample)[0],
     "micro_recall": lambda sample: _micro_metrics(sample)[1],
     "micro_f1": lambda sample: _micro_metrics(sample)[2],

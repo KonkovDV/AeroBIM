@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, cast
+
 from aerobim.core.security.object_limits import (
     DEFAULT_MAX_GET_BYTES,
     ObjectTooLargeError,
@@ -88,16 +90,16 @@ class S3ObjectStore:
         # Residual: presigned GET bypasses this store's max_get_bytes streaming cap;
         # callers that fetch via URL must enforce their own size limits.
         client = self._build_client()
-        return client.generate_presigned_url(
+        return cast(str | None, client.generate_presigned_url(
             "get_object",
             Params={"Bucket": self._bucket, "Key": self._qualify_key(key)},
             ExpiresIn=expires_in_seconds,
-        )
+        ))
 
-    def _build_client(self):
+    def _build_client(self) -> Any:
         try:
-            import boto3  # type: ignore[import-not-found]
-            from botocore.config import Config  # type: ignore[import-not-found]
+            import boto3
+            from botocore.config import Config
         except ModuleNotFoundError as exc:
             raise RuntimeError(
                 "S3ObjectStore requires boto3/botocore. Install AeroBIM enterprise extras."

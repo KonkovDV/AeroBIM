@@ -106,9 +106,10 @@ def _element_boxes_from_model(model: Any) -> dict[str, AxisAlignedBox3d]:
     except ModuleNotFoundError:
         return {}
 
-    settings = ifcopenshell.geom.settings()
+    settings_factory: Any = ifcopenshell.geom.settings
+    geom_settings: Any = settings_factory()
     try:
-        settings.set(settings.USE_WORLD_COORDS, True)
+        geom_settings.set(geom_settings.USE_WORLD_COORDS, True)
     except Exception:  # noqa: BLE001 — settings enum variance across versions
         pass
 
@@ -122,7 +123,7 @@ def _element_boxes_from_model(model: Any) -> dict[str, AxisAlignedBox3d]:
         guid = str(getattr(product, "GlobalId", "") or "").strip()
         if not guid:
             continue
-        box = _bbox_from_product(ifcopenshell.geom, settings, product)
+        box = _bbox_from_product(ifcopenshell.geom, geom_settings, product)
         if box is not None:
             boxes[guid] = box
     return boxes

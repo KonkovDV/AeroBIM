@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
-def _create_app():
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+
+    from aerobim.core.di.container import Container
+
+
+def _create_app() -> tuple[Container, FastAPI]:
     """Lazy app factory — avoids side-effects at import time."""
     from aerobim.infrastructure.di.bootstrap import bootstrap_container
     from aerobim.presentation.http.api import create_http_app

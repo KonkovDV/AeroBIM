@@ -10,7 +10,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Literal, Protocol
+from typing import TYPE_CHECKING, Literal, Protocol
+
+if TYPE_CHECKING:
+    from aerobim.domain.models import ValidationIssue
 
 MepExceptionKind = Literal[
     "sleeve",
@@ -555,7 +558,7 @@ def mep_finding_to_issue(
     *,
     matrix_synthetic: bool = False,
     geometry_verified: bool = False,
-):
+) -> ValidationIssue:
     """Map domain MEP finding → ValidationIssue (advisory/engine spatial).
 
     Template/synthetic matrices and co-presence-only graphs never emit ERROR.

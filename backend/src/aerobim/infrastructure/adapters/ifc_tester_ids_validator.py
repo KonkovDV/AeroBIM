@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
@@ -36,7 +37,7 @@ class IfcTesterIdsValidator:
 
         return self._map_results(results)
 
-    def _map_results(self, results: dict) -> list[ValidationIssue]:
+    def _map_results(self, results: dict[str, Any]) -> list[ValidationIssue]:
         issues: list[ValidationIssue] = []
 
         for spec in results.get("specifications", []):

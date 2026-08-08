@@ -24,7 +24,7 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 CLAIM_BOUNDARY = (
     "AECV-Bench open_bench_only (arXiv:2601.04819). Drawing-literacy baseline "
@@ -815,7 +815,7 @@ def _call_openai_vision_counts(
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
-    return json.loads(text)
+    return cast(dict[str, Any], json.loads(text))
 
 
 def evaluate_live_counting(

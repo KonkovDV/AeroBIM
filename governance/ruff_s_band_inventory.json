@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0.0",
+  "date": "2026-08-08",
+  "claim_level": "engineering_governance",
+  "description": "Documented Ruff S-band per-file suppressions (false positives + accepted risk).",
+  "entries": [
+    {
+      "glob": "tests/**",
+      "rules": ["S101", "S105", "S106", "S107", "S108", "S110", "S311", "S314"],
+      "rationale": "Test fixtures use assert, dummy passwords, and non-crypto RNG by design."
+    },
+    {
+      "glob": "src/aerobim/core/di/tokens.py",
+      "rules": ["S105"],
+      "rationale": "DI token string OIDC_TOKEN_VALIDATOR is not a credential."
+    },
+    {
+      "glob": "src/aerobim/domain/hybrid/data_classification.py",
+      "rules": ["S105"],
+      "rationale": "Enum label SECRET for data classification, not a password."
+    },
+    {
+      "glob": "src/aerobim/domain/hybrid/sensitive_entities.py",
+      "rules": ["S105"],
+      "rationale": "Entity type label SECRET for PII detection patterns."
+    },
+    {
+      "glob": "src/aerobim/domain/package_outcome.py",
+      "rules": ["S105"],
+      "rationale": "Outcome enum values PASS/PASS_WITH_WARNINGS are not credentials."
+    },
+    {
+      "glob": "src/aerobim/domain/eval_statistics.py",
+      "rules": ["S311"],
+      "rationale": "Bootstrap statistics use random module; not cryptographic."
+    },
+    {
+      "glob": "src/aerobim/tools/**",
+      "rules": ["S101", "S310", "S314", "S603", "S607", "S311", "S105", "E501"],
+      "rationale": "Operator CLI/tools: invariant asserts, guarded urlopen, trusted local XML, subprocess to git/docker."
+    },
+    {
+      "glob": "src/aerobim/application/services/compliance_agent_orchestrator.py",
+      "rules": ["S101"],
+      "rationale": "Ports validated at DI wire time; asserts are internal programmer errors."
+    },
+    {
+      "glob": "src/aerobim/application/services/package_ingestion.py",
+      "rules": ["S101"],
+      "rationale": "Internal ingestion invariants after DI wiring."
+    },
+    {
+      "glob": "src/aerobim/domain/norm_rule_eligibility.py",
+      "rules": ["S101"],
+      "rationale": "Compile-time eligibility invariants."
+    },
+    {
+      "glob": "src/aerobim/domain/region_read_plan.py",
+      "rules": ["S101"],
+      "rationale": "Internal plan consistency checks."
+    },
+    {
+      "glob": "src/aerobim/domain/sequential_inference.py",
+      "rules": ["S101"],
+      "rationale": "Graph invariant checks after construction."
+    },
+    {
+      "glob": "src/aerobim/core/security/outbound_url.py",
+      "rules": ["S101", "S310"],
+      "rationale": "SSRF guard uses safe_urlopen; assert documents post-pin invariant."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/bsi_validation_service.py",
+      "rules": ["S310"],
+      "rationale": "HTTP via SSRF-guarded safe_urlopen."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/http_bcf_api_client.py",
+      "rules": ["S310"],
+      "rationale": "HTTP via SSRF-guarded safe_urlopen."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/kimi_k3_advisory_client.py",
+      "rules": ["S310"],
+      "rationale": "HTTP via SSRF-guarded safe_urlopen."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/llm_extraction_adapters.py",
+      "rules": ["S310"],
+      "rationale": "HTTP via SSRF-guarded safe_urlopen."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/openai_compat_llm_provider.py",
+      "rules": ["S310"],
+      "rationale": "HTTP via SSRF-guarded safe_urlopen."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/security/oidc_token_validator.py",
+      "rules": ["S310"],
+      "rationale": "JWKS fetch via SSRF-guarded safe_urlopen."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/federated_ifc_mep_system_graph.py",
+      "rules": ["S112"],
+      "rationale": "Skip corrupt optional graph fragments; logged upstream."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/filesystem_audit_store.py",
+      "rules": ["S110"],
+      "rationale": "Best-effort temp cleanup; failure is non-fatal."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/ifc_aabb_mep_pair_filter.py",
+      "rules": ["S110"],
+      "rationale": "Optional geometry parse failures are skipped by design."
+    },
+    {
+      "glob": "src/aerobim/presentation/http/context.py",
+      "rules": ["S101"],
+      "rationale": "OIDC validator presence asserted after registration check."
+    },
+    {
+      "glob": "src/aerobim/infrastructure/adapters/region_restricted_vlm_pipeline.py",
+      "rules": ["S101"],
+      "rationale": "Pipeline wiring invariant after DI bootstrap."
+    }
+  ]
+}

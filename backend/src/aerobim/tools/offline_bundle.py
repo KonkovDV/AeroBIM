@@ -25,6 +25,7 @@ import re
 import subprocess
 import sys
 import time
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -549,16 +550,15 @@ def main() -> None:
         help="With closed-contour: also run docker load + --network none smoke",
     )
     args = parser.parse_args()
-    sys.exit(
-        {
-            "build": cmd_build,
-            "verify": cmd_verify,
-            "smoke": cmd_smoke,
-            "closed-contour": lambda: cmd_closed_contour(run_smoke=args.smoke),
-            "wheelhouse": cmd_wheelhouse,
-            "sbom": cmd_sbom,
-        }[args.command]()
-    )
+    handlers: dict[str, Callable[[], int]] = {
+        "build": cmd_build,
+        "verify": cmd_verify,
+        "smoke": cmd_smoke,
+        "closed-contour": lambda: cmd_closed_contour(run_smoke=args.smoke),
+        "wheelhouse": cmd_wheelhouse,
+        "sbom": cmd_sbom,
+    }
+    sys.exit(handlers[args.command]())
 
 
 if __name__ == "__main__":

@@ -131,14 +131,7 @@ jobs:
           python -m pip install --upgrade "pip==25.2"
           pip install --require-hashes -r requirements-dev-lock.txt
           pip install -e . --no-deps
-      - run: mypy src/aerobim --ignore-missing-imports
-      - name: Mypy strict (security/RBAC modules)
-        run: |
-          mypy \
-            src/aerobim/core/security/rate_limit_backend.py \
-            src/aerobim/infrastructure/security/redis_rate_limiter.py \
-            src/aerobim/domain/auth_roles.py \
-            --strict
+      - run: mypy src/aerobim --strict --ignore-missing-imports
 
   test:
     runs-on: ubuntu-latest
@@ -234,9 +227,9 @@ jobs:
       - name: Audit dev/test lock (advisory)
         continue-on-error: true
         run: python -m pip_audit -r requirements-dev-lock.txt --no-deps --progress-spinner off
-      - name: Commit signature hygiene (advisory)
-        continue-on-error: true
-        run: python scripts/verify_commit_signatures.py --depth 30
+      - name: Commit signature governance (enforced policy)
+        working-directory: backend
+        run: python scripts/verify_commit_signatures.py --policy ../governance/commit_signing_policy.json
 
   benchmark-smoke:
     runs-on: ubuntu-latest

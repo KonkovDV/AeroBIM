@@ -20,7 +20,7 @@ def _esc(value: str) -> str:
 _TRIAGE_BANDS = ("critical", "major", "minor", "negligible")
 
 
-def _triage_band(issue: dict) -> str | None:
+def _triage_band(issue: dict[str, Any]) -> str | None:
     """Deterministic clash triage band carried in evidence_refs (Wave B)."""
     refs = issue.get("evidence_refs") or ()
     if not isinstance(refs, list | tuple):
@@ -34,7 +34,7 @@ def _triage_band(issue: dict) -> str | None:
     return None
 
 
-def _build_issue_rows(issues: list[dict]) -> str:
+def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
     rows = ""
     sorted_issues = sorted(issues, key=lambda i: i.get("priority", 0), reverse=True)
     for issue in sorted_issues:
@@ -137,7 +137,7 @@ def render_report_html(report_id: str, data: dict[str, Any]) -> str:
     status_label = "PASSED" if summary["passed"] else "FAILED"
 
     # Group issues by category for expert reviewer workflow
-    category_issues: dict[str, list[dict]] = defaultdict(list)
+    category_issues: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for issue in data.get("issues", ()):
         cat = issue.get("category", "ifc-validation")
         category_issues[cat].append(issue)

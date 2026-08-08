@@ -6,7 +6,9 @@ System escalations are distinct from expert decisions. Invalid transitions fail 
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Literal, Protocol
+from typing import Literal
+
+from aerobim.domain.models import ReviewEvent
 
 HitlReviewState = Literal[
     "escalated",
@@ -51,18 +53,11 @@ class HitlTransitionError(ValueError):
     """Invalid HITL lifecycle transition or missing required fields."""
 
 
-class _HitlEventLike(Protocol):
-    event_type: str
-    finding_id: str | None
-    issue_rule_id: str | None
-    resulting_state: str | None
-
-
 _NORM_PACK_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
 
 
 def latest_hitl_state(
-    events: Sequence[_HitlEventLike],
+    events: Sequence[ReviewEvent],
     finding_id: str | None,
     issue_rule_id: str | None,
 ) -> str | None:

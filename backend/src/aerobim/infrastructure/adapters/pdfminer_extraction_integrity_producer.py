@@ -72,7 +72,7 @@ class PdfMinerExtractionIntegrityProducer:
                     return
                 if hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes)):
                     try:
-                        for child in obj:  # type: ignore[union-attr]
+                        for child in obj:
                             _walk(child, box=box, parts=parts)
                     except TypeError:
                         return

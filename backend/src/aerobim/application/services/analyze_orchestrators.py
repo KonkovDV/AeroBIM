@@ -27,6 +27,7 @@ from aerobim.domain.drawing_region_hitl import (
     review_events_for_hitl_regions,
 )
 from aerobim.domain.finding_provenance import ensure_finding_provenance
+from aerobim.domain.hybrid.trust_policy import RouteTarget
 from aerobim.domain.ingestion import (
     detect_annotation_sheet_identity_drift,
     detect_missing_drawing_sheet_identity,
@@ -485,7 +486,7 @@ class AdvisoryOrchestrator:
 
         # TZ row 19: local IFC space inventory candidates (no egress). Always eligible —
         # HybridRouteGate only suppresses external/agent advisory, not local inventory.
-        space_candidates: tuple = ()
+        space_candidates: tuple[ValidationIssue, ...] = ()
         extractor = getattr(self._host, "_space_inventory_extractor", None)
         if (
             getattr(self._host, "_space_efficiency_advisory_enabled", False)
@@ -623,10 +624,8 @@ def _advisory_object_kind(request: ValidationRequest) -> str:
     return "ifc"
 
 
-def _llm_overlay_route_target(provider: object):
+def _llm_overlay_route_target(provider: object) -> RouteTarget:
     """Studio/cloud OpenAI-compat → PUBLIC; local weights / mock → LOCAL (RT-030)."""
-
-    from aerobim.domain.hybrid.trust_policy import RouteTarget
 
     name = (
         str(getattr(provider, "provider", None) or getattr(provider, "_provider", "") or "")

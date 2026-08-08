@@ -33,7 +33,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
         }
 
     @router.get("/v1/auth/bff")
-    def get_auth_bff_status():
+    def get_auth_bff_status() -> JSONResponse:
         """Public discovery: POST-05 OIDC BFF is designed but not implemented."""
 
         return JSONResponse(status_code=501, content=build_auth_bff_capability())
@@ -41,7 +41,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
     @router.get("/v1/auth/login")
     def auth_login_stub(
         redirect_uri: Annotated[str | None, Query()] = None,
-    ):
+    ) -> JSONResponse:
         """Phase 2 stub: issue CSRF state; no production IdP redirect or session cookie."""
 
         state_entry = bff_store.issue(redirect_uri=redirect_uri)
@@ -57,7 +57,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
     def auth_callback_stub(
         state: Annotated[str | None, Query()] = None,
         code: Annotated[str | None, Query()] = None,
-    ):
+    ) -> JSONResponse:
         """Phase 2 stub: validate CSRF state; never issue production SSO session cookie."""
 
         if not state or bff_store.consume(state) is None:
@@ -77,7 +77,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
         )
 
     @router.post("/v1/auth/logout")
-    def auth_logout_stub():
+    def auth_logout_stub() -> JSONResponse:
         """Phase 2 stub: honesty only — does not clear global CSRF state or sessions.
 
         Public logout must not wipe process-wide CSRF ``state`` (anonymous DoS).

@@ -8,7 +8,10 @@ import sys
 from pathlib import Path
 from typing import TypedDict
 
-from aerobim.application.services.extraction_benchmark import evaluate_fixture
+from aerobim.application.services.extraction_benchmark import (
+    ExtractionMetricResult,
+    evaluate_fixture,
+)
 from aerobim.domain.eval_statistics import FixtureCounts, cluster_bootstrap_cis
 from aerobim.domain.models import RequirementSource, SourceKind
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
@@ -97,7 +100,7 @@ def _evaluate_manifest(
     macro_recall = sum(r.recall for r in fixture_results) / n if n > 0 else 0.0
     macro_f1 = sum(r.f1_score for r in fixture_results) / n if n > 0 else 0.0
 
-    discipline_buckets: dict[str, list] = {}
+    discipline_buckets: dict[str, list[ExtractionMetricResult]] = {}
     for fixture, result in zip(manifest["fixtures"], fixture_results, strict=True):
         discipline = str(fixture.get("discipline") or "unknown")
         discipline_buckets.setdefault(discipline, []).append(result)
