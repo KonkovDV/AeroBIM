@@ -1,40 +1,60 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
-  "schema_version": "1.3.0",
-  "commit_sha": "8ef9f9b16b97bf5d7b12b8cf52020b4a4ce1cb61",
-  "tree_sha": "cddafd8f98e07bd47ee7664f5ef1ac1526d0ce39",
-  "working_tree_clean": true,
-  "generated_at": "2026-08-08T20:34:34.566768+00:00",
+  "schema_version": "1.4.0",
+  "commit_sha": "0ed820d34c0af7922783470b66e94c2201947672",
+  "tree_sha": "f3c75c1ebe2945646f0f35c0d26624f02c59b57f",
+  "working_tree_clean": false,
+  "generated_at": "2026-08-08T21:21:31.807716+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 1988,
-    "tests_passed": 1980,
-    "tests_skipped": 8,
+    "tests_collected": 1997,
+    "tests_passed": 1990,
+    "tests_skipped": 7,
     "tests_failed": 0,
-    "source_loc": 61077,
-    "test_loc": 41564,
-    "test_functions": 1990
+    "source_loc": 61347,
+    "test_loc": 41739,
+    "test_functions": 1997,
+    "uncollected": []
   },
   "frontend": {
     "tests_passed": 29,
-    "note": "Recorded from last CI/local vitest run when provided via --frontend-tests-passed"
+    "tests_failed": 0,
+    "vitest_artifact": "../frontend/var/vitest-results.json",
+    "note": "Recorded from vitest JSON artifact when provided; manual --frontend-tests-passed without artifact is not publishable"
   },
   "quality_gates": {
     "ruff": {
-      "status": "PASS"
+      "status": "FAIL",
+      "tool": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "exit_code": 1,
+      "duration_ms": 104.9,
+      "reason": "[94m50\u001b[0m \u001b[1m\u001b[32m+\u001b[0m \u001b[1m\u001b[32m            Path(\"docs/pilot-claim-boundary-2026.md\"),\u001b[0m\u001b[0m\u001b[32m text, \"Non-claims (explicit \u001b[0m\u001b[1m\u001b[32mboundaries)\"\u001b[0m\u001b[0m\u001b[32m\n\u001b[0m\u001b[1m\u001b[94m51\u001b[0m \u001b[1m\u001b[32m+\u001b[0m \u001b[1m\u001b[32m        )\u001b[0m\u001b[0m\u001b[32m\n\u001b[0m\u001b[1m\u001b[94m52\u001b[0m \u001b[1m\u001b[94m|\u001b[0m         self.assertEqual(len(hits), 1)\n\u001b[1m\u001b[94m  \u001b[0m \u001b[1m\u001b[94m|\u001b[0m\n\n2 files would be reformatted, 565 files already formatted"
     },
     "mypy": {
-      "status": "PASS"
+      "status": "FAIL",
+      "tool": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "exit_code": 1,
+      "duration_ms": 2457.8,
+      "reason": "sIndex | SupportsTrunc = ..., /) -> int\nsrc\\aerobim\\tools\\export_runtime_baseline.py:665: note:     def int(str | bytes | bytearray, /, base: SupportsIndex) -> int\nsrc\\aerobim\\infrastructure\\adapters\\docling_office_document_ingestor.py:77: error: Argument 1 to \"Document\" has incompatible type \"Path\"; expected \"str | IO[bytes] | None\"  [arg-type]\nFound 2 errors in 2 files (checked 309 source files)"
     },
     "pytest": {
-      "status": "PASS"
+      "status": "PASS",
+      "tool": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "exit_code": 0,
+      "duration_ms": 63276.0
     },
     "vitest": {
-      "status": "PASS"
+      "status": "PASS",
+      "tool": "npm",
+      "exit_code": 0,
+      "duration_ms": 3205.1
     },
     "build": {
-      "status": "PASS"
+      "status": "PASS",
+      "tool": "npm",
+      "exit_code": 0,
+      "duration_ms": 6371.4
     }
   },
   "environment": {
@@ -43,16 +63,16 @@
     "platform": "Windows-11-10.0.26200-SP0",
     "system": "Windows",
     "machine": "AMD64",
-    "lockfile_sha256": "7401d81b37a7b32e5b42a4fddfc54aed01f0b46ff8e6f0f856a84fa929d94417",
+    "lockfile_sha256": "c70becc6bdda0b774afd174bcf8b673b19a4251d83873ad43a300c8aadf193eb",
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 61077,
-    "backend_test_loc": 41564,
-    "backend_test_functions": 1990,
+    "backend_src_loc": 61347,
+    "backend_test_loc": 41739,
+    "backend_test_functions": 1997,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=1980, frontend=29; commit 8ef9f9b16b97; see docs/evidence/runtime-baseline-latest.json · src ~61077 LOC; tests ~41564 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=1990, frontend=29; commit 0ed820d34c0a; see docs/evidence/runtime-baseline-latest.json · src ~61347 LOC; tests ~41739 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -92,9 +112,73 @@
     "AEROBIM_MEP_FEDERATED_SCOPE_PATH",
     "AEROBIM_PDF_BACKEND",
     "AEROBIM_PORT",
+    "AEROBIM_PRIORITY_PROFILE",
+    "AEROBIM_REMARK_LOCALE",
     "AEROBIM_REPORT_TTL_DAYS",
     "AEROBIM_REQUIRE_CLASH",
     "AEROBIM_REQUIRE_MEP_SYSTEM_CLASH",
+    "AEROBIM_S3_ACCESS_KEY_ID",
+    "AEROBIM_S3_BUCKET",
+    "AEROBIM_S3_ENDPOINT_URL",
+    "AEROBIM_S3_PREFIX",
+    "AEROBIM_S3_REGION",
+    "AEROBIM_S3_SECRET_ACCESS_KEY",
+    "AEROBIM_SIGNOFF_PROFILE",
+    "AEROBIM_STORAGE_DIR"
+  ],
+  "code_env_vars": [
+    "AEROBIM_API_BEARER_TOKEN",
+    "AEROBIM_API_TENANT_ID",
+    "AEROBIM_APP_NAME",
+    "AEROBIM_BCF_API_BASE_URL",
+    "AEROBIM_BCF_API_PROJECT_ID",
+    "AEROBIM_BCF_API_TOKEN",
+    "AEROBIM_BCF_API_VERSION",
+    "AEROBIM_BSI_API_TOKEN",
+    "AEROBIM_BSI_VALIDATION_URL",
+    "AEROBIM_CORS_ORIGINS",
+    "AEROBIM_CROSS_DOC_SEVERITY",
+    "AEROBIM_DB_URL",
+    "AEROBIM_ENV",
+    "AEROBIM_HOST",
+    "AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE",
+    "AEROBIM_HYBRID_PROVIDER_CONFIG",
+    "AEROBIM_IFC_PARSE_CACHE_DIR",
+    "AEROBIM_KIMI_API_BASE_URL",
+    "AEROBIM_KIMI_API_KEY",
+    "AEROBIM_KIMI_CACHE_DIR",
+    "AEROBIM_KIMI_CACHE_NAMESPACE",
+    "AEROBIM_KIMI_CACHE_PROJECT",
+    "AEROBIM_KIMI_MODEL",
+    "AEROBIM_KIMI_REASONING_EFFORT",
+    "AEROBIM_LLM_ADVISORY_ENABLED",
+    "AEROBIM_LLM_ALLOWED_HOSTS",
+    "AEROBIM_LLM_API_KEY",
+    "AEROBIM_LLM_AUTH_SCHEME",
+    "AEROBIM_LLM_BASE_URL",
+    "AEROBIM_LLM_BUDGET_LEDGER",
+    "AEROBIM_LLM_BUDGET_TZ",
+    "AEROBIM_LLM_FOLDER_ID",
+    "AEROBIM_LLM_LOCAL_ENABLED",
+    "AEROBIM_LLM_MODEL",
+    "AEROBIM_LLM_MODEL_REVISION",
+    "AEROBIM_LLM_MODEL_SHA256",
+    "AEROBIM_LLM_PROVIDER",
+    "AEROBIM_LLM_RESPONSE_FORMAT_MODE",
+    "AEROBIM_LLM_TIMEOUT_SECONDS",
+    "AEROBIM_MEP_FEDERATED_SCOPE_PATH",
+    "AEROBIM_MEP_SCOPE_MEMO_REF",
+    "AEROBIM_NORM_RULE_PACK",
+    "AEROBIM_OIDC_AUDIENCE",
+    "AEROBIM_OIDC_ISSUER",
+    "AEROBIM_OIDC_JWKS_EXTRA_HOSTS",
+    "AEROBIM_OIDC_JWKS_URL",
+    "AEROBIM_OIDC_ROLES_CLAIM",
+    "AEROBIM_OIDC_TENANT_CLAIM",
+    "AEROBIM_PDF_BACKEND",
+    "AEROBIM_PRIORITY_PROFILE",
+    "AEROBIM_REDIS_URL",
+    "AEROBIM_REMARK_LOCALE",
     "AEROBIM_S3_ACCESS_KEY_ID",
     "AEROBIM_S3_BUCKET",
     "AEROBIM_S3_ENDPOINT_URL",
@@ -109,6 +193,13 @@
     "adapter_modules": 72,
     "di_tokens": 63
   },
-  "artifact_completeness": "full",
-  "publishable": true
+  "attestation": {
+    "attested_by": "local",
+    "ci_run_id": null,
+    "ci_platform": "Windows-11-10.0.26200-SP0",
+    "ci_python_version": "3.13.7",
+    "gates_attested": []
+  },
+  "artifact_completeness": "partial",
+  "publishable": false
 }

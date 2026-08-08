@@ -7,7 +7,13 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Eng readiness **improved** (F–L): publishable precision gates, SLA `customer_measurable` refuse-without-evidence, BCF T0–T4 ladder + empty T2 template, revision finding compare, pilot threat model, open-core ADR — **without** inventing customer corpus, CDE screenshots, or SLA customer packs.
 
+**Reclassification (v4):** [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md)
+
 ## Open engineering/legal blockers (2026-07-31 audit)
+
+| ID | Severity | Status | Summary |
+|---|---|---|---|
+| N-18 | **P0** | **CLOSED 2026-08-09** (WP-A1b) | CLI `--attested-by ci` allowed local forgery of publishability. Fix: attestation derived only from `GITHUB_ACTIONS` env; flag removed; `test_attestation_cannot_be_forged_locally`. Reclass: [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md). |
 
 | ID | Severity | Status | Summary |
 |---|---|---|---|
