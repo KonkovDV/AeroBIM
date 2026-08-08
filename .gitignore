@@ -38,8 +38,11 @@ artifacts/*
 # Local operator artifacts
 .local/
 
-# Accidental local tracker dumps / non-canonical baselines (keep under .local or regenerate)
-docs/evidence/AeroBIM_baseline_*.pdf
+# Local operator baseline exports (WP-A11 — never commit)
+docs/evidence/local/
+docs/evidence/runtime-baseline-latest-dirty.json
+docs/evidence/runtime-baseline-latest.ci-generated.json
+
 docs/evidence/sprint2-synthetic-baseline-2026-08-0[6-9].*
 docs/evidence/sprint2-synthetic-baseline-2026-08-1*.*
 
