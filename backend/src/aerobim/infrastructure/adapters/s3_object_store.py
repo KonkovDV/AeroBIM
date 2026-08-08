@@ -90,11 +90,14 @@ class S3ObjectStore:
         # Residual: presigned GET bypasses this store's max_get_bytes streaming cap;
         # callers that fetch via URL must enforce their own size limits.
         client = self._build_client()
-        return cast(str | None, client.generate_presigned_url(
-            "get_object",
-            Params={"Bucket": self._bucket, "Key": self._qualify_key(key)},
-            ExpiresIn=expires_in_seconds,
-        ))
+        return cast(
+            str | None,
+            client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": self._bucket, "Key": self._qualify_key(key)},
+                ExpiresIn=expires_in_seconds,
+            ),
+        )
 
     def _build_client(self) -> Any:
         try:

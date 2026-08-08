@@ -10,11 +10,11 @@ Stability: shared DI container + suite prime; measured iterations=20, warmup=2. 
 
 | Schema | Packs | bytes | entities | p50 ms | p95 ms | max ms | spike max/p50 | issues | reqs |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| IFC2X3 | 1 | 997 | 12 | 51.422 | 52.753 | 54.515 | 1.06 | 6 | 3 |
-| IFC4 | 1 | 997 | 12 | 49.546 | 52.148 | 52.149 | 1.053 | 4 | 3 |
-| IFC4X3 | 1 | 1005 | 12 | 49.242 | 51.622 | 52.899 | 1.074 | 4 | 3 |
+| IFC2X3 | 1 | 997 | 12 | 68.378 | 76.287 | 80.243 | 1.174 | 6 | 3 |
+| IFC4 | 1 | 997 | 12 | 68.049 | 71.259 | 71.548 | 1.051 | 4 | 3 |
+| IFC4X3 | 1 | 1005 | 12 | 69.122 | 72.136 | 74.303 | 1.075 | 4 | 3 |
 
 Policy: Schema suite reuses one DI container, primes once, warms per pack, gc.collect after warmup, and defaults to n=20 so nearest-rank p95 is not identical to a single OS/MEP spike (historical IFC4 n=5 max~568ms).
 
-Generated at: `2026-08-08T14:51:07.717716+00:00`
+Generated at: `2026-08-08T19:22:26.725458+00:00`
 JSON evidence: `C:/plans/AeroBIM/audit/evidence/ifc-release-benchmark-2026-08.json`

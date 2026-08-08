@@ -157,7 +157,7 @@ class ExportRuntimeBaselineTests(unittest.TestCase):
 
         backend = Path(__file__).resolve().parents[1]
         baseline = export_runtime_baseline(backend_root=backend, commit_sha="test")
-        self.assertEqual(baseline["schema_version"], "1.2.1")
+        self.assertEqual(baseline["schema_version"], "1.3.0")
         backend_block = baseline["backend"]
         assert isinstance(backend_block, dict)
         self.assertGreater(int(backend_block["test_functions"]), 0)

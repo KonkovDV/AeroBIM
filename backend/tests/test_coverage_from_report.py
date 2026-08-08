@@ -234,6 +234,22 @@ class CoverageFromReportTests(unittest.TestCase):
             row.status_for(FindingCategory.DRAWING_VALIDATION), CoverageStatus.NOT_CHECKED
         )
 
+    def test_package_without_mep_has_tz_gap_not_checked(self) -> None:
+        """WP-R4 E2E: IFC-only package — MEP TZ gap stays not_checked, never no_findings."""
+        report = _report(
+            requirements=(ParsedRequirement(rule_id="r", source="model.ifc"),),
+            capabilities=ReportCapabilities(clash=CapabilityStatus(CapabilityState.OK)),
+        )
+        payload = coverage_from_report(report, scope=derive_report_scope(report)).to_dict(
+            report=report
+        )
+        mep_gap = next(g for g in payload["tz_gaps"] if g["gap_id"] == "mep_system_clash")
+        self.assertEqual(mep_gap["status"], "not_checked")
+        row = next(r for r in payload["sources"] if r["source_id"] == "model.ifc")
+        spatial = row["operator_status"].get("spatial", "not_checked")
+        self.assertNotEqual(spatial, "no_findings")
+        self.assertEqual(spatial, "not_checked")
+
     def test_clean_sheet_checked_ok_without_offsheet_drawing_finding(self) -> None:
         region = DrawingRegionRef(
             sheet_id="sheet-12", bbox_xyxy=(0.0, 0.0, 1.0, 1.0), confidence=0.9, modality="ocr"

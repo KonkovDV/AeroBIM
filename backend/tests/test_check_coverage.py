@@ -179,10 +179,12 @@ class CheckCoverageTests(unittest.TestCase):
             scope={_IFC: {"a"}},
         )
         record = cov.to_dict()
-        self.assertEqual(record["schema_version"], "1.1.0")
+        self.assertEqual(record["schema_version"], "1.2.0")
         self.assertIn("operator_legend", record)
-        self.assertIn("done", record["operator_legend"])
+        self.assertIn("no_findings", record["operator_legend"])
+        self.assertIn("tz_gaps", record)
+        self.assertEqual(len(record["tz_gaps"]), 4)
         row = record["sources"][0]
         self.assertIn("operator_status", row)
-        self.assertEqual(row["operator_status"]["ifc-validation"], "done")
-        self.assertIn("done", record["operator_summary"])
+        self.assertEqual(row["operator_status"]["ifc-validation"], "no_findings")
+        self.assertIn("no_findings", record["operator_summary"])

@@ -212,9 +212,7 @@ def _load_known_upstream_case_ids(repo: Path) -> frozenset[str]:
     if not isinstance(edges, list):
         return frozenset()
     return frozenset(
-        str(edge["case_id"])
-        for edge in edges
-        if isinstance(edge, dict) and edge.get("case_id")
+        str(edge["case_id"]) for edge in edges if isinstance(edge, dict) and edge.get("case_id")
     )
 
 

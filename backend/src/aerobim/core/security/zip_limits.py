@@ -154,9 +154,7 @@ def read_zip_member_capped(
         raise ZipBombError(f"ZIP member is a directory: {name!r}")
     declared = int(info.file_size)
     if declared > max_member_bytes:
-        raise ZipBombError(
-            f"ZIP member {name!r} too large ({declared} > {max_member_bytes})"
-        )
+        raise ZipBombError(f"ZIP member {name!r} too large ({declared} > {max_member_bytes})")
     with archive.open(name, "r") as stream:
         return read_stream_capped(
             stream,

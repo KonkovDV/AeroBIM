@@ -33,8 +33,52 @@ from aerobim.domain.models import (
     ValidationReport,
 )
 
-COVERAGE_ALGORITHM_VERSION = "1.1.0"
+COVERAGE_ALGORITHM_VERSION = "1.2.0"
 """Bump when the coverage derivation changes so frozen snapshots stay interpretable."""
+
+# WP-R4 / KT#2: four honest gap states (TZ matrix holes + per-source cells).
+# Deterministic findings use operator alias ``findings`` (check ran; see issues list).
+PRESENTATION_STATES: frozenset[str] = frozenset(
+    {"no_findings", "not_checked", "insufficient_data", "expert_required"}
+)
+
+TZ_GAP_ROWS: tuple[dict[str, str], ...] = (
+    {
+        "gap_id": "mep_system_clash",
+        "label": "Пересечения инженерных систем (ЭОМ/ОВ/ВК)",
+        "status": "not_checked",
+        "reason": (
+            "Требуется федеративная MEP-модель заказчика (RT-003); "
+            "system-aware clash не верифицирован"
+        ),
+        "tz_matrix": "§3.3 MEP / system intersections",
+    },
+    {
+        "gap_id": "cv_symbol_reading",
+        "label": "Распознавание зон чертежа (CV)",
+        "status": "not_checked",
+        "reason": (
+            "Зонный CV-конвейер не заявлен; доступна только оценка пригодности зоны (WP-R7)"
+        ),
+        "tz_matrix": "Vector 2D / CV advisory",
+    },
+    {
+        "gap_id": "dwg_native",
+        "label": "Нативная загрузка DWG",
+        "status": "not_checked",
+        "reason": (
+            "Нативный DWG не поддерживается; маршрут через DXF/PDF/IFC с provenance (WP-R2)"
+        ),
+        "tz_matrix": "Upload DWG",
+    },
+    {
+        "gap_id": "space_efficiency",
+        "label": "Эффективность использования пространства",
+        "status": "not_checked",
+        "reason": "Метрика не определена заказчиком; нормы не задают «неэффективность»",
+        "tz_matrix": "§2 целевые задачи / space efficiency",
+    },
+)
 
 
 class CoverageStatus(StrEnum):
@@ -52,21 +96,21 @@ class CoverageStatus(StrEnum):
     """Только advisory-находки — требуется подтверждение эксперта."""
 
 
-# Operator-facing labels (KT#2): do not invent a second SSOT — aliases over CoverageStatus.
+# Operator-facing labels (WP-R4 / KT#2): aliases over CoverageStatus, not a second SSOT.
 _OPERATOR_STATUS: dict[CoverageStatus, str] = {
-    CoverageStatus.CHECKED_OK: "done",
+    CoverageStatus.CHECKED_OK: "no_findings",
     CoverageStatus.CHECKED_FINDINGS: "findings",
-    CoverageStatus.NOT_CHECKED: "not_done",
-    CoverageStatus.INSUFFICIENT_DATA: "partial",
-    CoverageStatus.REQUIRES_EXPERT: "needs_expert",
+    CoverageStatus.NOT_CHECKED: "not_checked",
+    CoverageStatus.INSUFFICIENT_DATA: "insufficient_data",
+    CoverageStatus.REQUIRES_EXPERT: "expert_required",
 }
 
 OPERATOR_STATUS_LEGEND: dict[str, str] = {
-    "done": "Проверка выполнена на этом источнике; нарушений не найдено",
-    "findings": "Проверка выполнена; есть детерминированные находки",
-    "not_done": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)",
-    "partial": "Проверка запускалась, данных или движка недостаточно",
-    "needs_expert": "Только advisory-сигнал — требуется эксперт",
+    "no_findings": "Проверка выполнена на этом источнике; нарушений не найдено",
+    "findings": "Проверка выполнена; есть детерминированные находки (см. список)",
+    "not_checked": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)",
+    "insufficient_data": "Проверка запускалась, данных или движка недостаточно",
+    "expert_required": "Только advisory-сигнал — требуется эксперт",
 }
 
 
@@ -74,6 +118,23 @@ def operator_status_for(status: CoverageStatus) -> str:
     """Presentation alias for TIM / UI — same honesty as CoverageStatus."""
 
     return _OPERATOR_STATUS[status]
+
+
+def presentation_status_for(status: CoverageStatus) -> str:
+    """WP-R4 four-state view for gap-oriented filters (findings excluded — see issues)."""
+
+    if status is CoverageStatus.CHECKED_FINDINGS:
+        return "findings"
+    alias = operator_status_for(status)
+    if alias in PRESENTATION_STATES:
+        return alias
+    return "not_checked"
+
+
+def tz_gap_rows_for_report(report: ValidationReport | None = None) -> list[dict[str, str]]:
+    """Four TZ-matrix gaps as explicit not_checked rows (WP-R4)."""
+    _ = report  # reserved for future per-report gap nuance; gaps stay not_checked until RT-003+
+    return [dict(row) for row in TZ_GAP_ROWS]
 
 
 # Семейство -> НАБОР полей ReportCapabilities, влияющих на это семейство. CHECKED_OK
@@ -117,23 +178,28 @@ class CheckCoverageMap:
                 counts[status.value] += 1
         return counts
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self, *, report: ValidationReport | None = None) -> dict[str, Any]:
         return {
             "artifact": "check-coverage-map",
             "schema_version": COVERAGE_ALGORITHM_VERSION,
             "note": (
                 "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK "
                 "requires explicit scope + all family capabilities OK; verdict-neutral — "
-                "does NOT set summary.passed (ADR-001). operator_status is a presentation "
-                "alias (done/findings/not_done/partial/needs_expert), not a product claim."
+                "does NOT set summary.passed (ADR-001). operator_status uses WP-R4 aliases "
+                "(no_findings/findings/not_checked/insufficient_data/expert_required)."
             ),
             "operator_legend": dict(OPERATOR_STATUS_LEGEND),
+            "presentation_states": sorted(PRESENTATION_STATES),
+            "tz_gaps": tz_gap_rows_for_report(report),
             "sources": [
                 {
                     "source_id": row.source_id,
                     "families": {fam.value: status.value for fam, status in row.families},
                     "operator_status": {
                         fam.value: operator_status_for(status) for fam, status in row.families
+                    },
+                    "presentation_status": {
+                        fam.value: presentation_status_for(status) for fam, status in row.families
                     },
                     "reasons": {fam.value: reason for fam, reason in row.reasons},
                 }
@@ -362,10 +428,15 @@ def derive_report_scope(report: ValidationReport) -> dict[FindingCategory, set[s
 
 __all__ = [
     "COVERAGE_ALGORITHM_VERSION",
+    "PRESENTATION_STATES",
+    "TZ_GAP_ROWS",
     "CheckCoverageMap",
     "CoverageStatus",
     "SourceCoverage",
     "build_check_coverage",
     "coverage_from_report",
     "derive_report_scope",
+    "operator_status_for",
+    "presentation_status_for",
+    "tz_gap_rows_for_report",
 ]

@@ -414,7 +414,7 @@ def export_evidence_bundle(
         "report_id": report.report_id,
         "reproducibility_hash": run_manifest.reproducibility_hash,
         "report_content_sha256": report_content_sha256,
-        "coverage": coverage_map.to_dict(),
+        "coverage": coverage_map.to_dict(report=report),
     }
     manifest = {
         "artifact_type": "aerobim_evidence_bundle",

@@ -87,8 +87,7 @@ def _write_evidence(
             else:
                 issues_display = issues_raw
             lines.append(
-                f"| {name} | {timing.get('p50')} | {timing.get('p95')} | "
-                f"{issues_display} |"
+                f"| {name} | {timing.get('p50')} | {timing.get('p95')} | {issues_display} |"
             )
     lines.extend(
         [

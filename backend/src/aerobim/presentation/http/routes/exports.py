@@ -7,6 +7,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.check_coverage import coverage_from_report, derive_report_scope
 from aerobim.domain.object_acl import AuthPrincipal
 from aerobim.presentation.http.context import (
     BCF_PROJECT_ID_RE,
@@ -47,6 +48,8 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         ctx.assert_report_access(report, principal)
         data: dict[str, Any] = ctx.serialize_public_report(report)
+        scope = derive_report_scope(report)
+        data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
         html = render_report_html(report_id, data)
         return HTMLResponse(
             content=html,

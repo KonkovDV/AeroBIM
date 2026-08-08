@@ -111,7 +111,16 @@ export interface CheckCoverageSourceRow {
   source_id: string;
   families: Record<string, string>;
   operator_status?: Record<string, string>;
+  presentation_status?: Record<string, string>;
   reasons?: Record<string, string>;
+}
+
+export interface TzGapRow {
+  gap_id: string;
+  label: string;
+  status: string;
+  reason: string;
+  tz_matrix?: string;
 }
 
 export interface CheckCoverageMap {
@@ -119,6 +128,8 @@ export interface CheckCoverageMap {
   schema_version?: string;
   note?: string;
   operator_legend?: Record<string, string>;
+  presentation_states?: string[];
+  tz_gaps?: TzGapRow[];
   sources: CheckCoverageSourceRow[];
   summary?: Record<string, number>;
   operator_summary?: Record<string, number>;

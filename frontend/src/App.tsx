@@ -1080,7 +1080,12 @@ export default function App() {
                 divergences={selectedReport.divergences}
               />
 
-              <CoverageMapPanel reportId={selectedReport.report_id} />
+              <CoverageMapPanel
+                reportId={selectedReport.report_id}
+                onNavigateToFindings={() => {
+                  document.querySelector(".issue-list")?.scrollIntoView({ behavior: "smooth" });
+                }}
+              />
 
               <div className="issue-toolbar">
                 <label>
