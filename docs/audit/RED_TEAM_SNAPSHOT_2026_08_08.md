@@ -2,12 +2,16 @@
 title: "Red Team Master Audit — Environment Snapshot"
 date: 2026-08-08
 phase: 0
-status: snapshot
+status: superseded
 checkpoint: NO_GO
 claim_boundary: engineering_evidence_only
+superseded_by: docs/audit/RED_TEAM_CLOSURE_2026_08_08.md
 ---
 
 # Red Team Master Audit — Snapshot (Phase 0)
+
+> **Historical:** Point-in-time environment snapshot (pre-Wave 3). Current engineering status: [`RED_TEAM_CLOSURE_2026_08_08.md`](RED_TEAM_CLOSURE_2026_08_08.md).
+
 
 **Audit ID:** RT-MASTER-2026-08-08  
 **Scope:** Full-repo security + engineering readiness inventory (Phases 0–2). **No code fixes in this pass.**  

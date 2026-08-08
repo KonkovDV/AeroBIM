@@ -13,6 +13,12 @@ from fastapi import HTTPException
 
 from aerobim.domain.object_acl import AuthPrincipal, principal_may_edit_norm_pack
 from aerobim.presentation.http.context import _oidc_tenant_from_claim
+from aerobim.presentation.http.errors import (
+    public_analyze_concurrency_limit_detail,
+    public_bad_request_detail,
+    public_hitl_state_conflict_detail,
+)
+from aerobim.presentation.http.routes.analyze import _normalize_idempotency_key
 
 
 class OidcTenantClaimTests(unittest.TestCase):
@@ -138,6 +144,44 @@ class RedisRateLimitFailClosedTests(unittest.TestCase):
                 signoff_profile="development",
             )
             self.assertIsInstance(backend, InProcessRateLimitBackend)
+
+
+class IdempotencyKeyNormalizationTests(unittest.TestCase):
+    def test_strip_and_collapse_whitespace(self) -> None:
+        self.assertEqual(_normalize_idempotency_key("  key-1  "), "key-1")
+        self.assertIsNone(_normalize_idempotency_key("   "))
+        self.assertIsNone(_normalize_idempotency_key(None))
+
+    def test_dedup_after_normalization(self) -> None:
+        from aerobim.application.use_cases.analyze_project_package_jobs import (
+            SubmitAnalyzeProjectPackageJobUseCase,
+        )
+        from aerobim.domain.models import RequirementSource, ValidationRequest
+        from aerobim.infrastructure.adapters.in_memory_analyze_project_package_job_store import (
+            InMemoryAnalyzeProjectPackageJobStore,
+        )
+
+        store = InMemoryAnalyzeProjectPackageJobStore()
+        use_case = SubmitAnalyzeProjectPackageJobUseCase(store)
+        request = ValidationRequest(
+            request_id="req-1",
+            ifc_path=None,
+            requirement_source=RequirementSource(text="REQ"),
+            tenant_id="t1",
+        )
+        job_a = use_case.execute(request, idempotency_key="idem")
+        job_b = use_case.execute(request, idempotency_key="  idem  ")
+        self.assertEqual(job_a.job_id, job_b.job_id)
+
+
+class PublicErrorDetailTests(unittest.TestCase):
+    def test_stable_public_details(self) -> None:
+        self.assertEqual(public_bad_request_detail(), "Invalid request")
+        self.assertEqual(
+            public_analyze_concurrency_limit_detail(),
+            "Analyze concurrency limit exceeded",
+        )
+        self.assertEqual(public_hitl_state_conflict_detail(), "HITL state conflict")
 
 
 class RuffInventoryDriftTests(unittest.TestCase):

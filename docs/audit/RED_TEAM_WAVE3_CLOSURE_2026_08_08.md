@@ -12,7 +12,7 @@ status: remediated
 | RT-AUDIT-002 | **CLOSED** | `content_hash` / `previous_event_hash` chain on review JSONL |
 | RT-AUDIT-003 | **CLOSED** | Static bearer blocked from expert HITL in pilot/production |
 | RT-DOS-001 | **CLOSED** | Stage timeouts enforced via `PackageTraceCollector`; sync analyze disabled in pilot/prod |
-| RT-DOS-002 | **PARTIAL** | GET job poll rate limit (300/min); shared Redis still future work |
+| RT-DOS-002 | **CLOSED** | GET job poll rate limit (300/min); shared Redis rate limiter in Wave 4 (`RT-DOS-002-R`) |
 | RT-DOS-003 | **CLOSED** | Upload `assert_can_accept` + Content-Length pre-check before quarantine write |
 | RT-UP-001..004 | **CLOSED** | Stable upload errors, `sanitize_upload_filename`, RFC5987 Content-Disposition |
 | RT-DOS-005 | **CLOSED** | Docker compose `mem_limit` / `cpus` on backend service |

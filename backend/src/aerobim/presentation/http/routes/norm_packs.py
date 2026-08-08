@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.object_acl import AuthPrincipal, principal_may_edit_norm_pack
 from aerobim.presentation.http.context import ApiContext
+from aerobim.presentation.http.errors import public_bad_request_detail
 from aerobim.presentation.http.schemas import NormRuleHitlEventRequest
 
 
@@ -70,7 +71,10 @@ def build_norm_packs_router(ctx: ApiContext) -> APIRouter:
                 tenant_id=tenant_id,
             )
         except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raise HTTPException(
+                status_code=400,
+                detail=public_bad_request_detail(),
+            ) from exc
         return {"version": asdict(record), "event": asdict(event)}
 
     @router.get("/v1/norm-packs/{pack_id}/versions")
