@@ -90,11 +90,12 @@ Source of truth: `docs/gtm/SPRINT3_WEEK_TASKS_STATUS_2026_08.md`
 
 Many Sprint 3 files were **local/uncommitted** at last status (do not assume pushed). Before commit: human must ask; exclude secrets and internal corpus.
 
-### Gates last known green (approx)
+### Gates last known green (2026-08-08)
 
-- ruff / mypy OK
-- **1914 passed**, 8 skipped (full pytest)
-- After OCR fix: `tests/test_raster_drawing_analyzer.py` → **3 passed**
+- ruff / mypy strict OK
+- **1957 passed**, 7 skipped (full pytest)
+- Red Team Waves 1–5b remediated (`2a4d1f4`)
+- Open-corpora regression 7/7 (`docs/evidence/sprint3-open-corpora-regression-2026-08.md`)
 
 ### Runtime / deps relevant to drawings
 
@@ -245,7 +246,7 @@ Refresh: `aerobim-internal-data/reports/expertise-dataset-report.md`
 |---|---|---|
 | ЕГРЗ / ГГЭ | No open packages | `REQUIRES_PERMISSION` — do not auto-download |
 | BSI IDS / IFC-Bench / fixtures | Not expertise | open_bench / regression only |
-| Mumbai Building Permit (CC BY 4.0) | Yes: scrutiny↔concession (India, 333 projects) | Foreign ACC analog; **manual download pending**; never claim as RU expertise accuracy |
+| Mumbai Building Permit (CC BY 4.0) | Yes: scrutiny↔concession (India, 333 projects) | Foreign ACC analog; **on disk** (2026-08-08); never claim as RU expertise accuracy |
 | Samolet package | Required | Only path to RT-001 |
 
 ### Baseline types possible today
@@ -424,6 +425,6 @@ IFC2x3/4/4x3 were tested with reproducible speed numbers (fixture Analyze p50 ~2
 | Internal open-corpus testing | `PARTIALLY_READY` |
 | Sprint 3 week task 1 (IFC metrics) | `DONE_WITH_EVIDENCE` |
 | Sprint 3 week task 2 (expertise GT) | `BLOCKED_BY_DATA` (open RU) / Mumbai `foreign_acc_analog` **ON_DISK** |
-| Sprint 3 week task 3 (expand/run/fix) | `PARTIALLY_DONE` |
+| Sprint 3 week task 3 (expand/run/fix) | `PARTIALLY_DONE` (open-corpora 7/7; RT Waves 1–5b closed) |
 | Meeting usability (Tehlab internal) | `YES` with Claims Lock |
 | Customer / production claims | `NO_GO` |
