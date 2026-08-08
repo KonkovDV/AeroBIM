@@ -263,7 +263,9 @@ jobs:
               sys.exit(1)
           print("Committed baseline matches CI generation (WP-A11)")
           PY
+          # N-22: health gate (publishable) must sit beside consistency, not replace it.
           python -m aerobim.tools.export_runtime_baseline --check-committed-baseline
+          python -m aerobim.tools.export_runtime_baseline --check-publishable
       - name: Upload CI-generated runtime baseline
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()

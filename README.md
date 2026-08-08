@@ -393,6 +393,35 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_LLM_429_RETRIES` | `3` | Linear backoff retries on HTTP 429 before SKIPPED |
 | `AEROBIM_LLM_ALLOWED_HOSTS` | *(built-in)* | Extra allowlisted hostnames (comma-separated); Alibaba/OpenAI always forbidden |
 | `AEROBIM_HYBRID_PROVIDER_CONFIG` | *(unset)* | Path to hybrid provider JSON (`schema_version` ≥1.1 requires `model_revision`) |
+| `AEROBIM_API_TENANT_ID` | *(unset)* | Optional tenant id for multi-tenant API auth |
+| `AEROBIM_APP_NAME` | `aerobim` | Application name for logs / OpenAPI title |
+| `AEROBIM_BCF_API_BASE_URL` | *(unset)* | Optional BCF API base URL (enterprise sync) |
+| `AEROBIM_BCF_API_PROJECT_ID` | *(unset)* | Optional BCF project id |
+| `AEROBIM_BCF_API_TOKEN` | *(unset)* | Optional BCF API bearer token |
+| `AEROBIM_BCF_API_VERSION` | `2.1` | BCF API version label |
+| `AEROBIM_BSI_API_TOKEN` | *(unset)* | Optional buildingSMART Validation Service token |
+| `AEROBIM_BSI_VALIDATION_URL` | *(built-in)* | Optional override for bSI Validation Service URL |
+| `AEROBIM_GATES_ATTESTED` | *(CI only)* | Comma-separated CI job names attested into runtime baseline; ignored locally; must equal required gate set under GitHub Actions (N-23) |
+| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | HTTP rate limit per client IP |
+| `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
+| `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Optional Kimi OpenAI-compat base URL |
+| `AEROBIM_KIMI_API_KEY` | *(unset)* | Optional Kimi API key (never logged) |
+| `AEROBIM_KIMI_CACHE_DIR` | *(unset)* | Optional Kimi response cache directory |
+| `AEROBIM_KIMI_CACHE_NAMESPACE` | *(unset)* | Optional Kimi cache namespace |
+| `AEROBIM_KIMI_CACHE_PROJECT` | *(unset)* | Optional Kimi cache project key |
+| `AEROBIM_KIMI_MODEL` | *(unset)* | Optional Kimi model id |
+| `AEROBIM_KIMI_REASONING_EFFORT` | *(unset)* | Optional Kimi reasoning effort knob |
+| `AEROBIM_LLM_TIMEOUT_SECONDS` | `120` | Advisory LLM HTTP timeout seconds |
+| `AEROBIM_MEP_SCOPE_MEMO_REF` | *(unset)* | Optional memo ref for federated MEP scope provenance |
+| `AEROBIM_NORM_RULE_PACK` | *(unset)* | Optional norm rule-pack id/path |
+| `AEROBIM_OIDC_AUDIENCE` | *(unset)* | OIDC audience claim required under pilot/production |
+| `AEROBIM_OIDC_ISSUER` | *(unset)* | OIDC issuer URL |
+| `AEROBIM_OIDC_JWKS_EXTRA_HOSTS` | *(unset)* | Extra allowlisted JWKS hostnames |
+| `AEROBIM_OIDC_JWKS_URL` | *(unset)* | OIDC JWKS URL |
+| `AEROBIM_OIDC_ROLES_CLAIM` | `roles` | OIDC claim name for roles |
+| `AEROBIM_OIDC_TENANT_CLAIM` | `tenant` | OIDC claim name for tenant |
+| `AEROBIM_REDIS_URL` | *(unset)* | Optional Redis URL for rate-limit / cache backends |
+
 
 <!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->
 AEROBIM_ALLOW_ANONYMOUS_DEV
@@ -411,6 +440,7 @@ AEROBIM_CROSS_DOC_SEVERITY
 AEROBIM_DB_URL
 AEROBIM_DEBUG
 AEROBIM_ENV
+AEROBIM_GATES_ATTESTED
 AEROBIM_HOST
 AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE
 AEROBIM_HYBRID_PROVIDER_CONFIG

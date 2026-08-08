@@ -214,6 +214,25 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertEqual(forged["attestation"]["attested_by"], "local")
         self.assertTrue(forged["attestation"].get("attestation_environment_incomplete"))
 
+    def test_gates_attested_env_ignored_locally(self) -> None:
+        """N-23: AEROBIM_GATES_ATTESTED must not forge gates_attested outside complete CI."""
+        import os
+
+        with patch.dict(
+            os.environ,
+            {
+                "AEROBIM_GATES_ATTESTED": (
+                    "test,frontend,supply-chain-audit,sprint-2-1-gates,"
+                    "security-regression,offline-bundle-smoke,openapi-contract"
+                ),
+                "GITHUB_ACTIONS": "false",
+            },
+            clear=False,
+        ):
+            baseline = export_runtime_baseline(backend_root=_REPO / "backend")
+        self.assertEqual(baseline["attestation"]["attested_by"], "local")
+        self.assertEqual(baseline["attestation"]["gates_attested"], [])
+
     def test_committed_baseline_is_ci_attested(self) -> None:
         from aerobim.tools.export_runtime_baseline import committed_baseline_attestation_errors
 

@@ -53,13 +53,43 @@ _COMMITTED_BASELINE = "docs/evidence/runtime-baseline-latest.json"
 _LOCAL_BASELINE_DIR = "docs/evidence/local"
 
 
-def _gates_attested_from_env() -> list[str]:
+def _complete_github_actions_env() -> dict[str, str] | None:
+    """Return required GITHUB_* vars only when the Actions environment is complete."""
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        return None
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
+    workflow_ref = os.environ.get("GITHUB_WORKFLOW_REF")
+    github_sha = os.environ.get("GITHUB_SHA")
+    if not run_id or not run_attempt or not workflow_ref or not github_sha:
+        return None
+    return {
+        "run_id": run_id,
+        "run_attempt": run_attempt,
+        "workflow_ref": workflow_ref,
+        "github_sha": github_sha,
+    }
+
+
+def _gates_attested_from_env(*, ci_complete: bool) -> list[str]:
+    """N-23: AEROBIM_GATES_ATTESTED is honored only under complete CI attestation.
+
+    Locally the variable is ignored (empty gates_attested). In CI the value must
+    equal ``_REQUIRED_GATES_ATTESTED`` exactly; otherwise attestation is incomplete.
+    """
+    if not ci_complete:
+        return []
     raw = os.environ.get("AEROBIM_GATES_ATTESTED", "")
-    return sorted(part.strip() for part in raw.split(",") if part.strip())
+    from_env = sorted(part.strip() for part in raw.split(",") if part.strip())
+    if set(from_env) != _REQUIRED_GATES_ATTESTED:
+        return from_env
+    return sorted(_REQUIRED_GATES_ATTESTED)
 
 
 def _resolve_attestation_from_environment() -> dict[str, object]:
     """WP-A1b / N-18: attestation is derived from the process environment only."""
+    ci = _complete_github_actions_env()
+    gates = _gates_attested_from_env(ci_complete=ci is not None)
     attestation: dict[str, object] = {
         "attested_by": "local",
         "run_id": None,
@@ -68,24 +98,24 @@ def _resolve_attestation_from_environment() -> dict[str, object]:
         "github_sha": None,
         "runner_os": os.environ.get("RUNNER_OS") or platform.system(),
         "runner_python": platform.python_version(),
-        "gates_attested": _gates_attested_from_env(),
+        "gates_attested": gates,
     }
     if os.environ.get("GITHUB_ACTIONS") != "true":
         return attestation
-    run_id = os.environ.get("GITHUB_RUN_ID")
-    run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
-    workflow_ref = os.environ.get("GITHUB_WORKFLOW_REF")
-    github_sha = os.environ.get("GITHUB_SHA")
-    if not all([run_id, run_attempt, workflow_ref, github_sha]):
+    if ci is None:
         attestation["attestation_environment_incomplete"] = True
+        return attestation
+    if set(gates) != _REQUIRED_GATES_ATTESTED:
+        attestation["attestation_environment_incomplete"] = True
+        attestation["attestation_gates_attested_invalid"] = True
         return attestation
     attestation.update(
         {
             "attested_by": "ci",
-            "run_id": run_id,
-            "run_attempt": int(run_attempt),
-            "workflow_ref": workflow_ref,
-            "github_sha": github_sha,
+            "run_id": ci["run_id"],
+            "run_attempt": int(ci["run_attempt"]),
+            "workflow_ref": ci["workflow_ref"],
+            "github_sha": ci["github_sha"],
         }
     )
     return attestation
@@ -120,7 +150,9 @@ def committed_baseline_attestation_errors(repo: Path | None = None) -> list[str]
     )
 
 
-def compare_baseline_snapshots(committed: dict[str, object], generated: dict[str, object]) -> list[str]:
+def compare_baseline_snapshots(
+    committed: dict[str, object], generated: dict[str, object]
+) -> list[str]:
     """Compare committed vs CI-generated baseline (WP-A11)."""
     errors: list[str] = []
     for key in ("commit_sha", "tree_sha", "schema_version"):
@@ -144,6 +176,7 @@ def compare_baseline_snapshots(committed: dict[str, object], generated: dict[str
     if generated.get("publishable") is not True:
         errors.append("generated_baseline_not_publishable")
     return errors
+
 
 def _repo_root() -> Path:
     # tools/ -> aerobim/ -> src/ -> backend/ -> repo root
@@ -670,17 +703,13 @@ def publishability_errors(
         else:
             missing = sorted(_REQUIRED_GATES_ATTESTED - {str(g) for g in gates_attested})
             if missing:
-                errors.append(
-                    f"attestation_gates_attested_missing: {missing}"
-                )
+                errors.append(f"attestation_gates_attested_missing: {missing}")
 
     commit = baseline.get("commit_sha")
     if expected_commit_sha and isinstance(commit, str):
         if commit != expected_commit_sha:
             behind = (
-                _commits_behind(repo, commit, expected_commit_sha)
-                if repo is not None
-                else None
+                _commits_behind(repo, commit, expected_commit_sha) if repo is not None else None
             )
             if behind is None:
                 errors.append(
@@ -733,11 +762,7 @@ def _compute_publishable(
         return False, "partial"
     github_sha = attestation.get("github_sha")
     commit = baseline.get("commit_sha")
-    if (
-        isinstance(github_sha, str)
-        and isinstance(commit, str)
-        and github_sha != commit
-    ):
+    if isinstance(github_sha, str) and isinstance(commit, str) and github_sha != commit:
         return False, "partial"
     if publishability_errors(baseline):
         return False, "partial"
@@ -769,11 +794,10 @@ def export_runtime_baseline(
     test_loc = _count_lines(tests_root, "*.py")
     test_count = _count_tests(tests_root)
     collection = _test_collection_inventory(backend)
-    collected = (
-        tests_collected
-        if tests_collected is not None
-        else int(collection["tests_collected_live"])
-    )
+    collected_live = collection["tests_collected_live"]
+    if not isinstance(collected_live, int):
+        raise TypeError(f"tests_collected_live must be int, got {type(collected_live).__name__}")
+    collected = tests_collected if tests_collected is not None else collected_live
     uncollected = collection["uncollected"]
     macro_f1 = _extraction_macro_f1(backend)
     gates = _default_quality_gates()
@@ -786,7 +810,9 @@ def export_runtime_baseline(
     frontend_passed = frontend_tests_passed if frontend_tests_passed is not None else "n/a"
     f1_display = f"{macro_f1}" if macro_f1 is not None else "n/a"
     env = environment if environment is not None else _environment_fingerprint(repo)
-    attestation_block = attestation if attestation is not None else _resolve_attestation_from_environment()
+    attestation_block = (
+        attestation if attestation is not None else _resolve_attestation_from_environment()
+    )
     payload: dict[str, object] = {
         "artifact_type": "aerobim_runtime_baseline",
         "schema_version": _SCHEMA_VERSION,
@@ -1001,8 +1027,32 @@ def _check_documented_env_sets(repo: Path) -> list[str]:
     return errors
 
 
+_INTERNAL_ENV_REGISTRY = "audit/internal_env_vars.json"
+
+
+def _internal_env_names(repo: Path) -> set[str]:
+    """Load explicit allowlist of Settings knobs intentionally outside Configuration table."""
+    path = repo / _INTERNAL_ENV_REGISTRY
+    if not path.is_file():
+        return set()
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return set()
+    if not isinstance(payload, dict):
+        return set()
+    entries = payload.get("vars")
+    if not isinstance(entries, dict):
+        return set()
+    return {str(name) for name in entries}
+
+
 def _check_code_env_documented(repo: Path) -> list[str]:
-    """Fail when Settings reads AEROBIM_* knobs absent from README documented-env marker."""
+    """Fail when Settings reads AEROBIM_* knobs absent from README Configuration + registry.
+
+    N-20: marker-only parity can hide holes published as documented_env_vars vs code_env_vars.
+    Require code ⊆ (Configuration table ∪ audit/internal_env_vars.json).
+    """
     errors: list[str] = []
     readme = repo / "README.md"
     if not readme.exists():
@@ -1019,6 +1069,19 @@ def _check_code_env_documented(repo: Path) -> list[str]:
         errors.append(
             f"settings.py reads undocumented AEROBIM_* vars (not in README marker): "
             f"{missing_readme}"
+        )
+    config_names = set(_configuration_env_names(readme))
+    internal = _internal_env_names(repo)
+    missing_config = sorted(code_names - config_names - internal)
+    if missing_config:
+        errors.append(
+            "settings.py AEROBIM_* vars missing from README ## Configuration table "
+            f"(and not listed in {_INTERNAL_ENV_REGISTRY}): {missing_config}"
+        )
+    unexplained_internal = sorted(internal - code_names)
+    if unexplained_internal:
+        errors.append(
+            f"{_INTERNAL_ENV_REGISTRY} lists vars not read by settings.py: {unexplained_internal}"
         )
     artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
     if artifact.exists():
@@ -1361,10 +1424,7 @@ def main(argv: list[str] | None = None) -> int:
         if frontend_tests_passed is None:
             frontend_tests_passed = vitest_parsed["tests_passed"]
         frontend_tests_failed = vitest_parsed["tests_failed"]
-    elif (
-        args.frontend_tests_passed is not None
-        and attestation.get("attested_by") == "ci"
-    ):
+    elif args.frontend_tests_passed is not None and attestation.get("attested_by") == "ci":
         print(
             "--frontend-tests-passed without --vitest-json is not allowed under CI attestation",
             file=sys.stderr,
