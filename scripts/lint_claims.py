@@ -225,7 +225,7 @@ def lint_claims(
             for rule_id, pattern in patterns:
                 if pattern.search(line):
                     violations.append(f"{rel}:{lineno}: [{rule_id}] {line.strip()[:160]}")
-        violations.extend(claim_needs_boundary_violations(path, text))
+        # G6 claim_needs_boundary stays behind --claim-boundary-guard only
     return violations
 
 

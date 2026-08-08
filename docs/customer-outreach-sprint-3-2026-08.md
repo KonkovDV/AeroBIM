@@ -16,10 +16,10 @@ claim_boundary: >-
 
 **Related:**
 
-- Week instance: [`docs/gtm/customer-outreach-week-2026-08-10.md`](../gtm/customer-outreach-week-2026-08-10.md)
-- Tracker schema SSOT: [`docs/customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv`](../customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv)
-- Data request when `data_available=yes`: [`docs/datasets/customer-data-request-2026-08.md`](../datasets/customer-data-request-2026-08.md)
-- Claims Lock: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
+- Week instance: [`docs/gtm/customer-outreach-week-2026-08-10.md`](gtm/customer-outreach-week-2026-08-10.md)
+- Tracker schema SSOT: [`docs/customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv`](customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv)
+- Data request when `data_available=yes`: [`docs/datasets/customer-data-request-2026-08.md`](datasets/customer-data-request-2026-08.md)
+- Claims Lock: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md)
 
 **Checkpoint:** **NO_GO** until RT-001 customer corpus + dual adjudication exists.
 
@@ -182,7 +182,7 @@ Ask on first contact or follow-up. Log answers in tracker — do not invent outc
 
 | Tier | Criteria | Next step |
 |---|---|---|
-| **A — pilot candidate** | IFC + PDF/A available; expertise/QC remark list with anchors; 2 adjudicators; NDA feasible; DWG-only share <50% or export path agreed | Send [`customer-data-request-2026-08.md`](../datasets/customer-data-request-2026-08.md); schedule scope memo |
+| **A — pilot candidate** | IFC + PDF/A available; expertise/QC remark list with anchors; 2 adjudicators; NDA feasible; DWG-only share <50% or export path agreed | Send [`customer-data-request-2026-08.md`](datasets/customer-data-request-2026-08.md); schedule scope memo |
 | **B — nurture** | Interest + partial formats (e.g. PDF only); expert available; data blocked by NDA | NDA template; on-prem demo |
 | **C — discovery only** | Pain confirmed; no etalon section; DWG-only >80% | Stay in discovery; no pilot promise |
 | **D — disqualify** | No IFC path; no remark list; no adjudicators; expects >90% accuracy claim | Politely close; do not over-promise |
@@ -193,7 +193,7 @@ Ask on first contact or follow-up. Log answers in tracker — do not invent outc
 
 ## 5. Contact result fields (tracker schema)
 
-Copy [`CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv`](../customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv) for each week. Required columns:
+Copy [`CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv`](customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv) for each week. Required columns:
 
 | Column | Values / notes |
 |---|---|
@@ -237,7 +237,7 @@ Copy [`CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv`](../customer/CUSTOMER_OUTREACH_TR
 | LLM | «Regex fixture baseline only; Kimi/Qwen NOT RUN Sprint 3» | «LLM beats regex on customer data» |
 | Checkpoint | «Checkpoint NO_GO до customer evidence по RT-001» (internal) | «Production-ready», «Checkpoint GO» |
 
-Full forbidden list: [`CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md).
+Full forbidden list: [`CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
 ---
 

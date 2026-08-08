@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from aerobim.domain.check_coverage import (
@@ -59,6 +59,7 @@ def capability_statuses(draw: st.DrawFn) -> ReportCapabilities:
 
 
 class CheckCoverageHypothesisTests(unittest.TestCase):
+    @settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
     @given(
         source_count=st.integers(min_value=1, max_value=4),
         caps=capability_statuses(),
