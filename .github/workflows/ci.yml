@@ -95,6 +95,8 @@ jobs:
           PY
       - name: Claims Lock linter (WP-R10)
         run: python ../scripts/lint_claims.py
+      - name: Claims Lock matrix guard (I-9)
+        run: python ../scripts/lint_claims.py --matrix-guard
       - name: Runtime baseline README drift check
         run: python -m aerobim.tools.export_runtime_baseline --check-readme
       - run: ruff check src tests

@@ -485,7 +485,9 @@ def publishability_errors(
     commit = baseline.get("commit_sha")
     if expected_commit_sha and isinstance(commit, str):
         head = expected_commit_sha
-        if commit != head and not (repo is not None and _baseline_binding_parent_ok(repo, commit, head)):
+        if commit != head and not (
+            repo is not None and _baseline_binding_parent_ok(repo, commit, head)
+        ):
             errors.append(
                 f"commit_sha mismatch: artifact={commit!r} expected HEAD={expected_commit_sha!r}"
             )
@@ -497,7 +499,8 @@ def _compute_publishable(
     *,
     require_clean_tree: bool,
 ) -> tuple[bool, str]:
-    if require_clean_tree and baseline.get("working_tree_clean") is not True:
+    del require_clean_tree  # suffix/exit policy only; publishable always needs clean tree
+    if baseline.get("working_tree_clean") is not True:
         return False, "partial"
     if completeness_errors(baseline):
         return False, "partial"
@@ -532,6 +535,9 @@ def export_runtime_baseline(
         for key, value in quality_gates.items():
             if key in gates:
                 gates[key] = _normalize_gate(value)
+    commit = commit_sha if commit_sha is not None else _commit_sha(repo)
+    backend_passed = tests_passed if tests_passed is not None else "n/a"
+    frontend_passed = frontend_tests_passed if frontend_tests_passed is not None else "n/a"
     f1_display = f"{macro_f1}" if macro_f1 is not None else "n/a"
     env = environment if environment is not None else _environment_fingerprint(repo)
     payload: dict[str, object] = {
@@ -570,9 +576,10 @@ def export_runtime_baseline(
             "extraction_macro_f1": macro_f1,
         },
         "readme_snippet": (
-            f"Backend src ~{src_loc} LOC; tests ~{test_loc} LOC; "
-            f"{test_count}+ test functions; extraction macro_f1={f1_display} "
-            f"(fixture corpus; not product accuracy)"
+            f"tests_passed: backend={backend_passed}, frontend={frontend_passed}; "
+            f"commit {commit[:12]}; see docs/evidence/runtime-baseline-latest.json · "
+            f"src ~{src_loc} LOC; tests ~{test_loc} LOC; "
+            f"extraction macro_f1={f1_display} (fixture corpus; not product accuracy)"
         ),
         "documented_env_vars": _configuration_env_names(repo / "README.md"),
         "architecture_inventory": _live_architecture_inventory(repo),
