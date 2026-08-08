@@ -1,0 +1,5 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Settings.py AEROBIM_* knobs intentionally absent from README ## Configuration. Empty by default after N-20 closure — prefer documenting operator-facing vars in the table.",
+  "vars": {}
+}

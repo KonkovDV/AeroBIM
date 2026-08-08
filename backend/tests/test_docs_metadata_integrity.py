@@ -46,7 +46,9 @@ class DocsMetadataIntegrityTests(unittest.TestCase):
             "## Non-claims (explicit boundaries)\n\n"
             "1. first\n2. second\n9. skipped eight\n10. tenth\n"
         )
-        hits = continuity(Path("docs/pilot-claim-boundary-2026.md"), text, "Non-claims (explicit boundaries)")
+        hits = continuity(
+            Path("docs/pilot-claim-boundary-2026.md"), text, "Non-claims (explicit boundaries)"
+        )
         self.assertEqual(len(hits), 1)
 
     def test_live_repo_passes_after_wp_a3_fixes(self) -> None:

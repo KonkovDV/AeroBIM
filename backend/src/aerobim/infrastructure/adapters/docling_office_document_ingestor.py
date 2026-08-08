@@ -74,7 +74,7 @@ class OfficeDocumentIngestor:
             raise RuntimeError(
                 "python-docx is required for .docx ingest (core dependency)"
             ) from exc
-        document = Document(path)
+        document = Document(str(path))
         lines: list[str] = []
         for para_idx, paragraph in enumerate(document.paragraphs, start=1):
             text = paragraph.text.strip()
