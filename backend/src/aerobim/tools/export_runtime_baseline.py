@@ -439,10 +439,27 @@ def completeness_errors(baseline: dict[str, Any]) -> list[str]:
     return errors
 
 
+_BASELINE_ARTIFACT_REL = "docs/evidence/runtime-baseline-latest.json"
+
+
+def _baseline_binding_parent_ok(repo: Path, artifact_commit: str, head: str) -> bool:
+    """Allow commit_sha == HEAD~1 when HEAD only re-binds the baseline artifact (WP-R0)."""
+    if artifact_commit == head:
+        return True
+    parent = _git(repo, "rev-parse", "HEAD~1")
+    if not parent or artifact_commit != parent:
+        return False
+    changed = _git(repo, "diff", "--name-only", parent, head)
+    if not changed:
+        return False
+    return changed.splitlines() == [_BASELINE_ARTIFACT_REL]
+
+
 def publishability_errors(
     baseline: dict[str, Any],
     *,
     expected_commit_sha: str | None = None,
+    repo: Path | None = None,
 ) -> list[str]:
     """Stricter than completeness: HEAD match + clean tree for publishable artifacts."""
     errors = list(completeness_errors(baseline))
@@ -453,10 +470,12 @@ def publishability_errors(
     if baseline.get("working_tree_clean") is not True:
         errors.append("working_tree_clean must be true for publishable baseline")
     commit = baseline.get("commit_sha")
-    if expected_commit_sha and commit != expected_commit_sha:
-        errors.append(
-            f"commit_sha mismatch: artifact={commit!r} expected HEAD={expected_commit_sha!r}"
-        )
+    if expected_commit_sha and isinstance(commit, str):
+        head = expected_commit_sha
+        if commit != head and not (repo is not None and _baseline_binding_parent_ok(repo, commit, head)):
+            errors.append(
+                f"commit_sha mismatch: artifact={commit!r} expected HEAD={expected_commit_sha!r}"
+            )
     return errors
 
 
@@ -838,7 +857,7 @@ def _check_artifact_publishable(repo: Path) -> list[str]:
     if not isinstance(stored, dict):
         return ["runtime-baseline-latest.json must be an object"]
     head = _commit_sha(repo)
-    return publishability_errors(stored, expected_commit_sha=head or None)
+    return publishability_errors(stored, expected_commit_sha=head or None, repo=repo)
 
 
 def _check_artifact_complete(repo: Path) -> list[str]:
