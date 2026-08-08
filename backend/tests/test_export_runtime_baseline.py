@@ -10,8 +10,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-_REPO = Path(__file__).resolve().parents[2]
-
 from aerobim.tools.export_runtime_baseline import (
     _check_architecture_inventory,
     _check_documented_env_sets,
@@ -21,6 +19,8 @@ from aerobim.tools.export_runtime_baseline import (
     export_runtime_baseline,
     parse_pytest_junit,
 )
+
+_REPO = Path(__file__).resolve().parents[2]
 
 
 class ParseVitestJsonTests(unittest.TestCase):
@@ -198,7 +198,6 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
 
     def test_attestation_cannot_be_forged_locally(self) -> None:
         import os
-        import subprocess
 
         help_result = subprocess.run(
             [sys.executable, "-m", "aerobim.tools.export_runtime_baseline", "--help"],

@@ -14,16 +14,14 @@ from aerobim.domain.models import (
     SourceKind,
     ValidationRequest,
 )
+from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
+    OfficeDocumentIngestor,
+)
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
 from aerobim.infrastructure.adapters.narrative_rule_synthesizer import (
     NarrativeRuleSynthesizer,
-)
-from aerobim.infrastructure.adapters.docling_office_document_ingestor import (
-    DoclingOfficeDocumentIngestor,
-    OfficeDocumentIngestor,
-    _LEGACY_FAIL_MESSAGE,
 )
 
 
