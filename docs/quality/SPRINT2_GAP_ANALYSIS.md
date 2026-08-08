@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Sprint 2 — Gap Analysis (Stage 0)
 
 **Date:** 2026-08-06  

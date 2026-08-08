@@ -52,19 +52,93 @@ class LintClaimsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             tz = Path(tmp) / "TZ.md"
             tz.write_text(
-                "| Row | partial | RT-001 customer corpus blocked |\n"
-                "| Bad | done | approved norm pack delivered |\n",
+                "| Requirement | Status | Module |\n"
+                "|-------------|--------|--------|\n"
+                "| approved norm pack | done | blocked until RT-002 |\n",
                 encoding="utf-8",
             )
+            registry = _REPO / "audit" / "tz_matrix_blocked_registry.json"
             sys.path.insert(0, str(_REPO / "scripts"))
             try:
                 from lint_claims import matrix_guard  # type: ignore[import-not-found]
 
-                hits = matrix_guard(tz)
+                hits = matrix_guard(tz, registry_path=registry)
             finally:
                 if sys.path[0] == str(_REPO / "scripts"):
                     sys.path.pop(0)
             self.assertEqual(len(hits), 1)
+
+    def test_blocked_word_does_not_suppress_forbidden_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "bad.md"
+            path.write_text(
+                "Точность более 90% — blocked wording, но в пилоте достигается.\n",
+                encoding="utf-8",
+            )
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import lint_claims  # type: ignore[import-not-found]
+
+                hits = lint_claims(
+                    matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md", roots=[path]
+                )
+            finally:
+                if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertTrue(hits)
+
+    def test_matrix_guard_catches_mep_row_marked_done(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tz = Path(tmp) / "TZ.md"
+            tz.write_text(
+                "### 3.3 Error detection\n\n"
+                "| Requirement | Status | Module | Phase |\n"
+                "|-------------|--------|--------|-------|\n"
+                "| MEP / system intersections | done | gap | P1 |\n",
+                encoding="utf-8",
+            )
+            registry = _REPO / "audit" / "tz_matrix_blocked_registry.json"
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import matrix_guard  # type: ignore[import-not-found]
+
+                hits = matrix_guard(tz, registry_path=registry)
+            finally:
+                if sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertEqual(len(hits), 1)
+
+    def test_customer_docs_scanned_by_default_roots(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "docs.md"
+            path.write_text("Мы production-ready для заказчика.\n", encoding="utf-8")
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import lint_claims  # type: ignore[import-not-found]
+
+                hits = lint_claims(
+                    matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md", roots=[path]
+                )
+            finally:
+                if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertTrue(hits)
+
+    def test_claim_needs_boundary_flags_unframed_numeric_claim(self) -> None:
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import claim_needs_boundary_violations  # type: ignore[import-not-found]
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        bad = "Detection accuracy is 95% on all projects.\n"
+        hits = claim_needs_boundary_violations(Path("docs/x.md"), bad)
+        self.assertEqual(len(hits), 1)
+        framed = (
+            "Detection on open corpus n=24 claim_level: coverage_map_only — 16.7% "
+            "is coverage-map only, not product accuracy (NO_GO RT-001).\n"
+        )
+        self.assertEqual(claim_needs_boundary_violations(Path("docs/x.md"), framed), [])
 
 
 if __name__ == "__main__":

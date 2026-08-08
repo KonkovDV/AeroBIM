@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
 title: "ТЗ Самолет × ТехЛаб 2026 — Задача 07 (редакция v2.0)"
 status: active

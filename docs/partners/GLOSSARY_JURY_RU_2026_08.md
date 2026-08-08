@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Глоссарий для жюри (без внутреннего жаргона на первом экране)
 
 | Термин в репо | По-русски для заявки |

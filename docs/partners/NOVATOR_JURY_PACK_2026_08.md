@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Jury pack — критерии мышления жюри МИК / Техлаб (верхний слой)
 
 **Дата:** 2026-08-05  

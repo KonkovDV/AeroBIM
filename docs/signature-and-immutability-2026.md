@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Signature and immutability (2026)
 
 **Capability:** `qualified_signature` = **ENG_PARTIAL** when a fixture envelope is audited; default **MISSING** when not evaluated.  

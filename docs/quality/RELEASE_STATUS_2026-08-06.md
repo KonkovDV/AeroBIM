@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Release Status — 2026-08-06
 
 **commit_sha:** `d96a59ac6704357336ae46f7d61f6435be4c6a2c`  
