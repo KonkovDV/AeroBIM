@@ -10,6 +10,7 @@ from pathlib import Path
 from aerobim.tools.export_runtime_baseline import (
     _check_architecture_inventory,
     _check_documented_env_sets,
+    _compute_publishable,
     _live_architecture_inventory,
     completeness_errors,
     export_runtime_baseline,
@@ -140,6 +141,32 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         dumped = json.dumps(baseline)
         self.assertIn("gate not executed", dumped)
         self.assertFalse(baseline.get("publishable"))
+
+    def test_dirty_tree_is_not_publishable_even_when_complete(self) -> None:
+        backend = Path(__file__).resolve().parents[1]
+        baseline = export_runtime_baseline(
+            backend_root=backend,
+            tests_passed=90,
+            tests_skipped=8,
+            tests_failed=0,
+            tests_collected=100,
+            frontend_tests_passed=29,
+            quality_gates={
+                "ruff": {"status": "PASS"},
+                "mypy": {"status": "PASS"},
+                "pytest": {"status": "PASS"},
+                "vitest": {"status": "PASS"},
+                "build": {"status": "PASS"},
+            },
+        )
+        baseline["working_tree_clean"] = False
+        publishable, completeness = _compute_publishable(baseline, require_clean_tree=False)
+        self.assertFalse(publishable)
+        self.assertEqual(completeness, "partial")
+        from aerobim.tools.export_runtime_baseline import publishability_errors
+
+        errors = publishability_errors(baseline)
+        self.assertTrue(any("working_tree_clean" in e for e in errors))
 
 
 class DocumentedEnvSetTests(unittest.TestCase):

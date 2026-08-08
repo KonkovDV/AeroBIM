@@ -2,7 +2,7 @@
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
 version: "1.2.0"
-last_updated: "2026-08-02"
+last_updated: "2026-08-08"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -118,6 +118,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | Web UI | done | `frontend/` review shell | MVP |
 | Drawing overlay of errors | done | `DrawingEvidencePanel` | MVP |
 | Remarks panel: list / filter / priority / edit | done | Severity filter + remark editor → review-events | P0 |
+| Per-check coverage map (four states) | partial | `domain/check_coverage.py` (`no_findings` / `not_checked` / `insufficient_data` / `expert_required`); `tz_gaps` for MEP/CV/DWG/space-efficiency; HTML export first page + `CoverageMapPanel`; `GET /v1/reports/{id}/coverage`; `test_check_coverage_property` (I-8) | P0 WP-R4 |
 
 ## 5. Data sources and constraints
 
@@ -140,7 +141,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | Calc error detection | Cross-doc + OpenRebar on agreed pack | partial | MVP |
 | Inconsistency accuracy >90% | Same adjudication path as clash | partial (harness + protocol; not measured on customer corpus) | P1 harness done / P4 publish |
 | Remark quality RU/EN | RU templates live; EN P0; human edit HITL | partial | P0 |
-| Model accuracy / stability | pytest + capabilities fail-closed | done | MVP |
+| Model accuracy / stability | pytest + capabilities fail-closed + publishable runtime baseline (`tests_passed` numeric; `claims-lint` CI) | done | MVP |
 | Scalability | Jobs + optional Redis/Postgres/S3 | partial | MVP foundation |
 | UI usability | Review shell; remarks panel P0 | partial | P0 |
 | Package ≤30 min | `measure_package_sla` on **agreed** pack | done (fixture); customer TBD | MVP |
@@ -166,7 +167,7 @@ Manifest: [`samples/tz-appendix/MANIFEST.json`](../../samples/tz-appendix/MANIFE
 | Phase | Focus |
 |-------|-------|
 | **MVP** | Deterministic IFC/IDS/cross-doc/clash + OCR baseline + templates + browser review |
-| **P0 (Checkpoint #2 eng)** | WP-01..08 eng package landed (baseline complete; HybridRouteGate; signature ENG_PARTIAL; norm v2; completeness; open-corpora n=7 honest; quality protocol 0.60; README/baseline sync). RT-001/002/003 still OPEN → Checkpoint **NO_GO** |
+| **P0 (Checkpoint #2 eng)** | WP-01..08 + WP-R0/R10/R4 eng: publishable baseline schema 1.3.0 (`tests_passed`, five PASS gates, `baseline-integrity` CI); executable Claims Lock linter + matrix guard; coverage map four states in report/UI. RT-001/002/003 still OPEN → Checkpoint **NO_GO** |
 | **P0** | Multipart upload, remarks UI (list/filter/edit), EN remarks |
 | **P1** | Norm packs, section pairing, detection precision harness — engineering scaffolds landed; customer pack/corpus still required |
 | **P2** | DXF/DWG thin adapter, OCR deepen, CV advisory |

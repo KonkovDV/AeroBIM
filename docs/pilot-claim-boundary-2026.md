@@ -58,7 +58,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 | RT-003 MEP scaffold honesty | Agent `detect_system_clash` → `degraded`; gap doc matches DI wiring; product MEP still HOLD |
 | Norm rule packs fail-closed (P0.2) | Requested/configured pack load error → `capabilities.norm_rule_packs=failed` → `summary.passed=false`; packs not requested → `skipped` (does not block) |
 | PrecisionClaim publish gate (R1/R4) | Typed claim; render withheld unless `corpus_kind=customer` and ≥2 adjudicators |
-| Runtime baseline metrics (R5) | `python -m aerobim.tools.export_runtime_baseline` — LOC/tests/F1 not hand-authored |
+| Runtime baseline metrics (R5) | `python -m aerobim.tools.export_runtime_baseline --run-gates --require-clean-tree` — numeric `tests_passed`, `publishable: true` only on clean tree; see `docs/evidence/runtime-baseline-latest.json` |
+| Claims Lock CI linter (WP-R10) | `python scripts/lint_claims.py` + `--matrix-guard` — machine-checkable forbidden claims |
 | Internal self-audit naming (R2) | Self assessments must not be labeled external/independent |
 | Four contours | ingestion / deterministic_validation / ai_advisory / evidence_reporting — AI cannot mutate `passed`; Analyze UC coordinates contour orchestrators (RT-A) |
 | I9 IFC KG port wiring | Domain port + DI + `query_ifc_kg` + fixture `evaluate_ifc_qa` — **advisory scaffold only** |
@@ -143,7 +144,7 @@ python -m aerobim.tools.evaluate_detection_precision \
   --labels ../samples/benchmarks/detection-precision/labels-synthetic.json \
   --detections ../samples/benchmarks/detection-precision/detections-synthetic.json \
   --min-precision 0.6 --min-recall 0.6 --min-f1 0.6
-python -m aerobim.tools.export_runtime_baseline
+python -m aerobim.tools.export_runtime_baseline --run-gates --require-clean-tree --require-complete
 ```
 
 Use an **isolated** virtual environment under `AeroBIM/backend/.venv-pilot`, not the monorepo root `.venv`.

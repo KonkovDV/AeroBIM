@@ -2,7 +2,7 @@
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
 version: "1.3.0"
-last_updated: "2026-08-03"
+last_updated: "2026-08-08"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
@@ -71,7 +71,8 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Hybrid AI routing + WP-02 advisory pre-gate | `domain/hybrid/*` + `HybridRouteGate` on Analyze advisory; OFF==ON; never sets `summary.passed` — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) · [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md) |
 | Local Qwen advisory remark compose (KT#2 W1) | `private_qwen_local` + `OpenAICompatLlmProvider` + `compose_advisory_remark`; `ai_generated` + expert required; cloud Max NOT_VERIFIED — [`QWEN_LOCAL_KT2_PLAN`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) |
 | Yandex AI Studio grant path (KT#2 T2) | Same adapter; `private_yandex_ai_studio`; token caps; RF cloud for open corpora; on-prem for pilot — [`YANDEX_AI_STUDIO_GRANT`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md) |
-| Runtime baseline complete (WP-01) | `docs/evidence/runtime-baseline-latest.json` schema 1.2.0; CI `--check-complete` / `--check-readme` |
+| Runtime baseline complete (WP-01 / WP-R0) | `docs/evidence/runtime-baseline-latest.json` schema **1.3.0**; numeric `tests_passed` (backend+frontend); five `quality_gates=PASS`; `publishable` requires clean tree; CI `baseline-integrity` (`--check-publishable`) + `--check-readme` |
+| Executable Claims Lock linter (WP-R10) | `scripts/lint_claims.py` (patterns from this matrix); CI blocking; `--matrix-guard` enforces Samolet-blocked rows ≠ `done` |
 | Detached signature envelope (WP-03) | `qualified_signature` ENG_PARTIAL; trust_chain NOT_VERIFIED — never «УКЭП проверена» |
 | Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + journal; RT-002 OPEN |
 | Package completeness inventory (WP-05) | Soft opt-in; fixture-grade; no native DWG |
@@ -83,7 +84,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`; inventory + [`license-policy-2026.md`](license-policy-2026.md) |
 | Annotation claimed-GUID presence (P2-04) | spatial-index lookup; wall-guid demo pin [`evidence/checkpoint2-evidence-bundle-latest.json`](evidence/checkpoint2-evidence-bundle-latest.json) |
 | MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + `AEROBIM_MEP_AABB_FILTER`; always `geometry_verified=False` — [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) |
-| Per-source check-coverage map (checked / not-checked / findings / requires-expert) | `domain/check_coverage.py` + 16 tests; verdict-neutral observability; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope; exposed read-only via `GET /v1/reports/{id}/coverage` (ACL-scoped, verdict-neutral); not embedded in the persisted report |
+| Per-source check-coverage map (four presentation states) | `domain/check_coverage.py` + property test (I-8) + E2E MEP `not_checked`; `tz_gaps` (MEP/CV/DWG/space); HTML export coverage first page + frontend `CoverageMapPanel`; `GET /v1/reports/{id}/coverage` (ACL-scoped, verdict-neutral); `no_findings` impossible when check not executed |
 | Advisory domain modules (drawing region quality/type/assessment, revision diff, norm applicability) | `domain/{region_quality,region_classifier,drawing_region_assessment,revision_diff,norm_applicability}.py` + tests; domain-pure, verdict-neutral (do NOT set summary.passed), fixture-only, NOT wired into ingestion/verdict; bad/unknown/ambiguous → escalate, never a silent OK/guess |
 
 ## Run manifest (iteration 2026-07-21)
