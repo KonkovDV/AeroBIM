@@ -188,7 +188,7 @@ class HitlPreviousStateSsotTests(unittest.TestCase):
                 },
             )
             self.assertEqual(response.status_code, 409, response.text)
-            self.assertIn("previous_state", response.text)
+            self.assertEqual(response.json().get("detail"), "HITL state conflict")
 
 
 class EvidenceHtmlEnforcedTests(unittest.TestCase):

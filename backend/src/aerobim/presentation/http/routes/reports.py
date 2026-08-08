@@ -20,6 +20,10 @@ from aerobim.presentation.http.context import (
     attachment_content_disposition,
     safe_preview_media_type,
 )
+from aerobim.presentation.http.errors import (
+    public_bad_request_detail,
+    public_hitl_state_conflict_detail,
+)
 from aerobim.presentation.http.schemas import ReviewEventRequest
 
 
@@ -147,9 +151,15 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
                 )
             )
         except HitlStateConflictError as exc:
-            raise HTTPException(status_code=409, detail=str(exc)) from exc
+            raise HTTPException(
+                status_code=409,
+                detail=public_hitl_state_conflict_detail(),
+            ) from exc
         except HitlTransitionError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raise HTTPException(
+                status_code=400,
+                detail=public_bad_request_detail(),
+            ) from exc
         return {"event": asdict(event)}
 
     @router.get("/v1/reports/{report_id}/review-events")

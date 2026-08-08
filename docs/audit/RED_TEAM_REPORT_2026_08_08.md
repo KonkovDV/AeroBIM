@@ -2,12 +2,16 @@
 title: "Red Team Master Audit — Findings Report"
 date: 2026-08-08
 phase: "1-2"
-status: findings_only
+status: superseded
 checkpoint: NO_GO
-remediation: awaiting_owner
+remediation: closed_engineering
+superseded_by: docs/audit/RED_TEAM_CLOSURE_2026_08_08.md
 ---
 
 # Red Team Master Audit — Findings Report (Phases 1–2)
+
+> **Historical:** Pre-remediation findings registry. Engineering closure: [`RED_TEAM_CLOSURE_2026_08_08.md`](RED_TEAM_CLOSURE_2026_08_08.md); Waves 3–5: `RED_TEAM_WAVE*_CLOSURE_2026_08_08.md`.
+
 
 **Audit ID:** RT-MASTER-2026-08-08  
 **Snapshot:** [`RED_TEAM_SNAPSHOT_2026_08_08.md`](RED_TEAM_SNAPSHOT_2026_08_08.md)  

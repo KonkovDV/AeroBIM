@@ -14,6 +14,7 @@ from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
 )
 from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.errors import (
+    public_analyze_concurrency_limit_detail,
     public_bad_request_detail,
     public_service_unavailable_detail,
     public_sync_analyze_disabled_detail,
@@ -26,6 +27,10 @@ from aerobim.presentation.http.schemas import (
     OpenRebarDigestRequest,
     ValidateIfcRequest,
 )
+
+
+def _normalize_idempotency_key(value: str | None) -> str | None:
+    return (value or "").strip() or None
 
 
 def build_analyze_router(ctx: ApiContext) -> APIRouter:
@@ -180,7 +185,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except ValueError as exc:
             logger.warning("submit_analyze_project_package bad request", detail=str(exc))
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
-        idem = (idempotency_key or "").strip() or None
+        idem = _normalize_idempotency_key(idempotency_key)
         if idem is not None and len(idem) > 128:
             raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
 
@@ -199,7 +204,10 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 max_concurrent_per_tenant=ctx.settings.max_concurrent_analyze_jobs_per_tenant,
             )
         except JobConcurrencyLimitError as exc:
-            raise HTTPException(status_code=429, detail=str(exc)) from exc
+            raise HTTPException(
+                status_code=429,
+                detail=public_analyze_concurrency_limit_detail(),
+            ) from exc
         if job.status.value == "queued":
             background_tasks.add_task(job_runner.run, job.job_id, request)
         return ctx.serialize_analyze_project_package_job(job)

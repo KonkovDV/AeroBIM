@@ -13,6 +13,8 @@ _PUBLIC_UPLOAD_PROMOTE_FAILED = "Upload promote failed"
 _PUBLIC_UPLOAD_OBJECT_STORE_FAILED = "Object store write failed"
 _PUBLIC_HITL_FORBIDDEN = "Expert HITL events require OIDC reviewer identity"
 _PUBLIC_SYNC_ANALYZE_DISABLED = "Synchronous analyze disabled; use async submit endpoint"
+_PUBLIC_ANALYZE_CONCURRENCY_LIMIT = "Analyze concurrency limit exceeded"
+_PUBLIC_HITL_STATE_CONFLICT = "HITL state conflict"
 
 
 def public_bad_request_detail() -> str:
@@ -63,9 +65,19 @@ def public_sync_analyze_disabled_detail() -> str:
     return _PUBLIC_SYNC_ANALYZE_DISABLED
 
 
+def public_analyze_concurrency_limit_detail() -> str:
+    return _PUBLIC_ANALYZE_CONCURRENCY_LIMIT
+
+
+def public_hitl_state_conflict_detail() -> str:
+    return _PUBLIC_HITL_STATE_CONFLICT
+
+
 __all__ = [
+    "public_analyze_concurrency_limit_detail",
     "public_bad_request_detail",
     "public_hitl_forbidden_detail",
+    "public_hitl_state_conflict_detail",
     "public_service_unavailable_detail",
     "public_sync_analyze_disabled_detail",
     "public_upload_content_rejected_detail",

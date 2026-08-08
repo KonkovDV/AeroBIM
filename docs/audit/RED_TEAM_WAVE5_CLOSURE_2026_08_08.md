@@ -15,6 +15,7 @@ status: remediated
 | RT-GOV-006 | **CLOSED** | FastAPI `response_model=None` for binary/stream routes (`Response \| FileResponse`) |
 | RT-GOV-007 | **CLOSED** | Rate-limit Redis keys hash bearer; pilot/prod fail-closed when Redis unavailable |
 | RT-GOV-008 | **CLOSED** | OIDC tenant claim rejects non-string values; analyze idempotency key normalized |
+| RT-ERR-002 | **CLOSED** | Stable public HTTP details on analyze 429, HITL 409/400, norm-pack 400 (no `str(exc)` leak) |
 
 ## Post-Wave 5 hardening (2026-08-08)
 

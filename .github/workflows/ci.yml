@@ -295,6 +295,7 @@ jobs:
             "project-package-baseline.json",
             "project-package-fire-compliance.json",
             "project-package-stress-multisource.json",
+            "project-package-pilot-moscow-v1.json",
           ]
 
           lines = [

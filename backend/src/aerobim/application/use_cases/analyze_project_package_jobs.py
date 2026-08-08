@@ -29,6 +29,7 @@ class SubmitAnalyzeProjectPackageJobUseCase:
         max_concurrent_per_tenant: int | None = None,
     ) -> AnalyzeProjectPackageJob:
         tenant_id = (request.tenant_id or "").strip() or None
+        idempotency_key = (idempotency_key or "").strip() or None
         # Opportunistic reclaim before concurrency accounting / create.
         self._job_store.reclaim_stale_running()
         if idempotency_key:
