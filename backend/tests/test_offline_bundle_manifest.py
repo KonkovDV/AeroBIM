@@ -125,3 +125,36 @@ def test_closed_contour_verify_without_smoke(tmp_path: Path, monkeypatch) -> Non
     bundle_dir = _make_bundle(tmp_path)
     monkeypatch.setattr(bundle, "_BUNDLE_DIR", bundle_dir)
     assert bundle.cmd_closed_contour(run_smoke=False) == 0
+
+
+def test_container_probe_script_checks_auth_and_egress() -> None:
+    from aerobim.tools.offline_bundle import _container_probe_script
+
+    script = _container_probe_script(token="test-token")
+    assert "401" in script or "base64" in script
+    assert "1.1.1.1" in script or "base64" in script
+
+
+def test_install_scripts_refuse_demo_token_without_flag(tmp_path: Path) -> None:
+    from aerobim.tools.offline_bundle import write_install_scripts
+
+    write_install_scripts(tmp_path)
+    sh = (tmp_path / "install_offline.sh").read_text(encoding="utf-8")
+    ps1 = (tmp_path / "install_offline.ps1").read_text(encoding="utf-8")
+    assert "AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN" in sh
+    assert "network none" in sh
+    assert "-p " not in sh
+    assert "AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN" in ps1
+    assert 'docker run' in ps1 and '-p ' not in ps1.split('docker run', 1)[1]
+
+
+def test_wheelhouse_artifact_in_manifest(tmp_path: Path) -> None:
+    from aerobim.tools.offline_bundle import write_install_docs, write_install_scripts, write_wheelhouse_artifact
+
+    for name in _BUNDLE_FILES:
+        (tmp_path / name).write_bytes(f"content-of-{name}".encode())
+    write_install_docs(tmp_path)
+    write_install_scripts(tmp_path)
+    write_wheelhouse_artifact(tmp_path)
+    manifest = build_manifest(tmp_path, image_id="sha256:test")
+    assert "wheelhouse-OUT_OF_SCOPE.json" in manifest["files"]

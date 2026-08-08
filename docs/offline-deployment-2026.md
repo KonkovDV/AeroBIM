@@ -19,7 +19,7 @@ python -m aerobim.tools.offline_bundle sbom
 python -m aerobim.tools.offline_bundle wheelhouse  # exit 2 — OUT_OF_SCOPE honesty artifact
 ```
 
-`smoke` path: `docker rmi` tag → `docker load` from tar → run container `--network none` → health + capabilities HTTP checks.
+`smoke` path: `docker rmi` tag → `docker load` from tar → `--network none` → in-container probes (health, auth 401 gate, capabilities, egress block).
 
 `wheelhouse` writes `wheelhouse-OUT_OF_SCOPE.json` (exit **2**) — bare-metal pip is not required for И1.
 
@@ -51,7 +51,9 @@ CI: `.github/workflows/ci.yml` job `offline-bundle-smoke` (on `main`).
 1. Copy `artifacts/offline-bundle/` to the closed-contour host.
 2. `python -m aerobim.tools.offline_bundle verify` (or manual sha256 vs manifest).
 3. Run `install_offline.sh` (Linux) or `install_offline.ps1` (Windows) from the bundle dir.
-4. Probe `GET /health` and `GET /v1/system/capabilities` with bearer token.
+   Set `AEROBIM_API_BEARER_TOKEN` (required). API probes use `docker exec` — host `-p`
+   is unreliable with `--network none`.
+4. Probe `GET /health` inside the container.
 
 Live evidence: [`docs/evidence/offline-closed-contour-docker-2026-08.md`](evidence/offline-closed-contour-docker-2026-08.md).
 
