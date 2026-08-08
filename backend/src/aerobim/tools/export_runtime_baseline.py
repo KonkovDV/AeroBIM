@@ -440,19 +440,32 @@ def completeness_errors(baseline: dict[str, Any]) -> list[str]:
 
 
 _BASELINE_ARTIFACT_REL = "docs/evidence/runtime-baseline-latest.json"
+_BASELINE_BINDING_PATHS = frozenset(
+    {
+        _BASELINE_ARTIFACT_REL,
+        "backend/src/aerobim/tools/export_runtime_baseline.py",
+    }
+)
 
 
 def _baseline_binding_parent_ok(repo: Path, artifact_commit: str, head: str) -> bool:
-    """Allow commit_sha == HEAD~1 when HEAD only re-binds the baseline artifact (WP-R0)."""
+    """Accept commit_sha when only baseline-binding commits sit between artifact and HEAD."""
     if artifact_commit == head:
         return True
-    parent = _git(repo, "rev-parse", "HEAD~1")
-    if not parent or artifact_commit != parent:
-        return False
-    changed = _git(repo, "diff", "--name-only", parent, head)
-    if not changed:
-        return False
-    return changed.splitlines() == [_BASELINE_ARTIFACT_REL]
+    current = head
+    while current:
+        parent = _git(repo, "rev-parse", f"{current}~1")
+        if not parent:
+            return False
+        changed = {
+            line for line in _git(repo, "diff", "--name-only", parent, current).splitlines() if line
+        }
+        if changed and not changed <= _BASELINE_BINDING_PATHS:
+            return False
+        if parent == artifact_commit:
+            return True
+        current = parent
+    return False
 
 
 def publishability_errors(
