@@ -16,11 +16,12 @@ import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-_SCHEMA_VERSION = "1.2.1"
+_SCHEMA_VERSION = "1.3.0"
 _QUALITY_GATE_KEYS = ("ruff", "mypy", "pytest", "vitest", "build")
 _ALLOWED_GATE_VALUES = frozenset({"PASS", "FAIL", "SKIPPED", "UNKNOWN", "NOT_RUN"})
 _COMPLETE_GATE_VALUE = "PASS"
@@ -155,8 +156,35 @@ def _extraction_macro_f1(backend_root: Path) -> float | None:
     return float(value) if isinstance(value, int | float) else None
 
 
-def _default_quality_gates() -> dict[str, str]:
-    return {key: "UNKNOWN" for key in _QUALITY_GATE_KEYS}
+def _gate_status(value: object) -> str:
+    if isinstance(value, dict):
+        raw = value.get("status")
+        return str(raw).upper() if raw is not None else "UNKNOWN"
+    return str(value).upper()
+
+
+def _normalize_gate(value: object, *, reason: str | None = None) -> dict[str, object]:
+    if isinstance(value, dict):
+        payload = dict(value)
+        payload["status"] = _gate_status(payload)
+        if payload["status"] == "UNKNOWN" and reason and not payload.get("reason"):
+            payload["reason"] = reason
+        return payload
+    status = str(value).upper()
+    gate: dict[str, object] = {"status": status}
+    if status == "UNKNOWN" and reason:
+        gate["reason"] = reason
+    return gate
+
+
+def _default_quality_gates() -> dict[str, dict[str, object]]:
+    return {
+        key: _normalize_gate(
+            "UNKNOWN",
+            reason="gate not executed in this export run",
+        )
+        for key in _QUALITY_GATE_KEYS
+    }
 
 
 def _parse_gate(raw: str) -> tuple[str, str]:
@@ -175,6 +203,154 @@ def _parse_gate(raw: str) -> tuple[str, str]:
             f"{', '.join(sorted(_ALLOWED_GATE_VALUES))}"
         )
     return key, value
+
+
+def _run_subprocess_gate(
+    label: str,
+    cmd: list[str],
+    *,
+    cwd: Path,
+    timeout_s: int = 900,
+) -> dict[str, object]:
+    from time import perf_counter
+
+    started = perf_counter()
+    run_cmd = cmd
+    if platform.system() == "Windows" and cmd and cmd[0] == "npm":
+        run_cmd = ["cmd", "/c", *cmd]
+    try:
+        completed = subprocess.run(
+            run_cmd,
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout_s,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {
+            "status": "FAIL",
+            "tool": cmd[0] if cmd else label,
+            "exit_code": -1,
+            "duration_ms": round((perf_counter() - started) * 1000.0, 1),
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+    status = "PASS" if completed.returncode == 0 else "FAIL"
+    payload: dict[str, object] = {
+        "status": status,
+        "tool": cmd[0] if cmd else label,
+        "exit_code": completed.returncode,
+        "duration_ms": round((perf_counter() - started) * 1000.0, 1),
+    }
+    if status == "FAIL":
+        tail = (completed.stderr or completed.stdout or "").strip()[-400:]
+        if tail:
+            payload["reason"] = tail
+    return payload
+
+
+def run_quality_gates(
+    repo: Path, *, junit_path: Path | None = None
+) -> dict[str, dict[str, object]]:
+    """Execute local quality gates and return structured gate payloads."""
+    backend = repo / "backend"
+    frontend = repo / "frontend"
+    junit = junit_path or (repo / "backend" / "var" / "reports" / "pytest-junit.xml")
+    junit.parent.mkdir(parents=True, exist_ok=True)
+    gates: dict[str, dict[str, object]] = {}
+    gates["ruff"] = _run_subprocess_gate(
+        "ruff",
+        [sys.executable, "-m", "ruff", "format", "--check", "src", "tests"],
+        cwd=backend,
+    )
+    if _gate_status(gates["ruff"]) == "PASS":
+        gates["ruff_check"] = _run_subprocess_gate(
+            "ruff_check",
+            [sys.executable, "-m", "ruff", "check", "src", "tests"],
+            cwd=backend,
+        )
+        # Merge ruff check into ruff gate status for publishable baseline.
+        if _gate_status(gates["ruff_check"]) != "PASS":
+            gates["ruff"] = dict(gates["ruff_check"])
+            gates["ruff"]["tool"] = "ruff"
+    gates["mypy"] = _run_subprocess_gate(
+        "mypy",
+        [
+            sys.executable,
+            "-m",
+            "mypy",
+            "src/aerobim",
+            "--strict",
+            "--ignore-missing-imports",
+        ],
+        cwd=backend,
+    )
+    gates["pytest"] = _run_subprocess_gate(
+        "pytest",
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            f"--junitxml={junit.as_posix()}",
+        ],
+        cwd=backend,
+        timeout_s=1200,
+    )
+    vitest_json = frontend / "var" / "vitest-results.json"
+    if frontend.is_dir() and (frontend / "package.json").is_file():
+        vitest_json.parent.mkdir(parents=True, exist_ok=True)
+        gates["vitest"] = _run_subprocess_gate(
+            "vitest",
+            [
+                "npm",
+                "test",
+                "--",
+                "--run",
+                "--reporter=json",
+                "--outputFile=var/vitest-results.json",
+            ],
+            cwd=frontend,
+        )
+        gates["build"] = _run_subprocess_gate(
+            "build",
+            ["npm", "run", "build"],
+            cwd=frontend,
+        )
+    else:
+        gates["vitest"] = _normalize_gate(
+            "SKIPPED",
+            reason="frontend/package.json missing",
+        )
+        gates["build"] = _normalize_gate(
+            "SKIPPED",
+            reason="frontend/package.json missing",
+        )
+    # Publishable contract expects these five keys exactly.
+    return {
+        "ruff": gates["ruff"],
+        "mypy": gates["mypy"],
+        "pytest": gates["pytest"],
+        "vitest": gates["vitest"],
+        "build": gates["build"],
+    }
+
+
+def parse_vitest_json(path: Path) -> dict[str, int]:
+    """Parse vitest JSON reporter output into passed / failed / skipped counts."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("vitest JSON root must be an object")
+    passed = int(payload.get("numPassedTests", 0))
+    failed = int(payload.get("numFailedTests", 0))
+    skipped = int(payload.get("numPendingTests", 0) or payload.get("numTodoTests", 0))
+    total = int(payload.get("numTotalTests", passed + failed + skipped))
+    return {
+        "tests_collected": total,
+        "tests_passed": passed,
+        "tests_skipped": skipped,
+        "tests_failed": failed,
+    }
 
 
 def parse_pytest_junit(path: Path) -> dict[str, int]:
@@ -238,11 +414,14 @@ def completeness_errors(baseline: dict[str, Any]) -> list[str]:
     else:
         for key in _QUALITY_GATE_KEYS:
             value = gates.get(key)
-            if value != _COMPLETE_GATE_VALUE:
+            if _gate_status(value) != _COMPLETE_GATE_VALUE:
                 errors.append(
                     f"quality_gates.{key} must be {_COMPLETE_GATE_VALUE!r} for complete "
-                    f"baseline, got {value!r}"
+                    f"baseline, got {_gate_status(value)!r}"
                 )
+            if isinstance(value, dict) and _gate_status(value) == "UNKNOWN":
+                if not str(value.get("reason") or "").strip():
+                    errors.append(f"quality_gates.{key} UNKNOWN requires non-empty reason")
 
     env = baseline.get("environment")
     if not isinstance(env, dict):
@@ -260,6 +439,39 @@ def completeness_errors(baseline: dict[str, Any]) -> list[str]:
     return errors
 
 
+def publishability_errors(
+    baseline: dict[str, Any],
+    *,
+    expected_commit_sha: str | None = None,
+) -> list[str]:
+    """Stricter than completeness: HEAD match + clean tree for publishable artifacts."""
+    errors = list(completeness_errors(baseline))
+    if baseline.get("publishable") is not True:
+        errors.append("publishable must be true for publishable baseline")
+    if baseline.get("artifact_completeness") != "full":
+        errors.append("artifact_completeness must be 'full' for publishable baseline")
+    if baseline.get("working_tree_clean") is not True:
+        errors.append("working_tree_clean must be true for publishable baseline")
+    commit = baseline.get("commit_sha")
+    if expected_commit_sha and commit != expected_commit_sha:
+        errors.append(
+            f"commit_sha mismatch: artifact={commit!r} expected HEAD={expected_commit_sha!r}"
+        )
+    return errors
+
+
+def _compute_publishable(
+    baseline: dict[str, Any],
+    *,
+    require_clean_tree: bool,
+) -> tuple[bool, str]:
+    if require_clean_tree and baseline.get("working_tree_clean") is not True:
+        return False, "partial"
+    if completeness_errors(baseline):
+        return False, "partial"
+    return True, "full"
+
+
 def export_runtime_baseline(
     *,
     backend_root: Path | None = None,
@@ -268,10 +480,11 @@ def export_runtime_baseline(
     tests_skipped: int | None = None,
     tests_failed: int | None = None,
     tests_collected: int | None = None,
-    quality_gates: dict[str, str] | None = None,
+    quality_gates: Mapping[str, object] | None = None,
     commit_sha: str | None = None,
     tree_sha: str | None = None,
     environment: dict[str, object] | None = None,
+    require_clean_tree: bool = False,
 ) -> dict[str, object]:
     backend = (backend_root or (_repo_root() / "backend")).resolve()
     repo = backend.parent
@@ -286,10 +499,10 @@ def export_runtime_baseline(
     if quality_gates:
         for key, value in quality_gates.items():
             if key in gates:
-                gates[key] = value
+                gates[key] = _normalize_gate(value)
     f1_display = f"{macro_f1}" if macro_f1 is not None else "n/a"
     env = environment if environment is not None else _environment_fingerprint(repo)
-    return {
+    payload: dict[str, object] = {
         "artifact_type": "aerobim_runtime_baseline",
         "schema_version": _SCHEMA_VERSION,
         "commit_sha": commit_sha if commit_sha is not None else _commit_sha(repo),
@@ -332,6 +545,10 @@ def export_runtime_baseline(
         "documented_env_vars": _configuration_env_names(repo / "README.md"),
         "architecture_inventory": _live_architecture_inventory(repo),
     }
+    publishable, completeness = _compute_publishable(payload, require_clean_tree=require_clean_tree)
+    payload["artifact_completeness"] = completeness
+    payload["publishable"] = publishable
+    return payload
 
 
 def _live_architecture_inventory(repo: Path) -> dict[str, int]:
@@ -610,6 +827,20 @@ def _check_artifact_drift(repo: Path, live: dict[str, object]) -> list[str]:
     return errors
 
 
+def _check_artifact_publishable(repo: Path) -> list[str]:
+    artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
+    if not artifact.exists():
+        return ["Missing docs/evidence/runtime-baseline-latest.json"]
+    try:
+        stored = json.loads(artifact.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return ["Invalid runtime-baseline-latest.json"]
+    if not isinstance(stored, dict):
+        return ["runtime-baseline-latest.json must be an object"]
+    head = _commit_sha(repo)
+    return publishability_errors(stored, expected_commit_sha=head or None)
+
+
 def _check_artifact_complete(repo: Path) -> list[str]:
     artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
     if not artifact.exists():
@@ -648,6 +879,24 @@ def main(argv: list[str] | None = None) -> int:
             "Fail if committed runtime-baseline-latest.json has null/UNKNOWN fields "
             "(WP-01). Use with --check-readme in CI."
         ),
+    )
+    parser.add_argument(
+        "--check-publishable",
+        action="store_true",
+        help=(
+            "Fail if committed runtime-baseline-latest.json is not publishable "
+            "(complete + clean tree + commit_sha == HEAD)"
+        ),
+    )
+    parser.add_argument(
+        "--require-clean-tree",
+        action="store_true",
+        help="Mark artifact publishable=false when working tree is dirty; add -dirty suffix to --out",
+    )
+    parser.add_argument(
+        "--run-gates",
+        action="store_true",
+        help="Execute ruff/mypy/pytest/vitest/build and record structured quality_gates",
     )
     parser.add_argument(
         "--require-complete",
@@ -701,28 +950,47 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     repo = _repo_root()
     gates = _default_quality_gates()
+    junit_path: Path | None = None
+    vitest_json_path: Path | None = None
+    if args.run_gates:
+        junit_path = repo / "backend" / "var" / "reports" / "pytest-junit.xml"
+        vitest_json_path = repo / "frontend" / "var" / "vitest-results.json"
+        gates = run_quality_gates(repo, junit_path=junit_path)
     for raw in args.gate:
         key, value = _parse_gate(raw)
-        gates[key] = value
+        gates[key] = _normalize_gate(value)
 
     tests_passed = args.tests_passed
     tests_skipped = args.tests_skipped
     tests_failed = args.tests_failed
     tests_collected: int | None = None
-    if args.pytest_junit is not None:
-        parsed = parse_pytest_junit(args.pytest_junit)
+    frontend_tests_passed = args.frontend_tests_passed
+    junit_for_parse = args.pytest_junit or junit_path
+    if junit_for_parse is not None and junit_for_parse.is_file():
+        parsed = parse_pytest_junit(junit_for_parse)
         tests_passed = parsed["tests_passed"] if tests_passed is None else tests_passed
         tests_skipped = parsed["tests_skipped"] if tests_skipped is None else tests_skipped
         tests_failed = parsed["tests_failed"] if tests_failed is None else tests_failed
         tests_collected = parsed["tests_collected"]
+    vitest_for_parse = vitest_json_path
+    if vitest_for_parse is not None and vitest_for_parse.is_file():
+        vitest_parsed = parse_vitest_json(vitest_for_parse)
+        if frontend_tests_passed is None:
+            frontend_tests_passed = vitest_parsed["tests_passed"]
 
-    if args.check_readme or args.check_complete:
-        live = export_runtime_baseline(backend_root=repo / "backend", quality_gates=gates)
+    if args.check_readme or args.check_complete or args.check_publishable:
+        live = export_runtime_baseline(
+            backend_root=repo / "backend",
+            quality_gates=gates,
+            require_clean_tree=args.require_clean_tree,
+        )
         errors: list[str] = []
         if args.check_readme:
             errors.extend(_check_readme_markers(repo) + _check_artifact_drift(repo, live))
         if args.check_complete:
             errors.extend(_check_artifact_complete(repo))
+        if args.check_publishable:
+            errors.extend(_check_artifact_publishable(repo))
         if errors:
             for message in errors:
                 print(message, file=sys.stderr)
@@ -732,12 +1000,13 @@ def main(argv: list[str] | None = None) -> int:
 
     baseline = export_runtime_baseline(
         backend_root=repo / "backend",
-        frontend_tests_passed=args.frontend_tests_passed,
+        frontend_tests_passed=frontend_tests_passed,
         tests_passed=tests_passed,
         tests_skipped=tests_skipped,
         tests_failed=tests_failed,
         tests_collected=tests_collected,
         quality_gates=gates,
+        require_clean_tree=args.require_clean_tree,
     )
     if args.require_complete:
         errors = completeness_errors(baseline)
@@ -747,6 +1016,8 @@ def main(argv: list[str] | None = None) -> int:
             return 1
 
     out = args.out or (repo / "docs" / "evidence" / "runtime-baseline-latest.json")
+    if args.require_clean_tree and baseline.get("working_tree_clean") is not True:
+        out = out.with_name(f"{out.stem}-dirty{out.suffix}")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(baseline, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(baseline, ensure_ascii=False, indent=2))

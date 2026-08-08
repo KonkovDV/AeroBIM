@@ -17,6 +17,25 @@ from aerobim.tools.export_runtime_baseline import (
 )
 
 
+class ParseVitestJsonTests(unittest.TestCase):
+    def test_parses_vitest_counts(self) -> None:
+        payload = {
+            "numTotalTests": 32,
+            "numPassedTests": 29,
+            "numFailedTests": 1,
+            "numPendingTests": 2,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "vitest.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            from aerobim.tools.export_runtime_baseline import parse_vitest_json
+
+            parsed = parse_vitest_json(path)
+        self.assertEqual(parsed["tests_passed"], 29)
+        self.assertEqual(parsed["tests_failed"], 1)
+        self.assertEqual(parsed["tests_skipped"], 2)
+
+
 class ParsePytestJunitTests(unittest.TestCase):
     def test_parses_suite_counts(self) -> None:
         xml = """<?xml version="1.0" encoding="utf-8"?>
@@ -36,7 +55,7 @@ class ParsePytestJunitTests(unittest.TestCase):
 class CompletenessErrorsTests(unittest.TestCase):
     def _complete(self) -> dict:
         return {
-            "schema_version": "1.2.1",
+            "schema_version": "1.3.0",
             "commit_sha": "abc123",
             "tree_sha": "def456",
             "backend": {
@@ -47,11 +66,11 @@ class CompletenessErrorsTests(unittest.TestCase):
             },
             "frontend": {"tests_passed": 29},
             "quality_gates": {
-                "ruff": "PASS",
-                "mypy": "PASS",
-                "pytest": "PASS",
-                "vitest": "PASS",
-                "build": "PASS",
+                "ruff": {"status": "PASS"},
+                "mypy": {"status": "PASS"},
+                "pytest": {"status": "PASS"},
+                "vitest": {"status": "PASS"},
+                "build": {"status": "PASS"},
             },
             "environment": {
                 "python_version": "3.12.0",
@@ -62,11 +81,15 @@ class CompletenessErrorsTests(unittest.TestCase):
         }
 
     def test_complete_baseline_has_no_errors(self) -> None:
-        self.assertEqual(completeness_errors(self._complete()), [])
+        payload = self._complete()
+        payload["publishable"] = True
+        payload["artifact_completeness"] = "full"
+        payload["working_tree_clean"] = True
+        self.assertEqual(completeness_errors(payload), [])
 
     def test_unknown_gate_is_incomplete(self) -> None:
         payload = self._complete()
-        payload["quality_gates"]["ruff"] = "UNKNOWN"
+        payload["quality_gates"]["ruff"] = {"status": "UNKNOWN", "reason": "skipped"}
         errors = completeness_errors(payload)
         self.assertTrue(any("quality_gates.ruff" in e for e in errors))
 
@@ -96,7 +119,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
                 "lockfile_sha256": "abc",
             },
         )
-        self.assertEqual(baseline["schema_version"], "1.2.1")
+        self.assertEqual(baseline["schema_version"], "1.3.0")
         self.assertEqual(baseline["commit_sha"], "testsha")
         self.assertEqual(baseline["tree_sha"], "testtree")
         backend_block = baseline["backend"]
@@ -115,7 +138,8 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             self.assertIsInstance(inv[key], int)
             self.assertGreater(inv[key], 0)
         dumped = json.dumps(baseline)
-        self.assertIn("UNKNOWN", dumped)
+        self.assertIn("gate not executed", dumped)
+        self.assertFalse(baseline.get("publishable"))
 
 
 class DocumentedEnvSetTests(unittest.TestCase):

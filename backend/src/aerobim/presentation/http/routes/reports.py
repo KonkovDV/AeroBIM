@@ -92,7 +92,9 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         if report is None:
             raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
         ctx.assert_report_access(report, principal)
-        return coverage_from_report(report, scope=derive_report_scope(report)).to_dict()
+        return coverage_from_report(report, scope=derive_report_scope(report)).to_dict(
+            report=report
+        )
 
     @router.post("/v1/reports/{report_id}/review-events")
     def append_review_event(

@@ -91,22 +91,14 @@ def attachment_content_disposition(filename: str) -> str:
     from urllib.parse import quote
 
     normalized = filename.replace("\x00", "").replace("\r", "").replace("\n", "")
-    ascii_safe = (
-        normalized.replace('"', "")
-        .replace("\\", "_")
-        .replace("/", "_")
-        .replace(";", "_")
-    )
+    ascii_safe = normalized.replace('"', "").replace("\\", "_").replace("/", "_").replace(";", "_")
     ascii_safe = "".join(
         ch if ord(ch) < 128 and ch not in ('"', "\\") else "_" for ch in ascii_safe
     )
     ascii_safe = (ascii_safe.strip() or "download").strip(" .")
     utf8_encoded = quote(normalized, safe="")
     if ascii_safe != normalized.strip():
-        return (
-            f'attachment; filename="{ascii_safe}"; '
-            f"filename*=UTF-8''{utf8_encoded}"
-        )
+        return f"attachment; filename=\"{ascii_safe}\"; filename*=UTF-8''{utf8_encoded}"
     return f'attachment; filename="{ascii_safe}"'
 
 

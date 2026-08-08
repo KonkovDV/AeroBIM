@@ -474,9 +474,7 @@ def benchmark_schema_suite(
     # path / IfcOpenShell schema caches are warm before any measured schema window.
     if pack_paths:
         first_pack = load_benchmark_pack(pack_paths[0])
-        analyze_use_case.execute(
-            _iteration_request(first_pack.request, "suite-prime", 1)
-        )
+        analyze_use_case.execute(_iteration_request(first_pack.request, "suite-prime", 1))
         gc.collect()
 
     pack_results = [
@@ -756,9 +754,7 @@ def main() -> None:
 
     multi = len(pack_paths) > 1 or args.schema_suite or args.group_by == "schema"
     if args.schema_suite:
-        iterations = (
-            SCHEMA_SUITE_DEFAULT_ITERATIONS if args.iterations is None else args.iterations
-        )
+        iterations = SCHEMA_SUITE_DEFAULT_ITERATIONS if args.iterations is None else args.iterations
         warmup_iterations = (
             SCHEMA_SUITE_DEFAULT_WARMUP_ITERATIONS
             if args.warmup_iterations is None
@@ -805,7 +801,9 @@ def _emit_stdout(text: str) -> None:
     import sys
 
     try:
-        sys.stdout.reconfigure(encoding="utf-8")
+        reconfigure = getattr(sys.stdout, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8")
         print(text)
     except (AttributeError, OSError, ValueError):
         sys.stdout.buffer.write(text.encode("utf-8", errors="replace"))

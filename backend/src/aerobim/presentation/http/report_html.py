@@ -130,6 +130,71 @@ def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
     return rows
 
 
+def _build_coverage_section(coverage: dict[str, Any]) -> str:
+    """WP-R4: coverage map is the first substantive section (before findings)."""
+    tz_gaps = coverage.get("tz_gaps") or []
+    sources = coverage.get("sources") or []
+    if not tz_gaps and not sources:
+        return ""
+
+    gap_rows = ""
+    for gap in tz_gaps:
+        if not isinstance(gap, dict):
+            continue
+        gap_rows += (
+            f"<tr><td>{_esc(str(gap.get('label', '')))}</td>"
+            f"<td class='cov-not-checked'><code>{_esc(str(gap.get('status', '')))}</code></td>"
+            f"<td>{_esc(str(gap.get('reason', '')))}</td></tr>\n"
+        )
+
+    family_keys: list[str] = sorted(
+        {
+            fam
+            for row in sources
+            if isinstance(row, dict)
+            for fam in (row.get("operator_status") or row.get("families") or {})
+        }
+    )
+    source_rows = ""
+    for row in sources:
+        if not isinstance(row, dict):
+            continue
+        sid = _esc(str(row.get("source_id", "")))
+        ops = row.get("operator_status") or row.get("families") or {}
+        reasons = row.get("reasons") or {}
+        cells = ""
+        for fam in family_keys:
+            op = str(ops.get(fam, "not_checked"))
+            reason = reasons.get(fam)
+            title = f' title="{_esc(str(reason))}"' if reason else ""
+            cells += f"<td class='cov-{op.replace('_', '-')}'{title}><code>{_esc(op)}</code></td>"
+        source_rows += f"<tr><td><code>{sid}</code></td>{cells}</tr>\n"
+
+    fam_headers = "".join(f"<th>{_esc(f.replace('-', ' '))}</th>" for f in family_keys)
+    tz_block = ""
+    if gap_rows:
+        tz_block = (
+            "<h3>Пробелы матрицы ТЗ (честные not_checked)</h3>"
+            "<table class='coverage-tz'><thead><tr><th>Раздел</th><th>Статус</th><th>Причина</th>"
+            f"</tr></thead><tbody>{gap_rows}</tbody></table>"
+        )
+
+    src_block = ""
+    if source_rows:
+        src_block = (
+            "<h3>По источникам комплекта</h3>"
+            "<table class='coverage-src'><thead><tr><th>Источник</th>"
+            f"{fam_headers}</tr></thead><tbody>{source_rows}</tbody></table>"
+        )
+
+    return (
+        "<section class='coverage'><h2>Карта покрытия проверок</h2>"
+        "<p class='coverage-note'>«Нарушений не найдено» ≠ «не проверялось». "
+        "Не смешивать с итоговым вердиктом.</p>"
+        f"{tz_block}{src_block}</section>\n"
+    )
+
+
 def render_report_html(report_id: str, data: dict[str, Any]) -> str:
     """Render the serialized public report payload as a standalone HTML page."""
     summary: dict[str, Any] = data["summary"]
@@ -215,6 +280,14 @@ font-weight:700;vertical-align:middle}}
 .band-major{{background:#b58900;color:#fff}}
 .band-minor{{background:#5b7fa6;color:#fff}}
 .band-negligible{{background:#999;color:#fff}}
+.coverage{{margin:1.5em 0}}
+.coverage-note{{font-size:.9em;color:#555;margin:.4em 0 1em}}
+.coverage-tz,.coverage-src{{font-size:.9em}}
+.cov-no-findings{{background:#e8f5e9}}
+.cov-findings{{background:#fff3e0}}
+.cov-not-checked{{background:#f5f5f5;color:#666}}
+.cov-insufficient-data{{background:#fff8e1}}
+.cov-expert-required{{background:#e3f2fd}}
 </style></head><body>
 <h1>Validation Report</h1>
 <div class="summary {status_class}">
@@ -223,7 +296,7 @@ font-weight:700;vertical-align:middle}}
 {summary["warning_count"]} warning(s) &middot;
 {summary["requirement_count"]} requirement(s)
 </div>
-{iso_section}{category_sections}
+{_build_coverage_section(data.get("coverage") or {})}{iso_section}{category_sections}
 <p class="meta">
 Report ID: {_esc(report_id)} &middot;
 Project: {_esc(str(data.get("project_name") or "—"))} &middot;

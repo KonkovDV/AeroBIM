@@ -1,7 +1,7 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-08T07:38:51.452573+00:00",
+  "generated_at": "2026-08-08T16:10:14.119843+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
   "file_count": 753,
   "vendored_count": 15,
@@ -1048,8 +1048,8 @@
     },
     {
       "path": "DATASET_MANIFEST.json",
-      "sha256": "162ca6c5864a30e60f223a9af87713993c28af9bf06cf0e548393d7e73785bbb",
-      "bytes": 436298,
+      "sha256": "7489290864481d25d60a971e683f0c20dfdee39dff2914c61c7763e972a7a96a",
+      "bytes": 432811,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -8104,8 +8104,8 @@
     },
     {
       "path": "ids/buildingsmart-testcases/KNOWN_UPSTREAM_EDGES.json",
-      "sha256": "1e485fbcaef5835e6514be575f75ccb248a7924038f5da813ef2953d652832cd",
-      "bytes": 1158,
+      "sha256": "0b61a773aa9ea714d15aaf5e25e6213971cfbad0855f2f8ce34b810046ef209c",
+      "bytes": 17826,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

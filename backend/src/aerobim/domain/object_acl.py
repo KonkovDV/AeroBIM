@@ -25,9 +25,7 @@ class AuthPrincipal:
     """Normalized role names from OIDC claims (casefold)."""
 
 
-HITL_EXPERT_EVENT_TYPES = frozenset(
-    {"accepted", "rejected", "edited", "edited_remark", "waived"}
-)
+HITL_EXPERT_EVENT_TYPES = frozenset({"accepted", "rejected", "edited", "edited_remark", "waived"})
 
 
 def principal_may_append_hitl_event(

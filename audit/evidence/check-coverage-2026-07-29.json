@@ -1,143 +1,214 @@
 {
   "artifact": "check-coverage-map",
-  "schema_version": "1.1.0",
-  "note": "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope + all family capabilities OK; verdict-neutral — does NOT set summary.passed (ADR-001). operator_status is a presentation alias (done/findings/not_done/partial/needs_expert), not a product claim.",
+  "corpus": "synthetic",
+  "disclaimer": "synthetic fixture; no customer data; not product accuracy",
+  "note": "per-source check coverage; 'no findings' != 'not checked'; CHECKED_OK requires explicit scope + all family capabilities OK; verdict-neutral — does NOT set summary.passed (ADR-001). operator_status uses WP-R4 aliases (no_findings/findings/not_checked/insufficient_data/expert_required).",
   "operator_legend": {
-    "done": "Проверка выполнена на этом источнике; нарушений не найдено",
-    "findings": "Проверка выполнена; есть детерминированные находки",
-    "not_done": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)",
-    "partial": "Проверка запускалась, данных или движка недостаточно",
-    "needs_expert": "Только advisory-сигнал — требуется эксперт"
+    "expert_required": "Только advisory-сигнал — требуется эксперт",
+    "findings": "Проверка выполнена; есть детерминированные находки (см. список)",
+    "insufficient_data": "Проверка запускалась, данных или движка недостаточно",
+    "no_findings": "Проверка выполнена на этом источнике; нарушений не найдено",
+    "not_checked": "Проверка не выполнялась / область неизвестна (≠ «нарушений нет»)"
   },
+  "operator_summary": {
+    "expert_required": 1,
+    "findings": 2,
+    "insufficient_data": 1,
+    "no_findings": 2,
+    "not_checked": 19
+  },
+  "presentation_states": [
+    "expert_required",
+    "insufficient_data",
+    "no_findings",
+    "not_checked"
+  ],
+  "schema_version": "1.2.0",
   "sources": [
     {
-      "source_id": "model.ifc",
       "families": {
-        "ifc-validation": "checked_findings",
-        "ids-validation": "not_checked",
-        "drawing-validation": "not_checked",
         "cross-document": "checked_ok",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "checked_findings",
         "spatial": "not_checked"
       },
       "operator_status": {
+        "cross-document": "no_findings",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
         "ifc-validation": "findings",
-        "ids-validation": "not_done",
-        "drawing-validation": "not_done",
-        "cross-document": "done",
-        "spatial": "not_done"
+        "spatial": "not_checked"
+      },
+      "presentation_status": {
+        "cross-document": "no_findings",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "findings",
+        "spatial": "not_checked"
       },
       "reasons": {
-        "ids-validation": "source not in scope of this check",
         "drawing-validation": "source not in scope of this check",
+        "ids-validation": "source not in scope of this check",
         "spatial": "check family did not fully run"
-      }
+      },
+      "source_id": "model.ifc"
     },
     {
-      "source_id": "AR_RD_sheet12.pdf",
       "families": {
-        "ifc-validation": "not_checked",
-        "ids-validation": "not_checked",
-        "drawing-validation": "not_checked",
         "cross-document": "requires_expert",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
         "spatial": "not_checked"
       },
       "operator_status": {
-        "ifc-validation": "not_done",
-        "ids-validation": "not_done",
-        "drawing-validation": "not_done",
-        "cross-document": "needs_expert",
-        "spatial": "not_done"
+        "cross-document": "expert_required",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
+        "spatial": "not_checked"
+      },
+      "presentation_status": {
+        "cross-document": "expert_required",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
+        "spatial": "not_checked"
       },
       "reasons": {
-        "ifc-validation": "source not in scope of this check",
-        "ids-validation": "source not in scope of this check",
-        "drawing-validation": "source not in scope of this check",
         "cross-document": "advisory-only findings require expert confirmation",
-        "spatial": "source not in scope of this check"
-      }
-    },
-    {
-      "source_id": "req.ids",
-      "families": {
-        "ifc-validation": "not_checked",
-        "ids-validation": "checked_ok",
-        "drawing-validation": "not_checked",
-        "cross-document": "not_checked",
-        "spatial": "not_checked"
-      },
-      "operator_status": {
-        "ifc-validation": "not_done",
-        "ids-validation": "done",
-        "drawing-validation": "not_done",
-        "cross-document": "not_done",
-        "spatial": "not_done"
-      },
-      "reasons": {
-        "ifc-validation": "source not in scope of this check",
         "drawing-validation": "source not in scope of this check",
-        "cross-document": "source not in scope of this check",
+        "ids-validation": "source not in scope of this check",
+        "ifc-validation": "source not in scope of this check",
         "spatial": "source not in scope of this check"
-      }
+      },
+      "source_id": "AR_RD_sheet12.pdf"
     },
     {
-      "source_id": "sheet-12",
       "families": {
-        "ifc-validation": "not_checked",
-        "ids-validation": "not_checked",
-        "drawing-validation": "insufficient_data",
         "cross-document": "not_checked",
+        "drawing-validation": "not_checked",
+        "ids-validation": "checked_ok",
+        "ifc-validation": "not_checked",
         "spatial": "not_checked"
       },
       "operator_status": {
-        "ifc-validation": "not_done",
-        "ids-validation": "not_done",
-        "drawing-validation": "partial",
-        "cross-document": "not_done",
-        "spatial": "not_done"
+        "cross-document": "not_checked",
+        "drawing-validation": "not_checked",
+        "ids-validation": "no_findings",
+        "ifc-validation": "not_checked",
+        "spatial": "not_checked"
+      },
+      "presentation_status": {
+        "cross-document": "not_checked",
+        "drawing-validation": "not_checked",
+        "ids-validation": "no_findings",
+        "ifc-validation": "not_checked",
+        "spatial": "not_checked"
       },
       "reasons": {
-        "ifc-validation": "source not in scope of this check",
-        "ids-validation": "source not in scope of this check",
-        "drawing-validation": "a check in this family failed",
         "cross-document": "source not in scope of this check",
+        "drawing-validation": "source not in scope of this check",
+        "ifc-validation": "source not in scope of this check",
         "spatial": "source not in scope of this check"
-      }
+      },
+      "source_id": "req.ids"
     },
     {
-      "source_id": "(unattributed)",
       "families": {
-        "ifc-validation": "not_checked",
-        "ids-validation": "not_checked",
-        "drawing-validation": "not_checked",
         "cross-document": "not_checked",
+        "drawing-validation": "insufficient_data",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
+        "spatial": "not_checked"
+      },
+      "operator_status": {
+        "cross-document": "not_checked",
+        "drawing-validation": "insufficient_data",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
+        "spatial": "not_checked"
+      },
+      "presentation_status": {
+        "cross-document": "not_checked",
+        "drawing-validation": "insufficient_data",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
+        "spatial": "not_checked"
+      },
+      "reasons": {
+        "cross-document": "source not in scope of this check",
+        "drawing-validation": "a check in this family failed",
+        "ids-validation": "source not in scope of this check",
+        "ifc-validation": "source not in scope of this check",
+        "spatial": "source not in scope of this check"
+      },
+      "source_id": "sheet-12"
+    },
+    {
+      "families": {
+        "cross-document": "not_checked",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
         "spatial": "checked_findings"
       },
       "operator_status": {
-        "ifc-validation": "not_done",
-        "ids-validation": "not_done",
-        "drawing-validation": "not_done",
-        "cross-document": "not_done",
+        "cross-document": "not_checked",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
+        "spatial": "findings"
+      },
+      "presentation_status": {
+        "cross-document": "not_checked",
+        "drawing-validation": "not_checked",
+        "ids-validation": "not_checked",
+        "ifc-validation": "not_checked",
         "spatial": "findings"
       },
       "reasons": {
         "spatial": "finding not attributed to a listed source id"
-      }
+      },
+      "source_id": "(unattributed)"
     }
   ],
   "summary": {
-    "checked_ok": 2,
     "checked_findings": 2,
-    "not_checked": 19,
+    "checked_ok": 2,
     "insufficient_data": 1,
+    "not_checked": 19,
     "requires_expert": 1
   },
-  "operator_summary": {
-    "done": 2,
-    "findings": 2,
-    "not_done": 19,
-    "partial": 1,
-    "needs_expert": 1
-  },
-  "corpus": "synthetic",
-  "disclaimer": "synthetic fixture; no customer data; not product accuracy"
+  "tz_gaps": [
+    {
+      "gap_id": "mep_system_clash",
+      "label": "Пересечения инженерных систем (ЭОМ/ОВ/ВК)",
+      "reason": "Требуется федеративная MEP-модель заказчика (RT-003); system-aware clash не верифицирован",
+      "status": "not_checked",
+      "tz_matrix": "§3.3 MEP / system intersections"
+    },
+    {
+      "gap_id": "cv_symbol_reading",
+      "label": "Распознавание зон чертежа (CV)",
+      "reason": "Зонный CV-конвейер не заявлен; доступна только оценка пригодности зоны (WP-R7)",
+      "status": "not_checked",
+      "tz_matrix": "Vector 2D / CV advisory"
+    },
+    {
+      "gap_id": "dwg_native",
+      "label": "Нативная загрузка DWG",
+      "reason": "Нативный DWG не поддерживается; маршрут через DXF/PDF/IFC с provenance (WP-R2)",
+      "status": "not_checked",
+      "tz_matrix": "Upload DWG"
+    },
+    {
+      "gap_id": "space_efficiency",
+      "label": "Эффективность использования пространства",
+      "reason": "Метрика не определена заказчиком; нормы не задают «неэффективность»",
+      "status": "not_checked",
+      "tz_matrix": "§2 целевые задачи / space efficiency"
+    }
+  ]
 }

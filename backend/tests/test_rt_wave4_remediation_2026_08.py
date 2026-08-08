@@ -65,9 +65,7 @@ class RateLimitBackendTests(unittest.TestCase):
             self.assertTrue(
                 backend.allow(bucket="post", key="k", max_events=3, window_seconds=60.0)
             )
-        self.assertFalse(
-            backend.allow(bucket="post", key="k", max_events=3, window_seconds=60.0)
-        )
+        self.assertFalse(backend.allow(bucket="post", key="k", max_events=3, window_seconds=60.0))
 
     def test_redis_backend_uses_script(self) -> None:
         backend = RedisRateLimitBackend.__new__(RedisRateLimitBackend)

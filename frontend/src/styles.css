@@ -774,6 +774,33 @@ input {
   vertical-align: top;
 }
 
+.coverage-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.85rem;
+}
+
+.coverage-filter select {
+  min-width: 12rem;
+}
+
+.coverage-tz-gaps {
+  margin-bottom: 1rem;
+}
+
+.coverage-findings-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.coverage-table .cov-no-findings,
 .coverage-table .cov-done {
   background: rgba(26, 127, 55, 0.08);
 }
@@ -782,14 +809,17 @@ input {
   background: rgba(207, 34, 46, 0.08);
 }
 
+.coverage-table .cov-not-checked,
 .coverage-table .cov-not-done {
   background: rgba(110, 118, 129, 0.08);
 }
 
+.coverage-table .cov-insufficient-data,
 .coverage-table .cov-partial {
   background: rgba(154, 103, 0, 0.1);
 }
 
+.coverage-table .cov-expert-required,
 .coverage-table .cov-expert {
   background: rgba(9, 105, 218, 0.08);
 }

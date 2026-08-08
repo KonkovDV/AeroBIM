@@ -96,7 +96,7 @@ class UploadFilenameTests(unittest.TestCase):
     def test_sanitize_strips_control_chars_and_reserved_names(self) -> None:
         name = sanitize_upload_filename("CON.pdf")
         self.assertTrue(name.startswith("_"))
-        rtl = sanitize_upload_filename("evi\u202Egnp.exe")
+        rtl = sanitize_upload_filename("evi\u202egnp.exe")
         self.assertNotIn("\u202e", rtl)
 
 

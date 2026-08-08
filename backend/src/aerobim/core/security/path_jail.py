@@ -100,11 +100,7 @@ def sanitize_upload_filename(filename: str, *, max_length: int = 180) -> str:
         segment = "upload.bin"
     for banned in ':*?"<>|\r\n;':
         segment = segment.replace(banned, "")
-    segment = "".join(
-        ch
-        for ch in segment
-        if unicodedata.category(ch) not in {"Cf", "Cc"}
-    )
+    segment = "".join(ch for ch in segment if unicodedata.category(ch) not in {"Cf", "Cc"})
     segment = segment.strip(" .") or "upload.bin"
     if len(segment) > max_length:
         segment = segment[:max_length]
