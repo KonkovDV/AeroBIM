@@ -26,3 +26,15 @@
 | 18 | CoverageMapPanel без теста | **STILL_TRUE** | компонент есть; `*.test.*` для панели нет (WP-B3) |
 
 **N-18 (новое):** `attested_by` из CLI `--attested-by` → **FIXED_BY_US** (WP-A1b): флаг удалён; аттестация только из `GITHUB_ACTIONS` + `GITHUB_RUN_ID` + `GITHUB_WORKFLOW_REF` + `GITHUB_SHA`.
+
+## N-19…N-23 (ревизия 09.08 вечер, ветка)
+
+| # | Находка | Статус на ветке | Доказательство |
+|---|---------|-----------------|----------------|
+| N-19 | ruff/mypy FAIL в закоммиченном baseline | **FIXED_BY_US** | `quality_gates.ruff/mypy=PASS` в `127f261` artifact; mypy `Document(str(path))` + `int` guards |
+| N-20 | `documented_env_vars` vs `code_env_vars` дыра 27 | **FIXED_BY_US** | 27 строк в README Configuration + `code-doc=[]`; реестр `audit/internal_env_vars.json` (пустой) |
+| N-21 | dirty tree / чужие SHA | **FIXED_BY_US** (локально) | `working_tree_clean: true`, `commit_sha=498fd70` (parent evidence commit); `attested_by: local`, `publishable: false` |
+| N-22 | `--check-publishable` исчез | **FIXED_BY_US** | шаг после compare в `baseline-integrity` |
+| N-23 | `AEROBIM_GATES_ATTESTED` локально куёт gates | **FIXED_BY_US** | env игнорируется вне complete CI; документирован в Configuration |
+
+**main:** все N-19…N-23 и WP-A* остаются **STILL_TRUE** на публичном `main` до merge PR.
