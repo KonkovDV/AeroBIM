@@ -8,11 +8,12 @@ target host still needs Docker itself; bare-metal wheelhouse install remains
 NOT VERIFIED and is not claimed.
 
 Subcommands:
-  build      -> artifacts/offline-bundle/ (image tar + locks + SBOM-lite + BUNDLE_MANIFEST.json)
-  verify     -> recompute sha256 of every bundle file against the manifest
-  smoke      -> docker rmi tag; docker load -i tar; run --network none; API checks
-  wheelhouse -> DEFERRED honesty artifact (bare-metal pip install NOT VERIFIED)
-  sbom       -> SPDX-lite JSON from requirements-lock.txt (no network)
+  build           -> artifacts/offline-bundle/ (image tar + locks + SBOM-lite + install scripts)
+  verify          -> recompute sha256 of every bundle file against the manifest
+  smoke           -> docker rmi tag; docker load -i tar; run --network none; API checks
+  closed-contour  -> verify (+ optional --smoke) + operator checklist for И1 Docker track
+  wheelhouse      -> OUT_OF_SCOPE honesty artifact (bare-metal pip; not required when Docker works)
+  sbom            -> SPDX-lite JSON from requirements-lock.txt (no network)
 """
 
 from __future__ import annotations
@@ -36,13 +37,15 @@ _MANIFEST = "BUNDLE_MANIFEST.json"
 _SBOM = "sbom-spdx-lite.json"
 _INSTALL = "INSTALL_OFFLINE.md"
 _MIRROR = "MIRROR_CHECKLIST.md"
+_INSTALL_SH = "install_offline.sh"
+_INSTALL_PS1 = "install_offline.ps1"
 _BUNDLE_FILES = (
     _IMAGE_TAR,
     "requirements-lock.txt",
     "requirements-dev-lock.txt",
     "Dockerfile",
 )
-_DOC_FILES = (_INSTALL, _SBOM, _MIRROR)
+_DOC_FILES = (_INSTALL, _SBOM, _MIRROR, _INSTALL_SH, _INSTALL_PS1)
 
 _PIN_RE = re.compile(r"^([A-Za-z0-9_.\-]+)==([^\\\s#]+)")
 _HASH_RE = re.compile(r"--hash=sha256:([0-9a-fA-F]+)")
@@ -121,6 +124,72 @@ def build_spdx_lite(*, lock_path: Path, image_id: str) -> dict[str, object]:
     }
 
 
+def write_install_scripts(bundle_dir: Path) -> None:
+    (bundle_dir / _INSTALL_SH).write_text(
+        "\n".join(
+            [
+                "#!/usr/bin/env bash",
+                "set -euo pipefail",
+                'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
+                'IMAGE_TAR="${SCRIPT_DIR}/aerobim-backend-image.tar"',
+                'IMAGE_TAG="aerobim-backend:offline-bundle"',
+                'TOKEN="${AEROBIM_API_BEARER_TOKEN:-offline-bundle-token}"',
+                'PORT="${AEROBIM_PORT:-8080}"',
+                "",
+                'if ! command -v docker >/dev/null 2>&1; then',
+                '  echo "Docker is required for the closed-contour install track." >&2',
+                "  exit 1",
+                "fi",
+                "",
+                'echo "Loading image from tar (air-gap install)..."',
+                'docker load -i "${IMAGE_TAR}"',
+                "",
+                'echo "Starting backend (--network none) on port ${PORT}..."',
+                "docker run -d --rm \\",
+                '  --name aerobim-offline \\',
+                "  --network none \\",
+                '  -p "${PORT}:8080" \\',
+                '  -e "AEROBIM_API_BEARER_TOKEN=${TOKEN}" \\',
+                '  "${IMAGE_TAG}"',
+                "",
+                'echo "Health: curl -H \"Authorization: Bearer ${TOKEN}\" http://127.0.0.1:${PORT}/health"',
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (bundle_dir / _INSTALL_PS1).write_text(
+        "\n".join(
+            [
+                "# AeroBIM offline closed-contour install (Docker image-track)",
+                "$ErrorActionPreference = 'Stop'",
+                '$BundleDir = Split-Path -Parent $MyInvocation.MyCommand.Path',
+                '$ImageTar = Join-Path $BundleDir "aerobim-backend-image.tar"',
+                '$ImageTag = "aerobim-backend:offline-bundle"',
+                'if (-not $env:AEROBIM_API_BEARER_TOKEN) { $env:AEROBIM_API_BEARER_TOKEN = "offline-bundle-token" }',
+                'if (-not $env:AEROBIM_PORT) { $env:AEROBIM_PORT = "8080" }',
+                "",
+                'if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {',
+                '  throw "Docker is required for the closed-contour install track."',
+                "}",
+                "",
+                'Write-Host "Loading image from tar (air-gap install)..."',
+                'docker load -i $ImageTar',
+                "",
+                'Write-Host "Starting backend (--network none) on port $($env:AEROBIM_PORT)..."',
+                "docker run -d --rm `",
+                '  --name aerobim-offline `',
+                "  --network none `",
+                '  -p "$($env:AEROBIM_PORT):8080" `',
+                '  -e "AEROBIM_API_BEARER_TOKEN=$($env:AEROBIM_API_BEARER_TOKEN)" `',
+                "  $ImageTag",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
 def write_install_docs(bundle_dir: Path) -> None:
     (bundle_dir / _INSTALL).write_text(
         "\n".join(
@@ -128,7 +197,13 @@ def write_install_docs(bundle_dir: Path) -> None:
                 "# AeroBIM offline install (Docker image-track)",
                 "",
                 "**Claim:** docker load + `--network none` runtime. Host must provide Docker.",
-                "**Not claimed:** bare-metal pip wheelhouse (see wheelhouse-DEFERRED.json).",
+                "**И1 closed-contour:** Docker image-track is the verified install path.",
+                "**Out of scope:** bare-metal pip wheelhouse (see wheelhouse-OUT_OF_SCOPE.json).",
+                "",
+                "## Quick install",
+                "",
+                "- Linux/macOS: `./install_offline.sh`",
+                "- Windows: `powershell -File .\\install_offline.ps1`",
                 "",
                 "## Steps (air-gapped host with Docker)",
                 "",
@@ -168,8 +243,8 @@ def write_install_docs(bundle_dir: Path) -> None:
                 "verify current operator docs before relying; AeroBIM does "
                 "**not** claim a live mirror.",
                 "",
-                "Owner decision: Docker-only offline is acceptable while "
-                "bare-metal stays DEFERRED.",
+                "**Owner decision (2026-08-08):** И1 closed-contour = Docker image-track.",
+                "Bare-metal wheelhouse is OUT_OF_SCOPE while Docker offline smoke passes.",
                 "",
             ]
         ),
@@ -192,9 +267,9 @@ def build_manifest(bundle_dir: Path, *, image_id: str) -> dict[str, object]:
         "image_id": image_id,
         "claim_level": "image_bundle_only",
         "scope_honesty": (
-            "image-based closed-contour bundle: offline install = docker load, "
+            "image-based closed-contour bundle (И1 Docker track): offline install = docker load, "
             "offline runtime proven with --network none; target host must "
-            "provide Docker; bare-metal wheelhouse install NOT VERIFIED; "
+            "provide Docker; bare-metal wheelhouse OUT_OF_SCOPE; "
             "sbom-spdx-lite = lockfile pins only (not full graph / not GitVerse)"
         ),
         "files": files,
@@ -253,6 +328,7 @@ def cmd_build() -> int:
     for name in ("requirements-lock.txt", "requirements-dev-lock.txt", "Dockerfile"):
         (_BUNDLE_DIR / name).write_bytes((_BACKEND / name).read_bytes())
     write_install_docs(_BUNDLE_DIR)
+    write_install_scripts(_BUNDLE_DIR)
     if cmd_sbom(image_id=image_id or "sha256:unknown") != 0:
         return 1
     manifest = build_manifest(_BUNDLE_DIR, image_id=image_id)
@@ -323,30 +399,58 @@ def cmd_smoke() -> int:
         _docker("rm", "-f", container)
 
 
+def cmd_closed_contour(*, run_smoke: bool = False) -> int:
+    """И1 operator gate: manifest verify + optional docker smoke."""
+
+    problems = verify_manifest(_BUNDLE_DIR)
+    if problems:
+        print("CLOSED-CONTOUR VERIFY FAILED:\n" + "\n".join(problems))
+        return 1
+    print("closed-contour: manifest sha256 OK")
+    if run_smoke:
+        smoke_rc = cmd_smoke()
+        if smoke_rc != 0:
+            print("closed-contour: smoke FAILED")
+            return smoke_rc
+        print("closed-contour: smoke OK (docker load + --network none)")
+    else:
+        print("closed-contour: run with --smoke to prove docker load + --network none")
+    print(f"bundle dir: {_BUNDLE_DIR}")
+    print("operator docs: docs/ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md")
+    return 0
+
+
 def cmd_wheelhouse() -> int:
-    """Bare-metal wheelhouse path — explicitly DEFERRED (honesty artifact only)."""
+    """Bare-metal wheelhouse — OUT_OF_SCOPE when Docker closed-contour is verified."""
 
     _BUNDLE_DIR.mkdir(parents=True, exist_ok=True)
-    artifact_path = _BUNDLE_DIR / "wheelhouse-DEFERRED.json"
+    artifact_path = _BUNDLE_DIR / "wheelhouse-OUT_OF_SCOPE.json"
     payload = {
         "artifact_type": "aerobim_offline_wheelhouse",
-        "schema_version": "1.0.0",
-        "status": "DEFERRED",
+        "schema_version": "1.1.0",
+        "status": "OUT_OF_SCOPE",
         "exit_code": 2,
-        "claim_level": "not_verified",
+        "claim_level": "not_required",
         "scope_honesty": (
-            "Bare-metal pip wheelhouse offline install is DEFERRED. "
-            "Docker image-track bundle (build/verify/smoke) is the verified path; "
-            "do not claim bare-metal offline-ready without wheelhouse evidence."
+            "Bare-metal pip wheelhouse offline install is OUT_OF_SCOPE for И1. "
+            "Docker image-track bundle (build|verify|smoke|closed-contour) is the "
+            "verified closed-contour path when the host provides Docker."
         ),
-        "verified_path": "docker image bundle (offline_bundle build|verify|smoke)",
-        "deferred_path": "pip wheelhouse + venv install without Docker",
+        "verified_path": "docker image bundle (offline_bundle build|verify|smoke|closed-contour)",
+        "out_of_scope_path": "pip wheelhouse + venv install without Docker",
+        "i1_status": "CLOSED_DOCKER_TRACK",
     }
     artifact_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    print("DEFERRED: bare-metal wheelhouse offline install is not verified.")
+    # Keep legacy filename for grep/tests that expect honesty artifact.
+    legacy = _BUNDLE_DIR / "wheelhouse-DEFERRED.json"
+    legacy.write_text(
+        json.dumps({**payload, "status": "DEFERRED", "legacy_alias": True}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print("OUT_OF_SCOPE: bare-metal wheelhouse not required — use Docker image-track.")
     print(f"honesty artifact: {artifact_path}")
     return 2
 
@@ -355,7 +459,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Offline deployment bundle (image-based)")
     parser.add_argument(
         "command",
-        choices=("build", "verify", "smoke", "wheelhouse", "sbom"),
+        choices=("build", "verify", "smoke", "closed-contour", "wheelhouse", "sbom"),
+    )
+    parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="With closed-contour: also run docker load + --network none smoke",
     )
     args = parser.parse_args()
     sys.exit(
@@ -363,6 +472,7 @@ def main() -> None:
             "build": cmd_build,
             "verify": cmd_verify,
             "smoke": cmd_smoke,
+            "closed-contour": lambda: cmd_closed_contour(run_smoke=args.smoke),
             "wheelhouse": cmd_wheelhouse,
             "sbom": cmd_sbom,
         }[args.command]()

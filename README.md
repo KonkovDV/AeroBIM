@@ -101,7 +101,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | DXF via CadModelIngestor | Partial / Not verified | fixture | Optional ezdxf; honesty never OK; ≠ DWG support |
 | Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` (OCR degrade ≠ VLM) |
 | MEP system-aware clash | Not verified / blocked | fixture_only | ENG_PARTIAL: edge_kinds + AABB broadphase; always `geometry_verified=False`; RT-003 OPEN |
-| Offline Docker image-track | Available | eng | `offline_bundle` smoke; bare-metal **DEFERRED** |
+| Offline Docker image-track | Available | eng | И1 **CLOSED** — `closed-contour --smoke`; bare-metal OUT_OF_SCOPE |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
 | Frontend vitest review-shell | Green in CI | release-readiness | **29** passed (`frontend` CI job) |

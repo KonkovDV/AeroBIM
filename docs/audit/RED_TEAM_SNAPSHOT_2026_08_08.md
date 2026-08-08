@@ -115,8 +115,8 @@ SSOT: [`audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKE
 
 | Track | Status | Evidence |
 |---|---|---|
-| Docker image offline bundle | **VERIFIED** | `aerobim.tools.offline_bundle` build/verify/smoke; CI `offline-bundle-smoke` |
-| Bare-metal wheelhouse | **DEFERRED** | `wheelhouse` subcommand exit 2 + `wheelhouse-DEFERRED.json` |
+| Docker image offline bundle | **VERIFIED / И1 CLOSED** | `offline_bundle` build/verify/smoke/closed-contour; CI `offline-bundle-smoke` |
+| Bare-metal wheelhouse | **OUT_OF_SCOPE** | `wheelhouse` exit 2 — not required for И1 |
 | Docs | **VERIFIED** | [`docs/offline-deployment-2026.md`](../offline-deployment-2026.md) |
 
 Owner note (2026-08-01): Docker offline sufficient; bare-metal not required until owner reverses.
