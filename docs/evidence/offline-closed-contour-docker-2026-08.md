@@ -2,7 +2,7 @@
 
 **Status:** **CLOSED** (Docker image-track)  
 **JSON:** [`offline-closed-contour-docker-2026-08.json`](../evidence/offline-closed-contour-docker-2026-08.json)  
-**Runbook:** [`docs/ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md`](../../docs/ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md)
+**Runbook:** [`docs/offline-deployment-2026.md`](../../docs/offline-deployment-2026.md)
 
 ## Commands (local, 2026-08-08)
 

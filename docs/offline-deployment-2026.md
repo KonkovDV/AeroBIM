@@ -3,7 +3,7 @@
 **Claim level:** Docker **image-track** eng evidence (CI `offline-bundle-smoke`).  
 **И1 status (2026-08-08):** **CLOSED** — Docker closed-contour verified (`closed-contour --smoke`).  
 **Owner decision:** bare-metal wheelhouse is **OUT_OF_SCOPE** while Docker offline works.  
-**Ops runbook:** [`docs/ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md`](ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md)  
+**Ops runbook:** [`docs/offline-deployment-2026.md`](offline-deployment-2026.md) + [`docs/evidence/offline-closed-contour-docker-2026-08.md`](evidence/offline-closed-contour-docker-2026-08.md)  
 **Checked:** 2026-08-08 against `aerobim.tools.offline_bundle`.
 
 ## What is VERIFIED
@@ -45,6 +45,15 @@ CI: `.github/workflows/ci.yml` job `offline-bundle-smoke` (on `main`).
 | Live GitVerse mirror of this repo | Operator checklist only |
 | Full npm cache offline frontend rebuild inside bundle | UNKNOWN |
 | Hugging Face / cloud LLM in offline mode | N/A — default deny |
+
+## Air-gap install (operator)
+
+1. Copy `artifacts/offline-bundle/` to the closed-contour host.
+2. `python -m aerobim.tools.offline_bundle verify` (or manual sha256 vs manifest).
+3. Run `install_offline.sh` (Linux) or `install_offline.ps1` (Windows) from the bundle dir.
+4. Probe `GET /health` and `GET /v1/system/capabilities` with bearer token.
+
+Live evidence: [`docs/evidence/offline-closed-contour-docker-2026-08.md`](evidence/offline-closed-contour-docker-2026-08.md).
 
 ## Capabilities expected offline
 

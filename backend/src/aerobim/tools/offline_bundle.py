@@ -416,7 +416,7 @@ def cmd_closed_contour(*, run_smoke: bool = False) -> int:
     else:
         print("closed-contour: run with --smoke to prove docker load + --network none")
     print(f"bundle dir: {_BUNDLE_DIR}")
-    print("operator docs: docs/ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md")
+    print("operator docs: docs/offline-deployment-2026.md")
     return 0
 
 

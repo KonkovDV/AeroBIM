@@ -23,6 +23,6 @@
     {"check": "unit tests test_offline_bundle_manifest", "result": "PASS 9/9"},
     {"check": "install_offline.sh + install_offline.ps1 in manifest", "result": "PASS"}
   ],
-  "operator_docs": "docs/ops/OFFLINE_CLOSED_CONTOUR_DOCKER_2026_08.md",
+  "operator_docs": "docs/offline-deployment-2026.md",
   "supersedes": "audit/evidence/offline-bundle-smoke-2026-07-31.json"
 }
