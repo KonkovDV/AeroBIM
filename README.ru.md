@@ -91,7 +91,7 @@ AeroBIM выполняет детерминированную проверку �
 | DXF (CadModelIngestor) | Partial / Not verified | fixture | Optional ezdxf; ≠ поддержка DWG |
 | CV human-level | Missing | — | OCR degrade ≠ VLM |
 | MEP system-aware clash | Not verified / blocked | fixture_only | ENG_PARTIAL: edge_kinds + AABB; всегда `geometry_verified=False`; RT-003 OPEN |
-| Offline Docker image-track | Доступно | eng | `offline_bundle` smoke; bare-metal **DEFERRED** |
+| Offline Docker image-track | Доступно | eng | И1 **CLOSED** — `closed-contour --smoke`; bare-metal OUT_OF_SCOPE |
 | Корректность расчётов | Not implemented | — | сверка источников, не расчётный решатель |
 | Hybrid AI + advisory pre-gate (WP-02) | Доступно (eng) | fixture | Gate до advisory observations; OFF==ON для `summary.passed`; Checkpoint NO_GO |
 | Envelope подписи (WP-03) | ENG_PARTIAL | fixture | Hash/roles; trust_chain NOT_VERIFIED — никогда «УКЭП проверена» |

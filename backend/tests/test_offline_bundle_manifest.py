@@ -40,7 +40,9 @@ def test_missing_file_is_detected(tmp_path: Path) -> None:
 def test_manifest_declares_honest_scope(tmp_path: Path) -> None:
     manifest = build_manifest(_make_bundle(tmp_path), image_id="sha256:test")
     assert manifest["claim_level"] == "image_bundle_only"
-    assert "NOT VERIFIED" in str(manifest["scope_honesty"])
+    assert "OUT_OF_SCOPE" in str(manifest["scope_honesty"]) or "NOT VERIFIED" in str(
+        manifest["scope_honesty"]
+    )
 
 
 def test_spdx_lite_parses_lock_pins() -> None:
@@ -66,6 +68,25 @@ def test_spdx_lite_parses_lock_pins() -> None:
     assert doc["packages"][0]["checksums"][0]["algorithm"] == "SHA256"
 
 
+def test_install_scripts_and_docs_enter_manifest(tmp_path: Path) -> None:
+    from aerobim.tools.offline_bundle import write_install_docs, write_install_scripts
+
+    for name in _BUNDLE_FILES:
+        (tmp_path / name).write_bytes(f"content-of-{name}".encode())
+    write_install_docs(tmp_path)
+    write_install_scripts(tmp_path)
+    (tmp_path / "sbom-spdx-lite.json").write_text(
+        json.dumps({"claim_level": "lockfile_sbom_lite", "package_count": 0}),
+        encoding="utf-8",
+    )
+    manifest = build_manifest(tmp_path, image_id="sha256:test")
+    assert "INSTALL_OFFLINE.md" in manifest["files"]
+    assert "MIRROR_CHECKLIST.md" in manifest["files"]
+    assert "install_offline.sh" in manifest["files"]
+    assert "install_offline.ps1" in manifest["files"]
+    assert "sbom-spdx-lite.json" in manifest["files"]
+
+
 def test_install_docs_and_sbom_enter_manifest(tmp_path: Path) -> None:
     from aerobim.tools.offline_bundle import write_install_docs
 
@@ -83,14 +104,24 @@ def test_install_docs_and_sbom_enter_manifest(tmp_path: Path) -> None:
     assert "sbom-spdx-lite" in str(manifest["scope_honesty"])
 
 
-def test_wheelhouse_writes_deferred_artifact(tmp_path: Path, monkeypatch) -> None:
+def test_wheelhouse_writes_out_of_scope_artifact(tmp_path: Path, monkeypatch) -> None:
     from aerobim.tools import offline_bundle as bundle
 
     monkeypatch.setattr(bundle, "_BUNDLE_DIR", tmp_path)
     exit_code = bundle.cmd_wheelhouse()
     assert exit_code == 2
-    artifact = tmp_path / "wheelhouse-DEFERRED.json"
+    artifact = tmp_path / "wheelhouse-OUT_OF_SCOPE.json"
     assert artifact.is_file()
     payload = json.loads(artifact.read_text(encoding="utf-8"))
-    assert payload["status"] == "DEFERRED"
-    assert payload["exit_code"] == 2
+    assert payload["status"] == "OUT_OF_SCOPE"
+    assert payload["i1_status"] == "CLOSED_DOCKER_TRACK"
+    legacy = tmp_path / "wheelhouse-DEFERRED.json"
+    assert legacy.is_file()
+
+
+def test_closed_contour_verify_without_smoke(tmp_path: Path, monkeypatch) -> None:
+    from aerobim.tools import offline_bundle as bundle
+
+    bundle_dir = _make_bundle(tmp_path)
+    monkeypatch.setattr(bundle, "_BUNDLE_DIR", bundle_dir)
+    assert bundle.cmd_closed_contour(run_smoke=False) == 0

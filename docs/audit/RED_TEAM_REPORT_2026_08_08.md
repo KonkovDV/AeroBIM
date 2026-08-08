@@ -46,7 +46,7 @@ Severity: **P0** = exploitable in default production config · **P1** = defense-
 | RT-ERR-001 | P2 | **VERIFIED** | `str(exc)` returned in HTTP 400 on analyze routes | Information disclosure |
 | RT-RATE-001 | P2 | **VERIFIED** | No application rate limiting | Abuse / cost amplification at edge |
 | RT-HITL-001 | P2 | **PARTIAL** | HITL idempotency/sequence computed outside exclusive lock | Race under concurrent writers |
-| RT-OFFLINE-001 | CHK | **VERIFIED** | Bare-metal wheelhouse DEFERRED (Docker track only) | И1 scope gap |
+| RT-OFFLINE-001 | CHK | **CLOSED** | И1 Docker image-track verified (`closed-contour --smoke`) | — |
 | RT-BLOCKERS-001 | P2 | **VERIFIED** | `CRITICAL_BLOCKERS.md` CLOSED rows vs stale BLOCKER prose | Operator confusion |
 | RT-LIC-001 | — | **NOT_VULNERABLE** | PyMuPDF AGPL gated to optional extra | Engineering cleared |
 | RT-UPLOAD-001 | — | **HYPOTHESIS** | Multipart buffering before quota enforcement | Not reproduced |
