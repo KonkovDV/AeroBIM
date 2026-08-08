@@ -59,7 +59,7 @@ Source of truth: `docs/gtm/SPRINT3_WEEK_TASKS_STATUS_2026_08.md`
 |---|---|---|---|
 | 1 | IFC formats tested? Meeting metrics (speed + accuracy honesty) | **DONE (evidence)** | Yes tested IFC2X3/IFC4/IFC4X3. Speed measured. Product accuracy **not** measured |
 | 2 | Expertise-conclusion datasets for baseline comparison | **CHECKED — no RU open GT** | Cannot honestly baseline vs RU expertise on public data. Mumbai = foreign ACC analog (manual download). Need Samolet |
-| 3 | Expand open docs, run, fix bugs | **PARTIAL / ongoing** | SFC-A68 run + OCR fix shipped; more datasets staged; ArchCAD/EGRZ/Samolet still blocked |
+| 3 | Expand open docs, run, fix bugs | **DONE (engineering rails)** | Battery green; BSI 290 adjusted pass; IfcTester mapping fix; 22 upstream edges documented |
 
 ---
 

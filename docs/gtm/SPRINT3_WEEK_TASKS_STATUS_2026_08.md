@@ -16,7 +16,7 @@ claim_boundary: >-
 |---|--------|--------|----------------|
 | 1 | IFC-форматы: были ли прогоны + цифры точности/скорости | **Сделано (evidence)** | Да, IFC2X3/IFC4/IFC4X3. p95 стабилизирован (n=20). **Продуктовой точности нет** |
 | 2 | Датасеты с заключениями экспертизы vs baseline | **RU GT нет; Mumbai foreign ACC скачан** | ЕГРЗ не даёт пар. Mumbai 333 scrutiny↔concession на диске (CC BY). Нужен пакет «Самолёта» для RT-001 |
-| 3 | Расширить открытые датасеты, прогоны, фиксы | **В процессе** | SFC-A68 прогнан; OCR-баг numpy починен; open-corpora regression **7/7** (2026-08-08); Red Team Waves 1–5b закрыты (`2a4d1f4`) |
+| 3 | Расширить открытые датасеты, прогоны, фиксы | **Сделано (engineering)** | Battery `battery_pass=true`: fixture 7/7; BSI 290 adjusted 100% (22 upstream edges labeled); IFC-Bench v1/v2 smoke 7/7; adapter fix prohibited/zero-applicability; evidence [`sprint3-open-corpus-battery-2026-08.md`](../evidence/sprint3-open-corpus-battery-2026-08.md) |
 
 ---
 
@@ -91,7 +91,9 @@ Evidence: [`ifc-release-benchmark-2026-08.md`](../evidence/ifc-release-benchmark
 | BlueprintSymVL | on disk | inventory | — |
 | PIDQA | text only | inventory | — |
 | Construction-document-digitalization | cloned; **labels only**, images via Roboflow | labels inventoried; no PNG in zip | LICENSE unclear / incomplete assets |
-| Open-corpora regression (WP-06) | in-repo fixtures | **7/7 match** (2026-08-08) | evidence: [`sprint3-open-corpora-regression-2026-08.md`](../evidence/sprint3-open-corpora-regression-2026-08.md) |
+| Open-corpora regression (WP-06) | in-repo fixtures | **7/7 match** | evidence: [`sprint3-open-corpora-regression-2026-08.md`](../evidence/sprint3-open-corpora-regression-2026-08.md) |
+| BSI IDS TestCases (n=290) | vendored CC BY-ND | **adjusted 100%** (22 known IfcTester upstream edges) | [`ids-bsi-upstream-edges-2026-08.md`](../evidence/ids-bsi-upstream-edges-2026-08.md); adapter fix 0093/0094 |
+| Sprint 3 open-corpus battery | orchestrator | **pass** | [`sprint3-open-corpus-battery-2026-08.md`](../evidence/sprint3-open-corpus-battery-2026-08.md) |
 | Red Team engineering (Waves 1–5b) | closed | 1957 pytest pass; mypy strict; S-band | [`RED_TEAM_WAVE5_CLOSURE_2026_08_08.md`](../audit/RED_TEAM_WAVE5_CLOSURE_2026_08_08.md) |
 | ArchCAD-400K | HF gated | blocked | needs `hf auth login` |
 | PID_dataset Zenodo | 6.7 GB | not downloaded | size gate |

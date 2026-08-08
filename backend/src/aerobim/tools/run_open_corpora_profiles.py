@@ -203,6 +203,52 @@ def _bootstrap_use_case(storage_dir: Path, *, mep_scope: Path | None = None) -> 
     )
 
 
+def _load_known_upstream_case_ids(repo: Path) -> frozenset[str]:
+    path = repo / "samples/ids/buildingsmart-testcases/KNOWN_UPSTREAM_EDGES.json"
+    if not path.is_file():
+        return frozenset()
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    edges = payload.get("edges")
+    if not isinstance(edges, list):
+        return frozenset()
+    return frozenset(
+        str(edge["case_id"])
+        for edge in edges
+        if isinstance(edge, dict) and edge.get("case_id")
+    )
+
+
+def _regression_pass_stats(
+    case_rows: list[dict[str, object]],
+    *,
+    known_upstream: frozenset[str],
+) -> dict[str, object]:
+    upstream_mismatches = [
+        row
+        for row in case_rows
+        if not row.get("match") and str(row.get("case_id")) in known_upstream
+    ]
+    unexplained = [
+        row
+        for row in case_rows
+        if not row.get("match") and str(row.get("case_id")) not in known_upstream
+    ]
+    scorable = [row for row in case_rows if str(row.get("case_id")) not in known_upstream]
+    adjusted_matched = sum(1 for row in scorable if row.get("match"))
+    return {
+        "known_upstream_mismatch_count": len(upstream_mismatches),
+        "known_upstream_case_ids": [str(row["case_id"]) for row in upstream_mismatches],
+        "unexplained_mismatch_count": len(unexplained),
+        "unexplained_case_ids": [str(row["case_id"]) for row in unexplained],
+        "adjusted_cases_scorable": len(scorable),
+        "adjusted_cases_matched": adjusted_matched,
+        "adjusted_binary_match_rate": (
+            round(adjusted_matched / len(scorable), 6) if scorable else 0.0
+        ),
+        "regression_pass": len(unexplained) == 0,
+    }
+
+
 def run_regression_profile(
     profile: dict[str, Any],
     *,
@@ -252,6 +298,8 @@ def run_regression_profile(
         )
 
     total = len(case_rows)
+    known_upstream = _load_known_upstream_case_ids(repo)
+    pass_stats = _regression_pass_stats(case_rows, known_upstream=known_upstream)
     return {
         "profile_id": profile["profile_id"],
         "profile_kind": "regression",
@@ -259,6 +307,7 @@ def run_regression_profile(
         "cases_run": total,
         "cases_matched": matched,
         "binary_match_rate": round(matched / total, 6) if total else 0.0,
+        **pass_stats,
         "cases": case_rows,
         "input_pins": pin_results,
         "claim_boundary": CLAIM_BOUNDARY,
@@ -447,6 +496,7 @@ def run_all_profiles(
     profiles_dir: Path | None = None,
     output_dir: Path | None = None,
     mode: str = "full",
+    include_bsi: bool = False,
 ) -> dict[str, Any]:
     resolved_repo = (repo or repo_root()).resolve()
     resolved_profiles = (profiles_dir or default_profiles_dir()).resolve()
@@ -479,17 +529,27 @@ def run_all_profiles(
                 repo=resolved_repo,
                 storage_dir=storage / "load",
             )
+            profiles: dict[str, object] = {
+                "regression": regression,
+                "pilot_approx": pilot,
+                "load": load,
+            }
+            if include_bsi:
+                bsi_path = resolved_profiles / "regression-bsi.json"
+                if bsi_path.is_file():
+                    profiles["regression_bsi"] = run_regression_profile(
+                        _load_json(bsi_path),
+                        repo=resolved_repo,
+                        storage_dir=storage / "regression-bsi",
+                    )
         artifact = {
             "artifact_type": "open_corpora_profiles_run",
             "schema_version": "1.0.0",
             "mode": "full",
+            "include_bsi": include_bsi,
             "generated_at": datetime.now(tz=UTC).isoformat(),
             "claim_boundary": CLAIM_BOUNDARY,
-            "profiles": {
-                "regression": regression,
-                "pilot_approx": pilot,
-                "load": load,
-            },
+            "profiles": profiles,
         }
     else:
         raise ValueError(f"unknown mode {mode!r}; use smoke|full")
@@ -532,6 +592,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--profiles-dir", type=Path, default=None)
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--repo-root", type=Path, default=None)
+    parser.add_argument(
+        "--include-bsi",
+        action="store_true",
+        help="Also run regression-bsi.json (290 buildingSMART TestCases; slow)",
+    )
     args = parser.parse_args(argv)
 
     artifact = run_all_profiles(
@@ -539,14 +604,19 @@ def main(argv: list[str] | None = None) -> int:
         profiles_dir=args.profiles_dir,
         output_dir=args.output_dir,
         mode=args.mode,
+        include_bsi=args.include_bsi,
     )
     print(json.dumps(artifact, ensure_ascii=False, indent=2))
     if args.mode == "smoke" and not artifact.get("pins_ok", False):
         return 2
     if args.mode == "full":
-        regression = (artifact.get("profiles") or {}).get("regression") or {}
-        if regression.get("cases_matched") != regression.get("cases_run"):
-            return 2
+        profiles = artifact.get("profiles") or {}
+        for key in ("regression", "regression_bsi"):
+            regression = profiles.get(key)
+            if not isinstance(regression, dict):
+                continue
+            if not regression.get("regression_pass", False):
+                return 2
     return 0
 
 

@@ -113,6 +113,87 @@ class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
         guids = {i.element_guid for i in issues}
         self.assertEqual(guids, {"GUID-A", "GUID-B"})
 
+    def test_map_results_prohibited_specification_with_applicability_match(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        validator = IfcTesterIdsValidator()
+        fake_results = {
+            "specifications": [
+                {
+                    "name": "Prohibited Wall",
+                    "status": False,
+                    "cardinality": "prohibited",
+                    "total_applicable": 1,
+                    "requirements": [],
+                    "applicable_entities": [
+                        {
+                            "element": "2hJQkZ0zj1XBp0001#1",
+                            "global_id": "2hJQkZ0zj1XBp0001",
+                        }
+                    ],
+                }
+            ]
+        }
+
+        issues = validator._map_results(fake_results)
+        self.assertEqual(len(issues), 1)
+        self.assertIn("Prohibited", issues[0].message)
+        self.assertEqual(issues[0].element_guid, "2hJQkZ0zj1XBp0001")
+
+    def test_map_results_failed_requirement_without_failed_entities(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        validator = IfcTesterIdsValidator()
+        fake_results = {
+            "specifications": [
+                {
+                    "name": "Required Wall Name",
+                    "status": False,
+                    "cardinality": "required",
+                    "total_applicable": 0,
+                    "requirements": [
+                        {
+                            "facet_type": "Attribute",
+                            "description": "The Name shall be Waldo",
+                            "status": False,
+                            "failed_entities": [],
+                        }
+                    ],
+                }
+            ]
+        }
+
+        issues = validator._map_results(fake_results)
+        self.assertEqual(len(issues), 1)
+        self.assertIn("Waldo", issues[0].message)
+
+
+class IfcTesterIdsValidatorBsiRegressionTests(unittest.TestCase):
+    """BSI TestCases that must map to pass/fail consistently with filename prefix."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.repo = Path(__file__).resolve().parents[2]
+        cls.bsi_root = cls.repo / "samples" / "ids" / "buildingsmart-testcases" / "cases"
+
+    def _validate(self, case_dir: str, case_id: str) -> bool:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        case_path = self.bsi_root / case_dir
+        issues = IfcTesterIdsValidator().validate(
+            case_path / f"{case_id}.ids",
+            case_path / f"{case_id}.ifc",
+        )
+        return len(issues) == 0
+
+    def test_bsi_0093_prohibited_specification_fails(self) -> None:
+        case_id = "fail-prohibited_specifications_fails_if_the_applicability_matches"
+        self.assertFalse(self._validate("0093", case_id))
+
+    def test_bsi_0094_required_spec_with_no_applicable_entity_fails(self) -> None:
+        case_id = "fail-required_specifications_need_at_least_one_applicable_entity_2_2"
+        self.assertFalse(self._validate("0094", case_id))
+
 
 if __name__ == "__main__":
     unittest.main()
