@@ -293,7 +293,7 @@ class CorrelationTests(unittest.TestCase):
         add_correlation_middleware(app)
 
         @app.get("/test")
-        def test_endpoint() -> dict[str, str]:
+        def _fake_endpoint() -> dict[str, str]:
             from aerobim.presentation.http.correlation import get_correlation_id
 
             return {"cid": get_correlation_id()}

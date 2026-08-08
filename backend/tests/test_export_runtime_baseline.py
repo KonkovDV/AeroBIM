@@ -3,9 +3,14 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+_REPO = Path(__file__).resolve().parents[2]
 
 from aerobim.tools.export_runtime_baseline import (
     _check_architecture_inventory,
@@ -56,7 +61,7 @@ class ParsePytestJunitTests(unittest.TestCase):
 class CompletenessErrorsTests(unittest.TestCase):
     def _complete(self) -> dict:
         return {
-            "schema_version": "1.3.0",
+            "schema_version": "1.4.0",
             "commit_sha": "abc123",
             "tree_sha": "def456",
             "backend": {
@@ -64,6 +69,8 @@ class CompletenessErrorsTests(unittest.TestCase):
                 "tests_passed": 90,
                 "tests_skipped": 8,
                 "tests_failed": 0,
+                "test_functions": 100,
+                "uncollected": [],
             },
             "frontend": {"tests_passed": 29},
             "quality_gates": {
@@ -120,7 +127,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
                 "lockfile_sha256": "abc",
             },
         )
-        self.assertEqual(baseline["schema_version"], "1.3.0")
+        self.assertEqual(baseline["schema_version"], "1.4.0")
         self.assertEqual(baseline["commit_sha"], "testsha")
         self.assertEqual(baseline["tree_sha"], "testtree")
         backend_block = baseline["backend"]
@@ -166,7 +173,91 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         from aerobim.tools.export_runtime_baseline import publishability_errors
 
         errors = publishability_errors(baseline)
-        self.assertTrue(any("working_tree_clean" in e for e in errors))
+        self.assertTrue(any("working_tree_dirty" in e for e in errors))
+
+    def test_local_attestation_is_not_publishable(self) -> None:
+        from aerobim.tools.export_runtime_baseline import publishability_errors
+
+        payload = CompletenessErrorsTests()._complete()
+        payload["publishable"] = True
+        payload["artifact_completeness"] = "full"
+        payload["working_tree_clean"] = True
+        payload["attestation"] = {
+            "attested_by": "local",
+            "ci_run_id": None,
+            "ci_platform": "test",
+            "ci_python_version": "3.12.0",
+            "gates_attested": [],
+        }
+        payload["frontend"] = {
+            "tests_passed": 29,
+            "vitest_artifact": "frontend/var/vitest-results.json",
+        }
+        errors = publishability_errors(payload, expected_commit_sha="abc123", repo=None)
+        self.assertTrue(any("attestation_not_ci" in e for e in errors))
+
+    def test_attestation_cannot_be_forged_locally(self) -> None:
+        import os
+        import subprocess
+
+        help_result = subprocess.run(
+            [sys.executable, "-m", "aerobim.tools.export_runtime_baseline", "--help"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotIn("--attested-by", help_result.stdout)
+        baseline = export_runtime_baseline(backend_root=_REPO / "backend")
+        self.assertEqual(baseline["attestation"]["attested_by"], "local")
+        with patch.dict(os.environ, {"GITHUB_ACTIONS": "true"}, clear=False):
+            forged = export_runtime_baseline(backend_root=_REPO / "backend")
+        self.assertEqual(forged["attestation"]["attested_by"], "local")
+        self.assertTrue(forged["attestation"].get("attestation_environment_incomplete"))
+
+    def test_committed_baseline_is_ci_attested(self) -> None:
+        from aerobim.tools.export_runtime_baseline import committed_baseline_attestation_errors
+
+        artifact = _REPO / "docs" / "evidence" / "runtime-baseline-latest.json"
+        stored = json.loads(artifact.read_text(encoding="utf-8"))
+        attestation = stored.get("attestation")
+        if not isinstance(attestation, dict) or attestation.get("attested_by") != "ci":
+            self.skipTest(
+                "bootstrap: commit CI-generated docs/evidence/runtime-baseline-latest.json "
+                "from Actions artifact (WP-A11)"
+            )
+        errors = committed_baseline_attestation_errors(_REPO)
+        self.assertEqual(errors, [], msg="; ".join(errors))
+
+    def test_fake_frontend_count_without_vitest_artifact_not_publishable(self) -> None:
+        from aerobim.tools.export_runtime_baseline import publishability_errors
+
+        payload = CompletenessErrorsTests()._complete()
+        payload["publishable"] = True
+        payload["artifact_completeness"] = "full"
+        payload["working_tree_clean"] = True
+        payload["attestation"] = {
+            "attested_by": "ci",
+            "run_id": "1",
+            "run_attempt": 1,
+            "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main",
+            "github_sha": "abc123",
+            "runner_os": "Linux",
+            "runner_python": "3.12.0",
+            "gates_attested": sorted(
+                {
+                    "test",
+                    "frontend",
+                    "supply-chain-audit",
+                    "sprint-2-1-gates",
+                    "security-regression",
+                    "offline-bundle-smoke",
+                    "openapi-contract",
+                }
+            ),
+        }
+        payload["frontend"] = {"tests_passed": 999, "vitest_artifact": None}
+        errors = publishability_errors(payload, expected_commit_sha="abc123", repo=None)
+        self.assertTrue(any("frontend_vitest_artifact_missing" in e for e in errors))
 
 
 class DocumentedEnvSetTests(unittest.TestCase):

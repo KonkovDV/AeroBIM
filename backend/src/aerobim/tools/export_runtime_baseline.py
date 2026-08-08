@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import re
 import subprocess
@@ -21,10 +22,25 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-_SCHEMA_VERSION = "1.3.0"
+_SCHEMA_VERSION = "1.4.0"
 _QUALITY_GATE_KEYS = ("ruff", "mypy", "pytest", "vitest", "build")
 _ALLOWED_GATE_VALUES = frozenset({"PASS", "FAIL", "SKIPPED", "UNKNOWN", "NOT_RUN"})
 _COMPLETE_GATE_VALUE = "PASS"
+_REQUIRED_GATES_ATTESTED = frozenset(
+    {
+        "test",
+        "frontend",
+        "supply-chain-audit",
+        "sprint-2-1-gates",
+        "security-regression",
+        "offline-bundle-smoke",
+        "openapi-contract",
+    }
+)
+_CODE_ENV_RE = re.compile(
+    r"os\.(?:getenv|environ\.get)\(\s*[\"'](AEROBIM_[A-Z][A-Z0-9_]*)[\"']"
+    r"|os\.environ\[\s*[\"'](AEROBIM_[A-Z][A-Z0-9_]*)[\"']\s*\]"
+)
 _BASELINE_MARKER_BEGIN = "<!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->"
 _ENV_DOC_MARKER_BEGIN = "<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->"
 _ENV_DOC_MARKER_END = "<!-- AEROBIM_DOCUMENTED_ENV:END -->"
@@ -33,7 +49,101 @@ _ENV_TABLE_CELL_RE = re.compile(r"`(AEROBIM_[A-Z][A-Z0-9_]*)`")
 _ENV_MARKER_NOISE = frozenset({"AEROBIM_DOCUMENTED_ENV", "AEROBIM_RUNTIME_BASELINE"})
 _DRIFT_KEYS = ("backend_src_loc", "backend_test_loc", "backend_test_functions")
 _DRIFT_TOLERANCE = 50
+_COMMITTED_BASELINE = "docs/evidence/runtime-baseline-latest.json"
+_LOCAL_BASELINE_DIR = "docs/evidence/local"
 
+
+def _gates_attested_from_env() -> list[str]:
+    raw = os.environ.get("AEROBIM_GATES_ATTESTED", "")
+    return sorted(part.strip() for part in raw.split(",") if part.strip())
+
+
+def _resolve_attestation_from_environment() -> dict[str, object]:
+    """WP-A1b / N-18: attestation is derived from the process environment only."""
+    attestation: dict[str, object] = {
+        "attested_by": "local",
+        "run_id": None,
+        "run_attempt": None,
+        "workflow_ref": None,
+        "github_sha": None,
+        "runner_os": os.environ.get("RUNNER_OS") or platform.system(),
+        "runner_python": platform.python_version(),
+        "gates_attested": _gates_attested_from_env(),
+    }
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        return attestation
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
+    workflow_ref = os.environ.get("GITHUB_WORKFLOW_REF")
+    github_sha = os.environ.get("GITHUB_SHA")
+    if not all([run_id, run_attempt, workflow_ref, github_sha]):
+        attestation["attestation_environment_incomplete"] = True
+        return attestation
+    attestation.update(
+        {
+            "attested_by": "ci",
+            "run_id": run_id,
+            "run_attempt": int(run_attempt),
+            "workflow_ref": workflow_ref,
+            "github_sha": github_sha,
+        }
+    )
+    return attestation
+
+
+def _default_baseline_output(repo: Path) -> Path:
+    attestation = _resolve_attestation_from_environment()
+    if attestation.get("attested_by") == "ci":
+        return repo / _COMMITTED_BASELINE
+    return repo / _LOCAL_BASELINE_DIR / "runtime-baseline-local.json"
+
+
+def committed_baseline_attestation_errors(repo: Path | None = None) -> list[str]:
+    """WP-A11: committed baseline in git must be CI-attested and publishable."""
+    root = repo or _repo_root()
+    artifact = root / _COMMITTED_BASELINE
+    if not artifact.is_file():
+        return [f"missing_committed_baseline: {_COMMITTED_BASELINE}"]
+    try:
+        stored = json.loads(artifact.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return [f"invalid_committed_baseline: {_COMMITTED_BASELINE}"]
+    if not isinstance(stored, dict):
+        return [f"committed_baseline_not_object: {_COMMITTED_BASELINE}"]
+    head = _commit_sha(root)
+    tree = _tree_sha(root)
+    return publishability_errors(
+        stored,
+        expected_commit_sha=head or None,
+        expected_tree_sha=tree or None,
+        repo=root,
+    )
+
+
+def compare_baseline_snapshots(committed: dict[str, object], generated: dict[str, object]) -> list[str]:
+    """Compare committed vs CI-generated baseline (WP-A11)."""
+    errors: list[str] = []
+    for key in ("commit_sha", "tree_sha", "schema_version"):
+        if committed.get(key) != generated.get(key):
+            errors.append(
+                f"baseline_field_mismatch:{key} committed={committed.get(key)!r} "
+                f"generated={generated.get(key)!r}"
+            )
+    committed_metrics = committed.get("metrics")
+    generated_metrics = generated.get("metrics")
+    if isinstance(committed_metrics, dict) and isinstance(generated_metrics, dict):
+        for key in _DRIFT_KEYS:
+            c_val = int(committed_metrics.get(key, -1))
+            g_val = int(generated_metrics.get(key, -2))
+            if abs(c_val - g_val) > _DRIFT_TOLERANCE:
+                errors.append(f"baseline_metrics_drift:{key} committed={c_val} generated={g_val}")
+    committed_att = committed.get("attestation")
+    generated_att = generated.get("attestation")
+    if committed_att != generated_att:
+        errors.append("attestation_mismatch")
+    if generated.get("publishable") is not True:
+        errors.append("generated_baseline_not_publishable")
+    return errors
 
 def _repo_root() -> Path:
     # tools/ -> aerobim/ -> src/ -> backend/ -> repo root
@@ -56,21 +166,82 @@ def _count_lines(root: Path, pattern: str) -> int:
     return total
 
 
-def _count_tests(tests_root: Path) -> int:
+def _iter_test_definition_ids(tests_root: Path) -> set[str]:
+    """Collect pytest-style node ids for module-level and class test methods."""
+    import ast
+
+    ids: set[str] = set()
     if not tests_root.exists():
-        return 0
-    count = 0
-    for path in tests_root.rglob("test_*.py"):
+        return ids
+    for path in sorted(tests_root.rglob("test_*.py")):
+        rel = path.relative_to(tests_root.parent).as_posix()
         try:
-            text = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+            tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
+        except SyntaxError:
             continue
-        count += sum(
-            1
-            for line in text.splitlines()
-            if line.lstrip().startswith("def test_") or line.lstrip().startswith("async def test_")
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
+                ids.add(f"{rel}::{node.name}")
+            elif isinstance(node, ast.ClassDef):
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef) and item.name.startswith("test_"):
+                        ids.add(f"{rel}::{node.name}::{item.name}")
+            elif isinstance(node, ast.If):
+                for branch in (*node.body, *node.orelse):
+                    if isinstance(branch, ast.FunctionDef) and branch.name.startswith("test_"):
+                        ids.add(f"{rel}::{branch.name}")
+    return ids
+
+
+def _count_tests(tests_root: Path) -> int:
+    return len(_iter_test_definition_ids(tests_root))
+
+
+def _pytest_collected_ids(backend_root: Path) -> set[str]:
+    try:
+        completed = subprocess.run(
+            [sys.executable, "-m", "pytest", "--collect-only", "-q"],
+            cwd=backend_root,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=180,
         )
-    return count
+    except (OSError, subprocess.TimeoutExpired):
+        return set()
+    if completed.returncode not in {0, 5}:
+        return set()
+    collected: set[str] = set()
+    for line in completed.stdout.splitlines():
+        token = line.strip()
+        if "::test_" in token and not token.startswith("="):
+            collected.add(token)
+    return collected
+
+
+def _test_collection_inventory(backend_root: Path) -> dict[str, object]:
+    tests_root = backend_root / "tests"
+    definitions = _iter_test_definition_ids(tests_root)
+    collected = _pytest_collected_ids(backend_root)
+    uncollected = sorted(definitions - collected)
+    return {
+        "test_definitions": len(definitions),
+        "tests_collected_live": len(collected),
+        "uncollected": uncollected,
+    }
+
+
+def _code_env_names(repo: Path) -> list[str]:
+    settings_path = repo / "backend" / "src" / "aerobim" / "core" / "config" / "settings.py"
+    names: set[str] = set()
+    if not settings_path.is_file():
+        return []
+    text = settings_path.read_text(encoding="utf-8", errors="ignore")
+    for match in _CODE_ENV_RE.finditer(text):
+        name = match.group(1) or match.group(2)
+        if name:
+            names.add(name)
+    return sorted(names)
 
 
 def _git(repo: Path, *args: str) -> str:
@@ -440,59 +611,110 @@ def completeness_errors(baseline: dict[str, Any]) -> list[str]:
 
 
 _BASELINE_ARTIFACT_REL = "docs/evidence/runtime-baseline-latest.json"
-_BASELINE_BINDING_PATHS = frozenset(
-    {
-        _BASELINE_ARTIFACT_REL,
-        "backend/src/aerobim/tools/export_runtime_baseline.py",
-        "README.md",
-        "README.ru.md",
-    }
-)
 
 
-def _baseline_binding_parent_ok(repo: Path, artifact_commit: str, head: str) -> bool:
-    """Accept commit_sha when only baseline-binding commits sit between artifact and HEAD."""
+def _commits_behind(repo: Path, artifact_commit: str, head: str) -> int | None:
     if artifact_commit == head:
-        return True
+        return 0
+    count = 0
     current = head
-    while current:
+    while current and current != artifact_commit:
         parent = _git(repo, "rev-parse", f"{current}~1")
         if not parent:
-            return False
-        changed = {
-            line for line in _git(repo, "diff", "--name-only", parent, current).splitlines() if line
-        }
-        if changed and not changed <= _BASELINE_BINDING_PATHS:
-            return False
-        if parent == artifact_commit:
-            return True
+            return None
+        count += 1
         current = parent
-    return False
+    return count if current == artifact_commit else None
 
 
 def publishability_errors(
     baseline: dict[str, Any],
     *,
     expected_commit_sha: str | None = None,
+    expected_tree_sha: str | None = None,
     repo: Path | None = None,
 ) -> list[str]:
-    """Stricter than completeness: HEAD match + clean tree for publishable artifacts."""
+    """Stricter than completeness: CI attestation + HEAD/tree match + clean tree."""
     errors = list(completeness_errors(baseline))
     if baseline.get("publishable") is not True:
-        errors.append("publishable must be true for publishable baseline")
+        errors.append("publishable_not_true")
     if baseline.get("artifact_completeness") != "full":
-        errors.append("artifact_completeness must be 'full' for publishable baseline")
+        errors.append("artifact_incomplete")
     if baseline.get("working_tree_clean") is not True:
-        errors.append("working_tree_clean must be true for publishable baseline")
-    commit = baseline.get("commit_sha")
-    if expected_commit_sha and isinstance(commit, str):
-        head = expected_commit_sha
-        if commit != head and not (
-            repo is not None and _baseline_binding_parent_ok(repo, commit, head)
+        errors.append("working_tree_dirty")
+
+    attestation = baseline.get("attestation")
+    if not isinstance(attestation, dict):
+        errors.append("attestation_missing")
+    else:
+        attested_by = attestation.get("attested_by")
+        if attested_by != "ci":
+            errors.append(f"attestation_not_ci: got {attested_by!r}")
+        if attestation.get("attestation_environment_incomplete"):
+            errors.append("attestation_environment_incomplete")
+        github_sha = attestation.get("github_sha")
+        commit = baseline.get("commit_sha")
+        if (
+            attested_by == "ci"
+            and isinstance(github_sha, str)
+            and isinstance(commit, str)
+            and github_sha != commit
         ):
             errors.append(
-                f"commit_sha mismatch: artifact={commit!r} expected HEAD={expected_commit_sha!r}"
+                f"attestation_sha_mismatch: attestation.github_sha={github_sha!r} "
+                f"commit_sha={commit!r}"
             )
+        gates_attested = attestation.get("gates_attested")
+        if not isinstance(gates_attested, list):
+            errors.append("attestation_gates_attested_missing")
+        else:
+            missing = sorted(_REQUIRED_GATES_ATTESTED - {str(g) for g in gates_attested})
+            if missing:
+                errors.append(
+                    f"attestation_gates_attested_missing: {missing}"
+                )
+
+    commit = baseline.get("commit_sha")
+    if expected_commit_sha and isinstance(commit, str):
+        if commit != expected_commit_sha:
+            behind = (
+                _commits_behind(repo, commit, expected_commit_sha)
+                if repo is not None
+                else None
+            )
+            if behind is None:
+                errors.append(
+                    f"commit_sha_mismatch: artifact={commit!r} expected HEAD={expected_commit_sha!r}"
+                )
+            else:
+                errors.append(
+                    f"baseline_stale_by_{behind}_commits: regenerate {_COMMITTED_BASELINE}"
+                )
+    tree = baseline.get("tree_sha")
+    if expected_tree_sha and isinstance(tree, str) and tree != expected_tree_sha:
+        errors.append(
+            f"tree_sha_mismatch: artifact={tree!r} expected HEAD tree={expected_tree_sha!r}"
+        )
+
+    backend = baseline.get("backend")
+    if isinstance(backend, dict):
+        collected = backend.get("tests_collected")
+        definitions = backend.get("test_functions")
+        if isinstance(collected, int) and isinstance(definitions, int) and definitions != collected:
+            uncollected = backend.get("uncollected")
+            detail = (
+                f" ({uncollected[:5]}...)" if isinstance(uncollected, list) and uncollected else ""
+            )
+            errors.append(
+                f"uncollected_test_definitions: test_functions={definitions} "
+                f"tests_collected={collected}{detail}"
+            )
+
+    frontend = baseline.get("frontend")
+    if isinstance(frontend, dict):
+        vitest_source = frontend.get("vitest_artifact")
+        if not vitest_source:
+            errors.append("frontend_vitest_artifact_missing")
     return errors
 
 
@@ -506,6 +728,19 @@ def _compute_publishable(
         return False, "partial"
     if completeness_errors(baseline):
         return False, "partial"
+    attestation = baseline.get("attestation")
+    if not isinstance(attestation, dict) or attestation.get("attested_by") != "ci":
+        return False, "partial"
+    github_sha = attestation.get("github_sha")
+    commit = baseline.get("commit_sha")
+    if (
+        isinstance(github_sha, str)
+        and isinstance(commit, str)
+        and github_sha != commit
+    ):
+        return False, "partial"
+    if publishability_errors(baseline):
+        return False, "partial"
     return True, "full"
 
 
@@ -513,6 +748,7 @@ def export_runtime_baseline(
     *,
     backend_root: Path | None = None,
     frontend_tests_passed: int | None = None,
+    frontend_tests_failed: int | None = None,
     tests_passed: int | None = None,
     tests_skipped: int | None = None,
     tests_failed: int | None = None,
@@ -522,6 +758,8 @@ def export_runtime_baseline(
     tree_sha: str | None = None,
     environment: dict[str, object] | None = None,
     require_clean_tree: bool = False,
+    vitest_json_path: str | None = None,
+    attestation: dict[str, object] | None = None,
 ) -> dict[str, object]:
     backend = (backend_root or (_repo_root() / "backend")).resolve()
     repo = backend.parent
@@ -530,7 +768,13 @@ def export_runtime_baseline(
     src_loc = _count_lines(src_root, "*.py")
     test_loc = _count_lines(tests_root, "*.py")
     test_count = _count_tests(tests_root)
-    collected = test_count if tests_collected is None else tests_collected
+    collection = _test_collection_inventory(backend)
+    collected = (
+        tests_collected
+        if tests_collected is not None
+        else int(collection["tests_collected_live"])
+    )
+    uncollected = collection["uncollected"]
     macro_f1 = _extraction_macro_f1(backend)
     gates = _default_quality_gates()
     if quality_gates:
@@ -542,6 +786,7 @@ def export_runtime_baseline(
     frontend_passed = frontend_tests_passed if frontend_tests_passed is not None else "n/a"
     f1_display = f"{macro_f1}" if macro_f1 is not None else "n/a"
     env = environment if environment is not None else _environment_fingerprint(repo)
+    attestation_block = attestation if attestation is not None else _resolve_attestation_from_environment()
     payload: dict[str, object] = {
         "artifact_type": "aerobim_runtime_baseline",
         "schema_version": _SCHEMA_VERSION,
@@ -562,11 +807,15 @@ def export_runtime_baseline(
             "source_loc": src_loc,
             "test_loc": test_loc,
             "test_functions": test_count,
+            "uncollected": uncollected,
         },
         "frontend": {
             "tests_passed": frontend_tests_passed,
+            "tests_failed": frontend_tests_failed,
+            "vitest_artifact": vitest_json_path,
             "note": (
-                "Recorded from last CI/local vitest run when provided via --frontend-tests-passed"
+                "Recorded from vitest JSON artifact when provided; "
+                "manual --frontend-tests-passed without artifact is not publishable"
             ),
         },
         "quality_gates": gates,
@@ -584,7 +833,9 @@ def export_runtime_baseline(
             f"extraction macro_f1={f1_display} (fixture corpus; not product accuracy)"
         ),
         "documented_env_vars": _configuration_env_names(repo / "README.md"),
+        "code_env_vars": _code_env_names(repo),
         "architecture_inventory": _live_architecture_inventory(repo),
+        "attestation": attestation_block,
     }
     publishable, completeness = _compute_publishable(payload, require_clean_tree=require_clean_tree)
     payload["artifact_completeness"] = completeness
@@ -723,9 +974,11 @@ def _check_documented_env_sets(repo: Path) -> list[str]:
             )
             continue
         marker_sets[name] = set(names)
-        if set(names) != set(expected):
+        missing_in_marker = set(expected) - set(names)
+        if missing_in_marker:
             errors.append(
-                _symdiff_message(name, "README.md_Configuration", set(names), set(expected))
+                f"{name} documented-env marker missing Configuration table names: "
+                f"{sorted(missing_in_marker)}"
             )
 
     if "README.md" in marker_sets and "README.ru.md" in marker_sets:
@@ -745,6 +998,66 @@ def _check_documented_env_sets(repo: Path) -> list[str]:
     if en_all and ru_all and en_all != ru_all:
         errors.append(_symdiff_message("README.md_all", "README.ru.md_all", en_all, ru_all))
 
+    return errors
+
+
+def _check_code_env_documented(repo: Path) -> list[str]:
+    """Fail when Settings reads AEROBIM_* knobs absent from README documented-env marker."""
+    errors: list[str] = []
+    readme = repo / "README.md"
+    if not readme.exists():
+        return ["Missing README.md"]
+    marker = _documented_env_marker_names(readme.read_text(encoding="utf-8"))
+    if marker is None:
+        return [
+            f"README.md missing {_ENV_DOC_MARKER_BEGIN}…{_ENV_DOC_MARKER_END} "
+            "for code/settings env parity"
+        ]
+    code_names = set(_code_env_names(repo))
+    missing_readme = sorted(code_names - set(marker))
+    if missing_readme:
+        errors.append(
+            f"settings.py reads undocumented AEROBIM_* vars (not in README marker): "
+            f"{missing_readme}"
+        )
+    artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
+    if artifact.exists():
+        try:
+            stored = json.loads(artifact.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return errors + ["Invalid runtime-baseline-latest.json while checking code_env_vars"]
+        if isinstance(stored, dict):
+            artifact_names = stored.get("code_env_vars")
+            if isinstance(artifact_names, list):
+                artifact_set = {str(x) for x in artifact_names}
+                if artifact_set != code_names:
+                    errors.append(
+                        _symdiff_message("code", "artifact_code_env", code_names, artifact_set)
+                    )
+    return errors
+
+
+def _check_readme_numeric_claims(repo: Path, live: dict[str, object]) -> list[str]:
+    errors: list[str] = []
+    backend = live.get("backend")
+    inv = live.get("architecture_inventory")
+    if not isinstance(backend, dict) or not isinstance(inv, dict):
+        return ["Live baseline missing backend/architecture_inventory for README numeric check"]
+    stale_patterns = (
+        (r"171\s+tests", "stale backend test count 171"),
+        (r"1\.9K\s+LOC", "stale ~1.9K LOC claim"),
+        (r"9\s+domain\s+ports", "stale 9 domain ports claim"),
+        (r"12\s+infrastructure\s+adapters", "stale 12 adapters claim"),
+        (r"13\s+DI\s+tokens", "stale 13 DI tokens claim"),
+    )
+    for readme_name in ("README.md", "README.ru.md"):
+        path = repo / readme_name
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for pattern, label in stale_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                errors.append(f"{readme_name} contains {label}")
     return errors
 
 
@@ -842,7 +1155,10 @@ def _check_readme_markers(repo: Path) -> list[str]:
                 "docs/evidence/runtime-baseline-latest.json readme_snippet (WP-08)"
             )
     errors.extend(_check_documented_env_sets(repo))
+    errors.extend(_check_code_env_documented(repo))
     errors.extend(_check_architecture_inventory(repo))
+    live = export_runtime_baseline(backend_root=repo / "backend")
+    errors.extend(_check_readme_numeric_claims(repo, live))
     return errors
 
 
@@ -878,8 +1194,16 @@ def _check_artifact_publishable(repo: Path) -> list[str]:
         return ["Invalid runtime-baseline-latest.json"]
     if not isinstance(stored, dict):
         return ["runtime-baseline-latest.json must be an object"]
+    if stored.get("publishable") is not True:
+        return []
     head = _commit_sha(repo)
-    return publishability_errors(stored, expected_commit_sha=head or None, repo=repo)
+    tree = _tree_sha(repo)
+    return publishability_errors(
+        stored,
+        expected_commit_sha=head or None,
+        expected_tree_sha=tree or None,
+        repo=repo,
+    )
 
 
 def _check_artifact_complete(repo: Path) -> list[str]:
@@ -901,7 +1225,7 @@ def main(argv: list[str] | None = None) -> int:
         "--out",
         type=Path,
         default=None,
-        help="Write JSON artifact (default: docs/evidence/runtime-baseline-latest.json)",
+        help="Write JSON artifact (default: docs/evidence/local/ locally; committed path in CI)",
     )
     parser.add_argument(
         "--check-readme",
@@ -979,6 +1303,20 @@ def main(argv: list[str] | None = None) -> int:
         help="Read tests_passed/skipped/failed from a pytest JUnit XML report",
     )
     parser.add_argument(
+        "--vitest-json",
+        type=Path,
+        default=None,
+        help="Vitest JSON reporter artifact for frontend pass/fail counts",
+    )
+    parser.add_argument(
+        "--check-committed-baseline",
+        action="store_true",
+        help=(
+            "WP-A11: fail if docs/evidence/runtime-baseline-latest.json is not CI-attested "
+            "and publishable on HEAD"
+        ),
+    )
+    parser.add_argument(
         "--gate",
         action="append",
         default=[],
@@ -1006,6 +1344,7 @@ def main(argv: list[str] | None = None) -> int:
     tests_failed = args.tests_failed
     tests_collected: int | None = None
     frontend_tests_passed = args.frontend_tests_passed
+    frontend_tests_failed: int | None = None
     junit_for_parse = args.pytest_junit or junit_path
     if junit_for_parse is not None and junit_for_parse.is_file():
         parsed = parse_pytest_junit(junit_for_parse)
@@ -1013,13 +1352,31 @@ def main(argv: list[str] | None = None) -> int:
         tests_skipped = parsed["tests_skipped"] if tests_skipped is None else tests_skipped
         tests_failed = parsed["tests_failed"] if tests_failed is None else tests_failed
         tests_collected = parsed["tests_collected"]
-    vitest_for_parse = vitest_json_path
+    vitest_for_parse = args.vitest_json or vitest_json_path
+    vitest_artifact: str | None = None
+    attestation = _resolve_attestation_from_environment()
     if vitest_for_parse is not None and vitest_for_parse.is_file():
         vitest_parsed = parse_vitest_json(vitest_for_parse)
+        vitest_artifact = vitest_for_parse.as_posix()
         if frontend_tests_passed is None:
             frontend_tests_passed = vitest_parsed["tests_passed"]
+        frontend_tests_failed = vitest_parsed["tests_failed"]
+    elif (
+        args.frontend_tests_passed is not None
+        and attestation.get("attested_by") == "ci"
+    ):
+        print(
+            "--frontend-tests-passed without --vitest-json is not allowed under CI attestation",
+            file=sys.stderr,
+        )
+        return 1
 
-    if args.check_readme or args.check_complete or args.check_publishable:
+    if (
+        args.check_readme
+        or args.check_complete
+        or args.check_publishable
+        or args.check_committed_baseline
+    ):
         live = export_runtime_baseline(
             backend_root=repo / "backend",
             quality_gates=gates,
@@ -1032,6 +1389,8 @@ def main(argv: list[str] | None = None) -> int:
             errors.extend(_check_artifact_complete(repo))
         if args.check_publishable:
             errors.extend(_check_artifact_publishable(repo))
+        if args.check_committed_baseline:
+            errors.extend(committed_baseline_attestation_errors(repo))
         if errors:
             for message in errors:
                 print(message, file=sys.stderr)
@@ -1042,12 +1401,15 @@ def main(argv: list[str] | None = None) -> int:
     baseline = export_runtime_baseline(
         backend_root=repo / "backend",
         frontend_tests_passed=frontend_tests_passed,
+        frontend_tests_failed=frontend_tests_failed,
         tests_passed=tests_passed,
         tests_skipped=tests_skipped,
         tests_failed=tests_failed,
         tests_collected=tests_collected,
         quality_gates=gates,
         require_clean_tree=args.require_clean_tree,
+        vitest_json_path=vitest_artifact,
+        attestation=attestation,
     )
     if args.require_complete:
         errors = completeness_errors(baseline)
@@ -1056,7 +1418,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(message, file=sys.stderr)
             return 1
 
-    out = args.out or (repo / "docs" / "evidence" / "runtime-baseline-latest.json")
+    out = args.out or _default_baseline_output(repo)
     if args.require_clean_tree and baseline.get("working_tree_clean") is not True:
         out = out.with_name(f"{out.stem}-dirty{out.suffix}")
     out.parent.mkdir(parents=True, exist_ok=True)
