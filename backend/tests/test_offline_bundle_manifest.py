@@ -7,12 +7,22 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from aerobim.tools.offline_bundle import _BUNDLE_FILES, build_manifest, verify_manifest
+from aerobim.tools.offline_bundle import (
+    _BUNDLE_FILES,
+    _BACKEND,
+    _IMAGE_TAR,
+    build_manifest,
+    verify_bundle_source_sync,
+    verify_manifest,
+)
 
 
 def _make_bundle(tmp_path: Path) -> Path:
     for name in _BUNDLE_FILES:
-        (tmp_path / name).write_bytes(f"content-of-{name}".encode())
+        if name == _IMAGE_TAR:
+            (tmp_path / name).write_bytes(f"content-of-{name}".encode())
+        else:
+            (tmp_path / name).write_bytes((_BACKEND / name).read_bytes())
     manifest = build_manifest(tmp_path, image_id="sha256:test")
     (tmp_path / "BUNDLE_MANIFEST.json").write_text(json.dumps(manifest), encoding="utf-8")
     return tmp_path
@@ -28,6 +38,13 @@ def test_tampered_file_is_detected(tmp_path: Path) -> None:
     (bundle / "requirements-lock.txt").write_bytes(b"tampered")
     problems = verify_manifest(bundle)
     assert any("sha256 mismatch: requirements-lock.txt" in p for p in problems)
+
+
+def test_bundle_backend_drift_is_detected(tmp_path: Path) -> None:
+    bundle = _make_bundle(tmp_path)
+    (bundle / "Dockerfile").write_bytes(b"# stale dockerfile")
+    problems = verify_bundle_source_sync(bundle)
+    assert any("bundle/backend drift: Dockerfile" in p for p in problems)
 
 
 def test_missing_file_is_detected(tmp_path: Path) -> None:
@@ -144,8 +161,10 @@ def test_install_scripts_refuse_demo_token_without_flag(tmp_path: Path) -> None:
     assert "AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN" in sh
     assert "network none" in sh
     assert "-p " not in sh
+    assert "full closed-contour probe" in sh
     assert "AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN" in ps1
     assert 'docker run' in ps1 and '-p ' not in ps1.split('docker run', 1)[1]
+    assert "full closed-contour probe" in ps1
 
 
 def test_wheelhouse_artifact_in_manifest(tmp_path: Path) -> None:

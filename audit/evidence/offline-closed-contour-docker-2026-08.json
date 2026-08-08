@@ -1,27 +1,26 @@
 {
   "artifact_type": "offline_closed_contour_docker",
-  "schema_version": "1.2.0",
+  "schema_version": "1.3.0",
   "date": "2026-08-08",
-  "generated_at": "2026-08-08T09:30:00+00:00",
+  "generated_at": "2026-08-08T12:50:00+03:00",
   "claim_level": "image_bundle_only",
   "i1_status": "CLOSED_DOCKER_TRACK",
-  "audit_id": "RT-HYPERDEEP-CC-2026-08-08",
-  "scope_honesty": "И1 closed-contour Docker VERIFIED after hyperdeep Red Team pass: build/verify/closed-contour --smoke with in-container probes (health, unauth 401, capabilities, egress block). Install scripts use docker exec (no host port-publish). Bearer token required; demo token lab-only.",
+  "audit_id": "RT-HYPERDEEP-CC-2026-08-08-R2",
+  "scope_honesty": "И1 closed-contour Docker VERIFIED after hyperdeep Red Team round 2: install scripts share full in-container probes with smoke; verify detects bundle/backend Dockerfile+lock drift.",
   "environment": {
     "docker_client": "29.5.2",
     "platform": "Windows-11 / desktop-linux",
     "image_tag": "aerobim-backend:offline-bundle",
-    "image_id": "sha256:e988161c2f39c31c6a0300e00f36598047babf8452617b6da6771ce1efe4a033",
-    "image_tar_sha256": "550a6f59e94c7fa1c24313dd5a0b195c66866422a01a5702ad17ec507edc167b",
-    "image_tar_bytes": 864943104,
-    "commit_sha": "a71b6c6"
+    "commit_sha": "bffd8a0"
   },
   "checks": [
     {"check": "RT-CC-H01 install script host port-publish removed", "result": "REMEDIATED"},
     {"check": "RT-CC-H02 demo token gate", "result": "REMEDIATED"},
     {"check": "RT-CC-H03 smoke egress+auth probes", "result": "REMEDIATED"},
+    {"check": "RT-CC-H10 install full probe parity", "result": "REMEDIATED"},
+    {"check": "RT-CC-H11 bundle/backend drift detection", "result": "REMEDIATED"},
     {"check": "offline_bundle closed-contour --smoke", "result": "PASS probes OK"},
-    {"check": "test_offline_bundle_manifest", "result": "PASS 12/12"}
+    {"check": "test_offline_bundle_manifest", "result": "PASS 13/13"}
   ],
   "operator_docs": "docs/offline-deployment-2026.md",
   "hyperdeep_report": "docs/audit/RED_TEAM_HYPERDEEP_CLOSED_CONTOUR_2026_08_08.md",

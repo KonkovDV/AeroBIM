@@ -26,6 +26,8 @@ i1_status: CLOSED_DOCKER_TRACK
 | RT-CC-H07 | — | **NOT_VULNERABLE** | `/v1/system/capabilities` returns 401 without bearer |
 | RT-CC-H08 | — | **NOT_VULNERABLE** | Manifest sha256 verify catches tamper (unit tests) |
 | RT-CC-H09 | INFO | **ACCEPTED** | Host HTTP via `-p` unreliable with `--network none` — documented; use `docker exec` |
+| RT-CC-H10 | P2 | **REMEDIATED** (R2) | Install scripts only health-checked; smoke ran full auth+egress probes |
+| RT-CC-H11 | P2 | **REMEDIATED** (R2) | `verify` / `closed-contour` did not detect bundle/backend Dockerfile+lock drift |
 
 ---
 
@@ -49,7 +51,23 @@ i1_status: CLOSED_DOCKER_TRACK
 
 ## RT-CC-H03 — Smoke probe depth (P2, REMEDIATED)
 
-**Fix:** `_container_probe_script()` adds unauthenticated 401 check + egress block probe (`1.1.1.1`).
+**Fix:** `_container_probe_command()` adds unauthenticated 401 check + egress block probe (`1.1.1.1`). Token read from container env (shared with install scripts).
+
+---
+
+## RT-CC-H10 — Install script probe gap (P2, REMEDIATED, round 2)
+
+**Issue:** `install_offline.sh` / `.ps1` only curled `/health`; smoke validated auth + egress — operator false confidence after install.
+
+**Fix:** Install scripts invoke the same `_container_probe_command()` as `closed-contour --smoke`.
+
+---
+
+## RT-CC-H11 — Bundle/backend drift (P2, REMEDIATED, round 2)
+
+**Issue:** `verify_manifest` checked tarball integrity only; stale Dockerfile or lockfile in bundle could pass verify after backend edits.
+
+**Fix:** `verify_bundle_source_sync()` compares bundle `Dockerfile` + lockfiles to live `backend/` during `verify` and `closed-contour`.
 
 ---
 
@@ -62,7 +80,7 @@ python -m aerobim.tools.offline_bundle build
 python -m aerobim.tools.offline_bundle closed-contour --smoke
 ```
 
-Expected: unit tests pass; smoke prints `offline bundle probes: health+auth+egress OK`.
+Expected: unit tests pass (13); smoke prints `offline bundle probes: health+auth+egress OK`; verify reports no bundle/backend drift.
 
 ---
 
