@@ -1,10 +1,8 @@
-"""Lightweight in-process HTTP rate limiting (RT-RATE-001)."""
+"""Lightweight HTTP rate limiting (RT-RATE-001) with optional Redis backend."""
 
 from __future__ import annotations
 
-import time
-from collections import defaultdict, deque
-from threading import Lock
+from aerobim.core.security.rate_limit_backend import RateLimitBackend, build_rate_limit_backend
 
 _RATE_LIMITED_POST_PREFIXES = (
     "/v1/analyze/",
@@ -13,28 +11,7 @@ _RATE_LIMITED_POST_PREFIXES = (
 )
 _JOB_POLL_PREFIX = "/v1/analyze/project-package/jobs/"
 _DEFAULT_JOB_POLL_PER_MINUTE = 300
-
-
-class _SlidingWindowLimiter:
-    def __init__(self, *, max_events: int, window_seconds: float) -> None:
-        self._max_events = max_events
-        self._window_seconds = window_seconds
-        self._events: dict[str, deque[float]] = defaultdict(deque)
-        self._lock = Lock()
-
-    def allow(self, key: str) -> bool:
-        if self._max_events <= 0:
-            return True
-        now = time.monotonic()
-        cutoff = now - self._window_seconds
-        with self._lock:
-            bucket = self._events[key]
-            while bucket and bucket[0] <= cutoff:
-                bucket.popleft()
-            if len(bucket) >= self._max_events:
-                return False
-            bucket.append(now)
-            return True
+_WINDOW_SECONDS = 60.0
 
 
 def add_rate_limit_middleware(
@@ -42,8 +19,9 @@ def add_rate_limit_middleware(
     *,
     requests_per_minute: int,
     job_poll_per_minute: int = 0,
+    redis_url: str | None = None,
 ) -> None:
-    """Attach per-client sliding-window limiter for expensive routes."""
+    """Attach per-client limiter for expensive routes (shared when Redis is configured)."""
 
     if requests_per_minute <= 0 and job_poll_per_minute <= 0:
         return
@@ -52,14 +30,7 @@ def add_rate_limit_middleware(
     from starlette.requests import Request
     from starlette.responses import JSONResponse, Response
 
-    post_limiter = _SlidingWindowLimiter(
-        max_events=requests_per_minute,
-        window_seconds=60.0,
-    )
-    poll_limiter = _SlidingWindowLimiter(
-        max_events=job_poll_per_minute,
-        window_seconds=60.0,
-    )
+    backend: RateLimitBackend = build_rate_limit_backend(redis_url)
 
     class _RateLimitMiddleware(BaseHTTPMiddleware):
         async def dispatch(self, request: Request, call_next) -> Response:  # noqa: ANN001
@@ -69,7 +40,12 @@ def add_rate_limit_middleware(
             key = f"{client}:{auth[:32]}"
 
             if request.method == "GET" and path.startswith(_JOB_POLL_PREFIX):
-                if job_poll_per_minute > 0 and not poll_limiter.allow(f"poll:{key}"):
+                if job_poll_per_minute > 0 and not backend.allow(
+                    bucket="poll",
+                    key=key,
+                    max_events=job_poll_per_minute,
+                    window_seconds=_WINDOW_SECONDS,
+                ):
                     return JSONResponse(
                         status_code=429,
                         content={"detail": "Rate limit exceeded"},
@@ -80,7 +56,12 @@ def add_rate_limit_middleware(
                 return await call_next(request)
             if not any(path.startswith(prefix) for prefix in _RATE_LIMITED_POST_PREFIXES):
                 return await call_next(request)
-            if requests_per_minute > 0 and not post_limiter.allow(f"post:{key}"):
+            if requests_per_minute > 0 and not backend.allow(
+                bucket="post",
+                key=key,
+                max_events=requests_per_minute,
+                window_seconds=_WINDOW_SECONDS,
+            ):
                 return JSONResponse(
                     status_code=429,
                     content={"detail": "Rate limit exceeded"},

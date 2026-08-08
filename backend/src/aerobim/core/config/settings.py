@@ -266,6 +266,8 @@ class Settings:
     """
     oidc_tenant_claim: str = "tenant_id"
     """JWT claim used for tenant binding. No silent fallback to tid/org_id."""
+    oidc_roles_claim: str = "roles"
+    """JWT claim for RBAC roles (supports dotted paths, e.g. realm_access.roles)."""
     # Optional Redis for durable async jobs
     redis_url: str | None = None
     # Optional bSI Validation Service / local schema certificate
@@ -495,6 +497,18 @@ class Settings:
 
         return self.signoff_profile in {"samolet_pilot", "production"}
 
+    @property
+    def require_hitl_reviewer_roles(self) -> bool:
+        """OIDC principals must carry reviewer/admin roles for expert HITL."""
+
+        return self.signoff_profile in {"samolet_pilot", "production"}
+
+    @property
+    def enforce_norm_pack_rbac(self) -> bool:
+        """Norm-pack mutations require editor/reviewer/admin OIDC roles."""
+
+        return self.signoff_profile in {"samolet_pilot", "production"}
+
     def require_secure_auth(self) -> None:
         """Fail closed: non-dev deployments must configure bearer and/or OIDC."""
         if self.is_dev_environment:
@@ -672,6 +686,9 @@ class Settings:
             ),
             oidc_tenant_claim=(
                 (os.getenv("AEROBIM_OIDC_TENANT_CLAIM") or "tenant_id").strip() or "tenant_id"
+            ),
+            oidc_roles_claim=(
+                (os.getenv("AEROBIM_OIDC_ROLES_CLAIM") or "roles").strip() or "roles"
             ),
             redis_url=(os.getenv("AEROBIM_REDIS_URL") or "").strip() or None,
             bsi_validation_url=(os.getenv("AEROBIM_BSI_VALIDATION_URL") or "").strip() or None,
