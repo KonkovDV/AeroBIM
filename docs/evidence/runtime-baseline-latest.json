@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "dc2dff4b3ac67a57c86971965bf139f207d58c1f",
+  "commit_sha": "216b2058e74e056902c93a7e069d80305efdb85a",
   "tree_sha": "c20917bf49cabaaa8b65bdb46875e521e99f9dde",
   "working_tree_clean": true,
   "generated_at": "2026-08-09T07:57:19.619302+00:00",
@@ -55,7 +55,7 @@
     "backend_test_functions": 2009,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2161, frontend=29; commit dc2dff4b3ac6; see docs/evidence/runtime-baseline-latest.json · src ~61641 LOC; tests ~42088 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2161, frontend=29; commit 216b2058e74e; see docs/evidence/runtime-baseline-latest.json · src ~61641 LOC; tests ~42088 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -209,7 +209,7 @@
     "run_id": "31302124873",
     "run_attempt": 1,
     "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/pull/13/merge",
-    "github_sha": "dc2dff4b3ac67a57c86971965bf139f207d58c1f",
+    "github_sha": "216b2058e74e056902c93a7e069d80305efdb85a",
     "runner_os": "Linux",
     "runner_python": "3.12.13",
     "gates_attested": [
