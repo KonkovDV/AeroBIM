@@ -128,4 +128,75 @@ describe("DrawingEvidencePanel", () => {
 
     expect(screen.getByText(/does not yet have a complete rectangle payload/i)).toBeTruthy();
   });
+
+  it("asks the operator to select a report when report is null", () => {
+    render(<DrawingEvidencePanel report={null} activeIssue={null} />);
+    expect(screen.getByText(/select a report to inspect drawing evidence/i)).toBeTruthy();
+  });
+
+  it("explains when no drawing assets were materialized", () => {
+    const report = buildReport();
+    report.drawing_assets = [];
+    render(<DrawingEvidencePanel report={report} activeIssue={buildIssue({})} />);
+    expect(screen.getByText(/no persisted drawing preview assets were materialized/i)).toBeTruthy();
+  });
+
+  it("keeps browsing usable when the issue sheet has no matching asset", () => {
+    render(
+      <DrawingEvidencePanel
+        report={buildReport()}
+        activeIssue={buildIssue({
+          problem_zone: {
+            sheet_id: "Z-999",
+            page_number: 9,
+            x: 1,
+            y: 2,
+            width: 3,
+            height: 4,
+            element_guid: null,
+          },
+        })}
+      />,
+    );
+    expect(screen.getByText(/no persisted preview asset matches that sheet\/page exactly/i)).toBeTruthy();
+  });
+
+  it("lists HITL regions that require expert review", () => {
+    const report = buildReport();
+    report.drawing_regions = [
+      {
+        sheet_id: "A-101",
+        modality: "raster",
+        hitl_required: true,
+        hitl_reason: "low_confidence_ocr",
+        confidence: 0.41,
+        bbox_xyxy: [0, 0, 10, 10],
+      },
+    ];
+    render(<DrawingEvidencePanel report={report} activeIssue={null} />);
+    expect(screen.getByLabelText(/regions requiring expert review/i)).toBeTruthy();
+    expect(screen.getByText(/low_confidence_ocr/i)).toBeTruthy();
+    expect(screen.getByText(/1 HITL region/i)).toBeTruthy();
+  });
+
+  it("shows overlay target meta when the matched asset is selected", () => {
+    render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
+    expect(screen.getByText(/overlay target/i)).toBeTruthy();
+    expect(screen.getByText("DRAW-001")).toBeTruthy();
+  });
+
+  it("shows browse mode meta after switching away from the matched asset", () => {
+    render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
+    fireEvent.click(screen.getByRole("button", { name: /a-101/i }));
+    expect(screen.getByText(/browse mode/i)).toBeTruthy();
+  });
+
+  it("surfaces image load failures without claiming overlay success", async () => {
+    render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
+    const image = screen.getByRole("img", { name: /drawing evidence preview for a-102/i });
+    fireEvent.error(image);
+    await waitFor(() => {
+      expect(screen.getByText(/failed to load the persisted drawing preview/i)).toBeTruthy();
+    });
+  });
 });

@@ -1,76 +1,61 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "76e0da0453cede9fce4f93ebcfdcca041829eb07",
-  "tree_sha": "22a7db95054b781b60e9abd3dc9964a99df80a3f",
+  "commit_sha": "0344cabd3921bbca24f4f04396a87ee9083dae24",
+  "tree_sha": "2b8bbbd7dc5c29c40f3cff8b066cfe94e0410d71",
   "working_tree_clean": true,
-  "generated_at": "2026-08-09T06:58:28.434273+00:00",
+  "generated_at": "2026-08-09T08:29:50.476536+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2006,
-    "tests_passed": 1993,
-    "tests_skipped": 8,
+    "tests_collected": 2010,
+    "tests_passed": 2161,
+    "tests_skipped": 10,
     "tests_failed": 0,
-    "source_loc": 61634,
-    "test_loc": 42020,
-    "test_functions": 2006,
+    "source_loc": 61690,
+    "test_loc": 42114,
+    "test_functions": 2010,
     "uncollected": []
   },
   "frontend": {
-    "tests_passed": 29,
+    "tests_passed": 48,
     "tests_failed": 0,
-    "vitest_artifact": "frontend/var/vitest-results.json",
+    "vitest_artifact": "../frontend/var/vitest-results.json",
     "note": "Recorded from vitest JSON artifact when provided; manual --frontend-tests-passed without artifact is not publishable"
   },
   "quality_gates": {
     "ruff": {
-      "status": "PASS",
-      "tool": "python",
-      "exit_code": 0,
-      "duration_ms": 112.4
+      "status": "PASS"
     },
     "mypy": {
-      "status": "PASS",
-      "tool": "python",
-      "exit_code": 0,
-      "duration_ms": 1910.9
+      "status": "PASS"
     },
     "pytest": {
-      "status": "PASS",
-      "tool": "python",
-      "exit_code": 0,
-      "duration_ms": 74208.3
+      "status": "PASS"
     },
     "vitest": {
-      "status": "PASS",
-      "tool": "npm",
-      "exit_code": 0,
-      "duration_ms": 3149.1
+      "status": "PASS"
     },
     "build": {
-      "status": "PASS",
-      "tool": "npm",
-      "exit_code": 0,
-      "duration_ms": 6313.7
+      "status": "PASS"
     }
   },
   "environment": {
-    "python_version": "3.13.7",
+    "python_version": "3.12.13",
     "python_implementation": "CPython",
-    "platform": "Windows-11-10.0.26200-SP0",
-    "system": "Windows",
-    "machine": "AMD64",
+    "platform": "Linux-6.17.0-1020-azure-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "machine": "x86_64",
     "lockfile_sha256": "c70becc6bdda0b774afd174bcf8b673b19a4251d83873ad43a300c8aadf193eb",
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 61634,
-    "backend_test_loc": 42020,
-    "backend_test_functions": 2006,
+    "backend_src_loc": 61690,
+    "backend_test_loc": 42114,
+    "backend_test_functions": 2010,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=1993, frontend=29; commit 76e0da0453ce; see docs/evidence/runtime-baseline-latest.json · src ~61634 LOC; tests ~42020 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2161, frontend=48; commit 0344cabd3921; see docs/evidence/runtime-baseline-latest.json · src ~61690 LOC; tests ~42114 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -220,15 +205,24 @@
     "di_tokens": 63
   },
   "attestation": {
-    "attested_by": "local",
-    "run_id": null,
-    "run_attempt": null,
-    "workflow_ref": null,
-    "github_sha": null,
-    "runner_os": "Windows",
-    "runner_python": "3.13.7",
-    "gates_attested": []
+    "attested_by": "ci",
+    "run_id": "31303439524",
+    "run_attempt": 1,
+    "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/pull/13/merge",
+    "github_sha": "0344cabd3921bbca24f4f04396a87ee9083dae24",
+    "runner_os": "Linux",
+    "runner_python": "3.12.13",
+    "gates_attested": [
+      "frontend",
+      "offline-bundle-smoke",
+      "openapi-contract",
+      "security-regression",
+      "sprint-2-1-gates",
+      "supply-chain-audit",
+      "test"
+    ],
+    "commit_sha": "0344cabd3921bbca24f4f04396a87ee9083dae24"
   },
-  "artifact_completeness": "partial",
-  "publishable": false
+  "artifact_completeness": "full",
+  "publishable": true
 }

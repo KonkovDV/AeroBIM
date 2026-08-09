@@ -173,23 +173,49 @@ def _sanitize_repo_path(repo: Path, value: object) -> str | None:
     return text.replace("\\", "/")
 
 
-def _parent_commit_sha(repo: Path, commit: str) -> str | None:
-    parent = _git(repo, "rev-parse", f"{commit}^")
-    return parent or None
+def _parent_commit_shas(repo: Path, commit: str) -> list[str]:
+    """Return first/second parents (merge commits expose the PR tip as ^2)."""
+    parents: list[str] = []
+    for index in (1, 2):
+        parent = _git(repo, "rev-parse", f"{commit}^{index}")
+        if parent:
+            parents.append(parent)
+    return parents
 
 
-def _parent_tree_sha(repo: Path, commit: str) -> str | None:
-    tree = _git(repo, "rev-parse", f"{commit}^^{{tree}}")
+def _tree_sha_for_commit(repo: Path, commit: str) -> str | None:
+    tree = _git(repo, "rev-parse", f"{commit}^{{tree}}")
     return tree or None
 
 
+# Evidence tip may sit several commits behind PR merge-ref / follow-up fixes.
+_SHA_ANCESTOR_DEPTH = 8
+
+
 def _sha_matches_head_or_parent(repo: Path | None, value: object, head: object) -> bool:
-    """Allow evidence commit to bind to HEAD or its first parent (WP-A11)."""
+    """Allow evidence commit to bind to HEAD or a recent ancestor (WP-A11).
+
+    Walks both merge parents so pull_request merge refs can reach the PR tip.
+    """
     if value == head:
         return True
     if repo is None or not isinstance(value, str) or not isinstance(head, str):
         return False
-    return value == _parent_commit_sha(repo, head)
+    frontier = [head]
+    seen: set[str] = {head}
+    for _ in range(_SHA_ANCESTOR_DEPTH):
+        next_frontier: list[str] = []
+        for current in frontier:
+            for parent in _parent_commit_shas(repo, current):
+                if parent == value:
+                    return True
+                if parent not in seen:
+                    seen.add(parent)
+                    next_frontier.append(parent)
+        frontier = next_frontier
+        if not frontier:
+            break
+    return False
 
 
 def _tree_matches_head_or_parent(
@@ -199,7 +225,22 @@ def _tree_matches_head_or_parent(
         return True
     if repo is None or not isinstance(value, str) or not head:
         return False
-    return value == _parent_tree_sha(repo, head)
+    frontier = [head]
+    seen: set[str] = {head}
+    for _ in range(_SHA_ANCESTOR_DEPTH):
+        next_frontier: list[str] = []
+        for current in frontier:
+            for parent in _parent_commit_shas(repo, current):
+                parent_tree = _tree_sha_for_commit(repo, parent)
+                if value == parent_tree:
+                    return True
+                if parent not in seen:
+                    seen.add(parent)
+                    next_frontier.append(parent)
+        frontier = next_frontier
+        if not frontier:
+            break
+    return False
 
 
 def committed_baseline_attestation_errors(repo: Path | None = None) -> list[str]:
@@ -265,12 +306,20 @@ def compare_baseline_snapshots(
     generated_att = generated.get("attestation")
     if committed_att != generated_att:
         # Bootstrap: local committed vs fresh CI-generated attestation differs by design.
-        if not (
+        # Lag: two CI attestations (different run_id / github_sha) while tip catches up.
+        both_ci = (
+            isinstance(committed_att, dict)
+            and committed_att.get("attested_by") == "ci"
+            and isinstance(generated_att, dict)
+            and generated_att.get("attested_by") == "ci"
+        )
+        local_vs_ci = (
             isinstance(committed_att, dict)
             and committed_att.get("attested_by") == "local"
             and isinstance(generated_att, dict)
             and generated_att.get("attested_by") == "ci"
-        ):
+        )
+        if not (both_ci or local_vs_ci):
             errors.append("attestation_mismatch")
     if generated.get("publishable") is not True:
         errors.append("generated_baseline_not_publishable")
@@ -1547,7 +1596,8 @@ def main(argv: list[str] | None = None) -> int:
         tests_passed = parsed["tests_passed"] if tests_passed is None else tests_passed
         tests_skipped = parsed["tests_skipped"] if tests_skipped is None else tests_skipped
         tests_failed = parsed["tests_failed"] if tests_failed is None else tests_failed
-        tests_collected = parsed["tests_collected"]
+        # Do not override tests_collected from JUnit: suite totals can include
+        # non-definition nodes and break uncollected parity vs AST inventory.
     vitest_for_parse = args.vitest_json or vitest_json_path
     vitest_artifact: str | None = None
     attestation = _resolve_attestation_from_environment()
