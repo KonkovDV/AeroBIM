@@ -141,7 +141,11 @@ def _sanitize_tool_name(tool: object) -> str:
     if not raw:
         return "unknown"
     lowered = raw.replace("\\", "/").lower()
-    if lowered.endswith("/python") or lowered.endswith("/python.exe") or lowered.endswith("python3"):
+    if (
+        lowered.endswith("/python")
+        or lowered.endswith("/python.exe")
+        or lowered.endswith("python3")
+    ):
         return "python"
     if lowered.endswith("/node") or lowered.endswith("/node.exe"):
         return "node"
@@ -188,7 +192,9 @@ def _sha_matches_head_or_parent(repo: Path | None, value: object, head: object) 
     return value == _parent_commit_sha(repo, head)
 
 
-def _tree_matches_head_or_parent(repo: Path | None, value: object, head_tree: object, head: str | None) -> bool:
+def _tree_matches_head_or_parent(
+    repo: Path | None, value: object, head_tree: object, head: str | None
+) -> bool:
     if value == head_tree:
         return True
     if repo is None or not isinstance(value, str) or not head:

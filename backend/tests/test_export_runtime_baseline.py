@@ -315,9 +315,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             "GITHUB_ACTIONS": "true",
             "GITHUB_RUN_ID": "1",
             "GITHUB_RUN_ATTEMPT": "1",
-            "GITHUB_WORKFLOW_REF": (
-                "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main"
-            ),
+            "GITHUB_WORKFLOW_REF": ("KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main"),
             "GITHUB_SHA": sha,
             "AEROBIM_GATES_ATTESTED": gates_csv,
             "RUNNER_OS": "Linux",
@@ -365,9 +363,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
                 tests_collected=100,
                 frontend_tests_passed=29,
                 frontend_tests_failed=0,
-                quality_gates={
-                    k: "PASS" for k in ("ruff", "mypy", "pytest", "vitest", "build")
-                },
+                quality_gates={k: "PASS" for k in ("ruff", "mypy", "pytest", "vitest", "build")},
                 vitest_json_path=str(vitest),
                 require_clean_tree=True,
             )
@@ -443,12 +439,13 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertTrue(any("not_publishable" in e for e in errors))
 
     def test_compare_allows_parent_commit_sha(self) -> None:
+        """Shallow CI clones have no HEAD^ — mock parent helpers instead of rev-parse."""
         from aerobim.tools.export_runtime_baseline import compare_baseline_snapshots
 
-        head = _git("rev-parse", "HEAD")
-        parent = _git("rev-parse", "HEAD^")
-        head_tree = _git("rev-parse", "HEAD^{tree}")
-        parent_tree = _git("rev-parse", "HEAD^^{tree}")
+        head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        parent = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        head_tree = "cccccccccccccccccccccccccccccccccccccccc"
+        parent_tree = "dddddddddddddddddddddddddddddddddddddddd"
         committed = {
             "commit_sha": parent,
             "tree_sha": parent_tree,
@@ -473,7 +470,17 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             "attestation": {"attested_by": "ci"},
             "publishable": True,
         }
-        self.assertEqual(compare_baseline_snapshots(committed, generated, repo=_REPO), [])
+        with (
+            patch(
+                "aerobim.tools.export_runtime_baseline._parent_commit_sha",
+                return_value=parent,
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._parent_tree_sha",
+                return_value=parent_tree,
+            ),
+        ):
+            self.assertEqual(compare_baseline_snapshots(committed, generated, repo=_REPO), [])
 
 
 class DocumentedEnvSetTests(unittest.TestCase):
