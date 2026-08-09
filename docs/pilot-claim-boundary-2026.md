@@ -73,6 +73,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | ISO 19650-lite CDE state on reports | `iso19650` block on public report JSON |
 | OIDC JWT alongside static bearer | `AEROBIM_OIDC_*` + enterprise `PyJWT` |
 | Static API bearer scope (KT#2 honesty) | Shared `AEROBIM_API_BEARER_TOKEN` is **pilot transport auth only** — may authenticate uploads/reads; **must not** create expert HITL accept/reject/sign events (`is_service_token` denied). Expert verdicts require OIDC (or equivalent) principal with reviewer/admin role under pilot/production profiles |
+| HITL reviewer-role gate profile boundary (N-49) | `enforce_hitl_reviewer_auth` / `require_hitl_reviewer_roles` are **on only** for `signoff_profile` ∈ `{samolet_pilot, production}`. Development / fixture / default demo profiles do **not** require reviewer roles (static bearer still blocked). Do not demo role model under a non-pilot profile and claim the gate is live |
 | Optional bSI / local schema certificate id | `schema_validation_request_id` + `capabilities.ifc_schema.external_ref` |
 | Postgres/filesystem filtered report index | `GET /v1/reports?project=&discipline=&passed=` |
 | Revit thin-client deep-link helper | `clients/revit-plugin/scripts/export_and_open_report.py` + UI `?report=` |

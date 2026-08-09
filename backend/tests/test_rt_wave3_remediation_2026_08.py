@@ -128,6 +128,52 @@ class HitlRbacTests(unittest.TestCase):
             )
         )
 
+    def test_hitl_role_gate_profile_matrix(self) -> None:
+        """N-49: reviewer roles required only under pilot/production; demo/default off."""
+
+        from types import SimpleNamespace
+
+        from aerobim.core.config.settings import Settings
+
+        reviewer = AuthPrincipal(
+            tenant_id="t1",
+            subject="oidc-user",
+            roles=frozenset({"reviewer"}),
+        )
+        no_role = AuthPrincipal(tenant_id="t1", subject="oidc-user", roles=frozenset())
+
+        for profile, roles_required in (
+            ("samolet_pilot", True),
+            ("production", True),
+            ("development", False),
+            ("fixture", False),
+        ):
+            probe = SimpleNamespace(signoff_profile=profile)
+            enforce = Settings.enforce_hitl_reviewer_auth.__get__(probe, Settings)
+            require_roles = Settings.require_hitl_reviewer_roles.__get__(probe, Settings)
+            self.assertEqual(enforce, roles_required, msg=f"enforce flag for {profile}")
+            self.assertEqual(require_roles, roles_required, msg=f"require roles for {profile}")
+            self.assertTrue(
+                principal_may_append_hitl_event(
+                    enforce_hitl_reviewer_auth=enforce,
+                    require_hitl_reviewer_roles=require_roles,
+                    principal=reviewer,
+                    event_type="accepted",
+                ),
+                msg=f"reviewer may accept under {profile}",
+            )
+            may_no_role = principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=enforce,
+                require_hitl_reviewer_roles=require_roles,
+                principal=no_role,
+                event_type="accepted",
+            )
+            self.assertEqual(
+                may_no_role,
+                not roles_required,
+                msg=f"no-role principal under {profile}",
+            )
+
 
 class UploadFilenameTests(unittest.TestCase):
     def test_sanitize_strips_control_chars_and_reserved_names(self) -> None:

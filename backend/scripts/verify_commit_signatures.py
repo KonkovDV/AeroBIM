@@ -22,14 +22,22 @@ def _load_policy(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _signed_commits(depth: int) -> tuple[int, int, list[str]]:
+def _signed_commits(depth: int) -> tuple[int, int, int, int, list[str]]:
+    """Return (good_signed, unverifiable_E, other_bad, total, marks).
+
+    Only ``G`` (good trusted signature) counts toward the signed ratio.
+    ``E`` (cannot check) is worse than unsigned and must not inflate the ratio.
+    """
+
     log = subprocess.check_output(
         ["git", "log", f"-{depth}", "--pretty=format:%G?"],
         text=True,
     )
     marks = [line.strip() for line in log.splitlines() if line.strip()]
     signed = sum(1 for mark in marks if mark == "G")
-    return signed, len(marks), marks
+    unverifiable = sum(1 for mark in marks if mark == "E")
+    other_bad = sum(1 for mark in marks if mark in {"B", "U", "X", "Y", "R"})
+    return signed, unverifiable, other_bad, len(marks), marks
 
 
 def _head_is_signed() -> bool:
@@ -79,17 +87,36 @@ def main() -> int:
 
     policy = _load_policy(args.policy)
     depth = int(args.depth or policy.get("inspect_depth") or 30)
-    signed, total, _marks = _signed_commits(depth)
+    signed, unverifiable, other_bad, total, _marks = _signed_commits(depth)
     ratio = (signed / total) if total else 0.0
     min_ratio = _effective_min_ratio(policy)
     enforce = bool(policy.get("enforce_ci", False))
+    # Distinct from unsigned: E/B/U/... fail enforcement even if ratio is met.
+    fail_unverifiable = bool(policy.get("fail_on_unverifiable_signature", enforce))
 
-    print(f"signed_commits={signed}/{total} ratio={ratio:.2f} required_min_ratio={min_ratio:.2f}")
+    print(
+        f"signed_commits_G={signed}/{total} ratio={ratio:.2f} "
+        f"unverifiable_E={unverifiable} bad={other_bad} "
+        f"required_min_ratio={min_ratio:.2f}"
+    )
 
     if signed == 0:
         print(
-            "NOTE: no GPG-signed commits in window; enable git commit.gpgsign and upload pubkey",
+            "NOTE: no G-status signed commits in window; enable git commit.gpgsign and upload pubkey",
         )
+    if unverifiable:
+        print(
+            f"NOTE: {unverifiable} commit(s) have unverifiable signatures (git %G?=E); "
+            "these do not count as signed and must not be treated as unsigned-equivalent",
+        )
+
+    if fail_unverifiable and (unverifiable > 0 or other_bad > 0):
+        print(
+            "ERROR: unverifiable or bad commit signatures present "
+            f"(E={unverifiable}, bad={other_bad}); only G-status with a trusted key counts",
+            file=sys.stderr,
+        )
+        return 2
 
     if enforce and ratio < min_ratio:
         print(

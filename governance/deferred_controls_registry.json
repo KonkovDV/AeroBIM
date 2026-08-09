@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "date": "2026-08-09",
+  "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. Dates after KT#2 freeze must not be used for controls claimed as maturity evidence.",
+  "waivers": [
+    {
+      "id": "A4-signing-enforcement",
+      "control": "Принуждение доли подписанных коммитов (только G-status)",
+      "mechanism": "governance/commit_signing_policy.json + verify_commit_signatures.py",
+      "state": "deferred",
+      "reason": "Личный ключ B5690EEEBB952194 ещё не в GitHub; enforce_ci=false до первого G-status",
+      "activates_on": "2026-08-12",
+      "owner": "KonkovDV"
+    },
+    {
+      "id": "N43-baseline-one-commit-lag",
+      "control": "Допуск дрейфа baseline: 1 коммит только для артефакта/README",
+      "mechanism": "export_runtime_baseline baseline-integrity",
+      "state": "deferred",
+      "reason": "Репетиция заморозки 17.08; до тех пор soft ±50",
+      "activates_on": "2026-08-17",
+      "owner": "KonkovDV"
+    },
+    {
+      "id": "N47-ruf100",
+      "control": "Поиск мёртвых noqa (RUF100)",
+      "mechanism": "ruff --extend-select RUF100",
+      "state": "deferred",
+      "reason": "~105 накопленных подавлений; чистка после заморозки",
+      "activates_on": "2026-08-25",
+      "owner": "KonkovDV"
+    },
+    {
+      "id": "N49-hitl-role-profile-boundary",
+      "control": "Заявление границы: HITL role gate только pilot/production",
+      "mechanism": "docs/pilot-claim-boundary-2026.md + profile matrix test",
+      "state": "active",
+      "reason": "Закрывается тестом и строкой границы в этом коммите",
+      "activates_on": "2026-08-09",
+      "owner": "KonkovDV"
+    }
+  ]
+}

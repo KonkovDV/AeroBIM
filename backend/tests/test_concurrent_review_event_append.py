@@ -108,6 +108,21 @@ class ConcurrentReviewEventAppendTests(unittest.TestCase):
             )
             self.assertEqual(event.sequence_number, 1)
             self.assertFalse(lock_path.exists())
+            self.assertTrue((target.with_name(f"{target.name}.seq.1")).exists())
+
+    def test_sequence_slot_blocks_duplicate_even_without_lock(self) -> None:
+        """N-50: sequence O_EXCL is the invariant; lock is only an optimization."""
+
+        from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+            SequenceClaimError,
+            _claim_sequence_slot,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "r.jsonl"
+            _claim_sequence_slot(target, 1)
+            with self.assertRaises(SequenceClaimError):
+                _claim_sequence_slot(target, 1)
 
 
 if __name__ == "__main__":
