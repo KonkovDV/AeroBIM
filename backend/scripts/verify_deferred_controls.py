@@ -40,15 +40,26 @@ def main() -> int:
     for item in waivers:
         if not isinstance(item, dict):
             continue
-        if str(item.get("state") or "").lower() != "deferred":
+        state = str(item.get("state") or "").lower()
+        flags = item.get("policy_flags") or []
+        if state == "deferred" and flags:
+            print(
+                f"NOTE: {item.get('id')} deferred flags={list(flags)} "
+                f"must flip together on {item.get('activates_on')}"
+            )
+        if state != "deferred":
             continue
         activates = str(item.get("activates_on") or "").strip()
         if not activates:
             overdue.append(f"{item.get('id')}: deferred without activates_on")
             continue
         if today >= _parse_day(activates):
+            flag_note = ""
+            if flags:
+                flag_note = f"; enable policy flags {list(flags)} and set state=active"
             overdue.append(
-                f"{item.get('id')}: deferred past activates_on={activates} (today={today.isoformat()})"
+                f"{item.get('id')}: deferred past activates_on={activates} "
+                f"(today={today.isoformat()}){flag_note}"
             )
     print(f"deferred_controls checked={len(waivers)} overdue={len(overdue)} today={today.isoformat()}")
     for line in overdue:
