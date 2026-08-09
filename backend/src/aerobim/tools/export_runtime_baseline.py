@@ -184,12 +184,23 @@ def _parent_tree_sha(repo: Path, commit: str) -> str | None:
 
 
 def _sha_matches_head_or_parent(repo: Path | None, value: object, head: object) -> bool:
-    """Allow evidence commit to bind to HEAD or its first parent (WP-A11)."""
+    """Allow evidence commit to bind to HEAD or a recent ancestor (WP-A11).
+
+    Evidence commits typically land 1–2 commits after the CI tip they attest.
+    """
     if value == head:
         return True
     if repo is None or not isinstance(value, str) or not isinstance(head, str):
         return False
-    return value == _parent_commit_sha(repo, head)
+    current = head
+    for _ in range(3):
+        parent = _parent_commit_sha(repo, current)
+        if not parent:
+            return False
+        if value == parent:
+            return True
+        current = parent
+    return False
 
 
 def _tree_matches_head_or_parent(
@@ -199,7 +210,16 @@ def _tree_matches_head_or_parent(
         return True
     if repo is None or not isinstance(value, str) or not head:
         return False
-    return value == _parent_tree_sha(repo, head)
+    current = head
+    for _ in range(3):
+        parent = _parent_commit_sha(repo, current)
+        if not parent:
+            return False
+        parent_tree = _parent_tree_sha(repo, current)
+        if value == parent_tree:
+            return True
+        current = parent
+    return False
 
 
 def committed_baseline_attestation_errors(repo: Path | None = None) -> list[str]:
