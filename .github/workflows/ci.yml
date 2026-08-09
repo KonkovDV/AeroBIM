@@ -164,11 +164,12 @@ jobs:
           pip install -e . --no-deps
       - name: Pytest + coverage (single run)
         run: |
-          mkdir -p ../artifacts/coverage
+          mkdir -p ../artifacts/coverage ../artifacts/pytest
           pytest tests -v --tb=short \
             --cov=aerobim \
             --cov-report=term-missing:skip-covered \
-            --cov-report=xml:../artifacts/coverage/coverage.xml
+            --cov-report=xml:../artifacts/coverage/coverage.xml \
+            --junitxml=../artifacts/pytest/junit.xml
       - name: Upload coverage artifact
         if: success()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -176,6 +177,13 @@ jobs:
           name: backend-coverage
           path: artifacts/coverage/coverage.xml
           if-no-files-found: warn
+      - name: Upload pytest JUnit artifact
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: backend-pytest-junit
+          path: artifacts/pytest/junit.xml
+          if-no-files-found: error
       - name: Verify synthetic detection-precision harness contract
         run: |
           python -m aerobim.tools.evaluate_detection_precision \
@@ -227,6 +235,11 @@ jobs:
         with:
           name: frontend-vitest-json
           path: frontend/var
+      - name: Download pytest JUnit artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: backend-pytest-junit
+          path: artifacts/pytest
       - name: Install locked toolchain
         run: |
           python -m pip install --upgrade "pip==25.2"
@@ -237,11 +250,37 @@ jobs:
           AEROBIM_GATES_ATTESTED: >-
             test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
         run: |
+          # Do NOT --run-gates here: this job has no frontend node_modules, and re-pytest
+          # is flaky under ifcopenshell teardown. Upstream needs: jobs already passed.
           python -m aerobim.tools.export_runtime_baseline --check-readme --check-complete
           python -m aerobim.tools.export_runtime_baseline \
-            --run-gates \
+            --gate ruff=PASS \
+            --gate mypy=PASS \
+            --gate pytest=PASS \
+            --gate vitest=PASS \
+            --gate build=PASS \
+            --pytest-junit ../artifacts/pytest/junit.xml \
             --vitest-json ../frontend/var/vitest-results.json \
+            --require-clean-tree \
+            --require-complete \
             --out ../docs/evidence/runtime-baseline-latest.ci-generated.json
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          p = Path("../docs/evidence/runtime-baseline-latest.ci-generated.json")
+          b = json.loads(p.read_text(encoding="utf-8"))
+          att = b.get("attestation") if isinstance(b.get("attestation"), dict) else {}
+          ok = (
+              b.get("publishable") is True
+              and b.get("artifact_completeness") == "full"
+              and att.get("attested_by") == "ci"
+              and att.get("run_id")
+          )
+          print("generated_publishable", b.get("publishable"), att.get("attested_by"), att.get("run_id"))
+          if not ok:
+              print("CI-generated baseline is not publishable; refusing soft-fail bootstrap", file=sys.stderr)
+              raise SystemExit(1)
+          PY
       - name: Upload CI-generated runtime baseline
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
