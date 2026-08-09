@@ -97,6 +97,7 @@ def _write_event_exclusive(target: Path, event: ReviewEvent, *, sequence: int) -
         os.close(fd)
     return slot
 
+
 class FilesystemReviewEventStore:
     def __init__(self, storage_dir: Path, *, fail_closed: bool = False) -> None:
         self._dir = storage_dir / "review-events"
