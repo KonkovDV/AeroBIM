@@ -82,6 +82,31 @@ def main() -> int:
                         f"must flip together on {activates}; actual={actual}"
                     )
 
+        numeric = item.get("policy_numeric")
+        if isinstance(numeric, dict):
+            rel = str(numeric.get("file") or "").strip()
+            field = str(numeric.get("field") or "").strip()
+            target: Path | None = None
+            if rel:
+                candidate = Path(rel)
+                target = candidate if candidate.is_file() else _repo_root() / rel
+            if not field or target is None or not target.is_file():
+                errors.append(f"{wid}: policy_numeric missing file/field or file absent")
+            else:
+                mech = json.loads(target.read_text(encoding="utf-8"))
+                got = mech.get(field)
+                expect = (
+                    numeric.get("when_active")
+                    if state == "active"
+                    else numeric.get("when_deferred")
+                )
+                if expect is not None and got != expect:
+                    errors.append(
+                        f"{wid}: {rel} {field}={got!r} expected {expect!r} for state={state} (N-43)"
+                    )
+                else:
+                    print(f"NOTE: {wid} {field}={got} state={state} (ok)")
+
         if state != "deferred":
             continue
         if not activates:

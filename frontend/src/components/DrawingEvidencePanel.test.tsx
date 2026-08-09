@@ -179,6 +179,39 @@ describe("DrawingEvidencePanel", () => {
     expect(screen.getByText(/1 HITL region/i)).toBeTruthy();
   });
 
+  it("draws DrawingRegionRef overlays for the selected sheet including stamp priors", async () => {
+    const report = buildReport();
+    report.drawing_regions = [
+      {
+        sheet_id: "A-101",
+        modality: "layout_prior",
+        confidence: 1,
+        layout_role: "content",
+        coordinate_system: "normalized-0-1",
+        bbox_xyxy: [0, 0, 1, 0.85],
+      },
+      {
+        sheet_id: "A-101",
+        modality: "layout_prior",
+        confidence: 1,
+        layout_role: "stamp",
+        coordinate_system: "normalized-0-1",
+        bbox_xyxy: [0.55, 0.85, 1, 1],
+      },
+    ];
+    const { container } = render(<DrawingEvidencePanel report={report} activeIssue={null} />);
+    const image = screen.getByRole("img", { name: /drawing evidence preview for a-101/i });
+    Object.defineProperty(image, "naturalWidth", { configurable: true, value: 320 });
+    Object.defineProperty(image, "naturalHeight", { configurable: true, value: 200 });
+    fireEvent.load(image);
+
+    await waitFor(() => {
+      expect(container.querySelectorAll(".drawing-evidence-rect-region").length).toBe(1);
+      expect(container.querySelectorAll(".drawing-evidence-rect-stamp").length).toBe(1);
+      expect(screen.getByText(/2 region overlay/i)).toBeTruthy();
+    });
+  });
+
   it("shows overlay target meta when the matched asset is selected", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
     expect(screen.getByText(/overlay target/i)).toBeTruthy();
