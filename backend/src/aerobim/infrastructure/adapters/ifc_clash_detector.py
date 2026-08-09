@@ -49,7 +49,8 @@ class IfcClashDetector:
             clash_set = {
                 "name": "Internal hard clashes",
                 "mode": "intersection",
-                "check_all": False,
+                # Single-file packages need self-clash within set A (N-measure path).
+                "check_all": True,
                 "tolerance": 0.0,
                 "a": [{"file": str(ifc_path)}],
             }
