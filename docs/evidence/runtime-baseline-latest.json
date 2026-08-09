@@ -50,8 +50,8 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 61870,
-    "backend_test_loc": 42798,
+    "backend_src_loc": 61960,
+    "backend_test_loc": 42893,
     "backend_test_functions": 2031,
     "extraction_macro_f1": 0.8600000000000001
   },

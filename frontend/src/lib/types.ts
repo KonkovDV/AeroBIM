@@ -185,6 +185,7 @@ export interface DrawingRegionRef {
   modality: string;
   hitl_required?: boolean;
   hitl_reason?: string | null;
+  layout_role?: string | null;
   coordinate_system?: string | null;
   page_width?: number | null;
   page_height?: number | null;

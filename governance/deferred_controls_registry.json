@@ -19,11 +19,17 @@
     {
       "id": "N43-baseline-one-commit-lag",
       "control": "Допуск дрейфа baseline: 1 коммит только для артефакта/README",
-      "mechanism": "export_runtime_baseline baseline-integrity",
+      "mechanism": "governance/baseline_integrity_policy.json + export_runtime_baseline",
       "state": "deferred",
-      "reason": "Репетиция заморозки 17.08; до тех пор soft ±50",
+      "reason": "Сейчас max_commits_behind=50; 17.08 репетиция заморозки — поставить 1 и state=active. allowed_lag_paths уже в политике.",
       "activates_on": "2026-08-17",
-      "owner": "KonkovDV"
+      "owner": "KonkovDV",
+      "policy_numeric": {
+        "file": "governance/baseline_integrity_policy.json",
+        "field": "max_commits_behind",
+        "when_deferred": 50,
+        "when_active": 1
+      }
     },
     {
       "id": "N47-ruf100",

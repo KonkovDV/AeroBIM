@@ -473,6 +473,26 @@ input {
   pointer-events: none;
 }
 
+.drawing-evidence-rect-region {
+  border-color: #0369a1;
+  background: rgba(3, 105, 161, 0.12);
+  box-shadow: none;
+}
+
+.drawing-evidence-rect-hitl {
+  border-color: #b45309;
+  background: rgba(180, 83, 9, 0.18);
+  box-shadow: none;
+}
+
+.drawing-evidence-rect-stamp,
+.drawing-evidence-rect-title {
+  border-style: dashed;
+  border-color: #64748b;
+  background: rgba(100, 116, 139, 0.08);
+  box-shadow: none;
+}
+
 .drawing-evidence-caption {
   margin-top: 12px;
   color: var(--muted);

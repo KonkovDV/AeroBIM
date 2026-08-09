@@ -189,21 +189,80 @@ def _tree_sha_for_commit(repo: Path, commit: str) -> str | None:
 
 
 # Evidence tip may sit several commits behind PR merge-ref / follow-up fixes.
-_SHA_ANCESTOR_DEPTH = 8
+# Depth is loaded from governance/baseline_integrity_policy.json (N-43).
+_SHA_ANCESTOR_DEPTH_DEFAULT = 50
+_BASELINE_POLICY_REL = "governance/baseline_integrity_policy.json"
+
+
+def _load_baseline_integrity_policy(repo: Path | None = None) -> dict[str, object]:
+    root = repo or _repo_root()
+    path = root / _BASELINE_POLICY_REL
+    if not path.is_file():
+        return {
+            "max_commits_behind": _SHA_ANCESTOR_DEPTH_DEFAULT,
+            "allowed_lag_paths": [
+                "docs/evidence/runtime-baseline-latest.json",
+                "README.md",
+            ],
+        }
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"max_commits_behind": _SHA_ANCESTOR_DEPTH_DEFAULT, "allowed_lag_paths": []}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _max_commits_behind(repo: Path | None = None) -> int:
+    policy = _load_baseline_integrity_policy(repo)
+    raw = policy.get("max_commits_behind", _SHA_ANCESTOR_DEPTH_DEFAULT)
+    try:
+        return max(0, int(raw))
+    except (TypeError, ValueError):
+        return _SHA_ANCESTOR_DEPTH_DEFAULT
+
+
+def _allowed_lag_paths(repo: Path | None = None) -> frozenset[str]:
+    policy = _load_baseline_integrity_policy(repo)
+    paths = policy.get("allowed_lag_paths") or []
+    if not isinstance(paths, list):
+        return frozenset()
+    return frozenset(str(p).replace("\\", "/") for p in paths)
+
+
+def _diff_paths_between(repo: Path, older: str, newer: str) -> list[str]:
+    raw = _git(repo, "diff", "--name-only", f"{older}..{newer}")
+    if not raw:
+        return []
+    return [line.replace("\\", "/") for line in raw.splitlines() if line.strip()]
+
+
+def _one_commit_lag_allowed(repo: Path, artifact_commit: str, head: str) -> bool:
+    """True when artifact is exactly HEAD~1 and the tip commit only touches allowlisted paths."""
+
+    parent = _git(repo, "rev-parse", f"{head}~1")
+    if not parent or parent != artifact_commit:
+        return False
+    changed = _diff_paths_between(repo, artifact_commit, head)
+    allowed = _allowed_lag_paths(repo)
+    return bool(changed) and all(path in allowed for path in changed)
 
 
 def _sha_matches_head_or_parent(repo: Path | None, value: object, head: object) -> bool:
-    """Allow evidence commit to bind to HEAD or a recent ancestor (WP-A11).
+    """Allow evidence commit to bind to HEAD or a recent ancestor (WP-A11 / N-43).
 
     Walks both merge parents so pull_request merge refs can reach the PR tip.
+    When max_commits_behind==1, only exact HEAD or a one-commit allowlisted lag.
     """
     if value == head:
         return True
     if repo is None or not isinstance(value, str) or not isinstance(head, str):
         return False
+    max_behind = _max_commits_behind(repo)
+    if max_behind == 1:
+        return _one_commit_lag_allowed(repo, value, head)
     frontier = [head]
     seen: set[str] = {head}
-    for _ in range(_SHA_ANCESTOR_DEPTH):
+    for _ in range(max_behind):
         next_frontier: list[str] = []
         for current in frontier:
             for parent in _parent_commit_shas(repo, current):
@@ -225,9 +284,15 @@ def _tree_matches_head_or_parent(
         return True
     if repo is None or not isinstance(value, str) or not head:
         return False
+    max_behind = _max_commits_behind(repo)
+    if max_behind == 1:
+        if not _one_commit_lag_allowed(repo, _git(repo, "rev-parse", f"{head}~1") or "", head):
+            return False
+        parent_tree = _tree_sha_for_commit(repo, _git(repo, "rev-parse", f"{head}~1") or "")
+        return value == parent_tree
     frontier = [head]
     seen: set[str] = {head}
-    for _ in range(_SHA_ANCESTOR_DEPTH):
+    for _ in range(max_behind):
         next_frontier: list[str] = []
         for current in frontier:
             for parent in _parent_commit_shas(repo, current):
@@ -1421,6 +1486,30 @@ def _check_artifact_drift(repo: Path, live: dict[str, object]) -> list[str]:
         # Allow small churn from concurrent edits within the same gate run.
         if abs(stored_value - live_value) > _DRIFT_TOLERANCE:
             errors.append(f"Baseline drift for {key}: artifact={stored_value} live={live_value}")
+    # N-43 countdown: how many tip commits until max_commits_behind is exceeded.
+    if isinstance(stored, dict):
+        head = _commit_sha(repo)
+        artifact_commit = stored.get("commit_sha")
+        if isinstance(artifact_commit, str) and head:
+            behind = _commits_behind(repo, artifact_commit, head)
+            max_behind = _max_commits_behind(repo)
+            if behind is None:
+                print(
+                    f"baseline_commits_behind=unknown max_commits_behind={max_behind} "
+                    f"artifact={artifact_commit[:12]} head={head[:12]}"
+                )
+            else:
+                until = max(0, max_behind - behind)
+                print(
+                    f"baseline_commits_behind={behind} max_commits_behind={max_behind} "
+                    f"commits_until_baseline_break={until} "
+                    f"artifact={artifact_commit[:12]} head={head[:12]}"
+                )
+                if behind > max_behind:
+                    errors.append(
+                        f"baseline_stale_by_{behind}_commits: exceeds max_commits_behind={max_behind} "
+                        f"(N-43 / {_BASELINE_POLICY_REL})"
+                    )
     return errors
 
 

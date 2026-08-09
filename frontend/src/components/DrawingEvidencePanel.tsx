@@ -1,11 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchDrawingAssetPreviewBlobUrl } from "../lib/api";
-import type { DrawingAsset, ValidationIssue, ValidationReport } from "../lib/types";
+import type {
+  DrawingAsset,
+  DrawingRegionRef,
+  ValidationIssue,
+  ValidationReport,
+} from "../lib/types";
 
 interface DrawingEvidencePanelProps {
   report: ValidationReport | null;
   activeIssue: ValidationIssue | null;
 }
+
+type OverlayRect = {
+  key: string;
+  className: string;
+  style: { left: string; top: string; width: string; height: string };
+  label: string;
+};
 
 function findMatchingAsset(report: ValidationReport, issue: ValidationIssue | null): DrawingAsset | null {
   const problemZone = issue?.problem_zone;
@@ -27,6 +39,60 @@ function findMatchingAsset(report: ValidationReport, issue: ValidationIssue | nu
 
 function describeAsset(asset: DrawingAsset): string {
   return `${asset.sheet_id}${asset.page_number ? ` · page ${asset.page_number}` : ""}`;
+}
+
+function isNormalizedBBox(region: DrawingRegionRef): boolean {
+  const system = (region.coordinate_system ?? "").toLowerCase();
+  if (system.includes("normalized")) {
+    return true;
+  }
+  const [x0, y0, x1, y1] = region.bbox_xyxy;
+  return [x0, y0, x1, y1].every((value) => value >= 0 && value <= 1.0001);
+}
+
+function regionPixelBox(
+  region: DrawingRegionRef,
+  imageMetrics: { width: number; height: number },
+  coordinateWidth: number,
+  coordinateHeight: number,
+): { left: number; top: number; width: number; height: number } | null {
+  const [x0, y0, x1, y1] = region.bbox_xyxy;
+  if (!(x1 > x0 && y1 > y0)) {
+    return null;
+  }
+  if (isNormalizedBBox(region)) {
+    return {
+      left: x0 * imageMetrics.width,
+      top: y0 * imageMetrics.height,
+      width: (x1 - x0) * imageMetrics.width,
+      height: (y1 - y0) * imageMetrics.height,
+    };
+  }
+  const pageWidth = region.page_width ?? coordinateWidth;
+  const pageHeight = region.page_height ?? coordinateHeight;
+  if (pageWidth <= 0 || pageHeight <= 0) {
+    return null;
+  }
+  return {
+    left: (x0 / pageWidth) * imageMetrics.width,
+    top: (y0 / pageHeight) * imageMetrics.height,
+    width: ((x1 - x0) / pageWidth) * imageMetrics.width,
+    height: ((y1 - y0) / pageHeight) * imageMetrics.height,
+  };
+}
+
+function regionClassName(region: DrawingRegionRef): string {
+  const role = (region.layout_role ?? "content").toLowerCase();
+  if (role === "stamp") {
+    return "drawing-evidence-rect drawing-evidence-rect-stamp";
+  }
+  if (role === "title_block") {
+    return "drawing-evidence-rect drawing-evidence-rect-title";
+  }
+  if (region.hitl_required === true) {
+    return "drawing-evidence-rect drawing-evidence-rect-hitl";
+  }
+  return "drawing-evidence-rect drawing-evidence-rect-region";
 }
 
 export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvidencePanelProps) {
@@ -117,14 +183,52 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
       }
     : null;
 
-  const overlayStyle = normalizedZone !== null && imageMetrics !== null && coordinateWidth !== null && coordinateHeight !== null
-    ? {
-        left: `${(normalizedZone.x / coordinateWidth) * imageMetrics.width}px`,
-        top: `${(normalizedZone.y / coordinateHeight) * imageMetrics.height}px`,
-        width: `${(normalizedZone.width / coordinateWidth) * imageMetrics.width}px`,
-        height: `${(normalizedZone.height / coordinateHeight) * imageMetrics.height}px`,
+  const issueOverlay: OverlayRect | null =
+    normalizedZone !== null && imageMetrics !== null && coordinateWidth !== null && coordinateHeight !== null
+      ? {
+          key: "problem-zone",
+          className: "drawing-evidence-rect",
+          label: "problem_zone",
+          style: {
+            left: `${(normalizedZone.x / coordinateWidth) * imageMetrics.width}px`,
+            top: `${(normalizedZone.y / coordinateHeight) * imageMetrics.height}px`,
+            width: `${(normalizedZone.width / coordinateWidth) * imageMetrics.width}px`,
+            height: `${(normalizedZone.height / coordinateHeight) * imageMetrics.height}px`,
+          },
+        }
+      : null;
+
+  const sheetRegions = useMemo(() => {
+    if (!selectedAsset || !report?.drawing_regions) {
+      return [] as DrawingRegionRef[];
+    }
+    return report.drawing_regions.filter((region) => region.sheet_id === selectedAsset.sheet_id);
+  }, [report, selectedAsset]);
+
+  const regionOverlays = useMemo(() => {
+    if (!imageMetrics || coordinateWidth === null || coordinateHeight === null) {
+      return [] as OverlayRect[];
+    }
+    const overlays: OverlayRect[] = [];
+    sheetRegions.forEach((region, index) => {
+      const box = regionPixelBox(region, imageMetrics, coordinateWidth, coordinateHeight);
+      if (box === null) {
+        return;
       }
-    : undefined;
+      overlays.push({
+        key: `region-${region.sheet_id}-${index}`,
+        className: regionClassName(region),
+        label: region.layout_role ?? region.modality,
+        style: {
+          left: `${box.left}px`,
+          top: `${box.top}px`,
+          width: `${box.width}px`,
+          height: `${box.height}px`,
+        },
+      });
+    });
+    return overlays;
+  }, [sheetRegions, imageMetrics, coordinateWidth, coordinateHeight]);
 
   const hitlRegions = useMemo(
     () => (report?.drawing_regions ?? []).filter((region) => region.hitl_required === true),
@@ -150,6 +254,9 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
             <span>{selectedAsset ? describeAsset(selectedAsset) : "asset n/a"}</span>
             <span>{selectedAsset?.media_type ?? "preview n/a"}</span>
             <span>{isOverlayTarget ? "overlay target" : "browse mode"}</span>
+            {regionOverlays.length > 0 ? (
+              <span className="selection-badge">{regionOverlays.length} region overlay(s)</span>
+            ) : null}
             {hitlRegions.length > 0 ? (
               <span className="selection-badge">{hitlRegions.length} HITL region(s)</span>
             ) : null}
@@ -205,7 +312,17 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
                 setImageError("Failed to load the persisted drawing preview for this issue.");
               }}
             />
-            {overlayStyle && <div className="drawing-evidence-rect" style={overlayStyle} />}
+            {regionOverlays.map((overlay) => (
+              <div
+                key={overlay.key}
+                className={overlay.className}
+                style={overlay.style}
+                data-region-label={overlay.label}
+              />
+            ))}
+            {issueOverlay && (
+              <div className={issueOverlay.className} style={issueOverlay.style} data-testid="problem-zone-overlay" />
+            )}
             {imageError && (
               <div className="viewer-overlay viewer-overlay-error">
                 <p>{imageError}</p>
@@ -216,7 +333,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
           <div className="drawing-evidence-caption">
             <strong>{activeIssue?.rule_id ?? "Report drawing evidence"}</strong>
             <p>
-              Overlay coordinates come from the persisted `problem_zone`, scaled against the stored drawing asset coordinate space instead of any browser-side heuristic.
+              Finding rectangle comes from persisted `problem_zone`. Sheet regions (`DrawingRegionRef`, including stamp/title priors) are drawn for the selected asset when coordinates are present — layout priors are not a product literacy claim.
             </p>
             {problemZone === null && (
               <p>

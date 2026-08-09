@@ -15,6 +15,18 @@ a product whose value is origin integrity; it was removed in commit series aroun
 `b99f5fd` / Class A honesty fixes. Commit messages may again carry truthful
 co-author trailers. Historical commits retain whatever metadata they had when written.
 
+## Commit signing trust anchor (2026-08-09)
+
+CI counts authorship signatures only when the signing key fingerprint is listed under
+`governance/trusted_signing_keys/*.asc` (not merely present in a local GnuPG keyring).
+A cryptographically valid signature from an **unregistered** key is treated as
+**unverifiable** and fails CI when `fail_on_unverifiable_signature` is enabled — worse
+than an unsigned commit. New contributors: add your public `.asc` to that directory
+(in a commit already signed by an author-trusted key; see deferred control N-59) before
+expecting green signature governance. Platform keys under
+`governance/trusted_signing_keys/platform/` (e.g. GitHub web-flow) verify merges without
+counting toward the authorship ratio.
+
 ## Supported Surface
 
 | Surface | Support |
