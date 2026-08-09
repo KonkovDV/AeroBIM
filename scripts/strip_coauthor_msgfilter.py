@@ -1,7 +1,11 @@
-"""Remove Co-authored-by trailers from stdin (git filter-branch --msg-filter)."""
+"""Pass-through msg-filter (historical rewrite tool).
+
+Previously stripped Co-authored-by trailers. That rewrote provenance metadata and
+is no longer permitted. This script now copies stdin to stdout unchanged.
+"""
+
+from __future__ import annotations
 
 import sys
 
-lines = sys.stdin.read().splitlines(keepends=True)
-out = [ln for ln in lines if not ln.strip().lower().startswith("co-authored-by:")]
-sys.stdout.write("".join(out))
+sys.stdout.write(sys.stdin.read())

@@ -91,6 +91,43 @@ class HitlRbacTests(unittest.TestCase):
             )
         )
 
+    def test_static_bearer_blocked_even_when_role_gate_disabled(self) -> None:
+        """N-32: shared bearer never signs — including development / non-pilot profiles."""
+
+        principal = AuthPrincipal(tenant_id="t1", subject="api-bearer", is_service_token=True)
+        self.assertFalse(
+            principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=False,
+                require_hitl_reviewer_roles=False,
+                principal=principal,
+                event_type="accepted",
+            )
+        )
+        self.assertFalse(
+            principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=False,
+                require_hitl_reviewer_roles=False,
+                principal=principal,
+                event_type="rejected",
+            )
+        )
+        self.assertTrue(
+            principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=False,
+                require_hitl_reviewer_roles=False,
+                principal=AuthPrincipal(tenant_id="t1", subject="local-expert"),
+                event_type="accepted",
+            )
+        )
+        self.assertTrue(
+            principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=False,
+                require_hitl_reviewer_roles=False,
+                principal=principal,
+                event_type="opened",
+            )
+        )
+
 
 class UploadFilenameTests(unittest.TestCase):
     def test_sanitize_strips_control_chars_and_reserved_names(self) -> None:

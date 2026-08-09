@@ -49,7 +49,7 @@
       "problemMatcher": []
     },
     {
-      "label": "AeroBIM: commit (single author)",
+      "label": "AeroBIM: commit",
       "type": "shell",
       "command": "powershell -ExecutionPolicy Bypass -File ../scripts/git_commit.ps1 -Message \"${input:commitMessage}\"",
       "options": {
@@ -62,7 +62,7 @@
     {
       "id": "commitMessage",
       "type": "promptString",
-      "description": "Conventional commit message (single author, no co-author trailers)",
+      "description": "Conventional commit message (honest authorship; Co-authored-by allowed)",
       "default": "docs: "
     }
   ]

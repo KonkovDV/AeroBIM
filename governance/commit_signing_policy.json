@@ -1,11 +1,11 @@
 {
-  "schema_version": "1.0.0",
-  "date": "2026-08-08",
-  "enforce_ci": true,
+  "schema_version": "1.0.1",
+  "date": "2026-08-09",
+  "enforce_ci": false,
   "min_signed_ratio": 0.0,
   "ratchet_target_ratio": 0.5,
   "ratchet_effective_date": "2026-09-01",
   "inspect_depth": 30,
   "require_head_signed_on_release_tags": true,
-  "notes": "Ratchet increases required signed-commit ratio after 2026-09-01. Configure git commit.gpgsign=true locally."
+  "notes": "Honesty fork 2026-08-09: enforce_ci=false while signed ratio is 0. Gate still runs and reports ratio. On ratchet_effective_date, set enforce_ci=true and require min_signed_ratio>=ratchet_target_ratio. Do not claim commit signing is enforced before that."
 }
