@@ -269,7 +269,7 @@ jobs:
           attestation = committed.get("attestation") if isinstance(committed.get("attestation"), dict) else {}
           bootstrap = attestation.get("attested_by") != "ci" or committed.get("publishable") is not True
 
-          errors = compare_baseline_snapshots(committed, generated)
+          errors = compare_baseline_snapshots(committed, generated, repo=repo)
           if errors:
               for err in errors:
                   print(err, file=sys.stderr)
