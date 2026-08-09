@@ -138,7 +138,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 
 | TZ criterion | Pilot / repo target | Status | Phase |
 |--------------|---------------------|--------|-------|
-| Clash accuracy >90% | Measured precision after labeled corpus; pilot TP ≥60% interim | partial (harness + protocol; not measured on customer corpus) | P1 harness done / P4 publish |
+| Clash accuracy >90% | Measured precision after labeled corpus; pilot TP ≥60% interim | partial (harness + protocol + [slice scaffold 2026-08](../evidence/clash-measurement-slice-2026-08/README.md); **not measured** — awaiting IFC with solids + dual labels n≈50) | P1 harness done / measure 12–14.08 / P4 publish |
 | Calc error detection | Cross-doc + OpenRebar on agreed pack | partial | MVP |
 | Inconsistency accuracy >90% | Same adjudication path as clash | partial (harness + protocol; not measured on customer corpus) | P1 harness done / P4 publish |
 | Remark quality RU/EN | RU templates live; EN P0; human edit HITL | partial | P0 |

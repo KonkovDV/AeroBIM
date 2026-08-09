@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "slice_id": "clash-measurement-slice-2026-08",
+  "date": "2026-08-09",
+  "finding_class": "clash",
+  "target_n": 50,
+  "status": "scaffold_ready",
+  "harness_smoke": {
+    "synthetic_evaluate_detection_precision": "ok",
+    "ifcclash_import": true,
+    "check_all_self_clash": true,
+    "buildingsmart_wall_sample_detect": "ok_zero_clashes",
+    "tiny_in_repo_fixtures": "geom_iterator_fails_or_empty",
+    "blocker": "Need pilot/customer IFC with intersecting solids for n≈50 labels"
+  },
+  "next": [
+    "Obtain IFC with real solids (pilot/customer pack)",
+    "Export detections",
+    "Dual label n≈50",
+    "κ then P/R",
+    "Update TZ matrix with measured wording only"
+  ],
+  "claim_boundary": "No product accuracy until adjudicated; never call result TZ collision >90%."
+}

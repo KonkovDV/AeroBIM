@@ -215,10 +215,16 @@ def _load_baseline_integrity_policy(repo: Path | None = None) -> dict[str, objec
 def _max_commits_behind(repo: Path | None = None) -> int:
     policy = _load_baseline_integrity_policy(repo)
     raw = policy.get("max_commits_behind", _SHA_ANCESTOR_DEPTH_DEFAULT)
-    try:
-        return max(0, int(raw))
-    except (TypeError, ValueError):
+    if isinstance(raw, bool):
         return _SHA_ANCESTOR_DEPTH_DEFAULT
+    if isinstance(raw, int):
+        return max(0, raw)
+    if isinstance(raw, str):
+        try:
+            return max(0, int(raw.strip()))
+        except ValueError:
+            return _SHA_ANCESTOR_DEPTH_DEFAULT
+    return _SHA_ANCESTOR_DEPTH_DEFAULT
 
 
 def _allowed_lag_paths(repo: Path | None = None) -> frozenset[str]:

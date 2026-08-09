@@ -1,0 +1,27 @@
+{
+  "artifact_type": "adjudicator_agreement",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-07-17T09:00:00+00:00",
+  "source_csv": "adjudication-template.csv",
+  "adjudicator_a": "eng-a",
+  "adjudicator_b": "eng-b",
+  "adjudicator_count": 2,
+  "adjudicators": ["eng-a", "eng-b"],
+  "paired_items": 4,
+  "alpha_units": 4,
+  "cohens_kappa": 0.75,
+  "krippendorff_alpha": 0.72,
+  "confusion_matrix": {
+    "confirmed/confirmed": 3,
+    "rejected/rejected": 1
+  },
+  "pass_threshold_0_60": true,
+  "target_threshold_0_80": false,
+  "pass_alpha_0_67": true,
+  "notes": [
+    "TEMPLATE ONLY — replace with measure_adjudicator_agreement output on customer CSV",
+    "LLM assist does not count as an adjudicator",
+    "Publishable PrecisionClaim still requires corpus_kind=customer + intake gates"
+  ],
+  "claim_boundary": "Fixture/template agreement shape; not customer evidence; NO_GO until RT-001"
+}
