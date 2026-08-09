@@ -9,8 +9,8 @@
 | A2 | publishable при dirty tree | **KILLED** | `test_dirty_tree_is_not_publishable_even_when_complete` |
 | A3 | gates_attested: [] | **KILLED** | `--check-committed-baseline` → `attestation_gates_attested_missing` (P12) |
 | A4 | Ручной commit_sha | **KILLED** | `attestation_sha_mismatch` / commit mismatch в P12 |
-| A5 | Раздуть LOC на 49 | **UNVERIFIED** | допуск `_DRIFT_TOLERANCE=50`; отдельный inflate>50 не гонялся |
-| A6 | Ручной README блок | **UNVERIFIED** | не исполнялась |
+| A5 | Раздуть LOC на 49 | **KILLED** (на >50) | `test_loc_inflate_beyond_tolerance_is_killed` — допуск 50, +51 fails |
+| A6 | Ручной README блок | **KILLED** | `test_manual_readme_snippet_mismatch_is_killed` |
 | A7 | Метрика в Markdown-таблице | **KILLED** (после фикса) | `test_claim_needs_boundary_checks_markdown_table_rows` |
 | A8 | allow-file + второе нарушение | **KILLED** | `test_allow_file_without_registry_is_not_amnesty` + `audit/claims_allow_file_registry.json` |
 | A9 | Rename _MONITORED | **KILLED** (частично) | missing file → error в `check_docs_metadata_integrity` |
@@ -26,5 +26,5 @@
 | A19 | offline_bundle без сети | **UNVERIFIED** | CI job есть; air-gap proof не снят |
 | A20 | подмена комплекта SLA | **UNVERIFIED** | |
 
-**Итого факт:** KILLED 14 · SURVIVED 0 · UNVERIFIED 6.  
-**DoD ≥14 KILLED:** закрыт исполняемыми pytest 2026-08-09 (локальный прогон + registry kill A8).
+**Итого факт:** KILLED 16 · SURVIVED 0 · UNVERIFIED 4.  
+**DoD ≥14 KILLED:** закрыт (+ A5/A6 unit proofs).

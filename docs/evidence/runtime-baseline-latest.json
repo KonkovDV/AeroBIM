@@ -51,11 +51,11 @@
   },
   "metrics": {
     "backend_src_loc": 61690,
-    "backend_test_loc": 42114,
-    "backend_test_functions": 2010,
+    "backend_test_loc": 42207,
+    "backend_test_functions": 2012,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2161, frontend=48; commit 0344cabd3921; see docs/evidence/runtime-baseline-latest.json · src ~61690 LOC; tests ~42114 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2161, frontend=48; commit ea616af5edac; see docs/evidence/runtime-baseline-latest.json · src ~61690 LOC; tests ~42207 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
