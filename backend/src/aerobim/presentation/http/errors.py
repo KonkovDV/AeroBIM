@@ -15,6 +15,9 @@ _PUBLIC_HITL_FORBIDDEN = "Expert HITL events require OIDC reviewer identity"
 _PUBLIC_SYNC_ANALYZE_DISABLED = "Synchronous analyze disabled; use async submit endpoint"
 _PUBLIC_ANALYZE_CONCURRENCY_LIMIT = "Analyze concurrency limit exceeded"
 _PUBLIC_HITL_STATE_CONFLICT = "HITL state conflict"
+_PUBLIC_STORAGE_BOUNDARY = "Stored object escapes storage boundary"
+_PUBLIC_NOT_FOUND = "Object not found"
+_PUBLIC_EXPORT_UNAVAILABLE = "Export service unavailable"
 
 
 def public_bad_request_detail() -> str:
@@ -73,12 +76,29 @@ def public_hitl_state_conflict_detail() -> str:
     return _PUBLIC_HITL_STATE_CONFLICT
 
 
+def public_storage_boundary_detail() -> str:
+    """Stable 409 detail — never echo PathJailError path text to clients."""
+
+    return _PUBLIC_STORAGE_BOUNDARY
+
+
+def public_not_found_detail() -> str:
+    return _PUBLIC_NOT_FOUND
+
+
+def public_export_unavailable_detail() -> str:
+    return _PUBLIC_EXPORT_UNAVAILABLE
+
+
 __all__ = [
     "public_analyze_concurrency_limit_detail",
     "public_bad_request_detail",
+    "public_export_unavailable_detail",
     "public_hitl_forbidden_detail",
     "public_hitl_state_conflict_detail",
+    "public_not_found_detail",
     "public_service_unavailable_detail",
+    "public_storage_boundary_detail",
     "public_sync_analyze_disabled_detail",
     "public_upload_content_rejected_detail",
     "public_upload_object_store_failed_detail",

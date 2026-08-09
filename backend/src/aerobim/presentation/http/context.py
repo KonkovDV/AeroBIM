@@ -449,7 +449,9 @@ class ApiContext:
         try:
             reject_symlinks(resolved, base=base)
         except PathJailError as exc:
-            raise HTTPException(status_code=409, detail=str(exc)) from exc
+            from aerobim.presentation.http.errors import public_storage_boundary_detail
+
+            raise HTTPException(status_code=409, detail=public_storage_boundary_detail()) from exc
         if settings.enforce_object_acl:
             tenant = (getattr(report, "tenant_id", None) or "").strip()
             if not tenant and principal is not None:
@@ -462,7 +464,9 @@ class ApiContext:
                         tenant_id=tenant,
                     )
                 except PathJailError as exc:
-                    raise HTTPException(status_code=404, detail="Object not found") from exc
+                    from aerobim.presentation.http.errors import public_not_found_detail
+
+                    raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         if not resolved.exists():
             raise HTTPException(
                 status_code=404, detail=f"IFC source for report {report_id} not found"
@@ -508,7 +512,9 @@ class ApiContext:
         try:
             reject_symlinks(resolved, base=settings.storage_dir.resolve())
         except PathJailError as exc:
-            raise HTTPException(status_code=409, detail=str(exc)) from exc
+            from aerobim.presentation.http.errors import public_storage_boundary_detail
+
+            raise HTTPException(status_code=409, detail=public_storage_boundary_detail()) from exc
         if settings.enforce_object_acl:
             tenant = (getattr(report, "tenant_id", None) or "").strip()
             if not tenant and principal is not None:
@@ -521,7 +527,9 @@ class ApiContext:
                         tenant_id=tenant,
                     )
                 except PathJailError as exc:
-                    raise HTTPException(status_code=404, detail="Object not found") from exc
+                    from aerobim.presentation.http.errors import public_not_found_detail
+
+                    raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         if not resolved.exists():
             raise HTTPException(
                 status_code=404, detail=f"Drawing asset preview for {asset_id} not found"

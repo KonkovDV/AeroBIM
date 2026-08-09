@@ -147,9 +147,13 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         try:
             result = push_use_case.execute(report_id, project_id=project_id)
         except LookupError as exc:
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
+            from aerobim.presentation.http.errors import public_not_found_detail
+
+            raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         except RuntimeError as exc:
-            raise HTTPException(status_code=503, detail=str(exc)) from exc
+            from aerobim.presentation.http.errors import public_export_unavailable_detail
+
+            raise HTTPException(status_code=503, detail=public_export_unavailable_detail()) from exc
 
         return {
             "project_id": result.project_id,
