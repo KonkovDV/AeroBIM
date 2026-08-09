@@ -1,6 +1,6 @@
 # Red Team pass — Class A closure + B window (2026-08-09)
 
-**Tree:** `11dc84c` + follow-up commits on this pass.  
+**Tree:** `fcd2f394f6d4f0091df41e74c6b063272cade003` on `main`.  
 **Mode:** claim-breaking first; no public exploit catalogue (N-40).
 
 ## Ground truth
