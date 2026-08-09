@@ -82,6 +82,55 @@ class DeferredControlsScriptTests(unittest.TestCase):
             )
             self.assertEqual(proc.returncode, 0)
 
+    def test_active_with_false_policy_flags_fails(self) -> None:
+        """N-58: registry must read the mechanism file, not only its own state field."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            registry = Path(tmp) / "waivers.json"
+            policy = Path(tmp) / "policy.json"
+            registry.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.0.0",
+                        "waivers": [
+                            {
+                                "id": "A4",
+                                "state": "active",
+                                "activates_on": "2026-08-09",
+                                "policy_flags": ["enforce_ci", "fail_on_unverifiable_signature"],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            policy.write_text(
+                json.dumps(
+                    {
+                        "enforce_ci": False,
+                        "fail_on_unverifiable_signature": False,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(_SCRIPTS / "verify_deferred_controls.py"),
+                    "--registry",
+                    str(registry),
+                    "--policy",
+                    str(policy),
+                    "--today",
+                    "2026-08-09",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(proc.returncode, 1)
+            self.assertIn("state=active but enforce_ci=false", proc.stderr)
+
 
 class LiveRegistrySmokeTests(unittest.TestCase):
     def test_repo_registry_passes_today(self) -> None:

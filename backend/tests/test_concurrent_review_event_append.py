@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import tempfile
 import threading
@@ -112,6 +113,88 @@ class ConcurrentReviewEventAppendTests(unittest.TestCase):
             self.assertTrue(slot.exists())
             self.assertIn('"event_type": "opened"', slot.read_text(encoding="utf-8"))
             self.assertFalse(target.exists(), msg="durable record is the seq file, not jsonl")
+
+    def test_jsonl_must_not_appear_after_append(self) -> None:
+        """N-57: no shadow jsonl after exclusive seq writes."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "c" * 32
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="seed",
+                    event_id=None,
+                )
+            )
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            self.assertFalse(target.exists())
+            self.assertTrue(target.with_name(f"{target.name}.seq.1").exists())
+
+    def test_sequence_gap_is_fail_closed(self) -> None:
+        """N-57: deleting .seq.N is indistinguishable from deletion — reader must yell."""
+
+        from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+            ReviewEventChainError,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "review-events"
+            root.mkdir(parents=True, exist_ok=True)
+            report_id = "d" * 32
+            target = root / f"{report_id}.jsonl"
+            for seq in range(1, 11):
+                payload = {
+                    "event_id": f"e{seq}",
+                    "report_id": report_id,
+                    "event_type": "opened" if seq == 1 else "edited",
+                    "created_at": f"2026-08-09T12:00:{seq:02d}+00:00",
+                    "sequence_number": seq,
+                }
+                (root / f"{target.name}.seq.{seq}").write_text(
+                    json.dumps(payload) + "\n",
+                    encoding="utf-8",
+                )
+            (root / f"{target.name}.seq.7").unlink()
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            with self.assertRaises(ReviewEventChainError):
+                store.list_for_report(report_id)
+
+    def test_diverging_jsonl_is_fail_closed(self) -> None:
+        """N-57: shadow jsonl that disagrees with seq files must not be invisible."""
+
+        from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+            AuditEventCorruptionError,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "review-events"
+            root.mkdir(parents=True, exist_ok=True)
+            report_id = "e" * 32
+            target = root / f"{report_id}.jsonl"
+            event = {
+                "event_id": "e1",
+                "report_id": report_id,
+                "event_type": "opened",
+                "created_at": "2026-08-09T12:00:00+00:00",
+                "sequence_number": 1,
+            }
+            (root / f"{target.name}.seq.1").write_text(
+                json.dumps(event) + "\n",
+                encoding="utf-8",
+            )
+            target.write_text('{"event_id":"tampered"}\n', encoding="utf-8")
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            with self.assertRaises(AuditEventCorruptionError):
+                store.list_for_report(report_id)
 
     def test_sequence_slot_blocks_duplicate_even_without_lock(self) -> None:
         """N-50/N-54: exclusive event file is the invariant; lock is only an optimization."""
