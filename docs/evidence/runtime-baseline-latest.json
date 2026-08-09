@@ -1,16 +1,16 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "7895cbe0e6bbb22a4744865ff91654abeef59fc0",
-  "tree_sha": "1383c65b8e9519ba7b9060d1c84cbfe515f3f45f",
-  "working_tree_clean": false,
-  "generated_at": "2026-08-09T07:50:13.981422+00:00",
+  "commit_sha": "dc2dff4b3ac67a57c86971965bf139f207d58c1f",
+  "tree_sha": "c20917bf49cabaaa8b65bdb46875e521e99f9dde",
+  "working_tree_clean": true,
+  "generated_at": "2026-08-09T07:57:19.619302+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
     "tests_collected": 2009,
-    "tests_passed": 1993,
-    "tests_skipped": 8,
+    "tests_passed": 2161,
+    "tests_skipped": 9,
     "tests_failed": 0,
     "source_loc": 61641,
     "test_loc": 42088,
@@ -25,42 +25,27 @@
   },
   "quality_gates": {
     "ruff": {
-      "status": "PASS",
-      "tool": "python",
-      "exit_code": 0,
-      "duration_ms": 112.4
+      "status": "PASS"
     },
     "mypy": {
-      "status": "PASS",
-      "tool": "python",
-      "exit_code": 0,
-      "duration_ms": 1910.9
+      "status": "PASS"
     },
     "pytest": {
-      "status": "PASS",
-      "tool": "python",
-      "exit_code": 0,
-      "duration_ms": 74208.3
+      "status": "PASS"
     },
     "vitest": {
-      "status": "PASS",
-      "tool": "npm",
-      "exit_code": 0,
-      "duration_ms": 3149.1
+      "status": "PASS"
     },
     "build": {
-      "status": "PASS",
-      "tool": "npm",
-      "exit_code": 0,
-      "duration_ms": 6313.7
+      "status": "PASS"
     }
   },
   "environment": {
-    "python_version": "3.13.7",
+    "python_version": "3.12.13",
     "python_implementation": "CPython",
-    "platform": "Windows-11-10.0.26200-SP0",
-    "system": "Windows",
-    "machine": "AMD64",
+    "platform": "Linux-6.17.0-1020-azure-x86_64-with-glibc2.39",
+    "system": "Linux",
+    "machine": "x86_64",
     "lockfile_sha256": "c70becc6bdda0b774afd174bcf8b673b19a4251d83873ad43a300c8aadf193eb",
     "lockfile_path": "backend/requirements-lock.txt"
   },
@@ -70,7 +55,7 @@
     "backend_test_functions": 2009,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=1993, frontend=29; commit 7895cbe0e6bb; see docs/evidence/runtime-baseline-latest.json · src ~61641 LOC; tests ~42088 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2161, frontend=29; commit dc2dff4b3ac6; see docs/evidence/runtime-baseline-latest.json · src ~61641 LOC; tests ~42088 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -220,15 +205,23 @@
     "di_tokens": 63
   },
   "attestation": {
-    "attested_by": "local",
-    "run_id": null,
-    "run_attempt": null,
-    "workflow_ref": null,
-    "github_sha": null,
-    "runner_os": "Windows",
-    "runner_python": "3.13.7",
-    "gates_attested": []
+    "attested_by": "ci",
+    "run_id": "31302124873",
+    "run_attempt": 1,
+    "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/pull/13/merge",
+    "github_sha": "dc2dff4b3ac67a57c86971965bf139f207d58c1f",
+    "runner_os": "Linux",
+    "runner_python": "3.12.13",
+    "gates_attested": [
+      "frontend",
+      "offline-bundle-smoke",
+      "openapi-contract",
+      "security-regression",
+      "sprint-2-1-gates",
+      "supply-chain-audit",
+      "test"
+    ]
   },
-  "artifact_completeness": "partial",
-  "publishable": false
+  "artifact_completeness": "full",
+  "publishable": true
 }
