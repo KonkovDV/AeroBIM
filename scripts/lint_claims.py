@@ -213,7 +213,12 @@ def _should_scan(path: Path) -> bool:
         rel = path.relative_to(_repo_root()).as_posix()
     except ValueError:
         return True
-    return not any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS)
+    if any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS):
+        return False
+    # Evidence JSON/PDF quote forbidden phrases as denial/inventory text, not product claims.
+    if "/evidence/" in f"/{rel}" and path.suffix.lower() in {".json", ".pdf"}:
+        return False
+    return True
 
 
 def _load_allow_file_paths(registry_path: Path = _ALLOW_FILE_REGISTRY) -> frozenset[str]:
