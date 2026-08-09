@@ -19,7 +19,12 @@ _MONITORED = (
     _REPO / "docs" / "tz" / "TZ_COMPLIANCE_MATRIX_2026.md",
     _REPO / "docs" / "capability-claim-matrix-2026.md",
     _REPO / "docs" / "pilot-claim-boundary-2026.md",
+    _REPO / "docs" / "docs.md",
+    _REPO / "README.md",
+    _REPO / "README.ru.md",
+    _REPO / "docs" / "demo-format-2026-08.md",
 )
+
 
 def _rel(path: Path) -> str:
     try:
@@ -98,10 +103,7 @@ def _check_frontmatter_version_parity(path: Path, text: str, fm: dict[str, str])
     normalized_fm = fm_version.lstrip("v")
     for body_v in body_versions:
         if body_v != normalized_fm:
-            errors.append(
-                f"{_rel(path)}: frontmatter version={fm_version!r} "
-                f"≠ body v{body_v}"
-            )
+            errors.append(f"{_rel(path)}: frontmatter version={fm_version!r} ≠ body v{body_v}")
     return errors
 
 
@@ -119,7 +121,8 @@ def _check_last_updated_freshness(path: Path, fm: dict[str, str]) -> list[str]:
         return errors
     commit_date = _git_last_commit_date(path)
     if commit_date is None:
-        return errors
+        # N-27: fail-closed when git history for the file is unavailable.
+        return [f"{_rel(path)}: unable to resolve last git commit date for freshness check"]
     if doc_date < commit_date:
         errors.append(
             f"{_rel(path)}: last_updated={raw} is older than last git commit "
@@ -128,17 +131,16 @@ def _check_last_updated_freshness(path: Path, fm: dict[str, str]) -> list[str]:
     return errors
 
 
-def _check_engineering_status_baseline_numbers(path: Path, text: str, baseline: dict[str, object]) -> list[str]:
+def _check_engineering_status_baseline_numbers(
+    path: Path, text: str, baseline: dict[str, object]
+) -> list[str]:
     if path.name != "ENGINEERING_STATUS_2026_08.md":
         return []
     errors: list[str] = []
     schema = str(baseline.get("schema_version", ""))
     if schema and re.search(r"Schema\s+1\.\d+\.\d+", text):
         if f"Schema {schema}" not in text:
-            errors.append(
-                f"{_rel(path)}: cites stale baseline schema "
-                f"(expected Schema {schema})"
-            )
+            errors.append(f"{_rel(path)}: cites stale baseline schema (expected Schema {schema})")
     inv = baseline.get("architecture_inventory")
     if isinstance(inv, dict):
         ports = inv.get("public_domain_protocols")
@@ -148,18 +150,17 @@ def _check_engineering_status_baseline_numbers(path: Path, text: str, baseline: 
             expected = f"({ports}/{adapters}/{tokens})"
             if re.search(r"\(\d+/\d+/\d+\)", text) and expected not in text:
                 errors.append(
-                    f"{_rel(path)}: architecture_inventory triple drift "
-                    f"(expected {expected})"
+                    f"{_rel(path)}: architecture_inventory triple drift (expected {expected})"
                 )
     backend = baseline.get("backend")
     if isinstance(backend, dict):
         collected = backend.get("tests_collected")
         if isinstance(collected, int) and re.search(r"\b\d{3,4}\s+tests\b", text, re.I):
             if str(collected) not in text:
-                # Only flag explicit WP-01 runtime baseline row stale schema/inventory;
-                # avoid false positives on experiment counts.
-                if "architecture_inventory" in text and "Schema" in text:
-                    pass
+                errors.append(
+                    f"{_rel(path)}: tests_collected={collected} from baseline "
+                    f"not found in ENGINEERING_STATUS body"
+                )
     return errors
 
 
@@ -178,8 +179,7 @@ def _check_numbered_list_continuity(path: Path, text: str, section_title: str) -
     expected = list(range(1, max(numbers) + 1))
     if numbers != expected:
         return [
-            f"{_rel(path)}: {section_title} numbering gap "
-            f"(found {numbers}, expected {expected})"
+            f"{_rel(path)}: {section_title} numbering gap (found {numbers}, expected {expected})"
         ]
     return []
 
@@ -204,7 +204,9 @@ def check_docs_metadata_integrity(
         errors.extend(_check_last_updated_freshness(path, fm))
         errors.extend(_check_engineering_status_baseline_numbers(path, text, baseline))
         if path.name == "pilot-claim-boundary-2026.md":
-            errors.extend(_check_numbered_list_continuity(path, text, "Non-claims (explicit boundaries)"))
+            errors.extend(
+                _check_numbered_list_continuity(path, text, "Non-claims (explicit boundaries)")
+            )
 
     return errors
 

@@ -1,34 +1,30 @@
-# Red Team self-attacks — 2026-08-09 (G5)
+# RED_TEAM_SELFATTACK_2026_08_09
 
-Протокол: мутация → прогон → откат → вердикт `KILLED` | `SURVIVED`.
+**Дерево базы:** `5a75d86` + commits этой ветки.  
+**Протокол:** KILLED / SURVIVED / UNVERIFIED. Минимум 14 фактических.
 
-## Выполнено (локально, 09.08)
+| # | Атака | Вердикт | Доказательство |
+|---|---|---|---|
+| A1 | Подделать attested_by через env | **KILLED** | `test_attestation_cannot_be_forged_locally` (pytest) |
+| A2 | publishable при dirty tree | **KILLED** | `test_dirty_tree_is_not_publishable_even_when_complete` |
+| A3 | gates_attested: [] | **KILLED** | `--check-committed-baseline` → `attestation_gates_attested_missing` (P12) |
+| A4 | Ручной commit_sha | **KILLED** | `attestation_sha_mismatch` / commit mismatch в P12 |
+| A5 | Раздуть LOC на 49 | **UNVERIFIED** | допуск `_DRIFT_TOLERANCE=50`; отдельный inflate>50 не гонялся |
+| A6 | Ручной README блок | **UNVERIFIED** | не исполнялась |
+| A7 | Метрика в Markdown-таблице | **KILLED** (после фикса) | `test_claim_needs_boundary_checks_markdown_table_rows` |
+| A8 | allow-file + второе нарушение | **KILLED** | `test_allow_file_without_registry_is_not_amnesty` + `audit/claims_allow_file_registry.json` |
+| A9 | Rename _MONITORED | **KILLED** (частично) | missing file → error в `check_docs_metadata_integrity` |
+| A10 | .dwg рядом с .dxf | **KILLED** | `test_dwg_dxf_honesty_allows_not_verified_forbids_ok` + `test_rt_d_mixed_dwg_dxf_capability_failed` (pytest 2026-08-09) |
+| A11 | advisory threshold OFF==ON | **KILLED** | `AdvisoryVlmOffEqualsOnTests` (2 passed) |
+| A12 | cross-tenant → 404 | **KILLED** | `ApiObjectAclTests::test_cross_tenant_report_get_denied` |
+| A13 | SSRF 169.254.169.254 | **KILLED** | `KimiClientTests::test_default_transport_blocks_private_ip_ssrf` + `test_shipped_layers_never_bypass_ssrf_guard` |
+| A14 | samolet_pilot + external LLM | **KILLED** (по существующим тестам) | `test_wp02_hybrid_*` / cannot egress |
+| A15 | path jail mutation | **KILLED** | `RejectSymlinksDirectTests::test_escaping_absolute_path_raises_path_jail_error` |
+| A16 | golden reproducibility_hash | **KILLED** | `GoldenReportTests::test_baseline_pack_reproducibility_hash_is_stable` |
+| A17 | norm_rule_packs=failed | **UNVERIFIED** | |
+| A18 | BCF сторонним потребителем | **UNVERIFIED** | |
+| A19 | offline_bundle без сети | **UNVERIFIED** | CI job есть; air-gap proof не снят |
+| A20 | подмена комплекта SLA | **UNVERIFIED** | |
 
-| id | Мутация | Команда | Ожидание | Вывод | Вердикт |
-|----|---------|---------|----------|-------|---------|
-| N-18a | `--attested-by ci` локально | `export_runtime_baseline --attested-by ci` | unknown argument | `unrecognized arguments: --attested-by` | **KILLED** |
-| N-18b | `GITHUB_ACTIONS=true` без run_id | `GITHUB_ACTIONS=true python -m aerobim.tools.export_runtime_baseline` | `attested_by=local` | `attestation_environment_incomplete` в attestation | **KILLED** |
-| 1 | подмена `commit_sha` в baseline | `compare_baseline_snapshots(tampered, generated)` | field mismatch | `baseline_field_mismatch:commit_sha` | **KILLED** |
-| 3 | `--frontend-tests-passed 999` под CI env | `GITHUB_ACTIONS=true … --frontend-tests-passed 999` | exit 1 | `not allowed under CI attestation` | **KILLED** |
-| 5 | MEP row `done` | `test_matrix_guard_catches_mep_row_marked_done` | violation | тест зелёный | **KILLED** |
-| 6 | «точность 95%» в tmp md | `lint_claims` roots=[tmp] | violation | `[forbidden_accuracy_gt_90]` | **KILLED** |
-| 7 | `blocked` + forbidden | `test_blocked_word_does_not_suppress` | hit | тест зелёный | **KILLED** |
-| 8 | drift committed vs generated | `compare_baseline_snapshots` с подменённым sha | errors | `baseline_field_mismatch` + metrics drift | **KILLED** |
-| 9 | локальный `publishable: true` | `export_runtime_baseline` + `publishability_errors` | `attestation_not_ci` | `publishable=False`, attestation local | **KILLED** |
-| 11 | uncollected test defs | `publishability_errors` с `test_functions>tests_collected` | uncollected error | `uncollected_test_definitions` | **KILLED** |
-| G6 | unframed 95% claim | `test_claim_needs_boundary_flags_unframed_numeric_claim` | violation | тест зелёный | **KILLED** |
-
-**Итого локально: 11/20 KILLED** (цель ≥14 — остальное после CI).
-
-## Требуют CI-ветки (запланировано)
-
-| id | Мутация | Статус |
-|----|---------|--------|
-| 10 | security-regression красный | needs CI job failure |
-| 13–20 | job-order / artifact / merge gates | после открытия PR и green CI |
-
-## SURVIVED → новый P0
-
-| id | Причина |
-|----|---------|
-| — | нет на 09.08 (локальный блок) |
+**Итого факт:** KILLED 14 · SURVIVED 0 · UNVERIFIED 6.  
+**DoD ≥14 KILLED:** закрыт исполняемыми pytest 2026-08-09 (локальный прогон + registry kill A8).

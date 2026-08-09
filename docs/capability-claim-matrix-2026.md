@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
-version: "1.3.0"
-last_updated: "2026-08-08"
+version: "1.4.0"
+last_updated: "2026-08-09"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
@@ -71,7 +71,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Hybrid AI routing + WP-02 advisory pre-gate | `domain/hybrid/*` + `HybridRouteGate` on Analyze advisory; OFF==ON; never sets `summary.passed` — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) · [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md) |
 | Local Qwen advisory remark compose (KT#2 W1) | `private_qwen_local` + `OpenAICompatLlmProvider` + `compose_advisory_remark`; `ai_generated` + expert required; cloud Max NOT_VERIFIED — [`QWEN_LOCAL_KT2_PLAN`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) |
 | Yandex AI Studio grant path (KT#2 T2) | Same adapter; `private_yandex_ai_studio`; token caps; RF cloud for open corpora; on-prem for pilot — [`YANDEX_AI_STUDIO_GRANT`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md) |
-| Runtime baseline complete (WP-01 / WP-R0) | `docs/evidence/runtime-baseline-latest.json` schema **1.3.0**; numeric `tests_passed` (backend+frontend); five `quality_gates=PASS`; `publishable` requires clean tree; CI `baseline-integrity` (`--check-publishable`) + `--check-readme` |
+| Runtime baseline complete (WP-01 / WP-R0) | `docs/evidence/runtime-baseline-latest.json` schema **1.4.0**; numeric `tests_passed` (backend+frontend); five `quality_gates=PASS`; `publishable` requires clean tree + CI attestation; CI `baseline-integrity` (`--check-publishable`) + `--check-readme` |
 | Executable Claims Lock linter (WP-R10) | `scripts/lint_claims.py` (patterns from this matrix); CI blocking; `--matrix-guard` enforces Samolet-blocked rows ≠ `done` |
 | Detached signature envelope (WP-03) | `qualified_signature` ENG_PARTIAL; trust_chain NOT_VERIFIED — never «УКЭП проверена» |
 | Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + journal; RT-002 OPEN |

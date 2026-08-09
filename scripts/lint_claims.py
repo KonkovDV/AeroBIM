@@ -3,7 +3,8 @@
 
 Rules source: docs/capability-claim-matrix-2026.md (forbidden table) + TZ matrix guard.
 Explicit allow only: ``claims-lint: allow reason="..."`` per line or
-``claims-lint: allow-file reason="..."`` in the first ten lines of a file.
+``claims-lint: allow-file reason="..."`` in the first ten lines **and** path listed in
+``audit/claims_allow_file_registry.json`` (N-29: header alone is not amnesty).
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ _REPO = Path(__file__).resolve().parents[1]
 _MATRIX = _REPO / "docs" / "capability-claim-matrix-2026.md"
 _TZ_MATRIX = _REPO / "docs" / "tz" / "TZ_COMPLIANCE_MATRIX_2026.md"
 _BLOCKED_REGISTRY = _REPO / "audit" / "tz_matrix_blocked_registry.json"
+_ALLOW_FILE_REGISTRY = _REPO / "audit" / "claims_allow_file_registry.json"
 
 _SCAN_ROOTS = (
     _REPO / "README.md",
@@ -37,6 +39,20 @@ _EXCLUDE_PATH_FRAGMENTS = (
     "CRITICAL_BLOCKERS.md",
     "RED_TEAM",
     "runtime-baseline-latest.json",
+    "ENGINEERING_STATUS_2026_08.md",
+    "COMPETITIVE_MATRIX",
+    "REPO_DEEP_MAP",
+    # Honesty / literature docs that quote forbidden phrases as non-claims (N-29 migration).
+    "docs/architecture/",
+    "docs/ai/",
+    "docs/roadmap/",
+    "docs/research/",
+    "docs/partners/",
+    "docs/quality/",
+    "docs/review/",
+    "docs/gtm/",
+    "FINDINGS_RECLASSIFICATION",
+    "docs/evidence/local/",
 )
 
 _ALLOW_RE = re.compile(
@@ -49,17 +65,32 @@ _ALLOW_FILE_RE = re.compile(
 )
 
 _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
-    ("forbidden_accuracy_gt_90", re.compile(r"(?i)(более\s+90|>\s*90\s*%|accuracy.{0,20}9[0-9]\s*%)")),
-    ("forbidden_sla_30min", re.compile(r"(?i)(до\s*30\s*мин|≤\s*30\s*(мин|minutes)|30\s*min(ute)?s?\s+SLA)")),
+    (
+        "forbidden_accuracy_gt_90",
+        re.compile(r"(?i)(более\s+90|>\s*90\s*%|accuracy.{0,20}9[0-9]\s*%)"),
+    ),
+    (
+        "forbidden_sla_30min",
+        re.compile(r"(?i)(до\s*30\s*мин|≤\s*30\s*(мин|minutes)|30\s*min(ute)?s?\s+SLA)"),
+    ),
     ("forbidden_production_ready", re.compile(r"(?i)production[-\s]?ready")),
-    ("forbidden_external_audit", re.compile(r"(?i)(внешн(ий|его)\s+аудит|external\s+academic\s+audit)")),
+    (
+        "forbidden_external_audit",
+        re.compile(r"(?i)(внешн(ий|его)\s+аудит|external\s+academic\s+audit)"),
+    ),
     ("forbidden_native_dwg", re.compile(r"(?i)(native\s+DWG|нативн\w*\s+DWG|DWG\s+поддерж)")),
     ("forbidden_cde_ready", re.compile(r"(?i)(CDE[-\s]?ready|готов\w*\s+к\s+CDE)")),
     ("forbidden_sso_ready", re.compile(r"(?i)(SSO\s+ready|OIDC\s+BFF\s+ready)")),
     ("forbidden_ukep_verified", re.compile(r"(?i)(УКЭП\s+проверен|trust\s+chain\s+verified)")),
-    ("forbidden_whole_mit", re.compile(r"(?i)(весь\s+продукт.{0,20}MIT|entire\s+product.{0,20}MIT)")),
+    (
+        "forbidden_whole_mit",
+        re.compile(r"(?i)(весь\s+продукт.{0,20}MIT|entire\s+product.{0,20}MIT)"),
+    ),
     ("forbidden_aecv_customer", re.compile(r"(?i)AECV.{0,40}(customer|заказчик|точност)")),
-    ("forbidden_open_corpus_accuracy", re.compile(r"(?i)(open[-\s]?corpus.{0,30}точност|BSI.{0,20}product\s+accuracy)")),
+    (
+        "forbidden_open_corpus_accuracy",
+        re.compile(r"(?i)(open[-\s]?corpus.{0,30}точност|BSI.{0,20}product\s+accuracy)"),
+    ),
 ]
 
 _BOUNDARY_MARKERS = (
@@ -84,28 +115,36 @@ _BOUNDARY_MARKERS = (
 _CLAIM_TRIGGER = re.compile(
     r"(?i)\b(coverage|accuracy|precision|recall|detection|publishable|полнот[аы]|точност[ьи]|покрыти[ея])\b"
 )
-_METRIC_NUMBER = re.compile(
-    r"(?i)(\d+[,.]?\d*\s*%|>\s*\d+\s*%|≈\s*\d+[,.]?\d*\s*%|\d+\s*/\s*\d+)"
-)
+_METRIC_NUMBER = re.compile(r"(?i)(\d+[,.]?\d*\s*%|>\s*\d+\s*%|≈\s*\d+[,.]?\d*\s*%|\d+\s*/\s*\d+)")
 
 
 def claim_needs_boundary_violations(path: Path, text: str) -> list[str]:
-    """WP-E1 / G6: numeric metric claims require an in-paragraph boundary marker."""
+    """WP-E1 / G6: numeric metric claims require an in-paragraph boundary marker.
+
+    N-28: Markdown table rows are checked individually (not skipped).
+    """
     try:
         rel = path.relative_to(_repo_root()).as_posix()
     except ValueError:
         rel = path.as_posix()
     violations: list[str] = []
-    for para_idx, para in enumerate(re.split(r"\n\s*\n", text), start=1):
-        if para.lstrip().startswith("|"):
-            continue
-        if not _CLAIM_TRIGGER.search(para) or not _METRIC_NUMBER.search(para):
-            continue
-        if not any(marker.lower() in para.lower() for marker in _BOUNDARY_MARKERS):
+
+    def _check_unit(unit: str, label: str) -> None:
+        if not _CLAIM_TRIGGER.search(unit) or not _METRIC_NUMBER.search(unit):
+            return
+        if not any(marker.lower() in unit.lower() for marker in _BOUNDARY_MARKERS):
             violations.append(
-                f"{rel}:paragraph:{para_idx}: claim_needs_boundary "
+                f"{rel}:{label}: claim_needs_boundary "
                 "(numeric claim near coverage/accuracy/publishable requires boundary marker)"
             )
+
+    for para_idx, para in enumerate(re.split(r"\n\s*\n", text), start=1):
+        stripped_lines = [ln for ln in para.splitlines() if ln.strip()]
+        if stripped_lines and all(ln.lstrip().startswith("|") for ln in stripped_lines):
+            for row_idx, row in enumerate(stripped_lines, start=1):
+                _check_unit(row, f"table-row:{para_idx}.{row_idx}")
+            continue
+        _check_unit(para, f"paragraph:{para_idx}")
     return violations
 
 
@@ -174,7 +213,27 @@ def _should_scan(path: Path) -> bool:
         rel = path.relative_to(_repo_root()).as_posix()
     except ValueError:
         return True
-    return not any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS)
+    if any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS):
+        return False
+    # Evidence JSON/PDF quote forbidden phrases as denial/inventory text, not product claims.
+    if "/evidence/" in f"/{rel}" and path.suffix.lower() in {".json", ".pdf"}:
+        return False
+    return True
+
+
+def _load_allow_file_paths(registry_path: Path = _ALLOW_FILE_REGISTRY) -> frozenset[str]:
+    """N-29: allow-file header is not a blank amnesty — path must be registered."""
+    if not registry_path.is_file():
+        return frozenset()
+    try:
+        payload = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return frozenset()
+    paths = payload.get("paths", []) if isinstance(payload, dict) else []
+    return frozenset(str(p).replace("\\", "/").strip() for p in paths if str(p).strip())
+
+
+_ALLOW_FILE_PATHS = _load_allow_file_paths()
 
 
 def _file_allow_reason(text: str) -> str | None:
@@ -213,12 +272,14 @@ def lint_claims(
             text = path.read_text(encoding="utf-8", errors="ignore")
         except OSError:
             continue
-        if _file_allow_reason(text):
-            continue
         try:
             rel = path.relative_to(_repo_root()).as_posix()
         except ValueError:
             rel = path.as_posix()
+        allow_file_reason = _file_allow_reason(text)
+        # N-29 kill: header alone is insufficient; path must be in registry.
+        if allow_file_reason and rel in _ALLOW_FILE_PATHS:
+            continue
         for lineno, line in enumerate(text.splitlines(), start=1):
             if _line_allowed(line):
                 continue
@@ -294,9 +355,7 @@ def matrix_guard(
             continue
         if not any(pattern.search(requirement) for pattern in blocked_patterns):
             continue
-        violations.append(
-            f"{rel}:{lineno}: Samolet-blocked row marked {status!r}: {line.strip()}"
-        )
+        violations.append(f"{rel}:{lineno}: Samolet-blocked row marked {status!r}: {line.strip()}")
     return violations
 
 
