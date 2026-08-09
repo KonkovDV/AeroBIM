@@ -3,7 +3,8 @@
 
 Rules source: docs/capability-claim-matrix-2026.md (forbidden table) + TZ matrix guard.
 Explicit allow only: ``claims-lint: allow reason="..."`` per line or
-``claims-lint: allow-file reason="..."`` in the first ten lines of a file.
+``claims-lint: allow-file reason="..."`` in the first ten lines **and** path listed in
+``audit/claims_allow_file_registry.json`` (N-29: header alone is not amnesty).
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ _REPO = Path(__file__).resolve().parents[1]
 _MATRIX = _REPO / "docs" / "capability-claim-matrix-2026.md"
 _TZ_MATRIX = _REPO / "docs" / "tz" / "TZ_COMPLIANCE_MATRIX_2026.md"
 _BLOCKED_REGISTRY = _REPO / "audit" / "tz_matrix_blocked_registry.json"
+_ALLOW_FILE_REGISTRY = _REPO / "audit" / "claims_allow_file_registry.json"
 
 _SCAN_ROOTS = (
     _REPO / "README.md",
@@ -214,6 +216,21 @@ def _should_scan(path: Path) -> bool:
     return not any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS)
 
 
+def _load_allow_file_paths(registry_path: Path = _ALLOW_FILE_REGISTRY) -> frozenset[str]:
+    """N-29: allow-file header is not a blank amnesty — path must be registered."""
+    if not registry_path.is_file():
+        return frozenset()
+    try:
+        payload = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return frozenset()
+    paths = payload.get("paths", []) if isinstance(payload, dict) else []
+    return frozenset(str(p).replace("\\", "/").strip() for p in paths if str(p).strip())
+
+
+_ALLOW_FILE_PATHS = _load_allow_file_paths()
+
+
 def _file_allow_reason(text: str) -> str | None:
     for line in text.splitlines()[:10]:
         match = _ALLOW_FILE_RE.search(line)
@@ -250,16 +267,14 @@ def lint_claims(
             text = path.read_text(encoding="utf-8", errors="ignore")
         except OSError:
             continue
-        allow_file_reason = _file_allow_reason(text)
-        if allow_file_reason:
-            # N-29 residual: whole-file allow remains for honesty READMEs that quote
-            # forbidden phrases as non-claims. New client docs must use per-line allow.
-            # ENGINEERING_STATUS no longer uses allow-file (excluded + header removed).
-            continue
         try:
             rel = path.relative_to(_repo_root()).as_posix()
         except ValueError:
             rel = path.as_posix()
+        allow_file_reason = _file_allow_reason(text)
+        # N-29 kill: header alone is insufficient; path must be in registry.
+        if allow_file_reason and rel in _ALLOW_FILE_PATHS:
+            continue
         for lineno, line in enumerate(text.splitlines(), start=1):
             if _line_allowed(line):
                 continue

@@ -173,33 +173,48 @@ def _sanitize_repo_path(repo: Path, value: object) -> str | None:
     return text.replace("\\", "/")
 
 
-def _parent_commit_sha(repo: Path, commit: str) -> str | None:
-    parent = _git(repo, "rev-parse", f"{commit}^")
-    return parent or None
+def _parent_commit_shas(repo: Path, commit: str) -> list[str]:
+    """Return first/second parents (merge commits expose the PR tip as ^2)."""
+    parents: list[str] = []
+    for index in (1, 2):
+        parent = _git(repo, "rev-parse", f"{commit}^{index}")
+        if parent:
+            parents.append(parent)
+    return parents
 
 
-def _parent_tree_sha(repo: Path, commit: str) -> str | None:
-    tree = _git(repo, "rev-parse", f"{commit}^^{{tree}}")
+def _tree_sha_for_commit(repo: Path, commit: str) -> str | None:
+    tree = _git(repo, "rev-parse", f"{commit}^{{tree}}")
     return tree or None
+
+
+# Evidence tip may sit several commits behind PR merge-ref / follow-up fixes.
+_SHA_ANCESTOR_DEPTH = 8
 
 
 def _sha_matches_head_or_parent(repo: Path | None, value: object, head: object) -> bool:
     """Allow evidence commit to bind to HEAD or a recent ancestor (WP-A11).
 
-    Evidence commits typically land 1–2 commits after the CI tip they attest.
+    Walks both merge parents so pull_request merge refs can reach the PR tip.
     """
     if value == head:
         return True
     if repo is None or not isinstance(value, str) or not isinstance(head, str):
         return False
-    current = head
-    for _ in range(3):
-        parent = _parent_commit_sha(repo, current)
-        if not parent:
-            return False
-        if value == parent:
-            return True
-        current = parent
+    frontier = [head]
+    seen: set[str] = {head}
+    for _ in range(_SHA_ANCESTOR_DEPTH):
+        next_frontier: list[str] = []
+        for current in frontier:
+            for parent in _parent_commit_shas(repo, current):
+                if parent == value:
+                    return True
+                if parent not in seen:
+                    seen.add(parent)
+                    next_frontier.append(parent)
+        frontier = next_frontier
+        if not frontier:
+            break
     return False
 
 
@@ -210,15 +225,21 @@ def _tree_matches_head_or_parent(
         return True
     if repo is None or not isinstance(value, str) or not head:
         return False
-    current = head
-    for _ in range(3):
-        parent = _parent_commit_sha(repo, current)
-        if not parent:
-            return False
-        parent_tree = _parent_tree_sha(repo, current)
-        if value == parent_tree:
-            return True
-        current = parent
+    frontier = [head]
+    seen: set[str] = {head}
+    for _ in range(_SHA_ANCESTOR_DEPTH):
+        next_frontier: list[str] = []
+        for current in frontier:
+            for parent in _parent_commit_shas(repo, current):
+                parent_tree = _tree_sha_for_commit(repo, parent)
+                if value == parent_tree:
+                    return True
+                if parent not in seen:
+                    seen.add(parent)
+                    next_frontier.append(parent)
+        frontier = next_frontier
+        if not frontier:
+            break
     return False
 
 
@@ -285,12 +306,20 @@ def compare_baseline_snapshots(
     generated_att = generated.get("attestation")
     if committed_att != generated_att:
         # Bootstrap: local committed vs fresh CI-generated attestation differs by design.
-        if not (
+        # Lag: two CI attestations (different run_id / github_sha) while tip catches up.
+        both_ci = (
+            isinstance(committed_att, dict)
+            and committed_att.get("attested_by") == "ci"
+            and isinstance(generated_att, dict)
+            and generated_att.get("attested_by") == "ci"
+        )
+        local_vs_ci = (
             isinstance(committed_att, dict)
             and committed_att.get("attested_by") == "local"
             and isinstance(generated_att, dict)
             and generated_att.get("attested_by") == "ci"
-        ):
+        )
+        if not (both_ci or local_vs_ci):
             errors.append("attestation_mismatch")
     if generated.get("publishable") is not True:
         errors.append("generated_baseline_not_publishable")

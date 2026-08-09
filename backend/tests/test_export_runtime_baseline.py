@@ -486,12 +486,12 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         }
         with (
             patch(
-                "aerobim.tools.export_runtime_baseline._parent_commit_sha",
-                return_value=parent,
+                "aerobim.tools.export_runtime_baseline._parent_commit_shas",
+                side_effect=lambda _repo, commit: [parent] if commit == head else [],
             ),
             patch(
-                "aerobim.tools.export_runtime_baseline._parent_tree_sha",
-                return_value=parent_tree,
+                "aerobim.tools.export_runtime_baseline._tree_sha_for_commit",
+                side_effect=lambda _repo, commit: parent_tree if commit == parent else None,
             ),
         ):
             self.assertEqual(compare_baseline_snapshots(committed, generated, repo=_REPO), [])

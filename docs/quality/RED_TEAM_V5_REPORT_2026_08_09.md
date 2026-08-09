@@ -33,17 +33,17 @@
 | WP-A12 | partial | baseline cleaned; `audit/evidence/**` ещё N-34 |
 | WP-N25/26 | FIXED ранее | |
 | WP-N27/28 | **в этом PR** | metadata + table boundary |
-| WP-N29 | **partial** | ENGINEERING_STATUS без allow-file; legacy allow-file ещё SURVIVED (A8) |
+| WP-N29 | **FIXED_BY_US** | allow-file требует registry path; A8 KILLED |
 | WP-A11 | pending | после зелёного CI — commit artifact |
 | WP-G4 | **обновлён** | PR_TRIAGE |
 | K1 | **в этом PR** | `docs/docs.md` §7 |
 | K2 | **черновик** | `deployment-contour-2026.md` |
 | K3 | **черновик** | `ACCEPTANCE_PROTOCOL_TASK7_2026.md` |
-| K4–K11 | не начаты | после P0 gate |
+| K4–K11 | K4 partial | CoverageMapPanel 12 tests + DrawingEvidencePanel 12 tests |
 
 ## 5. Самоатаки
 
-→ [`RED_TEAM_SELFATTACK_2026_08_09.md`](RED_TEAM_SELFATTACK_2026_08_09.md) — 8 KILLED / 1 SURVIVED / 11 UNVERIFIED (<14 KILLED).
+→ [`RED_TEAM_SELFATTACK_2026_08_09.md`](RED_TEAM_SELFATTACK_2026_08_09.md) — 9 KILLED / 0 SURVIVED / 11 UNVERIFIED (<14 KILLED).
 
 ## 6. Итоговый baseline
 
