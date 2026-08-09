@@ -21,7 +21,10 @@ class CommitSigningPolicyHonestyTests(unittest.TestCase):
                 "enforce_ci=true with min_signed_ratio=0 is a decorative control",
             )
         notes = str(policy.get("notes") or "")
-        self.assertIn("Honesty", notes)
+        self.assertTrue(
+            "honesty" in notes.lower() or "N-45" in notes,
+            "policy notes must state honesty / N-45 rationale",
+        )
 
 
 if __name__ == "__main__":

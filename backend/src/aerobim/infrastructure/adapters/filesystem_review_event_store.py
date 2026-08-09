@@ -28,6 +28,7 @@ _logger = logging.getLogger(__name__)
 _MAX_LINE_BYTES = 256 * 1024
 _LOCK_ATTEMPTS = 50
 _LOCK_SLEEP_S = 0.02
+_LOCK_STALE_S = 60.0
 _NORM_PACK_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
 
 
@@ -37,6 +38,22 @@ class AuditEventCorruptionError(RuntimeError):
 
 class ReviewEventChainError(RuntimeError):
     """Raised when hash-chain verification fails under fail-closed."""
+
+
+def _acquire_excl_lock(lock_path: Path) -> int:
+    """Create exclusive lock file; reclaim stale locks left by crashed processes."""
+
+    try:
+        return os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        try:
+            age = time.time() - lock_path.stat().st_mtime
+        except OSError:
+            age = 0.0
+        if age >= _LOCK_STALE_S:
+            lock_path.unlink(missing_ok=True)
+            return os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        raise
 
 
 class FilesystemReviewEventStore:
@@ -61,9 +78,9 @@ class FilesystemReviewEventStore:
         lock_path = target.with_suffix(target.suffix + ".lock")
         for _ in range(_LOCK_ATTEMPTS):
             try:
-                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                fd = _acquire_excl_lock(lock_path)
                 try:
-                    os.write(fd, b"1")
+                    os.write(fd, f"{time.time():.3f}".encode("ascii"))
                 finally:
                     os.close(fd)
                 try:
@@ -84,9 +101,9 @@ class FilesystemReviewEventStore:
         lock_path = target.with_suffix(target.suffix + ".lock")
         for _ in range(_LOCK_ATTEMPTS):
             try:
-                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                fd = _acquire_excl_lock(lock_path)
                 try:
-                    os.write(fd, b"1")
+                    os.write(fd, f"{time.time():.3f}".encode("ascii"))
                 finally:
                     os.close(fd)
                 try:
@@ -181,9 +198,9 @@ class FilesystemReviewEventStore:
         report_id = event.report_id
         for _ in range(_LOCK_ATTEMPTS):
             try:
-                fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                fd = _acquire_excl_lock(lock_path)
                 try:
-                    os.write(fd, b"1")
+                    os.write(fd, f"{time.time():.3f}".encode("ascii"))
                 finally:
                     os.close(fd)
                 try:

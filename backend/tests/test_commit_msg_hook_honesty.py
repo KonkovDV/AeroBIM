@@ -23,7 +23,7 @@ class CommitMsgHookHonestyTests(unittest.TestCase):
         self.assertIsNone(re.search(r"\bsed\b|\bawk\b|\bperl\b", text))
 
     def test_strip_filter_is_passthrough(self) -> None:
-        script = REPO_ROOT / "scripts" / "strip_coauthor_msgfilter.py"
+        script = REPO_ROOT / "scripts" / "passthrough_commit_msgfilter.py"
         body = "docs: note\n\nCo-authored-by: Assistant <assistant@example.com>\n"
         completed = subprocess.run(
             [sys.executable, str(script)],

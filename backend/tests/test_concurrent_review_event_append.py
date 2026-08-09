@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import os
 import tempfile
 import threading
+import time
 import unittest
 from pathlib import Path
 
@@ -78,6 +80,34 @@ class ConcurrentReviewEventAppendTests(unittest.TestCase):
             self.assertEqual(conflicts, workers - 1)
             self.assertEqual(sequences, [1, 2])
             self.assertEqual(len(sequences), len(set(sequences)))
+
+    def test_stale_lock_is_reclaimed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "b" * 32
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            lock_path = target.with_suffix(target.suffix + ".lock")
+            lock_path.write_text("stale", encoding="utf-8")
+            old = time.time() - 120.0
+            os.utime(lock_path, (old, old))
+            event = store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="after-stale",
+                    event_id=None,
+                )
+            )
+            self.assertEqual(event.sequence_number, 1)
+            self.assertFalse(lock_path.exists())
 
 
 if __name__ == "__main__":
