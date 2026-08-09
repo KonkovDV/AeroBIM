@@ -23,6 +23,15 @@ from aerobim.tools.export_runtime_baseline import (
 _REPO = Path(__file__).resolve().parents[2]
 
 
+def _git(*args: str) -> str:
+    import shutil
+
+    git = shutil.which("git")
+    if not git:
+        raise unittest.SkipTest("git executable not found")
+    return subprocess.check_output([git, *args], cwd=_REPO, text=True).strip()
+
+
 class ParseVitestJsonTests(unittest.TestCase):
     def test_parses_vitest_counts(self) -> None:
         payload = {
@@ -283,9 +292,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
 
         from aerobim.tools.export_runtime_baseline import _publishability_core_errors
 
-        sha = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=_REPO, text=True
-        ).strip()
+        sha = _git("rev-parse", "HEAD")
         gates_csv = (
             "test,frontend,supply-chain-audit,sprint-2-1-gates,"
             "security-regression,offline-bundle-smoke,openapi-contract"
@@ -438,18 +445,10 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
     def test_compare_allows_parent_commit_sha(self) -> None:
         from aerobim.tools.export_runtime_baseline import compare_baseline_snapshots
 
-        head = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=_REPO, text=True
-        ).strip()
-        parent = subprocess.check_output(
-            ["git", "rev-parse", "HEAD^"], cwd=_REPO, text=True
-        ).strip()
-        head_tree = subprocess.check_output(
-            ["git", "rev-parse", "HEAD^{tree}"], cwd=_REPO, text=True
-        ).strip()
-        parent_tree = subprocess.check_output(
-            ["git", "rev-parse", "HEAD^^{tree}"], cwd=_REPO, text=True
-        ).strip()
+        head = _git("rev-parse", "HEAD")
+        parent = _git("rev-parse", "HEAD^")
+        head_tree = _git("rev-parse", "HEAD^{tree}")
+        parent_tree = _git("rev-parse", "HEAD^^{tree}")
         committed = {
             "commit_sha": parent,
             "tree_sha": parent_tree,
