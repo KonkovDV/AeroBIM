@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.5",
+  "schema_version": "1.0.6",
   "date": "2026-08-09",
   "enforce_ci": false,
   "fail_on_unverifiable_signature": false,
@@ -10,5 +10,5 @@
   "ratio_scope": "inspect_window",
   "require_head_signed_on_release_tags": true,
   "trusted_keys_dir": "governance/trusted_signing_keys",
-  "notes": "Honesty N-45/N-56: numerator = G/U whose fingerprint matches ASC in trusted_keys_dir (repo-anchored trust). Runner ownertrust must not decide the ratio. N-55: unsigned commits push trusted merges out of the last-N window — keep commit.gpgsign on. N-53: never full-history ratios. Both enforce flags flip together on 2026-08-11 (waiver A4). enforce_ci stays false until that flip."
+  "notes": "Honesty N-45/N-56: author numerator = G/U whose fingerprint matches trusted_signing_keys/*.asc only. platform/*.asc (e.g. GitHub 4AEE18F83AFDEB23) verify without counting. Good signature with unregistered fingerprint = unverifiable (exit 2 when fail_on), worse than unsigned. Sign with B5690 or add .asc same commit signed by already-trusted key. Fail if history depth < inspect_depth. N-55 prints commits_until_ratio_break. N-59 deferred: key-dir changes require already-trusted signature. enforce_ci stays false until 2026-08-11 A4 flip."
 }
