@@ -73,7 +73,7 @@
     "avg_minutes": null,
     "benchmark": null
   },
-  "command": "python -m aerobim.tools.measure_package_sla --pack C:/plans/AeroBIM/samples/benchmarks/project-package-pilot-moscow-v1.json --max-minutes 30.0 --iterations 1 --warmup-iterations 0",
+  "command": "python -m aerobim.tools.measure_package_sla --pack samples/benchmarks/project-package-pilot-moscow-v1.json --max-minutes 30.0 --iterations 1 --warmup-iterations 0",
   "corpus_kind": "fixture",
   "claim_level": "fixture_only",
   "allowed_wording": "Fixture wall-clock only; not customer комплект SLA",

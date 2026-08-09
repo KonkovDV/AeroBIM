@@ -1,20 +1,20 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "0344cabd3921bbca24f4f04396a87ee9083dae24",
-  "tree_sha": "2b8bbbd7dc5c29c40f3cff8b066cfe94e0410d71",
+  "commit_sha": "3489cad44697c4378eebca8bc5552c7a853f2749",
+  "tree_sha": "02fb3e85dc5fc6a7c8489fc6a9ced625a14676e0",
   "working_tree_clean": true,
-  "generated_at": "2026-08-09T08:29:50.476536+00:00",
+  "generated_at": "2026-08-09T09:17:59.934973+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2010,
-    "tests_passed": 2161,
+    "tests_collected": 2012,
+    "tests_passed": 2163,
     "tests_skipped": 10,
     "tests_failed": 0,
     "source_loc": 61690,
-    "test_loc": 42114,
-    "test_functions": 2010,
+    "test_loc": 42207,
+    "test_functions": 2012,
     "uncollected": []
   },
   "frontend": {
@@ -55,7 +55,7 @@
     "backend_test_functions": 2012,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2161, frontend=48; commit ea616af5edac; see docs/evidence/runtime-baseline-latest.json · src ~61690 LOC; tests ~42207 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2163, frontend=48; commit 3489cad44697; see docs/evidence/runtime-baseline-latest.json · src ~61690 LOC; tests ~42207 LOC; extraction macro_f1=0.86 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -206,10 +206,10 @@
   },
   "attestation": {
     "attested_by": "ci",
-    "run_id": "31303439524",
+    "run_id": "31305352296",
     "run_attempt": 1,
-    "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/pull/13/merge",
-    "github_sha": "0344cabd3921bbca24f4f04396a87ee9083dae24",
+    "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main",
+    "github_sha": "3489cad44697c4378eebca8bc5552c7a853f2749",
     "runner_os": "Linux",
     "runner_python": "3.12.13",
     "gates_attested": [
@@ -220,8 +220,7 @@
       "sprint-2-1-gates",
       "supply-chain-audit",
       "test"
-    ],
-    "commit_sha": "0344cabd3921bbca24f4f04396a87ee9083dae24"
+    ]
   },
   "artifact_completeness": "full",
   "publishable": true
