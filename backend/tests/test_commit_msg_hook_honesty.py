@@ -7,7 +7,6 @@ import subprocess
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -16,9 +15,7 @@ class CommitMsgHookHonestyTests(unittest.TestCase):
         hook = REPO_ROOT / ".githooks" / "commit-msg"
         text = hook.read_text(encoding="utf-8")
         code_lines = [
-            line
-            for line in text.splitlines()
-            if line.strip() and not line.lstrip().startswith("#")
+            line for line in text.splitlines() if line.strip() and not line.lstrip().startswith("#")
         ]
         self.assertTrue(text.startswith("#!/bin/sh"))
         self.assertEqual(code_lines, ["exit 0"])
