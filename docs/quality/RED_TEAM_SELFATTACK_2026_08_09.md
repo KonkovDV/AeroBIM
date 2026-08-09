@@ -12,7 +12,7 @@
 | A5 | Раздуть LOC на 49 | **UNVERIFIED** | не исполнялась в этом прогоне; допуск 50 — риск SURVIVED |
 | A6 | Ручной README блок | **UNVERIFIED** | не исполнялась |
 | A7 | Метрика в Markdown-таблице | **KILLED** (после фикса) | `test_claim_needs_boundary_checks_markdown_table_rows` |
-| A8 | allow-file + второе нарушение | **SURVIVED** (residual N-29) | `test_allow_file_still_amnesty_for_legacy_honesty_docs` — amnesty жива для legacy |
+| A8 | allow-file + второе нарушение | **KILLED** | `test_allow_file_without_registry_is_not_amnesty` + `audit/claims_allow_file_registry.json` |
 | A9 | Rename _MONITORED | **KILLED** (частично) | missing file → error в `check_docs_metadata_integrity` |
 | A10 | .dwg рядом с .dxf | **UNVERIFIED** | не гонялся RT-D в этом прогоне |
 | A11 | advisory threshold OFF==ON | **UNVERIFIED** | |
@@ -26,5 +26,5 @@
 | A19 | offline_bundle без сети | **UNVERIFIED** | CI job есть; air-gap proof не снят |
 | A20 | подмена комплекта SLA | **UNVERIFIED** | |
 
-**Итого факт:** KILLED 8 · SURVIVED 1 · UNVERIFIED 11.  
-**До 14 KILLED:** нужно добить A5/A6/A10–A13/A15–A20 отдельными ветками `red-team/attack-*` (не в этом PR).
+**Итого факт:** KILLED 9 · SURVIVED 0 · UNVERIFIED 11.  
+**До 14 KILLED:** нужно добить A5/A6/A10–A13/A15–A20 исполняемыми прогонами (не только ссылкой на suite).

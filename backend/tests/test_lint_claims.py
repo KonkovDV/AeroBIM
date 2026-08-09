@@ -157,12 +157,8 @@ class LintClaimsTests(unittest.TestCase):
         self.assertTrue(hits)
         self.assertTrue(any("table-row" in h for h in hits))
 
-    def test_allow_file_still_amnesty_for_legacy_honesty_docs(self) -> None:
-        """N-29 residual: allow-file still skips pattern scan (README.ru legacy).
-
-        Progress: ENGINEERING_STATUS no longer uses allow-file; client docs should
-        prefer per-line allow. Full removal tracked as STILL_TRUE residual.
-        """
+    def test_allow_file_without_registry_is_not_amnesty(self) -> None:
+        """N-29 / A8: allow-file header on an unregistered path must still lint."""
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "legacy.md"
             path.write_text(
@@ -181,7 +177,23 @@ class LintClaimsTests(unittest.TestCase):
             finally:
                 if sys.path and sys.path[0] == str(_REPO / "scripts"):
                     sys.path.pop(0)
-            self.assertEqual(hits, [])
+            self.assertTrue(hits)
+            self.assertTrue(any("forbidden_production_ready" in h for h in hits))
+
+    def test_allow_file_registry_still_covers_readme(self) -> None:
+        """Registered honesty docs keep allow-file amnesty (README.md)."""
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import lint_claims  # type: ignore[import-not-found]
+
+            hits = lint_claims(
+                matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md",
+                roots=[_REPO / "README.md"],
+            )
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        self.assertEqual(hits, [])
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@
   "package_sha256": "bb41905c7c1c7c88bcb03fd00d73b0b0b1b60fa401ba6e9402b85f98878f62cc",
   "file_inventory": [
     {
-      "path": "C:/plans/AeroBIM/samples/benchmarks/project-package-pilot-moscow-v1.json",
+      "path": "samples/benchmarks/project-package-pilot-moscow-v1.json",
       "bytes": 1096,
       "sha256": "bb41905c7c1c7c88bcb03fd00d73b0b0b1b60fa401ba6e9402b85f98878f62cc"
     }
@@ -65,7 +65,7 @@
       "pack_id": "project-package-pilot-moscow-v1",
       "pack_version": "1.0.0",
       "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence.",
-      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+      "storage_dir": "backend/var/reports"
     }
   },
   "warm_run": {
@@ -73,7 +73,7 @@
     "avg_minutes": null,
     "benchmark": null
   },
-  "command": "python -m aerobim.tools.measure_package_sla --pack C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-pilot-moscow-v1.json --max-minutes 30.0 --iterations 1 --warmup-iterations 0",
+  "command": "python -m aerobim.tools.measure_package_sla --pack C:/plans/AeroBIM/samples/benchmarks/project-package-pilot-moscow-v1.json --max-minutes 30.0 --iterations 1 --warmup-iterations 0",
   "corpus_kind": "fixture",
   "claim_level": "fixture_only",
   "allowed_wording": "Fixture wall-clock only; not customer комплект SLA",
@@ -110,6 +110,6 @@
     "pack_id": "project-package-pilot-moscow-v1",
     "pack_version": "1.0.0",
     "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence.",
-    "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+    "storage_dir": "backend/var/reports"
   }
 }
