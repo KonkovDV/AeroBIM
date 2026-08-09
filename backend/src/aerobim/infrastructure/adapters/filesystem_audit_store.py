@@ -52,6 +52,7 @@ from aerobim.infrastructure.adapters.local_object_store import LocalObjectStore
 
 _LOCK_ATTEMPTS = 50
 _LOCK_SLEEP_S = 0.02
+_LOCK_STALE_S = 60.0
 _PDF_OPEN_TIMEOUT_S = 30.0
 _logger = logging.getLogger(__name__)
 
@@ -119,11 +120,33 @@ class FilesystemAuditStore:
             try:
                 fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
                 try:
-                    os.write(fd, b"1")
+                    os.write(fd, f"{time.time():.3f}".encode("ascii"))
                 finally:
                     os.close(fd)
                 return
             except FileExistsError:
+                try:
+                    age = time.time() - lock_path.stat().st_mtime
+                except OSError:
+                    age = 0.0
+                if age >= _LOCK_STALE_S:
+                    reclaim_path = Path(str(lock_path) + ".reclaim")
+                    try:
+                        rfd = os.open(str(reclaim_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                        os.close(rfd)
+                    except FileExistsError:
+                        time.sleep(_LOCK_SLEEP_S)
+                        continue
+                    try:
+                        try:
+                            age = time.time() - lock_path.stat().st_mtime
+                        except OSError:
+                            age = _LOCK_STALE_S
+                        if age >= _LOCK_STALE_S:
+                            lock_path.unlink(missing_ok=True)
+                            continue
+                    finally:
+                        reclaim_path.unlink(missing_ok=True)
                 time.sleep(_LOCK_SLEEP_S)
         raise RuntimeError(f"Could not acquire report-save lock for {lock_path.name}")
 

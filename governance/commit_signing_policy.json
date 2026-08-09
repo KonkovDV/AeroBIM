@@ -1,11 +1,12 @@
 {
-  "schema_version": "1.0.2",
+  "schema_version": "1.0.3",
   "date": "2026-08-09",
   "enforce_ci": false,
+  "fail_on_unverifiable_signature": false,
   "min_signed_ratio": 0.0,
   "ratchet_target_ratio": 0.03,
   "ratchet_effective_date": "2026-08-09",
   "inspect_depth": 30,
   "require_head_signed_on_release_tags": true,
-  "notes": "N-45/A-4 honesty 2026-08-09: ratchet date is today and target ratio is 0.03, but enforce_ci stays false until at least one G-status signed commit exists and the secondary-email E-status commits (merge #12/#13/#14) have a published pubkey. Do not claim commit signing is enforced while enforce_ci=false. Upload GPG key for KonkovDV (and any author of E-marked commits), then set enforce_ci=true."
+  "notes": "Counting rule (N-45): only git %G?=G with a trusted key counts as signed. E (Can't check signature) is worse than N (no signature) and must never inflate the ratio. fail_on_unverifiable_signature defaults with enforce_ci: when true, E/B/U/X/Y/R fail with exit 2 (distinct from ratio failure exit 1). Merge #12/#13/#14 are E under key B5690EEEBB952194 (Konkov Dmitrij / yandex) — not GitHub's 4AEE18F83AFDEB23. Upload that pubkey (or re-sign), then set enforce_ci and fail_on_unverifiable_signature true. Deferred activation tracked in deferred_controls_registry.json A4-signing-enforcement."
 }

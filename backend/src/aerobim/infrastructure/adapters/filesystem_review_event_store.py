@@ -40,8 +40,17 @@ class ReviewEventChainError(RuntimeError):
     """Raised when hash-chain verification fails under fail-closed."""
 
 
+class SequenceClaimError(RuntimeError):
+    """Raised when another writer already claimed this sequence slot (CAS conflict)."""
+
+
 def _acquire_excl_lock(lock_path: Path) -> int:
-    """Create exclusive lock file; reclaim stale locks left by crashed processes."""
+    """Create exclusive lock file; reclaim stale locks via exclusive reclaim marker.
+
+    Age-based unlink alone is a race (two reclaimers can both succeed). The
+    ``.reclaim`` marker is created with O_EXCL so only one process clears the
+    stale lock. Sequence numbers still use O_EXCL slots — lock is an optimization.
+    """
 
     try:
         return os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
@@ -50,10 +59,40 @@ def _acquire_excl_lock(lock_path: Path) -> int:
             age = time.time() - lock_path.stat().st_mtime
         except OSError:
             age = 0.0
-        if age >= _LOCK_STALE_S:
+        if age < _LOCK_STALE_S:
+            raise
+        reclaim_path = Path(str(lock_path) + ".reclaim")
+        try:
+            rfd = os.open(str(reclaim_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.close(rfd)
+        except FileExistsError:
+            raise FileExistsError from None
+        try:
+            try:
+                age = time.time() - lock_path.stat().st_mtime
+            except OSError:
+                age = _LOCK_STALE_S
+            if age < _LOCK_STALE_S:
+                raise FileExistsError
             lock_path.unlink(missing_ok=True)
             return os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        raise
+        finally:
+            reclaim_path.unlink(missing_ok=True)
+
+
+def _claim_sequence_slot(target: Path, sequence: int) -> Path:
+    """Create sequence claim file exclusively — duplicate sequence becomes impossible."""
+
+    slot = target.with_name(f"{target.name}.seq.{sequence}")
+    try:
+        fd = os.open(str(slot), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError as exc:
+        raise SequenceClaimError(f"sequence {sequence} already claimed for {target.name}") from exc
+    try:
+        os.write(fd, b"1")
+    finally:
+        os.close(fd)
+    return slot
 
 
 class FilesystemReviewEventStore:
@@ -87,7 +126,7 @@ class FilesystemReviewEventStore:
                     return self._append_api_under_lock(target, spec)
                 finally:
                     lock_path.unlink(missing_ok=True)
-            except FileExistsError:
+            except (FileExistsError, SequenceClaimError):
                 time.sleep(_LOCK_SLEEP_S)
         raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
 
@@ -188,7 +227,7 @@ class FilesystemReviewEventStore:
         )
         content_hash = review_event_content_hash(draft, previous_event_hash=previous_hash)
         stamped = replace(draft, content_hash=content_hash)
-        self._write_event_line(target, stamped)
+        self._write_event_line(target, stamped, sequence=sequence)
         return stamped
 
     def _append_under_lock(self, target: Path, event: ReviewEvent) -> str:
@@ -236,18 +275,20 @@ class FilesystemReviewEventStore:
                             previous_event_hash=draft.previous_event_hash or previous_hash,
                         )
                         draft = replace(draft, content_hash=content_hash)
-                    self._write_event_line(target, draft)
+                    self._write_event_line(target, draft, sequence=sequence)
                     return draft.event_id
                 finally:
                     lock_path.unlink(missing_ok=True)
-            except FileExistsError:
+            except (FileExistsError, SequenceClaimError):
                 time.sleep(_LOCK_SLEEP_S)
         raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
 
-    def _write_event_line(self, target: Path, event: ReviewEvent) -> None:
+    def _write_event_line(self, target: Path, event: ReviewEvent, *, sequence: int) -> None:
         line = json.dumps(asdict(event), ensure_ascii=False) + "\n"
         if len(line.encode("utf-8")) > _MAX_LINE_BYTES:
             raise ValueError(f"Review event exceeds max line size ({_MAX_LINE_BYTES} bytes)")
+        # Claim sequence before append so lock-reclaim races cannot duplicate numbers.
+        _claim_sequence_slot(target, sequence)
         with target.open("a", encoding="utf-8") as handle:
             handle.write(line)
             handle.flush()
