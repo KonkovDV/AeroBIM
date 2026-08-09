@@ -10,5 +10,5 @@
   "ratio_scope": "inspect_window",
   "require_head_signed_on_release_tags": true,
   "trusted_keys_dir": "governance/trusted_signing_keys",
-  "notes": "N-56: numerator = G/U whose fingerprint matches ASC in trusted_keys_dir (repo-anchored trust). Runner ownertrust must not decide the ratio. N-55: unsigned commits push trusted merges out of the last-N window — keep commit.gpgsign on. N-53: never full-history ratios. Both enforce flags flip together on 2026-08-11 (waiver A4)."
+  "notes": "Honesty N-45/N-56: numerator = G/U whose fingerprint matches ASC in trusted_keys_dir (repo-anchored trust). Runner ownertrust must not decide the ratio. N-55: unsigned commits push trusted merges out of the last-N window — keep commit.gpgsign on. N-53: never full-history ratios. Both enforce flags flip together on 2026-08-11 (waiver A4). enforce_ci stays false until that flip."
 }
