@@ -405,6 +405,9 @@ jobs:
       - name: Audit dev/test lock (advisory)
         continue-on-error: true
         run: python -m pip_audit -r requirements-dev-lock.txt --no-deps --progress-spinner off
+      - name: Import trusted signing public keys
+        working-directory: backend
+        run: python scripts/import_trusted_signing_keys.py --keys-dir ../governance/trusted_signing_keys
       - name: Commit signature governance (enforced policy)
         working-directory: backend
         run: python scripts/verify_commit_signatures.py --policy ../governance/commit_signing_policy.json

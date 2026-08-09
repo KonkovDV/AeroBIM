@@ -130,23 +130,19 @@ class FilesystemAuditStore:
                 except OSError:
                     age = 0.0
                 if age >= _LOCK_STALE_S:
-                    reclaim_path = Path(str(lock_path) + ".reclaim")
+                    stolen = lock_path.with_name(
+                        f"{lock_path.name}.stolen.{os.getpid()}.{time.time_ns()}"
+                    )
                     try:
-                        rfd = os.open(str(reclaim_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-                        os.close(rfd)
-                    except FileExistsError:
+                        os.rename(str(lock_path), str(stolen))
+                    except OSError:
                         time.sleep(_LOCK_SLEEP_S)
                         continue
                     try:
-                        try:
-                            age = time.time() - lock_path.stat().st_mtime
-                        except OSError:
-                            age = _LOCK_STALE_S
-                        if age >= _LOCK_STALE_S:
-                            lock_path.unlink(missing_ok=True)
-                            continue
-                    finally:
-                        reclaim_path.unlink(missing_ok=True)
+                        stolen.unlink(missing_ok=True)
+                    except OSError:
+                        pass
+                    continue
                 time.sleep(_LOCK_SLEEP_S)
         raise RuntimeError(f"Could not acquire report-save lock for {lock_path.name}")
 

@@ -108,21 +108,38 @@ class ConcurrentReviewEventAppendTests(unittest.TestCase):
             )
             self.assertEqual(event.sequence_number, 1)
             self.assertFalse(lock_path.exists())
-            self.assertTrue((target.with_name(f"{target.name}.seq.1")).exists())
+            slot = target.with_name(f"{target.name}.seq.1")
+            self.assertTrue(slot.exists())
+            self.assertIn('"event_type": "opened"', slot.read_text(encoding="utf-8"))
+            self.assertFalse(target.exists(), msg="durable record is the seq file, not jsonl")
 
     def test_sequence_slot_blocks_duplicate_even_without_lock(self) -> None:
-        """N-50: sequence O_EXCL is the invariant; lock is only an optimization."""
+        """N-50/N-54: exclusive event file is the invariant; lock is only an optimization."""
 
+        from aerobim.domain.models import ReviewEvent
         from aerobim.infrastructure.adapters.filesystem_review_event_store import (
             SequenceClaimError,
-            _claim_sequence_slot,
+            _write_event_exclusive,
         )
 
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "r.jsonl"
-            _claim_sequence_slot(target, 1)
+            event = ReviewEvent(
+                event_id="e1",
+                report_id="r" * 32,
+                event_type="opened",
+                created_at="2026-08-09T12:00:00+00:00",
+                issue_rule_id="R1",
+                actor="a",
+                note="n",
+                latency_ms=1,
+                sequence_number=1,
+            )
+            slot = _write_event_exclusive(target, event, sequence=1)
+            self.assertTrue(slot.exists())
+            self.assertIn("opened", slot.read_text(encoding="utf-8"))
             with self.assertRaises(SequenceClaimError):
-                _claim_sequence_slot(target, 1)
+                _write_event_exclusive(target, event, sequence=1)
 
 
 if __name__ == "__main__":

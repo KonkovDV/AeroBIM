@@ -23,10 +23,10 @@ def _load_policy(path: Path) -> dict[str, object]:
 
 
 def _signed_commits(depth: int) -> tuple[int, int, int, int, list[str]]:
-    """Return (good_signed, unverifiable_E, other_bad, total, marks).
+    """Return (good_signed, unverifiable_E, other_bad, total, marks) for last ``depth`` commits.
 
-    Only ``G`` (good trusted signature) counts toward the signed ratio.
-    ``E`` (cannot check) is worse than unsigned and must not inflate the ratio.
+    Ratio scope is always this inspect window (N-53) — never full repository history.
+    Only ``G`` counts as signed. ``E`` must not inflate the numerator.
     """
 
     log = subprocess.check_output(
@@ -86,7 +86,15 @@ def main() -> int:
     args = parser.parse_args()
 
     policy = _load_policy(args.policy)
-    depth = int(args.depth or policy.get("inspect_depth") or 30)
+    depth = int(args.depth or policy.get("inspect_depth") or 50)
+    scope = str(policy.get("ratio_scope") or "inspect_window")
+    if scope not in {"inspect_window", "last_n_commits"}:
+        print(
+            f"ERROR: ratio_scope={scope!r} rejected; use inspect_window "
+            "(full-history ratios are unreachable after unsigned bulk history — N-53)",
+            file=sys.stderr,
+        )
+        return 1
     signed, unverifiable, other_bad, total, _marks = _signed_commits(depth)
     ratio = (signed / total) if total else 0.0
     min_ratio = _effective_min_ratio(policy)
@@ -96,6 +104,7 @@ def main() -> int:
 
     print(
         f"signed_commits_G={signed}/{total} ratio={ratio:.2f} "
+        f"window=last_{depth} scope={scope} "
         f"unverifiable_E={unverifiable} bad={other_bad} "
         f"required_min_ratio={min_ratio:.2f}"
     )
