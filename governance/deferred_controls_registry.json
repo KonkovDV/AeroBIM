@@ -7,8 +7,8 @@
       "id": "A4-signing-enforcement",
       "control": "Принуждение доли подписанных коммитов + fail on unverifiable (G-only)",
       "mechanism": "governance/commit_signing_policy.json + import_trusted_signing_keys.py + verify_commit_signatures.py",
-      "state": "deferred",
-      "reason": "Ключ в governance/trusted_signing_keys; оба флага включаются вместе после зелёного dry-run",
+      "state": "active",
+      "reason": "CI dry-run branch: both flags true; trust anchored in trusted_signing_keys",
       "activates_on": "2026-08-11",
       "owner": "KonkovDV",
       "policy_flags": [
