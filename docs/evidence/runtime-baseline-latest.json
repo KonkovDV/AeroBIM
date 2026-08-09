@@ -14,7 +14,7 @@
     "tests_failed": 0,
     "source_loc": 61690,
     "test_loc": 42398,
-    "test_functions": 2017,
+    "test_functions": 2012,
     "uncollected": []
   },
   "frontend": {
@@ -52,7 +52,7 @@
   "metrics": {
     "backend_src_loc": 61690,
     "backend_test_loc": 42398,
-    "backend_test_functions": 2017,
+    "backend_test_functions": 2012,
     "extraction_macro_f1": 0.8600000000000001
   },
   "readme_snippet": "tests_passed: backend=2163, frontend=48; commit 3489cad44697; see docs/evidence/runtime-baseline-latest.json · src ~61690 LOC; tests ~42398 LOC; extraction macro_f1=0.86 (fixture corpus; not product accuracy)",
