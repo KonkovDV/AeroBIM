@@ -1,0 +1,13 @@
+#!/bin/sh
+# Block irreversible publication of private Red Team / recheck material (N-46).
+# .gitignore is convenience, not a security boundary — this hook fails closed.
+
+set -e
+blocked='(^|/)\.local(/|$)|internal-docs|red-team|audit-digest|aerobim_recheck|recheck_digest|recheck2_windows'
+if git diff --cached --name-only --diff-filter=ACMR | grep -Eiq "$blocked"; then
+  echo "pre-commit: refusing to stage private/internal Red Team paths (N-46)." >&2
+  echo "Move material outside the worktree (e.g. ../AeroBIM-private/) before committing." >&2
+  git diff --cached --name-only --diff-filter=ACMR | grep -Ei "$blocked" >&2 || true
+  exit 1
+fi
+exit 0

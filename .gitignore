@@ -35,7 +35,8 @@ artifacts/*
 # IDE / agent (not product source)
 .cursor/
 
-# Local operator artifacts
+# Local operator artifacts — keep OUTSIDE this worktree when possible
+# (sibling ../AeroBIM-private/). A tracked .local/ inside a public repo is N-46 risk.
 .local/
 
 # Local operator baseline exports (WP-A11 — never commit)
@@ -46,7 +47,7 @@ docs/evidence/runtime-baseline-latest.ci-generated.json
 docs/evidence/sprint2-synthetic-baseline-2026-08-0[6-9].*
 docs/evidence/sprint2-synthetic-baseline-2026-08-1*.*
 
-# Accidental private dump at repo root (use .local/internal-docs/)
+# Accidental private dump at repo root (use sibling ../AeroBIM-private/, not in-tree .local/)
 /AeroBIM/
 
 # Commercial ops with contacts / outreach PII (live copies under .local/commercial-ops/)

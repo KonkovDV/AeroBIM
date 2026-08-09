@@ -6,6 +6,15 @@ AeroBIM is maintained as an open-source engineering and research repository.
 
 Security support is best effort for the active default branch and latest release line. Experimental snapshots and local forks are not guaranteed to receive fixes.
 
+## AI assistance honesty (2026-08-09)
+
+AI coding assistants were used during development. For a period before 2026-08-09,
+repository tooling discouraged or stripped `Co-authored-by:` trailers so GitHub
+contributor graphs looked single-author. That provenance rewrite was incorrect for
+a product whose value is origin integrity; it was removed in commit series around
+`b99f5fd` / Class A honesty fixes. Commit messages may again carry truthful
+co-author trailers. Historical commits retain whatever metadata they had when written.
+
 ## Supported Surface
 
 | Surface | Support |
