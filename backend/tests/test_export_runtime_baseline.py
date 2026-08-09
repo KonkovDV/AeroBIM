@@ -575,5 +575,98 @@ class ArchitectureInventoryTests(unittest.TestCase):
         self.assertEqual(errors, [])
 
 
+class BaselineDriftAndReadmeAttackTests(unittest.TestCase):
+    def test_loc_inflate_beyond_tolerance_is_killed(self) -> None:
+        """A5: +51 LOC in artifact vs live must fail (tolerance is 50)."""
+        from aerobim.tools.export_runtime_baseline import (
+            _DRIFT_TOLERANCE,
+            _check_artifact_drift,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            evidence = repo / "docs" / "evidence"
+            evidence.mkdir(parents=True)
+            live = {
+                "metrics": {
+                    "backend_src_loc": 1000,
+                    "backend_test_loc": 1000,
+                    "backend_test_functions": 100,
+                }
+            }
+            stored = {
+                "metrics": {
+                    "backend_src_loc": 1000 + _DRIFT_TOLERANCE + 1,
+                    "backend_test_loc": 1000,
+                    "backend_test_functions": 100,
+                }
+            }
+            (evidence / "runtime-baseline-latest.json").write_text(
+                json.dumps(stored),
+                encoding="utf-8",
+            )
+            errors = _check_artifact_drift(repo, live)
+            self.assertTrue(errors)
+            self.assertTrue(any("backend_src_loc" in e for e in errors))
+
+    def test_manual_readme_snippet_mismatch_is_killed(self) -> None:
+        """A6: hand-edited README runtime snippet must fail vs artifact."""
+        from aerobim.tools.export_runtime_baseline import _check_readme_markers
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            evidence = repo / "docs" / "evidence"
+            evidence.mkdir(parents=True)
+            snippet = (
+                "tests_passed: backend=1, frontend=1; commit deadbeef; "
+                "see docs/evidence/runtime-baseline-latest.json"
+            )
+            artifact = {
+                "readme_snippet": snippet,
+                "metrics": {},
+            }
+            (evidence / "runtime-baseline-latest.json").write_text(
+                json.dumps(artifact),
+                encoding="utf-8",
+            )
+            forged = snippet.replace("frontend=1", "frontend=999")
+            readme = (
+                "# AeroBIM\n\n"
+                "<!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->\n"
+                f"{forged}\n"
+                "<!-- AEROBIM_RUNTIME_BASELINE:END -->\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->\n"
+                "AEROBIM_HOST\n"
+                "<!-- AEROBIM_DOCUMENTED_ENV:END -->\n"
+            )
+            (repo / "README.md").write_text(readme, encoding="utf-8")
+            (repo / "README.ru.md").write_text(readme, encoding="utf-8")
+            # Avoid env/inventory side checks by stubbing helpers if needed — markers only.
+            with (
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_documented_env_sets",
+                    return_value=[],
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_code_env_documented",
+                    return_value=[],
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_architecture_inventory",
+                    return_value=[],
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline.export_runtime_baseline",
+                    return_value={"metrics": {}},
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_readme_numeric_claims",
+                    return_value=[],
+                ),
+            ):
+                errors = _check_readme_markers(repo)
+            self.assertTrue(any("readme_snippet" in e for e in errors))
+
+
 if __name__ == "__main__":
     unittest.main()
