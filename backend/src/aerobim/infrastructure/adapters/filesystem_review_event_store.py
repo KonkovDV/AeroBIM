@@ -293,7 +293,7 @@ class FilesystemReviewEventStore:
         target = self._path(report_id)
         self.last_invalid_line_count = 0
         self.last_load_degraded = False
-        lines = self._load_event_lines(target)
+        lines = self._load_event_lines(target, raise_on_corrupt=raise_on_corrupt)
         if not lines:
             return []
         events: list[ReviewEvent] = []
@@ -395,8 +395,13 @@ class FilesystemReviewEventStore:
                 )
         return events
 
-    def _load_event_lines(self, target: Path) -> list[str]:
-        """Prefer exclusive sequence files; fall back to legacy JSONL."""
+    def _load_event_lines(self, target: Path, *, raise_on_corrupt: bool) -> list[str]:
+        """Prefer exclusive sequence files; fall back to legacy JSONL.
+
+        N-54/N-57: sequence files are the durable journal. A missing ``.seq.N`` in
+        an otherwise contiguous series is treated as a deleted record. A sidecar
+        ``.jsonl`` that diverges from the sequence files is also fail-closed.
+        """
 
         prefix = f"{target.name}.seq."
         slots = [
@@ -406,7 +411,36 @@ class FilesystemReviewEventStore:
         ]
         if slots:
             slots.sort(key=lambda path: int(path.name.rsplit(".", 1)[-1]))
-            return [path.read_text(encoding="utf-8").rstrip("\n") for path in slots]
+            nums = [int(path.name.rsplit(".", 1)[-1]) for path in slots]
+            expected = list(range(1, nums[-1] + 1)) if nums else []
+            if nums != expected:
+                msg = (
+                    f"review-events sequence file gap for {target.name}: "
+                    f"have {nums} expected contiguous {expected}"
+                )
+                if raise_on_corrupt:
+                    raise ReviewEventChainError(msg)
+                _logger.warning(msg)
+                self.last_load_degraded = True
+            lines = [path.read_text(encoding="utf-8").rstrip("\n") for path in slots]
+            if target.exists():
+                jsonl_lines = [
+                    line.rstrip("\n")
+                    for line in target.read_text(encoding="utf-8").splitlines()
+                    if line.strip()
+                ]
+                seq_lines = [line for line in lines if line.strip()]
+                if jsonl_lines != seq_lines:
+                    msg = (
+                        f"review-events jsonl diverges from seq files for {target.name} "
+                        "(shadow store — N-57)"
+                    )
+                    if raise_on_corrupt:
+                        raise AuditEventCorruptionError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
+                    self.last_invalid_line_count += 1
+            return lines
         if target.exists():
             return target.read_text(encoding="utf-8").splitlines()
         return []

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail CI when a deferred control's activates_on date has passed (waiver registry)."""
+"""Fail CI when deferred controls expire — and when registry state disagrees with mechanism (N-58)."""
 
 from __future__ import annotations
 
@@ -17,12 +17,22 @@ def _parse_day(raw: str) -> date:
     return date.fromisoformat(text)
 
 
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--registry",
         type=Path,
-        default=Path(__file__).resolve().parents[2] / "governance/deferred_controls_registry.json",
+        default=_repo_root() / "governance/deferred_controls_registry.json",
+    )
+    parser.add_argument(
+        "--policy",
+        type=Path,
+        default=_repo_root() / "governance/commit_signing_policy.json",
+        help="Mechanism file read when waivers list policy_flags (N-58)",
     )
     parser.add_argument(
         "--today",
@@ -36,35 +46,62 @@ def main() -> int:
     payload = json.loads(args.registry.read_text(encoding="utf-8"))
     today = date.fromisoformat(args.today) if args.today else datetime.now(tz=UTC).date()
     waivers = payload.get("waivers") or []
-    overdue: list[str] = []
+    errors: list[str] = []
+    policy: dict[str, object] | None = None
+    if args.policy.is_file():
+        policy = json.loads(args.policy.read_text(encoding="utf-8"))
+
     for item in waivers:
         if not isinstance(item, dict):
             continue
+        wid = str(item.get("id") or "?")
         state = str(item.get("state") or "").lower()
-        flags = item.get("policy_flags") or []
-        if state == "deferred" and flags:
-            print(
-                f"NOTE: {item.get('id')} deferred flags={list(flags)} "
-                f"must flip together on {item.get('activates_on')}"
-            )
+        flags = [str(f) for f in (item.get("policy_flags") or [])]
+        activates = str(item.get("activates_on") or "").strip()
+
+        if flags:
+            if policy is None:
+                errors.append(f"{wid}: policy_flags set but policy file missing: {args.policy}")
+            else:
+                actual = {flag: bool(policy.get(flag)) for flag in flags}
+                if state == "active":
+                    for flag, value in actual.items():
+                        if not value:
+                            errors.append(
+                                f"{wid}: state=active but {flag}=false in {args.policy.name} (N-58)"
+                            )
+                elif state == "deferred":
+                    for flag, value in actual.items():
+                        if value:
+                            errors.append(
+                                f"{wid}: state=deferred but {flag}=true in {args.policy.name} "
+                                "(control escaped the registry — N-58)"
+                            )
+                    print(
+                        f"NOTE: {wid} deferred flags={flags} "
+                        f"must flip together on {activates}; actual={actual}"
+                    )
+
         if state != "deferred":
             continue
-        activates = str(item.get("activates_on") or "").strip()
         if not activates:
-            overdue.append(f"{item.get('id')}: deferred without activates_on")
+            errors.append(f"{wid}: deferred without activates_on")
             continue
         if today >= _parse_day(activates):
             flag_note = ""
             if flags:
-                flag_note = f"; enable policy flags {list(flags)} and set state=active"
-            overdue.append(
-                f"{item.get('id')}: deferred past activates_on={activates} "
+                flag_note = f"; enable policy flags {flags} and set state=active"
+            errors.append(
+                f"{wid}: deferred past activates_on={activates} "
                 f"(today={today.isoformat()}){flag_note}"
             )
-    print(f"deferred_controls checked={len(waivers)} overdue={len(overdue)} today={today.isoformat()}")
-    for line in overdue:
+
+    print(
+        f"deferred_controls checked={len(waivers)} errors={len(errors)} today={today.isoformat()}"
+    )
+    for line in errors:
         print(f"ERROR: {line}", file=sys.stderr)
-    return 1 if overdue else 0
+    return 1 if errors else 0
 
 
 if __name__ == "__main__":

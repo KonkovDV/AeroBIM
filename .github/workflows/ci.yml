@@ -413,7 +413,10 @@ jobs:
         run: python scripts/verify_commit_signatures.py --policy ../governance/commit_signing_policy.json
       - name: Deferred controls registry (fail after activates_on)
         working-directory: backend
-        run: python scripts/verify_deferred_controls.py --registry ../governance/deferred_controls_registry.json
+        run: >
+          python scripts/verify_deferred_controls.py
+          --registry ../governance/deferred_controls_registry.json
+          --policy ../governance/commit_signing_policy.json
       - name: No private Red Team paths in tracked tree (N-51)
         working-directory: backend
         run: python scripts/verify_no_private_tracked_paths.py
