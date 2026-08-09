@@ -72,6 +72,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | BCF API 3.0 topic push (OpenCDE) | `POST .../export/bcf-api/push` with hub Bearer token |
 | ISO 19650-lite CDE state on reports | `iso19650` block on public report JSON |
 | OIDC JWT alongside static bearer | `AEROBIM_OIDC_*` + enterprise `PyJWT` |
+| Static API bearer scope (KT#2 honesty) | Shared `AEROBIM_API_BEARER_TOKEN` is **pilot transport auth only** — may authenticate uploads/reads; **must not** create expert HITL accept/reject/sign events (`is_service_token` denied). Expert verdicts require OIDC (or equivalent) principal with reviewer/admin role under pilot/production profiles |
 | Optional bSI / local schema certificate id | `schema_validation_request_id` + `capabilities.ifc_schema.external_ref` |
 | Postgres/filesystem filtered report index | `GET /v1/reports?project=&discipline=&passed=` |
 | Revit thin-client deep-link helper | `clients/revit-plugin/scripts/export_and_open_report.py` + UI `?report=` |

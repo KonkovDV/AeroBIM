@@ -557,7 +557,7 @@ Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architectu
 
 ## Git commits
 
-Use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit (single author)** so history stays single-author without `Co-authored-by` trailers. Enable the repo hook:
+Use [scripts/git_commit.ps1](scripts/git_commit.ps1) or the VS Code task **AeroBIM: commit**. Keep authorship honest: `Co-authored-by:` trailers are allowed when an assistant materially contributed. Optional hooks (pass-through, no trailer stripping):
 
 ```bash
 git config core.hooksPath .githooks

@@ -30,7 +30,7 @@ source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 
-Enable single-author commit hygiene (required):
+Optional local hooks (do not rewrite authorship metadata):
 
 ```bash
 git config core.hooksPath .githooks
@@ -61,11 +61,11 @@ If formatting fails:
 python -m ruff format src tests
 ```
 
-## Git Commits (single author)
+## Git Commits (honest authorship)
 
-Do not use commit flows that inject `Co-authored-by:` trailers.
+Keep commit authorship truthful. If an AI assistant materially contributed, prefer an explicit `Co-authored-by:` trailer (or an equivalent honest note in the commit body). Do not strip or rewrite provenance trailers.
 
-1. Commit from your shell or the VS Code task **AeroBIM: commit (single author)**.
+1. Commit from your shell or the VS Code task **AeroBIM: commit**.
 2. Or run:
 
 ```powershell
@@ -73,7 +73,7 @@ cd AeroBIM
 powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "type: description"
 ```
 
-Enable hooks: `git config core.hooksPath .githooks`.
+Optional hooks: `git config core.hooksPath .githooks` (pass-through; does not erase co-authors).
 
 ## Pull Request Checklist
 

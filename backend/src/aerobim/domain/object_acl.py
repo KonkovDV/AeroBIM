@@ -35,14 +35,19 @@ def principal_may_append_hitl_event(
     principal: AuthPrincipal,
     event_type: str,
 ) -> bool:
-    """Deny static bearer and require reviewer roles for expert sign-off."""
+    """Gate expert HITL writes: shared static bearer never signs.
 
-    if not enforce_hitl_reviewer_auth:
-        return True
+    Expert events (accept/reject/edit/waive) require a non-service principal.
+    Under pilot/production profiles, reviewer/admin roles are also required.
+    """
+
     if event_type not in HITL_EXPERT_EVENT_TYPES:
         return True
+    # Shared API bearer has no expert identity — never a legal acceptance actor.
     if principal.is_service_token:
         return False
+    if not enforce_hitl_reviewer_auth:
+        return True
     if require_hitl_reviewer_roles:
         return principal_has_any_role(
             principal_roles=principal.roles,
