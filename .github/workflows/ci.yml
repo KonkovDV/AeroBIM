@@ -339,6 +339,9 @@ jobs:
               raise SystemExit(1)
           if soft:
               print("Committed baseline structurally OK; SHA tip lag tolerated (WP-A11)")
+              if committed.get("publishable") is not True:
+                  print("Committed baseline lost publishable=true during tip lag", file=sys.stderr)
+                  raise SystemExit(1)
           else:
               print("Committed baseline matches CI generation (WP-A11)")
 
@@ -351,8 +354,8 @@ jobs:
                   if bootstrap:
                       print(f"BOOTSTRAP: {flag} soft-fail until CI artifact is committed")
                       raise SystemExit(0)
-                  # Merge-ref / tip lag: publishable CI evidence may trail HEAD by a few commits.
-                  if flag == "--check-committed-baseline" and soft:
+                  # Merge-ref / tip lag: SHA-bound checks trail HEAD until evidence is re-committed.
+                  if soft and flag in ("--check-committed-baseline", "--check-publishable"):
                       print(f"SOFT: {flag} deferred while SHA tip lag is open")
                       continue
                   raise SystemExit(completed.returncode)
