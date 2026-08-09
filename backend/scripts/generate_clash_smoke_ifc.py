@@ -46,7 +46,9 @@ def main() -> None:
             height=dz,
             thickness=dy,
         )
-        ifcopenshell.api.geometry.assign_representation(f, product=wall, representation=representation)
+        ifcopenshell.api.geometry.assign_representation(
+            f, product=wall, representation=representation
+        )
         ifcopenshell.api.geometry.edit_object_placement(
             f,
             product=wall,
