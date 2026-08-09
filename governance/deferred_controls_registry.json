@@ -1,11 +1,11 @@
 {
-  "schema_version": "1.0.1",
+  "schema_version": "1.0.2",
   "date": "2026-08-09",
   "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. Dates after KT#2 freeze must not be used for controls claimed as maturity evidence. A4 names BOTH policy flags so neither escapes the registry.",
   "waivers": [
     {
       "id": "A4-signing-enforcement",
-      "control": "Принуждение доли подписанных коммитов + fail on unverifiable (G-only)",
+      "control": "Принуждение доли подписанных коммитов + fail on unverifiable",
       "mechanism": "governance/commit_signing_policy.json + import_trusted_signing_keys.py + verify_commit_signatures.py",
       "state": "deferred",
       "reason": "Ключ в governance/trusted_signing_keys; оба флага включаются вместе после зелёного dry-run",
@@ -41,6 +41,15 @@
       "state": "active",
       "reason": "Закрыто тестом матрицы профилей и строкой границы",
       "activates_on": "2026-08-09",
+      "owner": "KonkovDV"
+    },
+    {
+      "id": "N59-trusted-keys-already-trusted-signer",
+      "control": "Изменения governance/trusted_signing_keys только коммитом, уже подписанным author-trusted ключом",
+      "mechanism": "policy note + future CI check on path+signature",
+      "state": "deferred",
+      "reason": "Замкнутый контур доверия к доверяющему; не строить до заморозки — сегодня подписывать новым ключом только после/вместе с ASC, коммитом под B5690",
+      "activates_on": "2026-08-25",
       "owner": "KonkovDV"
     }
   ]

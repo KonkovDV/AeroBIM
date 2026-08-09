@@ -79,9 +79,13 @@ def main() -> int:
         print(f"ERROR: keys dir missing: {args.keys_dir}", file=sys.stderr)
         return 1
     asc_files = sorted(args.keys_dir.glob("*.asc"))
+    platform_dir = args.keys_dir / "platform"
+    if platform_dir.is_dir():
+        asc_files.extend(sorted(platform_dir.glob("*.asc")))
     if len(asc_files) < args.require_at_least:
         print(
-            f"ERROR: need >= {args.require_at_least} .asc in {args.keys_dir}, found {len(asc_files)}",
+            f"ERROR: need >= {args.require_at_least} .asc under {args.keys_dir} "
+            f"(author + platform/), found {len(asc_files)}",
             file=sys.stderr,
         )
         return 1

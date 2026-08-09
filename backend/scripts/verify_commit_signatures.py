@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-"""Commit-signature governance gate (RT-GOV-003 / Wave 5 / N-56).
+"""Commit-signature governance gate (RT-GOV-003 / N-53..N-56 / N-59 notes).
 
-Trust is anchored in ``governance/trusted_signing_keys/*.asc``, not in the
-runner keyring ownertrust. A cryptographically valid signature (git ``G`` or
-``U``) counts toward the ratio only when its fingerprint matches a trusted
-key file. Everything else with a signature is unverifiable (exit 2 when
-enforced) — including ``U`` from an unknown key and ``E`` (missing key).
+Trust is anchored in ``governance/trusted_signing_keys/*.asc`` (author keys).
+Optional ``.../platform/*.asc`` (e.g. GitHub web-flow) verify without counting
+toward the signed ratio — platform confirmation, not authorship.
+
+Classification of a cryptographically valid signature whose fingerprint is
+**not** in either set: **unverifiable** (same bucket as ``E``). With
+``fail_on_unverifiable_signature`` that is exit 2 — worse than unsigned.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import subprocess
@@ -35,12 +38,10 @@ def _load_policy(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _fingerprints_from_asc(keys_dir: Path) -> set[str]:
-    """Read primary fingerprints from ASCII-armored public keys (repo anchor)."""
-
+def _fingerprints_from_asc_files(paths: list[Path]) -> set[str]:
     gpg = _gpg_bin()
     found: set[str] = set()
-    for path in sorted(keys_dir.glob("*.asc")):
+    for path in paths:
         proc = subprocess.run(
             [gpg, "--show-keys", "--with-colons", str(path)],
             text=True,
@@ -49,7 +50,7 @@ def _fingerprints_from_asc(keys_dir: Path) -> set[str]:
         )
         if proc.returncode != 0:
             print(proc.stderr or proc.stdout, file=sys.stderr)
-            print(f"ERROR: cannot read trusted key {path.name}", file=sys.stderr)
+            print(f"ERROR: cannot read key {path}", file=sys.stderr)
             raise SystemExit(1)
         for line in proc.stdout.splitlines():
             if line.startswith("fpr:"):
@@ -63,40 +64,46 @@ def _normalize_fpr(raw: str) -> str:
     return re.sub(r"[^0-9A-Fa-f]", "", raw or "").upper()
 
 
-def _commit_sig_rows(depth: int) -> list[tuple[str, str]]:
-    """Return [(status, fingerprint), ...] for the last ``depth`` commits."""
+def _commit_sig_rows(depth: int) -> list[tuple[str, str, str, str]]:
+    """Return [(status, fingerprint, short_sha, subject), ...] newest first."""
 
     log = subprocess.check_output(
-        ["git", "log", f"-{depth}", "--pretty=format:%G? %GF"],
+        ["git", "log", f"-{depth}", "--pretty=format:%G? %GF %h %s"],
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
-    rows: list[tuple[str, str]] = []
+    rows: list[tuple[str, str, str, str]] = []
     for line in log.splitlines():
         text = line.strip()
         if not text:
             continue
-        parts = text.split(None, 1)
+        parts = text.split(None, 3)
         status = parts[0]
         fpr = _normalize_fpr(parts[1] if len(parts) > 1 else "")
-        rows.append((status, fpr))
+        short = parts[2] if len(parts) > 2 else ""
+        subject = parts[3] if len(parts) > 3 else ""
+        rows.append((status, fpr, short, subject))
     return rows
 
 
 def _classify(
-    rows: list[tuple[str, str]],
-    trusted: set[str],
-) -> tuple[int, int, int, int]:
-    """Return (trusted_signed, unverifiable, other_bad, total).
+    rows: list[tuple[str, str, str, str]],
+    author_trusted: set[str],
+    platform_trusted: set[str],
+) -> tuple[int, int, int, int, list[tuple[str, str]]]:
+    """Return (author_signed, unverifiable, other_bad, total, named_author_signed).
 
-    trusted_signed: G/U whose fingerprint is in the repo key set (N-56).
-    unverifiable: E, or G/U with missing/foreign fingerprint.
-    other_bad: B/X/Y/R.
+    author_signed: G/U with author-key fingerprint (counts toward ratio).
+    platform G/U: verified, not counted, not unverifiable.
+    foreign G/U or E: unverifiable (exit 2 when fail_on_unverifiable).
     """
 
     signed = 0
     unverifiable = 0
     other_bad = 0
-    for status, fpr in rows:
+    named: list[tuple[str, str]] = []
+    for status, fpr, short, subject in rows:
         if status == "N":
             continue
         if status in {"B", "X", "Y", "R"}:
@@ -106,20 +113,57 @@ def _classify(
             unverifiable += 1
             continue
         if status in {"G", "U"}:
-            if fpr and fpr in trusted:
+            if fpr and fpr in author_trusted:
                 signed += 1
+                named.append((short, subject))
+            elif fpr and fpr in platform_trusted:
+                continue
             else:
                 unverifiable += 1
             continue
         unverifiable += 1
-    return signed, unverifiable, other_bad, len(rows)
+    return signed, unverifiable, other_bad, len(rows), named
 
 
-def _head_trusted(trusted: set[str]) -> bool:
+def _needed_signed(min_ratio: float, depth: int) -> int:
+    if depth <= 0 or min_ratio <= 0:
+        return 0
+    return int(math.ceil(min_ratio * depth - 1e-12))
+
+
+def _commits_until_ratio_break(
+    rows: list[tuple[str, str, str, str]],
+    author_trusted: set[str],
+    *,
+    min_ratio: float,
+    depth: int,
+) -> int | None:
+    """How many new tip commits until author-signed count would fall below min_ratio.
+
+    Critical signature = the ``needed``-th newest author-trusted commit (not the
+    newest). When that one slides out of the window, the ratio breaks.
+    """
+
+    needed = _needed_signed(min_ratio, depth)
+    if needed <= 0:
+        return None
+    positions = [
+        idx
+        for idx, (status, fpr, _short, _subject) in enumerate(rows)
+        if status in {"G", "U"} and fpr in author_trusted
+    ]
+    if len(positions) < needed:
+        return 0
+    critical = positions[needed - 1]
+    # When k new commits are prepended, index becomes critical+k; leaves at >= depth.
+    return max(0, depth - critical)
+
+
+def _head_trusted(author_trusted: set[str]) -> bool:
     rows = _commit_sig_rows(1)
     if not rows:
         return False
-    signed, _, _, _ = _classify(rows, trusted)
+    signed, _, _, _, _ = _classify(rows, author_trusted, set())
     return signed == 1
 
 
@@ -162,7 +206,7 @@ def main() -> int:
         "--keys-dir",
         type=Path,
         default=None,
-        help="Override trusted ASC directory (default: policy trusted_keys_dir)",
+        help="Author trusted ASC directory (non-recursive *.asc)",
     )
     args = parser.parse_args()
 
@@ -171,8 +215,7 @@ def main() -> int:
     scope = str(policy.get("ratio_scope") or "inspect_window")
     if scope not in {"inspect_window", "last_n_commits"}:
         print(
-            f"ERROR: ratio_scope={scope!r} rejected; use inspect_window "
-            "(full-history ratios are unreachable after unsigned bulk history — N-53)",
+            f"ERROR: ratio_scope={scope!r} rejected; use inspect_window",
             file=sys.stderr,
         )
         return 1
@@ -184,53 +227,71 @@ def main() -> int:
     if not keys_dir.is_dir():
         print(f"ERROR: trusted keys dir missing: {keys_dir}", file=sys.stderr)
         return 1
-    trusted = _fingerprints_from_asc(keys_dir)
-    if not trusted:
-        print(f"ERROR: no fingerprints in {keys_dir}", file=sys.stderr)
+
+    author_files = sorted(keys_dir.glob("*.asc"))
+    platform_files = sorted((keys_dir / "platform").glob("*.asc")) if (keys_dir / "platform").is_dir() else []
+    author_trusted = _fingerprints_from_asc_files(author_files)
+    platform_trusted = _fingerprints_from_asc_files(platform_files)
+    if not author_trusted:
+        print(f"ERROR: no author fingerprints in {keys_dir}/*.asc", file=sys.stderr)
         return 1
 
     rows = _commit_sig_rows(depth)
-    signed, unverifiable, other_bad, total = _classify(rows, trusted)
+    if len(rows) < depth:
+        print(
+            f"ERROR: available history {len(rows)} < inspect_depth {depth} "
+            "(shallow checkout collapses the signing window — refuse, do not decorate)",
+            file=sys.stderr,
+        )
+        return 3
+
+    signed, unverifiable, other_bad, total, named = _classify(
+        rows, author_trusted, platform_trusted
+    )
     ratio = (signed / total) if total else 0.0
     min_ratio = _effective_min_ratio(policy)
     enforce = bool(policy.get("enforce_ci", False))
     fail_unverifiable = bool(policy.get("fail_on_unverifiable_signature", enforce))
+    # Countdown uses the ratio that will bind under enforcement (ratchet), not today's 0.0.
+    planning_ratio = max(min_ratio, float(policy.get("ratchet_target_ratio", 0.0) or 0.0))
+    needed = _needed_signed(planning_ratio, depth)
+    until_break = _commits_until_ratio_break(
+        rows, author_trusted, min_ratio=planning_ratio, depth=depth
+    )
 
-    # N-55: warn when trusted signatures sit near the trailing edge of the window.
-    trailing_unsigned = 0
-    for status, fpr in reversed(rows):
-        if status in {"G", "U"} and fpr in trusted:
-            break
-        trailing_unsigned += 1
     print(
         f"signed_trusted={signed}/{total} ratio={ratio:.2f} "
         f"window=last_{depth} scope={scope} "
         f"unverifiable={unverifiable} bad={other_bad} "
-        f"trusted_keys={len(trusted)} "
-        f"required_min_ratio={min_ratio:.2f}"
+        f"author_keys={len(author_trusted)} platform_keys={len(platform_trusted)} "
+        f"required_min_ratio={min_ratio:.2f} planning_ratio={planning_ratio:.2f} "
+        f"needed_signed={needed}"
     )
-    if trailing_unsigned and signed:
+    for short, subject in named:
+        print(f"trusted_commit {short} {subject}")
+    if until_break is not None and needed > 0:
         print(
-            f"NOTE: N-55 window drift risk — {trailing_unsigned} commit(s) after the "
-            "newest trusted signature; unsigned commits push signed merges out of the window"
+            f"commits_until_ratio_break={until_break} "
+            f"(break when author-trusted falls below {needed}/{depth} at planning_ratio={planning_ratio:.2f})"
         )
 
     if signed == 0:
         print(
-            "NOTE: no trusted-key signatures in window; enable commit signing and keep "
-            "public keys in governance/trusted_signing_keys",
+            "NOTE: no author-trusted signatures in window; sign with a key whose "
+            ".asc is already in trusted_signing_keys (or add the .asc in the same commit)"
         )
     if unverifiable:
         print(
-            f"NOTE: {unverifiable} commit(s) have unverifiable signatures "
-            "(missing key, or fingerprint not in trusted_signing_keys)",
+            f"NOTE: {unverifiable} commit(s) unverifiable "
+            "(missing key, or fingerprint not in author/platform trusted sets). "
+            "Good-but-unregistered is unverifiable — with fail_on that is exit 2, "
+            "worse than unsigned."
         )
 
     if fail_unverifiable and (unverifiable > 0 or other_bad > 0):
         print(
             "ERROR: unverifiable or bad commit signatures present "
-            f"(unverifiable={unverifiable}, bad={other_bad}); "
-            "only G/U with a fingerprint in trusted_signing_keys counts",
+            f"(unverifiable={unverifiable}, bad={other_bad})",
             file=sys.stderr,
         )
         return 2
@@ -238,15 +299,15 @@ def main() -> int:
     if enforce and ratio < min_ratio:
         print(
             f"ERROR: signed ratio {ratio:.2f} below required {min_ratio:.2f} "
-            f"(trusted fingerprints only, window last {depth})",
+            f"(author fingerprints only, window last {depth})",
             file=sys.stderr,
         )
         return 1
 
     if enforce and bool(policy.get("require_head_signed_on_release_tags")) and _on_release_tag():
-        if not _head_trusted(trusted):
+        if not _head_trusted(author_trusted):
             print(
-                "ERROR: release tag HEAD must be signed by a trusted_signing_keys fingerprint",
+                "ERROR: release tag HEAD must be signed by an author trusted_signing_keys fingerprint",
                 file=sys.stderr,
             )
             return 1
