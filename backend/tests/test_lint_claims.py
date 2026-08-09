@@ -142,6 +142,47 @@ class LintClaimsTests(unittest.TestCase):
         )
         self.assertEqual(claim_needs_boundary_violations(Path("docs/x.md"), framed), [])
 
+    def test_claim_needs_boundary_checks_markdown_table_rows(self) -> None:
+        """N-28: metrics hidden in table cells must still require a boundary marker."""
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import (
+                claim_needs_boundary_violations,  # type: ignore[import-not-found]
+            )
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        table = "| Metric | Value |\n|---|---|\n| detection accuracy | 95% |\n"
+        hits = claim_needs_boundary_violations(Path("docs/x.md"), table)
+        self.assertTrue(hits)
+        self.assertTrue(any("table-row" in h for h in hits))
+
+    def test_allow_file_still_amnesty_for_legacy_honesty_docs(self) -> None:
+        """N-29 residual: allow-file still skips pattern scan (README.ru legacy).
+
+        Progress: ENGINEERING_STATUS no longer uses allow-file; client docs should
+        prefer per-line allow. Full removal tracked as STILL_TRUE residual.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "legacy.md"
+            path.write_text(
+                '<!-- claims-lint: allow-file reason="legacy honesty quote" -->\n'
+                "We are production-ready today.\n",
+                encoding="utf-8",
+            )
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import lint_claims  # type: ignore[import-not-found]
+
+                hits = lint_claims(
+                    matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md",
+                    roots=[path],
+                )
+            finally:
+                if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertEqual(hits, [])
+
 
 if __name__ == "__main__":
     unittest.main()

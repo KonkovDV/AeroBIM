@@ -1547,7 +1547,8 @@ def main(argv: list[str] | None = None) -> int:
         tests_passed = parsed["tests_passed"] if tests_passed is None else tests_passed
         tests_skipped = parsed["tests_skipped"] if tests_skipped is None else tests_skipped
         tests_failed = parsed["tests_failed"] if tests_failed is None else tests_failed
-        tests_collected = parsed["tests_collected"]
+        # Do not override tests_collected from JUnit: suite totals can include
+        # non-definition nodes and break uncollected parity vs AST inventory.
     vitest_for_parse = args.vitest_json or vitest_json_path
     vitest_artifact: str | None = None
     attestation = _resolve_attestation_from_environment()
