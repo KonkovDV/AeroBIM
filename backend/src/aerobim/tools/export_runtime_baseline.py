@@ -128,6 +128,74 @@ def _default_baseline_output(repo: Path) -> Path:
     return repo / _LOCAL_BASELINE_DIR / "runtime-baseline-local.json"
 
 
+def _is_committed_baseline_path(repo: Path, path: Path) -> bool:
+    try:
+        return path.resolve() == (repo / _COMMITTED_BASELINE).resolve()
+    except OSError:
+        return False
+
+
+def _sanitize_tool_name(tool: object) -> str:
+    """N-24: never publish absolute local interpreter/tool paths."""
+    raw = str(tool or "")
+    if not raw:
+        return "unknown"
+    lowered = raw.replace("\\", "/").lower()
+    if lowered.endswith("/python") or lowered.endswith("/python.exe") or lowered.endswith("python3"):
+        return "python"
+    if lowered.endswith("/node") or lowered.endswith("/node.exe"):
+        return "node"
+    if lowered.endswith("/npm") or lowered.endswith("/npm.cmd"):
+        return "npm"
+    name = Path(raw).name
+    if name.lower() in {"python", "python.exe", "python3", "python3.exe"}:
+        return "python"
+    return name or raw
+
+
+def _sanitize_repo_path(repo: Path, value: object) -> str | None:
+    """N-24: store repo-relative POSIX paths only."""
+    if value is None:
+        return None
+    text = str(value)
+    if not text:
+        return None
+    try:
+        path = Path(text)
+        if path.is_absolute():
+            return path.resolve().relative_to(repo.resolve()).as_posix()
+    except (OSError, ValueError):
+        pass
+    return text.replace("\\", "/")
+
+
+def _parent_commit_sha(repo: Path, commit: str) -> str | None:
+    parent = _git(repo, "rev-parse", f"{commit}^")
+    return parent or None
+
+
+def _parent_tree_sha(repo: Path, commit: str) -> str | None:
+    tree = _git(repo, "rev-parse", f"{commit}^^{{tree}}")
+    return tree or None
+
+
+def _sha_matches_head_or_parent(repo: Path | None, value: object, head: object) -> bool:
+    """Allow evidence commit to bind to HEAD or its first parent (WP-A11)."""
+    if value == head:
+        return True
+    if repo is None or not isinstance(value, str) or not isinstance(head, str):
+        return False
+    return value == _parent_commit_sha(repo, head)
+
+
+def _tree_matches_head_or_parent(repo: Path | None, value: object, head_tree: object, head: str | None) -> bool:
+    if value == head_tree:
+        return True
+    if repo is None or not isinstance(value, str) or not head:
+        return False
+    return value == _parent_tree_sha(repo, head)
+
+
 def committed_baseline_attestation_errors(repo: Path | None = None) -> list[str]:
     """WP-A11: committed baseline in git must be CI-attested and publishable."""
     root = repo or _repo_root()
@@ -147,20 +215,38 @@ def committed_baseline_attestation_errors(repo: Path | None = None) -> list[str]
         expected_commit_sha=head or None,
         expected_tree_sha=tree or None,
         repo=root,
+        allow_parent_sha=True,
     )
 
 
 def compare_baseline_snapshots(
-    committed: dict[str, object], generated: dict[str, object]
+    committed: dict[str, object],
+    generated: dict[str, object],
+    *,
+    repo: Path | None = None,
 ) -> list[str]:
     """Compare committed vs CI-generated baseline (WP-A11)."""
     errors: list[str] = []
-    for key in ("commit_sha", "tree_sha", "schema_version"):
-        if committed.get(key) != generated.get(key):
-            errors.append(
-                f"baseline_field_mismatch:{key} committed={committed.get(key)!r} "
-                f"generated={generated.get(key)!r}"
-            )
+    root = repo or _repo_root()
+    head = generated.get("commit_sha")
+    head_tree = generated.get("tree_sha")
+    if not _sha_matches_head_or_parent(root, committed.get("commit_sha"), head):
+        errors.append(
+            f"baseline_field_mismatch:commit_sha committed={committed.get('commit_sha')!r} "
+            f"generated={head!r}"
+        )
+    if not _tree_matches_head_or_parent(
+        root, committed.get("tree_sha"), head_tree, head if isinstance(head, str) else None
+    ):
+        errors.append(
+            f"baseline_field_mismatch:tree_sha committed={committed.get('tree_sha')!r} "
+            f"generated={head_tree!r}"
+        )
+    if committed.get("schema_version") != generated.get("schema_version"):
+        errors.append(
+            f"baseline_field_mismatch:schema_version committed={committed.get('schema_version')!r} "
+            f"generated={generated.get('schema_version')!r}"
+        )
     committed_metrics = committed.get("metrics")
     generated_metrics = generated.get("metrics")
     if isinstance(committed_metrics, dict) and isinstance(generated_metrics, dict):
@@ -172,7 +258,14 @@ def compare_baseline_snapshots(
     committed_att = committed.get("attestation")
     generated_att = generated.get("attestation")
     if committed_att != generated_att:
-        errors.append("attestation_mismatch")
+        # Bootstrap: local committed vs fresh CI-generated attestation differs by design.
+        if not (
+            isinstance(committed_att, dict)
+            and committed_att.get("attested_by") == "local"
+            and isinstance(generated_att, dict)
+            and generated_att.get("attested_by") == "ci"
+        ):
+            errors.append("attestation_mismatch")
     if generated.get("publishable") is not True:
         errors.append("generated_baseline_not_publishable")
     return errors
@@ -434,7 +527,7 @@ def _run_subprocess_gate(
     except (OSError, subprocess.TimeoutExpired) as exc:
         return {
             "status": "FAIL",
-            "tool": cmd[0] if cmd else label,
+            "tool": _sanitize_tool_name(cmd[0] if cmd else label),
             "exit_code": -1,
             "duration_ms": round((perf_counter() - started) * 1000.0, 1),
             "reason": f"{type(exc).__name__}: {exc}",
@@ -442,7 +535,7 @@ def _run_subprocess_gate(
     status = "PASS" if completed.returncode == 0 else "FAIL"
     payload: dict[str, object] = {
         "status": status,
-        "tool": cmd[0] if cmd else label,
+        "tool": _sanitize_tool_name(cmd[0] if cmd else label),
         "exit_code": completed.returncode,
         "duration_ms": round((perf_counter() - started) * 1000.0, 1),
     }
@@ -660,19 +753,26 @@ def _commits_behind(repo: Path, artifact_commit: str, head: str) -> int | None:
     return count if current == artifact_commit else None
 
 
-def publishability_errors(
+def _self_declared_publishability_errors(baseline: dict[str, Any]) -> list[str]:
+    """Checks that only apply to a finished artifact (not while computing publishable)."""
+    errors: list[str] = []
+    if baseline.get("publishable") is not True:
+        errors.append("publishable_not_true")
+    if baseline.get("artifact_completeness") != "full":
+        errors.append("artifact_incomplete")
+    return errors
+
+
+def _publishability_core_errors(
     baseline: dict[str, Any],
     *,
     expected_commit_sha: str | None = None,
     expected_tree_sha: str | None = None,
     repo: Path | None = None,
+    allow_parent_sha: bool = False,
 ) -> list[str]:
-    """Stricter than completeness: CI attestation + HEAD/tree match + clean tree."""
+    """Core publishability rules without self-referential publishable/completeness keys."""
     errors = list(completeness_errors(baseline))
-    if baseline.get("publishable") is not True:
-        errors.append("publishable_not_true")
-    if baseline.get("artifact_completeness") != "full":
-        errors.append("artifact_incomplete")
     if baseline.get("working_tree_clean") is not True:
         errors.append("working_tree_dirty")
 
@@ -707,7 +807,10 @@ def publishability_errors(
 
     commit = baseline.get("commit_sha")
     if expected_commit_sha and isinstance(commit, str):
-        if commit != expected_commit_sha:
+        matched = commit == expected_commit_sha
+        if not matched and allow_parent_sha:
+            matched = _sha_matches_head_or_parent(repo, commit, expected_commit_sha)
+        if not matched:
             behind = (
                 _commits_behind(repo, commit, expected_commit_sha) if repo is not None else None
             )
@@ -720,10 +823,16 @@ def publishability_errors(
                     f"baseline_stale_by_{behind}_commits: regenerate {_COMMITTED_BASELINE}"
                 )
     tree = baseline.get("tree_sha")
-    if expected_tree_sha and isinstance(tree, str) and tree != expected_tree_sha:
-        errors.append(
-            f"tree_sha_mismatch: artifact={tree!r} expected HEAD tree={expected_tree_sha!r}"
-        )
+    if expected_tree_sha and isinstance(tree, str):
+        matched_tree = tree == expected_tree_sha
+        if not matched_tree and allow_parent_sha and isinstance(expected_commit_sha, str):
+            matched_tree = _tree_matches_head_or_parent(
+                repo, tree, expected_tree_sha, expected_commit_sha
+            )
+        if not matched_tree:
+            errors.append(
+                f"tree_sha_mismatch: artifact={tree!r} expected HEAD tree={expected_tree_sha!r}"
+            )
 
     backend = baseline.get("backend")
     if isinstance(backend, dict):
@@ -747,24 +856,33 @@ def publishability_errors(
     return errors
 
 
+def publishability_errors(
+    baseline: dict[str, Any],
+    *,
+    expected_commit_sha: str | None = None,
+    expected_tree_sha: str | None = None,
+    repo: Path | None = None,
+    allow_parent_sha: bool = False,
+) -> list[str]:
+    """Stricter than completeness: CI attestation + HEAD/tree match + clean tree."""
+    return _self_declared_publishability_errors(baseline) + _publishability_core_errors(
+        baseline,
+        expected_commit_sha=expected_commit_sha,
+        expected_tree_sha=expected_tree_sha,
+        repo=repo,
+        allow_parent_sha=allow_parent_sha,
+    )
+
+
 def _compute_publishable(
     baseline: dict[str, Any],
     *,
     require_clean_tree: bool,
 ) -> tuple[bool, str]:
     del require_clean_tree  # suffix/exit policy only; publishable always needs clean tree
-    if baseline.get("working_tree_clean") is not True:
-        return False, "partial"
-    if completeness_errors(baseline):
-        return False, "partial"
-    attestation = baseline.get("attestation")
-    if not isinstance(attestation, dict) or attestation.get("attested_by") != "ci":
-        return False, "partial"
-    github_sha = attestation.get("github_sha")
-    commit = baseline.get("commit_sha")
-    if isinstance(github_sha, str) and isinstance(commit, str) and github_sha != commit:
-        return False, "partial"
-    if publishability_errors(baseline):
+    # Must NOT call publishability_errors(): it self-checks publishable/completeness keys
+    # that are assigned only after this function returns (circular lock).
+    if _publishability_core_errors(baseline):
         return False, "partial"
     return True, "full"
 
@@ -804,7 +922,10 @@ def export_runtime_baseline(
     if quality_gates:
         for key, value in quality_gates.items():
             if key in gates:
-                gates[key] = _normalize_gate(value)
+                gate = _normalize_gate(value)
+                if "tool" in gate:
+                    gate["tool"] = _sanitize_tool_name(gate["tool"])
+                gates[key] = gate
     commit = commit_sha if commit_sha is not None else _commit_sha(repo)
     backend_passed = tests_passed if tests_passed is not None else "n/a"
     frontend_passed = frontend_tests_passed if frontend_tests_passed is not None else "n/a"
@@ -813,6 +934,7 @@ def export_runtime_baseline(
     attestation_block = (
         attestation if attestation is not None else _resolve_attestation_from_environment()
     )
+    safe_vitest = _sanitize_repo_path(repo, vitest_json_path)
     payload: dict[str, object] = {
         "artifact_type": "aerobim_runtime_baseline",
         "schema_version": _SCHEMA_VERSION,
@@ -838,7 +960,7 @@ def export_runtime_baseline(
         "frontend": {
             "tests_passed": frontend_tests_passed,
             "tests_failed": frontend_tests_failed,
-            "vitest_artifact": vitest_json_path,
+            "vitest_artifact": safe_vitest,
             "note": (
                 "Recorded from vitest JSON artifact when provided; "
                 "manual --frontend-tests-passed without artifact is not publishable"
@@ -1257,8 +1379,12 @@ def _check_artifact_publishable(repo: Path) -> list[str]:
         return ["Invalid runtime-baseline-latest.json"]
     if not isinstance(stored, dict):
         return ["runtime-baseline-latest.json must be an object"]
+    # N-25: non-publishable committed artifact is an error, not a silent skip.
     if stored.get("publishable") is not True:
-        return []
+        return [
+            "committed_baseline_not_publishable: docs/evidence/runtime-baseline-latest.json "
+            "must have publishable=true (bootstrap: commit CI-generated artifact)"
+        ]
     head = _commit_sha(repo)
     tree = _tree_sha(repo)
     return publishability_errors(
@@ -1266,6 +1392,7 @@ def _check_artifact_publishable(repo: Path) -> list[str]:
         expected_commit_sha=head or None,
         expected_tree_sha=tree or None,
         repo=repo,
+        allow_parent_sha=True,
     )
 
 
@@ -1479,6 +1606,14 @@ def main(argv: list[str] | None = None) -> int:
             return 1
 
     out = args.out or _default_baseline_output(repo)
+    # N-26: refuse overwriting the committed public baseline with a local/non-CI attestation.
+    if _is_committed_baseline_path(repo, out) and attestation.get("attested_by") != "ci":
+        print(
+            "refusing to write non-CI-attested baseline to "
+            f"{_COMMITTED_BASELINE} (N-26); omit --out or write under docs/evidence/local/",
+            file=sys.stderr,
+        )
+        return 2
     if args.require_clean_tree and baseline.get("working_tree_clean") is not True:
         out = out.with_name(f"{out.stem}-dirty{out.suffix}")
     out.parent.mkdir(parents=True, exist_ok=True)
