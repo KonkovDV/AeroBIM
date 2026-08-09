@@ -15,10 +15,12 @@ _HTML_CSP = (
     "default-src 'none'; style-src 'unsafe-inline'; img-src data:; "
     "frame-ancestors 'none'; base-uri 'none'"
 )
+_PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=()"
+_HSTS = "max-age=31536000; includeSubDomains"
 
 
 def add_security_headers_middleware(app: FastAPI) -> None:
-    """Attach middleware that sets nosniff / CSP / referrer / frame denial headers."""
+    """Attach middleware that sets ASVS-aligned browser hardening headers."""
     from starlette.middleware.base import BaseHTTPMiddleware
 
     class _SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -31,6 +33,15 @@ def add_security_headers_middleware(app: FastAPI) -> None:
             response.headers.setdefault("X-Content-Type-Options", "nosniff")
             response.headers.setdefault("Referrer-Policy", "no-referrer")
             response.headers.setdefault("X-Frame-Options", "DENY")
+            response.headers.setdefault("Permissions-Policy", _PERMISSIONS_POLICY)
+            response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+            response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+            # Harmless on HTTP; required when TLS terminates at the app or a proxy that
+            # forwards this response. Reverse proxies may override.
+            response.headers.setdefault("Strict-Transport-Security", _HSTS)
+            path = request.url.path or ""
+            if path.startswith("/v1/") or path in {"/health", "/ready", "/metrics"}:
+                response.headers.setdefault("Cache-Control", "no-store")
             content_type = (response.headers.get("content-type") or "").lower()
             if "text/html" in content_type:
                 response.headers["Content-Security-Policy"] = _HTML_CSP

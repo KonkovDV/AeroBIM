@@ -83,6 +83,14 @@ class SecurityHeadersTests(unittest.TestCase):
             self.assertEqual(response.headers.get("x-content-type-options"), "nosniff")
             self.assertEqual(response.headers.get("referrer-policy"), "no-referrer")
             self.assertEqual(response.headers.get("x-frame-options"), "DENY")
+            self.assertEqual(
+                response.headers.get("permissions-policy"),
+                "camera=(), microphone=(), geolocation=(), payment=()",
+            )
+            self.assertEqual(response.headers.get("cross-origin-opener-policy"), "same-origin")
+            self.assertEqual(response.headers.get("cross-origin-resource-policy"), "same-origin")
+            self.assertIn("max-age=", response.headers.get("strict-transport-security") or "")
+            self.assertEqual(response.headers.get("cache-control"), "no-store")
             csp = response.headers.get("content-security-policy") or ""
             self.assertIn("default-src 'none'", csp)
             self.assertIn("frame-ancestors 'none'", csp)
