@@ -23,6 +23,15 @@ from aerobim.tools.export_runtime_baseline import (
 _REPO = Path(__file__).resolve().parents[2]
 
 
+def _git(*args: str) -> str:
+    import shutil
+
+    git = shutil.which("git")
+    if not git:
+        raise unittest.SkipTest("git executable not found")
+    return subprocess.check_output([git, *args], cwd=_REPO, text=True).strip()
+
+
 class ParseVitestJsonTests(unittest.TestCase):
     def test_parses_vitest_counts(self) -> None:
         payload = {
@@ -276,6 +285,202 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         payload["frontend"] = {"tests_passed": 999, "vitest_artifact": None}
         errors = publishability_errors(payload, expected_commit_sha="abc123", repo=None)
         self.assertTrue(any("frontend_vitest_artifact_missing" in e for e in errors))
+
+    def test_ci_environment_yields_publishable_true(self) -> None:
+        """Circular-lock regression: compute publishable before self-declared keys exist."""
+        import os
+
+        from aerobim.tools.export_runtime_baseline import _publishability_core_errors
+
+        sha = _git("rev-parse", "HEAD")
+        gates_csv = (
+            "test,frontend,supply-chain-audit,sprint-2-1-gates,"
+            "security-regression,offline-bundle-smoke,openapi-contract"
+        )
+        vitest_dir = _REPO / "frontend" / "var"
+        vitest_dir.mkdir(parents=True, exist_ok=True)
+        vitest = vitest_dir / "vitest-results.json"
+        vitest.write_text(
+            json.dumps(
+                {
+                    "numTotalTests": 29,
+                    "numPassedTests": 29,
+                    "numFailedTests": 0,
+                    "numPendingTests": 0,
+                }
+            ),
+            encoding="utf-8",
+        )
+        env = {
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_RUN_ID": "1",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "GITHUB_WORKFLOW_REF": ("KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main"),
+            "GITHUB_SHA": sha,
+            "AEROBIM_GATES_ATTESTED": gates_csv,
+            "RUNNER_OS": "Linux",
+        }
+        with (
+            patch.dict(os.environ, env, clear=False),
+            patch(
+                "aerobim.tools.export_runtime_baseline._working_tree_clean",
+                return_value=True,
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._commit_sha",
+                return_value=sha,
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._tree_sha",
+                return_value="tree-ci-test",
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._test_collection_inventory",
+                return_value={
+                    "test_definitions": 100,
+                    "tests_collected_live": 100,
+                    "uncollected": [],
+                },
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._count_tests",
+                return_value=100,
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._count_lines",
+                return_value=1000,
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._extraction_macro_f1",
+                return_value=0.86,
+            ),
+        ):
+            baseline = export_runtime_baseline(
+                backend_root=_REPO / "backend",
+                tests_passed=92,
+                tests_skipped=8,
+                tests_failed=0,
+                tests_collected=100,
+                frontend_tests_passed=29,
+                frontend_tests_failed=0,
+                quality_gates={k: "PASS" for k in ("ruff", "mypy", "pytest", "vitest", "build")},
+                vitest_json_path=str(vitest),
+                require_clean_tree=True,
+            )
+        core_errs = _publishability_core_errors(baseline)
+        self.assertEqual(core_errs, [], msg="; ".join(core_errs))
+        self.assertEqual(baseline["attestation"]["attested_by"], "ci")
+        self.assertTrue(baseline["publishable"])
+        self.assertEqual(baseline["artifact_completeness"], "full")
+        from aerobim.tools.export_runtime_baseline import publishability_errors
+
+        self.assertEqual(
+            publishability_errors(baseline, expected_commit_sha=sha, repo=None),
+            [],
+        )
+
+    def test_baseline_has_no_local_paths(self) -> None:
+        """N-24: public baseline must not leak absolute local machine paths."""
+        abs_python = r"C:\Users\Пользователь\AppData\Local\Programs\Python\Python313\python.exe"
+        abs_vitest = str((_REPO / "frontend" / "var" / "vitest-results.json").resolve())
+        baseline = export_runtime_baseline(
+            backend_root=_REPO / "backend",
+            quality_gates={
+                "ruff": {"status": "PASS", "tool": abs_python},
+                "mypy": {"status": "PASS", "tool": abs_python},
+                "pytest": {"status": "PASS", "tool": abs_python},
+                "vitest": {"status": "PASS", "tool": "vitest"},
+                "build": {"status": "PASS", "tool": "npm"},
+            },
+            vitest_json_path=abs_vitest,
+        )
+        dumped = json.dumps(baseline)
+        self.assertNotIn("Пользователь", dumped)
+        self.assertNotIn("AppData", dumped)
+        self.assertNotIn("C:\\\\Users", dumped)
+        self.assertNotIn("C:/Users", dumped)
+        self.assertEqual(baseline["quality_gates"]["ruff"]["tool"], "python")
+        vitest_art = baseline["frontend"]["vitest_artifact"]
+        self.assertIsInstance(vitest_art, str)
+        self.assertFalse(Path(str(vitest_art)).is_absolute())
+        self.assertTrue(str(vitest_art).replace("\\", "/").startswith("frontend/"))
+
+    def test_refuses_local_overwrite_of_committed_baseline(self) -> None:
+        """N-26: --out to committed path without CI attestation must exit 2."""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "aerobim.tools.export_runtime_baseline",
+                "--out",
+                str(_REPO / "docs" / "evidence" / "runtime-baseline-latest.json"),
+            ],
+            cwd=_REPO / "backend",
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("N-26", result.stderr)
+
+    def test_check_publishable_fails_when_not_publishable(self) -> None:
+        """N-25: vacuum skip removed — non-publishable committed artifact is an error."""
+        from aerobim.tools.export_runtime_baseline import _check_artifact_publishable
+
+        errors = _check_artifact_publishable(_REPO)
+        artifact = json.loads(
+            (_REPO / "docs" / "evidence" / "runtime-baseline-latest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if artifact.get("publishable") is True:
+            self.skipTest("committed baseline already publishable")
+        self.assertTrue(errors)
+        self.assertTrue(any("not_publishable" in e for e in errors))
+
+    def test_compare_allows_parent_commit_sha(self) -> None:
+        """Shallow CI clones have no HEAD^ — mock parent helpers instead of rev-parse."""
+        from aerobim.tools.export_runtime_baseline import compare_baseline_snapshots
+
+        head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        parent = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        head_tree = "cccccccccccccccccccccccccccccccccccccccc"
+        parent_tree = "dddddddddddddddddddddddddddddddddddddddd"
+        committed = {
+            "commit_sha": parent,
+            "tree_sha": parent_tree,
+            "schema_version": "1.4.0",
+            "metrics": {
+                "backend_src_loc": 100,
+                "backend_test_loc": 100,
+                "backend_test_functions": 100,
+            },
+            "attestation": {"attested_by": "ci"},
+            "publishable": True,
+        }
+        generated = {
+            "commit_sha": head,
+            "tree_sha": head_tree,
+            "schema_version": "1.4.0",
+            "metrics": {
+                "backend_src_loc": 100,
+                "backend_test_loc": 100,
+                "backend_test_functions": 100,
+            },
+            "attestation": {"attested_by": "ci"},
+            "publishable": True,
+        }
+        with (
+            patch(
+                "aerobim.tools.export_runtime_baseline._parent_commit_sha",
+                return_value=parent,
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._parent_tree_sha",
+                return_value=parent_tree,
+            ),
+        ):
+            self.assertEqual(compare_baseline_snapshots(committed, generated, repo=_REPO), [])
 
 
 class DocumentedEnvSetTests(unittest.TestCase):

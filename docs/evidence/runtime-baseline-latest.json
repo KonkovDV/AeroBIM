@@ -1,44 +1,44 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "498fd7092818b012e7ec74513c8a6b718cd69df2",
-  "tree_sha": "08ee7c9aa4173ba427ec166c159ac27655af43ff",
+  "commit_sha": "76e0da0453cede9fce4f93ebcfdcca041829eb07",
+  "tree_sha": "22a7db95054b781b60e9abd3dc9964a99df80a3f",
   "working_tree_clean": true,
-  "generated_at": "2026-08-08T22:14:59.141123+00:00",
+  "generated_at": "2026-08-09T06:58:28.434273+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2001,
+    "tests_collected": 2006,
     "tests_passed": 1993,
     "tests_skipped": 8,
     "tests_failed": 0,
-    "source_loc": 61499,
-    "test_loc": 41812,
-    "test_functions": 2001,
+    "source_loc": 61634,
+    "test_loc": 42020,
+    "test_functions": 2006,
     "uncollected": []
   },
   "frontend": {
     "tests_passed": 29,
     "tests_failed": 0,
-    "vitest_artifact": "C:/plans/AeroBIM/frontend/var/vitest-results.json",
+    "vitest_artifact": "frontend/var/vitest-results.json",
     "note": "Recorded from vitest JSON artifact when provided; manual --frontend-tests-passed without artifact is not publishable"
   },
   "quality_gates": {
     "ruff": {
       "status": "PASS",
-      "tool": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "tool": "python",
       "exit_code": 0,
       "duration_ms": 112.4
     },
     "mypy": {
       "status": "PASS",
-      "tool": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "tool": "python",
       "exit_code": 0,
       "duration_ms": 1910.9
     },
     "pytest": {
       "status": "PASS",
-      "tool": "C:\\Users\\Пользователь\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "tool": "python",
       "exit_code": 0,
       "duration_ms": 74208.3
     },
@@ -65,12 +65,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 61499,
-    "backend_test_loc": 41812,
-    "backend_test_functions": 2001,
+    "backend_src_loc": 61634,
+    "backend_test_loc": 42020,
+    "backend_test_functions": 2006,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=1993, frontend=29; commit 498fd7092818; see docs/evidence/runtime-baseline-latest.json · src ~61499 LOC; tests ~41812 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=1993, frontend=29; commit 76e0da0453ce; see docs/evidence/runtime-baseline-latest.json · src ~61634 LOC; tests ~42020 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
