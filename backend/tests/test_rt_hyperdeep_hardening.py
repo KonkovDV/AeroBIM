@@ -166,9 +166,9 @@ class ReviewEventIntegrityTests(unittest.TestCase):
                 created_at="2026-07-18T00:00:00Z",
             )
             open_store.append(events[0])
-            path = root / "review-events" / "rpt-a.jsonl"
-            with path.open("a", encoding="utf-8") as handle:
-                handle.write("{not-json\n")
+            # N-54: durable records are exclusive .seq.N files (not a jsonl append marker).
+            corrupt = root / "review-events" / "rpt-a.jsonl.seq.2"
+            corrupt.write_text("{not-json\n", encoding="utf-8")
             loaded = open_store.list_for_report("rpt-a")
             self.assertEqual(len(loaded), 1)
             self.assertEqual(open_store.last_invalid_line_count, 1)
