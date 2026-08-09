@@ -393,6 +393,10 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Signature window is last inspect_depth commits; default shallow PR
+          # checkout is depth=1 and silently collapses the ratio to 1/1 (N-56 dry-run).
+          fetch-depth: 80
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
