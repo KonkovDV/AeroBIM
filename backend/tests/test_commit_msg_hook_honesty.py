@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -25,7 +26,7 @@ class CommitMsgHookHonestyTests(unittest.TestCase):
         script = REPO_ROOT / "scripts" / "strip_coauthor_msgfilter.py"
         body = "docs: note\n\nCo-authored-by: Assistant <assistant@example.com>\n"
         completed = subprocess.run(
-            ["python", str(script)],
+            [sys.executable, str(script)],
             input=body,
             check=True,
             capture_output=True,
