@@ -111,10 +111,19 @@ class OidcBffPhase25PkceTests(unittest.TestCase):
         store = InMemoryOidcBffStateStore()
         entry = store.issue(redirect_uri="https://app.example/cb")
         assert entry.code_challenge is not None
+        # Without allowlist → no open redirect draft.
+        blocked = build_login_stub_payload(
+            state_entry=entry,
+            authorize_endpoint="https://idp.example/oauth/authorize",
+            client_id="aerobim-lab",
+        )
+        self.assertIsNone(blocked["idp_redirect_url"])
+        self.assertFalse(blocked["redirect_uri_allowlisted"])
         login = build_login_stub_payload(
             state_entry=entry,
             authorize_endpoint="https://idp.example/oauth/authorize",
             client_id="aerobim-lab",
+            redirect_uri_allowlist=("https://app.example/cb",),
         )
         url = login["idp_redirect_url"]
         self.assertIsInstance(url, str)
@@ -122,6 +131,7 @@ class OidcBffPhase25PkceTests(unittest.TestCase):
         self.assertIn("code_challenge_method=S256", url)
         self.assertIn("client_id=aerobim-lab", url)
         self.assertEqual(login["status"], "NOT_IMPLEMENTED")
+        self.assertTrue(login["redirect_uri_allowlisted"])
         draft = build_idp_authorize_url_draft(
             authorize_endpoint="https://idp.example/oauth/authorize",
             client_id="aerobim-lab",

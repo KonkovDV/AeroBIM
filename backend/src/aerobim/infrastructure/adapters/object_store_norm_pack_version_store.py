@@ -11,12 +11,15 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from aerobim.core.security.path_jail import safe_storage_token
 from aerobim.domain.models import NormPackVersionInfo
 from aerobim.domain.ports import ObjectStore
 
 
 def _safe_token(value: str) -> str:
-    return "".join(ch if ch.isalnum() or ch in "._:-" else "_" for ch in value)
+    """Encode pack/tenant tokens for index paths and object keys (no NTFS ADS)."""
+
+    return safe_storage_token(value)
 
 
 class ObjectStoreNormRulePackVersionStore:
@@ -36,7 +39,7 @@ class ObjectStoreNormRulePackVersionStore:
 
     def _object_key(self, pack_id: str, version: str, *, tenant_id: str | None = None) -> str:
         safe_pack = _safe_token(pack_id)
-        safe_version = "".join(ch if ch.isalnum() or ch in "._:+-" else "_" for ch in version)
+        safe_version = safe_storage_token(version)
         tenant = (tenant_id or "").strip()
         if tenant:
             return f"tenants/{_safe_token(tenant)}/norm-packs/{safe_pack}/{safe_version}.json"

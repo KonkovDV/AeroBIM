@@ -417,6 +417,19 @@ class KimiConfigGateTests(unittest.TestCase):
         ).vlm_advisory_ready()
         self.assertFalse(ready)
 
+    def test_yandex_provider_with_ip_host_and_kimi_is_not_ready(self) -> None:
+        """IP/proxy URL must not bypass refuse when provider is Yandex."""
+
+        ready = _settings(
+            vlm_enabled=True,
+            vlm_api_base_url="https://203.0.113.10/v1",
+            vlm_api_key="k",
+            vlm_model="kimi-k3",
+            signoff_profile="development",
+            llm_provider="yandex-ai-studio",
+        ).vlm_advisory_ready()
+        self.assertFalse(ready)
+
     def test_yandex_with_pinned_qwen_model_is_ready(self) -> None:
         ready = _settings(
             vlm_enabled=True,

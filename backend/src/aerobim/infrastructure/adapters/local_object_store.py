@@ -87,7 +87,11 @@ class LocalObjectStore:
         return target
 
     def _normalise_key(self, key: str) -> str:
-        return key.strip().replace("\\", "/").lstrip("/")
+        normalised = key.strip().replace("\\", "/").lstrip("/")
+        # Windows NTFS: ':' introduces Alternate Data Streams / drive syntax.
+        if ":" in normalised:
+            raise ValueError(f"Object key must not contain ':': {key!r}")
+        return normalised
 
 
 __all__ = ["ObjectTooLargeError", "LocalObjectStore"]
