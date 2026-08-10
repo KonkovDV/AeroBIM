@@ -155,7 +155,11 @@ def build_auth_bff_capability() -> dict[str, object]:
         "design": "docs/architecture/_2026_07.md",
         "dev_proxy": "Vite loopback Authorization inject only",
         "phase_2_stubs": "login/callback/logout with CSRF state (no production session)",
-        "phase_3_pending": "HttpOnly session cookie + IdP wiring",
+        "phase_2_5_pkce": (
+            "S256 code_challenge on login; optional IdP authorize URL draft via "
+            "AEROBIM_OIDC_BFF_CLIENT_ID + AEROBIM_OIDC_BFF_AUTHORIZE_URL — still 501"
+        ),
+        "phase_3_pending": "HttpOnly session cookie + IdP code exchange + FE bearer removal",
     }
 
 

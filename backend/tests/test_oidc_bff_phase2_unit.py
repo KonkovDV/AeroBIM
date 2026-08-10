@@ -1,4 +1,4 @@
-"""OIDC BFF Phase 2 stub helpers (unit) — HTTP covered by test_oidc_bff_stubs."""
+"""Phase 2.5 unit coverage for OIDC BFF PKCE stubs."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ class OidcBffPhase2UnitTests(unittest.TestCase):
         payload = build_auth_bff_capability()
         self.assertEqual(payload["status"], "NOT_IMPLEMENTED")
         self.assertIn("phase_2_stubs", payload)
+        self.assertIn("phase_2_5_pkce", payload)
 
     def test_state_one_time_and_payload_honesty(self) -> None:
         store = InMemoryOidcBffStateStore()
@@ -26,6 +27,7 @@ class OidcBffPhase2UnitTests(unittest.TestCase):
         self.assertIsNone(store.consume(entry.state))
         login = build_login_stub_payload(state_entry=entry)
         self.assertIsNone(login.get("idp_redirect_url"))
+        self.assertIn("pkce", login)
         callback = build_callback_stub_payload(state=entry.state, code="x")
         self.assertFalse(callback["session_cookie_issued"])
         self.assertEqual(build_logout_stub_payload()["status"], "NOT_IMPLEMENTED")

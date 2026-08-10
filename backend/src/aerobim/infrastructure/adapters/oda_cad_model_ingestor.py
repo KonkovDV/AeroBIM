@@ -2,13 +2,19 @@
 
 /** @sota-stub */
 Enable only after legal review via ``AEROBIM_ODA_CAD_ENABLED=true``.
+The flag opens the *legal* gate only — without a licensed ODA/Teigha SDK this
+adapter still returns ``supported=False`` (STUB-ODA-CAD-001).
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from aerobim.domain.cad_ingest import NATIVE_DWG_MISSING_REASON, CadIngestResult
+from aerobim.domain.cad_ingest import (
+    NATIVE_DWG_MISSING_REASON,
+    NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON,
+    CadIngestResult,
+)
 
 
 class OdaCadModelIngestor:
@@ -23,21 +29,15 @@ class OdaCadModelIngestor:
         self._enabled = enabled
 
     def ingest(self, path: Path, *, sheet_id: str | None = None) -> CadIngestResult:
-        del sheet_id
-        if not self._enabled:
-            return CadIngestResult(
-                annotations=(),
-                format_resolved="dwg",
-                entity_count=0,
-                degraded=True,
-                supported=False,
-                reason=NATIVE_DWG_MISSING_REASON,
-            )
+        del path, sheet_id
+        reason = (
+            NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON if self._enabled else NATIVE_DWG_MISSING_REASON
+        )
         return CadIngestResult(
             annotations=(),
             format_resolved="dwg",
             entity_count=0,
             degraded=True,
             supported=False,
-            reason=NATIVE_DWG_MISSING_REASON,
+            reason=reason,
         )

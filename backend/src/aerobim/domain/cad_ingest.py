@@ -7,6 +7,10 @@ from dataclasses import dataclass
 from aerobim.domain.models import DrawingAnnotation
 
 NATIVE_DWG_MISSING_REASON = "native DWG parser is not implemented"
+NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON = (
+    "AEROBIM_ODA_CAD_ENABLED=true but ODA/Teigha SDK is not shipped "
+    "(STUB-ODA-CAD-001; legal gate open ≠ native DWG product)"
+)
 
 
 @dataclass(frozen=True)
@@ -53,5 +57,6 @@ __all__ = [
     "CadIngestResult",
     "DerivedCadProvenance",
     "NATIVE_DWG_MISSING_REASON",
+    "NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON",
     "default_dwg_loss_notes",
 ]
