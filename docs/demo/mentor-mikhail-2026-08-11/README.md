@@ -1,40 +1,30 @@
-# Пакет для Михаила — AeroBIM (11.08.2026)
+# Доказательства работы — AeroBIM
 
-**Одна ссылка на эту папку:**  
-https://github.com/KonkovDV/AeroBIM/tree/main/docs/demo/mentor-mikhail-2026-08-11
+**Кому:** Михаил, IT-ментор  
+**Дата:** 11.08.2026  
+**Назначение:** проверить факты работы, а не прочитать обещания.
 
-Здесь всё нужное к созвону: краткий отчёт, текст письма, как показать за 7 минут и доказательства прогона.
+## Что здесь проверяется
 
-## С чего начать
+| № | Утверждение | Чем подтверждается |
+| --- | --- | --- |
+| 1 | Есть сквозной прогон от документов до замечания | [evidence/slice-summary.json](evidence/slice-summary.json), [evidence/report.json](evidence/report.json) |
+| 2 | Замечание привязано к месту и несёт след источника | [evidence/report.html](evidence/report.html) (просмотр), [evidence/slice-LIMITATIONS.json](evidence/slice-LIMITATIONS.json) |
+| 3 | Система прочитала фрагмент чертежа через Yandex Cloud | [evidence/crops/00-content.png](evidence/crops/00-content.png), [evidence/vlm-result.json](evidence/vlm-result.json) |
+| 4 | Границы заявлены явно и не подменяют факт | [evidence/vlm-LIMITATIONS.json](evidence/vlm-LIMITATIONS.json), [evidence/slice-LIMITATIONS.json](evidence/slice-LIMITATIONS.json) |
+| 5 | Модель не ставит итог вместо эксперта | [10-fakty.md](10-fakty.md), пункт «Решение» |
 
-| Файл | Зачем |
-| --- | --- |
-| [01-otchet.md](01-otchet.md) | Краткий отчёт простыми словами |
-| [02-pismo.md](02-pismo.md) | Текст «как от меня» |
-| [03-kak-pokazat.md](03-kak-pokazat.md) | Сценарий показа на 7 минут |
-| [evidence/](evidence/) | Результат прогона и картинка фрагмента |
+## Как проверить за 3 минуты
 
-## Суть в трёх предложениях
+1. Открыть [20-proverka.md](20-proverka.md) и сверить ключевые поля с `evidence/*.json`.  
+2. Посмотреть [evidence/crops/00-content.png](evidence/crops/00-content.png) и значение **150 mm** в [evidence/vlm-result.json](evidence/vlm-result.json).  
+3. Убедиться, что в ограничениях нет заявлений «точность 90%+», «итог ставит модель», «полностью готовое зрение».
 
-1. Есть честный сквозной показ: чертёж → проверка → замечание с привязкой к месту.  
-2. Через Yandex Cloud система прочитала фрагмент чертежа и нашла толщину **150 мм**.  
-3. Итог принимает не модель, а правила и человек; границы заявлены явно.
+## Полный перечень
 
-## Доказательства (уже в папке)
+- [00-index.md](00-index.md) — карта пакета  
+- [10-fakty.md](10-fakty.md) — только факты и границы  
+- [20-proverka.md](20-proverka.md) — как воспроизвести и что сверить  
+- [evidence/](evidence/) — артефакты прогонов
 
-- Фрагмент листа: [evidence/crops/00-content.png](evidence/crops/00-content.png)
-- Что вернула модель: [evidence/vlm-result.json](evidence/vlm-result.json) → значение `150 mm`
-- Ограничения: [evidence/vlm-LIMITATIONS.json](evidence/vlm-LIMITATIONS.json), [evidence/slice-LIMITATIONS.json](evidence/slice-LIMITATIONS.json)
-- Сводка детерминированного среза: [evidence/slice-summary.json](evidence/slice-summary.json)
-
-## Повторный прогон (если нужно обновить артефакты)
-
-Из каталога `backend/`:
-
-```powershell
-$env:PYTHONIOENCODING = "utf-8"
-python -m aerobim.tools.run_vertical_slice --manifest ../samples/demo/vertical-slice-2026-08-11/manifest.json --output ../artifacts/vertical-slice-2026-08-11
-python -m aerobim.tools.run_mentor_vlm_demo --pdf ../samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf --output ../artifacts/mentor-vlm-2026-08-11
-```
-
-Ключи и секреты в эту папку **не** кладём.
+Секретные ключи сюда не входят; идентификатор облачной папки в имени модели скрыт.
