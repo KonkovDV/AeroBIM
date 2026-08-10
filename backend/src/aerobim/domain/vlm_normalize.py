@@ -11,7 +11,9 @@ from __future__ import annotations
 import re
 
 _WS = re.compile(r"\s+")
-_ALLOWED_KINDS = frozenset({"text", "dimension", "designation", "table_row", "stamp_field"})
+_ALLOWED_KINDS = frozenset(
+    {"text", "dimension", "designation", "table_row", "stamp_field", "candidate_class"}
+)
 
 NORMALIZER_VERSION = "1.0.0"
 """Bump when a rule below changes output; recorded in cache provenance (§2.1)."""
