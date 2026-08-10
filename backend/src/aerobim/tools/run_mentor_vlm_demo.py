@@ -28,6 +28,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.core.config.vlm_endpoint_gate import refuse_yandex_kimi_default_model
 from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
     HeuristicLayoutRegionDetector,
@@ -44,7 +45,9 @@ from aerobim.tools.vlm_smoke_gate import (
 )
 
 
-def _observation_rows(pipeline: RegionRestrictedVlmPipeline, source: DrawingSource) -> dict[str, Any]:
+def _observation_rows(
+    pipeline: RegionRestrictedVlmPipeline, source: DrawingSource
+) -> dict[str, Any]:
     """Richer mentor view: include grounded observation values (still advisory)."""
     result = pipeline.read_sheet(source, text_layer_present=False)
     reads: list[dict[str, Any]] = []
@@ -91,6 +94,7 @@ def _observation_rows(pipeline: RegionRestrictedVlmPipeline, source: DrawingSour
             "cv_human_level MISSING; verdict stays with the deterministic engine and the expert"
         ),
     }
+
 
 _SKIP_EXIT = 2
 _BLOCKED_EXIT = 3
@@ -152,17 +156,11 @@ def _resolve_credentials() -> dict[str, str | None]:
     folder = (os.getenv("AEROBIM_LLM_FOLDER_ID") or "").strip() or None
     auth = (os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip() or "Bearer"
     provider = (os.getenv("AEROBIM_LLM_PROVIDER") or "").strip() or None
-    host = ""
-    if base:
-        try:
-            from urllib.parse import urlparse
-
-            host = (urlparse(base).hostname or "").lower()
-        except Exception:  # noqa: BLE001
-            host = ""
-    yandex = "yandex" in host or (provider or "").startswith("yandex")
     # Refuse silent kimi-k3 profile against Yandex Studio (wrong request shape).
-    if yandex and (not model or model.lower().startswith("kimi-k3")):
+    yandex_error = refuse_yandex_kimi_default_model(
+        base_url=base or None, model=model or None, provider=provider
+    )
+    if yandex_error:
         return {
             "base_url": base or None,
             "api_key": key or None,
@@ -170,10 +168,7 @@ def _resolve_credentials() -> dict[str, str | None]:
             "folder_id": folder,
             "auth_scheme": auth,
             "provider": provider,
-            "error": (
-                "Yandex Studio requires AEROBIM_VLM_MODEL or AEROBIM_LLM_MODEL "
-                "(e.g. gpt://<folder>/qwen3.6-35b-a3b); kimi-k3 default is refused"
-            ),
+            "error": yandex_error,
         }
     if not model:
         model = "kimi-k3"
@@ -319,7 +314,11 @@ def main(argv: list[str] | None = None) -> int:
     pdf = args.pdf
     if not pdf.is_file():
         # Resolve relative to repo root when launched from backend/
-        alt = Path(__file__).resolve().parents[4] / "samples/demo/vertical-slice-2026-08-11" / pdf.name
+        alt = (
+            Path(__file__).resolve().parents[4]
+            / "samples/demo/vertical-slice-2026-08-11"
+            / pdf.name
+        )
         if alt.is_file():
             pdf = alt
         else:
@@ -339,9 +338,9 @@ def main(argv: list[str] | None = None) -> int:
             "crops": crops,
             "generated_at": datetime.now(tz=UTC).isoformat(),
             "dotenv_loaded": str(env_path) if env_path else None,
-            "claim_boundary": _limitations(live=False, model=creds["model"] or "", provider=creds["provider"])[
-                "claim_boundary"
-            ],
+            "claim_boundary": _limitations(
+                live=False, model=creds["model"] or "", provider=creds["provider"]
+            )["claim_boundary"],
         }
         (out_dir / "report.json").write_text(
             json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

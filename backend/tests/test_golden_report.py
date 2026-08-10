@@ -14,9 +14,9 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
 # Pinned on project-package-baseline.json @ development profile (fixture only).
-# 2026-07-31 (third conscious refresh): extraction_integrity producer wired into
-# report capabilities (text-layer signals only; not product OCR/render claim).
-GOLDEN_BASELINE_REPRO_HASH = "aa641ac5b7583415b7fcc483922001444c60dcd7c0c562060d14408e8a16555d"
+# 2026-08-11 (fourth conscious refresh): mep_system_clash / engine signature after
+# MEP-CLASH-001 honesty probe wiring; hash is status+engine only (not reason text).
+GOLDEN_BASELINE_REPRO_HASH = "62ade6f05ddad57a541200c513f2c454ab615fa83a5592110c4a9d83e0b68595"
 
 
 class GoldenReportTests(unittest.TestCase):

@@ -167,9 +167,16 @@ class ApplyNormRuleHitlEventUseCase:
             tenant_id=bound_tenant,
         )
 
+        if report_id:
+            event_report_id = report_id
+        elif bound_tenant:
+            # Tenant-scoped journal so concurrent tenants never share one lock/seq.
+            event_report_id = f"pack:{bound_tenant}:{pack_id}"
+        else:
+            event_report_id = f"pack:{pack_id}"
         event = ReviewEvent(
             event_id=uuid4().hex,
-            report_id=report_id or f"pack:{pack_id}",
+            report_id=event_report_id,
             event_type=event_type,
             created_at=datetime.now(tz=UTC).isoformat(),
             actor=proposed_by,

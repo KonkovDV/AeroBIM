@@ -69,6 +69,43 @@ class NormPackTenantIsolationTests(unittest.TestCase):
         self.assertEqual(len(self.store.list_versions(pack_id, tenant_id="tenant-b")), 1)
         self.assertEqual(len(self.store.list_versions(pack_id, tenant_id="tenant-c")), 0)
 
+    def test_review_events_are_tenant_isolated_on_windows_safe_paths(self) -> None:
+        """Colon report_ids must not collapse to one NTFS ADS / shared lock."""
+
+        pack_id = "SAMOLET-RESIDENTIAL-AR-REFERENCE"
+        _, event_a = self.use_case.execute(
+            pack_id=pack_id,
+            base_pack_path=REFERENCE_PACK,
+            event_type="norm_rule_proposed",
+            rule_diff={"rule_id": "SAM-AR-001", "evidence_text": "a"},
+            proposed_by="eng-a",
+            target_approval_status="draft",
+            tenant_id="tenant-a",
+        )
+        _, event_b = self.use_case.execute(
+            pack_id=pack_id,
+            base_pack_path=REFERENCE_PACK,
+            event_type="norm_rule_proposed",
+            rule_diff={"rule_id": "SAM-AR-001", "evidence_text": "b"},
+            proposed_by="eng-b",
+            target_approval_status="draft",
+            tenant_id="tenant-b",
+        )
+        self.assertEqual(event_a.report_id, "pack:tenant-a:SAMOLET-RESIDENTIAL-AR-REFERENCE")
+        self.assertEqual(event_b.report_id, "pack:tenant-b:SAMOLET-RESIDENTIAL-AR-REFERENCE")
+        self.assertNotEqual(event_a.report_id, event_b.report_id)
+        # Second append on each tenant journal must also succeed (no ADS lock death).
+        _, event_a2 = self.use_case.execute(
+            pack_id=pack_id,
+            base_pack_path=REFERENCE_PACK,
+            event_type="norm_rule_proposed",
+            rule_diff={"rule_id": "SAM-AR-002", "evidence_text": "a2"},
+            proposed_by="eng-a",
+            target_approval_status="draft",
+            tenant_id="tenant-a",
+        )
+        self.assertEqual(event_a2.report_id, event_a.report_id)
+
     def test_principal_may_access_norm_pack(self) -> None:
         self.assertTrue(
             principal_may_access_norm_pack(

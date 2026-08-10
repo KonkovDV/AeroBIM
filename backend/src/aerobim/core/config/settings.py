@@ -454,12 +454,23 @@ class Settings:
         Fail-closed tiers: under pilot/production profiles public/external VLM
         egress is **forbidden** (NDA data must not leave the contour) unless an
         approved on-prem path is wired. Dev/fixture may enable it for open data.
+        Yandex Studio + default ``kimi-k3`` is refused (wrong request profile).
         """
         if not self.vlm_enabled:
             return False
         if self.signoff_profile in {"samolet_pilot", "production"}:
             return False
-        return bool(self.vlm_api_base_url and self.vlm_api_key)
+        if not (self.vlm_api_base_url and self.vlm_api_key):
+            return False
+        from aerobim.core.config.vlm_endpoint_gate import refuse_yandex_kimi_default_model
+
+        if refuse_yandex_kimi_default_model(
+            base_url=self.vlm_api_base_url,
+            model=self.vlm_model,
+            provider=self.llm_provider,
+        ):
+            return False
+        return True
 
     def llm_local_ready(self) -> bool:
         """True when OpenAI-compat advisory LLM may be invoked.
