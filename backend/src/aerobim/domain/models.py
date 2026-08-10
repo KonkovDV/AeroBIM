@@ -285,7 +285,8 @@ class DrawingRegionRef:
     page_width: float | None = None
     page_height: float | None = None
     layout_role: str | None = None
-    """Optional layout prior: ``content`` | ``title_block`` | ``stamp`` (PII risk)."""
+    """Optional layout prior: content | title_block | stamp | specification |
+    dimension_chain (stamp = PII risk for cloud VLM). Heuristic baseline only."""
     page_rotation: int | None = None
     """PDF ``/Rotate`` in {0,90,180,270}; None = unknown (PII fail-closed when required)."""
 
