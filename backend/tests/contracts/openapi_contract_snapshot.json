@@ -1707,7 +1707,7 @@
     },
     "/v1/auth/login": {
       "get": {
-        "description": "Phase 2 stub: issue CSRF state; no production IdP redirect or session cookie.",
+        "description": "Phase 2.5 stub: CSRF + PKCE; optional IdP URL draft; no session cookie.",
         "operationId": "auth_login_stub_v1_auth_login_get",
         "parameters": [
           {

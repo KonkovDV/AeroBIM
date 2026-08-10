@@ -52,6 +52,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
                 redirect_uri=redirect_uri,
                 authorize_endpoint=ctx.settings.oidc_bff_authorize_url,
                 client_id=ctx.settings.oidc_bff_client_id,
+                redirect_uri_allowlist=ctx.settings.oidc_bff_redirect_uri_allowlist,
             ),
         )
 

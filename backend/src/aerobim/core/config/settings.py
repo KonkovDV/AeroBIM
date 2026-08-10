@@ -301,6 +301,13 @@ class Settings:
     """
     oidc_bff_authorize_url: str | None = None
     """Lab-only authorize endpoint (``AEROBIM_OIDC_BFF_AUTHORIZE_URL``)."""
+    oidc_bff_redirect_uri_allowlist: tuple[str, ...] = ()
+    """Exact ``redirect_uri`` allowlist for Phase 2.5 IdP URL drafts.
+
+    Env: ``AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST`` (comma-separated). Without a
+    match, login still issues CSRF+PKCE but omits ``idp_redirect_url`` (no open
+    redirect). Does not flip ``auth_bff`` to implemented.
+    """
     # Optional Redis for durable async jobs
     redis_url: str | None = None
     # Optional bSI Validation Service / local schema certificate
@@ -737,6 +744,11 @@ class Settings:
             oidc_bff_client_id=(os.getenv("AEROBIM_OIDC_BFF_CLIENT_ID") or "").strip() or None,
             oidc_bff_authorize_url=(
                 (os.getenv("AEROBIM_OIDC_BFF_AUTHORIZE_URL") or "").strip() or None
+            ),
+            oidc_bff_redirect_uri_allowlist=tuple(
+                uri.strip()
+                for uri in (os.getenv("AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST") or "").split(",")
+                if uri.strip()
             ),
             redis_url=(os.getenv("AEROBIM_REDIS_URL") or "").strip() or None,
             bsi_validation_url=(os.getenv("AEROBIM_BSI_VALIDATION_URL") or "").strip() or None,

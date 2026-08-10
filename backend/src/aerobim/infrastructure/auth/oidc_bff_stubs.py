@@ -117,17 +117,20 @@ def build_login_stub_payload(
     redirect_uri: str | None = None,
     authorize_endpoint: str | None = None,
     client_id: str | None = None,
+    redirect_uri_allowlist: tuple[str, ...] | list[str] | None = None,
 ) -> dict[str, Any]:
     """Honesty stub login — CSRF+PKCE issued; optional IdP URL draft; no session cookie."""
 
     capability = build_auth_bff_capability()
     effective_redirect = redirect_uri or state_entry.redirect_uri
     idp_redirect_url: str | None = None
-    if authorize_endpoint and client_id and effective_redirect and state_entry.code_challenge:
+    allow = tuple(redirect_uri_allowlist or ())
+    redirect_allowed = bool(effective_redirect) and effective_redirect in allow
+    if authorize_endpoint and client_id and redirect_allowed and state_entry.code_challenge:
         idp_redirect_url = build_idp_authorize_url_draft(
             authorize_endpoint=authorize_endpoint,
             client_id=client_id,
-            redirect_uri=effective_redirect,
+            redirect_uri=effective_redirect,  # type: ignore[arg-type]
             state=state_entry.state,
             code_challenge=state_entry.code_challenge,
         )
@@ -143,10 +146,12 @@ def build_login_stub_payload(
             # code_verifier stays server-side only
         },
         "idp_redirect_url": idp_redirect_url,
+        "redirect_uri_allowlisted": redirect_allowed,
         "message": (
-            "Phase 2.5 stub: CSRF state + PKCE S256 issued; optional IdP authorize "
-            "URL draft when AEROBIM_OIDC_BFF_* lab env is set. No production session "
-            "cookie. auth_bff remains NOT_IMPLEMENTED until Phase 3."
+            "Phase 2.5 stub: CSRF state + PKCE S256 issued; IdP authorize URL draft "
+            "only when AEROBIM_OIDC_BFF_* lab env is set AND redirect_uri is "
+            "allowlisted. No production session cookie. auth_bff remains "
+            "NOT_IMPLEMENTED until Phase 3."
         ),
     }
 
