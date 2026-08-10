@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "vertical-slice-2026-08-11",
+  "description": "Vertical slice demo: IFC + IDS + rules + one vector PDF with WALL-01 thickness annotation (text layer; OCR not claimed).",
+  "project_name": "Vertical slice A-101 — WALL-01",
+  "discipline": "architecture",
+  "stage": "demo",
+  "corpus_kind": "fixture",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "requirement_path": "samples/requirements/techlab-demo-rules.txt",
+    "ids_path": "samples/ids/walls-multi-entity.ids",
+    "technical_spec_path": "samples/specifications/techlab-tz.txt",
+    "calculation_path": "samples/calculations/techlab-area-calc.txt",
+    "drawings": [
+      {
+        "path": "samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+        "sheet_id": "A-101",
+        "format": "pdf"
+      }
+    ]
+  }
+}
