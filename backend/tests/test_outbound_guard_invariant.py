@@ -56,7 +56,7 @@ def test_guarded_adapters_actually_use_safe_urlopen() -> None:
     for rel in (
         "infrastructure/adapters/bsi_validation_service.py",
         "infrastructure/adapters/http_bcf_api_client.py",
-        "infrastructure/adapters/kimi_k3_advisory_client.py",
+        "infrastructure/adapters/vlm_advisory_client.py",
         "infrastructure/adapters/openai_compat_llm_provider.py",
         "infrastructure/security/oidc_token_validator.py",
     ):

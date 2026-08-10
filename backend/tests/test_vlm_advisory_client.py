@@ -28,14 +28,14 @@ from aerobim.domain.ai_tool_registry import (
 )
 from aerobim.domain.models import DrawingSource
 from aerobim.domain.vlm_grounding import ground_vlm_drawing_response
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
-    KimiAdvisoryError,
-    KimiK3AdvisoryClient,
-    KimiReadResult,
+from aerobim.infrastructure.adapters.vlm_advisory_client import (
+    VlmAdvisoryError,
+    VlmAdvisoryClient,
+    VlmReadResult,
     VlmAdvisoryClient,
     profile_for,
 )
-from aerobim.infrastructure.adapters.kimi_vlm_drawing_pipeline import KimiVlmDrawingPipeline
+from aerobim.infrastructure.adapters.vlm_drawing_pipeline import VlmDrawingPipeline
 
 
 def _settings(**overrides: object) -> Settings:
@@ -177,8 +177,8 @@ class KimiClientTests(unittest.TestCase):
             "utf-8"
         )
 
-    def _client(self, transport) -> KimiK3AdvisoryClient:  # noqa: ANN001
-        return KimiK3AdvisoryClient(
+    def _client(self, transport) -> VlmAdvisoryClient:  # noqa: ANN001
+        return VlmAdvisoryClient(
             base_url="https://kimi.example.com/v1",
             api_key="secret-key-abc",
             model="kimi-k3",
@@ -207,42 +207,42 @@ class KimiClientTests(unittest.TestCase):
 
     def test_missing_choices_raises(self) -> None:
         client = self._client(lambda *a, **k: b'{"no":"choices"}')
-        with self.assertRaises(KimiAdvisoryError):
+        with self.assertRaises(VlmAdvisoryError):
             client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
 
     def test_non_json_content_raises(self) -> None:
         env = json.dumps({"choices": [{"message": {"content": "not json"}}]}).encode("utf-8")
         client = self._client(lambda *a, **k: env)
-        with self.assertRaises(KimiAdvisoryError):
+        with self.assertRaises(VlmAdvisoryError):
             client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
 
     def test_requires_base_url_and_key(self) -> None:
-        with self.assertRaises(KimiAdvisoryError):
-            KimiK3AdvisoryClient(base_url="", api_key="k")
-        with self.assertRaises(KimiAdvisoryError):
-            KimiK3AdvisoryClient(base_url="https://x", api_key="")
+        with self.assertRaises(VlmAdvisoryError):
+            VlmAdvisoryClient(base_url="", api_key="k")
+        with self.assertRaises(VlmAdvisoryError):
+            VlmAdvisoryClient(base_url="https://x", api_key="")
 
     def test_default_transport_blocks_private_ip_ssrf(self) -> None:
         # No transport injected → default transport uses the SSRF guard.
-        client = KimiK3AdvisoryClient(base_url="https://127.0.0.1", api_key="k")
+        client = VlmAdvisoryClient(base_url="https://127.0.0.1", api_key="k")
         with self.assertRaises(UnsafeOutboundUrlError):
             client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
 
     def test_default_transport_caps_response_size(self) -> None:
         oversized = b"x" * 64
-        client = KimiK3AdvisoryClient(
+        client = VlmAdvisoryClient(
             base_url="https://kimi.example.com/v1",
             api_key="k",
             max_response_bytes=8,
             allowed_hosts=frozenset({"kimi.example.com"}),
         )
         with patch.object(outbound_url, "safe_urlopen", lambda *a, **k: _FakeResp(oversized)):
-            with self.assertRaises(KimiAdvisoryError):
+            with self.assertRaises(VlmAdvisoryError):
                 client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
 
     def test_default_transport_rejects_non_allowlisted_host(self) -> None:
         with self.assertRaises(RuntimeError):
-            KimiK3AdvisoryClient(
+            VlmAdvisoryClient(
                 base_url="https://evil.example.com/v1",
                 api_key="k",
             )
@@ -253,7 +253,7 @@ class KimiClientTests(unittest.TestCase):
         content_with_nan = '{"regions":[{"bbox":[1,2,3,4],"confidence":NaN}]}'
         env = json.dumps({"choices": [{"message": {"content": content_with_nan}}]}).encode("utf-8")
         client = self._client(lambda *a, **k: env)
-        with self.assertRaises(KimiAdvisoryError):
+        with self.assertRaises(VlmAdvisoryError):
             client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
 
     def test_content_json_fence_parses(self) -> None:
@@ -326,7 +326,7 @@ class VlmProfileAndContractTests(unittest.TestCase):
         client = VlmAdvisoryClient(
             base_url="https://x/v1", api_key="k", transport=lambda *a, **k: env
         )
-        with self.assertRaises(KimiAdvisoryError) as ctx:
+        with self.assertRaises(VlmAdvisoryError) as ctx:
             client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
         self.assertEqual(ctx.exception.reason_code, "TRUNCATED")
 
@@ -337,7 +337,7 @@ class VlmProfileAndContractTests(unittest.TestCase):
         client = VlmAdvisoryClient(
             base_url="https://x/v1", api_key="k", transport=lambda *a, **k: env
         )
-        with self.assertRaises(KimiAdvisoryError) as ctx:
+        with self.assertRaises(VlmAdvisoryError) as ctx:
             client.read_drawing(b"x", media_type="image/png", sheet_id="S1", prompt="p")
         self.assertEqual(ctx.exception.reason_code, "EMPTY_CONTENT")
 
@@ -382,28 +382,28 @@ class VlmProfileAndContractTests(unittest.TestCase):
 
 class KimiConfigGateTests(unittest.TestCase):
     def test_disabled_by_default(self) -> None:
-        self.assertFalse(_settings().kimi_advisory_ready())
+        self.assertFalse(_settings().vlm_advisory_ready())
 
     def test_enabled_but_unconfigured_is_not_ready(self) -> None:
-        self.assertFalse(_settings(kimi_k3_enabled=True).kimi_advisory_ready())
+        self.assertFalse(_settings(vlm_enabled=True).vlm_advisory_ready())
 
     def test_dev_open_data_ready_when_configured(self) -> None:
         ready = _settings(
-            kimi_k3_enabled=True,
-            kimi_api_base_url="https://kimi.example.com/v1",
-            kimi_api_key="k",
+            vlm_enabled=True,
+            vlm_api_base_url="https://kimi.example.com/v1",
+            vlm_api_key="k",
             signoff_profile="development",
-        ).kimi_advisory_ready()
+        ).vlm_advisory_ready()
         self.assertTrue(ready)
 
     def test_customer_profile_hard_disables_public_api(self) -> None:
         for profile in ("samolet_pilot", "production"):
             ready = _settings(
-                kimi_k3_enabled=True,
-                kimi_api_base_url="https://kimi.example.com/v1",
-                kimi_api_key="k",
+                vlm_enabled=True,
+                vlm_api_base_url="https://kimi.example.com/v1",
+                vlm_api_key="k",
                 signoff_profile=profile,
-            ).kimi_advisory_ready()
+            ).vlm_advisory_ready()
             self.assertFalse(ready, profile)
 
 
@@ -415,11 +415,11 @@ class _CountingReader:
 
     def read_drawing(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, prompt: str
-    ) -> KimiReadResult:
+    ) -> VlmReadResult:
         self.calls += 1
         if self._raise is not None:
             raise self._raise
-        return KimiReadResult(content=self._response, usage={}, determinism_basis="test")
+        return VlmReadResult(content=self._response, usage={}, determinism_basis="test")
 
 
 def _png_source(tmp: str, name: str = "AR-01.png") -> DrawingSource:
@@ -431,7 +431,7 @@ def _png_source(tmp: str, name: str = "AR-01.png") -> DrawingSource:
 class KimiVlmPipelineTests(unittest.TestCase):
     def test_not_ready_degrades_without_calling_vlm(self) -> None:
         reader = _CountingReader()
-        pipeline = KimiVlmDrawingPipeline(reader, ready=False)
+        pipeline = VlmDrawingPipeline(reader, ready=False)
         with tempfile.TemporaryDirectory() as tmp:
             result = pipeline.analyze(_png_source(tmp), mode="auto")
         self.assertEqual(reader.calls, 0)
@@ -440,7 +440,7 @@ class KimiVlmPipelineTests(unittest.TestCase):
 
     def test_ocr_only_mode_does_not_call_vlm(self) -> None:
         reader = _CountingReader()
-        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        pipeline = VlmDrawingPipeline(reader, ready=True)
         with tempfile.TemporaryDirectory() as tmp:
             result = pipeline.analyze(_png_source(tmp), mode="ocr_only")
         self.assertEqual(reader.calls, 0)
@@ -450,19 +450,19 @@ class KimiVlmPipelineTests(unittest.TestCase):
         reader = _CountingReader(
             {"regions": [{"bbox": [1, 2, 3, 4], "text": "AR-01", "confidence": 0.9}]}
         )
-        pipeline = KimiVlmDrawingPipeline(reader, ready=True, model_id="kimi-k3")
+        pipeline = VlmDrawingPipeline(reader, ready=True, model_id="kimi-k3")
         with tempfile.TemporaryDirectory() as tmp:
             result = pipeline.analyze(_png_source(tmp), mode="auto")
         self.assertEqual(reader.calls, 1)
         self.assertEqual(len(result.regions), 1)
         self.assertEqual(result.annotations, ())
-        self.assertEqual(result.pipeline_mode_used, "kimi_vlm_candidate")
+        self.assertEqual(result.pipeline_mode_used, "vlm_candidate")
         self.assertTrue(result.degraded)  # candidates never verified CV
         self.assertIn("cv_human_level remains", result.reason or "")
 
     def test_schema_deviation_fails_closed(self) -> None:
         reader = _CountingReader({"no_regions": True})
-        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        pipeline = VlmDrawingPipeline(reader, ready=True)
         with tempfile.TemporaryDirectory() as tmp:
             result = pipeline.analyze(_png_source(tmp), mode="auto")
         self.assertEqual(reader.calls, 1)
@@ -470,8 +470,8 @@ class KimiVlmPipelineTests(unittest.TestCase):
         self.assertEqual(result.pipeline_mode_used, "unavailable")
 
     def test_client_error_fails_closed(self) -> None:
-        reader = _CountingReader(raise_exc=KimiAdvisoryError("boom"))
-        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        reader = _CountingReader(raise_exc=VlmAdvisoryError("boom"))
+        pipeline = VlmDrawingPipeline(reader, ready=True)
         with tempfile.TemporaryDirectory() as tmp:
             result = pipeline.analyze(_png_source(tmp), mode="auto")
         self.assertTrue(result.degraded)
@@ -479,7 +479,7 @@ class KimiVlmPipelineTests(unittest.TestCase):
 
     def test_unsupported_suffix_degrades_before_read(self) -> None:
         reader = _CountingReader()
-        pipeline = KimiVlmDrawingPipeline(reader, ready=True)
+        pipeline = VlmDrawingPipeline(reader, ready=True)
         source = DrawingSource(path=Path("nonexistent/plan.pdf"), sheet_id="S1")
         result = pipeline.analyze(source, mode="auto")
         self.assertEqual(reader.calls, 0)
@@ -499,12 +499,12 @@ class KimiVlmPipelineTests(unittest.TestCase):
                 ]
             }
         ).encode("utf-8")
-        client = KimiK3AdvisoryClient(
+        client = VlmAdvisoryClient(
             base_url="https://kimi.example.com/v1",
             api_key="k",
             transport=lambda url, headers, body: envelope,
         )
-        pipeline = KimiVlmDrawingPipeline(client, ready=True)
+        pipeline = VlmDrawingPipeline(client, ready=True)
         with tempfile.TemporaryDirectory() as tmp:
             result = pipeline.analyze(_png_source(tmp), mode="auto")
         self.assertEqual(len(result.regions), 1)
@@ -515,7 +515,7 @@ class KimiVlmPipelineTests(unittest.TestCase):
         # Red Team: size gate must trip on stat() before read_bytes (OOM guard);
         # the VLM is not called.
         reader = _CountingReader({"regions": []})
-        pipeline = KimiVlmDrawingPipeline(reader, ready=True, max_image_bytes=4)
+        pipeline = VlmDrawingPipeline(reader, ready=True, max_image_bytes=4)
         with tempfile.TemporaryDirectory() as tmp:
             result = pipeline.analyze(_png_source(tmp), mode="auto")
         self.assertEqual(reader.calls, 0)
@@ -525,9 +525,9 @@ class KimiVlmPipelineTests(unittest.TestCase):
 
 class KimiAdvisorySmokeTests(unittest.TestCase):
     def test_not_run_without_credentials(self) -> None:
-        from aerobim.tools.kimi_advisory_smoke import run_smoke
+        from aerobim.tools.vlm_advisory_smoke import run_smoke
 
-        with patch.dict(os.environ, {"AEROBIM_KIMI_API_BASE_URL": "", "AEROBIM_KIMI_API_KEY": ""}):
+        with patch.dict(os.environ, {"AEROBIM_VLM_API_BASE_URL": "", "AEROBIM_VLM_API_KEY": ""}):
             report = run_smoke(Path("nonexistent.png"), sheet_id="S1")
         self.assertEqual(report["status"], "NOT_RUN")
 

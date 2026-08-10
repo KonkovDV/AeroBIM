@@ -8,10 +8,11 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from aerobim.application.services.hybrid_route_gate import HybridRouteGate
-from aerobim.tools.kimi_advisory_smoke import run_smoke
+from aerobim.tools.vlm_advisory_smoke import run_smoke
 from aerobim.tools.vlm_smoke_gate import (
     evaluate_vlm_smoke_egress,
     gate_blocks_external,
+    smoke_signoff_blocks_external,
 )
 
 
@@ -44,6 +45,29 @@ class VlmSmokeGateTests(unittest.TestCase):
         )
         self.assertTrue(gate_blocks_external(result))
 
+    def test_whole_sheet_requires_explicit_opt_in(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            image = Path(tmp) / "open.png"
+            image.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 16)
+            with patch.dict(
+                "os.environ",
+                {
+                    "AEROBIM_VLM_API_BASE_URL": "https://example.invalid",
+                    "AEROBIM_VLM_API_KEY": "test-key",
+                },
+            ):
+                report = run_smoke(image, sheet_id="S1", tenant_id="open-data-smoke")
+        self.assertEqual(report["status"], "NOT_RUN")
+        self.assertIn("whole-sheet", str(report["reason"]))
+
+    def test_pilot_signoff_blocks_smoke(self) -> None:
+        class _Pilot:
+            signoff_profile = "samolet_pilot"
+
+        reason = smoke_signoff_blocks_external(settings=_Pilot())
+        self.assertIsNotNone(reason)
+        self.assertIn("samolet_pilot", reason or "")
+
     def test_advisory_smoke_blocked_never_builds_client(self) -> None:
         factory = MagicMock()
         with tempfile.TemporaryDirectory() as tmp:
@@ -52,8 +76,8 @@ class VlmSmokeGateTests(unittest.TestCase):
             with patch.dict(
                 "os.environ",
                 {
-                    "AEROBIM_KIMI_API_BASE_URL": "https://example.invalid",
-                    "AEROBIM_KIMI_API_KEY": "test-key",
+                    "AEROBIM_VLM_API_BASE_URL": "https://example.invalid",
+                    "AEROBIM_VLM_API_KEY": "test-key",
                 },
             ):
                 report = run_smoke(
@@ -61,6 +85,7 @@ class VlmSmokeGateTests(unittest.TestCase):
                     sheet_id="S1",
                     tenant_id="",  # empty → blocked
                     client_factory=factory,
+                    allow_whole_sheet=True,
                 )
         self.assertEqual(report["status"], "BLOCKED_BY_GATE")
         factory.assert_not_called()

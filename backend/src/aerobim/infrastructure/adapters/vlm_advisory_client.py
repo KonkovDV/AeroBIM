@@ -87,7 +87,7 @@ def observations_schema_hash() -> str:
 
 
 @dataclass(frozen=True)
-class KimiModelProfile:
+class VlmModelProfile:
     """Per-model request-shaping capabilities (avoids breaking the tier-C vLLM path)."""
 
     model_id: str
@@ -109,8 +109,8 @@ def _strict_regions_response_format() -> dict[str, Any]:
     }
 
 
-def kimi_k3_api_profile(model_id: str = "kimi-k3") -> KimiModelProfile:
-    return KimiModelProfile(
+def kimi_k3_api_profile(model_id: str = "kimi-k3") -> VlmModelProfile:
+    return VlmModelProfile(
         model_id=model_id,
         send_temperature=False,
         response_format=_strict_regions_response_format(),
@@ -120,8 +120,8 @@ def kimi_k3_api_profile(model_id: str = "kimi-k3") -> KimiModelProfile:
     )
 
 
-def vllm_vlm_profile(model_id: str) -> KimiModelProfile:
-    return KimiModelProfile(
+def vllm_vlm_profile(model_id: str) -> VlmModelProfile:
+    return VlmModelProfile(
         model_id=model_id,
         send_temperature=True,
         response_format={"type": "json_object"},
@@ -131,17 +131,35 @@ def vllm_vlm_profile(model_id: str) -> KimiModelProfile:
     )
 
 
-def profile_for(model_id: str) -> KimiModelProfile:
-    """Default profile inference; anything not the kimi-k3 API is treated as vLLM."""
-    return (
-        kimi_k3_api_profile(model_id)
-        if model_id.strip().lower().startswith("kimi-k3")
-        else vllm_vlm_profile(model_id)
+def yandex_studio_vlm_profile(model_id: str) -> VlmModelProfile:
+    """Yandex AI Studio OpenAI-compat VLM (e.g. qwen3.6-35b-a3b with Base64 images).
+
+    Live evidence (Aug 2026): use ``json_object`` (vendor ``json_schema`` rejects
+    schemas with optional properties); disable thinking via
+    ``chat_template_kwargs`` so content is not parked in ``reasoning_content``.
+    """
+    return VlmModelProfile(
+        model_id=model_id,
+        send_temperature=True,
+        response_format={"type": "json_object"},
+        supports_reasoning_effort=False,
+        disable_server_tools=False,  # omit tools key; empty tools can 400 on Studio
+        determinism_basis="vendor_think_off",
     )
 
 
+def profile_for(model_id: str) -> VlmModelProfile:
+    """Default profile inference by model URI / id prefix."""
+    mid = model_id.strip().lower()
+    if mid.startswith("kimi-k3"):
+        return kimi_k3_api_profile(model_id)
+    if mid.startswith("gpt://") or "qwen3.6" in mid or "yandex" in mid:
+        return yandex_studio_vlm_profile(model_id)
+    return vllm_vlm_profile(model_id)
+
+
 @dataclass(frozen=True)
-class KimiReadResult:
+class VlmReadResult:
     """Client output: structured content + billing usage + determinism basis."""
 
     content: dict[str, Any]
@@ -149,7 +167,7 @@ class KimiReadResult:
     determinism_basis: str
 
 
-class KimiAdvisoryError(RuntimeError):
+class VlmAdvisoryError(RuntimeError):
     """Raised when the VLM advisory call fails or returns an unusable response.
 
     ``reason_code`` classifies the failure so the pipeline can fail closed with a
@@ -188,15 +206,19 @@ class VlmAdvisoryClient:
         base_url: str,
         api_key: str,
         model: str = "kimi-k3",
-        profile: KimiModelProfile | None = None,
+        profile: VlmModelProfile | None = None,
         reasoning_effort: str = "low",
         timeout_seconds: float = _DEFAULT_TIMEOUT_SECONDS,
         max_response_bytes: int = _DEFAULT_MAX_RESPONSE_BYTES,
         transport: Transport | None = None,
         allowed_hosts: frozenset[str] | None = None,
+        auth_scheme: str = "Bearer",
+        folder_id: str | None = None,
+        disable_thinking: bool | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> None:
         if not base_url or not api_key:
-            raise KimiAdvisoryError("VLM advisory client requires base_url and api_key")
+            raise VlmAdvisoryError("VLM advisory client requires base_url and api_key")
         # Enforce host allowlist only on the real network path. Injected transports
         # are unit-test seams and must not require public DNS names on the allowlist.
         if transport is None:
@@ -217,6 +239,14 @@ class VlmAdvisoryClient:
         self._max_response_bytes = max_response_bytes
         self._transport = transport or self._default_transport
         self._allowed_hosts = allowed_hosts
+        scheme = (auth_scheme or "Bearer").strip() or "Bearer"
+        self._auth_scheme = scheme
+        self._folder_id = (folder_id or "").strip() or None
+        # Auto-enable think-off for Yandex Studio VLM profiles unless caller overrides.
+        if disable_thinking is None:
+            disable_thinking = self._profile.determinism_basis == "vendor_think_off"
+        self._disable_thinking = bool(disable_thinking)
+        self._extra_headers = dict(extra_headers or {})
 
     def __repr__(self) -> str:  # never leak the key
         return f"VlmAdvisoryClient(base_url={self._base_url!r}, model={self._model!r})"
@@ -233,7 +263,7 @@ class VlmAdvisoryClient:
         with safe_urlopen(request, timeout=self._timeout) as response:
             raw = response.read(self._max_response_bytes + 1)
         if len(raw) > self._max_response_bytes:
-            raise KimiAdvisoryError(f"VLM response exceeds {self._max_response_bytes}-byte cap")
+            raise VlmAdvisoryError(f"VLM response exceeds {self._max_response_bytes}-byte cap")
         return cast(bytes, raw)
 
     def _build_payload(
@@ -248,8 +278,6 @@ class VlmAdvisoryClient:
         payload: dict[str, Any] = {
             "model": self._model,
             "response_format": response_format or profile.response_format,
-            # §2.5: never let the model run billable/uncontrolled server tools.
-            "tools": [],
             "messages": [
                 {
                     "role": "system",
@@ -267,11 +295,31 @@ class VlmAdvisoryClient:
                 },
             ],
         }
+        # §2.5: disable billable server tools only when the profile needs it.
+        # Yandex Studio: omit the key entirely (empty tools array is unnecessary).
+        if profile.disable_server_tools:
+            payload["tools"] = []
         if profile.send_temperature:
             payload["temperature"] = 0
         if profile.supports_reasoning_effort:
             payload["reasoning_effort"] = self._reasoning_effort
+        if self._disable_thinking:
+            # Yandex Qwen: top-level enable_thinking → 400; kwargs path returns content.
+            payload["chat_template_kwargs"] = {"enable_thinking": False}
         return payload
+
+    def _request_headers(self) -> dict[str, str]:
+        headers = {
+            "Authorization": f"{self._auth_scheme} {self._api_key}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            **self._extra_headers,
+        }
+        if self._folder_id and "x-folder-id" not in headers:
+            headers["x-folder-id"] = self._folder_id
+        if "x-data-logging-enabled" not in headers:
+            headers["x-data-logging-enabled"] = "false"
+        return headers
 
     def read_drawing(
         self,
@@ -281,7 +329,7 @@ class VlmAdvisoryClient:
         sheet_id: str,
         prompt: str,
         response_format: dict[str, Any] | None = None,
-    ) -> KimiReadResult:
+    ) -> VlmReadResult:
         """Send one image + prompt; return structured content + usage + basis.
 
         Grounding/verdict are the caller's job (``vlm_grounding``); this method
@@ -294,16 +342,12 @@ class VlmAdvisoryClient:
                 data_url, sheet_id=sheet_id, prompt=prompt, response_format=response_format
             )
         ).encode("utf-8")
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+        headers = self._request_headers()
         raw = self._transport(f"{self._base_url}/chat/completions", headers, body)
         try:
             envelope = json.loads(raw.decode("utf-8"), parse_constant=_reject_nonfinite)
         except (ValueError, UnicodeDecodeError) as exc:
-            raise KimiAdvisoryError(
+            raise VlmAdvisoryError(
                 f"VLM response is not valid JSON: {exc}", reason_code="SCHEMA_DEVIATION"
             ) from exc
 
@@ -314,19 +358,19 @@ class VlmAdvisoryClient:
             try:
                 loaded = json.loads(_strip_json_fence(content), parse_constant=_reject_nonfinite)
             except ValueError as exc:
-                raise KimiAdvisoryError(
+                raise VlmAdvisoryError(
                     f"VLM message content is not valid JSON: {exc}",
                     reason_code="SCHEMA_DEVIATION",
                 ) from exc
             if not isinstance(loaded, dict):
-                raise KimiAdvisoryError(
+                raise VlmAdvisoryError(
                     "VLM structured content must be a JSON object",
                     reason_code="SCHEMA_DEVIATION",
                 )
             parsed = loaded
 
         usage = envelope.get("usage") if isinstance(envelope.get("usage"), dict) else {}
-        return KimiReadResult(
+        return VlmReadResult(
             content=parsed, usage=dict(usage), determinism_basis=self._profile.determinism_basis
         )
 
@@ -350,29 +394,45 @@ class VlmAdvisoryClient:
         sheet_id: str,
         region_id: str,
         prompt: str,
-    ) -> KimiReadResult:
+    ) -> VlmReadResult:
         """Region-restricted read (§3/§4): one region crop → the observations schema."""
+        effective_prompt = prompt
+        # json_object tiers (Yandex Studio, many vLLM builds) do not constrain
+        # decode to OBSERVATIONS_RESPONSE_SCHEMA — embed a compact example so the
+        # model returns the required top-level ``observations`` array.
+        if self._observations_response_format().get("type") == "json_object":
+            effective_prompt = (
+                f"{prompt}\n\n"
+                "Return ONLY a JSON object with this shape (no markdown):\n"
+                '{"readable": true, "unreadable_reason": null, "observations": ['
+                '{"kind": "dimension", "raw_value": "150 mm", '
+                '"bbox_rel": [0.1, 0.1, 0.5, 0.3], "confidence": 0.8, '
+                '"unit": "mm", "ifc_target_hint": null, "evidence_note": ""}'
+                "]}\n"
+                "kind enum: text|dimension|designation|table_row|stamp_field|candidate_class. "
+                "bbox_rel is relative to THIS crop, values in 0..1."
+            )
         return self.read_drawing(
             image_bytes,
             media_type=media_type,
             sheet_id=f"{sheet_id}#{region_id}",
-            prompt=prompt,
+            prompt=effective_prompt,
             response_format=self._observations_response_format(),
         )
 
     @staticmethod
     def _extract_message_content(envelope: object) -> str | dict[str, Any]:
         if not isinstance(envelope, dict):
-            raise KimiAdvisoryError(
+            raise VlmAdvisoryError(
                 "VLM response envelope must be an object", reason_code="SCHEMA_DEVIATION"
             )
         choices = envelope.get("choices")
         if not isinstance(choices, list) or not choices:
-            raise KimiAdvisoryError("VLM response has no choices", reason_code="SCHEMA_DEVIATION")
+            raise VlmAdvisoryError("VLM response has no choices", reason_code="SCHEMA_DEVIATION")
         first = choices[0] if isinstance(choices[0], dict) else {}
         # §2.4: a truncated JSON must be classified, never mistaken for "found nothing".
         if first.get("finish_reason") == "length":
-            raise KimiAdvisoryError(
+            raise VlmAdvisoryError(
                 "VLM response was truncated (finish_reason=length)", reason_code="TRUNCATED"
             )
         message = first.get("message") if isinstance(first.get("message"), dict) else None
@@ -384,15 +444,18 @@ class VlmAdvisoryClient:
         # Thinking models may spend the budget on reasoning_content and return
         # empty content — that is EMPTY_CONTENT, distinct from a schema problem.
         has_reasoning = bool(message and str(message.get("reasoning_content") or "").strip())
-        raise KimiAdvisoryError(
+        raise VlmAdvisoryError(
             "VLM response has empty content"
             + (" (reasoning_content present)" if has_reasoning else ""),
             reason_code="EMPTY_CONTENT",
         )
 
 
-# Backwards-compatible alias (the class was formerly named KimiK3AdvisoryClient).
+# Backwards-compatible aliases (historical Kimi-first naming).
 KimiK3AdvisoryClient = VlmAdvisoryClient
+KimiAdvisoryError = VlmAdvisoryError
+KimiReadResult = VlmReadResult
+KimiModelProfile = VlmModelProfile
 
 __all__ = [
     "KimiAdvisoryError",
@@ -402,8 +465,12 @@ __all__ = [
     "ReasonCode",
     "Transport",
     "VlmAdvisoryClient",
+    "VlmAdvisoryError",
+    "VlmModelProfile",
+    "VlmReadResult",
     "kimi_k3_api_profile",
     "observations_schema_hash",
     "profile_for",
     "vllm_vlm_profile",
+    "yandex_studio_vlm_profile",
 ]

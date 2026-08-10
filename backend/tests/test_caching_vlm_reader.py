@@ -14,7 +14,7 @@ from aerobim.infrastructure.adapters.caching_vlm_reader import (
     CachingVlmReader,
     FilesystemVlmResponseStore,
 )
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import KimiReadResult
+from aerobim.infrastructure.adapters.vlm_advisory_client import VlmReadResult
 
 _CONTENT = {"readable": True, "observations": []}
 
@@ -25,12 +25,12 @@ class _CountingReader:
 
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
-    ) -> KimiReadResult:
+    ) -> VlmReadResult:
         self.calls += 1
-        return KimiReadResult(content=_CONTENT, usage={}, determinism_basis="live")
+        return VlmReadResult(content=_CONTENT, usage={}, determinism_basis="live")
 
 
-def _read(reader: CachingVlmReader, image: bytes = b"img") -> KimiReadResult:
+def _read(reader: CachingVlmReader, image: bytes = b"img") -> VlmReadResult:
     return reader.read_region(
         image, media_type="image/png", sheet_id="AR-01", region_id="stamp", prompt="p"
     )

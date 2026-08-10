@@ -55,8 +55,11 @@ aerobim-validate-customer-intake-gate = "aerobim.tools.validate_customer_intake_
 aerobim-measure-package-sla = "aerobim.tools.measure_package_sla:main"
 aerobim-export-evidence-bundle = "aerobim.tools.export_evidence_bundle:main"
 aerobim-register-dwg-conversion = "aerobim.tools.register_dwg_conversion:main"
-aerobim-kimi-advisory-smoke = "aerobim.tools.kimi_advisory_smoke:main"
-aerobim-kimi-region-smoke = "aerobim.tools.kimi_region_smoke:main"
+aerobim-vlm-advisory-smoke = "aerobim.tools.vlm_advisory_smoke:main"
+aerobim-vlm-region-smoke = "aerobim.tools.vlm_region_smoke:main"
+# Deprecated aliases (historical Kimi-first naming).
+aerobim-kimi-advisory-smoke = "aerobim.tools.vlm_advisory_smoke:main"
+aerobim-kimi-region-smoke = "aerobim.tools.vlm_region_smoke:main"
 
 [project.optional-dependencies]
 dev = [
@@ -127,7 +130,7 @@ select = ["E", "F", "I", "UP", "B", "S"]
 "src/aerobim/core/security/outbound_url.py" = ["S101", "S310"]
 "src/aerobim/infrastructure/adapters/bsi_validation_service.py" = ["S310"]
 "src/aerobim/infrastructure/adapters/http_bcf_api_client.py" = ["S310"]
-"src/aerobim/infrastructure/adapters/kimi_k3_advisory_client.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/vlm_advisory_client.py" = ["S310"]
 "src/aerobim/infrastructure/adapters/llm_extraction_adapters.py" = ["S310"]
 "src/aerobim/infrastructure/adapters/openai_compat_llm_provider.py" = ["S310"]
 "src/aerobim/infrastructure/security/oidc_token_validator.py" = ["S310"]

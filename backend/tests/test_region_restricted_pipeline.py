@@ -7,9 +7,9 @@ from pathlib import Path
 
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
 from aerobim.domain.region_read_plan import plan_region_reads, subtract_aabb
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
-    KimiAdvisoryError,
-    KimiReadResult,
+from aerobim.infrastructure.adapters.vlm_advisory_client import (
+    VlmAdvisoryError,
+    VlmReadResult,
 )
 from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
     RegionRestrictedVlmPipeline,
@@ -67,11 +67,11 @@ class _FakeReader:
 
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
-    ) -> KimiReadResult:
+    ) -> VlmReadResult:
         self.calls += 1
         if self._raise is not None:
             raise self._raise
-        return KimiReadResult(content=self._content, usage={}, determinism_basis="test")
+        return VlmReadResult(content=self._content, usage={}, determinism_basis="test")
 
 
 def _source() -> DrawingSource:
@@ -510,7 +510,7 @@ class RegionRestrictedPipelineTests(unittest.TestCase):
         self.assertIsNotNone(result.truncation_reason)
 
     def test_reader_error_degrades_that_region_not_the_sheet(self) -> None:
-        reader = _FakeReader(raise_exc=KimiAdvisoryError("boom", reason_code="TRUNCATED"))
+        reader = _FakeReader(raise_exc=VlmAdvisoryError("boom", reason_code="TRUNCATED"))
         pipe = self._pipeline(reader=reader, cropper=_FakeCropper(), detector=_FakeDetector(1))
         result = pipe.read_sheet(_source(), text_layer_present=False)
         self.assertFalse(result.skipped_vlm)

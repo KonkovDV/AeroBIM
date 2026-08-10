@@ -1,7 +1,7 @@
-"""Kimi VLM drawing pipeline — advisory candidate regions with OCR degrade.
+"""Advisory VLM drawing pipeline — candidate regions with OCR degrade.
 
 Implements ``MultimodalDrawingPipeline`` by composing the SSRF-guarded
-``KimiK3AdvisoryClient`` with domain-pure ``vlm_grounding``. Mirrors the honesty
+``VlmAdvisoryClient`` with domain-pure ``vlm_grounding``. Mirrors the honesty
 posture of ``OcrFallbackMultimodalDrawingPipeline``:
 
 - the result is **always** ``degraded=True`` — VLM output is candidate regions,
@@ -11,7 +11,7 @@ posture of ``OcrFallbackMultimodalDrawingPipeline``:
 - the deterministic engine and the expert own the verdict (ADR-001 / TR-2/27/31).
 
 Not wired into ``bootstrap_container`` by default: constructed only when
-``settings.kimi_advisory_ready()`` and on open-data tiers (see scenario matrix).
+``settings.vlm_advisory_ready()`` and on open-data tiers (see scenario matrix).
 """
 
 from __future__ import annotations
@@ -21,9 +21,9 @@ from typing import Literal, Protocol
 from aerobim.domain.consistency import MultimodalDrawingResult
 from aerobim.domain.models import DrawingSource
 from aerobim.domain.vlm_grounding import ground_vlm_drawing_response
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
-    KimiAdvisoryError,
-    KimiReadResult,
+from aerobim.infrastructure.adapters.vlm_advisory_client import (
+    VlmAdvisoryError,
+    VlmReadResult,
 )
 
 _VLM_IMAGE_MEDIA_TYPES = {
@@ -43,7 +43,7 @@ _DEFAULT_PROMPT = (
 class _DrawingReader(Protocol):
     def read_drawing(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, prompt: str
-    ) -> KimiReadResult: ...
+    ) -> VlmReadResult: ...
 
 
 class _FallbackPipeline(Protocol):
@@ -52,12 +52,8 @@ class _FallbackPipeline(Protocol):
     ) -> MultimodalDrawingResult: ...
 
 
-class KimiVlmDrawingPipeline:
-    """Advisory VLM reads (model-agnostic; Kimi is one provider profile).
-
-    OCR-degrades on any non-VLM / failure path. Kept named ``Kimi*`` for
-    back-compat; ``VlmDrawingPipeline`` is the model-agnostic alias.
-    """
+class VlmDrawingPipeline:
+    """Advisory VLM reads (provider-agnostic: Yandex/Qwen, vLLM, or Kimi profile)."""
 
     def __init__(
         self,
@@ -87,7 +83,7 @@ class KimiVlmDrawingPipeline:
         # Fail-closed gate: not configured/ready, explicit OCR-only, or no path →
         # never invoke the VLM; degrade to OCR (or unavailable).
         if not self._ready or self._client is None:
-            return self._degrade(source, "Kimi advisory not ready (fail-closed)")
+            return self._degrade(source, "VLM advisory not ready (fail-closed)")
         if mode == "ocr_only" or source.path is None:
             return self._degrade(source, "VLM not invoked (ocr_only or missing path)")
 
@@ -107,16 +103,16 @@ class KimiVlmDrawingPipeline:
             read = self._client.read_drawing(
                 image_bytes, media_type=media_type, sheet_id=sheet_id, prompt=self._prompt
             )
-        except KimiAdvisoryError as exc:
+        except VlmAdvisoryError as exc:
             # §2.4: classified failure (TRUNCATED/EMPTY_CONTENT/SCHEMA_DEVIATION/...)
             # must be surfaced faithfully, never as "found nothing".
             return self._degrade(
-                source, f"Kimi VLM read failed (fail-closed, {exc.reason_code}): {exc}"
+                source, f"VLM read failed (fail-closed, {exc.reason_code}): {exc}"
             )
         except OSError as exc:
-            return self._degrade(source, f"Kimi VLM read failed (fail-closed, IO): {exc}")
+            return self._degrade(source, f"VLM read failed (fail-closed, IO): {exc}")
         except Exception as exc:  # noqa: BLE001 — SSRF/transport errors must fail closed, not OK
-            return self._degrade(source, f"Kimi VLM transport error (fail-closed): {exc}")
+            return self._degrade(source, f"VLM transport error (fail-closed): {exc}")
 
         grounded = ground_vlm_drawing_response(
             read.content,
@@ -126,14 +122,14 @@ class KimiVlmDrawingPipeline:
         )
         if not grounded.parse_ok:
             return self._degrade(
-                source, f"Kimi VLM schema deviation (fail-closed): {grounded.reason}"
+                source, f"VLM schema deviation (fail-closed): {grounded.reason}"
             )
 
         # Candidate regions only — no fabricated annotations; always degraded.
         return MultimodalDrawingResult(
             annotations=(),
             regions=grounded.regions,
-            pipeline_mode_used="kimi_vlm_candidate",
+            pipeline_mode_used="vlm_candidate",
             degraded=True,
             reason=(
                 f"Advisory VLM candidate regions ({len(grounded.regions)}; "
@@ -155,7 +151,7 @@ class KimiVlmDrawingPipeline:
         )
 
 
-# Model-agnostic alias (§5): the contour is not named after one model.
-VlmDrawingPipeline = KimiVlmDrawingPipeline
+# Deprecated alias (historical Kimi-first naming).
+KimiVlmDrawingPipeline = VlmDrawingPipeline
 
 __all__ = ["KimiVlmDrawingPipeline", "VlmDrawingPipeline"]

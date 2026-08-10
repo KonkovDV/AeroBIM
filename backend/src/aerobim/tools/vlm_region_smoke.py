@@ -7,7 +7,7 @@ real endpoint round-trips through our parser BEFORE the Aug 4-20 protocol, and
 (with ``--cache-dir``) that a second run replays byte-identically without a call.
 
 Safety: makes real outbound calls; run ONLY on non-NDA / open sample images.
-Requires ``AEROBIM_KIMI_API_BASE_URL`` + ``AEROBIM_KIMI_API_KEY``; without them
+Requires ``AEROBIM_VLM_API_BASE_URL`` + ``AEROBIM_VLM_API_KEY``; without them
 it prints NOT_RUN and exits 2 (a skip, never a fabricated pass). Advisory only —
 the deterministic verdict is untouched.
 
@@ -36,6 +36,7 @@ from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
 from aerobim.tools.vlm_smoke_gate import (
     evaluate_vlm_smoke_egress,
     gate_blocks_external,
+    smoke_signoff_blocks_external,
     smoke_tenant_id,
 )
 
@@ -97,12 +98,24 @@ def build_region_smoke_report(
 
 
 def _build_pipeline(
-    *, base_url: str, api_key: str, model: str, reasoning: str, cache_dir: str | None
+    *,
+    base_url: str,
+    api_key: str,
+    model: str,
+    reasoning: str,
+    cache_dir: str | None,
+    auth_scheme: str = "Bearer",
+    folder_id: str | None = None,
 ) -> RegionRestrictedVlmPipeline:
-    from aerobim.infrastructure.adapters.kimi_k3_advisory_client import VlmAdvisoryClient
+    from aerobim.infrastructure.adapters.vlm_advisory_client import VlmAdvisoryClient
 
     client = VlmAdvisoryClient(
-        base_url=base_url, api_key=api_key, model=model, reasoning_effort=reasoning
+        base_url=base_url,
+        api_key=api_key,
+        model=model,
+        reasoning_effort=reasoning,
+        auth_scheme=auth_scheme,
+        folder_id=folder_id,
     )
     reader: object = client
     if cache_dir:
@@ -110,7 +123,7 @@ def _build_pipeline(
             CachingVlmReader,
             FilesystemVlmResponseStore,
         )
-        from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
+        from aerobim.infrastructure.adapters.vlm_advisory_client import (
             observations_schema_hash,
         )
 
@@ -139,11 +152,36 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=None, help="artifact path (JSON)")
     args = parser.parse_args(argv)
 
-    base_url = (os.getenv("AEROBIM_KIMI_API_BASE_URL") or "").strip()
-    api_key = (os.getenv("AEROBIM_KIMI_API_KEY") or "").strip()
-    model = (os.getenv("AEROBIM_KIMI_MODEL") or "kimi-k3").strip() or "kimi-k3"
-    reasoning = (os.getenv("AEROBIM_KIMI_REASONING_EFFORT") or "low").strip().lower() or "low"
-    cache_dir = args.cache_dir or (os.getenv("AEROBIM_KIMI_CACHE_DIR") or "").strip() or None
+    base_url = (
+        os.getenv("AEROBIM_VLM_API_BASE_URL")
+        or os.getenv("AEROBIM_KIMI_API_BASE_URL")
+        or os.getenv("AEROBIM_LLM_BASE_URL")
+        or ""
+    ).strip()
+    api_key = (
+        os.getenv("AEROBIM_VLM_API_KEY")
+        or os.getenv("AEROBIM_KIMI_API_KEY")
+        or os.getenv("AEROBIM_LLM_API_KEY")
+        or ""
+    ).strip()
+    model = (
+        os.getenv("AEROBIM_VLM_MODEL")
+        or os.getenv("AEROBIM_KIMI_MODEL")
+        or os.getenv("AEROBIM_LLM_MODEL")
+        or "kimi-k3"
+    ).strip() or "kimi-k3"
+    reasoning = (
+        os.getenv("AEROBIM_VLM_REASONING_EFFORT")
+        or os.getenv("AEROBIM_KIMI_REASONING_EFFORT")
+        or "low"
+    ).strip().lower() or "low"
+    cache_dir = (
+        args.cache_dir
+        or (os.getenv("AEROBIM_VLM_CACHE_DIR") or os.getenv("AEROBIM_KIMI_CACHE_DIR") or "").strip()
+        or None
+    )
+    auth_scheme = (os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip() or "Bearer"
+    folder_id = (os.getenv("AEROBIM_LLM_FOLDER_ID") or "").strip() or None
 
     if not base_url or not api_key:
         print(
@@ -151,7 +189,8 @@ def main(argv: list[str] | None = None) -> int:
                 {
                     "status": "NOT_RUN",
                     "reason": (
-                        "set AEROBIM_KIMI_API_BASE_URL and AEROBIM_KIMI_API_KEY (tier A open data)"
+                        "set AEROBIM_VLM_API_BASE_URL+AEROBIM_VLM_API_KEY "
+                        "(aliases AEROBIM_KIMI_*; or AEROBIM_LLM_* for open data)"
                     ),
                 },
                 ensure_ascii=False,
@@ -162,6 +201,22 @@ def main(argv: list[str] | None = None) -> int:
     if not args.image.is_file():
         print(json.dumps({"status": "NOT_RUN", "reason": f"image not found: {args.image}"}))
         return _SKIP_EXIT
+
+    signoff_block = smoke_signoff_blocks_external()
+    if signoff_block:
+        print(
+            json.dumps(
+                {
+                    "status": "BLOCKED_BY_SIGNOFF",
+                    "reason": signoff_block,
+                    "may_call_external": False,
+                    "claim_boundary": "pilot/production forbids external VLM smoke",
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return _BLOCKED_EXIT
 
     tenant = smoke_tenant_id(args.tenant_id)
     gate_result = evaluate_vlm_smoke_egress(
@@ -181,7 +236,13 @@ def main(argv: list[str] | None = None) -> int:
         return _BLOCKED_EXIT
 
     pipeline = _build_pipeline(
-        base_url=base_url, api_key=api_key, model=model, reasoning=reasoning, cache_dir=cache_dir
+        base_url=base_url,
+        api_key=api_key,
+        model=model,
+        reasoning=reasoning,
+        cache_dir=cache_dir,
+        auth_scheme=auth_scheme,
+        folder_id=folder_id,
     )
     source = DrawingSource(path=args.image, sheet_id=args.sheet_id)
     report = build_region_smoke_report(pipeline, source)

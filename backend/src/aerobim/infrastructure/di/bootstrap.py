@@ -302,7 +302,7 @@ def bootstrap_container(settings: Settings | None = None) -> Container:
         ),
         lifecycle=Lifecycle.SINGLETON,
     )
-    # Advisory VLM (§3/§7): available under kimi_advisory_ready(), but DELIBERATELY
+    # Advisory VLM (§3/§7): available under vlm_advisory_ready(), but DELIBERATELY
     # NOT consumed by AnalyzeProjectPackageUseCase — its candidate regions must
     # never reach engine_issues / summary.passed (advisory OFF==ON invariant).
     container.register(
@@ -918,60 +918,63 @@ def _safe_cache_namespace(value: str | None) -> str | None:
 def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipeline:
     """Region-restricted advisory VLM; fail-closed and NOT on the verdict path.
 
-    Constructed ready only when ``settings.kimi_advisory_ready()`` (opt-in, and
+    Constructed ready only when ``settings.vlm_advisory_ready()`` (opt-in, and
     hard-disabled on samolet_pilot / production). Even when ready it is not wired
     into the deterministic use case, so toggling the flag cannot change
     ``summary.passed`` (advisory OFF==ON). A future advisory surface may consume
     it, but must keep candidate regions out of ``engine_issues``.
     """
     settings = current.resolve(Tokens.SETTINGS)
-    if not settings.kimi_advisory_ready():
+    if not settings.vlm_advisory_ready():
         return RegionRestrictedVlmPipeline(
             region_detector=None, reader=None, cropper=None, ready=False
         )
-    from aerobim.infrastructure.adapters.kimi_k3_advisory_client import VlmAdvisoryClient
+    from aerobim.infrastructure.adapters.vlm_advisory_client import VlmAdvisoryClient
 
     client = VlmAdvisoryClient(
-        base_url=settings.kimi_api_base_url or "",
-        api_key=settings.kimi_api_key or "",
-        model=settings.kimi_model,
-        reasoning_effort=settings.kimi_reasoning_effort,
+        base_url=settings.vlm_api_base_url or "",
+        api_key=settings.vlm_api_key or "",
+        model=settings.vlm_model,
+        reasoning_effort=settings.vlm_reasoning_effort,
         allowed_hosts=frozenset(settings.llm_allowed_hosts),
+        # Yandex Studio (and similar) need auth scheme + folder from the LLM contour.
+        auth_scheme=settings.llm_auth_scheme,
+        folder_id=settings.llm_folder_id,
     )
     # §2.1/§5: deterministic act-grade replay ONLY with a trusted tenant scope.
     # The pipeline is a process singleton with no per-request identity, so a
     # persistent cache without a validated namespace could replay one tenant's
     # response for another. Fail closed: no namespace -> no persistent cache.
     reader: object = client
-    cache_namespace = _safe_cache_namespace(settings.kimi_cache_namespace)
+    cache_namespace = _safe_cache_namespace(settings.vlm_cache_namespace)
     # A configured-but-invalid project fails closed (None); unset project -> "".
     cache_project = (
-        _safe_cache_namespace(settings.kimi_cache_project) if settings.kimi_cache_project else ""
+        _safe_cache_namespace(settings.vlm_cache_project) if settings.vlm_cache_project else ""
     )
-    if settings.kimi_cache_dir and cache_namespace and cache_project is not None:
+    if settings.vlm_cache_dir and cache_namespace and cache_project is not None:
         from aerobim.infrastructure.adapters.caching_vlm_reader import (
             CachingVlmReader,
             FilesystemVlmResponseStore,
         )
-        from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
+        from aerobim.infrastructure.adapters.vlm_advisory_client import (
             observations_schema_hash,
         )
 
         # Physically scope the store under tenant/[project] (defense in depth on
         # top of the namespace+project already folded into the cache key).
-        store_root = Path(settings.kimi_cache_dir) / cache_namespace
+        store_root = Path(settings.vlm_cache_dir) / cache_namespace
         if cache_project:
             store_root = store_root / cache_project
         ttl_seconds = (
-            settings.kimi_cache_ttl_days * 86400.0 if settings.kimi_cache_ttl_days else None
+            settings.vlm_cache_ttl_days * 86400.0 if settings.vlm_cache_ttl_days else None
         )
         reader = CachingVlmReader(
             client,
             FilesystemVlmResponseStore(store_root, ttl_seconds=ttl_seconds),
-            model=settings.kimi_model,
-            endpoint=settings.kimi_api_base_url or "",
+            model=settings.vlm_model,
+            endpoint=settings.vlm_api_base_url or "",
             request_schema_hash=observations_schema_hash(),
-            reasoning_effort=settings.kimi_reasoning_effort,
+            reasoning_effort=settings.vlm_reasoning_effort,
             cache_namespace=cache_namespace,
             cache_project=cache_project or "",
         )

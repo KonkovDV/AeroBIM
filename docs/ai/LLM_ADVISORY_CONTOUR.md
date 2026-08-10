@@ -16,7 +16,11 @@ ingestion → deterministic Shared-gate → advisory overlay → evidence/HITL �
 | HITL review events | Expert confirm / edit | Human-owned |
 | Evidence bundle | Provenance + hashes | No |
 
-Providers (DI): Kimi / Yandex Studio / OpenAI-compat adapters + `MockLlmProvider`. Live calls remain **opt-in** via settings/API keys. Comparative mock bench: `python -m aerobim.tools.benchmark_llm_advisory`.
+Providers (DI): Yandex AI Studio / OpenAI-compat / optional Moonshot Kimi profile +
+`MockLlmProvider`. Live drawing VLM adapter: `vlm_advisory_client.py`
+(`AEROBIM_VLM_*`; deprecated alias `AEROBIM_KIMI_*`). Historical Kimi studies remain
+under `docs/architecture/KIMI_*` (evidence only). Live calls remain **opt-in**.
+Comparative mock bench: `python -m aerobim.tools.benchmark_llm_advisory`.
 
 ## Invariants
 

@@ -55,7 +55,18 @@ python -m aerobim.tools.run_vertical_slice `
 python -c "import json; p=Path('../artifacts/vertical-slice-2026-08-11/slice-summary.json'); d=json.loads(p.read_text(encoding='utf-8')); print(d['report_id'], d['summary'], d['operator_status_counts'], d['metrics'])"
 ```
 
-## Следующие шаги (после 11.08, не в этом срезе)
+## VLM-путь для звонка с ментором (crop → Yandex)
+
+Отдельный runbook: [`mentor-call-mikhail-2026-08-11.md`](mentor-call-mikhail-2026-08-11.md).
+
+```powershell
+python -m aerobim.tools.run_mentor_vlm_demo `
+  --pdf ../samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf `
+  --output ../artifacts/mentor-vlm-2026-08-11
+```
+
+Advisory only: crop региона → Yandex Qwen → observations; **не** меняет `summary.passed`.
+
 
 - Скан-PDF / RapidOCR путь с явным `OCR extraction, not engineering understanding`.
 - Расширение coverage UI до явных 4 состояний на уровне интерфейса.

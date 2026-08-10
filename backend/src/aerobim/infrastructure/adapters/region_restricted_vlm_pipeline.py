@@ -21,9 +21,9 @@ from typing import Protocol
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
 from aerobim.domain.region_read_plan import RegionReadTask, plan_region_reads
 from aerobim.domain.vlm_grounding import VlmObservation, ground_vlm_region_observations
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
-    KimiAdvisoryError,
-    KimiReadResult,
+from aerobim.infrastructure.adapters.vlm_advisory_client import (
+    VlmAdvisoryError,
+    VlmReadResult,
 )
 from aerobim.infrastructure.adapters.pdf_page_orientation import read_page_rotate_degrees
 
@@ -39,7 +39,7 @@ _DEFAULT_REGION_PROMPT = (
 class _RegionReader(Protocol):
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
-    ) -> KimiReadResult: ...
+    ) -> VlmReadResult: ...
 
 
 class _RegionDetector(Protocol):
@@ -223,7 +223,7 @@ class RegionRestrictedVlmPipeline:
                 region_id=task.region_id,
                 prompt=self._prompt,
             )
-        except KimiAdvisoryError as exc:
+        except VlmAdvisoryError as exc:
             return RegionRead(
                 task.region_id, (), True, f"read failed ({exc.reason_code})", crop_sha256=crop_sha
             )
