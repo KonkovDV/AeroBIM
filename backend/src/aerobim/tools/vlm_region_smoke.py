@@ -25,6 +25,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.core.config.vlm_endpoint_gate import refuse_yandex_kimi_default_model
 from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
     HeuristicLayoutRegionDetector,
@@ -195,8 +196,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     cache_namespace = (
         args.cache_namespace
-        or (os.getenv("AEROBIM_VLM_CACHE_NAMESPACE") or os.getenv("AEROBIM_KIMI_CACHE_NAMESPACE") or "")
-        .strip()
+        or (
+            os.getenv("AEROBIM_VLM_CACHE_NAMESPACE")
+            or os.getenv("AEROBIM_KIMI_CACHE_NAMESPACE")
+            or ""
+        ).strip()
         or None
     )
     auth_scheme = (os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip() or "Bearer"
@@ -219,6 +223,17 @@ def main(argv: list[str] | None = None) -> int:
         return _SKIP_EXIT
     if not args.image.is_file():
         print(json.dumps({"status": "NOT_RUN", "reason": f"image not found: {args.image}"}))
+        return _SKIP_EXIT
+
+    yandex_block = refuse_yandex_kimi_default_model(
+        base_url=base_url,
+        model=model,
+        provider=(os.getenv("AEROBIM_LLM_PROVIDER") or "").strip() or None,
+    )
+    if yandex_block:
+        print(
+            json.dumps({"status": "NOT_RUN", "reason": yandex_block}, ensure_ascii=False, indent=2)
+        )
         return _SKIP_EXIT
 
     signoff_block = smoke_signoff_blocks_external()

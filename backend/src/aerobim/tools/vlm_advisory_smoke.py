@@ -21,10 +21,11 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from aerobim.core.config.vlm_endpoint_gate import refuse_yandex_kimi_default_model
 from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.vlm_advisory_client import (
-    VlmAdvisoryError,
     VlmAdvisoryClient,
+    VlmAdvisoryError,
 )
 from aerobim.infrastructure.adapters.vlm_drawing_pipeline import VlmDrawingPipeline
 from aerobim.tools.vlm_smoke_gate import (
@@ -49,9 +50,7 @@ def run_smoke(
     base_url = (
         os.getenv("AEROBIM_VLM_API_BASE_URL") or os.getenv("AEROBIM_KIMI_API_BASE_URL") or ""
     ).strip()
-    api_key = (
-        os.getenv("AEROBIM_VLM_API_KEY") or os.getenv("AEROBIM_KIMI_API_KEY") or ""
-    ).strip()
+    api_key = (os.getenv("AEROBIM_VLM_API_KEY") or os.getenv("AEROBIM_KIMI_API_KEY") or "").strip()
     model = (
         os.getenv("AEROBIM_VLM_MODEL") or os.getenv("AEROBIM_KIMI_MODEL") or "kimi-k3"
     ).strip() or "kimi-k3"
@@ -79,6 +78,14 @@ def run_smoke(
                 "explicitly for open-data raster fixtures only"
             ),
         }
+
+    yandex_block = refuse_yandex_kimi_default_model(
+        base_url=base_url,
+        model=model,
+        provider=(os.getenv("AEROBIM_LLM_PROVIDER") or "").strip() or None,
+    )
+    if yandex_block:
+        return {"status": "NOT_RUN", "reason": yandex_block}
 
     signoff_block = smoke_signoff_blocks_external()
     if signoff_block:

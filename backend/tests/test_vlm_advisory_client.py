@@ -406,6 +406,28 @@ class KimiConfigGateTests(unittest.TestCase):
             ).vlm_advisory_ready()
             self.assertFalse(ready, profile)
 
+    def test_yandex_with_default_kimi_model_is_not_ready(self) -> None:
+        ready = _settings(
+            vlm_enabled=True,
+            vlm_api_base_url="https://llm.api.cloud.yandex.net/v1",
+            vlm_api_key="k",
+            vlm_model="kimi-k3",
+            signoff_profile="development",
+            llm_provider="yandex-ai-studio",
+        ).vlm_advisory_ready()
+        self.assertFalse(ready)
+
+    def test_yandex_with_pinned_qwen_model_is_ready(self) -> None:
+        ready = _settings(
+            vlm_enabled=True,
+            vlm_api_base_url="https://llm.api.cloud.yandex.net/v1",
+            vlm_api_key="k",
+            vlm_model="gpt://folder/qwen3.6-35b-a3b",
+            signoff_profile="development",
+            llm_provider="yandex-ai-studio",
+        ).vlm_advisory_ready()
+        self.assertTrue(ready)
+
 
 class _CountingReader:
     def __init__(self, response: dict | None = None, raise_exc: Exception | None = None) -> None:

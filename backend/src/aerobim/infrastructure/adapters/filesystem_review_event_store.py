@@ -14,6 +14,7 @@ import time
 from dataclasses import asdict, replace
 from pathlib import Path
 
+from aerobim.core.security.path_jail import safe_storage_token
 from aerobim.domain.models import ReviewEvent
 from aerobim.domain.review_event_append import HitlStateConflictError, ReviewEventAppendSpec
 from aerobim.domain.review_event_chain import genesis_previous_hash, review_event_content_hash
@@ -107,7 +108,9 @@ class FilesystemReviewEventStore:
         self.last_load_degraded: bool = False
 
     def _path(self, report_id: str) -> Path:
-        return self._dir / f"{report_id}.jsonl"
+        # Windows NTFS: raw ``pack:…`` is an Alternate Data Stream, so seq/lock
+        # files vanish from iterdir() and the second append cannot acquire a lock.
+        return self._dir / f"{safe_storage_token(report_id)}.jsonl"
 
     def append(self, event: ReviewEvent) -> str:
         target = self._path(event.report_id)
