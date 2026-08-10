@@ -55,7 +55,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RTATOM A2.5 / RT-POST-09 hashes | **CLOSED*** | `--require-hashes` + `--generate-hashes` locks; CI/Docker wire-up; pinned `pip==25.2` / `uv==0.8.22`. *Residual: unhashed pip/uv bootstrap wheels. |
 | RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: full OIDC BFF (POST-05) remains **DESIGNED / NOT_IMPLEMENTED** — see `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md`. |
 
-Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF (POST-05 **DESIGNED / NOT_IMPLEMENTED**), customer corpus.
+Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF Phase 3 (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 2.5 PKCE landed 2026-08-11 — still 501). Eng pack: [`docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md`](../../docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md).
 
 ## Closed in post-remediation wave (2026-07-19)
 

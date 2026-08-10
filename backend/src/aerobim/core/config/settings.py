@@ -293,6 +293,14 @@ class Settings:
     """JWT claim used for tenant binding. No silent fallback to tid/org_id."""
     oidc_roles_claim: str = "roles"
     """JWT claim for RBAC roles (supports dotted paths, e.g. realm_access.roles)."""
+    oidc_bff_client_id: str | None = None
+    """Lab-only OIDC BFF public client id (``AEROBIM_OIDC_BFF_CLIENT_ID``).
+
+    With ``oidc_bff_authorize_url``, Phase 2.5 login may include an IdP authorize
+    URL draft. Does **not** flip ``auth_bff`` to implemented / Checkpoint GO.
+    """
+    oidc_bff_authorize_url: str | None = None
+    """Lab-only authorize endpoint (``AEROBIM_OIDC_BFF_AUTHORIZE_URL``)."""
     # Optional Redis for durable async jobs
     redis_url: str | None = None
     # Optional bSI Validation Service / local schema certificate
@@ -725,6 +733,10 @@ class Settings:
             ),
             oidc_roles_claim=(
                 (os.getenv("AEROBIM_OIDC_ROLES_CLAIM") or "roles").strip() or "roles"
+            ),
+            oidc_bff_client_id=(os.getenv("AEROBIM_OIDC_BFF_CLIENT_ID") or "").strip() or None,
+            oidc_bff_authorize_url=(
+                (os.getenv("AEROBIM_OIDC_BFF_AUTHORIZE_URL") or "").strip() or None
             ),
             redis_url=(os.getenv("AEROBIM_REDIS_URL") or "").strip() or None,
             bsi_validation_url=(os.getenv("AEROBIM_BSI_VALIDATION_URL") or "").strip() or None,

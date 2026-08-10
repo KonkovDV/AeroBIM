@@ -42,7 +42,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
     def auth_login_stub(
         redirect_uri: Annotated[str | None, Query()] = None,
     ) -> JSONResponse:
-        """Phase 2 stub: issue CSRF state; no production IdP redirect or session cookie."""
+        """Phase 2.5 stub: CSRF + PKCE; optional IdP URL draft; no session cookie."""
 
         state_entry = bff_store.issue(redirect_uri=redirect_uri)
         return JSONResponse(
@@ -50,6 +50,8 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
             content=build_login_stub_payload(
                 state_entry=state_entry,
                 redirect_uri=redirect_uri,
+                authorize_endpoint=ctx.settings.oidc_bff_authorize_url,
+                client_id=ctx.settings.oidc_bff_client_id,
             ),
         )
 

@@ -31,7 +31,7 @@
 | Effect | Native DWG remains unsupported; DXF via ezdxf is the combat path |
 | Blockers | Legal review + licensed ODA/Teigha; flag `AEROBIM_ODA_CAD_ENABLED` |
 | Target | After legal review; never claim DWG product readiness without customer DWG evidence |
-| Honesty | `dwg_dxf` never OK |
+| Honesty | `dwg_dxf` never OK; flag=true without SDK → distinct `NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON` (2026-08-11); analyze uses `EzdxfCadModelIngestor` only |
 
 ### STUB-IFC-KG-001 (fallback only)
 

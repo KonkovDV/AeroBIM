@@ -10,11 +10,14 @@ anchors:
 
 # POST-05: OIDC BFF design (honesty spike)
 
-**Status:** **DESIGNED / NOT_IMPLEMENTED** (Phase 2 CSRF stubs landed; Phase 3 pending)
+**Status:** **DESIGNED / NOT_IMPLEMENTED** (Phase 2 CSRF stubs + Phase 2.5 PKCE landed; Phase 3 pending)
 
 This document is the Wave A3 design spike. Phase 2 stub routes (`/v1/auth/login`,
 `/v1/auth/callback`, `/v1/auth/logout`) ship CSRF state binding only — no IdP
 registration, no production session cookie, and no reverse-proxy cookie termination.
+Phase 2.5 adds PKCE S256 (`code_challenge` on login; verifier server-side) and an
+optional IdP authorize URL *draft* when `AEROBIM_OIDC_BFF_CLIENT_ID` +
+`AEROBIM_OIDC_BFF_AUTHORIZE_URL` are set — responses remain **HTTP 501**.
 Frontend and API must keep reporting `auth_bff.status = NOT_IMPLEMENTED` until Phase 3.
 
 ## Problem
@@ -55,7 +58,8 @@ Normative choices (Jul 2026 BCP):
 |---|---|---|
 | **1** | Design + honesty surface (`auth_bff`, this doc, `GET /v1/auth/bff` → 501) | **DONE** |
 | **2** | Stub `/v1/auth/login` + callback + logout with CSRF `state` store (no production IdP) | **STUBS LANDED** (`infrastructure/auth/oidc_bff_stubs.py`); `auth_bff.status` still **NOT_IMPLEMENTED** |
-| **3** | Production reverse-proxy cookie session + IdP wiring + FE removal of any bearer inject | NOT_IMPLEMENTED |
+| **2.5** | PKCE S256 on login + optional lab authorize URL draft (`AEROBIM_OIDC_BFF_*`) | **LANDED 2026-08-11** — still HTTP 501 / NOT_IMPLEMENTED |
+| **3** | Production reverse-proxy cookie session + IdP code exchange + FE removal of any bearer inject | NOT_IMPLEMENTED |
 
 ## Honesty surface
 
@@ -67,7 +71,8 @@ Capabilities payload (`schema_version` ≥ 1.2.0):
   "design": "docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md",
   "dev_proxy": "Vite loopback Authorization inject only",
   "phase_2_stubs": "login/callback/logout with CSRF state (no production session)",
-  "phase_3_pending": "HttpOnly session cookie + IdP wiring"
+  "phase_2_5_pkce": "S256 code_challenge; optional IdP URL draft via AEROBIM_OIDC_BFF_* — still 501",
+  "phase_3_pending": "HttpOnly session cookie + IdP code exchange + FE bearer removal"
 }
 ```
 

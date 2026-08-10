@@ -44,6 +44,9 @@ class OidcBffStubRouteTests(unittest.TestCase):
         self.assertEqual(body["status"], "NOT_IMPLEMENTED")
         self.assertTrue(body["stub"])
         self.assertIn("state", body)
+        self.assertEqual(body["pkce"]["code_challenge_method"], "S256")
+        self.assertTrue(body["pkce"]["code_challenge"])
+        self.assertNotIn("code_verifier", body)
         self.assertIsNone(body.get("idp_redirect_url"))
 
     def test_callback_rejects_invalid_csrf_state(self) -> None:

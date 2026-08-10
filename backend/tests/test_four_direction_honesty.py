@@ -8,7 +8,10 @@ import unittest
 from pathlib import Path
 
 from aerobim.application.services.capability_policy import build_signoff_policy
-from aerobim.domain.cad_ingest import NATIVE_DWG_MISSING_REASON
+from aerobim.domain.cad_ingest import (
+    NATIVE_DWG_MISSING_REASON,
+    NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON,
+)
 from aerobim.domain.calculation_evidence import (
     FORBIDDEN_CALC_CLAIM_PHRASES,
     independent_solver_not_implemented_payload,
@@ -66,7 +69,8 @@ class NativeDwgHonestyTests(unittest.TestCase):
         self.assertFalse(disabled.supported)
         self.assertFalse(enabled.supported)
         self.assertEqual(disabled.reason, NATIVE_DWG_MISSING_REASON)
-        self.assertEqual(enabled.reason, NATIVE_DWG_MISSING_REASON)
+        self.assertEqual(enabled.reason, NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON)
+        self.assertIn("STUB-ODA-CAD-001", enabled.reason or "")
         caps = ReportCapabilities(dwg_dxf=CapabilityStatus(CapabilityState.FAILED, enabled.reason))
         enforce_honesty_capabilities(caps)
         policy = build_signoff_policy(profile="development")
