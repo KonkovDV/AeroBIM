@@ -17,12 +17,12 @@ from aerobim.infrastructure.adapters.caching_vlm_reader import (
     CachingVlmReader,
     FilesystemVlmResponseStore,
 )
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import KimiReadResult
+from aerobim.infrastructure.adapters.vlm_advisory_client import VlmReadResult
 from aerobim.infrastructure.adapters.pymupdf_region_cropper import PyMuPDFRegionCropper
 from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
     RegionRestrictedVlmPipeline,
 )
-from aerobim.tools.kimi_region_smoke import build_region_smoke_report, main
+from aerobim.tools.vlm_region_smoke import build_region_smoke_report, main
 
 _OBS = {
     "readable": True,
@@ -73,9 +73,9 @@ class _CountingReader:
 
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
-    ) -> KimiReadResult:
+    ) -> VlmReadResult:
         self.calls += 1
-        return KimiReadResult(content=_OBS, usage={}, determinism_basis="live")
+        return VlmReadResult(content=_OBS, usage={}, determinism_basis="live")
 
 
 class _FixedCropper:
@@ -134,7 +134,7 @@ class RegionSmokeReportTests(unittest.TestCase):
             self.assertEqual(second["reads"][0]["determinism_basis"], "vlm_cache_replay")
 
     def test_main_not_run_without_credentials(self) -> None:
-        with patch.dict(os.environ, {"AEROBIM_KIMI_API_BASE_URL": "", "AEROBIM_KIMI_API_KEY": ""}):
+        with patch.dict(os.environ, {"AEROBIM_VLM_API_BASE_URL": "", "AEROBIM_VLM_API_KEY": ""}):
             exit_code = main(["--image", "nonexistent.png"])
         self.assertEqual(exit_code, 2)
 

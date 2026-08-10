@@ -24,13 +24,13 @@ from aerobim.domain.vlm_cache import (
     vlm_cache_key,
 )
 from aerobim.domain.vlm_normalize import NORMALIZER_VERSION
-from aerobim.infrastructure.adapters.kimi_k3_advisory_client import KimiReadResult
+from aerobim.infrastructure.adapters.vlm_advisory_client import VlmReadResult
 
 
 class _RegionReader(Protocol):
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
-    ) -> KimiReadResult: ...
+    ) -> VlmReadResult: ...
 
 
 _SHA256_HEX_LEN = 64
@@ -139,7 +139,7 @@ class CachingVlmReader:
 
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
-    ) -> KimiReadResult:
+    ) -> VlmReadResult:
         key = self._key(image_bytes, prompt)
         entry = self._store.get(key)
         cached = entry_content_if_intact(entry)
@@ -148,7 +148,7 @@ class CachingVlmReader:
         if cached is not None and entry_matches_request(
             entry, image_bytes=image_bytes, prompt=prompt, model=self._model
         ):
-            return KimiReadResult(
+            return VlmReadResult(
                 content=cached, usage={"cache": "hit"}, determinism_basis="vlm_cache_replay"
             )
         started = perf_counter()

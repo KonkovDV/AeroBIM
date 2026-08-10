@@ -1,6 +1,6 @@
 """Advisory OFF==ON invariant on the real AnalyzeProjectPackageUseCase path (§0.3/§7).
 
-Toggling ``kimi_advisory_ready()`` must NOT change ``summary.passed`` or the
+Toggling ``vlm_advisory_ready()`` must NOT change ``summary.passed`` or the
 persisted verdict issues. The advisory VLM is a separate DI token deliberately
 not consumed by the verdict path; this test is the regression guard that proves
 the flag toggles advisory availability while the deterministic verdict is
@@ -37,17 +37,17 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
 
         off = Settings.from_env()
         # replace() bypasses from_env's SSRF boot gate (no network); dev profile
-        # keeps kimi_advisory_ready() unblocked.
+        # keeps vlm_advisory_ready() unblocked.
         on = replace(
             off,
-            kimi_k3_enabled=True,
+            vlm_enabled=True,
             # Loopback host is on the product LLM allowlist (RT-WH-05).
-            kimi_api_base_url="https://127.0.0.1:9/v1",
-            kimi_api_key="test-key",
+            vlm_api_base_url="https://127.0.0.1:9/v1",
+            vlm_api_key="test-key",
         )
         # The flag must actually toggle — otherwise this test is vacuous.
-        self.assertFalse(off.kimi_advisory_ready())
-        self.assertTrue(on.kimi_advisory_ready())
+        self.assertFalse(off.vlm_advisory_ready())
+        self.assertTrue(on.vlm_advisory_ready())
 
         container_off = bootstrap_container(off)
         container_on = bootstrap_container(on)

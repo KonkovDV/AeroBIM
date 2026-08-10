@@ -81,11 +81,37 @@ def gate_blocks_external(result: HybridGateResult) -> bool:
     return not result.may_call_external
 
 
+def smoke_signoff_blocks_external(*, settings: Any | None = None) -> str | None:
+    """Fail-closed: pilot/production must not run external VLM smoke CLIs.
+
+    Product DI already gates via ``Settings.vlm_advisory_ready()``. Smoke tools
+    historically skip ``vlm_enabled`` (operator opt-in by running the tool) but
+    MUST still honour the closed-contour signoff profiles.
+
+    Reads ``AEROBIM_SIGNOFF_PROFILE`` directly when ``settings`` is omitted so
+    unit tests / partial env do not trigger full ``Settings.from_env()`` SSRF
+    validation just to check the profile gate.
+    Returns a human reason when blocked, else ``None``.
+    """
+
+    if settings is None:
+        profile = (os.getenv("AEROBIM_SIGNOFF_PROFILE") or "dev").strip().lower() or "dev"
+    else:
+        profile = (getattr(settings, "signoff_profile", None) or "dev").strip().lower()
+    if profile in {"samolet_pilot", "production"}:
+        return (
+            f"signoff_profile={profile!r} forbids external VLM smoke egress "
+            "(use open-data/dev profile or the DI path with vlm_advisory_ready)"
+        )
+    return None
+
+
 __all__ = [
     "DEFAULT_SMOKE_OBJECT_KIND",
     "DEFAULT_SMOKE_TENANT",
     "build_vlm_smoke_gate",
     "evaluate_vlm_smoke_egress",
     "gate_blocks_external",
+    "smoke_signoff_blocks_external",
     "smoke_tenant_id",
 ]

@@ -126,7 +126,7 @@ class ObservationsSchemaGuardTests(unittest.TestCase):
     def test_schema_hash_matches_client_ssot(self) -> None:
         # The infrastructure client must re-bind the SAME domain schema (single
         # source of truth) — hashes must be identical.
-        from aerobim.infrastructure.adapters.kimi_k3_advisory_client import (
+        from aerobim.infrastructure.adapters.vlm_advisory_client import (
             observations_schema_hash,
         )
 

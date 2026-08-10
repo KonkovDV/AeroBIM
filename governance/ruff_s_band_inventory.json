@@ -80,7 +80,7 @@
       "rationale": "HTTP via SSRF-guarded safe_urlopen."
     },
     {
-      "glob": "src/aerobim/infrastructure/adapters/kimi_k3_advisory_client.py",
+      "glob": "src/aerobim/infrastructure/adapters/vlm_advisory_client.py",
       "rules": ["S310"],
       "rationale": "HTTP via SSRF-guarded safe_urlopen."
     },

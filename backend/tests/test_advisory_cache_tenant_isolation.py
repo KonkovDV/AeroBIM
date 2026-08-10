@@ -24,9 +24,9 @@ def _ready_settings(**over: object):
 
     base = replace(
         Settings.from_env(),
-        kimi_k3_enabled=True,
-        kimi_api_base_url="https://127.0.0.1:9/v1",
-        kimi_api_key="test-key",
+        vlm_enabled=True,
+        vlm_api_base_url="https://127.0.0.1:9/v1",
+        vlm_api_key="test-key",
     )
     return replace(base, **over)
 
@@ -57,7 +57,7 @@ class AdvisoryCacheTenantIsolationTests(unittest.TestCase):
     def test_cache_disabled_without_namespace(self) -> None:
         from aerobim.infrastructure.adapters.caching_vlm_reader import CachingVlmReader
 
-        reader = self._reader(_ready_settings(kimi_cache_dir="var/kimi-cache"))
+        reader = self._reader(_ready_settings(vlm_cache_dir="var/kimi-cache"))
         # Fail-closed: a cache dir without a tenant scope must NOT build a store.
         self.assertNotIsInstance(reader, CachingVlmReader)
 
@@ -68,7 +68,7 @@ class AdvisoryCacheTenantIsolationTests(unittest.TestCase):
         )
 
         reader = self._reader(
-            _ready_settings(kimi_cache_dir="var/kimi-cache", kimi_cache_namespace="tenant-a")
+            _ready_settings(vlm_cache_dir="var/kimi-cache", vlm_cache_namespace="tenant-a")
         )
         self.assertIsInstance(reader, CachingVlmReader)
         store = reader._store
@@ -77,10 +77,10 @@ class AdvisoryCacheTenantIsolationTests(unittest.TestCase):
 
     def test_two_tenants_get_distinct_store_roots(self) -> None:
         a = self._reader(
-            _ready_settings(kimi_cache_dir="var/kimi-cache", kimi_cache_namespace="tenant-a")
+            _ready_settings(vlm_cache_dir="var/kimi-cache", vlm_cache_namespace="tenant-a")
         )
         b = self._reader(
-            _ready_settings(kimi_cache_dir="var/kimi-cache", kimi_cache_namespace="tenant-b")
+            _ready_settings(vlm_cache_dir="var/kimi-cache", vlm_cache_namespace="tenant-b")
         )
         self.assertNotEqual(str(a._store._root), str(b._store._root))
 
@@ -89,7 +89,7 @@ class AdvisoryCacheTenantIsolationTests(unittest.TestCase):
 
         for bad in ("../evil", "a/b", "..", "x" * 65, "тенант"):
             reader = self._reader(
-                _ready_settings(kimi_cache_dir="var/kimi-cache", kimi_cache_namespace=bad)
+                _ready_settings(vlm_cache_dir="var/kimi-cache", vlm_cache_namespace=bad)
             )
             self.assertNotIsInstance(reader, CachingVlmReader, bad)
 
@@ -98,9 +98,9 @@ class AdvisoryCacheTenantIsolationTests(unittest.TestCase):
 
         reader = self._reader(
             _ready_settings(
-                kimi_cache_dir="var/kimi-cache",
-                kimi_cache_namespace="tenant-a",
-                kimi_cache_project="proj-x",
+                vlm_cache_dir="var/kimi-cache",
+                vlm_cache_namespace="tenant-a",
+                vlm_cache_project="proj-x",
             )
         )
         self.assertIsInstance(reader, CachingVlmReader)
@@ -113,9 +113,9 @@ class AdvisoryCacheTenantIsolationTests(unittest.TestCase):
 
         reader = self._reader(
             _ready_settings(
-                kimi_cache_dir="var/kimi-cache",
-                kimi_cache_namespace="tenant-a",
-                kimi_cache_project="../evil",
+                vlm_cache_dir="var/kimi-cache",
+                vlm_cache_namespace="tenant-a",
+                vlm_cache_project="../evil",
             )
         )
         # A configured-but-path-unsafe project must not silently drop to tenant scope.

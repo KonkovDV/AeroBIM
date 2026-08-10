@@ -34,6 +34,31 @@ def _read_bool(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _read_vlm_enabled() -> bool:
+    """Prefer AEROBIM_VLM_ENABLED; keep AEROBIM_KIMI_K3_ENABLED as deprecated alias."""
+    if os.getenv("AEROBIM_VLM_ENABLED") is not None:
+        return _read_bool("AEROBIM_VLM_ENABLED", False)
+    return _read_bool("AEROBIM_KIMI_K3_ENABLED", False)
+
+
+def _env_prefer(*names: str, default: str = "") -> str:
+    """First non-empty env among names (primary first, deprecated aliases later)."""
+    for name in names:
+        value = (os.getenv(name) or "").strip()
+        if value:
+            return value
+    return default
+
+
+def _read_optional_int_prefer(*names: str) -> int | None:
+    for name in names:
+        raw = os.getenv(name)
+        if raw is None or not str(raw).strip():
+            continue
+        return int(raw)
+    return None
+
+
 def _read_llm_advisory_enabled() -> bool:
     """Prefer AEROBIM_LLM_ADVISORY_ENABLED; keep AEROBIM_LLM_LOCAL_ENABLED as alias.
 
@@ -314,51 +339,52 @@ class Settings:
     """Optional IFC parse cache directory (``AEROBIM_IFC_PARSE_CACHE_DIR``) — NFR SLA."""
     hybrid_drawing_enabled: bool = True
     """Use HybridDrawingAnalyzer for DrawingAnalyzerPort when True."""
-    kimi_k3_enabled: bool = False
-    """Opt-in Kimi K3 / Kimi-VL advisory drawing read (``AEROBIM_KIMI_K3_ENABLED``).
+    vlm_enabled: bool = False
+    """Opt-in advisory VLM drawing read (``AEROBIM_VLM_ENABLED``; alias ``AEROBIM_KIMI_K3_ENABLED``).
 
-    Advisory only (ADR-001 / TR-31): never sets ``summary.passed``. Default off.
+    Provider-agnostic (Yandex/Qwen, vLLM, or Moonshot Kimi profile). Advisory only
+    (ADR-001 / TR-31): never sets ``summary.passed``. Default off.
     """
-    kimi_api_base_url: str | None = None
-    """OpenAI-compatible base URL for the Kimi advisory endpoint (SSRF-gated)."""
-    kimi_api_key: str | None = None
-    """Bearer key for the Kimi advisory endpoint (never logged)."""
-    kimi_model: str = "kimi-k3"
-    """Advisory model id (e.g. ``kimi-k3`` or a small ``kimi-vl`` variant)."""
-    kimi_reasoning_effort: str = "low"
+    vlm_api_base_url: str | None = None
+    """OpenAI-compatible base URL for the advisory VLM endpoint (SSRF-gated)."""
+    vlm_api_key: str | None = None
+    """API key for the advisory VLM endpoint (never logged)."""
+    vlm_model: str = "kimi-k3"
+    """Advisory model id (e.g. ``gpt://…/qwen3.6-35b-a3b`` or ``kimi-k3``)."""
+    vlm_reasoning_effort: str = "low"
     """reasoning_effort for kimi-k3 API (``low`` OCR-by-region / ``high`` cross-doc).
 
-    Only sent for profiles that support it (kimi-k3 API); ignored for vLLM VLMs.
+    Only sent for profiles that support it (kimi-k3 API); ignored for Yandex/vLLM.
     """
-    kimi_max_image_bytes: int = 32 * 1024 * 1024
+    vlm_max_image_bytes: int = 32 * 1024 * 1024
     """Max drawing-image bytes before the VLM pipeline fails closed (IMAGE_TOO_LARGE)."""
-    kimi_cache_dir: str | None = None
+    vlm_cache_dir: str | None = None
     """Optional dir for the deterministic VLM response cache (§2.1 act replay).
 
     When set, advisory region reads are cached by (sha256 image + sha256 prompt +
     model) for byte-identical golden-hash replay. Advisory-only; off by default.
     """
-    kimi_cache_namespace: str | None = None
+    vlm_cache_namespace: str | None = None
     """Explicit tenant/project isolation scope for the VLM response cache (§5).
 
     MUST be a trusted deployment-config value derived from tenant_id / project_id
     — never taken from the request body, filename, sheet_id, or the model's
-    response. When ``kimi_cache_dir`` is set but this is empty or path-unsafe, the
+    response. When ``vlm_cache_dir`` is set but this is empty or path-unsafe, the
     persistent cache is DISABLED (fail-closed: a cache is never shared across
     tenants). Allowed chars: ``[A-Za-z0-9._-]``, 1-64 (no ``.``/``..``).
     """
-    kimi_cache_ttl_days: int | None = None
+    vlm_cache_ttl_days: int | None = None
     """Optional TTL (days) for cached VLM responses (§5.10).
 
     On read, an entry older than the TTL is treated as a miss and deleted
     (explicit deletion policy). ``None`` keeps entries until the dir is cleared.
     """
-    kimi_cache_project: str | None = None
+    vlm_cache_project: str | None = None
     """Optional project sub-scope for the VLM response cache (§7).
 
     Folded into the cache key + physical store dir under the tenant namespace so
     two projects of the same tenant never share cached answers. Same trusted-config
-    rule as ``kimi_cache_namespace``; when set but path-unsafe the cache is DISABLED
+    rule as ``vlm_cache_namespace``; when set but path-unsafe the cache is DISABLED
     (fail-closed). Empty = no project boundary (tenant-level scope only).
     """
     hybrid_provider_config_path: str | None = None
@@ -422,19 +448,18 @@ class Settings:
     llm_budget_ledger_path: Path | None = None
     """Shared JSON day ledger (AEROBIM_LLM_BUDGET_LEDGER). Required when LLM ready (RT-031)."""
 
-    def kimi_advisory_ready(self) -> bool:
-        """True only when K3 advisory is safe to invoke.
+    def vlm_advisory_ready(self) -> bool:
+        """True only when advisory VLM is safe to invoke.
 
-        Fail-closed tiers (see KIMI_K3_SCENARIO_MATRIX): under pilot/production
-        profiles the public Kimi API is **forbidden** (NDA data must not leave the
-        contour) and no on-prem wiring exists yet, so advisory is hard-disabled
-        there regardless of config. Dev/fixture may enable it for open data only.
+        Fail-closed tiers: under pilot/production profiles public/external VLM
+        egress is **forbidden** (NDA data must not leave the contour) unless an
+        approved on-prem path is wired. Dev/fixture may enable it for open data.
         """
-        if not self.kimi_k3_enabled:
+        if not self.vlm_enabled:
             return False
         if self.signoff_profile in {"samolet_pilot", "production"}:
             return False
-        return bool(self.kimi_api_base_url and self.kimi_api_key)
+        return bool(self.vlm_api_base_url and self.vlm_api_key)
 
     def llm_local_ready(self) -> bool:
         """True when OpenAI-compat advisory LLM may be invoked.
@@ -707,20 +732,38 @@ class Settings:
             mep_aabb_filter_enabled=_read_bool("AEROBIM_MEP_AABB_FILTER", True),
             ifc_parse_cache_dir=(os.getenv("AEROBIM_IFC_PARSE_CACHE_DIR") or "").strip() or None,
             hybrid_drawing_enabled=_read_bool("AEROBIM_HYBRID_DRAWING_ENABLED", True),
-            kimi_k3_enabled=_read_bool("AEROBIM_KIMI_K3_ENABLED", False),
-            kimi_api_base_url=(os.getenv("AEROBIM_KIMI_API_BASE_URL") or "").strip() or None,
-            kimi_api_key=(os.getenv("AEROBIM_KIMI_API_KEY") or "").strip() or None,
-            kimi_model=(os.getenv("AEROBIM_KIMI_MODEL") or "kimi-k3").strip() or "kimi-k3",
-            kimi_reasoning_effort=(
-                (os.getenv("AEROBIM_KIMI_REASONING_EFFORT") or "low").strip().lower() or "low"
+            vlm_enabled=_read_vlm_enabled(),
+            vlm_api_base_url=_env_prefer(
+                "AEROBIM_VLM_API_BASE_URL", "AEROBIM_KIMI_API_BASE_URL"
+            )
+            or None,
+            vlm_api_key=_env_prefer("AEROBIM_VLM_API_KEY", "AEROBIM_KIMI_API_KEY") or None,
+            vlm_model=_env_prefer("AEROBIM_VLM_MODEL", "AEROBIM_KIMI_MODEL", default="kimi-k3")
+            or "kimi-k3",
+            vlm_reasoning_effort=(
+                _env_prefer(
+                    "AEROBIM_VLM_REASONING_EFFORT",
+                    "AEROBIM_KIMI_REASONING_EFFORT",
+                    default="low",
+                ).lower()
+                or "low"
             ),
-            kimi_max_image_bytes=_read_int("AEROBIM_KIMI_MAX_IMAGE_BYTES", 32 * 1024 * 1024),
-            kimi_cache_dir=(os.getenv("AEROBIM_KIMI_CACHE_DIR") or "").strip() or None,
-            kimi_cache_namespace=(
-                (os.getenv("AEROBIM_KIMI_CACHE_NAMESPACE") or "").strip() or None
+            vlm_max_image_bytes=_read_int(
+                "AEROBIM_VLM_MAX_IMAGE_BYTES",
+                _read_int("AEROBIM_KIMI_MAX_IMAGE_BYTES", 32 * 1024 * 1024),
             ),
-            kimi_cache_ttl_days=_read_optional_int("AEROBIM_KIMI_CACHE_TTL_DAYS"),
-            kimi_cache_project=((os.getenv("AEROBIM_KIMI_CACHE_PROJECT") or "").strip() or None),
+            vlm_cache_dir=_env_prefer("AEROBIM_VLM_CACHE_DIR", "AEROBIM_KIMI_CACHE_DIR") or None,
+            vlm_cache_namespace=_env_prefer(
+                "AEROBIM_VLM_CACHE_NAMESPACE", "AEROBIM_KIMI_CACHE_NAMESPACE"
+            )
+            or None,
+            vlm_cache_ttl_days=_read_optional_int_prefer(
+                "AEROBIM_VLM_CACHE_TTL_DAYS", "AEROBIM_KIMI_CACHE_TTL_DAYS"
+            ),
+            vlm_cache_project=_env_prefer(
+                "AEROBIM_VLM_CACHE_PROJECT", "AEROBIM_KIMI_CACHE_PROJECT"
+            )
+            or None,
             hybrid_provider_config_path=(
                 (os.getenv("AEROBIM_HYBRID_PROVIDER_CONFIG") or "").strip() or None
             ),
@@ -825,7 +868,7 @@ class Settings:
             ("AEROBIM_BSI_VALIDATION_URL", settings.bsi_validation_url),
             ("AEROBIM_BCF_API_BASE_URL", settings.bcf_api_base_url),
             ("AEROBIM_S3_ENDPOINT_URL", settings.s3_endpoint_url),
-            ("AEROBIM_KIMI_API_BASE_URL", settings.kimi_api_base_url),
+            ("AEROBIM_VLM_API_BASE_URL", settings.vlm_api_base_url),
         ):
             if not candidate:
                 continue
@@ -842,7 +885,7 @@ class Settings:
                 )
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"{label} failed SSRF gate: {exc}") from exc
-            if label == "AEROBIM_KIMI_API_BASE_URL":
+            if label == "AEROBIM_VLM_API_BASE_URL":
                 try:
                     assert_llm_base_host_allowed(
                         candidate,
