@@ -9,14 +9,14 @@
 ## 2. Есть привязка к источнику
 
 - Замечание связано с конкретным местом на листе.
-- Для просмотра удобнее `evidence/report.html`.
+- Для просмотра: `evidence/report.html`.
 - Хэши входов зафиксированы в `evidence/slice-summary.json`.
 
 ## 3. Фрагмент чертежа прочитан внешней моделью
 
 - Используется Yandex Cloud.
-- В модель ушёл **фрагмент** листа: `evidence/crops/00-content.png`.
-- В ответе чтения найдено значение **150 мм**: `evidence/vlm-result.json`.
+- В модель ушёл фрагмент листа (`egress_crop=true`): `evidence/crops/00-content.png`.
+- В ответе чтения найдено значение **150 мм**: `evidence/vlm-report.json` → `reads[].observations[].raw_value`.
 
 ## 4. Решение
 
@@ -33,4 +33,4 @@
 ## 6. Проверка границ
 
 - Список ограничений: `evidence/slice-LIMITATIONS.json`, `evidence/vlm-LIMITATIONS.json`.
-- В пакете нет ключей и секретов; часть идентификаторов скрыта.
+- В пакете нет ключей; id облачной папки в имени модели скрыт.

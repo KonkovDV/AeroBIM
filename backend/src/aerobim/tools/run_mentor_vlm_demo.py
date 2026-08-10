@@ -56,6 +56,8 @@ def _observation_rows(pipeline: RegionRestrictedVlmPipeline, source: DrawingSour
                 "determinism_basis": read.determinism_basis,
                 "crop_sha256": read.crop_sha256,
                 "reason": read.reason,
+                "control_fields_ignored": list(read.control_fields_ignored),
+                "dropped_count": read.dropped_count,
                 "observations": [
                     {
                         "kind": obs.kind,
@@ -117,6 +119,17 @@ def _load_dotenv() -> Path | None:
     return env_path
 
 
+def _redact_model_uri(model: str) -> str:
+    """Hide cloud folder id in gpt:// URIs for evidence packs."""
+    if not model.startswith("gpt://"):
+        return model
+    parts = model.split("/")
+    # gpt:// <folder> / <name> ...
+    if len(parts) >= 4 and parts[0] == "gpt:" and parts[1] == "":
+        return "gpt://<folder>/" + "/".join(parts[3:])
+    return model
+
+
 def _resolve_credentials() -> dict[str, str | None]:
     base = (
         os.getenv("AEROBIM_VLM_API_BASE_URL")
@@ -134,11 +147,36 @@ def _resolve_credentials() -> dict[str, str | None]:
         os.getenv("AEROBIM_VLM_MODEL")
         or os.getenv("AEROBIM_LLM_MODEL")
         or os.getenv("AEROBIM_KIMI_MODEL")
-        or "kimi-k3"
-    ).strip() or "kimi-k3"
+        or ""
+    ).strip()
     folder = (os.getenv("AEROBIM_LLM_FOLDER_ID") or "").strip() or None
     auth = (os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip() or "Bearer"
     provider = (os.getenv("AEROBIM_LLM_PROVIDER") or "").strip() or None
+    host = ""
+    if base:
+        try:
+            from urllib.parse import urlparse
+
+            host = (urlparse(base).hostname or "").lower()
+        except Exception:  # noqa: BLE001
+            host = ""
+    yandex = "yandex" in host or (provider or "").startswith("yandex")
+    # Refuse silent kimi-k3 profile against Yandex Studio (wrong request shape).
+    if yandex and (not model or model.lower().startswith("kimi-k3")):
+        return {
+            "base_url": base or None,
+            "api_key": key or None,
+            "model": None,
+            "folder_id": folder,
+            "auth_scheme": auth,
+            "provider": provider,
+            "error": (
+                "Yandex Studio requires AEROBIM_VLM_MODEL or AEROBIM_LLM_MODEL "
+                "(e.g. gpt://<folder>/qwen3.6-35b-a3b); kimi-k3 default is refused"
+            ),
+        }
+    if not model:
+        model = "kimi-k3"
     return {
         "base_url": base or None,
         "api_key": key or None,
@@ -146,6 +184,7 @@ def _resolve_credentials() -> dict[str, str | None]:
         "folder_id": folder,
         "auth_scheme": auth,
         "provider": provider,
+        "error": None,
     }
 
 
@@ -175,33 +214,45 @@ def _build_pipeline(
     )
 
 
-def _save_preview_crops(
+def _save_planned_crops(
     *,
     source: DrawingSource,
     out_dir: Path,
     detector: HeuristicLayoutRegionDetector,
 ) -> list[dict[str, Any]]:
+    """Save the same PII-clipped crops the pipeline would send (cloud-safe roles only)."""
+    from aerobim.domain.region_read_plan import plan_region_reads
+    from aerobim.infrastructure.adapters.pdf_page_orientation import read_page_rotate_degrees
+
     cropper = PdfiumRegionCropper(coordinate_system="normalized-0-1", dpi=200)
     crops_dir = out_dir / "crops"
     crops_dir.mkdir(parents=True, exist_ok=True)
-    saved: list[dict[str, Any]] = []
     regions = detector.detect(source.path, sheet_id=source.sheet_id)  # type: ignore[arg-type]
-    for idx, region in enumerate(regions):
-        role = getattr(region, "layout_role", None) or "unknown"
-        if role == "stamp":
-            continue
-        png, media = cropper.crop(source, bbox_xyxy=region.bbox_xyxy)
+    page_rotate = read_page_rotate_degrees(source.path) if source.path else 0
+    plan = plan_region_reads(
+        text_layer_present=False,
+        regions=regions,
+        exclude_stamp_regions=True,
+        page_rotate_degrees=page_rotate,
+    )
+    saved: list[dict[str, Any]] = []
+    for idx, task in enumerate(plan.tasks):
+        role = task.layout_role or "unknown"
+        png, media = cropper.crop(source, bbox_xyxy=task.bbox_xyxy)
         name = f"{idx:02d}-{role}.png"
         path = crops_dir / name
         path.write_bytes(png)
         saved.append(
             {
                 "file": str(path.relative_to(out_dir)).replace("\\", "/"),
+                "region_id": task.region_id,
                 "layout_role": role,
-                "bbox_xyxy": list(region.bbox_xyxy),
+                "bbox_xyxy": list(task.bbox_xyxy),
+                "coordinate_system": task.coordinate_system,
                 "media_type": media,
                 "sha256": hashlib.sha256(png).hexdigest(),
                 "bytes": len(png),
+                "egress_crop": True,
             }
         )
     return saved
@@ -214,7 +265,7 @@ def _limitations(*, live: bool, model: str, provider: str | None) -> dict[str, A
             "NOT product CV; NOT >90% accuracy; NEVER flips summary.passed"
         ),
         "provider": provider or "unknown",
-        "model": model,
+        "model": _redact_model_uri(model),
         "live_call": live,
         "forced_vlm_path": True,
         "forced_vlm_path_reason": (
@@ -277,7 +328,7 @@ def main(argv: list[str] | None = None) -> int:
 
     source = DrawingSource(path=pdf, sheet_id=args.sheet_id)
     detector = HeuristicLayoutRegionDetector()
-    crops = _save_preview_crops(source=source, out_dir=out_dir, detector=detector)
+    crops = _save_planned_crops(source=source, out_dir=out_dir, detector=detector)
 
     if args.dry_crop_only:
         report = {
@@ -306,6 +357,19 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0
+
+    if creds.get("error"):
+        bad = {
+            "status": "NOT_RUN",
+            "reason": creds["error"],
+            "crops": crops,
+            "dotenv_loaded": str(env_path) if env_path else None,
+        }
+        print(json.dumps(bad, ensure_ascii=False, indent=2))
+        (out_dir / "report.json").write_text(
+            json.dumps(bad, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        return _SKIP_EXIT
 
     if not creds["base_url"] or not creds["api_key"]:
         skip = {
@@ -398,7 +462,7 @@ def main(argv: list[str] | None = None) -> int:
         "pdf": str(pdf),
         "pdf_sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(),
         "crops": crops,
-        "model": creds["model"],
+        "model": _redact_model_uri(creds["model"] or ""),
         "provider": creds["provider"],
         "auth_scheme": creds["auth_scheme"],
         "folder_id_set": bool(creds["folder_id"]),
