@@ -1,7 +1,7 @@
 {
   "claim_boundary": "advisory VLM region read only; roundtrip / structured candidate; NOT product CV; NOT >90% accuracy; NEVER flips summary.passed",
   "provider": "yandex-ai-studio",
-  "model": "gpt://b1g56rei64gfdk5t2tvc/qwen3.6-35b-a3b",
+  "model": "gpt://<folder>/qwen3.6-35b-a3b",
   "live_call": true,
   "forced_vlm_path": true,
   "forced_vlm_path_reason": "text_layer_present=False so mentor can see crop→VLM; deterministic text-layer path is vertical-slice demo",

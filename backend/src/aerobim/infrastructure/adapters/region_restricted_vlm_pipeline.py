@@ -62,6 +62,8 @@ class RegionRead:
     reason: str | None
     determinism_basis: str = "unavailable"
     crop_sha256: str = ""
+    control_fields_ignored: tuple[str, ...] = ()
+    dropped_count: int = 0
 
 
 @dataclass(frozen=True)
@@ -253,6 +255,8 @@ class RegionRestrictedVlmPipeline:
                 True,
                 f"schema deviation: {grounded.reason}",
                 crop_sha256=crop_sha,
+                control_fields_ignored=grounded.control_fields_ignored,
+                dropped_count=grounded.dropped_count,
             )
         return RegionRead(
             task.region_id,
@@ -261,6 +265,8 @@ class RegionRestrictedVlmPipeline:
             grounded.reason,
             read.determinism_basis,
             crop_sha,
+            grounded.control_fields_ignored,
+            grounded.dropped_count,
         )
 
 

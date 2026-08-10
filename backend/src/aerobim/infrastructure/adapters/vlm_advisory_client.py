@@ -386,6 +386,22 @@ class VlmAdvisoryClient:
             }
         return {"type": "json_object"}
 
+    def effective_region_prompt(self, prompt: str) -> str:
+        """Prompt actually sent on ``read_region`` (may embed schema for json_object)."""
+        if self._observations_response_format().get("type") != "json_object":
+            return prompt
+        return (
+            f"{prompt}\n\n"
+            "Return ONLY a JSON object with this shape (no markdown):\n"
+            '{"readable": true, "unreadable_reason": null, "observations": ['
+            '{"kind": "dimension", "raw_value": "150 mm", '
+            '"bbox_rel": [0.1, 0.1, 0.5, 0.3], "confidence": 0.8, '
+            '"unit": "mm", "ifc_target_hint": null, "evidence_note": ""}'
+            "]}\n"
+            "kind enum: text|dimension|designation|table_row|stamp_field|candidate_class. "
+            "bbox_rel is relative to THIS crop, values in 0..1."
+        )
+
     def read_region(
         self,
         image_bytes: bytes,
@@ -396,27 +412,11 @@ class VlmAdvisoryClient:
         prompt: str,
     ) -> VlmReadResult:
         """Region-restricted read (§3/§4): one region crop → the observations schema."""
-        effective_prompt = prompt
-        # json_object tiers (Yandex Studio, many vLLM builds) do not constrain
-        # decode to OBSERVATIONS_RESPONSE_SCHEMA — embed a compact example so the
-        # model returns the required top-level ``observations`` array.
-        if self._observations_response_format().get("type") == "json_object":
-            effective_prompt = (
-                f"{prompt}\n\n"
-                "Return ONLY a JSON object with this shape (no markdown):\n"
-                '{"readable": true, "unreadable_reason": null, "observations": ['
-                '{"kind": "dimension", "raw_value": "150 mm", '
-                '"bbox_rel": [0.1, 0.1, 0.5, 0.3], "confidence": 0.8, '
-                '"unit": "mm", "ifc_target_hint": null, "evidence_note": ""}'
-                "]}\n"
-                "kind enum: text|dimension|designation|table_row|stamp_field|candidate_class. "
-                "bbox_rel is relative to THIS crop, values in 0..1."
-            )
         return self.read_drawing(
             image_bytes,
             media_type=media_type,
             sheet_id=f"{sheet_id}#{region_id}",
-            prompt=effective_prompt,
+            prompt=self.effective_region_prompt(prompt),
             response_format=self._observations_response_format(),
         )
 

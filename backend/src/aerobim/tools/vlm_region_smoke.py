@@ -1,9 +1,9 @@
-"""Region-restricted live smoke for the advisory VLM (tier A, OPEN DATA ONLY).
+"""Region-restricted live smoke for the advisory VLM (OPEN DATA ONLY).
 
-Exercises the real §3 path — layout detector → read plan → PyMuPDF crop → ONE
+Exercises the real §3 path — layout detector → read plan → Pdfium crop → ONE
 ``read_region`` call per region (never the whole sheet) → §4 observations
 grounding — optionally through the §2.1 deterministic cache. Purpose: prove the
-real endpoint round-trips through our parser BEFORE the Aug 4-20 protocol, and
+real endpoint round-trips through our parser BEFORE the protocol, and
 (with ``--cache-dir``) that a second run replays byte-identically without a call.
 
 Safety: makes real outbound calls; run ONLY on non-NDA / open sample images.
@@ -106,6 +106,7 @@ def _build_pipeline(
     cache_dir: str | None,
     auth_scheme: str = "Bearer",
     folder_id: str | None = None,
+    cache_namespace: str | None = None,
 ) -> RegionRestrictedVlmPipeline:
     from aerobim.infrastructure.adapters.vlm_advisory_client import VlmAdvisoryClient
 
@@ -127,13 +128,20 @@ def _build_pipeline(
             observations_schema_hash,
         )
 
+        namespace = (cache_namespace or "").strip()
+        if not namespace:
+            raise ValueError(
+                "cache-dir requires --cache-namespace (or AEROBIM_VLM_CACHE_NAMESPACE) "
+                "for tenant-scoped act-grade replay"
+            )
         reader = CachingVlmReader(
             client,
-            FilesystemVlmResponseStore(Path(cache_dir)),
+            FilesystemVlmResponseStore(Path(cache_dir) / namespace),
             model=model,
             endpoint=base_url,
             request_schema_hash=observations_schema_hash(),
             reasoning_effort=reasoning,
+            cache_namespace=namespace,
         )
     return RegionRestrictedVlmPipeline(
         region_detector=HeuristicLayoutRegionDetector(),
@@ -149,6 +157,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sheet-id", default="SMOKE-01")
     parser.add_argument("--tenant-id", default=None, help="Hybrid tenant (default open-data-smoke)")
     parser.add_argument("--cache-dir", default=None, help="§2.1 cache dir (enables replay)")
+    parser.add_argument(
+        "--cache-namespace",
+        default=None,
+        help="Required with --cache-dir (or AEROBIM_VLM_CACHE_NAMESPACE)",
+    )
     parser.add_argument("--out", type=Path, default=None, help="artifact path (JSON)")
     args = parser.parse_args(argv)
 
@@ -178,6 +191,12 @@ def main(argv: list[str] | None = None) -> int:
     cache_dir = (
         args.cache_dir
         or (os.getenv("AEROBIM_VLM_CACHE_DIR") or os.getenv("AEROBIM_KIMI_CACHE_DIR") or "").strip()
+        or None
+    )
+    cache_namespace = (
+        args.cache_namespace
+        or (os.getenv("AEROBIM_VLM_CACHE_NAMESPACE") or os.getenv("AEROBIM_KIMI_CACHE_NAMESPACE") or "")
+        .strip()
         or None
     )
     auth_scheme = (os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip() or "Bearer"
@@ -230,20 +249,25 @@ def main(argv: list[str] | None = None) -> int:
             "reason": gate_result.decision.reason,
             "may_call_external": False,
             "egress_bytes_estimate": gate_result.egress_bytes_estimate,
-            "claim_boundary": ("HybridRouteGate refused PUBLIC VLM egress; zero bytes to Kimi"),
+            "claim_boundary": ("HybridRouteGate refused PUBLIC VLM egress; zero bytes sent"),
         }
         print(json.dumps(blocked, ensure_ascii=False, indent=2))
         return _BLOCKED_EXIT
 
-    pipeline = _build_pipeline(
-        base_url=base_url,
-        api_key=api_key,
-        model=model,
-        reasoning=reasoning,
-        cache_dir=cache_dir,
-        auth_scheme=auth_scheme,
-        folder_id=folder_id,
-    )
+    try:
+        pipeline = _build_pipeline(
+            base_url=base_url,
+            api_key=api_key,
+            model=model,
+            reasoning=reasoning,
+            cache_dir=cache_dir,
+            auth_scheme=auth_scheme,
+            folder_id=folder_id,
+            cache_namespace=cache_namespace,
+        )
+    except ValueError as exc:
+        print(json.dumps({"status": "NOT_RUN", "reason": str(exc)}, ensure_ascii=False, indent=2))
+        return _SKIP_EXIT
     source = DrawingSource(path=args.image, sheet_id=args.sheet_id)
     report = build_region_smoke_report(pipeline, source)
     report.update(

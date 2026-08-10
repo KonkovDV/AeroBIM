@@ -2,15 +2,15 @@
 
 | Файл | Роль |
 | --- | --- |
-| [10-fakty.md](10-fakty.md) | Что уже работает и что не заявляется |
-| [20-proverka.md](20-proverka.md) | Как воспроизвести и какие поля сверить |
-| [evidence/README.md](evidence/README.md) | Перечень доказательных файлов |
-| [evidence/crops/00-content.png](evidence/crops/00-content.png) | Фрагмент чертежа |
-| [evidence/vlm-result.json](evidence/vlm-result.json) | Ответ чтения фрагмента |
+| [10-fakty.md](10-fakty.md) | Факты и границы |
+| [20-proverka.md](20-proverka.md) | Сверка и воспроизведение |
+| [evidence/README.md](evidence/README.md) | Перечень артефактов |
+| [evidence/crops/00-content.png](evidence/crops/00-content.png) | Фрагмент, ушедший в модель |
+| [evidence/vlm-report.json](evidence/vlm-report.json) | Полный отчёт чтения (как с инструмента) |
+| [evidence/vlm-LIMITATIONS.json](evidence/vlm-LIMITATIONS.json) | Границы чтения |
 | [evidence/slice-summary.json](evidence/slice-summary.json) | Сводка сквозного прогона |
 | [evidence/report.json](evidence/report.json) | Полный отчёт прогона |
-| [evidence/report.html](evidence/report.html) | Просмотр отчёта в браузере |
+| [evidence/report.html](evidence/report.html) | Просмотр отчёта |
 | [evidence/slice-LIMITATIONS.json](evidence/slice-LIMITATIONS.json) | Границы сквозного прогона |
-| [evidence/vlm-LIMITATIONS.json](evidence/vlm-LIMITATIONS.json) | Границы чтения фрагмента |
 
-Порядок чтения: `10-fakty.md` → `20-proverka.md` → `evidence/`.
+Порядок: `10-fakty.md` → `20-proverka.md` → `evidence/`.

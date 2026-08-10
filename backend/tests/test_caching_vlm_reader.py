@@ -53,6 +53,42 @@ class CachingVlmReaderTests(unittest.TestCase):
         _read(reader, b"img-b")
         self.assertEqual(inner.calls, 2)
 
+    def test_effective_region_prompt_participates_in_cache_key(self) -> None:
+        """json_object prompt rewrite must change the cache identity."""
+
+        class _ExpandingReader:
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def effective_region_prompt(self, prompt: str) -> str:
+                return f"{prompt}::expanded"
+
+            def read_region(
+                self,
+                image_bytes: bytes,
+                *,
+                media_type: str,
+                sheet_id: str,
+                region_id: str,
+                prompt: str,
+            ) -> VlmReadResult:
+                self.calls += 1
+                return VlmReadResult(
+                    content={"readable": True, "observations": [], "n": self.calls},
+                    usage={},
+                    determinism_basis="live",
+                )
+
+        inner = _ExpandingReader()
+        store = InMemoryVlmResponseStore()
+        reader = CachingVlmReader(inner, store, model="gpt://folder/qwen")
+        first = _read(reader)
+        # Mutate expansion contract → must miss even if caller prompt unchanged.
+        inner.effective_region_prompt = lambda prompt: f"{prompt}::expanded-v2"  # type: ignore[method-assign]
+        second = _read(reader)
+        self.assertEqual(inner.calls, 2)
+        self.assertNotEqual(first.content.get("n"), second.content.get("n"))
+
     def test_tampered_entry_fails_closed_to_miss(self) -> None:
         inner = _CountingReader()
         store = InMemoryVlmResponseStore()

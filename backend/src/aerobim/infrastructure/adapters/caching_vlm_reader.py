@@ -140,13 +140,19 @@ class CachingVlmReader:
     def read_region(
         self, image_bytes: bytes, *, media_type: str, sheet_id: str, region_id: str, prompt: str
     ) -> VlmReadResult:
-        key = self._key(image_bytes, prompt)
+        # Cache must key on the prompt that will actually leave the client.
+        # VlmAdvisoryClient may rewrite json_object prompts with an embedded schema.
+        effective_prompt = prompt
+        expand = getattr(self._reader, "effective_region_prompt", None)
+        if callable(expand):
+            effective_prompt = str(expand(prompt))
+        key = self._key(image_bytes, effective_prompt)
         entry = self._store.get(key)
         cached = entry_content_if_intact(entry)
         # Two-layer integrity: golden content hash AND the entry's request hashes
         # must match THIS (image, prompt, model) — else fail closed to a miss.
         if cached is not None and entry_matches_request(
-            entry, image_bytes=image_bytes, prompt=prompt, model=self._model
+            entry, image_bytes=image_bytes, prompt=effective_prompt, model=self._model
         ):
             return VlmReadResult(
                 content=cached, usage={"cache": "hit"}, determinism_basis="vlm_cache_replay"
@@ -164,7 +170,7 @@ class CachingVlmReader:
             key,
             build_cache_entry(
                 image_bytes=image_bytes,
-                prompt=prompt,
+                prompt=effective_prompt,
                 model=self._model,
                 content=result.content,
                 provenance=self._provenance,
