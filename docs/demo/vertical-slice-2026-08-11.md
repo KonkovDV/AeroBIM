@@ -10,7 +10,7 @@
 - **Запуск:**  
   `python -m aerobim.tools.run_vertical_slice --manifest samples/demo/vertical-slice-2026-08-11/manifest.json --output artifacts/vertical-slice-2026-08-11`  
   (из `backend/`: `--manifest ../samples/... --output ../artifacts/...`)
-- **Артефакты:** `report.json`, `report.html`, `slice-summary.json` (входные SHA256, статус карты покрытия, воспроизводимый ключ finding, claim boundary).
+- **Артефакты:** `report.json`, `report.html`, `slice-summary.json`, `LIMITATIONS.json` (входные SHA256, статус карты покрытия, воспроизводимый ключ finding, claim boundary, evidence envelope).
 
 ## Что честно заявлено
 
@@ -19,6 +19,7 @@
 - `REQUIRES_EXPERT` выражается через coverage/operator status (`expert_required`, `not_checked`, `insufficient_data`, `no_findings`, `findings`), а не новым доменным claim.
 - Исходные файлы не изменяются (read-only), SHA256 фиксируются.
 - Детерминированный `summary.passed` не меняется advisory-контуром.
+- **Evidence envelope:** каждая извлечённая аннотация несёт `method`, `method_version`, `source_sha256`, `page`, `region_bbox`, `quality_flags` (`heuristic_baseline`, `cv_verified=false`), `evidence_hash`.
 
 ## Ограничения (таблица)
 
@@ -29,6 +30,7 @@
 | Точность | Fixture-only, deterministic rules | >90% customer accuracy |
 | Эксперт | Остаётся финальным решением | Автоматический sign-off |
 | BCF 2.1 | Структурный smoke на существующем пути | Готовая CDE-интеграция |
+| Metrics | extraction coverage, counts | customer accuracy, nDCG без ground truth |
 
 ## 7-минутный runbook
 
@@ -50,7 +52,7 @@ cd C:\plans\AeroBIM\backend
 python -m aerobim.tools.run_vertical_slice `
   --manifest ../samples/demo/vertical-slice-2026-08-11/manifest.json `
   --output ../artifacts/vertical-slice-2026-08-11
-python -c "import json; p=Path('../artifacts/vertical-slice-2026-08-11/slice-summary.json'); d=json.loads(p.read_text(encoding='utf-8')); print(d['report_id'], d['summary'], d['operator_status_counts'])"
+python -c "import json; p=Path('../artifacts/vertical-slice-2026-08-11/slice-summary.json'); d=json.loads(p.read_text(encoding='utf-8')); print(d['report_id'], d['summary'], d['operator_status_counts'], d['metrics'])"
 ```
 
 ## Следующие шаги (после 11.08, не в этом срезе)

@@ -76,11 +76,36 @@ class VerticalSliceTests(unittest.TestCase):
             self.assertTrue((Path(tmp) / "report.json").is_file())
             self.assertTrue((Path(tmp) / "report.html").is_file())
             self.assertTrue((Path(tmp) / "slice-summary.json").is_file())
+            self.assertTrue((Path(tmp) / "LIMITATIONS.json").is_file())
             html = (Path(tmp) / "report.html").read_text(encoding="utf-8")
             self.assertIn("WALL-01", html)
             self.assertIn("finding_id=", html.lower())
             self.assertIn("evidence_refs=", html.lower())
             self.assertIn(result["report_id"], html)
+
+    def test_evidence_envelope_and_metrics(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            result = self._run(Path(tmp))
+            evidence = result["evidence"]
+            self.assertEqual(len(evidence), 1)
+            ev = evidence[0]
+            self.assertEqual(ev["method"], "pdf_text_layer")
+            self.assertEqual(
+                ev["source_sha256"],
+                "6aa1789a027f3a60be21bc68c26bb17440d4c54e827859c6268b590710125fcf",
+            )
+            self.assertEqual(ev["extracted_value"], "150")
+            self.assertEqual(ev["normalized_value"], "150")
+            self.assertEqual(ev["unit"], "mm")
+            self.assertTrue(ev["quality_flags"]["heuristic_baseline"])
+            self.assertFalse(ev["quality_flags"]["cv_verified"])
+            self.assertIn("evidence_hash", ev)
+
+            metrics = result["metrics"]
+            self.assertEqual(metrics["drawing_extraction_coverage"], 1.0)
+            self.assertEqual(metrics["annotation_count"], 1)
+            self.assertEqual(metrics["finding_count"], 14)
+            self.assertGreaterEqual(metrics["not_checked_count"], 1)
 
 
 if __name__ == "__main__":

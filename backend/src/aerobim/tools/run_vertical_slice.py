@@ -145,6 +145,91 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
     html_path = output_dir / "report.html"
     html_path.write_text(render_report_html(report.report_id, public), encoding="utf-8")
 
+    # Evidence envelope: deterministic provenance per extracted drawing annotation.
+    extraction_method = "pdf_text_layer"
+    evidence_records: list[dict[str, Any]] = []
+    for annotation in report.drawing_annotations:
+        pz = annotation.problem_zone
+        source_path = next(
+            (
+                str(e["path"])
+                for e in input_entries
+                if e.get("sheet_id") == annotation.sheet_id and "sha256" in e
+            ),
+            None,
+        )
+        input_sha = next(
+            (
+                e.get("sha256")
+                for e in input_entries
+                if e.get("sheet_id") == annotation.sheet_id and "sha256" in e
+            ),
+            None,
+        )
+        record = {
+            "annotation_id": annotation.annotation_id,
+            "method": extraction_method,
+            "method_version": "raster-drawing-analyzer@1",
+            "source_path": source_path,
+            "source_sha256": input_sha,
+            "page": pz.page_number if pz else None,
+            "region_bbox": [pz.x, pz.y, pz.width, pz.height] if pz else None,
+            "extracted_value": annotation.observed_value,
+            "normalized_value": annotation.observed_value,
+            "unit": annotation.unit,
+            "target_ref": annotation.target_ref,
+            "measure_name": annotation.measure_name,
+            "sheet_id": annotation.sheet_id,
+            "quality_flags": {
+                "heuristic_baseline": True,
+                "cv_verified": False,
+                "requires_expert": False,
+            },
+            "evidence_hash": hashlib.sha256(
+                json.dumps(
+                    {
+                        "source_sha256": input_sha,
+                        "annotation_id": annotation.annotation_id,
+                        "value": annotation.observed_value,
+                        "method": extraction_method,
+                    },
+                    sort_keys=True,
+                ).encode("utf-8")
+            ).hexdigest(),
+        }
+        evidence_records.append(record)
+
+    # Honest sidecar: explicit limitations and reproduction steps for the demo.
+    limitations = {
+        "artifact": "vertical-slice-limitations",
+        "schema_version": "1.0.0",
+        "claim_boundary": _SLIDE_BOUNDARY,
+        "not_demonstrated": [
+            "trained CV / symbol detection on drawing",
+            "native DWG ingestion",
+            "MEP system-aware clash",
+            "customer corpus accuracy",
+            "production-ready BCF/CDE integration",
+        ],
+        "reproduce": {
+            "command": (
+                "python -m aerobim.tools.run_vertical_slice "
+                "--manifest samples/demo/vertical-slice-2026-08-11/manifest.json "
+                "--output artifacts/vertical-slice-2026-08-11"
+            ),
+            "cwd": "backend/",
+            "inputs_sha256": {
+                e["path"]: e.get("sha256") for e in input_entries if "sha256" in e
+            },
+        },
+        "expert_decision_required": True,
+    }
+    limitations_path = output_dir / "LIMITATIONS.json"
+    limitations_path.write_text(
+        json.dumps(limitations, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
     coverage_rows = coverage.get("sources") or []
     operator_counts: dict[str, int] = {}
     for row in coverage_rows if isinstance(coverage_rows, list) else []:
@@ -179,6 +264,19 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         "artifacts": {
             "report_json": str(report_json_path.name),
             "report_html": str(html_path.name),
+            "limitations": "LIMITATIONS.json",
+        },
+        "evidence": evidence_records,
+        "metrics": {
+            "drawing_extraction_coverage": (
+                len(annotations) / max(len(report.drawing_assets), 1)
+                if report.drawing_assets
+                else 0.0
+            ),
+            "annotation_count": len(annotations),
+            "finding_count": len(findings),
+            "requires_expert_count": operator_counts.get("expert_required", 0),
+            "not_checked_count": operator_counts.get("not_checked", 0),
         },
         "honest_notes": [
             "PDF input uses text-layer extraction (vector), not trained CV",
@@ -196,6 +294,7 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         "report_json": str(report_json_path),
         "report_html": str(html_path),
         "summary": str(summary_path),
+        "limitations": str(limitations_path),
     }
     return summary
 
