@@ -47,10 +47,13 @@ OBSERVATIONS_RESPONSE_SCHEMA: dict[str, Any] = {
                             "designation",
                             "table_row",
                             "stamp_field",
+                            "candidate_class",
                         ],
                     },
                     "raw_value": {"type": "string"},
                     "normalized_value": {"type": ["string", "null"]},
+                    "unit": {"type": ["string", "null"]},
+                    "ifc_target_hint": {"type": ["string", "null"]},
                     "bbox_rel": {
                         "type": "array",
                         "items": {"type": "number"},

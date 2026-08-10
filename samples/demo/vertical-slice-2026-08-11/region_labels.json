@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "sheet_id": "A-101",
+  "claim_boundary": "fixture_only labels for heuristic region priors; not customer accuracy",
+  "regions": [
+    {
+      "sheet_id": "A-101",
+      "layout_role": "content",
+      "bbox_xyxy": [0.0, 0.0, 1.0, 0.78],
+      "coordinate_system": "normalized-0-1"
+    },
+    {
+      "sheet_id": "A-101",
+      "layout_role": "stamp",
+      "bbox_xyxy": [0.55, 0.82, 1.0, 1.0],
+      "coordinate_system": "normalized-0-1"
+    },
+    {
+      "sheet_id": "A-101",
+      "layout_role": "title_block",
+      "bbox_xyxy": [0.0, 0.82, 0.28, 1.0],
+      "coordinate_system": "normalized-0-1"
+    },
+    {
+      "sheet_id": "A-101",
+      "layout_role": "specification",
+      "bbox_xyxy": [0.62, 0.35, 1.0, 0.78],
+      "coordinate_system": "normalized-0-1"
+    },
+    {
+      "sheet_id": "A-101",
+      "layout_role": "dimension_chain",
+      "bbox_xyxy": [0.05, 0.68, 0.55, 0.82],
+      "coordinate_system": "normalized-0-1"
+    }
+  ]
+}

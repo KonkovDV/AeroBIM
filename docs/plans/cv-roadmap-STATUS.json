@@ -13,55 +13,61 @@
         "Claim wording: OCR extraction, not engineering understanding"
       ],
       "next": [
-        "CER/WER on 3–5 labeled scan fixtures when corpus available"
+        "CER/WER on labeled scan fixtures when customer corpus available"
       ]
     },
     "P1_region_detector": {
-      "status": "heuristic_baseline",
+      "status": "metrics_harness_ready",
       "done": [
         "HeuristicLayoutRegionDetector: content/stamp/title_block/specification/dimension_chain",
         "hitl_required on low confidence",
-        "expected blocked roles in region_read_plan (no false coverage alarm)",
-        "slice exposes layout_regions + metrics"
+        "expected blocked roles in region_read_plan",
+        "region_detection_metrics IoU@50 P/R harness",
+        "evaluate_region_detection tool + fixture region_labels.json",
+        "slice iou50_score (fixture F1=1.0 on self-labels)"
       ],
       "next": [
-        "P1.2 LayoutLMv3/DocLayNet fine-tune on 50–100 labeled regions",
-        "mAP@50 / recall for stamp+specification"
+        "LayoutLMv3/DocLayNet fine-tune when 50–100 human labels exist",
+        "mAP@50:95 on held-out sheets"
       ]
     },
     "P2_symbol_spotting": {
-      "status": "NOT_CHECKED",
+      "status": "vector_baseline_candidates",
       "done": [
-        "Explicit NOT_CHECKED in slice cv_phases (research contour)"
+        "pdf_vector_primitives via pdfminer (line/rect/curve/text)",
+        "propose_symbol_candidates_from_vectors (heuristic candidates only)",
+        "slice exposes primitive_counts + candidate sample",
+        "verified door/window counts remain NOT claimed"
       ],
       "next": [
-        "vector primitives parser",
-        "ArchCAD-400K / VecFormer reference path",
-        "count error + expert review queue"
+        "labeled symbol corpus + ArchCAD-400K/VecFormer reference",
+        "count error metrics under dual adjudication"
       ]
     },
     "P3_ifc_mapping": {
-      "status": "candidate_links_only",
+      "status": "geo_tolerance_ready",
       "done": [
-        "annotation_ifc_matching candidate links in slice",
-        "ifc_guid unset until spatial confirm"
+        "annotation_ifc_matching candidate links",
+        "confirm_link_against_spatial_index optional bbox_xyxy_for + iou_tolerance",
+        "geo mismatch clears ifc_guid (never invents GUIDs)",
+        "slice geo_confirm_demo match_ok + mismatch_clears"
       ],
       "next": [
-        "geometric compatibility + tolerance",
-        "floor/type/pset matching",
-        "precision/recall on pilot IFC"
+        "populate IfcSpatialElement AABB in production index",
+        "pilot IFC precision/recall for confirmed links"
       ]
     },
     "P4_vlm_advisory": {
-      "status": "guarded",
+      "status": "structured_candidate_ready",
       "done": [
-        "ADR-001 / advisory OFF==ON tests already in suite",
-        "slice affirms summary_passed_source=deterministic_engine_only",
+        "OBSERVATIONS_RESPONSE_SCHEMA + candidate_class/unit/ifc_target_hint",
+        "vlm_normalize allows candidate_class",
+        "slice validates structured candidate; passed_unchanged guard",
+        "ADR-001 / advisory OFF==ON suite retained",
         "stamp/title/spec excluded from cloud VLM allowlist"
       ],
       "next": [
-        "structured candidate schema on cropped region only",
-        "HITL accept/reject loop with audit"
+        "live crop→VLM→HITL audit on pilot sheets (still never flips passed)"
       ]
     }
   },

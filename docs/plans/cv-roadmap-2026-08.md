@@ -9,10 +9,10 @@
 | Фаза | Статус | Что закрыто |
 | --- | --- | --- |
 | P0 OCR raster | `baseline_ready` | RapidOCR path, fail-closed zero yield, quality_flags, honest claim |
-| P1 Region detector | `heuristic_baseline` | stamp/title/spec/dim priors + HITL + slice metrics |
-| P2 Symbol spotting | `NOT_CHECKED` | явно не заявлено; research contour |
-| P3 IFC mapping | `candidate_links_only` | candidate links в slice; GUID не выдумывается |
-| P4 VLM advisory | `guarded` | ADR-001 + slice guard; stamp excluded from cloud |
+| P1 Region detector | `metrics_harness_ready` | priors + HITL + IoU@50 harness + fixture labels (F1=1.0 self) |
+| P2 Symbol spotting | `vector_baseline_candidates` | pdfminer vectors + heuristic candidates; counts not claimed |
+| P3 IFC mapping | `geo_tolerance_ready` | optional IoU tolerance confirm; mismatch clears GUID |
+| P4 VLM advisory | `structured_candidate_ready` | schema candidate_class; passed_unchanged guard |
 
 ## 1. Почему это сложнее обычного CV
 

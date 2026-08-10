@@ -52,12 +52,24 @@ class CvRoadmapSliceTests(unittest.TestCase):
         phases = result["cv_phases"]
         self.assertEqual(phases["P0_ocr_raster"]["status"], "baseline_ready")
         self.assertIn("not engineering understanding", phases["P0_ocr_raster"]["claim"])
-        self.assertEqual(phases["P1_region_detector"]["status"], "heuristic_baseline")
+        self.assertIn(
+            phases["P1_region_detector"]["status"],
+            {"heuristic_baseline", "metrics_harness_ready"},
+        )
         self.assertIn("stamp", phases["P1_region_detector"]["roles"])
         self.assertIn("specification", phases["P1_region_detector"]["roles"])
-        self.assertEqual(phases["P2_symbol_spotting"]["status"], "NOT_CHECKED")
-        self.assertEqual(phases["P3_ifc_mapping"]["status"], "candidate_links_only")
-        self.assertEqual(phases["P4_vlm_advisory"]["status"], "guarded")
+        self.assertIsNotNone(phases["P1_region_detector"].get("iou50_score"))
+        self.assertEqual(phases["P1_region_detector"]["iou50_score"]["f1"], 1.0)
+        self.assertEqual(phases["P2_symbol_spotting"]["status"], "vector_baseline_candidates")
+        self.assertIsNotNone(phases["P2_symbol_spotting"].get("vector"))
+        self.assertEqual(phases["P3_ifc_mapping"]["status"], "geo_tolerance_ready")
+        geo = phases["P3_ifc_mapping"]["geo_confirm_demo"]
+        self.assertTrue(geo["match_ok_guid_set"])
+        self.assertTrue(geo["mismatch_clears_guid"])
+        self.assertEqual(phases["P4_vlm_advisory"]["status"], "structured_candidate_ready")
+        guard = phases["P4_vlm_advisory"]["advisory_guard"]
+        self.assertTrue(guard["schema_conformant"])
+        self.assertTrue(guard["passed_unchanged"])
         self.assertEqual(
             phases["P4_vlm_advisory"]["summary_passed_source"],
             "deterministic_engine_only",

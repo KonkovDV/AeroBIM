@@ -158,9 +158,14 @@ def claimed_guid_from_evidence(evidence_ref: str) -> str | None:
 def confirm_link_against_spatial_index(
     link: AnnotationIfcLink,
     spatial_index: _GuidLookup,
+    *,
+    annotation_bbox: tuple[float, float, float, float] | None = None,
+    iou_tolerance: float = 0.0,
 ) -> AnnotationIfcLink:
     """Set ``ifc_guid`` only when claimed GUID is present in the model index.
 
+    Optional geometric gate: when ``annotation_bbox`` is set and the index exposes
+    ``bbox_xyxy_for``, require IoU >= ``iou_tolerance`` (if tolerance > 0).
     Region-overlap / target_ref candidates stay ``ifc_guid=None``. Missing or
     wrong claimed GUIDs keep provenance evidence unchanged and leave guid unset.
     Pre-set ``ifc_guid`` values are never trusted without ``claimed_guid:`` evidence.
@@ -173,16 +178,54 @@ def confirm_link_against_spatial_index(
         return link
     if spatial_index.lookup(claimed) is None:
         return replace(link, ifc_guid=None)
+
+    if iou_tolerance > 0.0 and annotation_bbox is not None:
+        bbox_for = getattr(spatial_index, "bbox_xyxy_for", None)
+        if callable(bbox_for):
+            element_bbox = bbox_for(claimed)
+            if element_bbox is None:
+                return replace(
+                    link,
+                    ifc_guid=None,
+                    evidence_ref=f"{link.evidence_ref}|geo_unavailable",
+                )
+            iou = intersection_over_union(annotation_bbox, element_bbox)
+            if iou < iou_tolerance:
+                return replace(
+                    link,
+                    ifc_guid=None,
+                    evidence_ref=(
+                        f"{link.evidence_ref}|geo_mismatch:iou={iou:.4f}<{iou_tolerance}"
+                    ),
+                )
+            return replace(
+                link,
+                ifc_guid=claimed,
+                evidence_ref=f"{link.evidence_ref}|geo_ok:iou={iou:.4f}",
+            )
+
     return replace(link, ifc_guid=claimed)
 
 
 def confirm_annotation_ifc_links(
     links: Sequence[AnnotationIfcLink],
     spatial_index: _GuidLookup | None,
+    *,
+    annotation_bboxes: dict[str, tuple[float, float, float, float]] | None = None,
+    iou_tolerance: float = 0.0,
 ) -> list[AnnotationIfcLink]:
     if spatial_index is None:
         return list(links)
-    return [confirm_link_against_spatial_index(link, spatial_index) for link in links]
+    bboxes = annotation_bboxes or {}
+    return [
+        confirm_link_against_spatial_index(
+            link,
+            spatial_index,
+            annotation_bbox=bboxes.get(link.annotation_id),
+            iou_tolerance=iou_tolerance,
+        )
+        for link in links
+    ]
 
 
 __all__ = [

@@ -9137,6 +9137,18 @@
       "redistribution": "allowed under repo MIT",
       "production_use": "fixture only; never customer evidence",
       "personal_data": false
+    },
+    {
+      "path": "demo/vertical-slice-2026-08-11/region_labels.json",
+      "sha256": "089b9816b6a8fd0448fc883267616d8a1811833c51c7c24a682481f95f73ca6d",
+      "bytes": 981,
+      "provenance": "project_authored_fixture",
+      "source": "heuristic region labels for vertical slice P1.2 IoU harness",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
     }
   ]
 }
