@@ -1,0 +1,24 @@
+{
+  "status": "ok",
+  "sheet_id": "TECHLAB-A101",
+  "provider": "yandex-ai-studio",
+  "model": "gpt://<folder>/qwen3.6-35b-a3b",
+  "regions_detected": 5,
+  "regions_read": 1,
+  "stamp_regions_excluded": 4,
+  "observation": {
+    "kind": "dimension",
+    "raw_value": "150 mm",
+    "normalized_value": "150mm",
+    "confidence": 0.95,
+    "needs_expert_review": true,
+    "note": "thickness 150 mm рядом с WALL-01"
+  },
+  "honesty": {
+    "fragment_only": true,
+    "not_whole_sheet": true,
+    "model_does_not_decide_accept": true,
+    "not_product_vision_claim": true
+  },
+  "generated_at": "2026-08-10T20:40:12.540740+00:00"
+}

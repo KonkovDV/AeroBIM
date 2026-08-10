@@ -1,0 +1,381 @@
+{
+  "artifact_type": "aerobim_vertical_slice",
+  "schema_version": "1.0.0",
+  "slice_id": "vertical-slice-2026-08-11",
+  "generated_at": "2026-08-10T20:28:26.600889+00:00",
+  "claim_boundary": "fixture_only demo slice; heuristic region/OCR baseline; not product CV; not customer accuracy; not native DWG",
+  "manifest": "samples/demo/vertical-slice-2026-08-11/manifest.json",
+  "inputs": [
+    {
+      "kind": "ifc",
+      "path": "samples/ifc/walls-multi-entity.ifc",
+      "sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe",
+      "bytes": 1142
+    },
+    {
+      "kind": "ids",
+      "path": "samples/ids/walls-multi-entity.ids",
+      "sha256": "4ab52e9c93e0669cd8165af406a51a6b7d2554f7ee3a4adee6c2e307b847a932",
+      "bytes": 1314
+    },
+    {
+      "kind": "requirements",
+      "path": "samples/requirements/techlab-demo-rules.txt",
+      "sha256": "ff331a2056124811b0460679bcc16cbfbde22256e0cf6a5d717fd79b708bf0a3",
+      "bytes": 753
+    },
+    {
+      "kind": "technical_spec",
+      "path": "samples/specifications/techlab-tz.txt",
+      "sha256": "b2e27c58d7e58a341edc3e198dca3cbff5c17da07c97a3c3c99fcfb3d0a74a7d",
+      "bytes": 643
+    },
+    {
+      "kind": "calculation",
+      "path": "samples/calculations/techlab-area-calc.txt",
+      "sha256": "89039586054ece80924a7ae69c0f0bbdef25d94ebc91f9a89156641854b4ec9a",
+      "bytes": 491
+    },
+    {
+      "path": "samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+      "sha256": "6aa1789a027f3a60be21bc68c26bb17440d4c54e827859c6268b590710125fcf",
+      "bytes": 450,
+      "sheet_id": "A-101",
+      "format": "pdf"
+    }
+  ],
+  "report_id": "ad91a207686145ce91a0d3a886f8f0af",
+  "summary": {
+    "requirement_count": 5,
+    "issue_count": 16,
+    "error_count": 8,
+    "warning_count": 2,
+    "passed": false,
+    "drawing_annotation_count": 1,
+    "generated_remark_count": 16,
+    "authoritative": true,
+    "outcome": "blocked"
+  },
+  "operator_status_counts": {
+    "findings": 5,
+    "not_checked": 7,
+    "insufficient_data": 2,
+    "no_findings": 1
+  },
+  "drawing_annotation_count": 1,
+  "finding_count": 16,
+  "reproducibility": {
+    "deterministic_order": "stable_rule_target_zone_key",
+    "finding_keys": [
+      "REQ-AREA-001|ROOM-101|None|None|None|42",
+      "REQ-AREA-002|ROOM-102|None|None|None|18.5",
+      "REQ-FIRE-001|ALL|None|None|None|REI60",
+      "REQ-FIRE-002|ALL|None|None|None|TRUE",
+      "REQ-HEIGHT-001|ALL|None|None|None|2.7",
+      "IDS-Wall Fire Rating Multi|None|None|None|None|None",
+      "IDS-Wall Fire Rating Multi|None|None|None|None|None",
+      "AEROBIM-CLASH-CAPABILITY|None|None|None|None|None",
+      "AEROBIM-QTY-MISSING|ROOM-101|None|None|None|42.0",
+      "AEROBIM-QTY-MISSING|ROOM-102|None|None|None|18.5",
+      "AEROBIM-LOAD-FORMAT|None|None|None|None|None",
+      "AEROBIM-DRAWING-REGION-HITL|None|None|None|None|None",
+      "AEROBIM-DRAWING-REGION-HITL|None|None|None|None|None",
+      "AEROBIM-DRAWING-REGION-HITL|None|None|None|None|None",
+      "AEROBIM-DRAWING-REGION-HITL|None|None|None|None|None",
+      "AEROBIM-DRAWING-REGION-HITL|None|None|None|None|None"
+    ]
+  },
+  "artifacts": {
+    "report_json": "report.json",
+    "report_html": "report.html",
+    "limitations": "LIMITATIONS.json"
+  },
+  "evidence": [
+    {
+      "annotation_id": "VIS-001-9846515",
+      "method": "pdf_text_layer",
+      "method_version": "raster-drawing-analyzer@1",
+      "claim": "PDF text-layer extraction, not trained CV",
+      "source_path": "samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+      "source_sha256": "6aa1789a027f3a60be21bc68c26bb17440d4c54e827859c6268b590710125fcf",
+      "page": 1,
+      "region_bbox": [
+        72.0,
+        62.48400000000004,
+        150.048,
+        12.0
+      ],
+      "extracted_value": "150",
+      "normalized_value": "150",
+      "unit": "mm",
+      "target_ref": "WALL-01",
+      "measure_name": "thickness",
+      "sheet_id": "A-101",
+      "quality_flags": {
+        "heuristic_baseline": true,
+        "cv_verified": false,
+        "ocr_used": false,
+        "text_layer_available": true,
+        "low_confidence": false,
+        "requires_expert": false
+      },
+      "evidence_hash": "6a4816e0a34e7e4e52a281263cd8cc92a73e52aba636283806f696c098bc4eee"
+    }
+  ],
+  "layout_regions": [
+    {
+      "sheet_id": "A-101",
+      "bbox_xyxy": [
+        0.0,
+        0.0,
+        1.0,
+        0.78
+      ],
+      "confidence": 0.35,
+      "modality": "detector",
+      "hitl_required": true,
+      "hitl_reason": "low_confidence<0.45",
+      "coordinate_system": "normalized-0-1",
+      "page_width": null,
+      "page_height": null,
+      "layout_role": "content",
+      "page_rotation": null
+    },
+    {
+      "sheet_id": "A-101",
+      "bbox_xyxy": [
+        0.55,
+        0.82,
+        1.0,
+        1.0
+      ],
+      "confidence": 0.4,
+      "modality": "detector",
+      "hitl_required": true,
+      "hitl_reason": "low_confidence<0.45",
+      "coordinate_system": "normalized-0-1",
+      "page_width": null,
+      "page_height": null,
+      "layout_role": "stamp",
+      "page_rotation": null
+    },
+    {
+      "sheet_id": "A-101",
+      "bbox_xyxy": [
+        0.0,
+        0.82,
+        0.28,
+        1.0
+      ],
+      "confidence": 0.3,
+      "modality": "detector",
+      "hitl_required": true,
+      "hitl_reason": "low_confidence<0.45",
+      "coordinate_system": "normalized-0-1",
+      "page_width": null,
+      "page_height": null,
+      "layout_role": "title_block",
+      "page_rotation": null
+    },
+    {
+      "sheet_id": "A-101",
+      "bbox_xyxy": [
+        0.62,
+        0.35,
+        1.0,
+        0.78
+      ],
+      "confidence": 0.28,
+      "modality": "detector",
+      "hitl_required": true,
+      "hitl_reason": "heuristic_spec_band",
+      "coordinate_system": "normalized-0-1",
+      "page_width": null,
+      "page_height": null,
+      "layout_role": "specification",
+      "page_rotation": null
+    },
+    {
+      "sheet_id": "A-101",
+      "bbox_xyxy": [
+        0.05,
+        0.68,
+        0.55,
+        0.82
+      ],
+      "confidence": 0.28,
+      "modality": "detector",
+      "hitl_required": true,
+      "hitl_reason": "heuristic_dim_band",
+      "coordinate_system": "normalized-0-1",
+      "page_width": null,
+      "page_height": null,
+      "layout_role": "dimension_chain",
+      "page_rotation": null
+    }
+  ],
+  "ifc_annotation_links": [
+    {
+      "annotation_id": "VIS-001-9846515",
+      "sheet_id": "A-101",
+      "target_ref": "WALL-01",
+      "ifc_guid": null,
+      "match_basis": "target_ref",
+      "confidence": 0.55,
+      "evidence_ref": "drawing:A-101:WALL-01"
+    }
+  ],
+  "empty_ocr_policy": {
+    "status": "CHECKED_WITH_EXTRACTION",
+    "operator_status": "findings_or_annotations_present",
+    "note": "At least one drawing annotation extracted"
+  },
+  "cv_phases": {
+    "P0_ocr_raster": {
+      "status": "baseline_ready",
+      "claim": "OCR extraction, not engineering understanding",
+      "ocr_used": false,
+      "text_layer_available": true,
+      "empty_yield_policy": "INSUFFICIENT_DATA + raster FAILED (not silent pass)"
+    },
+    "P1_region_detector": {
+      "status": "metrics_harness_ready",
+      "claim": "region detection: heuristic baseline, not trained CV",
+      "roles": [
+        "content",
+        "dimension_chain",
+        "specification",
+        "stamp",
+        "title_block"
+      ],
+      "region_count": 5,
+      "hitl_required_count": 5,
+      "iou50_score": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "iou_threshold": 0.5,
+        "matched": [
+          {
+            "sheet_id": "A-101",
+            "layout_role": "content",
+            "iou": 1.0
+          },
+          {
+            "sheet_id": "A-101",
+            "layout_role": "stamp",
+            "iou": 1.0
+          },
+          {
+            "sheet_id": "A-101",
+            "layout_role": "title_block",
+            "iou": 1.0
+          },
+          {
+            "sheet_id": "A-101",
+            "layout_role": "specification",
+            "iou": 1.0
+          },
+          {
+            "sheet_id": "A-101",
+            "layout_role": "dimension_chain",
+            "iou": 1.0
+          }
+        ],
+        "claim_boundary": "fixture_only region detection metrics; heuristic baseline; not product CV; not customer accuracy",
+        "metric_note": "IoU@threshold role-matched P/R — not mAP product accuracy"
+      }
+    },
+    "P2_symbol_spotting": {
+      "status": "vector_baseline_candidates",
+      "claim": "vector extraction + symbol candidates; counts NOT_CHECKED as verified findings",
+      "vector": {
+        "page_count": 1,
+        "primitive_counts": {
+          "text": 1
+        },
+        "method": "pdfminer_layout"
+      },
+      "symbol_candidate_count": 0,
+      "symbol_candidates_sample": [],
+      "note": "requires labeled corpus before any precision claim"
+    },
+    "P3_ifc_mapping": {
+      "status": "geo_tolerance_ready",
+      "claim": "annotation-IFC candidate + optional IoU tolerance confirm",
+      "link_count": 1,
+      "confirmed_guid_count": 0,
+      "geo_confirm_demo": {
+        "iou_tolerance": 0.25,
+        "match_ok_guid_set": true,
+        "match_ok_evidence": "claimed_guid:DEMO-GUID-GEO-TOLERANCE#WALL-01|geo_ok:iou=1.0000",
+        "mismatch_clears_guid": true,
+        "mismatch_evidence": "claimed_guid:DEMO-GUID-GEO-TOLERANCE#WALL-01|geo_mismatch:iou=0.0000<0.25",
+        "claim": "geometric tolerance gate; never invents GUIDs"
+      }
+    },
+    "P4_vlm_advisory": {
+      "status": "structured_candidate_ready",
+      "claim": "VLM advisory never changes summary.passed (ADR-001)",
+      "summary_passed_source": "deterministic_engine_only",
+      "observed_summary_passed": false,
+      "advisory_guard": {
+        "schema_conformant": true,
+        "schema_violations": [],
+        "summary_passed_before": false,
+        "summary_passed_after": false,
+        "passed_unchanged": true,
+        "crop_only": true,
+        "whole_sheet_forbidden": true,
+        "schema_kinds_include_candidate_class": true,
+        "claim": "VLM advisory structured candidate; never changes summary.passed"
+      },
+      "advisory_candidate": {
+        "sheet_id": "A-101",
+        "region_id": "content-crop-demo",
+        "readable": true,
+        "unreadable_reason": null,
+        "observations": [
+          {
+            "kind": "candidate_class",
+            "raw_value": "WALL-01 thickness 150 mm",
+            "normalized_value": null,
+            "unit": "mm",
+            "ifc_target_hint": "WALL-01",
+            "bbox_rel": [
+              0.1,
+              0.1,
+              0.4,
+              0.2
+            ],
+            "confidence": 0.55,
+            "evidence_note": "structured advisory candidate on cropped region only"
+          }
+        ]
+      }
+    }
+  },
+  "metrics": {
+    "drawing_extraction_coverage": 1.0,
+    "annotation_count": 1,
+    "finding_count": 16,
+    "requires_expert_count": 0,
+    "not_checked_count": 7,
+    "insufficient_data_count": 2,
+    "layout_region_count": 5,
+    "layout_hitl_count": 5,
+    "ifc_candidate_link_count": 1
+  },
+  "honest_notes": [
+    "PDF input uses text-layer extraction (vector), not trained CV",
+    "OCR extraction, not engineering understanding, when raster path used",
+    "region detection: heuristic baseline, not trained CV",
+    "symbol spotting NOT_CHECKED (research contour)",
+    "VLM advisory never changes summary.passed",
+    "REQUIRES_EXPERT / INSUFFICIENT_DATA via coverage — never silent pass",
+    "Original inputs are read-only in this slice"
+  ]
+}
