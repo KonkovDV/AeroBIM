@@ -21,7 +21,9 @@ from aerobim.domain.models import DrawingRegionRef
 # Only these roles may leave the contour toward cloud VLM (after PII prior clip).
 _CLOUD_SAFE_LAYOUT_ROLES = frozenset({"content"})
 # Expected non-content roles from the heuristic detector (not a coverage alarm).
-_EXPECTED_BLOCKED_ROLES = frozenset({"stamp", "title_block"})
+_EXPECTED_BLOCKED_ROLES = frozenset(
+    {"stamp", "title_block", "specification", "dimension_chain", "explication"}
+)
 
 # Visual-orientation priors (normalized 0..1, y-down). Mapped into page space
 # via ``page_rotate_degrees`` before clipping (RT-STAMP-14).

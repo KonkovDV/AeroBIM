@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "roadmap": "docs/plans/cv-roadmap-2026-08.md",
+  "updated_at": "2026-08-10",
+  "principle": "evidence-first hybrid; VLM never changes summary.passed",
+  "phases": {
+    "P0_ocr_raster": {
+      "status": "baseline_ready",
+      "done": [
+        "RapidOCR path in RasterDrawingAnalyzer (optional [raster] extra)",
+        "Empty OCR/zero yield → raster FAILED + INSUFFICIENT_DATA (fail-closed)",
+        "quality_flags: ocr_used, text_layer_available, heuristic_baseline, cv_verified=false",
+        "Claim wording: OCR extraction, not engineering understanding"
+      ],
+      "next": [
+        "CER/WER on 3–5 labeled scan fixtures when corpus available"
+      ]
+    },
+    "P1_region_detector": {
+      "status": "heuristic_baseline",
+      "done": [
+        "HeuristicLayoutRegionDetector: content/stamp/title_block/specification/dimension_chain",
+        "hitl_required on low confidence",
+        "expected blocked roles in region_read_plan (no false coverage alarm)",
+        "slice exposes layout_regions + metrics"
+      ],
+      "next": [
+        "P1.2 LayoutLMv3/DocLayNet fine-tune on 50–100 labeled regions",
+        "mAP@50 / recall for stamp+specification"
+      ]
+    },
+    "P2_symbol_spotting": {
+      "status": "NOT_CHECKED",
+      "done": [
+        "Explicit NOT_CHECKED in slice cv_phases (research contour)"
+      ],
+      "next": [
+        "vector primitives parser",
+        "ArchCAD-400K / VecFormer reference path",
+        "count error + expert review queue"
+      ]
+    },
+    "P3_ifc_mapping": {
+      "status": "candidate_links_only",
+      "done": [
+        "annotation_ifc_matching candidate links in slice",
+        "ifc_guid unset until spatial confirm"
+      ],
+      "next": [
+        "geometric compatibility + tolerance",
+        "floor/type/pset matching",
+        "precision/recall on pilot IFC"
+      ]
+    },
+    "P4_vlm_advisory": {
+      "status": "guarded",
+      "done": [
+        "ADR-001 / advisory OFF==ON tests already in suite",
+        "slice affirms summary_passed_source=deterministic_engine_only",
+        "stamp/title/spec excluded from cloud VLM allowlist"
+      ],
+      "next": [
+        "structured candidate schema on cropped region only",
+        "HITL accept/reject loop with audit"
+      ]
+    }
+  },
+  "forbidden_claims": [
+    "product CV",
+    "customer accuracy >90%",
+    "native DWG",
+    "whole-sheet VLM understanding",
+    "symbol count as verified finding"
+  ]
+}

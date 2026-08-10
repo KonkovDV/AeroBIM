@@ -26,7 +26,13 @@ from aerobim.application.use_cases.analyze_project_package import (  # noqa: E40
 )
 from aerobim.core.config.settings import Settings  # noqa: E402
 from aerobim.core.di.tokens import Tokens  # noqa: E402
+from aerobim.domain.annotation_ifc_matching import (  # noqa: E402
+    link_annotation_to_ifc_target,
+)
 from aerobim.domain.check_coverage import coverage_from_report, derive_report_scope  # noqa: E402
+from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (  # noqa: E402
+    HeuristicLayoutRegionDetector,
+)
 from aerobim.infrastructure.di.bootstrap import bootstrap_container  # noqa: E402
 from aerobim.presentation.http.report_html import render_report_html  # noqa: E402
 from aerobim.tools.benchmark_project_package import load_benchmark_pack  # noqa: E402
@@ -146,7 +152,15 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
     html_path.write_text(render_report_html(report.report_id, public), encoding="utf-8")
 
     # Evidence envelope: deterministic provenance per extracted drawing annotation.
-    extraction_method = "pdf_text_layer"
+    # P0: text-layer vs OCR flags — this demo PDF uses pdfminer text layer (not OCR).
+    ocr_used = False
+    text_layer_available = True
+    for annotation in report.drawing_annotations:
+        if annotation.source and "ocr" in annotation.source.lower():
+            ocr_used = True
+            text_layer_available = False
+            break
+
     evidence_records: list[dict[str, Any]] = []
     for annotation in report.drawing_annotations:
         pz = annotation.problem_zone
@@ -166,10 +180,20 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             ),
             None,
         )
+        method = (
+            "ocr"
+            if annotation.source and "ocr" in annotation.source.lower()
+            else "pdf_text_layer"
+        )
         record = {
             "annotation_id": annotation.annotation_id,
-            "method": extraction_method,
+            "method": method,
             "method_version": "raster-drawing-analyzer@1",
+            "claim": (
+                "OCR extraction, not engineering understanding"
+                if method == "ocr"
+                else "PDF text-layer extraction, not trained CV"
+            ),
             "source_path": source_path,
             "source_sha256": input_sha,
             "page": pz.page_number if pz else None,
@@ -183,6 +207,9 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             "quality_flags": {
                 "heuristic_baseline": True,
                 "cv_verified": False,
+                "ocr_used": method == "ocr",
+                "text_layer_available": method == "pdf_text_layer",
+                "low_confidence": False,
                 "requires_expert": False,
             },
             "evidence_hash": hashlib.sha256(
@@ -191,7 +218,7 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
                         "source_sha256": input_sha,
                         "annotation_id": annotation.annotation_id,
                         "value": annotation.observed_value,
-                        "method": extraction_method,
+                        "method": method,
                     },
                     sort_keys=True,
                 ).encode("utf-8")
@@ -199,10 +226,91 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         }
         evidence_records.append(record)
 
+    # P1.1: heuristic layout regions (stamp/title/spec/dim) — HEURISTIC_BASELINE.
+    detector = HeuristicLayoutRegionDetector()
+    layout_regions: list[dict[str, Any]] = []
+    for entry in input_entries:
+        if entry.get("format") != "pdf" and not str(entry.get("path", "")).endswith(".pdf"):
+            continue
+        pdf_path = root / str(entry["path"])
+        if not pdf_path.is_file():
+            continue
+        for region in detector.detect(pdf_path, sheet_id=str(entry.get("sheet_id") or "A-101")):
+            layout_regions.append(asdict(region))
+
+    # P3 scaffold: annotation → IFC candidate links (claimed GUID only; no invention).
+    ifc_links = [
+        link_annotation_to_ifc_target(ann, requirements=report.requirements).as_dict()
+        for ann in report.drawing_annotations
+    ]
+
+    # P0 honesty: zero annotations on a raster/PDF request → not "no errors".
+    raster_zero_yield = len(report.drawing_annotations) == 0 and any(
+        str(e.get("path", "")).endswith((".pdf", ".png", ".jpg", ".jpeg", ".webp"))
+        for e in input_entries
+    )
+    empty_ocr_status = (
+        {
+            "status": "INSUFFICIENT_DATA",
+            "operator_status": "insufficient_data",
+            "note": (
+                "Zero drawing annotations from PDF/raster path — fail-closed "
+                "(capabilities.raster FAILED); never treat as CHECKED_OK / no findings"
+            ),
+        }
+        if raster_zero_yield
+        else {
+            "status": "CHECKED_WITH_EXTRACTION",
+            "operator_status": "findings_or_annotations_present",
+            "note": "At least one drawing annotation extracted",
+        }
+    )
+
+    # CV phase status (roadmap P0–P4) — honest progress, not product claims.
+    cv_phases = {
+        "P0_ocr_raster": {
+            "status": "baseline_ready",
+            "claim": "OCR extraction, not engineering understanding",
+            "ocr_used": ocr_used,
+            "text_layer_available": text_layer_available,
+            "empty_yield_policy": "INSUFFICIENT_DATA + raster FAILED (not silent pass)",
+        },
+        "P1_region_detector": {
+            "status": "heuristic_baseline",
+            "claim": "region detection: heuristic baseline, not trained CV",
+            "roles": sorted(
+                {
+                    str(r.get("layout_role"))
+                    for r in layout_regions
+                    if isinstance(r.get("layout_role"), str)
+                }
+            ),
+            "region_count": len(layout_regions),
+            "hitl_required_count": sum(1 for r in layout_regions if r.get("hitl_required")),
+        },
+        "P2_symbol_spotting": {
+            "status": "NOT_CHECKED",
+            "claim": "symbol spotting deferred — research contour, not VLM-first",
+            "note": "doors/windows count not claimed; requires CAD primitives + labeled corpus",
+        },
+        "P3_ifc_mapping": {
+            "status": "candidate_links_only",
+            "claim": "annotation-IFC candidate; ifc_guid unset until spatial confirm",
+            "link_count": len(ifc_links),
+            "confirmed_guid_count": sum(1 for link in ifc_links if link.get("ifc_guid")),
+        },
+        "P4_vlm_advisory": {
+            "status": "guarded",
+            "claim": "VLM advisory never changes summary.passed (ADR-001)",
+            "summary_passed_source": "deterministic_engine_only",
+            "observed_summary_passed": report.summary.passed,
+        },
+    }
+
     # Honest sidecar: explicit limitations and reproduction steps for the demo.
     limitations = {
         "artifact": "vertical-slice-limitations",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "claim_boundary": _SLIDE_BOUNDARY,
         "not_demonstrated": [
             "trained CV / symbol detection on drawing",
@@ -210,7 +318,9 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             "MEP system-aware clash",
             "customer corpus accuracy",
             "production-ready BCF/CDE integration",
+            "whole-sheet VLM understanding",
         ],
+        "cv_phases": cv_phases,
         "reproduce": {
             "command": (
                 "python -m aerobim.tools.run_vertical_slice "
@@ -267,6 +377,10 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             "limitations": "LIMITATIONS.json",
         },
         "evidence": evidence_records,
+        "layout_regions": layout_regions,
+        "ifc_annotation_links": ifc_links,
+        "empty_ocr_policy": empty_ocr_status,
+        "cv_phases": cv_phases,
         "metrics": {
             "drawing_extraction_coverage": (
                 len(annotations) / max(len(report.drawing_assets), 1)
@@ -277,11 +391,18 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             "finding_count": len(findings),
             "requires_expert_count": operator_counts.get("expert_required", 0),
             "not_checked_count": operator_counts.get("not_checked", 0),
+            "insufficient_data_count": operator_counts.get("insufficient_data", 0),
+            "layout_region_count": len(layout_regions),
+            "layout_hitl_count": sum(1 for r in layout_regions if r.get("hitl_required")),
+            "ifc_candidate_link_count": len(ifc_links),
         },
         "honest_notes": [
             "PDF input uses text-layer extraction (vector), not trained CV",
             "OCR extraction, not engineering understanding, when raster path used",
-            "REQUIRES_EXPERT via coverage status when data is insufficient",
+            "region detection: heuristic baseline, not trained CV",
+            "symbol spotting NOT_CHECKED (research contour)",
+            "VLM advisory never changes summary.passed",
+            "REQUIRES_EXPERT / INSUFFICIENT_DATA via coverage — never silent pass",
             "Original inputs are read-only in this slice",
         ],
     }

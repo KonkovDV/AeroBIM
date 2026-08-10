@@ -1,6 +1,18 @@
 # AeroBIM CV Roadmap — evidence-first, август 2026
 
+**Machine status:** [`cv-roadmap-STATUS.json`](cv-roadmap-STATUS.json) (обновляется по мере закрытия фаз).
+
 **Принцип:** инженерный чертёж нельзя надёжно проверять одной картинкой и одним запросом к модели. Рабочая система — гибридная: векторные данные и геометрические правила дают доказательство, OCR/VLM помогают найти и объяснить неоднозначные места, эксперт подтверждает спорные случаи. **VLM никогда не меняет `summary.passed`.**
+
+## Статус исполнения (10.08.2026)
+
+| Фаза | Статус | Что закрыто |
+| --- | --- | --- |
+| P0 OCR raster | `baseline_ready` | RapidOCR path, fail-closed zero yield, quality_flags, honest claim |
+| P1 Region detector | `heuristic_baseline` | stamp/title/spec/dim priors + HITL + slice metrics |
+| P2 Symbol spotting | `NOT_CHECKED` | явно не заявлено; research contour |
+| P3 IFC mapping | `candidate_links_only` | candidate links в slice; GUID не выдумывается |
+| P4 VLM advisory | `guarded` | ADR-001 + slice guard; stamp excluded from cloud |
 
 ## 1. Почему это сложнее обычного CV
 
