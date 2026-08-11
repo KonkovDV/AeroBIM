@@ -309,17 +309,23 @@ class VlmAdvisoryClient:
         return payload
 
     def _request_headers(self) -> dict[str, str]:
-        headers = {
+        # RT-20260811-01: extras must not override Authorization / Content-Type /
+        # Accept / Host / folder / logging. Folder comes only from constructor.
+        from aerobim.core.security.immutable_http_headers import merge_outbound_headers
+
+        forced: dict[str, str] = {
             "Authorization": f"{self._auth_scheme} {self._api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json",
-            **self._extra_headers,
+            "x-data-logging-enabled": "false",
         }
-        if self._folder_id and "x-folder-id" not in headers:
-            headers["x-folder-id"] = self._folder_id
-        if "x-data-logging-enabled" not in headers:
-            headers["x-data-logging-enabled"] = "false"
-        return headers
+        if self._folder_id:
+            forced["x-folder-id"] = self._folder_id
+        return merge_outbound_headers(
+            self._extra_headers,
+            forced=forced,
+            also_deny=frozenset({"x-folder-id", "x-data-logging-enabled"}),
+        )
 
     def read_drawing(
         self,

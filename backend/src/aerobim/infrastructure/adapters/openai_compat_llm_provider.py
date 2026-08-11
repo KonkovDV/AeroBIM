@@ -129,15 +129,21 @@ class OpenAICompatLlmProvider:
         return {"type": "json_object"}
 
     def _request_headers(self, *, client_request_id: str) -> dict[str, str]:
-        headers = {
+        # RT-20260811-01/06: extras may carry vendor folder/logging from DI, but
+        # must never override Authorization / Content-Type / Accept / Host.
+        from aerobim.core.security.immutable_http_headers import merge_outbound_headers
+
+        forced: dict[str, str] = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            **self._extra_headers,
             # Opaque UUIDv4 only (RT-META-01) — never internal request_id.
             "x-client-request-id": client_request_id,
         }
         if self._api_key:
-            headers["Authorization"] = f"{self._auth_scheme} {self._api_key}"
+            forced["Authorization"] = f"{self._auth_scheme} {self._api_key}"
+        headers = merge_outbound_headers(self._extra_headers, forced=forced)
+        if self._folder_id:
+            headers["x-folder-id"] = self._folder_id
         return headers
 
     def _vendor_audit_fields(self) -> dict[str, Any]:

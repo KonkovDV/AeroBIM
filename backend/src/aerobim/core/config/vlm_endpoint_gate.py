@@ -9,6 +9,21 @@ _YANDEX_KIMI_REFUSAL = (
     "(e.g. gpt://<folder>/qwen3.6-35b-a3b); kimi-k3 default is refused"
 )
 
+# Exact hosts aligned with default LLM allowlist (settings._DEFAULT_LLM_ALLOWED_HOSTS).
+_YANDEX_HOSTS_EXACT = frozenset(
+    {
+        "ai.api.cloud.yandex.net",
+        "llm.api.cloud.yandex.net",
+    }
+)
+
+# DNS suffixes for Yandex Cloud API endpoints (leading dot = suffix match only).
+_YANDEX_HOST_SUFFIXES = (
+    ".api.cloud.yandex.net",
+    ".cloud.yandex.net",
+    ".yandexcloud.net",
+)
+
 # Hosts that clearly belong to a non-Yandex VLM vendor / lab fixture.
 # Ambient AEROBIM_LLM_PROVIDER=yandex must not poison these smoke URLs.
 _NON_YANDEX_HOST_MARKERS = (
@@ -23,6 +38,17 @@ _NON_YANDEX_HOST_MARKERS = (
 )
 
 
+def _hostname_is_yandex(host: str) -> bool:
+    """True only for exact Yandex Cloud API hosts / known suffixes — not substrings."""
+
+    normalized = host.strip().lower().rstrip(".")
+    if not normalized:
+        return False
+    if normalized in _YANDEX_HOSTS_EXACT:
+        return True
+    return any(normalized.endswith(suffix) for suffix in _YANDEX_HOST_SUFFIXES)
+
+
 def endpoint_looks_like_yandex(
     base_url: str | None,
     *,
@@ -30,7 +56,7 @@ def endpoint_looks_like_yandex(
 ) -> bool:
     """True when the VLM URL / provider indicates Yandex AI Studio contour.
 
-    - Hostname containing ``yandex`` → Yandex.
+    - Exact / suffix Yandex Cloud API hosts → Yandex (never raw substring ``yandex``).
     - Explicit non-Yandex host markers win over ambient ``AEROBIM_LLM_PROVIDER``.
     - Provider ``yandex*`` with empty host, IP, or unknown CDN host → Yandex
       (closes IP/proxy bypass of the kimi-k3 refuse gate).
@@ -42,7 +68,7 @@ def endpoint_looks_like_yandex(
             host = (urlparse(base_url).hostname or "").lower()
         except Exception:  # noqa: BLE001 — malformed URL → empty host
             host = ""
-    if "yandex" in host:
+    if host and _hostname_is_yandex(host):
         return True
     provider_yandex = (provider or "").strip().lower().startswith("yandex")
     if not provider_yandex:
