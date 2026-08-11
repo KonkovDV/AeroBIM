@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0.2",
-  "date": "2026-08-09",
-  "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. Dates after KT#2 freeze must not be used for controls claimed as maturity evidence. A4 names BOTH policy flags so neither escapes the registry.",
+  "date": "2026-08-11",
+  "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. A4 flipped ACTIVE 2026-08-11 (both policy flags). N43 lag=1 activates 2026-08-17.",
   "waivers": [
     {
       "id": "A4-signing-enforcement",
       "control": "Принуждение доли подписанных коммитов + fail on unverifiable",
       "mechanism": "governance/commit_signing_policy.json + import_trusted_signing_keys.py + verify_commit_signatures.py",
-      "state": "deferred",
-      "reason": "Ключ в governance/trusted_signing_keys; оба флага включаются вместе после зелёного dry-run",
+      "state": "active",
+      "reason": "Activated 2026-08-11 after green dry-run (18/50 trusted, ratio=0.36). Both enforce_ci and fail_on_unverifiable_signature enabled together.",
       "activates_on": "2026-08-11",
       "owner": "KonkovDV",
       "policy_flags": [
