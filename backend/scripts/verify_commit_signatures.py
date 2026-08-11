@@ -28,7 +28,22 @@ def _repo_root() -> Path:
 
 
 def _gpg_bin() -> str:
-    return os.environ.get("AEROBIM_GPG_BIN") or os.environ.get("GPG") or "gpg"
+    env = os.environ.get("AEROBIM_GPG_BIN") or os.environ.get("GPG")
+    if env:
+        return env
+    try:
+        proc = subprocess.run(
+            ["git", "config", "--get", "gpg.program"],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        configured = (proc.stdout or "").strip()
+        if configured:
+            return configured
+    except OSError:
+        pass
+    return "gpg"
 
 
 def _load_policy(path: Path) -> dict[str, object]:
