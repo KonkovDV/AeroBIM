@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "aerobim-extent-clash-fixture-2026-08-11",
+  "dataset_status": "adjudicated",
+  "scope_reference": "FIXTURE-EXTENT-CLASH-ONLY-NOT-CUSTOMER-EVIDENCE",
+  "claim_level": "fixture_only",
+  "adjudication": {
+    "method": "dual_independent",
+    "completed_at": "2026-08-11T07:01:34.712300+00:00",
+    "adjudicators": [
+      {
+        "id": "engineer-a",
+        "role": "fixture rater A"
+      },
+      {
+        "id": "engineer-b",
+        "role": "fixture rater B"
+      }
+    ],
+    "notes": "Both raters confirm AABB extent overlaps on the synthetic fixture; not a customer package adjudication."
+  },
+  "cases": [
+    {
+      "case_id": "EXTENT-CLASH-FIXTURE-001",
+      "expected_findings": [
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "07rKl38QDF2vdadUSS_lo8|3TTdB_$Zb9fA2plxtiGfxz",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0BCoThuf52fvLM8cH_MyTd|0aPWMwmB16KQvjgtfsgRFH",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0QqZI3IiD34eHSmjCZyYQz|2_vjqzyDL4KOBtBjFdqsQ7",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0Za1e3PojC2xknQDuJ6Nei|1Vsyk$WU5EmQz0oCqrT8$P",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0zvS6_9J90yhmGXgjbPkxC|3QSX6UBGr4COfE3Nx75XE9",
+          "adjudication_status": "confirmed"
+        }
+      ]
+    }
+  ]
+}
