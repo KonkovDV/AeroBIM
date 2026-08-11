@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "slice_id": "kt2-handoff-2026-08-11",
+  "date": "2026-08-11",
+  "git_sha": "701a267",
+  "status": "fixture_handoff_ready",
+  "claim_level": "fixture_only",
+  "checkpoint_verdict": "NO_GO",
+  "claim_boundary": "KT#2 methodology/fixture handoff only. Not customer RT-001/002/003. Not product accuracy >90%. Not native DWG / MEP delivered / OIDC BFF production.",
+  "components": {
+    "wall_guid_bundle": {
+      "path": "docs/evidence/kt2-handoff-2026-08-11/wall-guid",
+      "verification": "passed",
+      "report_id": "47848247aed244fa878acff822df86e9",
+      "reproducibility_hash": "e6c37b189bf455b8c0dfe37cf3552e082451afd7d392bef04d5be560142abaf7",
+      "summary_passed": false,
+      "derived_outcome": "BLOCKED"
+    },
+    "vertical_slice": {
+      "path": "docs/evidence/kt2-handoff-2026-08-11/vertical-slice",
+      "slice_id": "vertical-slice-2026-08-11",
+      "claim": "PDF text-layer + heuristic regions + advisory VLM candidate; never flips summary.passed"
+    },
+    "harness_dryrun": {
+      "path": "docs/evidence/kt2-handoff-2026-08-11/harness-dryrun",
+      "publishable": false,
+      "require_publishable_exit": 1,
+      "note": "Synthetic labels; --require-publishable fail-closed as required"
+    },
+    "clash_measurement": {
+      "path": "docs/evidence/clash-measurement-slice-2026-08",
+      "status": "fixture_measured",
+      "n": 5,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "drawing_overlay": {
+      "path": "docs/evidence/drawing-overlay-smoke-2026-08",
+      "status": "fixture_rendered",
+      "png": "overlay-wall-thickness.png"
+    },
+    "mentor_pack": {
+      "path": "docs/demo/mentor-mikhail-2026-08-11"
+    }
+  },
+  "governance": {
+    "deferred_controls_errors": 0,
+    "matrix_guard": "OK",
+    "private_marker_hits": 0,
+    "a4_signing": "active",
+    "n43_lag": "deferred_until_2026-08-17"
+  },
+  "next_calendar": [
+    "12-16.08: keep TZ clash/overlay wording fixture-only; customer n≈50 when IFC arrives",
+    "17.08: N43 baseline lag=1 rehearsal",
+    "20.08: KT#2 window end — intermediate version on agreed scenario",
+    "Do not flip checkpoint GO without RT-001/002/003 evidence"
+  ]
+}

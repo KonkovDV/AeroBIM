@@ -1,0 +1,186 @@
+{
+  "artifact_type": "aerobim_detection_precision_evaluation",
+  "schema_version": "1.1.0",
+  "dataset_id": "aerobim-p1-detection-contract-synthetic",
+  "dataset_status": "synthetic",
+  "scope_reference": "HARNESS-CONTRACT-ONLY-NOT-CUSTOMER-EVIDENCE",
+  "run_id": "aerobim-p1-detection-contract-run",
+  "matching_policy": "exact-v1",
+  "publishable_protocol_gate": false,
+  "adjudicator_count": 1,
+  "corpus_kind": "synthetic",
+  "held_out_split": false,
+  "fn_tracked": true,
+  "finding_predicates": [
+    "geometric_clash",
+    "norm_violation",
+    "cross_document",
+    "ids_facet",
+    "drawing_measure",
+    "schema_gate",
+    "version_mismatch",
+    "other"
+  ],
+  "agreement_path": null,
+  "require_agreement_for_publishable": false,
+  "precision_claim": {
+    "metric": "macro_precision",
+    "value": 0.444444,
+    "corpus_id": "aerobim-p1-detection-contract-synthetic",
+    "corpus_kind": "synthetic",
+    "adjudicators": 1,
+    "held_out_split": false,
+    "fn_tracked": true,
+    "base_publishable": false,
+    "publishable": false,
+    "render": "macro_precision=withheld (corpus_kind=synthetic, adjudicators=1; not publishable as product accuracy)"
+  },
+  "labels": {
+    "confirmed": 6,
+    "excluded": 1,
+    "unresolved": 1
+  },
+  "detections": 6,
+  "micro": {
+    "tp": 4,
+    "fp": 2,
+    "fn": 2,
+    "precision": 0.666667,
+    "recall": 0.666667,
+    "f1": 0.666667,
+    "critical_recall": 0.666667,
+    "false_positive_burden": 0.25,
+    "support": 6
+  },
+  "macro": {
+    "precision": 0.444444,
+    "recall": 0.666667,
+    "f1": 0.533333,
+    "class_count": 3,
+    "empty_classes": false
+  },
+  "per_class": {
+    "clash": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.666667,
+      "recall": 1.0,
+      "f1": 0.8,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.333333,
+      "support": 2
+    },
+    "cross-document": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.666667,
+      "recall": 1.0,
+      "f1": 0.8,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.333333,
+      "support": 2
+    },
+    "missing-element": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "critical_recall": 0.0,
+      "false_positive_burden": 0.0,
+      "support": 2
+    }
+  },
+  "per_discipline": {
+    "ar": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 1,
+      "precision": 0.666667,
+      "recall": 0.666667,
+      "f1": 0.666667,
+      "critical_recall": 0.666667,
+      "false_positive_burden": 0.25,
+      "support": 3
+    },
+    "kj": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 1,
+      "precision": 0.666667,
+      "recall": 0.666667,
+      "f1": 0.666667,
+      "critical_recall": 0.666667,
+      "false_positive_burden": 0.25,
+      "support": 3
+    }
+  },
+  "clash_vs_nonclash": {
+    "clash": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.666667,
+      "recall": 1.0,
+      "f1": 0.8,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.333333,
+      "support": 2
+    },
+    "non_clash": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 2,
+      "precision": 0.666667,
+      "recall": 0.5,
+      "f1": 0.571429,
+      "critical_recall": 0.5,
+      "false_positive_burden": 0.2,
+      "support": 4
+    }
+  },
+  "false_positives": [
+    {
+      "case_id": "SYNTHETIC-AR-001",
+      "finding_class": "cross-document",
+      "match_key": "composite:[\"SECTION-PAIR-AR-FACADE-MATERIAL\",\"FACADE-TYPE-F1\",\"\"]",
+      "rule_id": "SECTION-PAIR-AR-FACADE-MATERIAL",
+      "target_ref": "FACADE-TYPE-F1",
+      "element_guid": null,
+      "discipline": "ar"
+    },
+    {
+      "case_id": "SYNTHETIC-KJ-001",
+      "finding_class": "clash",
+      "match_key": "composite:[\"SPATIAL-HARD-CLASH\",\"GUID-X|GUID-Y\",\"\"]",
+      "rule_id": "SPATIAL-HARD-CLASH",
+      "target_ref": "GUID-X|GUID-Y",
+      "element_guid": null,
+      "discipline": "kj"
+    }
+  ],
+  "false_negatives": [
+    {
+      "case_id": "SYNTHETIC-AR-001",
+      "finding_class": "missing-element",
+      "match_key": "composite:[\"SECTION-PAIR-AR-DOOR-CLEAR-WIDTH\",\"DOOR-TYPE-D1\",\"\"]",
+      "rule_id": "SECTION-PAIR-AR-DOOR-CLEAR-WIDTH",
+      "target_ref": "DOOR-TYPE-D1",
+      "element_guid": null,
+      "discipline": "ar"
+    },
+    {
+      "case_id": "SYNTHETIC-KJ-001",
+      "finding_class": "missing-element",
+      "match_key": "composite:[\"SECTION-PAIR-KJ-LOAD-COMBINATION\",\"CALC-LC-01\",\"\"]",
+      "rule_id": "SECTION-PAIR-KJ-LOAD-COMBINATION",
+      "target_ref": "CALC-LC-01",
+      "element_guid": null,
+      "discipline": "kj"
+    }
+  ],
+  "warning": "Dataset is not adjudicated customer evidence; metrics are harness/fixture results and must not be published as AeroBIM product accuracy."
+}

@@ -47,7 +47,17 @@ claim_boundary: "Governance evidence only. Checkpoint NO_GO for RT-001/002/003 u
 - RT-001/002/003 Checkpoint **NO_GO**
 - RUF100 / frontend ESLint / CODEOWNERS (после 19.08)
 - N43 lag=1 до репетиции 17.08
-- Продуктовые TZ-критерии (коллизии / overlay) — окно 12–16.08
+- Продуктовые TZ-критерии (коллизии / overlay) — окно 12–16.08; **fixture handoff готов** 11.08 (`docs/evidence/kt2-handoff-2026-08-11/`)
+
+## KT#2 handoff (добавлено 11.08 вечер)
+
+| Артефакт | Статус |
+|---|---|
+| Wall-guid bundle + verify | **passed** under `docs/evidence/kt2-handoff-2026-08-11/wall-guid` |
+| Vertical slice | regenerated in handoff pack |
+| Harness synthetic + `--require-publishable` | exit **1** (fail-closed) |
+| Clash AABB + overlay PNG | `fixture_measured` / `fixture_rendered` |
+| Cover note | [`../demo/KT2_HANDOFF_COVER_2026_08_11.md`](../demo/KT2_HANDOFF_COVER_2026_08_11.md) |
 
 ## Команды (воспроизводимо)
 

@@ -117,7 +117,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | NLP for TZ / remarks / anomalies | partial | Regex NLP; LLM advisory stub; EN/RU templates | MVP / P3 |
 | Clash / anomaly algorithms | partial | IfcClash deterministic | MVP |
 | Web UI | done | `frontend/` review shell | MVP |
-| Drawing overlay of errors | done | `DrawingEvidencePanel` + smoke PNG evidence [`drawing-overlay-smoke-2026-08`](../evidence/drawing-overlay-smoke-2026-08/README.md) (deterministic `problem_zone` on rasterized PDF — not CV) | MVP |
+| Drawing overlay of errors | done | `DrawingEvidencePanel` + smoke PNG [`drawing-overlay-smoke-2026-08`](../evidence/drawing-overlay-smoke-2026-08/README.md) + [KT#2 handoff](../evidence/kt2-handoff-2026-08-11/README.md) (deterministic `problem_zone` — not CV) | MVP |
 | Remarks panel: list / filter / priority / edit | done | Severity filter + remark editor → review-events | P0 |
 | Per-check coverage map (four states) | partial | `domain/check_coverage.py` (4 gap states + operator `findings`); HTML+PDF export first page; `CoverageMapPanel`; Hypothesis I-8; `GET /v1/reports/{id}/coverage` + `/export/pdf` | P0 WP-R4 |
 
@@ -138,7 +138,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 
 | TZ criterion | Pilot / repo target | Status | Phase |
 |--------------|---------------------|--------|-------|
-| Clash accuracy >90% | Measured precision after labeled corpus; pilot TP ≥60% interim | partial (harness + protocol + [slice 2026-08](../evidence/clash-measurement-slice-2026-08/README.md): **fixture** AABB extents precision=1.0 recall=1.0 n=5 — **not** customer corpus, **not** TZ >90%; customer n≈50 still open) | P1 fixture measured 11.08 / measure customer 12–14.08 / P4 publish |
+| Clash accuracy >90% | Measured precision after labeled corpus; pilot TP ≥60% interim | partial ([KT#2 handoff 11.08](../evidence/kt2-handoff-2026-08-11/README.md) + [slice 2026-08](../evidence/clash-measurement-slice-2026-08/README.md): **fixture** AABB extents precision=1.0 recall=1.0 n=5 — **not** customer corpus, **not** TZ >90%; customer n≈50 still open) | P1 fixture measured 11.08 / measure customer 12–14.08 / P4 publish |
 | Calc error detection | Cross-doc + OpenRebar on agreed pack | partial | MVP |
 | Inconsistency accuracy >90% | Same adjudication path as clash | partial (harness + protocol; not measured on customer corpus) | P1 harness done / P4 publish |
 | Remark quality RU/EN | RU templates live; EN P0; human edit HITL | partial | P0 |

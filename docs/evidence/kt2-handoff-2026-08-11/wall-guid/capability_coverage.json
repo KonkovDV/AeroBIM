@@ -1,0 +1,100 @@
+{
+  "present": true,
+  "fields": {
+    "clash": {
+      "status": "failed",
+      "reason": "Clash detection failed: ",
+      "external_ref": null
+    },
+    "ids": {
+      "status": "skipped",
+      "reason": "IDS validation not requested",
+      "external_ref": null
+    },
+    "ifc_validation": {
+      "status": "ok",
+      "reason": null,
+      "external_ref": null
+    },
+    "unit_scale": {
+      "status": "not_verified",
+      "reason": "IFC unit scale not probed",
+      "external_ref": null
+    },
+    "raster": {
+      "status": "skipped",
+      "reason": "no raster drawing sources",
+      "external_ref": null
+    },
+    "ifc_schema": {
+      "status": "not_verified",
+      "reason": "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)",
+      "external_ref": null
+    },
+    "norm_rule_packs": {
+      "status": "skipped",
+      "reason": "norm rule packs not requested",
+      "external_ref": null
+    },
+    "section_pairing": {
+      "status": "skipped",
+      "reason": "PD/RD section pairing not requested",
+      "external_ref": null
+    },
+    "dwg_dxf": {
+      "status": "missing",
+      "reason": "native DWG parser is not implemented",
+      "external_ref": null
+    },
+    "cv_human_level": {
+      "status": "missing",
+      "reason": "Human-level CV/drawing understanding not implemented",
+      "external_ref": null
+    },
+    "mep_system_clash": {
+      "status": "not_verified",
+      "reason": "MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo",
+      "external_ref": null
+    },
+    "calculation_match": {
+      "status": "skipped",
+      "reason": "numeric calculation match not evaluated",
+      "external_ref": null
+    },
+    "calculation_correctness": {
+      "status": "not_implemented",
+      "reason": "independent solver verification is not implemented",
+      "external_ref": null
+    },
+    "quantity": {
+      "status": "ok",
+      "reason": "quantity consistency evaluated",
+      "external_ref": null
+    },
+    "extraction_integrity": {
+      "status": "skipped",
+      "reason": "no PDF drawing sources for extraction-integrity probe",
+      "external_ref": null
+    },
+    "qualified_signature": {
+      "status": "missing",
+      "reason": "qualified signature / УКЭП not evaluated for this report; when evaluated, trust_chain_status remains not_verified (no accredited CA/TSP access) — never a legal validity claim",
+      "external_ref": null
+    },
+    "package_completeness": {
+      "status": "skipped",
+      "reason": "package completeness not requested",
+      "external_ref": null
+    },
+    "llm_advisory": {
+      "status": "skipped",
+      "reason": "llm advisory not configured; Advisory remark drafts only; never sets summary.passed; ai_generated requires expert confirmation",
+      "external_ref": null
+    },
+    "office_ingest": {
+      "status": "skipped",
+      "reason": "MS Office ingest not evaluated",
+      "external_ref": null
+    }
+  }
+}
