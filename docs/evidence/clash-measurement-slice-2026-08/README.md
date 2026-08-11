@@ -1,34 +1,46 @@
-<!-- claims-lint: allow-file reason="Measurement scaffold citing forbidden accuracy phrases only as non-claims / protocol boundary" -->
+<!-- claims-lint: allow-file reason="Measurement evidence citing forbidden accuracy phrases only as non-claims / protocol boundary" -->
 ---
-title: "Clash measurement slice — kickoff (KT#2 window)"
+title: "Clash measurement slice — fixture measured (2026-08-11)"
 status: active
-version: "0.1.0"
-date: "2026-08-09"
-claim_boundary: "Scaffold only. No product accuracy. Allowed wording after labeling: geometric intersection of extents, measured P/R at n with κ — never «коллизия по ТЗ >90%»."
+version: "0.2.0"
+date: "2026-08-11"
+claim_boundary: "Fixture AABB P/R only. Allowed: geometric intersection of extents, measured P/R at n=5 — never «коллизия по ТЗ >90%», never customer corpus, never IfcClash mesh product claim."
 ---
 
-# Clash measurement slice (12–14.08)
+# Clash measurement slice (updated 2026-08-11)
 
 Applies existing WP-07 protocol — does not invent a new one.
 
 | Item | Value |
 | --- | --- |
-| Finding class | `clash` only (`SPATIAL-HARD-CLASH` / IfcClash intersection) |
-| Target n | **50** interim (planner prefers ~62 power / ~111 Wilson; report CI width) |
-| Adjudicators | 2 (dual-blind); κ gate eng ≥0.60, pilot target ≥0.80 |
-| Interim quality | TP/(TP+FP) ≥ 0.60 planning — **not** TZ >90% |
-| Forbidden claims | verified collisions; MEP delivered; product >90% |
+| Finding class | `clash` (`SPATIAL-EXTENT-CLASH` AABB extents on fixture) |
+| Fixture n | **5** confirmed overlaps / 12 walls (`samples/ifc/clash-extent-overlap-fixture.ifc`) |
+| Micro (fixture) | precision=1.0 recall=1.0 f1=1.0 (support=5) — **fixture_only** |
+| Target customer n | **50** interim (still awaiting pilot IFC solids) |
+| Forbidden claims | verified collisions; MEP delivered; product >90%; IfcClash mesh measured here |
+
+## Fixture measurement (done)
+
+```text
+cd backend
+python -m aerobim.tools.measure_extent_clash_fixture --write-fixture
+```
+
+Artifacts in this folder: `detections.json`, `labels.json`, `precision-recall.json`, `STATUS.json` (`status=fixture_measured`).
+
+IfcClash on tiny in-repo IFCs can still return 0 clashes — this path measures **AABB extent intersection**, matching the matrix honesty wording (geometric intersection of extents), not mesh clash product.
 
 ## Files in this folder
 
 | File | Role |
 | --- | --- |
-| `adjudication-worksheet.csv` | Dual labels (from template) |
-| `labels-protocol-draft.json` | Protocol labels shell — fill after export |
+| `detections.json` / `labels.json` / `precision-recall.json` | Fixture measure run |
+| `STATUS.json` | Machine-readable progress (`fixture_measured`) |
+| `adjudication-worksheet.csv` | Dual labels template (customer corpus) |
+| `labels-protocol-draft.json` | Protocol labels shell |
 | `agreement-template.json` | κ/α artifact shell |
-| `STATUS.json` | Machine-readable progress |
 
-## Operator sequence
+## Operator sequence (customer corpus — still open)
 
 ```text
 python scripts/run_clash_adjudication_slice.py --check-tools
@@ -44,11 +56,9 @@ aerobim-evaluate-detection-precision --labels <labels.json> --detections <detect
 
 ## Corpus blocker (honest)
 
-In-repo IFC fixtures are too small / incomplete for IfcClash geom iterator (`AssertionError` on initialize).  
-**Need:** customer or pilot IFC with real solid geometry (Samolet pack / agreed corpus). Until that file is present, detections stay empty and P/R cannot be measured — matrix stays “not measured”, not `0% engine`.
+Customer / pilot IFC with real solids for n≈50 dual-blind labels is still required for publishable product metrics. Fixture P/R does **not** close TZ clash accuracy >90%.
 
-## Matrix wording when done
+## Matrix wording
 
-Replace clash accuracy cell with:  
-`precision=… recall=… n=50 κ=… (geometric intersection of extents, measured; not TZ >90%)`  
+`precision=1.0 recall=1.0 n=5 (AABB extents, fixture_only; not customer; not TZ >90%)`  
 and run `python scripts/lint_claims.py --matrix-guard`.

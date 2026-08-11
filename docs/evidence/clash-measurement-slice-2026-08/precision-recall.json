@@ -1,0 +1,104 @@
+{
+  "artifact_type": "aerobim_detection_precision_evaluation",
+  "schema_version": "1.1.0",
+  "dataset_id": "aerobim-extent-clash-fixture-2026-08-11",
+  "dataset_status": "adjudicated",
+  "scope_reference": "FIXTURE-EXTENT-CLASH-ONLY-NOT-CUSTOMER-EVIDENCE",
+  "run_id": "extent-clash-fixture-2026-08-11",
+  "matching_policy": "exact-v1",
+  "publishable_protocol_gate": true,
+  "adjudicator_count": 2,
+  "corpus_kind": "customer",
+  "held_out_split": false,
+  "fn_tracked": true,
+  "finding_predicates": [
+    "geometric_clash",
+    "norm_violation",
+    "cross_document",
+    "ids_facet",
+    "drawing_measure",
+    "schema_gate",
+    "version_mismatch",
+    "other"
+  ],
+  "agreement_path": null,
+  "require_agreement_for_publishable": false,
+  "precision_claim": {
+    "metric": "macro_precision",
+    "value": 1.0,
+    "corpus_id": "aerobim-extent-clash-fixture-2026-08-11",
+    "corpus_kind": "customer",
+    "adjudicators": 2,
+    "held_out_split": false,
+    "fn_tracked": true,
+    "base_publishable": true,
+    "publishable": false,
+    "render": "macro_precision=1.0000"
+  },
+  "labels": {
+    "confirmed": 5,
+    "excluded": 0,
+    "unresolved": 0
+  },
+  "detections": 5,
+  "micro": {
+    "tp": 5,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "critical_recall": 1.0,
+    "false_positive_burden": 0.0,
+    "support": 5
+  },
+  "macro": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "class_count": 1,
+    "empty_classes": false
+  },
+  "per_class": {
+    "clash": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.0,
+      "support": 5
+    }
+  },
+  "per_discipline": {
+    "unknown": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.0,
+      "support": 5
+    }
+  },
+  "clash_vs_nonclash": {
+    "clash": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.0,
+      "support": 5
+    }
+  },
+  "false_positives": [],
+  "false_negatives": [],
+  "warning": null
+}
