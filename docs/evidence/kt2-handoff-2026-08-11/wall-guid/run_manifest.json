@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "request_id": "evidence-bundle-project-package-wall-guid-demo",
+  "pack_id": "project-package-wall-guid-demo",
+  "reproducibility_hash": "e6c37b189bf455b8c0dfe37cf3552e082451afd7d392bef04d5be560142abaf7",
+  "passed": false,
+  "outcome": "blocked",
+  "engine_finding_count": 8,
+  "capability_digest": {
+    "clash": "failed",
+    "ids": "skipped",
+    "ifc_validation": "ok",
+    "unit_scale": "not_verified",
+    "raster": "skipped",
+    "ifc_schema": "not_verified",
+    "norm_rule_packs": "skipped",
+    "section_pairing": "skipped",
+    "calculation_match": "skipped",
+    "dwg_dxf": "missing",
+    "mep_system_clash": "not_verified",
+    "quantity": "ok",
+    "extraction_integrity": "skipped",
+    "qualified_signature": "missing",
+    "package_completeness": "skipped"
+  },
+  "stage_budget": {
+    "ingestion_minutes": 5.0,
+    "deterministic_validation_minutes": 18.0,
+    "ai_advisory_minutes": 2.0,
+    "evidence_reporting_minutes": 5.0,
+    "total_minutes": 30.0
+  },
+  "contours": [
+    "ingestion",
+    "deterministic_validation",
+    "ai_advisory",
+    "evidence_reporting"
+  ],
+  "package_sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
+  "rules_sha256": null,
+  "config_sha256": null,
+  "code_version": "aerobim-backend@0.1.0+701a267",
+  "claim_boundary": "fixture-only; not customer accuracy"
+}

@@ -1,0 +1,143 @@
+{
+  "artifact_type": "aerobim_evidence_bundle",
+  "schema_version": "1.1.0",
+  "pack_id": "project-package-wall-guid-demo",
+  "pack_version": "1.0.0",
+  "pack_path": "samples\\benchmarks\\project-package-wall-guid-demo.json",
+  "report_id": "47848247aed244fa878acff822df86e9",
+  "summary_passed": false,
+  "summary_passed_ambient": false,
+  "summary_passed_enforced": false,
+  "signoff_profile_ambient": "development",
+  "signoff_profile_enforced": "production",
+  "derived_outcome": "BLOCKED",
+  "issue_count": 8,
+  "error_count": 6,
+  "warning_count": 2,
+  "source_files": [
+    {
+      "path": "samples\\benchmarks\\project-package-wall-guid-demo.json",
+      "sha256": "bcbb0a3249e9845f77be944522a455880bcbf758341f66a7b653848bee10ea4b",
+      "status": "ok"
+    },
+    {
+      "path": "samples\\ifc\\wall-pset-qto-pass.ifc",
+      "sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
+      "status": "ok"
+    },
+    {
+      "path": "samples\\requirements\\techlab-demo-rules.txt",
+      "sha256": "ff331a2056124811b0460679bcc16cbfbde22256e0cf6a5d717fd79b708bf0a3",
+      "status": "ok"
+    },
+    {
+      "path": "samples\\drawings\\wall-pset-annotation-with-guid.txt",
+      "sha256": "ef58e3edc04a911eaa7932d308ca5ae66025732e4c84d83f300628c0efcce1a4",
+      "status": "ok"
+    }
+  ],
+  "package_source_hash_chain": {
+    "chain_sha256": "9e0848ceb04584149d8e21d4c8b6680337169b584debdd8b9f73e12dc30859a4",
+    "entry_count": 4,
+    "status": "ok",
+    "claim_boundary": "Engineering hash inventory of package source bytes (read-only open). Not УКЭП validation; not legal integrity of qualified signatures. Mismatch vs intake inventory means originals may have been rewritten."
+  },
+  "runtime_settings": {
+    "environment": "development",
+    "signoff_profile": "development",
+    "signoff_profile_ambient": "development",
+    "signoff_profile_enforced": "production",
+    "require_clash": false,
+    "require_bsi_schema": false,
+    "require_mep_system_clash": false,
+    "allow_anonymous_dev": false
+  },
+  "forbidden_claims": [
+    "customer accuracy >90%",
+    "customer SLA <=30 min",
+    "CDE BCF import proven",
+    "MEP system clash delivered",
+    "native DWG ready",
+    "independent calculation correctness"
+  ],
+  "claim_boundary": "summary.passed is Shared-gate technical status (ADR-001), not Shared→Published / contractual fitness. Bundle PASS claims are evaluated under production sign-off policy.",
+  "timings": {
+    "analyze_elapsed_ms": 1724.92,
+    "time_to_first_finding_ms": 1724.92,
+    "time_to_first_finding_semantics": "batch pipeline: equals analyze_elapsed_ms when issue_count > 0; null when no findings; not a streaming-latency claim",
+    "generated_at": "2026-08-11T17:35:16.847950+00:00"
+  },
+  "code_version": "aerobim-backend@0.1.0+701a267",
+  "package_version": "0.1.0",
+  "git_sha": "701a267",
+  "reproducibility_hash": "e6c37b189bf455b8c0dfe37cf3552e082451afd7d392bef04d5be560142abaf7",
+  "run_manifest": {
+    "schema_version": "1.0.0",
+    "request_id": "evidence-bundle-project-package-wall-guid-demo",
+    "pack_id": "project-package-wall-guid-demo",
+    "reproducibility_hash": "e6c37b189bf455b8c0dfe37cf3552e082451afd7d392bef04d5be560142abaf7",
+    "passed": false,
+    "outcome": "blocked",
+    "engine_finding_count": 8,
+    "capability_digest": {
+      "clash": "failed",
+      "ids": "skipped",
+      "ifc_validation": "ok",
+      "unit_scale": "not_verified",
+      "raster": "skipped",
+      "ifc_schema": "not_verified",
+      "norm_rule_packs": "skipped",
+      "section_pairing": "skipped",
+      "calculation_match": "skipped",
+      "dwg_dxf": "missing",
+      "mep_system_clash": "not_verified",
+      "quantity": "ok",
+      "extraction_integrity": "skipped",
+      "qualified_signature": "missing",
+      "package_completeness": "skipped"
+    },
+    "stage_budget": {
+      "ingestion_minutes": 5.0,
+      "deterministic_validation_minutes": 18.0,
+      "ai_advisory_minutes": 2.0,
+      "evidence_reporting_minutes": 5.0,
+      "total_minutes": 30.0
+    },
+    "contours": [
+      "ingestion",
+      "deterministic_validation",
+      "ai_advisory",
+      "evidence_reporting"
+    ],
+    "package_sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
+    "rules_sha256": null,
+    "config_sha256": null,
+    "code_version": "aerobim-backend@0.1.0+701a267",
+    "claim_boundary": "fixture-only; not customer accuracy"
+  },
+  "artifacts": {
+    "manifest.json": true,
+    "report.json": true,
+    "findings.json": true,
+    "capability_coverage.json": true,
+    "timings.json": true,
+    "report.html": true,
+    "logs_snippet.txt": true,
+    "run_manifest.json": true,
+    "check_coverage.json": true,
+    "package_source_hash_chain.json": true,
+    "README.md": true
+  },
+  "output_file_sha256": {
+    "report.json": "f2c1baf8dce487c86e72517d7caa391de5da500948bcabc18095fa35c883b9ae",
+    "findings.json": "90801e5a2f701a9cfda257ab85901ccc248599c38c95052f6f24aa26ac832062",
+    "capability_coverage.json": "c995d8baf96079d820c72c6769d08244dccaa0faa57b05dd4abe8243597ed777",
+    "timings.json": "79cd23208b6781562f90a7c32433c1d9a81a86ea79e52265914499be991dc2ab",
+    "report.html": "b60d0f3869a0281f8acfea00bc7842c213958f66808bdbb8ca19c363b725ba3c",
+    "logs_snippet.txt": "ef6d89c5ffe69661ac27af4cf1444ea3b75daa3b31bf3cc558975a9abb919be9",
+    "run_manifest.json": "a2b098f4e3c3132f3c3b1e4a4b8c3278abce7650f06f188de6e6f9b92310f995",
+    "check_coverage.json": "bfb49d460375e892cac436a02d8826f593cac4835e5427f3d14a4abe1d760656",
+    "package_source_hash_chain.json": "ec7fd691855813cc7720a5601b1d7b8e8b3aeb0a823ec3a18c9632477af20d82",
+    "README.md": "6285eb1e82f800a71bf43140ef4f76940cd3c7d4d88e964d9963729c0c9e6c50"
+  }
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>AeroBIM evidence — project-package-wall-guid-demo</title>
+<style>
+body { font-family: Segoe UI, sans-serif; margin: 1.5rem; color: #1a1a1a; }
+.pass { color: #0a7a32; } .fail { color: #b00020; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #ccc; padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+th { background: #f4f4f4; }
+small { color: #555; }
+</style></head><body>
+<h1>AeroBIM evidence bundle</h1>
+<p><small>code: aerobim-backend@0.1.0+701a267 · Shared-gate only (ADR-001)</small></p>
+<p>Pack: <code>project-package-wall-guid-demo</code> · Report: <code>47848247aed244fa878acff822df86e9</code></p>
+<p class="fail">
+  summary.passed=FAILED · derived_outcome=BLOCKED ·
+  errors=6 warnings=2
+  issues=8
+</p>
+<h2>Capability coverage</h2>
+<table><thead><tr><th>Capability</th><th>Status</th><th>Reason</th></tr></thead>
+<tbody><tr><td>calculation_correctness</td><td>not_implemented</td><td>independent solver verification is not implemented</td></tr><tr><td>calculation_match</td><td>skipped</td><td>numeric calculation match not evaluated</td></tr><tr><td>clash</td><td>failed</td><td>Clash detection failed: </td></tr><tr><td>cv_human_level</td><td>missing</td><td>Human-level CV/drawing understanding not implemented</td></tr><tr><td>dwg_dxf</td><td>missing</td><td>native DWG parser is not implemented</td></tr><tr><td>extraction_integrity</td><td>skipped</td><td>no PDF drawing sources for extraction-integrity probe</td></tr><tr><td>ids</td><td>skipped</td><td>IDS validation not requested</td></tr><tr><td>ifc_schema</td><td>not_verified</td><td>SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)</td></tr><tr><td>ifc_validation</td><td>ok</td><td></td></tr><tr><td>llm_advisory</td><td>skipped</td><td>llm advisory not configured; Advisory remark drafts only; never sets summary.passed; ai_generated requires expert confirmation</td></tr><tr><td>mep_system_clash</td><td>not_verified</td><td>MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo</td></tr><tr><td>norm_rule_packs</td><td>skipped</td><td>norm rule packs not requested</td></tr><tr><td>office_ingest</td><td>skipped</td><td>MS Office ingest not evaluated</td></tr><tr><td>package_completeness</td><td>skipped</td><td>package completeness not requested</td></tr><tr><td>qualified_signature</td><td>missing</td><td>qualified signature / УКЭП not evaluated for this report; when evaluated, trust_chain_status remains not_verified (no accredited CA/TSP access) — never a legal validity claim</td></tr><tr><td>quantity</td><td>ok</td><td>quantity consistency evaluated</td></tr><tr><td>raster</td><td>skipped</td><td>no raster drawing sources</td></tr><tr><td>section_pairing</td><td>skipped</td><td>PD/RD section pairing not requested</td></tr><tr><td>unit_scale</td><td>not_verified</td><td>IFC unit scale not probed</td></tr></tbody></table>
+<h2>Findings (first 200)</h2>
+<table><thead><tr><th>Severity</th><th>Rule</th><th>Category</th><th>Message</th></tr></thead>
+<tbody><tr><td>error</td><td>REQ-AREA-001</td><td>ifc-validation</td><td>No elements found for entity IFCSPACE</td></tr><tr><td>error</td><td>REQ-AREA-002</td><td>ifc-validation</td><td>No elements found for entity IFCSPACE</td></tr><tr><td>error</td><td>REQ-FIRE-001</td><td>ifc-validation</td><td>No elements found for entity IFCWALL</td></tr><tr><td>error</td><td>REQ-FIRE-002</td><td>ifc-validation</td><td>No elements found for entity IFCDOOR</td></tr><tr><td>error</td><td>REQ-HEIGHT-001</td><td>ifc-validation</td><td>No elements found for entity IFCSPACE</td></tr><tr><td>error</td><td>AEROBIM-CLASH-CAPABILITY</td><td>spatial</td><td>Clash detection capability failed: Clash detection failed: </td></tr><tr><td>warning</td><td>AEROBIM-QTY-MISSING</td><td>ifc-validation</td><td>Declared quantity &#x27;NetFloorArea&#x27; for ROOM-101 not found in IFC Qto/Pset</td></tr><tr><td>warning</td><td>AEROBIM-QTY-MISSING</td><td>ifc-validation</td><td>Declared quantity &#x27;NetFloorArea&#x27; for ROOM-102 not found in IFC Qto/Pset</td></tr></tbody></table>
+</body></html>
