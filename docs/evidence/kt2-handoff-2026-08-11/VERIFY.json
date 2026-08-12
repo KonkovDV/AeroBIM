@@ -54,6 +54,31 @@
       "check": "tri_source_alignment",
       "ok": true,
       "detail": "C:\\plans\\AeroBIM\\docs\\tz\\KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
+    },
+    {
+      "check": "max_eng_plan",
+      "ok": true,
+      "detail": "C:\\plans\\AeroBIM\\docs\\pilot\\KT2_MAX_ENG_PLAN_2026_08_12.md"
+    },
+    {
+      "check": "overlay_second_zone",
+      "ok": true,
+      "detail": "C:\\plans\\AeroBIM\\docs\\evidence\\drawing-overlay-smoke-2026-08\\overlay-sheet-header.png"
+    },
+    {
+      "check": "bcf_t1_structural",
+      "ok": true,
+      "detail": "structural_ok=True cde={'status': 'NOT_VERIFIED', 'reason': 'No independent CDE import log/screenshot hash in evidence pack'}"
+    },
+    {
+      "check": "jury_faq",
+      "ok": true,
+      "detail": "C:\\plans\\AeroBIM\\docs\\demo\\KT2_JURY_FAQ_2026_08_12.md"
+    },
+    {
+      "check": "demo_rehearsal",
+      "ok": true,
+      "detail": "C:\\plans\\AeroBIM\\docs\\demo\\KT2_DEMO_REHEARSAL_2026_08_12.md"
     }
   ]
 }

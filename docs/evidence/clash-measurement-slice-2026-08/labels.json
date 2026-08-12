@@ -6,7 +6,7 @@
   "claim_level": "fixture_only",
   "adjudication": {
     "method": "dual_independent",
-    "completed_at": "2026-08-11T17:35:07.884133+00:00",
+    "completed_at": "2026-08-12T13:41:32.204673+00:00",
     "adjudicators": [
       {
         "id": "engineer-a",
@@ -26,31 +26,37 @@
         {
           "finding_class": "clash",
           "rule_id": "SPATIAL-EXTENT-CLASH",
-          "target_ref": "07rKl38QDF2vdadUSS_lo8|3TTdB_$Zb9fA2plxtiGfxz",
+          "target_ref": "05mIGb$SH3VvgD7T9O4CW2|1smh4jg_D4k9TPkWsnOH_6",
           "adjudication_status": "confirmed"
         },
         {
           "finding_class": "clash",
           "rule_id": "SPATIAL-EXTENT-CLASH",
-          "target_ref": "0BCoThuf52fvLM8cH_MyTd|0aPWMwmB16KQvjgtfsgRFH",
+          "target_ref": "0FuhUH4r9AmwFAKDKdVSR$|3C3Zb9GfjCQvi0ko5zmfKY",
           "adjudication_status": "confirmed"
         },
         {
           "finding_class": "clash",
           "rule_id": "SPATIAL-EXTENT-CLASH",
-          "target_ref": "0QqZI3IiD34eHSmjCZyYQz|2_vjqzyDL4KOBtBjFdqsQ7",
+          "target_ref": "0ggZ3ertL3COMBE2XBLlD1|1hN5xtB6TBlfSLE8vErHqL",
           "adjudication_status": "confirmed"
         },
         {
           "finding_class": "clash",
           "rule_id": "SPATIAL-EXTENT-CLASH",
-          "target_ref": "0Za1e3PojC2xknQDuJ6Nei|1Vsyk$WU5EmQz0oCqrT8$P",
+          "target_ref": "0txm0W6X5EAQSC6PF7f71k|3hoPGYUaLCkRdFEdVWVe8i",
           "adjudication_status": "confirmed"
         },
         {
           "finding_class": "clash",
           "rule_id": "SPATIAL-EXTENT-CLASH",
-          "target_ref": "0zvS6_9J90yhmGXgjbPkxC|3QSX6UBGr4COfE3Nx75XE9",
+          "target_ref": "2SJ5H3vg9DnBVxOKIbDvc1|2uqHJBIvzDhRt3azCAZTrD",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "2tHr8QzYXFHfa0F55WAP_B|3UzAcFFeb5$Ojl_pOJiC5d",
           "adjudication_status": "confirmed"
         }
       ]

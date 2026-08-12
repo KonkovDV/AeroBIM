@@ -36,13 +36,13 @@
     "render": "macro_precision=1.0000"
   },
   "labels": {
-    "confirmed": 5,
+    "confirmed": 6,
     "excluded": 0,
     "unresolved": 0
   },
-  "detections": 5,
+  "detections": 6,
   "micro": {
-    "tp": 5,
+    "tp": 6,
     "fp": 0,
     "fn": 0,
     "precision": 1.0,
@@ -50,7 +50,7 @@
     "f1": 1.0,
     "critical_recall": 1.0,
     "false_positive_burden": 0.0,
-    "support": 5
+    "support": 6
   },
   "macro": {
     "precision": 1.0,
@@ -61,7 +61,7 @@
   },
   "per_class": {
     "clash": {
-      "tp": 5,
+      "tp": 6,
       "fp": 0,
       "fn": 0,
       "precision": 1.0,
@@ -69,12 +69,12 @@
       "f1": 1.0,
       "critical_recall": 1.0,
       "false_positive_burden": 0.0,
-      "support": 5
+      "support": 6
     }
   },
   "per_discipline": {
     "unknown": {
-      "tp": 5,
+      "tp": 6,
       "fp": 0,
       "fn": 0,
       "precision": 1.0,
@@ -82,12 +82,12 @@
       "f1": 1.0,
       "critical_recall": 1.0,
       "false_positive_burden": 0.0,
-      "support": 5
+      "support": 6
     }
   },
   "clash_vs_nonclash": {
     "clash": {
-      "tp": 5,
+      "tp": 6,
       "fp": 0,
       "fn": 0,
       "precision": 1.0,
@@ -95,7 +95,7 @@
       "f1": 1.0,
       "critical_recall": 1.0,
       "false_positive_burden": 0.0,
-      "support": 5
+      "support": 6
     }
   },
   "false_positives": [],

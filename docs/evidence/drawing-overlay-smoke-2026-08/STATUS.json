@@ -1,9 +1,40 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "slice_id": "drawing-overlay-smoke-2026-08",
-  "date": "2026-08-11",
+  "date": "2026-08-12",
   "status": "fixture_rendered",
   "claim_level": "fixture_only",
+  "source_pdf": "samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+  "overlays": {
+    "wall_thickness": {
+      "png": "docs/evidence/drawing-overlay-smoke-2026-08/overlay-wall-thickness.png",
+      "sha256": "cbc0c9a305a80b15b42ef1f3425ee9aebd023f8726da54da66aebadb05459799",
+      "page_number": 1,
+      "problem_zone": {
+        "x": 72.0,
+        "y": 62.0,
+        "width": 150.0,
+        "height": 14.0
+      },
+      "source_pdf": "C:/plans/AeroBIM/samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+      "rendered_at": "2026-08-12T13:41:11.996285+00:00",
+      "claim_boundary": "Deterministic bbox overlay on rasterized PDF page; not CV; not stamp product detection; illustration evidence for TZ drawing overlay."
+    },
+    "sheet_header": {
+      "png": "docs/evidence/drawing-overlay-smoke-2026-08/overlay-sheet-header.png",
+      "sha256": "539f838e6f78a219b6c406bcb4e4abfd4e8c0407bb6582125798693f8c6caf45",
+      "page_number": 1,
+      "problem_zone": {
+        "x": 36.0,
+        "y": 36.0,
+        "width": 220.0,
+        "height": 28.0
+      },
+      "source_pdf": "C:/plans/AeroBIM/samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+      "rendered_at": "2026-08-12T13:41:12.012024+00:00",
+      "claim_boundary": "Deterministic bbox overlay on rasterized PDF page; not CV; not stamp product detection; illustration evidence for TZ drawing overlay."
+    }
+  },
   "png": "docs/evidence/drawing-overlay-smoke-2026-08/overlay-wall-thickness.png",
   "sha256": "cbc0c9a305a80b15b42ef1f3425ee9aebd023f8726da54da66aebadb05459799",
   "page_number": 1,
@@ -13,7 +44,6 @@
     "width": 150.0,
     "height": 14.0
   },
-  "source_pdf": "samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
-  "rendered_at": "2026-08-11T17:35:08.193232+00:00",
+  "rendered_at": "2026-08-12T13:41:11.996285+00:00",
   "claim_boundary": "Deterministic bbox overlay on rasterized PDF page; not CV; not stamp product detection; illustration evidence for TZ drawing overlay."
 }

@@ -118,8 +118,33 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
 
     academic = repo / "docs" / "pilot" / "KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md"
     align = repo / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
+    max_eng = repo / "docs" / "pilot" / "KT2_MAX_ENG_PLAN_2026_08_12.md"
     _check("academic_plan", academic.is_file(), str(academic), rows)
     _check("tri_source_alignment", align.is_file(), str(align), rows)
+    _check("max_eng_plan", max_eng.is_file(), str(max_eng), rows)
+
+    second_overlay = (
+        repo / "docs" / "evidence" / "drawing-overlay-smoke-2026-08" / "overlay-sheet-header.png"
+    )
+    _check("overlay_second_zone", second_overlay.is_file(), str(second_overlay), rows)
+
+    bcf_t1 = handoff_dir / "bcf-t1" / "bcf-structural-handoff.json"
+    if bcf_t1.is_file():
+        bcf = _load_json(bcf_t1)
+        _check(
+            "bcf_t1_structural",
+            bool(bcf.get("structural_ok"))
+            and (bcf.get("cde_import") or {}).get("status") == "NOT_VERIFIED",
+            f"structural_ok={bcf.get('structural_ok')} cde={bcf.get('cde_import')}",
+            rows,
+        )
+    else:
+        _check("bcf_t1_structural", False, f"missing {bcf_t1}", rows)
+
+    faq = repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md"
+    rehearsal = repo / "docs" / "demo" / "KT2_DEMO_REHEARSAL_2026_08_12.md"
+    _check("jury_faq", faq.is_file(), str(faq), rows)
+    _check("demo_rehearsal", rehearsal.is_file(), str(rehearsal), rows)
 
     ok = all(bool(r["ok"]) for r in rows)
     return {

@@ -1,8 +1,7 @@
-"""Render an honest drawing-overlay evidence PNG (fixture / smoke path).
+"""Render honest drawing-overlay evidence PNGs (fixture / smoke path).
 
-Draws a ``problem_zone`` rectangle on a rasterized sheet. Claim boundary:
-deterministic overlay of a known bbox on a drawing page — not CV stamp
-detection, not human-level drawing understanding, not product >90%.
+Draws known ``problem_zone`` rectangles on a rasterized sheet. Claim boundary:
+deterministic overlay of known bboxes — not CV, not stamp product, not >90%.
 """
 
 from __future__ import annotations
@@ -36,7 +35,6 @@ def render_overlay(
     finally:
         doc.close()
 
-    # PDF user-space coords → pixmap (2× zoom).
     scale = 2.0
     x0 = float(zone["x"]) * scale
     y0 = float(zone["y"]) * scale
@@ -64,65 +62,79 @@ def render_overlay(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--pdf",
-        type=Path,
-        default=None,
-        help="Source PDF (default: samples/demo vertical-slice sheet)",
-    )
-    parser.add_argument(
-        "--out-dir",
-        type=Path,
-        default=None,
-        help="Evidence dir (default: docs/evidence/drawing-overlay-smoke-2026-08)",
-    )
+    parser.add_argument("--pdf", type=Path, default=None)
+    parser.add_argument("--out-dir", type=Path, default=None)
     args = parser.parse_args(argv)
     repo = _repo_root()
     pdf = args.pdf or (
         repo / "samples" / "demo" / "vertical-slice-2026-08-11" / "techlab-a101-wall-thickness.pdf"
     )
     out_dir = args.out_dir or (repo / "docs" / "evidence" / "drawing-overlay-smoke-2026-08")
-    # Zone aligned with vertical-slice WALL-01 thickness text band (page user space).
-    zone = {"x": 72.0, "y": 62.0, "width": 150.0, "height": 14.0}
-    png = out_dir / "overlay-wall-thickness.png"
-    meta = render_overlay(pdf_path=pdf, out_png=png, zone=zone, page_number=1)
+    zones = {
+        "wall_thickness": {
+            "file": "overlay-wall-thickness.png",
+            "zone": {"x": 72.0, "y": 62.0, "width": 150.0, "height": 14.0},
+        },
+        "sheet_header": {
+            "file": "overlay-sheet-header.png",
+            "zone": {"x": 36.0, "y": 36.0, "width": 220.0, "height": 28.0},
+        },
+    }
+    overlays: dict[str, object] = {}
+    for key, spec in zones.items():
+        png = out_dir / str(spec["file"])
+        zone = spec["zone"]
+        assert isinstance(zone, dict)
+        meta = render_overlay(pdf_path=pdf, out_png=png, zone=zone, page_number=1)
+        try:
+            png_rel = str(png.resolve().relative_to(repo).as_posix())
+        except ValueError:
+            png_rel = str(png.as_posix())
+        overlays[key] = {**meta, "png": png_rel}
+
     try:
         pdf_rel = str(pdf.resolve().relative_to(repo).as_posix())
-        png_rel = str(png.resolve().relative_to(repo).as_posix())
     except ValueError:
         pdf_rel = str(pdf.as_posix())
-        png_rel = str(png.as_posix())
+
+    primary = overlays["wall_thickness"]
+    assert isinstance(primary, dict)
     status_payload = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "slice_id": "drawing-overlay-smoke-2026-08",
-        "date": "2026-08-11",
+        "date": "2026-08-12",
         "status": "fixture_rendered",
         "claim_level": "fixture_only",
-        **meta,
-        "png": png_rel,
         "source_pdf": pdf_rel,
+        "overlays": overlays,
+        "png": primary["png"],
+        "sha256": primary["sha256"],
+        "page_number": primary["page_number"],
+        "problem_zone": primary["problem_zone"],
+        "rendered_at": primary["rendered_at"],
+        "claim_boundary": primary["claim_boundary"],
     }
+    out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "STATUS.json").write_text(
         json.dumps(status_payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    readme = out_dir / "README.md"
-    readme.write_text(
+    (out_dir / "README.md").write_text(
         "<!-- claims-lint: allow-file reason=\"Overlay evidence boundary doc\" -->\n"
         "---\n"
         'title: "Drawing overlay smoke evidence"\n'
-        'date: "2026-08-11"\n'
-        'claim_boundary: "Deterministic bbox on rasterized PDF — not CV / stamp product."\n'
+        'date: "2026-08-12"\n'
+        'claim_boundary: "Deterministic bboxes on rasterized PDF — not CV / stamp product."\n'
         "---\n\n"
-        "# Drawing overlay smoke (2026-08-11)\n\n"
-        f"- PNG: `{png.name}`\n"
-        f"- SHA-256: `{meta['sha256']}`\n"
-        f"- Zone: `{zone}` on page 1 of `{pdf.name}`\n\n"
-        "This illustrates TZ «просмотр чертежей с наложением ошибок» with a known\n"
-        "`problem_zone`. It does **not** claim computer-vision stamp detection.\n",
+        "# Drawing overlay smoke (2026-08-12)\n\n"
+        f"- Primary PNG: `{Path(str(primary['png'])).name}`\n"
+        f"- Primary SHA-256: `{primary['sha256']}`\n"
+        f"- Zones: wall thickness + sheet header on page 1 of `{pdf.name}`\n\n"
+        "Illustrates TZ «просмотр чертежей с наложением ошибок» with known "
+        "`problem_zone`s. Does **not** claim computer-vision stamp detection.\n",
         encoding="utf-8",
     )
-    print(json.dumps(meta, ensure_ascii=False, indent=2))
+    print(json.dumps(status_payload, ensure_ascii=False, indent=2))
     return 0
 
 

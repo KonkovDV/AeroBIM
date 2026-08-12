@@ -20,10 +20,10 @@ class ExtentClashFixtureMeasureTests(unittest.TestCase):
             status = measure(ifc_path=ifc, evidence_dir=Path(tmp))
         self.assertEqual(status["status"], "fixture_measured")
         self.assertEqual(status["claim_level"], "fixture_only")
-        self.assertEqual(status["n_confirmed_clash_labels"], 5)
+        self.assertEqual(status["n_confirmed_clash_labels"], 6)
         micro = status["micro"]
         assert isinstance(micro, dict)
-        self.assertEqual(micro["tp"], 5)
+        self.assertEqual(micro["tp"], 6)
         self.assertEqual(micro["fp"], 0)
         self.assertEqual(micro["fn"], 0)
         self.assertEqual(micro["precision"], 1.0)
