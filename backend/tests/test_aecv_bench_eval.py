@@ -277,6 +277,68 @@ class AecvBenchEvalTests(unittest.TestCase):
         self.assertNotIn("enable_thinking", body)
         self.assertNotIn("extra_body", body)
 
+    def test_substring_yandex_host_does_not_shape_thinking_body(self) -> None:
+        from aerobim.tools.run_aecv_bench_eval import _call_openai_vision_counts
+
+        png = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+        )
+        captured: dict = {}
+
+        class _Resp:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def read(self):
+                return json.dumps(
+                    {
+                        "choices": [
+                            {
+                                "message": {
+                                    "content": json.dumps(
+                                        {
+                                            "Door": 1,
+                                            "Window": 1,
+                                            "Space": 1,
+                                            "Bedroom": 0,
+                                            "Toilet": 0,
+                                        }
+                                    )
+                                }
+                            }
+                        ]
+                    }
+                ).encode()
+
+        def fake_urlopen(req, timeout=0):  # noqa: ARG001
+            captured["body"] = json.loads(req.data.decode())
+            return _Resp()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            img = Path(tmp) / "plan.png"
+            img.write_bytes(png)
+            with (
+                patch(
+                    "aerobim.core.config.settings.assert_llm_base_host_allowed",
+                    lambda *args, **kwargs: None,
+                ),
+                patch(
+                    "aerobim.core.security.outbound_url.safe_urlopen",
+                    fake_urlopen,
+                ),
+            ):
+                _call_openai_vision_counts(
+                    image_path=img,
+                    model="qwen-local",
+                    api_key="test-key",
+                    base_url="https://not-yandex.evil/v1",
+                    timeout_s=5.0,
+                )
+        self.assertNotIn("chat_template_kwargs", captured["body"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -743,6 +743,7 @@ def _call_openai_vision_counts(
         _DEFAULT_LLM_ALLOWED_HOSTS,
         assert_llm_base_host_allowed,
     )
+    from aerobim.core.config.vlm_endpoint_gate import endpoint_looks_like_yandex
     from aerobim.core.security.outbound_url import safe_urlopen
 
     # Product-forbidden hosts (OpenAI/Anthropic/Ali) must not be used from this tool.
@@ -780,7 +781,7 @@ def _call_openai_vision_counts(
     }
     # Yandex Qwen3.6: top-level enable_thinking/extra_body → 400;
     # chat_template_kwargs.enable_thinking=false returns content (not reasoning_only).
-    if "yandex" in base_url.lower() or model.startswith("gpt://"):
+    if endpoint_looks_like_yandex(base_url) or model.startswith("gpt://"):
         body["chat_template_kwargs"] = {"enable_thinking": False}
     auth_header = (
         f"Api-Key {api_key}"
