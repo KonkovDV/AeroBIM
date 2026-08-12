@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -28,6 +29,21 @@ class ExtentClashFixtureMeasureTests(unittest.TestCase):
         self.assertEqual(micro["fn"], 0)
         self.assertEqual(micro["precision"], 1.0)
         self.assertEqual(micro["recall"], 1.0)
+
+    def test_fixture_precision_recall_stays_non_customer(self) -> None:
+        ifc = _REPO / "samples" / "ifc" / "clash-extent-overlap-fixture.ifc"
+        if not ifc.is_file():
+            self.skipTest("extent clash fixture IFC missing")
+        with tempfile.TemporaryDirectory() as tmp:
+            evidence = Path(tmp)
+            measure(ifc_path=ifc, evidence_dir=evidence)
+            pr = json.loads((evidence / "precision-recall.json").read_text(encoding="utf-8"))
+        self.assertEqual(pr["claim_level"], "fixture_only")
+        self.assertEqual(pr["corpus_kind"], "fixture")
+        self.assertFalse(pr["publishable_protocol_gate"])
+        self.assertFalse(pr["precision_claim"]["base_publishable"])
+        self.assertFalse(pr["precision_claim"]["publishable"])
+        self.assertIn("withheld", pr["precision_claim"]["render"])
 
 
 class DrawingOverlayEvidenceTests(unittest.TestCase):
