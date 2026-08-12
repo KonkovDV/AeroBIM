@@ -14,8 +14,8 @@ Applies existing WP-07 protocol — does not invent a new one.
 | Item | Value |
 | --- | --- |
 | Finding class | `clash` (`SPATIAL-EXTENT-CLASH` AABB extents on fixture) |
-| Fixture n | **5** confirmed overlaps / 12 walls (`samples/ifc/clash-extent-overlap-fixture.ifc`) |
-| Micro (fixture) | precision=1.0 recall=1.0 f1=1.0 (support=5) — **fixture_only** |
+| Fixture n | **6** confirmed overlaps / 16 walls (`samples/ifc/clash-extent-overlap-fixture.ifc`) |
+| Micro (fixture) | precision=1.0 recall=1.0 f1=1.0 (support=6) — **fixture_only** |
 | Target customer n | **50** interim (still awaiting pilot IFC solids) |
 | Forbidden claims | verified collisions; MEP delivered; product >90%; IfcClash mesh measured here |
 

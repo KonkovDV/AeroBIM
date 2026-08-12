@@ -153,7 +153,7 @@ def measure(*, ifc_path: Path, evidence_dir: Path) -> dict[str, Any]:
     status = {
         "schema_version": "1.1.0",
         "slice_id": "clash-measurement-slice-2026-08",
-        "date": "2026-08-11",
+        "date": "2026-08-12",
         "finding_class": _FINDING_CLASS,
         "status": "fixture_measured",
         "claim_level": "fixture_only",

@@ -1,62 +1,46 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "slice_id": "kt2-handoff-2026-08-11",
   "date": "2026-08-12",
-  "git_sha_export_base": "701a267",
   "status": "fixture_handoff_ready",
   "claim_level": "fixture_only",
   "checkpoint_verdict": "NO_GO",
-  "claim_boundary": "KT#2 methodology/fixture handoff only. Not customer RT-001/002/003. Not product accuracy >90%. Not native DWG / MEP delivered / OIDC BFF production.",
-  "academic_plan": "docs/pilot/KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md",
-  "tri_source_alignment": "docs/tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md",
+  "claim_boundary": "KT#2 methodology/fixture handoff only. Not customer RT-001/002/003. Not product accuracy >90%. Not native DWG / MEP delivered / OIDC BFF production / CDE-ready BCF.",
+  "plans": {
+    "academic": "docs/pilot/KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md",
+    "max_eng": "docs/pilot/KT2_MAX_ENG_PLAN_2026_08_12.md",
+    "tri_source": "docs/tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
+  },
   "verify_command": "cd backend && python -m aerobim.tools.verify_kt2_handoff",
   "verify_artifact": "docs/evidence/kt2-handoff-2026-08-11/VERIFY.json",
   "components": {
-    "wall_guid_bundle": {
-      "path": "docs/evidence/kt2-handoff-2026-08-11/wall-guid",
-      "verification": "passed",
-      "report_id": "47848247aed244fa878acff822df86e9",
-      "reproducibility_hash": "e6c37b189bf455b8c0dfe37cf3552e082451afd7d392bef04d5be560142abaf7",
-      "summary_passed": false,
-      "derived_outcome": "BLOCKED"
-    },
-    "vertical_slice": {
-      "path": "docs/evidence/kt2-handoff-2026-08-11/vertical-slice",
-      "slice_id": "vertical-slice-2026-08-11",
-      "claim": "PDF text-layer + heuristic regions + advisory VLM candidate; never flips summary.passed"
-    },
-    "harness_dryrun": {
-      "path": "docs/evidence/kt2-handoff-2026-08-11/harness-dryrun",
-      "publishable": false,
-      "require_publishable_exit": 1,
-      "note": "Synthetic labels; --require-publishable fail-closed as required"
-    },
+    "wall_guid_bundle": {"path": "docs/evidence/kt2-handoff-2026-08-11/wall-guid", "verification": "passed"},
+    "vertical_slice": {"path": "docs/evidence/kt2-handoff-2026-08-11/vertical-slice"},
+    "harness_dryrun": {"path": "docs/evidence/kt2-handoff-2026-08-11/harness-dryrun", "publishable": false},
     "clash_measurement": {
       "path": "docs/evidence/clash-measurement-slice-2026-08",
       "status": "fixture_measured",
-      "n": 5,
+      "n": 6,
       "precision": 1.0,
       "recall": 1.0
     },
     "drawing_overlay": {
       "path": "docs/evidence/drawing-overlay-smoke-2026-08",
       "status": "fixture_rendered",
-      "png": "overlay-wall-thickness.png"
+      "zones": ["wall_thickness", "sheet_header"]
     },
-    "mentor_pack": {
-      "path": "docs/demo/mentor-mikhail-2026-08-11"
-    }
-  },
-  "governance": {
-    "deferred_controls_errors": 0,
-    "matrix_guard": "OK",
-    "a4_signing": "active",
-    "n43_lag": "deferred_until_2026-08-17"
+    "bcf_t1": {
+      "path": "docs/evidence/kt2-handoff-2026-08-11/bcf-t1",
+      "structural_ok": true,
+      "cde_import": "NOT_VERIFIED"
+    },
+    "jury_faq": "docs/demo/KT2_JURY_FAQ_2026_08_12.md",
+    "demo_rehearsal": "docs/demo/KT2_DEMO_REHEARSAL_2026_08_12.md",
+    "n43_checklist": "docs/audit/N43_REHEARSAL_CHECKLIST_2026_08_17.md"
   },
   "next_calendar": [
-    "13-16.08: TZ clash/overlay honesty; customer dual-blind only if IFC arrives",
-    "17.08: N43 baseline lag=1 rehearsal",
-    "20.08: KT#2 window end — intermediate version on agreed scenario",
-    "Do not flip checkpoint GO without RT-001/002/003 evidence"
+    "13-16.08: keep TZ honesty; no customer invention",
+    "17.08: N43 activate per checklist",
+    "20.08: KT#2 meeting — fixture GO + NO_GO"
   ]
 }

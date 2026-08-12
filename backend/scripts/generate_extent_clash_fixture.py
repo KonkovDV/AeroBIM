@@ -69,9 +69,15 @@ def write_extent_clash_fixture(out: Path) -> Path:
     box_at("Wall-B4", 22.0, -0.1, 6.0, 0.25, 3.0)
     box_at("Wall-A5", 30.0, 0.0, 2.0, 0.5, 3.0)
     box_at("Wall-B5", 30.5, 0.0, 2.0, 0.5, 3.0)
+    # Sixth intended overlap (KT#2 densify 2026-08-12).
+    box_at("Wall-A6", 60.0, 0.0, 4.0, 0.3, 3.0)
+    box_at("Wall-B6", 61.5, 0.05, 4.0, 0.3, 3.0)
     # Separated pair — must not be reported as clash.
     box_at("Wall-Sep-L", 40.0, 0.0, 2.0, 0.3, 3.0)
     box_at("Wall-Sep-R", 50.0, 0.0, 2.0, 0.3, 3.0)
+    # Near-miss gap (~0.5 m) — must not be reported as AABB overlap.
+    box_at("Wall-Near-L", 70.0, 0.0, 2.0, 0.3, 3.0)
+    box_at("Wall-Near-R", 72.5, 0.0, 2.0, 0.3, 3.0)
 
     f.write(str(out))
     return out
