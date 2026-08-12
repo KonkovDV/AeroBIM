@@ -16,6 +16,10 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         result = verify_kt2_handoff(handoff_dir=handoff, repo=_REPO)
         self.assertTrue(result["ok"], msg=result)
         self.assertEqual(result["checkpoint_verdict"], "NO_GO")
+        names = {c["check"] for c in result["checks"]}
+        self.assertIn("clash_precision_not_customer", names)
+        clash_pr = next(c for c in result["checks"] if c["check"] == "clash_precision_not_customer")
+        self.assertTrue(clash_pr["ok"], msg=clash_pr)
         failed = [c for c in result["checks"] if not c["ok"]]
         self.assertEqual(failed, [])
 

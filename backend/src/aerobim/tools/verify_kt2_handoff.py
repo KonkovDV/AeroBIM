@@ -92,7 +92,8 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     slice_summary = handoff_dir / "vertical-slice" / "slice-summary.json"
     _check("vertical_slice_summary", slice_summary.is_file(), str(slice_summary), rows)
 
-    clash_status = repo / "docs" / "evidence" / "clash-measurement-slice-2026-08" / "STATUS.json"
+    clash_dir = repo / "docs" / "evidence" / "clash-measurement-slice-2026-08"
+    clash_status = clash_dir / "STATUS.json"
     if clash_status.is_file():
         clash = _load_json(clash_status)
         _check(
@@ -103,6 +104,32 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         )
     else:
         _check("clash_fixture_measured", False, "missing clash STATUS", rows)
+
+    clash_pr = clash_dir / "precision-recall.json"
+    if clash_pr.is_file():
+        pr = _load_json(clash_pr)
+        claim = pr.get("precision_claim") if isinstance(pr.get("precision_claim"), dict) else {}
+        render = str(claim.get("render") or "")
+        honest = (
+            pr.get("corpus_kind") != "customer"
+            and pr.get("claim_level") == "fixture_only"
+            and pr.get("publishable_protocol_gate") is False
+            and claim.get("base_publishable") is False
+            and claim.get("publishable") is False
+            and "withheld" in render
+        )
+        _check(
+            "clash_precision_not_customer",
+            honest,
+            (
+                f"corpus_kind={pr.get('corpus_kind')!r} claim={pr.get('claim_level')!r} "
+                f"gate={pr.get('publishable_protocol_gate')!r} "
+                f"base={claim.get('base_publishable')!r} pub={claim.get('publishable')!r}"
+            ),
+            rows,
+        )
+    else:
+        _check("clash_precision_not_customer", False, "missing clash precision-recall.json", rows)
 
     overlay_status = repo / "docs" / "evidence" / "drawing-overlay-smoke-2026-08" / "STATUS.json"
     if overlay_status.is_file():

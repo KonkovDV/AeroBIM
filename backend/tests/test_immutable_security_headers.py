@@ -63,13 +63,14 @@ class LlmImmutableSecurityHeadersTests(unittest.TestCase):
         provider._auth_scheme = "Bearer"
         provider._api_key = "REAL"
         provider._folder_id = "folder-from-ctor"
+        provider._data_logging_enabled = False
         provider._extra_headers = {
             "Authorization": "Bearer ATTACK",
             "Content-Type": "evil",
             "Accept": "*/*",
             "Host": "evil.example",
             "x-folder-id": "folder-from-extra",
-            "x-data-logging-enabled": "false",
+            "x-data-logging-enabled": "true",
             "X-Custom": "ok",
         }
         headers = OpenAICompatLlmProvider._request_headers(
@@ -85,6 +86,19 @@ class LlmImmutableSecurityHeadersTests(unittest.TestCase):
             headers["x-client-request-id"],
             "11111111-1111-4111-8111-111111111111",
         )
+        self.assertNotIn("Host", headers)
+
+    def test_ctor_logging_preference_cannot_be_overridden_by_extras(self) -> None:
+        provider = OpenAICompatLlmProvider.__new__(OpenAICompatLlmProvider)
+        provider._auth_scheme = "Bearer"
+        provider._api_key = "REAL"
+        provider._folder_id = None
+        provider._data_logging_enabled = True
+        provider._extra_headers = {"x-data-logging-enabled": "false"}
+        headers = OpenAICompatLlmProvider._request_headers(
+            provider, client_request_id="11111111-1111-4111-8111-111111111111"
+        )
+        self.assertEqual(headers["x-data-logging-enabled"], "true")
 
 
 if __name__ == "__main__":

@@ -92,7 +92,12 @@ class OpenAICompatLlmProvider:
         self._budget = budget or LlmTokenBudget()
         self._max_completion_tokens = max(1, int(max_completion_tokens))
         self._allowed_hosts = frozenset(allowed_hosts or _DEFAULT_LLM_ALLOWED_HOSTS)
-        self._extra_headers = {str(k): str(v) for k, v in dict(extra_headers or {}).items()}
+        copied_headers = {str(k): str(v) for k, v in dict(extra_headers or {}).items()}
+        # RT-CODE-20260812-05: extras must not override logging after construction.
+        # Operator preference is captured once from DI extra_headers / default false.
+        raw_logging = copied_headers.pop("x-data-logging-enabled", None)
+        self._data_logging_enabled = str(raw_logging).strip().lower() == "true"
+        self._extra_headers = copied_headers
         scheme = (auth_scheme or "Bearer").strip() or "Bearer"
         self._auth_scheme = scheme
         mode = (response_schema_mode or "json_object").strip().lower()
@@ -138,16 +143,20 @@ class OpenAICompatLlmProvider:
             "Accept": "application/json",
             # Opaque UUIDv4 only (RT-META-01) — never internal request_id.
             "x-client-request-id": client_request_id,
+            "x-data-logging-enabled": "true" if getattr(self, "_data_logging_enabled", False) else "false",
         }
         if self._api_key:
             forced["Authorization"] = f"{self._auth_scheme} {self._api_key}"
-        headers = merge_outbound_headers(self._extra_headers, forced=forced)
         if self._folder_id:
-            headers["x-folder-id"] = self._folder_id
-        return headers
+            forced["x-folder-id"] = self._folder_id
+        return merge_outbound_headers(
+            self._extra_headers,
+            forced=forced,
+            also_deny=frozenset({"x-folder-id", "x-data-logging-enabled"}),
+        )
 
     def _vendor_audit_fields(self) -> dict[str, Any]:
-        logging_hdr = self._extra_headers.get("x-data-logging-enabled")
+        logging_hdr = "true" if getattr(self, "_data_logging_enabled", False) else "false"
         return {
             "model_uri": self._model,
             "model_revision": self._model_revision,

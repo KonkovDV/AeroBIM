@@ -41,6 +41,11 @@
       "detail": "status=fixture_measured claim=fixture_only"
     },
     {
+      "check": "clash_precision_not_customer",
+      "ok": true,
+      "detail": "corpus_kind='fixture' claim='fixture_only' gate=False base=False pub=False"
+    },
+    {
       "check": "overlay_fixture_rendered",
       "ok": true,
       "detail": "status=fixture_rendered claim=fixture_only"
