@@ -57,6 +57,44 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "publishable adjudication protocol gate"):
             evaluate_detection_precision(LABELS, DETECTIONS, require_publishable=True)
 
+    def test_fixture_claim_level_never_customer_even_when_adjudicated(self) -> None:
+        payload = json.loads(LABELS.read_text(encoding="utf-8"))
+        payload["dataset_status"] = "adjudicated"
+        payload["claim_level"] = "fixture_only"
+        payload["held_out_split"] = True
+        payload["scope_reference"] = "FIXTURE-EXTENT-CLASH-ONLY-NOT-CUSTOMER-EVIDENCE"
+        payload["adjudication"]["adjudicators"] = [
+            {"id": "engineer-1", "role": "fixture rater A"},
+            {"id": "engineer-2", "role": "fixture rater B"},
+        ]
+        unresolved = payload["cases"][0]["expected_findings"][4]
+        unresolved["adjudication_status"] = "excluded"
+        agreement = {
+            "artifact_type": "adjudicator_agreement",
+            "schema_version": "1.1.0",
+            "cohen_kappa": 0.82,
+            "pass_threshold_0_60": True,
+            "krippendorff_alpha": 0.79,
+            "pass_alpha_0_67": True,
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            agreement_path = Path(temporary_directory) / "agreement.json"
+            labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            agreement_path.write_text(json.dumps(agreement), encoding="utf-8")
+            report = evaluate_detection_precision(
+                labels_path,
+                DETECTIONS,
+                agreement_path=agreement_path,
+                require_agreement_for_publishable=False,
+            )
+        self.assertEqual(report["corpus_kind"], "fixture")
+        self.assertFalse(report["publishable_protocol_gate"])
+        self.assertFalse(report["precision_claim"]["base_publishable"])
+        self.assertFalse(report["precision_claim"]["publishable"])
+        self.assertIn("withheld", report["precision_claim"]["render"])
+        self.assertTrue(report["require_agreement_for_publishable"])
+
     def test_missing_agreement_never_publishable(self) -> None:
         payload = json.loads(LABELS.read_text(encoding="utf-8"))
         payload["dataset_status"] = "adjudicated"

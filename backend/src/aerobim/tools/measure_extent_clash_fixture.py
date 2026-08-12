@@ -144,7 +144,7 @@ def measure(*, ifc_path: Path, evidence_dir: Path) -> dict[str, Any]:
         lab_path,
         det_path,
         require_publishable=False,
-        require_agreement_for_publishable=False,
+        require_agreement_for_publishable=True,
     )
     metrics_path = evidence_dir / "precision-recall.json"
     metrics_path.write_text(json.dumps(metrics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

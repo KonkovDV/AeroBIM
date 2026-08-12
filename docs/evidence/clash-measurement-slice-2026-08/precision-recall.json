@@ -3,12 +3,13 @@
   "schema_version": "1.1.0",
   "dataset_id": "aerobim-extent-clash-fixture-2026-08-11",
   "dataset_status": "adjudicated",
+  "claim_level": "fixture_only",
   "scope_reference": "FIXTURE-EXTENT-CLASH-ONLY-NOT-CUSTOMER-EVIDENCE",
   "run_id": "extent-clash-fixture-2026-08-11",
   "matching_policy": "exact-v1",
-  "publishable_protocol_gate": true,
+  "publishable_protocol_gate": false,
   "adjudicator_count": 2,
-  "corpus_kind": "customer",
+  "corpus_kind": "fixture",
   "held_out_split": false,
   "fn_tracked": true,
   "finding_predicates": [
@@ -22,18 +23,18 @@
     "other"
   ],
   "agreement_path": null,
-  "require_agreement_for_publishable": false,
+  "require_agreement_for_publishable": true,
   "precision_claim": {
     "metric": "macro_precision",
     "value": 1.0,
     "corpus_id": "aerobim-extent-clash-fixture-2026-08-11",
-    "corpus_kind": "customer",
+    "corpus_kind": "fixture",
     "adjudicators": 2,
     "held_out_split": false,
     "fn_tracked": true,
-    "base_publishable": true,
+    "base_publishable": false,
     "publishable": false,
-    "render": "macro_precision=1.0000"
+    "render": "macro_precision=withheld (corpus_kind=fixture, adjudicators=2; not publishable as product accuracy)"
   },
   "labels": {
     "confirmed": 6,
@@ -100,5 +101,5 @@
   },
   "false_positives": [],
   "false_negatives": [],
-  "warning": null
+  "warning": "Dataset is not adjudicated customer evidence; metrics are harness/fixture results and must not be published as AeroBIM product accuracy."
 }

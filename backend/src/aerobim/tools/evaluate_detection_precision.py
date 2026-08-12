@@ -25,6 +25,18 @@ _MAX_INPUT_BYTES = 10 * 1024 * 1024
 _MAX_FINDINGS = 100_000
 _DATASET_STATUSES = {"synthetic", "draft", "adjudicated"}
 _LABEL_STATUSES = {"confirmed", "excluded", "unresolved"}
+# Claims Lock: these claim_level values can never promote to corpus_kind=customer,
+# even when dataset_status=adjudicated (fixture dual-rater templates).
+_NON_CUSTOMER_CLAIM_LEVELS = frozenset(
+    {
+        "fixture_only",
+        "synthetic_only",
+        "open_bench_only",
+        "engineering_baseline_only",
+        "harness_only",
+        "not_ready",
+    }
+)
 
 
 @dataclass(frozen=True, order=True)
@@ -101,6 +113,7 @@ class ParsedLabels:
     publishable_protocol_gate: bool
     adjudicator_count: int
     held_out_split: bool
+    claim_level: str | None = None
 
 
 @dataclass(frozen=True)
@@ -165,8 +178,18 @@ def evaluate_detection_precision(
             "empty_classes": True,
         }
 
+    from aerobim.domain.architecture import (
+        PrecisionClaim,
+        precision_claim_publishable_with_agreement,
+    )
+
+    corpus_kind = _resolve_corpus_kind(
+        dataset_status=labels.dataset_status,
+        claim_level=labels.claim_level,
+        scope_reference=labels.scope_reference,
+    )
     warning = None
-    if labels.dataset_status != "adjudicated":
+    if corpus_kind != "customer" or labels.dataset_status != "adjudicated":
         warning = (
             "Dataset is not adjudicated customer evidence; metrics are harness/fixture "
             "results and must not be published as AeroBIM product accuracy."
@@ -178,17 +201,6 @@ def evaluate_detection_precision(
         )
         warning = f"{warning} {empty_warning}" if warning else empty_warning
 
-    from aerobim.domain.architecture import (
-        PrecisionClaim,
-        precision_claim_publishable_with_agreement,
-    )
-
-    if labels.dataset_status == "adjudicated":
-        corpus_kind = "customer"
-    elif labels.dataset_status == "draft":
-        corpus_kind = "fixture"
-    else:
-        corpus_kind = "synthetic"
     # Harness always materializes FN identities — product gate still requires the flag.
     fn_tracked = True
     macro_precision = macro["precision"]
@@ -209,10 +221,12 @@ def evaluate_detection_precision(
         if agreement_payload.get("artifact_type") != "adjudicator_agreement":
             raise ValueError("agreement JSON must have artifact_type=adjudicator_agreement")
 
+    # Fixture/synthetic claim_level must never skip agreement (latent publishable flip).
+    agreement_required = require_agreement_for_publishable or corpus_kind != "customer"
     publishable = precision_claim_publishable_with_agreement(
         claim,
         agreement=agreement_payload,
-        require_agreement=require_agreement_for_publishable,
+        require_agreement=agreement_required,
         held_out_split=labels.held_out_split,
         fn_tracked=fn_tracked,
     )
@@ -236,6 +250,7 @@ def evaluate_detection_precision(
         "schema_version": _EVAL_SCHEMA_VERSION,
         "dataset_id": labels.dataset_id,
         "dataset_status": labels.dataset_status,
+        "claim_level": labels.claim_level,
         "scope_reference": labels.scope_reference,
         "run_id": detections.run_id,
         "matching_policy": "exact-v1",
@@ -246,7 +261,7 @@ def evaluate_detection_precision(
         "fn_tracked": fn_tracked,
         "finding_predicates": [predicate.value for predicate in FindingPredicate],
         "agreement_path": str(agreement_path.as_posix()) if agreement_path else None,
-        "require_agreement_for_publishable": require_agreement_for_publishable,
+        "require_agreement_for_publishable": agreement_required,
         "precision_claim": {
             "metric": claim.metric,
             "value": claim.value,
@@ -437,6 +452,12 @@ def _parse_labels(
             "completion time, and zero unresolved labels are required"
         )
     held_out_split = _parse_held_out_split(payload)
+    claim_level = _optional_string(payload.get("claim_level"), "claim_level")
+    if claim_level is not None:
+        claim_level = claim_level.casefold()
+    # Fixture claim_level cannot pass the product publishable protocol gate.
+    if claim_level in _NON_CUSTOMER_CLAIM_LEVELS:
+        publishable_gate = False
     return ParsedLabels(
         dataset_id=dataset_id,
         dataset_status=dataset_status,
@@ -447,6 +468,7 @@ def _parse_labels(
         publishable_protocol_gate=publishable_gate,
         adjudicator_count=adjudicator_count,
         held_out_split=held_out_split,
+        claim_level=claim_level,
     )
 
 
@@ -561,6 +583,31 @@ def _clash_bucket(item: FindingKey) -> str:
     if item.finding_class in {"clash", "spatial", "mep_clash", "system_clash"}:
         return "clash"
     return "non_clash"
+
+
+def _resolve_corpus_kind(
+    *,
+    dataset_status: str,
+    claim_level: str | None,
+    scope_reference: str | None,
+) -> str:
+    """Map labels metadata to corpus_kind without promoting fixtures to customer.
+
+    ``claim_level`` is the Claims Lock SSOT. Scope text is not used for promotion
+    (harness fixtures often say NOT-CUSTOMER while customer templates also reuse
+    similar phrasing during tests).
+    """
+
+    del scope_reference  # reserved for future explicit markers; unused by design
+    if claim_level in _NON_CUSTOMER_CLAIM_LEVELS:
+        if claim_level in {"synthetic_only", "open_bench_only", "engineering_baseline_only"}:
+            return "synthetic"
+        return "fixture"
+    if dataset_status == "adjudicated":
+        return "customer"
+    if dataset_status == "draft":
+        return "fixture"
+    return "synthetic"
 
 
 def _parse_held_out_split(payload: dict[str, Any]) -> bool:
