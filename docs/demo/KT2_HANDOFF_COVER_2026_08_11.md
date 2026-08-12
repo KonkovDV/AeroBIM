@@ -26,6 +26,8 @@ claim_boundary: "Fixture GO. Checkpoint NO_GO. Not customer accuracy."
 | Mentor pack | **done** |
 | RT-001 / RT-002 / RT-003 | **OPEN** (данные Самолёта) |
 | OIDC BFF | **501** Phase 2.5 stub — не production |
+| Academic closure plan (12.08) | [`../pilot/KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md`](../pilot/KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md) |
+| Tri-source alignment | [`../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md`](../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md) |
 | N43 baseline lag=1 | репетиция **17.08** |
 
 ## Календарь до конца окна КТ#2 (20.08)
