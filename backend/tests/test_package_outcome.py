@@ -121,7 +121,7 @@ class PackageOutcomeMatrixTests(unittest.TestCase):
         )
         self.assertEqual(outcome, PackageOutcome.BLOCKED)
 
-    def test_intake_blocked_dominates_errors(self) -> None:
+    def test_confirmed_violation_outranks_missing_evidence(self) -> None:
         caps = _caps()
         outcome = compute_package_outcome(
             error_count=3,
@@ -130,7 +130,43 @@ class PackageOutcomeMatrixTests(unittest.TestCase):
             intake_blocked=True,
             policy=build_signoff_policy(profile="samolet_pilot"),
         )
+        self.assertEqual(outcome, PackageOutcome.FAILED)
+        self.assertFalse(summary_passed_from_outcome(outcome))
+
+    def test_review_does_not_outrank_violation(self) -> None:
+        outcome = compute_package_outcome(
+            error_count=1,
+            warning_count=0,
+            capabilities=_caps(),
+            intake_blocked=False,
+            hitl_requires_review=True,
+            policy=build_signoff_policy(profile="development"),
+        )
+        self.assertEqual(outcome, PackageOutcome.FAILED)
+        self.assertFalse(summary_passed_from_outcome(outcome))
+
+    def test_missing_data_outranks_uncertainty(self) -> None:
+        outcome = compute_package_outcome(
+            error_count=0,
+            warning_count=0,
+            capabilities=_caps(),
+            intake_blocked=True,
+            hitl_requires_review=True,
+            policy=build_signoff_policy(profile="samolet_pilot"),
+        )
         self.assertEqual(outcome, PackageOutcome.BLOCKED)
+        self.assertFalse(summary_passed_from_outcome(outcome))
+
+    def test_review_required_never_passes(self) -> None:
+        outcome = compute_package_outcome(
+            error_count=0,
+            warning_count=4,
+            capabilities=_caps(),
+            intake_blocked=False,
+            hitl_requires_review=True,
+            policy=build_signoff_policy(profile="development"),
+        )
+        self.assertEqual(outcome, PackageOutcome.REVIEW_REQUIRED)
         self.assertFalse(summary_passed_from_outcome(outcome))
 
     def test_summary_passed_from_outcome(self) -> None:
@@ -201,8 +237,11 @@ class PackageOutcomeFalseGreenTests(unittest.TestCase):
                     ),
                 )
             )
-        self.assertEqual(report.summary.outcome, PackageOutcome.BLOCKED)
         self.assertFalse(report.summary.passed)
+        self.assertNotIn(
+            report.summary.outcome,
+            {PackageOutcome.PASS, PackageOutcome.PASS_WITH_WARNINGS},
+        )
         self.assertFalse(
             summary_passed_from_outcome(report.summary.outcome or PackageOutcome.FAILED)
         )
