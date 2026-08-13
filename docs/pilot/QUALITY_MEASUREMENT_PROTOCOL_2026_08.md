@@ -169,7 +169,7 @@ These constraints are mandatory when Samolet labels exist. They do **not** autho
 | **Four outcomes, not binary accuracy** | TP / FP / FN / TN aligned with `PackageOutcome` (FAILED / BLOCKED / REVIEW_REQUIRED / PASS*). Do not collapse to «% correct». |
 | **Selective-risk curve** | If a confidence score exists, publish risk vs coverage (abstain allowed). If it does not exist, say so — do not invent calibration. |
 | **Solihin split** | Report class 1 / 2 / 3 separately. Class 4 (performance / proof-of-solution) is **not claimed**. Inventory: [`../evidence/solihin-rule-classes-2026-08.md`](../evidence/solihin-rule-classes-2026-08.md). |
-| **AEC-Bench ≠ RT-001** | External document bench. False-pass on AEC-Bench is currently **SKIPPED**: [`../evidence/aec-bench-false-pass-2026-08.md`](../evidence/aec-bench-false-pass-2026-08.md). |
+| **AEC-Bench ≠ RT-001** | External document bench. Harbor drawing-reading false-pass is **NOT_MEASURED**. Gold-only `null_always_clean` floor is in [`../evidence/aec-bench-false-pass-2026-08.md`](../evidence/aec-bench-false-pass-2026-08.md) (task unit, not project cluster). |
 
 Wilson intervals (§4) remain the planner for a **project-level** rate after clustering, not a substitute for the cluster bootstrap.
 
@@ -183,6 +183,6 @@ Wilson intervals (§4) remain the planner for a **project-level** rate after clu
 | SLA honesty (p95, pack hash, machine) | `python -m aerobim.tools.measure_package_sla` |
 | Evidence bundle | `python -m aerobim.tools.export_evidence_bundle` |
 | Cluster bootstrap / κ / α | `aerobim.domain.eval_statistics` · `measure_adjudicator_agreement` |
-| False-pass on AEC-Bench | currently **SKIPPED** (Harbor NOT_RUN) |
+| False-pass on AEC-Bench | Harbor **NOT_RUN**; gold-only `null_always_clean` in `aec-bench-false-pass-2026-08` |
 
 Do not publish a product accuracy number from any of these without a Samolet (or RF-expertise) corpus.

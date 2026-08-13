@@ -15,8 +15,34 @@ class IfcBenchSmokeTests(unittest.TestCase):
     def test_parse_expected_number(self) -> None:
         from aerobim.tools.run_ifc_bench_smoke import _parse_expected_number
 
+        self.assertEqual(_parse_expected_number("There are four bathrooms."), 4.0)
         self.assertEqual(_parse_expected_number("There are 10 interior doors."), 10.0)
         self.assertEqual(_parse_expected_number("There are 4 bedrooms in the building."), 4.0)
+        self.assertEqual(
+            _parse_expected_number("The width of the door with uuid X is 1.25 m."),
+            1.25,
+        )
+        self.assertEqual(
+            _parse_expected_number(
+                "The window with GUID 0otfaO0qPDAhynjJ6DmgH8 has a height of 1.735 m "
+                "and a width of 1.0 m."
+            ),
+            1.735,
+        )
+        self.assertEqual(
+            _parse_expected_number("The width of the door with uuid 1hOSvn6df7F8_7GcBWlRGQ is 1.25 m."),
+            1.25,
+        )
+        self.assertEqual(
+            _parse_expected_number(
+                "The floor-to-floor height between the ground floor and the first floor is 3.1 m."
+            ),
+            3.1,
+        )
+        self.assertEqual(
+            _parse_expected_number("Based on the data, two thermostats are installed."),
+            2.0,
+        )
         self.assertEqual(
             _parse_expected_number(
                 "The model specifies 14 light fixtures: 8 pendant and 6 sconce lights."
@@ -83,7 +109,7 @@ class IfcBenchSmokeTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt001"])
         self.assertEqual(payload["benchmark"]["question_count"], 1026)
         self.assertTrue(payload["benchmark"]["questions_sha256_matches_pin"])
-        self.assertGreaterEqual(payload["summary"]["scored"], 5)
+        self.assertGreaterEqual(payload["summary"]["scored"], 12)
         self.assertEqual(payload["summary"]["mismatched"], 0)
         self.assertLess(payload["summary"]["scored"], payload["summary"]["total_questions"])
         raw = json.dumps(payload)

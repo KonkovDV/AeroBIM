@@ -1,12 +1,12 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "artifact_type": "federated_mep_inventory",
   "claim_level": "federated_mep_inventory",
-  "claim_boundary": "Inventory of public federated / MEP IFC on disk. Entity counts only. mep_system_clash remains NOT_VERIFIED. Not RT-003 delivered. Not customer MEP. GPLv3 IFC-Bench models are not opened.",
-  "generated_at": "2026-08-13T22:04:35.452704+00:00",
+  "claim_boundary": "Public federated / MEP IFC on disk. Entity counts plus AABB broadphase on the in-repo HVAC fixture (existing graph + AABB filter) and duplex architecture-vs-MEP product AABBs. AABB overlap is not geometric clash. mep_system_clash remains NOT_VERIFIED. Not RT-003 delivered. Not customer MEP. GPLv3 IFC-Bench models are not opened.",
+  "generated_at": "2026-08-13T22:44:19.773602+00:00",
   "mep_system_clash": "NOT_VERIFIED",
   "closes_rt003": false,
-  "present": 3,
+  "present": 5,
   "rows": [
     {
       "label": "eng_fixture",
@@ -24,7 +24,7 @@
         "IfcDistributionPort": 0,
         "IfcSystem": 2
       },
-      "elapsed_ms": 142.914,
+      "elapsed_ms": 187.288,
       "error": null,
       "ifc_product_count": 2
     },
@@ -44,7 +44,7 @@
         "IfcDistributionPort": 0,
         "IfcSystem": 0
       },
-      "elapsed_ms": 556.306,
+      "elapsed_ms": 549.58,
       "error": null,
       "ifc_product_count": 973
     },
@@ -64,24 +64,98 @@
         "IfcDistributionPort": 0,
         "IfcSystem": 0
       },
-      "elapsed_ms": 76.354,
+      "elapsed_ms": 79.367,
       "error": null,
       "ifc_product_count": 295
+    },
+    {
+      "label": "ifc_bench_dental_mep",
+      "path": ".local/ifc-bench-v2/projects/dental_clinic/mep.ifc",
+      "status": "RUN",
+      "bytes": 125780663,
+      "schema": "IFC2X3",
+      "view": "ViewDefinition [CoordinationView]",
+      "counts": {
+        "IfcDistributionElement": 16012,
+        "IfcFlowTerminal": 3053,
+        "IfcFlowSegment": 5952,
+        "IfcFlowFitting": 6693,
+        "IfcFlowController": 173,
+        "IfcDistributionPort": 0,
+        "IfcSystem": 0
+      },
+      "elapsed_ms": 27174.247,
+      "error": null,
+      "ifc_product_count": 16542
+    },
+    {
+      "label": "ifc_bench_dental_str",
+      "path": ".local/ifc-bench-v2/projects/dental_clinic/str.ifc",
+      "status": "RUN",
+      "bytes": 19375987,
+      "schema": "IFC2X3",
+      "view": "ViewDefinition [CoordinationView]",
+      "counts": {
+        "IfcDistributionElement": 0,
+        "IfcFlowTerminal": 0,
+        "IfcFlowSegment": 0,
+        "IfcFlowFitting": 0,
+        "IfcFlowController": 0,
+        "IfcDistributionPort": 0,
+        "IfcSystem": 0
+      },
+      "elapsed_ms": 1342.738,
+      "error": null,
+      "ifc_product_count": 1100
     },
     {
       "label": "ifc_bench_digital_hub",
       "path": ".local/ifc-bench-v2/projects/digital_hub/arc.ifc",
       "status": "SKIPPED",
       "reason": "file not present",
-      "elapsed_ms": 0.428
+      "elapsed_ms": 0.759
     },
     {
       "label": "ifc_bench_west_riverside",
       "path": ".local/ifc-bench-v2/projects/west_riverside_hospital/arc.ifc",
       "status": "SKIPPED",
       "reason": "file not present",
-      "elapsed_ms": 0.203
+      "elapsed_ms": 1.09
     }
   ],
-  "content_sha256": "8fd35e814cb0fd54ea60e80cecd5f8636c4c3a422d24dbe2fafb422866291aa5"
+  "geometry": {
+    "hvac_fixture_graph_aabb": {
+      "status": "RUN",
+      "geometry_verified": false,
+      "nodes": 2,
+      "edges": 1,
+      "synthetic": true,
+      "aabb_status": "unavailable",
+      "aabb_reason": "no element AABBs built (missing geometry / create_shape failed) — falling back to co_presence/connects edges",
+      "aabb_boxes_built": 0,
+      "aabb_pairs_before": 1,
+      "aabb_pairs_after": 0,
+      "elapsed_ms": 24.45
+    },
+    "duplex_arc_mep_aabb": {
+      "status": "RUN",
+      "geometry_verified": false,
+      "arc_boxes": 116,
+      "mep_boxes": 548,
+      "aabb_overlap_pairs": 654,
+      "arc_types": [
+        "IfcWall",
+        "IfcSlab",
+        "IfcDoor",
+        "IfcWindow"
+      ],
+      "mep_types": [
+        "IfcFlowTerminal",
+        "IfcEnergyConversionDevice",
+        "IfcFlowSegment"
+      ],
+      "elapsed_ms": 13354.01
+    }
+  },
+  "content_sha256": "3ece8ecd31497344bc302f5ddce93ee7b44c1ab01880d94a0d3498ad7049a8d5"
 }

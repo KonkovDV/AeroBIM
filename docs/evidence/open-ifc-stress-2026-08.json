@@ -3,7 +3,7 @@
   "artifact_type": "open_ifc_stress",
   "claim_level": "open_ifc_stress",
   "claim_boundary": "Header-level open/parse timing on IFC files present on disk. Not GNI 223 unless AEROBIM_GNI_BIM_ROOT is set. Student GNI models are not product accuracy. GPLv3 IFC-Bench models are not scanned from this tree. IfcOpenShell entity counts are optional and skip oversized files.",
-  "generated_at": "2026-08-13T22:04:02.598486+00:00",
+  "generated_at": "2026-08-13T22:46:09.406023+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.13.7",
@@ -14,7 +14,7 @@
   "open_max_bytes": 209715200,
   "gni": {
     "status": "RUN",
-    "reason": "C:\\plans\\AeroBIM\\.local\\gni-bim",
+    "reason": "..\\.local\\gni-bim",
     "doi": "10.5281/zenodo.19722012",
     "file_count": 224,
     "open_ok": 224,
@@ -37,7 +37,11 @@
         "structure": "2026_BIMprojects/2026_BIMprojects/model_0_structure.ifc",
         "arc_bytes": 7050075,
         "structure_bytes": 5752411,
-        "schema_match": true
+        "schema_match": true,
+        "arc_products": 2150,
+        "structure_products": 152,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": "ok"
       },
       {
         "stem": "model_1",
@@ -46,7 +50,11 @@
         "structure": "2026_BIMprojects/2026_BIMprojects/model_1_structure.ifc",
         "arc_bytes": 187042121,
         "structure_bytes": 562266,
-        "schema_match": true
+        "schema_match": true,
+        "arc_products": 34268,
+        "structure_products": 328,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": "ok"
       },
       {
         "stem": "model_2",
@@ -55,7 +63,11 @@
         "structure": null,
         "arc_bytes": 105747040,
         "structure_bytes": null,
-        "schema_match": null
+        "schema_match": null,
+        "arc_products": 589,
+        "structure_products": null,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": null
       },
       {
         "stem": "model_3",
@@ -64,7 +76,11 @@
         "structure": "2026_BIMprojects/2026_BIMprojects/model_3_structure.ifc",
         "arc_bytes": 13802280,
         "structure_bytes": 409916,
-        "schema_match": true
+        "schema_match": true,
+        "arc_products": 1735,
+        "structure_products": 201,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": "ok"
       },
       {
         "stem": "model_4",
@@ -73,7 +89,11 @@
         "structure": "2026_BIMprojects/2026_BIMprojects/model_4_structure.ifc",
         "arc_bytes": 52332497,
         "structure_bytes": 249138,
-        "schema_match": true
+        "schema_match": true,
+        "arc_products": 1419,
+        "structure_products": 107,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": "ok"
       },
       {
         "stem": "model_5",
@@ -82,7 +102,11 @@
         "structure": "2026_BIMprojects/2026_BIMprojects/model_5_structure.ifc",
         "arc_bytes": 76612522,
         "structure_bytes": 5310508,
-        "schema_match": true
+        "schema_match": true,
+        "arc_products": 3142,
+        "structure_products": 1111,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": "ok"
       },
       {
         "stem": "model_6",
@@ -91,7 +115,11 @@
         "structure": null,
         "arc_bytes": 561838129,
         "structure_bytes": null,
-        "schema_match": null
+        "schema_match": null,
+        "arc_products": null,
+        "structure_products": null,
+        "arc_ifc_open": "skipped_oversize",
+        "structure_ifc_open": null
       },
       {
         "stem": "model_7",
@@ -100,7 +128,11 @@
         "structure": "2026_BIMprojects/2026_BIMprojects/model_7_structure.ifc",
         "arc_bytes": 9390720,
         "structure_bytes": 3077417,
-        "schema_match": true
+        "schema_match": true,
+        "arc_products": 1243,
+        "structure_products": 876,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": "ok"
       },
       {
         "stem": "model_8",
@@ -109,7 +141,11 @@
         "structure": "2026_BIMprojects/2026_BIMprojects/model_8_structure.ifc",
         "arc_bytes": 22059457,
         "structure_bytes": 1928533,
-        "schema_match": true
+        "schema_match": true,
+        "arc_products": 702,
+        "structure_products": 206,
+        "arc_ifc_open": "ok",
+        "structure_ifc_open": "ok"
       }
     ],
     "pairs_complete": 7,
@@ -140,11 +176,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.07,
+      "elapsed_ms": 0.075,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 19,
-      "ifc_open_ms": 131.204
+      "ifc_open_ms": 147.135
     },
     {
       "path": "samples/ifc/clash-two-overlapping-boxes.ifc",
@@ -152,11 +188,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.126,
+      "elapsed_ms": 0.159,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 5,
-      "ifc_open_ms": 0.314
+      "ifc_open_ms": 0.453
     },
     {
       "path": "samples/ifc/model-diff/revision-a.ifc",
@@ -164,11 +200,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.069,
+      "elapsed_ms": 0.117,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3,
-      "ifc_open_ms": 0.15
+      "ifc_open_ms": 0.167
     },
     {
       "path": "samples/ifc/model-diff/revision-b.ifc",
@@ -176,11 +212,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.067,
+      "elapsed_ms": 0.068,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3,
-      "ifc_open_ms": 0.138
+      "ifc_open_ms": 0.146
     },
     {
       "path": "samples/ifc/public/buildingsmart-sample-test-files/tessellated-item.ifc",
@@ -188,11 +224,11 @@
       "schema": "IFC4",
       "view": "ViewDefinition [ReferenceView_V1.2]",
       "open_ok": true,
-      "elapsed_ms": 0.063,
+      "elapsed_ms": 0.075,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2,
-      "ifc_open_ms": 3.017
+      "ifc_open_ms": 0.704
     },
     {
       "path": "samples/ifc/public/buildingsmart-sample-test-files/wall-with-opening-and-window.ifc",
@@ -200,11 +236,11 @@
       "schema": "IFC4",
       "view": "ViewDefinition [ReferenceView_V1.2]",
       "open_ok": true,
-      "elapsed_ms": 0.103,
+      "elapsed_ms": 0.113,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 6,
-      "ifc_open_ms": 2.908
+      "ifc_open_ms": 1.286
     },
     {
       "path": "samples/ifc/wall-fire-rating-rei30.ifc",
@@ -212,11 +248,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.114,
+      "elapsed_ms": 0.105,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1,
-      "ifc_open_ms": 0.183
+      "ifc_open_ms": 0.168
     },
     {
       "path": "samples/ifc/wall-fire-rating-rei60.ifc",
@@ -224,11 +260,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.071,
+      "elapsed_ms": 0.07,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1,
-      "ifc_open_ms": 0.153
+      "ifc_open_ms": 0.148
     },
     {
       "path": "samples/ifc/wall-ifc4-referenceview.ifc",
@@ -236,11 +272,11 @@
       "schema": "IFC4",
       "view": "ReferenceView",
       "open_ok": true,
-      "elapsed_ms": 0.062,
+      "elapsed_ms": 0.061,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1,
-      "ifc_open_ms": 0.152
+      "ifc_open_ms": 0.139
     },
     {
       "path": "samples/ifc/wall-pset-ifc2x3.ifc",
@@ -248,11 +284,11 @@
       "schema": "IFC2X3",
       "view": "CoordinationView_V2.0",
       "open_ok": true,
-      "elapsed_ms": 0.067,
+      "elapsed_ms": 0.057,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1,
-      "ifc_open_ms": 0.191
+      "ifc_open_ms": 0.182
     },
     {
       "path": "samples/ifc/wall-pset-ifc4x3.ifc",
@@ -260,11 +296,11 @@
       "schema": "IFC4X3",
       "view": "Ifc4X3_ReferenceView",
       "open_ok": true,
-      "elapsed_ms": 0.062,
+      "elapsed_ms": 0.068,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1,
-      "ifc_open_ms": 7.16
+      "ifc_open_ms": 2.472
     },
     {
       "path": "samples/ifc/wall-pset-qto-missing-qto.ifc",
@@ -272,11 +308,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.129,
+      "elapsed_ms": 0.203,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1,
-      "ifc_open_ms": 0.195
+      "ifc_open_ms": 0.398
     },
     {
       "path": "samples/ifc/wall-pset-qto-pass.ifc",
@@ -284,11 +320,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.068,
+      "elapsed_ms": 0.166,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1,
-      "ifc_open_ms": 0.162
+      "ifc_open_ms": 0.266
     },
     {
       "path": "samples/ifc/wall-with-building-element-proxy.ifc",
@@ -296,11 +332,11 @@
       "schema": "IFC4",
       "view": "ReferenceView",
       "open_ok": true,
-      "elapsed_ms": 0.061,
+      "elapsed_ms": 0.103,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2,
-      "ifc_open_ms": 0.133
+      "ifc_open_ms": 0.206
     },
     {
       "path": "samples/ifc/walls-multi-entity.ifc",
@@ -308,11 +344,11 @@
       "schema": "IFC4",
       "view": "DesignTransferView",
       "open_ok": true,
-      "elapsed_ms": 0.057,
+      "elapsed_ms": 0.075,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3,
-      "ifc_open_ms": 0.175
+      "ifc_open_ms": 0.193
     }
   ],
   "gni_rows": [
@@ -322,11 +358,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.154,
+      "elapsed_ms": 0.816,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1082,
-      "ifc_open_ms": 279.117
+      "ifc_open_ms": 335.01
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_1.ifc",
@@ -334,11 +370,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.153,
+      "elapsed_ms": 1.076,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1571,
-      "ifc_open_ms": 341.71
+      "ifc_open_ms": 539.272
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_10.ifc",
@@ -346,11 +382,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.174,
+      "elapsed_ms": 1.042,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 789,
-      "ifc_open_ms": 253.969
+      "ifc_open_ms": 338.375
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_100.ifc",
@@ -358,11 +394,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.146,
+      "elapsed_ms": 1.957,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 649,
-      "ifc_open_ms": 336.883
+      "ifc_open_ms": 335.698
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_101.ifc",
@@ -370,11 +406,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.177,
+      "elapsed_ms": 0.721,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1723,
-      "ifc_open_ms": 493.397
+      "ifc_open_ms": 680.975
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_102.ifc",
@@ -382,11 +418,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.148,
+      "elapsed_ms": 0.822,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2221,
-      "ifc_open_ms": 496.543
+      "ifc_open_ms": 734.383
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_103.ifc",
@@ -394,11 +430,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.168,
+      "elapsed_ms": 1.167,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 334,
-      "ifc_open_ms": 457.464
+      "ifc_open_ms": 406.463
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_104.ifc",
@@ -406,11 +442,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.237,
+      "elapsed_ms": 0.458,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2450,
-      "ifc_open_ms": 1001.969
+      "ifc_open_ms": 961.501
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_105.ifc",
@@ -418,11 +454,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.296,
+      "elapsed_ms": 0.814,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 693,
-      "ifc_open_ms": 309.479
+      "ifc_open_ms": 175.811
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_106.ifc",
@@ -430,11 +466,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.276,
+      "elapsed_ms": 0.865,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3259,
-      "ifc_open_ms": 749.571
+      "ifc_open_ms": 449.065
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_107.ifc",
@@ -442,11 +478,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.274,
+      "elapsed_ms": 1.339,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 469,
-      "ifc_open_ms": 954.33
+      "ifc_open_ms": 885.891
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_108.ifc",
@@ -454,11 +490,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.266,
+      "elapsed_ms": 1.262,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 488,
-      "ifc_open_ms": 624.818
+      "ifc_open_ms": 395.983
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_109.ifc",
@@ -466,11 +502,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.322,
+      "elapsed_ms": 0.891,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 681,
-      "ifc_open_ms": 1071.76
+      "ifc_open_ms": 852.685
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_11.ifc",
@@ -478,11 +514,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.271,
+      "elapsed_ms": 5.209,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1849,
-      "ifc_open_ms": 702.882
+      "ifc_open_ms": 576.88
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_110.ifc",
@@ -490,11 +526,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.277,
+      "elapsed_ms": 0.853,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 627,
-      "ifc_open_ms": 336.598
+      "ifc_open_ms": 180.12
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_111.ifc",
@@ -502,11 +538,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.293,
+      "elapsed_ms": 1.082,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1574,
-      "ifc_open_ms": 697.475
+      "ifc_open_ms": 498.836
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_112.ifc",
@@ -514,11 +550,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.28,
+      "elapsed_ms": 0.896,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2393,
-      "ifc_open_ms": 1141.576
+      "ifc_open_ms": 1008.02
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_113.ifc",
@@ -526,11 +562,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.228,
+      "elapsed_ms": 1.257,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 526,
-      "ifc_open_ms": 699.861
+      "ifc_open_ms": 442.194
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_114.ifc",
@@ -538,11 +574,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.227,
+      "elapsed_ms": 0.974,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 741,
-      "ifc_open_ms": 316.079
+      "ifc_open_ms": 276.528
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_115.ifc",
@@ -550,11 +586,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.243,
+      "elapsed_ms": 0.663,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 216,
-      "ifc_open_ms": 144.204
+      "ifc_open_ms": 101.468
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_116.ifc",
@@ -562,11 +598,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.307,
+      "elapsed_ms": 1.282,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1765,
-      "ifc_open_ms": 837.292
+      "ifc_open_ms": 638.442
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_117.ifc",
@@ -574,11 +610,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.237,
+      "elapsed_ms": 0.85,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 890,
-      "ifc_open_ms": 685.63
+      "ifc_open_ms": 510.202
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_118.ifc",
@@ -586,11 +622,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.271,
+      "elapsed_ms": 1.326,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1992,
-      "ifc_open_ms": 534.773
+      "ifc_open_ms": 458.583
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_119.ifc",
@@ -598,11 +634,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.285,
+      "elapsed_ms": 1.095,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 579,
-      "ifc_open_ms": 376.135
+      "ifc_open_ms": 248.495
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_12.ifc",
@@ -610,11 +646,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.273,
+      "elapsed_ms": 0.946,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1422,
-      "ifc_open_ms": 1206.104
+      "ifc_open_ms": 896.136
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_120.ifc",
@@ -622,11 +658,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.311,
+      "elapsed_ms": 0.949,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 617,
-      "ifc_open_ms": 327.22
+      "ifc_open_ms": 426.973
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_121.ifc",
@@ -634,11 +670,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.38,
+      "elapsed_ms": 1.131,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 586,
-      "ifc_open_ms": 359.548
+      "ifc_open_ms": 463.063
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_122.ifc",
@@ -646,11 +682,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.254,
+      "elapsed_ms": 1.145,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2207,
-      "ifc_open_ms": 815.15
+      "ifc_open_ms": 686.775
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_123.ifc",
@@ -658,11 +694,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.22,
+      "elapsed_ms": 0.936,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1352,
-      "ifc_open_ms": 553.767
+      "ifc_open_ms": 334.734
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_124.ifc",
@@ -670,11 +706,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.251,
+      "elapsed_ms": 0.711,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 466,
-      "ifc_open_ms": 434.115
+      "ifc_open_ms": 309.827
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_125.ifc",
@@ -682,11 +718,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.226,
+      "elapsed_ms": 1.008,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 635,
-      "ifc_open_ms": 234.47
+      "ifc_open_ms": 293.524
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_126.ifc",
@@ -694,11 +730,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.257,
+      "elapsed_ms": 1.862,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1217,
-      "ifc_open_ms": 3753.239
+      "ifc_open_ms": 2788.631
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_127.ifc",
@@ -706,11 +742,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.25,
+      "elapsed_ms": 1.519,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 993,
-      "ifc_open_ms": 532.726
+      "ifc_open_ms": 381.599
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_128.ifc",
@@ -718,11 +754,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.238,
+      "elapsed_ms": 0.872,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1527,
-      "ifc_open_ms": 788.485
+      "ifc_open_ms": 549.533
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_129.ifc",
@@ -730,11 +766,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.277,
+      "elapsed_ms": 0.868,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1211,
-      "ifc_open_ms": 847.385
+      "ifc_open_ms": 485.415
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_13.ifc",
@@ -742,11 +778,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.269,
+      "elapsed_ms": 0.882,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 748,
-      "ifc_open_ms": 547.571
+      "ifc_open_ms": 409.843
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_130.ifc",
@@ -754,11 +790,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.417,
+      "elapsed_ms": 106.071,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 4913,
-      "ifc_open_ms": 1257.437
+      "ifc_open_ms": 1252.551
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_131.ifc",
@@ -766,11 +802,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.294,
+      "elapsed_ms": 1.065,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1025,
-      "ifc_open_ms": 671.216
+      "ifc_open_ms": 416.836
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_132.ifc",
@@ -778,11 +814,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.327,
+      "elapsed_ms": 8.613,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 727,
-      "ifc_open_ms": 726.636
+      "ifc_open_ms": 462.335
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_133.ifc",
@@ -790,11 +826,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.284,
+      "elapsed_ms": 0.852,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1483,
-      "ifc_open_ms": 674.32
+      "ifc_open_ms": 446.528
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_134.ifc",
@@ -802,11 +838,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.304,
+      "elapsed_ms": 0.904,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2364,
-      "ifc_open_ms": 1137.602
+      "ifc_open_ms": 825.613
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_135.ifc",
@@ -814,11 +850,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.313,
+      "elapsed_ms": 1.022,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1647,
-      "ifc_open_ms": 1115.305
+      "ifc_open_ms": 610.02
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_136.ifc",
@@ -826,11 +862,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.344,
+      "elapsed_ms": 0.829,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 894,
-      "ifc_open_ms": 172.404
+      "ifc_open_ms": 87.568
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_137.ifc",
@@ -838,11 +874,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.26,
+      "elapsed_ms": 0.557,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 895,
-      "ifc_open_ms": 386.447
+      "ifc_open_ms": 320.589
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_138.ifc",
@@ -850,11 +886,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.271,
+      "elapsed_ms": 0.878,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1316,
-      "ifc_open_ms": 1013.678
+      "ifc_open_ms": 764.351
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_139.ifc",
@@ -862,11 +898,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.277,
+      "elapsed_ms": 0.807,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 957,
-      "ifc_open_ms": 384.359
+      "ifc_open_ms": 216.043
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_14.ifc",
@@ -874,11 +910,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.288,
+      "elapsed_ms": 0.761,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2900,
-      "ifc_open_ms": 760.983
+      "ifc_open_ms": 451.686
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_140.ifc",
@@ -886,11 +922,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.311,
+      "elapsed_ms": 0.647,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1952,
-      "ifc_open_ms": 632.908
+      "ifc_open_ms": 668.711
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_141.ifc",
@@ -898,11 +934,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.368,
+      "elapsed_ms": 0.882,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3264,
-      "ifc_open_ms": 1233.01
+      "ifc_open_ms": 653.536
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_142.ifc",
@@ -910,11 +946,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.299,
+      "elapsed_ms": 0.792,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1147,
-      "ifc_open_ms": 260.636
+      "ifc_open_ms": 119.662
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_143.ifc",
@@ -922,11 +958,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.256,
+      "elapsed_ms": 0.844,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 494,
-      "ifc_open_ms": 392.876
+      "ifc_open_ms": 291.961
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_144.ifc",
@@ -934,11 +970,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 1.011,
+      "elapsed_ms": 0.895,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1502,
-      "ifc_open_ms": 1085.416
+      "ifc_open_ms": 887.556
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_145.ifc",
@@ -946,11 +982,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.284,
+      "elapsed_ms": 1.029,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1588,
-      "ifc_open_ms": 1593.91
+      "ifc_open_ms": 998.797
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_146.ifc",
@@ -958,11 +994,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.281,
+      "elapsed_ms": 0.664,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1082,
-      "ifc_open_ms": 539.156
+      "ifc_open_ms": 422.323
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_147.ifc",
@@ -970,11 +1006,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.268,
+      "elapsed_ms": 0.971,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1220,
-      "ifc_open_ms": 700.56
+      "ifc_open_ms": 402.873
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_148.ifc",
@@ -982,11 +1018,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.311,
+      "elapsed_ms": 0.888,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 790,
-      "ifc_open_ms": 752.527
+      "ifc_open_ms": 425.251
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_149.ifc",
@@ -994,11 +1030,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.286,
+      "elapsed_ms": 0.964,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 666,
-      "ifc_open_ms": 113.001
+      "ifc_open_ms": 109.159
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_15.ifc",
@@ -1006,11 +1042,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.256,
+      "elapsed_ms": 0.996,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1084,
-      "ifc_open_ms": 464.771
+      "ifc_open_ms": 573.354
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_150.ifc",
@@ -1018,11 +1054,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.287,
+      "elapsed_ms": 0.958,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1075,
-      "ifc_open_ms": 354.671
+      "ifc_open_ms": 211.646
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_151.ifc",
@@ -1030,11 +1066,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.266,
+      "elapsed_ms": 0.999,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2186,
-      "ifc_open_ms": 930.241
+      "ifc_open_ms": 539.183
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_152.ifc",
@@ -1042,11 +1078,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.394,
+      "elapsed_ms": 0.753,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 624,
-      "ifc_open_ms": 4186.29
+      "ifc_open_ms": 2859.419
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_153.ifc",
@@ -1054,11 +1090,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.327,
+      "elapsed_ms": 1.009,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 589,
-      "ifc_open_ms": 351.322
+      "ifc_open_ms": 304.84
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_154.ifc",
@@ -1066,11 +1102,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.246,
+      "elapsed_ms": 1.066,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 336,
-      "ifc_open_ms": 455.401
+      "ifc_open_ms": 311.113
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_155.ifc",
@@ -1078,11 +1114,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.274,
+      "elapsed_ms": 0.911,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1192,
-      "ifc_open_ms": 850.962
+      "ifc_open_ms": 396.168
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_156.ifc",
@@ -1090,11 +1126,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.542,
+      "elapsed_ms": 1.333,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 985,
-      "ifc_open_ms": 481.863
+      "ifc_open_ms": 266.784
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_157.ifc",
@@ -1102,11 +1138,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.276,
+      "elapsed_ms": 0.75,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3056,
-      "ifc_open_ms": 943.038
+      "ifc_open_ms": 922.853
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_158.ifc",
@@ -1114,11 +1150,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.295,
+      "elapsed_ms": 0.892,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 307,
-      "ifc_open_ms": 1030.263
+      "ifc_open_ms": 594.263
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_159.ifc",
@@ -1126,11 +1162,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.222,
+      "elapsed_ms": 0.774,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2158,
-      "ifc_open_ms": 1440.346
+      "ifc_open_ms": 1242.366
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_16.ifc",
@@ -1138,11 +1174,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.27,
+      "elapsed_ms": 0.797,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1704,
-      "ifc_open_ms": 956.506
+      "ifc_open_ms": 533.581
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_160.ifc",
@@ -1150,11 +1186,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.256,
+      "elapsed_ms": 1.119,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 646,
-      "ifc_open_ms": 402.266
+      "ifc_open_ms": 221.663
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_161.ifc",
@@ -1162,11 +1198,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.27,
+      "elapsed_ms": 0.729,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1282,
-      "ifc_open_ms": 939.678
+      "ifc_open_ms": 1026.844
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_162.ifc",
@@ -1174,11 +1210,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.314,
+      "elapsed_ms": 0.884,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 985,
-      "ifc_open_ms": 499.126
+      "ifc_open_ms": 335.981
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_163.ifc",
@@ -1186,11 +1222,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.253,
+      "elapsed_ms": 0.913,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 637,
-      "ifc_open_ms": 254.995
+      "ifc_open_ms": 160.084
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_164.ifc",
@@ -1198,11 +1234,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.27,
+      "elapsed_ms": 0.742,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 470,
-      "ifc_open_ms": 235.243
+      "ifc_open_ms": 143.277
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_165.ifc",
@@ -1210,11 +1246,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.271,
+      "elapsed_ms": 0.976,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 404,
-      "ifc_open_ms": 281.813
+      "ifc_open_ms": 161.99
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_166.ifc",
@@ -1222,11 +1258,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.271,
+      "elapsed_ms": 0.714,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1137,
-      "ifc_open_ms": 314.114
+      "ifc_open_ms": 162.246
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_167.ifc",
@@ -1234,11 +1270,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.283,
+      "elapsed_ms": 0.787,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 935,
-      "ifc_open_ms": 461.204
+      "ifc_open_ms": 445.603
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_168.ifc",
@@ -1246,11 +1282,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.312,
+      "elapsed_ms": 0.96,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1091,
-      "ifc_open_ms": 681.519
+      "ifc_open_ms": 639.215
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_169.ifc",
@@ -1258,11 +1294,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.307,
+      "elapsed_ms": 0.895,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1053,
-      "ifc_open_ms": 329.246
+      "ifc_open_ms": 122.869
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_17.ifc",
@@ -1270,11 +1306,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.252,
+      "elapsed_ms": 0.882,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1116,
-      "ifc_open_ms": 1012.75
+      "ifc_open_ms": 557.555
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_170.ifc",
@@ -1282,11 +1318,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.303,
+      "elapsed_ms": 0.758,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1211,
-      "ifc_open_ms": 911.797
+      "ifc_open_ms": 813.356
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_171.ifc",
@@ -1294,11 +1330,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.291,
+      "elapsed_ms": 1.37,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 703,
-      "ifc_open_ms": 707.709
+      "ifc_open_ms": 431.593
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_172.ifc",
@@ -1306,11 +1342,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.241,
+      "elapsed_ms": 0.801,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 5776,
-      "ifc_open_ms": 1736.458
+      "ifc_open_ms": 1447.141
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_173.ifc",
@@ -1318,11 +1354,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.281,
+      "elapsed_ms": 0.874,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1998,
-      "ifc_open_ms": 800.186
+      "ifc_open_ms": 450.053
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_174.ifc",
@@ -1330,11 +1366,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.277,
+      "elapsed_ms": 0.798,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 363,
-      "ifc_open_ms": 654.484
+      "ifc_open_ms": 551.202
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_175.ifc",
@@ -1342,11 +1378,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.301,
+      "elapsed_ms": 0.762,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 4063,
-      "ifc_open_ms": 1590.586
+      "ifc_open_ms": 1072.56
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_176.ifc",
@@ -1354,11 +1390,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.267,
+      "elapsed_ms": 1.157,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 203,
-      "ifc_open_ms": 291.332
+      "ifc_open_ms": 207.981
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_177.ifc",
@@ -1366,11 +1402,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.235,
+      "elapsed_ms": 0.883,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1127,
-      "ifc_open_ms": 398.733
+      "ifc_open_ms": 348.607
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_178.ifc",
@@ -1378,11 +1414,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.239,
+      "elapsed_ms": 0.854,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1010,
-      "ifc_open_ms": 970.713
+      "ifc_open_ms": 772.46
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_179.ifc",
@@ -1390,11 +1426,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.254,
+      "elapsed_ms": 0.739,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 753,
-      "ifc_open_ms": 212.413
+      "ifc_open_ms": 117.016
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_18.ifc",
@@ -1402,11 +1438,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.223,
+      "elapsed_ms": 0.996,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 294,
-      "ifc_open_ms": 129.422
+      "ifc_open_ms": 68.964
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_180.ifc",
@@ -1414,11 +1450,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.257,
+      "elapsed_ms": 0.885,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1211,
-      "ifc_open_ms": 557.475
+      "ifc_open_ms": 458.239
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_181.ifc",
@@ -1426,11 +1462,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.23,
+      "elapsed_ms": 1.086,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1132,
-      "ifc_open_ms": 315.979
+      "ifc_open_ms": 268.34
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_182.ifc",
@@ -1438,11 +1474,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.23,
+      "elapsed_ms": 0.892,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 455,
-      "ifc_open_ms": 176.811
+      "ifc_open_ms": 181.777
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_183.ifc",
@@ -1450,11 +1486,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.251,
+      "elapsed_ms": 0.924,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1060,
-      "ifc_open_ms": 475.79
+      "ifc_open_ms": 405.75
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_184.ifc",
@@ -1462,11 +1498,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.288,
+      "elapsed_ms": 0.762,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 770,
-      "ifc_open_ms": 498.141
+      "ifc_open_ms": 306.332
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_185.ifc",
@@ -1474,11 +1510,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.273,
+      "elapsed_ms": 0.779,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 679,
-      "ifc_open_ms": 295.953
+      "ifc_open_ms": 163.592
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_186.ifc",
@@ -1486,11 +1522,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.256,
+      "elapsed_ms": 0.768,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 428,
-      "ifc_open_ms": 1224.788
+      "ifc_open_ms": 860.916
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_187.ifc",
@@ -1498,11 +1534,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.297,
+      "elapsed_ms": 1.102,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 442,
-      "ifc_open_ms": 604.971
+      "ifc_open_ms": 715.965
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_188.ifc",
@@ -1510,11 +1546,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.198,
+      "elapsed_ms": 1.063,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2014,
-      "ifc_open_ms": 191.055
+      "ifc_open_ms": 199.306
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_189.ifc",
@@ -1522,11 +1558,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.146,
+      "elapsed_ms": 0.805,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1248,
-      "ifc_open_ms": 487.759
+      "ifc_open_ms": 713.036
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_19.ifc",
@@ -1534,11 +1570,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.204,
+      "elapsed_ms": 0.843,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 677,
-      "ifc_open_ms": 177.244
+      "ifc_open_ms": 299.538
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_190.ifc",
@@ -1546,11 +1582,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.176,
+      "elapsed_ms": 1.083,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 138,
-      "ifc_open_ms": 23.537
+      "ifc_open_ms": 44.582
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_191.ifc",
@@ -1558,11 +1594,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.14,
+      "elapsed_ms": 0.793,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 618,
-      "ifc_open_ms": 722.773
+      "ifc_open_ms": 725.597
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_192.ifc",
@@ -1570,11 +1606,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.166,
+      "elapsed_ms": 0.52,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1554,
-      "ifc_open_ms": 248.152
+      "ifc_open_ms": 304.286
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_193.ifc",
@@ -1582,11 +1618,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.165,
+      "elapsed_ms": 0.917,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 778,
-      "ifc_open_ms": 232.45
+      "ifc_open_ms": 361.212
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_194.ifc",
@@ -1594,11 +1630,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.156,
+      "elapsed_ms": 1.0,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 657,
-      "ifc_open_ms": 209.775
+      "ifc_open_ms": 326.893
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_195.ifc",
@@ -1606,11 +1642,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.172,
+      "elapsed_ms": 0.737,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 740,
-      "ifc_open_ms": 373.609
+      "ifc_open_ms": 366.594
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_196.ifc",
@@ -1618,11 +1654,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.176,
+      "elapsed_ms": 0.773,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 739,
-      "ifc_open_ms": 292.142
+      "ifc_open_ms": 292.913
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_197.ifc",
@@ -1630,11 +1666,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.23,
+      "elapsed_ms": 0.767,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3706,
-      "ifc_open_ms": 524.618
+      "ifc_open_ms": 691.381
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_198.ifc",
@@ -1642,11 +1678,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.218,
+      "elapsed_ms": 0.823,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 955,
-      "ifc_open_ms": 270.391
+      "ifc_open_ms": 375.247
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_199.ifc",
@@ -1654,11 +1690,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.178,
+      "elapsed_ms": 0.789,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 754,
-      "ifc_open_ms": 138.787
+      "ifc_open_ms": 141.866
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_2.ifc",
@@ -1666,11 +1702,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.163,
+      "elapsed_ms": 1.021,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2270,
-      "ifc_open_ms": 681.312
+      "ifc_open_ms": 794.959
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_20.ifc",
@@ -1678,11 +1714,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.175,
+      "elapsed_ms": 0.85,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 354,
-      "ifc_open_ms": 395.773
+      "ifc_open_ms": 604.632
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_200.ifc",
@@ -1690,11 +1726,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.173,
+      "elapsed_ms": 0.944,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 767,
-      "ifc_open_ms": 430.295
+      "ifc_open_ms": 411.823
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_201.ifc",
@@ -1702,11 +1738,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.164,
+      "elapsed_ms": 0.804,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 5098,
-      "ifc_open_ms": 1243.229
+      "ifc_open_ms": 1609.399
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_202.ifc",
@@ -1714,11 +1750,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.175,
+      "elapsed_ms": 0.644,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1184,
-      "ifc_open_ms": 239.191
+      "ifc_open_ms": 238.2
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_203.ifc",
@@ -1726,11 +1762,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.179,
+      "elapsed_ms": 0.853,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1604,
-      "ifc_open_ms": 225.218
+      "ifc_open_ms": 395.574
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_204.ifc",
@@ -1738,11 +1774,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.174,
+      "elapsed_ms": 1.024,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 329,
-      "ifc_open_ms": 526.318
+      "ifc_open_ms": 775.826
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_205.ifc",
@@ -1750,11 +1786,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.202,
+      "elapsed_ms": 0.891,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3679,
-      "ifc_open_ms": 348.786
+      "ifc_open_ms": 368.839
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_206.ifc",
@@ -1762,11 +1798,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.193,
+      "elapsed_ms": 1.063,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1298,
-      "ifc_open_ms": 285.719
+      "ifc_open_ms": 422.996
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_207.ifc",
@@ -1774,11 +1810,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.165,
+      "elapsed_ms": 1.614,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3555,
-      "ifc_open_ms": 564.319
+      "ifc_open_ms": 1035.247
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_21.ifc",
@@ -1786,11 +1822,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.188,
+      "elapsed_ms": 0.61,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 747,
-      "ifc_open_ms": 222.574
+      "ifc_open_ms": 237.623
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_22.ifc",
@@ -1798,11 +1834,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.171,
+      "elapsed_ms": 0.846,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1055,
-      "ifc_open_ms": 588.776
+      "ifc_open_ms": 609.066
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_23.ifc",
@@ -1810,11 +1846,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.167,
+      "elapsed_ms": 0.742,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 477,
-      "ifc_open_ms": 514.091
+      "ifc_open_ms": 575.229
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_24.ifc",
@@ -1822,11 +1858,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.181,
+      "elapsed_ms": 0.87,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1195,
-      "ifc_open_ms": 569.846
+      "ifc_open_ms": 568.623
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_25.ifc",
@@ -1834,11 +1870,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.228,
+      "elapsed_ms": 0.95,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1967,
-      "ifc_open_ms": 313.393
+      "ifc_open_ms": 494.549
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_26.ifc",
@@ -1846,11 +1882,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.16,
+      "elapsed_ms": 0.875,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1110,
-      "ifc_open_ms": 234.59
+      "ifc_open_ms": 447.316
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_27.ifc",
@@ -1858,11 +1894,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.164,
+      "elapsed_ms": 1.21,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 937,
-      "ifc_open_ms": 202.389
+      "ifc_open_ms": 201.199
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_28.ifc",
@@ -1870,11 +1906,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.172,
+      "elapsed_ms": 0.568,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 207,
-      "ifc_open_ms": 162.029
+      "ifc_open_ms": 155.44
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_29.ifc",
@@ -1882,11 +1918,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.176,
+      "elapsed_ms": 0.855,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 311,
-      "ifc_open_ms": 296.573
+      "ifc_open_ms": 286.29
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_3.ifc",
@@ -1894,11 +1930,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.187,
+      "elapsed_ms": 1.039,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 772,
-      "ifc_open_ms": 201.055
+      "ifc_open_ms": 300.882
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_30.ifc",
@@ -1906,11 +1942,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.161,
+      "elapsed_ms": 1.084,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 775,
-      "ifc_open_ms": 205.343
+      "ifc_open_ms": 273.356
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_31.ifc",
@@ -1918,11 +1954,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.189,
+      "elapsed_ms": 1.044,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1632,
-      "ifc_open_ms": 216.871
+      "ifc_open_ms": 335.948
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_32.ifc",
@@ -1930,11 +1966,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.175,
+      "elapsed_ms": 0.824,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2819,
-      "ifc_open_ms": 604.456
+      "ifc_open_ms": 756.22
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_33.ifc",
@@ -1942,11 +1978,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.206,
+      "elapsed_ms": 0.921,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1182,
-      "ifc_open_ms": 167.443
+      "ifc_open_ms": 168.006
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_34.ifc",
@@ -1954,11 +1990,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.168,
+      "elapsed_ms": 0.989,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 775,
-      "ifc_open_ms": 95.819
+      "ifc_open_ms": 95.174
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_35.ifc",
@@ -1966,11 +2002,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.164,
+      "elapsed_ms": 0.792,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1492,
-      "ifc_open_ms": 246.355
+      "ifc_open_ms": 227.608
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_36.ifc",
@@ -1978,11 +2014,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.178,
+      "elapsed_ms": 0.86,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 409,
-      "ifc_open_ms": 104.964
+      "ifc_open_ms": 172.055
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_37.ifc",
@@ -1990,11 +2026,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.172,
+      "elapsed_ms": 0.973,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 804,
-      "ifc_open_ms": 368.426
+      "ifc_open_ms": 588.133
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_38.ifc",
@@ -2002,11 +2038,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.177,
+      "elapsed_ms": 1.183,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 767,
-      "ifc_open_ms": 236.691
+      "ifc_open_ms": 234.197
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_39.ifc",
@@ -2014,11 +2050,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.187,
+      "elapsed_ms": 0.612,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 816,
-      "ifc_open_ms": 247.759
+      "ifc_open_ms": 246.212
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_4.ifc",
@@ -2026,11 +2062,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.195,
+      "elapsed_ms": 0.807,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1393,
-      "ifc_open_ms": 199.636
+      "ifc_open_ms": 200.951
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_40.ifc",
@@ -2038,11 +2074,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.193,
+      "elapsed_ms": 0.895,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 573,
-      "ifc_open_ms": 268.111
+      "ifc_open_ms": 358.969
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_41.ifc",
@@ -2050,11 +2086,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.181,
+      "elapsed_ms": 1.008,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 724,
-      "ifc_open_ms": 230.241
+      "ifc_open_ms": 374.974
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_42.ifc",
@@ -2062,11 +2098,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.19,
+      "elapsed_ms": 0.839,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 309,
-      "ifc_open_ms": 245.179
+      "ifc_open_ms": 330.195
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_43.ifc",
@@ -2074,11 +2110,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.238,
+      "elapsed_ms": 0.62,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1030,
-      "ifc_open_ms": 358.45
+      "ifc_open_ms": 366.363
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_44.ifc",
@@ -2086,11 +2122,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.18,
+      "elapsed_ms": 0.587,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1018,
-      "ifc_open_ms": 385.11
+      "ifc_open_ms": 375.202
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_45.ifc",
@@ -2098,11 +2134,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.176,
+      "elapsed_ms": 0.756,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1040,
-      "ifc_open_ms": 380.858
+      "ifc_open_ms": 670.609
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_46.ifc",
@@ -2110,11 +2146,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.224,
+      "elapsed_ms": 1.013,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1134,
-      "ifc_open_ms": 437.598
+      "ifc_open_ms": 498.798
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_47.ifc",
@@ -2122,11 +2158,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.208,
+      "elapsed_ms": 0.871,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1846,
-      "ifc_open_ms": 438.265
+      "ifc_open_ms": 443.164
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_48.ifc",
@@ -2134,11 +2170,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.227,
+      "elapsed_ms": 0.852,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 786,
-      "ifc_open_ms": 495.124
+      "ifc_open_ms": 739.3
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_49.ifc",
@@ -2146,11 +2182,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.229,
+      "elapsed_ms": 0.988,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 539,
-      "ifc_open_ms": 82.571
+      "ifc_open_ms": 153.76
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_5.ifc",
@@ -2158,11 +2194,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.201,
+      "elapsed_ms": 1.09,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 801,
-      "ifc_open_ms": 301.762
+      "ifc_open_ms": 297.592
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_50.ifc",
@@ -2170,11 +2206,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.214,
+      "elapsed_ms": 0.832,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 306,
-      "ifc_open_ms": 38.84
+      "ifc_open_ms": 40.288
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_51.ifc",
@@ -2182,11 +2218,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.229,
+      "elapsed_ms": 0.938,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 846,
-      "ifc_open_ms": 120.654
+      "ifc_open_ms": 126.145
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_52.ifc",
@@ -2194,11 +2230,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.213,
+      "elapsed_ms": 0.81,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1566,
-      "ifc_open_ms": 187.007
+      "ifc_open_ms": 188.454
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_53.ifc",
@@ -2206,11 +2242,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.244,
+      "elapsed_ms": 0.743,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2103,
-      "ifc_open_ms": 668.641
+      "ifc_open_ms": 1133.273
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_54.ifc",
@@ -2218,11 +2254,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.211,
+      "elapsed_ms": 0.897,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 367,
-      "ifc_open_ms": 80.197
+      "ifc_open_ms": 84.43
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_55.ifc",
@@ -2230,11 +2266,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.224,
+      "elapsed_ms": 0.508,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1228,
-      "ifc_open_ms": 519.529
+      "ifc_open_ms": 521.811
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_56.ifc",
@@ -2242,11 +2278,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.241,
+      "elapsed_ms": 0.584,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1374,
-      "ifc_open_ms": 419.511
+      "ifc_open_ms": 488.501
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_57.ifc",
@@ -2254,11 +2290,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.27,
+      "elapsed_ms": 0.924,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 732,
-      "ifc_open_ms": 579.824
+      "ifc_open_ms": 764.403
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_58.ifc",
@@ -2266,11 +2302,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.293,
+      "elapsed_ms": 0.849,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 340,
-      "ifc_open_ms": 205.233
+      "ifc_open_ms": 205.407
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_59.ifc",
@@ -2278,11 +2314,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.218,
+      "elapsed_ms": 0.815,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1644,
-      "ifc_open_ms": 651.51
+      "ifc_open_ms": 883.922
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_6.ifc",
@@ -2290,11 +2326,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.243,
+      "elapsed_ms": 0.961,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1637,
-      "ifc_open_ms": 1166.957
+      "ifc_open_ms": 1464.587
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_60.ifc",
@@ -2302,11 +2338,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.206,
+      "elapsed_ms": 0.908,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1206,
-      "ifc_open_ms": 597.906
+      "ifc_open_ms": 687.158
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_61.ifc",
@@ -2314,11 +2350,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.23,
+      "elapsed_ms": 0.612,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2000,
-      "ifc_open_ms": 574.056
+      "ifc_open_ms": 736.54
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_62.ifc",
@@ -2326,11 +2362,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.229,
+      "elapsed_ms": 0.961,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 376,
-      "ifc_open_ms": 55.587
+      "ifc_open_ms": 101.337
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_63.ifc",
@@ -2338,11 +2374,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.184,
+      "elapsed_ms": 0.865,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 307,
-      "ifc_open_ms": 256.821
+      "ifc_open_ms": 393.243
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_64.ifc",
@@ -2350,11 +2386,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.232,
+      "elapsed_ms": 0.819,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2082,
-      "ifc_open_ms": 721.355
+      "ifc_open_ms": 824.83
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_65.ifc",
@@ -2362,11 +2398,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.238,
+      "elapsed_ms": 0.845,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2985,
-      "ifc_open_ms": 344.487
+      "ifc_open_ms": 564.946
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_66.ifc",
@@ -2374,11 +2410,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.262,
+      "elapsed_ms": 0.865,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1460,
-      "ifc_open_ms": 315.112
+      "ifc_open_ms": 472.653
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_67.ifc",
@@ -2386,11 +2422,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.225,
+      "elapsed_ms": 1.167,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 733,
-      "ifc_open_ms": 131.154
+      "ifc_open_ms": 224.87
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_68.ifc",
@@ -2398,11 +2434,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.192,
+      "elapsed_ms": 0.96,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 602,
-      "ifc_open_ms": 1392.428
+      "ifc_open_ms": 1660.598
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_69.ifc",
@@ -2410,11 +2446,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.194,
+      "elapsed_ms": 0.647,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 277,
-      "ifc_open_ms": 292.801
+      "ifc_open_ms": 417.477
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_7.ifc",
@@ -2422,11 +2458,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.227,
+      "elapsed_ms": 0.985,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 785,
-      "ifc_open_ms": 283.874
+      "ifc_open_ms": 284.038
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_70.ifc",
@@ -2434,11 +2470,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.224,
+      "elapsed_ms": 0.766,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 779,
-      "ifc_open_ms": 142.846
+      "ifc_open_ms": 148.688
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_71.ifc",
@@ -2446,11 +2482,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.211,
+      "elapsed_ms": 0.702,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 161,
-      "ifc_open_ms": 223.967
+      "ifc_open_ms": 230.628
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_72.ifc",
@@ -2458,11 +2494,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.211,
+      "elapsed_ms": 0.812,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 936,
-      "ifc_open_ms": 456.323
+      "ifc_open_ms": 769.028
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_73.ifc",
@@ -2470,11 +2506,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.235,
+      "elapsed_ms": 1.028,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2394,
-      "ifc_open_ms": 205.116
+      "ifc_open_ms": 239.836
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_74.ifc",
@@ -2482,11 +2518,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.224,
+      "elapsed_ms": 0.783,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2253,
-      "ifc_open_ms": 493.723
+      "ifc_open_ms": 496.437
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_75.ifc",
@@ -2494,11 +2530,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.214,
+      "elapsed_ms": 0.827,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2534,
-      "ifc_open_ms": 640.864
+      "ifc_open_ms": 935.312
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_76.ifc",
@@ -2506,11 +2542,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.233,
+      "elapsed_ms": 0.802,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2012,
-      "ifc_open_ms": 464.606
+      "ifc_open_ms": 518.493
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_77.ifc",
@@ -2518,11 +2554,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.182,
+      "elapsed_ms": 0.811,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1119,
-      "ifc_open_ms": 691.497
+      "ifc_open_ms": 896.269
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_78.ifc",
@@ -2530,11 +2566,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.198,
+      "elapsed_ms": 0.855,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1092,
-      "ifc_open_ms": 193.965
+      "ifc_open_ms": 336.248
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_79.ifc",
@@ -2542,11 +2578,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.22,
+      "elapsed_ms": 1.689,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1303,
-      "ifc_open_ms": 724.455
+      "ifc_open_ms": 645.18
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_8.ifc",
@@ -2554,11 +2590,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.217,
+      "elapsed_ms": 1.056,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1178,
-      "ifc_open_ms": 232.784
+      "ifc_open_ms": 258.001
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_80.ifc",
@@ -2566,11 +2602,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.241,
+      "elapsed_ms": 1.007,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 887,
-      "ifc_open_ms": 248.747
+      "ifc_open_ms": 460.898
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_81.ifc",
@@ -2578,11 +2614,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.203,
+      "elapsed_ms": 0.873,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 380,
-      "ifc_open_ms": 246.473
+      "ifc_open_ms": 432.192
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_82.ifc",
@@ -2590,11 +2626,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.228,
+      "elapsed_ms": 1.037,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1156,
-      "ifc_open_ms": 401.473
+      "ifc_open_ms": 403.357
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_83.ifc",
@@ -2602,11 +2638,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.225,
+      "elapsed_ms": 0.803,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1074,
-      "ifc_open_ms": 263.56
+      "ifc_open_ms": 267.641
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_84.ifc",
@@ -2614,11 +2650,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.211,
+      "elapsed_ms": 0.777,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 771,
-      "ifc_open_ms": 223.45
+      "ifc_open_ms": 223.83
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_85.ifc",
@@ -2626,11 +2662,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.275,
+      "elapsed_ms": 0.755,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 763,
-      "ifc_open_ms": 337.506
+      "ifc_open_ms": 529.207
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_86.ifc",
@@ -2638,11 +2674,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.212,
+      "elapsed_ms": 1.026,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 797,
-      "ifc_open_ms": 162.146
+      "ifc_open_ms": 285.383
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_87.ifc",
@@ -2650,11 +2686,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.194,
+      "elapsed_ms": 1.108,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1531,
-      "ifc_open_ms": 294.129
+      "ifc_open_ms": 308.776
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_88.ifc",
@@ -2662,11 +2698,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.161,
+      "elapsed_ms": 0.777,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1137,
-      "ifc_open_ms": 251.185
+      "ifc_open_ms": 266.331
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_89.ifc",
@@ -2674,11 +2710,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.222,
+      "elapsed_ms": 0.795,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 744,
-      "ifc_open_ms": 101.692
+      "ifc_open_ms": 110.437
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_9.ifc",
@@ -2686,11 +2722,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.192,
+      "elapsed_ms": 0.731,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 216,
-      "ifc_open_ms": 23.189
+      "ifc_open_ms": 23.019
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_90.ifc",
@@ -2698,11 +2734,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.179,
+      "elapsed_ms": 0.904,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1635,
-      "ifc_open_ms": 548.86
+      "ifc_open_ms": 765.855
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_91.ifc",
@@ -2710,11 +2746,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.228,
+      "elapsed_ms": 0.838,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1011,
-      "ifc_open_ms": 340.027
+      "ifc_open_ms": 512.195
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_92.ifc",
@@ -2722,11 +2758,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.214,
+      "elapsed_ms": 1.041,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2425,
-      "ifc_open_ms": 285.04
+      "ifc_open_ms": 315.823
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_93.ifc",
@@ -2734,11 +2770,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.21,
+      "elapsed_ms": 0.851,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 573,
-      "ifc_open_ms": 1411.116
+      "ifc_open_ms": 1796.117
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_94.ifc",
@@ -2746,11 +2782,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.204,
+      "elapsed_ms": 0.834,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1095,
-      "ifc_open_ms": 478.459
+      "ifc_open_ms": 552.964
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_95.ifc",
@@ -2758,11 +2794,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.229,
+      "elapsed_ms": 0.932,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 706,
-      "ifc_open_ms": 757.769
+      "ifc_open_ms": 1125.607
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_96.ifc",
@@ -2770,11 +2806,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.214,
+      "elapsed_ms": 1.012,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1572,
-      "ifc_open_ms": 367.08
+      "ifc_open_ms": 371.507
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_97.ifc",
@@ -2782,11 +2818,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.229,
+      "elapsed_ms": 0.591,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3005,
-      "ifc_open_ms": 970.641
+      "ifc_open_ms": 1165.042
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_98.ifc",
@@ -2794,11 +2830,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.179,
+      "elapsed_ms": 1.148,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 657,
-      "ifc_open_ms": 254.578
+      "ifc_open_ms": 254.593
     },
     {
       "path": "2025_BIMfundamentals/2025_BIMfundamentals/model_99.ifc",
@@ -2806,11 +2842,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.216,
+      "elapsed_ms": 0.791,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 495,
-      "ifc_open_ms": 571.706
+      "ifc_open_ms": 679.855
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_0_arc.ifc",
@@ -2818,11 +2854,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.215,
+      "elapsed_ms": 1.109,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 2150,
-      "ifc_open_ms": 313.843
+      "ifc_open_ms": 475.674
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_0_structure.ifc",
@@ -2830,11 +2866,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.217,
+      "elapsed_ms": 0.894,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 152,
-      "ifc_open_ms": 242.69
+      "ifc_open_ms": 353.152
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_1_arc.ifc",
@@ -2842,11 +2878,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.214,
+      "elapsed_ms": 1.108,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 34268,
-      "ifc_open_ms": 9109.024
+      "ifc_open_ms": 11558.889
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_1_structure.ifc",
@@ -2854,11 +2890,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.189,
+      "elapsed_ms": 0.873,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 328,
-      "ifc_open_ms": 28.572
+      "ifc_open_ms": 28.671
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_2_arc.ifc",
@@ -2866,11 +2902,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.171,
+      "elapsed_ms": 0.745,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 589,
-      "ifc_open_ms": 4228.732
+      "ifc_open_ms": 5287.437
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_3_arc.ifc",
@@ -2878,11 +2914,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.185,
+      "elapsed_ms": 0.924,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1735,
-      "ifc_open_ms": 612.879
+      "ifc_open_ms": 705.121
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_3_structure.ifc",
@@ -2890,11 +2926,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.187,
+      "elapsed_ms": 0.83,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 201,
-      "ifc_open_ms": 18.804
+      "ifc_open_ms": 19.67
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_4_arc.ifc",
@@ -2902,11 +2938,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.196,
+      "elapsed_ms": 0.834,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1419,
-      "ifc_open_ms": 2200.469
+      "ifc_open_ms": 2881.644
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_4_structure.ifc",
@@ -2914,11 +2950,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.233,
+      "elapsed_ms": 1.005,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 107,
-      "ifc_open_ms": 12.734
+      "ifc_open_ms": 12.246
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_5_arc.ifc",
@@ -2926,11 +2962,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.207,
+      "elapsed_ms": 0.728,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 3142,
-      "ifc_open_ms": 5829.546
+      "ifc_open_ms": 4032.051
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_5_structure.ifc",
@@ -2938,11 +2974,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.387,
+      "elapsed_ms": 0.847,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1111,
-      "ifc_open_ms": 399.843
+      "ifc_open_ms": 370.86
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_6_arc.ifc",
@@ -2950,7 +2986,7 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.331,
+      "elapsed_ms": 0.978,
       "error": null,
       "ifc_open": "skipped_oversize",
       "ifc_product_count": null,
@@ -2962,11 +2998,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.144,
+      "elapsed_ms": 0.774,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 1243,
-      "ifc_open_ms": 732.685
+      "ifc_open_ms": 529.936
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_7_structure.ifc",
@@ -2974,11 +3010,11 @@
       "schema": "IFC2X3",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.321,
+      "elapsed_ms": 0.837,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 876,
-      "ifc_open_ms": 252.86
+      "ifc_open_ms": 135.557
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_8_arc.ifc",
@@ -2986,11 +3022,11 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.324,
+      "elapsed_ms": 1.091,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 702,
-      "ifc_open_ms": 1265.496
+      "ifc_open_ms": 724.044
     },
     {
       "path": "2026_BIMprojects/2026_BIMprojects/model_8_structure.ifc",
@@ -2998,12 +3034,100 @@
       "schema": "IFC4",
       "view": "Redacted",
       "open_ok": true,
-      "elapsed_ms": 0.318,
+      "elapsed_ms": 0.91,
       "error": null,
       "ifc_open": "ok",
       "ifc_product_count": 206,
-      "ifc_open_ms": 121.056
+      "ifc_open_ms": 140.115
     }
   ],
-  "content_sha256": "d9e0519962837fc7248ff7231aefc433f63a9caa19716a6ebfa054dff128fcca"
+  "extra": [
+    {
+      "dir": "C:\\plans\\AeroBIM\\.local\\bim-whale-ifc-samples",
+      "status": "RUN",
+      "file_count": 6,
+      "open_ok": 6,
+      "schema_counts": {
+        "IFC2X3": 6
+      },
+      "ifc_open_counts": {
+        "ok": 6
+      },
+      "rows": [
+        {
+          "path": "AdvancedProject/IFC/AdvancedProject.ifc",
+          "bytes": 44337371,
+          "schema": "IFC2X3",
+          "view": "ViewDefinition [CoordinationView_V2.0, QuantityTakeOffAddOnView]",
+          "open_ok": true,
+          "elapsed_ms": 1.013,
+          "error": null,
+          "ifc_open": "ok",
+          "ifc_product_count": 2365,
+          "ifc_open_ms": 2555.161
+        },
+        {
+          "path": "BasicHouse/IFC/BasicHouse.ifc",
+          "bytes": 52702577,
+          "schema": "IFC2X3",
+          "view": "ViewDefinition [CoordinationView_V2.0, QuantityTakeOffAddOnView]",
+          "open_ok": true,
+          "elapsed_ms": 1.1,
+          "error": null,
+          "ifc_open": "ok",
+          "ifc_product_count": 177,
+          "ifc_open_ms": 2679.919
+        },
+        {
+          "path": "LargeBuilding/IFC/LargeBuilding.ifc",
+          "bytes": 1292595,
+          "schema": "IFC2X3",
+          "view": "ViewDefinition [CoordinationView_V2.0, QuantityTakeOffAddOnView]",
+          "open_ok": true,
+          "elapsed_ms": 1.074,
+          "error": null,
+          "ifc_open": "ok",
+          "ifc_product_count": 187,
+          "ifc_open_ms": 59.615
+        },
+        {
+          "path": "ManySimpleWalls/IFC/ManySimpleWalls.ifc",
+          "bytes": 584056,
+          "schema": "IFC2X3",
+          "view": "ViewDefinition [CoordinationView_V2.0, QuantityTakeOffAddOnView]",
+          "open_ok": true,
+          "elapsed_ms": 0.896,
+          "error": null,
+          "ifc_open": "ok",
+          "ifc_product_count": 37,
+          "ifc_open_ms": 40.497
+        },
+        {
+          "path": "SimpleWall/IFC/SimpleWall.ifc",
+          "bytes": 39818,
+          "schema": "IFC2X3",
+          "view": "ViewDefinition [CoordinationView_V2.0, QuantityTakeOffAddOnView]",
+          "open_ok": true,
+          "elapsed_ms": 0.793,
+          "error": null,
+          "ifc_open": "ok",
+          "ifc_product_count": 6,
+          "ifc_open_ms": 3.983
+        },
+        {
+          "path": "TallBuilding/IFC/TallBuilding.ifc",
+          "bytes": 616509,
+          "schema": "IFC2X3",
+          "view": "ViewDefinition [CoordinationView_V2.0, QuantityTakeOffAddOnView]",
+          "open_ok": true,
+          "elapsed_ms": 0.95,
+          "error": null,
+          "ifc_open": "ok",
+          "ifc_product_count": 92,
+          "ifc_open_ms": 51.993
+        }
+      ]
+    }
+  ],
+  "content_sha256": "1682899c2eed89810708cd0999d5a98b5b4a7ecfaaf46c3f241fabafc2c5c746"
 }

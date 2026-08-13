@@ -36,6 +36,20 @@ _NUMBER_RE = re.compile(
     r"fixtures?|steps?|radiators?)?",
     re.IGNORECASE,
 )
+_WORD_NUMBERS = {
+    "one": 1.0,
+    "two": 2.0,
+    "three": 3.0,
+    "four": 4.0,
+    "five": 5.0,
+    "six": 6.0,
+    "seven": 7.0,
+    "eight": 8.0,
+    "nine": 9.0,
+    "ten": 10.0,
+    "eleven": 11.0,
+    "twelve": 12.0,
+}
 
 
 @dataclass(frozen=True)
@@ -79,6 +93,29 @@ def _parse_expected_number(answer: str) -> float | None:
         m = re.search(pattern, text, re.I)
         if m:
             return float(m.group(1))
+    word = re.search(
+        r"(?:there are|are|includes)\s+(one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve)\b",
+        text,
+        re.I,
+    )
+    if word:
+        return _WORD_NUMBERS[word.group(1).lower()]
+    counted = re.search(
+        r"\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+"
+        r"(?:thermostats?|boilers?|bathrooms?|rooms?)\b",
+        text,
+        re.I,
+    )
+    if counted:
+        return _WORD_NUMBERS[counted.group(1).lower()]
+    unit = re.search(
+        r"(\d+(?:\.\d+)?)\s*(?:mm|cm|m2|m²|sqm|m\b)",
+        text,
+        re.I,
+    )
+    if unit:
+        return float(unit.group(1))
     m = _NUMBER_RE.search(text)
     return float(m.group("n")) if m else None
 
@@ -94,12 +131,67 @@ def _open_ifc(path: Path) -> Any:
 
 
 def _is_external_door(door: Any) -> bool | None:
+    vals = _merged_psets(door)
+    if "IsExternal" in vals:
+        return bool(vals["IsExternal"])
+    return None
+
+
+def _merged_psets(obj: Any) -> dict[str, Any]:
     import ifcopenshell.util.element as el
 
-    for vals in el.get_psets(door).values():
-        if "IsExternal" in vals:
-            return bool(vals["IsExternal"])
+    merged: dict[str, Any] = {}
+    for vals in el.get_psets(obj).values():
+        if isinstance(vals, dict):
+            merged.update(vals)
+    return merged
+
+
+def _storey_elevation(model: Any, *names: str) -> float | None:
+    wanted = {name.casefold() for name in names}
+    for storey in model.by_type("IfcBuildingStorey"):
+        if (storey.Name or "").strip().casefold() in wanted:
+            elev = getattr(storey, "Elevation", None)
+            if elev is None:
+                return None
+            return float(elev)
     return None
+
+
+def _floor_to_floor_m(model: Any, upper: tuple[str, ...], lower: tuple[str, ...]) -> float:
+    top = _storey_elevation(model, *upper)
+    bottom = _storey_elevation(model, *lower)
+    if top is None or bottom is None:
+        return 0.0
+    return round(top - bottom, 4)
+
+
+def _guid_attr(model: Any, guid: str, attr: str) -> float:
+    entity = model.by_guid(guid)
+    value = getattr(entity, attr, None)
+    return float(value) if value is not None else 0.0
+
+
+def _insulated_panel_mm(model: Any) -> int:
+    for layer_set in model.by_type("IfcMaterialLayerSet"):
+        for layer in getattr(layer_set, "MaterialLayers", None) or []:
+            material = getattr(layer, "Material", None)
+            name = (getattr(material, "Name", None) or "").lower()
+            if "insulated panel" not in name:
+                continue
+            thickness = getattr(layer, "LayerThickness", None)
+            if isinstance(thickness, (int, float)):
+                return int(round(float(thickness) * 1000.0))
+    return 0
+
+
+def _named_product_count(model: Any, type_name: str, needle: str) -> int:
+    token = needle.lower()
+    return sum(
+        1
+        for item in model.by_type(type_name)
+        if token in ((item.Name or "") + (item.ObjectType or "")).lower()
+    )
 
 
 ProbeFn = Callable[[Any], float | int | str]
@@ -151,6 +243,16 @@ def _probes_for_model(
                     if "bathroom" in (s.LongName or "").lower()
                 ),
             ),
+            "width of the door 1hosvn6df7f8_7gcbwlrgq": (
+                "duplex_arc_door_guid_width_m",
+                lambda m: round(
+                    _guid_attr(m, "1hOSvn6df7F8_7GcBWlRGQ", "OverallWidth"), 4
+                ),
+            ),
+            "floor-to-floor height between the ground floor and first floor": (
+                "duplex_arc_floor_to_floor_m",
+                lambda m: _floor_to_floor_m(m, ("Level 2",), ("Level 1",)),
+            ),
         }
     if project == "duplex" and ifc_model == "mep":
         return {
@@ -160,6 +262,12 @@ def _probes_for_model(
                     1
                     for f in m.by_type("IfcFlowTerminal")
                     if any(k in (f.Name or "").lower() for k in ("pendant light", "sconce light"))
+                ),
+            ),
+            "which rooms have thermostats installed": (
+                "duplex_mep_thermostat_count",
+                lambda m: _named_product_count(
+                    m, "IfcDistributionControlElement", "thermostat"
                 ),
             ),
         }
@@ -197,6 +305,31 @@ def _probes_for_model(
             "how many doors are there in this building": (
                 "dental_arc_door_count",
                 lambda m: len(m.by_type("IfcDoor")),
+            ),
+            "how many toilet rooms are there on the second floor": (
+                "dental_arc_floor2_toilet_count",
+                lambda m: sum(
+                    1
+                    for s in m.by_type("IfcSpace")
+                    if (s.Name or "").startswith("2")
+                    and "toilet" in (s.LongName or "").lower()
+                ),
+            ),
+            "floor to floor height between the first and the second floor": (
+                "dental_arc_floor_to_floor_m",
+                lambda m: _floor_to_floor_m(
+                    m, ("Second Floor",), ("First Floor",)
+                ),
+            ),
+            "thickness of the insulation of the external walls": (
+                "dental_arc_insulated_panel_mm",
+                _insulated_panel_mm,
+            ),
+            "window with guid 0otfao0qpdahynjj6dmgh8": (
+                "dental_arc_window_guid_height_m",
+                lambda m: round(
+                    _guid_attr(m, "0otfaO0qPDAhynjJ6DmgH8", "OverallHeight"), 4
+                ),
             ),
         }
     return {}
@@ -252,7 +385,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
             continue
         q_lower = question.lower()
         probes = _probes_for_model(project, ifc_model, version=version)
-        matched_key = next((k for k in probes if k in q_lower), None)
+        matched_key = max((k for k in probes if k in q_lower), key=len, default=None)
         if matched_key is None:
             results.append(
                 ProbeResult(

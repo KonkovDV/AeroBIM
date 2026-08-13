@@ -20,9 +20,13 @@ from typing import Any
 
 CLAIM_BOUNDARY = (
     "AEC-Bench open_bench_only (arXiv:2603.29199). Prefetch/inventory of public "
-    "agentic tasks. Agent trial scores are NOT AeroBIM product accuracy and do "
-    "not close RT-001."
+    "agentic tasks plus gold-label inventory. Harbor agent trial scores are NOT "
+    "AeroBIM product accuracy and do not close RT-001. "
+    "null_always_clean is a gold-only baseline, not a drawing-reading agent."
 )
+
+_VIOLATION_DETERMINATIONS = frozenset({"rejected", "revise_and_resubmit"})
+_CLEAN_DETERMINATIONS = frozenset({"approved", "approved_as_noted"})
 
 
 def repo_root() -> Path:
@@ -137,6 +141,168 @@ def prefetch_instance(
     }
 
 
+def classify_gold_task(payload: dict[str, Any]) -> str:
+    """Map one AEC-Bench gt.json to a compliance label. Not an agent score."""
+    determination = str(payload.get("expected_determination") or "").strip().casefold()
+    if determination in _VIOLATION_DETERMINATIONS:
+        return "has_issue"
+    if determination in _CLEAN_DETERMINATIONS:
+        return "clean"
+    variant = str(payload.get("variant") or "").strip().casefold()
+    if variant == "navigation":
+        return "qa"
+    if variant == "broken":
+        return "has_issue"
+    if variant == "clean":
+        return "clean"
+    defects = payload.get("defects")
+    if isinstance(defects, list):
+        return "has_issue" if defects else "clean"
+    if payload.get("expected_answers") is not None:
+        return "qa"
+    return "unclassified"
+
+
+def inventory_gold(dataset_root: Path) -> dict[str, Any]:
+    tasks_root = dataset_root / "tasks"
+    by_label: dict[str, int] = {}
+    by_variant: dict[str, int] = {}
+    by_family: dict[str, dict[str, int]] = {}
+    gt_files = 0
+    for gt_path in sorted(tasks_root.rglob("gt.json")) if tasks_root.is_dir() else []:
+        gt_files += 1
+        payload = json.loads(gt_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            label = "unclassified"
+        else:
+            label = classify_gold_task(payload)
+            variant = str(payload.get("variant") or "none")
+            by_variant[variant] = by_variant.get(variant, 0) + 1
+        by_label[label] = by_label.get(label, 0) + 1
+        try:
+            rel = gt_path.relative_to(tasks_root).parts
+            family = "/".join(rel[:2]) if len(rel) >= 2 else "unknown"
+        except ValueError:
+            family = "unknown"
+        bucket = by_family.setdefault(family, {})
+        bucket[label] = bucket.get(label, 0) + 1
+    false_positive = int(by_label.get("has_issue") or 0)
+    true_negative = int(by_label.get("clean") or 0)
+    labeled = false_positive + true_negative
+    return {
+        "status": "RUN" if gt_files else "SKIPPED",
+        "gt_files": gt_files,
+        "by_label": dict(sorted(by_label.items())),
+        "by_variant": dict(sorted(by_variant.items())),
+        "by_family": {key: dict(sorted(val.items())) for key, val in sorted(by_family.items())},
+        "null_always_clean": {
+            "claim_boundary": (
+                "Always predict compliant without reading drawings. "
+                "Not Harbor. Not AeroBIM product accuracy. Not RT-001."
+            ),
+            "true_positive": 0,
+            "false_positive": false_positive,
+            "true_negative": true_negative,
+            "false_negative": 0,
+            "excluded_qa_or_unclassified": int(by_label.get("qa") or 0)
+            + int(by_label.get("unclassified") or 0),
+            "labeled_compliance_tasks": labeled,
+            "false_pass_rate_on_labeled": (
+                round(false_positive / labeled, 4) if labeled else None
+            ),
+        },
+    }
+
+
+def render_false_pass_markdown(payload: dict[str, Any]) -> str:
+    gold = payload.get("gold") or {}
+    null = gold.get("null_always_clean") or {}
+    harbor = payload.get("agent_trial") or {}
+    return "\n".join(
+        [
+            "<!-- claims-lint: allow-file reason=\"AEC-Bench gold inventory; Harbor false-pass SKIPPED\" -->",
+            "---",
+            'title: "AEC-Bench gold inventory and null baseline"',
+            f"date: {str(payload.get('generated_at') or '')[:10]}",
+            f"claim_level: {payload.get('claim_level')}",
+            "claim_boundary: >-",
+            f"  {payload.get('claim_boundary')}",
+            "---",
+            "",
+            "# AEC-Bench gold inventory",
+            "",
+            f"- gt.json files: **{gold.get('gt_files')}**",
+            f"- labels: `{json.dumps(gold.get('by_label'), ensure_ascii=False)}`",
+            f"- variants: `{json.dumps(gold.get('by_variant'), ensure_ascii=False)}`",
+            f"- Harbor agent: **{harbor.get('status')}**",
+            f"- null_always_clean false_positive: **{null.get('false_positive')}**",
+            f"- null_always_clean true_negative: **{null.get('true_negative')}**",
+            f"- null_always_clean false_pass_rate_on_labeled: **{null.get('false_pass_rate_on_labeled')}**",
+            f"- labeled_compliance_tasks: **{null.get('labeled_compliance_tasks')}**",
+            "",
+            "Harbor drawing-reading false-pass remains **NOT_MEASURED**. "
+            "`null_always_clean` is a gold-only floor: always say compliant, never open a sheet. "
+            "Not AeroBIM product accuracy. Not RT-001. Observation unit = task, not project cluster.",
+            "",
+            "```bash",
+            "cd backend",
+            "python -m aerobim.tools.run_aec_bench_smoke --also-docs-evidence",
+            "```",
+            "",
+        ]
+    )
+
+
+def _write_false_pass_evidence(repo: Path, smoke: dict[str, Any]) -> None:
+    gold = smoke.get("gold") or {}
+    null = gold.get("null_always_clean") or {}
+    body = {
+        "artifact_type": "aec_bench_false_pass",
+        "schema_version": "1.1.0",
+        "generated_at": smoke.get("generated_at"),
+        "claim_level": "open_bench_only",
+        "closes_rt001": False,
+        "customer_accuracy_not_established": True,
+        "claim_boundary": CLAIM_BOUNDARY,
+        "benchmark": {
+            "name": "AEC-Bench",
+            "arxiv": "2603.29199",
+            "mushkani_subset_arxiv": "2607.29058",
+            "inventory_tasks": (smoke.get("benchmark") or {}).get("instance_count"),
+            "gold_files": gold.get("gt_files"),
+            "observation_unit_gold": "task",
+            "observation_unit_mushkani": "project",
+        },
+        "false_pass": {
+            "status": "NOT_MEASURED",
+            "reason": "Harbor agent trial NOT_RUN; no drawing-reading agent score.",
+        },
+        "null_always_clean": null,
+        "gold": {
+            "status": gold.get("status"),
+            "by_label": gold.get("by_label"),
+            "by_variant": gold.get("by_variant"),
+        },
+        "cluster_bootstrap": {"status": "NOT_MEASURED"},
+        "four_outcome_table": {
+            "status": "NULL_BASELINE_ONLY",
+            "true_positive": null.get("true_positive"),
+            "false_positive": null.get("false_positive"),
+            "true_negative": null.get("true_negative"),
+            "false_negative": null.get("false_negative"),
+        },
+    }
+    encoded = json.dumps(body, ensure_ascii=False, indent=2) + "\n"
+    body["content_sha256"] = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    text = json.dumps(body, ensure_ascii=False, indent=2) + "\n"
+    (repo / "docs" / "evidence" / "aec-bench-false-pass-2026-08.json").write_text(
+        text, encoding="utf-8"
+    )
+    (repo / "docs" / "evidence" / "aec-bench-false-pass-2026-08.md").write_text(
+        render_false_pass_markdown(smoke), encoding="utf-8"
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset-root", type=Path, default=None)
@@ -186,9 +352,10 @@ def main(argv: list[str] | None = None) -> int:
 
     openai_set = bool((os.getenv("OPENAI_API_KEY") or "").strip())
     anthropic_set = bool((os.getenv("ANTHROPIC_API_KEY") or "").strip())
+    gold = inventory_gold(dataset_root)
     report = {
         "artifact_type": "aec_bench_smoke",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_level": "open_bench_only",
         "claim_boundary": CLAIM_BOUNDARY,
@@ -201,6 +368,7 @@ def main(argv: list[str] | None = None) -> int:
             "by_scope": by_scope,
             "by_family": by_family,
         },
+        "gold": gold,
         "prefetch": prefetch_results,
         "agent_trial": {
             "status": "NOT_RUN",
@@ -231,6 +399,7 @@ def main(argv: list[str] | None = None) -> int:
         evidence = repo_root() / "docs" / "evidence" / "aec-bench-smoke-latest.json"
         evidence.write_text(text, encoding="utf-8")
         print(f"docs_evidence={evidence}")
+        _write_false_pass_evidence(repo_root(), report)
 
     agent_trial = report["agent_trial"]
     assert isinstance(agent_trial, dict)
@@ -244,6 +413,10 @@ def main(argv: list[str] | None = None) -> int:
                     for r in prefetch_results
                 ],
                 "agent_trial": agent_trial["status"],
+                "gold": gold.get("by_label"),
+                "null_always_clean": (gold.get("null_always_clean") or {}).get(
+                    "false_pass_rate_on_labeled"
+                ),
                 "claim_level": "open_bench_only",
             },
             ensure_ascii=False,

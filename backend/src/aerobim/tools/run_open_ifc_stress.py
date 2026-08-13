@@ -119,6 +119,8 @@ def detect_arc_structure_pairs(rows: list[dict[str, Any]]) -> list[dict[str, Any
     buckets: dict[str, dict[str, str]] = {}
     sizes: dict[str, dict[str, int | None]] = {}
     schemas: dict[str, dict[str, str | None]] = {}
+    products: dict[str, dict[str, int | None]] = {}
+    opens: dict[str, dict[str, str | None]] = {}
     for row in rows:
         name = Path(str(row.get("path") or "")).name
         match = _PAIR_RE.match(name)
@@ -129,6 +131,8 @@ def detect_arc_structure_pairs(rows: list[dict[str, Any]]) -> list[dict[str, Any
         buckets.setdefault(stem, {})[role] = str(row.get("path"))
         sizes.setdefault(stem, {})[role] = row.get("bytes")
         schemas.setdefault(stem, {})[role] = row.get("schema")
+        products.setdefault(stem, {})[role] = row.get("ifc_product_count")
+        opens.setdefault(stem, {})[role] = row.get("ifc_open")
     pairs: list[dict[str, Any]] = []
     for stem, roles in sorted(buckets.items()):
         pairs.append(
@@ -145,6 +149,10 @@ def detect_arc_structure_pairs(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     if "arc" in roles and "structure" in roles
                     else None
                 ),
+                "arc_products": (products.get(stem) or {}).get("arc"),
+                "structure_products": (products.get(stem) or {}).get("structure"),
+                "arc_ifc_open": (opens.get(stem) or {}).get("arc"),
+                "structure_ifc_open": (opens.get(stem) or {}).get("structure"),
             }
         )
     return pairs
@@ -170,6 +178,7 @@ def build_payload(
     repo: Path,
     open_model: bool = False,
     open_max_bytes: int = DEFAULT_OPEN_MAX_BYTES,
+    extra_roots: list[Path] | None = None,
 ) -> dict[str, Any]:
     fixture_rows = [
         stress_file(
@@ -199,6 +208,41 @@ def build_payload(
         fixture_rel = fixture_dir.resolve().relative_to(repo.resolve()).as_posix()
     except ValueError:
         fixture_rel = str(fixture_dir)
+    extra_payload: list[dict[str, Any]] = []
+    for extra in extra_roots or []:
+        if not extra.is_dir():
+            extra_payload.append(
+                {
+                    "dir": str(extra),
+                    "status": "SKIPPED",
+                    "reason": "directory not present",
+                    "file_count": 0,
+                    "open_ok": 0,
+                }
+            )
+            continue
+        extra_rows = [
+            stress_file(
+                path,
+                base=extra,
+                open_model=open_model,
+                open_max_bytes=open_max_bytes,
+            )
+            for path in discover_ifc(extra)
+        ]
+        extra_payload.append(
+            {
+                "dir": str(extra),
+                "status": "RUN",
+                "file_count": len(extra_rows),
+                "open_ok": sum(1 for row in extra_rows if row["open_ok"]),
+                "schema_counts": _count(extra_rows, "schema"),
+                "ifc_open_counts": _count(extra_rows, "ifc_open")
+                if open_model
+                else {"not_requested": len(extra_rows)},
+                "rows": extra_rows,
+            }
+        )
     pairs = detect_arc_structure_pairs(gni_rows)
     gni_failures = [row for row in gni_rows if not row.get("open_ok")]
     largest = max(gni_rows, key=lambda row: int(row.get("bytes") or 0), default=None)
@@ -239,6 +283,7 @@ def build_payload(
         },
         "fixture_rows": fixture_rows,
         "gni_rows": gni_rows,
+        "extra": extra_payload,
     }
     encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
         "utf-8"
@@ -260,11 +305,11 @@ def render_markdown(payload: dict[str, Any]) -> str:
     gni = payload.get("gni") or {}
     pairs = gni.get("pairs") or []
     pair_lines = [
-        f"| `{pair.get('stem')}` | {pair.get('paired')} | {pair.get('schema_match')} |"
+        f"| `{pair.get('stem')}` | {pair.get('paired')} | {pair.get('schema_match')} | {pair.get('arc_products')} | {pair.get('structure_products')} |"
         for pair in pairs
     ]
     pair_table = (
-        "\n".join(["| stem | paired | schema_match |", "| --- | --- | --- |", *pair_lines])
+        "\n".join(["| stem | paired | schema_match | arc_products | structure_products |", "| --- | --- | --- | --- | --- |", *pair_lines])
         if pair_lines
         else "_no `*_arc.ifc` / `*_structure.ifc` pairs in this root_"
     )
@@ -290,6 +335,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             f"- AR+STR pairs complete: **{gni.get('pairs_complete')}** / {len(pairs)} stems (upstream: 7 of 9 teams)",
             f"- largest file: `{json.dumps(gni.get('largest'), ensure_ascii=False)}` (upstream could not load ~536 MB architecture; header-only still opens)",
             f"- IfcOpenShell: `{json.dumps(gni.get('ifc_open_counts'), ensure_ascii=False)}`",
+            f"- extra roots: `{json.dumps([{k: row.get(k) for k in ('dir', 'status', 'file_count', 'open_ok', 'schema_counts', 'ifc_open_counts')} for row in payload.get('extra') or []], ensure_ascii=False)}`",
             f"- DOI: [{gni.get('doi')}](https://doi.org/{gni.get('doi')})",
             f"- content_sha256: `{payload.get('content_sha256')}`",
             "",
@@ -318,17 +364,29 @@ def main(argv: list[str] | None = None) -> int:
         help="IfcOpenShell-open each file under --open-max-bytes (default 200 MiB)",
     )
     parser.add_argument("--open-max-bytes", type=int, default=DEFAULT_OPEN_MAX_BYTES)
+    parser.add_argument(
+        "--extra-root",
+        action="append",
+        default=None,
+        type=Path,
+        help="Optional extra IFC trees (e.g. MIT BIM Whale samples under .local)",
+    )
     args = parser.parse_args(argv)
     root = repo_root()
     fixture_dir = args.fixture_dir or (root / "samples" / "ifc")
     gni_env = args.gni_root or os.environ.get("AEROBIM_GNI_BIM_ROOT")
     gni_root = Path(gni_env) if gni_env else None
+    extra_roots = list(args.extra_root or [])
+    whale = root / ".local" / "bim-whale-ifc-samples"
+    if whale.is_dir() and whale not in extra_roots:
+        extra_roots.append(whale)
     payload = build_payload(
         fixture_dir=fixture_dir,
         gni_root=gni_root,
         repo=root,
         open_model=bool(args.open_model),
         open_max_bytes=int(args.open_max_bytes),
+        extra_roots=extra_roots,
     )
     out = root / "artifacts" / "open-ifc-stress"
     out.mkdir(parents=True, exist_ok=True)
@@ -359,6 +417,13 @@ def main(argv: list[str] | None = None) -> int:
             )
         },
         "content_sha256": payload["content_sha256"],
+        "extra": [
+            {
+                key: row.get(key)
+                for key in ("dir", "status", "file_count", "open_ok", "schema_counts")
+            }
+            for row in payload.get("extra") or []
+        ],
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     fixture_ok = payload["fixture"]["open_ok"] == payload["fixture"]["file_count"]

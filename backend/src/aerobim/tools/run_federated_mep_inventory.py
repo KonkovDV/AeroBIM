@@ -20,9 +20,11 @@ from aerobim.tools.benchmark_project_package import repo_root
 
 CLAIM_LEVEL = "federated_mep_inventory"
 CLAIM_BOUNDARY = (
-    "Inventory of public federated / MEP IFC on disk. Entity counts only. "
-    "mep_system_clash remains NOT_VERIFIED. Not RT-003 delivered. "
-    "Not customer MEP. GPLv3 IFC-Bench models are not opened."
+    "Public federated / MEP IFC on disk. Entity counts plus AABB broadphase on "
+    "the in-repo HVAC fixture (existing graph + AABB filter) and duplex "
+    "architecture-vs-MEP product AABBs. "
+    "AABB overlap is not geometric clash. mep_system_clash remains NOT_VERIFIED. "
+    "Not RT-003 delivered. Not customer MEP. GPLv3 IFC-Bench models are not opened."
 )
 MEP_TYPES = (
     "IfcDistributionElement",
@@ -38,6 +40,8 @@ CANDIDATES = (
     ("samples/mep/hvac-sprinkler-systems.ifc", "eng_fixture"),
     (".local/ifc-bench-v2/projects/duplex/mep.ifc", "ifc_bench_duplex_mep"),
     (".local/ifc-bench-v2/projects/duplex/arc.ifc", "ifc_bench_duplex_arc"),
+    (".local/ifc-bench-v2/projects/dental_clinic/mep.ifc", "ifc_bench_dental_mep"),
+    (".local/ifc-bench-v2/projects/dental_clinic/str.ifc", "ifc_bench_dental_str"),
     (".local/ifc-bench-v2/projects/digital_hub/arc.ifc", "ifc_bench_digital_hub"),
     (".local/ifc-bench-v2/projects/west_riverside_hospital/arc.ifc", "ifc_bench_west_riverside"),
 )
@@ -86,11 +90,106 @@ def _inventory(path: Path, *, label: str, repo: Path) -> dict[str, Any]:
     return row
 
 
+def _hvac_graph_aabb(repo: Path) -> dict[str, Any]:
+    started = perf_counter()
+    scope_path = repo / "samples" / "mep" / "federated-scope-verified-fixture.json"
+    dummy = repo / "samples" / "mep" / "hvac-sprinkler-systems.ifc"
+    try:
+        from aerobim.infrastructure.adapters.federated_ifc_mep_system_graph import (
+            FederatedIfcMepSystemGraphProvider,
+        )
+        from aerobim.infrastructure.adapters.ifc_aabb_mep_pair_filter import IfcAabbMepPairFilter
+
+        provider = FederatedIfcMepSystemGraphProvider.from_scope_path(
+            scope_path, repo_root=repo
+        )
+        graph = provider.build(dummy)
+        aabb = IfcAabbMepPairFilter().filter_pairs(graph)
+        return {
+            "status": "RUN",
+            "geometry_verified": False,
+            "nodes": len(graph.nodes),
+            "edges": len(graph.edges),
+            "synthetic": graph.synthetic,
+            "aabb_status": aabb.status,
+            "aabb_reason": aabb.reason,
+            "aabb_boxes_built": aabb.boxes_built,
+            "aabb_pairs_before": aabb.pairs_before,
+            "aabb_pairs_after": aabb.pairs_after,
+            "elapsed_ms": round((perf_counter() - started) * 1000.0, 3),
+        }
+    except Exception as exc:  # noqa: BLE001 — inventory must not abort
+        return {
+            "status": "ERROR",
+            "geometry_verified": False,
+            "error": f"{type(exc).__name__}: {exc}",
+            "elapsed_ms": round((perf_counter() - started) * 1000.0, 3),
+        }
+
+
+def _duplex_aabb_overlaps(repo: Path) -> dict[str, Any]:
+    started = perf_counter()
+    arc = repo / ".local" / "ifc-bench-v2" / "projects" / "duplex" / "arc.ifc"
+    mep = repo / ".local" / "ifc-bench-v2" / "projects" / "duplex" / "mep.ifc"
+    v1_arc = repo / ".local" / "ifc-bench" / "projects" / "duplex" / "arc.ifc"
+    v1_mep = repo / ".local" / "ifc-bench" / "projects" / "duplex" / "mep.ifc"
+    if not arc.is_file():
+        arc, mep = v1_arc, v1_mep
+    if not arc.is_file() or not mep.is_file():
+        return {
+            "status": "SKIPPED",
+            "reason": "duplex arc/mep not present under .local/ifc-bench*",
+            "geometry_verified": False,
+            "elapsed_ms": round((perf_counter() - started) * 1000.0, 3),
+        }
+    try:
+        from aerobim.domain.mep_aabb import aabb_overlap
+        from aerobim.infrastructure.adapters.ifc_aabb_mep_pair_filter import (
+            _element_boxes_from_model,
+        )
+        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+
+        arc_boxes = _element_boxes_from_model(
+            open_ifc_model(arc),
+            ifc_types=("IfcWall", "IfcSlab", "IfcDoor", "IfcWindow"),
+        )
+        mep_boxes = _element_boxes_from_model(
+            open_ifc_model(mep),
+            ifc_types=("IfcFlowTerminal", "IfcEnergyConversionDevice", "IfcFlowSegment"),
+        )
+        overlaps = 0
+        for box_a in arc_boxes.values():
+            for box_b in mep_boxes.values():
+                if aabb_overlap(box_a, box_b):
+                    overlaps += 1
+        return {
+            "status": "RUN",
+            "geometry_verified": False,
+            "arc_boxes": len(arc_boxes),
+            "mep_boxes": len(mep_boxes),
+            "aabb_overlap_pairs": overlaps,
+            "arc_types": ["IfcWall", "IfcSlab", "IfcDoor", "IfcWindow"],
+            "mep_types": ["IfcFlowTerminal", "IfcEnergyConversionDevice", "IfcFlowSegment"],
+            "elapsed_ms": round((perf_counter() - started) * 1000.0, 3),
+        }
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "status": "ERROR",
+            "geometry_verified": False,
+            "error": f"{type(exc).__name__}: {exc}",
+            "elapsed_ms": round((perf_counter() - started) * 1000.0, 3),
+        }
+
+
 def build_payload(*, repo: Path) -> dict[str, Any]:
     rows = [_inventory(repo / rel, label=label, repo=repo) for rel, label in CANDIDATES]
     present = [row for row in rows if row["status"] == "RUN"]
+    geometry = {
+        "hvac_fixture_graph_aabb": _hvac_graph_aabb(repo),
+        "duplex_arc_mep_aabb": _duplex_aabb_overlaps(repo),
+    }
     body: dict[str, Any] = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "artifact_type": "federated_mep_inventory",
         "claim_level": CLAIM_LEVEL,
         "claim_boundary": CLAIM_BOUNDARY,
@@ -99,6 +198,7 @@ def build_payload(*, repo: Path) -> dict[str, Any]:
         "closes_rt003": False,
         "present": len(present),
         "rows": rows,
+        "geometry": geometry,
     }
     encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
         "utf-8"
@@ -124,6 +224,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- mep_system_clash: **{payload.get('mep_system_clash')}**",
         f"- closes_rt003: **{payload.get('closes_rt003')}**",
         f"- content_sha256: `{payload.get('content_sha256')}`",
+        f"- HVAC graph+AABB: `{json.dumps((payload.get('geometry') or {}).get('hvac_fixture_graph_aabb'), ensure_ascii=False)}`",
+        f"- duplex AABB: `{json.dumps((payload.get('geometry') or {}).get('duplex_arc_mep_aabb'), ensure_ascii=False)}`",
         "",
         "| label | status | schema | IfcFlowTerminal | IfcSystem | products | ms |",
         "| --- | --- | --- | --- | --- | --- | --- |",
