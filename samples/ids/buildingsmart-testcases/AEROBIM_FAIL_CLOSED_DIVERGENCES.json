@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "aerobim_ids_fail_closed_divergences",
+  "claim_boundary": "Intentional AeroBIM vs buildingSMART IDS TestCases disagreements. IfcTester treats ifcVersion as metadata (case 0101). AeroBIM fail-closes FILE_SCHEMA vs ifcVersion. Not product accuracy. Do not greenwash by dropping these from the denominator.",
+  "source": "samples/ids/buildingsmart-testcases (CC BY-ND 4.0, unmodified)",
+  "rule": "AEROBIM-IDS-IFC-VERSION",
+  "divergences": [
+    {
+      "case_id": "pass-a_specification_passes_only_if_all_requirements_pass_2_2",
+      "case_dir": "0096",
+      "bsi_filename_expected": "pass",
+      "aerobim_observed": "fail",
+      "classification": "aerobim_fail_closed_ifc_version",
+      "reason": "IDS ifcVersion=IFC2X3 on FILE_SCHEMA IFC4. BSI treats version as metadata; AeroBIM emits AEROBIM-IDS-IFC-VERSION."
+    },
+    {
+      "case_id": "pass-optional_specifications_may_still_pass_if_nothing_is_applicable",
+      "case_dir": "0097",
+      "bsi_filename_expected": "pass",
+      "aerobim_observed": "fail",
+      "classification": "aerobim_fail_closed_ifc_version",
+      "reason": "IDS ifcVersion=IFC2X3 on FILE_SCHEMA IFC4. Optional skip would also fail-close under SKIPPED=FAILED."
+    },
+    {
+      "case_id": "pass-prohibited_specifications_passes_if_the_applicability_does_not_matches",
+      "case_dir": "0098",
+      "bsi_filename_expected": "pass",
+      "aerobim_observed": "fail",
+      "classification": "aerobim_fail_closed_ifc_version",
+      "reason": "IDS ifcVersion=IFC2X3 on FILE_SCHEMA IFC4."
+    },
+    {
+      "case_id": "pass-required_specifications_need_at_least_one_applicable_entity_1_2",
+      "case_dir": "0099",
+      "bsi_filename_expected": "pass",
+      "aerobim_observed": "fail",
+      "classification": "aerobim_fail_closed_ifc_version",
+      "reason": "IDS ifcVersion=IFC2X3 on FILE_SCHEMA IFC4."
+    },
+    {
+      "case_id": "pass-specification_optionality_and_facet_optionality_can_be_combined",
+      "case_dir": "0100",
+      "bsi_filename_expected": "pass",
+      "aerobim_observed": "fail",
+      "classification": "aerobim_fail_closed_ifc_version",
+      "reason": "IDS ifcVersion=IFC2X3 on FILE_SCHEMA IFC4. Also labeled in KNOWN_UPSTREAM_EDGES.json (optionality)."
+    },
+    {
+      "case_id": "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result",
+      "case_dir": "0101",
+      "bsi_filename_expected": "pass",
+      "aerobim_observed": "fail",
+      "classification": "aerobim_fail_closed_ifc_version",
+      "reason": "Canonical BSI statement that ifcVersion is metadata. AeroBIM rejects silent pass of IFC2X3 IDS on IFC4 FILE_SCHEMA."
+    }
+  ]
+}

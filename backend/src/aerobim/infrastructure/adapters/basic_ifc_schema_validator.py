@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from aerobim.domain.ids_schema_gate import parse_ifc_file_schema
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
 # Supported public IFC schema tokens for pilot honesty (SPF FILE_SCHEMA).
@@ -17,10 +18,6 @@ _SUPPORTED_SCHEMAS = frozenset(
         "IFC4X3_ADD2",
         "IFC4X3_TC1",
     }
-)
-_FILE_SCHEMA_RE = re.compile(
-    r"FILE_SCHEMA\s*\(\s*\(\s*'([^']+)'",
-    re.IGNORECASE | re.DOTALL,
 )
 
 # Rooted-entity line: first attribute is the 22-char IfcGloballyUniqueId.
@@ -80,8 +77,8 @@ class BasicIfcSchemaValidator:
                     origin="deterministic",
                 )
             )
-        match = _FILE_SCHEMA_RE.search(text)
-        if match is None:
+        schema_token = parse_ifc_file_schema(text)
+        if schema_token is None:
             issues.append(
                 ValidationIssue(
                     rule_id="AEROBIM-IFC-SCHEMA",
@@ -92,7 +89,6 @@ class BasicIfcSchemaValidator:
                 )
             )
         else:
-            schema_token = match.group(1).strip().upper()
             normalized = schema_token.replace(" ", "").replace(".", "")
             if normalized not in _SUPPORTED_SCHEMAS and schema_token not in _SUPPORTED_SCHEMAS:
                 issues.append(

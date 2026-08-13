@@ -11,6 +11,11 @@ from aerobim.tools.run_open_corpora_profiles import (
     repo_root,
 )
 
+CASE_0101_ID = (
+    "pass-specification_version_is_purely_metadata_and_does_not_impact_"
+    "pass_or_fail_result"
+)
+
 
 class RegressionPassStatsTests(unittest.TestCase):
     def test_upstream_edge_excluded_from_fail(self) -> None:
@@ -28,6 +33,23 @@ class RegressionPassStatsTests(unittest.TestCase):
         rows = [{"case_id": "broken", "match": False}]
         stats = _regression_pass_stats(rows, known_upstream=frozenset())
         self.assertFalse(stats["regression_pass"])
+
+    def test_fail_closed_divergence_is_labeled_not_unexplained(self) -> None:
+        rows = [{"case_id": CASE_0101_ID, "match": False}]
+        stats = _regression_pass_stats(
+            rows,
+            known_upstream=frozenset(),
+            fail_closed=frozenset({CASE_0101_ID}),
+        )
+        self.assertTrue(stats["regression_pass"])
+        self.assertEqual(stats["fail_closed_divergence_count"], 1)
+        self.assertEqual(stats["unexplained_mismatch_count"], 0)
+
+    def test_loads_fail_closed_0101(self) -> None:
+        from aerobim.tools.run_open_corpora_profiles import _load_fail_closed_divergence_ids
+
+        ids = _load_fail_closed_divergence_ids(repo_root())
+        self.assertIn(CASE_0101_ID, ids)
 
 
 class KnownUpstreamLoaderTests(unittest.TestCase):
