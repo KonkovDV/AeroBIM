@@ -27,6 +27,7 @@ from aerobim.domain.models import (
     ValidationIssue,
 )
 from aerobim.domain.section_pairing import canonicalize_discipline
+from aerobim.domain.stale_norm_citations import warn_if_using_superseded_edition
 
 INVENTORY_SCHEMA_V1 = "aerobim_package_inventory_v1"
 
@@ -411,6 +412,13 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
 
     if inventory.check_unjustified_pd_calculations:
         issues.extend(_unjustified_pd_calculation_issues(inventory.artifacts))
+
+    stale = warn_if_using_superseded_edition(
+        edition=inventory.documentation_standard_edition,
+        package_developed_on=inventory.package_developed_on,
+    )
+    if stale is not None:
+        issues.append(stale)
 
     # Stable ordering for determinism.
     issues.sort(key=lambda item: (item.rule_id, item.target_ref or "", item.message))

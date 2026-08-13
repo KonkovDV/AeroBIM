@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "stale_norm_citation_scan",
+  "claim_level": "stale_norm_citation_scan",
+  "claim_boundary": "Citation hygiene only. Not statutory interpretation of the replacement standard. Not Moscow AGR completeness. Not customer accuracy.",
+  "generated_at": "2026-08-13T21:45:05.093497+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.7",
+    "machine": "AMD64",
+    "system": "Windows"
+  },
+  "source": {
+    "catalog": "samples/config/norm-citation-catalog.json",
+    "sources": "samples/config/norm-citation-sources.json"
+  },
+  "summary": {
+    "document_count": 2,
+    "source_count": 1,
+    "superseded_citation_warnings": 1,
+    "rule_id": "AEROBIM-NORM-SUPERSEDED"
+  },
+  "issues": [
+    {
+      "rule_id": "AEROBIM-NORM-SUPERSEDED",
+      "severity": "warning",
+      "source_id": "moscow_agr_cim_requirements",
+      "observed_value": "ГОСТ Р 21.101-2020",
+      "expected_value": "GOST_R_21.101-2026",
+      "message": "Требования Москвы к ЦИМ АГР (Депградполитики + ДИТ) (moscow_agr_cim_requirements) cites ГОСТ Р 21.101-2020 as of 2026-08-14; that document is superseded on 2026-04-01 by GOST_R_21.101-2026; Rosstandart order 129-st of 12.02.2026; https://www.rst.gov.ru/; Citation hygiene only. Not statutory interpretation of the replacement standard. Not Moscow AGR completeness. Not customer accuracy."
+    }
+  ],
+  "content_sha256": "d2ddd0b2b8a68c3fd8bb5a81895d47d3d5302e47d56ac5f5286c24c45d96ec4a"
+}
