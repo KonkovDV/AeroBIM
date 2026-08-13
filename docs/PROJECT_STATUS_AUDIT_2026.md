@@ -102,10 +102,10 @@ Legend: **code** · **test** · **runtime** · **benchmark** · **README-only** 
 
 | Expert reading | Runtime signals |
 |---|---|
+| FAILED | deterministic ERROR findings / hard clash — outranks missing data (arXiv:2607.29058) |
+| BLOCKED | intake blocked or required capability SKIPPED/FAILED/NOT_VERIFIED; never PASS |
+| REVIEW_REQUIRED | HITL / missing source; never rewrites a violation into a pass |
+| PASS_WITH_WARNINGS | warnings only; required capabilities OK |
 | PASS | `outcome=pass` and required capabilities OK |
-| PASS_WITH_WARNINGS | `outcome=pass_with_warnings` |
-| BLOCKED | intake blocked or required capability SKIPPED/FAILED/NOT_VERIFIED under pilot/production |
-| FAILED | deterministic ERROR findings / hard clash blocks |
-| REVIEW_REQUIRED | HITL regions require review |
 
-Do **not** invent PASS when any mandatory check did not complete successfully. Checkpoint **NO_GO** until RT-001/002/003.
+Do **not** invent PASS when any mandatory check did not complete successfully. Checkpoint **NO_GO** until RT-001/003 and a customer-approved acceptance profile.

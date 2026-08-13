@@ -22,12 +22,17 @@ def compute_package_outcome(
 ) -> PackageOutcome:
     """Compute package outcome from deterministic inputs + sign-off policy.
 
-    Precedence (ADR-001 / claim matrix):
-    1. intake blocked or required capability not OK → BLOCKED
-    2. executed finding failures / hard clashes → FAILED
-    3. HITL review required → REVIEW_REQUIRED
+    Precedence (violation > missing data > uncertainty > compliance), matching
+    the four-state contract in Mushkani et al., arXiv:2607.29058:
+
+    1. confirmed finding failures / hard clashes → FAILED
+    2. intake blocked or required capability not OK → BLOCKED
+    3. HITL / missing source / low confidence → REVIEW_REQUIRED
     4. warnings only → PASS_WITH_WARNINGS
     5. else PASS
+
+    REVIEW_REQUIRED never rewrites a violation into a pass. Incomplete evidence
+    never becomes PASS.
     """
 
     active = policy or build_signoff_policy(profile="development")
@@ -39,10 +44,10 @@ def compute_package_outcome(
             capabilities=capabilities,
         )
 
-    if intake_blocked or capability_blocked:
-        return PackageOutcome.BLOCKED
     if error_count > 0 or hard_clash_blocks:
         return PackageOutcome.FAILED
+    if intake_blocked or capability_blocked:
+        return PackageOutcome.BLOCKED
     if hitl_requires_review:
         return PackageOutcome.REVIEW_REQUIRED
     if warning_count > 0:
