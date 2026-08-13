@@ -77,6 +77,8 @@ class VerticalSliceTests(unittest.TestCase):
             self.assertTrue((Path(tmp) / "report.html").is_file())
             self.assertTrue((Path(tmp) / "slice-summary.json").is_file())
             self.assertTrue((Path(tmp) / "LIMITATIONS.json").is_file())
+            self.assertTrue((Path(tmp) / "findings.bcfzip").is_file())
+            self.assertGreater((Path(tmp) / "findings.bcfzip").stat().st_size, 32)
             html = (Path(tmp) / "report.html").read_text(encoding="utf-8")
             self.assertIn("WALL-01", html)
             self.assertIn("finding_id=", html.lower())
