@@ -37,7 +37,7 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - Paper [arXiv:2605.01698](https://arxiv.org/abs/2605.01698) states 1 027 tasks across **37 IFC models / 21 projects**. Do not blend card and paper counts in one sentence.
 - Solihin-adapted classes 1–4; eval-split `eval-split-hellin2026.csv` (514 test / 512 train after leak fix)
 - Multidisciplinary models used as **pointers**, not vendored: `west_riverside_hospital` (CC BY 3.0, OpenIFC / Wawan Solihin), `sixty5`, `dental_clinic`, `duplex`, `wbdg_office` (CC BY 4.0), `digital_hub` (MIT, RWTH Aachen E3D)
-- AeroBIM: pins only. GPLv3 models excluded (table above).
+- AeroBIM: pins + gitignored checkout of QA CSV + duplex/dental (GPLv3 dirs never copied). Deterministic smoke **9/1026** scored. Eval-split **514** stays unmapped NL — not a 514 false-pass figure. Hub extra models (`digital_hub`, `west_riverside`) SSL-timeout from this network; inventory SKIPPED. Smoke: `docs/evidence/ifc-bench-v2-smoke-latest.json`
 
 ## GNI BIM Dataset
 
@@ -47,6 +47,7 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - License: CC BY 4.0 (models); anonymization scripts MIT
 - Published: 224 anonymized IFC (223 parsed), paired AR+STR on 7 of 9 team projects
 - Caveat (upstream): student models, as-is — measure rule recall/false-omit, not «product accuracy»
+- AeroBIM 14.08.2026 (gitignored `.local/gni-bim`, not in git): **224** header-open, **223** IfcOpenShell-open, **1** oversize skip (`model_6_arc.ifc`, 561838129 B — same unloadable architectural file upstream skipped). AR+STR pairs **7**/9. Evidence [`docs/evidence/open-ifc-stress-2026-08.md`](evidence/open-ifc-stress-2026-08.md) · `content_sha256=d9e0519962837fc7248ff7231aefc433f63a9caa19716a6ebfa054dff128fcca`. Anonymization scripts MIT-pinned, not rewritten: [`docs/evidence/gni-anonymization-pin-2026-08.md`](evidence/gni-anonymization-pin-2026-08.md)
 
 ## Official examination IDS (GAU MO «Мособлгосэкспертиза»)
 
