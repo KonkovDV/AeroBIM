@@ -9,8 +9,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-09
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-14 · **v1.6.6** — IDS fail-closed (0.4); RT rewrite (open data vs leftover gaps)  
-**Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC unmeasured; not MEP delivered)  
+**last_updated:** 2026-08-14 · **v1.6.6** — IDS fail-closed (0.4); GNI 224/223 stress; duplex MEP inventory (clash NOT_VERIFIED)  
+**Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
 **Residuals Red Team:** [`quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md`](quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md)  

@@ -3,7 +3,7 @@
 title: "Quality measurement protocol — AeroBIM pilot (Aug 2026)"
 status: active
 version: "1.0.0"
-last_updated: "2026-08-02"
+last_updated: "2026-08-14"
 claim_boundary: "Protocol only. Fixture/open corpora never publish product accuracy. Interim confirmed-finding target is 0.60 — not >90%."
 ---
 
@@ -172,3 +172,17 @@ These constraints are mandatory when Samolet labels exist. They do **not** autho
 | **AEC-Bench ≠ RT-001** | External document bench. False-pass on AEC-Bench is currently **SKIPPED**: [`../evidence/aec-bench-false-pass-2026-08.md`](../evidence/aec-bench-false-pass-2026-08.md). |
 
 Wilson intervals (§4) remain the planner for a **project-level** rate after clustering, not a substitute for the cluster bootstrap.
+
+## 11. Reference implementation (already in this repo)
+
+| Protocol need | Command / module |
+| --- | --- |
+| Extraction quality on fixtures | `python -m aerobim.tools.evaluate_extraction` |
+| Detection precision + FN | `python -m aerobim.tools.evaluate_detection_precision` |
+| Ablation | `python -m aerobim.tools.run_ablation_study` |
+| SLA honesty (p95, pack hash, machine) | `python -m aerobim.tools.measure_package_sla` |
+| Evidence bundle | `python -m aerobim.tools.export_evidence_bundle` |
+| Cluster bootstrap / κ / α | `aerobim.domain.eval_statistics` · `measure_adjudicator_agreement` |
+| False-pass on AEC-Bench | currently **SKIPPED** (Harbor NOT_RUN) |
+
+Do not publish a product accuracy number from any of these without a Samolet (or RF-expertise) corpus.

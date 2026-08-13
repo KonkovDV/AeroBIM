@@ -5,7 +5,7 @@
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» corpus — open benches exist), **RT-002** (no Samolet-signed acceptance profile — official MOEXP IDS **are** public), **RT-003** (public federated IFC exists; not measured; not MEP delivered). Do not write «нет утверждённого нормативного пакета».
+**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» corpus — open benches exist), **RT-002** (no Samolet-signed acceptance profile — official MOEXP IDS **are** public), **RT-003** (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered). Do not write «нет утверждённого нормативного пакета».
 
 **Reclassification (v4):** [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md)
 
@@ -124,10 +124,11 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 ### RT-003 — Federated MEP not measured (public models exist)
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  
 - **Category:** MEP / Clash  
-- **Rewritten 2026-08-14:** multidisciplinary IFC is public in IFC-Bench V2 (`west_riverside_hospital` CC BY 3.0; `sixty5` / `dental_clinic` / `duplex` / `wbdg_office` CC BY 4.0; `digital_hub` MIT). IfcClash is an optional extra. OSArch: naive 7-discipline federation ~44k elements can OOM (~30 GB); bbox pre-broadphase is required before quoting runtime. Fixture «~0.5 s» must not go to the tracker as product SLA.  
-- **Still true:** `UnconfiguredMepSystemGraphProvider` stays `NOT_VERIFIED`. Synthetic stub is never OK. AeroBIM has **not** published a measured federated clash run. Not MEP delivered.  
-- **Normative hook:** «Требования к отсутствию коллизий» in digital building-model requirements ed. 4.0.  
-- **Product HOLD — RT-003 still OPEN** until a hashed measurement on a license-cleared federated model. Models exist; the measurement does not.  
+- **Rewritten 2026-08-14:** multidisciplinary IFC is public in IFC-Bench V2 (`west_riverside_hospital` CC BY 3.0; `sixty5` / `dental_clinic` / `duplex` / `wbdg_office` CC BY 4.0; `digital_hub` MIT). IfcClash is an optional extra. OSArch: naive 7-discipline federation ~44k elements can OOM (~30 GB); bbox pre-broadphase is required before quoting runtime. Fixture «~0.5 s» must not go to the tracker as product SLA.
+- **Inventory (not clash):** hashed entity counts on duplex/mep + HVAC fixture — [`docs/evidence/federated-mep-inventory-2026-08.md`](../../docs/evidence/federated-mep-inventory-2026-08.md) · `content_sha256=8fd35e814cb0fd54ea60e80cecd5f8636c4c3a422d24dbe2fafb422866291aa5`. `digital_hub` / `west_riverside` SKIPPED (not on disk; Hub SSL timeout).
+- **Still true:** `UnconfiguredMepSystemGraphProvider` stays `NOT_VERIFIED`. Synthetic stub is never OK. AeroBIM has **not** published a measured federated clash run. Not MEP delivered.
+- **Normative hook:** «Требования к отсутствию коллизий» in digital building-model requirements ed. 4.0.
+- **Product HOLD — RT-003 still OPEN** until a hashed **clash** run on a license-cleared federated model. Inventory ≠ delivered.  
 
 ### RT-004 — Clash SKIPPED does not block pass
 - **СТАТУС: ЗАКРЫТО (remediation 2026-07-17)** — `require_clash` → SKIPPED clash ⇒ FAILED + `passed=false`  

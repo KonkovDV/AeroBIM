@@ -33,12 +33,13 @@ IfcTester считает `ifcVersion` метаданными (официальн
 | --- | --- |
 | Checkpoint | **NO_GO**. Не перекрашиваем. |
 | «Нет норм?» | **Ложь.** IDS Мособлгосэкспертизы публичны: [moexp.ru ТИМ](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/). Engine coverage: [`../evidence/norm-pack-moexp-coverage-2026-08.md`](../evidence/norm-pack-moexp-coverage-2026-08.md). Нет **подписанного профиля приёмки Самолёта** и нет **корпуса моделей Самолёта** — это две другие вещи |
-| «Нет корпуса?» | Открытые: AEC-Bench ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)), IFC-Bench V2, GNI BIM ([Zenodo 10.5281/zenodo.19722012](https://doi.org/10.5281/zenodo.19722012)). Не использовали для цифры ложных пропусков. **Не существует** публичного «ПД РФ + заключение экспертизы». Атрибуция: [`../DATASETS.md`](../DATASETS.md) |
-| MEP | Публичные многодисциплинарные IFC есть (west_riverside, sixty5, duplex…). **Замера у нас нет.** Не MEP delivered. Не цитировать «~0.5 с на учебном пакете» |
+| «Нет корпуса?» | Открытые: AEC-Bench ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)), IFC-Bench V2 (smoke **9/1026** countable, не 514 false-pass), GNI BIM ([Zenodo 10.5281/zenodo.19722012](https://doi.org/10.5281/zenodo.19722012)) — **224** header / **223** IfcOpenShell, 1 oversize skip. Не корпус РФ-экспертизы. **Не существует** публичного «ПД РФ + заключение экспертизы». Атрибуция: [`../DATASETS.md`](../DATASETS.md) |
+| MEP | Инвентарь публичных IFC: duplex/mep 105 `IfcFlowTerminal`, clash **NOT_VERIFIED**. [`../evidence/federated-mep-inventory-2026-08.md`](../evidence/federated-mep-inventory-2026-08.md) · sha `8fd35e81…291aa5`. Не MEP delivered. Не цитировать «~0.5 с» как SLA |
 | IDS fail-open | Найден и закрыт. Кейс 0101 теперь FAILED у нас сознательно |
+| Устаревшая норма | Требования ЦИМ АГР ссылаются на ГОСТ Р 21.101-2020, заменённый 01.04.2026. `AEROBIM-NORM-SUPERSEDED` · [`../evidence/stale-norm-scan-2026-08.md`](../evidence/stale-norm-scan-2026-08.md) |
 | Kimi vs Qwen | **LIVE на Qwen** (fixture). Kimi на Yandex Studio **закрыт гейтом**. Advisory, не проверка норм |
 | DWG | Жёсткий **FAILED**. ODA trial 60 дней = КТ#3, не покупка. [`../architecture/ADR-003-dwg-oda-trial-kt3-2026.md`](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md) |
-| Московский АГР | **Не собран** (архитектура заморожена). Не обещаем |
+| Московский АГР | Полный профиль **не собран** (freeze). Есть обменный контур класса 1 на fixture: IFC4 / ReferenceView / proxy / имя / 500 МБ · [`../evidence/agr-exchange-2026-08.md`](../evidence/agr-exchange-2026-08.md) |
 | CV | Heuristic регионы + text layer. Это не обученный CV |
 | 1980 проверок / 656 тестов | Регрессия кода, **не** доля ложных пропусков ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058): fail-closed ≠ низкий false-pass) |
 

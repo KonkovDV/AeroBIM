@@ -9,14 +9,14 @@
 
 ## КТ#2 — 20.08.2026 (промежуточная версия)
 
-> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS-контуре закрыт (`AEROBIM-IDS-IFC-VERSION`). Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**, это другое); federated MEP на публичных моделях **не замерен**. Кодом GO не ставится.
+> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS-контуре закрыт (`AEROBIM-IDS-IFC-VERSION`). Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**, это другое); federated MEP clash **NOT_VERIFIED** (инвентарь duplex/mep есть). Кодом GO не ставится.
 
 | Корзина | Что |
 | --- | --- |
-| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. Official MOEXP IDS → IfcTester coverage. |
+| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. Official MOEXP IDS → IfcTester coverage. Stale-norm warning (21.101-2020→2026). AGR exchange-shape fixture (not full moscow_agr). |
 | **Подтверждено внешне** | IDS Мособлгосэкспертизы ([TIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/)) + AEC-Bench inventory 196 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)). Цифры покрытия IDS — только после прогона, см. evidence. |
-| **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. |
-| **Заблокировано не молчанием заказчика** | Корпус «ПД РФ + заключение экспертизы» публично не существует. Профиль приёмки Самолёта не подписан. Federated MEP на IFC-Bench V2 ещё не измерен. |
+| **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. Open IFC: fixtures 15/15; GNI **224** header / **223** IfcOpenShell (1 oversize skip). Student models, not product accuracy. |
+| **Заблокировано не молчанием заказчика** | Корпус «ПД РФ + заключение экспертизы» публично не существует. Профиль приёмки Самолёта не подписан. Federated MEP clash на публичных IFC **NOT_VERIFIED** (инвентарь duplex/mep измерен). |
 | **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов. Native DWG = **FAILED**. |
 
 Видео 3 мин: [`artifacts/demo/`](artifacts/demo/) — запись **19.08**, человек (сейчас placeholder).  
@@ -42,7 +42,7 @@ Pre-construction package review (expertise / chief engineer / doc QC): model ↔
 > ## Checkpoint: `NO_GO`
 >
 > Samolet TechLab Task 07 is **not** ready for customer sign-off. Open blockers:
-> **RT-001** (no public «RF PD + expertise conclusion» corpus; AEC-Bench / IFC-Bench / GNI exist and are not that corpus), **RT-002** (no Samolet-signed acceptance profile; official MOEXP IDS exist — that is not the same thing), **RT-003** (public federated IFC exists; AeroBIM has not measured it; not MEP delivered) —
+> **RT-001** (no public «RF PD + expertise conclusion» corpus; AEC-Bench / IFC-Bench / GNI exist and are not that corpus), **RT-002** (no Samolet-signed acceptance profile; official MOEXP IDS exist — that is not the same thing), **RT-003** (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered) —
 > see [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
 > Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
 > dated eng freeze: [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) ·

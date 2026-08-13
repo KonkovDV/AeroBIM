@@ -76,6 +76,8 @@ AeroBIM не претендует в этом документе на дости
 \mathrm{Recall}_{\mathrm{critical}} = \frac{\mathrm{TP}_{\mathrm{crit}}}{\mathrm{TP}_{\mathrm{crit}} + \mathrm{FN}_{\mathrm{crit}}}
 \]
 
+**Ложный пропуск (false pass) — первая строка отчёта.** Система сказала «соответствует», эталон — нарушение. Для экспертизы это опаснее ложного срабатывания. Считается отдельно от FP. Источник, почему единица наблюдения — **проект**, а не задача: Mushkani, Bérard, Koseki, [arXiv:2607.29058](https://arxiv.org/abs/2607.29058). Доверительные интервалы — кластерный бутстрэп по проектам (`aerobim.domain.eval_statistics.cluster_bootstrap_cis`), не i.i.d. биномиал по находкам.
+
 Макро-среднее по классам допускается только как сводка и **не** заменяет отчёт по классам.
 
 > Запрещено называть «точностью» одну цифру без указания: precision/recall, класс, корпус, n, доверительный интервал.
@@ -216,6 +218,8 @@ AeroBIM готов исполнять протокол на переданном
 | Замер времени / SLA honesty | `python -m aerobim.tools.measure_package_sla` |
 | Двойная слепая | `docs/pilot/EXPERT_LABELING_INSTRUCTION_2026.md` |
 | Согласие экспертов | `measure_adjudicator_agreement` |
+| Кластерный бутстрэп | `aerobim.domain.eval_statistics.cluster_bootstrap_cis` |
+| Extraction / detection / ablation / bundle | `evaluate_extraction` · `evaluate_detection_precision` · `run_ablation_study` · `export_evidence_bundle` |
 | Инженерная детализация | `docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md` (WP-07) |
 
 ## Приложение B. Claims Lock (кратко)

@@ -9,14 +9,14 @@
 
 ## КТ#2 — 20.08.2026 (промежуточная версия)
 
-> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS закрыт. Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**); federated MEP на публичных моделях не замерен. Кодом не снимаются.
+> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS закрыт. Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**); federated MEP clash **NOT_VERIFIED**. Кодом не снимаются.
 
 | Корзина | Что |
 | --- | --- |
-| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → замечание + overlay + HTML/JSON + BCF ZIP. IDS МОГЭ → IfcTester. |
+| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice`. IDS МОГЭ → IfcTester. Предупреждение: ГОСТ Р 21.101-2020 заменён 2026. Обменный контур ЦИМ АГР класса 1 (не полный профиль). |
 | **Подтверждено внешне** | [IDS Мособлгосэкспертизы](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) · AEC-Bench 196 задач ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), инвентарь; ложные пропуски **SKIPPED**) |
-| **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом |
-| **Честный дефицит** | Корпус заказчика / «ПД РФ + заключение экспертизы»; подписанный профиль приёмки Самолёта; замер federated MEP |
+| **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом. Стресс 15 IFC в репо; GNI **224** header / **223** IfcOpenShell (1 oversize) |
+| **Честный дефицит** | Корпус заказчика / «ПД РФ + заключение экспертизы»; подписанный профиль приёмки Самолёта; clash federated MEP (инвентарь duplex/mep есть) |
 | **Не утверждаем** | >90%, DWG-ready, MEP delivered, CDE-ready BCF. Native DWG = **FAILED** |
 
 План: [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md) · трекер 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md)
@@ -40,8 +40,8 @@ Project-package analyze; IFC / IDS / cross-doc; детерминированны
 ## Статус готовности
 
 > **Checkpoint: `NO_GO`** — внутренний статус готовности к *подписанию у заказчика*, **не** оценка «система не работает».  
-> По-русски: код и fixtures есть; **нет** корпуса «ПД РФ + заключение экспертизы», **нет** подписанного профиля приёмки «Самолёта», **нет** замера federated MEP на публичных моделях. Официальные IDS Мособлгосэкспертизы **уже опубликованы** и лежат в репозитории. Формулировка «нет утверждённых норм» — ложь. Без customer-профиля и корпуса checkpoint не снимаем.  
-> Остаётся: **RT-001** (корпус РФ-экспертизы; открытые AEC-Bench / IFC-Bench / GNI — другой контур), **RT-002** (профиль приёмки Самолёта ≠ IDS МОГЭ), **RT-003** (модели есть, замера нет, не MEP delivered) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
+> По-русски: код и fixtures есть; **нет** корпуса «ПД РФ + заключение экспертизы», **нет** подписанного профиля приёмки «Самолёта», clash federated MEP **NOT_VERIFIED** (инвентарь duplex/mep измерен). Официальные IDS Мособлгосэкспертизы **уже опубликованы** и лежат в репозитории. Формулировка «нет утверждённых норм» — ложь. Без customer-профиля и корпуса checkpoint не снимаем.  
+> Остаётся: **RT-001** (корпус РФ-экспертизы; открытые AEC-Bench / IFC-Bench / GNI — другой контур), **RT-002** (профиль приёмки Самолёта ≠ IDS МОГЭ), **RT-003** (инвентарь публичных IFC есть, clash нет, не MEP delivered) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
 > Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.  
 > SSOT: [Claims Lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) · [eng status авг 2026](docs/ENGINEERING_STATUS_2026_08.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md).  
 > Инженерная готовность выросла (WP-01…08 и др.) **без** закрытия customer-блокеров — Fixture GO ≠ Checkpoint GO.

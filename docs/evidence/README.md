@@ -18,6 +18,12 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | AEC-Bench false-pass measurement **SKIPPED** (Harbor agent NOT_RUN). Inventory 196 ≠ RT-001 |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
 | [`ids-fail-closed-2026-08.md`](ids-fail-closed-2026-08.md) · [`.json`](ids-fail-closed-2026-08.json) | IfcTester ifcVersion fail-open closed; BSI 0101 live; not product accuracy |
+| [`stale-norm-scan-2026-08.md`](stale-norm-scan-2026-08.md) · [`.json`](stale-norm-scan-2026-08.json) | GOST R 21.101-2020 cited after 2026-04-01 → `AEROBIM-NORM-SUPERSEDED`. Not AGR completeness |
+| [`agr-exchange-2026-08.md`](agr-exchange-2026-08.md) · [`.json`](agr-exchange-2026-08.json) | Class-1 AGR exchange shape (IFC4 / RV / proxy / filename / 500 MB). Not moscow_agr profile |
+| [`open-ifc-stress-2026-08.md`](open-ifc-stress-2026-08.md) · [`.json`](open-ifc-stress-2026-08.json) | Header 224/224 GNI + 15/15 fixtures; IfcOpenShell 223 ok / 1 oversize skip. Student models, not product accuracy |
+| [`gni-anonymization-pin-2026-08.md`](gni-anonymization-pin-2026-08.md) · [`.json`](gni-anonymization-pin-2026-08.json) | MIT anonymization scripts pinned; execution SKIPPED (hardcoded paths; Zenodo already anonymized) |
+| [`federated-mep-inventory-2026-08.md`](federated-mep-inventory-2026-08.md) · [`.json`](federated-mep-inventory-2026-08.json) | Duplex MEP + HVAC fixture entity counts. `mep_system_clash` NOT_VERIFIED. Not delivered |
+| [`moexp-on-gni-sample-2026-08.md`](moexp-on-gni-sample-2026-08.md) · [`.json`](moexp-on-gni-sample-2026-08.json) | Official MOEXP IDS on one GNI student IFC. 389/389 fail. Not CIM compliance |
 | [`upstream-validate-overlap-2026-08.md`](upstream-validate-overlap-2026-08.md) | What duplicates bSI validate / Gherkin / ifcbench; keep vs replace. Not a run |
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |

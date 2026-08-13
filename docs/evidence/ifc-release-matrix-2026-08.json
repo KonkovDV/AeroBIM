@@ -4,7 +4,7 @@
   "claim_level": "fixture_only",
   "customer_accuracy_not_established": true,
   "claim_boundary": "Fixture schema-suite kernel timing and finding counts. issue_count is not accuracy. Not customer packages. Not TZ >90%.",
-  "generated_at": "2026-08-13T20:15:55.242372+00:00",
+  "generated_at": "2026-08-13T21:45:27.707830+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.13.7",
@@ -12,9 +12,9 @@
     "system": "Windows"
   },
   "source_suite": {
-    "generated_at": "2026-08-13T20:15:55.242179+00:00",
-    "iterations": 20,
-    "warmup_iterations": 2
+    "generated_at": "2026-08-13T21:45:27.707701+00:00",
+    "iterations": 5,
+    "warmup_iterations": 1
   },
   "rows": [
     {
@@ -25,10 +25,10 @@
       "rules_evaluated": 3,
       "findings_emitted": 6,
       "timing_ms": {
-        "p50": 25.86,
-        "p95": 29.194,
-        "max": 31.547,
-        "spike_max_over_p50": 1.22
+        "p50": 25.365,
+        "p95": 25.827,
+        "max": 25.827,
+        "spike_max_over_p50": 1.018
       },
       "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip"
     },
@@ -40,10 +40,10 @@
       "rules_evaluated": 3,
       "findings_emitted": 4,
       "timing_ms": {
-        "p50": 25.681,
-        "p95": 31.504,
-        "max": 40.354,
-        "spike_max_over_p50": 1.571
+        "p50": 23.677,
+        "p95": 24.97,
+        "max": 24.97,
+        "spike_max_over_p50": 1.055
       },
       "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip"
     },
@@ -53,16 +53,16 @@
       "ifc_bytes": 1005,
       "ifc_entity_count": 12,
       "rules_evaluated": 3,
-      "findings_emitted": 4,
+      "findings_emitted": 6,
       "timing_ms": {
-        "p50": 27.881,
-        "p95": 41.388,
-        "max": 45.576,
-        "spike_max_over_p50": 1.635
+        "p50": 25.806,
+        "p95": 31.758,
+        "max": 31.758,
+        "spike_max_over_p50": 1.231
       },
       "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip"
     }
   ],
   "refusals_and_degradations_note": "Schema-suite packs are IFC+IDS wall Pset fixtures. Capability SKIPPED (clash/raster/MEP) is honesty, not a silent pass. DWG native remains FAILED.",
-  "content_sha256": "c9c27ff556f47dab28c06a3299ca10098ae0bea9296b28053522c168d99ba7c3"
+  "content_sha256": "3780a18ddba8f4ebac684b977f12ed4c66b71b0317ccf3b17f2803e27c45f5b6"
 }
