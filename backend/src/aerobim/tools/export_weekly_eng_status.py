@@ -119,7 +119,7 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
             "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
             "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
             "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",
-            "RT-002 customer-approved norm pack",
+            "RT-002 Samolet customer-approved acceptance profile (MOEXP IDS already public)",
             "RT-003 federated MEP scope memo",
         ],
     }

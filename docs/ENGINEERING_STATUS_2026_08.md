@@ -10,7 +10,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
 **last_updated:** 2026-08-09 · **v1.6.6** — Renga **ToS cite GO**; Exp A / PNST IDS runtime **18/22 clean**; baseline schema **1.4.0** (CI-attested when publishable)  
-**Checkpoint:** **`NO_GO`** — RT-001 / RT-002 / RT-003 remain OPEN  
+**Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; AEC-Bench ≠ that corpus) / RT-002 (Samolet acceptance profile; official MOEXP IDS exist) / RT-003 (MEP) remain OPEN  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
 **Residuals Red Team:** [`quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md`](quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md)  

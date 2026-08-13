@@ -8,7 +8,8 @@
 ## Forbidden public wording (until evidence exists)
 
 - «точность >90%» / product accuracy percentages
-- «утверждённый заказчиком нормативный пакет» (current: **НЕТ**)
+- «утверждённый заказчиком нормативный пакет / профиль приёмки» (MOEXP IDS public; Samolet profile: **НЕТ**)
+- «нет утверждённых норм» / «норм-пакета нет» — false as of 2026-08-13; official IDS: https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/
 - «MEP clash» as delivered capability
 - «полный MEP clash» / full MEP system-aware as AVAILABLE without customer federated IFC + signed matrix (RT-003)
 - «анализирует DWG/DXF» / implying DWG ready because DXF parsed (mixed package must surface FAILED)
@@ -52,7 +53,8 @@
 
 - Fixture extraction macro_f1 (not product accuracy)
 - Generic IFC clash **when** `ifcclash` installed and capability OK
-- Synthetic / draft norm packs only
+- Official MOEXP IDS executed by IfcTester (engine coverage only; not Samolet sign-off)
+- Synthetic / draft **customer** norm packs only until `customer_approved`
 - BCF ZIP **structural** OK; CDE import **НЕ ДОКАЗАНО**
 - Fixture SLA schema 1.2.0 with `claim_level=fixture_only`
 - Calculation **сверка** PARTIAL; **корректность** НЕ РЕАЛИЗОВАНО (`evidence_consistency_only`)

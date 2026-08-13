@@ -1,0 +1,948 @@
+<ids:ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns:ids="http://standards.buildingsmart.org/IDS">
+  <ids:info>
+    <ids:title>Требования к элементам ИОС ВК, ПВ ЦИМ ОКС</ids:title>
+    <ids:copyright>Отдел ЦИМ, ГАУ МО "Мособлгосэкспертиза"</ids:copyright>
+    <ids:version>1.0</ids:version>
+    <ids:description>МОГЭ.ЦИМ.ИОС.ВК.ПВ.3.2</ids:description>
+    <ids:author>bimmoexp@gmail.com</ids:author>
+    <ids:date>2026-02-02</ids:date>
+    <ids:purpose>Проверка атрибутивного состава элементов по требованиям ГАУ МО "Мособлгосэкспертиза"</ids:purpose>
+    <ids:milestone>Проектирование</ids:milestone>
+  </ids:info>
+  <ids:specifications>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.1 Трубопроводы. Трубы" identifier="6.4.1.1" description="Требования к ЦИМ. Раздел 6.4.1 Трубопроводы. Трубы и соединительные детали. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Ww][Pp][Aa]|[Ww][Pp][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <ids:simpleValue>IFCPIPESEGMENT</ids:simpleValue>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="WPA" />
+              <xs:enumeration value="XMB" />
+              <xs:enumeration value="WPC" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="труба" />
+              <xs:enumeration value="фитинг трубы" />
+              <xs:enumeration value="шланг" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCLENGTHMEASURE" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Длина</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCREAL" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Уклон</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Диаметр условного прохода</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Тип системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Способ соединения</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Муфтовое" />
+              <xs:enumeration value="Фланцевое" />
+              <xs:enumeration value="Сварка (склейка)" />
+              <xs:enumeration value="Раструбное" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Строительные параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Материал</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.1 Трубопроводы. Соединительные детали" identifier="6.4.1.2" description="Требования к ЦИМ. Раздел 6.4.1 Трубопроводы. Трубы и соединительные детали. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Xx][Mm][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <ids:simpleValue>IFCPIPEFITTING</ids:simpleValue>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="WPA" />
+              <xs:enumeration value="XMB" />
+              <xs:enumeration value="WPC" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="труба" />
+              <xs:enumeration value="фитинг трубы" />
+              <xs:enumeration value="шланг" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCREAL" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Уклон</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Диаметр условного прохода</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Тип системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Способ соединения</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Муфтовое" />
+              <xs:enumeration value="Фланцевое" />
+              <xs:enumeration value="Сварка (склейка)" />
+              <xs:enumeration value="Раструбное" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Строительные параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Материал</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.1 Трубопроводы. Изоляция трубопровода" identifier="6.4.1.3" description="Требования к ЦИМ. Раздел 6.4.1 Трубопроводы. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*[Rr][Qq][Aa]\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <ids:simpleValue>IFCCOVERING</ids:simpleValue>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>RQA</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>тепло- и звукоизоляция</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCLENGTHMEASURE" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Толщина</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCAREAMEASURE" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Площадь</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Тип системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Строительные параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Материал</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.2 Запорно−регулирующая арматура трубопроводов" identifier="6.4.2" description="Требования к ЦИМ. Раздел 6.4.2 Запорно−регулирующая арматура трубопроводов. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Qq][Mm][Aa]|[Kk][Hh][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <ids:simpleValue>IFCVALVE</ids:simpleValue>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="QMA" />
+              <xs:enumeration value="KHA" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="жидкостный запорный клапан" />
+              <xs:enumeration value="регулятор расхода или давления воды" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCLENGTHMEASURE" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Диаметр условного прохода</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Тип системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Строительные параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Материал</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.3 Оборудование" identifier="6.4.3" description="Требования к ЦИМ. Раздел 6.4.3 Оборудование. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Hh][Qq][Bb]|[Gg][Pp][Bb]|[Cc][Mm][Aa]|[Ee][Bb][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="IFCPUMP|IFCTANK|IFCBOILER|IFCINTERCEPTOR" />
+            </xs:restriction>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="HQB" />
+              <xs:enumeration value="GPB" />
+              <xs:enumeration value="CMA" />
+              <xs:enumeration value="EBA" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="фильтрующее (разделяющее) устройство" />
+              <xs:enumeration value="гидравлический насос" />
+              <xs:enumeration value="закрытый резервуар" />
+              <xs:enumeration value="электрический котел" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.4 Сантехническое оборудование" identifier="6.4.4" description="Требования к ЦИМ. Раздел 6.4.4 Сантехническое оборудование. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Xx][Kk][Aa]|[Xx][Kk][Bb]|[Xx][Kk][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <ids:simpleValue>IFCSANITARYTERMINAL</ids:simpleValue>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="XKA" />
+              <xs:enumeration value="XKB" />
+              <xs:enumeration value="XKC" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="раковина" />
+              <xs:enumeration value="унитаз" />
+              <xs:enumeration value="писсуар" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Вид сантехнического оборудования</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.5 Оборудование пожаротушения&#xA;" identifier="6.4.5" description="Требования к ЦИМ. Раздел 6.4.5 Оборудование пожаротушения. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Xx][Kk][Aa]|[Xx][Kk][Bb]|[Xx][Kk][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Ff][Mm][Dd]|[Ff][Mm][Ff]|[Ff][Mm][Jj]|[Cc][Mm][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="IFCFIRESUPPRESSIONTERMINAL|IFCDOOR|IFCCOVERING|IFCFURNITURE" />
+            </xs:restriction>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="FMD" />
+              <xs:enumeration value="FMF" />
+              <xs:enumeration value="FMJ" />
+              <xs:enumeration value="CMB" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="огнетушитель" />
+              <xs:enumeration value="противопожарный занавес" />
+              <xs:enumeration value="огнезащитное покрытие" />
+              <xs:enumeration value="шкаф" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Тип системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="ИОС.ВК.ПВ.6.4.6 Измерительные приборы" identifier="6.4.6" description="Требования к ЦИМ. Раздел 6.4.6 Измерительные приборы. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:property dataType="IFCTEXT">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Bb][Ff][Aa]|[Bb][Pp][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="IFCFLOWINSTRUMENT|IFCSENSOR" />
+            </xs:restriction>
+          </ids:name>
+        </ids:entity>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Код класса#XNKC0001</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="BFA" />
+              <xs:enumeration value="BPA" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Наименование класса#XNKC0002</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="датчик расхода" />
+              <xs:enumeration value="датчик абсолютного давления" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_КСИ</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>КСИ Класс строительной информации#XNKC0003</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <ids:simpleValue>Com</ids:simpleValue>
+          </ids:value>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Имя системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Наименование</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Обозначение</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCTEXT" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Информация</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Тип системы</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+        <ids:property dataType="IFCLENGTHMEASURE" cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>МОГЭ_Геометрические параметры</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>Диаметр условного прохода</ids:simpleValue>
+          </ids:baseName>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+  </ids:specifications>
+</ids:ids>

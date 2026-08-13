@@ -1,0 +1,1088 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ids:ids xmlns:ids="http://standards.buildingsmart.org/IDS" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd">
+  <ids:info>
+    <ids:title>Требования к элементам ЦИМ автомобильных дорог и улично-дорожной сети</ids:title>
+    <ids:copyright>Отдел ЦИМ, ГАУ МО "Мособлгосэкспертиза""</ids:copyright>
+    <ids:version>1.1</ids:version>
+    <ids:description>МОГЭ.ЦИМ.АДиУДС.3.3</ids:description>
+    <ids:author>bimmoexp@gmail.com</ids:author>
+    <ids:date>2026-03-17</ids:date>
+    <ids:purpose>Проверка классификации КСИ элементов ЦИМ по требованиям ГАУ МО «Мособлгосэкспертиза»</ids:purpose>
+    <ids:milestone>Проектирование</ids:milestone>
+  </ids:info>
+  <ids:specifications>
+    <ids:specification ifcVersion="IFC4" name="2.1.2 Фундаменты кроме свай, переходные плиты, лежни" identifier="2.1.2" description="Требования к ЦИМ. Раздел 2.1.2 Фундаменты кроме свай. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;подготовка под фундамент моделируется отдельным элементом">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCFOOTING" /><xs:enumeration value="IFCFOOTINGTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Tt]|[Uu][Ll][Gg]|[Uu][Ll][Kk]|[Uu][Ll][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.3 Сваи" identifier="2.1.3" description="Требования к ЦИМ. Раздел 2.1.3 Сваи. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;сваи моделируются отдельно от основной части фундамент">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCPILE" /><xs:enumeration value="IFCPILETYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.4 Тело опоры, подферменные площадки" identifier="2.1.4" description="Требования к ЦИМ. Раздел 2.1.4 Тело опоры, подферменные площадки. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;каждая стойка опоры моделируется отельным элементом;&#10;каждая подферменная площадка моделируется отдельным элементов.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCOLUMN" /><xs:enumeration value="IFCCOLUMNTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Dd]|[Uu][Ll][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.5 Ригели, насадки" identifier="2.1.5" description="Требования к ЦИМ. Раздел 2.1.5 Ригели, насадки. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCBEAM" /><xs:enumeration value="IFCBEAMTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Ee])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.6 Опорные части и клиновые листы" identifier="2.1.6" description="Требования к ЦИМ. Раздел 2.1.6 Опорные части и клиновые листы. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;каждая опорная часть моделируется отдельным элементом без разделения на составляющие&#10;детали;&#10;каждый клиновый лист моделируется отдельным элементов без разделения на составляющие&#10;детали.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCPLATE" /><xs:enumeration value="IFCPLATETYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Pp][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.7 Шкафные стенки, открылки" identifier="2.1.7" description="Требования к ЦИМ. Раздел 2.1.7 Шкафные стенки, открылки. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCWALL" /><xs:enumeration value="IFCWALLTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Uu]|[Uu][Ll][Vv])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.8 Грунтовые элементы" identifier="2.1.8" description="Требования к ЦИМ. Раздел 2.1.8 Грунтовые элементы. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;слои дорожной одежды из сыпучих материалов и грунтов моделируются в соответствии с&#10;разделом 2.1.13.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Aa]|[Uu][Mm][Qq]|[Ww][Mm][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.9 Укрепления грунтовых поверхностей" identifier="2.1.9" description="Требования к ЦИМ. Раздел 2.1.9 Укрепления грунтовых поверхностей. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;Подготовка под укрепление из сыпучих материалов моделируется отдельным элементом в&#10;соответствии с разделом 2.1.8.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Mm][Jj]|[Nn][Cc][Gg]|[Uu][Mm][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.10 Балки пролетного строения" identifier="2.1.10" description="Требования к ЦИМ. Раздел 2.1.10 Балки пролетного строения. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCBEAM" /><xs:enumeration value="IFCBEAMTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Ee])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.11 Монолитные участки пролетного строения" identifier="2.1.11" description="Требования к ЦИМ. Раздел 2.1.11 Монолитные участки пролетного строения. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCSLAB" /><xs:enumeration value="IFCSLABTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Kk])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты дорожных знаков" identifier="2.1.12.1" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты дорожных знаков. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Pp][Hh][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты светофоров" identifier="2.1.12.2" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты светофоров. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCAUDIOVISUALAPPLIANCE" /><xs:enumeration value="IFCAUDIOVISUALAPPLIANCETYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Pp][Hh][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты дорожной разметки" identifier="2.1.12.3" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты дорожной разметки. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Pp][Hh][Ee])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты дорожного ограждения" identifier="2.1.12.4" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты дорожного ограждения. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Ff][Qq][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты сигнальных столбиков" identifier="2.1.12.5" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты сигнальных столбиков. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Rr][Uu][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты средств аудио-, фото- и видеофиксации" identifier="2.1.12.6" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты средств аудио-, фото- и видеофиксации. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCSENSOR" /><xs:enumeration value="IFCSENSORTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Bb][Xx][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты стоечных опор" identifier="2.1.12.7" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты стоечных опор. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCOLUMN" /><xs:enumeration value="IFCCOLUMNTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты рамных опор" identifier="2.1.12.8" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты рамных опор. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCELEMENTASSEMBLY" /><xs:enumeration value="IFCELEMENTASSEMBLYTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.12 Элементы обустройства автомобильных дорог. Атрибуты бортовых камней" identifier="2.1.12.9" description="Требования к ЦИМ. Раздел 2.1.12 Элементы обустройства автомобильных дорог. Атрибуты бортовых камней. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;элементы обустройства автомобильных дорог моделируются в виде отдельных объемных&#10;элементов в упрощенной форме;&#10;опоры дорожных знаков и светофоров моделируются отдельным элементом;&#10;фундаменты опор моделируются отдельным элементом в соответствии с разделом 2.1.2;&#10;дорожные ограждения с различными параметрами (например, высотой) моделируются&#10;отдельными участками;&#10;дорожная разметка моделируется в виде поверхностей, повторяющих в своих границах&#10;поверхность, на которую наносится;&#10;основание под бортовые камни допускается не моделировать.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Nn][Dd][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.13 Слои дорожной одежды. Конструктивные слои&#10;" identifier="2.1.13.1" description="Требования к ЦИМ. Раздел 2.1.13 Слои дорожной одежды. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;Каждый слой моделируется отдельным элементом">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Tt][Aa]|[Nn][Cc][Aa]|[Uu][Ll][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.13 Слои дорожной одежды. Разделяющие слои&#10;" identifier="2.1.13.2" description="Требования к ЦИМ. Раздел 2.1.13 Слои дорожной одежды. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;Каждый слой моделируется отдельным элементом">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCOVERING" /><xs:enumeration value="IFCCOVERINGTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Rr][Qq][Bb]|[Rr][Qq][Hh])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.14 Металлические конструкции" identifier="2.1.14" description="Требования к ЦИМ. Раздел 2.1.14 Металлические конструкции. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCOLUMN" /><xs:enumeration value="IFCBEAM" /><xs:enumeration value="IFCELEMENTASSEMBLY" /><xs:enumeration value="IFCSLAB" /><xs:enumeration value="IFCMEMBER" /><xs:enumeration value="IFCSTAIR" /><xs:enumeration value="IFCCOLUMNTYPE" /><xs:enumeration value="IFCBEAMTYPE" /><xs:enumeration value="IFCELEMENTASSEMBLYTYPE" /><xs:enumeration value="IFCSLABTYPE" /><xs:enumeration value="IFCMEMBERTYPE" /><xs:enumeration value="IFCSTAIRTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Dd]|[Uu][Ll][Ee]|[Uu][Ll][Kk]|[Uu][Mm][Ll]|[Xx][Ss][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.15 Ограждения" identifier="2.1.15" description="Требования к ЦИМ. Раздел 2.1.15 Ограждения. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCRAILING" /><xs:enumeration value="IFCRAILINGTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Rr][Uu][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.16 Водоотвод" identifier="2.1.16" description="Требования к ЦИМ. Раздел 2.1.16 Водоотвод. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCPIPESEGMENT" /><xs:enumeration value="IFCPIPEFITTING" /><xs:enumeration value="IFCPIPESEGMENTTYPE" /><xs:enumeration value="IFCPIPEFITTINGTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Ww][Mm][Bb]|[Ww][Pp][Aa]|[Ww][Mm][Ee])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.17 Стены. Несущая стена" identifier="2.1.17.1" description="Требования к ЦИМ. Раздел 2.1.17 Стены. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCWALL" /><xs:enumeration value="IFCWALLTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Mm])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.17 Стены. Отверстия" identifier="2.1.17.2" description="Требования к ЦИМ. Раздел 2.1.17 Стены. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <ids:simpleValue>IFCOPENINGELEMENT</ids:simpleValue>
+          </ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Xx][Tt][Aa]|[Xx][Tt][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.18 Отделка" identifier="2.1.18" description="Требования к ЦИМ. Раздел 2.1.18 Отделка. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;отделку требуется моделировать в границах помещения;&#10;полы и потолки с перепадом выше 50 мм моделируются с уклоном;&#10;допускается моделирование отделки стен условной толщиной, округленной до 10 мм.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCOVERING" /><xs:enumeration value="IFCCOVERINGTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Nn][Cc][Cc]|[Nn][Cc][Dd]|[Nn][Cc][Bb]|[Qq][Qq][Jj])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.19 Витражи. Общая сборка" identifier="2.1.19.1" description="Требования к ЦИМ. Раздел 2.1.19 Витражи. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;при экспорте в формат IFC витражная система моделируется в виде отдельных элементов,&#10;объединенных в сборку (с помощью IfcRelAggregates). Требования к моделированию иных&#10;элементов системы приведены в соответствующих разделах">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCURTAINWALL" /><xs:enumeration value="IFCCURTAINWALLTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Qq][Qq][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.19 Витражи. Элементы сборки" identifier="2.1.19.2" description="Требования к ЦИМ. Раздел 2.1.19 Витражи. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;при экспорте в формат IFC витражная система моделируется в виде отдельных элементов,&#10;объединенных в сборку (с помощью IfcRelAggregates). Требования к моделированию иных&#10;элементов системы приведены в соответствующих разделах.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCDOOR" /><xs:enumeration value="IFCPLATE" /><xs:enumeration value="IFCMEMBER" /><xs:enumeration value="IFCELEMENTASSEMBLY" /><xs:enumeration value="IFCDOORTYPE" /><xs:enumeration value="IFCPLATETYPE" /><xs:enumeration value="IFCMEMBERTYPE" /><xs:enumeration value="IFCELEMENTASSEMBLYTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Nn][Aa][Aa]|[Qq][Qq][Cc]|[Nn][Aa][Bb]|[Uu][Nn][Aa]|[Uu][Nn][Bb]|[Uu][Nn][Cc]|[Uu][Nn][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.20 Кровля. Общая сборка" identifier="2.1.20.1" description="Требования к ЦИМ. Раздел 2.1.20 Кровля. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;кровельное покрытие моделируется в виде отдельных элементов, объединенных в сборку (с&#10;помощью IfcRelAggregates). Требования к моделированию отдельных элементов приведены в&#10;соответствующих разделах.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCROOF" /><xs:enumeration value="IFCROOFTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*[Aa][Ee]\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.20 Кровля. Элементы сборки" identifier="2.1.20.2" description="Требования к ЦИМ. Раздел 2.1.20 Кровля. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;кровельное покрытие моделируется в виде отдельных элементов, объединенных в сборку (с&#10;помощью IfcRelAggregates). Требования к моделированию отдельных элементов приведены в&#10;соответствующих разделах.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCOVERING" /><xs:enumeration value="IFCCOVERINGTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*[Nn][Cc][Ee]\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.21 Вертикальный транспорт" identifier="2.1.21" description="Требования к ЦИМ. Раздел 2.1.21 Вертикальный транспорт. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCTRANSPORTELEMENT" /><xs:enumeration value="IFCTRANSPORTELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Gg][Mm][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.22 Лестничные сходы, пандусы. Общая сборка" identifier="2.1.22.1" description="Требования к ЦИМ. Раздел 2.1.22 Лестничные сходы, пандусы. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;лестничные сходы должны иметь правильные габариты, форму и отражать проектное количество&#10;проступей и площадок;&#10;пандусы должны иметь правильные габариты форму и уклон.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCSTAIR" /><xs:enumeration value="IFCRAMP" /><xs:enumeration value="IFCSTAIRTYPE" /><xs:enumeration value="IFCRAMPTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>.*[КкKk][СсCc][ИиIi].*</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>.*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Xx][Ss][Cc]|[Xx][Ss][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.22 Лестничные сходы, пандусы. Элементы сборки" identifier="2.1.22.2" description="Требования к ЦИМ. Раздел 2.1.22 Лестничные сходы, пандусы. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;лестничные сходы должны иметь правильные габариты, форму и отражать проектное количество&#10;проступей и площадок;&#10;пандусы должны иметь правильные габариты форму и уклон.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCSTAIRFLIGHT" /><xs:enumeration value="IFCSLAB" /><xs:enumeration value="IFCMEMBER" /><xs:enumeration value="IFCSTAIRFLIGHTTYPE" /><xs:enumeration value="IFCSLABTYPE" /><xs:enumeration value="IFCMEMBERTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <ids:simpleValue>.*[КкKk][СсCc][ИиIi].*</ids:simpleValue>
+          </ids:propertySet>
+          <ids:baseName>
+            <ids:simpleValue>.*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*</ids:simpleValue>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Xx][Ss][Bb]|[Xx][Ss][Aa]|[Uu][Aa][Dd]|[Uu][Bb][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.23 Водопропускная труба" identifier="2.1.23" description="Требования к ЦИМ. Раздел 2.1.23 Водопропускная труба. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;каждая труба многоочковых водопропускных труб моделируется отдельным элементом;&#10;водопропускные трубы моделируется с проектным уклоном без учета строительного подъема;&#10;металлические гофрированные трубы моделируются в виде труб с толщиной стенки, равной&#10;высоте гофра плюс толщина листа.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCPIPESEGMENT" /><xs:enumeration value="IFCPIPESEGMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Ww][Pp][Aa])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.24 Противофильтрационные экраны" identifier="2.1.24" description="Требования к ЦИМ. Раздел 2.1.24 Противофильтрационные экраны. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;грунтовые противофильтрационные экраны моделируются в соответствии с разделом 0;&#10;противофильтрационные экраны из металлических гофрированных элементов моделируются в&#10;виде стенок толщиной, равной высоте гофра плюс толщина листа, без разделения на листы и без&#10;соединительных деталей.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCWALL" /><xs:enumeration value="IFCWALLTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Rr][Qq][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.25 Оголовки водопропускных труб, перепады, водобойные колодцы" identifier="2.1.25" description="Требования к ЦИМ. Раздел 2.1.25 Оголовки водопропускных труб, перепады, водобойные колодцы. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCWALL" /><xs:enumeration value="IFCCIVILELEMENT" /><xs:enumeration value="IFCWALLTYPE" /><xs:enumeration value="IFCCIVILELEMENTTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Bb][Ff]|[Uu][Ll][Vv]|[Ww][Mm][Bb]|[Qq][Pp][Bb])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.26 Подпорные стены" identifier="2.1.26" description="Требования к ЦИМ. Раздел 2.1.26 Подпорные стены. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Особенности моделирования:&#10;грунт засыпки армогрунтовых систем моделируется отдельным элементом в соответствии с&#10;разделом 2.1.8.">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCWALL" /><xs:enumeration value="IFCWALLTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Uu][Ll][Ll])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.27 Шумозащитные (акустические) экраны. Общая сборка" identifier="2.1.27.1" description="Требования к ЦИМ. Раздел 2.1.27 Шумозащитные (акустические) экраны. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCCURTAINWALL" /><xs:enumeration value="IFCCURTAINWALLTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Rr][Qq][Cc])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+    <ids:specification ifcVersion="IFC4" name="2.1.27 Шумозащитные (акустические) экраны. Элементы сборки" identifier="2.1.27.2" description="Требования к ЦИМ. Раздел 2.1.27 Шумозащитные (акустические) экраны. Наименование и описание атрибутов, экспортируемых в ЦИМ формата IFC">
+      <ids:applicability minOccurs="1" maxOccurs="unbounded">
+        <ids:entity>
+          <ids:name>
+            <xs:restriction base="xs:string"><xs:enumeration value="IFCDOOR" /><xs:enumeration value="IFCPLATE" /><xs:enumeration value="IFCMEMBER" /><xs:enumeration value="IFCELEMENTASSEMBLY" /><xs:enumeration value="IFCDOORTYPE" /><xs:enumeration value="IFCPLATETYPE" /><xs:enumeration value="IFCMEMBERTYPE" /><xs:enumeration value="IFCELEMENTASSEMBLYTYPE" /></xs:restriction></ids:name>
+        </ids:entity>
+      </ids:applicability>
+      <ids:requirements>
+        <ids:property cardinality="required">
+          <ids:propertySet>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*[КкKk][СсCc][ИиIi].*" />
+            </xs:restriction>
+          </ids:propertySet>
+          <ids:baseName>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*([КкKk][СсCc][ИиIi]).*([КкKk][ОоOo][ДдDd]).*([КкKk][ЛлLl][АаAa][СсCc][СсCc][АаAa].*).*" />
+            </xs:restriction>
+          </ids:baseName>
+          <ids:value>
+            <xs:restriction base="xs:string">
+              <xs:pattern value=".*\s*([Nn][Aa][Aa]|[Qq][Qq][Cc]|[Nn][Aa][Bb]|[Uu][Nn][Aa]|[Uu][Nn][Bb]|[Uu][Nn][Cc]|[Uu][Nn][Dd])\s*.*" />
+            </xs:restriction>
+          </ids:value>
+        </ids:property>
+      </ids:requirements>
+    </ids:specification>
+  </ids:specifications>
+</ids:ids>

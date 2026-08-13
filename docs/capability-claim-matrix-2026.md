@@ -37,7 +37,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 |---|---|---|
 | Product accuracy >90% | RT-001 | Fixture macro_f1 only; cite pack + SHA |
 | Customer SLA ≤30 min | RT-001 / SLA honesty | Fixture SLA `claim_level=fixture_only` |
-| Approved customer norm pack | RT-002 | Synthetic/draft packs only (`claim_labels`); full approval object + pack_hash required — RT-002 **OPEN** |
+| Approved **customer** acceptance profile | RT-002 | Official MOEXP IDS exist ([coverage](evidence/norm-pack-moexp-coverage-2026-08.md)); Samolet `customer_approved` pack still absent — RT-002 **OPEN** |
 | MEP system clash delivered | RT-003 | `mep_system_clash=NOT_VERIFIED`; edge_kinds/AABB ≠ verified geometric clash — RT-003 **OPEN** |
 | AABB / connects = verified geometric clash | — | Always `geometry_verified=False` on analyze probe |
 | Native DWG analysis | — | НЕ РЕАЛИЗОВАНО (`native DWG parser is not implemented`) |
