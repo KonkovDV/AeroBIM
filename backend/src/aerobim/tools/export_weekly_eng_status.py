@@ -84,7 +84,8 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_boundary": (
             "Engineering weekly status only. No invented commercial funnel. "
-            "Checkpoint NO_GO until RT-001/002/003. Fixture != customer accuracy."
+            "Checkpoint NO_GO until RF PD+expertise corpus, Samolet acceptance "
+            "profile, and measured federated MEP. Fixture != customer accuracy."
         ),
         "checkpoint": "NO_GO",
         "rt_open": ["RT-001", "RT-002", "RT-003"],
@@ -119,8 +120,8 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
             "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
             "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
             "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",
-            "RT-002 Samolet customer-approved acceptance profile (MOEXP IDS already public)",
-            "RT-003 federated MEP scope memo",
+            "RT-002 Samolet-signed acceptance profile (public MOEXP IDS ≠ that profile)",
+            "RT-003 measure public federated IFC (west_riverside / sixty5); not MEP delivered",
         ],
     }
 

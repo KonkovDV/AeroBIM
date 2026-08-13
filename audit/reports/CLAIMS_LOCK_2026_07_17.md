@@ -1,7 +1,7 @@
 # Claims lock — Red Team freeze
 
 **Status:** locked for Samolet TechLab Task 07 public wording.  
-**Checkpoint verdict:** `NO_GO` until RT-001/002/003 closed with customer evidence.  
+**Checkpoint verdict:** `NO_GO` until RF PD+expertise corpus, Samolet-signed profile, and measured federated MEP.  
 **Last Red Team docs pass:** 2026-07-19 (`main` @ post-remediation + jury-pack trim).  
 **Claims Lock v2 sync (2026-07-30, `main` @ `98c6701`):** coverage / revision diff / geometry core wording added (P1 features shipped 2026-07-29).
 
@@ -24,7 +24,8 @@
 - Green pass when required clash/OCR/schema checks were skipped
 - Fixture SLA as customer комплект ≤30 мин
 - «I9 DONE», «GraphRAG готов», «IfcLLM в AeroBIM» — I9 is **advisory scaffold** only
-- Closing RT-001/002/003 without customer evidence
+- Closing RT-001/002/003 without the remaining honest evidence (RF corpus / Samolet profile / measured federated MEP)
+- «нет утверждённых норм» / «норм-пакета нет» / «нет утверждённого нормативного пакета»
 - Treating grant token quota increase as progress on RT-001 / Checkpoint GO
 - «нет автоматического вердикта» without clarifying Shared-gate `summary.passed` (see ADR-001)
 - Treating co-presence MEP graph edges as connection / system-membership proof
@@ -86,7 +87,7 @@
 - `extraction_integrity` capability wired (default **NOT_VERIFIED**: сигналы ingestion-слоем ещё не производятся; FAILED блокирует pass) — «render-vs-extract проверка PDF реализована» по-прежнему НЕ заявляется
 - `extraction_integrity` PDF text-layer producer wired on analyze path (2026-07-31 evening): clean PDF → OK; hidden/zero-size → NOT_VERIFIED; FAILED still blocks pass — still **not** a full render-vs-extract product claim
 - «Offline install+runtime bundle пройден» (образ восстановлен из tar через docker load после удаления тега и обслужен при --network none; evidence 2026-07-31) — допустимо для контура С Docker; «bare-metal установка без Docker подтверждена» — НЕТ (wheelhouse NOT VERIFIED)
-- Checkpoint remains **NO_GO** until RT-001/002/003
+- Checkpoint remains **NO_GO** until RF PD+expertise corpus, Samolet-signed profile, and measured federated MEP
 - Sprint 2.1: инженерный baseline на public/synthetic package (reproducible on declared commit + manifest)
 - Sprint 2.1: система фиксирует deterministic findings и capability statuses
 - Sprint 2.1: LLM только как advisory layer; model comparison на synthetic/public (mock in CI)
