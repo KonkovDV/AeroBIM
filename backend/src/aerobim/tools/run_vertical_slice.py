@@ -164,6 +164,45 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
     html_path = output_dir / "report.html"
     html_path.write_text(render_report_html(report.report_id, public), encoding="utf-8")
 
+    from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+    bcf_path = output_dir / "findings.bcfzip"
+    bcf_path.write_bytes(export_bcf(report))
+
+    overlay_meta: dict[str, Any] | None = None
+    overlay_error: str | None = None
+    pdf_for_overlay: Path | None = None
+    for entry in input_entries:
+        path_str = str(entry.get("path") or "")
+        if path_str.endswith(".pdf"):
+            candidate = root / path_str
+            if candidate.is_file():
+                pdf_for_overlay = candidate
+                break
+    zone_ann = next((a for a in report.drawing_annotations if a.problem_zone is not None), None)
+    if pdf_for_overlay is not None and zone_ann is not None and zone_ann.problem_zone is not None:
+        pz = zone_ann.problem_zone
+        try:
+            from aerobim.tools.render_drawing_overlay_evidence import render_overlay
+
+            overlay_meta = render_overlay(
+                pdf_path=pdf_for_overlay,
+                out_png=output_dir / "overlay-problem-zone.png",
+                zone={
+                    "x": float(pz.x or 0.0),
+                    "y": float(pz.y or 0.0),
+                    "width": float(pz.width or 0.0),
+                    "height": float(pz.height or 0.0),
+                },
+                page_number=int(pz.page_number or 1),
+            )
+        except ImportError as exc:
+            overlay_error = f"overlay renderer unavailable: {exc}"
+    elif pdf_for_overlay is None:
+        overlay_error = "no PDF input for overlay"
+    elif zone_ann is None:
+        overlay_error = "no drawing annotation with problem_zone"
+
     # Evidence envelope: deterministic provenance per extracted drawing annotation.
     # P0: text-layer vs OCR flags — this demo PDF uses pdfminer text layer (not OCR).
     ocr_used = False
@@ -480,9 +519,7 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         "cv_phases": cv_phases,
         "reproduce": {
             "command": (
-                "python -m aerobim.tools.run_vertical_slice "
-                "--manifest samples/demo/vertical-slice-2026-08-11/manifest.json "
-                "--output artifacts/vertical-slice-2026-08-11"
+                "python -m aerobim.tools.run_demo_vertical_slice"
             ),
             "cwd": "backend/",
             "inputs_sha256": {
@@ -532,11 +569,17 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             "report_json": str(report_json_path.name),
             "report_html": str(html_path.name),
             "limitations": "LIMITATIONS.json",
+            "bcf_zip": str(bcf_path.name),
+            "overlay_png": (
+                "overlay-problem-zone.png" if overlay_meta else None
+            ),
         },
         "evidence": evidence_records,
         "layout_regions": layout_regions,
         "ifc_annotation_links": ifc_links,
         "empty_ocr_policy": empty_ocr_status,
+        "overlay": overlay_meta,
+        "overlay_error": overlay_error,
         "cv_phases": cv_phases,
         "metrics": {
             "drawing_extraction_coverage": (
@@ -573,6 +616,8 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         "report_html": str(html_path),
         "summary": str(summary_path),
         "limitations": str(limitations_path),
+        "bcf_zip": str(bcf_path),
+        "overlay_png": str(output_dir / "overlay-problem-zone.png"),
     }
     return summary
 
