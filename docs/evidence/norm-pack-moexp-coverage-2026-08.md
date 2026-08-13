@@ -36,8 +36,19 @@ Open fixture `samples/ifc/wall-pset-qto-pass.ifc`. Fail here means the spec ran 
 | nis | 2 | 91 | 0 | 91 | 0 | 0 |
 | oks | 20 | 216 | 0 | 216 | 0 | 0 |
 
+## By pack kind (filename, not a new run)
+
+`attributes` = published `Требования_…` IDS. `classification` = published `Проверка_КСИ_…` IDS.
+This split does not mean CIM compliance. Engine coverage only.
+
+| Kind | files | specs | exec pass | exec fail | unsupported | load error |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| attributes | 12 | 206 | 0 | 206 | 0 | 0 |
+| classification | 12 | 183 | 0 | 183 | 0 | 0 |
+| other | 0 | 0 | 0 | 0 | 0 | 0 |
+
 ICMM 3.3 is PDF-only on the TIM page as of 2026-08-13; no IDS listed.
 
 Generated at: `2026-08-13T20:33:20.765514+00:00`
-content_sha256: `843800f16d68e6fcc09977ad105acf864812c48f927583d42ed1ea8f0650885c`
+content_sha256: `6c00afc4d68a4c5152de45f6bb81c21b905608cbd6444e9d975c4700e91abb05`
 machine: `{"platform": "Windows-11-10.0.26200-SP0", "python": "3.13.7", "machine": "AMD64", "system": "Windows"}`

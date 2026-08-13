@@ -1,10 +1,14 @@
 import { Suspense, lazy, startTransition, useDeferredValue, useEffect, useState } from "react";
 import { downloadExport, fetchReport, fetchReports, getApiBaseUrl, postReviewEvent } from "./lib/api";
-import type { ClashResult, PackageOutcome, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
+import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
 import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 import CapabilityHonestyPanel from "./components/CapabilityHonestyPanel";
 import CoverageMapPanel from "./components/CoverageMapPanel";
 import ProvenancePanel from "./components/ProvenancePanel";
+import VerticalSliceKt2, {
+  formatPackageOutcome,
+  outcomeClass,
+} from "./components/VerticalSliceKt2";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
@@ -215,42 +219,6 @@ function ViewerPlaceholder({ message }: { message: string }) {
 function formatTimestamp(value: string): string {
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
-}
-
-function formatPackageOutcome(outcome: PackageOutcome | null | undefined, passed: boolean): string {
-  switch (outcome) {
-    case "pass":
-      return "PASS — нарушений не найдено (проверки выполнены)";
-    case "pass_with_warnings":
-      return "PASS_WITH_WARNINGS — есть предупреждения";
-    case "review_required":
-      return "REVIEW_REQUIRED — требуется эксперт";
-    case "blocked":
-      return "BLOCKED — проверка не завершена / данных недостаточно";
-    case "failed":
-      return "FAILED — ошибки или fail-closed";
-    default:
-      return passed ? "Passed (legacy)" : "Failed (legacy)";
-  }
-}
-
-/** Colour class for the outcome badge so REVIEW_REQUIRED is visually distinct from
- *  a confirmed PASS/BLOCKED verdict (HITL §12: an unconfirmed result must not read
- *  as a pass or a hard failure). */
-function outcomeClass(outcome: PackageOutcome | null | undefined, passed: boolean): string {
-  switch (outcome) {
-    case "pass":
-      return "outcome-pass";
-    case "pass_with_warnings":
-      return "outcome-warn";
-    case "review_required":
-      return "outcome-review";
-    case "blocked":
-    case "failed":
-      return "outcome-block";
-    default:
-      return passed ? "outcome-pass" : "outcome-block";
-  }
 }
 
 function reportSortWeight(report: ReportSummaryEntry): [number, string] {
@@ -1062,6 +1030,8 @@ export default function App() {
                   <strong>{selectedReport.summary.drawing_annotation_count}</strong>
                 </article>
               </div>
+
+              <VerticalSliceKt2 report={selectedReport} issue={activeIssue} />
 
               <div className="report-context">
                 <span>IFC: available via report source download</span>

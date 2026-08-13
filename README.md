@@ -191,8 +191,9 @@ source .venv/bin/activate  # Linux/macOS
 # Install (pdf-agpl = overlay PNG via PyMuPDF; raster = RapidOCR degrade path)
 pip install -e ".[dev,raster,pdf-agpl]"
 
-# KT#2 vertical slice (fail-loud; writes artifacts/vertical-slice-demo/)
+# KT#2 vertical slice (~10 min from clone): fail-loud; writes artifacts/vertical-slice-demo/
 python -m aerobim.tools.run_demo_vertical_slice
+# Open artifacts/vertical-slice-demo/report.html — fragment, finding, evidence, non-PASS verdict.
 
 # Optional extras
 # pip install -e ".[clash]"    # enable geometry clash detection

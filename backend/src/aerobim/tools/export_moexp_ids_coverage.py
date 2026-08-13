@@ -33,6 +33,9 @@ STATUS_PASS = "executable_pass_on_fixture"
 STATUS_FAIL = "executable_fail_on_fixture"
 STATUS_UNSUPPORTED = "unsupported"
 STATUS_LOAD_ERROR = "load_error"
+KIND_ATTRIBUTES = "attributes"
+KIND_CLASSIFICATION = "classification"
+KIND_OTHER = "other"
 
 
 def _sha256_bytes(raw: bytes) -> str:
@@ -68,6 +71,22 @@ def classify_specification(
     if spec_passed is True:
         return STATUS_PASS
     return STATUS_FAIL
+
+
+def classify_ids_kind(file_name: str) -> str:
+    """Split official MOEXP IDS into attributes vs classification packs.
+
+    Filenames on moexp.ru: ``Требования_…`` (attribute requirements) vs
+    ``Проверка_КСИ_…`` (classification / KSI). Grouping is from the published
+    name, not a new measurement.
+    """
+
+    name = file_name
+    if "Проверка_КСИ" in name:
+        return KIND_CLASSIFICATION
+    if "Требования" in name:
+        return KIND_ATTRIBUTES
+    return KIND_OTHER
 
 
 def _issue_digest(issues: list[ValidationIssue]) -> list[dict[str, str]]:
@@ -108,6 +127,7 @@ def evaluate_ids_file(
             "domain": domain,
             "path": str(ids_path.as_posix()),
             "file_name": ids_path.name,
+            "kind": classify_ids_kind(ids_path.name),
             "sha256": _sha256_file(ids_path),
             "bytes": ids_path.stat().st_size,
             "load_error": load_error,
@@ -166,6 +186,7 @@ def evaluate_ids_file(
         "domain": domain,
         "path": str(ids_path.as_posix()),
         "file_name": ids_path.name,
+        "kind": classify_ids_kind(ids_path.name),
         "sha256": _sha256_file(ids_path),
         "bytes": ids_path.stat().st_size,
         "load_error": load_error,
@@ -218,27 +239,27 @@ def _summarize(files: list[dict[str, Any]]) -> dict[str, Any]:
         "unsupported": counts[STATUS_UNSUPPORTED],
         "load_error": counts[STATUS_LOAD_ERROR],
         "by_domain": _by_domain(files),
+        "by_kind": _by_kind(files),
     }
 
 
-def _by_domain(files: list[dict[str, Any]]) -> dict[str, Any]:
-    grouped: dict[str, dict[str, int]] = {}
-    for row in files:
-        domain = str(row.get("domain") or "unknown")
-        bucket = grouped.setdefault(
-            domain,
-            {
-                "files": 0,
-                "specifications": 0,
-                "executable_pass_on_fixture": 0,
-                "executable_fail_on_fixture": 0,
-                "unsupported": 0,
-                "load_error": 0,
-            },
-        )
-        bucket["files"] += 1
-        for spec in row.get("specifications") or []:
-            bucket["specifications"] += 1
+def _empty_bucket() -> dict[str, int]:
+    return {
+        "files": 0,
+        "specifications": 0,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0,
+    }
+
+
+def _accumulate_file(bucket: dict[str, int], row: dict[str, Any]) -> None:
+    bucket["files"] += 1
+    specs = row.get("specifications") or []
+    if specs:
+        bucket["specifications"] += len(specs)
+        for spec in specs:
             status = str(spec.get("status") or STATUS_LOAD_ERROR)
             if status == STATUS_PASS:
                 bucket["executable_pass_on_fixture"] += 1
@@ -248,6 +269,34 @@ def _by_domain(files: list[dict[str, Any]]) -> dict[str, Any]:
                 bucket["unsupported"] += 1
             else:
                 bucket["load_error"] += 1
+        return
+    counts = row.get("counts") if isinstance(row.get("counts"), dict) else {}
+    bucket["specifications"] += int(row.get("specification_count") or 0)
+    bucket["executable_pass_on_fixture"] += int(counts.get(STATUS_PASS) or 0)
+    bucket["executable_fail_on_fixture"] += int(counts.get(STATUS_FAIL) or 0)
+    bucket["unsupported"] += int(counts.get(STATUS_UNSUPPORTED) or 0)
+    bucket["load_error"] += int(counts.get(STATUS_LOAD_ERROR) or 0)
+
+
+def _by_domain(files: list[dict[str, Any]]) -> dict[str, Any]:
+    grouped: dict[str, dict[str, int]] = {}
+    for row in files:
+        domain = str(row.get("domain") or "unknown")
+        bucket = grouped.setdefault(domain, _empty_bucket())
+        _accumulate_file(bucket, row)
+    return grouped
+
+
+def _by_kind(files: list[dict[str, Any]]) -> dict[str, Any]:
+    grouped: dict[str, dict[str, int]] = {
+        KIND_ATTRIBUTES: _empty_bucket(),
+        KIND_CLASSIFICATION: _empty_bucket(),
+        KIND_OTHER: _empty_bucket(),
+    }
+    for row in files:
+        kind = str(row.get("kind") or classify_ids_kind(str(row.get("file_name") or "")))
+        bucket = grouped.setdefault(kind, _empty_bucket())
+        _accumulate_file(bucket, row)
     return grouped
 
 
@@ -266,7 +315,7 @@ def build_moexp_ids_coverage(
     summary = _summarize(evaluated)
     payload: dict[str, Any] = {
         "artifact_type": "moexp_ids_coverage",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "claim_level": CLAIM_LEVEL,
         "customer_accuracy_not_established": True,
         "closes_rt002_customer_profile": False,
@@ -291,6 +340,7 @@ def build_moexp_ids_coverage(
         "files": [
             {
                 **{key: value for key, value in row.items() if key != "specifications"},
+                "kind": row.get("kind") or classify_ids_kind(str(row.get("file_name") or "")),
                 "specification_count": len(row.get("specifications") or []),
                 "counts": {
                     STATUS_PASS: sum(
@@ -383,6 +433,27 @@ def render_moexp_ids_coverage_markdown(coverage: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
+            "## By pack kind (filename, not a new run)",
+            "",
+            "`attributes` = published `Требования_…` IDS. `classification` = published `Проверка_КСИ_…` IDS.",
+            "This split does not mean CIM compliance. Engine coverage only.",
+            "",
+            "| Kind | files | specs | exec pass | exec fail | unsupported | load error |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    by_kind = summary.get("by_kind") if isinstance(summary.get("by_kind"), dict) else {}
+    for kind, bucket in sorted(by_kind.items()):
+        if not isinstance(bucket, dict):
+            continue
+        lines.append(
+            f"| {kind} | {bucket.get('files')} | {bucket.get('specifications')} | "
+            f"{bucket.get('executable_pass_on_fixture')} | {bucket.get('executable_fail_on_fixture')} | "
+            f"{bucket.get('unsupported')} | {bucket.get('load_error')} |"
+        )
+    lines.extend(
+        [
+            "",
             str(coverage.get("icmm_note") or ""),
             "",
             f"Generated at: `{coverage.get('generated_at')}`",
@@ -392,6 +463,27 @@ def render_moexp_ids_coverage_markdown(coverage: dict[str, Any]) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def attach_by_kind(coverage: dict[str, Any]) -> dict[str, Any]:
+    """Add filename-derived pack kind without re-running IfcTester."""
+
+    files = coverage.get("files")
+    if not isinstance(files, list):
+        raise ValueError("coverage.files must be a list")
+    for row in files:
+        if isinstance(row, dict):
+            row["kind"] = classify_ids_kind(str(row.get("file_name") or ""))
+    summary = coverage.get("summary")
+    if not isinstance(summary, dict):
+        summary = {}
+        coverage["summary"] = summary
+    summary["by_kind"] = _by_kind(files)
+    coverage["schema_version"] = "1.1.0"
+    coverage.pop("content_sha256", None)
+    encoded = json.dumps(coverage, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
+    coverage["content_sha256"] = _sha256_bytes(encoded)
+    return coverage
 
 
 def write_moexp_ids_coverage(
@@ -415,11 +507,20 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pack-dir", type=Path, default=None)
     parser.add_argument("--ifc", type=Path, default=None)
+    parser.add_argument(
+        "--from-json",
+        type=Path,
+        default=None,
+        help="Re-group an existing coverage JSON (by_kind) without re-running IfcTester.",
+    )
     args = parser.parse_args(argv)
     root = repo_root()
-    pack_dir = args.pack_dir or default_pack_dir(root)
-    ifc_path = args.ifc or default_fixture_ifc(root)
-    coverage = build_moexp_ids_coverage(pack_dir=pack_dir, ifc_path=ifc_path)
+    if args.from_json is not None:
+        coverage = attach_by_kind(json.loads(args.from_json.read_text(encoding="utf-8")))
+    else:
+        pack_dir = args.pack_dir or default_pack_dir(root)
+        ifc_path = args.ifc or default_fixture_ifc(root)
+        coverage = build_moexp_ids_coverage(pack_dir=pack_dir, ifc_path=ifc_path)
     write_moexp_ids_coverage(
         coverage,
         artifacts_json=root / "artifacts" / "norm-pack-moexp" / "coverage.json",

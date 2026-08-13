@@ -1,14 +1,15 @@
+<!-- claims-lint: allow-file reason="KT#2 AI work plan; quotes forbidden phrases as Never-do list; NO_GO explicit" -->
 # AI WORK PLAN — KT#2 (for the next agent)
 
-**Tip:** `07f2782`. **Checkpoint:** NO_GO. **Hours are calendar windows, not ideal-engineer time.**  
+**Tip:** current `main` after this delivery. **Checkpoint:** NO_GO. **Hours are calendar windows, not ideal-engineer time.**  
 **Every number must come from a run** (`artifacts/` or committed `docs/evidence/`). No hand-typed metrics.
 
-## P0 — before the tracker opens the repo (14.08, ≤60 min)
+## P0 — before the tracker opens the repo (14.08, ≤60 min) — DONE 13.08
 
-1. **Fix golden hash.** `backend/tests/test_golden_report.py` expects `62ade…8595`; code on `07f2782` yields `b243e8c9…1524` (PackageOutcome priority). Refresh the constant **and** the «fourth conscious refresh» comment. Re-run `pytest tests/test_golden_report.py -q`.
-2. **Register lint bypasses.** Add `docs/demo/TRACKER_MEETING_2026_08_14.md` and `docs/pilot/KT2_7DAY_PLAN_2026_08_13.md` to `audit/claims_allow_file_registry.json`, or switch them to per-line `claims-lint: allow`. Re-run `python scripts/lint_claims.py`.
-3. **Index VLM evidence.** Add one row to `docs/evidence/README.md` for `vlm-comparison-2026-08.json`.
-4. **Align ADR-001.** Add the precedence order (FAILED > BLOCKED > REVIEW_REQUIRED > PASS_WITH_WARNINGS > PASS) to `docs/architecture/ADR-001-verdict-ownership-2026.md` decision #2.
+1. Golden hash refreshed (`b243e8c9…1524`); outcome assertion `failed` (violation outranks missing data).
+2. Tracker/plan paths in `audit/claims_allow_file_registry.json`.
+3. VLM evidence indexed in `docs/evidence/README.md`.
+4. ADR-001 precedence aligned with Mushkani et al. arXiv:2607.29058.
 
 Gate: `pytest` on the four files above + `ruff check` + `lint_claims.py` all green.
 
@@ -33,7 +34,7 @@ Gate: `pytest` on the four files above + `ruff check` + `lint_claims.py` all gre
 | Build as **data** (JSON inventory + existing `package_completeness` + new rule-pack) | ~4 h, no new DI | «Формальная полнота комплекта по чек-листу, не проверка проектных решений» |
 | Cut | 0 | «Профиль АГР не собран; есть официальные IDS МОГЭ и движок» |
 
-**Default: cut.** Do not promise a Moscow profile that fails the freeze.
+**Default: cut — done 13.08.** Do not promise a Moscow profile that fails the freeze.
 
 ## P4 — measurement protocol + DWG ADR (18.08, 5 h)
 

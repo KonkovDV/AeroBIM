@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ProvenancePanel from "./ProvenancePanel";
-import type { ValidationIssue } from "../lib/types";
+import VerticalSliceKt2, { outcomeClass } from "./VerticalSliceKt2";
+import type { ValidationIssue, ValidationReport } from "../lib/types";
 
 /** KT#2 demo contract: stamp/title finding is visible with evidence + fail-closed verdict. */
 const stampFinding: ValidationIssue = {
@@ -43,12 +43,47 @@ const stampFinding: ValidationIssue = {
   approval_ref: null,
 };
 
+function buildReport(outcome: ValidationReport["summary"]["outcome"] = "failed"): ValidationReport {
+  return {
+    report_id: "c".repeat(32),
+    request_id: "req-slice",
+    created_at: "2026-08-13T20:00:00Z",
+    requirements: [],
+    issues: [stampFinding],
+    summary: {
+      requirement_count: 0,
+      issue_count: 1,
+      error_count: 1,
+      warning_count: 0,
+      passed: false,
+      drawing_annotation_count: 1,
+      generated_remark_count: 1,
+      outcome,
+    },
+    drawing_annotations: [],
+    drawing_assets: [],
+    clash_results: [],
+  };
+}
+
 describe("KT#2 vertical-slice UI contract", () => {
-  it("shows fragment quote, finding id, evidence ref, and does not look like a pass", () => {
-    render(<ProvenancePanel activeIssue={stampFinding} />);
+  it("shows fragment quote, finding id, evidence ref, overlay, and a non-pass verdict", () => {
+    render(<VerticalSliceKt2 report={buildReport("failed")} issue={stampFinding} />);
+    expect(screen.getByTestId("kt2-vertical-slice")).toBeTruthy();
     expect(screen.getByText("fid-slice-wall-01")).toBeTruthy();
     expect(screen.getByText("pdf:techlab-a101-wall-thickness#page1")).toBeTruthy();
-    expect(screen.getByText(/WALL-01/)).toBeTruthy();
-    expect(screen.getByText(/Audit-ready provenance present/i)).toBeTruthy();
+    expect(screen.getByText(/Quote: WALL-01 thickness 150 mm/)).toBeTruthy();
+    expect(screen.getByText(/Sheet A-101/)).toBeTruthy();
+    const badge = screen.getByTestId("kt2-outcome");
+    expect(badge.textContent).toMatch(/FAILED/);
+    expect(badge.className).toContain("outcome-fail");
+    expect(badge.className).not.toContain("outcome-pass");
+    expect(screen.getByText(/Verdict is not PASS/i)).toBeTruthy();
+  });
+
+  it("keeps FAILED visually distinct from BLOCKED", () => {
+    expect(outcomeClass("failed", false)).toBe("outcome-fail");
+    expect(outcomeClass("blocked", false)).toBe("outcome-block");
+    expect(outcomeClass("review_required", false)).toBe("outcome-review");
   });
 });
