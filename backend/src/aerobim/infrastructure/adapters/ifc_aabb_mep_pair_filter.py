@@ -100,7 +100,9 @@ def _source_paths(graph: MepSystemGraph) -> list[str]:
     return [part.strip() for part in raw.split(",") if part.strip()]
 
 
-def _element_boxes_from_model(model: Any) -> dict[str, AxisAlignedBox3d]:
+def _element_boxes_from_model(
+    model: Any, *, ifc_types: tuple[str, ...] | None = None
+) -> dict[str, AxisAlignedBox3d]:
     try:
         import ifcopenshell.geom
     except ModuleNotFoundError:
@@ -115,7 +117,18 @@ def _element_boxes_from_model(model: Any) -> dict[str, AxisAlignedBox3d]:
 
     boxes: dict[str, AxisAlignedBox3d] = {}
     try:
-        products = list(model.by_type("IfcProduct"))
+        if ifc_types:
+            products = []
+            seen: set[int] = set()
+            for type_name in ifc_types:
+                for product in model.by_type(type_name):
+                    ident = id(product)
+                    if ident in seen:
+                        continue
+                    seen.add(ident)
+                    products.append(product)
+        else:
+            products = list(model.by_type("IfcProduct"))
     except Exception:  # noqa: BLE001
         return {}
 

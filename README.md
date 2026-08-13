@@ -9,7 +9,7 @@
 
 ## КТ#2 — 20.08.2026 (промежуточная версия)
 
-> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS-контуре закрыт (`AEROBIM-IDS-IFC-VERSION`). Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**, это другое); federated MEP clash **NOT_VERIFIED** (инвентарь duplex/mep есть). Кодом GO не ставится.
+> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS-контуре закрыт (`AEROBIM-IDS-IFC-VERSION`). Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**, это другое); federated MEP clash **NOT_VERIFIED** (duplex AABB 654 overlap pairs measured; not clash). Кодом GO не ставится.
 
 | Корзина | Что |
 | --- | --- |

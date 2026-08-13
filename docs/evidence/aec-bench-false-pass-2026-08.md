@@ -1,36 +1,26 @@
-<!-- claims-lint: allow-file reason="AEC-Bench false-pass SKIPPED; inventory is not product accuracy" -->
+<!-- claims-lint: allow-file reason="AEC-Bench gold inventory; Harbor false-pass SKIPPED" -->
 ---
-title: "AEC-Bench false-pass measurement — SKIPPED"
-date: "2026-08-13"
-claim_boundary: "SKIPPED. Inventory 196 is not a false-pass rate. Not RT-001. Not product accuracy."
+title: "AEC-Bench gold inventory and null baseline"
+date: 2026-08-13
+claim_level: open_bench_only
+claim_boundary: >-
+  AEC-Bench open_bench_only (arXiv:2603.29199). Prefetch/inventory of public agentic tasks plus gold-label inventory. Harbor agent trial scores are NOT AeroBIM product accuracy and do not close RT-001. null_always_clean is a gold-only baseline, not a drawing-reading agent.
 ---
 
-# AEC-Bench false-pass — SKIPPED (honest)
+# AEC-Bench gold inventory
 
-**Status:** `SKIPPED`  
-**claim_level:** `open_bench_only`  
-**closes_rt001:** `false`
+- gt.json files: **196**
+- labels: `{"clean": 50, "has_issue": 134, "qa": 12}`
+- variants: `{"broken": 114, "clean": 34, "navigation": 12, "none": 36}`
+- Harbor agent: **NOT_RUN**
+- null_always_clean false_positive: **134**
+- null_always_clean true_negative: **50**
+- null_always_clean false_pass_rate_on_labeled: **0.7283**
+- labeled_compliance_tasks: **184**
 
-AEC-Bench ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), Apache 2.0) is inventoried: **196** tasks in [`aec-bench-smoke-latest.json`](aec-bench-smoke-latest.json). Harbor agent trial is `NOT_RUN` (no paid agent key / Docker trial). Mushkani et al. ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058)) 160-task compliance subset is **not executed**.
+Harbor drawing-reading false-pass remains **NOT_MEASURED**. `null_always_clean` is a gold-only floor: always say compliant, never open a sheet. Not AeroBIM product accuracy. Not RT-001. Observation unit = task, not project cluster.
 
-## Why SKIPPED (not a hidden fail)
-
-| Gate | Result |
-| --- | --- |
-| Inventory | 196 tasks, 9 families, 3 scopes — **done** 2026-08-03 |
-| Prefetch sample | 3 sheets downloaded — **done** |
-| Agent trial / 160-task slice | **NOT_RUN** |
-| False-pass rate | **not measured** |
-| Cluster bootstrap (project as unit) | **not measured** |
-| Four-outcome table | **not measured** |
-
-Publishing a percent here would be a fabricated metric. Calendar: full protocol is 17.08; if agent budget is still absent, keep SKIPPED.
-
-## What we will measure when the run exists
-
-1. **Observation unit = project**, not task (Mushkani: 29 projects). Cluster bootstrap CI.
-2. **False pass first** (system says compliant, gold says violation). False fail is secondary.
-3. Four outcomes: TP / FP / FN / TN — not binary accuracy.
-4. Calibration + selective-risk curve if a confidence score exists; else say it does not.
-
-Until that artifact has a hash, the only citeable sentence is: **false-pass rate not measured**.
+```bash
+cd backend
+python -m aerobim.tools.run_aec_bench_smoke --also-docs-evidence
+```

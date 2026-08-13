@@ -18,22 +18,23 @@ claim_boundary: >-
 - AR+STR pairs complete: **7** / 9 stems (upstream: 7 of 9 teams)
 - largest file: `{"path": "2026_BIMprojects/2026_BIMprojects/model_6_arc.ifc", "bytes": 561838129}` (upstream could not load ~536 MB architecture; header-only still opens)
 - IfcOpenShell: `{"ok": 223, "skipped_oversize": 1}`
+- extra roots: `[{"dir": "C:\\plans\\AeroBIM\\.local\\bim-whale-ifc-samples", "status": "RUN", "file_count": 6, "open_ok": 6, "schema_counts": {"IFC2X3": 6}, "ifc_open_counts": {"ok": 6}}]`
 - DOI: [10.5281/zenodo.19722012](https://doi.org/10.5281/zenodo.19722012)
-- content_sha256: `d9e0519962837fc7248ff7231aefc433f63a9caa19716a6ebfa054dff128fcca`
+- content_sha256: `1682899c2eed89810708cd0999d5a98b5b4a7ecfaaf46c3f241fabafc2c5c746`
 
 ## Paired architectural + structural stems
 
-| stem | paired | schema_match |
-| --- | --- | --- |
-| `model_0` | True | True |
-| `model_1` | True | True |
-| `model_2` | False | None |
-| `model_3` | True | True |
-| `model_4` | True | True |
-| `model_5` | True | True |
-| `model_6` | False | None |
-| `model_7` | True | True |
-| `model_8` | True | True |
+| stem | paired | schema_match | arc_products | structure_products |
+| --- | --- | --- | --- | --- |
+| `model_0` | True | True | 2150 | 152 |
+| `model_1` | True | True | 34268 | 328 |
+| `model_2` | False | None | 589 | None |
+| `model_3` | True | True | 1735 | 201 |
+| `model_4` | True | True | 1419 | 107 |
+| `model_5` | True | True | 3142 | 1111 |
+| `model_6` | False | None | None | None |
+| `model_7` | True | True | 1243 | 876 |
+| `model_8` | True | True | 702 | 206 |
 
 Student GNI models are **not** product accuracy. Checkpoint stays NO_GO.
 

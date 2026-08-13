@@ -1,7 +1,7 @@
 {
   "artifact_type": "ifc_bench_v2_smoke",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-13T22:12:52.303097+00:00",
+  "generated_at": "2026-08-13T22:43:26.589413+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "IFC-Bench open_bench_only: deterministic countable subset via IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001.",
   "closes_rt001": false,
@@ -15,11 +15,19 @@
     "questions_sha256_matches_pin": true,
     "pinned_sha256_reference": "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b",
     "question_count": 1026,
-    "ifc_files_present": 3,
+    "ifc_files_present": 5,
     "ifc_files": [
       {
         "path": "projects/dental_clinic/arc.ifc",
         "sha256": "b90fe57b8aa9329d762a564770e697d4f7357677484e3a78ede4ab6d2163c0c0"
+      },
+      {
+        "path": "projects/dental_clinic/mep.ifc",
+        "sha256": "72bdbfeb104d044bcd1ae644f9a5c6e72fd7750c2fd15fe98de2c53a04850e8d"
+      },
+      {
+        "path": "projects/dental_clinic/str.ifc",
+        "sha256": "3351ee3bd19aea39167ba466237fe06de64ea391b0a31b0aacc017c84311e14d"
       },
       {
         "path": "projects/duplex/arc.ifc",
@@ -33,16 +41,26 @@
   },
   "summary": {
     "total_questions": 1026,
-    "scored": 9,
-    "matched": 9,
+    "scored": 17,
+    "matched": 17,
     "mismatched": 0,
-    "skipped_unmapped_or_uncomparable": 1017,
+    "skipped_unmapped_or_uncomparable": 1009,
     "errors": 0,
     "exact_match_rate_on_scored": 1.0,
-    "denominator_note": "scored=9 of total_questions=1026; unmapped NL and non-numeric GT skipped; missing IFC → error",
-    "note": "Rate is over the deterministic countable subset only (9/1026 questions). Unmapped NL items are skipped."
+    "denominator_note": "scored=17 of total_questions=1026; unmapped NL and non-numeric GT skipped; missing IFC → error",
+    "note": "Rate is over the deterministic countable subset only (17/1026 questions). Unmapped NL items are skipped."
   },
   "results": [
+    {
+      "question": "What is the thickness of the insulation of the external walls?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_insulated_panel_mm",
+      "predicted": 42,
+      "expected": 42.0,
+      "status": "matched",
+      "detail": null
+    },
     {
       "question": "How many X-RAY rooms are there in total?",
       "project": "dental_clinic",
@@ -64,6 +82,36 @@
       "detail": null
     },
     {
+      "question": "How many toilet rooms are there on the second floor?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_floor2_toilet_count",
+      "predicted": 8,
+      "expected": 8.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "What is the floor to floor height between the first and the second floor?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_floor_to_floor_m",
+      "predicted": 4.57,
+      "expected": 4.57,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "What are the dimensions of the window with guid 0otfaO0qPDAhynjJ6DmgH8?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_window_guid_height_m",
+      "predicted": 1.735,
+      "expected": 1.735,
+      "status": "matched",
+      "detail": null
+    },
+    {
       "question": "how many windows are there in this building?",
       "project": "dental_clinic",
       "ifc_model": "arc",
@@ -80,6 +128,26 @@
       "probe_id": "dental_arc_door_count",
       "predicted": 254,
       "expected": 254.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "What is the width of the door 1hOSvn6df7F8_7GcBWlRGQ ?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_door_guid_width_m",
+      "predicted": 1.25,
+      "expected": 1.25,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "What is the floor-to-floor height between the ground floor and first floor?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_floor_to_floor_m",
+      "predicted": 3.1,
+      "expected": 3.1,
       "status": "matched",
       "detail": null
     },
@@ -124,6 +192,26 @@
       "detail": null
     },
     {
+      "question": "how many bathroom are there ?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_bathroom_count",
+      "predicted": 4,
+      "expected": 4.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
+      "question": "Which rooms have thermostats installed?",
+      "project": "duplex",
+      "ifc_model": "mep",
+      "probe_id": "duplex_mep_thermostat_count",
+      "predicted": 2,
+      "expected": 2.0,
+      "status": "matched",
+      "detail": null
+    },
+    {
       "question": "How many light fixtures are specified in the model, and what is the breakdown by type?",
       "project": "duplex",
       "ifc_model": "mep",
@@ -134,7 +222,7 @@
       "detail": null
     }
   ],
-  "skipped_count": 1017,
+  "skipped_count": 1009,
   "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\ifc-bench-v2-smoke.json",
-  "output_sha256": "955d68d9c9f6af8c68ad89e9fd578eda2d0649948475e87ea40506a60fcba78c"
+  "output_sha256": "17378fe4e57021fad25c036862ce35199aadabc27c75524d753daf4bcbe84721"
 }

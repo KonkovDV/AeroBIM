@@ -57,6 +57,8 @@ class OpenIfcStressTests(unittest.TestCase):
         self.assertTrue(by_stem["model_0"]["paired"])
         self.assertTrue(by_stem["model_0"]["schema_match"])
         self.assertFalse(by_stem["model_2"]["paired"])
+        self.assertIn("arc_products", by_stem["model_0"])
+        self.assertIn("structure_products", by_stem["model_0"])
 
     def test_header_only_does_not_read_whole_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

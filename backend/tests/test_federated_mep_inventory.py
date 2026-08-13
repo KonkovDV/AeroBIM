@@ -16,8 +16,11 @@ class FederatedMepInventoryTests(unittest.TestCase):
         self.assertEqual(payload["mep_system_clash"], "NOT_VERIFIED")
         self.assertFalse(payload["closes_rt003"])
         self.assertGreaterEqual(payload["present"], 1)
-        labels = {row["label"]: row["status"] for row in payload["rows"]}
-        self.assertEqual(labels["eng_fixture"], "RUN")
+        self.assertIn("hvac_fixture_graph_aabb", payload["geometry"])
+        self.assertEqual(payload["geometry"]["hvac_fixture_graph_aabb"]["geometry_verified"], False)
+        self.assertEqual(payload["geometry"]["hvac_fixture_graph_aabb"]["status"], "RUN")
+        self.assertIn("duplex_arc_mep_aabb", payload["geometry"])
+        self.assertFalse(payload["geometry"]["duplex_arc_mep_aabb"]["geometry_verified"])
 
 
 if __name__ == "__main__":
