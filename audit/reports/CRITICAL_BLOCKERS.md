@@ -5,7 +5,7 @@
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`** (RT-001 / RT-002 / RT-003 open). Engineering remediations do **not** close customer blockers. Eng readiness **improved** (F–L): publishable precision gates, SLA `customer_measurable` refuse-without-evidence, BCF T0–T4 ladder + empty T2 template, revision finding compare, pilot threat model, open-core ADR — **without** inventing customer corpus, CDE screenshots, or SLA customer packs.
+**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer blockers. Open: **RT-001** (no RF PD+expertise corpus; AEC-Bench is a document bench, not that corpus), **RT-002** (no Samolet-approved acceptance profile; official MOEXP IDS **are** public), **RT-003** (federated MEP).
 
 **Reclassification (v4):** [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md)
 
@@ -106,29 +106,23 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 
 ---
 
-### RT-001 — Customer accuracy / >90% not evidenced
+### RT-001 — Customer accuracy / RF expertise corpus not evidenced
 - **Severity:** BLOCKER  
 - **Category:** Claims / Evaluation  
-- **Exact file:** `docs/evidence/tz-matrix-status-latest.json`, `domain/architecture.py::PrecisionClaim`  
-- **Observed:** `customer_corpus_present=false`; F1≈0.86 on fixture only  
-- **Expected:** customer corpus + ≥2 adjudicators before any product accuracy claim  
-- **Reproduction:** `python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70`  
+- **Narrowed 2026-08-13:** a public **document** bench exists — AEC-Bench, 196 tasks, Apache 2.0 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), [github.com/nomic-ai/aec-bench](https://github.com/nomic-ai/aec-bench)). In-repo inventory smoke: `docs/evidence/aec-bench-smoke-latest.json` (Harbor agent **NOT_RUN**; false-pass not measured). Mushkani et al. slice of 160 compliance-judgment tasks: [arXiv:2607.29058](https://arxiv.org/abs/2607.29058) — protocol dated 17.08, not yet a published AeroBIM score.  
+- **Still true:** there is **no** public corpus «российский комплект ПД + фактическое заключение экспертизы». Fixture F1 is not product accuracy.  
+- **Expected before any product accuracy claim:** customer corpus + ≥2 adjudicators + κ/α + held-out + FN tracked  
 - **Impact:** Checkpoint fails if accuracy KPI presented as achieved  
-- **Fix:** Keep withheld; run customer intake protocol; do not raise claims  
-- **Verification:** PrecisionClaim product publishable only with customer + adjudicators≥2 + κ/α agreement + held-out split + FN tracked (never synthetic-only)  
-- **Engineering readiness (2026-07-21):** publishable gates hardened (`precision_claim_publishable_with_agreement` + per-class support/critical_recall/FP burden). **Product HOLD — RT-001 still OPEN** until customer corpus.  
+- **Product HOLD — RT-001 still OPEN** until that RF/customer corpus. AEC-Bench inventory ≠ RT-001 closed.
 
-### RT-002 — Approved norm pack absent
-- **Severity:** BLOCKER  
+### RT-002 — Customer-approved acceptance profile absent (public MOEXP IDS exist)
+- **Severity:** BLOCKER (customer sign-off)  
 - **Category:** Norms  
-- **Exact file:** `infrastructure/adapters/json_norm_rule_pack_loader.py`, partners TZ tails  
-- **Observed:** synthetic/draft packs only (`claim_labels` honesty); loader + schema require **full** `approval` object for `customer_approved`/`approved` — `approved_by`, `approval_date`, `approval_status`, `document_title`, `document_edition`, `effective_date`, `scope_reference` — plus `jurisdiction`, `pack_hash`/`source_hash`, and per-rule `clause`/`norm_clause`. **approval_ref alone rejected**. Synthetic/fixture labels cannot claim `customer_approved`. Content-hash mismatch blocks sign-off.  
-- **Expected:** signed customer pack with edition/clause/jurisdiction + matching pack_hash  
-- **Reproduction:** inspect samples/norm packs; `customer_corpus_present`  
-- **Impact:** «проверка норм» cannot be signed off  
-- **Fix:** customer pack intake; immutable version store records `content_sha256`  
-- **Verification:** pack load + analyze with FAILED/OK capability + hash reproducibility  
-- **Engineering readiness (2026-07-21):** approved-pack contract hardened (schema↔loader↔immutable store). **Product HOLD — RT-002 still OPEN** until signed customer pack. No fixture invents customer evidence.  
+- **Corrected 2026-08-13:** «нет утверждённых норм» is **false**. GAU MO «Мособлгосэкспертиза» published IDS + IFC4 mappings on [TIM / BIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) (CIM ОКС 3.2 + IDS 23.03.2026; НИС 3.3 + IDS 24.03.2026; АД/УДС 3.3 + IDS 23.03.2026). Pack + engine coverage: `samples/ids/moexp/` · [`docs/evidence/norm-pack-moexp-coverage-2026-08.md`](../../docs/evidence/norm-pack-moexp-coverage-2026-08.md). ICMM 3.3 remains PDF-only (no IDS on that page).  
+- **Still true:** no Samolet-signed `customer_approved` acceptance profile (`approval` object + `pack_hash` + jurisdiction + per-rule clause). Synthetic/fixture packs cannot claim `customer_approved`.  
+- **Expected:** signed customer profile with edition/clause/jurisdiction + matching pack_hash  
+- **Impact:** «проверка по профилю заказчика» cannot be signed off; official examination IDS **can** be executed  
+- **Product HOLD — RT-002 still OPEN** until signed customer profile. Public MOEXP IDS do not invent Samolet evidence.  
 
 ### RT-003 — MEP system-aware clash not runtime
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  

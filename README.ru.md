@@ -9,13 +9,14 @@
 
 ## КТ#2 — 20.08.2026 (промежуточная версия)
 
-> **Checkpoint: `NO_GO`.** Не прячем. RT-001 / RT-002 / RT-003 кодом не снимаются.
+> **Checkpoint: `NO_GO`.** Не прячем. RT-001 — нет корпуса «ПД РФ + заключение экспертизы». RT-002 — нет профиля приёмки «Самолёта» (IDS МОГЭ **есть**). RT-003 — MEP. Кодом не снимаются.
 
 | Корзина | Что |
 | --- | --- |
-| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → замечание + overlay + HTML/JSON + BCF ZIP |
+| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → замечание + overlay + HTML/JSON + BCF ZIP. IDS МОГЭ → IfcTester. |
+| **Подтверждено внешне** | [IDS Мособлгосэкспертизы](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) · AEC-Bench 196 задач ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), инвентарь, не ложные пропуски) |
 | **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом |
-| **Заблокировано заказчиком** | Корпус, нормы, MEP |
+| **Заблокировано заказчиком** | Корпус заказчика, профиль приёмки Самолёта, MEP |
 | **Не утверждаем** | >90%, DWG-ready, MEP delivered, CDE-ready BCF. Native DWG = **FAILED** |
 
 План: [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md) · трекер 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md)
@@ -39,8 +40,8 @@ Project-package analyze; IFC / IDS / cross-doc; детерминированны
 ## Статус готовности
 
 > **Checkpoint: `NO_GO`** — внутренний статус готовности к *подписанию у заказчика*, **не** оценка «система не работает».  
-> По-русски: код и fixtures есть; **нет** утверждённого корпуса заказчика, норм-пакета и federated MEP-scope — без них нельзя честно снять checkpoint.  
-> Открыты: **RT-001** (точность на customer corpus), **RT-002** (норм-пак), **RT-003** (federated MEP) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
+> По-русски: код и fixtures есть; **нет** корпуса «ПД РФ + заключение экспертизы», **нет** утверждённого профиля приёмки «Самолёта», **нет** federated MEP. Официальные IDS Мособлгосэкспертизы **уже опубликованы** и лежат в репозитории. Без customer-профиля и корпуса checkpoint не снимаем.  
+> Открыты: **RT-001** (точность на корпусе заказчика / РФ-экспертизы), **RT-002** (профиль приёмки заказчика), **RT-003** (federated MEP) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
 > Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.  
 > SSOT: [Claims Lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) · [eng status авг 2026](docs/ENGINEERING_STATUS_2026_08.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md).  
 > Инженерная готовность выросла (WP-01…08 и др.) **без** закрытия customer-блокеров — Fixture GO ≠ Checkpoint GO.
@@ -72,7 +73,7 @@ AeroBIM выполняет детерминированную проверку �
 
 **План:** расширение Stage-3 полей finding; profiling-driven performance; customer-gated RT-001/002/003.
 
-**Нужен заказчик:** RT-001 corpus · RT-002 нормы · RT-003 MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)).
+**Нужен заказчик:** RT-001 корпус · RT-002 профиль приёмки Самолёта · RT-003 MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)). IDS МОГЭ уже в репо.
 
 **Не заявляется:** точность >90%; SLA ≤30 мин на customer; native DWG; MEP delivered; корректность расчётов; CDE-ready BCF; bare-metal offline без Docker; AABB/connects = verified geometric clash. См. [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [ENGINEERING_STATUS_2026_08](docs/ENGINEERING_STATUS_2026_08.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md).
 

@@ -12,7 +12,7 @@ LLM-generated text **cannot** auto-become `approved`.
 
 ## Current AeroBIM state (VERIFIED boundaries)
 
-- RT-002 OPEN: customer-approved norm pack absent.
+- RT-002 OPEN: customer-approved **acceptance profile** absent. Public MOEXP IDS are in `samples/ids/moexp/` ([coverage](evidence/norm-pack-moexp-coverage-2026-08.md)).
 - Schema 2.0.0 + loader gates: `customer_approved` requires full approval object; deterministic rules need expert confirmation journal; `expert_required` is list-only.
 - Engine can execute packs when provided; approval boundary enforced in code paths for proposed_by / profile.
 - No claim of full СП/ГОСТ coverage.

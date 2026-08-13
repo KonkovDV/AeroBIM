@@ -9,13 +9,14 @@
 
 ## КТ#2 — 20.08.2026 (промежуточная версия)
 
-> **Checkpoint: `NO_GO`.** Не прячем. RT-001 (корпус заказчика), RT-002 (норм-пакет), RT-003 (федеративная модель ИС) кодом не снимаются.
+> **Checkpoint: `NO_GO`.** Не прячем. RT-001 — нет корпуса «ПД РФ + заключение экспертизы» (AEC-Bench — другой контур). RT-002 — нет профиля приёмки «Самолёта» (официальные IDS МОГЭ **есть**). RT-003 — federated MEP. Кодом GO не ставится.
 
 | Корзина | Что |
 | --- | --- |
-| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. |
+| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. Official MOEXP IDS → IfcTester coverage. |
+| **Подтверждено внешне** | IDS Мособлгосэкспертизы ([TIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/)) + AEC-Bench inventory 196 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)). Цифры покрытия IDS — только после прогона, см. evidence. |
 | **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. |
-| **Заблокировано заказчиком** | Customer accuracy, утверждённые нормы, MEP scope. |
+| **Заблокировано заказчиком** | Customer accuracy; утверждённый **профиль приёмки Самолёта**; MEP scope. |
 | **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов. Native DWG = **FAILED**. |
 
 Видео 3 мин: [`artifacts/demo/`](artifacts/demo/) — запись **19.08**, человек (сейчас placeholder).  
@@ -41,7 +42,7 @@ Pre-construction package review (expertise / chief engineer / doc QC): model ↔
 > ## Checkpoint: `NO_GO`
 >
 > Samolet TechLab Task 07 is **not** ready for customer sign-off. Open blockers:
-> **RT-001** (customer accuracy corpus), **RT-002** (approved norm pack), **RT-003** (federated MEP scope) —
+> **RT-001** (no RF PD+expertise corpus; AEC-Bench is not that corpus), **RT-002** (no Samolet-approved acceptance profile; official MOEXP IDS exist), **RT-003** (federated MEP scope) —
 > see [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
 > Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
 > dated eng freeze: [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) ·
@@ -81,7 +82,7 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 
 **Planned:** Stage-3 finding field expansion; profiling-driven performance wave; customer-gated RT-001/002/003 evidence.
 
-**Needs customer:** RT-001 accuracy corpus · RT-002 approved norms · RT-003 federated MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)).
+**Needs customer:** RT-001 RF/customer corpus · RT-002 Samolet acceptance profile · RT-003 federated MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)). Official MOEXP IDS are already in-repo.
 
 **Not claimed:** product accuracy >90%; customer ≤30 min SLA; native DWG; MEP system clash delivered; independent calc *correctness*; CDE-ready BCF; bare-metal offline without Docker; AABB/connects = verified geometric clash. See [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [ENGINEERING_STATUS_2026_08](docs/ENGINEERING_STATUS_2026_08.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md) · [benchmark-evidence](docs/benchmark-evidence-2026.md).
 
