@@ -1,7 +1,7 @@
 {
   "artifact_type": "ifc_bench_v2_smoke",
-  "schema_version": "1.1.0",
-  "generated_at": "2026-08-13T22:43:26.589413+00:00",
+  "schema_version": "1.2.0",
+  "generated_at": "2026-08-13T23:16:52.326879+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "IFC-Bench open_bench_only: deterministic countable subset via IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001.",
   "closes_rt001": false,
@@ -15,40 +15,131 @@
     "questions_sha256_matches_pin": true,
     "pinned_sha256_reference": "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b",
     "question_count": 1026,
-    "ifc_files_present": 5,
+    "ifc_files_present": 19,
+    "ifc_hash_max_bytes": 83886080,
     "ifc_files": [
       {
         "path": "projects/dental_clinic/arc.ifc",
+        "bytes": 13208096,
         "sha256": "b90fe57b8aa9329d762a564770e697d4f7357677484e3a78ede4ab6d2163c0c0"
       },
       {
         "path": "projects/dental_clinic/mep.ifc",
-        "sha256": "72bdbfeb104d044bcd1ae644f9a5c6e72fd7750c2fd15fe98de2c53a04850e8d"
+        "bytes": 125780663,
+        "sha256": null,
+        "sha256_skipped": "oversize"
       },
       {
         "path": "projects/dental_clinic/str.ifc",
+        "bytes": 19375987,
         "sha256": "3351ee3bd19aea39167ba466237fe06de64ea391b0a31b0aacc017c84311e14d"
       },
       {
+        "path": "projects/digital_hub/arc.ifc",
+        "bytes": 9022255,
+        "sha256": "19d7d02d53c2b88e86890ee236297b12bbb0f7748030cd32ff6a22762e9966bb"
+      },
+      {
+        "path": "projects/digital_hub/heating.ifc",
+        "bytes": 20890415,
+        "sha256": "a5603e8f6aa4cbf63aece92f92f503e9a578702d8fe96a6d4661490f1843710d"
+      },
+      {
+        "path": "projects/digital_hub/plumbing.ifc",
+        "bytes": 25178864,
+        "sha256": "0b1d6b0abd8d4cc3f5f798c7581bed2b39b40110ba6348d5470bbef646cfed79"
+      },
+      {
+        "path": "projects/digital_hub/ventilation.ifc",
+        "bytes": 12737833,
+        "sha256": "c0a1807875957c4154d45d14a3b5ed480dd3178a5bdc3262302a7eccf76d5cb1"
+      },
+      {
         "path": "projects/duplex/arc.ifc",
+        "bytes": 1656153,
         "sha256": "707a032566dee8e969a44d95509be46d646440e2443624709f8d3ae2b45f4656"
       },
       {
         "path": "projects/duplex/mep.ifc",
+        "bytes": 11129368,
         "sha256": "285f85de4424416ba6bade121588dbe0ae278fb4fdb0f4b782051cfdc7c92972"
+      },
+      {
+        "path": "projects/sixty5/arc.ifc",
+        "bytes": 342657851,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/sixty5/electrical.ifc",
+        "bytes": 97058912,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/sixty5/facade.ifc",
+        "bytes": 6067026,
+        "sha256": "a9a1b20214da8ac1e1bea1f8670bef24f20a0d53a8ebaef4eb20b5a447640c79"
+      },
+      {
+        "path": "projects/sixty5/kitchen.ifc",
+        "bytes": 49670229,
+        "sha256": "1905b992071729d1c780b18f6103e4d1d08307a4707d5f33a4413216f36776ac"
+      },
+      {
+        "path": "projects/sixty5/plumbing.ifc",
+        "bytes": 222099255,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/sixty5/str.ifc",
+        "bytes": 7422441,
+        "sha256": "79f294c643438ac7a494e4871857244c2de0eefa536eda5977af20640a301a22"
+      },
+      {
+        "path": "projects/sixty5/ventilation.ifc",
+        "bytes": 114891068,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/wbdg_office/arc.ifc",
+        "bytes": 4099293,
+        "sha256": "7108485ac8d2856922a83f1353aea8c6eaab60ff393546750bf648200617a544"
+      },
+      {
+        "path": "projects/wbdg_office/mep.ifc",
+        "bytes": 41894594,
+        "sha256": "835263f1a9f84663e19b2d1a73420a09919293d7932a3a514d1fa26ede3dcc1e"
+      },
+      {
+        "path": "projects/wbdg_office/str.ifc",
+        "bytes": 11067475,
+        "sha256": "3286777da15bac8a5b2bffaa14fd10a34fa72cbdfbabc8b072c05737f4c280cb"
       }
     ]
   },
+  "eval_split": {
+    "present": true,
+    "path": "questions/eval-split-hellin2026.csv",
+    "published_test_rows": 514,
+    "published_train_rows": 512,
+    "scored_in_test": 12,
+    "scored_in_train": 13,
+    "scored_unlisted": 0,
+    "note": "Published test split is 514 rows. This block only says how many of the deterministic scored probes fall in that split. It is not a 514 false-pass rate."
+  },
   "summary": {
     "total_questions": 1026,
-    "scored": 17,
-    "matched": 17,
+    "scored": 25,
+    "matched": 25,
     "mismatched": 0,
-    "skipped_unmapped_or_uncomparable": 1009,
+    "skipped_unmapped_or_uncomparable": 1001,
     "errors": 0,
     "exact_match_rate_on_scored": 1.0,
-    "denominator_note": "scored=17 of total_questions=1026; unmapped NL and non-numeric GT skipped; missing IFC → error",
-    "note": "Rate is over the deterministic countable subset only (17/1026 questions). Unmapped NL items are skipped."
+    "denominator_note": "scored=25 of total_questions=1026; unmapped NL and non-numeric GT skipped; missing IFC → error",
+    "note": "Rate is over the deterministic countable subset only (25/1026 questions). Unmapped NL items are skipped."
   },
   "results": [
     {
@@ -59,7 +150,8 @@
       "predicted": 42,
       "expected": 42.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "93"
     },
     {
       "question": "How many X-RAY rooms are there in total?",
@@ -69,7 +161,8 @@
       "predicted": 1,
       "expected": 1.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "95"
     },
     {
       "question": "How many rooms are there in the clinic ?",
@@ -79,7 +172,8 @@
       "predicted": 269,
       "expected": 269.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "99"
     },
     {
       "question": "How many toilet rooms are there on the second floor?",
@@ -89,7 +183,8 @@
       "predicted": 8,
       "expected": 8.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "117"
     },
     {
       "question": "What is the floor to floor height between the first and the second floor?",
@@ -99,7 +194,8 @@
       "predicted": 4.57,
       "expected": 4.57,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "118"
     },
     {
       "question": "What are the dimensions of the window with guid 0otfaO0qPDAhynjJ6DmgH8?",
@@ -109,7 +205,8 @@
       "predicted": 1.735,
       "expected": 1.735,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "119"
     },
     {
       "question": "how many windows are there in this building?",
@@ -119,7 +216,8 @@
       "predicted": 58,
       "expected": 58.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "123"
     },
     {
       "question": "How many doors are there in this building?",
@@ -129,7 +227,41 @@
       "predicted": 254,
       "expected": 254.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "124"
+    },
+    {
+      "question": "How many walls are load-bearing compared with non-load-bearing?",
+      "project": "digital_hub",
+      "ifc_model": "arc",
+      "probe_id": "digital_hub_arc_load_bearing_wall_count",
+      "predicted": 0,
+      "expected": 0.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "158"
+    },
+    {
+      "question": "Which component types comprise the heating system and how many of each?",
+      "project": "digital_hub",
+      "ifc_model": "heating",
+      "probe_id": "digital_hub_heating_distribution_element_count",
+      "predicted": 1795,
+      "expected": 1795.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "200"
+    },
+    {
+      "question": "How many air terminals serve each building storey?",
+      "project": "digital_hub",
+      "ifc_model": "ventilation",
+      "probe_id": "digital_hub_vent_air_terminal_count",
+      "predicted": 148,
+      "expected": 148.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "237"
     },
     {
       "question": "What is the width of the door 1hOSvn6df7F8_7GcBWlRGQ ?",
@@ -139,7 +271,8 @@
       "predicted": 1.25,
       "expected": 1.25,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "242"
     },
     {
       "question": "What is the floor-to-floor height between the ground floor and first floor?",
@@ -149,7 +282,8 @@
       "predicted": 3.1,
       "expected": 3.1,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "244"
     },
     {
       "question": "How many interior doors are there in this building?",
@@ -159,7 +293,8 @@
       "predicted": 10,
       "expected": 10.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "274"
     },
     {
       "question": "How many rooms are there in house A?",
@@ -169,7 +304,8 @@
       "predicted": 10,
       "expected": 10.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "279"
     },
     {
       "question": "How many bedrooms are there?",
@@ -179,7 +315,8 @@
       "predicted": 4,
       "expected": 4.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "281"
     },
     {
       "question": "How many steps does the stair in house A have?",
@@ -189,7 +326,8 @@
       "predicted": 16,
       "expected": 16.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "282"
     },
     {
       "question": "how many bathroom are there ?",
@@ -199,7 +337,8 @@
       "predicted": 4,
       "expected": 4.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "285"
     },
     {
       "question": "Which rooms have thermostats installed?",
@@ -209,7 +348,8 @@
       "predicted": 2,
       "expected": 2.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "294"
     },
     {
       "question": "How many light fixtures are specified in the model, and what is the breakdown by type?",
@@ -219,10 +359,66 @@
       "predicted": 14,
       "expected": 14.0,
       "status": "matched",
-      "detail": null
+      "detail": null,
+      "question_id": "302"
+    },
+    {
+      "question": "How many piles are used in this building, and could you provide a breakdown by pile type including quantities and percentages?",
+      "project": "sixty5",
+      "ifc_model": "str",
+      "probe_id": "sixty5_str_pile_count",
+      "predicted": 146,
+      "expected": 146.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "878"
+    },
+    {
+      "question": "How many MEP components exist per type?",
+      "project": "wbdg_office",
+      "ifc_model": "mep",
+      "probe_id": "wbdg_mep_flow_terminal_count",
+      "predicted": 1456,
+      "expected": 1456.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "984"
+    },
+    {
+      "question": "How many water heaters are in this building, and what are their specifications?",
+      "project": "wbdg_office",
+      "ifc_model": "mep",
+      "probe_id": "wbdg_mep_water_heater_count",
+      "predicted": 1,
+      "expected": 1.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "996"
+    },
+    {
+      "question": "How many electrical receptacles are installed in total, and what is the distribution by type?",
+      "project": "wbdg_office",
+      "ifc_model": "mep",
+      "probe_id": "wbdg_mep_receptacle_count",
+      "predicted": 441,
+      "expected": 441.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "1014"
+    },
+    {
+      "question": "Which types of columns are present in this building, and how many?",
+      "project": "wbdg_office",
+      "ifc_model": "str",
+      "probe_id": "wbdg_str_column_count",
+      "predicted": 80,
+      "expected": 80.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "1020"
     }
   ],
-  "skipped_count": 1009,
+  "skipped_count": 1001,
   "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\ifc-bench-v2-smoke.json",
-  "output_sha256": "17378fe4e57021fad25c036862ce35199aadabc27c75524d753daf4bcbe84721"
+  "output_sha256": "8f76efdf69fc0efb0407d7c0c557d03f40771e68fd5e29c518cf6f7591f57b34"
 }

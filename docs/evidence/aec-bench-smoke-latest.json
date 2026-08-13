@@ -1,7 +1,7 @@
 {
   "artifact_type": "aec_bench_smoke",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-13T22:43:25.018262+00:00",
+  "generated_at": "2026-08-13T23:32:41.901992+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "AEC-Bench open_bench_only (arXiv:2603.29199). Prefetch/inventory of public agentic tasks plus gold-label inventory. Harbor agent trial scores are NOT AeroBIM product accuracy and do not close RT-001. null_always_clean is a gold-only baseline, not a drawing-reading agent.",
   "closes_rt001": false,
@@ -86,14 +86,85 @@
       "false_pass_rate_on_labeled": 0.7283
     }
   },
-  "prefetch": [],
+  "prefetch": [
+    {
+      "status": "ok",
+      "scope": "intrasheet",
+      "family": "detail-technical-review",
+      "instance": "03add-constructability-01",
+      "downloads": [
+        {
+          "dest": "03add-constructability-01.pdf",
+          "status": "downloaded",
+          "bytes": 5791478,
+          "sha256": "7e049f5ca2204c9a91fcea5c93507f3ac1766f0f2a4c016c8933ac0c9b379953"
+        }
+      ]
+    },
+    {
+      "status": "ok",
+      "scope": "intrasheet",
+      "family": "detail-technical-review",
+      "instance": "gfiaa-constructability-01",
+      "downloads": [
+        {
+          "dest": "gfiaa-constructability-01.pdf",
+          "status": "downloaded",
+          "bytes": 56170222,
+          "sha256": "d73c93174df3acd0dbb633c37417810ced0a7b52140cafe26351a46e1ae2d1cf"
+        }
+      ]
+    },
+    {
+      "status": "ok",
+      "scope": "intrasheet",
+      "family": "detail-technical-review",
+      "instance": "gfiaa-constructability-02",
+      "downloads": [
+        {
+          "dest": "gfiaa-constructability-02.pdf",
+          "status": "downloaded",
+          "bytes": 3244429,
+          "sha256": "d93af6eba7f19c86f1f9a682b49319a42213ab3860a60e9c4b57817fa98710f9"
+        }
+      ]
+    },
+    {
+      "status": "partial_or_failed",
+      "scope": "intrasheet",
+      "family": "detail-technical-review",
+      "instance": "gfiaa-performance-01",
+      "downloads": [
+        {
+          "dest": "gfiaa-performance-01.pdf",
+          "status": "error",
+          "detail": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)>"
+        }
+      ]
+    },
+    {
+      "status": "ok",
+      "scope": "intrasheet",
+      "family": "detail-technical-review",
+      "instance": "nmrc-clean-01",
+      "downloads": [
+        {
+          "dest": "nmrc-clean-01.pdf",
+          "status": "downloaded",
+          "bytes": 878323,
+          "sha256": "83ec37d4edcdd4f37e81f0dac536b99c3991dae9291ebbe26df8922742b5531a"
+        }
+      ]
+    }
+  ],
   "agent_trial": {
     "status": "NOT_RUN",
-    "reason": "Harbor CLI installed separately; Codex/Claude agent trial needs valid OPENAI_API_KEY or ANTHROPIC_API_KEY. Live AECV vision returned HTTP 401 with current OPENAI_API_KEY — do not start paid agent burn until the key is replaced.",
+    "reason": "Harbor is a Codex/Claude Docker agent. It does not take the Yandex AI Studio Completions key. Yandex key present=true; that key already ran AECV-Bench live counting (macro_extended=0.4325 on 2026-08-04). OPENAI_API_KEY/ANTHROPIC_API_KEY are a different vendor; a prior OpenAI-compat call returned HTTP 401. Do not paste the Yandex key into Harbor.",
+    "yandex_studio_key_present": true,
     "openai_key_present": true,
     "anthropic_key_present": false,
     "harbor_hint": "%USERPROFILE%\\.local\\bin\\harbor.exe trials start --path tasks/<scope>/<family>/<instance> -a aec_bench.agents.codex_agent:CodexAgent -m openai/gpt-4o"
   },
-  "output_sha256": "31910182ce2a8ad81d5cf5f2cba08b8c562b6c83bd0e05acf4e52dcc79fa6cb6",
+  "output_sha256": "4aefe03208cd84a383ef6db835f1fae83bb28a8017d130f47ddf354c737aefe9",
   "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\aec-bench-smoke.json"
 }

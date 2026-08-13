@@ -49,6 +49,26 @@ class IfcBenchSmokeTests(unittest.TestCase):
             ),
             14.0,
         )
+        self.assertEqual(
+            _parse_expected_number(
+                "Air Terminals by Building Storey:\n   - E00_OKRD: 35 terminals (23.6%)\n\n"
+                "   Total Air Terminals: 148"
+            ),
+            148.0,
+        )
+        self.assertEqual(
+            _parse_expected_number(
+                "Heating System Components:\n   - Pipe Segments (914)\n\n"
+                "   Total Heating Components: 1795"
+            ),
+            1795.0,
+        )
+        self.assertEqual(
+            _parse_expected_number(
+                "Column Types:\n- M_W-Wide Flange-Column:W250X67: 80 columns"
+            ),
+            80.0,
+        )
         self.assertIsNone(
             _parse_expected_number("I cannot calculate the number of window on the north facade.")
         )
@@ -109,9 +129,14 @@ class IfcBenchSmokeTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt001"])
         self.assertEqual(payload["benchmark"]["question_count"], 1026)
         self.assertTrue(payload["benchmark"]["questions_sha256_matches_pin"])
-        self.assertGreaterEqual(payload["summary"]["scored"], 12)
+        self.assertGreaterEqual(payload["summary"]["scored"], 20)
         self.assertEqual(payload["summary"]["mismatched"], 0)
         self.assertLess(payload["summary"]["scored"], payload["summary"]["total_questions"])
+        self.assertEqual(payload["eval_split"]["published_test_rows"], 514)
+        self.assertEqual(
+            payload["eval_split"]["scored_in_test"] + payload["eval_split"]["scored_in_train"],
+            payload["summary"]["scored"],
+        )
         raw = json.dumps(payload)
         self.assertIn("scored=", raw)
 

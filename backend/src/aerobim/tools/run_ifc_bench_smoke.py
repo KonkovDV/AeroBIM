@@ -52,6 +52,9 @@ _WORD_NUMBERS = {
 }
 
 
+_MAX_IFC_HASH_BYTES = 80 * 1024 * 1024
+
+
 @dataclass(frozen=True)
 class ProbeResult:
     question: str
@@ -62,6 +65,7 @@ class ProbeResult:
     expected: float | int | str | None
     status: str  # matched | mismatched | skipped | error
     detail: str | None = None
+    question_id: str = ""
 
 
 def repo_root() -> Path:
@@ -76,6 +80,57 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def _ifc_inventory_entry(path: Path, dataset_root: Path) -> dict[str, Any]:
+    size = path.stat().st_size
+    rel = str(path.relative_to(dataset_root)).replace("\\", "/")
+    if size > _MAX_IFC_HASH_BYTES:
+        return {
+            "path": rel,
+            "bytes": size,
+            "sha256": None,
+            "sha256_skipped": "oversize",
+        }
+    return {"path": rel, "bytes": size, "sha256": _sha256_file(path)}
+
+
+def _eval_split_coverage(
+    dataset_root: Path, scored: list[ProbeResult]
+) -> dict[str, Any]:
+    note = (
+        "Published test split is 514 rows. This block only says how many of the "
+        "deterministic scored probes fall in that split. It is not a 514 false-pass rate."
+    )
+    path = dataset_root / "questions" / "eval-split-hellin2026.csv"
+    if not path.is_file():
+        return {"present": False, "note": note}
+    with path.open(encoding="utf-8", newline="") as fh:
+        mapping = {
+            str(row.get("id") or "").strip(): str(row.get("split") or "").strip()
+            for row in csv.DictReader(fh)
+        }
+    in_test = 0
+    in_train = 0
+    unlisted = 0
+    for row in scored:
+        split = mapping.get(row.question_id)
+        if split == "test":
+            in_test += 1
+        elif split == "train":
+            in_train += 1
+        else:
+            unlisted += 1
+    return {
+        "present": True,
+        "path": "questions/eval-split-hellin2026.csv",
+        "published_test_rows": sum(1 for split in mapping.values() if split == "test"),
+        "published_train_rows": sum(1 for split in mapping.values() if split == "train"),
+        "scored_in_test": in_test,
+        "scored_in_train": in_train,
+        "scored_unlisted": unlisted,
+        "note": note,
+    }
+
+
 def _parse_expected_number(answer: str) -> float | None:
     text = (answer or "").strip()
     if re.search(r"cannot|not available|information not", text, re.I):
@@ -88,6 +143,9 @@ def _parse_expected_number(answer: str) -> float | None:
         r"radiators?|x-ray)",
         r"(?:there are|are)\s+(\d+(?:\.\d+)?)\s+(?:interior\s+)?(?:doors?|rooms?)",
         r"(?:the stair has|has)\s+(\d+(?:\.\d+)?)\s+steps?",
+        r"total heating components:\s*(\d+)",
+        r"total air terminals:\s*(\d+)",
+        r"(\d+)\s+columns\b",
         r"(?:there are|are)\s+(\d+(?:\.\d+)?)",
     ):
         m = re.search(pattern, text, re.I)
@@ -134,6 +192,13 @@ def _is_external_door(door: Any) -> bool | None:
     vals = _merged_psets(door)
     if "IsExternal" in vals:
         return bool(vals["IsExternal"])
+    return None
+
+
+def _is_load_bearing(element: Any) -> bool | None:
+    vals = _merged_psets(element)
+    if "LoadBearing" in vals:
+        return bool(vals["LoadBearing"])
     return None
 
 
@@ -332,6 +397,58 @@ def _probes_for_model(
                 ),
             ),
         }
+    if project == "digital_hub" and ifc_model == "arc":
+        return {
+            "how many walls are load-bearing compared with non-load-bearing": (
+                "digital_hub_arc_load_bearing_wall_count",
+                lambda m: sum(
+                    1 for wall in m.by_type("IfcWall") if _is_load_bearing(wall) is True
+                ),
+            ),
+        }
+    if project == "digital_hub" and ifc_model == "heating":
+        return {
+            "which component types comprise the heating system": (
+                "digital_hub_heating_distribution_element_count",
+                lambda m: len(m.by_type("IfcDistributionElement")),
+            ),
+        }
+    if project == "digital_hub" and ifc_model == "ventilation":
+        return {
+            "how many air terminals serve each building storey": (
+                "digital_hub_vent_air_terminal_count",
+                lambda m: len(m.by_type("IfcAirTerminal")),
+            ),
+        }
+    if project == "sixty5" and ifc_model == "str":
+        return {
+            "how many piles are used in this building": (
+                "sixty5_str_pile_count",
+                lambda m: len(m.by_type("IfcPile")),
+            ),
+        }
+    if project == "wbdg_office" and ifc_model == "mep":
+        return {
+            "how many mep components exist per type": (
+                "wbdg_mep_flow_terminal_count",
+                lambda m: len(m.by_type("IfcFlowTerminal")),
+            ),
+            "how many electrical receptacles are installed": (
+                "wbdg_mep_receptacle_count",
+                lambda m: _named_product_count(m, "IfcFlowTerminal", "receptacle"),
+            ),
+            "how many water heaters are in this building": (
+                "wbdg_mep_water_heater_count",
+                lambda m: _named_product_count(m, "IfcFlowStorageDevice", "water heater"),
+            ),
+        }
+    if project == "wbdg_office" and ifc_model == "str":
+        return {
+            "which types of columns are present": (
+                "wbdg_str_column_count",
+                lambda m: len(m.by_type("IfcColumn")),
+            ),
+        }
     return {}
 
 
@@ -358,6 +475,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
         answer = (row.get("ground_truth") or row.get("answer") or "").strip()
         project = (row.get("project") or "").strip()
         ifc_model = (row.get("ifc_model") or "").strip()
+        question_id = str(row.get("id") or "").strip()
         if (
             not project
             or not ifc_model
@@ -380,6 +498,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     expected=_parse_expected_number(answer),
                     status="error",
                     detail="unsafe project/ifc_model path component",
+                    question_id=question_id,
                 )
             )
             continue
@@ -397,6 +516,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     expected=_parse_expected_number(answer),
                     status="skipped",
                     detail="no deterministic probe for this NL question",
+                    question_id=question_id,
                 )
             )
             continue
@@ -415,6 +535,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     expected=_parse_expected_number(answer),
                     status="error",
                     detail="IFC path escapes dataset projects root",
+                    question_id=question_id,
                 )
             )
             continue
@@ -429,6 +550,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     expected=_parse_expected_number(answer),
                     status="error",
                     detail=f"missing IFC under projects/{project}/",
+                    question_id=question_id,
                 )
             )
             continue
@@ -458,6 +580,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     expected=expected,
                     status=status,
                     detail=detail,
+                    question_id=question_id,
                 )
             )
         except Exception as exc:  # noqa: BLE001 — smoke must not abort pack
@@ -471,6 +594,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     expected=_parse_expected_number(answer),
                     status="error",
                     detail=str(exc),
+                    question_id=question_id,
                 )
             )
 
@@ -485,7 +609,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
     pinned = _PINNED_V2_SHA_MEASURED if version == "v2" else _PINNED_V1_SHA_HF
     return {
         "artifact_type": f"ifc_bench_{version}_smoke",
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_level": "open_bench_only",
         "claim_boundary": CLAIM_BOUNDARY,
@@ -504,14 +628,10 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
             "pinned_sha256_reference": pinned,
             "question_count": len(rows),
             "ifc_files_present": len(ifc_files),
-            "ifc_files": [
-                {
-                    "path": str(p.relative_to(dataset_root)).replace("\\", "/"),
-                    "sha256": _sha256_file(p),
-                }
-                for p in ifc_files
-            ],
+            "ifc_hash_max_bytes": _MAX_IFC_HASH_BYTES,
+            "ifc_files": [_ifc_inventory_entry(path, dataset_root) for path in ifc_files],
         },
+        "eval_split": _eval_split_coverage(dataset_root, scored),
         "summary": {
             "total_questions": len(results),
             "scored": len(scored),

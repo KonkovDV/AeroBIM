@@ -9,7 +9,7 @@ See [`IMPORT_PINS.json`](IMPORT_PINS.json) for hashes, licenses, and GPLv3 exclu
 | Measured QA rows | **1026** (card: 1027) |
 | Checkout | `.local/ifc-bench-v2` (gitignored); env `AEROBIM_IFC_BENCH_ROOT` |
 | Smoke | `python -m aerobim.tools.run_ifc_bench_smoke --version v2 --also-docs-evidence` |
-| Evidence | [`docs/evidence/ifc-bench-v2-smoke-latest.json`](../../../docs/evidence/ifc-bench-v2-smoke-latest.json) |
+| Evidence | [`docs/evidence/ifc-bench-v2-smoke-latest.json`](../../../docs/evidence/ifc-bench-v2-smoke-latest.json) — countable **25/1026** |
 
 GitHub archive is **v1-only**. Do not vendor the full ~2 GB tree into `samples/` until selective non-GPL pull is approved.
 
