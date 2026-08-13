@@ -6,11 +6,16 @@ from pathlib import Path
 from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
 from aerobim.tools.export_moexp_ids_coverage import (
+    KIND_ATTRIBUTES,
+    KIND_CLASSIFICATION,
+    KIND_OTHER,
     STATUS_FAIL,
     STATUS_LOAD_ERROR,
     STATUS_PASS,
     STATUS_UNSUPPORTED,
+    attach_by_kind,
     build_moexp_ids_coverage,
+    classify_ids_kind,
     classify_specification,
     default_fixture_ifc,
     default_pack_dir,
@@ -43,6 +48,51 @@ class MoexpIdsCoverageUnitTests(unittest.TestCase):
             STATUS_FAIL,
         )
 
+    def test_classify_ids_kind_from_official_filename(self) -> None:
+        self.assertEqual(
+            classify_ids_kind("IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids"),
+            KIND_ATTRIBUTES,
+        )
+        self.assertEqual(
+            classify_ids_kind("IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АР_v3.2.ids"),
+            KIND_CLASSIFICATION,
+        )
+        self.assertEqual(classify_ids_kind("notes.txt"), KIND_OTHER)
+
+    def test_attach_by_kind_splits_without_rerun(self) -> None:
+        payload = attach_by_kind(
+            {
+                "summary": {},
+                "files": [
+                    {
+                        "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids",
+                        "specification_count": 10,
+                        "counts": {
+                            STATUS_PASS: 0,
+                            STATUS_FAIL: 10,
+                            STATUS_UNSUPPORTED: 0,
+                            STATUS_LOAD_ERROR: 0,
+                        },
+                    },
+                    {
+                        "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АР_v3.2.ids",
+                        "specification_count": 8,
+                        "counts": {
+                            STATUS_PASS: 0,
+                            STATUS_FAIL: 8,
+                            STATUS_UNSUPPORTED: 0,
+                            STATUS_LOAD_ERROR: 0,
+                        },
+                    },
+                ],
+            }
+        )
+        by_kind = payload["summary"]["by_kind"]
+        self.assertEqual(by_kind[KIND_ATTRIBUTES]["specifications"], 10)
+        self.assertEqual(by_kind[KIND_CLASSIFICATION]["specifications"], 8)
+        self.assertEqual(payload["schema_version"], "1.1.0")
+        self.assertIn("content_sha256", payload)
+
     def test_render_states_boundaries(self) -> None:
         md = render_moexp_ids_coverage_markdown(
             {
@@ -69,6 +119,16 @@ class MoexpIdsCoverageUnitTests(unittest.TestCase):
                             "load_error": 0,
                         }
                     },
+                    "by_kind": {
+                        "attributes": {
+                            "files": 1,
+                            "specifications": 2,
+                            "executable_pass_on_fixture": 0,
+                            "executable_fail_on_fixture": 2,
+                            "unsupported": 0,
+                            "load_error": 0,
+                        }
+                    },
                 },
                 "icmm_note": "ICMM 3.3 is PDF-only",
                 "generated_at": "2026-08-13T00:00:00+00:00",
@@ -79,6 +139,8 @@ class MoexpIdsCoverageUnitTests(unittest.TestCase):
         self.assertIn("moexp.ru", md)
         self.assertIn("not product accuracy", md)
         self.assertIn("closes_rt002_customer_profile:** `False`", md)
+        self.assertIn("By pack kind", md)
+        self.assertIn("| attributes |", md)
 
 
 class MoexpIdsPackPresenceTests(unittest.TestCase):

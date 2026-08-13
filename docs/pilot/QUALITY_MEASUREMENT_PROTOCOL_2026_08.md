@@ -157,3 +157,18 @@ L1 public benches (IFC-Bench smoke, AECV live counting, AEC-Bench inventory) are
 - [x] Interim confirmed-finding target = 0.60 (§5)
 - [x] nDCG path referenced to `evaluate_ranking_quality` (§7)
 - [ ] Customer sign-off on strata allocation + n + κ threshold (external)
+
+## 10. Task-07 acceptance additions (18.08.2026)
+
+These constraints are mandatory when Samolet labels exist. They do **not** authorize publishing product accuracy from fixtures, AEC-Bench inventory, or MOEXP engine coverage.
+
+| Rule | Why |
+| --- | --- |
+| **Observation unit = project** (or signed package), not finding/task | Tasks in one drawing are correlated. Mushkani et al. [arXiv:2607.29058](https://arxiv.org/abs/2607.29058) report 29 projects / 160 tasks. Cluster bootstrap, not iid binomial on tasks. |
+| **False pass first** | System says compliant, gold says violation. This is the dangerous error for expertise. Report FP (false pass) separately from FN. |
+| **Four outcomes, not binary accuracy** | TP / FP / FN / TN aligned with `PackageOutcome` (FAILED / BLOCKED / REVIEW_REQUIRED / PASS*). Do not collapse to «% correct». |
+| **Selective-risk curve** | If a confidence score exists, publish risk vs coverage (abstain allowed). If it does not exist, say so — do not invent calibration. |
+| **Solihin split** | Report class 1 / 2 / 3 separately. Class 4 (performance / proof-of-solution) is **not claimed**. Inventory: [`../evidence/solihin-rule-classes-2026-08.md`](../evidence/solihin-rule-classes-2026-08.md). |
+| **AEC-Bench ≠ RT-001** | External document bench. False-pass on AEC-Bench is currently **SKIPPED**: [`../evidence/aec-bench-false-pass-2026-08.md`](../evidence/aec-bench-false-pass-2026-08.md). |
+
+Wilson intervals (§4) remain the planner for a **project-level** rate after clustering, not a substitute for the cluster bootstrap.

@@ -233,7 +233,7 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByRole("img", { name: /drawing evidence preview for a-102/i })).toBeTruthy();
-    expect(screen.getByText(/BLOCKED/)).toBeTruthy();
+    expect(screen.getAllByText(/BLOCKED/).length).toBeGreaterThan(0);
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
     expect(within(viewer).getByText("issue")).toBeTruthy();
@@ -290,7 +290,7 @@ describe("App", () => {
       passed: true,
     });
     fireEvent.click(screen.getByRole("button", { name: /bbbbbbbb/i }));
-    expect(await screen.findByText("Hospital beta issue")).toBeTruthy();
+    expect((await screen.findAllByText("Hospital beta issue")).length).toBeGreaterThan(0);
   });
 
   it("groups report cards by project when grouping mode is enabled", async () => {
@@ -316,7 +316,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Ungroup reports" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /bbbbbbbb/i }));
-    expect(await screen.findByText("Hospital beta issue")).toBeTruthy();
+    expect((await screen.findAllByText("Hospital beta issue")).length).toBeGreaterThan(0);
   });
 
   it("loads persisted report filters from localStorage on startup", async () => {
@@ -675,10 +675,39 @@ describe("App", () => {
 
     render(<App />);
 
-    const badge = await screen.findByText(/REVIEW_REQUIRED/);
-    // §12: an unconfirmed result must be visually distinct from a confirmed pass/block.
-    expect(badge.className).toContain("outcome-review");
-    expect(badge.className).not.toContain("outcome-pass");
-    expect(badge.className).not.toContain("outcome-block");
+    const badges = await screen.findAllByText(/REVIEW_REQUIRED/);
+    expect(badges.length).toBeGreaterThan(0);
+    for (const badge of badges) {
+      expect(badge.className).toContain("outcome-review");
+      expect(badge.className).not.toContain("outcome-pass");
+      expect(badge.className).not.toContain("outcome-block");
+      expect(badge.className).not.toContain("outcome-fail");
+    }
+  });
+
+  it("renders FAILED as a solid violation badge, distinct from BLOCKED missing-data", async () => {
+    const failed = buildReport();
+    failed.summary = { ...failed.summary, outcome: "failed", passed: false };
+    fetchReportMock.mockResolvedValue(failed);
+
+    const { unmount } = render(<App />);
+    const failBadges = await screen.findAllByText(/FAILED —/);
+    expect(failBadges.length).toBeGreaterThan(0);
+    for (const badge of failBadges) {
+      expect(badge.className).toContain("outcome-fail");
+      expect(badge.className).not.toContain("outcome-block");
+    }
+    unmount();
+
+    const blocked = buildReport();
+    blocked.summary = { ...blocked.summary, outcome: "blocked", passed: false };
+    fetchReportMock.mockResolvedValue(blocked);
+    render(<App />);
+    const blockBadges = await screen.findAllByText(/BLOCKED —/);
+    expect(blockBadges.length).toBeGreaterThan(0);
+    for (const badge of blockBadges) {
+      expect(badge.className).toContain("outcome-block");
+      expect(badge.className).not.toContain("outcome-fail");
+    }
   });
 });

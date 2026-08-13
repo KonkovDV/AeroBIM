@@ -14,7 +14,7 @@
 | Корзина | Что |
 | --- | --- |
 | **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → замечание + overlay + HTML/JSON + BCF ZIP. IDS МОГЭ → IfcTester. |
-| **Подтверждено внешне** | [IDS Мособлгосэкспертизы](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) · AEC-Bench 196 задач ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), инвентарь, не ложные пропуски) |
+| **Подтверждено внешне** | [IDS Мособлгосэкспертизы](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) · AEC-Bench 196 задач ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), инвентарь; ложные пропуски **SKIPPED**) |
 | **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом |
 | **Заблокировано заказчиком** | Корпус заказчика, профиль приёмки Самолёта, MEP |
 | **Не утверждаем** | >90%, DWG-ready, MEP delivered, CDE-ready BCF. Native DWG = **FAILED** |

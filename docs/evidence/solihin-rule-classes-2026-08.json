@@ -1,0 +1,1040 @@
+{
+  "artifact_type": "solihin_rule_classes",
+  "schema_version": "1.0.0",
+  "claim_level": "engineering_inventory",
+  "claim_boundary": "Engineering classification of in-repo rule identifiers. Solihin class 4 (performance / proof-of-solution) is not claimed. Not customer accuracy. Not statutory PP-87 completeness.",
+  "source": "https://doi.org/10.1016/j.autcon.2015.03.003",
+  "generated_at": "2026-08-13T20:57:28.982617+00:00",
+  "class_4_not_claimed": true,
+  "summary": {
+    "rule_count": 170,
+    "class_1_explicit": 113,
+    "class_2_derived": 18,
+    "class_3_extended": 14,
+    "class_4_not_claimed": 23,
+    "unclassified": 2
+  },
+  "rules": [
+    {
+      "rule_id": "AEROBIM-AGENT-CAP",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-CLASH",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-CLASH-HIT",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-CLASH-NO-IFC",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-CLASH-NONE",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-IDS",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-IDS-DRAFT",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-IFC-KG",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-IFC-KG-NO-IFC",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-LOAD",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-LOGIC",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-MEP-CLASH",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-MEP-CLASH-HIT",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-MEP-CLASH-NO-IFC",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-MEP-CLASH-NONE",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-NORM-HIT",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-NORMS",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-QTY",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-QTY-EMPTY",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-AGENT-QTY-NO-IFC",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory agent path; never sets Shared-gate"
+    },
+    {
+      "rule_id": "AEROBIM-BSI-VALIDATION",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema certificate presence"
+    },
+    {
+      "rule_id": "AEROBIM-CAD-DWG",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "CAD ingest honesty; native DWG stays FAILED"
+    },
+    {
+      "rule_id": "AEROBIM-CAD-DWG-DERIVED",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "CAD ingest honesty; native DWG stays FAILED"
+    },
+    {
+      "rule_id": "AEROBIM-CAD-DWG-IMPOSSIBLE-SUPPORTED",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "CAD ingest honesty; native DWG stays FAILED"
+    },
+    {
+      "rule_id": "AEROBIM-CAD-DWG-QA",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "CAD ingest honesty; native DWG stays FAILED"
+    },
+    {
+      "rule_id": "AEROBIM-CAD-DXF",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "CAD ingest honesty; native DWG stays FAILED"
+    },
+    {
+      "rule_id": "AEROBIM-CAD-INGEST",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "CAD ingest honesty; native DWG stays FAILED"
+    },
+    {
+      "rule_id": "AEROBIM-CLASH-CAPABILITY",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "spatial / interference (geometry_verified=False unless extra)"
+    },
+    {
+      "rule_id": "AEROBIM-CUSTOMER-INTAKE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "intake completeness"
+    },
+    {
+      "rule_id": "AEROBIM-DETERMINISM-DIVERGENCE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "advisory vs engine divergence honesty"
+    },
+    {
+      "rule_id": "AEROBIM-DRAWING-REGION-HITL",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "text-layer / annotation explicit value"
+    },
+    {
+      "rule_id": "AEROBIM-GUID-DUPLICATE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "explicit identifier"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-AUDIT",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-AUDIT-CAPABILITY",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-CAPABILITY",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-EMPTY-APPLICABILITY",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-ERROR",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-UNSUPPORTED-FACET",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-XSD-CAPABILITY",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IDS-XSD-INVALID",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS attribute/existence"
+    },
+    {
+      "rule_id": "AEROBIM-IFC-GUID-DUPLICATE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema / GUID explicit data"
+    },
+    {
+      "rule_id": "AEROBIM-IFC-GUID-INVALID",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema / GUID explicit data"
+    },
+    {
+      "rule_id": "AEROBIM-IFC-SCHEMA",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema / GUID explicit data"
+    },
+    {
+      "rule_id": "AEROBIM-IFC-SCHEMA-UNSUPPORTED",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema / GUID explicit data"
+    },
+    {
+      "rule_id": "AEROBIM-INTERPRET-IDS-DRAFT",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "LLM/IDS draft; advisory"
+    },
+    {
+      "rule_id": "AEROBIM-LOAD-ERROR",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "spreadsheet vs model derived check"
+    },
+    {
+      "rule_id": "AEROBIM-LOAD-FORMAT",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "spreadsheet vs model derived check"
+    },
+    {
+      "rule_id": "AEROBIM-LOAD-JSON",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "spreadsheet vs model derived check"
+    },
+    {
+      "rule_id": "AEROBIM-LOAD-MISMATCH",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "spreadsheet vs model derived check"
+    },
+    {
+      "rule_id": "AEROBIM-LOAD-OK",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "spreadsheet vs model derived check"
+    },
+    {
+      "rule_id": "AEROBIM-LOAD-ROW",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "spreadsheet vs model derived check"
+    },
+    {
+      "rule_id": "AEROBIM-LOAD-SCHEMA",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "spreadsheet vs model derived check"
+    },
+    {
+      "rule_id": "AEROBIM-LOGIC-CALC-WITHOUT-REQ",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "extended conditional / cross-doc logic"
+    },
+    {
+      "rule_id": "AEROBIM-LOGIC-NATIVE-DWG-DECLARED",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "extended conditional / cross-doc logic"
+    },
+    {
+      "rule_id": "AEROBIM-LOGIC-ORPHAN-SHEET",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "extended conditional / cross-doc logic"
+    },
+    {
+      "rule_id": "AEROBIM-LOGIC-PD-WITHOUT-RD",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "extended conditional / cross-doc logic"
+    },
+    {
+      "rule_id": "AEROBIM-LOGIC-RD-WITHOUT-PD",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "extended conditional / cross-doc logic"
+    },
+    {
+      "rule_id": "AEROBIM-LOGIC-SPARSE-PACKAGE",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "extended conditional / cross-doc logic"
+    },
+    {
+      "rule_id": "AEROBIM-LOGIC-UNPAIRED-PD-SECTION",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "extended conditional / cross-doc logic"
+    },
+    {
+      "rule_id": "AEROBIM-MEP-FINDING",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "federated MEP / RT-003; not verified"
+    },
+    {
+      "rule_id": "AEROBIM-MEP-FORBIDDEN",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "federated MEP / RT-003; not verified"
+    },
+    {
+      "rule_id": "AEROBIM-MEP-MATRIX-ERROR",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "federated MEP / RT-003; not verified"
+    },
+    {
+      "rule_id": "AEROBIM-MEP-MATRIX-MISSING",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "federated MEP / RT-003; not verified"
+    },
+    {
+      "rule_id": "AEROBIM-MEP-TEMPLATE",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "federated MEP / RT-003; not verified"
+    },
+    {
+      "rule_id": "AEROBIM-MEP-UNCLASSIFIED",
+      "solihin_class": 3,
+      "claimed": true,
+      "reason": "federated MEP / RT-003; not verified"
+    },
+    {
+      "rule_id": "AEROBIM-NORM-PACK",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "pack status / eligibility"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-CIPHER-MISMATCH",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-FORMAT-UNKNOWN",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-INVENTORY-MISSING",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-INVENTORY-SCHEMA",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-INVENTORY-UNREADABLE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-MISSING-CIPHER",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-MISSING-SCHEDULE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-MISSING-SECTION",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-MISSING-SPECIFICATION",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-TECHNICAL-SPEC-MISSING-TOPIC",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-UNJUSTIFIED-CALCULATION",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-UNPAIRED-SECTION",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-PACKAGE-UNSUPPORTED-FORMAT",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared inventory / naming / pairing"
+    },
+    {
+      "rule_id": "AEROBIM-QTY-ERROR",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "derived quantity compare"
+    },
+    {
+      "rule_id": "AEROBIM-QTY-MISMATCH",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "derived quantity compare"
+    },
+    {
+      "rule_id": "AEROBIM-QTY-MISSING",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "derived quantity compare"
+    },
+    {
+      "rule_id": "AEROBIM-REVISION-HASH",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "revision / edition label"
+    },
+    {
+      "rule_id": "AEROBIM-REVISION-MERGE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "revision / edition label"
+    },
+    {
+      "rule_id": "AEROBIM-SHEET-IDENTITY",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "sheet identity / naming"
+    },
+    {
+      "rule_id": "AEROBIM-SHEET-IDENTITY-DRIFT",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "sheet identity / naming"
+    },
+    {
+      "rule_id": "AEROBIM-SIGNATURE-AUDIT",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "envelope presence; not УКЭП legal validity"
+    },
+    {
+      "rule_id": "AEROBIM-SIGNATURE-MISSING",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "envelope presence; not УКЭП legal validity"
+    },
+    {
+      "rule_id": "AEROBIM-UNIT-SCALE",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "declared unit / scale"
+    },
+    {
+      "rule_id": "CUST-PLACEHOLDER-001",
+      "solihin_class": 0,
+      "claimed": false,
+      "reason": "unclassified prefix — listed, not claimed as class 1–4 coverage"
+    },
+    {
+      "rule_id": "DEGRADED-SCAN-PROVENANCE",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "synthetic degrade fixture; not product CV"
+    },
+    {
+      "rule_id": "DRAWING-ADVISORY-GROUNDING",
+      "solihin_class": 4,
+      "claimed": false,
+      "reason": "advisory drawing read; not verdict"
+    },
+    {
+      "rule_id": "EN-SPACE-01",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English space property fixture"
+    },
+    {
+      "rule_id": "EN-SPACE-02",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English space property fixture"
+    },
+    {
+      "rule_id": "EN-SPACE-03",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English space property fixture"
+    },
+    {
+      "rule_id": "EN-SPACE-04",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English space property fixture"
+    },
+    {
+      "rule_id": "EN-SPACE-05",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English space property fixture"
+    },
+    {
+      "rule_id": "EN-WALL-01",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English wall property fixture"
+    },
+    {
+      "rule_id": "EN-WALL-02",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English wall property fixture"
+    },
+    {
+      "rule_id": "EN-WALL-03",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English wall property fixture"
+    },
+    {
+      "rule_id": "EN-WALL-04",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English wall property fixture"
+    },
+    {
+      "rule_id": "EN-WALL-05",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "English wall property fixture"
+    },
+    {
+      "rule_id": "IDS-WallHeight",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "IDS height existence fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-CONTRACT",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-OPT-FALLBACK",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-OPT-STRATEGY",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-PROJECT-CODE",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-PROVENANCE-DIGEST",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-PROVENANCE-REFERENCE-MISSING",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-WASTE-METRIC-MISSING",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "OPENREBAR-WASTE-THRESHOLD",
+      "solihin_class": 2,
+      "claimed": true,
+      "reason": "rebar derived quantities / waste; fixture"
+    },
+    {
+      "rule_id": "R",
+      "solihin_class": 0,
+      "claimed": false,
+      "reason": "unclassified prefix — listed, not claimed as class 1–4 coverage"
+    },
+    {
+      "rule_id": "REQ-AREA-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-AREA-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-FIRE-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-FIRE-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-FIRE-003",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-FIRE-004",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-FIRE-005",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-FIRE-006",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-HEIGHT-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-MEP-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-MEP-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-MEP-003",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-MEP-004",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-MEP-005",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STR-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STR-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STR-003",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STR-004",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STR-005",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STR-006",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-AREA-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-AREA-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-SPACE-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-SPACE-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-SPACE-003",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-WALL-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-WALL-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-WALL-003",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-WALL-004",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-WALL-005",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-WALL-006",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "REQ-STRESS-WALL-007",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "fixture requirement text rules"
+    },
+    {
+      "rule_id": "SAM-AR-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-003",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-004",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-005",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-006",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-007",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-008",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-009",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-010",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-011",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-012",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-013",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-014",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-015",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-016",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-017",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-018",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-019",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-AR-020",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic AR property exists"
+    },
+    {
+      "rule_id": "SAM-R-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic residential template"
+    },
+    {
+      "rule_id": "SAM-R-002",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic residential template"
+    },
+    {
+      "rule_id": "SAM-R-003",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "synthetic residential template"
+    },
+    {
+      "rule_id": "V2-AR-AWAITING-CONFIRM-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema 2 AR draft template"
+    },
+    {
+      "rule_id": "V2-AR-FIRE-RATING-EXPERT-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema 2 AR draft template"
+    },
+    {
+      "rule_id": "V2-AR-SPACE-EXTERNAL-001",
+      "solihin_class": 1,
+      "claimed": true,
+      "reason": "schema 2 AR draft template"
+    }
+  ],
+  "content_sha256": "b69dbcc0e6d013e65d08101fa4bd8cfb0d988c498318f91cee77ed06cf18d27f"
+}

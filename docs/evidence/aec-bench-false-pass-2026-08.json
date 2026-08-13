@@ -1,0 +1,28 @@
+{
+  "artifact_type": "aec_bench_false_pass",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-13T20:50:00+00:00",
+  "claim_level": "open_bench_only",
+  "status": "SKIPPED",
+  "closes_rt001": false,
+  "customer_accuracy_not_established": true,
+  "claim_boundary": "SKIPPED. AEC-Bench inventory 196 is not a false-pass rate. Not RT-001 RF expertise corpus. Not product accuracy.",
+  "benchmark": {
+    "name": "AEC-Bench",
+    "arxiv": "2603.29199",
+    "mushkani_subset_arxiv": "2607.29058",
+    "inventory_tasks": 196,
+    "mushkani_tasks": 160,
+    "observation_unit": "project"
+  },
+  "false_pass": {
+    "status": "NOT_MEASURED",
+    "reason": "Harbor agent trial NOT_RUN; no paid agent key for 160-task slice; calendar gate is 17.08."
+  },
+  "cluster_bootstrap": {
+    "status": "NOT_MEASURED"
+  },
+  "four_outcome_table": {
+    "status": "NOT_MEASURED"
+  }
+}

@@ -2,7 +2,7 @@
 title: "Citeable evidence (jury / FAIR)"
 status: active
 version: "2.4.0"
-last_updated: "2026-08-04"
+last_updated: "2026-08-13"
 ---
 
 # Evidence fixtures
@@ -13,7 +13,10 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 |------|------|
 | [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV: publish **`macro_extended=0.4325`** (5 fields = Table 1 metric) + `macro_bench_protocol=0.5064` reference-only; scorer validation vs Table 1 max\|Δ\|≈0.02; B.5 gates; `open_bench_only` |
 | [`aec-bench-smoke-latest.json`](aec-bench-smoke-latest.json) | L1 AEC-Bench: 196-task inventory + prefetch sample; Harbor agent NOT_RUN (no agent key); ≠ RT-001 RF expertise corpus |
-| [`norm-pack-moexp-coverage-2026-08.md`](norm-pack-moexp-coverage-2026-08.md) · [`.json`](norm-pack-moexp-coverage-2026-08.json) | Official GAU MO IDS executed by IfcTester; engine coverage ≠ CIM compliance; does not close RT-002 customer profile |
+| [`norm-pack-moexp-coverage-2026-08.md`](norm-pack-moexp-coverage-2026-08.md) · [`.json`](norm-pack-moexp-coverage-2026-08.json) | Official GAU MO IDS executed by IfcTester; engine coverage ≠ CIM compliance; `by_kind` = attributes vs classification; does not close RT-002 customer profile |
+| [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Advisory VLM stamp/title fixture: Qwen live, Kimi gated on Yandex Studio. Not product accuracy; not MOEXP coverage |
+| [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | AEC-Bench false-pass measurement **SKIPPED** (Harbor agent NOT_RUN). Inventory 196 ≠ RT-001 |
+| [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
 | [`ifc-bench-v1-smoke-latest.json`](ifc-bench-v1-smoke-latest.json) | L1 open-bench: IFC-Bench v1 deterministic countable subset (`claim_level=open_bench_only`; ≠ RT-001) |
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |

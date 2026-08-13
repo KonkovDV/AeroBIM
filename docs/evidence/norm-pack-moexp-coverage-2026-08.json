@@ -1,6 +1,6 @@
 {
   "artifact_type": "moexp_ids_coverage",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "claim_level": "official_ids_engine_coverage",
   "customer_accuracy_not_established": true,
   "closes_rt002_customer_profile": false,
@@ -135,6 +135,32 @@
         "unsupported": 0,
         "load_error": 0
       }
+    },
+    "by_kind": {
+      "attributes": {
+        "files": 12,
+        "specifications": 206,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 206,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "classification": {
+        "files": 12,
+        "specifications": 183,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 183,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "other": {
+        "files": 0,
+        "specifications": 0,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      }
     }
   },
   "files": [
@@ -198,7 +224,8 @@
         "2.1.27 Шумозащитные (акустические) экраны. Общая сборка",
         "2.1.27 Шумозащитные (акустические) экраны. Элементы сборки"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "ad-uds",
@@ -262,7 +289,8 @@
         "2.1.27 Шумозащитные (акустические) экраны. Элементы сборки",
         "3.1.2 Здания, входящие в инфраструктуру линейного объекта"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "nis",
@@ -321,7 +349,8 @@
         "2.1.26 Подпорные стены",
         "2.1.27 Гидро- и пароизоляция. Основные атрибуты"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "nis",
@@ -397,7 +426,8 @@
         "2.1.27 Гидро- и пароизоляция. Дополнительные атрибуты",
         "3.1.2 Здания, входящие в инфраструктуру линейного объекта"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -439,7 +469,8 @@
         "АР.4.2.11 Помещения",
         "АР.4.2.12 Вертикальный транспорт"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -469,7 +500,8 @@
         "ИОС.ВК.ПВ.6.4.5 Оборудование пожаротушения\n",
         "ИОС.ВК.ПВ.6.4.6 Измерительные приборы"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -497,7 +529,8 @@
         "ИОС.ГС.6.8.3 Оборудование. Газопотребляющее оборудование",
         "ИОС.ГС.6.8.4 Измерительные приборы"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -520,7 +553,8 @@
       "failed_specification_names": [
         "ИОС.ИТП.6.9 ИТП"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -553,7 +587,8 @@
         "ИОС.ОВиК.6.5.7 Оборудование",
         "ИОС.ОВиК.6.5.8 Измерительные приборы\n"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -578,7 +613,8 @@
         "ИОС.СС.6.6.2 Оборудование",
         "ИОС.СС.6.6.3 Шкафы, ящики и коробки"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -605,7 +641,8 @@
         "ИОС.ЭС.6.7.3 Осветительные приборы",
         "ИОС.ЭС.6.7.4 Электрические приборы и устройства\n"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -640,7 +677,8 @@
         "КР.5.2.9 Металлические конструкции",
         "КР.5.2.10 Гидро- и пароизоляция"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -702,7 +740,8 @@
         "ПЗУ.3.2.18 Источники выбросов в атмосферу",
         "ПЗУ.3.2.19 Расчетные точки и места отбора проб воды"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -727,7 +766,8 @@
         "ТХ.7.2.1 Оборудование",
         "ТХ.7.2.1 Зоны обслуживания"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "attributes"
     },
     {
       "domain": "oks",
@@ -769,7 +809,8 @@
         "АР.4.2.11 Помещения",
         "АР.4.2.12 Вертикальный транспорт"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -799,7 +840,8 @@
         "ИОС.ВК.ПВ.6.4.5 Оборудование пожаротушения\n",
         "ИОС.ВК.ПВ.6.4.6 Измерительные приборы"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -826,7 +868,8 @@
         "ИОС.ГС.6.8.3 Оборудование. Пункты\nредуцирования газа",
         "ИОС.ГС.6.8.4 Измерительные приборы"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -849,7 +892,8 @@
       "failed_specification_names": [
         "ИОС.ИТП.6.9 ИТП"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -882,7 +926,8 @@
         "ИОС.ОВиК.6.5.7 Оборудование",
         "ИОС.ОВиК.6.5.8 Измерительные приборы\n"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -907,7 +952,8 @@
         "ИОС.СС.6.6.2 Оборудование",
         "ИОС.СС.6.6.3 Шкафы, ящики и коробки"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -934,7 +980,8 @@
         "ИОС.ЭС.6.7.3 Осветительные приборы",
         "ИОС.ЭС.6.7.4 Электрические приборы и устройства\n"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -969,7 +1016,8 @@
         "КР.5.2.9 Металлические конструкции",
         "КР.5.2.10 Гидро- и пароизоляция"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -1029,7 +1077,8 @@
         "ПЗУ.3.2.16 Лестницы. Элементы сборки",
         "ПЗУ.3.2.17 Этапы строительства, реконструкции объекта капитального строительства "
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     },
     {
       "domain": "oks",
@@ -1053,8 +1102,9 @@
         "ТХ.7.2.1 Мебель",
         "ТХ.7.2.1 Зоны обслуживания"
       ],
-      "unsupported_or_load_error": []
+      "unsupported_or_load_error": [],
+      "kind": "classification"
     }
   ],
-  "content_sha256": "843800f16d68e6fcc09977ad105acf864812c48f927583d42ed1ea8f0650885c"
+  "content_sha256": "6c00afc4d68a4c5152de45f6bb81c21b905608cbd6444e9d975c4700e91abb05"
 }

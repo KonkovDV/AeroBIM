@@ -14,9 +14,10 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
 # Pinned on project-package-baseline.json @ development profile (fixture only).
-# 2026-08-11 (fourth conscious refresh): mep_system_clash / engine signature after
-# MEP-CLASH-001 honesty probe wiring; hash is status+engine only (not reason text).
-GOLDEN_BASELINE_REPRO_HASH = "62ade6f05ddad57a541200c513f2c454ab615fa83a5592110c4a9d83e0b68595"
+# 2026-08-13 (fifth conscious refresh): PackageOutcome precedence
+# violation > missing data (FAILED outranks BLOCKED; arXiv:2607.29058).
+# Hash is status+engine only (not reason text).
+GOLDEN_BASELINE_REPRO_HASH = "b243e8c9eb1244ff8a2b60ccd7033ae12773d8cb21a2e59f1292b09ac01c1524"
 
 
 class GoldenReportTests(unittest.TestCase):
@@ -53,7 +54,8 @@ class GoldenReportTests(unittest.TestCase):
             pack_id=pack.pack_id,
         )
         self.assertEqual(manifest.reproducibility_hash, GOLDEN_BASELINE_REPRO_HASH)
-        self.assertEqual(manifest.outcome, "blocked")
+        # Confirmed engine findings outrank intake/capability blocks.
+        self.assertEqual(manifest.outcome, "failed")
         self.assertFalse(manifest.passed)
         self.assertGreater(manifest.engine_finding_count, 0)
 
