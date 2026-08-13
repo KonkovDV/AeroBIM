@@ -7,6 +7,19 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+## КТ#2 — 20.08.2026 (промежуточная версия)
+
+> **Checkpoint: `NO_GO`.** Не прячем. RT-001 / RT-002 / RT-003 кодом не снимаются.
+
+| Корзина | Что |
+| --- | --- |
+| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → замечание + overlay + HTML/JSON + BCF ZIP |
+| **Экспериментально** | VLM advisory на штампе; без ключа Studio цифр нет (SKIPPED) |
+| **Заблокировано заказчиком** | Корпус, нормы, MEP |
+| **Не утверждаем** | >90%, DWG-ready, MEP delivered, CDE-ready BCF. Native DWG = **FAILED** |
+
+План: [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md) · трекер 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md)
+
 **AeroBIM** — открытый ассистент критериев приёмки для openBIM-комплектов: помогает эксперту найти расхождения между BIM-моделью, чертежами, ТЗ и правилами **до** стройки.
 
 ## Задача с примером
@@ -136,11 +149,12 @@ python -m venv .venv
 source .venv/bin/activate   # Linux/macOS
 # .venv\Scripts\activate    # Windows
 
-pip install -e ".[dev,raster]"
+pip install -e ".[dev,raster,pdf-agpl]"
 # pip install -e ".[clash]"
 # pip install -e ".[docling]"
 # pip install -e ".[enterprise]"
-# pip install -e ".[pdf-agpl]"   # optional legacy PyMuPDF only
+
+python -m aerobim.tools.run_demo_vertical_slice
 
 pytest tests -q
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70

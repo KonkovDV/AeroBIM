@@ -31,6 +31,8 @@ backend/var/
 # CI / local benchmark dumps (regenerate via Actions or local gate)
 artifacts/*
 !artifacts/README.md
+!artifacts/demo/
+!artifacts/demo/.gitkeep
 
 # IDE / agent (not product source)
 .cursor/
