@@ -22,6 +22,14 @@ _FILE_SCHEMA_RE = re.compile(
     r"FILE_SCHEMA\s*\(\s*\(\s*'([^']+)'",
     re.IGNORECASE | re.DOTALL,
 )
+_FILE_DESCRIPTION_RE = re.compile(
+    r"FILE_DESCRIPTION\s*\(\s*\(\s*'([^']+)'",
+    re.IGNORECASE | re.DOTALL,
+)
+_VIEW_DEFINITION_RE = re.compile(
+    r"ViewDefinition\[([^\]]+)\]",
+    re.IGNORECASE,
+)
 _SPEC_OPEN_RE = re.compile(r"<specification\b([^>]*)>", re.IGNORECASE)
 _NAME_ATTR_RE = re.compile(r"""\bname\s*=\s*(['"])(.*?)\1""", re.IGNORECASE | re.DOTALL)
 _VERSION_ATTR_RE = re.compile(
@@ -39,6 +47,16 @@ def parse_ifc_file_schema(header_text: str) -> str | None:
     if match is None:
         return None
     token = normalize_ifc_schema_token(match.group(1))
+    return token or None
+
+
+def parse_ifc_view_definition(header_text: str) -> str | None:
+    """Return the ViewDefinition token from FILE_DESCRIPTION, if present."""
+    match = _FILE_DESCRIPTION_RE.search(header_text)
+    if match is None:
+        return None
+    inner = _VIEW_DEFINITION_RE.search(match.group(1))
+    token = (inner.group(1) if inner else match.group(1)).strip()
     return token or None
 
 
