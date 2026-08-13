@@ -25,8 +25,8 @@ SOURCE_PAGE = "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modeli
 CLAIM_BOUNDARY = (
     "Official GAU MO MosoblGosExpertiza IDS executed by IfcTester. "
     "Fixture IFC is not a MOEXP-compliant CIM. Pass/fail on the fixture is "
-    "not product accuracy, not Samolet acceptance, and does not close RT-002 "
-    "(customer-approved profile still absent). ICMM 3.3 has no published IDS."
+    "not product accuracy, not Samolet acceptance, and does not replace a "
+    "Samolet-signed acceptance profile. ICMM 3.3 has no published IDS."
 )
 
 STATUS_PASS = "executable_pass_on_fixture"

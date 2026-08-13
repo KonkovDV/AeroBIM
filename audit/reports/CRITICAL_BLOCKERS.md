@@ -5,7 +5,7 @@
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer blockers. Open: **RT-001** (no RF PD+expertise corpus; AEC-Bench is a document bench, not that corpus), **RT-002** (no Samolet-approved acceptance profile; official MOEXP IDS **are** public), **RT-003** (federated MEP).
+**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» corpus — open benches exist), **RT-002** (no Samolet-signed acceptance profile — official MOEXP IDS **are** public), **RT-003** (public federated IFC exists; not measured; not MEP delivered). Do not write «нет утверждённого нормативного пакета».
 
 **Reclassification (v4):** [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md)
 
@@ -55,7 +55,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RTATOM A2.5 / RT-POST-09 hashes | **CLOSED*** | `--require-hashes` + `--generate-hashes` locks; CI/Docker wire-up; pinned `pip==25.2` / `uv==0.8.22`. *Residual: unhashed pip/uv bootstrap wheels. |
 | RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: full OIDC BFF (POST-05) remains **DESIGNED / NOT_IMPLEMENTED** — see `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md`. |
 
-Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF Phase 3 (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 2.5 PKCE landed 2026-08-11 — still 501). Eng pack: [`docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md`](../../docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md).
+Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile), RT-003 (unmeasured federated MEP). Residual: full OIDC BFF Phase 3 (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 2.5 PKCE landed 2026-08-11 — still 501). Eng pack: [`docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md`](../../docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md).
 
 ## Closed in post-remediation wave (2026-07-19)
 
@@ -70,7 +70,7 @@ Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: full OIDC BFF P
 | RT-POST-09 | **CLOSED*** | Actions SHA-pinned; hashed locks (`--generate-hashes`); CI/Docker `--require-hashes`; pinned pip 25.2 + uv 0.8.22; lock drift with hashes. *Residual: floating pip/uv bootstrap before pin. |
 | RT-POST-10/11 | **CLOSED** | `html.escape(quote=True)`; ZIP rejects `..` / absolute members |
 
-Still open for checkpoint: **RT-001, RT-002, RT-003**. Residual: VITE bearer BFF **DESIGNED / NOT_IMPLEMENTED** (POST-05).
+Still open for checkpoint: remaining RT-001 / RT-002 / RT-003 as rewritten 2026-08-14 (open data vs honest leftover). Residual: VITE bearer BFF **DESIGNED / NOT_IMPLEMENTED** (POST-05).
 
 ## Closed in remediation commit (2026-07-17)
 
@@ -109,32 +109,25 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 ### RT-001 — Customer accuracy / RF expertise corpus not evidenced
 - **Severity:** BLOCKER  
 - **Category:** Claims / Evaluation  
-- **Narrowed 2026-08-13:** a public **document** bench exists — AEC-Bench, 196 tasks, Apache 2.0 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), [github.com/nomic-ai/aec-bench](https://github.com/nomic-ai/aec-bench)). In-repo inventory smoke: `docs/evidence/aec-bench-smoke-latest.json` (Harbor agent **NOT_RUN**; false-pass not measured). Mushkani et al. slice of 160 compliance-judgment tasks: [arXiv:2607.29058](https://arxiv.org/abs/2607.29058) — protocol dated 17.08, not yet a published AeroBIM score.  
-- **Still true:** there is **no** public corpus «российский комплект ПД + фактическое заключение экспертизы». Fixture F1 is not product accuracy.  
-- **Expected before any product accuracy claim:** customer corpus + ≥2 adjudicators + κ/α + held-out + FN tracked  
-- **Impact:** Checkpoint fails if accuracy KPI presented as achieved  
-- **Product HOLD — RT-001 still OPEN** until that RF/customer corpus. AEC-Bench inventory ≠ RT-001 closed.
+- **Rewritten 2026-08-14:** three public corpora were available and unused for a product false-pass number: AEC-Bench ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), Apache 2.0), IFC-Bench V2 (TUM GNI, CC BY 4.0), GNI BIM Dataset ([Zenodo 10.5281/zenodo.19722012](https://doi.org/10.5281/zenodo.19722012), CC BY 4.0). Attribution: [`docs/DATASETS.md`](../../docs/DATASETS.md). GPLv3 IFC from IFC-Bench stays **out** of this MIT tree.  
+- **Still true:** there is **no** public corpus «российский комплект ПД + фактическое заключение экспертизы». Fixture F1 is not product accuracy. 656 pytest ≠ false-pass rate ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058)).  
+- **Expected before any product accuracy claim:** customer or RF-expertise corpus + ≥2 adjudicators + κ/α + held-out + FN tracked  
+- **Product HOLD — RT-001 still OPEN** for that RF/customer corpus only. Open benches ≠ RT-001 closed.
 
-### RT-002 — Customer-approved acceptance profile absent (public MOEXP IDS exist)
+### RT-002 — Samolet-signed acceptance profile absent (public examination IDS exist)
 - **Severity:** BLOCKER (customer sign-off)  
 - **Category:** Norms  
-- **Corrected 2026-08-13:** «нет утверждённых норм» is **false**. GAU MO «Мособлгосэкспертиза» published IDS + IFC4 mappings on [TIM / BIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) (CIM ОКС 3.2 + IDS 23.03.2026; НИС 3.3 + IDS 24.03.2026; АД/УДС 3.3 + IDS 23.03.2026). Pack + engine coverage: `samples/ids/moexp/` · [`docs/evidence/norm-pack-moexp-coverage-2026-08.md`](../../docs/evidence/norm-pack-moexp-coverage-2026-08.md). ICMM 3.3 remains PDF-only (no IDS on that page).  
-- **Still true:** no Samolet-signed `customer_approved` acceptance profile (`approval` object + `pack_hash` + jurisdiction + per-rule clause). Synthetic/fixture packs cannot claim `customer_approved`.  
-- **Expected:** signed customer profile with edition/clause/jurisdiction + matching pack_hash  
-- **Impact:** «проверка по профилю заказчика» cannot be signed off; official examination IDS **can** be executed  
-- **Product HOLD — RT-002 still OPEN** until signed customer profile. Public MOEXP IDS do not invent Samolet evidence.  
+- **«Нет утверждённого нормативного пакета» is false.** GAU MO «Мособлгосэкспертиза» published IDS + IFC4 mappings on [TIM / BIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/). Also public: Москомэкспертиза МКЭ-ОД/19-39 (ред. 10.10.2024), МКЭ-ОД/24-178 (25.12.2024), Moscow AGR CIM requirements, Glavgosexpertiza IM recommendations, «Требования к ИМ ОКС, Часть 1» ред. 4.0 (clash-absence section), SPb CGE element→IFC tables, СП 333 / 331, ГОСТ Р 10.*, ПНСТ 909-2024. Pack + engine coverage: `samples/ids/moexp/` · [`docs/evidence/norm-pack-moexp-coverage-2026-08.md`](../../docs/evidence/norm-pack-moexp-coverage-2026-08.md).  
+- **Still true (two different deficits):** no Samolet **model corpus**, and no Samolet-signed `customer_approved` acceptance profile (`approval` object + `pack_hash` + jurisdiction + per-rule clause).  
+- **Product HOLD — RT-002 still OPEN** until signed Samolet profile. Public MOEXP IDS do not invent Samolet evidence.
 
-### RT-003 — MEP system-aware clash not runtime
+### RT-003 — Federated MEP not measured (public models exist)
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  
 - **Category:** MEP / Clash  
-- **Exact file:** `domain/mep.py`, `docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`  
-- **Symbol:** `UnconfiguredMepSystemGraphProvider` — **DI-wired** via `Tokens.MEP_SYSTEM_GRAPH_PROVIDER` in `bootstrap_container` (I2a); still raises / probe → `NOT_VERIFIED`  
-- **Observed:** Domain foundation expanded (`MepSystem`, `MepClashMatrix`, `MepClearanceRule`, `MepClashFinding` + matrix eval). Generic `IfcClashDetector` for geometry; system-aware MEP clash **not delivered** on customer federated IFC. `SyntheticMepSystemGraphProvider` is `@sota-stub` / unit-test only — never OK. Agent scaffold returns `degraded`.  
-- **Expected:** system graph + intersection matrix + clearance semantics on federated IFC  
-- **Impact:** MEP TZ row NOT VERIFIED — wiring ≠ capability  
-- **Fix:** Do not claim delivered; wait for federated IFC + real provider  
-- **Verification:** `GET /v1/system/capabilities` → `mep_system_clash=not_verified`; architecture tests  
-- **Engineering readiness (2026-07-21):** engineering foundation improved (domain + matrix eval + synthetic stub tests). **Product HOLD — RT-003 still OPEN** until customer federated IFC + signed scope memo. No invented federated model.  
+- **Rewritten 2026-08-14:** multidisciplinary IFC is public in IFC-Bench V2 (`west_riverside_hospital` CC BY 3.0; `sixty5` / `dental_clinic` / `duplex` / `wbdg_office` CC BY 4.0; `digital_hub` MIT). IfcClash is an optional extra. OSArch: naive 7-discipline federation ~44k elements can OOM (~30 GB); bbox pre-broadphase is required before quoting runtime. Fixture «~0.5 s» must not go to the tracker as product SLA.  
+- **Still true:** `UnconfiguredMepSystemGraphProvider` stays `NOT_VERIFIED`. Synthetic stub is never OK. AeroBIM has **not** published a measured federated clash run. Not MEP delivered.  
+- **Normative hook:** «Требования к отсутствию коллизий» in digital building-model requirements ed. 4.0.  
+- **Product HOLD — RT-003 still OPEN** until a hashed measurement on a license-cleared federated model. Models exist; the measurement does not.  
 
 ### RT-004 — Clash SKIPPED does not block pass
 - **СТАТУС: ЗАКРЫТО (remediation 2026-07-17)** — `require_clash` → SKIPPED clash ⇒ FAILED + `passed=false`  

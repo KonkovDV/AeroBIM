@@ -9,14 +9,14 @@
 
 ## КТ#2 — 20.08.2026 (промежуточная версия)
 
-> **Checkpoint: `NO_GO`.** Не прячем. RT-001 — нет корпуса «ПД РФ + заключение экспертизы». RT-002 — нет профиля приёмки «Самолёта» (IDS МОГЭ **есть**). RT-003 — MEP. Кодом не снимаются.
+> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS закрыт. Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**); federated MEP на публичных моделях не замерен. Кодом не снимаются.
 
 | Корзина | Что |
 | --- | --- |
 | **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → замечание + overlay + HTML/JSON + BCF ZIP. IDS МОГЭ → IfcTester. |
 | **Подтверждено внешне** | [IDS Мособлгосэкспертизы](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) · AEC-Bench 196 задач ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), инвентарь; ложные пропуски **SKIPPED**) |
 | **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом |
-| **Заблокировано заказчиком** | Корпус заказчика, профиль приёмки Самолёта, MEP |
+| **Честный дефицит** | Корпус заказчика / «ПД РФ + заключение экспертизы»; подписанный профиль приёмки Самолёта; замер federated MEP |
 | **Не утверждаем** | >90%, DWG-ready, MEP delivered, CDE-ready BCF. Native DWG = **FAILED** |
 
 План: [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md) · трекер 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md)
@@ -40,8 +40,8 @@ Project-package analyze; IFC / IDS / cross-doc; детерминированны
 ## Статус готовности
 
 > **Checkpoint: `NO_GO`** — внутренний статус готовности к *подписанию у заказчика*, **не** оценка «система не работает».  
-> По-русски: код и fixtures есть; **нет** корпуса «ПД РФ + заключение экспертизы», **нет** утверждённого профиля приёмки «Самолёта», **нет** federated MEP. Официальные IDS Мособлгосэкспертизы **уже опубликованы** и лежат в репозитории. Без customer-профиля и корпуса checkpoint не снимаем.  
-> Открыты: **RT-001** (точность на корпусе заказчика / РФ-экспертизы), **RT-002** (профиль приёмки заказчика), **RT-003** (federated MEP) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
+> По-русски: код и fixtures есть; **нет** корпуса «ПД РФ + заключение экспертизы», **нет** подписанного профиля приёмки «Самолёта», **нет** замера federated MEP на публичных моделях. Официальные IDS Мособлгосэкспертизы **уже опубликованы** и лежат в репозитории. Формулировка «нет утверждённых норм» — ложь. Без customer-профиля и корпуса checkpoint не снимаем.  
+> Остаётся: **RT-001** (корпус РФ-экспертизы; открытые AEC-Bench / IFC-Bench / GNI — другой контур), **RT-002** (профиль приёмки Самолёта ≠ IDS МОГЭ), **RT-003** (модели есть, замера нет, не MEP delivered) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
 > Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.  
 > SSOT: [Claims Lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) · [eng status авг 2026](docs/ENGINEERING_STATUS_2026_08.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md).  
 > Инженерная готовность выросла (WP-01…08 и др.) **без** закрытия customer-блокеров — Fixture GO ≠ Checkpoint GO.
@@ -62,7 +62,7 @@ AeroBIM выполняет детерминированную проверку �
 | **Экспериментально** | Код есть; не customer-proven |
 | **Доступно (eng)** | Инженерно готово; не customer GO |
 | **План** | Отложено (Wave 2+) |
-| **Нужен заказчик** | RT-001/002/003 — checkpoint **NO_GO** |
+| **Нужен заказчик** | Корпус Самолёта + подписанный профиль; корпус РФ-экспертизы — checkpoint **NO_GO** |
 | **Не заявляется** | Запрещённые формулировки до dual evidence |
 
 **Работает:** analyze project-package; IFC/IDS/cross-doc; Shared-gate `summary.passed` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); fail-closed pilot/production; ACL 404; SSRF; provenance; BCF ZIP 2.1/3.0 structural; HITL; CLI `export_evidence_bundle`; **annotation claimed-GUID presence** (P2-04); **core PDF через pypdfium2/pdfminer** (LIC-001 Option B); **HybridRouteGate pre-gate** (WP-02); **envelope подписи** (WP-03 ENG_PARTIAL); **norm pack v2** (WP-04); **completeness inventory** (WP-05); **open-corpora profiles** (WP-06, только regression/timing); **протокол измерения качества** (WP-07, Wilson; interim 0.60); Docker offline-bundle smoke; счётчики pytest / vitest — SSOT в [runtime baseline](docs/evidence/runtime-baseline-latest.json).
@@ -73,7 +73,7 @@ AeroBIM выполняет детерминированную проверку �
 
 **План:** расширение Stage-3 полей finding; profiling-driven performance; customer-gated RT-001/002/003.
 
-**Нужен заказчик:** RT-001 корпус · RT-002 профиль приёмки Самолёта · RT-003 MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)). IDS МОГЭ уже в репо.
+**Нужен заказчик:** корпус «ПД РФ + заключение экспертизы» · подписанный профиль приёмки Самолёта · замер federated MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md), [DATASETS](docs/DATASETS.md)). IDS МОГЭ уже в репо.
 
 **Не заявляется:** точность >90%; SLA ≤30 мин на customer; native DWG; MEP delivered; корректность расчётов; CDE-ready BCF; bare-metal offline без Docker; AABB/connects = verified geometric clash. См. [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [ENGINEERING_STATUS_2026_08](docs/ENGINEERING_STATUS_2026_08.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md).
 
@@ -110,7 +110,7 @@ AeroBIM выполняет детерминированную проверку �
 | Корректность расчётов | Not implemented | — | сверка источников, не расчётный решатель |
 | Hybrid AI + advisory pre-gate (WP-02) | Доступно (eng) | fixture | Gate до advisory observations; OFF==ON для `summary.passed`; Checkpoint NO_GO |
 | Envelope подписи (WP-03) | ENG_PARTIAL | fixture | Hash/roles; trust_chain NOT_VERIFIED — никогда «УКЭП проверена» |
-| Norm pack v2 (WP-04) | Доступно (eng) | fixture | RASE + journal; RT-002 OPEN |
+| Norm pack v2 (WP-04) | Доступно (eng) | fixture | RASE + journal; fixture ≠ профиль Самолёта |
 | Completeness inventory (WP-05) | Доступно (eng) | fixture | Soft opt-in; не native DWG; не PP-87 |
 | Open corpora (WP-06) | Доступно (eng) | fixture/open | Fixture n=7 + BSI IDS n=290 (CC BY-ND); CI smoke — не product accuracy |
 | Quality protocol (WP-07) | Доступно (eng) | protocol | Wilson P/R + planner; interim 0.60; никогда >90% |

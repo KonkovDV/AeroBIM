@@ -2,15 +2,15 @@
 title: "AeroBIM Engineering Status — August 2026"
 status: active
 version: "1.6.6"
-last_updated: "2026-08-09"
-claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/003. Fixture != customer."
+last_updated: "2026-08-14"
+claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
 
 # Engineering Status — 2026-08-09
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-09 · **v1.6.6** — Renga **ToS cite GO**; Exp A / PNST IDS runtime **18/22 clean**; baseline schema **1.4.0** (CI-attested when publishable)  
-**Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; AEC-Bench ≠ that corpus) / RT-002 (Samolet acceptance profile; official MOEXP IDS exist) / RT-003 (MEP) remain OPEN  
+**last_updated:** 2026-08-14 · **v1.6.6** — IDS fail-closed (0.4); RT rewrite (open data vs leftover gaps)  
+**Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC unmeasured; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
 **Residuals Red Team:** [`quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md`](quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md)  
@@ -24,7 +24,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO until RT-001/002/0
 
 | Track | Eng status | Customer |
 |---|---|---|
-| **P4 Experiment B (KR→AR→VK) CLOSED** | KR **≈16.7**/≈25/33/25 after #2+#4 LOGIC closed (#9/#10 MISSING_ATTRIBUTE ≈8.3pp); AR 17/25/42/17 (n=12); VK 25/50/13/13; RT-002≈17pp KR; RT-003=13pp VK | Friday speech synced; OV deferred KT#3; PNST 909 pin owner |
+| **IDS fail-closed (0.4)** | SKIPPED / `ifcVersion` mismatch → ERROR; BSI 0101 live | Not product accuracy; labeled divergences |
 | **Task 2 partial package** | `ifc_path` optional on analyze; document-only mode SKIPPED/NOT_VERIFIED for IFC engines; fail-closed if clash/MEP required | Not Checkpoint GO; not product accuracy |
 | **Task 7 weekly eng status** | `python -m aerobim.tools.export_weekly_eng_status` → `docs/evidence/weekly-eng-status-latest.json`; funnel = OWNER_ONLY | Never invent commercial counts |
 | **Task 4 adjudication plan** | `plan_adjudication_corpus` → recommended_n=111 for interim 0.60 @ expected 0.75 | Sizes labeling only; not precision |

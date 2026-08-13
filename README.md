@@ -9,14 +9,14 @@
 
 ## КТ#2 — 20.08.2026 (промежуточная версия)
 
-> **Checkpoint: `NO_GO`.** Не прячем. RT-001 — нет корпуса «ПД РФ + заключение экспертизы» (AEC-Bench — другой контур). RT-002 — нет профиля приёмки «Самолёта» (официальные IDS МОГЭ **есть**). RT-003 — federated MEP. Кодом GO не ставится.
+> **Checkpoint: `NO_GO`.** Не прячем. Тихий SKIPPED в IDS-контуре закрыт (`AEROBIM-IDS-IFC-VERSION`). Осталось: нет корпуса «ПД РФ + заключение экспертизы»; нет подписанного профиля приёмки «Самолёта» (IDS МОГЭ **есть**, это другое); federated MEP на публичных моделях **не замерен**. Кодом GO не ставится.
 
 | Корзина | Что |
 | --- | --- |
 | **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. Official MOEXP IDS → IfcTester coverage. |
 | **Подтверждено внешне** | IDS Мособлгосэкспертизы ([TIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/)) + AEC-Bench inventory 196 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)). Цифры покрытия IDS — только после прогона, см. evidence. |
 | **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. |
-| **Заблокировано заказчиком** | Customer accuracy; утверждённый **профиль приёмки Самолёта**; MEP scope. |
+| **Заблокировано не молчанием заказчика** | Корпус «ПД РФ + заключение экспертизы» публично не существует. Профиль приёмки Самолёта не подписан. Federated MEP на IFC-Bench V2 ещё не измерен. |
 | **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов. Native DWG = **FAILED**. |
 
 Видео 3 мин: [`artifacts/demo/`](artifacts/demo/) — запись **19.08**, человек (сейчас placeholder).  
@@ -42,7 +42,7 @@ Pre-construction package review (expertise / chief engineer / doc QC): model ↔
 > ## Checkpoint: `NO_GO`
 >
 > Samolet TechLab Task 07 is **not** ready for customer sign-off. Open blockers:
-> **RT-001** (no RF PD+expertise corpus; AEC-Bench is not that corpus), **RT-002** (no Samolet-approved acceptance profile; official MOEXP IDS exist), **RT-003** (federated MEP scope) —
+> **RT-001** (no public «RF PD + expertise conclusion» corpus; AEC-Bench / IFC-Bench / GNI exist and are not that corpus), **RT-002** (no Samolet-signed acceptance profile; official MOEXP IDS exist — that is not the same thing), **RT-003** (public federated IFC exists; AeroBIM has not measured it; not MEP delivered) —
 > see [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
 > Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
 > dated eng freeze: [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) ·
@@ -71,7 +71,7 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 | **What works** | Fixture/repo-proven; Shared-gate honesty |
 | **Experimental** | Code present; not customer-proven |
 | **Planned** | Design only / deferred Wave 2+ |
-| **Needs customer** | RT-001/002/003 — checkpoint **NO_GO** |
+| **Needs customer** | Samolet models + signed profile; RF expertise corpus — checkpoint **NO_GO** |
 | **Not claimed** | Forbidden wording until dual evidence |
 
 **What works:** project-package analyze; IFC/IDS/cross-doc; `summary.passed` Shared-gate ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)); pilot/production fail-closed profiles; ACL 404; SSRF outbound guard; provenance stamp/persist; BCF 2.1/3.0 structural ZIP; HITL review-events; evidence bundle CLI (`python -m aerobim.tools.export_evidence_bundle`); **annotation claimed-GUID presence confirm** (P2-04); **core PDF via pypdfium2/pdfminer** (LIC-001 Option B); **HybridRouteGate advisory pre-gate** (WP-02); **detached signature envelope audit** (WP-03 ENG_PARTIAL); **norm pack v2 eligibility** (WP-04); **package completeness inventory** (WP-05); **open-corpora profiles** (WP-06 regression/timing only); **quality measurement protocol** (WP-07 Wilson planner; interim 0.60); **L1 open-bench** IFC-Bench smoke + AECV live counting on Yandex Qwen (`claim_level=open_bench_only`, ≠ RT-001 — [evidence](docs/evidence/README.md)); Docker offline-bundle smoke; pytest / vitest counts SSOT via [runtime baseline](docs/evidence/runtime-baseline-latest.json) (`frontend.tests_passed` when recorded; else see baseline/CI).
@@ -82,7 +82,7 @@ AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidenc
 
 **Planned:** Stage-3 finding field expansion; profiling-driven performance wave; customer-gated RT-001/002/003 evidence.
 
-**Needs customer:** RT-001 RF/customer corpus · RT-002 Samolet acceptance profile · RT-003 federated MEP ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md)). Official MOEXP IDS are already in-repo.
+**Needs customer:** RF PD+expertise corpus · Samolet-signed acceptance profile · measured federated MEP on public IFC ([CRITICAL_BLOCKERS](audit/reports/CRITICAL_BLOCKERS.md), [DATASETS](docs/DATASETS.md)). Official MOEXP IDS are already in-repo. Public federated models exist; we have not published a measured run.
 
 **Not claimed:** product accuracy >90%; customer ≤30 min SLA; native DWG; MEP system clash delivered; independent calc *correctness*; CDE-ready BCF; bare-metal offline without Docker; AABB/connects = verified geometric clash. See [capability-claim-matrix](docs/capability-claim-matrix-2026.md) · [PROJECT_STATUS_AUDIT](docs/PROJECT_STATUS_AUDIT_2026.md) · [ENGINEERING_STATUS_2026_08](docs/ENGINEERING_STATUS_2026_08.md) · [pilot-protocol](docs/pilot-protocol-samolet-2026.md) · [benchmark-evidence](docs/benchmark-evidence-2026.md).
 
@@ -117,14 +117,14 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | DWG native analysis | Missing / Failed | — | Fail-closed; never OK; PDF/IFC = derived input with provenance only |
 | DXF via CadModelIngestor | Partial / Not verified | fixture | Optional ezdxf; honesty never OK; ≠ DWG support |
 | Human-level CV / drawing literacy | Missing | — | Explicit `MISSING` (OCR degrade ≠ VLM) |
-| MEP system-aware clash | Not verified / blocked | fixture_only | ENG_PARTIAL: edge_kinds + AABB broadphase; always `geometry_verified=False`; RT-003 OPEN |
+| MEP system-aware clash | Not verified / blocked | fixture_only | ENG_PARTIAL: edge_kinds + AABB broadphase; always `geometry_verified=False`; public federated IFC unmeasured |
 | Offline Docker image-track | Available | eng | И1 **CLOSED** — `closed-contour --smoke`; bare-metal OUT_OF_SCOPE |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
 | Frontend vitest review-shell | Green in CI | release-readiness | **48** passed (rontend CI job) |
 | Hybrid AI routing + advisory pre-gate (WP-02) | Available (eng) | fixture | Gate before advisory observations; OFF==ON for `summary.passed`; masking ≠ anonymity; Checkpoint NO_GO |
 | Detached signature envelope (WP-03) | ENG_PARTIAL | fixture | Hash/roles audit; trust_chain always NOT_VERIFIED — never «УКЭП проверена» |
-| Norm pack v2 eligibility (WP-04) | Available (eng) | fixture | RASE + execution_mode + expert journal; RT-002 OPEN |
+| Norm pack v2 eligibility (WP-04) | Available (eng) | fixture | RASE + execution_mode + expert journal; fixture ≠ Samolet-signed profile |
 | Package completeness inventory (WP-05) | Available (eng) | fixture | Soft opt-in; no native DWG; not PP-87 / customer intake |
 | Open corpora measurability (WP-06) | Available (eng) | fixture/open | Fixture n=7 + BSI IDS TestCases n=290 (CC BY-ND); CI smoke pins — not product accuracy |
 | Quality measurement protocol (WP-07) | Available (eng) | protocol | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |

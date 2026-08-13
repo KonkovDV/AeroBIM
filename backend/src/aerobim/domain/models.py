@@ -366,8 +366,8 @@ class NormRulePack:
     pack status remains the authority for whether the criteria were approved by
     a customer; loading a draft or synthetic template does not make it normative.
     Schema 2.0.0 adds RASE / execution_mode / expert confirmation journal; those
-    gates live in ``domain.norm_rule_eligibility`` (WP-04). RT-002 stays OPEN
-    until a real customer-approved pack exists outside fixtures.
+    gates live in ``domain.norm_rule_eligibility`` (WP-04). Public MOEXP IDS
+    are not a Samolet-signed acceptance profile.
     """
 
     pack_id: str

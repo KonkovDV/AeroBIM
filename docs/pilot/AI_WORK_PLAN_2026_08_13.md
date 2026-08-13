@@ -13,9 +13,14 @@
 
 Gate: `pytest` on the four files above + `ruff check` + `lint_claims.py` all green.
 
-## P1 — vertical slice UI (15–16.08, 10 h)
+## P0b — IDS fail-open (13/14.08 night) — code ready, commit this night
 
-- One page: PDF fragment → finding → evidence link → overlay PNG → outcome enum. Reuse existing review-shell; **no new ports**.
+- SKIPPED / `ifcVersion` vs `FILE_SCHEMA` → `AEROBIM-IDS-IFC-VERSION` / `AEROBIM-IDS-SKIPPED`.
+- Evidence: `docs/evidence/ids-fail-closed-2026-08.md`. Do not alias IFC4↔IFC4X3.
+
+## P1 — vertical slice UI (15–16.08, 6 h remaining)
+
+- Skeleton already on `main` (`8d6d505`): `VerticalSliceKt2.tsx`. Polish overlay + e2e only.
 - e2e: `backend/tests/test_demo_vertical_slice.py` + `frontend/src/components/VerticalSliceKt2.test.tsx`.
 - DoD: README «10 minutes from clone to demo» is true on a clean machine.
 
@@ -49,7 +54,7 @@ Gate: `pytest` on the four files above + `ruff check` + `lint_claims.py` all gre
 
 ## Never do
 
-- New ports / adapters / DI tokens (except the already-landed outcome priority).
+- New ports / adapters / DI tokens (except landed `PackageOutcome` and IDS fail-open 0.4).
 - «>90%», «DWG-ready», «MEP delivered», «CDE-ready BCF», «соответствует ПП 87», «московский профиль готов».
 - AEC-Bench numbers without a run log and hash.
 - Delete adapters without the owner's written «yes».
@@ -61,6 +66,6 @@ Gate: `pytest` on the four files above + `ruff check` + `lint_claims.py` all gre
 | `run_demo_vertical_slice` | Один CLI: лист → finding + overlay + BCF. Fixture. |
 | `docs/evidence/norm-pack-moexp-coverage-2026-08.md` | Движок исполняет 389/389 официальных спецификаций МОГЭ. ЦИМ по профилю МОГЭ **не замеряли**. |
 | Qwen live | Advisory на штампе/spec. Не вердикт. Kimi закрыт гейтом. |
-| `NO_GO` | RT-001 корпус РФ-экспертизы, RT-002 профиль «Самолёта», RT-003 MEP. Кодом не снимается. |
+| `NO_GO` | Корпус РФ-экспертизы, профиль Самолёта, замер federated MEP. Кодом GO не ставится. IDS fail-open закрыт (0.4). |
 
 **Ask Samolet for:** корпус моделей + 2 разметчика + подписанный профиль приёмки. Нормы экспертизы уже в репо.

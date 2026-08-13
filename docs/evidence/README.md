@@ -1,8 +1,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.4.0"
-last_updated: "2026-08-13"
+version: "2.5.0"
+last_updated: "2026-08-14"
 ---
 
 # Evidence fixtures
@@ -17,7 +17,8 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Advisory VLM stamp/title fixture: Qwen live, Kimi gated on Yandex Studio. Not product accuracy; not MOEXP coverage |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | AEC-Bench false-pass measurement **SKIPPED** (Harbor agent NOT_RUN). Inventory 196 ≠ RT-001 |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
-| [`ifc-bench-v1-smoke-latest.json`](ifc-bench-v1-smoke-latest.json) | L1 open-bench: IFC-Bench v1 deterministic countable subset (`claim_level=open_bench_only`; ≠ RT-001) |
+| [`ids-fail-closed-2026-08.md`](ids-fail-closed-2026-08.md) · [`.json`](ids-fail-closed-2026-08.json) | IfcTester ifcVersion fail-open closed; BSI 0101 live; not product accuracy |
+| [`upstream-validate-overlap-2026-08.md`](upstream-validate-overlap-2026-08.md) | What duplicates bSI validate / Gherkin / ifcbench; keep vs replace. Not a run |
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; WP-01 complete required in CI) |
