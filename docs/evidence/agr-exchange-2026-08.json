@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "agr_exchange_fixture",
+  "claim_level": "agr_exchange_fixture",
+  "claim_boundary": "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Not customer CIM acceptance.",
+  "generated_at": "2026-08-13T21:45:05.411620+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.7",
+    "machine": "AMD64",
+    "system": "Windows"
+  },
+  "manifest": "samples/agr/exchange-fixture-manifest.json",
+  "summary": {
+    "case_count": 5,
+    "cases_matching_expect": 5
+  },
+  "cases": [
+    {
+      "id": "pass-ifc4-referenceview",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [],
+      "observed_rule_ids": [],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-design-transfer-view",
+      "ifc": "samples/ifc/wall-pset-qto-pass.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 997,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-REFERENCE-VIEW"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-REFERENCE-VIEW"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-ifc4x3-schema",
+      "ifc": "samples/ifc/wall-pset-ifc4x3.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 1005,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-IFC-SCHEMA"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-IFC-SCHEMA"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-building-element-proxy",
+      "ifc": "samples/ifc/wall-with-building-element-proxy.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 639,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-PROXY-BANNED"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-PROXY-BANNED"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-filename-shape",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "bad:name.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "expect_matched": true
+    }
+  ],
+  "content_sha256": "346b9b73f65c0464ed9936689c0e3b83ac1fc00bd5e1ed5b388fc82b6dc37293"
+}

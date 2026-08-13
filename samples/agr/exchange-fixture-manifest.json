@@ -1,0 +1,36 @@
+{
+  "schema": "aerobim_agr_exchange_manifest_v1",
+  "claim_boundary": "Fixture AGR exchange-shape cases. Not moscow_agr profile. Not customer CIM.",
+  "cases": [
+    {
+      "id": "pass-ifc4-referenceview",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "expect_rule_ids": []
+    },
+    {
+      "id": "fail-design-transfer-view",
+      "ifc": "samples/ifc/wall-pset-qto-pass.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "expect_rule_ids": ["AEROBIM-AGR-REFERENCE-VIEW"]
+    },
+    {
+      "id": "fail-ifc4x3-schema",
+      "ifc": "samples/ifc/wall-pset-ifc4x3.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "expect_rule_ids": ["AEROBIM-AGR-IFC-SCHEMA"]
+    },
+    {
+      "id": "fail-building-element-proxy",
+      "ifc": "samples/ifc/wall-with-building-element-proxy.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "expect_rule_ids": ["AEROBIM-AGR-PROXY-BANNED"]
+    },
+    {
+      "id": "fail-filename-shape",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "bad:name.ifc",
+      "expect_rule_ids": ["AEROBIM-AGR-FILENAME"]
+    }
+  ]
+}
