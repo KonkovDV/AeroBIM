@@ -7,6 +7,21 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+## КТ#2 — 20.08.2026 (промежуточная версия)
+
+> **Checkpoint: `NO_GO`.** Не прячем. RT-001 (корпус заказчика), RT-002 (норм-пакет), RT-003 (федеративная модель ИС) кодом не снимаются.
+
+| Корзина | Что |
+| --- | --- |
+| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. |
+| **Экспериментально** | VLM advisory (штамп/экспликация); Kimi vs Qwen — без ключа Studio **SKIPPED**, цифр нет. Heuristic layout regions ≠ trained CV. |
+| **Заблокировано заказчиком** | Customer accuracy, утверждённые нормы, MEP scope. |
+| **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов. Native DWG = **FAILED**. |
+
+Видео 3 мин: [`artifacts/demo/`](artifacts/demo/) — запись **19.08**, человек (сейчас placeholder).  
+Встреча трекера 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md).  
+План 13–20.08: [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md).
+
 Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + cross-document evidence): helps an expert catch package contradictions **before** site work.
 
 ## Problem (concrete example)
@@ -172,8 +187,11 @@ python -m venv .venv
 source .venv/bin/activate  # Linux/macOS
 # .venv\Scripts\activate   # Windows
 
-# Install
-pip install -e ".[dev,raster]"
+# Install (pdf-agpl = overlay PNG via PyMuPDF; raster = RapidOCR degrade path)
+pip install -e ".[dev,raster,pdf-agpl]"
+
+# KT#2 vertical slice (fail-loud; writes artifacts/vertical-slice-demo/)
+python -m aerobim.tools.run_demo_vertical_slice
 
 # Optional extras
 # pip install -e ".[clash]"    # enable geometry clash detection
