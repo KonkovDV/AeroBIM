@@ -1,11 +1,16 @@
 # VLM stamp comparison (tracker 2.2)
 
-**status:** `SKIPPED`
+**status:** `LIVE`
 **claim_level:** `fixture_only`
 
-VLM advisory on stamp/title-block crop only. fixture_only. Not door/window counting. Not product accuracy. Invalid JSON → fail-closed skip.
+VLM advisory on open fixture title-block/spec crops. Stamp pixels are not sent (PII clip). fixture_only. Not door/window counting. Not product accuracy. Invalid JSON → fail-closed skip for that region.
 
-AEROBIM_LLM_API_KEY not set — refuse to invent metrics
+Take Qwen on Yandex AI Studio for this RF contour: live structured roundtrip on the open title-block/spec crops succeeded; Kimi-k3 is refused on the Studio host by design. This is not product accuracy and does not close RT-001. Stamp pixels stay off the wire (PII clip).
 
-content_sha256: `21360b87de917bfa3e177c6804c247539fef88d2398b10f9fadd644ab3ddcb07`
-generated_at: `2026-08-13T20:15:55.612180+00:00`
+| Model | Status | elapsed_ms | regions_read | observations | schema_fail_share |
+|---|---|---:|---:|---:|---:|
+| Qwen | roundtrip_ok | 1606.1 | 1 | 1 | 0.0 |
+| Kimi | GATE_REFUSED | — | — | — | — |
+
+content_sha256: `b542a608242276d33f4ba06b272125dbfdee0e8f741169e2d8f18edfe6104f01`
+generated_at: `2026-08-13T20:21:47.237117+00:00`

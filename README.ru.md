@@ -14,7 +14,7 @@
 | Корзина | Что |
 | --- | --- |
 | **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → замечание + overlay + HTML/JSON + BCF ZIP |
-| **Экспериментально** | VLM advisory на штампе; без ключа Studio цифр нет (SKIPPED) |
+| **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом |
 | **Заблокировано заказчиком** | Корпус, нормы, MEP |
 | **Не утверждаем** | >90%, DWG-ready, MEP delivered, CDE-ready BCF. Native DWG = **FAILED** |
 

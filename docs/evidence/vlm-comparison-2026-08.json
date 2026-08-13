@@ -1,8 +1,8 @@
 {
   "artifact_type": "vlm_stamp_comparison",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "claim_level": "fixture_only",
-  "claim_boundary": "VLM advisory on stamp/title-block crop only. fixture_only. Not door/window counting. Not product accuracy. Invalid JSON → fail-closed skip.",
+  "claim_boundary": "VLM advisory on open fixture title-block/spec crops. Stamp pixels are not sent (PII clip). fixture_only. Not door/window counting. Not product accuracy. Invalid JSON → fail-closed skip for that region.",
   "scenario": "stamp_title_block_explication",
   "not_in_scope": [
     "door_count",
@@ -13,19 +13,54 @@
     {
       "id": "qwen3-vl",
       "route": "Yandex AI Studio allowlisted host",
-      "role": "primary_candidate"
+      "role": "primary"
     },
     {
       "id": "kimi",
       "route": "refused on Yandex host (kimi-k3 default gate)",
-      "role": "comparison_only_if_non_yandex_allowlisted"
+      "role": "not_run_on_studio"
     }
   ],
-  "status": "SKIPPED",
-  "skip_reason": "AEROBIM_LLM_API_KEY not set — refuse to invent metrics",
-  "metrics": null,
-  "recommendation": "No live scores this run. Do not pick a model from empty metrics. Re-run 17.08 with Studio key; schema-invalid output = zero score / skip.",
-  "generated_at": "2026-08-13T20:15:55.612180+00:00",
+  "status": "LIVE",
+  "skip_reason": null,
+  "metrics": {
+    "n_sheets": 1,
+    "corpus": "open_fixture_vertical_slice_pdf",
+    "qwen": {
+      "id": "qwen",
+      "status": "roundtrip_ok",
+      "host": "llm.api.cloud.yandex.net",
+      "model": "gpt://<folder>/qwen3.6-35b-a3b",
+      "elapsed_ms": 1606.1,
+      "regions_detected": 5,
+      "regions_planned": 1,
+      "regions_read": 1,
+      "stamp_regions_excluded": 4,
+      "observation_count": 1,
+      "degraded_regions": 1,
+      "schema_fail_region_share": 0.0,
+      "spot_checks": {
+        "mentions_wall_01": true,
+        "mentions_150": true,
+        "note": "Open-fixture substring checks, not adjudicated precision/recall"
+      },
+      "skipped_vlm": false,
+      "pipeline_reason": "Layer 1: 1 region(s) queued for region-restricted VLM; excluded role=4 crs=0 pii_clip=0 (PII guard)",
+      "cost_note": "Token usage is per-region inside the client; pack-level RUB is not aggregated here without usage on each read. Order-of-magnitude only.",
+      "rub_per_1k_tokens_assumed": {
+        "input": 0.2,
+        "output": 0.4
+      }
+    },
+    "kimi": {
+      "id": "kimi",
+      "status": "GATE_REFUSED",
+      "reason": "Yandex Studio requires AEROBIM_VLM_MODEL or AEROBIM_LLM_MODEL (e.g. gpt://<folder>/qwen3.6-35b-a3b); kimi-k3 default is refused",
+      "metrics": null
+    }
+  },
+  "recommendation": "Take Qwen on Yandex AI Studio for this RF contour: live structured roundtrip on the open title-block/spec crops succeeded; Kimi-k3 is refused on the Studio host by design. This is not product accuracy and does not close RT-001. Stamp pixels stay off the wire (PII clip).",
+  "generated_at": "2026-08-13T20:21:47.237117+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.13.7",
@@ -33,5 +68,40 @@
     "system": "Windows"
   },
   "customer_accuracy_not_established": true,
-  "content_sha256": "21360b87de917bfa3e177c6804c247539fef88d2398b10f9fadd644ab3ddcb07"
+  "content_sha256": "b542a608242276d33f4ba06b272125dbfdee0e8f741169e2d8f18edfe6104f01",
+  "dotenv_loaded": true,
+  "models_run": [
+    {
+      "id": "qwen",
+      "status": "roundtrip_ok",
+      "host": "llm.api.cloud.yandex.net",
+      "model": "gpt://<folder>/qwen3.6-35b-a3b",
+      "elapsed_ms": 1606.1,
+      "regions_detected": 5,
+      "regions_planned": 1,
+      "regions_read": 1,
+      "stamp_regions_excluded": 4,
+      "observation_count": 1,
+      "degraded_regions": 1,
+      "schema_fail_region_share": 0.0,
+      "spot_checks": {
+        "mentions_wall_01": true,
+        "mentions_150": true,
+        "note": "Open-fixture substring checks, not adjudicated precision/recall"
+      },
+      "skipped_vlm": false,
+      "pipeline_reason": "Layer 1: 1 region(s) queued for region-restricted VLM; excluded role=4 crs=0 pii_clip=0 (PII guard)",
+      "cost_note": "Token usage is per-region inside the client; pack-level RUB is not aggregated here without usage on each read. Order-of-magnitude only.",
+      "rub_per_1k_tokens_assumed": {
+        "input": 0.2,
+        "output": 0.4
+      }
+    },
+    {
+      "id": "kimi",
+      "status": "GATE_REFUSED",
+      "reason": "Yandex Studio requires AEROBIM_VLM_MODEL or AEROBIM_LLM_MODEL (e.g. gpt://<folder>/qwen3.6-35b-a3b); kimi-k3 default is refused",
+      "metrics": null
+    }
+  ]
 }

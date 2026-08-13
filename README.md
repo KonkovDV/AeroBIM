@@ -14,7 +14,7 @@
 | Корзина | Что |
 | --- | --- |
 | **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. |
-| **Экспериментально** | VLM advisory (штамп/экспликация); Kimi vs Qwen — без ключа Studio **SKIPPED**, цифр нет. Heuristic layout regions ≠ trained CV. |
+| **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. |
 | **Заблокировано заказчиком** | Customer accuracy, утверждённые нормы, MEP scope. |
 | **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов. Native DWG = **FAILED**. |
 
