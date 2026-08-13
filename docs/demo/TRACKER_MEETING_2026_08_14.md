@@ -21,7 +21,7 @@ claim_boundary: "Fixture demo. Checkpoint NO_GO. Not customer accuracy. Not DWG-
 | --- | --- |
 | Checkpoint | **NO_GO** (RT-001 корпус, RT-002 нормы, RT-003 MEP) — не наше, кодом не закрыть |
 | IFC 2x3 / 4 / 4x3 | Таблица с прогона: [`docs/evidence/ifc-release-matrix-2026-08.md`](../evidence/ifc-release-matrix-2026-08.md) — fixture, не точность |
-| Kimi vs Qwen | Контур готов; **цифр нет без ключа Studio** — не выдумываем. Повтор 17.08 |
+| Kimi vs Qwen | **LIVE на Qwen** (~1.6 с, 1 регион, нашёл WALL-01 / 150 на open fixture). Kimi на Yandex Studio **закрыт гейтом**. Не точность продукта. [`../evidence/vlm-comparison-2026-08.md`](../evidence/vlm-comparison-2026-08.md) |
 | DWG | Жёсткий **FAILED**, вердикт комплекта false. Зелёного DWG не будет. ADR 17.08 |
 | CV | Heuristic регионы + text layer. Это не обученный CV |
 | Что нужно от «Самолёта» | Комплект + 2 эксперта-разметчика + утверждённый norm pack; иначе КТ#3 останется методикой |
