@@ -18,7 +18,7 @@ claim_boundary: >-
 - null_always_clean false_pass_rate_on_labeled: **0.7283**
 - labeled_compliance_tasks: **184**
 
-Harbor drawing-reading false-pass remains **NOT_MEASURED**. `null_always_clean` is a gold-only floor: always say compliant, never open a sheet. Not AeroBIM product accuracy. Not RT-001. Observation unit = task, not project cluster.
+Harbor drawing-reading false-pass remains **NOT_MEASURED**. The Yandex Studio key already ran **AECV-Bench** counting (macro_extended=0.4325, 2026-08-04); Harbor is a different Codex/Claude agent and does not take that key. `null_always_clean` is a gold-only floor: always say compliant, never open a sheet. Not AeroBIM product accuracy. Not RT-001. Observation unit = task, not project cluster.
 
 ```bash
 cd backend

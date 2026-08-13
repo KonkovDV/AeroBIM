@@ -37,7 +37,7 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - Paper [arXiv:2605.01698](https://arxiv.org/abs/2605.01698) states 1 027 tasks across **37 IFC models / 21 projects**. Do not blend card and paper counts in one sentence.
 - Solihin-adapted classes 1–4; eval-split `eval-split-hellin2026.csv` (514 test / 512 train after leak fix)
 - Multidisciplinary models used as **pointers**, not vendored: `west_riverside_hospital` (CC BY 3.0, OpenIFC / Wawan Solihin), `sixty5`, `dental_clinic`, `duplex`, `wbdg_office` (CC BY 4.0), `digital_hub` (MIT, RWTH Aachen E3D)
-- AeroBIM: pins + gitignored checkout of QA CSV + duplex/dental (GPLv3 dirs never copied). Deterministic smoke **17/1026** scored (`output_sha256=17378fe4…84721`). Eval-split **514** stays unmapped NL — not a 514 false-pass figure. Hub extra models (`digital_hub`, `west_riverside`) still absent (SSL). Smoke: `docs/evidence/ifc-bench-v2-smoke-latest.json`
+- AeroBIM: pins + gitignored checkout of QA CSV + non-GPL IFC (`duplex`, `dental_clinic`, `digital_hub`, `sixty5`, `wbdg_office`, `west_riverside_hospital`; GPLv3 dirs never copied). Deterministic smoke **25/1026** scored (`output_sha256=8f76efdf…7b34`). Of those 25, eval-split has **12** test / **13** train — not a 514 false-pass figure. `west_riverside` is on disk for federated MEP inventory; it has **0** rows in the v2 QA CSV. Smoke: `docs/evidence/ifc-bench-v2-smoke-latest.json`
 
 ## GNI BIM Dataset
 

@@ -1,8 +1,8 @@
 """Federated MEP inventory on public IFC. Never claims MEP delivered.
 
 Looks at in-repo HVAC fixture plus optional IFC-Bench checkouts
-(duplex/mep, digital_hub, west_riverside). Counts distribution elements.
-Does not run clash. Capability stays NOT_VERIFIED.
+(duplex/dental/digital_hub/wbdg_office; west_riverside if present).
+Counts distribution elements. Does not run clash. Capability stays NOT_VERIFIED.
 """
 
 from __future__ import annotations
@@ -43,7 +43,18 @@ CANDIDATES = (
     (".local/ifc-bench-v2/projects/dental_clinic/mep.ifc", "ifc_bench_dental_mep"),
     (".local/ifc-bench-v2/projects/dental_clinic/str.ifc", "ifc_bench_dental_str"),
     (".local/ifc-bench-v2/projects/digital_hub/arc.ifc", "ifc_bench_digital_hub"),
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/arc.ifc", "ifc_bench_west_riverside"),
+    (".local/ifc-bench-v2/projects/digital_hub/heating.ifc", "ifc_bench_digital_hub_heating"),
+    (".local/ifc-bench-v2/projects/digital_hub/plumbing.ifc", "ifc_bench_digital_hub_plumbing"),
+    (".local/ifc-bench-v2/projects/digital_hub/ventilation.ifc", "ifc_bench_digital_hub_ventilation"),
+    (".local/ifc-bench-v2/projects/wbdg_office/mep.ifc", "ifc_bench_wbdg_office_mep"),
+    # West Riverside ships IFC2X3 + IFC4 twins; inventory IFC4 once (not both).
+    (".local/ifc-bench-v2/projects/west_riverside_hospital/arc_ifc4.ifc", "ifc_bench_west_riverside_arc_ifc4"),
+    (".local/ifc-bench-v2/projects/west_riverside_hospital/mech_ifc4.ifc", "ifc_bench_west_riverside_mech_ifc4"),
+    (".local/ifc-bench-v2/projects/west_riverside_hospital/plumb_ifc4.ifc", "ifc_bench_west_riverside_plumb_ifc4"),
+    (".local/ifc-bench-v2/projects/west_riverside_hospital/elec_ifc4.ifc", "ifc_bench_west_riverside_elec_ifc4"),
+    (".local/ifc-bench-v2/projects/west_riverside_hospital/fire_ifc4.ifc", "ifc_bench_west_riverside_fire_ifc4"),
+    (".local/ifc-bench-v2/projects/west_riverside_hospital/sprinkle_ifc4.ifc", "ifc_bench_west_riverside_sprinkle_ifc4"),
+    (".local/ifc-bench-v2/projects/west_riverside_hospital/str_ifc4.ifc", "ifc_bench_west_riverside_str_ifc4"),
 )
 
 

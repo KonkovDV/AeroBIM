@@ -5,11 +5,21 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from aerobim.tools.run_aec_bench_smoke import classify_gold_task, inventory_gold, repo_root
+from aerobim.tools.run_aec_bench_smoke import (
+    _secret_present,
+    classify_gold_task,
+    inventory_gold,
+    repo_root,
+)
 
 
 class AecBenchGoldTests(unittest.TestCase):
+    def test_secret_present_reads_process_env(self) -> None:
+        with patch.dict("os.environ", {"AEROBIM_LLM_API_KEY": "x"}, clear=False):
+            self.assertTrue(_secret_present("AEROBIM_LLM_API_KEY"))
+
     def test_classify_broken_clean_and_submittal(self) -> None:
         self.assertEqual(classify_gold_task({"variant": "broken", "defects": [{}]}), "has_issue")
         self.assertEqual(classify_gold_task({"variant": "clean", "defects": []}), "clean")

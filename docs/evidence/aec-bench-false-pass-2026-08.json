@@ -1,7 +1,7 @@
 {
   "artifact_type": "aec_bench_false_pass",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-13T22:43:25.018262+00:00",
+  "generated_at": "2026-08-13T23:32:41.901992+00:00",
   "claim_level": "open_bench_only",
   "closes_rt001": false,
   "customer_accuracy_not_established": true,
@@ -17,7 +17,7 @@
   },
   "false_pass": {
     "status": "NOT_MEASURED",
-    "reason": "Harbor agent trial NOT_RUN; no drawing-reading agent score."
+    "reason": "Harbor Codex/Claude trial NOT_RUN (needs OpenAI/Anthropic agent key + Docker). Yandex Studio key is a different contour: it already scored AECV-Bench counting, not this Harbor agent. null_always_clean is gold-only."
   },
   "null_always_clean": {
     "claim_boundary": "Always predict compliant without reading drawings. Not Harbor. Not AeroBIM product accuracy. Not RT-001.",
@@ -53,5 +53,5 @@
     "true_negative": 50,
     "false_negative": 0
   },
-  "content_sha256": "989d04726a23261aa3a800eb11567720bde9c7f796b9d1ee51f6d4c3366e5124"
+  "content_sha256": "21bd22130350a3b410f5ce9e97fb224b33032894b7fbd03f50effe028c90ebc7"
 }

@@ -43,5 +43,5 @@
     "reason": "Full tree ~2GB; pin hashes first; selective non-GPL model pull later"
   },
   "smoke_evidence": "docs/evidence/ifc-bench-v2-smoke-latest.json",
-  "next_action": "digital_hub / west_riverside still SSL-blocked; remaining NL is agentic, not more IfcOpenShell counters"
+  "next_action": "west_riverside IFC4 inventory on disk; remaining IFC-Bench NL is agentic, not more IfcOpenShell counters"
 }

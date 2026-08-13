@@ -16,6 +16,7 @@ import urllib.error
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
+from time import sleep
 from typing import Any
 
 CLAIM_BOUNDARY = (
@@ -48,6 +49,23 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def _secret_present(name: str) -> bool:
+    """True if the named secret is in the process env or backend/.env. Never returns the value."""
+    if (os.getenv(name) or "").strip():
+        return True
+    env_path = repo_root() / "backend" / ".env"
+    if not env_path.is_file():
+        return False
+    prefix = f"{name}="
+    for line in env_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("#") or not stripped.startswith(prefix):
+            continue
+        value = stripped.split("=", 1)[1].strip().strip('"').strip("'")
+        return bool(value)
+    return False
+
+
 def discover_instances(dataset_root: Path) -> list[dict[str, Any]]:
     tasks_root = dataset_root / "tasks"
     instances: list[dict[str, Any]] = []
@@ -76,6 +94,7 @@ def prefetch_instance(
     family: str,
     instance: str,
     timeout_s: float,
+    retries: int = 3,
 ) -> dict[str, Any]:
     inst_dir = dataset_root / "tasks" / scope / family / instance
     manifest = inst_dir / "environment" / "manifest.jsonl"
@@ -102,42 +121,73 @@ def prefetch_instance(
                     "dest": dest_name,
                     "status": "cached",
                     "bytes": dest.stat().st_size,
-                    "sha256": _sha256_file(dest),
                 }
             )
             continue
-        try:
-            req = urllib.request.Request(
-                url,
-                headers={"User-Agent": "Mozilla/5.0 AeroBIM-open-bench/1.0"},
-                method="GET",
-            )
-            with urllib.request.urlopen(req, timeout=timeout_s) as resp:
-                data = resp.read()
-            dest.write_bytes(data)
-            downloads.append(
-                {
-                    "dest": dest_name,
-                    "status": "downloaded",
-                    "bytes": len(data),
-                    "sha256": hashlib.sha256(data).hexdigest(),
-                }
-            )
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
-            downloads.append(
-                {
-                    "dest": dest_name,
-                    "status": "error",
-                    "detail": str(exc)[:300],
-                }
-            )
-    ok = all(d.get("status") in {"cached", "downloaded"} for d in downloads)
+        last_error = ""
+        data: bytes | None = None
+        for attempt in range(max(1, retries)):
+            try:
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "Mozilla/5.0 AeroBIM-open-bench/1.0"},
+                    method="GET",
+                )
+                with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+                    data = resp.read()
+                break
+            except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
+                last_error = str(exc)[:300]
+                data = None
+                if attempt + 1 < retries:
+                    sleep(1.5 * (attempt + 1))
+        if data is None:
+            downloads.append({"dest": dest_name, "status": "error", "detail": last_error})
+            continue
+        dest.write_bytes(data)
+        downloads.append(
+            {
+                "dest": dest_name,
+                "status": "downloaded",
+                "bytes": len(data),
+                "sha256": hashlib.sha256(data).hexdigest(),
+            }
+        )
+    ok = all(item.get("status") in {"cached", "downloaded"} for item in downloads)
     return {
         "status": "ok" if ok else "partial_or_failed",
         "scope": scope,
         "family": family,
         "instance": instance,
         "downloads": downloads,
+    }
+
+
+def inventory_pdf_assets(dataset_root: Path) -> dict[str, Any]:
+    tasks = dataset_root / "tasks"
+    pdfs = list(tasks.rglob("*.pdf")) if tasks.is_dir() else []
+    by_scope: dict[str, int] = {}
+    for path in pdfs:
+        try:
+            scope = path.relative_to(tasks).parts[0]
+        except ValueError:
+            scope = "unknown"
+        by_scope[scope] = by_scope.get(scope, 0) + 1
+    manifest_pdf_urls = 0
+    for manifest in tasks.rglob("manifest.jsonl") if tasks.is_dir() else []:
+        for line in manifest.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            dest = str(json.loads(line).get("dest") or "")
+            if dest.lower().endswith(".pdf"):
+                manifest_pdf_urls += 1
+    return {
+        "pdf_files": len(pdfs),
+        "pdf_bytes": sum(path.stat().st_size for path in pdfs),
+        "by_scope": by_scope,
+        "manifest_pdf_urls": manifest_pdf_urls,
+        "note": "Sheets stay gitignored under .local/aec-bench. Not Harbor. Not product accuracy.",
     }
 
 
@@ -235,12 +285,17 @@ def render_false_pass_markdown(payload: dict[str, Any]) -> str:
             f"- labels: `{json.dumps(gold.get('by_label'), ensure_ascii=False)}`",
             f"- variants: `{json.dumps(gold.get('by_variant'), ensure_ascii=False)}`",
             f"- Harbor agent: **{harbor.get('status')}**",
+            f"- sheets on disk: **{(payload.get('assets') or {}).get('pdf_files')}** / "
+            f"{(payload.get('assets') or {}).get('manifest_pdf_urls')} manifest PDFs",
             f"- null_always_clean false_positive: **{null.get('false_positive')}**",
             f"- null_always_clean true_negative: **{null.get('true_negative')}**",
             f"- null_always_clean false_pass_rate_on_labeled: **{null.get('false_pass_rate_on_labeled')}**",
             f"- labeled_compliance_tasks: **{null.get('labeled_compliance_tasks')}**",
             "",
             "Harbor drawing-reading false-pass remains **NOT_MEASURED**. "
+            "The Yandex Studio key already ran **AECV-Bench** counting "
+            "(macro_extended=0.4325, 2026-08-04); Harbor is a different "
+            "Codex/Claude agent and does not take that key. "
             "`null_always_clean` is a gold-only floor: always say compliant, never open a sheet. "
             "Not AeroBIM product accuracy. Not RT-001. Observation unit = task, not project cluster.",
             "",
@@ -275,7 +330,11 @@ def _write_false_pass_evidence(repo: Path, smoke: dict[str, Any]) -> None:
         },
         "false_pass": {
             "status": "NOT_MEASURED",
-            "reason": "Harbor agent trial NOT_RUN; no drawing-reading agent score.",
+            "reason": (
+                "Harbor Codex/Claude trial NOT_RUN (needs OpenAI/Anthropic agent key + Docker). "
+                "Yandex Studio key is a different contour: it already scored AECV-Bench counting, "
+                "not this Harbor agent. null_always_clean is gold-only."
+            ),
         },
         "null_always_clean": null,
         "gold": {
@@ -311,7 +370,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Download manifest assets for --scope/--family/--instance",
     )
-    parser.add_argument("--scope", default="intrasheet")
+    parser.add_argument("--scope", default="intrasheet", help="intrasheet|intradrawing|intraproject|all")
     parser.add_argument("--family", default=None)
     parser.add_argument("--instance", default=None)
     parser.add_argument("--prefetch-limit", type=int, default=1)
@@ -334,7 +393,7 @@ def main(argv: list[str] | None = None) -> int:
         candidates = [
             i
             for i in instances
-            if i["scope"] == args.scope
+            if (args.scope == "all" or i["scope"] == args.scope)
             and (args.family is None or i["family"] == args.family)
             and (args.instance is None or i["instance"] == args.instance)
             and i["has_manifest"]
@@ -350,8 +409,9 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
 
-    openai_set = bool((os.getenv("OPENAI_API_KEY") or "").strip())
-    anthropic_set = bool((os.getenv("ANTHROPIC_API_KEY") or "").strip())
+    openai_set = _secret_present("OPENAI_API_KEY")
+    anthropic_set = _secret_present("ANTHROPIC_API_KEY")
+    yandex_set = _secret_present("AEROBIM_LLM_API_KEY")
     gold = inventory_gold(dataset_root)
     report = {
         "artifact_type": "aec_bench_smoke",
@@ -369,15 +429,19 @@ def main(argv: list[str] | None = None) -> int:
             "by_family": by_family,
         },
         "gold": gold,
+        "assets": inventory_pdf_assets(dataset_root),
         "prefetch": prefetch_results,
         "agent_trial": {
             "status": "NOT_RUN",
             "reason": (
-                "Harbor CLI installed separately; Codex/Claude agent trial needs "
-                "valid OPENAI_API_KEY or ANTHROPIC_API_KEY. Live AECV vision returned "
-                "HTTP 401 with current OPENAI_API_KEY — do not start paid agent burn "
-                "until the key is replaced."
+                "Harbor is a Codex/Claude Docker agent. It does not take the Yandex "
+                "AI Studio Completions key. Yandex key present="
+                f"{str(yandex_set).lower()}; that key already ran AECV-Bench live "
+                "counting (macro_extended=0.4325 on 2026-08-04). OPENAI_API_KEY/"
+                "ANTHROPIC_API_KEY are a different vendor; a prior OpenAI-compat "
+                "call returned HTTP 401. Do not paste the Yandex key into Harbor."
             ),
+            "yandex_studio_key_present": yandex_set,
             "openai_key_present": openai_set,
             "anthropic_key_present": anthropic_set,
             "harbor_hint": (
@@ -396,10 +460,29 @@ def main(argv: list[str] | None = None) -> int:
     text = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     out.write_text(text, encoding="utf-8")
     if args.also_docs_evidence:
+        docs_report = json.loads(json.dumps(report, ensure_ascii=False))
+        docs_report["prefetch"] = [
+            {
+                "instance": row.get("instance"),
+                "scope": row.get("scope"),
+                "family": row.get("family"),
+                "status": row.get("status"),
+                "ok": sum(
+                    1
+                    for item in row.get("downloads") or []
+                    if item.get("status") in {"cached", "downloaded"}
+                ),
+                "errors": sum(
+                    1 for item in row.get("downloads") or [] if item.get("status") == "error"
+                ),
+            }
+            for row in prefetch_results
+        ]
+        docs_text = json.dumps(docs_report, ensure_ascii=False, indent=2) + "\n"
         evidence = repo_root() / "docs" / "evidence" / "aec-bench-smoke-latest.json"
-        evidence.write_text(text, encoding="utf-8")
+        evidence.write_text(docs_text, encoding="utf-8")
         print(f"docs_evidence={evidence}")
-        _write_false_pass_evidence(repo_root(), report)
+        _write_false_pass_evidence(repo_root(), docs_report)
 
     agent_trial = report["agent_trial"]
     assert isinstance(agent_trial, dict)
@@ -417,6 +500,7 @@ def main(argv: list[str] | None = None) -> int:
                 "null_always_clean": (gold.get("null_always_clean") or {}).get(
                     "false_pass_rate_on_labeled"
                 ),
+                "assets": report.get("assets"),
                 "claim_level": "open_bench_only",
             },
             ensure_ascii=False,
