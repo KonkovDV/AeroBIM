@@ -143,6 +143,14 @@ def _probes_for_model(
                     0,
                 ),
             ),
+            "how many bathroom are there": (
+                "duplex_arc_bathroom_count",
+                lambda m: sum(
+                    1
+                    for s in m.by_type("IfcSpace")
+                    if "bathroom" in (s.LongName or "").lower()
+                ),
+            ),
         }
     if project == "duplex" and ifc_model == "mep":
         return {
@@ -181,6 +189,14 @@ def _probes_for_model(
             "how many rooms are there in the clinic": (
                 "dental_arc_space_count",
                 lambda m: len(m.by_type("IfcSpace")),
+            ),
+            "how many windows are there in this building": (
+                "dental_arc_window_count",
+                lambda m: len(m.by_type("IfcWindow")),
+            ),
+            "how many doors are there in this building": (
+                "dental_arc_door_count",
+                lambda m: len(m.by_type("IfcDoor")),
             ),
         }
     return {}

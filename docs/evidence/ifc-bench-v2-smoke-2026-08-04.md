@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # IFC-Bench v2 smoke (open_bench_only)
 
-**Date:** 2026-08-04  
+**Date:** 2026-08-04; re-run 2026-08-14 (countable subset **9/1026**, not 514)  
 **claim_level:** `open_bench_only`  
 **closes_rt001:** false  
 **Artifact:** [`ifc-bench-v2-smoke-latest.json`](ifc-bench-v2-smoke-latest.json)
@@ -11,13 +11,13 @@
 | Metric | Value |
 |---|---|
 | total_questions | 1026 |
-| scored (deterministic countable probes with local IFC) | **7** |
-| matched | 7 |
+| scored (deterministic countable probes with local IFC) | **9** |
+| matched | 9 |
 | mismatched | 0 |
 | exact_match_rate_on_scored | **1.0** |
-| skipped / unmapped NL | 1019 |
+| skipped / unmapped NL | 1017 |
 
-Do **not** report 100% on the full bench. Rate is over the mapped countable subset only (`7/1026`).
+Do **not** report 100% on the full bench. Rate is over the mapped countable subset only (`9/1026`).
 
 ## Integrity
 
