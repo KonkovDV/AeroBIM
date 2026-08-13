@@ -95,6 +95,11 @@ class SignOffCapabilityPolicy:
                 status = getattr(capabilities, name, None)
                 if status is None or status.status in _REQUIRED_NON_OK:
                     blocked.append(name)
+            ids = capabilities.ids
+            if ids is not None and ids.status is CapabilityState.SKIPPED:
+                reason = (ids.reason or "").lower()
+                if "not requested" not in reason:
+                    blocked.append("ids")
         return tuple(blocked)
 
     def mep_blocks_pass(self, capabilities: ReportCapabilities) -> bool:

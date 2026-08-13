@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "ids_fail_closed_gate",
+  "claim_level": "ids_fail_closed_gate",
+  "claim_boundary": "AeroBIM fail-closes IDS ifcVersion vs IFC FILE_SCHEMA and IfcTester SKIPPED specs. buildingSMART case 0101 documents version-as-metadata; we disagree on purpose. Not product accuracy. Not CIM compliance. Not Samolet acceptance.",
+  "generated_at": "2026-08-13T21:22:18.844481+00:00",
+  "cli_flags": {
+    "with_ifctester": false
+  },
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.7",
+    "machine": "AMD64",
+    "system": "Windows"
+  },
+  "source": {
+    "cases_dir": "samples/ids/buildingsmart-testcases/cases",
+    "license": "CC-BY-ND-4.0",
+    "canonical_case": "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result"
+  },
+  "summary": {
+    "bsi_pairs_discovered": 290,
+    "schema_mismatch_pairs": 9,
+    "pass_filename_with_schema_mismatch": 6,
+    "fail_filename_with_schema_mismatch": 3,
+    "case_0101_has_ifc_version_error": true
+  },
+  "pass_filename_schema_mismatches": [
+    {
+      "case_id": "pass-a_specification_passes_only_if_all_requirements_pass_2_2",
+      "case_dir": "0096",
+      "model_schema": "IFC4",
+      "mismatch_specs": [
+        {
+          "name": "A specification passes only if all requirements pass (2/2)",
+          "ids_versions": [
+            "IFC2X3"
+          ],
+          "model_schema": "IFC4"
+        }
+      ]
+    },
+    {
+      "case_id": "pass-optional_specifications_may_still_pass_if_nothing_is_applicable",
+      "case_dir": "0097",
+      "model_schema": "IFC4",
+      "mismatch_specs": [
+        {
+          "name": "Optional specifications may still pass if nothing is applicable",
+          "ids_versions": [
+            "IFC2X3"
+          ],
+          "model_schema": "IFC4"
+        }
+      ]
+    },
+    {
+      "case_id": "pass-prohibited_specifications_passes_if_the_applicability_does_not_matches",
+      "case_dir": "0098",
+      "model_schema": "IFC4",
+      "mismatch_specs": [
+        {
+          "name": "Prohibited specifications passes if the applicability does not matches",
+          "ids_versions": [
+            "IFC2X3"
+          ],
+          "model_schema": "IFC4"
+        }
+      ]
+    },
+    {
+      "case_id": "pass-required_specifications_need_at_least_one_applicable_entity_1_2",
+      "case_dir": "0099",
+      "model_schema": "IFC4",
+      "mismatch_specs": [
+        {
+          "name": "Required specifications need at least one applicable entity (1/2)",
+          "ids_versions": [
+            "IFC2X3"
+          ],
+          "model_schema": "IFC4"
+        }
+      ]
+    },
+    {
+      "case_id": "pass-specification_optionality_and_facet_optionality_can_be_combined",
+      "case_dir": "0100",
+      "model_schema": "IFC4",
+      "mismatch_specs": [
+        {
+          "name": "Specification optionality and facet optionality can be combined",
+          "ids_versions": [
+            "IFC2X3"
+          ],
+          "model_schema": "IFC4"
+        }
+      ]
+    },
+    {
+      "case_id": "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result",
+      "case_dir": "0101",
+      "model_schema": "IFC4",
+      "mismatch_specs": [
+        {
+          "name": "Specification version is purely metadata and does not impact pass or fail result",
+          "ids_versions": [
+            "IFC2X3"
+          ],
+          "model_schema": "IFC4"
+        }
+      ]
+    }
+  ],
+  "live_ifctester": {
+    "case_0101": {
+      "case_id": "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result",
+      "case_dir": "0101",
+      "ids_path": "samples/ids/buildingsmart-testcases/cases/0101/pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result.ids",
+      "ifc_path": "samples/ids/buildingsmart-testcases/cases/0101/pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result.ifc",
+      "bsi_filename_expected": "pass",
+      "issue_count": 1,
+      "elapsed_ms": 561.109,
+      "has_ifc_version_error": true,
+      "has_skipped_error": false,
+      "version_messages": [
+        "[IDS] Specification version is purely metadata and does not impact pass or fail result: FILE_SCHEMA IFC4 is not in IDS ifcVersion [IFC2X3] (AeroBIM fail-closed; IfcTester does not treat version mismatch as a failure)"
+      ],
+      "skipped_messages": [],
+      "rule_ids": [
+        "AEROBIM-IDS-IFC-VERSION"
+      ]
+    }
+  },
+  "ifctester_all_cases": [],
+  "content_sha256": "94db20d230714159177828f7d4f8fd25b152c9577c9f1a5da40056e1043b3162"
+}

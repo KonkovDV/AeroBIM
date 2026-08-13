@@ -203,16 +203,29 @@ def _bootstrap_use_case(storage_dir: Path, *, mep_scope: Path | None = None) -> 
     )
 
 
-def _load_known_upstream_case_ids(repo: Path) -> frozenset[str]:
-    path = repo / "samples/ids/buildingsmart-testcases/KNOWN_UPSTREAM_EDGES.json"
+def _load_case_ids_from_registry(path: Path, *, key: str) -> frozenset[str]:
     if not path.is_file():
         return frozenset()
     payload = json.loads(path.read_text(encoding="utf-8"))
-    edges = payload.get("edges")
-    if not isinstance(edges, list):
+    rows = payload.get(key)
+    if not isinstance(rows, list):
         return frozenset()
     return frozenset(
-        str(edge["case_id"]) for edge in edges if isinstance(edge, dict) and edge.get("case_id")
+        str(row["case_id"]) for row in rows if isinstance(row, dict) and row.get("case_id")
+    )
+
+
+def _load_known_upstream_case_ids(repo: Path) -> frozenset[str]:
+    return _load_case_ids_from_registry(
+        repo / "samples/ids/buildingsmart-testcases/KNOWN_UPSTREAM_EDGES.json",
+        key="edges",
+    )
+
+
+def _load_fail_closed_divergence_ids(repo: Path) -> frozenset[str]:
+    return _load_case_ids_from_registry(
+        repo / "samples/ids/buildingsmart-testcases/AEROBIM_FAIL_CLOSED_DIVERGENCES.json",
+        key="divergences",
     )
 
 
@@ -220,22 +233,31 @@ def _regression_pass_stats(
     case_rows: list[dict[str, object]],
     *,
     known_upstream: frozenset[str],
+    fail_closed: frozenset[str] = frozenset(),
 ) -> dict[str, object]:
+    labeled = known_upstream | fail_closed
     upstream_mismatches = [
         row
         for row in case_rows
         if not row.get("match") and str(row.get("case_id")) in known_upstream
     ]
+    fail_closed_mismatches = [
+        row
+        for row in case_rows
+        if not row.get("match") and str(row.get("case_id")) in fail_closed
+    ]
     unexplained = [
         row
         for row in case_rows
-        if not row.get("match") and str(row.get("case_id")) not in known_upstream
+        if not row.get("match") and str(row.get("case_id")) not in labeled
     ]
-    scorable = [row for row in case_rows if str(row.get("case_id")) not in known_upstream]
+    scorable = [row for row in case_rows if str(row.get("case_id")) not in labeled]
     adjusted_matched = sum(1 for row in scorable if row.get("match"))
     return {
         "known_upstream_mismatch_count": len(upstream_mismatches),
         "known_upstream_case_ids": [str(row["case_id"]) for row in upstream_mismatches],
+        "fail_closed_divergence_count": len(fail_closed_mismatches),
+        "fail_closed_case_ids": [str(row["case_id"]) for row in fail_closed_mismatches],
         "unexplained_mismatch_count": len(unexplained),
         "unexplained_case_ids": [str(row["case_id"]) for row in unexplained],
         "adjusted_cases_scorable": len(scorable),
@@ -297,7 +319,12 @@ def run_regression_profile(
 
     total = len(case_rows)
     known_upstream = _load_known_upstream_case_ids(repo)
-    pass_stats = _regression_pass_stats(case_rows, known_upstream=known_upstream)
+    fail_closed = _load_fail_closed_divergence_ids(repo)
+    pass_stats = _regression_pass_stats(
+        case_rows,
+        known_upstream=known_upstream,
+        fail_closed=fail_closed,
+    )
     return {
         "profile_id": profile["profile_id"],
         "profile_kind": "regression",

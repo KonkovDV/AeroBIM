@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
 
+from aerobim.domain.ids_schema_gate import RULE_IFC_VERSION, RULE_SKIPPED
 from aerobim.domain.models import (
     CapabilityState,
     CapabilityStatus,
@@ -21,6 +22,14 @@ from aerobim.domain.models import (
 
 RASTER_DRAWING_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 RASTER_DRAWING_FORMATS = {"pdf", "png", "jpg", "jpeg", "webp", "image", "raster"}
+_IDS_FAIL_CLOSED_RULE_IDS = frozenset(
+    {
+        "AEROBIM-IDS-ERROR",
+        "AEROBIM-IDS-CAPABILITY",
+        RULE_IFC_VERSION,
+        RULE_SKIPPED,
+    }
+)
 
 
 def build_report_capabilities(
@@ -87,8 +96,10 @@ def build_report_capabilities(
             CapabilityState.FAILED,
             ids_audit_issues[0].message if ids_audit_issues else "IDS audit failed",
         )
-    elif any(issue.rule_id == "AEROBIM-IDS-ERROR" for issue in ids_issues):
-        ids_error = next(issue for issue in ids_issues if issue.rule_id == "AEROBIM-IDS-ERROR")
+    elif any(issue.rule_id in _IDS_FAIL_CLOSED_RULE_IDS for issue in ids_issues):
+        ids_error = next(
+            issue for issue in ids_issues if issue.rule_id in _IDS_FAIL_CLOSED_RULE_IDS
+        )
         ids_capability = CapabilityStatus(CapabilityState.FAILED, ids_error.message)
     else:
         ids_capability = CapabilityStatus(CapabilityState.OK)
@@ -173,7 +184,8 @@ def build_report_capabilities(
         or CapabilityStatus(
             CapabilityState.NOT_VERIFIED,
             "MEP system graph provider DI-wired but unconfigured (MEP-CLASH-001); "
-            "federated MEP IFC + scope memo required",
+            "public federated IFC exists (IFC-Bench V2) but is not measured here; "
+            "not MEP delivered",
         ),
         calculation_match=calculation_match
         or CapabilityStatus(CapabilityState.SKIPPED, "numeric calculation match not evaluated"),
