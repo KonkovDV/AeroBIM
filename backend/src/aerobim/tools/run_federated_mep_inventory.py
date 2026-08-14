@@ -10,11 +10,17 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from time import perf_counter
 from typing import Any
 
+from aerobim.domain.copyleft_lane import (
+    GPLV3_IFC_BENCH_PROJECTS,
+    local_samolet_demo_copyleft_inputs_permitted,
+)
 from aerobim.domain.ids_schema_gate import parse_ifc_file_schema, parse_ifc_view_definition
 from aerobim.tools.benchmark_project_package import repo_root
 
@@ -80,6 +86,25 @@ CANDIDATES = (
         "ifc_bench_west_riverside_str_ifc4",
     ),
 )
+
+
+def _ci_environment() -> bool:
+    return os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("CI") == "true"
+
+
+def gplv3_local_candidates(repo: Path) -> tuple[tuple[str, str], ...]:
+    """Discover gitignored GPLv3 IFC-Bench files. Empty when dirs are absent."""
+    root = repo / ".local" / "ifc-bench-v2" / "projects"
+    found: list[tuple[str, str]] = []
+    for name in GPLV3_IFC_BENCH_PROJECTS:
+        project = root / name
+        if not project.is_dir():
+            continue
+        for path in sorted(project.rglob("*.ifc")):
+            rel = path.relative_to(repo).as_posix()
+            label = f"ifc_bench_gplv3_{name}_{path.stem}"
+            found.append((rel, label))
+    return tuple(found)
 
 
 def _sha256_bytes(raw: bytes) -> str:
@@ -214,18 +239,30 @@ def _duplex_aabb_overlaps(repo: Path) -> dict[str, Any]:
         }
 
 
-def build_payload(*, repo: Path) -> dict[str, Any]:
-    rows = [_inventory(repo / rel, label=label, repo=repo) for rel, label in CANDIDATES]
+def build_payload(*, repo: Path, include_gplv3: bool = False) -> dict[str, Any]:
+    candidates = CANDIDATES
+    if include_gplv3:
+        candidates = CANDIDATES + gplv3_local_candidates(repo)
+    rows = [_inventory(repo / rel, label=label, repo=repo) for rel, label in candidates]
     present = [row for row in rows if row["status"] == "RUN"]
     geometry = {
         "hvac_fixture_graph_aabb": _hvac_graph_aabb(repo),
         "duplex_arc_mep_aabb": _duplex_aabb_overlaps(repo),
     }
+    boundary = CLAIM_BOUNDARY
+    if include_gplv3:
+        boundary = (
+            "Samolet-local copyleft lane. GPLv3 IFC-Bench files may be opened from "
+            "gitignored .local/. AABB overlap is not geometric clash. "
+            "mep_system_clash remains NOT_VERIFIED. Not RT-003 delivered. "
+            "Not customer MEP. Not a public MIT distribution."
+        )
     body: dict[str, Any] = {
         "schema_version": "1.1.0",
         "artifact_type": "federated_mep_inventory",
         "claim_level": CLAIM_LEVEL,
-        "claim_boundary": CLAIM_BOUNDARY,
+        "claim_boundary": boundary,
+        "copyleft_lane": "samolet_demo_local" if include_gplv3 else "public_mit",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "mep_system_clash": "NOT_VERIFIED",
         "closes_rt003": False,
@@ -297,19 +334,35 @@ def render_markdown(payload: dict[str, Any]) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.parse_args(argv)
+    parser.add_argument(
+        "--samolet-demo-copyleft",
+        action="store_true",
+        help="Open gitignored GPLv3 IFC-Bench files if present. Never writes them to docs/evidence.",
+    )
+    args = parser.parse_args(argv)
+    include_gpl = local_samolet_demo_copyleft_inputs_permitted(
+        opted_in=bool(args.samolet_demo_copyleft),
+        ci=_ci_environment(),
+    )
+    if args.samolet_demo_copyleft and not include_gpl:
+        print(
+            "refusing --samolet-demo-copyleft on CI (public MIT evidence stays copyleft-free)",
+            file=sys.stderr,
+        )
+        return 2
     repo = repo_root()
-    payload = build_payload(repo=repo)
+    payload = build_payload(repo=repo, include_gplv3=include_gpl)
     out = repo / "artifacts" / "federated-mep-inventory"
     out.mkdir(parents=True, exist_ok=True)
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     (out / "federated-mep-inventory.json").write_text(text, encoding="utf-8")
-    (repo / "docs" / "evidence" / "federated-mep-inventory-2026-08.json").write_text(
-        text, encoding="utf-8"
-    )
-    (repo / "docs" / "evidence" / "federated-mep-inventory-2026-08.md").write_text(
-        render_markdown(payload), encoding="utf-8"
-    )
+    if not include_gpl:
+        (repo / "docs" / "evidence" / "federated-mep-inventory-2026-08.json").write_text(
+            text, encoding="utf-8"
+        )
+        (repo / "docs" / "evidence" / "federated-mep-inventory-2026-08.md").write_text(
+            render_markdown(payload), encoding="utf-8"
+        )
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     return 0 if payload["present"] >= 1 else 1
 
