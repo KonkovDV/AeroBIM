@@ -23,10 +23,15 @@ class DemoVerticalSliceTests(unittest.TestCase):
             self.assertTrue((out / "report.html").is_file())
             self.assertTrue((out / "report.json").is_file())
             self.assertTrue((out / "findings.bcfzip").is_file())
-            self.assertTrue((out / "overlay-problem-zone.png").is_file())
+            overlay = out / "overlay-problem-zone.png"
+            self.assertTrue(overlay.is_file())
+            self.assertEqual(overlay.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
             html = (out / "report.html").read_text(encoding="utf-8")
             self.assertIn("finding_id=", html.lower())
             self.assertIn("evidence_refs=", html.lower())
+            self.assertIn("kt2-overlay", html)
+            self.assertIn("overlay-problem-zone.png", html)
+            self.assertIn("Not CV", html)
             report = json.loads((out / "report.json").read_text(encoding="utf-8"))
             self.assertFalse(report["summary"]["passed"])
 

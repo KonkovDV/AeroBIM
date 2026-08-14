@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import VerticalSliceKt2, { outcomeClass } from "./VerticalSliceKt2";
+import VerticalSliceKt2, { outcomeClass, overlayRectStyle } from "./VerticalSliceKt2";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
 
 /** KT#2 demo contract: stamp/title finding is visible with evidence + fail-closed verdict. */
@@ -74,6 +74,9 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(screen.getByText("pdf:techlab-a101-wall-thickness#page1")).toBeTruthy();
     expect(screen.getByText(/Quote: WALL-01 thickness 150 mm/)).toBeTruthy();
     expect(screen.getByText(/Sheet A-101/)).toBeTruthy();
+    expect(screen.getByTestId("kt2-overlay")).toBeTruthy();
+    expect(screen.getByTestId("kt2-overlay-bbox")).toBeTruthy();
+    expect(screen.getByText(/deterministic bbox, not CV/i)).toBeTruthy();
     const badge = screen.getByTestId("kt2-outcome");
     expect(badge.textContent).toMatch(/FAILED/);
     expect(badge.className).toContain("outcome-fail");
@@ -85,5 +88,27 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(outcomeClass("failed", false)).toBe("outcome-fail");
     expect(outcomeClass("blocked", false)).toBe("outcome-block");
     expect(outcomeClass("review_required", false)).toBe("outcome-review");
+  });
+
+  it("places the bbox from problem_zone on the fixture letter page", () => {
+    const style = overlayRectStyle(stampFinding.problem_zone);
+    expect(style).not.toBeNull();
+    expect(style?.left).toBe(`${(72 / 612) * 100}%`);
+    expect(style?.top).toBe(`${(62 / 792) * 100}%`);
+    expect(style?.width).toBe(`${(150 / 612) * 100}%`);
+    expect(style?.height).toBe(`${(12 / 792) * 100}%`);
+  });
+
+  it("renders an overlay image when the CLI PNG href is provided", () => {
+    render(
+      <VerticalSliceKt2
+        report={buildReport("failed")}
+        issue={stampFinding}
+        overlaySrc="overlay-problem-zone.png"
+      />,
+    );
+    const img = screen.getByRole("img", { name: /problem-zone overlay/i });
+    expect(img.getAttribute("src")).toBe("overlay-problem-zone.png");
+    expect(screen.queryByTestId("kt2-overlay-bbox")).toBeNull();
   });
 });

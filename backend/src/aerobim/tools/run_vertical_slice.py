@@ -161,13 +161,6 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
     coverage = coverage_from_report(report, scope=scope).to_dict(report=report)
     public = asdict(report)
     public["coverage"] = coverage
-    html_path = output_dir / "report.html"
-    html_path.write_text(render_report_html(report.report_id, public), encoding="utf-8")
-
-    from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
-
-    bcf_path = output_dir / "findings.bcfzip"
-    bcf_path.write_bytes(export_bcf(report))
 
     overlay_meta: dict[str, Any] | None = None
     overlay_error: str | None = None
@@ -202,6 +195,21 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         overlay_error = "no PDF input for overlay"
     elif zone_ann is None:
         overlay_error = "no drawing annotation with problem_zone"
+
+    html_path = output_dir / "report.html"
+    html_path.write_text(
+        render_report_html(
+            report.report_id,
+            public,
+            overlay_image_href="overlay-problem-zone.png" if overlay_meta else None,
+        ),
+        encoding="utf-8",
+    )
+
+    from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+    bcf_path = output_dir / "findings.bcfzip"
+    bcf_path.write_bytes(export_bcf(report))
 
     # Evidence envelope: deterministic provenance per extracted drawing annotation.
     # P0: text-layer vs OCR flags — this demo PDF uses pdfminer text layer (not OCR).

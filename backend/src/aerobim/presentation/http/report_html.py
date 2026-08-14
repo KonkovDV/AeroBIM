@@ -225,7 +225,32 @@ def coverage_lines_for_export(coverage: dict[str, Any]) -> list[str]:
     return lines
 
 
-def render_report_html(report_id: str, data: dict[str, Any]) -> str:
+_ALLOWED_OVERLAY_HREFS = frozenset({"overlay-problem-zone.png"})
+
+
+def _overlay_section(overlay_image_href: str | None) -> str:
+    """Sibling PNG only — never a remote or path-escaping href."""
+    if overlay_image_href not in _ALLOWED_OVERLAY_HREFS:
+        return ""
+    href = _esc(overlay_image_href)
+    return (
+        "<section class='overlay' id='kt2-overlay'>"
+        "<h2>Problem-zone overlay</h2>"
+        "<p class='overlay-note'>"
+        "Deterministic bbox on rasterized PDF. Not CV. Not stamp product."
+        "</p>"
+        f"<figure><img src='{href}' alt='Problem-zone overlay on sheet' />"
+        f"<figcaption>{href} — sibling of this HTML</figcaption></figure>"
+        "</section>\n"
+    )
+
+
+def render_report_html(
+    report_id: str,
+    data: dict[str, Any],
+    *,
+    overlay_image_href: str | None = None,
+) -> str:
     """Render the serialized public report payload as a standalone HTML page."""
     summary: dict[str, Any] = data["summary"]
     status_class = "pass" if summary["passed"] else "fail"
@@ -280,6 +305,9 @@ def render_report_html(report_id: str, data: dict[str, Any]) -> str:
             f"<tbody>{rows}</tbody></table></section>\n"
         )
 
+    overlay_html = _overlay_section(overlay_image_href)
+    coverage_html = _build_coverage_section(data.get("coverage") or {})
+
     return f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <title>Validation Report {_esc(report_id)}</title>
@@ -318,6 +346,8 @@ font-weight:700;vertical-align:middle}}
 .cov-not-checked{{background:#f5f5f5;color:#666}}
 .cov-insufficient-data{{background:#fff8e1}}
 .cov-expert-required{{background:#e3f2fd}}
+.overlay img{{max-width:100%;height:auto;border:1px solid #ccc}}
+.overlay-note{{font-size:.9em;color:#555}}
 </style></head><body>
 <h1>Validation Report</h1>
 <div class="summary {status_class}">
@@ -326,7 +356,7 @@ font-weight:700;vertical-align:middle}}
 {summary["warning_count"]} warning(s) &middot;
 {summary["requirement_count"]} requirement(s)
 </div>
-{_build_coverage_section(data.get("coverage") or {})}{iso_section}{category_sections}
+{overlay_html}{coverage_html}{iso_section}{category_sections}
 <p class="meta">
 Report ID: {_esc(report_id)} &middot;
 Project: {_esc(str(data.get("project_name") or "—"))} &middot;

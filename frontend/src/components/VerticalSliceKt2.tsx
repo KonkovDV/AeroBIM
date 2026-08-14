@@ -1,4 +1,5 @@
-import type { PackageOutcome, ValidationIssue, ValidationReport } from "../lib/types";
+import type { CSSProperties } from "react";
+import type { PackageOutcome, ProblemZone, ValidationIssue, ValidationReport } from "../lib/types";
 
 export function formatPackageOutcome(
   outcome: PackageOutcome | null | undefined,
@@ -44,6 +45,31 @@ export function outcomeClass(
 export interface VerticalSliceKt2Props {
   report: ValidationReport;
   issue: ValidationIssue | null;
+  /** Sibling overlay PNG from the demo CLI, when the review shell has it. */
+  overlaySrc?: string;
+}
+
+/** Letter-size page used by the fixture PDF generator (points). Not a measured customer sheet. */
+export const KT2_OVERLAY_PAGE = { width: 612, height: 792 } as const;
+
+export function overlayRectStyle(zone: ProblemZone | null | undefined): CSSProperties | null {
+  if (
+    zone == null ||
+    zone.x == null ||
+    zone.y == null ||
+    zone.width == null ||
+    zone.height == null ||
+    zone.width <= 0 ||
+    zone.height <= 0
+  ) {
+    return null;
+  }
+  return {
+    left: `${(zone.x / KT2_OVERLAY_PAGE.width) * 100}%`,
+    top: `${(zone.y / KT2_OVERLAY_PAGE.height) * 100}%`,
+    width: `${(zone.width / KT2_OVERLAY_PAGE.width) * 100}%`,
+    height: `${(zone.height / KT2_OVERLAY_PAGE.height) * 100}%`,
+  };
 }
 
 function fragmentQuote(issue: ValidationIssue | null): string {
@@ -70,10 +96,15 @@ function overlayHint(issue: ValidationIssue | null): string {
  * KT#2 one-screen contract: original fragment, finding, evidence link, overlay
  * hint, and package outcome. Fixture demo — not customer accuracy.
  */
-export default function VerticalSliceKt2({ report, issue }: VerticalSliceKt2Props) {
+export default function VerticalSliceKt2({
+  report,
+  issue,
+  overlaySrc,
+}: VerticalSliceKt2Props) {
   const outcome = report.summary.outcome;
   const passed = report.summary.passed;
   const looksLikePass = passed === true || outcome === "pass" || outcome === "pass_with_warnings";
+  const rectStyle = overlayRectStyle(issue?.problem_zone);
 
   return (
     <article className="kt2-slice" data-testid="kt2-vertical-slice">
@@ -132,7 +163,21 @@ export default function VerticalSliceKt2({ report, issue }: VerticalSliceKt2Prop
         </div>
         <div>
           <dt>Overlay</dt>
-          <dd>{overlayHint(issue)}</dd>
+          <dd>
+            <figure className="kt2-overlay" data-testid="kt2-overlay">
+              {overlaySrc ? (
+                <img
+                  src={overlaySrc}
+                  alt="Problem-zone overlay on sheet (deterministic bbox, not CV)"
+                />
+              ) : rectStyle ? (
+                <div className="kt2-overlay-sheet" data-testid="kt2-overlay-bbox">
+                  <div className="kt2-overlay-rect" style={rectStyle} />
+                </div>
+              ) : null}
+              <figcaption>{overlayHint(issue)} · deterministic bbox, not CV</figcaption>
+            </figure>
+          </dd>
         </div>
       </dl>
     </article>

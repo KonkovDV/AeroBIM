@@ -18,11 +18,11 @@ Gate: `pytest` on the four files above + `ruff check` + `lint_claims.py` all gre
 - SKIPPED / `ifcVersion` vs `FILE_SCHEMA` → `AEROBIM-IDS-IFC-VERSION` / `AEROBIM-IDS-SKIPPED`.
 - Evidence: `docs/evidence/ids-fail-closed-2026-08.md`. Do not alias IFC4↔IFC4X3.
 
-## P1 — vertical slice UI (15–16.08, 6 h remaining)
+## P1 — vertical slice UI (15–16.08) — DONE 14.08 (pulled forward)
 
-- Skeleton already on `main` (`8d6d505`): `VerticalSliceKt2.tsx`. Polish overlay + e2e only.
+- Overlay PNG is a sibling of `report.html` (`#kt2-overlay`). UI shows bbox preview (and optional `overlaySrc`).
 - e2e: `backend/tests/test_demo_vertical_slice.py` + `frontend/src/components/VerticalSliceKt2.test.tsx`.
-- DoD: README «10 minutes from clone to demo» is true on a clean machine.
+- DoD: README «10 minutes from clone to demo» names overlay PNG. Gate: vitest + pytest.
 
 ## P2 — honest external validation (17.08, 6 h)
 
