@@ -583,6 +583,140 @@ class ClashDetectorPortTests(unittest.TestCase):
         results = IfcClashDetector().detect_between(path_a, path_b)
         self.assertGreaterEqual(len(results), 1)
 
+    def test_detect_clearance_between_builds_clearance_clash_set(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_a = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        ifc_b = (
+            Path(__file__).resolve().parents[2]
+            / "samples"
+            / "ifc"
+            / "clash-two-overlapping-boxes.ifc"
+        )
+        if not ifc_a.exists() or not ifc_b.exists():
+            self.skipTest("IFC fixtures not available")
+
+        captured: list[list[dict[str, object]]] = []
+        fake_package = types.ModuleType("ifcclash")
+        fake_submodule = types.ModuleType("ifcclash.ifcclash")
+
+        class _FakeClashSettings:
+            def __init__(self) -> None:
+                self.output = ""
+                self.logger = None
+
+        class _FakeClasher:
+            def __init__(self, settings: _FakeClashSettings) -> None:
+                self.settings = settings
+                self.clash_sets: list[dict[str, object]] = []
+
+            def clash(self) -> None:
+                captured.append(list(self.clash_sets))
+                self.clash_sets = [
+                    {
+                        "mode": "clearance",
+                        "clashes": {
+                            "1": {
+                                "a_global_id": "guid-a",
+                                "b_global_id": "guid-b",
+                                "a_name": "Duct",
+                                "b_name": "Pipe",
+                                "type": "clearance",
+                                "distance": 0.03,
+                            }
+                        },
+                    }
+                ]
+
+        fake_submodule.ClashSettings = _FakeClashSettings
+        fake_submodule.Clasher = _FakeClasher
+        fake_package.ifcclash = fake_submodule
+
+        with patch.dict(
+            sys.modules,
+            {
+                "ifcclash": fake_package,
+                "ifcclash.ifcclash": fake_submodule,
+            },
+        ):
+            results = detector.detect_clearance_between(ifc_a, ifc_b, clearance_m=0.05)
+
+        self.assertEqual(len(captured), 1)
+        clash_set = captured[0][0]
+        self.assertEqual(clash_set["mode"], "clearance")
+        self.assertEqual(clash_set["clearance"], 0.05)
+        self.assertTrue(clash_set["check_all"])
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].clash_type, "clearance")
+
+    def test_clearance_gap_hits_when_ifcclash_installed(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ifcclash") is None:
+            self.skipTest("ifcclash optional extra not installed")
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        root = Path(__file__).resolve().parents[2]
+        path_a = root / "samples" / "ifc" / "clash-clearance-gap-a.ifc"
+        path_b = root / "samples" / "ifc" / "clash-clearance-gap-b.ifc"
+        if not path_a.is_file() or not path_b.is_file():
+            self.skipTest("clearance-gap fixtures missing")
+        hard = IfcClashDetector().detect_between(path_a, path_b)
+        soft = IfcClashDetector().detect_clearance_between(path_a, path_b, clearance_m=0.05)
+        self.assertEqual(len(hard), 0)
+        self.assertGreaterEqual(len(soft), 1)
+        self.assertTrue(all(hit.clash_type == "clearance" for hit in soft))
+
+    def test_planted_clash_exports_bcf_file_ingest_round_trip(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ifcclash") is None:
+            self.skipTest("ifcclash optional extra not installed")
+        from aerobim.infrastructure.adapters.bcf_consumers import consume_bcf_zip
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+        from aerobim.tools.ingest_bcf_zip import ingest_payload
+
+        root = Path(__file__).resolve().parents[2]
+        path_a = root / "samples" / "ifc" / "clash-federated-box-a.ifc"
+        path_b = root / "samples" / "ifc" / "clash-federated-box-b.ifc"
+        if not path_a.is_file() or not path_b.is_file():
+            self.skipTest("planted federated clash fixtures missing")
+        hits = IfcClashDetector().detect_between(path_a, path_b)
+        self.assertGreaterEqual(len(hits), 1)
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-clash-bcf-roundtrip",
+            ifc_path=path_a,
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=0,
+                error_count=0,
+                warning_count=0,
+                passed=True,
+            ),
+            clash_results=tuple(hits),
+        )
+        archive = export_bcf(report)
+        topics = consume_bcf_zip(archive)
+        self.assertGreaterEqual(len(topics), 1)
+        exported_guids = {guid for topic in topics for guid in topic.selected_ifc_guids}
+        planted = {hits[0].element_a_guid, hits[0].element_b_guid}
+        self.assertTrue(exported_guids.intersection(planted))
+        with tempfile.TemporaryDirectory() as tmp:
+            zip_path = Path(tmp) / "clash-roundtrip.bcfzip"
+            zip_path.write_bytes(archive)
+            payload = ingest_payload(zip_path)
+        self.assertEqual(payload["cde_import"], "NOT_VERIFIED")
+        self.assertFalse(payload["closes_rt003"])
+        self.assertTrue(payload["structural_ok"])
+
 
 if __name__ == "__main__":
     unittest.main()

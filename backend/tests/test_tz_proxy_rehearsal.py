@@ -135,7 +135,10 @@ class TzProxyRehearsalPayloadTests(unittest.TestCase):
         intake = payload["rt001_egrz_intake_xml"]
         self.assertFalse(intake["closes_rt001"])
         self.assertEqual(intake["claim_level"], "egrz_intake_precheck")
-        self.assertEqual(intake["loadable_kinds"], ["conclusion"])
+        self.assertEqual(
+            intake["loadable_kinds"],
+            ["conclusion", "survey_assignment", "survey_report"],
+        )
         self.assertEqual(intake["stale_kinds"], [])
         self.assertIn("explanatory_note", intake["sanitize_loadable_kinds"])
 

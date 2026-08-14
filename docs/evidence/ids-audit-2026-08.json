@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "jurisdiction_ids_document_audit",
+  "generated_at": "2026-08-14T20:38:09.559912+00:00",
+  "auditor": "aerobim.infrastructure.adapters.xml_ids_document_auditor.XmlIdsDocumentAuditor",
+  "not_buildingsmart_ids_audit_tool_binary": true,
+  "claim_level": "ids_document_self_audit",
+  "checkpoint": "NO_GO",
+  "closes_rt002": false,
+  "customer_pack_hash": null,
+  "customer_signed": false,
+  "claim_boundary": "AeroBIM XmlIdsDocumentAuditor on vendored official jurisdiction IDS. Not the buildingSMART IDS-Audit-tool binary. Findings are document/schema gaps on public files; official bytes are not rewritten. Not customer_pack_hash. Does not close RT-002.",
+  "files": [
+    {
+      "profile_id": "MOEXP-GAU-IDS",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АР_v3.2.ids",
+      "bytes": 30428,
+      "sha256": "e0781f1e7fcafea71164c727742b20c7a81c4ed9039269f8bf18cd6deaa23447",
+      "issue_count": 0,
+      "rule_id_counts": {},
+      "sample_messages": [],
+      "official_file_rewritten": false
+    },
+    {
+      "profile_id": "MOSCOW-AGR-IDS",
+      "path": "samples/ids/moscow-agr/pack/АГР_ЦИМ БиО v8.ids",
+      "bytes": 1730,
+      "sha256": "7aab644c6a935b83343e32c38c8da1b52636899a928324d137417a43603c3d3c",
+      "issue_count": 0,
+      "rule_id_counts": {},
+      "sample_messages": [],
+      "official_file_rewritten": false
+    },
+    {
+      "profile_id": "SPBEXP-CGE-IDS",
+      "path": "samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Рельеф_1.1.0_(IDS_1.0).ids",
+      "bytes": 5382,
+      "sha256": "f92984d823c5dbe3669a56996992cb5466ebd44f488e55c2363b3410017ac392",
+      "issue_count": 0,
+      "rule_id_counts": {},
+      "sample_messages": [],
+      "official_file_rewritten": false
+    }
+  ],
+  "pack_inventory": {
+    "moexp_ids_files": 24,
+    "moscow_agr_ids_files": 4,
+    "spbexp_ids_files": 22,
+    "files_audited": 50,
+    "files_with_document_issues": 0,
+    "issue_count": 0,
+    "auditor_xsd": "samples/ids-xsd/ids.xsd",
+    "ids_schema": "IDS 1.0 XSD (also applied to some IDS 1.1 files)",
+    "note": "Document/XSD self-audit only. Not IfcTester model coverage. Not customer_pack_hash."
+  },
+  "sampled_files_note": "The files[] array keeps three hashed samples. pack_inventory is the full jurisdiction tree (moexp + moscow-agr + spbexp, excluding buildingSMART TestCases).",
+  "content_sha256": "5d1e02e140dc0eeea6cd4da62a1a522b3c4c5f2d1baf3530bae218e12e4c420d"
+}

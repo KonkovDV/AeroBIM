@@ -79,14 +79,19 @@
     "listed_assignment": "01.01",
     "ecpe_assignment": "01.01",
     "listed_conclusion": "01.03",
+    "listed_survey_assignment": "01.00",
+    "listed_survey_report": "01.00",
     "stale_vs_ecpe": [],
-    "loadable_xmlschema11": ["conclusion"],
+    "loadable_xmlschema11": ["conclusion", "survey_assignment", "survey_report"],
     "sanitize_loadable_xmlschema11": [
       "conclusion",
       "explanatory_note",
-      "design_assignment"
+      "design_assignment",
+      "survey_assignment",
+      "survey_report"
     ],
     "zip_member_folders_contain_dev_prefix": true,
-    "note": "p9_4 / p12_2 zips; SchemaVersion fixed 01.07/01.01; xml:id sanitize at load"
+    "construction_stage_xsd_on_catalog_scrape": false,
+    "note": "p9_4 / p12_2 zips; SchemaVersion fixed 01.07/01.01; xml:id sanitize at load; survey XSDs load as published; construction-stage catalog gap 14.08.2026"
   }
 }

@@ -40,6 +40,34 @@ def federated_clash_set(path_a: Path, path_b: Path) -> dict[str, Any]:
     }
 
 
+def federated_clearance_clash_set(
+    path_a: Path,
+    path_b: Path,
+    *,
+    clearance_m: float,
+) -> dict[str, Any]:
+    """Two-file soft clearance (IfcClash mode=clearance). Not MEP system-aware."""
+    if clearance_m <= 0:
+        raise ValueError("clearance_m must be > 0")
+    return {
+        "name": "Federated clearance clashes",
+        "mode": "clearance",
+        "check_all": True,
+        "clearance": clearance_m,
+        "a": [{"file": str(path_a)}],
+        "b": [{"file": str(path_b)}],
+    }
+
+
+def _clash_type_label(clash: Mapping[str, Any], clash_set: Mapping[str, Any]) -> str:
+    raw = str(clash.get("type", "") or clash_set.get("mode", "hard")).lower()
+    if "clearance" in raw:
+        return "clearance"
+    if "collision" in raw:
+        return "collision"
+    return "hard"
+
+
 def clash_results_from_sets(clash_sets: Sequence[Mapping[str, Any]]) -> list[ClashResult]:
     results: list[ClashResult] = []
     for clash_set_result in clash_sets:
@@ -49,14 +77,16 @@ def clash_results_from_sets(clash_sets: Sequence[Mapping[str, Any]]) -> list[Cla
         for clash in clashes.values():
             if not isinstance(clash, Mapping):
                 continue
+            clash_type = _clash_type_label(clash, clash_set_result)
+            label = "Clearance" if clash_type == "clearance" else "Hard clash"
             description = (
-                f"Hard clash between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}"
+                f"{label} between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}"
             )
             results.append(
                 ClashResult(
                     element_a_guid=str(clash.get("a_global_id", "")),
                     element_b_guid=str(clash.get("b_global_id", "")),
-                    clash_type="hard",
+                    clash_type=clash_type,
                     distance=float(clash.get("distance", 0.0) or 0.0),
                     description=description,
                 )
@@ -67,8 +97,8 @@ def clash_results_from_sets(clash_sets: Sequence[Mapping[str, Any]]) -> list[Cla
 class IfcClashDetector:
     """Infrastructure adapter implementing ``ClashDetector`` port.
 
-    ``detect_between`` is an extra method on this adapter (same engine, no new
-    DI token) for two-file geometric rehearsal. It does not close RT-003.
+    Extra methods ``detect_between`` / ``detect_clearance_between`` reuse this
+    adapter (same engine, no new DI token). Neither closes RT-003.
     """
 
     def detect(self, ifc_path: Path) -> list[ClashResult]:
@@ -82,6 +112,21 @@ class IfcClashDetector:
         if not path_b.exists():
             raise FileNotFoundError(f"IFC file not found: {path_b}")
         return self._guarded(lambda: self._run_federated_clash(path_a, path_b))
+
+    def detect_clearance_between(
+        self,
+        path_a: Path,
+        path_b: Path,
+        *,
+        clearance_m: float = 0.05,
+    ) -> list[ClashResult]:
+        if not path_a.exists():
+            raise FileNotFoundError(f"IFC file not found: {path_a}")
+        if not path_b.exists():
+            raise FileNotFoundError(f"IFC file not found: {path_b}")
+        return self._guarded(
+            lambda: self._run_federated_clearance(path_a, path_b, clearance_m)
+        )
 
     def _guarded(self, runner: Callable[[], list[ClashResult]]) -> list[ClashResult]:
         try:
@@ -105,6 +150,16 @@ class IfcClashDetector:
 
     def _run_federated_clash(self, path_a: Path, path_b: Path) -> list[ClashResult]:
         return self._run_clash_sets([federated_clash_set(path_a, path_b)])
+
+    def _run_federated_clearance(
+        self,
+        path_a: Path,
+        path_b: Path,
+        clearance_m: float,
+    ) -> list[ClashResult]:
+        return self._run_clash_sets(
+            [federated_clearance_clash_set(path_a, path_b, clearance_m=clearance_m)]
+        )
 
     def _run_clash_sets(self, clash_sets: list[dict[str, Any]]) -> list[ClashResult]:
         from ifcclash import ifcclash

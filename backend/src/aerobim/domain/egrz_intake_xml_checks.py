@@ -4,14 +4,16 @@ Adjacent to RT-001: EGRZ/ECPE returns packages in minutes for XML/format
 failures *before* an expert writes remarks. That is not a dual-adjudicated
 remark corpus (PP RF 878 of 24.07.2017 §23 remains metadata).
 
-Vendored MinStroy XSD 1.1 files. Catalog subsections p9_4 / p12_2 (retrieved
+Vendored MinStroy XSD files. Catalog subsections p9_4 / p12_2 (retrieved
 2026-08-14) include PZ **01.07** and ZnP **01.01**, matching ECPE in-force
 versions from 2026-06-11. Zip member folders still contain ``dev_``; the XSD
 ``SchemaVersion`` attributes are fixed 01.07 / 01.01. XMLSchema11 cannot load
 PZ/ZnP *as published* (duplicate xml:id='Name' on xs:documentation). Load-time
 strip of those attributes is a parser workaround, not a modified official
-file in git. Do not treat XMLSchema10 empty-elements as a validator. No new
-port.
+file in git. Survey-assignment / geological-report XSDs are XML Schema 1.0
+(no ``vc:minVersion``) and load as published. Construction-stage schemas from
+the 07.08.2026 news were not on the catalog scrape — do not invent files.
+Do not treat XMLSchema10 empty-elements as a validator. No new port.
 """
 
 from __future__ import annotations
@@ -22,7 +24,13 @@ from typing import Any, Final, Literal
 
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
-SchemaKind = Literal["conclusion", "explanatory_note", "design_assignment"]
+SchemaKind = Literal[
+    "conclusion",
+    "explanatory_note",
+    "design_assignment",
+    "survey_assignment",
+    "survey_report",
+]
 
 AS_OF: Final = "2026-08-14"
 CATALOG_PAGE: Final = "https://minstroyrf.gov.ru/tim/xml-skhemy/"
@@ -43,8 +51,9 @@ CLAIM_BOUNDARY = (
     "expertise, not a remark corpus, not УКЭП, not 783/пр compliance of a "
     "customer package. PZ 01.07 / ZnP 01.01 match ECPE in-force versions; "
     "XMLSchema11 still needs a documentation xml:id strip to load those two "
-    "files. Official zip folders contain 'dev_'. Checkpoint NO_GO. "
-    "closes_rt001=false."
+    "files. Official zip folders contain 'dev_'. Survey XSDs are intake "
+    "format only (GeologicalReport is not a generic all-discipline report). "
+    "Checkpoint NO_GO. closes_rt001=false."
 )
 
 SCHEMA_CATALOG: Final[tuple[dict[str, Any], ...]] = (
@@ -130,6 +139,66 @@ SCHEMA_CATALOG: Final[tuple[dict[str, Any], ...]] = (
         ),
         "zip_member_folder_note": (
             "official zip folder name contains 'dev_'; SchemaVersion is fixed 01.01"
+        ),
+    },
+    {
+        "kind": "survey_assignment",
+        "instrument_id": "MINSTROY-SURVEY-TASK-XSD-01-00",
+        "rel": "samples/xsd/minstroy/EngineeringSurveysTask-01-00.xsd",
+        "listed_version": "01.00",
+        "ecpe_in_force_version": "01.00",
+        "stale_vs_ecpe": False,
+        "root_localname": "EngineeringSurveysTask",
+        "xsd_processor": "XMLSchema11",
+        "loadable_xmlschema11": True,
+        "loadable_xmlschema11_after_doc_id_sanitize": True,
+        "load_blocker": None,
+        "catalog_subsection": (
+            "https://minstroyrf.gov.ru/tim/xml-skhemy/"
+            "zadanie-na-vypolnenie-inzhenernykh-izyskaniy/"
+            "zadanie-na-vypolnenie-inzhenernykh-izyskaniy/"
+        ),
+        "catalog_zip_url": (
+            "https://minstroyrf.gov.ru/upload/iblock/5c4/"
+            "m1ei3i091l2iqoynlg1i4o3jz7utbo3e/"
+            "%D0%97%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BD%D0%B0%20"
+            "%D0%B2%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5%20"
+            "%D0%B8%D0%BD%D0%B6%D0%B5%D0%BD%D0%B5%D1%80%D0%BD%D1%8B%D1%85%20"
+            "%D0%B8%D0%B7%D1%8B%D1%81%D0%BA%D0%B0%D0%BD%D0%B8%D0%B8%CC%86-01-00.zip"
+        ),
+        "zip_member": "EngineeringSurveysTask-01-00.xsd",
+        "in_force_from": "2026-10-03",
+        "note": "Catalog 14.08.2026; news: in force 3 months after publication.",
+    },
+    {
+        "kind": "survey_report",
+        "instrument_id": "MINSTROY-GEOLOGICAL-REPORT-XSD-01-00",
+        "rel": "samples/xsd/minstroy/GeologicalReport-01-00.xsd",
+        "listed_version": "01.00",
+        "ecpe_in_force_version": "01.00",
+        "stale_vs_ecpe": False,
+        "root_localname": "GeologicalReport",
+        "xsd_processor": "XMLSchema11",
+        "loadable_xmlschema11": True,
+        "loadable_xmlschema11_after_doc_id_sanitize": True,
+        "load_blocker": None,
+        "catalog_subsection": (
+            "https://minstroyrf.gov.ru/tim/xml-skhemy/"
+            "otchet-o-vypolnenii-inzhenernykh-izyskaniy/"
+            "otchet-o-vypolnenii-inzhenernykh-izyskaniy/"
+        ),
+        "catalog_zip_url": (
+            "https://minstroyrf.gov.ru/upload/iblock/4d1/"
+            "rmqvxrznv618qpuxyknugcdbfvpyr216/"
+            "%D0%9E%D1%82%D1%87%D0%B5%D1%82%20%D0%BE%20"
+            "%D0%B2%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B8%20"
+            "%D0%B8%D0%BD%D0%B6%D0%B5%D0%BD%D0%B5%D1%80%D0%BD%D1%8B%D1%85%20"
+            "%D0%B8%D0%B7%D1%8B%D1%81%D0%BA%D0%B0%D0%BD%D0%B8%D0%B8%CC%86-01-00.zip"
+        ),
+        "zip_member": "GeologicalReport-01-00.xsd",
+        "note": (
+            "Catalog title is survey report; published XSD root is GeologicalReport "
+            "(engineering-geological), not a generic all-discipline survey report."
         ),
     },
 )

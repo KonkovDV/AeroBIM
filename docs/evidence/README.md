@@ -2,7 +2,7 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.1"
+version: "2.5.2"
 last_updated: "2026-08-14"
 ---
 
@@ -21,7 +21,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`vertical-slice-demo-live-2026-08-14.md`](vertical-slice-demo-live-2026-08-14.md) | Live `run_demo_vertical_slice` pin: exit 0, `summary.passed=false`, NO_GO; PNG/manifest hashes stable; report/BCF drift via `created_at` |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `989d0472…6e5124` |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
-| [`ids-fail-closed-2026-08.md`](ids-fail-closed-2026-08.md) · [`.json`](ids-fail-closed-2026-08.json) | IfcTester ifcVersion fail-open closed; BSI 0101 live; not product accuracy |
+| [`ids-audit-2026-08.md`](ids-audit-2026-08.md) · [`.json`](ids-audit-2026-08.json) | `XmlIdsDocumentAuditor` on 50 jurisdiction IDS (MOEXP 24 / AGR 4 / SPb 22). Not buildingSMART IDS-Audit-tool binary. Not customer_pack_hash. Does not close RT-002 |
 | [`stale-norm-scan-2026-08.md`](stale-norm-scan-2026-08.md) · [`.json`](stale-norm-scan-2026-08.json) | GOST R 21.101-2020 cited after 2026-04-01 → `AEROBIM-NORM-SUPERSEDED`. Not AGR completeness |
 | [`agr-exchange-2026-08.md`](agr-exchange-2026-08.md) · [`.json`](agr-exchange-2026-08.json) | Class-1 AGR exchange shape. Territorial Moscow NPA citation; IDS zip `not_npa`. Not GrK art. 49. Not moscow_agr profile |
 | [`open-ifc-stress-2026-08.md`](open-ifc-stress-2026-08.md) · [`.json`](open-ifc-stress-2026-08.json) | Header 224/224 GNI + 15/15 fixtures; IfcOpenShell 223 ok / 1 oversize skip; AR+STR product counts; BIM Whale 6/6. sha `1682899c…c746` |
@@ -46,7 +46,7 @@ Related (not under `docs/evidence/`):
 | Path | Role |
 |------|------|
 | [`../../samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/) | WP-06 open-corpora profiles (regression/timing only) |
-| [`../../samples/xsd/minstroy/SOURCE.md`](../../samples/xsd/minstroy/SOURCE.md) | MinStroy XSD 1.1 intake; PZ 01.07 / ZnP 01.01 from catalog subsections; not RT-001 |
+| [`../../samples/xsd/minstroy/SOURCE.md`](../../samples/xsd/minstroy/SOURCE.md) | MinStroy XSD intake; PZ 01.07 / ZnP 01.01 + survey assignment/report; construction-stage catalog gap; not RT-001 |
 | [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md) | Red Team reading of live AECV numbers |
 | [`../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md`](../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md) | Red Team of Hub IFC-Bench / West Riverside / AEC prefetch (`ca6801d`); RT-HUB-01/02/03 mitigated |
 | [`../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality protocol |
