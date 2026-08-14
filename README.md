@@ -19,7 +19,7 @@
 | **Заблокировано не молчанием заказчика** | Корпус «ПД РФ + заключение экспертизы» публично не существует. Профиль приёмки Самолёта не подписан. Federated MEP clash на публичных IFC **NOT_VERIFIED** (инвентарь duplex/mep измерен). |
 | **Не утверждаем** | Not claimed: accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, calculation check, Tangl/10D integration. Native DWG = **FAILED**. |
 
-Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC в репо — IfcOpenShell fixture, не выгрузка Renga. OSINT + вектор 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC в репо — IfcOpenShell fixture, не выгрузка Renga и не Самолёт. Публичный образец издателя (ПНСТ 909, Renga 8.7) измеряется отдельно: `python -m aerobim.tools.run_renga_export_probe` (бинарник gitignored). OSINT + вектор 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 Видео 3 мин: [`docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) — запись **19.08**, человек.  
 Встреча трекера 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) · follow-up [`docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md).  

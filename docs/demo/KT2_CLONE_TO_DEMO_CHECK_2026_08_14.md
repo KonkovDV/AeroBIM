@@ -21,6 +21,7 @@ README EN §Quick Start и README RU §Быстрый старт называю�
 | `samples/demo/vertical-slice-2026-08-11/manifest.json` | есть |
 | `samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf` | есть |
 | `samples/ifc/walls-multi-entity.ifc` | есть; IfcOpenShell fixture, **не** Renga |
+| `python -m aerobim.tools.run_renga_export_probe` | отдельный прогон публичного образца Renga ПНСТ 909 (gitignored `.local/renga-pnst909`); **не** Самолёт; вертикальный срез **не** подменяет IFC |
 | `backend/tests/test_demo_vertical_slice.py` | есть: HTML `#kt2-overlay`, PNG signature, `summary.passed=false` |
 | `docs/evidence/drawing-overlay-smoke-2026-08/overlay-wall-thickness.png` | committed PNG |
 | `docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html` | snapshot **11.08**, секции `#kt2-overlay` **нет** — superseded; live CLI + [`../evidence/vertical-slice-demo-live-2026-08-14.md`](../evidence/vertical-slice-demo-live-2026-08-14.md) |

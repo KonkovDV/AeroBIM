@@ -19,7 +19,7 @@
 | **Честный дефицит** | Корпус заказчика / «ПД РФ + заключение экспертизы»; подписанный профиль приёмки Самолёта; clash federated MEP (инвентарь duplex/mep есть) |
 | **Не утверждаем** | Not claimed: >90%, DWG-ready, MEP delivered, CDE-ready BCF, Tangl/10D integration. Native DWG = **FAILED** |
 
-Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC — IfcOpenShell, не Renga. OSINT 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC — IfcOpenShell, не Renga и не Самолёт. Образец издателя ПНСТ 909: `python -m aerobim.tools.run_renga_export_probe`. OSINT 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 План: [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md) · трекер 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md)
 

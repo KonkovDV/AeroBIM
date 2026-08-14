@@ -26,3 +26,7 @@ claim_boundary: >-
 
 **GO** на цитирование страницы и публикацию агрегированных чисел покрытия.  
 **Не** вендорим бинарники; **не** заявляем product accuracy.
+
+## This machine (2026-08-14)
+
+Full 9.6 GB pack is **not** restored here. One member was extracted from the public `IFC.zip` for `run_renga_export_probe` (103 112 bytes, `Renga Professional 8.7.20879.0`, `FILE_SCHEMA=IFC4`). Evidence: [`../evidence/renga-export-probe-2026-08.md`](../evidence/renga-export-probe-2026-08.md). Not a Samolet export. Not Exp A 18/22 rerun.
