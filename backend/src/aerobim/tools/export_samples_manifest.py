@@ -8,7 +8,7 @@ Provenance classes:
 - samples/ids/moscow-agr/** -> official Moscow AGR IDS (stroimprosto);
 - samples/ids/spbexp/** -> official SPb GAU CGE IDS;
 - samples/agr/dgp/** -> official ДГП AGR XML/XSD examples;
-- samples/xsd/minstroy/*.xsd -> official MinStroy XSD 1.1 (intake only);
+- samples/xsd/minstroy/*.xsd -> official MinStroy XSD (intake only);
 - everything else -> project-authored synthetic fixtures (repo MIT, no real
   project data, no personal data by construction).
 
@@ -111,7 +111,7 @@ def _entry(path: Path) -> dict[str, object]:
         return _official(
             path,
             source=(
-                "MinStroy published XML Schema 1.1 (minstroyrf.gov.ru/tim/xml-skhemy); "
+                "MinStroy published XML Schema (minstroyrf.gov.ru/tim/xml-skhemy); "
                 "intake pre-check only; not RT-001 CLOSED"
             ),
             redistribution="redistributed as published; see samples/xsd/minstroy/SOURCE.md",

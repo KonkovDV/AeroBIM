@@ -70,6 +70,14 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - Pack: `samples/ids/spbexp/` (22 IDS from ОКС 3.1.0 + РИИ 1.1.0 zips)
 - This is a **state examination** IDS pack. It is **not** a Samolet-signed acceptance profile.
 
+## Official MinStroy XML schemas (EGRZ / ECPE intake)
+
+- Catalog: https://minstroyrf.gov.ru/tim/xml-skhemy/
+- Pack: `samples/xsd/minstroy/` (PZ 01.07, ZnP 01.01, conclusion 01.03, survey assignment 01.00, geological report 01.00)
+- Honesty: [`samples/xsd/minstroy/SOURCE.md`](../samples/xsd/minstroy/SOURCE.md)
+- Product function: `egrz_intake_precheck`. Empty fixtures fail XSD. **No pass fixture.** Construction-stage schemas from the 07.08.2026 news were not on the 14.08 catalog scrape.
+- This is **intake format**, not a remark corpus and **not** RT-001 CLOSED.
+
 ## buildingSMART IDS TestCases
 
 - Publisher: buildingSMART

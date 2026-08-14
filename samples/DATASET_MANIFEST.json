@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-14T19:43:39.697856+00:00",
+  "generated_at": "2026-08-14T20:25:44.619822+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 866,
+  "file_count": 873,
   "vendored_count": 15,
   "files": [
     {
@@ -1240,8 +1240,8 @@
     },
     {
       "path": "config/npa-instrument-register-2026-08-14.json",
-      "sha256": "57fc0d8abf6a638b7f43385af1a5aa921d63d96f42439875b4e07502a7226616",
-      "bytes": 3405,
+      "sha256": "bdcb1ab8b009d5d41038350ec36727bb6df5d5ab770887ca8f838d67c6f5ba62",
+      "bytes": 3705,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -9355,6 +9355,30 @@
       "personal_data": false
     },
     {
+      "path": "ifc/clash-clearance-gap-a.ifc",
+      "sha256": "effad7683c0fdf6703c60d2d339876ec4cb0f051429fa9c368578de6aab0c6ec",
+      "bytes": 1992,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "ifc/clash-clearance-gap-b.ifc",
+      "sha256": "3f86f7fea264cb0592102627cce5d9074079a7c481fedc6fe5a165a1f3a1cb55",
+      "bytes": 1994,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "ifc/clash-extent-overlap-fixture.ifc",
       "sha256": "f706b47172710e12fdd9abc05b6abd4ab032207d5e174a280416d8feaa70f5c3",
       "bytes": 13428,
@@ -10075,6 +10099,18 @@
       "personal_data": false
     },
     {
+      "path": "rule-packs/sp63-cover-template.json",
+      "sha256": "129f27880d4d1b2eeff01033385226d4bb9128e001eff594958d6637cef24a49",
+      "bytes": 2255,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "sections/ar-pd-synthetic.json",
       "sha256": "8e3dfcf16966055bc13e673fe9846d1a0118213ab99f97c7bd161cae48b0c7b4",
       "bytes": 1523,
@@ -10339,9 +10375,33 @@
       "personal_data": false
     },
     {
+      "path": "xsd/minstroy/EngineeringSurveysTask-01-00.xsd",
+      "sha256": "7da19458da8d4201f7b42d3ecc858e18f191c6112f2fed0dcf90a2eb22b3b112",
+      "bytes": 250229,
+      "provenance": "third_party_official",
+      "source": "MinStroy published XML Schema (minstroyrf.gov.ru/tim/xml-skhemy); intake pre-check only; not RT-001 CLOSED",
+      "license_status": "publisher_terms",
+      "attribution_required": true,
+      "redistribution": "redistributed as published; see samples/xsd/minstroy/SOURCE.md",
+      "production_use": "fixture engine coverage only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "xsd/minstroy/GeologicalReport-01-00.xsd",
+      "sha256": "b6d55df9621c34ada95420347397b32e8d926e80218736c3ee75dad6c8618b9e",
+      "bytes": 370274,
+      "provenance": "third_party_official",
+      "source": "MinStroy published XML Schema (minstroyrf.gov.ru/tim/xml-skhemy); intake pre-check only; not RT-001 CLOSED",
+      "license_status": "publisher_terms",
+      "attribution_required": true,
+      "redistribution": "redistributed as published; see samples/xsd/minstroy/SOURCE.md",
+      "production_use": "fixture engine coverage only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "xsd/minstroy/SOURCE.md",
-      "sha256": "8694665c5999a07243e9c2f6e41ff7eeb7460ffdc35bf670d9e652dcd55fa8a6",
-      "bytes": 4351,
+      "sha256": "c218c8120c738b0507cb180446bbb4ef6b111bad6c3ed8955764b73e482915e1",
+      "bytes": 5798,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -10426,6 +10486,30 @@
       "path": "xsd/minstroy/fixtures/empty-explanatory-note.xml",
       "sha256": "c5803b8ee4233d40f7dd3feae5d866b2a21a88ac5a43e3c3107c11b43042ff81",
       "bytes": 60,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "xsd/minstroy/fixtures/empty-survey-assignment.xml",
+      "sha256": "19e80f782124097e4928eb4b2201c94421c2102e3611330d75abc0154999bf14",
+      "bytes": 67,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "xsd/minstroy/fixtures/empty-survey-report.xml",
+      "sha256": "25f7a688dd4f3eda5449f9c43cf328d0c0d213daca62e31560b4abf749092b59",
+      "bytes": 61,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "AEROBIM-SP63-COVER-TEMPLATE",
+  "version": "0.1.0",
+  "title": "SP 63.13330 cover-thickness template (not a structural solver)",
+  "typology": "residential-multifamily",
+  "jurisdiction": "RF",
+  "disciplines": ["KR"],
+  "status": "synthetic-template",
+  "claim_labels": ["synthetic", "fixture", "template", "not-customer-evidence"],
+  "approval": null,
+  "customer_action_required": "Template thresholds only. Not SP 63 table 8.1 by exposure class. Not independent calculation correctness. RT-002 stays OPEN.",
+  "rules": [
+    {
+      "rule_id": "SP63-COVER-SLAB-001",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcSlab",
+      "property_set": "Pset_CoveringCommon",
+      "property_name": "CoveringThickness",
+      "operator": "gte",
+      "expected_value": 20,
+      "unit": "mm",
+      "norm_source": "СП 63.13330.2018",
+      "norm_edition": "2018",
+      "norm_clause": "8.3 (template)",
+      "evidence_text": "Synthetic minimum cover 20 mm on IfcSlab. Not the full SP 63 exposure-class table. Not a solver.",
+      "approval_status": "synthetic"
+    },
+    {
+      "rule_id": "SP63-COVER-COLUMN-001",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcColumn",
+      "property_set": "Pset_CoveringCommon",
+      "property_name": "CoveringThickness",
+      "operator": "gte",
+      "expected_value": 20,
+      "unit": "mm",
+      "norm_source": "СП 63.13330.2018",
+      "norm_edition": "2018",
+      "norm_clause": "8.3 (template)",
+      "evidence_text": "Synthetic minimum cover 20 mm on IfcColumn. Not independent verification.",
+      "approval_status": "synthetic"
+    },
+    {
+      "rule_id": "SP63-COVER-BEAM-001",
+      "scope": "ifc-property",
+      "ifc_entity": "IfcBeam",
+      "property_set": "Pset_CoveringCommon",
+      "property_name": "CoveringThickness",
+      "operator": "gte",
+      "expected_value": 20,
+      "unit": "mm",
+      "norm_source": "СП 63.13330.2018",
+      "norm_edition": "2018",
+      "norm_clause": "8.3 (template)",
+      "evidence_text": "Synthetic minimum cover 20 mm on IfcBeam. calculation_correctness stays NOT_IMPLEMENTED.",
+      "approval_status": "synthetic"
+    }
+  ]
+}

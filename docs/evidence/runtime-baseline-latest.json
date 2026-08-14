@@ -12,9 +12,9 @@
     "tests_passed": 2167,
     "tests_skipped": 11,
     "tests_failed": 0,
-    "source_loc": 72977,
-    "test_loc": 47212,
-    "test_functions": 2264,
+    "source_loc": 73101,
+    "test_loc": 47476,
+    "test_functions": 2271,
     "uncollected": []
   },
   "frontend": {
@@ -50,12 +50,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 72977,
-    "backend_test_loc": 47212,
-    "backend_test_functions": 2264,
+    "backend_src_loc": 73101,
+    "backend_test_loc": 47476,
+    "backend_test_functions": 2271,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/runtime-baseline-latest.json · src ~72977 LOC; tests ~47212 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/runtime-baseline-latest.json · src ~73101 LOC; tests ~47476 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",

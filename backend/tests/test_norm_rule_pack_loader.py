@@ -74,6 +74,19 @@ class JsonNormRulePackLoaderTests(unittest.TestCase):
         self.assertEqual(pack.rules[-1].operator, ComparisonOperator.GREATER_OR_EQUAL)
         self.assertAlmostEqual(pack.rules[-1].quantity.si_value, 1.2)
 
+    def test_loads_sp63_cover_template_without_claiming_solver(self) -> None:
+        pack_path = REPO_ROOT / "samples" / "rule-packs" / "sp63-cover-template.json"
+        pack = self.loader.load(pack_path)
+        self.assertEqual(pack.pack_id, "AEROBIM-SP63-COVER-TEMPLATE")
+        self.assertEqual(pack.status, RulePackStatus.SYNTHETIC_TEMPLATE)
+        self.assertTrue(pack.advisory_only)
+        self.assertEqual(len(pack.rules), 3)
+        self.assertTrue(
+            all(rule.operator == ComparisonOperator.GREATER_OR_EQUAL for rule in pack.rules)
+        )
+        self.assertIn("not-customer-evidence", pack.claim_labels)
+        self.assertIsNone(pack.approval_reference)
+
     def test_customer_approved_without_approval_ref_fails_closed(self) -> None:
         payload = json.loads(REFERENCE_PACK.read_text(encoding="utf-8"))
         payload["status"] = "customer_approved"

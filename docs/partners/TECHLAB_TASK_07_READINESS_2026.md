@@ -27,7 +27,7 @@ Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED
 | Work with **BIM models** | IFC + IDS + schema pre-gate + optional clash | VERIFIED_FIXTURE_ONLY |
 | Work with **TZ + calculations** | Narrative/structured extract + cross-doc + OpenRebar **сверка** | PARTIAL (correctness NOT_IMPLEMENTED) |
 | Compare docs vs calcs / TZ / sections / norms | Cross-doc + IDS + norm pack v2 eligibility + PD↔RD pairing + completeness inventory | PARTIAL (customer pack TBD; RT-002 OPEN) |
-| Detect clashes | IfcClash + `SPATIAL-*`; `require_clash` fail-closed | PARTIAL (generic; MEP NOT_VERIFIED) |
+| Detect clashes | IfcClash + `SPATIAL-*`; `require_clash` fail-closed; clearance extra-method on gap pair | PARTIAL (generic; MEP NOT_VERIFIED) |
 | Calc / dimension / area errors | Quantity algebra + cross-doc | VERIFIED_FIXTURE_ONLY (bounded) |
 | Logic gaps / missing elements | IDS `exists` + property checks + package completeness (soft opt-in) | VERIFIED_FIXTURE_ONLY |
 | Highlight problem zones | `problem_zone` + drawing overlay | VERIFIED_FIXTURE_ONLY |

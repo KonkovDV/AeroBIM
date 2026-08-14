@@ -2,7 +2,7 @@
 
 Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` | `ADVISORY_ONLY` | `NOT_RUNTIME_CONNECTED` | `MISSING` | `BLOCKED_BY_CUSTOMER_DATA` | `FIXTURE_ONLY`
 
-**Refresh:** 2026-08-14 — remaining engine substitutes: OpenRebar сверка, planted IfcClash, BCF file ingest, MEP graph+matrix fixture, derived-DWG sidecar. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
+**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
 
 | # | Требование ТЗ | Код | Runtime path | Тест / команда | Реальные данные | Статус | Риск |
 |---|---|---|---|---|---|---|---|
@@ -18,9 +18,9 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | 10 | Расчётные документы | calculation_source + LOAD table сверка | analyze | `area-requirement.txt` + `load-table.txt` | fixture | VERIFIED_FIXTURE_ONLY^[fn10] | MED |
 | 11 | Результаты расчётов | OpenRebarEvidenceVerifier | reinforcement paths | committed `openrebar-slab-03.result.json` | fixture | VERIFIED_FIXTURE_ONLY^[fn11] | HIGH |
 | 12 | Разделы ПД/РД | SectionDiffAnalyzer | pd/rd paths | `test_section_diff_analyzer.py` AR+KZH JSON | fixture | VERIFIED_FIXTURE_ONLY^[fn12] | MED |
-| 13 | Нормативные пакеты | NormRulePackLoader | norm_rule_pack_paths / env | loader + fail-closed tests | synthetic only | BLOCKED_BY_CUSTOMER_DATA | BLOCKER |
+| 13 | Нормативные пакеты | NormRulePackLoader | norm_rule_pack_paths / env | loader + fail-closed tests; SP 63 cover template | synthetic only | BLOCKED_BY_CUSTOMER_DATA^[fn13] | BLOCKER |
 | 14 | MEP-системы | FederatedIfcMepSystemGraphProvider + matrix | ENG_FIXTURE HVAC IFC | `test_p2_perf_2d_mep.py` | fixture graph | VERIFIED_FIXTURE_ONLY^[fn14] | HIGH |
-| 15 | Геометрические коллизии | IfcClashDetector | analyze clash + detect_between | planted federated boxes; optional `[clash]` | fixture | VERIFIED_FIXTURE_ONLY^[fn15] | CRITICAL |
+| 15 | Геометрические коллизии | IfcClashDetector | analyze clash + detect_between + detect_clearance_between | planted federated boxes; clearance-gap pair; optional `[clash]` | fixture | VERIFIED_FIXTURE_ONLY^[fn15] | CRITICAL |
 | 16 | Площади | quantity / property rules | IFC + cross-doc | quantity tests | fixture | VERIFIED_FIXTURE_ONLY | MED |
 | 17 | Размеры | same | same | same | fixture | VERIFIED_FIXTURE_ONLY | MED |
 | 18 | Отсутствующие элементы | IDS / IFC rules | when configured | IDS e2e fixtures | fixture | VERIFIED_FIXTURE_ONLY | MED |
@@ -58,6 +58,8 @@ Closest `VERIFIED_FIXTURE_ONLY` examples:
 | Package identity compare (fixture) | previous vs current identities | `cd backend && python -m aerobim.tools.compare_package_identities --input ../samples/packages/identity-compare-pd-rd.json` |
 | OpenRebar сверка (fixture) | committed reinforcement JSON | `pytest tests/test_openrebar_provenance_digest.py::OpenRebarProvenanceDigestToolTests::test_committed_openrebar_fixture_sverka_without_digest_mismatch -q` |
 | Planted IfcClash (optional extra) | federated boxes | `pytest tests/test_bcf_export_and_clash.py::ClashDetectorPortTests::test_planted_federated_boxes_clash_when_ifcclash_installed -q` |
+| Clearance IfcClash (optional extra) | gap pair ~30 mm | `pytest tests/test_bcf_export_and_clash.py::ClashDetectorPortTests::test_clearance_gap_hits_when_ifcclash_installed -q` |
+| Clash→BCF file ingest (not CDE) | planted pair round-trip | `pytest tests/test_bcf_export_and_clash.py::ClashDetectorPortTests::test_planted_clash_exports_bcf_file_ingest_round_trip -q` |
 | BCF file ingest (not CDE) | committed BCFZIP | `cd backend && python -m aerobim.tools.ingest_bcf_zip --input ../samples/bcf/fixture-topics.bcfzip` |
 | Derived DWG sidecar (never native OK) | placeholder DWG→DXF | `pytest tests/test_dwg_derived_provenance.py::DerivedProvenanceVerificationTests::test_committed_placeholder_dwg_derived_dxf_sidecar -q` |
 | Vector PDF + structured 2D | committed drawings | `pytest tests/test_structured_drawing_analyzer.py tests/test_raster_drawing_analyzer.py -q` |
@@ -95,13 +97,15 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn10]: Narrative calc ingest (`area-requirement.txt`) plus LOAD-table сверка (`load-table.txt`). **Not** independent structural verification (row 11 / OpenRebar). Not customer calculation volumes.
 
-^[fn11]: OpenRebar provenance сверка on committed `samples/calculations/openrebar-slab-03.result.json`. `calculation_correctness` stays **NOT_IMPLEMENTED**. Not a structural solver.
+^[fn11]: OpenRebar provenance сверка on committed `samples/calculations/openrebar-slab-03.result.json`. `calculation_correctness` stays **NOT_IMPLEMENTED**. SP 63 cover pack is a synthetic template, not a solver.
 
 ^[fn12]: Deterministic PD↔RD JSON pairing on `samples/sections/` (AR+KZH). **Not** customer PD/RD volumes and not a full PP RF 87 parser.
 
-^[fn14]: ENG_FIXTURE HVAC/sprinkler graph + clearance-matrix template. Default DI remains `UnconfiguredMepSystemGraphProvider`. Geometric MEP system clash stays **NOT_VERIFIED**. Does **not** close RT-003.
+^[fn13]: Loader + fail-closed approval contract. `samples/rule-packs/sp63-cover-template.json` is a 20 mm cover *template* (not SP 63 table 8.1, not exposure class). Customer-approved pack still missing. Does **not** close RT-002.
 
-^[fn15]: Planted IfcClash on `clash-federated-box-{a,b}.ifc` (optional `[clash]` extra). Engine rehearsal only. `closes_rt003=false`. Not coordinator BCF gold.
+^[fn14]: ENG_FIXTURE HVAC/sprinkler graph + clearance-matrix template. HVAC fixture has **no tessellated geometry** — live IfcClash clearance uses `clash-clearance-gap-{a,b}.ifc`, not that HVAC file. Default DI remains `UnconfiguredMepSystemGraphProvider`. Geometric MEP system clash stays **NOT_VERIFIED**. Does **not** close RT-003.
+
+^[fn15]: Planted IfcClash on `clash-federated-box-{a,b}.ifc` plus clearance-gap pair (`detect_clearance_between`, 50 mm). Optional `[clash]` extra. Clash→our BCF export→`consume_bcf_zip` is **file ingest**. Engine rehearsal only. `closes_rt003=false`. `cde_import=NOT_VERIFIED`. Not coordinator BCF gold.
 
 ^[fn25]: BCF 2.1/3.0 export + file ingest (`consume_bcf_zip_path`, `samples/bcf/fixture-topics.bcfzip`). `cde_import` stays **NOT_VERIFIED**. Not RT-008 T2.
 

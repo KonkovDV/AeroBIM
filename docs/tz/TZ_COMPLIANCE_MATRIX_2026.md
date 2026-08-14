@@ -79,14 +79,14 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | vs calculation results | partial | OpenRebar provenance сверка on fixture `openrebar-slab-03.result.json`; correctness NOT_IMPLEMENTED | MVP |
 | vs design brief (TZ) | done | Narrative + structured requirements | MVP |
 | sections vs sections | partial | `SectionDiffAnalyzer`: canonical PD↔RD pairing (RU/EN discipline + canonical-key registries, AR+KZH fixtures, SI tolerance, provenance, coverage in capability); customer pair/parser + canonical-key freeze TBD | P1 scaffold hardened 2026-07-11 |
-| vs norms / design rules | partial | IDS + `NormRulePackLoader` + 20-rule synthetic AR template; manifest/env customer path (`AEROBIM_NORM_RULE_PACK`) with fail-closed capability + CI schema gate; approved customer pack still missing | MVP / P1 hardened 2026-07-11 |
+| vs norms / design rules | partial | IDS + `NormRulePackLoader` + 20-rule synthetic AR template + SP 63 cover *template* (not a solver); manifest/env customer path (`AEROBIM_NORM_RULE_PACK`) with fail-closed capability + CI schema gate; approved customer pack still missing | MVP / P1 hardened 2026-07-11 |
 
 ### 3.3 Error detection
 
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
 | MEP / system intersections | missing | Generic clash only; explicit gap [`MEP-CLASH-001`](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | P1 customer corpus / roadmap |
-| Geometric BIM conflicts | partial | `IfcClashDetector` + `detect_between` on planted federated boxes; not TZ clash >90%; RT-003 OPEN | MVP |
+| Geometric BIM conflicts | partial | `IfcClashDetector` + `detect_between` on planted federated boxes + `detect_clearance_between` on gap pair; clash→BCF file ingest; not TZ clash >90%; RT-003 OPEN | MVP |
 | Calculation / load errors | partial | Cross-doc numeric; not full structural solver | MVP |
 | Incorrect areas | partial | Space area rules + quantity algebra | MVP |
 | Inefficient space use | missing | No utilization analytics | P4 (if metric agreed) |
