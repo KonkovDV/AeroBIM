@@ -23,10 +23,11 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
 | [`ids-fail-closed-2026-08.md`](ids-fail-closed-2026-08.md) · [`.json`](ids-fail-closed-2026-08.json) | IfcTester ifcVersion fail-open closed; BSI 0101 live; not product accuracy |
 | [`stale-norm-scan-2026-08.md`](stale-norm-scan-2026-08.md) · [`.json`](stale-norm-scan-2026-08.json) | GOST R 21.101-2020 cited after 2026-04-01 → `AEROBIM-NORM-SUPERSEDED`. Not AGR completeness |
-| [`agr-exchange-2026-08.md`](agr-exchange-2026-08.md) · [`.json`](agr-exchange-2026-08.json) | Class-1 AGR exchange shape (IFC4 / RV / proxy / filename / 500 MB / TEP root / Vedomost XSD). Not moscow_agr profile |
+| [`agr-exchange-2026-08.md`](agr-exchange-2026-08.md) · [`.json`](agr-exchange-2026-08.json) | Class-1 AGR exchange shape. Territorial Moscow NPA citation; IDS zip `not_npa`. Not GrK art. 49. Not moscow_agr profile |
 | [`open-ifc-stress-2026-08.md`](open-ifc-stress-2026-08.md) · [`.json`](open-ifc-stress-2026-08.json) | Header 224/224 GNI + 15/15 fixtures; IfcOpenShell 223 ok / 1 oversize skip; AR+STR product counts; BIM Whale 6/6. sha `1682899c…c746` |
 | [`gni-anonymization-pin-2026-08.md`](gni-anonymization-pin-2026-08.md) · [`.json`](gni-anonymization-pin-2026-08.json) | MIT anonymization scripts pinned; execution SKIPPED (hardcoded paths; Zenodo already anonymized) |
-| [`federated-mep-inventory-2026-08.md`](federated-mep-inventory-2026-08.md) · [`.json`](federated-mep-inventory-2026-08.json) | Duplex MEP 105 terminals; dental MEP 3053; digital_hub + wbdg_office + west_riverside IFC4 counted. Duplex AABB 654 overlap pairs. `mep_system_clash` NOT_VERIFIED. sha `d875af14…4c0b` |
+| [`federated-clash-planted-2026-08.md`](federated-clash-planted-2026-08.md) · [`.json`](federated-clash-planted-2026-08.json) | Planted federated IfcClash (walls; pipe vs wall). Engine rehearsal. `closes_rt003=false`, `mep_system_clash=NOT_VERIFIED` |
+| [`federated-clash-duplex-2026-08.md`](federated-clash-duplex-2026-08.md) · [`.json`](federated-clash-duplex-2026-08.json) | IFC-Bench duplex ARC vs MEP IfcClash (837 hits). Open bench. `closes_rt003=false` |
 | [`ifc-bench-v2-smoke-latest.json`](ifc-bench-v2-smoke-latest.json) · [`ifc-bench-v2-smoke-2026-08-04.md`](ifc-bench-v2-smoke-2026-08-04.md) | Countable subset **25/1026** (12 test / 13 train of those 25). Not 514 false-pass. `output_sha256=8f76efdf…7b34` |
 | [`moexp-on-gni-sample-2026-08.md`](moexp-on-gni-sample-2026-08.md) · [`.json`](moexp-on-gni-sample-2026-08.json) | Official MOEXP IDS on one GNI student IFC. 389/389 fail. Not CIM compliance |
 | [`upstream-validate-overlap-2026-08.md`](upstream-validate-overlap-2026-08.md) | What duplicates bSI validate / Gherkin / ifcbench; keep vs replace. Not a run |
@@ -45,7 +46,7 @@ Related (not under `docs/evidence/`):
 | Path | Role |
 |------|------|
 | [`../../samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/) | WP-06 open-corpora profiles (regression/timing only) |
-| [`../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) | L1/L2/L3 number levels |
+| [`../../samples/xsd/minstroy/SOURCE.md`](../../samples/xsd/minstroy/SOURCE.md) | MinStroy XSD 1.1 intake; PZ 01.07 / ZnP 01.01 from catalog subsections; not RT-001 |
 | [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md) | Red Team reading of live AECV numbers |
 | [`../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md`](../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md) | Red Team of Hub IFC-Bench / West Riverside / AEC prefetch (`ca6801d`); RT-HUB-01/02/03 mitigated |
 | [`../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality protocol |

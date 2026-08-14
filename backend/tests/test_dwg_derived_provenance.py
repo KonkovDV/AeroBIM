@@ -25,6 +25,7 @@ from aerobim.domain.cad_conversion_qa import (
     evaluate_conversion_loss,
 )
 from aerobim.domain.derived_cad_provenance import (
+    DERIVED_NOT_NATIVE_CLAIM,
     build_derived_cad_provenance,
     find_derived_provenance_sidecar,
     verify_derived_cad_provenance,
@@ -154,6 +155,18 @@ class DerivedProvenanceVerificationTests(unittest.TestCase):
             sidecar = _register_verified_sidecar(source, derived)
             self.assertEqual(find_derived_provenance_sidecar(source), sidecar)
             self.assertEqual(sidecar.name, "plan.dwg.derived-provenance.json")
+
+    def test_committed_placeholder_dwg_derived_dxf_sidecar(self) -> None:
+        cad = Path(__file__).resolve().parents[2] / "samples" / "cad"
+        sidecar = cad / "placeholder-source.dwg.derived-provenance.json"
+        dwg = cad / "placeholder-source.dwg"
+        if not sidecar.is_file() or not dwg.is_file():
+            self.skipTest("committed derived-DWG fixture missing")
+        result = verify_derived_provenance_sidecar(sidecar)
+        self.assertTrue(result.verified, msg=result.mismatches)
+        assert result.provenance is not None
+        self.assertEqual(result.provenance.derived_format, "dxf")
+        self.assertIn("never OK", DERIVED_NOT_NATIVE_CLAIM)
 
 
 class ConversionQaTests(unittest.TestCase):

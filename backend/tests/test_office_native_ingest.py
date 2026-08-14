@@ -130,6 +130,27 @@ class OfficeNativeIngestTests(unittest.TestCase):
         self.assertEqual(reqs[0].rule_id, "R-AREA")
         self.assertIn("120.5", reqs[0].expected_value or "")
 
+    def test_committed_docx_and_xlsx_fixtures(self) -> None:
+        samples = Path(__file__).resolve().parents[2] / "samples" / "office"
+        docx_path = samples / "tz-proxy-brief.docx"
+        xlsx_path = samples / "tz-proxy-areas.xlsx"
+        if not docx_path.is_file() or not xlsx_path.is_file():
+            self.skipTest("committed Office fixtures missing")
+        try:
+            import docx  # noqa: F401
+            import openpyxl  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("python-docx/openpyxl not installed")
+
+        ingestor = OfficeDocumentIngestor()
+        brief = ingestor.ingest(docx_path)
+        self.assertIn("200", brief.text)
+        self.assertIn("not customer", brief.text.casefold())
+        self.assertEqual(brief.doc_type, "docx")
+        areas = ingestor.ingest(xlsx_path)
+        self.assertIn("120.5", areas.text)
+        self.assertEqual(areas.doc_type, "xlsx")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,7 @@
-"""Minimal DXF fixture for CadEntityLoader / ezdxf EntityGraph tests.
+"""Minimal CAD fixtures.
 
-ASCII DXF R12-style entities (LINE + TEXT). Install ``aerobim-backend[cad]`` to
-exercise live ezdxf parse; without the extra, loader returns capability=SKIPPED.
+- `minimal-entities.dxf` — LINE + TEXT for ezdxf ingest (TZ row 4).
+- `placeholder-source.dwg` — fake DWG bytes, not a native parse target.
+- `placeholder-source.dwg.derived-provenance.json` — hash-bound DWG→DXF
+  substitute. Verified pair never makes ``dwg_dxf`` OK (TZ row 3 stays MISSING).
 """

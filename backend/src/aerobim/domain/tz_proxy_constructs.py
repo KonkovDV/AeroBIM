@@ -9,6 +9,9 @@ from __future__ import annotations
 
 from typing import Any, Final
 
+from aerobim.domain.egrz_intake_xml_checks import egrz_intake_catalog_snapshot
+from aerobim.domain.npa_legal_force import overlay_egrz_intake, overlay_ids_pack
+
 CLAIM_LEVEL: Final = "tz_proxy_rehearsal"
 CLAIM_BOUNDARY: Final = (
     "Public and synthetic proxies for Task 07 rows that still need Samolet files. "
@@ -111,90 +114,129 @@ def typical_remark_taxonomy_proxy() -> dict[str, Any]:
             "Kirov KR vs Mordovia AR/VK are different organs and list styles; "
             "shares are not a meta-analytic effect size."
         ),
+        "egrz_intake_xml": (
+            "MinStroy XSD intake pre-check is format-fail rehearsal, not a "
+            "remark catalog and not dual-adjudicated TP/FP."
+        ),
     }
+
+
+def egrz_intake_xml_proxy() -> dict[str, Any]:
+    """ECPE/EGRZ XML intake shape. Not expertise remarks. Not RT-001 CLOSED."""
+
+    return overlay_egrz_intake(
+        {
+            "claim_level": "egrz_intake_precheck",
+            "closes_rt001": False,
+            "messick_aspect_supported": ["content", "substantive"],
+            "messick_aspect_missing": ["external", "generalizability"],
+            "construct": (
+                "Well-formedness, declared root, and XSD 1.1 where XMLSchema11 "
+                "can load the published MinStroy schema. ECPE returns packages "
+                "for XML/format failures before an expert writes remarks."
+            ),
+            "why_not_criterion_valid": (
+                "Intake format failures are not dual-adjudicated expertise "
+                "remarks. PP RF 878 §23 public EGRZ fields stay metadata. "
+                "PZ 01.07 / ZnP 01.01 match ECPE versions but still need a "
+                "documentation xml:id strip to load; zip folders contain "
+                "'dev_'; no official instance XML. Not a remark corpus."
+            ),
+            **egrz_intake_catalog_snapshot(),
+        }
+    )
 
 
 def jurisdiction_ids_proxy() -> dict[str, Any]:
     """Official GAU MO IDS as ISO 19650-like information requirements — not BEP."""
-    return {
-        "claim_level": "official_ids_engine_coverage",
-        "closes_rt002": False,
-        "customer_signed": False,
-        "samolet_alias": False,
-        "approval": None,
-        "iso19650_role": "jurisdiction_eir_like",
-        "iso19650_not": "appointing_party_eir_or_bep",
-        "profile_id": "MOEXP-GAU-IDS",
-        "source_page": (
-            "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/"
-        ),
-        "messick_aspect_supported": ["content", "substantive", "structural"],
-        "messick_aspect_missing": ["external"],
-        "construct": (
-            "buildingSMART IDS 1.0 executed by IfcTester against official "
-            "MosoblGosExpertiza specifications. That is engine coverage of a "
-            "public jurisdiction information requirement, not Samolet acceptance."
-        ),
-        "why_not_criterion_valid": (
-            "RT-002 CLOSED needs a customer_approved pack with a full approval "
-            "object and matching pack_hash. A public GAU IDS zip is not that pack."
-        ),
-        "ids_pack_rel": "samples/ids/moexp/pack",
-        "coverage_evidence": "docs/evidence/norm-pack-moexp-coverage-2026-08.json",
-    }
+    return overlay_ids_pack(
+        "MOEXP-GAU-IDS",
+        {
+            "claim_level": "official_ids_engine_coverage",
+            "closes_rt002": False,
+            "customer_signed": False,
+            "samolet_alias": False,
+            "approval": None,
+            "iso19650_role": "jurisdiction_eir_like",
+            "iso19650_not": "appointing_party_eir_or_bep",
+            "profile_id": "MOEXP-GAU-IDS",
+            "source_page": (
+                "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/"
+            ),
+            "messick_aspect_supported": ["content", "substantive", "structural"],
+            "messick_aspect_missing": ["external"],
+            "construct": (
+                "buildingSMART IDS 1.0 executed by IfcTester against official "
+                "MosoblGosExpertiza specifications. That is engine coverage of a "
+                "public jurisdiction information requirement, not Samolet acceptance."
+            ),
+            "why_not_criterion_valid": (
+                "RT-002 CLOSED needs a customer_approved pack with a full approval "
+                "object and matching pack_hash. A public GAU IDS zip is not that pack."
+            ),
+            "ids_pack_rel": "samples/ids/moexp/pack",
+            "coverage_evidence": "docs/evidence/norm-pack-moexp-coverage-2026-08.json",
+        },
+    )
 
 
 def moscow_agr_ids_proxy() -> dict[str, Any]:
     """Official ДГП AGR IDS from stroimprosto.mos.ru — still not Samolet."""
-    return {
-        "claim_level": "official_ids_engine_coverage",
-        "closes_rt002": False,
-        "customer_signed": False,
-        "samolet_alias": False,
-        "approval": None,
-        "iso19650_role": "jurisdiction_eir_like",
-        "iso19650_not": "appointing_party_eir_or_bep",
-        "profile_id": "MOSCOW-AGR-DGP-IDS",
-        "source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
-        "messick_aspect_supported": ["content", "substantive", "structural"],
-        "messick_aspect_missing": ["external"],
-        "construct": (
-            "buildingSMART IDS executed against official Moscow AGR files "
-            "(АР / БиО / ПС / МССК). City knowledge-base pack, not appointing-party EIR."
-        ),
-        "why_not_criterion_valid": (
-            "RT-002 CLOSED needs Samolet approval + pack_hash. A public ДГП "
-            "IDS zip is not that pack and is not the frozen moscow_agr DI port."
-        ),
-        "ids_pack_rel": "samples/ids/moscow-agr/pack",
-        "coverage_evidence": "docs/evidence/norm-pack-moscow-agr-coverage-2026-08.json",
-    }
+    return overlay_ids_pack(
+        "MOSCOW-AGR-DGP-IDS",
+        {
+            "claim_level": "official_ids_engine_coverage",
+            "closes_rt002": False,
+            "customer_signed": False,
+            "samolet_alias": False,
+            "approval": None,
+            "iso19650_role": "jurisdiction_eir_like",
+            "iso19650_not": "appointing_party_eir_or_bep",
+            "profile_id": "MOSCOW-AGR-DGP-IDS",
+            "source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
+            "messick_aspect_supported": ["content", "substantive", "structural"],
+            "messick_aspect_missing": ["external"],
+            "construct": (
+                "buildingSMART IDS executed against official Moscow AGR files "
+                "(АР / БиО / ПС / МССК). City knowledge-base pack, not appointing-party EIR."
+            ),
+            "why_not_criterion_valid": (
+                "RT-002 CLOSED needs Samolet approval + pack_hash. A public ДГП "
+                "IDS zip is not that pack and is not the frozen moscow_agr DI port."
+            ),
+            "ids_pack_rel": "samples/ids/moscow-agr/pack",
+            "coverage_evidence": "docs/evidence/norm-pack-moscow-agr-coverage-2026-08.json",
+        },
+    )
 
 
 def spbexp_ids_proxy() -> dict[str, Any]:
     """Official SPb GAU CGE IDS 1.0 — second GAU pack, still not Samolet."""
-    return {
-        "claim_level": "official_ids_engine_coverage",
-        "closes_rt002": False,
-        "customer_signed": False,
-        "samolet_alias": False,
-        "approval": None,
-        "iso19650_role": "jurisdiction_eir_like",
-        "iso19650_not": "appointing_party_eir_or_bep",
-        "profile_id": "SPBEXP-GAU-CGE-IDS",
-        "source_page": "https://www.spbexp.ru/bim/docs/",
-        "messick_aspect_supported": ["content", "substantive", "structural"],
-        "messick_aspect_missing": ["external"],
-        "construct": (
-            "Official SPb GAU CGE IDS 1.0 (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). "
-            "Second public GAU jurisdiction pack after MOEXP."
-        ),
-        "why_not_criterion_valid": (
-            "A second GAU pack is still not a customer_approved Samolet profile."
-        ),
-        "ids_pack_rel": "samples/ids/spbexp/pack",
-        "coverage_evidence": "docs/evidence/norm-pack-spbexp-coverage-2026-08.json",
-    }
+    return overlay_ids_pack(
+        "SPBEXP-GAU-CGE-IDS",
+        {
+            "claim_level": "official_ids_engine_coverage",
+            "closes_rt002": False,
+            "customer_signed": False,
+            "samolet_alias": False,
+            "approval": None,
+            "iso19650_role": "jurisdiction_eir_like",
+            "iso19650_not": "appointing_party_eir_or_bep",
+            "profile_id": "SPBEXP-GAU-CGE-IDS",
+            "source_page": "https://www.spbexp.ru/bim/docs/",
+            "messick_aspect_supported": ["content", "substantive", "structural"],
+            "messick_aspect_missing": ["external"],
+            "construct": (
+                "Official SPb GAU CGE IDS 1.0 (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). "
+                "Second public GAU jurisdiction pack after MOEXP."
+            ),
+            "why_not_criterion_valid": (
+                "A second GAU pack is still not a customer_approved Samolet profile."
+            ),
+            "ids_pack_rel": "samples/ids/spbexp/pack",
+            "coverage_evidence": "docs/evidence/norm-pack-spbexp-coverage-2026-08.json",
+        },
+    )
 
 
 def public_jurisdiction_ids_packs() -> tuple[dict[str, Any], ...]:
@@ -232,6 +274,8 @@ def geometric_clash_proxy() -> dict[str, Any]:
         "planted_ifc_rel": "samples/ifc/clash-two-overlapping-boxes.ifc",
         "planted_federated_a_rel": "samples/ifc/clash-federated-box-a.ifc",
         "planted_federated_b_rel": "samples/ifc/clash-federated-box-b.ifc",
+        "planted_federated_pipe_b_rel": "samples/ifc/clash-federated-pipe-b.ifc",
+        "open_federated_duplex_rel": ".local/ifc-bench-v2/projects/duplex/{arc,mep}.ifc",
     }
 
 
@@ -273,7 +317,10 @@ def tz_row_proxy_map() -> dict[str, Any]:
         },
         "accuracy_protocol": {
             "tz": "Detection accuracy after dual adjudication",
-            "without_samolet": "Exp B coverage map + synthetic planted defects",
+            "without_samolet": (
+                "Exp B coverage map + synthetic planted defects + MinStroy "
+                "XSD intake pre-check (PZ 01.07 / ZnP 01.01; xml:id sanitize)"
+            ),
             "status": "blocked",
             "closes_blocker": "RT-001",
         },

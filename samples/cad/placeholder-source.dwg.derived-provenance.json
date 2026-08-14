@@ -1,0 +1,18 @@
+{
+  "artifact_type": "aerobim_derived_cad_provenance",
+  "claim_boundary": "analysis refers to the derived file; native DWG is not parsed - dwg_dxf never OK",
+  "conversion_tool": "manual-fixture",
+  "conversion_tool_version": "2026-08-14",
+  "derived_format": "dxf",
+  "derived_path": "minimal-entities.dxf",
+  "derived_sha256": "38a1f180317075624a0cb2819406eb905c655bacff0ce86cede57687a57d7307",
+  "loss_notes": [
+    "layers may be flattened or renamed",
+    "blocks/XREF may be unresolved or exploded",
+    "attributes and custom properties may be dropped",
+    "coordinate systems / UCS may differ from source DWG"
+  ],
+  "schema_version": "1.0.0",
+  "source_dwg_path": "placeholder-source.dwg",
+  "source_dwg_sha256": "c3f49d068c61b2be4e0dc57cdf8caf985597de87b72e3887fcd6df3874a8df36"
+}

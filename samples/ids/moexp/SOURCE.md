@@ -2,7 +2,7 @@
 
 **Source page:** https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/  
 **Retrieved:** 2026-08-13  
-**Claim:** public machine-readable examination requirements (IDS 1.0/1.1). Not a Samolet customer-approved acceptance profile. Does not close Checkpoint GO.
+**Claim:** public machine-readable examination requirements (IDS 1.0/1.1). Organ methodology, **not** GrK art. 49. Not a Samolet customer-approved acceptance profile. Does not close Checkpoint GO.
 
 AeroBIM does not claim authorship. Files are redistributed as published by the examination body.
 

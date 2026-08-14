@@ -1,0 +1,50 @@
+{
+  "contractId": "OpenRebar.reinforcement.report.v1",
+  "schemaVersion": "1.0.0",
+  "generatedAtUtc": "2026-04-16T00:00:00Z",
+  "metadata": {
+    "projectCode": "Residential Tower Alpha",
+    "slabId": "SLAB-03",
+    "sourceSystem": "OpenRebar",
+    "targetSystem": "AeroBIM",
+    "countryCode": "RU",
+    "designCode": "SP63",
+    "normativeProfileId": "ru.sp63.2018",
+    "normativeTablesVersion": "v1"
+  },
+  "normativeProfile": {
+    "profileId": "ru.sp63.2018",
+    "jurisdiction": "RU",
+    "designCode": "SP63",
+    "tablesVersion": "v1"
+  },
+  "analysisProvenance": {
+    "geometry": {
+      "decompositionAlgorithm": "grid-scan",
+      "rectangularShortcutFillRatio": 0.9,
+      "minRectangleAreaMm2": 1000.0,
+      "samplingResolutionPerAxis": 64,
+      "cellCoverageInclusionThreshold": 0.5
+    },
+    "optimization": {
+      "optimizerId": "column-generation",
+      "masterProblemStrategy": "restricted-master-lp-highs",
+      "pricingStrategy": "bounded-knapsack-dp",
+      "integerizationStrategy": "repair-ffd",
+      "demandAggregationPrecisionMm": 0.1,
+      "qualityFloor": "production",
+      "anyFallbackMasterSolverUsed": false
+    }
+  },
+  "isolineFileName": "floor-03.dxf",
+  "isolineFileFormat": "dxf",
+  "summary": {
+    "parsedZoneCount": 0,
+    "classifiedZoneCount": 0,
+    "totalRebarSegments": 0,
+    "totalWastePercent": 0.0,
+    "totalWasteMm": 0.0,
+    "totalMassKg": 0.0
+  },
+  "claim_boundary": "Synthetic OpenRebar provenance fixture. Сверка only — not independent structural verification."
+}

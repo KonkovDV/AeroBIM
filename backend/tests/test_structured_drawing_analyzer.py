@@ -36,6 +36,26 @@ class StructuredDrawingAnalyzerTests(unittest.TestCase):
         self.assertIsNotNone(zone)
         self.assertEqual(zone.element_guid, guid)
 
+    def test_committed_text_and_json_fixtures(self) -> None:
+        samples = Path(__file__).resolve().parents[2] / "samples" / "drawings"
+        analyzer = StructuredDrawingAnalyzer()
+        text_path = samples / "techlab-annotations.txt"
+        json_path = samples / "wall-thickness.json"
+        if not text_path.is_file() or not json_path.is_file():
+            self.skipTest("committed drawing fixtures missing")
+
+        text_anns = analyzer.analyze(DrawingSource(path=text_path, sheet_id="A-101"))
+        self.assertGreaterEqual(len(text_anns), 4)
+        self.assertTrue(
+            any(a.target_ref == "WALL-01" and a.observed_value == "200" for a in text_anns)
+        )
+
+        json_anns = analyzer.analyze(DrawingSource(path=json_path, sheet_id="A-101"))
+        self.assertEqual(len(json_anns), 2)
+        self.assertTrue(
+            any(a.target_ref == "W-EXT-01" and a.observed_value == "250" for a in json_anns)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

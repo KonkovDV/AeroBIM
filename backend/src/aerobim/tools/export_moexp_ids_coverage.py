@@ -411,6 +411,11 @@ def build_moexp_ids_coverage(
             "public_moexp_ids_present": True,
             "icmm_ids_published": False,
             "icmm_note": ("ICMM 3.3 is PDF-only on the TIM page as of 2026-08-13; no IDS listed."),
+            "legal_force": "not_npa",
+            "substitutes_customer_eir": False,
+            "substitutes_grk_art_49_expertise": False,
+            "closes_rt001": False,
+            "closes_rt003": False,
             "mappings": _inventory_mappings(pack_dir),
             "fixture_ifc": {
                 "path": str(ifc_path.as_posix()),

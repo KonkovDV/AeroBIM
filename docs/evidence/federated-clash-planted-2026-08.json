@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "federated_clash_planted_pin",
+  "claim_level": "engine_rehearsal",
+  "checkpoint": "NO_GO",
+  "closes_rt003": false,
+  "mep_system_clash": "NOT_VERIFIED",
+  "geometry_verified": false,
+  "customer_federated_ifc": false,
+  "signed_scope": false,
+  "claim_boundary": "Hashed IfcClash on in-repo planted federated IFC (walls; pipe vs wall). License-cleared synthetic fixtures, not customer models, not coordinator BCF gold, not MEP system-aware. Checkpoint NO_GO.",
+  "runs": [
+    {
+      "label": "planted_federated_crossing_walls",
+      "status": "RUN",
+      "closes_rt003": false,
+      "mep_system_clash": "NOT_VERIFIED",
+      "geometry_verified": false,
+      "clash_count": 1,
+      "elapsed_ms": 32.377,
+      "path_a": "samples/ifc/clash-federated-box-a.ifc",
+      "path_b": "samples/ifc/clash-federated-box-b.ifc",
+      "engine": "ifcclash",
+      "construct": "crossing IfcWall pair with known intersection",
+      "note": "In-repo planted federated pair. Hits prove the IfcClash A/B path, not customer MEP or coordinator gold."
+    },
+    {
+      "label": "planted_federated_pipe_vs_wall",
+      "status": "RUN",
+      "closes_rt003": false,
+      "mep_system_clash": "NOT_VERIFIED",
+      "geometry_verified": false,
+      "clash_count": 1,
+      "elapsed_ms": 35.059,
+      "path_a": "samples/ifc/clash-federated-box-a.ifc",
+      "path_b": "samples/ifc/clash-federated-pipe-b.ifc",
+      "engine": "ifcclash",
+      "construct": "IfcWall vs IfcPipeSegment with known intersection",
+      "note": "Planted IfcPipeSegment vs IfcWall. Geometric intersection rehearsal, not MEP system-aware clash and not a signed clearance matrix."
+    }
+  ],
+  "content_sha256": "5ff1ecc6fe9e0b9df96a8650e9fdb9f8b0efca91939e1f3d16f994b5245dca9c"
+}

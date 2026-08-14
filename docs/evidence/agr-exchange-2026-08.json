@@ -2,8 +2,26 @@
   "schema_version": "1.0.0",
   "artifact_type": "agr_exchange_fixture",
   "claim_level": "agr_exchange_fixture",
-  "claim_boundary": "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD are public city files, not a Samolet-signed acceptance pack. Not customer CIM acceptance.",
-  "generated_at": "2026-08-14T17:07:46.465905+00:00",
+  "claim_boundary": "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD are public city files, not a Samolet-signed acceptance pack. Not customer CIM acceptance. Cited NPA is territorial (Moscow 17-PP + DGP-R-1/26); the stroimprosto IDS zip is not itself an NPA. Does not substitute GrK art. 49 expertise, PP 614 IM obligation, or an AGR certificate.",
+  "legal_qualification": {
+    "as_of": "2026-08-14",
+    "product_function": "precheck_exchange_shape",
+    "legal_force_of_cited_npa": "territorial_npa",
+    "ids_zip_legal_force": "not_npa",
+    "territorial_scope": "moscow",
+    "cited_instrument_ids": [
+      "MOSCOW-17-PP",
+      "DGP-R-1-26"
+    ],
+    "substitutes_agr_certificate": false,
+    "substitutes_grk_art_49_expertise": false,
+    "substitutes_pp614_im_obligation": false,
+    "substitutes_egrz_remark_corpus": false,
+    "federal_im_obligation_created": false,
+    "closes_rt002": false,
+    "claim_boundary": "Legal-force labels for engineering honesty. Not a court opinion. Not statutory compliance of a customer package. Checkpoint NO_GO."
+  },
+  "generated_at": "2026-08-14T17:31:17.243988+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
@@ -144,5 +162,5 @@
       "expect_matched": true
     }
   ],
-  "content_sha256": "d24b8e7be463a50844f5bd4d2e5efc9c492b645857bfc7ba24bbc11654a207cf"
+  "content_sha256": "97993a9876e631b499d05c443a1129d5fd7a9af7bc881d89f0d343b20c0e7655"
 }

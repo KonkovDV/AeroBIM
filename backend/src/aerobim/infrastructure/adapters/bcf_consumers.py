@@ -339,10 +339,34 @@ def verify_bcf_zip_structure(
     )
 
 
+def consume_bcf_zip(archive: bytes) -> list[BcfTopicContract]:
+    """Dispatch BCF 2.1 / 3.0 consumers from archive bytes (file import, not CDE)."""
+
+    from aerobim.core.security.zip_limits import inspect_zip_bytes, read_zip_member_capped
+
+    inspect_zip_bytes(archive)
+    with zipfile.ZipFile(io.BytesIO(archive), "r") as zf:
+        version_raw = read_zip_member_capped(zf, "bcf.version")
+    version_text = version_raw.decode("utf-8", errors="replace")
+    if 'VersionId="3.0"' in version_text or "VersionId='3.0'" in version_text:
+        return consume_bcf3_zip(archive)
+    return consume_bcf21_zip(archive)
+
+
+def consume_bcf_zip_path(path: Path) -> list[BcfTopicContract]:
+    """Read a BCFZIP from disk. Not a CDE import and not RT-008 T2 evidence."""
+
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    return consume_bcf_zip(path.read_bytes())
+
+
 __all__ = [
     "BcfStructuralVerification",
     "BcfTopicContract",
     "consume_bcf21_zip",
     "consume_bcf3_zip",
+    "consume_bcf_zip",
+    "consume_bcf_zip_path",
     "verify_bcf_zip_structure",
 ]

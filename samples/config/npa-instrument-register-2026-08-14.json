@@ -1,0 +1,92 @@
+{
+  "schema": "aerobim_npa_instrument_register_v1",
+  "as_of": "2026-08-14",
+  "not_legal_advice": true,
+  "checkpoint": "NO_GO",
+  "claim_boundary": "Legal-force inventory for engineering honesty. Not a court opinion. Not full GOST/SP compliance. Does not close RT-001/002/003.",
+  "pp614_formats_citation": "PP RF 614 of 17.05.2024, composition of electronic documents item 7 subitems b/g/d: PDF/A; LandXML or open-spec terrain; IFC or open-spec CIM. Do not cite Rules item 7 (open GIS resource pointers) as the format list.",
+  "im_obligation": {
+    "statute": "GrK art. 57.5",
+    "cases_act": "PP RF 331 as amended by PP 2357",
+    "casuistic": true,
+    "ksi_follows_im": "GrK art. 57.6 only if IM is mandatory",
+    "rules_act": "PP RF 614 (2024-09-01 .. 2030-09-01); does not create new cases"
+  },
+  "minstroy_cim_composition": {
+    "instrument_id": "MINSTROY-CIM-PD-GRAPHICS-DRAFT",
+    "legal_force": "draft_unverified",
+    "regulation_gov_id": "155923",
+    "orv": "negative_minec",
+    "in_force_on_as_of": false,
+    "do_not_cite_as": "усиление с 01.03.2026"
+  },
+  "pp878": {
+    "egrz": {
+      "instrument_id": "PP-RF-878-2017-07-24",
+      "date": "2017-07-24",
+      "subject": "egrz_rules"
+    },
+    "radioelectronics_trap": {
+      "instrument_id": "PP-RF-878-2019-07-10",
+      "date": "2019-07-10",
+      "subject": "radioelectronics",
+      "not": "egrz"
+    }
+  },
+  "ids_pack_bindings": {
+    "MOEXP-GAU-IDS": {
+      "instrument_id": "MOEXP-IDS-METHODOLOGY",
+      "legal_force": "not_npa",
+      "territorial_scope": "moscow_oblast"
+    },
+    "MOSCOW-AGR-DGP-IDS": {
+      "instrument_id": "MOSCOW-AGR-IDS-METHODOLOGY",
+      "legal_force": "not_npa",
+      "territorial_scope": "moscow",
+      "cited_npa_ids": ["MOSCOW-17-PP", "DGP-R-1-26"]
+    },
+    "SPBEXP-GAU-CGE-IDS": {
+      "instrument_id": "SPBEXP-IDS-METHODOLOGY",
+      "legal_force": "not_npa",
+      "territorial_scope": "spb"
+    }
+  },
+  "product_checks": {
+    "agr_exchange_class_1": {
+      "product_function": "precheck_exchange_shape",
+      "legal_force_of_cited_npa": "territorial_npa",
+      "ids_zip_legal_force": "not_npa",
+      "territorial_scope": "moscow",
+      "substitutes_agr_certificate": false,
+      "substitutes_grk_art_49_expertise": false
+    },
+    "egrz_intake_xml": {
+      "product_function": "egrz_intake_precheck",
+      "legal_force_of_cited_npa": "agency_order",
+      "xsd_files_legal_force": "not_npa",
+      "cited_instrument_ids": ["MINSTROY-783-PR", "PP-RF-878-2017-07-24"],
+      "substitutes_grk_art_49_expertise": false,
+      "substitutes_egrz_remark_corpus": false,
+      "substitutes_ukep_check": false,
+      "closes_rt001": false
+    }
+  },
+  "minstroy_xml_schemas": {
+    "catalog_page": "https://minstroyrf.gov.ru/tim/xml-skhemy/",
+    "ecpe_in_force_since": "2026-06-11",
+    "listed_pz": "01.07",
+    "ecpe_pz": "01.07",
+    "listed_assignment": "01.01",
+    "ecpe_assignment": "01.01",
+    "listed_conclusion": "01.03",
+    "stale_vs_ecpe": [],
+    "loadable_xmlschema11": ["conclusion"],
+    "sanitize_loadable_xmlschema11": [
+      "conclusion",
+      "explanatory_note",
+      "design_assignment"
+    ],
+    "zip_member_folders_contain_dev_prefix": true,
+    "note": "p9_4 / p12_2 zips; SchemaVersion fixed 01.07/01.01; xml:id sanitize at load"
+  }
+}

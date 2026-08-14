@@ -4,18 +4,19 @@ title: "AGR exchange-shape fixture (class 1)"
 date: 2026-08-14
 claim_level: agr_exchange_fixture
 claim_boundary: >-
-  AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD are public city files, not a Samolet-signed acceptance pack. Not customer CIM acceptance.
+  AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD are public city files, not a Samolet-signed acceptance pack. Not customer CIM acceptance. Cited NPA is territorial (Moscow 17-PP + DGP-R-1/26); the stroimprosto IDS zip is not itself an NPA. Does not substitute GrK art. 49 expertise, PP 614 IM obligation, or an AGR certificate.
 ---
 
 # AGR exchange-shape fixture
 
 IFC4 + ReferenceView + no `IfcBuildingElementProxy` + five-field filename + 
 500 MB cap + TEP XML sidecar + official ДГП Vedomost XSD. **Not** the frozen 
-`moscow_agr` profile (no УКЭП, CRS, MSSK). Not a Samolet pack.
+`moscow_agr` profile (no УКЭП, CRS, MSSK). Not a Samolet pack. 
+Territorial Moscow NPA citation; IDS zip is not itself an NPA; not GrK art. 49.
 
 - cases: **11**
 - matching expect: **11**
-- content_sha256: `d24b8e7be463a50844f5bd4d2e5efc9c492b645857bfc7ba24bbc11654a207cf`
+- content_sha256: `97993a9876e631b499d05c443a1129d5fd7a9af7bc881d89f0d343b20c0e7655`
 
 | id | expect | observed | match |
 | --- | --- | --- | --- |

@@ -19,9 +19,11 @@ from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
 from aerobim.infrastructure.adapters.bcf_consumers import (
     consume_bcf3_zip,
     consume_bcf21_zip,
+    consume_bcf_zip_path,
     verify_bcf_zip_structure,
 )
 from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+from aerobim.tools.ingest_bcf_zip import ingest_payload
 from aerobim.tools.verify_bcf_structural_handoff import build_bcf_structural_handoff_evidence
 
 
@@ -105,6 +107,24 @@ class BcfMultiConsumerContractTests(unittest.TestCase):
         self.assertTrue(payload["structural_ok"])
         self.assertEqual(payload["cde_import"]["status"], "NOT_VERIFIED")
         self.assertEqual(payload["claim_level"], "structural_only")
+
+    def test_committed_bcfzip_file_ingest_is_not_cde(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2] / "samples" / "bcf" / "fixture-topics.bcfzip"
+        )
+        if not path.is_file():
+            self.skipTest("committed BCFZIP fixture missing")
+        topics = consume_bcf_zip_path(path)
+        self.assertGreaterEqual(len(topics), 1)
+        self.assertTrue(any(topic.title for topic in topics))
+        document = ingest_payload(path)
+        self.assertEqual(document["cde_import"], "NOT_VERIFIED")
+        self.assertFalse(document["closes_rt001"])
+        self.assertFalse(document["closes_rt002"])
+        self.assertFalse(document["closes_rt003"])
+        self.assertTrue(document["structural_ok"])
+        self.assertGreaterEqual(document["topic_count"], 1)
+        self.assertIn("not CDE", str(document["claim_boundary"]))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Two-file crossing-wall IFC pair for federated IfcClash smoke (not customer evidence)."""
+"""Two-file crossing-wall IFC pair plus IfcPipeSegment vs wall for federated
+IfcClash smoke (not customer evidence, not MEP system-aware)."""
 
 from __future__ import annotations
 
@@ -40,17 +41,24 @@ def _new_model(name: str):
     return model, body, storey
 
 
-def _wall_2pt(
-    model, *, body, storey, name: str, p1: tuple[float, float], p2: tuple[float, float]
+def _element_2pt(
+    model,
+    *,
+    body,
+    storey,
+    ifc_class: str,
+    name: str,
+    p1: tuple[float, float],
+    p2: tuple[float, float],
 ) -> None:
-    wall = ifcopenshell.api.run("root.create_entity", model, ifc_class="IfcWall", name=name)
+    element = ifcopenshell.api.run("root.create_entity", model, ifc_class=ifc_class, name=name)
     ifcopenshell.api.run(
-        "spatial.assign_container", model, products=[wall], relating_structure=storey
+        "spatial.assign_container", model, products=[element], relating_structure=storey
     )
     rep = ifcopenshell.api.run(
         "geometry.create_2pt_wall",
         model,
-        element=wall,
+        element=element,
         context=body,
         p1=p1,
         p2=p2,
@@ -58,7 +66,17 @@ def _wall_2pt(
         height=3.0,
         thickness=0.2,
     )
-    ifcopenshell.api.run("geometry.assign_representation", model, product=wall, representation=rep)
+    ifcopenshell.api.run(
+        "geometry.assign_representation", model, product=element, representation=rep
+    )
+
+
+def _wall_2pt(
+    model, *, body, storey, name: str, p1: tuple[float, float], p2: tuple[float, float]
+) -> None:
+    _element_2pt(
+        model, body=body, storey=storey, ifc_class="IfcWall", name=name, p1=p1, p2=p2
+    )
 
 
 def main() -> None:
@@ -76,8 +94,22 @@ def main() -> None:
     path_b = out_dir / "clash-federated-box-b.ifc"
     file_b.write(str(path_b))
 
+    file_p, body_p, storey_p = _new_model("ClashFederatedPipe")
+    _element_2pt(
+        file_p,
+        body=body_p,
+        storey=storey_p,
+        ifc_class="IfcPipeSegment",
+        name="Pipe-B",
+        p1=(2.0, -1.0),
+        p2=(2.0, 1.0),
+    )
+    path_p = out_dir / "clash-federated-pipe-b.ifc"
+    file_p.write(str(path_p))
+
     print(f"wrote {path_a} bytes={path_a.stat().st_size}")
     print(f"wrote {path_b} bytes={path_b.stat().st_size}")
+    print(f"wrote {path_p} bytes={path_p.stat().st_size}")
 
 
 if __name__ == "__main__":

@@ -67,6 +67,7 @@ _ACCEPTED_EXCHANGE_FORMATS = frozenset(
         "csv",
         "xlsx",
         "xls",
+        "docx",
         "png",
         "jpg",
         "jpeg",

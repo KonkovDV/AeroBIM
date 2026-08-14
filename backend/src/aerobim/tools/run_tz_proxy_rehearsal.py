@@ -16,10 +16,12 @@ from time import perf_counter
 from typing import Any
 
 from aerobim.domain.errors import ClashCapabilityError
+from aerobim.domain.norm_pack_hash import compute_directory_tree_hash
 from aerobim.domain.tz_proxy_constructs import (
     CLAIM_BOUNDARY,
     CLAIM_LEVEL,
     construct_validity_frame,
+    egrz_intake_xml_proxy,
     geometric_clash_proxy,
     jurisdiction_ids_proxy,
     public_jurisdiction_ids_packs,
@@ -32,6 +34,7 @@ from aerobim.tools.export_moexp_ids_coverage import discover_ids
 
 PLANTED_FEDERATED_A_REL = "samples/ifc/clash-federated-box-a.ifc"
 PLANTED_FEDERATED_B_REL = "samples/ifc/clash-federated-box-b.ifc"
+PLANTED_FEDERATED_PIPE_B_REL = "samples/ifc/clash-federated-pipe-b.ifc"
 DUPLEX_ARC_REL = ".local/ifc-bench-v2/projects/duplex/arc.ifc"
 DUPLEX_MEP_REL = ".local/ifc-bench-v2/projects/duplex/mep.ifc"
 
@@ -139,6 +142,43 @@ def run_planted_federated_clash(repo: Path) -> dict[str, Any]:
     )
 
 
+def run_planted_federated_pipe_clash(repo: Path) -> dict[str, Any]:
+    path_a = repo / PLANTED_FEDERATED_A_REL
+    path_b = repo / PLANTED_FEDERATED_PIPE_B_REL
+    extra = {
+        "path_a": PLANTED_FEDERATED_A_REL,
+        "path_b": PLANTED_FEDERATED_PIPE_B_REL,
+        "engine": "ifcclash",
+        "construct": "IfcWall vs IfcPipeSegment with known intersection",
+    }
+    if not path_a.is_file() or not path_b.is_file():
+        return _clash_row(label="planted_federated_pipe_vs_wall", status="MISSING", extra=extra)
+    started = perf_counter()
+    try:
+        results = IfcClashDetector().detect_between(path_a, path_b)
+    except ClashCapabilityError as exc:
+        return _clash_row(
+            label="planted_federated_pipe_vs_wall",
+            status=exc.status.upper(),
+            reason=exc.reason,
+            elapsed_ms=(perf_counter() - started) * 1000.0,
+            extra=extra,
+        )
+    return _clash_row(
+        label="planted_federated_pipe_vs_wall",
+        status="RUN",
+        clash_count=len(results),
+        elapsed_ms=(perf_counter() - started) * 1000.0,
+        extra={
+            **extra,
+            "note": (
+                "Planted IfcPipeSegment vs IfcWall. Geometric intersection rehearsal, "
+                "not MEP system-aware clash and not a signed clearance matrix."
+            ),
+        },
+    )
+
+
 def run_federated_duplex(repo: Path) -> dict[str, Any]:
     arc = repo / DUPLEX_ARC_REL
     mep = repo / DUPLEX_MEP_REL
@@ -182,6 +222,11 @@ def _live_ids_pointer(repo: Path, pointer: dict[str, Any]) -> dict[str, Any]:
     pack = repo / str(pointer["ids_pack_rel"])
     ids = discover_ids(pack) if pack.is_dir() else []
     pointer["ids_file_count"] = len(ids)
+    pack_dir = repo / str(pointer["ids_pack_rel"])
+    if pack_dir.is_dir():
+        pointer["jurisdiction_tree_hash"] = compute_directory_tree_hash(pack_dir)
+    pointer["customer_pack_hash"] = None
+    pointer["approval"] = None
     coverage_path = repo / str(pointer["coverage_evidence"])
     if coverage_path.is_file():
         try:
@@ -205,7 +250,11 @@ def build_payload(
     repo: Path,
     include_open_federated: bool = False,
 ) -> dict[str, Any]:
-    clashes = [run_planted_clash(repo), run_planted_federated_clash(repo)]
+    clashes = [
+        run_planted_clash(repo),
+        run_planted_federated_clash(repo),
+        run_planted_federated_pipe_clash(repo),
+    ]
     if include_open_federated:
         clashes.append(run_federated_duplex(repo))
     else:
@@ -232,6 +281,7 @@ def build_payload(
         "construct_validity": construct_validity_frame(),
         "tz_rows": tz_row_proxy_map(),
         "rt001_typical_remark_taxonomy": typical_remark_taxonomy_proxy(),
+        "rt001_egrz_intake_xml": egrz_intake_xml_proxy(),
         "rt002_jurisdiction_ids": moexp_live_pointer(repo),
         "rt002_public_ids_packs": [
             _live_ids_pointer(repo, dict(row)) for row in public_jurisdiction_ids_packs()
@@ -278,6 +328,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- public jurisdiction packs: **{len(payload.get('rt002_public_ids_packs') or ())}**",
         f"- customer_signed: **{ids.get('customer_signed')}**",
         f"- samolet_alias: **{ids.get('samolet_alias')}**",
+        f"- egrz_intake_xml: **{(payload.get('rt001_egrz_intake_xml') or {}).get('claim_level')}** "
+        f"(closes_rt001={(payload.get('rt001_egrz_intake_xml') or {}).get('closes_rt001')})",
         f"- mep_system_clash: **{clash.get('mep_system_clash')}**",
         f"- content_sha256: `{payload.get('content_sha256')}`",
         "",
@@ -307,6 +359,135 @@ def render_markdown(payload: dict[str, Any]) -> str:
         )
     lines.extend(["", f"Claim boundary: {payload.get('claim_boundary')}", ""])
     return "\n".join(lines)
+
+
+def write_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
+    """Pin planted federated IfcClash runs. Still not RT-003 CLOSED."""
+
+    clash = payload.get("rt003_geometric_clash") or {}
+    raw_runs = clash.get("runs") or []
+    pin_runs: list[dict[str, Any]] = [
+        row
+        for row in raw_runs
+        if isinstance(row, dict)
+        and row.get("label")
+        in {
+            "planted_federated_crossing_walls",
+            "planted_federated_pipe_vs_wall",
+        }
+    ]
+    body: dict[str, Any] = {
+        "schema_version": "1.0.0",
+        "artifact_type": "federated_clash_planted_pin",
+        "claim_level": "engine_rehearsal",
+        "checkpoint": "NO_GO",
+        "closes_rt003": False,
+        "mep_system_clash": "NOT_VERIFIED",
+        "geometry_verified": False,
+        "customer_federated_ifc": False,
+        "signed_scope": False,
+        "claim_boundary": (
+            "Hashed IfcClash on in-repo planted federated IFC (walls; pipe vs wall). "
+            "License-cleared synthetic fixtures, not customer models, not coordinator "
+            "BCF gold, not MEP system-aware. Checkpoint NO_GO."
+        ),
+        "runs": pin_runs,
+    }
+    encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    body["content_sha256"] = _sha256_bytes(encoded)
+    json_path = repo / "docs" / "evidence" / "federated-clash-planted-2026-08.json"
+    md_path = repo / "docs" / "evidence" / "federated-clash-planted-2026-08.md"
+    json_path.write_text(json.dumps(body, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    lines = [
+        '<!-- claims-lint: allow-file reason="Planted federated IfcClash pin; RT-003 stays OPEN" -->',
+        "---",
+        'title: "Planted federated IfcClash pin"',
+        "claim_level: engine_rehearsal",
+        "closes_rt003: false",
+        "mep_system_clash: NOT_VERIFIED",
+        "---",
+        "",
+        "# Planted federated IfcClash",
+        "",
+        f"- closes_rt003: **{body['closes_rt003']}**",
+        f"- mep_system_clash: **{body['mep_system_clash']}**",
+        f"- content_sha256: `{body['content_sha256']}`",
+        "",
+        "| label | status | clash_count |",
+        "| --- | --- | ---: |",
+    ]
+    for row in pin_runs:
+        lines.append(
+            f"| {row.get('label')} | {row.get('status')} | {row.get('clash_count', '')} |"
+        )
+    boundary = str(body["claim_boundary"])
+    lines.extend(["", boundary, ""])
+    md_path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_open_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
+    """Pin IFC-Bench duplex IfcClash. Still not RT-003 CLOSED."""
+
+    clash = payload.get("rt003_geometric_clash") or {}
+    raw_runs = clash.get("runs") or []
+    pin_runs: list[dict[str, Any]] = [
+        row
+        for row in raw_runs
+        if isinstance(row, dict) and row.get("label") == "duplex_arc_vs_mep"
+    ]
+    body: dict[str, Any] = {
+        "schema_version": "1.0.0",
+        "artifact_type": "federated_clash_duplex_pin",
+        "claim_level": "open_bench_only",
+        "checkpoint": "NO_GO",
+        "closes_rt003": False,
+        "mep_system_clash": "NOT_VERIFIED",
+        "geometry_verified": False,
+        "customer_federated_ifc": False,
+        "signed_scope": False,
+        "license": "CC BY 4.0 (IFC-Bench duplex / buildingSMART sample)",
+        "claim_boundary": (
+            "Hashed IfcClash on gitignored IFC-Bench duplex ARC vs MEP. Public "
+            "federated pair, no coordinator BCF gold, no signed clearance matrix, "
+            "not customer models, not MEP system-aware. Hits ≠ delivered. "
+            "Checkpoint NO_GO."
+        ),
+        "runs": pin_runs,
+    }
+    encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    body["content_sha256"] = _sha256_bytes(encoded)
+    json_path = repo / "docs" / "evidence" / "federated-clash-duplex-2026-08.json"
+    md_path = repo / "docs" / "evidence" / "federated-clash-duplex-2026-08.md"
+    json_path.write_text(json.dumps(body, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    lines = [
+        '<!-- claims-lint: allow-file reason="Open federated duplex IfcClash pin; RT-003 stays OPEN" -->',
+        "---",
+        'title: "IFC-Bench duplex federated IfcClash pin"',
+        "claim_level: open_bench_only",
+        "closes_rt003: false",
+        "mep_system_clash: NOT_VERIFIED",
+        "---",
+        "",
+        "# IFC-Bench duplex federated IfcClash",
+        "",
+        f"- closes_rt003: **{body['closes_rt003']}**",
+        f"- mep_system_clash: **{body['mep_system_clash']}**",
+        f"- content_sha256: `{body['content_sha256']}`",
+        "",
+        "| label | status | clash_count |",
+        "| --- | --- | ---: |",
+    ]
+    for row in pin_runs:
+        lines.append(
+            f"| {row.get('label')} | {row.get('status')} | {row.get('clash_count', '')} |"
+        )
+    boundary = str(body["claim_boundary"])
+    lines.extend(["", boundary, ""])
+    md_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_payload(
@@ -339,6 +520,16 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Also write docs/evidence (default: artifacts/ only).",
     )
+    parser.add_argument(
+        "--write-clash-pin",
+        action="store_true",
+        help="Write planted federated IfcClash pin under docs/evidence. Still NOT_VERIFIED.",
+    )
+    parser.add_argument(
+        "--write-open-federated-pin",
+        action="store_true",
+        help="Write duplex IfcClash pin under docs/evidence. Still NOT_VERIFIED.",
+    )
     args = parser.parse_args(argv)
     root = repo_root()
     payload = build_payload(repo=root, include_open_federated=args.include_open_federated)
@@ -353,6 +544,10 @@ def main(argv: list[str] | None = None) -> int:
             artifacts_json=root / "docs" / "evidence" / "tz-proxy-rehearsal-latest.json",
             artifacts_md=root / "docs" / "evidence" / "tz-proxy-rehearsal-2026-08.md",
         )
+    if args.write_clash_pin or args.write_docs_evidence:
+        write_federated_clash_pin(root, payload)
+    if args.write_open_federated_pin:
+        write_open_federated_clash_pin(root, payload)
     print(
         json.dumps(
             {

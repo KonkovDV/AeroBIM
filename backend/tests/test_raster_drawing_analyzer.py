@@ -100,6 +100,53 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
         finally:
             image_path.unlink(missing_ok=True)
 
+    def test_committed_vector_pdf_fixture(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "samples"
+            / "drawings"
+            / "wall-thickness-vector.pdf"
+        )
+        if not path.is_file():
+            self.skipTest("committed vector PDF fixture missing")
+        annotations = RasterDrawingAnalyzer().analyze_image(path, sheet_id="A-101")
+        self.assertGreaterEqual(len(annotations), 1)
+        annotation = annotations[0]
+        self.assertEqual(annotation.target_ref, "WALL-01")
+        self.assertEqual(annotation.measure_name, "thickness")
+        self.assertEqual(annotation.observed_value, "250")
+        self.assertEqual(annotation.unit, "mm")
+
+    def test_committed_scan_png_with_fake_ocr(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2] / "samples" / "drawings" / "wall-thickness-scan.png"
+        )
+        if not path.is_file():
+            self.skipTest("committed scan PNG fixture missing")
+        annotations = RasterDrawingAnalyzer(ocr_engine_factory=_FakeOcrEngine).analyze_image(
+            path, sheet_id="A-201"
+        )
+        self.assertEqual(len(annotations), 1)
+        self.assertEqual(annotations[0].target_ref, "WALL-IMG-01")
+        self.assertEqual(annotations[0].observed_value, "220")
+
+    def test_committed_scan_png_with_rapidocr_when_installed(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("rapidocr") is None:
+            self.skipTest("rapidocr optional extra not installed")
+        path = (
+            Path(__file__).resolve().parents[2] / "samples" / "drawings" / "wall-thickness-scan.png"
+        )
+        if not path.is_file():
+            self.skipTest("committed scan PNG fixture missing")
+        annotations = RasterDrawingAnalyzer().analyze_image(path, sheet_id="A-201")
+        texts = " ".join(f"{a.target_ref} {a.observed_value}" for a in annotations)
+        self.assertTrue(
+            any(a.observed_value == "220" for a in annotations),
+            f"RapidOCR did not recover 220 mm from fixture: {texts!r}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

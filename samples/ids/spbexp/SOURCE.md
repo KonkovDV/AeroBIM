@@ -2,7 +2,7 @@
 
 **Source page:** https://www.spbexp.ru/bim/docs/  
 **Retrieved:** 2026-08-14  
-**Claim:** public machine-readable examination requirements (IDS 1.0). Second GAU jurisdiction pack after MOEXP. Not a Samolet customer-approved acceptance profile. Does not close Checkpoint GO / RT-002.
+**Claim:** public machine-readable examination requirements (IDS 1.0). Second GAU jurisdiction pack after MOEXP. Organ methodology, **not** GrK art. 49. Not a Samolet customer-approved acceptance profile. Does not close Checkpoint GO / RT-002.
 
 AeroBIM does not claim authorship. Files are redistributed as published by СПб ГАУ «Центр государственной экспертизы».
 

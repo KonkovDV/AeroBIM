@@ -568,6 +568,21 @@ class ClashDetectorPortTests(unittest.TestCase):
         self.assertEqual(results[0].element_a_guid, "guid-a")
         self.assertEqual(results[0].element_b_guid, "guid-b")
 
+    def test_planted_federated_boxes_clash_when_ifcclash_installed(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ifcclash") is None:
+            self.skipTest("ifcclash optional extra not installed")
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        root = Path(__file__).resolve().parents[2]
+        path_a = root / "samples" / "ifc" / "clash-federated-box-a.ifc"
+        path_b = root / "samples" / "ifc" / "clash-federated-box-b.ifc"
+        if not path_a.is_file() or not path_b.is_file():
+            self.skipTest("planted federated clash fixtures missing")
+        results = IfcClashDetector().detect_between(path_a, path_b)
+        self.assertGreaterEqual(len(results), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,5 @@
+# Synthetic calculation load table
+# Format: LOAD|id|label|expected|unit|observed
+# Fixture only — сверка, not independent structural verification.
+LOAD|L1|snow|10|kN|10
+LOAD|L2|wind|5|kN|8

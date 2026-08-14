@@ -184,7 +184,9 @@ class ConflictKind(StrEnum):
     """Semantic classification of cross-document contradiction kind.
 
     Assigned in single-request analysis: HARD, UNIT_MISMATCH, SOFT, AMBIGUOUS.
-    STAGE_MISMATCH / VERSION_MISMATCH are reserved for multi-package CDE compare.
+    STAGE_MISMATCH / VERSION_MISMATCH / DOC_TYPE_MISMATCH are also used by
+    fixture package-vs-package identity compare. That path is not CDE version
+    management and is not customer package evidence.
     """
 
     HARD_CONFLICT = "hard-conflict"
@@ -196,10 +198,13 @@ class ConflictKind(StrEnum):
     ambiguous unit encoding between source documents."""
 
     STAGE_MISMATCH = "stage-mismatch"
-    """Reserved: sources belong to different delivery stages (e.g. SD vs DD)."""
+    """Same source_id compared across delivery stages (e.g. PD vs RD)."""
 
     VERSION_MISMATCH = "version-mismatch"
-    """Same logical document compared across distinct revisions (ingestion guard)."""
+    """Same logical document compared across distinct revisions."""
+
+    DOC_TYPE_MISMATCH = "doc-type-mismatch"
+    """Same source_id compared across distinct document types (e.g. drawing vs plan)."""
 
     SOFT_CONFLICT_WITHIN_TOLERANCE = "soft-conflict-within-tolerance"
     """Numeric values differ in presentation but SI comparison is within ε."""

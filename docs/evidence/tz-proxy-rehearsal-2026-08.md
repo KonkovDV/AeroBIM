@@ -50,13 +50,13 @@ Checkpoint остаётся **NO_GO**.
 | **ТР-14** | Геометрические коллизии (IfcClash) | `detect_between` + посаженная пара пересекающихся стен (`clash-federated-box-{a,b}.ifc`) | **partial** |
 | **ТР-15** | MEP system-aware | Федеративный инвентарь + опциональный IfcClash Duplex. Нет signed clearance matrix | **not_verified** (RT-003) |
 | **ТР-6** | Нативный DWG | DXF / PDF/A; LibreDWG не линкуем | `TZ_MANDATORY_UNSUPPORTED` |
-| **§9 точность** | Dual adjudication | Карта покрытия Эксп. Б (КР 4/24, АР 2/12, ВК 4/16) | **blocked** (RT-001) |
+| **§9 точность** | Dual adjudication | Карта покрытия Эксп. Б + приёмка XML Минстроя (ПЗ 01.07 / ZnP 01.01; xml:id sanitize) | **blocked** (RT-001) |
 
 ISO 19650: IDS МОГЭ ближе к **information requirements органа**, не к BEP назначенной стороны и не к EIR «Самолёта». Публичный PDF АГР Москвы (ДГП-Р-1/26) — норма обмена, не `customer_approved` pack.
 
 ## Почему три блокера всё ещё OPEN
 
-1. **RT-001.** ЕГРЗ открывает метаданные, не пары «том ↔ замечание». Типовые перечни — таксономия (content), не критерий. Dual κ/α без чужого комплекта не считается.
+1. **RT-001.** ЕГРЗ открывает метаданные, не пары «том ↔ замечание». Типовые перечни — таксономия (content), не критерий. Приёмка XML Минстроя ловит формат до замечания эксперта и **не** заменяет dual κ/α. Dual κ/α без чужого комплекта не считается.
 2. **RT-002.** 24 IDS / 389 specs МОГЭ исполняются (`closes_rt002_customer_profile: false`). Это не `approval` + `pack_hash` заказчика.
 3. **RT-003.** IfcClash — движок intersection/collision/clearance ([документация IfcOpenShell](https://docs.ifcopenshell.org/ifcclash.html)). Публичные федеративные IFC не содержат BCF-истины. G55 Solibri — чужие клиентские данные, в git не копируем. AABB overlap ≠ geometric clash.
 

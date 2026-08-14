@@ -130,6 +130,35 @@ class PackageCompletenessDomainTests(unittest.TestCase):
         self.assertIn("native DWG", dwg_issues[0].message)
         self.assertNotIn("DWG-ready", dwg_issues[0].message)
 
+    def test_declared_docx_is_accepted_exchange_format(self) -> None:
+        inventory = PackageInventory.from_mapping(
+            {
+                "schema": INVENTORY_SCHEMA_V1,
+                "project_id": "office-honesty",
+                "mandatory_pd_sections": ["AR"],
+                "require_pd_rd_pairing": False,
+                "require_specifications": False,
+                "require_schedules": False,
+                "require_sheet_ciphers": False,
+                "artifacts": [
+                    {
+                        "artifact_id": "pd-ar-brief",
+                        "role": "pd_section",
+                        "discipline": "AR",
+                        "format": "docx",
+                        "cipher": "AR-001",
+                    }
+                ],
+            }
+        )
+        report = assess_package_completeness(inventory)
+        unknown = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-FORMAT-UNKNOWN"]
+        unsupported = [
+            i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-UNSUPPORTED-FORMAT"
+        ]
+        self.assertEqual(unknown, [])
+        self.assertEqual(unsupported, [])
+
 
 class PackageCompletenessUseCaseWiringTests(unittest.TestCase):
     def test_missing_section_fixture_fails_analyze(self) -> None:

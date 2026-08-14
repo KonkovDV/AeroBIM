@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from aerobim.domain.architecture import DocumentIdentity
 from aerobim.domain.models import (
@@ -134,6 +134,194 @@ def detect_revision_merge_conflicts(
     return issues
 
 
+PACKAGE_IDENTITY_CLAIM_BOUNDARY = (
+    "Fixture package identity compare only; not CDE version management; "
+    "not customer package evidence."
+)
+
+
+def _norm_token(value: str | None) -> str:
+    return (value or "").strip()
+
+
+def _optional_token(item: Mapping[str, object], key: str) -> str | None:
+    if item.get(key) is None:
+        return None
+    return _norm_token(str(item[key]))
+
+
+def identities_from_mapping(items: Sequence[Mapping[str, object]]) -> list[DocumentIdentity]:
+    """Build DocumentIdentity rows from a JSON-like package compare payload."""
+
+    identities: list[DocumentIdentity] = []
+    for item in items:
+        identities.append(
+            DocumentIdentity(
+                source_id=str(item.get("source_id") or "").strip(),
+                doc_type=str(item.get("doc_type") or "").strip(),
+                revision=_optional_token(item, "revision"),
+                status=_optional_token(item, "status"),
+                stage=_optional_token(item, "stage"),
+                sha256=_optional_token(item, "sha256"),
+            )
+        )
+    return identities
+
+
+def _index_identities(
+    identities: Sequence[DocumentIdentity],
+    *,
+    side: str,
+) -> tuple[dict[str, DocumentIdentity], list[ValidationIssue]]:
+    index: dict[str, DocumentIdentity] = {}
+    issues: list[ValidationIssue] = []
+    duplicate_keys: set[str] = set()
+    for identity in identities:
+        key = _norm_token(identity.source_id).casefold()
+        if not key:
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-PACKAGE-DOC-IDENTITY-MISSING",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"{side} package has a document without source_id; "
+                        f"{PACKAGE_IDENTITY_CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    conflict_kind=ConflictKind.AMBIGUOUS_MAPPING,
+                    evidence_modality="ingestion",
+                )
+            )
+            continue
+        if key in index:
+            if key not in duplicate_keys:
+                duplicate_keys.add(key)
+                issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-PACKAGE-DOC-DUPLICATE",
+                        severity=Severity.WARNING,
+                        message=(
+                            f"{side} package lists source_id {identity.source_id!r} "
+                            f"more than once; {PACKAGE_IDENTITY_CLAIM_BOUNDARY}"
+                        ),
+                        category=FindingCategory.CROSS_DOCUMENT,
+                        conflict_kind=ConflictKind.AMBIGUOUS_MAPPING,
+                        source_id=identity.source_id,
+                        evidence_modality="ingestion",
+                    )
+                )
+            continue
+        index[key] = identity
+    return index, issues
+
+
+def compare_package_document_identities(
+    previous: Sequence[DocumentIdentity],
+    current: Sequence[DocumentIdentity],
+) -> list[ValidationIssue]:
+    """Compare two package identity lists by ``source_id``.
+
+    Matching IDs emit ``DOC_TYPE_MISMATCH``, ``STAGE_MISMATCH``, and
+    ``VERSION_MISMATCH``. Added/removed IDs are listed. This is fixture/engine
+    coverage for TZ «сравнение версий и типов» — not CDE import.
+    """
+
+    previous_index, issues = _index_identities(previous, side="previous")
+    current_index, current_issues = _index_identities(current, side="current")
+    issues.extend(current_issues)
+
+    for key in sorted(previous_index.keys() | current_index.keys()):
+        left = previous_index.get(key)
+        right = current_index.get(key)
+        if left is None and right is not None:
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-PACKAGE-DOC-ADDED",
+                    severity=Severity.INFO,
+                    message=(
+                        f"Document {right.doc_type}/{right.source_id} is present in "
+                        f"current package only; {PACKAGE_IDENTITY_CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    source_id=right.source_id,
+                    evidence_modality="ingestion",
+                )
+            )
+            continue
+        if right is None and left is not None:
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-PACKAGE-DOC-REMOVED",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"Document {left.doc_type}/{left.source_id} is present in "
+                        f"previous package only; {PACKAGE_IDENTITY_CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    source_id=left.source_id,
+                    evidence_modality="ingestion",
+                )
+            )
+            continue
+        if left is None or right is None:
+            continue
+        if left.doc_type.casefold() != right.doc_type.casefold():
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-PACKAGE-DOC-TYPE-MISMATCH",
+                    severity=Severity.ERROR,
+                    message=(
+                        f"Document type mismatch for {left.source_id}: "
+                        f"{left.doc_type!r} vs {right.doc_type!r}; "
+                        f"{PACKAGE_IDENTITY_CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    conflict_kind=ConflictKind.DOC_TYPE_MISMATCH,
+                    source_id=left.source_id,
+                    evidence_modality="ingestion",
+                    expected_value=left.doc_type,
+                    observed_value=right.doc_type,
+                )
+            )
+        if _norm_token(left.stage).casefold() != _norm_token(right.stage).casefold():
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-PACKAGE-STAGE-MISMATCH",
+                    severity=Severity.ERROR,
+                    message=(
+                        f"Stage mismatch for {left.source_id}: "
+                        f"{left.stage!r} vs {right.stage!r}; "
+                        f"{PACKAGE_IDENTITY_CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    conflict_kind=ConflictKind.STAGE_MISMATCH,
+                    source_id=left.source_id,
+                    evidence_modality="ingestion",
+                    expected_value=left.stage,
+                    observed_value=right.stage,
+                )
+            )
+        if _norm_token(left.revision).casefold() != _norm_token(right.revision).casefold():
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-PACKAGE-VERSION-MISMATCH",
+                    severity=Severity.ERROR,
+                    message=(
+                        f"Revision mismatch for {left.source_id}: "
+                        f"{left.revision!r} vs {right.revision!r}; "
+                        f"{PACKAGE_IDENTITY_CLAIM_BOUNDARY}"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    conflict_kind=ConflictKind.VERSION_MISMATCH,
+                    source_id=left.source_id,
+                    evidence_modality="ingestion",
+                    expected_value=left.revision,
+                    observed_value=right.revision,
+                )
+            )
+    return issues
+
+
 def drawing_sheet_identity(source: DrawingSource) -> str | None:
     """Resolve stable sheet identity for 2D provenance (sheet_id preferred)."""
 
@@ -240,10 +428,13 @@ def stamp_requirement_source(
 
 
 __all__ = [
+    "PACKAGE_IDENTITY_CLAIM_BOUNDARY",
+    "compare_package_document_identities",
     "detect_annotation_sheet_identity_drift",
     "detect_missing_drawing_sheet_identity",
     "detect_revision_merge_conflicts",
     "drawing_sheet_identity",
+    "identities_from_mapping",
     "identity_from_requirement_source",
     "revisions_conflict",
     "same_logical_document",

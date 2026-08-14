@@ -15,6 +15,7 @@ from aerobim.domain.agr_exchange_checks import (
     collect_agr_tep_xml_issues,
     collect_agr_vedomost_xsd_issues,
 )
+from aerobim.domain.npa_legal_force import agr_exchange_legal_payload
 from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
 
 CLAIM_LEVEL = "agr_exchange_fixture"
@@ -86,6 +87,7 @@ def run_manifest(manifest_path: Path, *, root: Path) -> dict[str, Any]:
         "artifact_type": "agr_exchange_fixture",
         "claim_level": CLAIM_LEVEL,
         "claim_boundary": CLAIM_BOUNDARY,
+        "legal_qualification": agr_exchange_legal_payload(),
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "machine": _machine_fingerprint(),
         "manifest": manifest_path.resolve().relative_to(root).as_posix(),
@@ -118,7 +120,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         "IFC4 + ReferenceView + no `IfcBuildingElementProxy` + five-field filename + ",
         "500 MB cap + TEP XML sidecar + official ДГП Vedomost XSD. **Not** the frozen ",
-        "`moscow_agr` profile (no УКЭП, CRS, MSSK). Not a Samolet pack.",
+        "`moscow_agr` profile (no УКЭП, CRS, MSSK). Not a Samolet pack. ",
+        "Territorial Moscow NPA citation; IDS zip is not itself an NPA; not GrK art. 49.",
         "",
         f"- cases: **{summary.get('case_count')}**",
         f"- matching expect: **{summary.get('cases_matching_expect')}**",

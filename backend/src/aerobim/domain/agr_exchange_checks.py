@@ -34,7 +34,9 @@ CLAIM_BOUNDARY = (
     "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. "
     "Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD "
     "are public city files, not a Samolet-signed acceptance pack. "
-    "Not customer CIM acceptance."
+    "Not customer CIM acceptance. Cited NPA is territorial (Moscow 17-PP + "
+    "DGP-R-1/26); the stroimprosto IDS zip is not itself an NPA. Does not "
+    "substitute GrK art. 49 expertise, PP 614 IM obligation, or an AGR certificate."
 )
 REQUIRED_SCHEMA = "IFC4"
 MAX_IFC_BYTES = 500 * 1024 * 1024
