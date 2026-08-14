@@ -140,6 +140,20 @@ class IfcBenchSmokeTests(unittest.TestCase):
         raw = json.dumps(payload)
         self.assertIn("scored=", raw)
 
+    def test_docs_evidence_uses_repo_relative_dataset_root(self) -> None:
+        from aerobim.tools.run_ifc_bench_smoke import _sanitize_docs_evidence, repo_root
+
+        payload = {
+            "benchmark": {"dataset_root": str(repo_root() / ".local" / "ifc-bench-v2")},
+            "output_path": str(repo_root() / "artifacts" / "open-bench" / "ifc-bench-v2-smoke.json"),
+            "output_sha256": "abc",
+        }
+        docs = _sanitize_docs_evidence(payload)
+        self.assertEqual(docs["benchmark"]["dataset_root"], ".local/ifc-bench-v2")
+        self.assertNotIn("output_path", docs)
+        self.assertEqual(docs["output_sha256"], "abc")
+
 
 if __name__ == "__main__":
     unittest.main()
+

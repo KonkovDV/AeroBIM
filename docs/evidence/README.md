@@ -1,7 +1,7 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.0"
+version: "2.5.1"
 last_updated: "2026-08-14"
 ---
 
@@ -43,6 +43,7 @@ Related (not under `docs/evidence/`):
 | [`../../samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/) | WP-06 open-corpora profiles (regression/timing only) |
 | [`../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) | L1/L2/L3 number levels |
 | [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md) | Red Team reading of live AECV numbers |
+| [`../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md`](../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md) | Red Team of Hub IFC-Bench / West Riverside / AEC prefetch (`ca6801d`); RT-HUB-01/02/03 mitigated |
 | [`../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality protocol |
 
 ## Reproducible package evidence bundle

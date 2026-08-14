@@ -72,6 +72,23 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
 
 
+def _repo_relative_or_redact(path_str: str) -> str:
+    try:
+        resolved = Path(path_str).resolve()
+        return resolved.relative_to(repo_root().resolve()).as_posix()
+    except (OSError, ValueError):
+        return "<redacted>"
+
+
+def _sanitize_docs_evidence(payload: dict[str, Any]) -> dict[str, Any]:
+    docs = json.loads(json.dumps(payload, ensure_ascii=False))
+    bench = docs.get("benchmark")
+    if isinstance(bench, dict) and bench.get("dataset_root"):
+        bench["dataset_root"] = _repo_relative_or_redact(str(bench["dataset_root"]))
+    docs.pop("output_path", None)
+    return docs
+
+
 def _sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as fh:
@@ -688,8 +705,10 @@ def main(argv: list[str] | None = None) -> int:
     out.write_text(text, encoding="utf-8")
 
     if args.also_docs_evidence:
+        docs_payload = _sanitize_docs_evidence(payload)
+        docs_text = json.dumps(docs_payload, ensure_ascii=False, indent=2) + "\n"
         evidence = repo_root() / "docs" / "evidence" / f"ifc-bench-{args.version}-smoke-latest.json"
-        evidence.write_text(text, encoding="utf-8")
+        evidence.write_text(docs_text, encoding="utf-8")
         print(f"docs_evidence={evidence}")
 
     summary = payload["summary"]

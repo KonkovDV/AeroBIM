@@ -13,11 +13,15 @@ import hashlib
 import json
 import os
 import urllib.error
-import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 from time import sleep
 from typing import Any
+from urllib.parse import urlparse
+from urllib.request import Request
+
+from aerobim.core.security.outbound_url import UnsafeOutboundUrlError, safe_urlopen
+from aerobim.core.security.path_jail import PathJailError, resolve_storage_path
 
 CLAIM_BOUNDARY = (
     "AEC-Bench open_bench_only (arXiv:2603.29199). Prefetch/inventory of public "
@@ -28,6 +32,8 @@ CLAIM_BOUNDARY = (
 
 _VIOLATION_DETERMINATIONS = frozenset({"rejected", "revise_and_resubmit"})
 _CLEAN_DETERMINATIONS = frozenset({"approved", "approved_as_noted"})
+_PREFETCH_HOSTS = frozenset({"nomic-public-data.com"})
+_PREFETCH_MAX_BYTES = 200 * 1024 * 1024
 
 
 def repo_root() -> Path:
@@ -39,6 +45,61 @@ def default_dataset_root() -> Path:
     if env:
         return Path(env)
     return repo_root() / ".local" / "aec-bench"
+
+
+def _repo_relative_or_redact(path_str: str) -> str:
+    try:
+        resolved = Path(path_str).resolve()
+        return resolved.relative_to(repo_root().resolve()).as_posix()
+    except (OSError, ValueError):
+        return "<redacted>"
+
+
+def assert_prefetch_url(url: str) -> str:
+    """Allow only HTTPS AEC-Bench CDN hosts. Does not fetch."""
+    parsed = urlparse((url or "").strip())
+    if parsed.scheme != "https":
+        raise ValueError("prefetch URL must be https")
+    host = (parsed.hostname or "").casefold()
+    if host not in _PREFETCH_HOSTS:
+        raise ValueError(f"prefetch host not allowlisted: {host or '<empty>'}")
+    if parsed.username or parsed.password:
+        raise ValueError("prefetch URL must not contain credentials")
+    if parsed.port not in (None, 443):
+        raise ValueError("prefetch URL must use default https port")
+    return parsed.geturl()
+
+
+def _read_capped(response: Any, *, max_bytes: int) -> bytes:
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        chunk = response.read(1024 * 1024)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > max_bytes:
+            raise ValueError(f"prefetch response exceeds {max_bytes} byte cap")
+        chunks.append(chunk)
+    return b"".join(chunks)
+
+
+def _sanitize_docs_evidence(report: dict[str, Any]) -> dict[str, Any]:
+    payload = json.loads(json.dumps(report, ensure_ascii=False))
+    bench = payload.get("benchmark")
+    if isinstance(bench, dict) and bench.get("dataset_root"):
+        bench["dataset_root"] = _repo_relative_or_redact(str(bench["dataset_root"]))
+    payload.pop("output_path", None)
+    trial = payload.get("agent_trial")
+    if isinstance(trial, dict):
+        for key in ("yandex_studio_key_present", "openai_key_present", "anthropic_key_present"):
+            trial.pop(key, None)
+        reason = str(trial.get("reason") or "")
+        reason = reason.replace("Yandex key present=true; ", "")
+        reason = reason.replace("Yandex key present=false; ", "")
+        trial["reason"] = reason
+        trial["credential_flags"] = "omitted_from_docs_evidence"
+    return payload
 
 
 def _sha256_file(path: Path) -> str:
@@ -113,7 +174,17 @@ def prefetch_instance(
         if not url or not dest_name:
             downloads.append({"status": "error", "detail": "bad manifest row"})
             continue
-        dest = env_dir / dest_name
+        try:
+            dest = resolve_storage_path(dest_name, base=env_dir)
+        except PathJailError as exc:
+            downloads.append(
+                {
+                    "dest": dest_name,
+                    "status": "error",
+                    "detail": f"path jail: {exc}"[:300],
+                }
+            )
+            continue
         dest.parent.mkdir(parents=True, exist_ok=True)
         if dest.is_file() and dest.stat().st_size > 0:
             downloads.append(
@@ -124,19 +195,34 @@ def prefetch_instance(
                 }
             )
             continue
+        try:
+            safe_url = assert_prefetch_url(url)
+        except ValueError as exc:
+            downloads.append({"dest": dest_name, "status": "error", "detail": str(exc)[:300]})
+            continue
         last_error = ""
         data: bytes | None = None
         for attempt in range(max(1, retries)):
             try:
-                req = urllib.request.Request(
-                    url,
+                req = Request(
+                    safe_url,
                     headers={"User-Agent": "Mozilla/5.0 AeroBIM-open-bench/1.0"},
                     method="GET",
                 )
-                with urllib.request.urlopen(req, timeout=timeout_s) as resp:
-                    data = resp.read()
+                with safe_urlopen(req, timeout=timeout_s) as resp:
+                    data = _read_capped(resp, max_bytes=_PREFETCH_MAX_BYTES)
                 break
-            except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
+            except UnsafeOutboundUrlError as exc:
+                last_error = str(exc)[:300]
+                data = None
+                break
+            except (
+                urllib.error.URLError,
+                urllib.error.HTTPError,
+                TimeoutError,
+                OSError,
+                ValueError,
+            ) as exc:
                 last_error = str(exc)[:300]
                 data = None
                 if attempt + 1 < retries:
@@ -435,11 +521,10 @@ def main(argv: list[str] | None = None) -> int:
             "status": "NOT_RUN",
             "reason": (
                 "Harbor is a Codex/Claude Docker agent. It does not take the Yandex "
-                "AI Studio Completions key. Yandex key present="
-                f"{str(yandex_set).lower()}; that key already ran AECV-Bench live "
-                "counting (macro_extended=0.4325 on 2026-08-04). OPENAI_API_KEY/"
-                "ANTHROPIC_API_KEY are a different vendor; a prior OpenAI-compat "
-                "call returned HTTP 401. Do not paste the Yandex key into Harbor."
+                "AI Studio Completions key. The Yandex Studio Completions contour already "
+                "ran AECV-Bench live counting (macro_extended=0.4325 on 2026-08-04). "
+                "OPENAI_API_KEY/ANTHROPIC_API_KEY are a different vendor; a prior "
+                "OpenAI-compat call returned HTTP 401. Do not paste the Yandex key into Harbor."
             ),
             "yandex_studio_key_present": yandex_set,
             "openai_key_present": openai_set,
@@ -478,6 +563,7 @@ def main(argv: list[str] | None = None) -> int:
             }
             for row in prefetch_results
         ]
+        docs_report = _sanitize_docs_evidence(docs_report)
         docs_text = json.dumps(docs_report, ensure_ascii=False, indent=2) + "\n"
         evidence = repo_root() / "docs" / "evidence" / "aec-bench-smoke-latest.json"
         evidence.write_text(docs_text, encoding="utf-8")
