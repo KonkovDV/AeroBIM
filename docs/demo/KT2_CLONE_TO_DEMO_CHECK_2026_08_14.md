@@ -34,14 +34,14 @@ README EN §Quick Start и README RU §Быстрый старт называю�
 
 | Поле | Значение |
 | --- | --- |
-| `git_sha` | `2e6654b9da0ced35afee42819e026b2414045530` (HEAD; working tree dirty during this session) |
+| `git_sha` | `d809d3677492c988d35024e9e06664ae7f949b89` (`working_tree_dirty=false`) |
 | `checkpoint_verdict` | **NO_GO** |
 | `summary.passed` | `false` |
 | `outcome` | `failed` |
 | `verification_status` | `NOT_PASS_EXPERT_REQUIRED` |
-| `reproducibility_hash` | `3b404e15a805c91b2b79e593374b055c9ba56721337d1f4c64345737ae867be4` (stable across two runs) |
+| `reproducibility_hash` | `f67038c00578fae123f4ecfcbe05cc536382cb445a9f0364513590d92225fa6d` (stable across two clean runs; binds `code_version`) |
 | overlay PNG sha256 | `9826281f83a1a5608a3bd88e7d4f4f52475a702c5f3c3a5b4100d05f05f6a349` (stable) |
-| `run-manifest.json` sha256 | `6ff41196340e7592d85a863dbc48a2366d1116c5a5f55932539df2e486f483a1` (stable) |
+| `run-manifest.json` sha256 | `0ff1f6d085c8306edd85469f967be87051617da622955e3724f948983edd8c56` (stable across two clean runs) |
 | `LIMITATIONS.json` sha256 | `78877c146bb9525b866e9c18f3605fa819615b8f8bc49628a596ffc5f20e1965` (stable) |
 | `report.json` / `report.html` / `findings.bcfzip` | **дрейф** `created_at` — сравнивать hash воспроизводимости, не сырые байты |
 
