@@ -54,6 +54,11 @@ class EvidenceBundleVerifierTests(unittest.TestCase):
         self.assertEqual(result["verification"], "passed")
         self.assertGreater(result["hashes_checked"], 0)
 
+    def test_fresh_bundle_files_are_lf_only(self) -> None:
+        for path in self._bundle_dir.iterdir():
+            if path.is_file():
+                self.assertNotIn(b"\r\n", path.read_bytes(), msg=path.name)
+
     def test_tampered_findings_json_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             bundle = self._copy_bundle(Path(tmp))

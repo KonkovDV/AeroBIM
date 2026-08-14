@@ -17,4 +17,4 @@ quadrantChart
     AeroBIM: [0.25, 0.85]
 ```
 
-Честные уступки: зрелость model checking и доля рынка — у зарубежных продуктов выше. Отличие AeroBIM — связка cross-doc + provenance + fail-closed + OFF==ON.
+Честные уступки: зрелость model checking и доля рынка — у зарубежных продуктов выше. У Самолёта главный сосед — **Tangl + 10D**, не Solibri. Отличие AeroBIM — связка cross-doc + provenance + fail-closed + OFF==ON.
