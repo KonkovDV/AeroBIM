@@ -36,6 +36,7 @@ class ConstructValidityFrameTests(unittest.TestCase):
         catalogs = {row["id"]: row for row in taxonomy["catalogs"]}
         self.assertEqual(catalogs["kirov-kr"]["n"], 24)
         self.assertEqual(catalogs["kirov-kr"]["detectable"], 4)
+        self.assertEqual(len(catalogs["kirov-kr"]["detectable_openers"]), 4)
         self.assertEqual(catalogs["mordovia-vk-3kv2024"]["detectable"], 4)
 
     def test_jurisdiction_pointer_is_not_samolet(self) -> None:
@@ -69,9 +70,15 @@ class JurisdictionPointerFileTests(unittest.TestCase):
 
 class TzProxyRehearsalPayloadTests(unittest.TestCase):
     def test_payload_honesty_without_opening_duplex(self) -> None:
-        with patch(
-            "aerobim.tools.run_tz_proxy_rehearsal.IfcClashDetector.detect",
-            side_effect=ClashCapabilityError("skipped", "IfcClash unavailable: test"),
+        with (
+            patch(
+                "aerobim.tools.run_tz_proxy_rehearsal.IfcClashDetector.detect",
+                side_effect=ClashCapabilityError("skipped", "IfcClash unavailable: test"),
+            ),
+            patch(
+                "aerobim.tools.run_tz_proxy_rehearsal.IfcClashDetector.detect_between",
+                side_effect=ClashCapabilityError("skipped", "IfcClash unavailable: test"),
+            ),
         ):
             payload = build_payload(repo=REPO_ROOT, include_open_federated=False)
         self.assertFalse(payload["closes_rt001"])
@@ -80,6 +87,7 @@ class TzProxyRehearsalPayloadTests(unittest.TestCase):
         self.assertEqual(payload["checkpoint"], "NO_GO")
         runs = {row["label"]: row for row in payload["rt003_geometric_clash"]["runs"]}
         self.assertEqual(runs["planted_overlapping_boxes"]["status"], "SKIPPED")
+        self.assertEqual(runs["planted_federated_crossing_walls"]["status"], "SKIPPED")
         self.assertEqual(runs["duplex_arc_vs_mep"]["status"], "SKIPPED")
         self.assertEqual(payload["rt003_geometric_clash"]["mep_system_clash"], "NOT_VERIFIED")
         ids = payload["rt002_jurisdiction_ids"]
@@ -117,6 +125,10 @@ class TzProxyRehearsalPayloadTests(unittest.TestCase):
                 side_effect=ClashCapabilityError("skipped", "test"),
             ),
             patch(
+                "aerobim.tools.run_tz_proxy_rehearsal.IfcClashDetector.detect_between",
+                side_effect=ClashCapabilityError("skipped", "test"),
+            ),
+            patch(
                 "aerobim.tools.run_tz_proxy_rehearsal.write_payload",
             ) as writer,
         ):
@@ -127,3 +139,22 @@ class TzProxyRehearsalPayloadTests(unittest.TestCase):
         self.assertEqual(out.name, "latest.json")
         self.assertEqual(out.parent.name, "tz-proxy-rehearsal")
         self.assertEqual(out.parent.parent.name, "artifacts")
+
+
+class PlantedFederatedClashTests(unittest.TestCase):
+    def test_crossing_wall_pair_is_in_repo(self) -> None:
+        self.assertTrue((REPO_ROOT / "samples" / "ifc" / "clash-federated-box-a.ifc").is_file())
+        self.assertTrue((REPO_ROOT / "samples" / "ifc" / "clash-federated-box-b.ifc").is_file())
+
+    def test_ifcclash_finds_planted_federated_intersection(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ifcclash") is None:
+            self.skipTest("ifcclash extra not installed")
+        from aerobim.tools.run_tz_proxy_rehearsal import run_planted_federated_clash
+
+        row = run_planted_federated_clash(REPO_ROOT)
+        self.assertEqual(row["status"], "RUN")
+        self.assertGreaterEqual(int(row["clash_count"]), 1)
+        self.assertFalse(row["closes_rt003"])
+        self.assertEqual(row["mep_system_clash"], "NOT_VERIFIED")

@@ -29,6 +29,8 @@ from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
 from aerobim.tools.export_moexp_ids_coverage import discover_ids
 
+PLANTED_FEDERATED_A_REL = "samples/ifc/clash-federated-box-a.ifc"
+PLANTED_FEDERATED_B_REL = "samples/ifc/clash-federated-box-b.ifc"
 DUPLEX_ARC_REL = ".local/ifc-bench-v2/projects/duplex/arc.ifc"
 DUPLEX_MEP_REL = ".local/ifc-bench-v2/projects/duplex/mep.ifc"
 
@@ -99,6 +101,43 @@ def run_planted_clash(repo: Path) -> dict[str, Any]:
     )
 
 
+def run_planted_federated_clash(repo: Path) -> dict[str, Any]:
+    path_a = repo / PLANTED_FEDERATED_A_REL
+    path_b = repo / PLANTED_FEDERATED_B_REL
+    extra = {
+        "path_a": PLANTED_FEDERATED_A_REL,
+        "path_b": PLANTED_FEDERATED_B_REL,
+        "engine": "ifcclash",
+        "construct": "crossing IfcWall pair with known intersection",
+    }
+    if not path_a.is_file() or not path_b.is_file():
+        return _clash_row(label="planted_federated_crossing_walls", status="MISSING", extra=extra)
+    started = perf_counter()
+    try:
+        results = IfcClashDetector().detect_between(path_a, path_b)
+    except ClashCapabilityError as exc:
+        return _clash_row(
+            label="planted_federated_crossing_walls",
+            status=exc.status.upper(),
+            reason=exc.reason,
+            elapsed_ms=(perf_counter() - started) * 1000.0,
+            extra=extra,
+        )
+    return _clash_row(
+        label="planted_federated_crossing_walls",
+        status="RUN",
+        clash_count=len(results),
+        elapsed_ms=(perf_counter() - started) * 1000.0,
+        extra={
+            **extra,
+            "note": (
+                "In-repo planted federated pair. Hits prove the IfcClash A/B path, "
+                "not customer MEP or coordinator gold."
+            ),
+        },
+    )
+
+
 def run_federated_duplex(repo: Path) -> dict[str, Any]:
     arc = repo / DUPLEX_ARC_REL
     mep = repo / DUPLEX_MEP_REL
@@ -162,7 +201,7 @@ def build_payload(
     repo: Path,
     include_open_federated: bool = False,
 ) -> dict[str, Any]:
-    clashes = [run_planted_clash(repo)]
+    clashes = [run_planted_clash(repo), run_planted_federated_clash(repo)]
     if include_open_federated:
         clashes.append(run_federated_duplex(repo))
     else:

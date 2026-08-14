@@ -33,6 +33,7 @@ def federated_clash_set(path_a: Path, path_b: Path) -> dict[str, Any]:
     return {
         "name": "Federated hard clashes",
         "mode": "intersection",
+        "check_all": True,
         "tolerance": 0.0,
         "a": [{"file": str(path_a)}],
         "b": [{"file": str(path_b)}],

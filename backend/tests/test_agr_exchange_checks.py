@@ -9,8 +9,10 @@ from aerobim.domain.agr_exchange_checks import (
     RULE_FILENAME,
     RULE_PROXY,
     RULE_SCHEMA,
+    RULE_TEP_XML,
     RULE_VIEW,
     collect_agr_exchange_issues,
+    collect_agr_tep_xml_issues,
     split_five_field_filename,
 )
 from aerobim.domain.ids_schema_gate import parse_ifc_view_definition
@@ -88,10 +90,20 @@ class HeaderAndProxyTests(unittest.TestCase):
         self.assertEqual([issue.rule_id for issue in issues], [RULE_SCHEMA])
 
 
+class TepXmlSidecarTests(unittest.TestCase):
+    def test_missing_sidecar_fails(self) -> None:
+        issues = collect_agr_tep_xml_issues(xml_path=None)
+        self.assertEqual([issue.rule_id for issue in issues], [RULE_TEP_XML])
+
+    def test_fixture_sidecar_passes(self) -> None:
+        path = REPO / "samples" / "agr" / "tep-sidecar-fixture.xml"
+        self.assertEqual(collect_agr_tep_xml_issues(xml_path=path), ())
+
+
 class ManifestRunTests(unittest.TestCase):
     def test_manifest_expectations_match(self) -> None:
         payload = run_manifest(MANIFEST, root=REPO)
-        self.assertEqual(payload["summary"]["case_count"], 5)
+        self.assertEqual(payload["summary"]["case_count"], 7)
         self.assertEqual(
             payload["summary"]["cases_matching_expect"],
             payload["summary"]["case_count"],

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AgrTepSidecar xmlns="urn:aerobim:agr-tep-fixture" claim="not-official-moscow-tep-schema">
+  <note>Fixture sidecar presence only. Not ДГП-Р-1/26 XML schema. Not RT-002.</note>
+</AgrTepSidecar>

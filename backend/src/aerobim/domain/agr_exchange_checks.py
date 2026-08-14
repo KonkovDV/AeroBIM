@@ -3,8 +3,9 @@
 Moscow CIM AGR wording (TechLab brief 0.5, 14.08.2026): IFC4 ReferenceView,
 IFC SPF, no IfcBuildingElementProxy, five-field filename, file ≤500 MB.
 
-This is NOT the moscow_agr profile: no УКЭП, no CRS, no MSSK, no XML ведомость.
-Official PDF is not vendored; field *names* are not claimed.
+This is NOT the moscow_agr profile: no УКЭП, no CRS, no MSSK.
+TEP XML sidecar presence is class-1 only (well-formed XML), not the official
+ДГП schema. Official PDF is not vendored; field *names* are not claimed.
 """
 
 from __future__ import annotations
@@ -23,10 +24,12 @@ RULE_VIEW = "AEROBIM-AGR-REFERENCE-VIEW"
 RULE_PROXY = "AEROBIM-AGR-PROXY-BANNED"
 RULE_SIZE = "AEROBIM-AGR-FILE-SIZE"
 RULE_FILENAME = "AEROBIM-AGR-FILENAME"
+RULE_TEP_XML = "AEROBIM-AGR-TEP-XML"
 
 CLAIM_BOUNDARY = (
     "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. "
-    "Not УКЭП. Not CRS. Not MSSK. Not customer CIM acceptance."
+    "Not УКЭП. Not CRS. Not MSSK. Not official TEP XML schema. "
+    "Not customer CIM acceptance."
 )
 REQUIRED_SCHEMA = "IFC4"
 MAX_IFC_BYTES = 500 * 1024 * 1024
@@ -136,6 +139,45 @@ def collect_agr_exchange_issues(
             )
         )
     return tuple(issues)
+
+
+def collect_agr_tep_xml_issues(*, xml_path: Path | None) -> tuple[ValidationIssue, ...]:
+    """Sidecar presence + well-formed XML. Not the official Moscow TEP schema."""
+    if xml_path is None or not xml_path.is_file():
+        return (
+            _issue(
+                RULE_TEP_XML,
+                (
+                    "AGR exchange requires a TEP XML sidecar with the IFC (ДГП-Р-1/26); "
+                    f"sidecar missing; {CLAIM_BOUNDARY}"
+                ),
+                expected="well-formed XML sidecar",
+                observed="missing",
+            ),
+        )
+    try:
+        from defusedxml import ElementTree
+
+        root = ElementTree.parse(xml_path).getroot()
+    except Exception as exc:  # noqa: BLE001 — fixture parse path
+        return (
+            _issue(
+                RULE_TEP_XML,
+                f"TEP XML sidecar is not well-formed XML ({exc}); {CLAIM_BOUNDARY}",
+                expected="well-formed XML sidecar",
+                observed=xml_path.name,
+            ),
+        )
+    if root is None:
+        return (
+            _issue(
+                RULE_TEP_XML,
+                f"TEP XML sidecar has no root element; {CLAIM_BOUNDARY}",
+                expected="well-formed XML sidecar",
+                observed=xml_path.name,
+            ),
+        )
+    return ()
 
 
 def _issue(

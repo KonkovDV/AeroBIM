@@ -1,20 +1,21 @@
 <!-- claims-lint: allow-file reason="AGR exchange fixture; not moscow_agr profile" -->
 ---
 title: "AGR exchange-shape fixture (class 1)"
-date: 2026-08-13
+date: 2026-08-14
 claim_level: agr_exchange_fixture
 claim_boundary: >-
-  AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Not customer CIM acceptance.
+  AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Not official TEP XML schema. Not customer CIM acceptance.
 ---
 
 # AGR exchange-shape fixture
 
 IFC4 + ReferenceView + no `IfcBuildingElementProxy` + five-field filename + 
-500 MB cap. **Not** the frozen `moscow_agr` profile (no УКЭП, CRS, MSSK).
+500 MB cap + optional TEP XML sidecar presence. **Not** the frozen 
+`moscow_agr` profile (no УКЭП, CRS, MSSK, official TEP schema).
 
-- cases: **5**
-- matching expect: **5**
-- content_sha256: `346b9b73f65c0464ed9936689c0e3b83ac1fc00bd5e1ed5b388fc82b6dc37293`
+- cases: **7**
+- matching expect: **7**
+- content_sha256: `68c1fbbc14b4bcd44f73cbf3fae36ed2583a512006f8be98976f3727dcbb9e42`
 
 | id | expect | observed | match |
 | --- | --- | --- | --- |
@@ -23,6 +24,8 @@ IFC4 + ReferenceView + no `IfcBuildingElementProxy` + five-field filename +
 | `fail-ifc4x3-schema` | `['AEROBIM-AGR-IFC-SCHEMA']` | `['AEROBIM-AGR-IFC-SCHEMA']` | True |
 | `fail-building-element-proxy` | `['AEROBIM-AGR-PROXY-BANNED']` | `['AEROBIM-AGR-PROXY-BANNED']` | True |
 | `fail-filename-shape` | `['AEROBIM-AGR-FILENAME']` | `['AEROBIM-AGR-FILENAME']` | True |
+| `fail-tep-xml-missing` | `['AEROBIM-AGR-TEP-XML']` | `['AEROBIM-AGR-TEP-XML']` | True |
+| `pass-tep-xml-sidecar` | `[]` | `[]` | True |
 
 ```bash
 cd backend

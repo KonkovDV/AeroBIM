@@ -70,6 +70,12 @@ def typical_remark_taxonomy_proxy() -> dict[str, Any]:
                     "Типовые-ошибки-по-разделу-4-КР-проектной-документации.pdf"
                 ),
                 "evidence": "docs/evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md",
+                "detectable_openers": [
+                    "AEROBIM-PACKAGE-TECHNICAL-SPEC-MISSING-TOPIC",
+                    "SECTION-PAIR-KZH",
+                    "AEROBIM-PACKAGE-UNJUSTIFIED-CALCULATION",
+                    "AEROBIM-PACKAGE-MISSING-SECTION",
+                ],
             },
             {
                 "id": "mordovia-ar-3kv2024",
@@ -163,6 +169,8 @@ def geometric_clash_proxy() -> dict[str, Any]:
             "fixture_only — not IfcClash mesh, not TZ >90%"
         ),
         "planted_ifc_rel": "samples/ifc/clash-two-overlapping-boxes.ifc",
+        "planted_federated_a_rel": "samples/ifc/clash-federated-box-a.ifc",
+        "planted_federated_b_rel": "samples/ifc/clash-federated-box-b.ifc",
     }
 
 
