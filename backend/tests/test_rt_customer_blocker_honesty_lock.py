@@ -162,6 +162,22 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         self.assertNotIn("closes_rt002: true", text)
         self.assertNotIn("closes_rt003: true", text)
 
+    def test_tz_proxy_rehearsal_doc_stays_no_go(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "evidence"
+            / "tz-proxy-rehearsal-2026-08.md"
+        )
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("closes_rt003: false", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("Messick", text)
+        self.assertNotIn("closes_rt001: true", text)
+
 
 if __name__ == "__main__":
     unittest.main()

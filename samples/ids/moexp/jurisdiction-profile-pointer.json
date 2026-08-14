@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "jurisdiction_ids_pointer",
+  "profile_id": "MOEXP-GAU-IDS",
+  "title": "Official MosoblGosExpertiza IDS — jurisdiction pointer, not Samolet acceptance",
+  "status": "draft",
+  "approval": null,
+  "approval_ref": null,
+  "customer_approval_ref": null,
+  "customer_signed": false,
+  "samolet_alias": false,
+  "closes_rt002": false,
+  "iso19650_role": "jurisdiction_eir_like",
+  "iso19650_not": "appointing_party_eir_or_bep",
+  "claim_level": "official_ids_engine_coverage",
+  "claim_labels": [
+    "jurisdiction-official-unsigned",
+    "not-samolet-profile",
+    "not-customer-evidence"
+  ],
+  "ids_pack_rel": "samples/ids/moexp/pack",
+  "source_page": "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/",
+  "coverage_evidence": "docs/evidence/norm-pack-moexp-coverage-2026-08.json",
+  "note": "Do not promote to customer_approved. RT-002 stays OPEN until a signed Samolet pack_hash."
+}
