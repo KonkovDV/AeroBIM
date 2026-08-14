@@ -156,6 +156,8 @@ pip install -e ".[dev,raster,pdf-agpl]"
 # pip install -e ".[enterprise]"
 
 python -m aerobim.tools.run_demo_vertical_slice
+# Открыть artifacts/vertical-slice-demo/report.html — фрагмент, finding, evidence,
+# оверлей overlay-problem-zone.png рядом с HTML, вердикт не PASS. Это не CV.
 
 pytest tests -q
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70

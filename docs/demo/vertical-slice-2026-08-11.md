@@ -10,7 +10,7 @@
 - **Запуск:**  
   `python -m aerobim.tools.run_vertical_slice --manifest samples/demo/vertical-slice-2026-08-11/manifest.json --output artifacts/vertical-slice-2026-08-11`  
   (из `backend/`: `--manifest ../samples/... --output ../artifacts/...`)
-- **Артефакты:** `report.json`, `report.html`, `slice-summary.json`, `LIMITATIONS.json` (входные SHA256, статус карты покрытия, воспроизводимый ключ finding, claim boundary, evidence envelope).
+- **Артефакты:** `report.json`, `report.html` (секция `#kt2-overlay` со ссылкой на sibling PNG), `overlay-problem-zone.png`, `slice-summary.json`, `LIMITATIONS.json` (входные SHA256, статус карты покрытия, воспроизводимый ключ finding, claim boundary, evidence envelope). Детерминированный bbox, не CV.
 
 ## Что честно заявлено
 

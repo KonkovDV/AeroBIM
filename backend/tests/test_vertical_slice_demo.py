@@ -84,6 +84,12 @@ class VerticalSliceTests(unittest.TestCase):
             self.assertIn("finding_id=", html.lower())
             self.assertIn("evidence_refs=", html.lower())
             self.assertIn(result["report_id"], html)
+            self.assertIn("kt2-overlay", html)
+            self.assertIn("overlay-problem-zone.png", html)
+            png = Path(tmp) / "overlay-problem-zone.png"
+            self.assertTrue(png.is_file())
+            self.assertEqual(png.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
+            self.assertIsNotNone(result.get("overlay"))
 
     def test_evidence_envelope_and_metrics(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

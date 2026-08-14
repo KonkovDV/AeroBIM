@@ -57,3 +57,26 @@ class ReportHtmlCoverageTests(unittest.TestCase):
         self.assertGreater(issue_pos, cov_pos)
         self.assertIn("not_checked", html)
         self.assertIn("Пересечения инженерных систем", html)
+
+    def test_overlay_section_only_for_allowlisted_sibling_png(self) -> None:
+        data = {
+            "summary": {
+                "passed": False,
+                "issue_count": 1,
+                "error_count": 1,
+                "warning_count": 0,
+                "requirement_count": 0,
+            },
+            "issues": [],
+        }
+        with_img = render_report_html("r1", data, overlay_image_href="overlay-problem-zone.png")
+        self.assertIn("kt2-overlay", with_img)
+        self.assertIn("overlay-problem-zone.png", with_img)
+        self.assertIn("Not CV", with_img)
+        rejected = render_report_html(
+            "r1", data, overlay_image_href="https://evil.example/x.png"
+        )
+        self.assertNotIn("kt2-overlay", rejected)
+        self.assertNotIn("evil.example", rejected)
+        traversal = render_report_html("r1", data, overlay_image_href="../secret.png")
+        self.assertNotIn("kt2-overlay", traversal)
