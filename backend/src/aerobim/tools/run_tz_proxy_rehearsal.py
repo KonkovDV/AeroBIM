@@ -22,6 +22,7 @@ from aerobim.domain.tz_proxy_constructs import (
     construct_validity_frame,
     geometric_clash_proxy,
     jurisdiction_ids_proxy,
+    public_jurisdiction_ids_packs,
     typical_remark_taxonomy_proxy,
     tz_row_proxy_map,
 )
@@ -177,9 +178,8 @@ def run_federated_duplex(repo: Path) -> dict[str, Any]:
     )
 
 
-def moexp_live_pointer(repo: Path) -> dict[str, Any]:
-    pointer = jurisdiction_ids_proxy()
-    pack = repo / pointer["ids_pack_rel"]
+def _live_ids_pointer(repo: Path, pointer: dict[str, Any]) -> dict[str, Any]:
+    pack = repo / str(pointer["ids_pack_rel"])
     ids = discover_ids(pack) if pack.is_dir() else []
     pointer["ids_file_count"] = len(ids)
     coverage_path = repo / str(pointer["coverage_evidence"])
@@ -194,6 +194,10 @@ def moexp_live_pointer(repo: Path) -> dict[str, Any]:
             pointer["ids_file_count_from_coverage"] = summary.get("ids_file_count")
             pointer["unsupported_from_coverage"] = summary.get("unsupported")
     return pointer
+
+
+def moexp_live_pointer(repo: Path) -> dict[str, Any]:
+    return _live_ids_pointer(repo, jurisdiction_ids_proxy())
 
 
 def build_payload(
@@ -229,6 +233,9 @@ def build_payload(
         "tz_rows": tz_row_proxy_map(),
         "rt001_typical_remark_taxonomy": typical_remark_taxonomy_proxy(),
         "rt002_jurisdiction_ids": moexp_live_pointer(repo),
+        "rt002_public_ids_packs": [
+            _live_ids_pointer(repo, dict(row)) for row in public_jurisdiction_ids_packs()
+        ],
         "rt003_geometric_clash": {
             **geometric_clash_proxy(),
             "runs": clashes,
@@ -268,6 +275,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- theory: {validity.get('theory')}",
         f"- MOEXP IDS files on disk: **{ids.get('ids_file_count')}**",
         f"- MOEXP specs (coverage artifact): **{ids.get('specification_count')}**",
+        f"- public jurisdiction packs: **{len(payload.get('rt002_public_ids_packs') or ())}**",
         f"- customer_signed: **{ids.get('customer_signed')}**",
         f"- samolet_alias: **{ids.get('samolet_alias')}**",
         f"- mep_system_clash: **{clash.get('mep_system_clash')}**",

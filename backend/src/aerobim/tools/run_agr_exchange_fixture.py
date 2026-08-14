@@ -13,6 +13,7 @@ from aerobim.domain.agr_exchange_checks import (
     CLAIM_BOUNDARY,
     collect_agr_exchange_issues,
     collect_agr_tep_xml_issues,
+    collect_agr_vedomost_xsd_issues,
 )
 from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
 
@@ -49,7 +50,24 @@ def run_manifest(manifest_path: Path, *, root: Path) -> dict[str, Any]:
         if entry.get("require_tep_xml"):
             tep_rel = str(entry.get("tep_xml") or "").strip()
             tep_path = (root / tep_rel).resolve() if tep_rel else None
-            issues = issues + collect_agr_tep_xml_issues(xml_path=tep_path)
+            expected_root = str(entry.get("tep_expected_root") or "").strip() or None
+            issues = issues + collect_agr_tep_xml_issues(
+                xml_path=tep_path,
+                expected_root=expected_root,
+            )
+        if entry.get("require_vedomost_xsd"):
+            ved_rel = str(entry.get("vedomost_xml") or "").strip()
+            xsd_rel = str(entry.get("vedomost_xsd") or "").strip()
+            ved_path = (root / ved_rel).resolve() if ved_rel else None
+            xsd_path = (
+                (root / xsd_rel).resolve()
+                if xsd_rel
+                else root / "samples" / "agr" / "dgp" / "Vedomost_AGR_VED_NEW.xsd"
+            )
+            issues = issues + collect_agr_vedomost_xsd_issues(
+                xml_path=ved_path,
+                xsd_path=xsd_path,
+            )
         expected = tuple(str(item) for item in (entry.get("expect_rule_ids") or ()))
         observed = tuple(issue.rule_id for issue in issues)
         rows.append(
@@ -99,8 +117,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "# AGR exchange-shape fixture",
         "",
         "IFC4 + ReferenceView + no `IfcBuildingElementProxy` + five-field filename + ",
-        "500 MB cap + optional TEP XML sidecar presence. **Not** the frozen ",
-        "`moscow_agr` profile (no УКЭП, CRS, MSSK, official TEP schema).",
+        "500 MB cap + TEP XML sidecar + official ДГП Vedomost XSD. **Not** the frozen ",
+        "`moscow_agr` profile (no УКЭП, CRS, MSSK). Not a Samolet pack.",
         "",
         f"- cases: **{summary.get('case_count')}**",
         f"- matching expect: **{summary.get('cases_matching_expect')}**",

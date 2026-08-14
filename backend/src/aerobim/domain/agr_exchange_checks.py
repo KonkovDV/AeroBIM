@@ -4,8 +4,9 @@ Moscow CIM AGR wording (TechLab brief 0.5, 14.08.2026): IFC4 ReferenceView,
 IFC SPF, no IfcBuildingElementProxy, five-field filename, file ≤500 MB.
 
 This is NOT the moscow_agr profile: no УКЭП, no CRS, no MSSK.
-TEP XML sidecar presence is class-1 only (well-formed XML), not the official
-ДГП schema. Official PDF is not vendored; field *names* are not claimed.
+TEP XML sidecar presence is class-1 well-formed XML. Official ДГП example
+``AGR_TEO.xml`` (root ``ArchitecturalUrbanPlanningSolution``) and official
+``Vedomost_AGR_VED_NEW.xsd`` are public city files, not a Samolet pack.
 """
 
 from __future__ import annotations
@@ -25,10 +26,14 @@ RULE_PROXY = "AEROBIM-AGR-PROXY-BANNED"
 RULE_SIZE = "AEROBIM-AGR-FILE-SIZE"
 RULE_FILENAME = "AEROBIM-AGR-FILENAME"
 RULE_TEP_XML = "AEROBIM-AGR-TEP-XML"
+RULE_TEP_ROOT = "AEROBIM-AGR-TEP-ROOT"
+RULE_VEDOMOST_XSD = "AEROBIM-AGR-VEDOMOST-XSD"
+OFFICIAL_TEP_ROOT = "ArchitecturalUrbanPlanningSolution"
 
 CLAIM_BOUNDARY = (
     "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. "
-    "Not УКЭП. Not CRS. Not MSSK. Not official TEP XML schema. "
+    "Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD "
+    "are public city files, not a Samolet-signed acceptance pack. "
     "Not customer CIM acceptance."
 )
 REQUIRED_SCHEMA = "IFC4"
@@ -141,8 +146,18 @@ def collect_agr_exchange_issues(
     return tuple(issues)
 
 
-def collect_agr_tep_xml_issues(*, xml_path: Path | None) -> tuple[ValidationIssue, ...]:
-    """Sidecar presence + well-formed XML. Not the official Moscow TEP schema."""
+def _local_tag(tag: str) -> str:
+    if "}" in tag:
+        return tag.rsplit("}", 1)[-1]
+    return tag
+
+
+def collect_agr_tep_xml_issues(
+    *,
+    xml_path: Path | None,
+    expected_root: str | None = None,
+) -> tuple[ValidationIssue, ...]:
+    """Sidecar presence + well-formed XML; optional official TEP root local-name."""
     if xml_path is None or not xml_path.is_file():
         return (
             _issue(
@@ -174,6 +189,80 @@ def collect_agr_tep_xml_issues(*, xml_path: Path | None) -> tuple[ValidationIssu
                 RULE_TEP_XML,
                 f"TEP XML sidecar has no root element; {CLAIM_BOUNDARY}",
                 expected="well-formed XML sidecar",
+                observed=xml_path.name,
+            ),
+        )
+    if expected_root:
+        observed = _local_tag(str(root.tag))
+        if observed != expected_root:
+            return (
+                _issue(
+                    RULE_TEP_ROOT,
+                    (
+                        f"TEP XML root {observed!r} is not official ДГП example "
+                        f"root {expected_root!r}; {CLAIM_BOUNDARY}"
+                    ),
+                    expected=expected_root,
+                    observed=observed,
+                ),
+            )
+    return ()
+
+
+def collect_agr_vedomost_xsd_issues(
+    *,
+    xml_path: Path | None,
+    xsd_path: Path,
+) -> tuple[ValidationIssue, ...]:
+    """Official ДГП Vedomost_AGR XSD. Not TEP AGR_TEO.xml. Not Samolet pack."""
+    if xml_path is None or not xml_path.is_file():
+        return (
+            _issue(
+                RULE_VEDOMOST_XSD,
+                f"AGR CIM inventory XML sidecar missing; {CLAIM_BOUNDARY}",
+                expected="Vedomost XML valid against official XSD",
+                observed="missing",
+            ),
+        )
+    if not xsd_path.is_file():
+        return (
+            _issue(
+                RULE_VEDOMOST_XSD,
+                f"Official Vedomost XSD missing at {xsd_path.name}; {CLAIM_BOUNDARY}",
+                expected="Vedomost_AGR_VED_NEW.xsd",
+                observed="missing-xsd",
+            ),
+        )
+    try:
+        import xmlschema
+    except ImportError as exc:
+        return (
+            _issue(
+                RULE_VEDOMOST_XSD,
+                f"xmlschema not installed ({exc}); {CLAIM_BOUNDARY}",
+                expected="xmlschema XMLSchema10",
+                observed="unavailable",
+            ),
+        )
+    try:
+        schema = xmlschema.XMLSchema10(str(xsd_path))
+        errors = list(schema.iter_errors(str(xml_path)))
+    except Exception as exc:  # noqa: BLE001 — fixture XSD path
+        return (
+            _issue(
+                RULE_VEDOMOST_XSD,
+                f"Vedomost XSD validation could not run ({exc}); {CLAIM_BOUNDARY}",
+                expected="schema load + validate",
+                observed=type(exc).__name__,
+            ),
+        )
+    if errors:
+        first = errors[0]
+        return (
+            _issue(
+                RULE_VEDOMOST_XSD,
+                (f"Vedomost XML fails official ДГП XSD ({first}); {CLAIM_BOUNDARY}"),
+                expected="valid against Vedomost_AGR_VED_NEW.xsd",
                 observed=xml_path.name,
             ),
         )

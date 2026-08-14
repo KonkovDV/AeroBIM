@@ -1,0 +1,1977 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Требования к элементам ЦИМ (Сети связи)</title>
+    <copyright>Отдел ТИМ, СПб ГАУ "ЦГЭ"</copyright>
+    <version>3.1</version>
+    <description>ЦГЭ.ЦИМ.3.0
+Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ
+Подраздел 5. Сети связи</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-09</date>
+    <purpose>Проверка атрибутивного состава, по требованиям СПб ГАУ "ЦГЭ"</purpose>
+    <milestone>Проектирование</milestone>
+  </info>
+  <specifications>
+    <specification name="Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)" ifcVersion="IFC4" identifier="Таблица 5.А.1" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Общие параметры здания (ИОС)&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDING</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается корпуса по экспликации на генеральном плане земельного участка." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер секции. Если нет деления на секции, то указывается знак «-» (прочерк)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер секции</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается организация, разработавшая ЦИМ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные по разделу</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Исполнитель</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается список нормативных документов, в соответствии с которыми разрабатывалась ЦИМ. Разделитель между номерами документов «;» (точка с запятой). Пример для модели ВК: ПП РФ № 1521; Федеральный закон № 384-ФЗ; Федеральный закон № 123-ФЗ; СП 30.13330.2016; СП 8.13130.2009; СП 10.13130.2009; СП 40-102-2000." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные по разделу</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Нормативные документы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 5.А.2 – Имена атрибутов для элемента для всех инженерных систем (IfcDistributionSystem)" ifcVersion="IFC4" identifier="Таблица 5.А.2" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Атрибуты инженерной системы&#xA;">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="AUDIOVISUAL" />
+              <xs:enumeration value="COMMUNICATION" />
+              <xs:enumeration value="CONTROL" />
+              <xs:enumeration value="DATA" />
+              <xs:enumeration value="ELECTROACOUSTIC" />
+              <xs:enumeration value="OPERATIONAL" />
+              <xs:enumeration value="SECURITY" />
+              <xs:enumeration value="SIGNAL" />
+              <xs:enumeration value="TELEPHONE" />
+              <xs:enumeration value="TV" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается буквенно-цифровое обозначение системы в соответствии с таблицами 15-17, 20 ГОСТ 21.205-2016, с таблицей 1 ГОСТ 21.602-2016. Примечание 1. В случае невозможности программного обеспечения выгрузить систему в класс IfcDistributionSystem атрибут «Марка системы» следует заполнить для каждого элемента системы." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 5.А.13 Распределительный щит (IfcElectricDistributionBoard)" ifcVersion="IFC4" identifier="Таблица 5.А.13" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Атрибуты элементов распределительный щит, оптический распределительный шкаф, оборудование маршрутизации">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCELECTRICDISTRIBUTIONBOARD" />
+              <xs:enumeration value="IFCELECTRICDISTRIBUTIONBOARDTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CONSUMERUNIT" />
+              <xs:enumeration value="DISTRIBUTIONBOARD" />
+              <xs:enumeration value="MOTORCONTROLCENTRE" />
+              <xs:enumeration value="SWITCHBOARD" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="OPERATIONAL" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается номер щита." uri="" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер щита</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается назначения щита.В соответствии с приложением Б." uri="" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="ГРЩ" />
+              <xs:enumeration value="ВРУ" />
+              <xs:enumeration value="ЩЗ" />
+              <xs:enumeration value="ЩА" />
+              <xs:enumeration value="ЩУ" />
+              <xs:enumeration value="ЩЭ" />
+              <xs:enumeration value="ЩК" />
+              <xs:enumeration value="ЩС" />
+              <xs:enumeration value="ЩЭО" />
+              <xs:enumeration value="ЩО" />
+              <xs:enumeration value="ЩАВР" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается тип исполнения электрического щита." uri="" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип исполнения</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Встраиваемый" />
+              <xs:enumeration value="Навесной" />
+              <xs:enumeration value="Напольный" />
+              <xs:enumeration value="Иное" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается номинальный ток отходящих цепей, в амперах." uri="" dataType="IFCELECTRICCURRENTMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Ток отходящих цепей</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номинальный ток ввода, в амперах." uri="" dataType="IFCELECTRICCURRENTMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Ток ввода</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номинальное напряжение, в вольтах" uri="" dataType="IFCELECTRICVOLTAGEMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напряжение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается тип системы заземления в соответствии с ГОСТ Р 50571.2-94." uri="" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Система заземления</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="TN-C" />
+              <xs:enumeration value="TN-S" />
+              <xs:enumeration value="TN-C-S" />
+              <xs:enumeration value="TT" />
+              <xs:enumeration value="IT" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается климатическое исполнение в соответствии с ГОСТ 15150-69." uri="" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Климатическое исполнение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается класс защиты устройства в соответствии с ГОСТ 14254-2015." uri="" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Степень защиты</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается масса элемент, в кг." uri="" dataType="IFCMASSMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Масса</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.29.10 Точка соединения (IfcDistributionPort)" ifcVersion="IFC4" identifier="5.А.29.10" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента точка соединения">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCDISTRIBUTIONPORT" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CABLE" />
+              <xs:enumeration value="CABLECARRIER" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.158 Кабеленесущие системы (IfcCableCarrierSegment)" ifcVersion="IFC4" identifier="5.А.158" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элементов кабеленесущих систем">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCCABLECARRIERSEGMENT" />
+              <xs:enumeration value="IFCCABLECARRIERSEGMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CABLELADDERSEGMENT" />
+              <xs:enumeration value="CABLETRAYSEGMENT" />
+              <xs:enumeration value="CABLETRUNKINGSEGMENT" />
+              <xs:enumeration value="CONDUITSEGMENT" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование материала кабеленесущей системы" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Строительные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается ширина кабеленесущей системы, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Ширина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается высота кабеленесущей системы, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается диаметр круглой кабеленесущей системы, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Диаметр</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается длина кабеленесущей системы, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Длина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается способ соединения (внутренняя/наружная резьба, на обжимах, сварка и т.д.)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Способ соединения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается количество крепежа на метр погонный." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Крепёж</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.159 Соединительные элементы лотков и коробов (IfcCableCarrierFitting)" ifcVersion="IFC4" identifier="5.А.159" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты соединительных элементов лотков и коробов">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCCABLECARRIERFITTING" />
+              <xs:enumeration value="IFCCABLECARRIERFITTINGTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="BEND" />
+              <xs:enumeration value="CROSS" />
+              <xs:enumeration value="REDUCER" />
+              <xs:enumeration value="TEE" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование материала соединительных элементов лотков и коробов" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Строительные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается ширина соединительных элементов лотков и коробов, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Ширина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается высота соединительных элементов лотков и коробов, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается диаметр соединительных элементов лотков и коробов, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Диаметр</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается способ соединения (внутренняя/наружная резьба, на обжимах, сварка и т.д.)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Способ соединения</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.160 Провод (IfcCableSegment)" ifcVersion="IFC4" identifier="5.А.160" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента провод">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCCABLESEGMENT" />
+              <xs:enumeration value="IFCCABLESEGMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="BUSBARSEGMENT" />
+              <xs:enumeration value="CABLESEGMENT" />
+              <xs:enumeration value="CONDUCTORSEGMENT" />
+              <xs:enumeration value="CORESEGMENT" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование материала токопроводящих жил" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Строительные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается длина провода, кабеля, мм" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Длина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается количество крепежа на метр погонный." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Крепёж</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.161 Соединительные элементы проводов (IfcCableFitting)" ifcVersion="IFC4" identifier="5.А.161" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты соединительных элементов проводов">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCCABLEFITTING" />
+              <xs:enumeration value="IFCCABLEFITTINGTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CONNECTOR" />
+              <xs:enumeration value="ENTRY" />
+              <xs:enumeration value="EXIT" />
+              <xs:enumeration value="JUNCTION" />
+              <xs:enumeration value="TRANSITION" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.162 Коробка распределительная (IfcJunctionBox)" ifcVersion="IFC4" identifier="5.А.162" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента коробка распределительная">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCJUNCTIONBOX" />
+              <xs:enumeration value="IFCJUNCTIONBOXTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="DATA" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.163 Счетчик электрический (IfcFlowMeter)" ifcVersion="IFC4" identifier="5.А.163" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента счетчик электрический">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCFLOWMETER" />
+              <xs:enumeration value="IFCFLOWMETERTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="ENERGYMETER" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="OPERATIONAL" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+                <xs:enumeration value="SECURITY" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.164 Защитное устройство (IfcProtectiveDevice)" ifcVersion="IFC4" identifier="5.А.164" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элементов защитное устройство (автоматический выключатель, рубильник, пакетник)">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCPROTECTIVEDEVICE" />
+              <xs:enumeration value="IFCPROTECTIVEDEVICETYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="OPERATIONAL" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="TELEPHONE" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.165 Устройство переключения (IfcSwitchingDevice)" ifcVersion="IFC4" identifier="5.А.165" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элементов переключатель, выключатель, аварийный выключатель, тумблер, стартер">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCSWITCHINGDEVICE" />
+              <xs:enumeration value="IFCSWITCHINGDEVICETYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.166 Прибор учета времени (IfcElectricTimeControl)" ifcVersion="IFC4" identifier="5.А.166 Прибор учета времени" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента прибора учета времени">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCELECTRICTIMECONTROL" />
+              <xs:enumeration value="IFCELECTRICTIMECONTROLTYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+                <xs:enumeration value="ELECTROACOUSTIC" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.167 Устройство связи (IfcCommunicationsAppliance)" ifcVersion="IFC4" identifier="5.А.167" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента устройство связи">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCCOMMUNICATIONSAPPLIANCE" />
+              <xs:enumeration value="IFCCOMMUNICATIONSAPPLIANCETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="ANTENNA" />
+              <xs:enumeration value="COMPUTER" />
+              <xs:enumeration value="FAX" />
+              <xs:enumeration value="GATEWAY" />
+              <xs:enumeration value="MODEM" />
+              <xs:enumeration value="NETWORKAPPLIANCE" />
+              <xs:enumeration value="NETWORKBRIDGE" />
+              <xs:enumeration value="NETWORKHUB" />
+              <xs:enumeration value="PRINTER" />
+              <xs:enumeration value="REPEATER" />
+              <xs:enumeration value="ROUTER" />
+              <xs:enumeration value="SCANNER" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.168 Устройство видеонаблюдения и оповещения (IfcAudioVisualAppliance)" ifcVersion="IFC4" identifier="5.А.168" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элементов устройство видеонаблюдения и&#xA;оповещения">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCAUDIOVISUALAPPLIANCE" />
+              <xs:enumeration value="IFCAUDIOVISUALAPPLIANCETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="AMPLIFIER" />
+              <xs:enumeration value="CAMERA" />
+              <xs:enumeration value="DISPLAY" />
+              <xs:enumeration value="MICROPHONE" />
+              <xs:enumeration value="PLAYER" />
+              <xs:enumeration value="PROJECTOR" />
+              <xs:enumeration value="RECEIVER" />
+              <xs:enumeration value="SPEAKER" />
+              <xs:enumeration value="TELEPHONE" />
+              <xs:enumeration value="SWITCHER" />
+              <xs:enumeration value="TUNER" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.169 Электроприбор (IfcElectricAppliance)" ifcVersion="IFC4" identifier="5.А.169" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента электроприбор">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCELECTRICAPPLIANCE" />
+              <xs:enumeration value="IFCELECTRICAPPLIANCETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="DISHWASHER" />
+              <xs:enumeration value="ELECTRICCOOKER" />
+              <xs:enumeration value="FREESTANDINGELECTRICHEATER" />
+              <xs:enumeration value="FREESTANDINGWATERHEATER" />
+              <xs:enumeration value="FREESTANDINGFAN" />
+              <xs:enumeration value="FREESTANDINGWATERCOOLER" />
+              <xs:enumeration value="FREEZER" />
+              <xs:enumeration value="FRIDGE_FREEZER" />
+              <xs:enumeration value="HANDDRYER" />
+              <xs:enumeration value="KITCHENMACHINE" />
+              <xs:enumeration value="MICROWAVE" />
+              <xs:enumeration value="PHOTOCOPIER" />
+              <xs:enumeration value="REFRIGERATOR" />
+              <xs:enumeration value="TUMBLEDRYER" />
+              <xs:enumeration value="VENDINGMACHINE" />
+              <xs:enumeration value="WASHINGMACHINE" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.170 Розетка (IfcOutlet)" ifcVersion="IFC4" identifier="5.А.170" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента розетка">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCOUTLET" />
+              <xs:enumeration value="IFCOUTLETTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="AUDIOVISUALOUTLET" />
+              <xs:enumeration value="COMMUNICATIONSOUTLET" />
+              <xs:enumeration value="DATAOUTLET" />
+              <xs:enumeration value="TELEPHONEOUTLET" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.171 Накопитель электроэнергии (IfcElectricFlowStorageDevice)" ifcVersion="IFC4" identifier="5.А.171" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента накопитель электроэнергии">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCELECTRICFLOWSTORAGEDEVICE" />
+              <xs:enumeration value="IFCELECTRICFLOWSTORAGEDEVICETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="BATTERY" />
+              <xs:enumeration value="CAPACITORBANK" />
+              <xs:enumeration value="HARMONICFILTER" />
+              <xs:enumeration value="INDUCTORBANK" />
+              <xs:enumeration value="UPS" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.172 Солнечная батарея (IfcSolarDevice)" ifcVersion="IFC4" identifier="5.А.172" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента солнечная батарея">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCSOLARDEVICE" />
+              <xs:enumeration value="IFCSOLARDEVICETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="SOLARCOLLECTOR" />
+              <xs:enumeration value="SOLARPANEL" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.173 Привод (IfcActuator)" ifcVersion="IFC4" identifier="5.А.173" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента привод">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCACTUATOR" />
+              <xs:enumeration value="IFCACTUATORTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="ELECTRICACTUATOR" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+                <xs:enumeration value="ELECTROACOUSTIC" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.174 Оповещатель/извещатель (IfcAlarm)" ifcVersion="IFC4" identifier="5.А.174" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элементов оповещатель/извещатель">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCALARM" />
+              <xs:enumeration value="IFCALARMTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="BELL" />
+              <xs:enumeration value="BREAKGLASSBUTTON" />
+              <xs:enumeration value="LIGHT" />
+              <xs:enumeration value="MANUALPULLBOX" />
+              <xs:enumeration value="SIREN" />
+              <xs:enumeration value="WHISTLE" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.175 Контроллер, блок управления (IfcController)" ifcVersion="IFC4" identifier="5.А.175" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элементов контроллер, блок управления">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCCONTROLLER" />
+              <xs:enumeration value="IFCCONTROLLERTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="FLOATING" />
+              <xs:enumeration value="PROGRAMMABLE" />
+              <xs:enumeration value="PROPORTIONAL" />
+              <xs:enumeration value="MULTIPOSITION" />
+              <xs:enumeration value="TWOPOSITION" />
+              <xs:enumeration value="USERDEFINED" />
+              <xs:enumeration value="NOTDEFINED" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.176 Измерительный прибор, снимающий показания сети (IfcFlowInstrument)" ifcVersion="IFC4" identifier="5.А.176" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента измерительный прибор, снимающий показания&#xA;сети">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCFLOWINSTRUMENT" />
+              <xs:enumeration value="IFCFLOWINSTRUMENTTYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="ELECTROACOUSTIC" />
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="5.А.177 Датчик (IfcSensor)" ifcVersion="IFC4" identifier="5.А.177" description="Требования к ЦИМ.&#xA;Часть 5. ИНЖЕНЕРНОЕ ОБОРУДОВАНИЕ И СЕТИ&#xA;Таблица 5.2 – Элементы ЦИМ ИОС. Соответствие элементов классам IFC." instructions="Атрибуты элемента датчик">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCSENSOR" />
+              <xs:enumeration value="IFCSENSORTYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+        <partOf relation="IFCRELASSIGNSTOGROUP">
+          <entity>
+            <name>
+              <simpleValue>IFCDISTRIBUTIONSYSTEM</simpleValue>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="SIGNAL" />
+                <xs:enumeration value="DATA" />
+                <xs:enumeration value="TELEPHONE" />
+                <xs:enumeration value="TV" />
+                <xs:enumeration value="CONTROL" />
+                <xs:enumeration value="AUDIOVISUAL" />
+                <xs:enumeration value="COMMUNICATION" />
+                <xs:enumeration value="SECURITY" />
+                <xs:enumeration value="USERDEFINED" />
+                <xs:enumeration value="NOTDEFINED" />
+                <xs:enumeration value="ELECTROACOUSTIC" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается марка элемента из спецификации, ведомости и/или чертежей" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативный документ на изделие, при наличии (ГОСТ, ТУ и пр.)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается буквенно-цифровое обозначение имени системы, к которой принадлежит элемент в соответствии с ГОСТ 21.205-2016 и ГОСТ 21.602-2016. В случае принадлежности элемента к нескольким системам, разделителем между обозначением систем служит символ нижнего подчеркивания «_». Например: Т1.4_Т2.4. Указывается в случае невозможности программного обеспечения выгрузить систему в класс IfcSystem." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Марка системы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

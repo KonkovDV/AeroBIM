@@ -87,9 +87,9 @@ def classify_ids_kind(file_name: str) -> str:
     """
 
     name = file_name
-    if "Проверка_КСИ" in name:
+    if "Проверка_КСИ" in name or "Классификация" in name:
         return KIND_CLASSIFICATION
-    if "Требования" in name:
+    if "Требования" in name or "требования" in name:
         return KIND_ATTRIBUTES
     return KIND_OTHER
 
@@ -303,12 +303,61 @@ def _by_kind(files: list[dict[str, Any]]) -> dict[str, Any]:
     return grouped
 
 
-def build_moexp_ids_coverage(
+def _file_coverage_rows(evaluated: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            **{key: value for key, value in row.items() if key != "specifications"},
+            "kind": row.get("kind") or classify_ids_kind(str(row.get("file_name") or "")),
+            "specification_count": len(row.get("specifications") or []),
+            "counts": {
+                STATUS_PASS: sum(
+                    1
+                    for spec in row.get("specifications") or []
+                    if spec.get("status") == STATUS_PASS
+                ),
+                STATUS_FAIL: sum(
+                    1
+                    for spec in row.get("specifications") or []
+                    if spec.get("status") == STATUS_FAIL
+                ),
+                STATUS_UNSUPPORTED: sum(
+                    1
+                    for spec in row.get("specifications") or []
+                    if spec.get("status") == STATUS_UNSUPPORTED
+                ),
+                STATUS_LOAD_ERROR: sum(
+                    1
+                    for spec in row.get("specifications") or []
+                    if spec.get("status") == STATUS_LOAD_ERROR
+                ),
+            },
+            "failed_specification_names": [
+                spec.get("name")
+                for spec in row.get("specifications") or []
+                if spec.get("status") == STATUS_FAIL
+            ],
+            "unsupported_or_load_error": [
+                spec
+                for spec in row.get("specifications") or []
+                if spec.get("status") in {STATUS_UNSUPPORTED, STATUS_LOAD_ERROR}
+            ],
+        }
+        for row in evaluated
+    ]
+
+
+def build_ids_engine_coverage(
     *,
     pack_dir: Path,
     ifc_path: Path,
+    artifact_type: str,
+    claim_boundary: str,
+    source_page: str,
+    extra_fields: dict[str, Any] | None = None,
     files: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    """IfcTester engine coverage of a public IDS pack. Never a customer profile."""
+
     auditor = XmlIdsDocumentAuditor()
     ifc_model = open_ifc_model(ifc_path) if files is None else None
     evaluated = (
@@ -319,16 +368,14 @@ def build_moexp_ids_coverage(
             for path in discover_ids(pack_dir)
         ]
     )
-    summary = _summarize(evaluated)
     payload: dict[str, Any] = {
-        "artifact_type": "moexp_ids_coverage",
+        "artifact_type": artifact_type,
         "schema_version": "1.1.0",
         "claim_level": CLAIM_LEVEL,
         "customer_accuracy_not_established": True,
         "closes_rt002_customer_profile": False,
-        "public_moexp_ids_present": True,
-        "claim_boundary": CLAIM_BOUNDARY,
-        "source_page": SOURCE_PAGE,
+        "claim_boundary": claim_boundary,
+        "source_page": source_page,
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "machine": _machine_fingerprint(),
         "pack_dir": str(pack_dir.as_posix()),
@@ -336,56 +383,46 @@ def build_moexp_ids_coverage(
             "path": str(ifc_path.as_posix()),
             "sha256": _sha256_file(ifc_path) if ifc_path.is_file() else None,
             "bytes": ifc_path.stat().st_size if ifc_path.is_file() else None,
-            "note": "Open wall Pset fixture. Not a MOEXP CIM. Fail on fixture ≠ unsupported spec.",
+            "note": "Open wall Pset fixture. Fail on fixture ≠ unsupported spec.",
         },
-        "icmm_ids_published": False,
-        "icmm_note": ("ICMM 3.3 is PDF-only on the TIM page as of 2026-08-13; no IDS listed."),
-        "mappings": _inventory_mappings(pack_dir),
-        "summary": summary,
-        "files": [
-            {
-                **{key: value for key, value in row.items() if key != "specifications"},
-                "kind": row.get("kind") or classify_ids_kind(str(row.get("file_name") or "")),
-                "specification_count": len(row.get("specifications") or []),
-                "counts": {
-                    STATUS_PASS: sum(
-                        1
-                        for spec in row.get("specifications") or []
-                        if spec.get("status") == STATUS_PASS
-                    ),
-                    STATUS_FAIL: sum(
-                        1
-                        for spec in row.get("specifications") or []
-                        if spec.get("status") == STATUS_FAIL
-                    ),
-                    STATUS_UNSUPPORTED: sum(
-                        1
-                        for spec in row.get("specifications") or []
-                        if spec.get("status") == STATUS_UNSUPPORTED
-                    ),
-                    STATUS_LOAD_ERROR: sum(
-                        1
-                        for spec in row.get("specifications") or []
-                        if spec.get("status") == STATUS_LOAD_ERROR
-                    ),
-                },
-                "failed_specification_names": [
-                    spec.get("name")
-                    for spec in row.get("specifications") or []
-                    if spec.get("status") == STATUS_FAIL
-                ],
-                "unsupported_or_load_error": [
-                    spec
-                    for spec in row.get("specifications") or []
-                    if spec.get("status") in {STATUS_UNSUPPORTED, STATUS_LOAD_ERROR}
-                ],
-            }
-            for row in evaluated
-        ],
+        "summary": _summarize(evaluated),
+        "files": _file_coverage_rows(evaluated),
     }
+    if extra_fields:
+        payload.update(extra_fields)
     encoded = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
     payload["content_sha256"] = _sha256_bytes(encoded)
     return payload
+
+
+def build_moexp_ids_coverage(
+    *,
+    pack_dir: Path,
+    ifc_path: Path,
+    files: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    return build_ids_engine_coverage(
+        pack_dir=pack_dir,
+        ifc_path=ifc_path,
+        artifact_type="moexp_ids_coverage",
+        claim_boundary=CLAIM_BOUNDARY,
+        source_page=SOURCE_PAGE,
+        extra_fields={
+            "public_moexp_ids_present": True,
+            "icmm_ids_published": False,
+            "icmm_note": ("ICMM 3.3 is PDF-only on the TIM page as of 2026-08-13; no IDS listed."),
+            "mappings": _inventory_mappings(pack_dir),
+            "fixture_ifc": {
+                "path": str(ifc_path.as_posix()),
+                "sha256": _sha256_file(ifc_path) if ifc_path.is_file() else None,
+                "bytes": ifc_path.stat().st_size if ifc_path.is_file() else None,
+                "note": (
+                    "Open wall Pset fixture. Not a MOEXP CIM. Fail on fixture ≠ unsupported spec."
+                ),
+            },
+        },
+        files=files,
+    )
 
 
 def render_moexp_ids_coverage_markdown(coverage: dict[str, Any]) -> str:

@@ -1,0 +1,1160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Минимальный атрибутивный состав элементов ЦИМ ИГДИ (модель ситуации)</title>
+    <copyright>СПб ГАУ "Центр государственной экспертизы"</copyright>
+    <version>1.1.0</version>
+    <description>Рекомендации по минимальному составу моделируемых элементов ЦИМ, их классификации и особенностям формирования геометрии.</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-10</date>
+    <purpose>Проверка атрибутивного состава элементов цифровых информационных моделей инженерно-геодезических изысканий ситуации (ЦИМ ИГДИ_С).</purpose>
+    <milestone>Инженерные изыскания</milestone>
+  </info>
+  <specifications>
+    <specification name="1.1.2 Существующее здание, строение, сооружение" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.1.2" description="Существующие здания, строения и сооружения, попадающие в границы геодезической съемки. Контуры следует воспроизводить в соответствии с их очертаниями, отображаемыми на топографическом плане требуемого масштаба. Справочно см. пояснения № 45-119 к ГКИНП 02-049-86." instructions="Объемные тела в контурах зданий или сооружений.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCEXTERNALSPATIALELEMENT</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>EXTERNAL_FIRE</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Заполняется в соответствии с приказом Минстроя России от 02.11.2022 № 928/пр." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Код ОКС</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:IFCLABEL">
+              <xs:pattern value="^[01][12]\.[01][1-9]\.0[09][1-9]\.0[09][1-9]$" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Жилое</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Этажность</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсуствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип огнестойкости</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Статус</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.1.3 Зеленое насаждение (растительность)" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.1.3" description="Деревья, кустарники, клумбы, штучные травы и иные растения. Примечание: газоны следует представлять в составе покрытия. " instructions="Точечный – для отдельно стоящих растений и деревьев или в случае необходимости выполнения «подеревной съемки». Площадной – при определяемых на местности контурах участка растительного покрова.&#xA;При экспорте в IFC4 в атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;VEGETATION&quot; или &quot;Зеленое насаждение&quot; или &quot;Растительность&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="VEGETATION" />
+              <xs:enumeration value="Растительность" />
+              <xs:enumeration value="Зеленое насаждение" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <attribute>
+          <name>
+            <simpleValue>ObjectType</simpleValue>
+          </name>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="VEGETATION" />
+              <xs:enumeration value="Растительность" />
+              <xs:enumeration value="Зеленое насаждение" />
+            </xs:restriction>
+          </value>
+        </attribute>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип растительности</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Порода</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Средняя высота</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Средняя толщина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Среднее расстояние</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.2.1 Пункт геодезических сетей" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.2.1" description="Справочно см. пояснения № 21-45 к ГКИНП 02-049-86. " instructions="Рекомендуется использовать элементы из библиотеки топографических знаков (см. Приложение В).&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;GEODETIC_POINT&quot; или &quot;Пункт геодезических сетей&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="GEODETIC_POINT" />
+              <xs:enumeration value="Пункт геодезических сетей" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+        <attribute>
+          <name>
+            <simpleValue>ObjectType</simpleValue>
+          </name>
+        </attribute>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип знака</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.2.3 Точечный топографический объект" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.2.3" description="Точечные топографические объекты, указываемые на топографических планах. См. пояснения ГКИНП 02-049-86. " instructions="Допускается формирование геометрии в условных размерах с условной графической детализацией. Рекомендуется использовать элементы из библиотеки топографических знаков. (см. Приложение В).&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;POINT_FEATURE&quot; или &quot;Точечный топографический объект&quot;">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="POINT_FEATURE" />
+              <xs:enumeration value="Точечный топографический объект" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.2.4 Ограждение; забор" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.2.4" description="Ограждения, заборы указываемые на топографических планах. Справочно см. пояснения № 583-588 к ГКИНП 02-049-86. " instructions="Моделируется в габаритных размерах без деления на составляющие части, допускается формирование упрощенной геометрии.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;RAILING&quot; или &quot;Ограждение&quot; или &quot;Забор&quot; или &quot;Шумозащитный экран&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="RAILING" />
+              <xs:enumeration value="Ограждение" />
+              <xs:enumeration value="Забор" />
+              <xs:enumeration value="Шумозащитный экран" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.2.5 Точка подключения к инженерным сетям" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.2.5" description="Моделируются точки подключения проектируемого ОКС к источникам снабжения, инженерным сетям, коммуникациям (в случае наличия информации от заказчика и ресурсоснабжающих организаций). " instructions="Рекомендуется моделировать условным элементом ЦИМ с размерами 1х1х1 м.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;CONNECTION_POINT&quot; или &quot;Точка подключения к инженерным сетям&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCBUILDINGELEMENTPROXY" />
+              <xs:enumeration value="IFCBUILDINGELEMENTPROXYTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CONNECTION_POINT" />
+              <xs:enumeration value="Точка подключения" />
+              <xs:enumeration value="Точка подключения к инженерным сетям" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип точки подключения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Балансодержатель</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.2.6 Фундамент существующего здания/сооружения" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.2.6" description="Фундаменты существующих ОКС, попадающие в границы зоны изысканий или планируемую зону строительных работ. Моделируются в случае наличия дополнительных требований заказчика. " instructions="Моделируются в габаритных размерах  от отметки подошвы или пяты сваи (по результатам вскрытия или архивным и проектным данных существующих ОКС). &#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;FOOTING&quot; или &quot;Существующий фундамент&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="FOOTING" />
+              <xs:enumeration value="Фундамент" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип фундамента</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.3 Существующие коммуникации (основные)" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.3" description="Общие атрибуты для труб, футляров, кабелей, каналов, камер, колодцев (1.3.1-1.3.6).">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCPIPESEGMENT" />
+              <xs:enumeration value="IFCCOVERING" />
+              <xs:enumeration value="IFCCABLESEGMENT" />
+              <xs:enumeration value="IFCDISTRIBUTIONCHAMBERELEMENT" />
+            </xs:restriction>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип системы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Статус</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.3.1 Труба (существующая)" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.3.1" description="Общие требования см. 1.3. Положение элементов принимается в допусках инженерно-геодезической съемки. В случае формирования по архивным данным пересечения, нестыковки и иные дефекты построения, имеющиеся в архивных данных, не исправляются. " instructions="Допускается формирование упрощенной геометрии в габаритах сечения. Для нескольких параллельных труб/ футляров/ кабелей допускается моделирование единого элемента прямоугольного сечения в габаритных размерах группы. Трубопроводы моделируются полнотелыми элементами по внешним габаритам, включая изоляцию.&#xA;">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCPIPESEGMENT" />
+              <xs:enumeration value="IFCPIPESEGMENTTYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Условный диаметр</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Заполняется если применимо." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Число прокладок</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутсвии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Балансодержатель</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.3.3 Кабель (существующий)" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.3.3" description="Общие требования см. 1.3" instructions="Положение элементов принимается в допусках инженерно-геодезической съемки. В случае формирования по архивным данным пересечения, нестыковки и иные дефекты построения, имеющиеся в архивных данных, не исправляются. ">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCCABLESEGMENT</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напряжение сети</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.3.4 Каналы" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.3.4" description="Общие требования см. 1.3. Положение элементов принимается в допусках инженерно-геодезической съемки. В случае формирования по архивным данным пересечения, нестыковки и иные дефекты построения, имеющиеся в архивных данных, не исправляются." instructions="Моделируется в габаритных размерах без деления на составляющие части каналов (днище, стенки, крышка), допускается формирование упрощенной геометрии.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCDISTRIBUTIONCHAMBERELEMENT</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>FORMEDDUCT</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип канала</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.3.5 Камеры" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.3.5" description="Общие требования см. 1.3. Положение элементов принимается в допусках инженерно-геодезической съемки. В случае формирования по архивным данным пересечения, нестыковки и иные дефекты построения, имеющиеся в архивных данных, не исправляются. " instructions="Моделируется в габаритных размерах без деления на составляющие части каналов (днище, стенки, крышка), допускается формирование упрощенной геометрии. Круглые колодцы рекомендуется моделировать цилиндрами, прямоугольные колодцы в виде параллелепипеда. Высота элемента должна быть равна глубине колодца/камеры, определенной натурными измерениями или по отметке присоединенной трубы.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCDISTRIBUTIONCHAMBERELEMENT</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>VALVECHAMBER</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.3.6 Колодец" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.3.6" description="Общие требования см. 1.3. Положение элементов принимается в допусках инженерно-геодезической съемки. В случае формирования по архивным данным пересечения, нестыковки и иные дефекты построения, имеющиеся в архивных данных, не исправляются. " instructions="Моделируется в габаритных размерах без деления на составляющие части каналов (днище, стенки, крышка), допускается формирование упрощенной геометрии. Круглые колодцы рекомендуется моделировать цилиндрами, прямоугольные колодцы в виде параллелепипеда. Высота элемента должна быть равна глубине колодца/камеры, определенной натурными измерениями или по отметке присоединенной трубы.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;PIT&quot; или &quot;Колодец&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCDISTRIBUTIONCHAMBERELEMENT</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>PIT</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип колодца</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.3.7 Столбы, опоры ЛЭП" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.3.7" description="Положение элементов принимается в допусках инженерно-геодезической съемки. В случае формирования по архивным данным пересечения, нестыковки и иные дефекты построения, имеющиеся в архивных данных, не исправляются. " instructions="Моделируется в габаритных размерах без деления на составляющие части.  Допускается формирование упрощенной геометрии.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;POST&quot; или &quot;Столб&quot; или &quot;Опора ЛЭП&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCGEOGRAPHICELEMENT</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>POST</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.4 Существующие коммуникации (дополнительные)" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.4" description="Общие атрибуты для фитингов, трубопроводной арматуры, шкафов, отдельных приборов (1.4.1-1.4.4).">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCPIPEFITTING" />
+              <xs:enumeration value="IFCVALVE" />
+              <xs:enumeration value="IFCFLOWCONTROLLER" />
+              <xs:enumeration value="IFCFLOWTERMINAL" />
+            </xs:restriction>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип системы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Заполняется если применимо." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.4.1 Фитинг" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.4.1" description="Отводы, тройники, крестовины и иные элементы соединения инженерных коммуникаций." instructions="Допускается формирование геометрии в условных размерах с условной графической детализацией. Элементы рекомендуется формировать в положении полного открытия. Рекомендуется использовать элементы из библиотеки топографических знаков. (см. Приложение В).">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCPIPEFITTING</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Заполняется если применимо." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Условный диаметр</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.4.2 Трубопроводная арматура" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.4.2" description="Задвижки, клапаны и иная запорно-регулирующая арматура в рамках инженерных систем. " instructions="Допускается формирование геометрии в условных размерах с условной графической детализацией. Элементы рекомендуется формировать в положении полного открытия. Рекомендуется использовать элементы из библиотеки топографических знаков. (см. Приложение В). ">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCVALVE</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Заполняется если применимо." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Условный диаметр</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.4.3 Шкаф" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.4.3" description="Шкафы сетей систем коммунальной инфраструктуры." instructions="Допускается формирование геометрии в условных размерах с условной графической детализацией. Элементы рекомендуется формировать в положении полного открытия. Рекомендуется использовать элементы из библиотеки топографических знаков. (см. Приложение В).">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCFLOWCONTROLLER</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.4.4 Отдельный прибор (пожарный гидрант, осветительный прибор)" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.4.4" description="Отдельные приборы сетей систем коммунальной инфраструктуры." instructions="Допускается формирование геометрии в условных размерах с условной графической детализацией. Элементы рекомендуется формировать в положении полного открытия. Рекомендуется использовать элементы из библиотеки топографических знаков. (см. Приложение В).">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCFLOWTERMINAL</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.4.5 Поворотные точки" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.4.5" description="Моделируется в месте поворота трубопроводов. Положение элемента ЦИМ в допусках инженерно-геодезической съемки. " instructions="Рекомендуется моделировать условным сферическим элементом ЦИМ диаметром равным большему трубопроводу в месте соединения. Допускается не моделировать точки поворота, которые не указываются на топографической съёмке или в каталоге координат.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;TURNING_POINT&quot; или &quot;Поворотная точка&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="TURNING_POINT" />
+              <xs:enumeration value="Поворотная точка" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование узла</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип системы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.1 Правила заполнения атрибута &quot;Статус&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.1">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Статус</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Статус</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Демонтируемый" />
+              <xs:enumeration value="Реконструируемый" />
+              <xs:enumeration value="Проектируемый" />
+              <xs:enumeration value="Временный" />
+              <xs:enumeration value="Разрушенный" />
+              <xs:enumeration value="Эксплуатируемый" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.3 Правила заполнения атрибута &quot;Источник данных&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.3">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Архивные материалы" />
+              <xs:enumeration value="Новые данные" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.4 Правила заполнения атрибута &quot;Материал&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.4">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Асбестоцемент" />
+              <xs:enumeration value="Бетон" />
+              <xs:enumeration value="Дерево" />
+              <xs:enumeration value="Железобетон" />
+              <xs:enumeration value="Керамика" />
+              <xs:enumeration value="Кирпич" />
+              <xs:enumeration value="Полимерные материалы" />
+              <xs:enumeration value="Сталь" />
+              <xs:enumeration value="Стеклокомпозит" />
+              <xs:enumeration value="Чугун" />
+              <xs:enumeration value="а/ц" />
+              <xs:enumeration value="бет." />
+              <xs:enumeration value="дер." />
+              <xs:enumeration value="жб." />
+              <xs:enumeration value="кер." />
+              <xs:enumeration value="кирп." />
+              <xs:enumeration value="плм.ст." />
+              <xs:enumeration value="сте.ком." />
+              <xs:enumeration value="чуг." />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.5 Правила заполнения атрибута &quot;Назначение&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.5">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Столб общего назначения" />
+              <xs:enumeration value="Оттяжка" />
+              <xs:enumeration value="Укос" />
+              <xs:enumeration value="Столб ЛЭП" />
+              <xs:enumeration value="Столб сети связи" />
+              <xs:enumeration value="Столб фонарный" />
+              <xs:enumeration value="Опора контактной сети" />
+              <xs:enumeration value="Опора навеса" />
+              <xs:enumeration value="Опора ограды" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.6 Правила заполнения атрибута &quot;Тип знака&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.6">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип знака</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип знака</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Пункт полигонометрии" />
+              <xs:enumeration value="Репер" />
+              <xs:enumeration value="Пункт триангуляции" />
+              <xs:enumeration value="Пункт спутниковой геодезической сети" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.7 Правила заполнения атрибута &quot;Тип точки подключения&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.7">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип точки подключения</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип точки подключения</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Водоснабжения" />
+              <xs:enumeration value="Водоотведения" />
+              <xs:enumeration value="Теплоснабжения" />
+              <xs:enumeration value="Газоснабжения" />
+              <xs:enumeration value="Электроэнергетики" />
+              <xs:enumeration value="Сети связи" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.8 Правила заполнения атрибута &quot;Тип растительности&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.8">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип растительности</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип растительности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Дерево" />
+              <xs:enumeration value="Куст" />
+              <xs:enumeration value="Пень" />
+              <xs:enumeration value="Живая изгородь" />
+              <xs:enumeration value="Декоративные посадки" />
+              <xs:enumeration value="Полосы древесных насаждений" />
+              <xs:enumeration value="Участки леса" />
+              <xs:enumeration value="Участки зарослей кустарников" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.10 Правила заполнения атрибута &quot;Тип системы&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.10">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип системы</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип системы</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="К0" />
+              <xs:enumeration value="К1" />
+              <xs:enumeration value="К2" />
+              <xs:enumeration value="К3" />
+              <xs:enumeration value="ДР" />
+              <xs:enumeration value="В0" />
+              <xs:enumeration value="В1" />
+              <xs:enumeration value="В2" />
+              <xs:enumeration value="В3" />
+              <xs:enumeration value="Т1" />
+              <xs:enumeration value="Т2" />
+              <xs:enumeration value="Т3" />
+              <xs:enumeration value="Т4" />
+              <xs:enumeration value="Т5" />
+              <xs:enumeration value="Т6" />
+              <xs:enumeration value="Т7" />
+              <xs:enumeration value="Т8" />
+              <xs:enumeration value="Х1" />
+              <xs:enumeration value="Х2" />
+              <xs:enumeration value="Х3" />
+              <xs:enumeration value="Х4" />
+              <xs:enumeration value="Х5" />
+              <xs:enumeration value="ВС1" />
+              <xs:enumeration value="ВС2" />
+              <xs:enumeration value="ВС3" />
+              <xs:enumeration value="Г3" />
+              <xs:enumeration value="Г2" />
+              <xs:enumeration value="Г1" />
+              <xs:enumeration value="Канализация общего назначения" />
+              <xs:enumeration value="Канализация бытовая" />
+              <xs:enumeration value="Канализация дождевая" />
+              <xs:enumeration value="Канализация производственная" />
+              <xs:enumeration value="Канализация дренажная" />
+              <xs:enumeration value="Водопровод общего назначения" />
+              <xs:enumeration value="Водопровод хозяйственно-питьевой" />
+              <xs:enumeration value="Водопровод противопожарный" />
+              <xs:enumeration value="Водопровод производственный" />
+              <xs:enumeration value="Отопление подающий" />
+              <xs:enumeration value="Отопление обратный" />
+              <xs:enumeration value="Горячее водоснабжение подающий" />
+              <xs:enumeration value="Горячее водоснабжение циркуляционный" />
+              <xs:enumeration value="Для технологических процессов подающий" />
+              <xs:enumeration value="Для технологических процессов обратный" />
+              <xs:enumeration value="Паропровод" />
+              <xs:enumeration value="Конденсаторопровод" />
+              <xs:enumeration value="Трубопровод холодоносителя подающий" />
+              <xs:enumeration value="Трубопровод холодоносителя обратный" />
+              <xs:enumeration value="Трубопровод жидкого хладагента" />
+              <xs:enumeration value="Трубопровод газообразного хладагента (горячий газ)" />
+              <xs:enumeration value="Трубопровод газообразного хладагента (холодный газ)" />
+              <xs:enumeration value="Трубопровод воздухозабора" />
+              <xs:enumeration value="Трубопровод сжатого воздуха" />
+              <xs:enumeration value="Трубопровод вакуумный" />
+              <xs:enumeration value="Теплопровод магистральный" />
+              <xs:enumeration value="Теплопровод распределительный (квартальный)" />
+              <xs:enumeration value="Газопровод ПНГ" />
+              <xs:enumeration value="Газопровод распределительный" />
+              <xs:enumeration value="Конденсато-продукто-этанолопровод" />
+              <xs:enumeration value="Газопровод высокого давления" />
+              <xs:enumeration value="Газопровод среднего давления" />
+              <xs:enumeration value="Газопровод низкого давления" />
+              <xs:enumeration value="Этиленопровод" />
+              <xs:enumeration value="Газопровод соединительный" />
+              <xs:enumeration value="Газопровод промысловый" />
+              <xs:enumeration value="Специализированная газовая сеть" />
+              <xs:enumeration value="Сети до 1 кВ" />
+              <xs:enumeration value="Сети от 1 кВ до 35 кВ" />
+              <xs:enumeration value="Сети свыше 35 кВ" />
+              <xs:enumeration value="Линия связи" />
+              <xs:enumeration value="Линейно-кабельное сооружение связи" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.11 Правила заполнения атрибута &quot;Тип колодца&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.11">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип колодца</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип колодца</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Смотровой" />
+              <xs:enumeration value="Контрольный" />
+              <xs:enumeration value="Дождеприемный" />
+              <xs:enumeration value="Дренажный" />
+              <xs:enumeration value="Перепадный" />
+              <xs:enumeration value="Пожарный" />
+              <xs:enumeration value="Водоприемный" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.12 Правила заполнения атрибута &quot;Тип канала&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.12">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип канала</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип канала</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Проходной" />
+              <xs:enumeration value="Полупроходной" />
+              <xs:enumeration value="Непроходной" />
+              <xs:enumeration value="Не определено" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.13 Правила заполнения атрибута &quot;Тип фундамента&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.13">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип фундамента</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип фундамента</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Плитный" />
+              <xs:enumeration value="Ленточный" />
+              <xs:enumeration value="Свайный" />
+              <xs:enumeration value="Столбчатый" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.15 Правила заполнения атрибута &quot;Напряжение сети&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.15">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напряжение сети</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напряжение сети</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="1150 кВ" />
+              <xs:enumeration value="800 кВ" />
+              <xs:enumeration value="750 кВ" />
+              <xs:enumeration value="600 кВ" />
+              <xs:enumeration value="500 кВ" />
+              <xs:enumeration value="400 кВ" />
+              <xs:enumeration value="330 кВ" />
+              <xs:enumeration value="220 кВ" />
+              <xs:enumeration value="110 кВ" />
+              <xs:enumeration value="60 кВ" />
+              <xs:enumeration value="35 кВ" />
+              <xs:enumeration value="20 кВ" />
+              <xs:enumeration value="10 кВ" />
+              <xs:enumeration value="6 кВ" />
+              <xs:enumeration value="0.4 кВ" />
+              <xs:enumeration value="Не определено" />
+              <xs:enumeration value="11В.1" />
+              <xs:enumeration value="11В.2" />
+              <xs:enumeration value="11В.3" />
+              <xs:enumeration value="11В.4" />
+              <xs:enumeration value="11В.5" />
+              <xs:enumeration value="11В.6" />
+              <xs:enumeration value="11В.7" />
+              <xs:enumeration value="11В.8" />
+              <xs:enumeration value="11В.9" />
+              <xs:enumeration value="11В.10" />
+              <xs:enumeration value="11В.11" />
+              <xs:enumeration value="11В.12" />
+              <xs:enumeration value="11В.13" />
+              <xs:enumeration value="11В.14" />
+              <xs:enumeration value="11В.15" />
+              <xs:enumeration value="11В.16" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

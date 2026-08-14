@@ -1,0 +1,167 @@
+{
+  "artifact_type": "moscow_agr_ids_coverage",
+  "schema_version": "1.1.0",
+  "claim_level": "official_ids_engine_coverage",
+  "customer_accuracy_not_established": true,
+  "closes_rt002_customer_profile": false,
+  "claim_boundary": "Official Moscow AGR IDS zip from stroimprosto.mos.ru (АР / БиО / ПС / МССК). IfcTester engine coverage on a wall fixture is not CIM AGR acceptance, not УКЭП, and not a Samolet-signed pack. RT-002 stays OPEN.",
+  "source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
+  "generated_at": "2026-08-14T17:07:47.373106+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "machine": "AMD64",
+    "system": "Windows"
+  },
+  "pack_dir": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack",
+  "fixture_ifc": {
+    "path": "C:/plans/AeroBIM/samples/ifc/wall-pset-qto-pass.ifc",
+    "sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
+    "bytes": 997,
+    "note": "Open wall Pset fixture. Fail on fixture ≠ unsupported spec."
+  },
+  "summary": {
+    "ids_file_count": 4,
+    "specification_count": 102,
+    "executable": 102,
+    "executable_pass_on_fixture": 99,
+    "executable_fail_on_fixture": 3,
+    "unsupported": 0,
+    "load_error": 0,
+    "by_domain": {
+      "pack": {
+        "files": 4,
+        "specifications": 102,
+        "executable_pass_on_fixture": 99,
+        "executable_fail_on_fixture": 3,
+        "unsupported": 0,
+        "load_error": 0
+      }
+    },
+    "by_kind": {
+      "attributes": {
+        "files": 1,
+        "specifications": 14,
+        "executable_pass_on_fixture": 12,
+        "executable_fail_on_fixture": 2,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "classification": {
+        "files": 1,
+        "specifications": 86,
+        "executable_pass_on_fixture": 85,
+        "executable_fail_on_fixture": 1,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "other": {
+        "files": 2,
+        "specifications": 2,
+        "executable_pass_on_fixture": 2,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      }
+    }
+  },
+  "files": [
+    {
+      "domain": "pack",
+      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/АГР_Общие требования v9.ids",
+      "file_name": "АГР_Общие требования v9.ids",
+      "kind": "attributes",
+      "sha256": "3a495d980bdd94cb5f97833e6615a6eb201fc647ee9e656e5d2d7702e102e9d0",
+      "bytes": 53188,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 378.9,
+      "specification_count": 14,
+      "counts": {
+        "executable_pass_on_fixture": 12,
+        "executable_fail_on_fixture": 2,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Стена, перегородка Класс IFC: IfcWall",
+        "Объект\nКласс IFC: IfcBuilding"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "pack",
+      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/АГР_ЦИМ БиО v8.ids",
+      "file_name": "АГР_ЦИМ БиО v8.ids",
+      "kind": "other",
+      "sha256": "7aab644c6a935b83343e32c38c8da1b52636899a928324d137417a43603c3d3c",
+      "bytes": 1730,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 2.1,
+      "specification_count": 1,
+      "counts": {
+        "executable_pass_on_fixture": 1,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "pack",
+      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/АГР_ЦИМ ПС.ids",
+      "file_name": "АГР_ЦИМ ПС.ids",
+      "kind": "other",
+      "sha256": "71b4fd3a44bc11140184dfb8ec283fce0d32ae8710b4e9e83706b14cd95620e6",
+      "bytes": 1546,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 2.1,
+      "specification_count": 1,
+      "counts": {
+        "executable_pass_on_fixture": 1,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "pack",
+      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids",
+      "file_name": "Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids",
+      "kind": "classification",
+      "sha256": "a7e5f42381fe26057e5b841a569c3869072b3e95bb8858f95a7848e269b4f582",
+      "bytes": 117425,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 108.5,
+      "specification_count": 86,
+      "counts": {
+        "executable_pass_on_fixture": 85,
+        "executable_fail_on_fixture": 1,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "2. IfcWall - Стена, перегородка"
+      ],
+      "unsupported_or_load_error": []
+    }
+  ],
+  "pack_id": "moscow-agr",
+  "samolet_alias": false,
+  "customer_signed": false,
+  "content_sha256": "6c3cc896aa896a49b65472e9906256f51024f630b436e7a0ba0a00347cf1828a"
+}

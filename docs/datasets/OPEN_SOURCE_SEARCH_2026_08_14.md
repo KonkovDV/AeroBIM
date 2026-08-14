@@ -17,6 +17,8 @@ claim_boundary: "Inventory. Open corpora ≠ RF PD+expertise. Not product accura
 | GNI BIM (Zenodo 10.5281/zenodo.19722012) | `.local/gni-bim` на диске | Student models, не accuracy |
 | AEC-Bench (HF `nomic-ai/aec-bench`) | `.local/aec-bench` | Harbor **NOT_RUN** до 17.08 |
 | IDS МОГЭ (moexp.ru ТИМ) | В git `samples/ids/moexp/` | Не профиль Самолёта |
+| IDS АГР Москвы (stroimprosto `IDS.zip`) | В git `samples/ids/moscow-agr/` | Не профиль Самолёта |
+| IDS СПб ГАУ ЦГЭ (spbexp.ru bim/docs) | В git `samples/ids/spbexp/` | Не профиль Самолёта |
 | Москомэкспертиза / АГР IFC4 RV | Распоряжение ДГП-Р-1/26/64-16-6/26 с 02.04.2026: ЦИМ IFC4 Reference View обязателен для АГР Москвы | Норма, не датасет пар remark↔IFC |
 | ЕГРЗ / Главгосэкспертиза | Metadata only | DEAD_CHANNEL для файлов |
 | buildingSMART IDS TestCases | В git, 290, CC BY-ND | Регресс, не экспертиза |
@@ -28,7 +30,7 @@ claim_boundary: "Inventory. Open corpora ≠ RF PD+expertise. Not product accura
 | Источник | Статус | Закрывает блокер? |
 |---|---|---|
 | ЕГРЗ открытые данные (ПП 878 п. 23) | Метаданные заключения, не тома ПД | Нет (RT-001) |
-| АГР Москвы ДГП-Р-1/26 (с 02.04.2026) | Текст IFC4 RV; IDS ПИК внутренние | Нет (RT-002) |
+| АГР Москвы ДГП-Р-1/26 (с 02.04.2026) | Текст IFC4 RV; **публичный** `IDS.zip` на stroimprosto (4 IDS в git) | Нет (RT-002) |
 | Synthetic IFC Rail R3–R7 (Zenodo 18669269) | Синтетика с манифестом дефектов | Нет (RT-001) |
 | ifcfast G55 + Solibri BCF | Есть GT, это клиентские файлы | Нет (RT-003); не вендорить |
 | IfcClash 0.8.5 | Движок, не корпус | Нет (RT-003) |

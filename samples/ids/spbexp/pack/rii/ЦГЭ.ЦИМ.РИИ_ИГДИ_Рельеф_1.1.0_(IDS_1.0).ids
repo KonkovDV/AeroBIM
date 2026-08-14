@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Минимальный атрибутивный состав элементов ЦИМ ИГДИ (модель рельефа)</title>
+    <copyright>СПб ГАУ "Центр государственной экспертизы"</copyright>
+    <version>1.1.0</version>
+    <description>Рекомендации по минимальному составу моделируемых элементов ЦИМ, их классификации и особенностям формирования геометрии.</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-10</date>
+    <purpose>Проверка атрибутивного состава элементов цифровых информационных моделей инженерно-геодезических изысканий рельефа (натурной поверхности земли) (ЦИМ ИГДИ_Р).</purpose>
+    <milestone>Инженерные изыскания</milestone>
+  </info>
+  <specifications>
+    <specification name="1.1.1 Натурный рельеф" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.1.1" description="Планово-высотная модель существующего рельефа. Формируется на  основе инженерно-топографической съёмки отметок «дневной» поверхности. на основе метода триангуляции высотных отметок с учетом ввода дополнительных точек и характерных линий, учитывающих особенности рельефа и границ изысканий." instructions="Моделируется в виде TIN-поверхности. Разбивается в соответствии с типом поверхности (газоны, тротуары, дорога и т.д.).">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="TERRAIN" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип покрытия</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип поверхности</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="1.2.2 Автомобильная, грунтовая дорога, тропа, тротуар" ifcVersion="IFC4 IFC4X3_ADD2" identifier="1.2.2" description="Выделяются из поверхности натурного рельефа в качестве самостоятельных элементов ЦИМ." instructions="Моделируется в виде TIN-поверхности.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCCIVILELEMENT" />
+              <xs:enumeration value="IFCCIVILELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип покрытия</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:IFCLABEL">
+              <xs:enumeration value="Асфальт" />
+              <xs:enumeration value="Газон" />
+              <xs:enumeration value="Грунт" />
+              <xs:enumeration value="Бетон" />
+              <xs:enumeration value="Щебень" />
+              <xs:enumeration value="Гравий" />
+              <xs:enumeration value="Цемент" />
+              <xs:enumeration value="Полимер" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип дороги</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

@@ -56,6 +56,20 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - Hashes / retrieval: `samples/ids/moexp/SOURCE.md`
 - This is an approved **state examination** IDS pack. It is **not** a Samolet-signed acceptance profile.
 
+## Official Moscow AGR IDS (ДГП / «СтроимПросто»)
+
+- Publisher: knowledge base stroimprosto.mos.ru (article [cim-agr](https://stroimprosto.mos.ru/knowledge/article/cim-agr/))
+- Pack: `samples/ids/moscow-agr/` (4 IDS from public `IDS.zip`)
+- Related XML: `samples/agr/dgp/` (`AGR_TEO.xml`, `Vedomost_AGR_VED_NEW.xsd`)
+- This is a **city AGR** IDS pack. It is **not** a Samolet-signed acceptance profile and **not** the frozen `moscow_agr` DI port.
+
+## Official SPb GAU «ЦГЭ» IDS 1.0
+
+- Publisher: СПб ГАУ «Центр государственной экспертизы»
+- Page: https://www.spbexp.ru/bim/docs/
+- Pack: `samples/ids/spbexp/` (22 IDS from ОКС 3.1.0 + РИИ 1.1.0 zips)
+- This is a **state examination** IDS pack. It is **not** a Samolet-signed acceptance profile.
+
 ## buildingSMART IDS TestCases
 
 - Publisher: buildingSMART

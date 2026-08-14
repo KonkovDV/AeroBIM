@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+    <!-- Корневой элемент -->
+    <xs:element name="Vedomost">
+        <xs:complexType>
+            <xs:sequence>
+				<xs:element name="Header" type="headerType" minOccurs="0"/>
+                <xs:element name="Row" type="rowType" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+        <!-- Определение сложного типа для заголовка таблицы -->
+    <xs:complexType name="headerType">
+        <xs:sequence>
+            <xs:element name="Title" type="xs:string"/>
+            <xs:element name="Date" type="xs:date"/>
+            <xs:element name="Number" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- Определение допустимых идентификаторов -->
+    <xs:simpleType name="identifierType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="АР"/>
+            <xs:enumeration value="ПС"/>
+            <xs:enumeration value="БиО"/>
+            <xs:enumeration value="БФ"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- Тип для строки таблицы -->
+    <xs:complexType name="rowType">
+        <xs:sequence>
+	    <!-- Номер п/п -->
+            <xs:element name="Position" type="xs:int"/>  
+        <!-- Наименование ЦИМ АГР-->         
+            <xs:element name="NameAGR" type="xs:string"/> 
+        <!-- Наименование ЦИМ АГР-->         
+            <xs:element name="NameTRM" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>              
+	    <!-- Описание ЦИМ АГР --> 
+             <xs:element name="DescriptionAGR" type="xs:string"/>
+        <!-- Идентификатор строки -->
+            <xs:element name="Identifier" type="identifierType"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

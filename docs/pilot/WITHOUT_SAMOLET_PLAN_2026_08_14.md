@@ -14,7 +14,7 @@ claim_boundary: "Plan only. Checkpoint NO_GO. No new ports/DI. Not customer accu
 | # | Что | Зачем к 20.08 | Не утверждаем |
 | --- | --- | --- | --- |
 | 1 | Устаревшая норма: ГОСТ Р 21.101-2020 → 2026 | Демо: ведомственный документ ссылается на заменённый ГОСТ | Не «мы заменили экспертизу» |
-| 2 | Обменные проверки ЦИМ АГР класса 1: схема IFC4, ReferenceView, запрет Proxy, 5 полей имени, 500 МБ | Детерминированно, без ML, без нового порта | Не полный `moscow_agr` (нет УКЭП, СК, МССК, ведомости XML) |
+| 2 | Обменные проверки ЦИМ АГР класса 1: схема IFC4, ReferenceView, запрет Proxy, 5 полей имени, 500 МБ, корень ТЭП `AGR_TEO.xml`, XSD ведомости `Vedomost_AGR_VED_NEW.xsd` | Детерминированно, без ML, без нового порта | Не полный `moscow_agr` (нет УКЭП, СК, МССК). Не `pack_hash` Самолёта |
 | 3 | Стресс открытых IFC: `samples/ifc` 15/15 + GNI 224 header / 223 IfcOpenShell (1 oversize) | Масштаб без NDA | Не точность продукта; не 223 «как Самолёта» |
 | 4 | Протокол приёмки №7: ложный пропуск первым, единица = проект | Линейка для всех финалистов | Не точность продукта |
 | 5 | Перегон IFC-матрицы после fail-closed | IFC4X3 fixture теперь честно шумит | Не SLA продукта |
@@ -26,7 +26,7 @@ claim_boundary: "Plan only. Checkpoint NO_GO. No new ports/DI. Not customer accu
 | ID | Интернет вместо «Самолёта» | CLOSED? |
 | --- | --- | --- |
 | RT-001 | ЕГРЗ = метаданные (ПП 878 п. 23); IFC-Bench / AECV / GNI / синтетика Rail R3–R7 | **Нет** |
-| RT-002 | IDS МОГЭ + текст АГР Москвы; IDS ПИК не скачивается | **Нет** |
+| RT-002 | IDS МОГЭ + публичный `IDS.zip` АГР Москвы (stroimprosto) + IDS СПб ГАУ ЦГЭ; валидатор `/lk/cimcheck` — за ЛК | **Нет** |
 | RT-003 | IFC-Bench федерация + IfcClash; G55 Solibri BCF — чужие клиентские данные, не вендорить | **Нет** |
 
 Это не «мало искали». Эталон экспертизы и подписанный профиль юридически не лежат в открытом доступе.
@@ -49,6 +49,7 @@ claim_boundary: "Plan only. Checkpoint NO_GO. No new ports/DI. Not customer accu
 cd backend
 python -m aerobim.tools.export_stale_norm_scan
 python -m aerobim.tools.run_agr_exchange_fixture
+python -m aerobim.tools.export_public_ids_pack_coverage
 python -m aerobim.tools.run_open_ifc_stress --gni-root ../.local/gni-bim --open-model
 python -m aerobim.tools.export_gni_anonymization_pin
 python -m aerobim.tools.run_ifc_bench_smoke --version v2 --also-docs-evidence
