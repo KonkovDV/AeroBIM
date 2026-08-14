@@ -3,7 +3,7 @@
 title: "Что нужно от Самолёта для пилота Task 07 (июль 2026)"
 status: active
 version: "1.0.0"
-last_updated: "2026-07-10"
+last_updated: "2026-08-14"
 tags: [aerobim, samolet, intake, techlab, ru]
 ---
 
@@ -28,6 +28,19 @@ tags: [aerobim, samolet, intake, techlab, ru]
 | **Письменный scope memo** | Дисциплины, стадии, что *не* проверяем | Scope creep и ложные ожидания по CV/ГОСТ |
 
 Бюджет TechLab **2 000 000 ₽** должен покрывать именно эту калибровку на корпусе Самолёта, а не «дописать нейросеть с нуля».
+
+### 0.1 Стек Самолёта (срез 14.08.2026) — не просить лишнего
+
+Публично: **Renga + Tangl (BIM-данные, Power BI) + 10D / S.Control**. OSINT: [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+
+| Просить | Не просить |
+|---|---|
+| **IFC, выгруженный из Renga** (схема в HEADER: IFC4 vs IFC4X3 — как есть, без «почините под демо») | «Отключите Tangl Control, мы заменим clash» |
+| Листы PDF/2D той же ревизии + фрагмент ТЗ/EIR | Нативную модель «чтобы пересчитать объёмы» (это Tangl Value) |
+| Куда импортировать BCF (10D СОД / иное) — **название**, не доступ в прод | Доступ в 10D API / «интеграция за спринт» (T5, Claims Lock) |
+| 2 adjudicators дирекции ИМ | Замену Power BI / дашборда ОТ |
+
+Демо-fixture репозитория (`samples/ifc/walls-multi-entity.ifc`) — **IfcOpenShell, не Renga**. Для пилотных KPI нужен реальный экспорт.
 
 ---
 

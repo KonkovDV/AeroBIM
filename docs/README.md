@@ -24,7 +24,8 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng status** (P0 WP-01…08 + LIC-001 / P2 / offline) |
 | [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) | P0 Red Team rollup (self; Checkpoint NO_GO) |
 | [`docs.md`](docs.md) | **Jury memo (RU)** |
-| [`samolet.md`](samolet.md) | Strategy × Samolet 10D |
+| [`samolet.md`](samolet.md) | Strategy × Samolet 10D (июль 2026) |
+| [`gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) | **OSINT 14.08 + вектор** (Renga/Tangl/10D, монетизация) |
 | [`tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Customer TZ v2.0 |
 | [`tz/README.md`](tz/README.md) | Full TZ pack index |
 | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) | Verified vs planned |
@@ -48,7 +49,8 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 |------|------|
 | [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md) | Application blurb |
 | [`partners/AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md`](partners/AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md) | Positioning |
-| [`partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) | Ask to Samolet (RU) |
+| [`partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) | Ask to Samolet (RU; stack-aware 14.08) |
+| [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/COMPETITIVE_MATRIX_2026_08.md) | Competitive axes + RU developers |
 | [`../audit/reports/TZ_RUNTIME_MATRIX.md`](../audit/reports/TZ_RUNTIME_MATRIX.md) | Runtime capabilities |
 | [`../audit/reports/CLAIMS_EVIDENCE_MATRIX.md`](../audit/reports/CLAIMS_EVIDENCE_MATRIX.md) | Claims ↔ evidence |
 | [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) | FAIR / how to reproduce |

@@ -17,7 +17,9 @@
 | **Подтверждено внешне** | IDS Мособлгосэкспертизы ([TIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/)) + AEC-Bench inventory 196 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)). Цифры покрытия IDS — только после прогона, см. evidence. |
 | **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. Open IFC: fixtures 15/15; GNI **224** header / **223** IfcOpenShell (1 oversize skip). Student models, not product accuracy. |
 | **Заблокировано не молчанием заказчика** | Корпус «ПД РФ + заключение экспертизы» публично не существует. Профиль приёмки Самолёта не подписан. Federated MEP clash на публичных IFC **NOT_VERIFIED** (инвентарь duplex/mep измерен). |
-| **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов. Native DWG = **FAILED**. |
+| **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов, интеграция с Tangl/10D. Native DWG = **FAILED**. |
+
+Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC в репо — IfcOpenShell fixture, не выгрузка Renga. OSINT + вектор 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 Видео 3 мин: [`artifacts/demo/`](artifacts/demo/) — запись **19.08**, человек (сейчас placeholder).  
 Встреча трекера 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md).  
