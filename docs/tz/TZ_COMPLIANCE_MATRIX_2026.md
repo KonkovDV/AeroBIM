@@ -55,7 +55,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 |-------------|--------|-------------------|-------|
 | Analyze 2D drawings + BIM | partial | Structured/OCR drawings + IFC validators | MVP |
 | Compare PD/RD vs calcs, TZ, sections, norms | partial | Cross-doc + JSON norm-pack loader + deterministic section-pair scaffold; customer pack/pair TBD | MVP / P1 |
-| Detect clashes, calc errors, inconsistencies | partial | IfcClash + cross-doc + quantity compare | MVP |
+| Detect clashes, calc errors, inconsistencies | partial | IfcClash (`detect` + `detect_between`) + cross-doc + quantity compare; planted/open rehearsal is L2 — [tz-proxy-rehearsal](../evidence/tz-proxy-rehearsal-2026-08.md) | MVP |
 | Highlight errors, severity, generate remarks | partial | `problem_zone`, severity, `TemplateRemarkGenerator` | MVP / P0 UI |
 | Expert remains accountable | done | Claim boundary + HITL review-events | MVP |
 
@@ -86,7 +86,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
 | MEP / system intersections | missing | Generic clash only; explicit gap [`MEP-CLASH-001`](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | P1 customer corpus / roadmap |
-| Geometric BIM conflicts | partial | `IfcClashDetector` + `SPATIAL-*` | MVP |
+| Geometric BIM conflicts | partial | `IfcClashDetector` + `detect_between` (no new port) + `SPATIAL-*`; not TZ clash >90% | MVP |
 | Calculation / load errors | partial | Cross-doc numeric; not full structural solver | MVP |
 | Incorrect areas | partial | Space area rules + quantity algebra | MVP |
 | Inefficient space use | missing | No utilization analytics | P4 (if metric agreed) |
@@ -115,7 +115,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | CV for drawings | missing | Advisory roadmap | P2 |
 | OCR for text | partial | Raster baseline | MVP |
 | NLP for TZ / remarks / anomalies | partial | Regex NLP; LLM advisory stub; EN/RU templates | MVP / P3 |
-| Clash / anomaly algorithms | partial | IfcClash deterministic | MVP |
+| Clash / anomaly algorithms | partial | IfcClash deterministic; federated two-file rehearsal optional extra | MVP |
 | Web UI | done | `frontend/` review shell | MVP |
 | Drawing overlay of errors | done | `DrawingEvidencePanel` + smoke PNG [`drawing-overlay-smoke-2026-08`](../evidence/drawing-overlay-smoke-2026-08/README.md) + [KT#2 handoff](../evidence/kt2-handoff-2026-08-11/README.md) (deterministic `problem_zone` — not CV) | MVP |
 | Remarks panel: list / filter / priority / edit | done | Severity filter + remark editor → review-events | P0 |

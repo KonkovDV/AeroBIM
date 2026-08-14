@@ -486,6 +486,88 @@ class ClashDetectorPortTests(unittest.TestCase):
         self.assertEqual(result.clash_type, "hard")
         self.assertAlmostEqual(result.distance, 0.005)
 
+    def test_detect_between_raises_on_missing_file(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        existing = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not existing.exists():
+            self.skipTest("IFC fixture not available")
+        with self.assertRaises(FileNotFoundError):
+            detector.detect_between(existing, Path("/nonexistent-b.ifc"))
+        with self.assertRaises(FileNotFoundError):
+            detector.detect_between(Path("/nonexistent-a.ifc"), existing)
+
+    def test_detect_between_builds_federated_clash_set(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_a = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        ifc_b = (
+            Path(__file__).resolve().parents[2]
+            / "samples"
+            / "ifc"
+            / "clash-two-overlapping-boxes.ifc"
+        )
+        if not ifc_a.exists() or not ifc_b.exists():
+            self.skipTest("IFC fixtures not available")
+
+        captured: list[list[dict[str, object]]] = []
+        fake_package = types.ModuleType("ifcclash")
+        fake_submodule = types.ModuleType("ifcclash.ifcclash")
+
+        class _FakeClashSettings:
+            def __init__(self) -> None:
+                self.output = ""
+                self.logger = None
+
+        class _FakeClasher:
+            def __init__(self, settings: _FakeClashSettings) -> None:
+                self.settings = settings
+                self.clash_sets: list[dict[str, object]] = []
+
+            def clash(self) -> None:
+                captured.append(list(self.clash_sets))
+                self.clash_sets = [
+                    {
+                        "clashes": {
+                            "1": {
+                                "a_global_id": "guid-a",
+                                "b_global_id": "guid-b",
+                                "a_name": "Wall",
+                                "b_name": "Duct",
+                                "distance": 0.01,
+                            }
+                        }
+                    }
+                ]
+
+        fake_submodule.ClashSettings = _FakeClashSettings
+        fake_submodule.Clasher = _FakeClasher
+        fake_package.ifcclash = fake_submodule
+
+        with patch.dict(
+            sys.modules,
+            {
+                "ifcclash": fake_package,
+                "ifcclash.ifcclash": fake_submodule,
+            },
+        ):
+            results = detector.detect_between(ifc_a, ifc_b)
+
+        self.assertEqual(len(captured), 1)
+        clash_set = captured[0][0]
+        self.assertEqual(clash_set["a"], [{"file": str(ifc_a)}])
+        self.assertEqual(clash_set["b"], [{"file": str(ifc_b)}])
+        self.assertNotIn("check_all", clash_set)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].element_a_guid, "guid-a")
+        self.assertEqual(results[0].element_b_guid, "guid-b")
+
 
 if __name__ == "__main__":
     unittest.main()

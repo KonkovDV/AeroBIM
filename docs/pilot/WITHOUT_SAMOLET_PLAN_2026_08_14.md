@@ -54,4 +54,7 @@ python -m aerobim.tools.export_gni_anonymization_pin
 python -m aerobim.tools.run_ifc_bench_smoke --version v2 --also-docs-evidence
 python -m aerobim.tools.run_moexp_on_gni_sample
 python -m aerobim.tools.export_ifc_release_matrix --iterations 5 --warmup-iterations 1
+python -m aerobim.tools.run_tz_proxy_rehearsal
 ```
+
+Академический максимум ТЗ без корпуса: [`../evidence/tz-proxy-rehearsal-2026-08.md`](../evidence/tz-proxy-rehearsal-2026-08.md). Три блокера остаются OPEN.
