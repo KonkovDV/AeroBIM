@@ -13,7 +13,7 @@ claim_boundary: "Inventory. Open corpora ≠ RF PD+expertise. Not product accura
 
 | Источник | Статус | Что делать |
 |---|---|---|
-| IFC-Bench v2 (HF `sylvainHellin/ifc-bench`) | Уже в `.local/ifc-bench-v2`. Card: 22 проекта / 51 IFC / 1027 QA. Paper: 37 IFC / 21 проект — **не смешивать**. GPLv3 модели вне git | Не вендорить GPL |
+| IFC-Bench v2 (HF `sylvainHellin/ifc-bench`) | Уже в `.local/ifc-bench-v2`. Card: 22 проекта / 51 IFC / 1027 QA. Paper: 37 IFC / 21 проект — **не смешивать**. GPLv3 модели вне git; для показа Самолёту — `.local/` + `--samolet-demo-copyleft` | Не вендорить GPL |
 | GNI BIM (Zenodo 10.5281/zenodo.19722012) | `.local/gni-bim` на диске | Student models, не accuracy |
 | AEC-Bench (HF `nomic-ai/aec-bench`) | `.local/aec-bench` | Harbor **NOT_RUN** до 17.08 |
 | IDS МОГЭ (moexp.ru ТИМ) | В git `samples/ids/moexp/` | Не профиль Самолёта |

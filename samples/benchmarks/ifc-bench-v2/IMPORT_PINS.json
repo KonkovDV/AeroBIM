@@ -40,7 +40,7 @@
     "local_root_v2": ".local/ifc-bench-v2",
     "env": "AEROBIM_IFC_BENCH_ROOT",
     "vendored_in_samples": false,
-    "reason": "Full tree ~2GB; pin hashes first; selective non-GPL model pull later"
+    "reason": "Full tree ~2GB; pin hashes first; GPLv3 dirs stay out of git; Samolet-local demo may pull them into .local/ with --samolet-demo-copyleft"
   },
   "smoke_evidence": "docs/evidence/ifc-bench-v2-smoke-latest.json",
   "next_action": "west_riverside IFC4 inventory on disk; remaining IFC-Bench NL is agentic, not more IfcOpenShell counters"

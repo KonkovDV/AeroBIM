@@ -2,8 +2,9 @@
 
 Prefers a local checkout (``--from-dir``). Hub download is best-effort and
 tries huggingface.co then hf-mirror.com. Skips GPLv3 project directories
-listed in IMPORT_PINS.json. Does not add huggingface_hub as a product
-dependency.
+listed in IMPORT_PINS.json unless ``--samolet-demo-copyleft --include-gplv3``
+(local gitignored ``.local/`` only; refused in CI). Does not add
+huggingface_hub as a product dependency.
 """
 
 from __future__ import annotations
@@ -14,23 +15,22 @@ import json
 import os
 import shutil
 import ssl
+import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.copyleft_lane import (
+    GPLV3_IFC_BENCH_PROJECTS,
+    local_samolet_demo_copyleft_inputs_permitted,
+)
 from aerobim.tools.benchmark_project_package import repo_root
 
 DEFAULT_HUB = "https://huggingface.co"
 MIRROR_HUB = "https://hf-mirror.com"
 HUB_API_PATH = "/api/datasets/sylvainHellin/ifc-bench/tree/main"
 HUB_RESOLVE_PATH = "/datasets/sylvainHellin/ifc-bench/resolve/main"
-GPLV3_DEFAULT = (
-    "4351",
-    "ettenheim_gis",
-    "hitos",
-    "samuel_macalister_sample_house",
-)
 PRIORITY_PREFIXES = (
     "questions/",
     "projects/duplex/",
@@ -56,9 +56,9 @@ def _ssl_context() -> ssl.SSLContext:
 def _load_gpl_excludes(repo: Path) -> set[str]:
     pins = repo / "samples" / "benchmarks" / "ifc-bench-v2" / "IMPORT_PINS.json"
     if not pins.is_file():
-        return set(GPLV3_DEFAULT)
+        return set(GPLV3_IFC_BENCH_PROJECTS)
     payload = json.loads(pins.read_text(encoding="utf-8"))
-    names = payload.get("gplv3_models_exclude_from_mit_tree") or list(GPLV3_DEFAULT)
+    names = payload.get("gplv3_models_exclude_from_mit_tree") or list(GPLV3_IFC_BENCH_PROJECTS)
     return {str(name) for name in names}
 
 
@@ -139,13 +139,23 @@ def download_file(rel: str, dest: Path) -> dict[str, Any]:
     raise last_error or RuntimeError(f"download failed: {rel}")
 
 
-def copy_local(src: Path, dest: Path, *, excludes: set[str]) -> list[dict[str, Any]]:
+def _ci_environment() -> bool:
+    return os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("CI") == "true"
+
+
+def copy_local(
+    src: Path,
+    dest: Path,
+    *,
+    excludes: set[str],
+    include_gpl: bool = False,
+) -> list[dict[str, Any]]:
     copied: list[dict[str, Any]] = []
     for path in src.rglob("*"):
         if not path.is_file():
             continue
         rel = path.relative_to(src).as_posix()
-        if _is_gpl_path(rel, excludes):
+        if _is_gpl_path(rel, excludes) and not include_gpl:
             continue
         target = dest / rel
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -170,11 +180,12 @@ def select_files(
     *,
     excludes: set[str],
     full_non_gpl: bool,
+    include_gpl: bool = False,
 ) -> list[str]:
     chosen: list[str] = []
     for item in sorted(listed, key=lambda row: (_priority(str(row["path"])), str(row["path"]))):
         rel = str(item["path"]).replace("\\", "/")
-        if _is_gpl_path(rel, excludes):
+        if _is_gpl_path(rel, excludes) and not include_gpl:
             continue
         if not full_non_gpl and _priority(rel) >= 50:
             continue
@@ -201,7 +212,28 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Also download remaining non-GPLv3 project IFC (larger).",
     )
+    parser.add_argument(
+        "--samolet-demo-copyleft",
+        action="store_true",
+        help="Opt into Samolet-local copyleft inputs (gitignored .local/ only).",
+    )
+    parser.add_argument(
+        "--include-gplv3",
+        action="store_true",
+        help="Also copy/download GPLv3 IFC-Bench project dirs. Requires --samolet-demo-copyleft.",
+    )
     args = parser.parse_args(argv)
+    include_gpl = bool(args.include_gplv3)
+    opted_in = bool(args.samolet_demo_copyleft)
+    if include_gpl and not local_samolet_demo_copyleft_inputs_permitted(
+        opted_in=opted_in, ci=_ci_environment()
+    ):
+        print(
+            "refusing --include-gplv3: need --samolet-demo-copyleft and a non-CI host "
+            "(public MIT tree / Docker / other customers stay copyleft-free)",
+            file=sys.stderr,
+        )
+        return 2
     repo = repo_root()
     dest = args.dest or (repo / ".local" / "ifc-bench-v2")
     dest.mkdir(parents=True, exist_ok=True)
@@ -211,7 +243,7 @@ def main(argv: list[str] | None = None) -> int:
     skipped_gpl: list[str] = []
     source = _resolve_from_dir(args.from_dir)
     if source is not None:
-        downloaded.extend(copy_local(source, dest, excludes=excludes))
+        downloaded.extend(copy_local(source, dest, excludes=excludes, include_gpl=include_gpl))
     if args.hub or source is None:
         try:
             listed = list_hub_files()
@@ -219,10 +251,17 @@ def main(argv: list[str] | None = None) -> int:
             errors.append({"path": "*", "error": str(exc)})
             listed = []
         skipped_gpl = [
-            str(item["path"]) for item in listed if _is_gpl_path(str(item["path"]), excludes)
+            str(item["path"])
+            for item in listed
+            if _is_gpl_path(str(item["path"]), excludes) and not include_gpl
         ]
         already = {item["path"] for item in downloaded}
-        for rel in select_files(listed, excludes=excludes, full_non_gpl=bool(args.full_non_gpl)):
+        for rel in select_files(
+            listed,
+            excludes=excludes,
+            full_non_gpl=bool(args.full_non_gpl) or include_gpl,
+            include_gpl=include_gpl,
+        ):
             if rel in already:
                 continue
             target = dest / rel
@@ -239,10 +278,17 @@ def main(argv: list[str] | None = None) -> int:
         "downloaded": len(downloaded),
         "errors": errors,
         "skipped_gplv3": skipped_gpl,
+        "copyleft_lane": "samolet_demo_local" if include_gpl else "public_mit",
+        "gplv3_vendored_in_git": False,
         "files": downloaded,
         "claim_boundary": (
-            "Local gitignored checkout. GPLv3 project dirs skipped. "
-            "Not product accuracy. Not 514 false-pass."
+            "Local gitignored checkout. "
+            + (
+                "GPLv3 project dirs included for Samolet-local demo only. "
+                if include_gpl
+                else "GPLv3 project dirs skipped. "
+            )
+            + "Not product accuracy. Not 514 false-pass. Not a reason to ship GPL in Docker."
         ),
     }
     (dest / "FETCH_MANIFEST.json").write_text(

@@ -1,8 +1,8 @@
 ---
 title: "License policy 2026"
 status: active
-version: "1.0.0"
-date: "2026-07-31"
+version: "1.1.0"
+date: "2026-08-14"
 claim_boundary: "Инженерная политика, не юридическое заключение. LIC-001 требует юриста."
 ---
 
@@ -28,6 +28,27 @@ unknown блокирует) и `backend/tests/test_license_isolation_guard.py`
    `tools` — domain/application/presentation/core остаются чистыми (guard-тест).
    Это фиксирует поверхность миграции.
 5. Новая зависимость без классификации в inventory = красный CI.
+
+## Две полосы (14.08.2026)
+
+Показ **Самолёту** может использовать copyleft **входные файлы** локально.
+Публичный продукт, Docker, GitHub и **остальные** заказчики — без токсичных лицензий.
+
+| Полоса | Где | Можно | Нельзя |
+|---|---|---|---|
+| **public_mit** (default, CI, Docker, другие заказчики) | git + `requirements-lock.txt` | MIT-код; LGPL IfcOpenShell за infrastructure/tools; optional `pdf-agpl` **не** в runtime lock | Вендорить GPLv3 IFC; линковать LibreDWG; тащить AGPL в Docker |
+| **samolet_demo_local** | gitignored `.local/` на машине демо | Читать GPLv3 IFC-Bench (`4351`, `ettenheim_gis`, `hitos`, `samuel_macalister_sample_house`) | Коммитить эти файлы; включать флаг в CI; закрывать RT-001 |
+
+Включение:
+
+```bash
+python -m aerobim.tools.fetch_ifc_bench_v2 --from-dir <checkout> --include-gplv3 --samolet-demo-copyleft
+python -m aerobim.tools.run_federated_mep_inventory --samolet-demo-copyleft
+```
+
+Вторая команда **не** пишет GPL-строки в `docs/evidence/`. LibreDWG **не** линкуется: для показа Самолёту заказчик даёт IFC/PDF/A; CAD capability на `.dwg` остаётся FAILED.
+
+Это не юридическое заключение. Checkpoint остаётся **NO_GO**.
 
 ## LIC-001 (PyMuPDF) — дерево решений
 
