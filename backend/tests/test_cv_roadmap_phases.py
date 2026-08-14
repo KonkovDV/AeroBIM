@@ -42,9 +42,7 @@ class CvRoadmapSliceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.repo = Path(__file__).resolve().parents[2]
-        cls.manifest = (
-            cls.repo / "samples" / "demo" / "vertical-slice-2026-08-11" / "manifest.json"
-        )
+        cls.manifest = cls.repo / "samples" / "demo" / "vertical-slice-2026-08-11" / "manifest.json"
 
     def test_slice_exposes_p0_p4_honest_phases(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

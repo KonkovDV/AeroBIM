@@ -1,14 +1,15 @@
 """Export a license/provenance manifest for every file under samples/ (P-010/P-013).
 
-Two provenance classes only, assigned by location:
+Provenance classes:
 - samples/bcf-xsd/**, samples/ids-xsd/** -> vendored buildingSMART schemas
-  (third-party; attribution required; license status = review_pending -- we do
-  not invent license terms, legal review confirms redistribution conditions);
+  (committed rows keep CC BY-ND 4.0 after RT-W-01; do not full-rebuild);
+- samples/ids/moexp/** -> third-party official MOEXP IDS/mappings (not a
+  Samolet profile);
 - everything else -> project-authored synthetic fixtures (repo MIT, no real
   project data, no personal data by construction).
 
-Regenerate on any samples/ change; the committed manifest is gated by
-backend/tests/test_samples_manifest_gate.py (every file listed, hashes match).
+Prefer ``--merge-missing`` so existing vendored license rows stay intact.
+The committed manifest is gated by backend/tests/test_samples_manifest_gate.py.
 """
 
 from __future__ import annotations
@@ -44,6 +45,22 @@ def _sha256(path: Path) -> str:
 
 def _entry(path: Path) -> dict[str, object]:
     rel = path.relative_to(_SAMPLES).as_posix()
+    if rel.startswith("ids/moexp/"):
+        return {
+            "path": rel,
+            "sha256": _sha256(path),
+            "bytes": path.stat().st_size,
+            "provenance": "third_party_official",
+            "source": (
+                "GAU MO / MOEXP published IDS and IFC4 mappings (moexp.ru); "
+                "not a Samolet customer profile"
+            ),
+            "license_status": "publisher_terms",
+            "attribution_required": True,
+            "redistribution": "redistributed as published; see samples/ids/moexp/SOURCE.md",
+            "production_use": "fixture engine coverage only; never customer evidence",
+            "personal_data": False,
+        }
     vendored = rel.startswith(_VENDORED_PREFIXES)
     if vendored:
         return {
@@ -72,6 +89,38 @@ def _entry(path: Path) -> dict[str, object]:
     }
 
 
+def merge_missing_into(existing: dict[str, object]) -> dict[str, object]:
+    """Add on-disk samples files that are not listed. Preserve existing rows.
+
+    Full rebuild would reset vendored buildingSMART rows to review_pending and
+    break the CC BY-ND gate. Merge-only is the honest local fix.
+    """
+
+    files_raw = existing.get("files")
+    if not isinstance(files_raw, list):
+        raise ValueError("manifest files must be a list")
+    by_path: dict[str, dict[str, object]] = {}
+    for item in files_raw:
+        if isinstance(item, dict) and item.get("path"):
+            by_path[str(item["path"])] = item
+    for path in sorted(p for p in _SAMPLES.rglob("*") if p.is_file()):
+        rel = path.relative_to(_SAMPLES).as_posix()
+        if rel == "DATASET_MANIFEST.json" or rel in by_path:
+            continue
+        by_path[rel] = _entry(path)
+    merged = dict(existing)
+    merged_files = [by_path[key] for key in sorted(by_path)]
+    merged["files"] = merged_files
+    merged["file_count"] = len(merged_files)
+    merged["vendored_count"] = sum(
+        1
+        for entry in merged_files
+        if isinstance(entry, dict) and entry.get("provenance") == "third_party_vendored"
+    )
+    merged["generated_at"] = datetime.now(tz=UTC).isoformat()
+    return merged
+
+
 def build_manifest() -> dict[str, object]:
     files = sorted(p for p in _SAMPLES.rglob("*") if p.is_file())
     entries = [_entry(path) for path in files]
@@ -94,8 +143,19 @@ def build_manifest() -> dict[str, object]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export samples dataset manifest")
     parser.add_argument("--out", type=Path, default=_SAMPLES / "DATASET_MANIFEST.json")
+    parser.add_argument(
+        "--merge-missing",
+        action="store_true",
+        help="Keep existing rows (including CC BY-ND vendored schemas) and add missing files",
+    )
     args = parser.parse_args()
-    payload = build_manifest()
+    if args.merge_missing and args.out.is_file():
+        loaded = json.loads(args.out.read_text(encoding="utf-8"))
+        if not isinstance(loaded, dict):
+            raise ValueError("existing manifest must be a JSON object")
+        payload = merge_missing_into(loaded)
+    else:
+        payload = build_manifest()
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"manifest written: {args.out} ({payload['file_count']} files)")
 

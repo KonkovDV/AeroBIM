@@ -38,9 +38,7 @@ class EndpointLooksLikeYandexTests(unittest.TestCase):
         self.assertFalse(
             endpoint_looks_like_yandex("https://api.moonshot.cn/v1", provider="yandex")
         )
-        self.assertFalse(
-            endpoint_looks_like_yandex("https://localhost:8080/v1", provider="yandex")
-        )
+        self.assertFalse(endpoint_looks_like_yandex("https://localhost:8080/v1", provider="yandex"))
 
     def test_malformed_and_empty(self) -> None:
         self.assertFalse(endpoint_looks_like_yandex("not a url"))

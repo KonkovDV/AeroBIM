@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Historical 11.08 demo script; >90% and native DWG listed as forbidden, not claimed" -->
 # Vertical slice — демонстрация 11.08.2026
 
 **Baseline зафиксирован:** HEAD `fc88d50b9313bde31bdee08ca38791a59fd48133` (Signed-off-by / GPG `G`).

@@ -242,14 +242,10 @@ def _regression_pass_stats(
         if not row.get("match") and str(row.get("case_id")) in known_upstream
     ]
     fail_closed_mismatches = [
-        row
-        for row in case_rows
-        if not row.get("match") and str(row.get("case_id")) in fail_closed
+        row for row in case_rows if not row.get("match") and str(row.get("case_id")) in fail_closed
     ]
     unexplained = [
-        row
-        for row in case_rows
-        if not row.get("match") and str(row.get("case_id")) not in labeled
+        row for row in case_rows if not row.get("match") and str(row.get("case_id")) not in labeled
     ]
     scorable = [row for row in case_rows if str(row.get("case_id")) not in labeled]
     adjusted_matched = sum(1 for row in scorable if row.get("match"))

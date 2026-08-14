@@ -19,7 +19,10 @@ def _repo_root() -> Path:
 
 
 def _load_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"expected JSON object in {path}")
+    return data
 
 
 def _check(name: str, ok: bool, detail: str, rows: list[dict[str, Any]]) -> None:
@@ -98,7 +101,8 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         clash = _load_json(clash_status)
         _check(
             "clash_fixture_measured",
-            clash.get("status") == "fixture_measured" and clash.get("claim_level") == "fixture_only",
+            clash.get("status") == "fixture_measured"
+            and clash.get("claim_level") == "fixture_only",
             f"status={clash.get('status')} claim={clash.get('claim_level')}",
             rows,
         )
@@ -108,7 +112,8 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     clash_pr = clash_dir / "precision-recall.json"
     if clash_pr.is_file():
         pr = _load_json(clash_pr)
-        claim = pr.get("precision_claim") if isinstance(pr.get("precision_claim"), dict) else {}
+        precision_claim = pr.get("precision_claim")
+        claim: dict[str, Any] = precision_claim if isinstance(precision_claim, dict) else {}
         render = str(claim.get("render") or "")
         honest = (
             pr.get("corpus_kind") != "customer"
@@ -136,7 +141,8 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         overlay = _load_json(overlay_status)
         _check(
             "overlay_fixture_rendered",
-            overlay.get("status") == "fixture_rendered" and overlay.get("claim_level") == "fixture_only",
+            overlay.get("status") == "fixture_rendered"
+            and overlay.get("claim_level") == "fixture_only",
             f"status={overlay.get('status')} claim={overlay.get('claim_level')}",
             rows,
         )

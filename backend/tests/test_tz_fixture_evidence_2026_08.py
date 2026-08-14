@@ -8,7 +8,6 @@ from pathlib import Path
 from aerobim.tools.measure_extent_clash_fixture import measure
 from aerobim.tools.render_drawing_overlay_evidence import render_overlay
 
-
 _REPO = Path(__file__).resolve().parents[2]
 
 

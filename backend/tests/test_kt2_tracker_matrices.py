@@ -34,6 +34,9 @@ class VlmStampComparisonSkipTests(unittest.TestCase):
         self.assertEqual(payload["claim_level"], "fixture_only")
         self.assertIn("stamp", payload["scenario"])
         self.assertIn("door_count", payload["not_in_scope"])
+        self.assertEqual(payload["comparison_status"], "comparison_not_run")
+        self.assertEqual(payload["kimi_status"], "GATED")
+        self.assertEqual(payload["qwen_fixture_status"], "not_run_in_this_payload")
 
 
 if __name__ == "__main__":

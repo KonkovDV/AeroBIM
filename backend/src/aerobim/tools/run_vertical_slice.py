@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from dataclasses import asdict
 from datetime import UTC, datetime
@@ -39,6 +40,7 @@ from aerobim.domain.region_detection_metrics import (  # noqa: E402
     labels_from_dicts,
     score_region_detections,
 )
+from aerobim.domain.run_manifest import build_run_manifest  # noqa: E402
 from aerobim.domain.vlm_response_schema import (  # noqa: E402
     OBSERVATIONS_RESPONSE_SCHEMA,
     validate_observations_response,
@@ -59,6 +61,72 @@ _SLIDE_BOUNDARY = (
 
 def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _git_sha(repo: Path) -> str:
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if completed.returncode == 0:
+            return completed.stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return ""
+
+
+def _git_dirty(repo: Path) -> bool:
+    try:
+        completed = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=repo,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if completed.returncode == 0:
+            return bool(completed.stdout.strip())
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return False
+
+
+def _document_identity(
+    input_entries: list[dict[str, Any]], annotations: list[Any]
+) -> dict[str, Any]:
+    pdf = next(
+        (entry for entry in input_entries if str(entry.get("path") or "").endswith(".pdf")),
+        None,
+    )
+    first = annotations[0] if annotations else None
+    zone = getattr(first, "problem_zone", None) if first is not None else None
+    coordinates = None
+    page_number = None
+    sheet_id = None
+    if zone is not None:
+        page_number = zone.page_number
+        sheet_id = getattr(first, "sheet_id", None)
+        coordinates = {
+            "x": zone.x,
+            "y": zone.y,
+            "width": zone.width,
+            "height": zone.height,
+        }
+    return {
+        "path": None if pdf is None else pdf.get("path"),
+        "sha256": None if pdf is None else pdf.get("sha256"),
+        "bytes": None if pdf is None else pdf.get("bytes"),
+        "sheet_id": sheet_id or (None if pdf is None else pdf.get("sheet_id")),
+        "page_number": page_number,
+        "coordinates": coordinates,
+        "format": "pdf_text_layer",
+    }
 
 
 def _finding_key(finding: dict[str, Any]) -> tuple[str, ...]:
@@ -172,9 +240,11 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             if candidate.is_file():
                 pdf_for_overlay = candidate
                 break
-    zone_ann = next((a for a in report.drawing_annotations if a.problem_zone is not None), None)
-    if pdf_for_overlay is not None and zone_ann is not None and zone_ann.problem_zone is not None:
-        pz = zone_ann.problem_zone
+    overlay_zone = next(
+        (ann.problem_zone for ann in report.drawing_annotations if ann.problem_zone is not None),
+        None,
+    )
+    if pdf_for_overlay is not None and overlay_zone is not None:
         try:
             from aerobim.tools.render_drawing_overlay_evidence import render_overlay
 
@@ -182,19 +252,64 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
                 pdf_path=pdf_for_overlay,
                 out_png=output_dir / "overlay-problem-zone.png",
                 zone={
-                    "x": float(pz.x or 0.0),
-                    "y": float(pz.y or 0.0),
-                    "width": float(pz.width or 0.0),
-                    "height": float(pz.height or 0.0),
+                    "x": float(overlay_zone.x or 0.0),
+                    "y": float(overlay_zone.y or 0.0),
+                    "width": float(overlay_zone.width or 0.0),
+                    "height": float(overlay_zone.height or 0.0),
                 },
-                page_number=int(pz.page_number or 1),
+                page_number=int(overlay_zone.page_number or 1),
             )
         except ImportError as exc:
             overlay_error = f"overlay renderer unavailable: {exc}"
     elif pdf_for_overlay is None:
         overlay_error = "no PDF input for overlay"
-    elif zone_ann is None:
+    else:
         overlay_error = "no drawing annotation with problem_zone"
+
+    git_sha = _git_sha(root)
+    git_dirty = _git_dirty(root)
+    document_identity = _document_identity(input_entries, list(report.drawing_annotations))
+    package_sha256 = _sha256_file(pack_path)
+    ids_sha = next(
+        (str(entry["sha256"]) for entry in input_entries if entry.get("kind") == "ids"),
+        None,
+    )
+    run_manifest = build_run_manifest(
+        report,  # type: ignore[arg-type]
+        request_id=report.request_id,
+        pack_id=pack.pack_id,
+        package_sha256=package_sha256,
+        rules_sha256=ids_sha,
+        code_version=git_sha or None,
+    )
+    outcome_value = getattr(report.summary.outcome, "value", report.summary.outcome)
+    verification_status = (
+        "NOT_PASS_EXPERT_REQUIRED"
+        if not report.summary.passed
+        else "PASS_FIXTURE_ONLY_NOT_CUSTOMER"
+    )
+    kt2_release = {
+        "git_sha": git_sha or None,
+        "working_tree_dirty": git_dirty,
+        "package_id": pack.pack_id,
+        "document_path": document_identity.get("path"),
+        "document_sha256": document_identity.get("sha256"),
+        "page_number": document_identity.get("page_number"),
+        "coordinates": document_identity.get("coordinates"),
+        "verification_status": verification_status,
+        "checkpoint_verdict": "NO_GO",
+        "reproducibility_hash": run_manifest.reproducibility_hash,
+        "schema_versions": {
+            "slice_summary": "1.1.0",
+            "limitations": "1.1.0",
+            "run_manifest": run_manifest.schema_version,
+        },
+        "claim_boundary": _SLIDE_BOUNDARY,
+        "expert_review_required": True,
+        "customer_accuracy": False,
+        "fixture_demo": True,
+    }
+    public["kt2_release"] = kt2_release
 
     html_path = output_dir / "report.html"
     html_path.write_text(
@@ -241,9 +356,7 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             None,
         )
         method = (
-            "ocr"
-            if annotation.source and "ocr" in annotation.source.lower()
-            else "pdf_text_layer"
+            "ocr" if annotation.source and "ocr" in annotation.source.lower() else "pdf_text_layer"
         )
         record = {
             "annotation_id": annotation.annotation_id,
@@ -356,12 +469,16 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             continue
         extraction = extract_pdf_vector_primitives(pdf_path)
         vector_extract = extraction.as_dict()
-        symbol_candidates = [c.as_dict() for c in propose_symbol_candidates_from_vectors(extraction)]
+        symbol_candidates = [
+            c.as_dict() for c in propose_symbol_candidates_from_vectors(extraction)
+        ]
         break
 
     # --- P3 geometric tolerance confirm (optional bbox_for; demo with fake index) ---
     class _GeoIndex:
-        def __init__(self, guids: set[str], boxes: dict[str, tuple[float, float, float, float]]) -> None:
+        def __init__(
+            self, guids: set[str], boxes: dict[str, tuple[float, float, float, float]]
+        ) -> None:
             self._guids = guids
             self._boxes = boxes
 
@@ -526,13 +643,9 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         ],
         "cv_phases": cv_phases,
         "reproduce": {
-            "command": (
-                "python -m aerobim.tools.run_demo_vertical_slice"
-            ),
+            "command": ("python -m aerobim.tools.run_demo_vertical_slice"),
             "cwd": "backend/",
-            "inputs_sha256": {
-                e["path"]: e.get("sha256") for e in input_entries if "sha256" in e
-            },
+            "inputs_sha256": {e["path"]: e.get("sha256") for e in input_entries if "sha256" in e},
         },
         "expert_decision_required": True,
     }
@@ -556,14 +669,59 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
     annotations = [asdict(a) for a in report.drawing_annotations]
     findings = [asdict(i) for i in report.issues]
     finding_keys = [_finding_key(f) for f in findings]
+    run_manifest_path = output_dir / "run-manifest.json"
+    run_manifest_path.write_text(
+        json.dumps(run_manifest.as_dict(), ensure_ascii=False, indent=2, default=str),
+        encoding="utf-8",
+    )
+    overlay_png_path = output_dir / "overlay-problem-zone.png"
+    output_file_sha256: dict[str, str] = {}
+    for name, path in (
+        ("report.json", report_json_path),
+        ("report.html", html_path),
+        ("findings.bcfzip", bcf_path),
+        ("LIMITATIONS.json", limitations_path),
+        ("run-manifest.json", run_manifest_path),
+    ):
+        if path.is_file():
+            output_file_sha256[name] = _sha256_file(path)
+    if overlay_png_path.is_file():
+        output_file_sha256["overlay-problem-zone.png"] = _sha256_file(overlay_png_path)
+    input_artifact_hash = {
+        str(entry["path"]): entry.get("sha256") for entry in input_entries if "sha256" in entry
+    }
+    finding_provenance = [
+        {
+            "finding_id": issue.get("finding_id"),
+            "source_id": issue.get("source_id"),
+            "evidence_refs": issue.get("evidence_refs"),
+            "rule_id": issue.get("rule_id"),
+            "origin": issue.get("origin"),
+        }
+        for issue in findings
+    ]
     summary = {
         "artifact_type": "aerobim_vertical_slice",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "slice_id": pack.pack_id,
+        "package_id": pack.pack_id,
         "generated_at": datetime.now(tz=UTC).isoformat(),
+        "git_sha": git_sha or None,
+        "working_tree_dirty": git_dirty,
         "claim_boundary": _SLIDE_BOUNDARY,
         "manifest": str(pack_path.relative_to(root)).replace("\\", "/"),
         "inputs": input_entries,
+        "input_artifact_hash": input_artifact_hash,
+        "output_file_sha256": output_file_sha256,
+        "document_identity": document_identity,
+        "finding_provenance": finding_provenance,
+        "capability_honesty": asdict(report.capabilities) if report.capabilities else {},
+        "outcome": outcome_value,
+        "verification_status": verification_status,
+        "checkpoint_verdict": "NO_GO",
+        "expert_review_required": True,
+        "customer_accuracy": False,
+        "run_manifest": run_manifest.as_dict(),
         "report_id": report.report_id,
         "summary": asdict(report.summary),
         "operator_status_counts": operator_counts,
@@ -572,15 +730,19 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         "reproducibility": {
             "deterministic_order": "stable_rule_target_zone_key",
             "finding_keys": ["|".join(k) for k in finding_keys],
+            "reproducibility_hash": run_manifest.reproducibility_hash,
+            "hash_drift_note": (
+                "report.json and findings.bcfzip include created_at; "
+                "compare reproducibility_hash and overlay PNG, not raw report.json bytes"
+            ),
         },
         "artifacts": {
             "report_json": str(report_json_path.name),
             "report_html": str(html_path.name),
             "limitations": "LIMITATIONS.json",
             "bcf_zip": str(bcf_path.name),
-            "overlay_png": (
-                "overlay-problem-zone.png" if overlay_meta else None
-            ),
+            "run_manifest": "run-manifest.json",
+            "overlay_png": ("overlay-problem-zone.png" if overlay_meta else None),
         },
         "evidence": evidence_records,
         "layout_regions": layout_regions,
@@ -612,11 +774,18 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
             "VLM advisory never changes summary.passed",
             "REQUIRES_EXPERT / INSUFFICIENT_DATA via coverage — never silent pass",
             "Original inputs are read-only in this slice",
+            "Checkpoint NO_GO. Fixture demo is not customer GO.",
         ],
+        "vlm": {
+            "qwen_fixture_status": "LIVE",
+            "kimi_status": "GATED",
+            "comparison_status": "comparison_not_run",
+            "verdict_owner": "deterministic_engine_only",
+        },
     }
     summary_path = output_dir / "slice-summary.json"
     summary_path.write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2),
+        json.dumps(summary, ensure_ascii=False, indent=2, default=str),
         encoding="utf-8",
     )
     summary["_paths"] = {
@@ -625,7 +794,8 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
         "summary": str(summary_path),
         "limitations": str(limitations_path),
         "bcf_zip": str(bcf_path),
-        "overlay_png": str(output_dir / "overlay-problem-zone.png"),
+        "run_manifest": str(run_manifest_path),
+        "overlay_png": str(overlay_png_path),
     }
     return summary
 
@@ -646,7 +816,9 @@ def main() -> int:
     )
     args = parser.parse_args()
     result = run_vertical_slice(args.manifest, args.output)
-    print(json.dumps({k: v for k, v in result.items() if k != "_paths"}, ensure_ascii=False, indent=2))
+    print(
+        json.dumps({k: v for k, v in result.items() if k != "_paths"}, ensure_ascii=False, indent=2)
+    )
     return 0
 
 

@@ -30,7 +30,9 @@ class IfcBenchSmokeTests(unittest.TestCase):
             1.735,
         )
         self.assertEqual(
-            _parse_expected_number("The width of the door with uuid 1hOSvn6df7F8_7GcBWlRGQ is 1.25 m."),
+            _parse_expected_number(
+                "The width of the door with uuid 1hOSvn6df7F8_7GcBWlRGQ is 1.25 m."
+            ),
             1.25,
         )
         self.assertEqual(
@@ -64,9 +66,7 @@ class IfcBenchSmokeTests(unittest.TestCase):
             1795.0,
         )
         self.assertEqual(
-            _parse_expected_number(
-                "Column Types:\n- M_W-Wide Flange-Column:W250X67: 80 columns"
-            ),
+            _parse_expected_number("Column Types:\n- M_W-Wide Flange-Column:W250X67: 80 columns"),
             80.0,
         )
         self.assertIsNone(
@@ -145,7 +145,9 @@ class IfcBenchSmokeTests(unittest.TestCase):
 
         payload = {
             "benchmark": {"dataset_root": str(repo_root() / ".local" / "ifc-bench-v2")},
-            "output_path": str(repo_root() / "artifacts" / "open-bench" / "ifc-bench-v2-smoke.json"),
+            "output_path": str(
+                repo_root() / "artifacts" / "open-bench" / "ifc-bench-v2-smoke.json"
+            ),
             "output_sha256": "abc",
         }
         docs = _sanitize_docs_evidence(payload)
@@ -156,4 +158,3 @@ class IfcBenchSmokeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

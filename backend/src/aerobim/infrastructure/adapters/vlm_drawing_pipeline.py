@@ -106,9 +106,7 @@ class VlmDrawingPipeline:
         except VlmAdvisoryError as exc:
             # §2.4: classified failure (TRUNCATED/EMPTY_CONTENT/SCHEMA_DEVIATION/...)
             # must be surfaced faithfully, never as "found nothing".
-            return self._degrade(
-                source, f"VLM read failed (fail-closed, {exc.reason_code}): {exc}"
-            )
+            return self._degrade(source, f"VLM read failed (fail-closed, {exc.reason_code}): {exc}")
         except OSError as exc:
             return self._degrade(source, f"VLM read failed (fail-closed, IO): {exc}")
         except Exception as exc:  # noqa: BLE001 — SSRF/transport errors must fail closed, not OK
@@ -121,9 +119,7 @@ class VlmDrawingPipeline:
             min_confidence=self._min_confidence,
         )
         if not grounded.parse_ok:
-            return self._degrade(
-                source, f"VLM schema deviation (fail-closed): {grounded.reason}"
-            )
+            return self._degrade(source, f"VLM schema deviation (fail-closed): {grounded.reason}")
 
         # Candidate regions only — no fabricated annotations; always degraded.
         return MultimodalDrawingResult(

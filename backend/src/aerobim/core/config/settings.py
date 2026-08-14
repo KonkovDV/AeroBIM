@@ -355,7 +355,8 @@ class Settings:
     hybrid_drawing_enabled: bool = True
     """Use HybridDrawingAnalyzer for DrawingAnalyzerPort when True."""
     vlm_enabled: bool = False
-    """Opt-in advisory VLM drawing read (``AEROBIM_VLM_ENABLED``; alias ``AEROBIM_KIMI_K3_ENABLED``).
+    """Opt-in advisory VLM drawing read (``AEROBIM_VLM_ENABLED``;
+    alias ``AEROBIM_KIMI_K3_ENABLED``).
 
     Provider-agnostic (Yandex/Qwen, vLLM, or Moonshot Kimi profile). Advisory only
     (ADR-001 / TR-31): never sets ``summary.passed``. Default off.
@@ -768,9 +769,7 @@ class Settings:
             ifc_parse_cache_dir=(os.getenv("AEROBIM_IFC_PARSE_CACHE_DIR") or "").strip() or None,
             hybrid_drawing_enabled=_read_bool("AEROBIM_HYBRID_DRAWING_ENABLED", True),
             vlm_enabled=_read_vlm_enabled(),
-            vlm_api_base_url=_env_prefer(
-                "AEROBIM_VLM_API_BASE_URL", "AEROBIM_KIMI_API_BASE_URL"
-            )
+            vlm_api_base_url=_env_prefer("AEROBIM_VLM_API_BASE_URL", "AEROBIM_KIMI_API_BASE_URL")
             or None,
             vlm_api_key=_env_prefer("AEROBIM_VLM_API_KEY", "AEROBIM_KIMI_API_KEY") or None,
             vlm_model=_env_prefer("AEROBIM_VLM_MODEL", "AEROBIM_KIMI_MODEL", default="kimi-k3")
@@ -795,9 +794,7 @@ class Settings:
             vlm_cache_ttl_days=_read_optional_int_prefer(
                 "AEROBIM_VLM_CACHE_TTL_DAYS", "AEROBIM_KIMI_CACHE_TTL_DAYS"
             ),
-            vlm_cache_project=_env_prefer(
-                "AEROBIM_VLM_CACHE_PROJECT", "AEROBIM_KIMI_CACHE_PROJECT"
-            )
+            vlm_cache_project=_env_prefer("AEROBIM_VLM_CACHE_PROJECT", "AEROBIM_KIMI_CACHE_PROJECT")
             or None,
             hybrid_provider_config_path=(
                 (os.getenv("AEROBIM_HYBRID_PROVIDER_CONFIG") or "").strip() or None

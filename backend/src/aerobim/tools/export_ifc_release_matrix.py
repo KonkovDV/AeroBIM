@@ -21,6 +21,15 @@ from aerobim.tools.benchmark_project_package import (
     schema_suite_pack_paths,
 )
 
+
+def _mapping(value: object) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def _sequence(value: object) -> list[Any]:
+    return value if isinstance(value, list) else []
+
+
 CLAIM_LEVEL = "fixture_only"
 CLAIM_BOUNDARY = (
     "Fixture schema-suite kernel timing and finding counts. "
@@ -43,19 +52,11 @@ def build_ifc_release_matrix(suite_payload: dict[str, Any]) -> dict[str, Any]:
         metrics = by_schema.get(schema)
         if not isinstance(metrics, dict):
             continue
-        timing = metrics.get("timing_ms") if isinstance(metrics.get("timing_ms"), dict) else {}
-        issues = metrics.get("issue_count") if isinstance(metrics.get("issue_count"), dict) else {}
-        reqs = (
-            metrics.get("requirement_count")
-            if isinstance(metrics.get("requirement_count"), dict)
-            else {}
-        )
-        bytes_list = metrics.get("ifc_bytes") if isinstance(metrics.get("ifc_bytes"), list) else []
-        entities = (
-            metrics.get("ifc_entity_count")
-            if isinstance(metrics.get("ifc_entity_count"), list)
-            else []
-        )
+        timing = _mapping(metrics.get("timing_ms"))
+        issues = _mapping(metrics.get("issue_count"))
+        reqs = _mapping(metrics.get("requirement_count"))
+        bytes_list = _sequence(metrics.get("ifc_bytes"))
+        entities = _sequence(metrics.get("ifc_entity_count"))
         rows.append(
             {
                 "schema": schema,
@@ -115,7 +116,7 @@ def render_ifc_release_matrix_markdown(matrix: dict[str, Any]) -> str:
     for row in matrix.get("rows") or []:
         if not isinstance(row, dict):
             continue
-        timing = row.get("timing_ms") if isinstance(row.get("timing_ms"), dict) else {}
+        timing = _mapping(row.get("timing_ms"))
         lines.append(
             "| {schema} | {ent} | {nbytes} | {rules} | {findings} | {p50} | {p95} | {mx} |".format(
                 schema=row.get("schema"),
@@ -162,7 +163,9 @@ def main(argv: list[str] | None = None) -> int:
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--iterations", type=int, default=SCHEMA_SUITE_DEFAULT_ITERATIONS)
-    parser.add_argument("--warmup-iterations", type=int, default=SCHEMA_SUITE_DEFAULT_WARMUP_ITERATIONS)
+    parser.add_argument(
+        "--warmup-iterations", type=int, default=SCHEMA_SUITE_DEFAULT_WARMUP_ITERATIONS
+    )
     args = parser.parse_args(argv)
     root = repo_root()
     suite = benchmark_schema_suite(

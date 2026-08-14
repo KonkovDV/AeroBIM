@@ -40,7 +40,9 @@ def evaluate(
     iou_threshold: float,
 ) -> dict[str, Any]:
     labels_payload = json.loads(labels_path.read_text(encoding="utf-8"))
-    label_rows = labels_payload.get("regions") if isinstance(labels_payload, dict) else labels_payload
+    label_rows = (
+        labels_payload.get("regions") if isinstance(labels_payload, dict) else labels_payload
+    )
     if not isinstance(label_rows, list):
         raise ValueError("labels must be a list or {regions: [...]}")
     preds = labels_from_dicts(_preds_from_detector(pdf, sheet_id))

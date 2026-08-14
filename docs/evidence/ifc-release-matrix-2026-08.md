@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="IFC schema-suite matrix; >90% only as non-claim boundary" -->
 # IFC release matrix (tracker 2.1)
 
 **claim_level:** `fixture_only`

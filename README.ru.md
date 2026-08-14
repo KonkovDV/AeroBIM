@@ -158,8 +158,9 @@ pip install -e ".[dev,raster,pdf-agpl]"
 # pip install -e ".[enterprise]"
 
 python -m aerobim.tools.run_demo_vertical_slice
-# Открыть artifacts/vertical-slice-demo/report.html — фрагмент, finding, evidence,
-# оверлей overlay-problem-zone.png рядом с HTML, вердикт не PASS. Это не CV.
+# Открыть artifacts/vertical-slice-demo/report.html — фрагмент, оверлей, текст,
+# finding_id/source_id/evidence_refs, таблица capabilities, run-manifest.json, BCF ZIP.
+# summary.passed=false. Checkpoint NO_GO. Fixture demo, не CV.
 
 pytest tests -q
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70

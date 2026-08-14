@@ -4,9 +4,10 @@ Probe-verified 2026-07-31 on wall-fire-rating-rei60.ifc + wall-fire-rating.ids
 (clean baseline: passed=True, 0 issues):
 - LB-005 missing pset relation  -> IDS error (detected);
 - LB-006 wrong FireRating value -> IDS error (detected);
-- LB-007 class swap IFCWALL->IFCCOLUMN -> IDS-only run is a VACUOUS PASS
-  (missing element != compliant). Honesty anchor + verified compensating
-  control: an entity-presence requirement flips the verdict to failed.
+- LB-007 class swap IFCWALL->IFCCOLUMN -> IDS spec is SKIPPED (zero applicable
+  elements). Fail-closed contour (29fd0d5) treats SKIPPED as FAILED
+  (AEROBIM-IDS-SKIPPED). Compensating entity-presence requirement still
+  emits "No elements found for entity IFCWALL".
 """
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ from pathlib import Path
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.ids_schema_gate import RULE_SKIPPED
 from aerobim.domain.models import RequirementSource, ValidationRequest
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
@@ -82,13 +84,14 @@ class InjectedIfcDefectsLevelBTests(unittest.TestCase):
         self.assertFalse(report.summary.passed)
         self.assertTrue(any(i.rule_id == "IDS-Wall Fire Rating" for i in report.issues))
 
-    def test_lb007_class_swap_is_a_vacuous_pass_on_ids_only(self) -> None:
-        # Honesty anchor: missing element reads as PASS for an IDS-only run.
-        # If IfcTester/wiring ever starts flagging empty applicability, this
-        # fails so the catalog and pilot guidance get updated consciously.
+    def test_lb007_class_swap_fails_closed_on_skipped_ids_spec(self) -> None:
+        # Honesty anchor (updated 2026-08-14): IfcTester SKIPPED the Wall Fire
+        # Rating spec because no IfcWall remains. Fail-closed wiring must not
+        # read that as PASS. Historical 2026-07-31 CLAIMS_LOCK still records
+        # the pre-gate vacuous pass; this test is the live contour.
         report = self._run(self._mutated_path("LB-007"))
-        self.assertTrue(report.summary.passed)
-        self.assertEqual(report.summary.issue_count, 0)
+        self.assertFalse(report.summary.passed)
+        self.assertTrue(any(i.rule_id == RULE_SKIPPED for i in report.issues))
 
     def test_lb007_compensating_entity_presence_requirement_fails_closed(self) -> None:
         report = self._run(self._mutated_path("LB-007"), requirement_text=ENTITY_PRESENCE_REQ)

@@ -19,6 +19,11 @@ from typing import Any
 from aerobim.tools.benchmark_project_package import repo_root
 from aerobim.tools.map_typical_errors import _collect_rule_ids
 
+
+def _mapping(value: object) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 CLAIM_BOUNDARY = (
     "Engineering classification of in-repo rule identifiers. "
     "Solihin class 4 (performance / proof-of-solution) is not claimed. "
@@ -119,10 +124,10 @@ def build_solihin_inventory(*, root: Path | None = None) -> dict[str, Any]:
 
 
 def render_solihin_markdown(payload: dict[str, Any]) -> str:
-    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    summary = _mapping(payload.get("summary"))
     return "\n".join(
         [
-            "<!-- claims-lint: allow-file reason=\"Solihin class inventory; class 4 listed as not claimed\" -->",
+            '<!-- claims-lint: allow-file reason="Solihin class inventory; class 4 listed as not claimed" -->',
             "# Solihin & Eastman rule-class inventory",
             "",
             str(payload.get("claim_boundary") or ""),
@@ -143,9 +148,13 @@ def render_solihin_markdown(payload: dict[str, Any]) -> str:
     )
 
 
-def write_solihin_inventory(payload: dict[str, Any], *, evidence_json: Path, evidence_md: Path) -> None:
+def write_solihin_inventory(
+    payload: dict[str, Any], *, evidence_json: Path, evidence_md: Path
+) -> None:
     evidence_json.parent.mkdir(parents=True, exist_ok=True)
-    evidence_json.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    evidence_json.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     evidence_md.write_text(render_solihin_markdown(payload), encoding="utf-8")
 
 

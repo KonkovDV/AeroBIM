@@ -21,11 +21,11 @@ from typing import Protocol
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
 from aerobim.domain.region_read_plan import RegionReadTask, plan_region_reads
 from aerobim.domain.vlm_grounding import VlmObservation, ground_vlm_region_observations
+from aerobim.infrastructure.adapters.pdf_page_orientation import read_page_rotate_degrees
 from aerobim.infrastructure.adapters.vlm_advisory_client import (
     VlmAdvisoryError,
     VlmReadResult,
 )
-from aerobim.infrastructure.adapters.pdf_page_orientation import read_page_rotate_degrees
 
 _DEFAULT_MAX_REGIONS = 24
 _DEFAULT_REGION_PROMPT = (

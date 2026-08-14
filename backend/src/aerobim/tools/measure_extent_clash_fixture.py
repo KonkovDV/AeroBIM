@@ -32,12 +32,13 @@ def _wall_aabbs(ifc_path: Path) -> dict[str, tuple[str, AxisAlignedBox3d]]:
     import ifcopenshell.geom
 
     model = ifcopenshell.open(str(ifc_path))
-    settings = ifcopenshell.geom.settings()
+    geom_mod: Any = ifcopenshell.geom
+    settings = geom_mod.settings()
     settings.set(settings.USE_WORLD_COORDS, True)
     out: dict[str, tuple[str, AxisAlignedBox3d]] = {}
     for wall in model.by_type("IfcWall"):
         name = str(wall.Name or wall.GlobalId)
-        shape = ifcopenshell.geom.create_shape(settings, wall)
+        shape = geom_mod.create_shape(settings, wall)
         verts = shape.geometry.verts
         xs = verts[0::3]
         ys = verts[1::3]
@@ -137,7 +138,9 @@ def measure(*, ifc_path: Path, evidence_dir: Path) -> dict[str, Any]:
 
     det_path = evidence_dir / "detections.json"
     lab_path = evidence_dir / "labels.json"
-    det_path.write_text(json.dumps(detections, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    det_path.write_text(
+        json.dumps(detections, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     lab_path.write_text(json.dumps(labels, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     metrics = evaluate_detection_precision(
@@ -147,7 +150,9 @@ def measure(*, ifc_path: Path, evidence_dir: Path) -> dict[str, Any]:
         require_agreement_for_publishable=True,
     )
     metrics_path = evidence_dir / "precision-recall.json"
-    metrics_path.write_text(json.dumps(metrics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    metrics_path.write_text(
+        json.dumps(metrics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
     micro = metrics.get("micro") if isinstance(metrics, dict) else None
     status = {

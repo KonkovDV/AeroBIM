@@ -39,7 +39,7 @@ class IfcTesterIdsValidator:
             ) from exc
 
         ids_xml = ids_path.read_text(encoding="utf-8", errors="replace")
-        header = ifc_path.read_bytes()[:64 * 1024].decode("utf-8", errors="replace")
+        header = ifc_path.read_bytes()[: 64 * 1024].decode("utf-8", errors="replace")
         model_schema = parse_ifc_file_schema(header)
         our_mismatches = collect_schema_mismatches(
             model_schema=model_schema,

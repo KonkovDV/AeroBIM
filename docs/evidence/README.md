@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="Evidence index; open-corpus phrases as coverage map, not product accuracy" -->
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
@@ -14,7 +15,8 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV: publish **`macro_extended=0.4325`** (5 fields = Table 1 metric) + `macro_bench_protocol=0.5064` reference-only; scorer validation vs Table 1 max\|Δ\|≈0.02; B.5 gates; `open_bench_only` |
 | [`aec-bench-smoke-latest.json`](aec-bench-smoke-latest.json) | L1 AEC-Bench: 196-task inventory + 196 `gt.json`; Harbor agent NOT_RUN; ≠ RT-001 |
 | [`norm-pack-moexp-coverage-2026-08.md`](norm-pack-moexp-coverage-2026-08.md) · [`.json`](norm-pack-moexp-coverage-2026-08.json) | Official GAU MO IDS executed by IfcTester; engine coverage ≠ CIM compliance; `by_kind` = attributes vs classification; does not close RT-002 customer profile |
-| [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Advisory VLM stamp/title fixture: Qwen live, Kimi gated on Yandex Studio. Not product accuracy; not MOEXP coverage |
+| [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Qwen LIVE on fixture; Kimi GATED; `comparison_not_run`. Not a bake-off; not product accuracy |
+| [`vertical-slice-demo-live-2026-08-14.md`](vertical-slice-demo-live-2026-08-14.md) | Live `run_demo_vertical_slice` pin: exit 0, `summary.passed=false`, NO_GO; PNG/manifest hashes stable; report/BCF drift via `created_at` |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `989d0472…6e5124` |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
 | [`ids-fail-closed-2026-08.md`](ids-fail-closed-2026-08.md) · [`.json`](ids-fail-closed-2026-08.json) | IfcTester ifcVersion fail-open closed; BSI 0101 live; not product accuracy |

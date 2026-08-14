@@ -33,9 +33,7 @@ CLAIM_BOUNDARY = (
     "specs. buildingSMART case 0101 documents version-as-metadata; we disagree "
     "on purpose. Not product accuracy. Not CIM compliance. Not Samolet acceptance."
 )
-CASE_0101 = (
-    "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result"
-)
+CASE_0101 = "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result"
 
 
 def _sha256_bytes(raw: bytes) -> str:
@@ -87,7 +85,7 @@ def schema_gate_row(pair: dict[str, str], *, root: Path | None = None) -> dict[s
     ids_path = _as_repo_path(pair["ids_path"], root)
     ifc_path = _as_repo_path(pair["ifc_path"], root)
     ids_xml = ids_path.read_text(encoding="utf-8", errors="replace")
-    header = ifc_path.read_bytes()[:64 * 1024].decode("utf-8", errors="replace")
+    header = ifc_path.read_bytes()[: 64 * 1024].decode("utf-8", errors="replace")
     model_schema = parse_ifc_file_schema(header)
     specs = parse_ids_specification_versions(ids_xml)
     mismatches = collect_schema_mismatches(model_schema=model_schema, specs=specs)
@@ -139,12 +137,8 @@ def build_payload(
     pairs = discover_bsi_pairs(cases_dir, root=root)
     gate_rows = [schema_gate_row(pair, root=root) for pair in pairs]
     mismatched = [row for row in gate_rows if int(row["mismatch_count"]) > 0]
-    pass_expected_mismatched = [
-        row for row in mismatched if row["bsi_filename_expected"] == "pass"
-    ]
-    fail_expected_mismatched = [
-        row for row in mismatched if row["bsi_filename_expected"] == "fail"
-    ]
+    pass_expected_mismatched = [row for row in mismatched if row["bsi_filename_expected"] == "pass"]
+    fail_expected_mismatched = [row for row in mismatched if row["bsi_filename_expected"] == "fail"]
 
     live: dict[str, Any] = {}
     case_0101 = next((pair for pair in pairs if pair["case_id"] == CASE_0101), None)
@@ -216,7 +210,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
     live = (payload.get("live_ifctester") or {}).get("case_0101") or {}
     rows = payload.get("pass_filename_schema_mismatches") or []
     lines = [
-        "<!-- claims-lint: allow-file reason=\"IDS fail-closed evidence; BSI case names are measurements not product claims\" -->",
+        '<!-- claims-lint: allow-file reason="IDS fail-closed evidence; BSI case names are measurements not product claims" -->',
         "---",
         'title: "IDS fail-closed gate (ifcVersion vs FILE_SCHEMA)"',
         f"date: {str(payload.get('generated_at') or '')[:10]}",

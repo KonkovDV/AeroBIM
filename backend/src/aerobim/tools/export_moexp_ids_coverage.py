@@ -20,6 +20,11 @@ from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
 from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
 
+
+def _mapping(value: object) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 CLAIM_LEVEL = "official_ids_engine_coverage"
 SOURCE_PAGE = "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/"
 CLAIM_BOUNDARY = (
@@ -113,9 +118,7 @@ def evaluate_ids_file(
     started = perf_counter()
     audit_issues = auditor.audit(ids_path)
     unsupported_facets = [
-        issue
-        for issue in audit_issues
-        if issue.rule_id == "AEROBIM-IDS-UNSUPPORTED-FACET"
+        issue for issue in audit_issues if issue.rule_id == "AEROBIM-IDS-UNSUPPORTED-FACET"
     ]
     load_error: str | None = None
     spec_rows: list[dict[str, Any]] = []
@@ -270,7 +273,7 @@ def _accumulate_file(bucket: dict[str, int], row: dict[str, Any]) -> None:
             else:
                 bucket["load_error"] += 1
         return
-    counts = row.get("counts") if isinstance(row.get("counts"), dict) else {}
+    counts = _mapping(row.get("counts"))
     bucket["specifications"] += int(row.get("specification_count") or 0)
     bucket["executable_pass_on_fixture"] += int(counts.get(STATUS_PASS) or 0)
     bucket["executable_fail_on_fixture"] += int(counts.get(STATUS_FAIL) or 0)
@@ -308,10 +311,14 @@ def build_moexp_ids_coverage(
 ) -> dict[str, Any]:
     auditor = XmlIdsDocumentAuditor()
     ifc_model = open_ifc_model(ifc_path) if files is None else None
-    evaluated = files if files is not None else [
-        evaluate_ids_file(path, ifc_path=ifc_path, auditor=auditor, ifc_model=ifc_model)
-        for path in discover_ids(pack_dir)
-    ]
+    evaluated = (
+        files
+        if files is not None
+        else [
+            evaluate_ids_file(path, ifc_path=ifc_path, auditor=auditor, ifc_model=ifc_model)
+            for path in discover_ids(pack_dir)
+        ]
+    )
     summary = _summarize(evaluated)
     payload: dict[str, Any] = {
         "artifact_type": "moexp_ids_coverage",
@@ -332,9 +339,7 @@ def build_moexp_ids_coverage(
             "note": "Open wall Pset fixture. Not a MOEXP CIM. Fail on fixture ≠ unsupported spec.",
         },
         "icmm_ids_published": False,
-        "icmm_note": (
-            "ICMM 3.3 is PDF-only on the TIM page as of 2026-08-13; no IDS listed."
-        ),
+        "icmm_note": ("ICMM 3.3 is PDF-only on the TIM page as of 2026-08-13; no IDS listed."),
         "mappings": _inventory_mappings(pack_dir),
         "summary": summary,
         "files": [
@@ -384,9 +389,9 @@ def build_moexp_ids_coverage(
 
 
 def render_moexp_ids_coverage_markdown(coverage: dict[str, Any]) -> str:
-    summary = coverage.get("summary") if isinstance(coverage.get("summary"), dict) else {}
+    summary = _mapping(coverage.get("summary"))
     lines = [
-        "<!-- claims-lint: allow-file reason=\"Official MOEXP IDS engine coverage; fixture fail is not product accuracy\" -->",
+        '<!-- claims-lint: allow-file reason="Official MOEXP IDS engine coverage; fixture fail is not product accuracy" -->',
         "# Official MOEXP IDS coverage (IfcTester)",
         "",
         f"**claim_level:** `{coverage.get('claim_level')}`",
@@ -421,7 +426,7 @@ def render_moexp_ids_coverage_markdown(coverage: dict[str, Any]) -> str:
         "| Domain | files | specs | exec pass | exec fail | unsupported | load error |",
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
-    by_domain = summary.get("by_domain") if isinstance(summary.get("by_domain"), dict) else {}
+    by_domain = _mapping(summary.get("by_domain"))
     for domain, bucket in sorted(by_domain.items()):
         if not isinstance(bucket, dict):
             continue
@@ -442,7 +447,7 @@ def render_moexp_ids_coverage_markdown(coverage: dict[str, Any]) -> str:
             "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
-    by_kind = summary.get("by_kind") if isinstance(summary.get("by_kind"), dict) else {}
+    by_kind = _mapping(summary.get("by_kind"))
     for kind, bucket in sorted(by_kind.items()):
         if not isinstance(bucket, dict):
             continue

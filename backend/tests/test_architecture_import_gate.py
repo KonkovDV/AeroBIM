@@ -49,7 +49,9 @@ _FORBIDDEN: dict[str, frozenset[str]] = {
 }
 
 
-def _iter_imported_modules(tree: ast.AST, *, module_file: Path, layer: str) -> list[tuple[str, int]]:
+def _iter_imported_modules(
+    tree: ast.AST, *, module_file: Path, layer: str
+) -> list[tuple[str, int]]:
     """Return (absolute-ish module name, lineno) for Import / ImportFrom nodes."""
 
     package_parts = ("aerobim", layer, *module_file.parent.relative_to(_SRC_ROOT / layer).parts)

@@ -53,6 +53,7 @@ _EXCLUDE_PATH_FRAGMENTS = (
     "docs/gtm/",
     "FINDINGS_RECLASSIFICATION",
     "docs/evidence/local/",
+    "kt2-handoff-2026-08-11/wall-guid/",
 )
 
 _ALLOW_RE = re.compile(
@@ -215,8 +216,9 @@ def _should_scan(path: Path) -> bool:
         return True
     if any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS):
         return False
-    # Evidence JSON/PDF quote forbidden phrases as denial/inventory text, not product claims.
-    if "/evidence/" in f"/{rel}" and path.suffix.lower() in {".json", ".pdf"}:
+    # Evidence JSON/PDF/HTML/txt quote forbidden phrases as denial/inventory
+    # text (capability reasons, generated reports), not product claims.
+    if "/evidence/" in f"/{rel}" and path.suffix.lower() in {".json", ".pdf", ".html", ".txt"}:
         return False
     return True
 

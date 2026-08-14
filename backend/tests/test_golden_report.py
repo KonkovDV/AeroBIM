@@ -14,10 +14,11 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
 # Pinned on project-package-baseline.json @ development profile (fixture only).
-# 2026-08-13 (fifth conscious refresh): PackageOutcome precedence
-# violation > missing data (FAILED outranks BLOCKED; arXiv:2607.29058).
-# Hash is status+engine only (not reason text).
-GOLDEN_BASELINE_REPRO_HASH = "b243e8c9eb1244ff8a2b60ccd7033ae12773d8cb21a2e59f1292b09ac01c1524"
+# 2026-08-14 (sixth conscious refresh): IDS SKIPPED / ifcVersion fail-closed
+# (29fd0d5) plus capability-policy contour after that commit. Baseline pack
+# still FAILED with engine findings; hash is status+engine (not reason text).
+# Previous pin b243e8c9…c01c1524 was 2026-08-13 PackageOutcome FAILED>BLOCKED.
+GOLDEN_BASELINE_REPRO_HASH = "5c8917550af8d452375ab96d022b142bd2ce1b014f520253533cc8578b0e9d21"
 
 
 class GoldenReportTests(unittest.TestCase):

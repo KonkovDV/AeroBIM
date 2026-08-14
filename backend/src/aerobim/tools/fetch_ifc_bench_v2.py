@@ -121,9 +121,10 @@ def download_file(rel: str, dest: Path) -> dict[str, Any]:
         digest = hashlib.sha256()
         size = 0
         try:
-            with urllib.request.urlopen(req, context=_ssl_context(), timeout=600) as resp, dest.open(
-                "wb"
-            ) as handle:
+            with (
+                urllib.request.urlopen(req, context=_ssl_context(), timeout=600) as resp,
+                dest.open("wb") as handle,
+            ):
                 while True:
                     chunk = resp.read(1024 * 1024)
                     if not chunk:
@@ -249,10 +250,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(
         json.dumps(
-            {
-                k: payload[k]
-                for k in ("downloaded", "errors", "from_dir", "skipped_gplv3", "dest")
-            },
+            {k: payload[k] for k in ("downloaded", "errors", "from_dir", "skipped_gplv3", "dest")},
             ensure_ascii=False,
         )
     )
