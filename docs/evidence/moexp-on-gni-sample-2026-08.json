@@ -7,7 +7,7 @@
   "public_moexp_ids_present": true,
   "claim_boundary": "Official MOEXP IDS executed on one GNI student IFC. Not CIM compliance, not Samolet acceptance, not product accuracy. Does not overwrite the fixture MOEXP coverage snapshot.",
   "source_page": "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/",
-  "generated_at": "2026-08-13T22:15:13.696537+00:00",
+  "generated_at": "2026-08-14T13:12:00.619380+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.13.7",
@@ -175,7 +175,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 528.3,
+      "elapsed_ms": 512.7,
       "specification_count": 40,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -238,7 +238,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 2101.7,
+      "elapsed_ms": 1956.9,
       "specification_count": 42,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -303,7 +303,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 88.1,
+      "elapsed_ms": 85.5,
       "specification_count": 37,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -363,7 +363,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 2585.8,
+      "elapsed_ms": 5742.0,
       "specification_count": 54,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -440,7 +440,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 1149.5,
+      "elapsed_ms": 2706.6,
       "specification_count": 20,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -483,7 +483,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 335.5,
+      "elapsed_ms": 691.4,
       "specification_count": 8,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -514,7 +514,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 194.4,
+      "elapsed_ms": 423.4,
       "specification_count": 6,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -543,7 +543,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 44.9,
+      "elapsed_ms": 94.0,
       "specification_count": 1,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -567,7 +567,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 422.6,
+      "elapsed_ms": 908.6,
       "specification_count": 11,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -601,7 +601,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 116.3,
+      "elapsed_ms": 259.7,
       "specification_count": 3,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -627,7 +627,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 194.6,
+      "elapsed_ms": 423.8,
       "specification_count": 5,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -655,7 +655,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 650.9,
+      "elapsed_ms": 1406.6,
       "specification_count": 13,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -691,7 +691,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 1354.5,
+      "elapsed_ms": 2904.9,
       "specification_count": 40,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -754,7 +754,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 84.3,
+      "elapsed_ms": 178.3,
       "specification_count": 3,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -780,7 +780,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 88.0,
+      "elapsed_ms": 183.6,
       "specification_count": 20,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -823,7 +823,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 21.2,
+      "elapsed_ms": 40.4,
       "specification_count": 8,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -854,7 +854,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 8.6,
+      "elapsed_ms": 16.7,
       "specification_count": 5,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -882,7 +882,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 4.2,
+      "elapsed_ms": 8.3,
       "specification_count": 1,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -906,7 +906,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 21.4,
+      "elapsed_ms": 38.5,
       "specification_count": 11,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -940,7 +940,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 8.5,
+      "elapsed_ms": 15.0,
       "specification_count": 3,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -966,7 +966,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 14.0,
+      "elapsed_ms": 21.7,
       "specification_count": 5,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -994,7 +994,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 58.0,
+      "elapsed_ms": 117.4,
       "specification_count": 13,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -1030,7 +1030,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 80.3,
+      "elapsed_ms": 157.5,
       "specification_count": 38,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -1091,7 +1091,7 @@
       "audit_issue_count": 0,
       "unsupported_facet_count": 0,
       "audit_issues": [],
-      "elapsed_ms": 5.7,
+      "elapsed_ms": 11.4,
       "specification_count": 2,
       "counts": {
         "executable_pass_on_fixture": 0,
@@ -1106,7 +1106,7 @@
       "unsupported_or_load_error": []
     }
   ],
-  "content_sha256": "3cbd61098a2c956475a9a60e579701403ff5801411cd119c9592a1d2e954588e",
+  "content_sha256": "4bb668ac222b162369103cb40ec196e0a462f5084d339d9ee0debd919015ed19",
   "closes_rt001": false,
   "closes_rt002": false,
   "gni_sample": ".local/gni-bim/2025_BIMfundamentals/2025_BIMfundamentals/model_190.ifc",

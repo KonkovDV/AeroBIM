@@ -28,6 +28,7 @@ claim_boundary: "Plan only. Checkpoint NO_GO. No new ports/DI. Not customer accu
 - Скачивание 726 МБ GNI **в git** (локально уже в `.local/gni-bim`, gitignored)
 - Новые порты / DI
 - Видео 3 мин и ЛК — человек
+- Второй заказчик программы Техлаб (А101 / Галс) как замена корпусу «Самолёта» — правило AM 05.08 запрещает
 
 ## Команды
 

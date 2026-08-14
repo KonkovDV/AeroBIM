@@ -31,7 +31,7 @@ claim_boundary: >
 
 | ID | Sev | Status | Finding | Mitigation |
 |---|---|---|---|---|
-| RT-EX-01 | MED | **MITIGATED** | Temptation to invent tracker minutes after 08:00 | Follow-up file states **no notes in repo** |
+| RT-EX-01 | MED | **MITIGATED** | Temptation to invent 08:00 tracker minutes | Morning protocol still **absent**. Afternoon six-item list from the team chat is recorded as tasks, not as GO |
 | RT-EX-02 | MED | **MITIGATED** | Temptation to write `run_demo_vertical_slice` exit 0 without venv | Clone-to-demo check: live CLI **SKIPPED** |
 | RT-EX-03 | MED | **MITIGATED** | Handoff HTML 11.08 looks like current overlay demo | Video script forbids that snapshot; requires live `artifacts/` |
 | RT-EX-04 | MED | **MITIGATED** | Plan links from `docs/pilot/` used repo-root `docs/...` (18 CI broken links) | Relative `../` paths |
@@ -42,8 +42,8 @@ claim_boundary: >
 
 ## Attack scripts that failed (good)
 
-1. **«Трекер согласовал GO»** — нет заметок → нет такого утверждения.  
-2. **«Демо прогнано, exit 0»** — нет `.venv` → SKIPPED.  
+1. **«Трекер согласовал GO»** — шесть пунктов 15:26 ≠ GO.  
+2. **«Демо прогнано, exit 0»** — live CLI pinned on 3.12/3.13 overlay; still fixture, not customer PASS.  
 3. **«Harbor false-pass = 72.83% продукта»** — memo: gold-only, SKIPPED.  
 4. **«Письмо: дайте Tangl API»** — письмо просит Renga IFC.  
 5. **«CI зелёный»** — buffer lists red jobs.

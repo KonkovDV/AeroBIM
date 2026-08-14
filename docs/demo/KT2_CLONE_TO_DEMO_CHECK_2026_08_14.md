@@ -28,7 +28,8 @@ README EN §Quick Start и README RU §Быстрый старт называю�
 
 ## Live CLI на этой машине (14.08, после среза 1.1)
 
-Интерпретатор: `backend/.venv` · Python **3.13.7** (CI = 3.12; 3.12 locally missing).  
+Интерпретатор 14.08 утро: `backend/.venv` · Python **3.13.7**.  
+Интерпретатор 14.08 вечер (A6): `backend/.venv-3.12` · CPython **3.12.10** (`py -3.12`). Overlay PNG / `LIMITATIONS.json` совпали с пином 3.13.7. `reproducibility_hash` сдвинулся из‑за `code_version` (`f380354`, dirty), не из‑за минора Python.  
 Команда завершилась **exit 0**. Это успешная **генерация** артефактов, не customer PASS.
 
 Канонический каталог: `artifacts/vertical-slice-demo/` (gitignored). Повтор в `artifacts/vertical-slice-demo-run2/`.

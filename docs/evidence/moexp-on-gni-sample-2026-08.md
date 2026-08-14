@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="MOEXP IDS on GNI student sample; not CIM compliance" -->
 ---
 title: "MOEXP IDS on a GNI student IFC"
-date: 2026-08-13
+date: 2026-08-14
 claim_level: gni_student_vs_official_ids
 claim_boundary: >-
   Official MOEXP IDS executed on one GNI student IFC. Not CIM compliance, not Samolet acceptance, not product accuracy. Does not overwrite the fixture MOEXP coverage snapshot.
@@ -12,7 +12,7 @@ claim_boundary: >-
 - sample: `.local/gni-bim/2025_BIMfundamentals/2025_BIMfundamentals/model_190.ifc`
 - executable: **389** pass **0** fail **389**
 - this is a student model, **not** CIM compliance, **not** Samolet
-- content_sha256: `3cbd61098a2c956475a9a60e579701403ff5801411cd119c9592a1d2e954588e`
+- content_sha256: `4bb668ac222b162369103cb40ec196e0a462f5084d339d9ee0debd919015ed19`
 
 Does not overwrite [`norm-pack-moexp-coverage-2026-08.md`](norm-pack-moexp-coverage-2026-08.md).
 

@@ -5,6 +5,8 @@ __pycache__/
 *.pyd
 *.egg-info/
 backend/.venv/
+backend/.venv-3.12/
+backend/.venv-313/
 backend/.venv-pilot/
 .venv/
 .pytest_cache/

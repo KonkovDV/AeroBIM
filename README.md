@@ -185,8 +185,8 @@ Current behaviour is intentionally safe-by-default:
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM/backend
 
-# Create virtual environment
-python -m venv .venv
+# Create virtual environment on CPython 3.12 (CI pin). Windows: py -3.12 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate  # Linux/macOS
 # .venv\Scripts\activate   # Windows
 
@@ -444,7 +444,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_OIDC_JWKS_URL` | *(unset)* | OIDC JWKS URL |
 | `AEROBIM_OIDC_ROLES_CLAIM` | `roles` | OIDC claim name for roles |
 | `AEROBIM_OIDC_TENANT_CLAIM` | `tenant` | OIDC claim name for tenant |
-| `AEROBIM_OIDC_BFF_CLIENT_ID` | *(unset)* | Lab-only OIDC BFF public client id; does **not** make `auth_bff` production-ready |
+| `AEROBIM_OIDC_BFF_CLIENT_ID` | *(unset)* | Lab-only OIDC BFF public client id; `auth_bff` is **not claimed** production-ready |
 | `AEROBIM_OIDC_BFF_AUTHORIZE_URL` | *(unset)* | Lab-only IdP authorize URL draft; not a production login |
 | `AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST` | *(unset)* | Comma-separated exact `redirect_uri` allowlist for Phase 2.5 drafts |
 | `AEROBIM_REDIS_URL` | *(unset)* | Optional Redis URL for rate-limit / cache backends |

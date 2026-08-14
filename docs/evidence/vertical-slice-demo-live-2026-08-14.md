@@ -41,4 +41,25 @@ VLM: Qwen LIVE on fixture (prior 13.08 artifact); Kimi GATED; `comparison_not_ru
 | `ruff check src tests` + `ruff format --check` | PASS |
 | `lint_claims.py` / `--full-docs` / `--matrix-guard` / `--claim-boundary-guard` | OK |
 | `verify_evidence_bundle` wall-guid | passed (10 hashes). Do not edit hashed `wall-guid/README.md`. |
-| Python 3.12 | **not installed locally** (`py -3.12` → no runtime). Hashes remain 3.13.7 only. |
+| Python 3.12 | **reproduced 14.08 evening** — CPython **3.12.10**, venv `backend/.venv-3.12`, two CLI runs. Overlay PNG and `LIMITATIONS.json` **byte-match** the 3.13.7 pin. `reproducibility_hash` / `run-manifest.json` **differ** because `code_version` is `f380354` + dirty tree, not because of 3.12 vs 3.13. Hashed lock does not install on Windows (`uvloop`). |
+
+## A6 — CPython 3.12.10 (14.08 evening)
+
+Command (from `backend/`):
+
+```powershell
+.\.venv-3.12\Scripts\python.exe -m aerobim.tools.run_demo_vertical_slice --output ..\artifacts\vertical-slice-demo-312-run1
+.\.venv-3.12\Scripts\python.exe -m aerobim.tools.run_demo_vertical_slice --output ..\artifacts\vertical-slice-demo-312-run2
+```
+
+Exit **0** both times. `VERDICT: NOT PASS`. `working_tree_dirty=true`. HEAD `f3803548dcf97bff571d71951aff7795acc5754d`.
+
+| Artifact | 3.12.10 run1 = run2 | vs 3.13.7 pin (`d809d36`, clean) |
+| --- | --- | --- |
+| overlay-problem-zone.png | `9826281f83a1a5608a3bd88e7d4f4f52475a702c5f3c3a5b4100d05f05f6a349` | **match** |
+| LIMITATIONS.json | `78877c146bb9525b866e9c18f3605fa819615b8f8bc49628a596ffc5f20e1965` | **match** |
+| run-manifest.json | `6d887c5c2f0876fe0d4636466ed655a2292c3050fc0176683d39cfbb00c9b126` | differ (`code_version`) |
+| reproducibility_hash | `b5cf40bf1ee5eea14884fb57e154bf80a3bf4768b72e3a5542f536b2cf9f894e` | differ (`code_version=f380354` vs `d809d36`) |
+| report.json / report.html / findings.bcfzip | drift via `created_at` | expected |
+
+Install residual: `pip install --require-hashes -r requirements-dev-lock.txt` on this Windows host failed (`uvloop` Linux-only). 3.12 venv used README extras: `pip install -e ".[dev,raster,pdf-agpl]"`. `backend/.venv` (3.13.7) was **not** deleted.
