@@ -13,7 +13,7 @@ Checkpoint остаётся **NO_GO**. Журнал работ по списку
 |---|---|---|---|---|
 | 1 | КТ#2 к 20.08 — доработать продукт | ИИ + человек (видео/ЛК) | Срез 1.1 на `main`. A6: CLI на CPython 3.12.10, overlay/LIMITATIONS совпали с пином 3.13. Honesty-gates CI (README `not claimed`, attestation SHA) в этом пакете. | [`AI_WORK_PLAN_KT2_SOLVABLE_2026_08_14.md`](AI_WORK_PLAN_KT2_SOLVABLE_2026_08_14.md) · [`../evidence/vertical-slice-demo-live-2026-08-14.md`](../evidence/vertical-slice-demo-live-2026-08-14.md) |
 | 2 | Сводная таблица трёх релизов IFC | ИИ | Живой прогон n=20. IFC2X3 GUID 23→22 (снят `AEROBIM-IFC-GUID-INVALID`). IFC4X3: `ids=failed` (fail-closed `ifcVersion`). | [`../evidence/ifc-release-matrix-2026-08.md`](../evidence/ifc-release-matrix-2026-08.md) |
-| 3 | Датасеты: поиск, прогон скачанного, фикс ошибок | ИИ | Поиск 14.08; локально GNI / IFC-Bench / AEC-Bench / Renga pin. Публичного «ПД+экспертиза» нет. | [`../datasets/OPEN_SOURCE_SEARCH_2026_08_14.md`](../datasets/OPEN_SOURCE_SEARCH_2026_08_14.md) |
+| 3 | Датасеты: поиск, прогон скачанного, фикс ошибок | ИИ | Поиск 14.08 + вечерний проход без «Самолёта»: ЕГРЗ/АГР/G55/IfcClash. Публичного «ПД+экспертиза» нет. RT-001/002/003 OPEN. | [`../datasets/OPEN_SOURCE_SEARCH_2026_08_14.md`](../datasets/OPEN_SOURCE_SEARCH_2026_08_14.md) · [`../datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md`](../datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md) |
 | 4 | Вопросы + демо ядра у; созвон с Михаилом | Человек проводит; ИИ готовит пакет | Пакет готов. 12.08 слот а по календарю был; **минут в git нет**. Вердикт Кортунова 08.08 принят (срез, freeze портов). Второй слот а: ждём AM. | [`../demo/CONSULTATIONS_2026_08_14.md`](../demo/CONSULTATIONS_2026_08_14.md) |
 | 5 | Коммерческий трек: KPI = назначенные демо 3–5 | Подрядчик / владелец | Бриф переформулирован. Холодный канал 50 касаний / 0 ответов — не продолжать тем же KPI. В git демо = 0. | [`../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`](../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md) |
 | 6 | Монетизация при открытом коде — на следующей встрече | Команда | Варианты A–D, LICENSE не меняем | тот же файл, §2 |
@@ -22,7 +22,7 @@ Checkpoint остаётся **NO_GO**. Журнал работ по списку
 
 | Проблема | Факт из контура программы | Что делаем в репо | Что не делать |
 |---|---|---|---|
-| Корпус заказчика | Запрос приложений ТЗ 05.08; ответа нет | RT-001 открыт | Публиковать open-corpus F1 как точность продукта |
+| Корпус заказчика | Запрос приложений ТЗ 05.08; ответа нет | RT-001 открыт; публичные прокси ≠ CLOSED | Публиковать open-corpus F1 как точность продукта |
 | Профиль приёмки «Самолёта» | IDS МОГЭ ≠ Samolet | RT-002 открыт | Alias IFC4X3 → IFC4 |
 | Federated MEP | AABB ≠ clash | RT-003 открыт | MEP delivered |
 | DWG в ТЗ | Трекер 07.08: требование остаётся | FAILED + мемо TZ-mandatory | «Вне скоупа молча» / DWG-ready |

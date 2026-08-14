@@ -142,5 +142,26 @@ class OidcBffPhase25PkceTests(unittest.TestCase):
         self.assertEqual(url, draft)
 
 
+class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
+    def test_public_proxy_search_does_not_close_rt_blockers(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "datasets"
+            / "RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md"
+        )
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("closes_rt003: false", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("DEAD_CHANNEL", text)
+        self.assertIn("клиентские данные", text.lower())
+        self.assertNotIn("closes_rt001: true", text)
+        self.assertNotIn("closes_rt002: true", text)
+        self.assertNotIn("closes_rt003: true", text)
+
+
 if __name__ == "__main__":
     unittest.main()

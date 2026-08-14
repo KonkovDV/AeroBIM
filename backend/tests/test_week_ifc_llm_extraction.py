@@ -146,7 +146,8 @@ class DwgFailClosedStillHolds(unittest.TestCase):
         memo = Path(__file__).resolve().parents[2] / "docs" / "dwg-blocker-memo-2026-08.md"
         self.assertTrue(memo.is_file())
         text = memo.read_text(encoding="utf-8")
-        self.assertIn("PILOT_OUT_OF_SCOPE", text)
+        self.assertIn("TZ_MANDATORY_UNSUPPORTED", text)
+        self.assertNotIn("**Status:** PILOT_OUT_OF_SCOPE", text)
         self.assertIn("ПП РФ 614", text)
         self.assertIn("CADSoftTools", text)
         self.assertIn("fail-closed", text.lower())

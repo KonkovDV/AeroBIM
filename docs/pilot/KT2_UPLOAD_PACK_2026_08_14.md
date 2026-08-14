@@ -26,6 +26,7 @@ claim_boundary: "File list only. Nothing new after 18.08. Video and LK = human. 
 | 8 | IDS МОГЭ coverage | [`../evidence/norm-pack-moexp-coverage-2026-08.md`](../evidence/norm-pack-moexp-coverage-2026-08.md) |
 | 9 | OSINT / вектор | [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) |
 | 10 | Blockers | [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md) |
+| 10b | Три блокера без «Самолёта» (публичные прокси ≠ CLOSED) | [`../datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md`](../datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md) |
 | 11 | Видео 3 мин | локальный mp4 по [`../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) |
 
 ## Не класть в ЛК
