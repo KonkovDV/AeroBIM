@@ -1,0 +1,818 @@
+{
+  "artifact_type": "spbexp_ids_coverage",
+  "schema_version": "1.1.0",
+  "claim_level": "official_ids_engine_coverage",
+  "customer_accuracy_not_established": true,
+  "closes_rt002_customer_profile": false,
+  "claim_boundary": "Official SPb GAU CGE IDS 1.0 zips (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). Second public GAU jurisdiction pack. Not MosoblGosExpertiza. Not a Samolet-signed acceptance profile. RT-002 stays OPEN.",
+  "source_page": "https://www.spbexp.ru/bim/docs/",
+  "generated_at": "2026-08-14T17:07:48.321729+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "machine": "AMD64",
+    "system": "Windows"
+  },
+  "pack_dir": "C:/plans/AeroBIM/samples/ids/spbexp/pack",
+  "fixture_ifc": {
+    "path": "C:/plans/AeroBIM/samples/ifc/wall-pset-qto-pass.ifc",
+    "sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
+    "bytes": 997,
+    "note": "Open wall Pset fixture. Fail on fixture ≠ unsupported spec."
+  },
+  "summary": {
+    "ids_file_count": 22,
+    "specification_count": 356,
+    "executable": 356,
+    "executable_pass_on_fixture": 195,
+    "executable_fail_on_fixture": 161,
+    "unsupported": 0,
+    "load_error": 0,
+    "by_domain": {
+      "ЧАСТЬ 2. СПОЗУ": {
+        "files": 3,
+        "specifications": 23,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 23,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "ЧАСТЬ 3. АР": {
+        "files": 1,
+        "specifications": 16,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 16,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "ЧАСТЬ 4. КР": {
+        "files": 1,
+        "specifications": 21,
+        "executable_pass_on_fixture": 1,
+        "executable_fail_on_fixture": 20,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "5.1 ИОС1": {
+        "files": 1,
+        "specifications": 33,
+        "executable_pass_on_fixture": 21,
+        "executable_fail_on_fixture": 12,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "5.2 ИОС2": {
+        "files": 2,
+        "specifications": 35,
+        "executable_pass_on_fixture": 21,
+        "executable_fail_on_fixture": 14,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "5.3 ИОС3": {
+        "files": 1,
+        "specifications": 18,
+        "executable_pass_on_fixture": 10,
+        "executable_fail_on_fixture": 8,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "5.4 ИОС4": {
+        "files": 5,
+        "specifications": 103,
+        "executable_pass_on_fixture": 68,
+        "executable_fail_on_fixture": 35,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "5.5 ИОС5": {
+        "files": 1,
+        "specifications": 24,
+        "executable_pass_on_fixture": 10,
+        "executable_fail_on_fixture": 14,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "5.6 ИОС6": {
+        "files": 1,
+        "specifications": 19,
+        "executable_pass_on_fixture": 12,
+        "executable_fail_on_fixture": 7,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "ЧАСТЬ 6. ТХ": {
+        "files": 1,
+        "specifications": 3,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 3,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "rii": {
+        "files": 5,
+        "specifications": 61,
+        "executable_pass_on_fixture": 52,
+        "executable_fail_on_fixture": 9,
+        "unsupported": 0,
+        "load_error": 0
+      }
+    },
+    "by_kind": {
+      "attributes": {
+        "files": 0,
+        "specifications": 0,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "classification": {
+        "files": 0,
+        "specifications": 0,
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "other": {
+        "files": 22,
+        "specifications": 356,
+        "executable_pass_on_fixture": 195,
+        "executable_fail_on_fixture": 161,
+        "unsupported": 0,
+        "load_error": 0
+      }
+    }
+  },
+  "files": [
+    {
+      "domain": "ЧАСТЬ 2. СПОЗУ",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Базовая модель).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Базовая модель).ids",
+      "kind": "other",
+      "sha256": "38493c4b546a562090f8f94ef08c686fb90e95f1300dbe5da071f12d69f984b5",
+      "bytes": 72403,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 36.3,
+      "specification_count": 5,
+      "counts": {
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 5,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 2.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 2.А.2 – Имена атрибутов для элемента  «Пожарный отсек» (IfcSpatialZone.FIRESAFETY)",
+        "Таблица 2.А.3 – Имена атрибутов для элемента  «Площадь этажа» (IfcSpace.GFA)",
+        "Таблица 2.А.4 – Имена атрибутов для элемента «Площадь застройки» (IfcSpatialZone)",
+        "Таблица 2.А.5 – Имена атрибутов для элемента «Строительный объем подземной / надземной части» (IfcSpatialStructureElement)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "ЧАСТЬ 2. СПОЗУ",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Окружающей застройки).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Окружающей застройки).ids",
+      "kind": "other",
+      "sha256": "cfce4582ab440f1c700a64d03900829251d6cc971ed5595b2f223ffa8d21057d",
+      "bytes": 8234,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 4.5,
+      "specification_count": 2,
+      "counts": {
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 2,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 2.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 2.А.16 – Имена атрибутов для элемента «ОКС окружающей застройки» (IfcBuildingElementProxy)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "ЧАСТЬ 2. СПОЗУ",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Планировочная организация земельного участка).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Планировочная организация земельного участка).ids",
+      "kind": "other",
+      "sha256": "0fad7d68f60fac6c56ccc7cc24fe9c9f878b0eb61741d403341926bb87918121",
+      "bytes": 104183,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 44.9,
+      "specification_count": 16,
+      "counts": {
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 16,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 2.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 2.А.6 – Имена атрибутов для элемента «Поверхность участка застройки» (IfcGeographicElement)",
+        "Таблица 2.А.7 – Имена атрибутов для элемента «Зеленые насаждения» (IfcGeographicElement)",
+        "Таблица 2.А.8 – Имена атрибутов для элемента «Ограждение», «Дорожное ограждение»,«Шумозащитный экран» (IfcRailing)",
+        "Таблица 2.А.9 – Имена атрибутов для элемента «Функциональная зона», «Площадка» (IfcSpatialZone)",
+        "Таблица 2.А.10 – Имена атрибутов для элемента  «Покрытие» (IfcBuildingElementProxy)",
+        "Таблица 2.А.11 – Имена атрибутов для элемента  «Малые архитектурные формы», «Спортивное оборудование», «Игровое оборудование» (IfcBuildingElementProxy).",
+        "Таблица 2.А.12 – Имена атрибутов для элемента «Ворота», «Калитка», «Шлагбаум» (IfcDoor.GATE)",
+        "Таблица 2.А.13 – Имена атрибутов для элемента «Мусорный контейнер», «Урна» (IfcBuildingElementProxy)",
+        "Таблица 2.А.14 – Имена атрибутов для элемента «Подпорная стенка» (IfcWall.SHEAR)",
+        "Таблица 2.А.15 – Имена атрибутов для элемента «Парковочное место» (IfcBuildingElementProxy)",
+        "Таблица 3.А.11 – Имена атрибутов для элемента «Лестница» (IfcStair)",
+        "Таблица 3.А.12 – Имена атрибутов для элемента «Лестничный марш» (IfcStairFlight)",
+        "Таблица 3.А.13 – Имена атрибутов для элемента «Пандус», «Рампа» (IfcRamp)",
+        "Таблица 3.А.14 – Имена атрибутов для элемента «Пролет пандуса» (IfcRampFlight)",
+        "Таблица 3.А.16 – Имена атрибутов для элемента «Подъемно-транспортное оборудование» (IfcTransportElement)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "ЧАСТЬ 3. АР",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 3. АР/IDS СПб ГАУ ЦГЭ (Архитектурные решения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Архитектурные решения).ids",
+      "kind": "other",
+      "sha256": "81cb78faf2c168a7c20b487b98059668c0a5d0165c6e015c53d406c702da6370",
+      "bytes": 200541,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 103.1,
+      "specification_count": 16,
+      "counts": {
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 16,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 3.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 3.А.2 – Имена атрибутов для элемента «Помещение» (IfcSpace)",
+        "Таблица 3.А.3 – Имена атрибутов для элемента «Стена» (IfcWall)",
+        "Таблица 3.А.4 – Имена атрибутов для элемента «Витражная система» (IfcCurtainWall)",
+        "Таблица 3.А.5 – Имена атрибутов для элемента «Перекрытие» (IfcSlab)",
+        "Таблица 3.А.6 – Имена атрибутов для элемента «Пол», «Потолок», «Отделка стен», «Кровля» (IfcCovering)",
+        "Таблица 3.А.7 – Имена атрибутов для элемента «Дверь», «Ворота» (IfcDoor)",
+        "Таблица 3.А.8 – Имена атрибутов для элемента «Окно», «Балконный блок» (IfcWindow)",
+        "Таблица 3.А.9 – Имена атрибутов для элемента «Колонна», «Пилястра» (IfcColumn)",
+        "Таблица 3.А.10 – Имена атрибутов для элемента «Балка», «Перемычка» (IfcBeam)",
+        "Таблица 3.А.11 – Имена атрибутов для элемента «Лестница» (IfcStair)",
+        "Таблица 3.А.12 – Имена атрибутов для элемента «Лестничный марш» (IfcStairFlight)",
+        "Таблица 3.А.13 – Имена атрибутов для элемента «Пандус», «Рампа» (IfcRamp)",
+        "Таблица 3.А.14 – Имена атрибутов для элемента «Пролет пандуса» (IfcRampFlight)",
+        "Таблица 3.А.15 – Имена атрибутов для элемента «Ограждение» (IfcRailing)",
+        "Таблица 3.А.16 – Имена атрибутов для элемента «Подъемно-транспортное оборудование» (IfcTransportElement)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "ЧАСТЬ 4. КР",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 4. КР/IDS СПб ГАУ ЦГЭ (Конструктивные решения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Конструктивные решения).ids",
+      "kind": "other",
+      "sha256": "16fdd817cb230820b3baefe3f0b1ae78804d51ab42d3d27fb9bef8ed2a4cee4f",
+      "bytes": 204958,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 97.4,
+      "specification_count": 21,
+      "counts": {
+        "executable_pass_on_fixture": 1,
+        "executable_fail_on_fixture": 20,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 4.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 4.А.2 – Имена атрибутов для материалов (IfcMaterial)",
+        "Таблица 4.А.3 – Имена атрибутов для элемента «Стена» (IfcWall)",
+        "Таблица 4.А.4 – Имена атрибутов для элемента «Перекрытие» (IfcSlab)",
+        "Таблица 4.А.5 – Имена атрибутов для элемента «Колонна» (IfcColumn.COLUMN)",
+        "Таблица 4.А.6 – Имена атрибутов для элемента «Балка» (IfcBeam)",
+        "Таблица 4.А.7 – Имена атрибутов для элемента «Лестница» (IfcStair)",
+        "Таблица 4.А.8 – Имена атрибутов для элемента «Лестничный марш» (IfcStairFlight)",
+        "Таблица 4.А.9 – Имена атрибутов для элемента «Пандус», «Рампа» (IfcRamp)",
+        "Таблица 4.А.10 – Имена атрибутов для элемента «Пролёт пандуса» (IfcRampFlight)",
+        "Таблица 4.А.11 – Имена атрибутов для элемента «Фундамент, Подготовка» (IfcFooting)",
+        "Таблица 4.А.12 – Имена атрибутов для элемента «Свая» (IfcPile)",
+        "Таблица 4.А.13 – Имена атрибутов для элемента «Ограждение» (IfcRailing)",
+        "Таблица 4.А.14 – Имена атрибутов для элемента «Связи» (IfcMember)",
+        "Таблица 4.А.15 – Имена атрибутов для элемента «Сборка» (IfcElementAssembly)",
+        "Таблица 4.А.16 – Имена атрибутов для элемента «Пластины» (IfcPlate)",
+        "Таблица 4.А.17 – Имена атрибутов для элемента «Крепёжные элементы» (IfcMechanicalFastener)",
+        "Таблица 4.А.17 – Имена атрибутов для элемента «Иные детали сборки» (IfcDiscreteAccessory)",
+        "Таблица 4.А.19 – Имена атрибутов для элемента «Гидрошпонка», «Засыпка» (IfcBuildingElementProxy)",
+        "Таблица 4.А.20 – Имена атрибутов для элемента «Утеплитель», «Гидроизоляция», «Перфорация», «Огнезащита» (IfcCovering.INSULATION)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.1 ИОС1",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.1 ИОС1/IDS СПб ГАУ ЦГЭ (Система электроснабжения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система электроснабжения).ids",
+      "kind": "other",
+      "sha256": "e7a4cedda364d1b6c844b68106ffbfc12adbead23c7e5950d3595be476751a5a",
+      "bytes": 151263,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 95.2,
+      "specification_count": 33,
+      "counts": {
+        "executable_pass_on_fixture": 21,
+        "executable_fail_on_fixture": 12,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 5.А.13 Распределительный щит (IfcElectricDistributionBoard)",
+        "5.А.1 Кабеленесущие системы (IfcCableCarrierSegment)",
+        "5.А.2 Соединительные элементы лотков и коробов (IfcCableCarrierFitting)",
+        "5.А.5 Коробка распределительная (IfcJunctionBox)",
+        "5.А.6 Счетчик электрический (IfcFlowMeter)",
+        "5.А.7 Защитное устройство (IfcProtectiveDevice)",
+        "5.А.10 Электроприбор (IfcElectricAppliance)",
+        "5.А.11 Осветительный прибор (IfcLightFixture)",
+        "5.А.12 Розетка (IfcOutlet)",
+        "5.А.24 Трансформатор (IfcTransformer)",
+        "5.А.29.1 Точка соединения (IfcDistributionPort)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.2 ИОС2",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система водоснабжения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система водоснабжения).ids",
+      "kind": "other",
+      "sha256": "dfa35d97cf80289102e042cdfe875e8be74892c34b921d3b3e1bd5e6beb98b77",
+      "bytes": 87812,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 42.7,
+      "specification_count": 21,
+      "counts": {
+        "executable_pass_on_fixture": 14,
+        "executable_fail_on_fixture": 7,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.2 Точки соединения (IfcDistributionPort)",
+        "5.А.30 Труба (IfcPipeSegment)",
+        "5.А.31 Соединительные элементы труб (IfcPipeFitting)",
+        "5.А.32 Трубопроводная арматура (IfcValve)",
+        "5.А.33 Расходомер, счетчик (IfcFlowMeter)",
+        "5.А.42 Фильтр (IfcFilter)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.2 ИОС2",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система противопожарного водоснабжения (спринклерное пожаротушение)).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система противопожарного водоснабжения (спринклерное пожаротушение)).ids",
+      "kind": "other",
+      "sha256": "d6af5aa30ad67350009c26d3410eb46d926919900a043ade29f1a98b01879038",
+      "bytes": 56455,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 24.8,
+      "specification_count": 14,
+      "counts": {
+        "executable_pass_on_fixture": 7,
+        "executable_fail_on_fixture": 7,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.3 Точки соединения (IfcDistributionPort)",
+        "5.А.47 Труба (IfcPipeSegment)",
+        "5.А.48 Соединительные элементы труб (IfcPipeFitting)",
+        "5.А.49 Трубопроводная арматура (IfcValve)",
+        " 5.А.50 Спринклер, дренчер (IfcFireSuppressionTerminal)",
+        "5.А.54 Фильтр (IfcFilter)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.3 ИОС3",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.3 ИОС3/IDS СПб ГАУ ЦГЭ (Система водоотведения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система водоотведения).ids",
+      "kind": "other",
+      "sha256": "530959532dcf6268489374cba68586f69152ea93ca22f6c706b310b1d521bb97",
+      "bytes": 75857,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 39.2,
+      "specification_count": 18,
+      "counts": {
+        "executable_pass_on_fixture": 10,
+        "executable_fail_on_fixture": 8,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.4 Точки соединения (IfcDistributionPort)",
+        "5.А.57 Труба (IfcPipeSegment)",
+        "5.А.58 Соединительные элементы труб (IfcPipeFitting)",
+        "5.А.59 Трубопроводная арматура (IfcValve)",
+        "5.А.60 Расходомер, счетчик (IfcFlowMeter)",
+        "5.А.62 Сантехнический прибор (IfcSanitaryTerminal)",
+        "5.А.64 Отстойник (IfcWasteTerminal)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.4 ИОС4",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система вентиляции).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система вентиляции).ids",
+      "kind": "other",
+      "sha256": "c9014b41fbdbbd2b7ffd2afd2dff87963fc0110a8af9c65d7b93bced09f3267d",
+      "bytes": 82859,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 38.5,
+      "specification_count": 21,
+      "counts": {
+        "executable_pass_on_fixture": 12,
+        "executable_fail_on_fixture": 9,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.6 Точки соединения (IfcDistributionPort)",
+        "5.А.83 Воздуховод (IfcDuctSegment)",
+        "5.А.84 Соединительные элементы воздуховода (IfcDuctFitting)",
+        "5.А.85 Расходомер, счетчик (IfcFlowMeter)",
+        "5.А.86 Регулятор воздушного потока  (IfcAirTerminalBox)",
+        "5.А.87 Воздухораспределитель (IfcAirTerminal)",
+        "5.А.96 Шумоглушитель (IfcDuctSilencer)",
+        "5.А.97 Фильтр (IfcFilter)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.4 ИОС4",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система кондиционирования).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система кондиционирования).ids",
+      "kind": "other",
+      "sha256": "5d87aa5ab2e97d286e9547b25a81060f667dc2cd9e83925d31c6cc39f3f7de79",
+      "bytes": 115023,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 69.1,
+      "specification_count": 27,
+      "counts": {
+        "executable_pass_on_fixture": 21,
+        "executable_fail_on_fixture": 6,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.7 Точки соединения (IfcDistributionPort)",
+        "5.А.104 Воздуховод (IfcDuctSegment)",
+        "5.А.105 Соединительные элементы воздуховода (IfcDuctFitting)",
+        "5.А.107 Расходомер, счетчик (IfcFlowMeter)",
+        "5.А.120 Модульное оборудование (IfcUnitaryEquipment)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.4 ИОС4",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система отопления).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система отопления).ids",
+      "kind": "other",
+      "sha256": "272cc8be39c65e4302de627a81bafc5758db4c7530a799aa994cf81805010299",
+      "bytes": 59624,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 27.9,
+      "specification_count": 15,
+      "counts": {
+        "executable_pass_on_fixture": 9,
+        "executable_fail_on_fixture": 6,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.5 Точки соединения (IfcDistributionPort)",
+        "5.А.71 Труба (IfcPipeSegment)",
+        "5.А.72 Соединительные элементы труб (IfcPipeFitting)",
+        "5.А.73 Трубопроводная арматура (IfcValve)",
+        "5.А.74 Расходомер, счетчик (IfcFlowMeter)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.4 ИОС4",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система теплоснабжения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система теплоснабжения).ids",
+      "kind": "other",
+      "sha256": "24bb4b29d0d4053e421eff74fd0100a16df65946e7899afe941de0368652a1b6",
+      "bytes": 72769,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 36.3,
+      "specification_count": 18,
+      "counts": {
+        "executable_pass_on_fixture": 10,
+        "executable_fail_on_fixture": 8,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.8 Точки соединения (IfcDistributionPort)",
+        "5.А.125 Труба (IfcPipeSegment)",
+        "5.А.126 Соединительные элементы труб (IfcPipeFitting)",
+        "5.А.127 Трубопроводная арматура (IfcValve)",
+        "5.А.128 Расходомер, счетчик (IfcFlowMeter)",
+        "5.А.129 Насос (IfcPump)",
+        "5.А.134 Модульное оборудование (ИТП) (IfcUnitaryEquipment)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.4 ИОС4",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система холодоснабжения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система холодоснабжения).ids",
+      "kind": "other",
+      "sha256": "07595be56b76c434ec6f93e4f4492f73bbe39524e99a7b6accf6da02d98b5a24",
+      "bytes": 92547,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 44.7,
+      "specification_count": 22,
+      "counts": {
+        "executable_pass_on_fixture": 16,
+        "executable_fail_on_fixture": 6,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.8 Точки соединения (IfcDistributionPort)",
+        "5.А.141 Воздуховод (IfcDuctSegment)",
+        "5.А.142 Соединительные элементы воздуховода (IfcDuctFitting)",
+        "5.А.144 Расходомер, счетчик (IfcFlowMeter)",
+        "5.А.154 Модульное оборудование (IfcUnitaryEquipment)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.5 ИОС5",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.5 ИОС5/IDS СПб ГАУ ЦГЭ (Сети связи).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Сети связи).ids",
+      "kind": "other",
+      "sha256": "872e514ac7e95be7a33e7805358e8b7da87e4f694dd91aeed29444bf7077d9e9",
+      "bytes": 114828,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 76.9,
+      "specification_count": 24,
+      "counts": {
+        "executable_pass_on_fixture": 10,
+        "executable_fail_on_fixture": 14,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 5.А.13 Распределительный щит (IfcElectricDistributionBoard)",
+        "5.А.29.10 Точка соединения (IfcDistributionPort)",
+        "5.А.158 Кабеленесущие системы (IfcCableCarrierSegment)",
+        "5.А.159 Соединительные элементы лотков и коробов (IfcCableCarrierFitting)",
+        "5.А.162 Коробка распределительная (IfcJunctionBox)",
+        "5.А.163 Счетчик электрический (IfcFlowMeter)",
+        "5.А.164 Защитное устройство (IfcProtectiveDevice)",
+        "5.А.166 Прибор учета времени (IfcElectricTimeControl)",
+        "5.А.167 Устройство связи (IfcCommunicationsAppliance)",
+        "5.А.168 Устройство видеонаблюдения и оповещения (IfcAudioVisualAppliance)",
+        "5.А.171 Накопитель электроэнергии (IfcElectricFlowStorageDevice)",
+        "5.А.174 Оповещатель/извещатель (IfcAlarm)",
+        "5.А.175 Контроллер, блок управления (IfcController)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "5.6 ИОС6",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.6 ИОС6/IDS СПб ГАУ ЦГЭ (Система газоснабжения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Система газоснабжения).ids",
+      "kind": "other",
+      "sha256": "d69fd52e53810b9a8a2739ba3a64ee056f3f1c9646a26efa6f1871b2a9796ce6",
+      "bytes": 72869,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 30.1,
+      "specification_count": 19,
+      "counts": {
+        "executable_pass_on_fixture": 12,
+        "executable_fail_on_fixture": 7,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 5.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "5.А.29.11 Точки соединения (IfcDistributionPort)",
+        "5.А.178 Труба (IfcPipeSegment)",
+        "5.А.179 Соединительные элементы труб (IfcPipeFitting)",
+        "5.А.180 Трубопроводная арматура системы ГСВ (IfcDamper)",
+        " 5.А.181 Расходомер, счетчик (IfcFlowMeter)",
+        "5.А.187 Фильтр (IfcFilter)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "ЧАСТЬ 6. ТХ",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 6. ТХ/IDS СПб ГАУ ЦГЭ (Технологические решения).ids",
+      "file_name": "IDS СПб ГАУ ЦГЭ (Технологические решения).ids",
+      "kind": "other",
+      "sha256": "66d467c16902232c537ba269b33b8353aa9f824d587c4257dcc814969e1f5081",
+      "bytes": 19473,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 9.0,
+      "specification_count": 3,
+      "counts": {
+        "executable_pass_on_fixture": 0,
+        "executable_fail_on_fixture": 3,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "Таблица 6.А.2 – Имена атрибутов для элемента «Здание» (IfcBuilding)",
+        "Таблица 6.А.3 – Имена атрибутов для элемента «Мебель», «Монтируемое и немонтируемое оборудование» (IfcFurniture)",
+        "Таблица 6.А.4 – Имена атрибутов для элемента «Зона обслуживания» (IfcBuildingElementProxy)"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "rii",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Рельеф_1.1.0_(IDS_1.0).ids",
+      "file_name": "ЦГЭ.ЦИМ.РИИ_ИГДИ_Рельеф_1.1.0_(IDS_1.0).ids",
+      "kind": "other",
+      "sha256": "f92984d823c5dbe3669a56996992cb5466ebd44f488e55c2363b3410017ac392",
+      "bytes": 5382,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 4.2,
+      "specification_count": 2,
+      "counts": {
+        "executable_pass_on_fixture": 1,
+        "executable_fail_on_fixture": 1,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "1.1.1 Натурный рельеф"
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "rii",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Ситуация_1.1.0_(IDS_1.0).ids",
+      "file_name": "ЦГЭ.ЦИМ.РИИ_ИГДИ_Ситуация_1.1.0_(IDS_1.0).ids",
+      "kind": "other",
+      "sha256": "006d45001e44758eb82292427681a233da33946f797c6b538c57856baa90f692",
+      "bytes": 65533,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 45.4,
+      "specification_count": 32,
+      "counts": {
+        "executable_pass_on_fixture": 32,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "rii",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГИ_1.1.0_(IDS_1.0).ids",
+      "file_name": "ЦГЭ.ЦИМ.РИИ_ИГИ_1.1.0_(IDS_1.0).ids",
+      "kind": "other",
+      "sha256": "07cd61c4c0e406b32fec950aa67ba3210b2ef067ba1086d9556c00b26263a0e1",
+      "bytes": 45803,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 35.9,
+      "specification_count": 15,
+      "counts": {
+        "executable_pass_on_fixture": 7,
+        "executable_fail_on_fixture": 8,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [
+        "2.1.1 Проектируемый ОКС",
+        "2.1.3 Геологическая выработка/скважина (IFC4)",
+        "2.1.3 Геологическая выработка/скважина (IFC4x3)",
+        "2.1.4 Геологический слой (IFC4)",
+        "2.1.4 Геологический слой (IFC4x3)",
+        "2.1.5 Геологический пласт (IFC4)",
+        "2.1.5 Геологический пласт (IFC4x3)",
+        "А.3 Правила заполнения атрибута \"Источник данных\""
+      ],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "rii",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГМИ_1.1.0_(IDS_1.0).ids",
+      "file_name": "ЦГЭ.ЦИМ.РИИ_ИГМИ_1.1.0_(IDS_1.0).ids",
+      "kind": "other",
+      "sha256": "4370fa28e5ca77ac8f1cc50dac6ad736ac5e309f58785a7adcc3eba407e7ac35",
+      "bytes": 9186,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 6.5,
+      "specification_count": 4,
+      "counts": {
+        "executable_pass_on_fixture": 4,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [],
+      "unsupported_or_load_error": []
+    },
+    {
+      "domain": "rii",
+      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИЭИ_1.1.0_(IDS_1.0).ids",
+      "file_name": "ЦГЭ.ЦИМ.РИИ_ИЭИ_1.1.0_(IDS_1.0).ids",
+      "kind": "other",
+      "sha256": "1ce1a7471fae713301bfa8c344e121cde73829f789560904bc19b0274147dbff",
+      "bytes": 15987,
+      "load_error": null,
+      "audit_issue_count": 0,
+      "unsupported_facet_count": 0,
+      "audit_issues": [],
+      "elapsed_ms": 9.3,
+      "specification_count": 8,
+      "counts": {
+        "executable_pass_on_fixture": 8,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0
+      },
+      "failed_specification_names": [],
+      "unsupported_or_load_error": []
+    }
+  ],
+  "pack_id": "spbexp",
+  "samolet_alias": false,
+  "customer_signed": false,
+  "content_sha256": "438708700e41dd372daf4e75c522d76794498bb389ae2a6b754506c0ef29f4ac"
+}

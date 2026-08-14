@@ -67,6 +67,17 @@ class JurisdictionPointerFileTests(unittest.TestCase):
         self.assertFalse(data["samolet_alias"])
         self.assertIn("not-samolet-profile", data["claim_labels"])
 
+    def test_checked_in_moscow_and_spb_pointers_cannot_be_samolet(self) -> None:
+        for rel in (
+            "samples/ids/moscow-agr/jurisdiction-profile-pointer.json",
+            "samples/ids/spbexp/jurisdiction-profile-pointer.json",
+        ):
+            data = json.loads((REPO_ROOT / rel).read_text(encoding="utf-8"))
+            self.assertFalse(data["closes_rt002"])
+            self.assertFalse(data["customer_signed"])
+            self.assertFalse(data["samolet_alias"])
+            self.assertIsNone(data["approval"])
+
 
 class TzProxyRehearsalPayloadTests(unittest.TestCase):
     def test_payload_honesty_without_opening_duplex(self) -> None:
@@ -94,6 +105,9 @@ class TzProxyRehearsalPayloadTests(unittest.TestCase):
         self.assertGreaterEqual(int(ids["ids_file_count"]), 24)
         self.assertEqual(ids["specification_count"], 389)
         self.assertFalse(ids["customer_signed"])
+        packs = payload["rt002_public_ids_packs"]
+        self.assertEqual(len(packs), 3)
+        self.assertTrue(all(row["closes_rt002"] is False for row in packs))
 
     def test_moexp_pointer_reads_coverage_summary(self) -> None:
         pointer = moexp_live_pointer(REPO_ROOT)

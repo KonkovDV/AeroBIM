@@ -2,8 +2,8 @@
   "schema_version": "1.0.0",
   "artifact_type": "agr_exchange_fixture",
   "claim_level": "agr_exchange_fixture",
-  "claim_boundary": "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Not official TEP XML schema. Not customer CIM acceptance.",
-  "generated_at": "2026-08-14T16:51:41.259470+00:00",
+  "claim_boundary": "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD are public city files, not a Samolet-signed acceptance pack. Not customer CIM acceptance.",
+  "generated_at": "2026-08-14T17:07:46.465905+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
@@ -12,8 +12,8 @@
   },
   "manifest": "samples/agr/exchange-fixture-manifest.json",
   "summary": {
-    "case_count": 7,
-    "cases_matching_expect": 7
+    "case_count": 11,
+    "cases_matching_expect": 11
   },
   "cases": [
     {
@@ -98,7 +98,51 @@
       "expect_rule_ids": [],
       "observed_rule_ids": [],
       "expect_matched": true
+    },
+    {
+      "id": "pass-tep-official-root",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [],
+      "observed_rule_ids": [],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-tep-wrong-root",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-TEP-ROOT"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-TEP-ROOT"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "pass-vedomost-xsd",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [],
+      "observed_rule_ids": [],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-vedomost-xsd",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-VEDOMOST-XSD"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-VEDOMOST-XSD"
+      ],
+      "expect_matched": true
     }
   ],
-  "content_sha256": "68c1fbbc14b4bcd44f73cbf3fae36ed2583a512006f8be98976f3727dcbb9e42"
+  "content_sha256": "d24b8e7be463a50844f5bd4d2e5efc9c492b645857bfc7ba24bbc11654a207cf"
 }

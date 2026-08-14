@@ -46,6 +46,42 @@
       "require_tep_xml": true,
       "tep_xml": "samples/agr/tep-sidecar-fixture.xml",
       "expect_rule_ids": []
+    },
+    {
+      "id": "pass-tep-official-root",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "require_tep_xml": true,
+      "tep_xml": "samples/agr/dgp/AGR_TEO.xml",
+      "tep_expected_root": "ArchitecturalUrbanPlanningSolution",
+      "expect_rule_ids": []
+    },
+    {
+      "id": "fail-tep-wrong-root",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "require_tep_xml": true,
+      "tep_xml": "samples/agr/tep-sidecar-fixture.xml",
+      "tep_expected_root": "ArchitecturalUrbanPlanningSolution",
+      "expect_rule_ids": ["AEROBIM-AGR-TEP-ROOT"]
+    },
+    {
+      "id": "pass-vedomost-xsd",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "require_vedomost_xsd": true,
+      "vedomost_xml": "samples/agr/dgp/Vedomost_AGR.xml",
+      "vedomost_xsd": "samples/agr/dgp/Vedomost_AGR_VED_NEW.xsd",
+      "expect_rule_ids": []
+    },
+    {
+      "id": "fail-vedomost-xsd",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "require_vedomost_xsd": true,
+      "vedomost_xml": "samples/agr/tep-sidecar-fixture.xml",
+      "vedomost_xsd": "samples/agr/dgp/Vedomost_AGR_VED_NEW.xsd",
+      "expect_rule_ids": ["AEROBIM-AGR-VEDOMOST-XSD"]
     }
   ]
 }

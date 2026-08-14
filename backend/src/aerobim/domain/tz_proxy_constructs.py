@@ -144,6 +144,67 @@ def jurisdiction_ids_proxy() -> dict[str, Any]:
     }
 
 
+def moscow_agr_ids_proxy() -> dict[str, Any]:
+    """Official ДГП AGR IDS from stroimprosto.mos.ru — still not Samolet."""
+    return {
+        "claim_level": "official_ids_engine_coverage",
+        "closes_rt002": False,
+        "customer_signed": False,
+        "samolet_alias": False,
+        "approval": None,
+        "iso19650_role": "jurisdiction_eir_like",
+        "iso19650_not": "appointing_party_eir_or_bep",
+        "profile_id": "MOSCOW-AGR-DGP-IDS",
+        "source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
+        "messick_aspect_supported": ["content", "substantive", "structural"],
+        "messick_aspect_missing": ["external"],
+        "construct": (
+            "buildingSMART IDS executed against official Moscow AGR files "
+            "(АР / БиО / ПС / МССК). City knowledge-base pack, not appointing-party EIR."
+        ),
+        "why_not_criterion_valid": (
+            "RT-002 CLOSED needs Samolet approval + pack_hash. A public ДГП "
+            "IDS zip is not that pack and is not the frozen moscow_agr DI port."
+        ),
+        "ids_pack_rel": "samples/ids/moscow-agr/pack",
+        "coverage_evidence": "docs/evidence/norm-pack-moscow-agr-coverage-2026-08.json",
+    }
+
+
+def spbexp_ids_proxy() -> dict[str, Any]:
+    """Official SPb GAU CGE IDS 1.0 — second GAU pack, still not Samolet."""
+    return {
+        "claim_level": "official_ids_engine_coverage",
+        "closes_rt002": False,
+        "customer_signed": False,
+        "samolet_alias": False,
+        "approval": None,
+        "iso19650_role": "jurisdiction_eir_like",
+        "iso19650_not": "appointing_party_eir_or_bep",
+        "profile_id": "SPBEXP-GAU-CGE-IDS",
+        "source_page": "https://www.spbexp.ru/bim/docs/",
+        "messick_aspect_supported": ["content", "substantive", "structural"],
+        "messick_aspect_missing": ["external"],
+        "construct": (
+            "Official SPb GAU CGE IDS 1.0 (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). "
+            "Second public GAU jurisdiction pack after MOEXP."
+        ),
+        "why_not_criterion_valid": (
+            "A second GAU pack is still not a customer_approved Samolet profile."
+        ),
+        "ids_pack_rel": "samples/ids/spbexp/pack",
+        "coverage_evidence": "docs/evidence/norm-pack-spbexp-coverage-2026-08.json",
+    }
+
+
+def public_jurisdiction_ids_packs() -> tuple[dict[str, Any], ...]:
+    return (
+        jurisdiction_ids_proxy(),
+        moscow_agr_ids_proxy(),
+        spbexp_ids_proxy(),
+    )
+
+
 def geometric_clash_proxy() -> dict[str, Any]:
     """IfcClash intersection rehearsal. Not system-aware MEP (ТР-15 / RT-003)."""
     return {
@@ -185,7 +246,10 @@ def tz_row_proxy_map() -> dict[str, Any]:
         },
         "TR-11": {
             "tz": "Customer-approved norm pack",
-            "without_samolet": "MOEXP jurisdiction IDS pointer; intake template unsigned",
+            "without_samolet": (
+                "MOEXP + Moscow AGR IDS + SPb CGE IDS jurisdiction pointers; "
+                "intake template unsigned"
+            ),
             "status": "partial",
             "closes_blocker": "RT-002",
         },

@@ -1,0 +1,351 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Минимальный атрибутивный состав элементов ЦИМ ИЭИ</title>
+    <copyright>СПб ГАУ "Центр государственной экспертизы"</copyright>
+    <version>1.1.0</version>
+    <description>Рекомендации по минимальному составу моделируемых элементов ЦИМ, их классификации и особенностям формирования геометрии.</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-10</date>
+    <purpose>Проверка атрибутивного состава элементов цифровых информационных моделей инженерно-экологических изысканий (ЦИМ ИЭИ).</purpose>
+    <milestone>Инженерные изыскания</milestone>
+  </info>
+  <specifications>
+    <specification name="Замеры физических факторов. Проверка классификации" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.1.1" description="Проверка классификации элементов">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <attribute cardinality="required">
+          <name>
+            <simpleValue>ObjectType</simpleValue>
+          </name>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="NOISE" />
+              <xs:enumeration value="INFRASOUND" />
+              <xs:enumeration value="MAGNETIC_FIELD" />
+              <xs:enumeration value="VIBRATION_LEVEL" />
+              <xs:enumeration value="GROUND_ASSESSMENT_POINT" />
+              <xs:enumeration value="Замер шума" />
+              <xs:enumeration value="Замер инфразвука" />
+              <xs:enumeration value="Замер магнитного поля" />
+              <xs:enumeration value="Замер уровня вибраций" />
+              <xs:enumeration value="Точка результата оценки почво-грунта" />
+            </xs:restriction>
+          </value>
+        </attribute>
+      </requirements>
+    </specification>
+    <specification name="ЗОУИТ. Проверка классификации" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.1.1" description="Проверка классификации элементов">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCSPATIALZONE</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <attribute cardinality="required">
+          <name>
+            <simpleValue>ObjectType</simpleValue>
+          </name>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="SPECIAL_AREA" />
+              <xs:enumeration value="ЗОУИТ" />
+            </xs:restriction>
+          </value>
+        </attribute>
+      </requirements>
+    </specification>
+    <specification name="3.1.1.1 Замер шума" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.1.1.1" description="Моделируются места замеров физических факторов." instructions="Рекомендуется моделировать условным объемным элементом размерами 1х1х1 м.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>NOISE</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Эквивалентный уровень звука</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Максимальный уровнь шума</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер пробы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата замера</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="3.1.1.2 Замер инфразвука" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.1.1.2" description="Моделируются места замеров физических факторов." instructions="Рекомендуется моделировать условным объемным элементом размерами 1х1х1 м.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>INFRASOUND</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Эквивалентный уровень звукового давления</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер пробы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата замера</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="3.1.1.3 Замер магнитного поля" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.1.1.3" description="Моделируются места замеров физических факторов." instructions="Рекомендуется моделировать условным объемным элементом размерами 1х1х1 м.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>MAGNETIC_FIELD</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напряженность магнитного поля</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напряженность электрического поля</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер пробы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата замера</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="3.1.1.4 Замер уровня вибраций" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.1.1.4" description="Моделируются места замеров физических факторов." instructions="Рекомендуется моделировать условным объемным элементом размерами 1х1х1 м.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>VIBRATION_LEVEL</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Максимальный уровень вибраций</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер пробы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата замера</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="3.1.2 Точка результата оценки почво-грунта" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.1.2" description="Формируется в виде геологической выработки с выделением отдельных слоев грунта в пределах глубин отбора образцов." instructions="Моделируются по аналогии с геологическими выработками.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>GROUND_ASSESSMENT_POINT</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер точки</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер пробы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата замера</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Глубина отбора</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Загрязнения неорганические</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Загрязнения органические</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Загрязнения химические</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Загрязнения микробиологические</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Загрязнения токсикологические</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="3.2.1 ЗОУИТ" ifcVersion="IFC4 IFC4X3_ADD2" identifier="3.2.1" description="Моделируются ЗОУИТ, непосредственно затрагивающие участок строительства или попадающие в зону влияния ОКС." instructions="Площадной объект. Моделируются в виде горизонтального элемента в   границах ЗОУИТ и пределах диапазона отметок поверхности существующего рельефа. ">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCSPATIALZONE</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>SPECIAL_AREA</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

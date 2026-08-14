@@ -1,0 +1,322 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Требования к элементам ЦИМ (Технологические решения)</title>
+    <copyright>Отдел ТИМ, СПб ГАУ "ЦГЭ"</copyright>
+    <version>3.1</version>
+    <description>ЦГЭ.ЦИМ.3.0
+Часть 6. ТЕХНОЛОГИЧЕСКИЕ РЕШЕНИЯ
+</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-09</date>
+    <purpose>Проверка атрибутивного состава, по требованиям СПб ГАУ "ЦГЭ"</purpose>
+    <milestone>Проектирование</milestone>
+  </info>
+  <specifications>
+    <specification name="Таблица 6.А.2 – Имена атрибутов для элемента «Здание» (IfcBuilding)" ifcVersion="IFC4" identifier="Таблица 6.А.2" description="Требования к ЦИМ.&#xA;Часть 6. ТЕХНОЛОГИЧЕСКИЕ РЕШЕНИЯ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Общие параметры здания (АР)&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDING</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается корпуса по экспликации на генеральном плане земельного участка." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер секции. Если нет деления на секции, то указывается знак «-» (прочерк)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер секции</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается организация, разработавшая ЦИМ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные по разделу</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Исполнитель</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Пример для модели ТХ: СП 118.13330.2012; СП 59.13330.2016; СП 31-113-2004; РМД 31-10-2011; СанПиН 2.4.2.2821-10." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные по разделу</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Нормативные документы</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается число персонала учреждения в максимальную смену." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Образовательные организации</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество персонала</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается число персонала пищеблока в максимальную смену." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Образовательные организации</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество персонала пищеблока</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 6.А.3 – Имена атрибутов для элемента «Мебель», «Монтируемое и немонтируемое оборудование» (IfcFurniture)" ifcVersion="IFC4" identifier="Таблица 6.А.3" description="Требования к ЦИМ.&#xA;Часть 6. ТЕХНОЛОГИЧЕСКИЕ РЕШЕНИЯ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Представляет собой единый объемный элемент принципиальной формы.&#xA;Должно обеспечиваться независимо специфицирование элементов каждой позиции.&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCFURNITURE" />
+              <xs:enumeration value="IFCFURNITURETYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="optional" instructions="Указывается номер секции. Если нет деления на секции, то указывается знак «-» (прочерк)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер секции</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается корпуса по экспликации на генеральном плане земельного участка." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер этажа, на котором находится элемент." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Этаж</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается номер помещения, в котором расположен элемент. Допускается не указывать." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер помещения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается основное назначение элемента. См. Приложение Б" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация </simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Булевое значение, указывающее, что элемент относится к монтируемому оборудованию." dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Идентификация </simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Монтируемое</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:IFCBOOLEAN">
+              <xs:enumeration value="True" />
+              <xs:enumeration value="False" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Булевое значение, указывающее, что элемент предназначен для использования маломобильными группами населения." dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Идентификация </simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>МГН</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:IFCBOOLEAN">
+              <xs:enumeration value="True" />
+              <xs:enumeration value="False" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается число пользователей для столов, парт и иной" dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Идентификация </simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество пользователей</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер позиции (марки) элемента, который позволяет объединять и группировать одинаковые элементы в одну строку спецификации для подсчета суммарных значений. По аналогии с соответствующим столбцом форм 3, 5 – 9 по ГОСТ 21.501-2018. Если не применимо, указывается знак «-» (прочерк)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество Позиция</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указываются реквизиты нормативно-технической документации на изготовление изделия (ГОСТ, ТУ и пр.). Если не применимо, указывается знак «-» (прочерк)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обозначение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование элемента. По аналогии с соответствующим столбцом форм 1, 2, 4, 7 – 9 по ГОСТ 21.501-2018. Если не применимо, указывается знак «-» (прочерк)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Маркировка</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается габаритная длина элемента (если примерно)." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Длина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается габаритная ширина элемента (если примерно)." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Ширина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается габаритная высота элемента (если примерно)." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается высота размещения элемента относительно чистого пола помещения при креплении на стене." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота размещения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер мебели: для столов ученических в соответствии с Таблицей 2 ГОСТ 11015-93; для стульев ученических в соответствии с Таблицей 2 ГОСТ 11016-93." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер мебели Целое</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:integer">
+              <xs:enumeration value="1" />
+              <xs:enumeration value="2" />
+              <xs:enumeration value="3" />
+              <xs:enumeration value="4" />
+              <xs:enumeration value="5" />
+              <xs:enumeration value="6" />
+              <xs:enumeration value="7" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается основной материал, из которого изготовлена мебель." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Строительные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 6.А.4 – Имена атрибутов для элемента «Зона обслуживания» (IfcBuildingElementProxy)" ifcVersion="IFC4" identifier="Таблица 6.А.4" description="Требования к ЦИМ.&#xA;Часть 6. ТЕХНОЛОГИЧЕСКИЕ РЕШЕНИЯ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Представляет собой объемный элемент, имеющий нормируемые габаритные размеры.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCBUILDINGELEMENTPROXY" />
+              <xs:enumeration value="IFCBUILDINGELEMENTPROXYTYPE" />
+            </xs:restriction>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="optional" instructions="Указывается номер секции. Если нет деления на секции, то указывается знак «-» (прочерк)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер секции</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается корпуса по экспликации на генеральном плане земельного участка." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер этажа, на котором находится элемент." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Этаж</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается основное назначение элемента." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация </simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение</simpleValue>
+          </baseName>
+          <value>
+            <simpleValue>Зона обслуживания</simpleValue>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается габаритная длина элемента." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Длина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается габаритная ширина элемента." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Ширина</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается габаритная высота элемента." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

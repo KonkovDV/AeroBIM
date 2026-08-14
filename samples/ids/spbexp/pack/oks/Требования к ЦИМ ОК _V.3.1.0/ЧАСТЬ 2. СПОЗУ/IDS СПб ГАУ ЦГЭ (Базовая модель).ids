@@ -1,0 +1,1202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Требования к элементам ЦИМ (Базовая модель)</title>
+    <copyright>Отдел ТИМ, СПб ГАУ "ЦГЭ"</copyright>
+    <version>3.1</version>
+    <description>ЦГЭ.ЦИМ.3.0
+Часть 2. БАЗОВАЯ МОДЕЛЬ
+</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-09</date>
+    <purpose>Проверка атрибутивного состава, по требованиям СПб ГАУ "ЦГЭ"</purpose>
+    <milestone>Проектирование</milestone>
+  </info>
+  <specifications>
+    <specification name="Таблица 2.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)" ifcVersion="IFC4" identifier="Таблица 2.А.1" description="Требования к ЦИМ.&#xA;Часть 2. БАЗОВАЯ МОДЕЛЬ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Общие параметры здания (БМ)&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDING</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается адрес объекта строительства." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Адрес</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается вид строительства." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Вид работ</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Строительство" />
+              <xs:enumeration value="Реконструкция" />
+              <xs:enumeration value="Капитальный ремонт" />
+              <xs:enumeration value="Снос" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается компания Генпроектировщик." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Генпроектировщик</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер договора на выполнение работ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Договор</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается Заказчик ЦИМ и проектной документации." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Заказчик</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается источник финансирования в соответствии с заданием на проектирование." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник финансирования</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Федеральный бюджет" />
+              <xs:enumeration value="Бюджет субъекта РФ" />
+              <xs:enumeration value="Местный бюджет" />
+              <xs:enumeration value="Бюджет территориального государственного внебюджетного фонда" />
+              <xs:enumeration value="Бюджет государственного внебюджетного фонда РФ" />
+              <xs:enumeration value="Средства юридических лиц, указанных в части 2 статьи 48.2 ГрК РФ" />
+              <xs:enumeration value="Средства частного инвестора" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается кадастровый номер земельного участка." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Кадастровый номер</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается наименование проектируемого объекта в соответствии с заданием на проектирование." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Название проекта</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается назначение здания/сооружения в соответствии с заданием на проектирование." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Назначение объекта </simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер градостроительного плана земельного участка." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер ГПЗУ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается стадия разработки проектной документации в соответствии с заданием на проектирование." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Стадия проекта</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается шифр объекта в соответствии с системой кодирования, принятой в проектной организации." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Шифр проекта</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается количество этапов строительства в соответствии с заданием на проектирование." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Этапность строительства</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается категория сложности ОКС." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Категория сложности</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается уровень ответственности ОКС, согласно пункту 7 части 1 и части 7 статьи 4 Федерального закона № 384-ФЗ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Уровень ответственности </simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Повышенный" />
+              <xs:enumeration value="Нормальный" />
+              <xs:enumeration value="Пониженный" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается класс сооружения в соответствии с приложением А ГОСТ 27751-2014." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Класс сооружения</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="КС-1" />
+              <xs:enumeration value="КС-2" />
+              <xs:enumeration value="КС-3" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается класс сооружения по условиям эксплуатации в соответствии с таблицей 5.2 СП 250.1325800.2016." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Класс сооружения по условиям эксплуатации</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается значение принятого коэффициента надежности по ответственности." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Коэффициент надежности по ответственности</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается установленный период использования ОКС по назначению до капитального ремонта и (или) реконструкции с предусмотренным техническим обслуживанием." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Общие данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Указывается значение принятого коэффициента надежности по ответственности.</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается требуемая мощность (вместимость) ОКС, в соответствии с заданием на проектирование. Единицы измерения принимаются по аналогии с Приложением 9 Приказа министерства регионального развития № 497." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Требуемые показатели ОКС</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Требуемая мощность ОКС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается требуемое количество машиномест автостоянки в соответствии с заданием на проектирование." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Требуемые показатели ОКС</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Требуемая мощность автостоянки</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается максимальная общая площадь ОКС в соответствии с заданием на проектирование" dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Требуемые показатели ОКС</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Предельная площадь ОКС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается предельная (предполагаемая) стоимость ОКС в соответствии с заданием на проектирование, в млн.руб." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Требуемые показатели ОКС</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Предельная стоимость ОКС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается проектная мощность (вместимость) ОКС. Единицы измерения принимаются по аналогии с Приложением 9 Приказа министерства регионального развития № 497." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Мощность ОКС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается проектное количество машиномест автостоянки." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Мощность автостоянки</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается архитектурная высота здания согласно пункту 3.5 СП 118.13330.2012." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота ОКС архитектурная</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается этажность здания." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Этажность</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается количество надземных этажей." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество надземных этажей</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается количество этажей, расположенных ниже уровня земли." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество подземных этажей</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается количество секций. Если здание не имеет деления на секции, то указывается «0» (ноль)" dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество секций</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается абсолютная отметка, принятая за отметку 0.000 проекта в принятой региональной системе высот." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Отметка нуля</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается кадастровая площадь участка строительства." dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Площадь участка</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается общая площадь здания в соответствии с приложением Г СП 118.13330.2012." dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Общая площадь здания</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается полезная площадь здания в соответствии с приложением Г СП 118.13330.2012." dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Проектные ТЭП</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Полезная площадь</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается разрешаемый отбор объема холодной воды в соответствии с техническими условиями на подключение объекта капитального строительства к сетям инженерно-технического обеспечения (далее – ТУ на подключение), в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Лимит водопотребления ХВС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается разрешаемый отбор объема горячей воды в соответствии с ТУ на подключение, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Лимит водопотребления ГВС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается разрешаемый объем сброса бытовых сточных вод в соответствии с ТУ на подключение, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Лимит водоотведения БСВ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается разрешаемый объем сброса поверхностных сточных вод с кровли, прилегающей территории и дренажных вод в соответствии с ТУ на подключение, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Лимит водоотведения ПВ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается разрешаемый отбор объема воды на нужды наружного пожаротушения в соответствии с ТУ на подключение, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Расход на наружное пожаротушение</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетный суммарный расход водопотребления холодной воды, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Расчетный расход ХВС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетный суммарный расход водопотребления горячей воды, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Расчетный расход ГВС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетный суммарный сброс бытовых сточных вод, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Расчетное водоотведение БСВ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетный объем сброса поверхностных сточных вод с кровли, прилегающей территории и дренажных вод, в м3/сут." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения о расходах воды</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Расчетное водоотведения ПВ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается категория надежности электроснабжения потребителей по ПУЭ 7." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Сведения об электрических нагрузках</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Категория электроснабжения по надежности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Первая" />
+              <xs:enumeration value="Вторая" />
+              <xs:enumeration value="Третья" />
+              <xs:enumeration value="Особая" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается обеспеченная нагрузка от электроприемников ОКС, в соответствии с ТУ на подключение, в кВт." dataType="IFCPOWERMEASURE">
+          <propertySet>
+            <simpleValue>Сведения об электрических нагрузках</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обеспеченная мощность ЭС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается максимальная расчетная нагрузка электроприемников ОКС, в кВт." dataType="IFCPOWERMEASURE">
+          <propertySet>
+            <simpleValue>Сведения об электрических нагрузках</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Максимальная мощность ЭС</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается максимальная расчетная нагрузка электроприемников первой категории, в кВт." dataType="IFCPOWERMEASURE">
+          <propertySet>
+            <simpleValue>Сведения об электрических нагрузках</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Электроприемники 1-й категории</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается максимальная расчетная нагрузка электроприемников второй категории, в кВт." dataType="IFCPOWERMEASURE">
+          <propertySet>
+            <simpleValue>Сведения об электрических нагрузках</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Электроприемники 2-й категории</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается максимальная расчетная нагрузка электроприемников третей категории, в кВт." dataType="IFCPOWERMEASURE">
+          <propertySet>
+            <simpleValue>Сведения об электрических нагрузках</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Электроприемники 3-й категории</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается информация об источнике теплоснабжения в соответствии с ТУ на подключение." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Сведения об источниках теплоснабжения</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник теплоснабжения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается гарантированная максимальная тепловая нагрузка в соответствии с ТУ на подключение, в Гкал/час." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Сведения об источниках теплоснабжения</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Обеспеченная тепловая нагрузка</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетная температура наружного воздуха для проектирования теплозащиты, в градусах Цельсия." dataType="IFCTHERMODYNAMICTEMPERATUREMEASURE">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Температура наружного воздуха</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетная температура внутреннего воздуха для проектирования теплозащиты, в градусах Цельсия" dataType="IFCTHERMODYNAMICTEMPERATUREMEASURE">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Температура внутреннего воздуха</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается расчетное значение температуры воздуха на теплом чердаке, в градусах Цельсия. Указывается при наличии чердака" dataType="IFCTHERMODYNAMICTEMPERATUREMEASURE">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Температура теплого чердака</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Указывается расчетное значение температуры воздуха в техническом подполье, в градусах Цельсия. Указывается при наличии техподполья" dataType="IFCTHERMODYNAMICTEMPERATUREMEASURE">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Температура техподполья</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетная температура наружного воздуха, осредненная за отопительный период по средним суточным температурам наружного воздуха, согласно СП 131.13330.2020, в градусах Цельсия." dataType="IFCTHERMODYNAMICTEMPERATUREMEASURE">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Средняя температура отопительного периода</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетный период времени работы системы отопления здания, согласно СП 131.13330.2020 в сутках." dataType="IFCTIME">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Продолжительность отопительного периода</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается расчетное значение градусо-суток отопительного периода, в оС·сут/год" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>ГСОП</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается удельный расход тепловой энергии за отопительный период, в кДж/(м2·оС·сут)." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Удельный расход тепловой энергии</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается класс энергоэффективности здания, установленный заданием на проектирование." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Расчетные условия по теплозащите и энергоэффективность</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Класс энергоэффективности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="A++" />
+              <xs:enumeration value="A+" />
+              <xs:enumeration value="A" />
+              <xs:enumeration value="B" />
+              <xs:enumeration value="C" />
+              <xs:enumeration value="D" />
+              <xs:enumeration value="F" />
+              <xs:enumeration value="G" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается категории сложности инженерно-геологических условий, согласно приложению А СП 47.13330.2012." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Категория сложности инженерно-геологических условий</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+              <xs:enumeration value="III" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается геотехническая категория здания, согласно пункту 4.6 СП 22.13330.2016." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Геотехническая категория</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:integer">
+              <xs:enumeration value="1" />
+              <xs:enumeration value="2" />
+              <xs:enumeration value="3" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается принятый комплект карт общего сейсмического районирования территории Российской Федерации в соответствии с пунктом 4.3 СП 14.13330.2014 и ОСР-2015." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Карта ОСР-2015</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="A" />
+              <xs:enumeration value="B" />
+              <xs:enumeration value="C" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается сейсмичность района строительства в соответствии с СП 14.13330.2014, в баллах шкалы MSK-64." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Сейсмичность района строительства</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:integer">
+              <xs:enumeration value="1" />
+              <xs:enumeration value="2" />
+              <xs:enumeration value="3" />
+              <xs:enumeration value="4" />
+              <xs:enumeration value="5" />
+              <xs:enumeration value="6" />
+              <xs:enumeration value="7" />
+              <xs:enumeration value="8" />
+              <xs:enumeration value="9" />
+              <xs:enumeration value="10" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается сейсмичность района строительства в соответствии с СП 14.13330.2014, в баллах шкалы MSK-64." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Расчетная сейсмичность площадки</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:integer">
+              <xs:enumeration value="1" />
+              <xs:enumeration value="2" />
+              <xs:enumeration value="3" />
+              <xs:enumeration value="4" />
+              <xs:enumeration value="5" />
+              <xs:enumeration value="6" />
+              <xs:enumeration value="7" />
+              <xs:enumeration value="8" />
+              <xs:enumeration value="9" />
+              <xs:enumeration value="10" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается климатический район строительства, согласно приложению Б СП 131.13330.2020." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Климатический район</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+              <xs:enumeration value="III" />
+              <xs:enumeration value="IV" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается климатический подрайон строительства, в соответствии с приложением Б СП 131.13330.2018." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Климатический подрайон</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IА" />
+              <xs:enumeration value="IБ" />
+              <xs:enumeration value="IВ" />
+              <xs:enumeration value="IГ" />
+              <xs:enumeration value="IД" />
+              <xs:enumeration value="IIА" />
+              <xs:enumeration value="IIБ" />
+              <xs:enumeration value="IIВ" />
+              <xs:enumeration value="IIГ" />
+              <xs:enumeration value="IIIА" />
+              <xs:enumeration value="IIIБ" />
+              <xs:enumeration value="IIIВ" />
+              <xs:enumeration value="IVА" />
+              <xs:enumeration value="IVБ" />
+              <xs:enumeration value="IVВ" />
+              <xs:enumeration value="IVГ" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается ветровой район строительства согласно приложению Е СП 20.13330.2016." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Ветровой район</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Ia" />
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+              <xs:enumeration value="III" />
+              <xs:enumeration value="IV" />
+              <xs:enumeration value="V" />
+              <xs:enumeration value="VI" />
+              <xs:enumeration value="VII" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативное ветровое давление согласно СП 20.13330.2016, в кПа." dataType="IFCPRESSUREMEASURE">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Нормативное ветровое давление</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается снеговой район строительства согласно приложению Е СП 20.13330.2016. I; II; III; IV; V; ; VII; VIII." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Снеговой район</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+              <xs:enumeration value="III" />
+              <xs:enumeration value="IV" />
+              <xs:enumeration value="V" />
+              <xs:enumeration value="VI" />
+              <xs:enumeration value="VII" />
+              <xs:enumeration value="VIII" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается нормативное снеговое давление по СП 20.13330.2016, в кПа." dataType="IFCPRESSUREMEASURE">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Нормативное снеговое давление</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается температура наиболее холодной пятидневки, согласно СП 131.13330.2018, в градусах Цельсия." dataType="IFCTHERMODYNAMICTEMPERATUREMEASURE">
+          <propertySet>
+            <simpleValue>Климатические и геотехнические данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Температура наиболее холодной пятидневки</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается пожарно-техническая высота объекта капитального строительства в соответствии с пунктом 3.1, СП 1.13130.2009." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота пожарно-техническая</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается категория пожарной опасности здания в соответствии со статьей 27 Федерального закона № 123-ФЗ. «н/н». – если не нормируется." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Категория пожарной и взрывопожарной опасности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="А" />
+              <xs:enumeration value="В1" />
+              <xs:enumeration value="В2" />
+              <xs:enumeration value="В3" />
+              <xs:enumeration value="В4" />
+              <xs:enumeration value="Г" />
+              <xs:enumeration value="Д" />
+              <xs:enumeration value="н/н" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается класс конструктивной пожарной опасности здания в соответствии со статьей 31 Федерального закона № 123-ФЗ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Класс конструктивной пожарной опасности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="С0" />
+              <xs:enumeration value="С1" />
+              <xs:enumeration value="С2" />
+              <xs:enumeration value="С3" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается класс функциональной пожарной опасности здания в соответствии со статьей 32 Федерального закона № 123-ФЗ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Класс функциональной пожарной опасности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Ф1" />
+              <xs:enumeration value="Ф1.1" />
+              <xs:enumeration value="Ф1.2" />
+              <xs:enumeration value="Ф1.3" />
+              <xs:enumeration value="Ф1.4" />
+              <xs:enumeration value="Ф2" />
+              <xs:enumeration value="Ф2.1" />
+              <xs:enumeration value="Ф2.2" />
+              <xs:enumeration value="Ф2.3" />
+              <xs:enumeration value="Ф2.4" />
+              <xs:enumeration value="Ф3" />
+              <xs:enumeration value="Ф3.1" />
+              <xs:enumeration value="Ф3.2" />
+              <xs:enumeration value="Ф3.3" />
+              <xs:enumeration value="Ф3.4" />
+              <xs:enumeration value="Ф3.5" />
+              <xs:enumeration value="Ф3.6" />
+              <xs:enumeration value="Ф3.7" />
+              <xs:enumeration value="Ф4" />
+              <xs:enumeration value="Ф4.1" />
+              <xs:enumeration value="Ф4.2" />
+              <xs:enumeration value="Ф4.3" />
+              <xs:enumeration value="Ф4.4" />
+              <xs:enumeration value="Ф5" />
+              <xs:enumeration value="Ф5.1" />
+              <xs:enumeration value="Ф5.2" />
+              <xs:enumeration value="Ф5.3" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается степень огнестойкости здания в соответствии со статьей 30 Федерального закона № 123-ФЗ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Степень огнестойкости</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+              <xs:enumeration value="III" />
+              <xs:enumeration value="IV" />
+              <xs:enumeration value="V" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается количество пожарных отсеков в здании." dataType="IFCINTEGER">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Количество пожарных отсеков</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается категория молниезащиты объекта капитального строительства в соответствии с РД 34.21.122-87" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные молниезащиты</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Категория молниезащиты</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+              <xs:enumeration value="III" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается материал токоотводов здания." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные молниезащиты</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал токоотводов</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается тип молниеприемника в соответствии с РД 34.21.122-87." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные молниезащиты</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип молниеприемника</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Стержневой" />
+              <xs:enumeration value="Тросовый" />
+              <xs:enumeration value="Сетка" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается материал молниеприемника." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные молниезащиты</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Материал молниеприемника</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается тип заземлителя." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные молниезащиты</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип заземлителя</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Кольцевой" />
+              <xs:enumeration value="Глубинный" />
+              <xs:enumeration value="Фундаментный" />
+              <xs:enumeration value="Иной" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 2.А.2 – Имена атрибутов для элемента  «Пожарный отсек» (IfcSpatialZone.FIRESAFETY)" ifcVersion="IFC4" identifier="Таблица 2.А.2" description="Требования к ЦИМ.&#xA;Часть 2. БАЗОВАЯ МОДЕЛЬ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Формируется в виде отдельных объемных элементов, ограниченных противопожарными стенами и противопожарными перекрытиями или покрытиями, с пределами огнестойкости конструкции, обеспечивающими нераспространение пожара за границы пожарного отсека в течение всей продолжительности пожара.&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCSPATIALZONE</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>FIRESAFETY</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается номер корпуса, в котором находится элемент." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер секции, в которой находится элемент. Если нет деления на секции, то указывается знак «-» (прочерк)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер секции</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается имя пожарного отсека." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Имя</simpleValue>
+          </baseName>
+          <value>
+            <simpleValue>Пожарный отсек</simpleValue>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается порядковый номер пожарного отсека." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается класс конструктивной пожарной опасности здания в соответствии со статьей 31 Федерального закона № 123-ФЗ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Класс конструктивной пожарной опасности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="С0" />
+              <xs:enumeration value="С1" />
+              <xs:enumeration value="С2" />
+              <xs:enumeration value="С3" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается класс функциональной пожарной опасности здания в соответствии со статьей 32 Федерального закона № 123-ФЗ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Класс функциональной пожарной опасности</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Ф1" />
+              <xs:enumeration value="Ф1.1" />
+              <xs:enumeration value="Ф1.2" />
+              <xs:enumeration value="Ф1.3" />
+              <xs:enumeration value="Ф1.4" />
+              <xs:enumeration value="Ф2" />
+              <xs:enumeration value="Ф2.1" />
+              <xs:enumeration value="Ф2.2" />
+              <xs:enumeration value="Ф2.3" />
+              <xs:enumeration value="Ф2.4" />
+              <xs:enumeration value="Ф3" />
+              <xs:enumeration value="Ф3.1" />
+              <xs:enumeration value="Ф3.2" />
+              <xs:enumeration value="Ф3.3" />
+              <xs:enumeration value="Ф3.4" />
+              <xs:enumeration value="Ф3.5" />
+              <xs:enumeration value="Ф3.6" />
+              <xs:enumeration value="Ф3.7" />
+              <xs:enumeration value="Ф4" />
+              <xs:enumeration value="Ф4.1" />
+              <xs:enumeration value="Ф4.2" />
+              <xs:enumeration value="Ф4.3" />
+              <xs:enumeration value="Ф4.4" />
+              <xs:enumeration value="Ф5" />
+              <xs:enumeration value="Ф5.1" />
+              <xs:enumeration value="Ф5.2" />
+              <xs:enumeration value="Ф5.3" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается степень огнестойкости здания в соответствии со статьей 30 Федерального закона № 123-ФЗ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Пожарные параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Степень огнестойкости</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="I" />
+              <xs:enumeration value="II" />
+              <xs:enumeration value="III" />
+              <xs:enumeration value="IV" />
+              <xs:enumeration value="V" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается площадь этажа в пределах пожарного отсека в соответствии с пунктом 6 СП 2.13130.2012." dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Площадь</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 2.А.3 – Имена атрибутов для элемента  «Площадь этажа» (IfcSpace.GFA)" ifcVersion="IFC4" identifier="Таблица 2.А.3" description="Требования к ЦИМ.&#xA;Часть 2. БАЗОВАЯ МОДЕЛЬ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Формируется в виде отдельных объемных элементов, расположенных на соответствующих уровнях ЦИМ БМ.&#xA;Геометрия и характеристики данных элементов должны удовлетворять требованиями пункта Г.1.2* [1].&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCSPACE</simpleValue>
+          </name>
+          <predefinedType>
+            <simpleValue>GFA</simpleValue>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается номер корпуса, в котором находится элемент." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер секции, в которой находится элемент. Если нет деления на секции, то указывается знак «-» (прочерк)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер секции</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается имя элемента." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Имя</simpleValue>
+          </baseName>
+          <value>
+            <simpleValue>Площадь этажа</simpleValue>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается порядковый номер этажа." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается площадь этажа в соответствие с пунктом Г.1.2 приложения Г СП 118.13330.2012." dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Площадь</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 2.А.4 – Имена атрибутов для элемента «Площадь застройки» (IfcSpatialZone)" ifcVersion="IFC4" identifier="Таблица 2.А.4" description="Требования к ЦИМ.&#xA;Часть 2. БАЗОВАЯ МОДЕЛЬ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Формируется в виде отдельного объемного элемента.&#xA;Геометрия и характеристики данного элемента должны удовлетворять требованиям пункта Г.7 [1].&#xA;Рекомендуется моделировать на нулевой отметке ЦИМ.&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCSPATIALZONE</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается номер корпуса, к которому относится элемент площадь застройки." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается имя элемента." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Имя</simpleValue>
+          </baseName>
+          <value>
+            <simpleValue>Площадь застройки</simpleValue>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается площадь застройки в соответствии с пунктом Г.7 приложения Г СП 118.13330.2012." dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Площадь</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 2.А.5 – Имена атрибутов для элемента «Строительный объем подземной / надземной части» (IfcSpatialStructureElement)" ifcVersion="IFC4" identifier="Таблица 2.А.5" description="Требования к ЦИМ.&#xA;Часть 2. БАЗОВАЯ МОДЕЛЬ&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Формируется в виде отдельных объемных элементов.&#xA;Геометрия и характеристики данных элементов должны удовлетворять требованиям пункта Г.6 [1].&#xA;Рекомендуется моделировать на нулевой отметке ЦИМ.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCSPATIALSTRUCTUREELEMENT</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается номер корпуса, к которому относится элемент строительного объема." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается имя элемента." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Имя</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Надземная часть" />
+              <xs:enumeration value="Подземная часть" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается объем элемента в соответствии с пунктом Г.6 приложения Г СП 118.13330.2012." dataType="IFCVOLUMEMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Объём" />
+              <xs:enumeration value="Объем" />
+            </xs:restriction>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

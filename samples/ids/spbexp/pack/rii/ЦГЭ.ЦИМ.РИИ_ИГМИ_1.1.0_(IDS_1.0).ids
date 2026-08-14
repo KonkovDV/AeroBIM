@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Минимальный атрибутивный состав элементов ЦИМ ИГМИ</title>
+    <copyright>СПб ГАУ "Центр государственной экспертизы"</copyright>
+    <version>1.1.0</version>
+    <description>Рекомендации по минимальному составу моделируемых элементов ЦИМ, их классификации и особенностям формирования геометрии.</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-10</date>
+    <purpose>Проверка атрибутивного состава элементов цифровых информационных моделей инженерно-метеорологических изысканий (ЦИМ ИГМИ).</purpose>
+    <milestone>Инженерные изыскания</milestone>
+  </info>
+  <specifications>
+    <specification name="4.1.1 Поверхность водных объектов (урез воды)" ifcVersion="IFC4 IFC4X3_ADD2" identifier="4.1.1" description="Планово-высотная модель существующего рельефа дна, формируемая на основе метода триангуляции высотных отметок с учетом ввода дополнительных точек и характерных линий, учитывающих особенности рельефа и границ изысканий. " instructions="Моделируется в виде TIN-поверхности.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;WATER_SURFACE&quot; или &quot;Поверхность водных объектов&quot; или &quot;Урез воды&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="WATER_SURFACE" />
+              <xs:enumeration value="Поверхность водных объектов" />
+              <xs:enumeration value="Урез воды" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип водного объекта</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:IFCLABEL">
+              <xs:enumeration value="Река" />
+              <xs:enumeration value="Море" />
+              <xs:enumeration value="Ручей" />
+              <xs:enumeration value="Канал" />
+              <xs:enumeration value="Озеро" />
+              <xs:enumeration value="Пруд" />
+              <xs:enumeration value="Карьер" />
+              <xs:enumeration value="Водохранилище" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата формирования</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="4.2.1 Зона разлива" ifcVersion="IFC4 IFC4X3_ADD2" identifier="4.2.1" description="Моделируется поверхность уровня высоких вод различной обеспеченности." instructions="Моделируется в виде TIN-поверхности.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;SPILL_ZONE&quot; &quot;Зона разлива&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCSPATIALZONE" />
+              <xs:enumeration value="IFCSPATIALZONETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="SPILL_ZONE" />
+              <xs:enumeration value="Зона разлива" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Процент обеспеченности</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="4.2.2 Водоохранная зона" ifcVersion="IFC4 IFC4X3_ADD2" identifier="4.2.2" description="См. описание ЗОУИТ (п. 3.2.1 требований к элементам ЦИМ ИЭИ)." instructions="Площадной элемент. См. описание ЗОУИТ (п. 3.2.1 требований к элементам ЦИМ ИЭИ). &#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;WATER_PROTECTION_ZONE&quot; и &quot;Водоохранная зона&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCSPATIALZONE" />
+              <xs:enumeration value="IFCSPATIALZONETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="WATER_PROTECTION_ZONE" />
+              <xs:enumeration value="Водоохранная зона" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="4.2.3 Поверхность дна" ifcVersion="IFC4 IFC4X3_ADD2" identifier="4.2.3" description="Планово-высотная модель существующего рельефа дна, формируемая на основе метода триангуляции высотных отметок с учетом ввода дополнительных точек и характерных линий, учитывающих особенности рельефа и границ изысканий. " instructions="Моделируется в виде TIN-поверхности.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;BOTTOM_SURFACE&quot; и &quot;Поверхность дна&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="BOTTOM_SURFACE" />
+              <xs:enumeration value="Поверхность дна" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата формирования</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

@@ -9,10 +9,13 @@ from aerobim.domain.agr_exchange_checks import (
     RULE_FILENAME,
     RULE_PROXY,
     RULE_SCHEMA,
+    RULE_TEP_ROOT,
     RULE_TEP_XML,
+    RULE_VEDOMOST_XSD,
     RULE_VIEW,
     collect_agr_exchange_issues,
     collect_agr_tep_xml_issues,
+    collect_agr_vedomost_xsd_issues,
     split_five_field_filename,
 )
 from aerobim.domain.ids_schema_gate import parse_ifc_view_definition
@@ -99,11 +102,43 @@ class TepXmlSidecarTests(unittest.TestCase):
         path = REPO / "samples" / "agr" / "tep-sidecar-fixture.xml"
         self.assertEqual(collect_agr_tep_xml_issues(xml_path=path), ())
 
+    def test_official_tep_root_passes(self) -> None:
+        path = REPO / "samples" / "agr" / "dgp" / "AGR_TEO.xml"
+        self.assertEqual(
+            collect_agr_tep_xml_issues(
+                xml_path=path,
+                expected_root="ArchitecturalUrbanPlanningSolution",
+            ),
+            (),
+        )
+
+    def test_fixture_sidecar_fails_official_root(self) -> None:
+        path = REPO / "samples" / "agr" / "tep-sidecar-fixture.xml"
+        issues = collect_agr_tep_xml_issues(
+            xml_path=path,
+            expected_root="ArchitecturalUrbanPlanningSolution",
+        )
+        self.assertEqual([issue.rule_id for issue in issues], [RULE_TEP_ROOT])
+
+    def test_official_vedomost_xsd_passes(self) -> None:
+        issues = collect_agr_vedomost_xsd_issues(
+            xml_path=REPO / "samples" / "agr" / "dgp" / "Vedomost_AGR.xml",
+            xsd_path=REPO / "samples" / "agr" / "dgp" / "Vedomost_AGR_VED_NEW.xsd",
+        )
+        self.assertEqual(issues, ())
+
+    def test_fixture_xml_fails_vedomost_xsd(self) -> None:
+        issues = collect_agr_vedomost_xsd_issues(
+            xml_path=REPO / "samples" / "agr" / "tep-sidecar-fixture.xml",
+            xsd_path=REPO / "samples" / "agr" / "dgp" / "Vedomost_AGR_VED_NEW.xsd",
+        )
+        self.assertEqual([issue.rule_id for issue in issues], [RULE_VEDOMOST_XSD])
+
 
 class ManifestRunTests(unittest.TestCase):
     def test_manifest_expectations_match(self) -> None:
         payload = run_manifest(MANIFEST, root=REPO)
-        self.assertEqual(payload["summary"]["case_count"], 7)
+        self.assertEqual(payload["summary"]["case_count"], 11)
         self.assertEqual(
             payload["summary"]["cases_matching_expect"],
             payload["summary"]["case_count"],
