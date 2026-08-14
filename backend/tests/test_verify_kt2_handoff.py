@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from aerobim.tools.verify_evidence_bundle import verify_evidence_bundle
 from aerobim.tools.verify_kt2_handoff import verify_kt2_handoff
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -22,6 +23,16 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         self.assertTrue(clash_pr["ok"], msg=clash_pr)
         failed = [c for c in result["checks"] if not c["ok"]]
         self.assertEqual(failed, [])
+
+    def test_wall_guid_snapshot_is_lf_and_verifies(self) -> None:
+        wall = _REPO / "docs" / "evidence" / "kt2-handoff-2026-08-11" / "wall-guid"
+        if not (wall / "manifest.json").is_file():
+            self.skipTest("wall-guid snapshot missing")
+        for path in wall.iterdir():
+            if path.is_file():
+                self.assertNotIn(b"\r\n", path.read_bytes(), msg=path.name)
+        result = verify_evidence_bundle(wall)
+        self.assertTrue(result["ok"], msg=result)
 
 
 if __name__ == "__main__":

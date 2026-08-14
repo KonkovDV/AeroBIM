@@ -78,7 +78,15 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
                 )
             except json.JSONDecodeError:
                 ok_verify = "passed" in (proc.stdout or "").lower()
-        _check("wall_guid_verify", ok_verify, f"exit={proc.returncode}", rows)
+        detail = f"exit={proc.returncode}"
+        if not ok_verify:
+            err = (proc.stderr or "").strip().replace("\n", " ")
+            out = (proc.stdout or "").strip().replace("\n", " ")
+            if err:
+                detail = f"{detail} stderr={err[:400]}"
+            elif out:
+                detail = f"{detail} stdout={out[:400]}"
+        _check("wall_guid_verify", ok_verify, detail, rows)
 
     harness = handoff_dir / "harness-dryrun" / "pilot-harness-report.json"
     if harness.is_file():

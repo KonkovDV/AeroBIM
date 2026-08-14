@@ -46,6 +46,11 @@ _FORBIDDEN = (
 )
 
 
+def _write_utf8_lf(path: Path, text: str) -> None:
+    """Write UTF-8 with LF so bundle digests match Linux CI (eol=lf)."""
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
 def _sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -284,7 +289,7 @@ def _write_logs_snippet(
             state_value = getattr(state, "value", state)
             reason = getattr(status, "reason", None) or ""
             lines.append(f"capability.{name}={state_value}" + (f" ({reason})" if reason else ""))
-    (output_dir / "logs_snippet.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    _write_utf8_lf(output_dir / "logs_snippet.txt", "\n".join(lines) + "\n")
 
 
 def export_evidence_bundle(
@@ -457,36 +462,40 @@ def export_evidence_bundle(
         "artifacts": artifacts,
     }
 
-    (output_dir / "manifest.json").write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    _write_utf8_lf(
+        output_dir / "manifest.json",
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
     )
-    (output_dir / "report.json").write_text(
+    _write_utf8_lf(
+        output_dir / "report.json",
         json.dumps(report_payload, indent=2, ensure_ascii=False, default=str) + "\n",
-        encoding="utf-8",
     )
-    (output_dir / "findings.json").write_text(
+    _write_utf8_lf(
+        output_dir / "findings.json",
         json.dumps(findings, indent=2, ensure_ascii=False, default=str) + "\n",
-        encoding="utf-8",
     )
-    (output_dir / "capability_coverage.json").write_text(
-        json.dumps(coverage, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    _write_utf8_lf(
+        output_dir / "capability_coverage.json",
+        json.dumps(coverage, indent=2, ensure_ascii=False) + "\n",
     )
-    (output_dir / "timings.json").write_text(
-        json.dumps(timings, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    _write_utf8_lf(
+        output_dir / "timings.json",
+        json.dumps(timings, indent=2, ensure_ascii=False) + "\n",
     )
-    (output_dir / "run_manifest.json").write_text(
+    _write_utf8_lf(
+        output_dir / "run_manifest.json",
         json.dumps(run_manifest.as_dict(), indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
     )
-    (output_dir / "check_coverage.json").write_text(
+    _write_utf8_lf(
+        output_dir / "check_coverage.json",
         json.dumps(check_coverage_snapshot, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
     )
-    (output_dir / "package_source_hash_chain.json").write_text(
+    _write_utf8_lf(
+        output_dir / "package_source_hash_chain.json",
         json.dumps(source_hash_chain, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
     )
-    (output_dir / "report.html").write_text(
+    _write_utf8_lf(
+        output_dir / "report.html",
         _render_bundle_html(
             report=report,
             pack_id=benchmark_pack.pack_id,
@@ -495,7 +504,6 @@ def export_evidence_bundle(
             code_version=code_meta["label"],
             enforced_passed=bool(enforced_passed),
         ),
-        encoding="utf-8",
     )
     _write_logs_snippet(
         output_dir=output_dir,
@@ -539,7 +547,7 @@ python -m aerobim.tools.export_evidence_bundle \\
 - BCF structural export is separate; CDE import is NOT_VERIFIED until Tier-2 evidence.
 - Forbidden: {", ".join(_FORBIDDEN)}.
 """
-    (output_dir / "README.md").write_text(readme, encoding="utf-8")
+    _write_utf8_lf(output_dir / "README.md", readme)
 
     output_hashes: dict[str, str] = {}
     for name in artifacts:
@@ -548,8 +556,9 @@ python -m aerobim.tools.export_evidence_bundle \\
             output_hashes[name] = _sha256_file(path)
     manifest["output_file_sha256"] = output_hashes
     # Re-write manifest with output hashes (manifest hash intentionally omitted).
-    (output_dir / "manifest.json").write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    _write_utf8_lf(
+        output_dir / "manifest.json",
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
     )
     return manifest
 

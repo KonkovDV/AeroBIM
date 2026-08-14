@@ -1,24 +1,24 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "3489cad44697c4378eebca8bc5552c7a853f2749",
-  "tree_sha": "02fb3e85dc5fc6a7c8489fc6a9ced625a14676e0",
+  "commit_sha": "88e726be20bc4f36c2e811b594efa82e517af01f",
+  "tree_sha": "1d4452b22f3d01c37362fe0eb9ff73ecc0801133",
   "working_tree_clean": true,
-  "generated_at": "2026-08-09T09:17:59.934973+00:00",
+  "generated_at": "2026-08-14T12:54:17.413488+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2012,
-    "tests_passed": 2163,
-    "tests_skipped": 10,
+    "tests_collected": 2178,
+    "tests_passed": 2167,
+    "tests_skipped": 11,
     "tests_failed": 0,
-    "source_loc": 61743,
-    "test_loc": 42440,
-    "test_functions": 2012,
+    "source_loc": 70269,
+    "test_loc": 45853,
+    "test_functions": 2178,
     "uncollected": []
   },
   "frontend": {
-    "tests_passed": 48,
+    "tests_passed": 54,
     "tests_failed": 0,
     "vitest_artifact": "../frontend/var/vitest-results.json",
     "note": "Recorded from vitest JSON artifact when provided; manual --frontend-tests-passed without artifact is not publishable"
@@ -50,12 +50,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 61960,
-    "backend_test_loc": 42893,
-    "backend_test_functions": 2031,
+    "backend_src_loc": 70269,
+    "backend_test_loc": 45853,
+    "backend_test_functions": 2178,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2163, frontend=48; commit 3489cad44697; see docs/evidence/runtime-baseline-latest.json · src ~61743 LOC; tests ~42440 LOC; extraction macro_f1=0.86 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/runtime-baseline-latest.json · src ~70269 LOC; tests ~45853 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -115,6 +115,9 @@
     "AEROBIM_MEP_SCOPE_MEMO_REF",
     "AEROBIM_NORM_RULE_PACK",
     "AEROBIM_OIDC_AUDIENCE",
+    "AEROBIM_OIDC_BFF_AUTHORIZE_URL",
+    "AEROBIM_OIDC_BFF_CLIENT_ID",
+    "AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST",
     "AEROBIM_OIDC_ISSUER",
     "AEROBIM_OIDC_JWKS_EXTRA_HOSTS",
     "AEROBIM_OIDC_JWKS_URL",
@@ -135,7 +138,8 @@
     "AEROBIM_S3_REGION",
     "AEROBIM_S3_SECRET_ACCESS_KEY",
     "AEROBIM_SIGNOFF_PROFILE",
-    "AEROBIM_STORAGE_DIR"
+    "AEROBIM_STORAGE_DIR",
+    "AEROBIM_VLM_ENABLED"
   ],
   "code_env_vars": [
     "AEROBIM_API_BEARER_TOKEN",
@@ -155,13 +159,6 @@
     "AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE",
     "AEROBIM_HYBRID_PROVIDER_CONFIG",
     "AEROBIM_IFC_PARSE_CACHE_DIR",
-    "AEROBIM_KIMI_API_BASE_URL",
-    "AEROBIM_KIMI_API_KEY",
-    "AEROBIM_KIMI_CACHE_DIR",
-    "AEROBIM_KIMI_CACHE_NAMESPACE",
-    "AEROBIM_KIMI_CACHE_PROJECT",
-    "AEROBIM_KIMI_MODEL",
-    "AEROBIM_KIMI_REASONING_EFFORT",
     "AEROBIM_LLM_ADVISORY_ENABLED",
     "AEROBIM_LLM_ALLOWED_HOSTS",
     "AEROBIM_LLM_API_KEY",
@@ -181,6 +178,9 @@
     "AEROBIM_MEP_SCOPE_MEMO_REF",
     "AEROBIM_NORM_RULE_PACK",
     "AEROBIM_OIDC_AUDIENCE",
+    "AEROBIM_OIDC_BFF_AUTHORIZE_URL",
+    "AEROBIM_OIDC_BFF_CLIENT_ID",
+    "AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST",
     "AEROBIM_OIDC_ISSUER",
     "AEROBIM_OIDC_JWKS_EXTRA_HOSTS",
     "AEROBIM_OIDC_JWKS_URL",
@@ -197,7 +197,8 @@
     "AEROBIM_S3_REGION",
     "AEROBIM_S3_SECRET_ACCESS_KEY",
     "AEROBIM_SIGNOFF_PROFILE",
-    "AEROBIM_STORAGE_DIR"
+    "AEROBIM_STORAGE_DIR",
+    "AEROBIM_VLM_ENABLED"
   ],
   "architecture_inventory": {
     "public_domain_protocols": 48,

@@ -60,9 +60,9 @@ claim_boundary: "План для ИИ-исполнителя. Код в этом
 
 ### A5. claims-lint `--full-docs` и CI-гейты
 
-- **Затык:** `--full-docs` падает на старых файлах без allow-file; CI job `wall_guid_verify` exit=1 (по состоянию на `aca6d09`).
-- **Действие:** прогнать `python scripts/lint_claims.py --full-docs`, собрать список нарушений, для честных non-claim документов добавить allow-file header + запись в `audit/claims_allow_file_registry.json` (как сделано для evidence 14.08). Отдельно воспроизвести `wall_guid_verify` локально и закрыть причину.
-- **DoD:** `lint_claims.py`, `--full-docs`, `--matrix-guard`, `--claim-boundary-guard` → OK; wall_guid_verify зелёный в CI после push.
+- **Затык (было):** `--full-docs` / `wall_guid_verify exit=1`.  
+- **Закрыто 14.08 вечер:** snapshot `wall-guid` был с CRLF-хешами; Linux `eol=lf` валил verifier. Снимок нормализован в LF, exporter пишет `newline="\n"`. Runtime baseline README drift (env + LOC) обновлён. N43 lag=1 **не** включали.  
+- **DoD локально:** `verify_evidence_bundle` wall-guid OK; `--check-readme` OK; `lint_claims.py` OK. Зелёный CI — после push.
 
 ### A6. Паритет интерпретатора: локальный 3.13 vs CI 3.12
 
