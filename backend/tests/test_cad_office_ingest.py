@@ -65,6 +65,22 @@ class CadOfficeIngestTests(unittest.TestCase):
         self.assertEqual(result.annotations[0].sheet_id, "A-101")
         self.assertIn("200", result.annotations[0].observed_value)
 
+    def test_committed_minimal_dxf_fixture_extracts_text(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ezdxf") is None:
+            self.skipTest("ezdxf optional extra not installed")
+
+        path = Path(__file__).resolve().parents[2] / "samples" / "cad" / "minimal-entities.dxf"
+        if not path.is_file():
+            self.skipTest("committed DXF fixture missing")
+        result = EzdxfCadModelIngestor().ingest(path, sheet_id="CAD-MIN")
+        self.assertTrue(result.supported)
+        self.assertGreaterEqual(result.entity_count, 2)
+        texts = " ".join(annotation.observed_value for annotation in result.annotations)
+        self.assertIn("WALL-A", texts)
+        self.assertEqual(result.format_resolved, "dxf")
+
     def test_office_text_ingest(self) -> None:
         ingestor = DoclingOfficeDocumentIngestor()
         with tempfile.TemporaryDirectory() as temporary_directory:

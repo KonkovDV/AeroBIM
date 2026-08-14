@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "federated_clash_duplex_pin",
+  "claim_level": "open_bench_only",
+  "checkpoint": "NO_GO",
+  "closes_rt003": false,
+  "mep_system_clash": "NOT_VERIFIED",
+  "geometry_verified": false,
+  "customer_federated_ifc": false,
+  "signed_scope": false,
+  "license": "CC BY 4.0 (IFC-Bench duplex / buildingSMART sample)",
+  "claim_boundary": "Hashed IfcClash on gitignored IFC-Bench duplex ARC vs MEP. Public federated pair, no coordinator BCF gold, no signed clearance matrix, not customer models, not MEP system-aware. Hits ≠ delivered. Checkpoint NO_GO.",
+  "runs": [
+    {
+      "label": "duplex_arc_vs_mep",
+      "status": "RUN",
+      "closes_rt003": false,
+      "mep_system_clash": "NOT_VERIFIED",
+      "geometry_verified": false,
+      "clash_count": 837,
+      "elapsed_ms": 5959.65,
+      "path_a": ".local/ifc-bench-v2/projects/duplex/arc.ifc",
+      "path_b": ".local/ifc-bench-v2/projects/duplex/mep.ifc",
+      "engine": "ifcclash",
+      "license": "public_ifc_bench_non_gpl",
+      "note": "Open federated pair, no coordinator BCF gold. Hits ≠ MEP delivered."
+    }
+  ],
+  "content_sha256": "d87f8e0206fd88306aa617386319cc326751cbd17f70aa6a52091a40151193c6"
+}

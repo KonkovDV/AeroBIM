@@ -2,7 +2,7 @@
 
 **Source page:** https://stroimprosto.mos.ru/knowledge/article/cim-agr/  
 **Retrieved:** 2026-08-14  
-**Claim:** public machine-readable AGR CIM checks (IDS). Not a Samolet customer-approved acceptance profile. Does not close Checkpoint GO / RT-002.
+**Claim:** public machine-readable AGR CIM checks (IDS). City methodology files, **not** the territorial NPA itself (that is 17-ПП + ДГП-Р-1/26). Not a Samolet customer-approved acceptance profile. Does not close Checkpoint GO / RT-002. Does not substitute GrK art. 49 expertise.
 
 AeroBIM does not claim authorship. Files are redistributed as published by the City of Moscow knowledge base.
 

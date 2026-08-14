@@ -1,9 +1,10 @@
-# Drawing Samples Placeholder
+# Drawing fixtures
 
-Store structured drawing annotations here.
+Structured 2D evidence for TZ row 1 / row 2 (fixture only, not CV, not DWG):
 
-These fixtures represent the current baseline contract for 2D evidence before full CV/PDF/DWG adapters land.
+- `techlab-annotations.txt` — pipe-separated vector-style annotations
+- `wall-thickness.json` — JSON annotations
+- `wall-thickness-vector.pdf` — vector PDF text (`WALL-01 thickness 250 mm`)
+- `wall-thickness-scan.png` — synthetic raster for RapidOCR (`WALL-IMG-01 thickness 220 mm`)
 
-Recommended columns for text fixtures:
-
-- `annotation_id|sheet_id|target_ref|measure_name|observed_value|unit|page|x|y|width|height`
+Not customer drawings. Native DWG remains missing.

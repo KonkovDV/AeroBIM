@@ -1,0 +1,44 @@
+{
+  "schema": "aerobim.package_identity_compare.v1",
+  "claim_boundary": "Synthetic package identity compare fixture; not CDE; not customer packages.",
+  "previous": [
+    {
+      "source_id": "PZ",
+      "doc_type": "explanatory_note",
+      "stage": "PD",
+      "revision": "R1"
+    },
+    {
+      "source_id": "AR-101",
+      "doc_type": "drawing",
+      "stage": "PD",
+      "revision": "R1"
+    },
+    {
+      "source_id": "KZH-01",
+      "doc_type": "calculation",
+      "stage": "PD",
+      "revision": "R1"
+    }
+  ],
+  "current": [
+    {
+      "source_id": "PZ",
+      "doc_type": "explanatory_note",
+      "stage": "RD",
+      "revision": "R2"
+    },
+    {
+      "source_id": "AR-101",
+      "doc_type": "plan",
+      "stage": "PD",
+      "revision": "R1"
+    },
+    {
+      "source_id": "IOS-01",
+      "doc_type": "specification",
+      "stage": "RD",
+      "revision": "R1"
+    }
+  ]
+}

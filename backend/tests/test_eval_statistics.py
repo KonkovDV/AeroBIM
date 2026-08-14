@@ -185,5 +185,24 @@ class ExtractionArtifactUncertaintyTests(unittest.TestCase):
         self.assertIn("never customer accuracy", str(uncertainty["claim_boundary"]))
 
 
+class EnglishExtractionGateTests(unittest.TestCase):
+    def test_english_manifest_meets_fixture_macro_f1_gate(self) -> None:
+        from pathlib import Path
+
+        from aerobim.tools.evaluate_extraction import _evaluate_manifest
+
+        manifest = (
+            Path(__file__).resolve().parents[2]
+            / "samples"
+            / "benchmarks"
+            / "english-aec-ground-truth.json"
+        )
+        if not manifest.is_file():
+            self.skipTest("English extraction manifest missing")
+        payload = _evaluate_manifest(manifest, bootstrap_replicates=100, bootstrap_seed=1)
+        self.assertGreaterEqual(payload["macro_f1"], 0.70)
+        self.assertIn("never customer accuracy", str(payload["uncertainty"]["claim_boundary"]))
+
+
 if __name__ == "__main__":
     unittest.main()

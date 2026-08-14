@@ -1,12 +1,12 @@
 # ifcdiff → TZ row 28 (version / doc-type compare)
 
-**Date:** 2026-08-04 (updated)  
-**Status:** thin port landed — TZ product row still **not** closed as CDE compare  
-**Matrix:** [`audit/reports/TZ_RUNTIME_MATRIX.md`](../../audit/reports/TZ_RUNTIME_MATRIX.md) row **28**
+**Date:** 2026-08-04 (updated 2026-08-14)  
+**Status:** thin IFC diff remains engineering-only; **package identity compare** now covers TZ row 28 on fixtures  
+**Matrix:** [`audit/reports/TZ_RUNTIME_MATRIX.md`](../../audit/reports/TZ_RUNTIME_MATRIX.md) row **28** = `VERIFIED_FIXTURE_ONLY` (not CDE)
 
-## Finding (unchanged product gap)
+## Finding (unchanged CDE gap)
 
-Tracker TZ requires «сравнение версий и типов документации» as multi-package CDE compare. Reserved kinds `STAGE_MISMATCH` / `VERSION_MISMATCH` alone do not satisfy that.
+Tracker TZ «сравнение версий и типов документации» is **not** CDE version management. Reserved kinds alone never satisfied the row. Fixture package-vs-package identity compare now emits `STAGE_MISMATCH` / `VERSION_MISMATCH` / `DOC_TYPE_MISMATCH`. CDE import remains missing.
 
 ## Wheel reality
 
@@ -29,7 +29,7 @@ Scope: GlobalId **add/remove** + `Name` / `ObjectType` / `Tag` / `Description` c
 - Engineering signal only — not «документация одобрена».  
 - Does **not** close RT-001.  
 - Does **not** claim CDE version management.  
-- Matrix row 28 stays **MISSING** (or PARTIAL only if explicitly reclassified) until package-vs-package doc-type/version compare ships.
+- Matrix row 28 is `VERIFIED_FIXTURE_ONLY` via `compare_package_document_identities` (synthetic inventories). This IFC GUID/attribute diff stays a separate scaffold.
 
 ## Estimate remaining
 

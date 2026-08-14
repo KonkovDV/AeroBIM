@@ -34,6 +34,7 @@ class PublicJurisdictionPackTests(unittest.TestCase):
             self.assertFalse(row["customer_signed"])
             self.assertFalse(row["samolet_alias"])
             self.assertIsNone(row["approval"])
+            self.assertEqual(row["legal_force"], "not_npa")
 
     def test_moscow_agr_ids_on_disk(self) -> None:
         files = discover_ids(REPO / "samples" / "ids" / "moscow-agr" / "pack")

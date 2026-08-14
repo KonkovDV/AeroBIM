@@ -1,0 +1,58 @@
+{
+  "artifact_type": "rt001_preregistration",
+  "schema_version": "1.0.0",
+  "status": "FROZEN_ON_SYNTHETIC",
+  "frozen_at": "2026-08-14",
+  "checkpoint": "NO_GO",
+  "closes_rt001": false,
+  "corpus_kind": "synthetic",
+  "claim_boundary": "Schema freeze on the in-repo synthetic detection-precision contract. One fixture author is not dual independent raters. LLM is not a rater. Does not close RT-001. Not product precision.",
+  "protocol_ref": "docs/quality/RT001_LABELING_PROTOCOL_RT026_2026_08_03.md",
+  "label_schema": {
+    "schema_version": "1.0.0",
+    "schema_path": "samples/benchmarks/detection-precision/labels.schema.json",
+    "schema_sha256": "b01c208e647197a6351090124361f052ad2cf781091ff3a6185ba74fe31a8f39",
+    "frozen_at": "2026-08-14"
+  },
+  "sample_plan": {
+    "n_planned": null,
+    "n_pilot": 2,
+    "pilot_dataset": "samples/benchmarks/detection-precision/labels-synthetic.json",
+    "power_assumptions": "not estimated — synthetic contract only",
+    "stop_rule": "do not score product precision on this freeze",
+    "wilson_planner_ref": "WP-07 quality measurement protocol"
+  },
+  "strata": [
+    {"axis": "discipline", "levels": ["AR", "ST", "MEP"], "counts": {"AR": 1, "ST": 1, "MEP": 0}},
+    {"axis": "criticality", "levels": ["error", "warning"], "counts": {}},
+    {"axis": "modality", "levels": ["ifc", "drawing", "cross_doc"], "counts": {"cross_doc": 2}},
+    {"axis": "claimed_guid", "levels": ["present", "absent", "na"], "counts": {}}
+  ],
+  "raters": {
+    "min_independent": 2,
+    "adjudicator_on_disagreement": true,
+    "llm_counts_as_rater": false,
+    "blind_to_advisory": true,
+    "named": ["synthetic-author"],
+    "independent_human_raters": 0,
+    "why_not_iaa": "labels-synthetic.json lists a single fixture author; that is not dual-rater κ/α"
+  },
+  "metrics": {
+    "primary": "krippendorff_alpha",
+    "imbalance_robust": "gwet_ac1",
+    "secondary": "cohens_kappa",
+    "measured_on_this_freeze": false
+  },
+  "thresholds_draft": {
+    "pass_alpha_0_67": true,
+    "pass_ac1_0_60": true,
+    "pass_kappa_0_60_eng_gate": true,
+    "target_kappa_0_80_not_sole_gate": true
+  },
+  "forbidden": [
+    "publishing this freeze as RT-001 CLOSED",
+    "counting the fixture author twice as independent raters",
+    "using LLM output as a rater",
+    "stamping corpus_kind=customer on synthetic labels"
+  ]
+}

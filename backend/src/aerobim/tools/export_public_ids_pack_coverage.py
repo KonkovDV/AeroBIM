@@ -106,6 +106,12 @@ def export_pack(pack_id: str, *, root: Path, ifc_path: Path) -> dict[str, Any]:
             "pack_id": pack_id,
             "samolet_alias": False,
             "customer_signed": False,
+            "legal_force": "not_npa",
+            "substitutes_customer_eir": False,
+            "substitutes_grk_art_49_expertise": False,
+            "substitutes_agr_certificate": False,
+            "closes_rt001": False,
+            "closes_rt003": False,
         },
     )
     evidence_stem = str(meta["evidence_stem"])

@@ -5,64 +5,32 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.models import (
+    RequirementSource,
+    SourceKind,
+    ValidationRequest,
+)
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
+    OpenRebarEvidenceVerifier,
     build_openrebar_provenance_digest,
 )
 from aerobim.tools.openrebar_provenance_digest import (
     compute_openrebar_provenance_digest,
 )
 
+_COMMITTED_OPENREBAR = (
+    Path(__file__).resolve().parents[2]
+    / "samples"
+    / "calculations"
+    / "openrebar-slab-03.result.json"
+)
+
 
 def _fixture_payload() -> dict[str, object]:
-    return {
-        "contractId": "OpenRebar.reinforcement.report.v1",
-        "schemaVersion": "1.0.0",
-        "generatedAtUtc": "2026-04-16T00:00:00Z",
-        "metadata": {
-            "projectCode": "Residential Tower Alpha",
-            "slabId": "SLAB-03",
-            "sourceSystem": "OpenRebar",
-            "targetSystem": "AeroBIM",
-            "countryCode": "RU",
-            "designCode": "SP63",
-            "normativeProfileId": "ru.sp63.2018",
-            "normativeTablesVersion": "v1",
-        },
-        "normativeProfile": {
-            "profileId": "ru.sp63.2018",
-            "jurisdiction": "RU",
-            "designCode": "SP63",
-            "tablesVersion": "v1",
-        },
-        "analysisProvenance": {
-            "geometry": {
-                "decompositionAlgorithm": "grid-scan",
-                "rectangularShortcutFillRatio": 0.9,
-                "minRectangleAreaMm2": 1000.0,
-                "samplingResolutionPerAxis": 64,
-                "cellCoverageInclusionThreshold": 0.5,
-            },
-            "optimization": {
-                "optimizerId": "column-generation",
-                "masterProblemStrategy": "restricted-master-lp-highs",
-                "pricingStrategy": "bounded-knapsack-dp",
-                "integerizationStrategy": "repair-ffd",
-                "demandAggregationPrecisionMm": 0.1,
-                "qualityFloor": "production",
-                "anyFallbackMasterSolverUsed": False,
-            },
-        },
-        "isolineFileName": "floor-03.dxf",
-        "isolineFileFormat": "dxf",
-        "summary": {
-            "parsedZoneCount": 0,
-            "classifiedZoneCount": 0,
-            "totalRebarSegments": 0,
-            "totalWastePercent": 0.0,
-            "totalWasteMm": 0.0,
-            "totalMassKg": 0.0,
-        },
-    }
+    payload = json.loads(_COMMITTED_OPENREBAR.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise TypeError("OpenRebar fixture must be a JSON object")
+    return payload
 
 
 class OpenRebarProvenanceDigestToolTests(unittest.TestCase):
@@ -98,6 +66,33 @@ class OpenRebarProvenanceDigestToolTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 compute_openrebar_provenance_digest(report_path)
+
+    def test_committed_openrebar_fixture_sverka_without_digest_mismatch(self) -> None:
+        if not _COMMITTED_OPENREBAR.is_file():
+            self.skipTest("committed OpenRebar fixture missing")
+        payload = _fixture_payload()
+        digest = build_openrebar_provenance_digest(payload)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            ifc = Path(tmp_dir) / "m.ifc"
+            ifc.write_text("ISO-10303-21;", encoding="utf-8")
+            issues = OpenRebarEvidenceVerifier().verify(
+                ValidationRequest(
+                    request_id="openrebar-fixture",
+                    ifc_path=ifc,
+                    requirement_source=RequirementSource(
+                        text="R|IFCWALL|P|T|1",
+                        source_kind=SourceKind.STRUCTURED_TEXT,
+                    ),
+                    project_name="Residential Tower Alpha",
+                    reinforcement_report_path=_COMMITTED_OPENREBAR,
+                    reinforcement_source_digest=digest,
+                )
+            )
+        rules = {issue.rule_id for issue in issues}
+        self.assertNotIn("OPENREBAR-PROVENANCE-DIGEST", rules)
+        self.assertNotIn("OPENREBAR-CONTRACT", rules)
+        self.assertNotIn("OPENREBAR-OPT-FALLBACK", rules)
+        self.assertNotIn("OPENREBAR-OPT-STRATEGY", rules)
 
 
 if __name__ == "__main__":

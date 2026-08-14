@@ -65,8 +65,8 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
-| Vector 2D drawings | partial | Structured TXT/JSON; PDF text blocks — not CAD entities | P2 DWG/DXF |
-| Scanned 2D drawings | partial | RapidOCR baseline | MVP / P2 |
+| Vector 2D drawings | partial | Structured TXT/JSON + committed vector PDF text (`samples/drawings/`); not CAD entities | P2 DWG/DXF |
+| Scanned 2D drawings | partial | RapidOCR on synthetic `wall-thickness-scan.png`; not customer scans | MVP / P2 |
 | BIM geometry + attributes | done | IfcOpenShell, IDS, schema pre-gate | MVP |
 | Extract objects | partial | IFC entities; no CV symbol detection | MVP / P2 |
 | Extract dimensions | partial | IFC quantities + drawing annotations | MVP |
@@ -76,7 +76,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
-| vs calculation results | partial | Cross-doc + OpenRebar provenance | MVP |
+| vs calculation results | partial | OpenRebar provenance сверка on fixture `openrebar-slab-03.result.json`; correctness NOT_IMPLEMENTED | MVP |
 | vs design brief (TZ) | done | Narrative + structured requirements | MVP |
 | sections vs sections | partial | `SectionDiffAnalyzer`: canonical PD↔RD pairing (RU/EN discipline + canonical-key registries, AR+KZH fixtures, SI tolerance, provenance, coverage in capability); customer pair/parser + canonical-key freeze TBD | P1 scaffold hardened 2026-07-11 |
 | vs norms / design rules | partial | IDS + `NormRulePackLoader` + 20-rule synthetic AR template; manifest/env customer path (`AEROBIM_NORM_RULE_PACK`) with fail-closed capability + CI schema gate; approved customer pack still missing | MVP / P1 hardened 2026-07-11 |
@@ -86,7 +86,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
 | MEP / system intersections | missing | Generic clash only; explicit gap [`MEP-CLASH-001`](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | P1 customer corpus / roadmap |
-| Geometric BIM conflicts | partial | `IfcClashDetector` + `detect_between` (no new port) + `SPATIAL-*`; not TZ clash >90% | MVP |
+| Geometric BIM conflicts | partial | `IfcClashDetector` + `detect_between` on planted federated boxes; not TZ clash >90%; RT-003 OPEN | MVP |
 | Calculation / load errors | partial | Cross-doc numeric; not full structural solver | MVP |
 | Incorrect areas | partial | Space area rules + quantity algebra | MVP |
 | Inefficient space use | missing | No utilization analytics | P4 (if metric agreed) |
@@ -106,16 +106,17 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
-| Upload MS Office | done | Native `.docx`/`.xlsx` via `python-docx`+`openpyxl` (MIT); Docling optional `[docling]`; legacy `.doc`/`.xls` fail-closed; `office_ingest` capability — `test_office_native_ingest` | P0 WP-R1 |
+| Upload MS Office | done | Native `.docx`/`.xlsx` via `python-docx`+`openpyxl` (MIT); committed `samples/office/` round-trip; Docling optional `[docling]`; legacy `.doc`/`.xls` fail-closed; `office_ingest` capability — `test_office_native_ingest` | P0 WP-R1 |
 | Upload PDF | partial | Path-based + raster + `POST /v1/uploads` | P0 |
-| Upload DWG | missing | — | P2 |
+| Upload DWG | missing | Native DWG never OK; derived DXF sidecar `placeholder-source.dwg` is not a parser | P2 |
 | Upload BIM (IFC) | done | Path-based + multipart upload | MVP / P0 |
-| Auto analysis + report | done | `AnalyzeProjectPackageUseCase` + JSON/HTML/BCF | MVP |
-| Version / doc-type compare | partial | ISO 19650-lite fields; no full version diff | P1 |
+| Auto analysis + report | done | `AnalyzeProjectPackageUseCase` + JSON/HTML/BCF ZIP export | MVP |
+| BCF ZIP file ingest | partial | Committed `fixture-topics.bcfzip` round-trip; CDE import NOT_VERIFIED | MVP |
+| Version / doc-type compare | partial | Fixture package identity compare (`compare_package_document_identities`); not CDE version management | P1 |
 | CV for drawings | missing | Advisory roadmap | P2 |
 | OCR for text | partial | Raster baseline | MVP |
 | NLP for TZ / remarks / anomalies | partial | Regex NLP; LLM advisory stub; EN/RU templates | MVP / P3 |
-| Clash / anomaly algorithms | partial | IfcClash deterministic; federated two-file rehearsal optional extra | MVP |
+| Clash / anomaly algorithms | partial | IfcClash `detect_between` on planted federated boxes (optional extra); `closes_rt003=false` | MVP |
 | Web UI | done | `frontend/` review shell | MVP |
 | Drawing overlay of errors | done | `DrawingEvidencePanel` + smoke PNG [`drawing-overlay-smoke-2026-08`](../evidence/drawing-overlay-smoke-2026-08/README.md) + [KT#2 handoff](../evidence/kt2-handoff-2026-08-11/README.md) (deterministic `problem_zone` — not CV) | MVP |
 | Remarks panel: list / filter / priority / edit | done | Severity filter + remark editor → review-events | P0 |
@@ -127,7 +128,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 |------|--------|-------|
 | 2D drawings | partial | Fixtures + OCR; customer PDFs via intake |
 | BIM models | done | IFC packs |
-| TZ RU/EN | done | RU narrative + EN structured corpus |
+| TZ RU/EN | done | RU narrative + EN structured corpus (EN F1 fixture gate wired; not customer accuracy) |
 | Company standards | partial | IDS / rule packs; customer corpus TBD |
 | Scan vs vector quality | acknowledged | Capability status + claim boundary |
 | Unstructured data | acknowledged | Deterministic extractors + HITL |
@@ -139,7 +140,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | TZ criterion | Pilot / repo target | Status | Phase |
 |--------------|---------------------|--------|-------|
 | Clash accuracy >90% | Measured precision after labeled corpus; pilot TP ≥60% interim | partial ([KT#2 handoff](../evidence/kt2-handoff-2026-08-11/README.md) + [slice 2026-08](../evidence/clash-measurement-slice-2026-08/README.md): **fixture** AABB extents precision=1.0 recall=1.0 n=6 — **not** customer corpus, **not** TZ >90%; customer n≈50 still open) | P1 fixture densified 12.08 / measure customer when IFC arrives / P4 publish |
-| Calc error detection | Cross-doc + OpenRebar on agreed pack | partial | MVP |
+| Calc error detection | Cross-doc + OpenRebar provenance сверка on fixture; correctness NOT_IMPLEMENTED | partial | MVP |
 | Inconsistency accuracy >90% | Same adjudication path as clash | partial (harness + protocol; not measured on customer corpus) | P1 harness done / P4 publish |
 | Remark quality RU/EN | RU templates live; EN P0; human edit HITL | partial | P0 |
 | Model accuracy / stability | pytest + capabilities fail-closed + publishable runtime baseline (`tests_passed` numeric; `claims-lint` CI) | done | MVP |

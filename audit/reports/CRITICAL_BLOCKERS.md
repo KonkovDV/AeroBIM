@@ -5,7 +5,7 @@
 **RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» corpus — open benches exist), **RT-002** (no Samolet-signed acceptance profile — official MOEXP IDS **are** public), **RT-003** (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered). Do not write «нет утверждённого нормативного пакета».
+**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» corpus — open benches + MinStroy XML intake exist), **RT-002** (no Samolet-signed acceptance profile — official MOEXP/AGR/SPb IDS **are** public), **RT-003** (public duplex IfcClash RUN; `mep_system_clash` NOT_VERIFIED; not MEP delivered). Do not write «нет утверждённого нормативного пакета».
 
 **Reclassification (v4):** [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md)
 
@@ -110,7 +110,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Severity:** BLOCKER  
 - **Category:** Claims / Evaluation  
 - **Rewritten 2026-08-14:** three public corpora were available and unused for a product false-pass number: AEC-Bench ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199), Apache 2.0), IFC-Bench V2 (TUM GNI, CC BY 4.0), GNI BIM Dataset ([Zenodo 10.5281/zenodo.19722012](https://doi.org/10.5281/zenodo.19722012), CC BY 4.0). Attribution: [`docs/DATASETS.md`](../../docs/DATASETS.md). GPLv3 IFC from IFC-Bench stays **out** of this MIT tree.  
-- **Still true:** there is **no** public corpus «российский комплект ПД + фактическое заключение экспертизы». Fixture F1 is not product accuracy. 656 pytest ≠ false-pass rate ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058)).  
+- **Still true:** there is **no** public corpus «российский комплект ПД + фактическое заключение экспертизы». Fixture F1 is not product accuracy. 656 pytest ≠ false-pass rate ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058)). MinStroy XSD **01.07 / 01.01** are now vendored from catalog subsections (zip folders still `dev_`); that is intake format, not a remark corpus.  
 - **Expected before any product accuracy claim:** customer or RF-expertise corpus + ≥2 adjudicators + κ/α + held-out + FN tracked  
 - **Product HOLD — RT-001 still OPEN** for that RF/customer corpus only. Open benches ≠ RT-001 closed.
 
@@ -125,10 +125,11 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  
 - **Category:** MEP / Clash  
 - **Rewritten 2026-08-14:** multidisciplinary IFC is public in IFC-Bench V2 (`west_riverside_hospital` CC BY 3.0; `sixty5` / `dental_clinic` / `duplex` / `wbdg_office` CC BY 4.0; `digital_hub` MIT). IfcClash is an optional extra. OSArch: naive 7-discipline federation ~44k elements can OOM (~30 GB); bbox pre-broadphase is required before quoting runtime. Fixture «~0.5 s» must not go to the tracker as product SLA.
-- **Inventory (not clash):** hashed entity counts on duplex/mep + HVAC fixture — [`docs/evidence/federated-mep-inventory-2026-08.md`](../../docs/evidence/federated-mep-inventory-2026-08.md) · `content_sha256=8fd35e814cb0fd54ea60e80cecd5f8636c4c3a422d24dbe2fafb422866291aa5`. `digital_hub` / `west_riverside` SKIPPED (not on disk; Hub SSL timeout).
-- **Still true:** `UnconfiguredMepSystemGraphProvider` stays `NOT_VERIFIED`. Synthetic stub is never OK. AeroBIM has **not** published a measured federated clash run. Not MEP delivered.
+- **Inventory (not clash):** hashed entity counts on duplex/mep + HVAC fixture + Digital Hub + West Riverside IFC4 — [`docs/evidence/federated-mep-inventory-2026-08.md`](../../docs/evidence/federated-mep-inventory-2026-08.md) · `content_sha256=d875af14f1f177ac27d64fd12ac9d700b635190ca9b2c80e8971ab017ec54c0b`.
+- **Geometric clash (not MEP delivered):** planted federated IfcClash (walls; IfcPipeSegment vs IfcWall) under `docs/evidence/federated-clash-planted-2026-08.json`. Public IFC-Bench duplex ARC vs MEP IfcClash **RUN, 837 hits** under `docs/evidence/federated-clash-duplex-2026-08.json`. Engine rehearsal, **not** customer federated IFC, **not** signed scope, **not** coordinator BCF gold. `closes_rt003` stays false.
+- **Still true:** `UnconfiguredMepSystemGraphProvider` stays `NOT_VERIFIED`. Synthetic stub is never OK.
 - **Normative hook:** «Требования к отсутствию коллизий» in digital building-model requirements ed. 4.0.
-- **Product HOLD — RT-003 still OPEN** until a hashed **clash** run on a license-cleared federated model. Inventory ≠ delivered.  
+- **Product HOLD — RT-003 still OPEN** until customer federated IFC + signed scope + verified geometry. Inventory, planted clash, and public duplex clash ≠ delivered.  
 
 ### RT-004 — Clash SKIPPED does not block pass
 - **СТАТУС: ЗАКРЫТО (remediation 2026-07-17)** — `require_clash` → SKIPPED clash ⇒ FAILED + `passed=false`  
