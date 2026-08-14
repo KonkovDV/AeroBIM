@@ -10,3 +10,7 @@ Prefer small, license-clear fixtures first. Not customer evidence.
 0.8.4 (`FILE_SCHEMA(('IFC4'))`, project name `Samolet Multi Fixture`). Samolet’s
 public authoring stack is Renga; a customer IFC must come from that export chain
 (intake). Do not describe this file as a Renga or Samolet production model.
+
+A publisher Renga sample (PNST 909, ToS cite GO, binaries gitignored) is probed
+by `python -m aerobim.tools.run_renga_export_probe`. That command does not
+replace this fixture.

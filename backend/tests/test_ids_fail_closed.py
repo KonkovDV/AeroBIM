@@ -15,6 +15,7 @@ from aerobim.domain.ids_schema_gate import (
     collect_schema_mismatches,
     model_schema_allowed,
     parse_ids_specification_versions,
+    parse_ifc_file_name,
     parse_ifc_file_schema,
     skipped_spec_fail_closed_rule_id,
 )
@@ -83,6 +84,18 @@ class IdsSchemaGateDomainTests(unittest.TestCase):
         header = "ISO-10303-21;\nHEADER;\nFILE_SCHEMA(('IFC4'));\n"
         self.assertEqual(parse_ifc_file_schema(header), "IFC4")
 
+    def test_parse_file_name_originating_system(self) -> None:
+        header = WALL_IFC.read_text(encoding="utf-8")
+        parsed = parse_ifc_file_name(header)
+        assert parsed is not None
+        self.assertTrue(parsed.originating_system)
+
+    def test_parse_renga_view_definition_allows_space(self) -> None:
+        from aerobim.domain.ids_schema_gate import parse_ifc_view_definition
+
+        header = "FILE_DESCRIPTION(('ViewDefinition [Renga View]'),'2;1');\n"
+        self.assertEqual(parse_ifc_view_definition(header), "Renga View")
+
     def test_ifc2x3_ids_does_not_allow_ifc4_model(self) -> None:
         self.assertFalse(model_schema_allowed("IFC4", frozenset({"IFC2X3"})))
         self.assertTrue(model_schema_allowed("IFC4", frozenset({"IFC2X3", "IFC4"})))
@@ -107,6 +120,33 @@ class IdsSchemaGateDomainTests(unittest.TestCase):
         self.assertEqual(len(specs), 1)
         self.assertEqual(specs[0].name, "Wall Fire Rating IFC2X3")
         self.assertEqual(specs[0].versions, frozenset({"IFC2X3"}))
+
+    def test_parses_namespaced_moexp_specification_ifc4(self) -> None:
+        """Official MOEXP IDS uses <ids:specification ifcVersion='IFC4'>."""
+        snippet = (
+            '<ids:ids xmlns:ids="http://standards.buildingsmart.org/IDS">'
+            '<ids:specification ifcVersion="IFC4" name="АР стены">'
+            "</ids:specification></ids:ids>"
+        )
+        specs = parse_ids_specification_versions(snippet)
+        self.assertEqual(len(specs), 1)
+        self.assertEqual(specs[0].name, "АР стены")
+        self.assertEqual(specs[0].versions, frozenset({"IFC4"}))
+        self.assertFalse(model_schema_allowed("IFC4X3", specs[0].versions))
+
+    def test_official_moexp_ar_ids_is_ifc4_only(self) -> None:
+        ids_path = (
+            REPO
+            / "samples"
+            / "ids"
+            / "moexp"
+            / "pack"
+            / "oks"
+            / "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids"
+        )
+        specs = parse_ids_specification_versions(ids_path.read_text(encoding="utf-8"))
+        self.assertGreater(len(specs), 10)
+        self.assertTrue(all(spec.versions == frozenset({"IFC4"}) for spec in specs))
 
     def test_collect_mismatch_on_wall_fixture_header(self) -> None:
         header = WALL_IFC.read_text(encoding="utf-8")

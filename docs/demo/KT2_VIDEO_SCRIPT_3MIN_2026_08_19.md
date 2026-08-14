@@ -28,7 +28,7 @@ python -m aerobim.tools.run_demo_vertical_slice
 | 50–100 | `report.html` → `#kt2-overlay` | «Лист, текстовое доказательство, finding_id, source_id, evidence_refs, summary.passed=false. Вердикт не PASS. Рамка детерминированная, это не CV. Fixture demo.» |
 | 100–130 | `overlay-problem-zone.png` рядом | «Оверлей — sibling PNG. Не обученный детектор штампа.» |
 | 130–155 | `findings.bcfzip` | «Структурный BCF ZIP. Импорт в СОД не проверяли. Не CDE-ready.» |
-| 155–175 | IDS / схема | «Официальные IDS МОГЭ — IFC4. Выгрузка Renga IFC4X3 у нас не проходит молча. Демо-IFC в репо — IfcOpenShell, не Renga.» |
+| 155–175 | IDS / схема | «Официальные IDS МОГЭ — IFC4. Если схема другая, в том числе IFC4X3, не проходит молча. Демо-IFC в репо — IfcOpenShell, не Renga. Публичный Renga 8.7 ПНСТ 909 у нас измерен как IFC4.» |
 | 175–180 | стоп | «Tangl проверяет модель, мы — комплект. 10D не заменяем. GO не рисуем.» |
 
 ## Запрещено в кадре и в голосе

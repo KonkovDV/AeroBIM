@@ -27,10 +27,10 @@ _FILE_DESCRIPTION_RE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 _VIEW_DEFINITION_RE = re.compile(
-    r"ViewDefinition\[([^\]]+)\]",
+    r"ViewDefinition\s*\[([^\]]+)\]",
     re.IGNORECASE,
 )
-_SPEC_OPEN_RE = re.compile(r"<specification\b([^>]*)>", re.IGNORECASE)
+_SPEC_OPEN_RE = re.compile(r"<(?:[\w.-]+:)?specification\b([^>]*)>", re.IGNORECASE)
 _NAME_ATTR_RE = re.compile(r"""\bname\s*=\s*(['"])(.*?)\1""", re.IGNORECASE | re.DOTALL)
 _VERSION_ATTR_RE = re.compile(
     r"""\bifcVersion\s*=\s*(['"])(.*?)\1""",
@@ -58,6 +58,110 @@ def parse_ifc_view_definition(header_text: str) -> str | None:
     inner = _VIEW_DEFINITION_RE.search(match.group(1))
     token = (inner.group(1) if inner else match.group(1)).strip()
     return token or None
+
+
+@dataclass(frozen=True)
+class IfcFileNameHeader:
+    """ISO-10303-21 FILE_NAME fields used to identify the exporting system."""
+
+    name: str
+    timestamp: str
+    preprocessor_version: str
+    originating_system: str
+    authorization: str
+
+
+def _extract_step_call_inner(header_text: str, call_name: str) -> str | None:
+    match = re.search(rf"{re.escape(call_name)}\s*\(", header_text, re.IGNORECASE)
+    if match is None:
+        return None
+    start = match.end()
+    depth = 1
+    in_string = False
+    index = start
+    while index < len(header_text):
+        char = header_text[index]
+        if in_string:
+            if char == "'" and index + 1 < len(header_text) and header_text[index + 1] == "'":
+                index += 2
+                continue
+            if char == "'":
+                in_string = False
+            index += 1
+            continue
+        if char == "'":
+            in_string = True
+        elif char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return header_text[start:index]
+        index += 1
+    return None
+
+
+def _split_step_args(inner: str) -> tuple[str, ...]:
+    args: list[str] = []
+    buf: list[str] = []
+    depth = 0
+    in_string = False
+    index = 0
+    while index < len(inner):
+        char = inner[index]
+        if in_string:
+            if char == "'" and index + 1 < len(inner) and inner[index + 1] == "'":
+                buf.append("''")
+                index += 2
+                continue
+            buf.append(char)
+            if char == "'":
+                in_string = False
+            index += 1
+            continue
+        if char == "'":
+            in_string = True
+            buf.append(char)
+        elif char == "(":
+            depth += 1
+            buf.append(char)
+        elif char == ")":
+            depth -= 1
+            buf.append(char)
+        elif char == "," and depth == 0:
+            args.append("".join(buf).strip())
+            buf = []
+        else:
+            buf.append(char)
+        index += 1
+    tail = "".join(buf).strip()
+    if tail:
+        args.append(tail)
+    return tuple(args)
+
+
+def _unquote_step_string(raw: str) -> str:
+    text = raw.strip()
+    if len(text) >= 2 and text[0] == "'" and text[-1] == "'":
+        return text[1:-1].replace("''", "'")
+    return text
+
+
+def parse_ifc_file_name(header_text: str) -> IfcFileNameHeader | None:
+    """Parse FILE_NAME preprocessor / originating_system from an IFC header."""
+    inner = _extract_step_call_inner(header_text, "FILE_NAME")
+    if inner is None:
+        return None
+    args = _split_step_args(inner)
+    if len(args) < 6:
+        return None
+    return IfcFileNameHeader(
+        name=_unquote_step_string(args[0]),
+        timestamp=_unquote_step_string(args[1]),
+        preprocessor_version=_unquote_step_string(args[4]),
+        originating_system=_unquote_step_string(args[5]),
+        authorization=_unquote_step_string(args[6]) if len(args) > 6 else "",
+    )
 
 
 def parse_ids_ifc_version_tokens(raw: str | None) -> frozenset[str]:

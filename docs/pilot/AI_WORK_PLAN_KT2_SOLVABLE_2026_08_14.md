@@ -112,7 +112,7 @@ claim_boundary: "План для ИИ-исполнителя. Код в этом
 | C1 | RT-001: корпус «ПД РФ + заключение экспертизы» | публично не существует; нужен корпус заказчика |
 | C2 | RT-002: подписанный профиль приёмки Самолёта | документ заказчика (IDS МОГЭ — не он) |
 | C3 | RT-003: federated MEP IFC + верифицированный clash | модели заказчика + scope memo; AABB pairs ≠ clash |
-| C4 | Выгрузка Renga IFC вместо IfcOpenShell fixture | письмо-запрос готово: `docs/partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md` |
+| C4 | Выгрузка Renga IFC Самолёта вместо IfcOpenShell fixture | письмо-запрос готово: `docs/partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md`. **14.08:** публичный образец издателя (ПНСТ 909, Renga 8.7, `FILE_SCHEMA=IFC4`) измерен командой `run_renga_export_probe`; демо-IFC **не** подменён; Самолёт по-прежнему intake |
 | C5 | ODA trial (native DWG) | задача КТ#3; CADSoftTools не принято |
 | C6 | Импорт BCF в CDE заказчика | доступ к CDE; до проверки — «не CDE-ready» |
 
