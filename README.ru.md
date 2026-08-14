@@ -17,7 +17,7 @@
 | **Подтверждено внешне** | [IDS Мособлгосэкспертизы](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) · AEC-Bench 196 задач ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199); Harbor NOT_RUN; gold `null_always_clean` 134/184 FP) |
 | **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом. Стресс 15 IFC в репо; GNI **224** header / **223** IfcOpenShell (1 oversize) |
 | **Честный дефицит** | Корпус заказчика / «ПД РФ + заключение экспертизы»; подписанный профиль приёмки Самолёта; clash federated MEP (инвентарь duplex/mep есть) |
-| **Не утверждаем** | >90%, DWG-ready, MEP delivered, CDE-ready BCF, интеграция с Tangl/10D. Native DWG = **FAILED** |
+| **Не утверждаем** | Not claimed: >90%, DWG-ready, MEP delivered, CDE-ready BCF, Tangl/10D integration. Native DWG = **FAILED** |
 
 Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC — IfcOpenShell, не Renga. OSINT 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
