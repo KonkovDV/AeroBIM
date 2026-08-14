@@ -8,7 +8,7 @@
   "benchmark": {
     "name": "AEC-Bench",
     "arxiv": "2603.29199",
-    "dataset_root": "C:\\plans\\AeroBIM\\.local\\aec-bench",
+    "dataset_root": ".local/aec-bench",
     "instance_count": 196,
     "by_scope": {
       "intradrawing": 89,
@@ -159,12 +159,9 @@
   ],
   "agent_trial": {
     "status": "NOT_RUN",
-    "reason": "Harbor is a Codex/Claude Docker agent. It does not take the Yandex AI Studio Completions key. Yandex key present=true; that key already ran AECV-Bench live counting (macro_extended=0.4325 on 2026-08-04). OPENAI_API_KEY/ANTHROPIC_API_KEY are a different vendor; a prior OpenAI-compat call returned HTTP 401. Do not paste the Yandex key into Harbor.",
-    "yandex_studio_key_present": true,
-    "openai_key_present": true,
-    "anthropic_key_present": false,
+    "reason": "Harbor is a Codex/Claude Docker agent. It does not take the Yandex AI Studio Completions key. The Yandex Studio Completions contour already ran AECV-Bench live counting (macro_extended=0.4325 on 2026-08-04). OPENAI_API_KEY/ANTHROPIC_API_KEY are a different vendor; a prior OpenAI-compat call returned HTTP 401. Do not paste the Yandex key into Harbor.",
+    "credential_flags": "omitted_from_docs_evidence",
     "harbor_hint": "%USERPROFILE%\\.local\\bin\\harbor.exe trials start --path tasks/<scope>/<family>/<instance> -a aec_bench.agents.codex_agent:CodexAgent -m openai/gpt-4o"
   },
-  "output_sha256": "4aefe03208cd84a383ef6db835f1fae83bb28a8017d130f47ddf354c737aefe9",
-  "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\aec-bench-smoke.json"
+  "output_sha256": "4aefe03208cd84a383ef6db835f1fae83bb28a8017d130f47ddf354c737aefe9"
 }
