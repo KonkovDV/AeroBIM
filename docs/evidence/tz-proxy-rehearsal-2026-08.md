@@ -46,8 +46,8 @@ Checkpoint остаётся **NO_GO**.
 | ID | Требование | Без «Самолёта» | Статус (не `done` на блокерах) |
 |---|---|---|---|
 | **ТР-8** | IDS / properties IFC | Fixture + IDS МОГЭ + BSI TestCases | done |
-| **ТР-11** | Норм-пак, утверждённый заказчиком | IDS МОГЭ = **юрисдикционный** профиль (`jurisdiction_eir_like`), не EIR назначающей стороны. Указатель: `samples/ids/moexp/jurisdiction-profile-pointer.json` | **partial** (RT-002) |
-| **ТР-14** | Геометрические коллизии (IfcClash) | `IfcClashDetector.detect` + `detect_between` (два файла, без нового DI-порта). Посаженный IFC: `samples/ifc/clash-two-overlapping-boxes.ifc`. AABB n=6 — другой конструкт | **partial** |
+| **ТР-11** | Норм-пак, утверждённый заказчиком | IDS МОГЭ + AGR class-1 (включая sidecar TEP XML presence). Не EIR «Самолёта» | **partial** (RT-002) |
+| **ТР-14** | Геометрические коллизии (IfcClash) | `detect_between` + посаженная пара пересекающихся стен (`clash-federated-box-{a,b}.ifc`) | **partial** |
 | **ТР-15** | MEP system-aware | Федеративный инвентарь + опциональный IfcClash Duplex. Нет signed clearance matrix | **not_verified** (RT-003) |
 | **ТР-6** | Нативный DWG | DXF / PDF/A; LibreDWG не линкуем | `TZ_MANDATORY_UNSUPPORTED` |
 | **§9 точность** | Dual adjudication | Карта покрытия Эксп. Б (КР 4/24, АР 2/12, ВК 4/16) | **blocked** (RT-001) |

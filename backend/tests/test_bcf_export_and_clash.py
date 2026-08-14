@@ -563,7 +563,7 @@ class ClashDetectorPortTests(unittest.TestCase):
         clash_set = captured[0][0]
         self.assertEqual(clash_set["a"], [{"file": str(ifc_a)}])
         self.assertEqual(clash_set["b"], [{"file": str(ifc_b)}])
-        self.assertNotIn("check_all", clash_set)
+        self.assertTrue(clash_set["check_all"])
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].element_a_guid, "guid-a")
         self.assertEqual(results[0].element_b_guid, "guid-b")

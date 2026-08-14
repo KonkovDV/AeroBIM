@@ -9,7 +9,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from aerobim.domain.agr_exchange_checks import CLAIM_BOUNDARY, collect_agr_exchange_issues
+from aerobim.domain.agr_exchange_checks import (
+    CLAIM_BOUNDARY,
+    collect_agr_exchange_issues,
+    collect_agr_tep_xml_issues,
+)
 from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
 
 CLAIM_LEVEL = "agr_exchange_fixture"
@@ -42,6 +46,10 @@ def run_manifest(manifest_path: Path, *, root: Path) -> dict[str, Any]:
             body_text=body_text,
             size_bytes=size_bytes,
         )
+        if entry.get("require_tep_xml"):
+            tep_rel = str(entry.get("tep_xml") or "").strip()
+            tep_path = (root / tep_rel).resolve() if tep_rel else None
+            issues = issues + collect_agr_tep_xml_issues(xml_path=tep_path)
         expected = tuple(str(item) for item in (entry.get("expect_rule_ids") or ()))
         observed = tuple(issue.rule_id for issue in issues)
         rows.append(
@@ -91,7 +99,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "# AGR exchange-shape fixture",
         "",
         "IFC4 + ReferenceView + no `IfcBuildingElementProxy` + five-field filename + ",
-        "500 MB cap. **Not** the frozen `moscow_agr` profile (no УКЭП, CRS, MSSK).",
+        "500 MB cap + optional TEP XML sidecar presence. **Not** the frozen ",
+        "`moscow_agr` profile (no УКЭП, CRS, MSSK, official TEP schema).",
         "",
         f"- cases: **{summary.get('case_count')}**",
         f"- matching expect: **{summary.get('cases_matching_expect')}**",

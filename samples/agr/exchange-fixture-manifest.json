@@ -31,6 +31,21 @@
       "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
       "declared_filename": "bad:name.ifc",
       "expect_rule_ids": ["AEROBIM-AGR-FILENAME"]
+    },
+    {
+      "id": "fail-tep-xml-missing",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "require_tep_xml": true,
+      "expect_rule_ids": ["AEROBIM-AGR-TEP-XML"]
+    },
+    {
+      "id": "pass-tep-xml-sidecar",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "require_tep_xml": true,
+      "tep_xml": "samples/agr/tep-sidecar-fixture.xml",
+      "expect_rule_ids": []
     }
   ]
 }

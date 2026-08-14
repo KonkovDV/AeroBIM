@@ -12,8 +12,8 @@
     "tests_passed": 2167,
     "tests_skipped": 11,
     "tests_failed": 0,
-    "source_loc": 71169,
-    "test_loc": 46250,
+    "source_loc": 71268,
+    "test_loc": 46293,
     "test_functions": 2178,
     "uncollected": []
   },
@@ -50,8 +50,8 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 71169,
-    "backend_test_loc": 46250,
+    "backend_src_loc": 71268,
+    "backend_test_loc": 46293,
     "backend_test_functions": 2178,
     "extraction_macro_f1": 0.8600000000000001
   },
