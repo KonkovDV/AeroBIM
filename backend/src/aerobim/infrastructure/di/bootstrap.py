@@ -965,9 +965,7 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
         store_root = Path(settings.vlm_cache_dir) / cache_namespace
         if cache_project:
             store_root = store_root / cache_project
-        ttl_seconds = (
-            settings.vlm_cache_ttl_days * 86400.0 if settings.vlm_cache_ttl_days else None
-        )
+        ttl_seconds = settings.vlm_cache_ttl_days * 86400.0 if settings.vlm_cache_ttl_days else None
         reader = CachingVlmReader(
             client,
             FilesystemVlmResponseStore(store_root, ttl_seconds=ttl_seconds),

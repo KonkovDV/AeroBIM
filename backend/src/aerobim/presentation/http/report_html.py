@@ -228,6 +228,109 @@ def coverage_lines_for_export(coverage: dict[str, Any]) -> list[str]:
 _ALLOWED_OVERLAY_HREFS = frozenset({"overlay-problem-zone.png"})
 
 
+def _text_evidence_section(annotations: object) -> str:
+    if not isinstance(annotations, list | tuple):
+        return ""
+    rows = ""
+    for ann in annotations:
+        if not isinstance(ann, dict):
+            continue
+        pz = ann.get("problem_zone") if isinstance(ann.get("problem_zone"), dict) else {}
+        coords = ""
+        if pz:
+            coords = (
+                f"page={pz.get('page_number')} "
+                f"x={pz.get('x')} y={pz.get('y')} "
+                f"w={pz.get('width')} h={pz.get('height')}"
+            )
+        rows += (
+            f"<tr><td>{_esc(str(ann.get('sheet_id') or ''))}</td>"
+            f"<td>{_esc(str(ann.get('source_id') or ann.get('source') or ''))}</td>"
+            f"<td>{_esc(coords)}</td>"
+            f"<td>{_esc(str(ann.get('observed_value') or ''))} "
+            f"{_esc(str(ann.get('unit') or ''))}</td>"
+            f"<td>{_esc(str(ann.get('target_ref') or ''))}</td></tr>\n"
+        )
+    if not rows:
+        return ""
+    return (
+        "<section class='cat' id='kt2-text-evidence'><h2>Text evidence</h2>"
+        "<p class='overlay-note'>PDF text-layer extraction. Not trained CV.</p>"
+        "<table><thead><tr><th>Sheet</th><th>Source</th><th>Coordinates</th>"
+        "<th>Extracted</th><th>Target</th></tr></thead><tbody>"
+        f"{rows}</tbody></table></section>\n"
+    )
+
+
+def _claim_boundary_banner(release: object) -> str:
+    if not isinstance(release, dict) or not release:
+        return ""
+    return (
+        '<p class="claim-boundary" id="kt2-claim-boundary">'
+        "Fixture demo. Not customer accuracy. Checkpoint NO_GO. Not CV. "
+        "VLM/advisory cannot set PASS."
+        "</p>\n"
+    )
+
+
+def _kt2_release_section(release: object) -> str:
+    if not isinstance(release, dict) or not release:
+        return ""
+    rows = ""
+    for key in (
+        "git_sha",
+        "working_tree_dirty",
+        "package_id",
+        "document_path",
+        "document_sha256",
+        "page_number",
+        "verification_status",
+        "checkpoint_verdict",
+        "reproducibility_hash",
+    ):
+        if key in release and release[key] is not None:
+            rows += (
+                f"<tr><th>{_esc(key)}</th><td><code>{_esc(str(release[key]))}</code></td></tr>\n"
+            )
+    coords = release.get("coordinates")
+    if isinstance(coords, dict):
+        coord_text = ", ".join(f"{k}={coords[k]}" for k in coords)
+        rows += f"<tr><th>coordinates</th><td><code>{_esc(coord_text)}</code></td></tr>\n"
+    if not rows:
+        return ""
+    return (
+        "<section class='cat' id='kt2-release'><h2>Run identity</h2>"
+        f"<table><tbody>{rows}</tbody></table></section>\n"
+    )
+
+
+def _capability_rows(capabilities: object) -> str:
+    if not isinstance(capabilities, dict):
+        return ""
+    rows = ""
+    for name, payload in sorted(capabilities.items()):
+        if isinstance(payload, dict):
+            status = payload.get("status", "")
+            reason = payload.get("reason") or ""
+        else:
+            status = payload
+            reason = ""
+        status_text = getattr(status, "value", status)
+        rows += (
+            f"<tr><td>{_esc(str(name))}</td>"
+            f"<td>{_esc(str(status_text))}</td>"
+            f"<td>{_esc(str(reason))}</td></tr>\n"
+        )
+    if not rows:
+        return ""
+    return (
+        "<section class='cat' id='kt2-capabilities'><h2>Capability honesty</h2>"
+        "<table><thead><tr><th>Capability</th><th>Status</th><th>Reason</th>"
+        "</tr></thead><tbody>"
+        f"{rows}</tbody></table></section>\n"
+    )
+
+
 def _overlay_section(overlay_image_href: str | None) -> str:
     """Sibling PNG only — never a remote or path-escaping href."""
     if overlay_image_href not in _ALLOWED_OVERLAY_HREFS:
@@ -237,10 +340,12 @@ def _overlay_section(overlay_image_href: str | None) -> str:
         "<section class='overlay' id='kt2-overlay'>"
         "<h2>Problem-zone overlay</h2>"
         "<p class='overlay-note'>"
-        "Deterministic bbox on rasterized PDF. Not CV. Not stamp product."
+        "Fixture demo. Not customer accuracy. Deterministic bbox on rasterized "
+        "PDF text-layer sheet. Not CV. Not stamp product."
         "</p>"
         f"<figure><img src='{href}' alt='Problem-zone overlay on sheet' />"
-        f"<figcaption>{href} — sibling of this HTML</figcaption></figure>"
+        f"<figcaption>{href} — highlighted region, sibling of this HTML</figcaption>"
+        "</figure>"
         "</section>\n"
     )
 
@@ -253,8 +358,11 @@ def render_report_html(
 ) -> str:
     """Render the serialized public report payload as a standalone HTML page."""
     summary: dict[str, Any] = data["summary"]
-    status_class = "pass" if summary["passed"] else "fail"
-    status_label = "PASSED" if summary["passed"] else "FAILED"
+    passed = bool(summary.get("passed"))
+    status_class = "pass" if passed else "fail"
+    status_label = "PASSED" if passed else "FAILED"
+    raw_outcome = summary.get("outcome")
+    outcome_text = getattr(raw_outcome, "value", raw_outcome) or "—"
 
     # Group issues by category for expert reviewer workflow
     category_issues: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -307,6 +415,11 @@ def render_report_html(
 
     overlay_html = _overlay_section(overlay_image_href)
     coverage_html = _build_coverage_section(data.get("coverage") or {})
+    text_evidence_html = _text_evidence_section(data.get("drawing_annotations"))
+    capabilities_html = _capability_rows(data.get("capabilities"))
+    kt2_release = data.get("kt2_release")
+    kt2_release_html = _kt2_release_section(kt2_release)
+    claim_banner = _claim_boundary_banner(kt2_release)
 
     return f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
@@ -348,15 +461,20 @@ font-weight:700;vertical-align:middle}}
 .cov-expert-required{{background:#e3f2fd}}
 .overlay img{{max-width:100%;height:auto;border:1px solid #ccc}}
 .overlay-note{{font-size:.9em;color:#555}}
+.claim-boundary{{margin:1em 0;padding:.75em 1em;border:1px solid #b58900;
+background:#fff8e1;font-size:.95em}}
 </style></head><body>
 <h1>Validation Report</h1>
+{claim_banner}
 <div class="summary {status_class}">
 <strong>{status_label}</strong> &mdash;
+summary.passed={_esc(str(passed).lower())} &middot;
+summary.outcome={_esc(str(outcome_text))} &middot;
 {summary["issue_count"]} issue(s): {summary["error_count"]} error(s),
 {summary["warning_count"]} warning(s) &middot;
 {summary["requirement_count"]} requirement(s)
 </div>
-{overlay_html}{coverage_html}{iso_section}{category_sections}
+{overlay_html}{text_evidence_html}{coverage_html}{capabilities_html}{kt2_release_html}{iso_section}{category_sections}
 <p class="meta">
 Report ID: {_esc(report_id)} &middot;
 Project: {_esc(str(data.get("project_name") or "—"))} &middot;

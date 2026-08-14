@@ -56,7 +56,7 @@ def skipped_payload(*, reason: str) -> dict[str, Any]:
 def render_skipped(payload: dict[str, Any]) -> str:
     return "\n".join(
         [
-            "<!-- claims-lint: allow-file reason=\"MOEXP IDS on GNI student sample; not CIM compliance\" -->",
+            '<!-- claims-lint: allow-file reason="MOEXP IDS on GNI student sample; not CIM compliance" -->',
             "---",
             'title: "MOEXP IDS on a GNI student IFC"',
             f"date: {str(payload.get('generated_at') or '')[:10]}",
@@ -118,7 +118,7 @@ def main(argv: list[str] | None = None) -> int:
     evidence_md.write_text(
         "\n".join(
             [
-                "<!-- claims-lint: allow-file reason=\"MOEXP IDS on GNI student sample; not CIM compliance\" -->",
+                '<!-- claims-lint: allow-file reason="MOEXP IDS on GNI student sample; not CIM compliance" -->',
                 "---",
                 'title: "MOEXP IDS on a GNI student IFC"',
                 f"date: {str(coverage.get('generated_at') or '')[:10]}",

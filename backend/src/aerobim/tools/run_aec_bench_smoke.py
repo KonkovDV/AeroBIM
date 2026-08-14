@@ -86,6 +86,8 @@ def _read_capped(response: Any, *, max_bytes: int) -> bytes:
 
 def _sanitize_docs_evidence(report: dict[str, Any]) -> dict[str, Any]:
     payload = json.loads(json.dumps(report, ensure_ascii=False))
+    if not isinstance(payload, dict):
+        raise TypeError("sanitized report must be a JSON object")
     bench = payload.get("benchmark")
     if isinstance(bench, dict) and bench.get("dataset_root"):
         bench["dataset_root"] = _repo_relative_or_redact(str(bench["dataset_root"]))
@@ -343,9 +345,7 @@ def inventory_gold(dataset_root: Path) -> dict[str, Any]:
             "excluded_qa_or_unclassified": int(by_label.get("qa") or 0)
             + int(by_label.get("unclassified") or 0),
             "labeled_compliance_tasks": labeled,
-            "false_pass_rate_on_labeled": (
-                round(false_positive / labeled, 4) if labeled else None
-            ),
+            "false_pass_rate_on_labeled": (round(false_positive / labeled, 4) if labeled else None),
         },
     }
 
@@ -356,7 +356,7 @@ def render_false_pass_markdown(payload: dict[str, Any]) -> str:
     harbor = payload.get("agent_trial") or {}
     return "\n".join(
         [
-            "<!-- claims-lint: allow-file reason=\"AEC-Bench gold inventory; Harbor false-pass SKIPPED\" -->",
+            '<!-- claims-lint: allow-file reason="AEC-Bench gold inventory; Harbor false-pass SKIPPED" -->',
             "---",
             'title: "AEC-Bench gold inventory and null baseline"',
             f"date: {str(payload.get('generated_at') or '')[:10]}",
@@ -456,7 +456,9 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Download manifest assets for --scope/--family/--instance",
     )
-    parser.add_argument("--scope", default="intrasheet", help="intrasheet|intradrawing|intraproject|all")
+    parser.add_argument(
+        "--scope", default="intrasheet", help="intrasheet|intradrawing|intraproject|all"
+    )
     parser.add_argument("--family", default=None)
     parser.add_argument("--instance", default=None)
     parser.add_argument("--prefetch-limit", type=int, default=1)

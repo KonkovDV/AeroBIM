@@ -12,6 +12,8 @@ claim_boundary: "Fixture GO / methodology handoff. Checkpoint NO_GO until RT-001
 
 Machine status: [`STATUS.json`](./STATUS.json)
 
+**Superseded demo HTML:** `vertical-slice/report.html` is the **11.08 snapshot** and does not contain `#kt2-overlay`. For the live CLI demo run `python -m aerobim.tools.run_demo_vertical_slice` and use pin [`../vertical-slice-demo-live-2026-08-14.md`](../vertical-slice-demo-live-2026-08-14.md). Do not open the 11.08 HTML on the tracker call.
+
 ## What to open in the meeting (30–40 min)
 
 | # | Artifact | Path |

@@ -20,8 +20,8 @@ IfcTester считает `ifcVersion` метаданными (официальн
 ## Что показать за 3 минуты
 
 1. Команда: `cd backend && python -m aerobim.tools.run_demo_vertical_slice`
-2. Открыть `artifacts/vertical-slice-demo/report.html` — лист, замечание, `finding_id` / `evidence_refs`, вердикт **не PASS**.
-3. Рядом PNG оверлея и `findings.bcfzip` (структурный ZIP, **не** CDE-ready).
+2. Открыть `artifacts/vertical-slice-demo/report.html` — лист, оверлей, текстовое доказательство 150 mm / WALL-01, `finding_id` / `source_id` / `evidence_refs`, `summary.passed=false`, capability table, вердикт **не PASS**. Fixture demo, не customer accuracy.
+3. Рядом PNG оверлея, `run-manifest.json` и `findings.bcfzip` (структурный ZIP, **не** CDE-ready).
 
 Сценарий: **штамп / экспликация / толщина стены на текстовом слое PDF**. Не счёт дверей и окон (AECV-Bench, обновление 11.08.2026: двери ~39%, окна ~34%).
 
@@ -39,7 +39,7 @@ IfcTester считает `ifcVersion` метаданными (официальн
 | MEP | Инвентарь: duplex/mep 105 `IfcFlowTerminal`; dental/mep 3053; digital_hub heating 63 / plumbing 74 / ventilation 148; wbdg_office/mep 1456; west_riverside IFC4 elec 1410 / sprinkle 1354 (mech/plumb 0 terminals, трубы/фитинги). Duplex AABB **654** overlap pairs, `geometry_verified=false`. Clash **NOT_VERIFIED**. [`../evidence/federated-mep-inventory-2026-08.md`](../evidence/federated-mep-inventory-2026-08.md) · sha `d875af14…4c0b`. Не MEP delivered. Не цитировать «~0.5 с» как SLA |
 | IDS fail-open | Найден и закрыт. Кейс 0101 теперь FAILED у нас сознательно |
 | Устаревшая норма | Требования ЦИМ АГР ссылаются на ГОСТ Р 21.101-2020, заменённый 01.04.2026. `AEROBIM-NORM-SUPERSEDED` · [`../evidence/stale-norm-scan-2026-08.md`](../evidence/stale-norm-scan-2026-08.md) |
-| Kimi vs Qwen | **LIVE на Qwen** (fixture). Kimi на Yandex Studio **закрыт гейтом**. Advisory, не проверка норм |
+| Kimi vs Qwen | Qwen **LIVE** на fixture. Kimi **GATED**. `comparison_status=comparison_not_run` — не bake-off. Advisory, не проверка норм |
 | DWG | Жёсткий **FAILED**. ODA trial 60 дней = КТ#3, не покупка. [`../architecture/ADR-003-dwg-oda-trial-kt3-2026.md`](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md) |
 | Московский АГР | Полный профиль **не собран** (freeze). Есть обменный контур класса 1 на fixture: IFC4 / ReferenceView / proxy / имя / 500 МБ · [`../evidence/agr-exchange-2026-08.md`](../evidence/agr-exchange-2026-08.md) |
 | CV | Heuristic регионы + text layer. Это не обученный CV |

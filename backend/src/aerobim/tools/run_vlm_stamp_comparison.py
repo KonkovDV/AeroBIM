@@ -61,12 +61,17 @@ def build_vlm_comparison(*, api_key_present: bool) -> dict[str, Any]:
                 "role": "not_run_on_studio",
             },
         ],
+        "comparison_status": "comparison_not_run",
+        "comparison_reason": (
+            "Qwen and Kimi were not executed on the same input, prompt, and "
+            "output schema in one repeatable artifact. Do not invent a bake-off."
+        ),
+        "qwen_fixture_status": "not_run_in_this_payload",
+        "kimi_status": "GATED",
         "status": status,
         "skip_reason": reason,
         "metrics": None,
-        "recommendation": (
-            "No live scores this run. Do not pick a model from empty metrics."
-        ),
+        "recommendation": ("No live scores this run. Do not pick a model from empty metrics."),
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "machine": _machine_fingerprint(),
         "customer_accuracy_not_established": True,
@@ -96,8 +101,7 @@ def run_stamp_comparison(*, pdf: Path, sheet_id: str) -> dict[str, Any]:
     kimi_row = {
         "id": "kimi",
         "status": "GATE_REFUSED" if kimi_refuse else "NOT_CONFIGURED",
-        "reason": kimi_refuse
-        or "No separate non-Yandex Kimi endpoint in env; not invented",
+        "reason": kimi_refuse or "No separate non-Yandex Kimi endpoint in env; not invented",
         "metrics": None,
     }
 
@@ -112,8 +116,7 @@ def run_stamp_comparison(*, pdf: Path, sheet_id: str) -> dict[str, Any]:
     if not creds.get("base_url") or not creds.get("api_key") or not creds.get("model"):
         payload = build_vlm_comparison(api_key_present=False)
         payload["skip_reason"] = (
-            "LLM/VLM key or base_url missing after dotenv "
-            f"(dotenv_loaded={bool(env_path)})"
+            f"LLM/VLM key or base_url missing after dotenv (dotenv_loaded={bool(env_path)})"
         )
         payload["dotenv_loaded"] = bool(env_path)
         payload["models_run"] = [kimi_row]
@@ -175,17 +178,13 @@ def run_stamp_comparison(*, pdf: Path, sheet_id: str) -> dict[str, Any]:
     reads = list(smoke.get("reads") or [])
     regions_read = int(smoke.get("regions_read") or 0)
     degraded = sum(1 for row in reads if isinstance(row, dict) and row.get("degraded"))
-    obs_n = sum(
-        len(row.get("observations") or []) for row in reads if isinstance(row, dict)
-    )
+    obs_n = sum(len(row.get("observations") or []) for row in reads if isinstance(row, dict))
     schema_fail_regions = sum(
         1
         for row in reads
         if isinstance(row, dict) and row.get("degraded") and not row.get("observations")
     )
-    schema_fail_share = (
-        round(schema_fail_regions / regions_read, 4) if regions_read else None
-    )
+    schema_fail_share = round(schema_fail_regions / regions_read, 4) if regions_read else None
     qwen_row = {
         "id": "qwen",
         "status": smoke.get("status"),
@@ -211,6 +210,9 @@ def run_stamp_comparison(*, pdf: Path, sheet_id: str) -> dict[str, Any]:
     take_qwen = smoke.get("status") == "roundtrip_ok" and kimi_row["status"] == "GATE_REFUSED"
     payload = build_vlm_comparison(api_key_present=True)
     payload["status"] = "LIVE"
+    payload["qwen_fixture_status"] = "LIVE"
+    payload["kimi_status"] = "GATED"
+    payload["comparison_status"] = "comparison_not_run"
     payload["skip_reason"] = None
     payload["dotenv_loaded"] = bool(env_path)
     payload["metrics"] = {
@@ -221,14 +223,14 @@ def run_stamp_comparison(*, pdf: Path, sheet_id: str) -> dict[str, Any]:
     }
     payload["models_run"] = [qwen_row, kimi_row]
     payload["recommendation"] = (
-        "Take Qwen on Yandex AI Studio for this RF contour: live structured "
-        "roundtrip on the open title-block/spec crops succeeded; Kimi-k3 is "
-        "refused on the Studio host by design. This is not product accuracy "
-        "and does not close RT-001. Stamp pixels stay off the wire (PII clip)."
+        "Qwen is LIVE on this open fixture (structured roundtrip recorded). "
+        "Kimi is GATED on the Studio host. comparison_status=comparison_not_run: "
+        "same input/prompt/schema was not executed for both models. "
+        "Not a bake-off. Not product accuracy. Does not close RT-001."
         if take_qwen
         else (
-            "Live run completed but is not a clean Qwen win; read models_run. "
-            "Do not publish as product accuracy."
+            "Live Qwen path completed; Kimi remains gated. "
+            "comparison_status=comparison_not_run. Do not publish as product accuracy."
         )
     )
     raw = json.dumps(
@@ -242,13 +244,19 @@ def run_stamp_comparison(*, pdf: Path, sheet_id: str) -> dict[str, Any]:
 
 
 def _write_markdown(payload: dict[str, Any], path: Path) -> None:
-    metrics = payload.get("metrics") if isinstance(payload.get("metrics"), dict) else {}
-    qwen = metrics.get("qwen") if isinstance(metrics.get("qwen"), dict) else {}
-    kimi = metrics.get("kimi") if isinstance(metrics.get("kimi"), dict) else {}
+    raw_metrics = payload.get("metrics")
+    metrics: dict[str, Any] = raw_metrics if isinstance(raw_metrics, dict) else {}
+    raw_qwen = metrics.get("qwen")
+    qwen: dict[str, Any] = raw_qwen if isinstance(raw_qwen, dict) else {}
+    raw_kimi = metrics.get("kimi")
+    kimi: dict[str, Any] = raw_kimi if isinstance(raw_kimi, dict) else {}
     lines = [
         "# VLM stamp comparison (tracker 2.2)",
         "",
         f"**status:** `{payload.get('status')}`",
+        f"**comparison_status:** `{payload.get('comparison_status')}`",
+        f"**qwen_fixture_status:** `{payload.get('qwen_fixture_status')}`",
+        f"**kimi_status:** `{payload.get('kimi_status')}`",
         f"**claim_level:** `{payload.get('claim_level')}`",
         "",
         str(payload.get("claim_boundary") or ""),

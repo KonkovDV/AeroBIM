@@ -38,7 +38,8 @@ class MentorVlmDemoTests(unittest.TestCase):
         )
 
     def test_yandex_refuses_kimi_default(self) -> None:
-        controlled = {k: v for k, v in __import__("os").environ.items() if not k.startswith("AEROBIM_")}
+        os_environ = __import__("os").environ
+        controlled = {k: v for k, v in os_environ.items() if not k.startswith("AEROBIM_")}
         controlled.update(
             {
                 "AEROBIM_LLM_BASE_URL": "https://llm.api.cloud.yandex.net/v1",

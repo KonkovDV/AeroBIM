@@ -45,16 +45,40 @@ CANDIDATES = (
     (".local/ifc-bench-v2/projects/digital_hub/arc.ifc", "ifc_bench_digital_hub"),
     (".local/ifc-bench-v2/projects/digital_hub/heating.ifc", "ifc_bench_digital_hub_heating"),
     (".local/ifc-bench-v2/projects/digital_hub/plumbing.ifc", "ifc_bench_digital_hub_plumbing"),
-    (".local/ifc-bench-v2/projects/digital_hub/ventilation.ifc", "ifc_bench_digital_hub_ventilation"),
+    (
+        ".local/ifc-bench-v2/projects/digital_hub/ventilation.ifc",
+        "ifc_bench_digital_hub_ventilation",
+    ),
     (".local/ifc-bench-v2/projects/wbdg_office/mep.ifc", "ifc_bench_wbdg_office_mep"),
     # West Riverside ships IFC2X3 + IFC4 twins; inventory IFC4 once (not both).
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/arc_ifc4.ifc", "ifc_bench_west_riverside_arc_ifc4"),
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/mech_ifc4.ifc", "ifc_bench_west_riverside_mech_ifc4"),
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/plumb_ifc4.ifc", "ifc_bench_west_riverside_plumb_ifc4"),
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/elec_ifc4.ifc", "ifc_bench_west_riverside_elec_ifc4"),
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/fire_ifc4.ifc", "ifc_bench_west_riverside_fire_ifc4"),
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/sprinkle_ifc4.ifc", "ifc_bench_west_riverside_sprinkle_ifc4"),
-    (".local/ifc-bench-v2/projects/west_riverside_hospital/str_ifc4.ifc", "ifc_bench_west_riverside_str_ifc4"),
+    (
+        ".local/ifc-bench-v2/projects/west_riverside_hospital/arc_ifc4.ifc",
+        "ifc_bench_west_riverside_arc_ifc4",
+    ),
+    (
+        ".local/ifc-bench-v2/projects/west_riverside_hospital/mech_ifc4.ifc",
+        "ifc_bench_west_riverside_mech_ifc4",
+    ),
+    (
+        ".local/ifc-bench-v2/projects/west_riverside_hospital/plumb_ifc4.ifc",
+        "ifc_bench_west_riverside_plumb_ifc4",
+    ),
+    (
+        ".local/ifc-bench-v2/projects/west_riverside_hospital/elec_ifc4.ifc",
+        "ifc_bench_west_riverside_elec_ifc4",
+    ),
+    (
+        ".local/ifc-bench-v2/projects/west_riverside_hospital/fire_ifc4.ifc",
+        "ifc_bench_west_riverside_fire_ifc4",
+    ),
+    (
+        ".local/ifc-bench-v2/projects/west_riverside_hospital/sprinkle_ifc4.ifc",
+        "ifc_bench_west_riverside_sprinkle_ifc4",
+    ),
+    (
+        ".local/ifc-bench-v2/projects/west_riverside_hospital/str_ifc4.ifc",
+        "ifc_bench_west_riverside_str_ifc4",
+    ),
 )
 
 
@@ -111,9 +135,7 @@ def _hvac_graph_aabb(repo: Path) -> dict[str, Any]:
         )
         from aerobim.infrastructure.adapters.ifc_aabb_mep_pair_filter import IfcAabbMepPairFilter
 
-        provider = FederatedIfcMepSystemGraphProvider.from_scope_path(
-            scope_path, repo_root=repo
-        )
+        provider = FederatedIfcMepSystemGraphProvider.from_scope_path(scope_path, repo_root=repo)
         graph = provider.build(dummy)
         aabb = IfcAabbMepPairFilter().filter_pairs(graph)
         return {
@@ -220,7 +242,7 @@ def build_payload(*, repo: Path) -> dict[str, Any]:
 
 def render_markdown(payload: dict[str, Any]) -> str:
     lines = [
-        "<!-- claims-lint: allow-file reason=\"Federated MEP inventory; clash NOT_VERIFIED\" -->",
+        '<!-- claims-lint: allow-file reason="Federated MEP inventory; clash NOT_VERIFIED" -->',
         "---",
         'title: "Federated MEP inventory"',
         f"date: {str(payload.get('generated_at') or '')[:10]}",

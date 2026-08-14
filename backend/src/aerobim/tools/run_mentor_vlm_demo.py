@@ -330,7 +330,7 @@ def main(argv: list[str] | None = None) -> int:
     crops = _save_planned_crops(source=source, out_dir=out_dir, detector=detector)
 
     if args.dry_crop_only:
-        report = {
+        dry_report = {
             "status": "dry_crop_only",
             "sheet_id": args.sheet_id,
             "pdf": str(pdf),
@@ -343,7 +343,7 @@ def main(argv: list[str] | None = None) -> int:
             )["claim_boundary"],
         }
         (out_dir / "report.json").write_text(
-            json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+            json.dumps(dry_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
         (out_dir / "LIMITATIONS.json").write_text(
             json.dumps(
@@ -354,7 +354,7 @@ def main(argv: list[str] | None = None) -> int:
             + "\n",
             encoding="utf-8",
         )
-        print(json.dumps(report, ensure_ascii=False, indent=2))
+        print(json.dumps(dry_report, ensure_ascii=False, indent=2))
         return 0
 
     if creds.get("error"):

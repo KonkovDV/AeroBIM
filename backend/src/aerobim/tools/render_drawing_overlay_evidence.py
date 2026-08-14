@@ -120,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
         encoding="utf-8",
     )
     (out_dir / "README.md").write_text(
-        "<!-- claims-lint: allow-file reason=\"Overlay evidence boundary doc\" -->\n"
+        '<!-- claims-lint: allow-file reason="Overlay evidence boundary doc" -->\n'
         "---\n"
         'title: "Drawing overlay smoke evidence"\n'
         'date: "2026-08-12"\n'

@@ -109,10 +109,7 @@ def collect_agr_exchange_issues(
         issues.append(
             _issue(
                 RULE_SIZE,
-                (
-                    f"IFC size {size_bytes} bytes exceeds {MAX_IFC_BYTES} (500 MB); "
-                    f"{CLAIM_BOUNDARY}"
-                ),
+                (f"IFC size {size_bytes} bytes exceeds {MAX_IFC_BYTES} (500 MB); {CLAIM_BOUNDARY}"),
                 expected=str(MAX_IFC_BYTES),
                 observed=str(size_bytes),
             )

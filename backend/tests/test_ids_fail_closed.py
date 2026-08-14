@@ -288,9 +288,7 @@ class ExportIdsFailClosedGateTests(unittest.TestCase):
             schema_gate_row,
         )
 
-        pairs = discover_bsi_pairs(
-            REPO / "samples" / "ids" / "buildingsmart-testcases" / "cases"
-        )
+        pairs = discover_bsi_pairs(REPO / "samples" / "ids" / "buildingsmart-testcases" / "cases")
         match = next(pair for pair in pairs if pair["case_id"] == CASE_0101)
         row = schema_gate_row(match)
         self.assertGreater(int(row["mismatch_count"]), 0)

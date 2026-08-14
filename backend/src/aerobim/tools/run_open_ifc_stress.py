@@ -267,11 +267,11 @@ def build_payload(
             "bytes_total": sum(int(row["bytes"] or 0) for row in gni_rows),
             "pairs": pairs,
             "pairs_complete": sum(1 for pair in pairs if pair["paired"]),
-            "ifc_open_counts": _count(gni_rows, "ifc_open") if open_model else {"not_requested": len(gni_rows)},
+            "ifc_open_counts": _count(gni_rows, "ifc_open")
+            if open_model
+            else {"not_requested": len(gni_rows)},
             "largest": (
-                {"path": largest.get("path"), "bytes": largest.get("bytes")}
-                if largest
-                else None
+                {"path": largest.get("path"), "bytes": largest.get("bytes")} if largest else None
             ),
             "failures": gni_failures,
         },
@@ -309,13 +309,19 @@ def render_markdown(payload: dict[str, Any]) -> str:
         for pair in pairs
     ]
     pair_table = (
-        "\n".join(["| stem | paired | schema_match | arc_products | structure_products |", "| --- | --- | --- | --- | --- |", *pair_lines])
+        "\n".join(
+            [
+                "| stem | paired | schema_match | arc_products | structure_products |",
+                "| --- | --- | --- | --- | --- |",
+                *pair_lines,
+            ]
+        )
         if pair_lines
         else "_no `*_arc.ifc` / `*_structure.ifc` pairs in this root_"
     )
     return "\n".join(
         [
-            "<!-- claims-lint: allow-file reason=\"Open IFC stress; GNI student models are not product accuracy\" -->",
+            '<!-- claims-lint: allow-file reason="Open IFC stress; GNI student models are not product accuracy" -->',
             "---",
             'title: "Open IFC header stress"',
             f"date: {str(payload.get('generated_at') or '')[:10]}",
@@ -392,9 +398,7 @@ def main(argv: list[str] | None = None) -> int:
     out.mkdir(parents=True, exist_ok=True)
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     (out / "open-ifc-stress.json").write_text(text, encoding="utf-8")
-    (root / "docs" / "evidence" / "open-ifc-stress-2026-08.json").write_text(
-        text, encoding="utf-8"
-    )
+    (root / "docs" / "evidence" / "open-ifc-stress-2026-08.json").write_text(text, encoding="utf-8")
     (root / "docs" / "evidence" / "open-ifc-stress-2026-08.md").write_text(
         render_markdown(payload), encoding="utf-8"
     )

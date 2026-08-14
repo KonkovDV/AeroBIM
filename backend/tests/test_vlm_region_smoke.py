@@ -17,11 +17,11 @@ from aerobim.infrastructure.adapters.caching_vlm_reader import (
     CachingVlmReader,
     FilesystemVlmResponseStore,
 )
-from aerobim.infrastructure.adapters.vlm_advisory_client import VlmReadResult
 from aerobim.infrastructure.adapters.pymupdf_region_cropper import PyMuPDFRegionCropper
 from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
     RegionRestrictedVlmPipeline,
 )
+from aerobim.infrastructure.adapters.vlm_advisory_client import VlmReadResult
 from aerobim.tools.vlm_region_smoke import build_region_smoke_report, main
 
 _OBS = {

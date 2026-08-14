@@ -1,5 +1,6 @@
 {
   "schema_version": "1.0.0",
+  "claims_lint": "claims-lint: allow-file reason='forbidden phrases listed as non-claims inventory'",
   "roadmap": "docs/plans/cv-roadmap-2026-08.md",
   "updated_at": "2026-08-10",
   "principle": "evidence-first hybrid; VLM never changes summary.passed",

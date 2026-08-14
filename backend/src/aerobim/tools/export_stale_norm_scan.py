@@ -31,17 +31,13 @@ def _sha256_bytes(raw: bytes) -> str:
 def load_catalog(path: Path) -> tuple[NormDocument, ...]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     raw = payload.get("documents") or ()
-    return tuple(
-        NormDocument.from_mapping(item) for item in raw if isinstance(item, dict)
-    )
+    return tuple(NormDocument.from_mapping(item) for item in raw if isinstance(item, dict))
 
 
 def load_sources(path: Path) -> tuple[CitingSource, ...]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     raw = payload.get("sources") or ()
-    return tuple(
-        CitingSource.from_mapping(item) for item in raw if isinstance(item, dict)
-    )
+    return tuple(CitingSource.from_mapping(item) for item in raw if isinstance(item, dict))
 
 
 def build_payload(
@@ -96,7 +92,7 @@ def build_payload(
 def render_markdown(payload: dict[str, Any]) -> str:
     summary = payload.get("summary") or {}
     lines = [
-        "<!-- claims-lint: allow-file reason=\"Stale-norm citation scan; not product accuracy\" -->",
+        '<!-- claims-lint: allow-file reason="Stale-norm citation scan; not product accuracy" -->',
         "---",
         'title: "Stale norm citations (GOST R 21.101-2020 superseded)"',
         f"date: {str(payload.get('generated_at') or '')[:10]}",

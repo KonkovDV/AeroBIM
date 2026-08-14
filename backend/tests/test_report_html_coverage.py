@@ -73,9 +73,49 @@ class ReportHtmlCoverageTests(unittest.TestCase):
         self.assertIn("kt2-overlay", with_img)
         self.assertIn("overlay-problem-zone.png", with_img)
         self.assertIn("Not CV", with_img)
-        rejected = render_report_html(
-            "r1", data, overlay_image_href="https://evil.example/x.png"
+        self.assertIn("Fixture demo", with_img)
+        self.assertNotIn("kt2-claim-boundary", with_img)
+        sliced = render_report_html(
+            "r1",
+            {
+                **data,
+                "kt2_release": {
+                    "git_sha": "abc",
+                    "package_id": "vertical-slice-2026-08-11",
+                    "checkpoint_verdict": "NO_GO",
+                    "verification_status": "NOT_PASS_EXPERT_REQUIRED",
+                },
+                "capabilities": {
+                    "dwg_dxf": {
+                        "status": "failed",
+                        "reason": "native DWG parser is not implemented",
+                    }
+                },
+                "drawing_annotations": [
+                    {
+                        "sheet_id": "A-101",
+                        "source": "raster-drawing-analyzer",
+                        "observed_value": "150",
+                        "unit": "mm",
+                        "target_ref": "WALL-01",
+                        "problem_zone": {
+                            "page_number": 1,
+                            "x": 1.0,
+                            "y": 2.0,
+                            "width": 3.0,
+                            "height": 4.0,
+                        },
+                    }
+                ],
+            },
+            overlay_image_href="overlay-problem-zone.png",
         )
+        self.assertIn("kt2-claim-boundary", sliced)
+        self.assertIn("summary.passed=false", sliced)
+        self.assertIn("kt2-capabilities", sliced)
+        self.assertIn("kt2-text-evidence", sliced)
+        self.assertIn("kt2-release", sliced)
+        rejected = render_report_html("r1", data, overlay_image_href="https://evil.example/x.png")
         self.assertNotIn("kt2-overlay", rejected)
         self.assertNotIn("evil.example", rejected)
         traversal = render_report_html("r1", data, overlay_image_href="../secret.png")

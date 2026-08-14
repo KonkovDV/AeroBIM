@@ -7,12 +7,12 @@ from pathlib import Path
 
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
 from aerobim.domain.region_read_plan import plan_region_reads, subtract_aabb
+from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
+    RegionRestrictedVlmPipeline,
+)
 from aerobim.infrastructure.adapters.vlm_advisory_client import (
     VlmAdvisoryError,
     VlmReadResult,
-)
-from aerobim.infrastructure.adapters.region_restricted_vlm_pipeline import (
-    RegionRestrictedVlmPipeline,
 )
 
 _OBS = {

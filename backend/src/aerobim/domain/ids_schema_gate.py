@@ -81,9 +81,7 @@ def parse_ids_specification_versions(ids_xml: str) -> tuple[IdsSpecificationVers
         name_match = _NAME_ATTR_RE.search(attrs)
         version_match = _VERSION_ATTR_RE.search(attrs)
         name = (name_match.group(2).strip() if name_match else "") or f"specification-{index}"
-        versions = parse_ids_ifc_version_tokens(
-            version_match.group(2) if version_match else None
-        )
+        versions = parse_ids_ifc_version_tokens(version_match.group(2) if version_match else None)
         specs.append(IdsSpecificationVersions(name=name, versions=versions))
     return tuple(specs)
 

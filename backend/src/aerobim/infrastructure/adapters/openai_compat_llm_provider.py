@@ -143,7 +143,9 @@ class OpenAICompatLlmProvider:
             "Accept": "application/json",
             # Opaque UUIDv4 only (RT-META-01) — never internal request_id.
             "x-client-request-id": client_request_id,
-            "x-data-logging-enabled": "true" if getattr(self, "_data_logging_enabled", False) else "false",
+            "x-data-logging-enabled": (
+                "true" if getattr(self, "_data_logging_enabled", False) else "false"
+            ),
         }
         if self._api_key:
             forced["Authorization"] = f"{self._auth_scheme} {self._api_key}"

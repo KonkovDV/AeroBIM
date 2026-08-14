@@ -12,8 +12,7 @@ from aerobim.tools.run_open_corpora_profiles import (
 )
 
 CASE_0101_ID = (
-    "pass-specification_version_is_purely_metadata_and_does_not_impact_"
-    "pass_or_fail_result"
+    "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result"
 )
 
 

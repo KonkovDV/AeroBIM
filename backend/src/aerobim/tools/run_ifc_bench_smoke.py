@@ -82,6 +82,8 @@ def _repo_relative_or_redact(path_str: str) -> str:
 
 def _sanitize_docs_evidence(payload: dict[str, Any]) -> dict[str, Any]:
     docs = json.loads(json.dumps(payload, ensure_ascii=False))
+    if not isinstance(docs, dict):
+        raise TypeError("sanitized report must be a JSON object")
     bench = docs.get("benchmark")
     if isinstance(bench, dict) and bench.get("dataset_root"):
         bench["dataset_root"] = _repo_relative_or_redact(str(bench["dataset_root"]))
@@ -110,9 +112,7 @@ def _ifc_inventory_entry(path: Path, dataset_root: Path) -> dict[str, Any]:
     return {"path": rel, "bytes": size, "sha256": _sha256_file(path)}
 
 
-def _eval_split_coverage(
-    dataset_root: Path, scored: list[ProbeResult]
-) -> dict[str, Any]:
+def _eval_split_coverage(dataset_root: Path, scored: list[ProbeResult]) -> dict[str, Any]:
     note = (
         "Published test split is 514 rows. This block only says how many of the "
         "deterministic scored probes fall in that split. It is not a 514 false-pass rate."
@@ -320,16 +320,12 @@ def _probes_for_model(
             "how many bathroom are there": (
                 "duplex_arc_bathroom_count",
                 lambda m: sum(
-                    1
-                    for s in m.by_type("IfcSpace")
-                    if "bathroom" in (s.LongName or "").lower()
+                    1 for s in m.by_type("IfcSpace") if "bathroom" in (s.LongName or "").lower()
                 ),
             ),
             "width of the door 1hosvn6df7f8_7gcbwlrgq": (
                 "duplex_arc_door_guid_width_m",
-                lambda m: round(
-                    _guid_attr(m, "1hOSvn6df7F8_7GcBWlRGQ", "OverallWidth"), 4
-                ),
+                lambda m: round(_guid_attr(m, "1hOSvn6df7F8_7GcBWlRGQ", "OverallWidth"), 4),
             ),
             "floor-to-floor height between the ground floor and first floor": (
                 "duplex_arc_floor_to_floor_m",
@@ -348,9 +344,7 @@ def _probes_for_model(
             ),
             "which rooms have thermostats installed": (
                 "duplex_mep_thermostat_count",
-                lambda m: _named_product_count(
-                    m, "IfcDistributionControlElement", "thermostat"
-                ),
+                lambda m: _named_product_count(m, "IfcDistributionControlElement", "thermostat"),
             ),
         }
     if project == "dental_clinic" and ifc_model == "arc":
@@ -393,15 +387,12 @@ def _probes_for_model(
                 lambda m: sum(
                     1
                     for s in m.by_type("IfcSpace")
-                    if (s.Name or "").startswith("2")
-                    and "toilet" in (s.LongName or "").lower()
+                    if (s.Name or "").startswith("2") and "toilet" in (s.LongName or "").lower()
                 ),
             ),
             "floor to floor height between the first and the second floor": (
                 "dental_arc_floor_to_floor_m",
-                lambda m: _floor_to_floor_m(
-                    m, ("Second Floor",), ("First Floor",)
-                ),
+                lambda m: _floor_to_floor_m(m, ("Second Floor",), ("First Floor",)),
             ),
             "thickness of the insulation of the external walls": (
                 "dental_arc_insulated_panel_mm",
@@ -409,18 +400,14 @@ def _probes_for_model(
             ),
             "window with guid 0otfao0qpdahynjj6dmgh8": (
                 "dental_arc_window_guid_height_m",
-                lambda m: round(
-                    _guid_attr(m, "0otfaO0qPDAhynjJ6DmgH8", "OverallHeight"), 4
-                ),
+                lambda m: round(_guid_attr(m, "0otfaO0qPDAhynjJ6DmgH8", "OverallHeight"), 4),
             ),
         }
     if project == "digital_hub" and ifc_model == "arc":
         return {
             "how many walls are load-bearing compared with non-load-bearing": (
                 "digital_hub_arc_load_bearing_wall_count",
-                lambda m: sum(
-                    1 for wall in m.by_type("IfcWall") if _is_load_bearing(wall) is True
-                ),
+                lambda m: sum(1 for wall in m.by_type("IfcWall") if _is_load_bearing(wall) is True),
             ),
         }
     if project == "digital_hub" and ifc_model == "heating":

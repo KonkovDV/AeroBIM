@@ -22,7 +22,7 @@ def _sha256_bytes(raw: bytes) -> str:
 def _read_header_and_body(path: Path) -> tuple[str, str, int]:
     raw = path.read_bytes()
     text = raw.decode("utf-8", errors="replace")
-    return text[:64 * 1024], text, len(raw)
+    return text[: 64 * 1024], text, len(raw)
 
 
 def run_manifest(manifest_path: Path, *, root: Path) -> dict[str, Any]:
@@ -35,11 +35,11 @@ def run_manifest(manifest_path: Path, *, root: Path) -> dict[str, Any]:
         rel = str(entry.get("ifc") or "")
         ifc_path = (root / rel).resolve() if not Path(rel).is_absolute() else Path(rel)
         declared = str(entry.get("declared_filename") or ifc_path.name)
-        header, body, size_bytes = _read_header_and_body(ifc_path)
+        header_text, body_text, size_bytes = _read_header_and_body(ifc_path)
         issues = collect_agr_exchange_issues(
             filename=declared,
-            header_text=header,
-            body_text=body,
+            header_text=header_text,
+            body_text=body_text,
             size_bytes=size_bytes,
         )
         expected = tuple(str(item) for item in (entry.get("expect_rule_ids") or ()))
@@ -55,7 +55,7 @@ def run_manifest(manifest_path: Path, *, root: Path) -> dict[str, Any]:
                 "expect_matched": set(expected) == set(observed),
             }
         )
-    body: dict[str, Any] = {
+    report_body: dict[str, Any] = {
         "schema_version": "1.0.0",
         "artifact_type": "agr_exchange_fixture",
         "claim_level": CLAIM_LEVEL,
@@ -69,17 +69,17 @@ def run_manifest(manifest_path: Path, *, root: Path) -> dict[str, Any]:
         },
         "cases": rows,
     }
-    encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
-        "utf-8"
-    )
-    body["content_sha256"] = _sha256_bytes(encoded)
-    return body
+    encoded = json.dumps(
+        report_body, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    report_body["content_sha256"] = _sha256_bytes(encoded)
+    return report_body
 
 
 def render_markdown(payload: dict[str, Any]) -> str:
     summary = payload.get("summary") or {}
     lines = [
-        "<!-- claims-lint: allow-file reason=\"AGR exchange fixture; not moscow_agr profile\" -->",
+        '<!-- claims-lint: allow-file reason="AGR exchange fixture; not moscow_agr profile" -->',
         "---",
         'title: "AGR exchange-shape fixture (class 1)"',
         f"date: {str(payload.get('generated_at') or '')[:10]}",
@@ -125,17 +125,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--manifest", type=Path, default=None)
     args = parser.parse_args(argv)
     root = repo_root()
-    manifest = args.manifest or (
-        root / "samples" / "agr" / "exchange-fixture-manifest.json"
-    )
+    manifest = args.manifest or (root / "samples" / "agr" / "exchange-fixture-manifest.json")
     payload = run_manifest(manifest, root=root)
     out_dir = root / "artifacts" / "agr-exchange"
     out_dir.mkdir(parents=True, exist_ok=True)
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     (out_dir / "agr-exchange.json").write_text(text, encoding="utf-8")
-    (root / "docs" / "evidence" / "agr-exchange-2026-08.json").write_text(
-        text, encoding="utf-8"
-    )
+    (root / "docs" / "evidence" / "agr-exchange-2026-08.json").write_text(text, encoding="utf-8")
     (root / "docs" / "evidence" / "agr-exchange-2026-08.md").write_text(
         render_markdown(payload), encoding="utf-8"
     )

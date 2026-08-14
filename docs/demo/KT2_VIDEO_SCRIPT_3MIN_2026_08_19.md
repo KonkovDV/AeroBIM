@@ -25,7 +25,7 @@ python -m aerobim.tools.run_demo_vertical_slice
 | ---: | --- | --- |
 | 0–20 | README Checkpoint `NO_GO` | «Промежуточная версия на учебном комплекте. Checkpoint у заказчика — NO_GO: нет корпуса РФ-экспертизы и нет подписанного профиля Самолёта.» |
 | 20–50 | терминал, команда | «Одна команда из README. Fail-loud. Пишет HTML, JSON, PNG оверлея и BCF ZIP.» |
-| 50–100 | `report.html` → `#kt2-overlay` | «Лист, замечание, finding_id, evidence_refs. Вердикт не PASS. Рамка детерминированная, это не CV.» |
+| 50–100 | `report.html` → `#kt2-overlay` | «Лист, текстовое доказательство, finding_id, source_id, evidence_refs, summary.passed=false. Вердикт не PASS. Рамка детерминированная, это не CV. Fixture demo.» |
 | 100–130 | `overlay-problem-zone.png` рядом | «Оверлей — sibling PNG. Не обученный детектор штампа.» |
 | 130–155 | `findings.bcfzip` | «Структурный BCF ZIP. Импорт в СОД не проверяли. Не CDE-ready.» |
 | 155–175 | IDS / схема | «Официальные IDS МОГЭ — IFC4. Выгрузка Renga IFC4X3 у нас не проходит молча. Демо-IFC в репо — IfcOpenShell, не Renga.» |

@@ -29,10 +29,9 @@ from aerobim.domain.ai_tool_registry import (
 from aerobim.domain.models import DrawingSource
 from aerobim.domain.vlm_grounding import ground_vlm_drawing_response
 from aerobim.infrastructure.adapters.vlm_advisory_client import (
+    VlmAdvisoryClient,
     VlmAdvisoryError,
-    VlmAdvisoryClient,
     VlmReadResult,
-    VlmAdvisoryClient,
     profile_for,
 )
 from aerobim.infrastructure.adapters.vlm_drawing_pipeline import VlmDrawingPipeline

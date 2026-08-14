@@ -92,10 +92,14 @@ def render_markdown(payload: dict[str, Any]) -> str:
     for item in payload.get("files") or []:
         sha = item.get("sha256") or "missing"
         rows.append(f"| `{item.get('path')}` | {item.get('present')} | `{sha}` |")
-    table = "\n".join(["| path | present | sha256 |", "| --- | --- | --- |", *rows]) if rows else "_none_"
+    table = (
+        "\n".join(["| path | present | sha256 |", "| --- | --- | --- |", *rows])
+        if rows
+        else "_none_"
+    )
     return "\n".join(
         [
-            "<!-- claims-lint: allow-file reason=\"GNI anonymization script pin; execution SKIPPED\" -->",
+            '<!-- claims-lint: allow-file reason="GNI anonymization script pin; execution SKIPPED" -->',
             "---",
             'title: "GNI anonymization script pin"',
             f"date: {str(payload.get('generated_at') or '')[:10]}",
@@ -128,10 +132,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--code-root", type=Path, default=None)
     args = parser.parse_args(argv)
     root = repo_root()
-    env = args.code_root or os.environ.get("AEROBIM_GNI_CODE_ROOT")
-    code_root = Path(env) if env else (root / ".local" / "gni-bim-code")
-    if not code_root.is_dir():
-        code_root = None
+    raw_root = args.code_root or os.environ.get("AEROBIM_GNI_CODE_ROOT")
+    candidate = Path(raw_root) if raw_root else (root / ".local" / "gni-bim-code")
+    code_root: Path | None = candidate if candidate.is_dir() else None
     payload = build_payload(code_root=code_root, repo=root)
     out = root / "artifacts" / "gni-anonymization-pin"
     out.mkdir(parents=True, exist_ok=True)

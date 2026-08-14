@@ -195,8 +195,9 @@ pip install -e ".[dev,raster,pdf-agpl]"
 
 # KT#2 vertical slice (~10 min from clone): fail-loud; writes artifacts/vertical-slice-demo/
 python -m aerobim.tools.run_demo_vertical_slice
-# Open artifacts/vertical-slice-demo/report.html — fragment, finding, evidence,
-# overlay PNG (sibling overlay-problem-zone.png), non-PASS verdict. Not CV.
+# Open artifacts/vertical-slice-demo/report.html — fragment, overlay, text evidence,
+# finding_id/source_id/evidence_refs, capability table, run-manifest.json, BCF ZIP.
+# summary.passed=false. Checkpoint NO_GO. Fixture demo, not CV.
 
 # Optional extras
 # pip install -e ".[clash]"    # enable geometry clash detection
