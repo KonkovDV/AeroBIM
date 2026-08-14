@@ -64,11 +64,11 @@ claim_boundary: "План для ИИ-исполнителя. Код в этом
 - **Закрыто 14.08 вечер:** snapshot `wall-guid` был с CRLF-хешами; Linux `eol=lf` валил verifier. Снимок нормализован в LF, exporter пишет `newline="\n"`. Runtime baseline README drift (env + LOC) обновлён. N43 lag=1 **не** включали.  
 - **DoD локально:** `verify_evidence_bundle` wall-guid OK; `--check-readme` OK; `lint_claims.py` OK. Зелёный CI — после push.
 
-### A6. Паритет интерпретатора: локальный 3.13 vs CI 3.12
+### A6. Паритет интерпретатора: локальный 3.13 vs CI 3.12 — **закрыто 14.08 вечер**
 
-- **Факт:** venv собран на Python **3.13.7**; `pyproject` требует `>=3.12`; CI гоняет 3.12. Хеши среза на 3.13 подтверждены, на 3.12 — нет.
-- **Действие:** установить Python 3.12, пересоздать `backend/.venv`, повторить `run_demo_vertical_slice` дважды, сравнить `reproducibility_hash` и PNG sha256 с пином `docs/evidence/vertical-slice-demo-live-2026-08-14.md`. Расхождения — объяснить в пине, не замалчивать.
-- **DoD:** пин обновлён строкой «воспроизведено на 3.12» или зафиксирована разница.
+- **Факт (было):** venv собран на Python **3.13.7**; `pyproject` требует `>=3.12`; CI гоняет 3.12. Хеши среза на 3.13 подтверждены, на 3.12 — нет.
+- **Сделано:** установлен CPython **3.12.10** (`winget` `Python.Python.3.12`); venv `backend/.venv-3.12` (`.venv` 3.13.7 не снесён); extras по README (`hashed lock` на Windows падает на `uvloop`); два прогона CLI; `.python-version` = `3.12`.
+- **DoD:** overlay PNG и `LIMITATIONS.json` **совпали** с пином 3.13.7. `reproducibility_hash` / `run-manifest.json` **отличаются** из‑за `code_version=f380354` + dirty tree vs `d809d36` clean — не 3.12 vs 3.13. Пин: `docs/evidence/vertical-slice-demo-live-2026-08-14.md`.
 
 ### A7. Устаревший handoff-снапшот 11.08
 

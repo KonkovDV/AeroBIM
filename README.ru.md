@@ -148,7 +148,8 @@ AeroBIM выполняет детерминированную проверку �
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM/backend
 
-python -m venv .venv
+# Интерпретатор = CPython 3.12 (как CI). Windows: py -3.12 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate   # Linux/macOS
 # .venv\Scripts\activate    # Windows
 

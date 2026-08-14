@@ -25,3 +25,5 @@ pip install -e . --no-deps
 ```
 
 Residual: the initial `pip==25.2` bootstrap wheel is not hash-verified; runtime/dev dependencies from the lockfiles are.
+
+Windows cannot `pip install --require-hashes -r requirements-dev-lock.txt`: the Linux lock includes `uvloop`, which refuses to build on Windows. Local Windows clone path remains `pip install -e ".[dev,raster,pdf-agpl]"` (README). Hashed lock is the CI/Linux/Docker install.

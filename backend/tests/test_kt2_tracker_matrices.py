@@ -4,7 +4,17 @@ import json
 import unittest
 from pathlib import Path
 
-from aerobim.tools.export_ifc_release_matrix import build_ifc_release_matrix
+from aerobim.domain.models import (
+    CapabilityState,
+    CapabilityStatus,
+    ReportCapabilities,
+    Severity,
+    ValidationIssue,
+)
+from aerobim.tools.export_ifc_release_matrix import (
+    build_ifc_release_matrix,
+    digest_rules_and_refusals,
+)
 from aerobim.tools.run_vlm_stamp_comparison import build_vlm_comparison
 
 
@@ -24,6 +34,31 @@ class IfcReleaseMatrixShapeTests(unittest.TestCase):
             self.assertIsNotNone(row["ifc_entity_count"])
             self.assertIn("Pset", row["pset_name_mismatch_policy"])
         self.assertIn("content_sha256", matrix)
+
+    def test_digest_lists_fired_rules_and_honesty_refusals(self) -> None:
+        issues = (
+            ValidationIssue(
+                rule_id="AEROBIM-IDS-IFC-VERSION", severity=Severity.ERROR, message="x"
+            ),
+            ValidationIssue(
+                rule_id="AEROBIM-IDS-IFC-VERSION", severity=Severity.ERROR, message="y"
+            ),
+            ValidationIssue(rule_id="AEROBIM-QTO-MISSING", severity=Severity.WARNING, message="z"),
+        )
+        caps = ReportCapabilities(
+            ids=CapabilityStatus(CapabilityState.OK, "ids ran"),
+            dwg_dxf=CapabilityStatus(
+                CapabilityState.MISSING, "native DWG parser is not implemented"
+            ),
+            clash=CapabilityStatus(CapabilityState.SKIPPED, "clash detection not evaluated"),
+        )
+        digest = digest_rules_and_refusals(issues, caps)
+        self.assertEqual(digest["rules_fired"]["AEROBIM-IDS-IFC-VERSION"], 2)
+        self.assertEqual(digest["severity_counts"]["error"], 2)
+        names = {item["capability"] for item in digest["refusals"]}
+        self.assertIn("dwg_dxf", names)
+        self.assertIn("clash", names)
+        self.assertIn("ids", digest["capabilities_ok"])
 
 
 class VlmStampComparisonSkipTests(unittest.TestCase):

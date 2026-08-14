@@ -8,18 +8,37 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections import Counter
+from dataclasses import fields
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
 
+from aerobim.domain.models import CapabilityState, ReportCapabilities, ValidationIssue
 from aerobim.tools.benchmark_project_package import (
     SCHEMA_SUITE_DEFAULT_ITERATIONS,
     SCHEMA_SUITE_DEFAULT_WARMUP_ITERATIONS,
+    _iteration_request,
     _machine_fingerprint,
     benchmark_schema_suite,
+    load_benchmark_pack,
     repo_root,
     schema_suite_pack_paths,
 )
+
+_CLAIMS_HEADER = (
+    "<!-- claims-lint: allow-file reason="
+    '"IFC schema-suite matrix; >90% only as non-claim boundary" -->'
+)
+_REFUSAL_STATES = frozenset(
+    {
+        CapabilityState.FAILED,
+        CapabilityState.MISSING,
+        CapabilityState.NOT_IMPLEMENTED,
+        CapabilityState.NOT_VERIFIED,
+    }
+)
+_HONESTY_SKIPPED = frozenset({"clash", "raster", "mep_system_clash", "dwg_dxf"})
 
 
 def _mapping(value: object) -> dict[str, Any]:
@@ -39,6 +58,84 @@ CLAIM_BOUNDARY = (
 
 def _sha256_bytes(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
+
+
+def digest_rules_and_refusals(
+    issues: tuple[ValidationIssue, ...] | list[ValidationIssue],
+    capabilities: ReportCapabilities | None,
+) -> dict[str, Any]:
+    """Last-report rule histogram + honesty refusals. Not product accuracy."""
+    fired = Counter(issue.rule_id or "UNKNOWN" for issue in issues)
+    severity = Counter(
+        issue.severity.value if hasattr(issue.severity, "value") else str(issue.severity)
+        for issue in issues
+    )
+    refusals: list[dict[str, str]] = []
+    ran_ok: list[str] = []
+    if capabilities is not None:
+        for field in fields(type(capabilities)):
+            status = getattr(capabilities, field.name)
+            state = getattr(status, "status", None)
+            if not isinstance(state, CapabilityState):
+                continue
+            reason = str(getattr(status, "reason", "") or "")
+            if state in _REFUSAL_STATES or (
+                state is CapabilityState.SKIPPED and field.name in _HONESTY_SKIPPED
+            ):
+                refusals.append(
+                    {
+                        "capability": field.name,
+                        "status": state.value,
+                        "reason": reason[:160],
+                    }
+                )
+            elif state is CapabilityState.OK:
+                ran_ok.append(field.name)
+    return {
+        "rules_fired": dict(sorted(fired.items())),
+        "severity_counts": dict(sorted(severity.items())),
+        "refusals": refusals,
+        "capabilities_ok": ran_ok,
+    }
+
+
+def _product_entity_counts(ifc_path: Path | None) -> dict[str, int]:
+    if ifc_path is None or not ifc_path.is_file():
+        return {}
+    try:
+        import ifcopenshell
+    except ImportError:
+        return {}
+    model = ifcopenshell.open(str(ifc_path))
+    counts: Counter[str] = Counter()
+    for entity in model.by_type("IfcProduct"):
+        counts[entity.is_a()] += 1
+    return dict(sorted(counts.items()))
+
+
+def attach_live_digests(matrix: dict[str, Any], pack_paths: list[Path]) -> None:
+    """One extra analyze per pack after timing; does not enter p50/p95 windows."""
+    from aerobim.core.config.settings import Settings
+    from aerobim.core.di.tokens import Tokens
+    from aerobim.infrastructure.di.bootstrap import bootstrap_container
+
+    settings = Settings.from_env()
+    analyze = bootstrap_container(settings).resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
+    by_schema: dict[str, dict[str, Any]] = {}
+    for pack_path in pack_paths:
+        pack = load_benchmark_pack(pack_path)
+        schema = str(pack.ifc_schema or "").upper()
+        report = analyze.execute(_iteration_request(pack.request, "digest", 1))
+        digest = digest_rules_and_refusals(report.issues, report.capabilities)
+        digest["summary_passed"] = report.summary.passed
+        digest["product_entities"] = _product_entity_counts(pack.request.ifc_path)
+        by_schema[schema] = digest
+    for row in matrix.get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        extra = by_schema.get(str(row.get("schema") or "").upper())
+        if extra:
+            row.update(extra)
 
 
 def build_ifc_release_matrix(suite_payload: dict[str, Any]) -> dict[str, Any]:
@@ -101,8 +198,53 @@ def build_ifc_release_matrix(suite_payload: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def _rules_fired_cell(row: dict[str, Any]) -> str:
+    fired = row.get("rules_fired")
+    if not isinstance(fired, dict) or not fired:
+        return "—"
+    return ", ".join(f"{key}×{fired[key]}" for key in fired)
+
+
+def _product_cell(row: dict[str, Any]) -> str:
+    products = row.get("product_entities")
+    if not isinstance(products, dict) or not products:
+        return "—"
+    return ", ".join(f"{key}×{products[key]}" for key in products)
+
+
+_TABLE_OMIT_REFUSALS = frozenset(
+    {
+        "clash",
+        "raster",
+        "unit_scale",
+        "ifc_schema",
+        "dwg_dxf",
+        "cv_human_level",
+        "mep_system_clash",
+        "calculation_correctness",
+        "qualified_signature",
+    }
+)
+
+
+def _refusals_cell(row: dict[str, Any]) -> str:
+    items = row.get("refusals")
+    if not isinstance(items, list) or not items:
+        return "—"
+    parts: list[str] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        cap = str(item.get("capability") or "")
+        if cap in _TABLE_OMIT_REFUSALS:
+            continue
+        parts.append(f"{cap}={item.get('status')}")
+    return ", ".join(parts) if parts else "shared honesty only"
+
+
 def render_ifc_release_matrix_markdown(matrix: dict[str, Any]) -> str:
     lines = [
+        _CLAIMS_HEADER,
         "# IFC release matrix (tracker 2.1)",
         "",
         f"**claim_level:** `{matrix.get('claim_level')}`",
@@ -110,29 +252,39 @@ def render_ifc_release_matrix_markdown(matrix: dict[str, Any]) -> str:
         "",
         str(matrix.get("claim_boundary") or ""),
         "",
-        "| Schema | entities | bytes | rules evaluated | findings emitted | p50 ms | p95 ms | max ms |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Schema | IfcProduct | entities | rules eval | rules fired | findings | p50 ms | p95 ms | max ms | refusals |",
+        "|---|---|---:|---:|---|---:|---:|---:|---:|---|",
     ]
     for row in matrix.get("rows") or []:
         if not isinstance(row, dict):
             continue
         timing = _mapping(row.get("timing_ms"))
         lines.append(
-            "| {schema} | {ent} | {nbytes} | {rules} | {findings} | {p50} | {p95} | {mx} |".format(
+            "| {schema} | {products} | {ent} | {rules} | {fired} | {findings} | {p50} | {p95} | {mx} | {refusals} |".format(
                 schema=row.get("schema"),
+                products=_product_cell(row),
                 ent=row.get("ifc_entity_count"),
-                nbytes=row.get("ifc_bytes"),
                 rules=row.get("rules_evaluated"),
+                fired=_rules_fired_cell(row),
                 findings=row.get("findings_emitted"),
                 p50=timing.get("p50"),
                 p95=timing.get("p95"),
                 mx=timing.get("max"),
+                refusals=_refusals_cell(row),
             )
         )
     lines.extend(
         [
             "",
             str(matrix.get("refusals_and_degradations_note") or ""),
+            "",
+            "issue_count / rules fired are fixture findings, **not claimed** product accuracy.",
+            "",
+            "Shared honesty refusals (all three packs, omitted from the refusals column): "
+            "clash skipped, raster skipped, dwg_dxf missing, cv_human_level missing, "
+            "mep_system_clash not_verified, calculation_correctness not_implemented, "
+            "qualified_signature missing, unit_scale/ifc_schema not_verified. "
+            "Native DWG is **not claimed** DWG-ready.",
             "",
             f"Generated at: `{matrix.get('generated_at')}`",
             f"content_sha256: `{matrix.get('content_sha256')}`",
@@ -153,9 +305,11 @@ def write_ifc_release_matrix(
     text = json.dumps(matrix, ensure_ascii=False, indent=2) + "\n"
     for path in (artifacts_json, evidence_json):
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text, encoding="utf-8")
+        path.write_text(text, encoding="utf-8", newline="\n")
     evidence_md.parent.mkdir(parents=True, exist_ok=True)
-    evidence_md.write_text(render_ifc_release_matrix_markdown(matrix), encoding="utf-8")
+    evidence_md.write_text(
+        render_ifc_release_matrix_markdown(matrix), encoding="utf-8", newline="\n"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -175,6 +329,14 @@ def main(argv: list[str] | None = None) -> int:
         group_by="schema",
     )
     matrix = build_ifc_release_matrix(cast(dict[str, Any], suite))
+    attach_live_digests(matrix, schema_suite_pack_paths(root))
+    encoded = json.dumps(
+        {key: value for key, value in matrix.items() if key != "content_sha256"},
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+    ).encode("utf-8")
+    matrix["content_sha256"] = _sha256_bytes(encoded)
     write_ifc_release_matrix(
         matrix,
         artifacts_json=root / "artifacts" / "ifc-release-matrix.json",

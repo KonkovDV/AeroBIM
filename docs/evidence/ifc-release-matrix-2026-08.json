@@ -4,7 +4,7 @@
   "claim_level": "fixture_only",
   "customer_accuracy_not_established": true,
   "claim_boundary": "Fixture schema-suite kernel timing and finding counts. issue_count is not accuracy. Not customer packages. Not TZ >90%.",
-  "generated_at": "2026-08-13T21:45:27.707830+00:00",
+  "generated_at": "2026-08-14T13:15:46.359762+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.13.7",
@@ -12,25 +12,92 @@
     "system": "Windows"
   },
   "source_suite": {
-    "generated_at": "2026-08-13T21:45:27.707701+00:00",
-    "iterations": 5,
-    "warmup_iterations": 1
+    "generated_at": "2026-08-14T13:15:46.359575+00:00",
+    "iterations": 20,
+    "warmup_iterations": 2
   },
   "rows": [
     {
       "schema": "IFC2X3",
       "pack_count": 1,
-      "ifc_bytes": 997,
+      "ifc_bytes": 975,
       "ifc_entity_count": 12,
       "rules_evaluated": 3,
-      "findings_emitted": 6,
+      "findings_emitted": 5,
       "timing_ms": {
-        "p50": 25.365,
-        "p95": 25.827,
-        "max": 25.827,
-        "spike_max_over_p50": 1.018
+        "p50": 44.325,
+        "p95": 49.044,
+        "max": 59.351,
+        "spike_max_over_p50": 1.339
       },
-      "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip"
+      "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip",
+      "rules_fired": {
+        "AEROBIM-CLASH-CAPABILITY": 1,
+        "AEROBIM-QTY-MISSING": 1,
+        "IDS-Wall Width Quantity": 1,
+        "SAM-R-002": 1,
+        "SAM-R-003": 1
+      },
+      "severity_counts": {
+        "error": 3,
+        "warning": 2
+      },
+      "refusals": [
+        {
+          "capability": "clash",
+          "status": "skipped",
+          "reason": "IfcClash unavailable: No module named 'ifcclash'"
+        },
+        {
+          "capability": "unit_scale",
+          "status": "not_verified",
+          "reason": "IFC unit scale not probed"
+        },
+        {
+          "capability": "raster",
+          "status": "skipped",
+          "reason": "no raster drawing sources"
+        },
+        {
+          "capability": "ifc_schema",
+          "status": "not_verified",
+          "reason": "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)"
+        },
+        {
+          "capability": "dwg_dxf",
+          "status": "missing",
+          "reason": "native DWG parser is not implemented"
+        },
+        {
+          "capability": "cv_human_level",
+          "status": "missing",
+          "reason": "Human-level CV/drawing understanding not implemented"
+        },
+        {
+          "capability": "mep_system_clash",
+          "status": "not_verified",
+          "reason": "MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo"
+        },
+        {
+          "capability": "calculation_correctness",
+          "status": "not_implemented",
+          "reason": "independent solver verification is not implemented"
+        },
+        {
+          "capability": "qualified_signature",
+          "status": "missing",
+          "reason": "qualified signature / УКЭП not evaluated for this report; when evaluated, trust_chain_status remains not_verified (no accredited CA/TSP access) — never a legal "
+        }
+      ],
+      "capabilities_ok": [
+        "ids",
+        "ifc_validation",
+        "quantity"
+      ],
+      "summary_passed": false,
+      "product_entities": {
+        "IfcWall": 1
+      }
     },
     {
       "schema": "IFC4",
@@ -40,12 +107,78 @@
       "rules_evaluated": 3,
       "findings_emitted": 4,
       "timing_ms": {
-        "p50": 23.677,
-        "p95": 24.97,
-        "max": 24.97,
-        "spike_max_over_p50": 1.055
+        "p50": 38.135,
+        "p95": 47.209,
+        "max": 48.448,
+        "spike_max_over_p50": 1.27
       },
-      "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip"
+      "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip",
+      "rules_fired": {
+        "AEROBIM-CLASH-CAPABILITY": 1,
+        "AEROBIM-QTY-MISSING": 1,
+        "SAM-R-002": 1,
+        "SAM-R-003": 1
+      },
+      "severity_counts": {
+        "error": 2,
+        "warning": 2
+      },
+      "refusals": [
+        {
+          "capability": "clash",
+          "status": "skipped",
+          "reason": "IfcClash unavailable: No module named 'ifcclash'"
+        },
+        {
+          "capability": "unit_scale",
+          "status": "not_verified",
+          "reason": "IFC unit scale not probed"
+        },
+        {
+          "capability": "raster",
+          "status": "skipped",
+          "reason": "no raster drawing sources"
+        },
+        {
+          "capability": "ifc_schema",
+          "status": "not_verified",
+          "reason": "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)"
+        },
+        {
+          "capability": "dwg_dxf",
+          "status": "missing",
+          "reason": "native DWG parser is not implemented"
+        },
+        {
+          "capability": "cv_human_level",
+          "status": "missing",
+          "reason": "Human-level CV/drawing understanding not implemented"
+        },
+        {
+          "capability": "mep_system_clash",
+          "status": "not_verified",
+          "reason": "MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo"
+        },
+        {
+          "capability": "calculation_correctness",
+          "status": "not_implemented",
+          "reason": "independent solver verification is not implemented"
+        },
+        {
+          "capability": "qualified_signature",
+          "status": "missing",
+          "reason": "qualified signature / УКЭП not evaluated for this report; when evaluated, trust_chain_status remains not_verified (no accredited CA/TSP access) — never a legal "
+        }
+      ],
+      "capabilities_ok": [
+        "ids",
+        "ifc_validation",
+        "quantity"
+      ],
+      "summary_passed": false,
+      "product_entities": {
+        "IfcWall": 1
+      }
     },
     {
       "schema": "IFC4X3",
@@ -55,14 +188,85 @@
       "rules_evaluated": 3,
       "findings_emitted": 6,
       "timing_ms": {
-        "p50": 25.806,
-        "p95": 31.758,
-        "max": 31.758,
-        "spike_max_over_p50": 1.231
+        "p50": 43.386,
+        "p95": 62.795,
+        "max": 64.402,
+        "spike_max_over_p50": 1.484
       },
-      "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip"
+      "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip",
+      "rules_fired": {
+        "AEROBIM-CLASH-CAPABILITY": 1,
+        "AEROBIM-IDS-IFC-VERSION": 2,
+        "AEROBIM-QTY-MISSING": 1,
+        "SAM-R-002": 1,
+        "SAM-R-003": 1
+      },
+      "severity_counts": {
+        "error": 4,
+        "warning": 2
+      },
+      "refusals": [
+        {
+          "capability": "clash",
+          "status": "skipped",
+          "reason": "IfcClash unavailable: No module named 'ifcclash'"
+        },
+        {
+          "capability": "ids",
+          "status": "failed",
+          "reason": "[IDS] Wall Fire Rating: FILE_SCHEMA IFC4X3 is not in IDS ifcVersion [IFC2X3,IFC4,IFC4X3_ADD2] (AeroBIM fail-closed; IfcTester does not treat version mismatch as"
+        },
+        {
+          "capability": "unit_scale",
+          "status": "not_verified",
+          "reason": "IFC unit scale not probed"
+        },
+        {
+          "capability": "raster",
+          "status": "skipped",
+          "reason": "no raster drawing sources"
+        },
+        {
+          "capability": "ifc_schema",
+          "status": "not_verified",
+          "reason": "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)"
+        },
+        {
+          "capability": "dwg_dxf",
+          "status": "missing",
+          "reason": "native DWG parser is not implemented"
+        },
+        {
+          "capability": "cv_human_level",
+          "status": "missing",
+          "reason": "Human-level CV/drawing understanding not implemented"
+        },
+        {
+          "capability": "mep_system_clash",
+          "status": "not_verified",
+          "reason": "MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo"
+        },
+        {
+          "capability": "calculation_correctness",
+          "status": "not_implemented",
+          "reason": "independent solver verification is not implemented"
+        },
+        {
+          "capability": "qualified_signature",
+          "status": "missing",
+          "reason": "qualified signature / УКЭП not evaluated for this report; when evaluated, trust_chain_status remains not_verified (no accredited CA/TSP access) — never a legal "
+        }
+      ],
+      "capabilities_ok": [
+        "ifc_validation",
+        "quantity"
+      ],
+      "summary_passed": false,
+      "product_entities": {
+        "IfcWall": 1
+      }
     }
   ],
   "refusals_and_degradations_note": "Schema-suite packs are IFC+IDS wall Pset fixtures. Capability SKIPPED (clash/raster/MEP) is honesty, not a silent pass. DWG native remains FAILED.",
-  "content_sha256": "3780a18ddba8f4ebac684b977f12ed4c66b71b0317ccf3b17f2803e27c45f5b6"
+  "content_sha256": "8d71e2ecc7e7ec8c7b0c704c0ffcd27ec8c71e99e6fe5b73f3495e8ea7aef85d"
 }

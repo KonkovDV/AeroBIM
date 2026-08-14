@@ -15,7 +15,10 @@ claim_boundary: "File list only. Nothing new after 18.08. Video and LK = human. 
 | --- | --- | --- |
 | 1 | Cover | [`../demo/KT2_HANDOFF_COVER_2026_08_11.md`](../demo/KT2_HANDOFF_COVER_2026_08_11.md) |
 | 2 | FAQ речи | [`../demo/KT2_JURY_FAQ_2026_08_12.md`](../demo/KT2_JURY_FAQ_2026_08_12.md) |
-| 3 | Бриф трекера | [`../demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) |
+| 3 | Бриф трекера + follow-up 15:26 | [`../demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) · [`../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md) |
+| 3b | Журнал шести пунктов | [`TECHLAB_ACTIONS_2026_08_14.md`](TECHLAB_ACTIONS_2026_08_14.md) |
+| 3c | Live CLI pin (3.12 overlay match) | [`../evidence/vertical-slice-demo-live-2026-08-14.md`](../evidence/vertical-slice-demo-live-2026-08-14.md) |
+| 3d | IFC2x3 / IFC4 / IFC4X3 matrix | [`../evidence/ifc-release-matrix-2026-08.md`](../evidence/ifc-release-matrix-2026-08.md) |
 | 4 | Handoff STATUS | [`../evidence/kt2-handoff-2026-08-11/STATUS.json`](../evidence/kt2-handoff-2026-08-11/STATUS.json) |
 | 5 | Vertical slice limitations | [`../evidence/kt2-handoff-2026-08-11/vertical-slice/LIMITATIONS.json`](../evidence/kt2-handoff-2026-08-11/vertical-slice/LIMITATIONS.json) |
 | 6 | Overlay PNG | [`../evidence/drawing-overlay-smoke-2026-08/`](../evidence/drawing-overlay-smoke-2026-08/) |

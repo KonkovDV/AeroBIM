@@ -40,7 +40,7 @@ IfcTester считает `ifcVersion` метаданными (официальн
 | IDS fail-open | Найден и закрыт. Кейс 0101 теперь FAILED у нас сознательно |
 | Устаревшая норма | Требования ЦИМ АГР ссылаются на ГОСТ Р 21.101-2020, заменённый 01.04.2026. `AEROBIM-NORM-SUPERSEDED` · [`../evidence/stale-norm-scan-2026-08.md`](../evidence/stale-norm-scan-2026-08.md) |
 | Kimi vs Qwen | Qwen **LIVE** на fixture. Kimi **GATED**. `comparison_status=comparison_not_run` — не bake-off. Advisory, не проверка норм |
-| DWG | Жёсткий **FAILED**. ODA trial 60 дней = КТ#3, не покупка. [`../architecture/ADR-003-dwg-oda-trial-kt3-2026.md`](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md) |
+| DWG | В ТЗ **остаётся**. Код: жёсткий **FAILED**, не «вне скоупа». Бюджет SDK = 0. ODA trial = КТ#3, не покупка. [`../architecture/ADR-003-dwg-oda-trial-kt3-2026.md`](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md) · [`../dwg-blocker-memo-2026-08.md`](../dwg-blocker-memo-2026-08.md) |
 | Московский АГР | Полный профиль **не собран** (freeze). Есть обменный контур класса 1 на fixture: IFC4 / ReferenceView / proxy / имя / 500 МБ · [`../evidence/agr-exchange-2026-08.md`](../evidence/agr-exchange-2026-08.md) |
 | CV | Heuristic регионы + text layer. Это не обученный CV |
 | 1980 проверок / 656 тестов | Регрессия кода, **не** доля ложных пропусков ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058): fail-closed ≠ низкий false-pass) |

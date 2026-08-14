@@ -1,9 +1,9 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # DWG: где затыки и сколько стоит платный путь (2026-08)
 
-**Status:** PILOT_OUT_OF_SCOPE (owner-confirmed default)  
+**Status:** TZ_MANDATORY_UNSUPPORTED (fail-closed FAILED; not silently out of scope)  
 **Checkpoint:** NO_GO  
-**claim_boundary:** Native DWG remains **Missing/Failed** (fail-closed). This memo is engineering + legal framing for stakeholders — **not** a DWG-ready product claim.  
+**claim_boundary:** Native DWG remains **Missing/Failed** (fail-closed). Tracker 07.08: DWG is in the Samolet TZ — do not delete the requirement. This memo is engineering + legal framing — **not** a DWG-ready product claim. Budget for SDK = 0.  
 **Code path today:** `EzdxfCadModelIngestor` returns `supported=False` for `.dwg`; honesty surface `native_dwg=missing` / `dwg_dxf=FAILED` when DWG is requested; FAILED CAD capability blocks `summary.passed` (ADR-001).  
 **Related:** [`docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md`](tz/DWG_DECISION_OPTIONS_ABC_2026_08.md)
 
@@ -64,11 +64,11 @@ DWG **не входит** в обязательный контур приёмк�
 
 ---
 
-## 5. Решение на пилот
+## 5. Решение на пилот (после замечания трекера 07.08)
 
-**DWG вне границ пилота.**
+**DWG не вычёркивается из ТЗ.** Требование остаётся обязательным и **неподдержанным**: код отдаёт FAILED и роняет `summary.passed`, а не «почти работает».
 
-Принимаем **IFC + PDF/A + DXF** по факту экспорта заказчиком. Путь DWG сохраняет жёсткий отказ и **никогда** не даёт зелёный результат.
+Принимаем **IFC + PDF/A** как подтверждённый контур. Файл, полученный экспортом из DWG, проходит как **производный** вход с provenance, не как native DWG. **DXF** — Partial / Not verified; в критерии приёмки не ставить, пока нет измеренного прогона. Согласование ограниченного сценария ушло заказчику через AM 07.08; ответа в командном контуре на 14.08 нет.
 
 | Триггер к покупке | Первый шаг |
 |---|---|
@@ -81,7 +81,7 @@ DWG **не входит** в обязательный контур приёмк�
 
 - **Затык:** формат закрытый; LibreDWG неполна и GPL-3; nanoCAD/SPDS → прокси, семантика теряется; OCR не даёт геометрической привязки / `evidence_refs`.  
 - **Цена:** ODA Sustaining 7 500 $ / 4 500 $ (12 000 $ / 2 года); альтернатива CADSoftTools от 1 660 $; APS для RF-юрлица закрыт.  
-- **Решение:** DWG out of pilot scope; приёмка через IFC + PDF/A (ПП 614, 783/пр); закупка только по триггеру заказчика.  
+- **Решение:** DWG **остаётся в ТЗ** и остаётся FAILED; приёмка пилота через IFC + PDF/A (ПП 614, 783/пр); закупка SDK только по триггеру заказчика. Не объявлять native DWG и не вычёркивать требование молча.  
 - **Код:** DWG не подключаем; регрессия — запрошенный DWG → `dwg_dxf=FAILED` и `summary.passed=false`.
 
 ---

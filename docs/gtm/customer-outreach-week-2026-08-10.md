@@ -14,7 +14,9 @@ claim_boundary: >-
 **Tracker schema SSOT:** [`docs/customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv`](../customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv)  
 **Week instance (example rows):** [`outreach-tracker-week-2026-08-10.csv`](outreach-tracker-week-2026-08-10.csv)
 
-**Rules:** Do not invent real company names, emails, or call outcomes in git. Replace `COMPANY_n` / `[CONTACT_NAME]` / `[OPERATOR_NAME]` before sending. Log verified contacts in private ops (`.local/commercial-ops/`) when live.
+**KPI since 14.08 (tracker):** scheduled demos (calendar slot), target **3–5**. A touch without a slot counts as 0. Cold 50/0 is closed as a tactic — do not scale the same letters.
+
+**Rules:** Do not invent real company names, emails, or call outcomes in git. Do not pitch A101 / Hals as a second TechLab customer (program rule 05.08). Replace `COMPANY_n` / `[CONTACT_NAME]` / `[OPERATOR_NAME]` before sending. Log verified contacts in private ops (`.local/commercial-ops/`) when live. See [`COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`](COMMERCIAL_AND_OPEN_CORE_2026_08_14.md).
 
 Related: [`CUSTOMER_DISCOVERY_SCRIPT.md`](../customer/CUSTOMER_DISCOVERY_SCRIPT.md), [`email-short-ru.md`](../customer-discovery/email-short-ru.md), [`CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
