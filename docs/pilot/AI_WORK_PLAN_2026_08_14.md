@@ -22,13 +22,13 @@ claim_boundary: >
 
 | Артефакт | Статус | Ссылка |
 |---|---|---|
-| OSINT Самолёт + вектор | **DONE** | [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) |
-| Конкурентная матрица RU | **DONE** | [`docs/partners/COMPETITIVE_MATRIX_2026_08.md`](docs/partners/COMPETITIVE_MATRIX_2026_08.md) |
-| Интейк stack-aware | **DONE** | [`docs/partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](docs/partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) |
-| Речь жюри/трекера | **DONE** | [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md) · [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) |
-| НПА АГР / СтроимПросто | **DONE** | [`docs/regulatory-baseline-2026.md`](docs/regulatory-baseline-2026.md) |
-| Честность демо-IFC | **DONE** | [`samples/ifc/README.md`](samples/ifc/README.md) |
-| Red Team OSINT-пакета | **DONE** | [`docs/quality/RED_TEAM_SAMOLET_OSINT_VECTOR_2026_08_14.md`](docs/quality/RED_TEAM_SAMOLET_OSINT_VECTOR_2026_08_14.md) |
+| OSINT Самолёт + вектор | **DONE** | [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) |
+| Конкурентная матрица RU | **DONE** | [`docs/partners/COMPETITIVE_MATRIX_2026_08.md`](../partners/COMPETITIVE_MATRIX_2026_08.md) |
+| Интейк stack-aware | **DONE** | [`docs/partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) |
+| Речь жюри/трекера | **DONE** | [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../demo/KT2_JURY_FAQ_2026_08_12.md) · [`docs/demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) |
+| НПА АГР / СтроимПросто | **DONE** | [`docs/regulatory-baseline-2026.md`](../regulatory-baseline-2026.md) |
+| Честность демо-IFC | **DONE** | [`samples/ifc/README.md`](../../samples/ifc/README.md) |
+| Red Team OSINT-пакета | **DONE** | [`docs/quality/RED_TEAM_SAMOLET_OSINT_VECTOR_2026_08_14.md`](../quality/RED_TEAM_SAMOLET_OSINT_VECTOR_2026_08_14.md) |
 | Коммит + push | **DONE** | `0905e60` → `origin/main` |
 
 ---
@@ -74,50 +74,50 @@ claim_boundary: >
 
 ### 14.08 (сегодня, после встречи 08:00)
 
-| # | Задача | Вход | Выход | Критерий готовности |
-|---|---|---|---|---|
-| 14.1 | Записать итоги встречи с трекером | Заметки Дмитрия Сигиневича | `docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md` | Список правок, если есть |
-| 14.2 | Проверить, что OSINT-пакет не сломал CI | `git log --oneline -3` | CI green | `lint_claims.py` OK |
-| 14.3 | Подготовить шаблон запроса Renga IFC | [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](docs/partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) §0.1 | Текст письма/сообщения | Не просить Tangl API |
+| # | Задача | Выход | Статус 14.08 |
+|---|---|---|---|
+| 14.1 | Итоги встречи с трекером | [`../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md) | **DONE** — заметок Сигиневича в repo нет; протокол не выдуман |
+| 14.2 | CI / claims | README `not claimed`; относительные ссылки плана | **PARTIAL** — `lint_claims.py` OK; docs-links этого плана чиним; typecheck/test/`--full-docs` красные **до** этого пакета, код freeze |
+| 14.3 | Шаблон запроса Renga IFC | [`../partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md`](../partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md) | **DONE** — не просит Tangl API |
 
 ### 15–16.08 (выходные, если трекер не дал правок)
 
-| # | Задача | Вход | Выход | Критерий готовности |
-|---|---|---|---|---|
-| 15.1 | Проверить overlay e2e (уже на main) | `artifacts/vertical-slice-demo/` | Подтверждение, что PNG + HTML работают | `run_demo_vertical_slice` exit 0 |
-| 15.2 | Подготовить сценарий видео 3 мин | [`TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) §«Что показать за 3 минуты» | Скрипт для человека | 3 мин, не больше |
-| 15.3 | Проверить README clone-to-demo | `README.md` §«KT#2 vertical slice» | Подтверждение 10 мин от клона | Команда работает |
+| # | Задача | Выход | Статус 14.08 |
+|---|---|---|---|
+| 15.1 | Overlay e2e | [`../demo/KT2_CLONE_TO_DEMO_CHECK_2026_08_14.md`](../demo/KT2_CLONE_TO_DEMO_CHECK_2026_08_14.md) | **PARTIAL** — контракт + committed PNG; live CLI **SKIPPED** (нет `.venv`) |
+| 15.2 | Сценарий видео 3 мин | [`../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | **DONE** (запись — человек 19.08) |
+| 15.3 | README clone-to-demo | тот же check | **DONE** — команда в README есть |
 
 ### 17.08 (понедельник)
 
-| # | Задача | Вход | Выход | Критерий готовности |
-|---|---|---|---|---|
-| 17.1 | Harbor 160: **SKIPPED** или прогон | [`KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md) §17.08 | Решение: SKIPPED (по умолчанию) | Не выдумывать % false-pass |
-| 17.2 | N43: проверить baseline SHA drift | `docs/evidence/runtime-baseline-latest.json` | Отчёт: drift ≤50 коммитов | Soft check, не блокер |
-| 17.3 | Подготовить пакет для КТ#2 | Все evidence | Список файлов для загрузки | Ничего нового |
+| # | Задача | Выход | Статус 14.08 |
+|---|---|---|---|
+| 17.1 | Harbor 160 | [`HARBOR_160_DECISION_2026_08_14.md`](HARBOR_160_DECISION_2026_08_14.md) | **PREP** — default SKIPPED; подтвердить 17.08 |
+| 17.2 | N43 drift | [`../audit/N43_MONITORING_SNAPSHOT_2026_08_14.md`](../audit/N43_MONITORING_SNAPSHOT_2026_08_14.md) | **PREP** — **62 > 50**; не активировать |
+| 17.3 | Пакет КТ#2 | [`KT2_UPLOAD_PACK_2026_08_14.md`](KT2_UPLOAD_PACK_2026_08_14.md) | **PREP** — список готов; грузит человек |
 
 ### 18.08 (вторник)
 
-| # | Задача | Вход | Выход | Критерий готовности |
-|---|---|---|---|---|
-| 18.1 | Финальная проверка claims | `scripts/lint_claims.py --full-docs` | 0 violations | CI green |
-| 18.2 | Проверить, что нет следов Cursor в коммитах | `git log --format=full -10` | Нет `Co-authored-by: Cursor` | Чисто |
-| 18.3 | Подготовить буфер для 20.08 | — | Список «что может пойти не так» | План Б |
+| # | Задача | Выход | Статус 14.08 |
+|---|---|---|---|
+| 18.1 | Claims | `python scripts/lint_claims.py` | **PARTIAL** — default OK; `--full-docs` красный на старых файлах |
+| 18.2 | Cursor trailers | `git log --format=full -15` | **DONE** — нет `Co-authored-by: Cursor` |
+| 18.3 | Буфер 20.08 | [`KT2_BUFFER_20_08_2026.md`](KT2_BUFFER_20_08_2026.md) | **DONE** |
 
 ### 19.08 (среда, человек)
 
-| # | Задача | Вход | Выход | Критерий готовности |
-|---|---|---|---|---|
-| 19.1 | **Видео 3 мин** (человек) | Скрипт из 15.2 | `artifacts/demo/kt2-demo.mp4` | 3 мин, не больше |
-| 19.2 | **Загрузка в ЛК** (человек) | Пакет из 17.3 | Подтверждение загрузки | Скриншот |
-| 19.3 | Финальный коммит (если правки) | — | `git push` | Только фиксы, не фичи |
+| # | Задача | Статус |
+|---|---|---|
+| 19.1 | Видео 3 мин | **BLOCKED: человек** |
+| 19.2 | Загрузка в ЛК | **BLOCKED: человек** |
+| 19.3 | Финальный коммит | этот pack — docs only |
 
 ### 20.08 (четверг, буфер)
 
-| # | Задача | Вход | Выход | Критерий готовности |
-|---|---|---|---|---|
-| 20.1 | Ничего нового | — | — | Только критические фиксы |
-| 20.2 | Подтверждение загрузки | ЛК | Скриншот | Дедлайн соблюдён |
+| # | Задача | Статус |
+|---|---|---|
+| 20.1 | Ничего нового | ещё не наступило |
+| 20.2 | Скриншот ЛК | **BLOCKED: человек** |
 
 ---
 
@@ -180,13 +180,13 @@ ls docs/evidence/federated-mep-inventory-2026-08.md
 
 | ID | Ссылка | Зачем |
 |---|---|---|
-| S1 | [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) | OSINT + вектор |
-| S2 | [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md) | План 13–20.08 |
-| S3 | [`docs/pilot/WITHOUT_SAMOLET_PLAN_2026_08_14.md`](docs/pilot/WITHOUT_SAMOLET_PLAN_2026_08_14.md) | Что закрываем без Самолёта |
-| S4 | [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md) | Речь жюри |
-| S5 | [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) | Речь трекеру |
-| S6 | [`docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Отложенные риски |
-| S7 | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 |
+| S1 | [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) | OSINT + вектор |
+| S2 | [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](KT2_7DAY_PLAN_2026_08_13.md) | План 13–20.08 |
+| S3 | [`docs/pilot/WITHOUT_SAMOLET_PLAN_2026_08_14.md`](WITHOUT_SAMOLET_PLAN_2026_08_14.md) | Что закрываем без Самолёта |
+| S4 | [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../demo/KT2_JURY_FAQ_2026_08_12.md) | Речь жюри |
+| S5 | [`docs/demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) | Речь трекеру |
+| S6 | [`docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](../quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Отложенные риски |
+| S7 | [`audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 |
 
 ---
 
@@ -201,3 +201,13 @@ ls docs/evidence/federated-mep-inventory-2026-08.md
 5. Checkpoint остаётся **NO_GO**.
 
 **Не критерий:** «всё идеально». Критерий: «ничего не сломано, ничего не выдумано, дедлайн соблюдён».
+
+---
+
+## 8. Исполнение 14.08.2026 (этот проход)
+
+Код **не менялся**. Checkpoint **NO_GO**.
+
+Deliverables: follow-up трекера, письмо Renga, скрипт видео, clone-to-demo check, Harbor default SKIPPED, N43=62, список ЛК, план Б, README `not claimed`, починка ссылок плана.
+
+Red Team исполнения: [`../quality/RED_TEAM_AI_PLAN_EXECUTION_2026_08_14.md`](../quality/RED_TEAM_AI_PLAN_EXECUTION_2026_08_14.md).

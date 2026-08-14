@@ -49,4 +49,6 @@ IfcTester считает `ifcVersion` метаданными (официальн
 
 Новые порты/DI, Iteration B.x, демо «посчитай двери», перекрас GO, GPLv3-модели IFC-Bench в репозиторий.
 
+Follow-up после 08:00: [`TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](TRACKER_MEETING_2026_08_14_FOLLOWUP.md) (заметок трекера в repo нет).
+
 План 7 дней: [`../pilot/KT2_7DAY_PLAN_2026_08_13.md`](../pilot/KT2_7DAY_PLAN_2026_08_13.md)

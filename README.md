@@ -17,13 +17,13 @@
 | **Подтверждено внешне** | IDS Мособлгосэкспертизы ([TIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/)) + AEC-Bench inventory 196 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)). Цифры покрытия IDS — только после прогона, см. evidence. |
 | **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. Open IFC: fixtures 15/15; GNI **224** header / **223** IfcOpenShell (1 oversize skip). Student models, not product accuracy. |
 | **Заблокировано не молчанием заказчика** | Корпус «ПД РФ + заключение экспертизы» публично не существует. Профиль приёмки Самолёта не подписан. Federated MEP clash на публичных IFC **NOT_VERIFIED** (инвентарь duplex/mep измерен). |
-| **Не утверждаем** | точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, проверка расчётов, интеграция с Tangl/10D. Native DWG = **FAILED**. |
+| **Не утверждаем** | Not claimed: accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, calculation check, Tangl/10D integration. Native DWG = **FAILED**. |
 
 Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC в репо — IfcOpenShell fixture, не выгрузка Renga. OSINT + вектор 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
-Видео 3 мин: [`artifacts/demo/`](artifacts/demo/) — запись **19.08**, человек (сейчас placeholder).  
-Встреча трекера 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md).  
-План 13–20.08: [`docs/pilot/KT2_7DAY_PLAN_2026_08_13.md`](docs/pilot/KT2_7DAY_PLAN_2026_08_13.md).
+Видео 3 мин: [`docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) — запись **19.08**, человек.  
+Встреча трекера 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) · follow-up [`docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md).  
+План ИИ 14.08 (код не трогаем): [`docs/pilot/AI_WORK_PLAN_2026_08_14.md`](docs/pilot/AI_WORK_PLAN_2026_08_14.md).
 
 Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + cross-document evidence): helps an expert catch package contradictions **before** site work.
 
@@ -44,7 +44,7 @@ Pre-construction package review (expertise / chief engineer / doc QC): model ↔
 > ## Checkpoint: `NO_GO`
 >
 > Samolet TechLab Task 07 is **not** ready for customer sign-off. Open blockers:
-> **RT-001** (no public «RF PD + expertise conclusion» corpus; AEC-Bench / IFC-Bench / GNI exist and are not that corpus), **RT-002** (no Samolet-signed acceptance profile; official MOEXP IDS exist — that is not the same thing), **RT-003** (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered) —
+> **RT-001** (no public «RF PD + expertise conclusion» corpus; AEC-Bench / IFC-Bench / GNI exist and are not that corpus), **RT-002** (no Samolet-signed acceptance profile; official MOEXP IDS exist — that is not the same thing), **RT-003** (public federated IFC inventory exists; clash NOT_VERIFIED; MEP delivered not claimed) —
 > see [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
 > Claims SSOT: [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) ·
 > dated eng freeze: [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) ·
