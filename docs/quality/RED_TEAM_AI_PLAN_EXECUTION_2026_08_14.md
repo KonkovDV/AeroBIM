@@ -1,17 +1,17 @@
 <!-- claims-lint: allow-file reason="Red Team of plan execution; forbidden phrases as non-claims; NO_GO explicit" -->
 ---
-title: "Red Team — исполнение плана ИИ 14.08.2026 (no code)"
+title: "Red Team — исполнение плана работ 14.08.2026 (no code)"
 status: active
 version: "1.0.0"
 last_updated: "2026-08-14"
 claim_boundary: >
-  Self Red Team of the executed no-code pack. Checkpoint remains NO_GO.
+  Internal Red Team of the executed no-code pack. Checkpoint remains NO_GO.
   Does not close RT-001/002/003. Does not claim CI green. No code changes.
 ---
 
-# Red Team — исполнение плана ИИ (код не трогаем)
+# Red Team — исполнение плана работ (код не трогаем)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** execution of [`../pilot/AI_WORK_PLAN_2026_08_14.md`](../pilot/AI_WORK_PLAN_2026_08_14.md) on 14.08.2026  
 **Code / architecture:** **unchanged**  
 **Checkpoint:** **`NO_GO`**

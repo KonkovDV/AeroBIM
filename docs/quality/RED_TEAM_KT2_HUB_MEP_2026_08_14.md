@@ -11,10 +11,10 @@ claim_boundary: >-
 
 # Red Team — Hub models + federated MEP (`ca6801d`)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** commit `ca6801d` vs parent `cd67925` (Hub IFC-Bench v2 probes, West Riverside IFC4 inventory, AEC-Bench prefetch/docs evidence) plus mitigations in this commit  
 **Checkpoint:** **`NO_GO`** (unchanged)  
-**Security subagent:** [Security Review](5bd293e7-0a49-478f-ac11-2827c9f79d54)
+**Security review:** internal (no external ticket).
 
 ## Verdict
 

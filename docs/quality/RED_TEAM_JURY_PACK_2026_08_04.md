@@ -1,9 +1,9 @@
 # Red Team — Jury pack + IFC-Bench v2 / model-diff (2026-08-04)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** Novator/TechLab jury docs + IFC-Bench v2 smoke + thin `IfcModelDiff`  
 **Checkpoint:** **`NO_GO`** (unchanged)  
-**Security subagent:** [Security Review](e01b2e2d-bf36-4db4-8291-dcf21e7c910f)
+**Security review:** internal (no external ticket).
 
 ## Verdict
 

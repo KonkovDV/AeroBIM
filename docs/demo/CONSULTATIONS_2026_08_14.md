@@ -7,7 +7,7 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 
 # Консультации — пакет к слотам
 
-**Срез:** 14.08.2026. Итоги созвонов в этот файл **не записывать, пока не будет заметок владельца.**
+**Срез:** 15.08.2026. Итоги созвонов в этот файл **не записывать, пока не будет заметок владельца.** Academic Red Team: [`../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md).
 
 ## 1. Е. Бурнаев (вторая консультация) — демо ядра
 
@@ -20,11 +20,11 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 | Что открыть | URL / команда |
 |---|---|
 | Репозиторий | https://github.com/KonkovDV/AeroBIM |
-| HTML ядра (committed fixture pack) | https://github.com/KonkovDV/AeroBIM/blob/main/docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html |
-| Clone → живой срез (overlay на листе) | `cd backend && python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` |
+| Живой срез (overlay на листе) | `cd backend && python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`) |
 | Скрипт 3 мин (если слот с экраном) | [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) |
+| P2-04 wall-GUID (без overlay) | https://github.com/KonkovDV/AeroBIM/blob/main/docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html — **не** ядро среза; секции `#kt2-overlay` нет |
 
-На экране показать за 6 минут: `summary.passed=false`, `finding_id` / `source_id` / `evidence_refs`, capability table, IDS fail-closed (`IFC4` ≠ `IFC4X3` не алиасится). Не показывать счёт дверей/окон.
+На экране показать за 6 минут: Checkpoint **NO_GO**, `summary.passed=false`, `finding_id` / `source_id` / `evidence_refs`, capability table, IDS fail-closed (`IFC4` ≠ `IFC4X3` не алиасится). Не показывать счёт дверей/окон. Wave A не закрыла RT-001/002/003. Не просить раунд.
 
 ### Вопросы (не питч)
 
@@ -32,7 +32,9 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 2. Какой **единица наблюдения** корректна для нашей задачи (finding / лист / раздел / проект), если цель — снизить ложный пропуск, а не macro-F1 на QA-бенче?  
 3. IFC-Bench / AEC-Bench дают открытый L2. Имеет ли смысл гнать Harbor 160 до корпуса заказчика, или это только калибровка ложного пропуска на чужой задаче?  
 4. Где вы поставили бы **стоп** на обучение по открытым IFC (Revit-bias, IFC2x3, GPLv3), чтобы не получить «модель цитирует чужой BIM», а не проверяет комплект?  
-5. Что из нашего контура вы считаете **готовым ядром для индустриального аудита**, а что — переинжинирингом до продукта (порты/адаптеры vs три открытых блокера RT-001/002/003)?
+5. Что из нашего контура вы считаете **готовым ядром для индустриального аудита**, а что — переинжинирингом до продукта (порты/адаптеры vs три открытых блокера RT-001/002/003)?  
+6. Messick/Kane: какой *use* скора вы считаете лицензированным на fixture (регресс движка) и какой IUA вы бы потребовали, прежде чем публиковать TP/(TP+FP) на комплекте заказчика?  
+7. Solihin–Eastman class 4 («proof of solution»): есть ли честный путь к СП 63 без solver, или class-1 template обязан так и называться?
 
 ### Не говорить
 

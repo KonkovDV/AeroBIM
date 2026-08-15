@@ -49,7 +49,7 @@
 ## Быстрые проверки перед показом
 
 ```powershell
-cd C:\plans\AeroBIM\backend
+cd backend
 python -m aerobim.tools.run_vertical_slice `
   --manifest ../samples/demo/vertical-slice-2026-08-11/manifest.json `
   --output ../artifacts/vertical-slice-2026-08-11

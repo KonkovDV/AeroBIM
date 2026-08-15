@@ -5,13 +5,13 @@ status: active
 version: "1.0.0"
 last_updated: "2026-08-14"
 claim_boundary: >
-  Self Red Team of the OSINT/GTM docs pack. Checkpoint remains NO_GO.
+  Internal Red Team of the OSINT/GTM docs pack. Checkpoint remains NO_GO.
   Does not close RT-001/002/003. Not product accuracy. Not 10D/Tangl integration.
 ---
 
 # Red Team — OSINT + вектор Самолёта
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** docs/GTM pack of 14.08.2026 (OSINT SSOT, competitive matrix RU rows, intake, jury/tracker speech, regulatory AGR rows, fixture IFC honesty, README speech bounds)  
 **Code / architecture:** **unchanged** (freeze: no new ports, adapters, DI)  
 **Checkpoint:** **`NO_GO`**

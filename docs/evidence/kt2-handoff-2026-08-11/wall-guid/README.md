@@ -21,7 +21,7 @@ Code: `aerobim-backend@0.1.0+701a267`
 cd backend
 python -m aerobim.tools.export_evidence_bundle \
   --pack samples\benchmarks\project-package-wall-guid-demo.json \
-  --output C:\plans\AeroBIM\docs\evidence\kt2-handoff-2026-08-11\wall-guid
+  --output docs/evidence/kt2-handoff-2026-08-11/wall-guid
 ```
 
 ## Claim boundary

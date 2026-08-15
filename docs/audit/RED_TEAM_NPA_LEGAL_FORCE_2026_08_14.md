@@ -11,7 +11,7 @@ claim_boundary: >
 
 # Red Team: NPA legal force (14.08.2026)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** domain register, jurisdiction IDS pointers, AGR class-1 fixture, living GTM/partners/regulatory docs, DWG memo, Qwen feasibility memo  
 **Code freeze:** no new ports / adapters / DI (`moscow_agr` stays CUT)  
 **Checkpoint:** **`NO_GO`**

@@ -71,6 +71,9 @@ describe("KT#2 vertical-slice UI contract", () => {
     render(<VerticalSliceKt2 report={buildReport("failed")} issue={stampFinding} />);
     expect(screen.getByTestId("kt2-vertical-slice")).toBeTruthy();
     expect(screen.getByText("fid-slice-wall-01")).toBeTruthy();
+    expect(screen.getByText("sheet:A-101")).toBeTruthy();
+    expect(screen.getByText(/Checkpoint NO_GO/i)).toBeTruthy();
+    expect(screen.getByText(/file ingest only/i)).toBeTruthy();
     expect(screen.getByText("pdf:techlab-a101-wall-thickness#page1")).toBeTruthy();
     expect(screen.getByText(/Quote: WALL-01 thickness 150 mm/)).toBeTruthy();
     expect(screen.getByText(/Sheet A-101/)).toBeTruthy();

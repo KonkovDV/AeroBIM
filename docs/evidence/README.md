@@ -34,6 +34,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; WP-01 complete required in CI) |
+| [`runtime-baseline-wave-a-windows-2026-08-15.md`](runtime-baseline-wave-a-windows-2026-08-15.md) | Local Wave A pytest on HEAD `005b7bc`: 2259 passed / 12 skipped / 0 failed. **Not** CI pin; does not replace 2167 |
 | [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run still operator |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
 | [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json) | Synthetic detection twin (`synthetic_only`) |

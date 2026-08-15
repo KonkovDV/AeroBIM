@@ -14,7 +14,11 @@ claim_boundary: "File list only. Nothing new after 18.08. Video and LK = human. 
 | # | Что | Путь |
 | --- | --- | --- |
 | 1 | Cover | [`../demo/KT2_HANDOFF_COVER_2026_08_11.md`](../demo/KT2_HANDOFF_COVER_2026_08_11.md) |
+| 1b | Репетиция (live CLI, не wall-guid) | [`../demo/KT2_DEMO_REHEARSAL_2026_08_12.md`](../demo/KT2_DEMO_REHEARSAL_2026_08_12.md) |
 | 2 | FAQ речи | [`../demo/KT2_JURY_FAQ_2026_08_12.md`](../demo/KT2_JURY_FAQ_2026_08_12.md) |
+| 2b | Питч 5:30 (NO_GO first) | [`../partners/PITCH_NOVALTOR_TECHLAB_2026_08.md`](../partners/PITCH_NOVALTOR_TECHLAB_2026_08.md) |
+| 2c | Funding Red Team | [`../quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](../quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
+| 2d | Academic Red Team (Messick/Kane/ISO 19650/Solihin) | [`../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) |
 | 3 | Бриф трекера + follow-up 15:26 | [`../demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) · [`../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md) |
 | 3b | Журнал шести пунктов | [`TECHLAB_ACTIONS_2026_08_14.md`](TECHLAB_ACTIONS_2026_08_14.md) |
 | 3c | Live CLI pin (3.12 overlay match) | [`../evidence/vertical-slice-demo-live-2026-08-14.md`](../evidence/vertical-slice-demo-live-2026-08-14.md) |
@@ -31,4 +35,5 @@ claim_boundary: "File list only. Nothing new after 18.08. Video and LK = human. 
 
 ## Не класть в ЛК
 
-исходники `backend/`; GPLv3 IFC; ключи Studio; корпоративные модели Самолёта; утверждение Checkpoint GO.
+исходники `backend/`; GPLv3 IFC; ключи Studio; корпоративные модели Самолёта; утверждение Checkpoint GO.  
+Не выдавать `kt2-handoff-2026-08-11/wall-guid/report.html` за вертикальный срез (нет `#kt2-overlay`). Для показа — live `artifacts/vertical-slice-demo/` с машины оператора.

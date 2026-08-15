@@ -30,9 +30,7 @@ def _issue_row(issue: ValidationIssue) -> dict[str, object]:
     return {
         "rule_id": issue.rule_id,
         "severity": issue.severity.value,
-        "conflict_kind": (
-            issue.conflict_kind.value if issue.conflict_kind is not None else None
-        ),
+        "conflict_kind": (issue.conflict_kind.value if issue.conflict_kind is not None else None),
         "source_id": issue.source_id,
         "expected_value": issue.expected_value,
         "observed_value": issue.observed_value,

@@ -19,7 +19,7 @@ Open-bench CLI и прямые вызовы Studio могут обходить `
 
 1. **Снять ledger**
    ```powershell
-   Get-Content C:\plans\AeroBIM\backend\var\llm_token_budget.json
+   Get-Content backend\var\llm_token_budget.json
    ```
    Записать: `day` (Europe/Moscow), `tokens_today`, `tokens_run` (если есть), path.
 

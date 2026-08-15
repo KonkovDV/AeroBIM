@@ -268,6 +268,7 @@ def _claim_boundary_banner(release: object) -> str:
     return (
         '<p class="claim-boundary" id="kt2-claim-boundary">'
         "Fixture demo. Not customer accuracy. Checkpoint NO_GO. Not CV. "
+        "Not a CDE import (structural ZIP / file ingest only). "
         "VLM/advisory cannot set PASS."
         "</p>\n"
     )
@@ -341,7 +342,7 @@ def _overlay_section(overlay_image_href: str | None) -> str:
         "<h2>Problem-zone overlay</h2>"
         "<p class='overlay-note'>"
         "Fixture demo. Not customer accuracy. Deterministic bbox on rasterized "
-        "PDF text-layer sheet. Not CV. Not stamp product."
+        "PDF text-layer sheet. Not CV. Not stamp product. Not a CDE import."
         "</p>"
         f"<figure><img src='{href}' alt='Problem-zone overlay on sheet' />"
         f"<figcaption>{href} — highlighted region, sibling of this HTML</figcaption>"

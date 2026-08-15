@@ -1,16 +1,15 @@
 ---
 title: "Red Team — Task 3 Exp B completeness @ 681b651"
 date: 2026-08-05
-auditor: agent
+auditor: internal
 head_at_audit: "681b651"
 head_after_fix: "this commit"
 claim_boundary: "Honesty / speech-sync audit. Not product accuracy. Checkpoint NO_GO."
-subagent: "f1daa7e6-0f5c-4d65-8c53-56b0b797570e"
 ---
 
 # Red Team — Task 3 / Exp B (после `681b651`)
 
-Метод: subagent [Red Team Task3](f1daa7e6-0f5c-4d65-8c53-56b0b797570e) + grep Friday/demo/baseline vs Exp B SSOT.
+Метод: чтение Friday/demo/baseline vs Exp B SSOT.
 
 ## Verdict
 

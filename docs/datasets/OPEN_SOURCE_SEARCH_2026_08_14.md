@@ -44,6 +44,16 @@ claim_boundary: "Inventory. Open corpora ≠ RF PD+expertise. Not product accura
 | MOEXP IDS × 1 GNI IFC | `run_moexp_on_gni_sample` | 389 executable, **0 pass / 389 fail** | не баг: студенческая модель ≠ ЦИМ МОГЭ; **не** зеленую |
 | Renga ПНСТ 909 pin | `.local/renga-pnst909` | ранее `run_renga_export_probe` | не Самолёт |
 
+## Прогон 15.08 (CPython 3.12.10)
+
+| Комплект | Команда | Результат | Честность |
+|---|---|---|---|
+| Schema-suite n=20 | `export_ifc_release_matrix` | python=`3.12.10`; IFC2X3 findings 5 / IFC4 4 / IFC4X3 6; `passed=false`; p50 ≈ 26–30 ms | Не SLA. Не accuracy. Tracker-paste в том же md |
+| Open corpora smoke | `run_open_corpora_profiles --mode smoke` | `pins_ok=true`; 7 regression cases | SHA only; not TP/FP |
+| Harbor 160 / AEC-Bench agent | — | **NOT_RUN** (календарь 17.08) | Не выдумывать false-pass % |
+
+closes_rt001: false. closes_rt002: false. closes_rt003: false. Checkpoint **NO_GO**.
+
 ## Что не прогоняли повторно сегодня
 
 Полный GNI 223 IfcOpenShell (уже в [`../evidence/open-ifc-stress-2026-08.md`](../evidence/open-ifc-stress-2026-08.md)). IFC-Bench 1026 QA (smoke 25/1026). Harbor 160 — календарь 17.08.

@@ -15,7 +15,8 @@
 4. [`TZ_TBD_PROPOSALS_TASK07_2026_08.md`](TZ_TBD_PROPOSALS_TASK07_2026_08.md) — предложения к TBD (не «ТЗ v2»)  
 5. [`../qa-defense-2026.md`](../qa-defense-2026.md) — заготовки ответов 20–30 с  
 6. [`COMPETITIVE_MATRIX_2026_08.md`](COMPETITIVE_MATRIX_2026_08.md)  
-7. [`PITCH_NOVALTOR_TECHLAB_2026_08.md`](PITCH_NOVALTOR_TECHLAB_2026_08.md)  
+7. [`PITCH_NOVALTOR_TECHLAB_2026_08.md`](PITCH_NOVALTOR_TECHLAB_2026_08.md) — **15.08:** первые 15 с = NO_GO; не раунд  
+7a. [`../quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](../quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) — атаки венчура / diligence  
 8. [`ROADMAP_3Y_2026_08.md`](ROADMAP_3Y_2026_08.md)  
 9. [`diagrams/README.md`](diagrams/README.md) — 4 схемы  
 10. [`GLOSSARY_JURY_RU_2026_08.md`](GLOSSARY_JURY_RU_2026_08.md)  

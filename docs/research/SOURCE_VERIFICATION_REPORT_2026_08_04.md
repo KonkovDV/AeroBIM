@@ -47,7 +47,7 @@ See also: [`CITATION_ERRATA_2026_08_04.md`](CITATION_ERRATA_2026_08_04.md).
 
 ### 2.1 AECV-Bench baselines (highest priority)
 
-**What was opened:** arXiv PDF https://arxiv.org/pdf/2601.04819 (full text this session).
+**What was opened:** arXiv PDF https://arxiv.org/pdf/2601.04819 (full text, 04.08.2026).
 
 **Paper numbers (Table 1, object counting, mean over Door/Window/Bedroom/Toilet):**
 

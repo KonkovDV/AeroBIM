@@ -1,11 +1,11 @@
-<!-- claims-lint: allow-file reason="AI work plan; forbidden phrases as non-claims; NO_GO explicit" -->
+<!-- claims-lint: allow-file reason="KT#2 work plan; forbidden phrases as non-claims; NO_GO explicit" -->
 ---
-title: "План работ ИИ: решаемые затыки КТ#2 (14.08.2026, после среза 1.1)"
+title: "План работ: решаемые затыки КТ#2 (14.08.2026, после среза 1.1)"
 date: "2026-08-14"
-claim_boundary: "План для ИИ-исполнителя. Код в этом документе не меняется. Checkpoint NO_GO. Не customer accuracy. Не DWG-ready. Не MEP delivered. Не CDE-ready."
+claim_boundary: "План работ. Код в этом документе не меняется. Checkpoint NO_GO. Не customer accuracy. Не DWG-ready. Не MEP delivered. Не CDE-ready."
 ---
 
-# План работ ИИ — решаемые затыки КТ#2
+# План работ — решаемые затыки КТ#2
 
 **Состояние на 14.08 ~14:00:** вертикальный срез 1.1 живой (exit 0, `summary.passed=false`, NO_GO, hashes стабильны). HEAD `2e6654b`, рабочее дерево **грязное** (срез не закоммичен).
 
@@ -118,7 +118,7 @@ claim_boundary: "План для ИИ-исполнителя. Код в этом
 
 ---
 
-## Порядок выполнения для ИИ
+## Порядок выполнения
 
 1. **A1** (коммит среза) — по команде владельца.
 2. **A2.1 → A2.4** (pytest green) — каждый с focused-тестом.

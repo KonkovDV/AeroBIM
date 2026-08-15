@@ -240,7 +240,7 @@ def _duplex_aabb_overlaps(repo: Path) -> dict[str, Any]:
 
 
 def build_payload(*, repo: Path, include_gplv3: bool = False) -> dict[str, Any]:
-    candidates = CANDIDATES
+    candidates: tuple[tuple[str, str], ...] = CANDIDATES
     if include_gplv3:
         candidates = CANDIDATES + gplv3_local_candidates(repo)
     rows = [_inventory(repo / rel, label=label, repo=repo) for rel, label in candidates]

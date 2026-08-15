@@ -1,7 +1,7 @@
 ---
 title: "Red Team — KT#2 Friday pack (post-99d7167 remediation)"
 date: 2026-08-05
-auditor: agent
+auditor: internal
 head_at_audit: "99d7167"
 head_after_fix: "this commit"
 claim_boundary: "Honesty / leak / claims audit. Not product accuracy. Checkpoint NO_GO."
@@ -10,8 +10,7 @@ claim_boundary: "Honesty / leak / claims audit. Not product accuracy. Checkpoint
 # Red Team — пятничный пакет КТ#2
 
 Аудит публичной поверхности после коммита `99d7167` (Exp B AR/VK, baseline, press registry).  
-Метод: чтение SSOT + grep на claims lock / воронку / имена конкурентов / Segment E.  
-Subagent: [Red Team KT2 pack](94501350-04b4-4a70-92cb-081a25a463eb).
+Метод: чтение SSOT + grep на claims lock / воронку / имена конкурентов / Segment E.
 
 ## Verdict
 

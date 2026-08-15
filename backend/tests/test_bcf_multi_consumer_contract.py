@@ -109,9 +109,7 @@ class BcfMultiConsumerContractTests(unittest.TestCase):
         self.assertEqual(payload["claim_level"], "structural_only")
 
     def test_committed_bcfzip_file_ingest_is_not_cde(self) -> None:
-        path = (
-            Path(__file__).resolve().parents[2] / "samples" / "bcf" / "fixture-topics.bcfzip"
-        )
+        path = Path(__file__).resolve().parents[2] / "samples" / "bcf" / "fixture-topics.bcfzip"
         if not path.is_file():
             self.skipTest("committed BCFZIP fixture missing")
         topics = consume_bcf_zip_path(path)

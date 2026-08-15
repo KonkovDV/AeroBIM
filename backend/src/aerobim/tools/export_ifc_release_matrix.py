@@ -1,7 +1,7 @@
 """Build tracker IFC2x3 / IFC4 / IFC4x3 matrix from a schema-suite payload.
 
 Numbers come from the measured run only. fixture_only. Not product accuracy.
-Needed for tracker meeting 14.08.2026.
+Tracker paste format for the 14.08.2026 meeting.
 """
 
 from __future__ import annotations
@@ -176,7 +176,7 @@ def build_ifc_release_matrix(suite_payload: dict[str, Any]) -> dict[str, Any]:
 
     payload = {
         "artifact_type": "ifc_release_matrix",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "claim_level": CLAIM_LEVEL,
         "customer_accuracy_not_established": True,
         "claim_boundary": CLAIM_BOUNDARY,
@@ -189,8 +189,13 @@ def build_ifc_release_matrix(suite_payload: dict[str, Any]) -> dict[str, Any]:
         },
         "rows": rows,
         "refusals_and_degradations_note": (
-            "Schema-suite packs are IFC+IDS wall Pset fixtures. Capability SKIPPED "
-            "(clash/raster/MEP) is honesty, not a silent pass. DWG native remains FAILED."
+            "Schema-suite packs are IFC+IDS wall Pset fixtures. Clash SKIPPED/FAILED "
+            "and raster/MEP SKIPPED/NOT_VERIFIED are honesty, not a silent pass. "
+            "DWG native remains FAILED."
+        ),
+        "tracker_task": (
+            "Dmitry 14.08 #2: elements / fired rules / wall-clock / refusals. "
+            "summary.passed is Shared-gate, not customer GO."
         ),
     }
     encoded = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
@@ -214,7 +219,6 @@ def _product_cell(row: dict[str, Any]) -> str:
 
 _TABLE_OMIT_REFUSALS = frozenset(
     {
-        "clash",
         "raster",
         "unit_scale",
         "ifc_schema",
@@ -242,6 +246,64 @@ def _refusals_cell(row: dict[str, Any]) -> str:
     return ", ".join(parts) if parts else "shared honesty only"
 
 
+def _passed_cell(row: dict[str, Any]) -> str:
+    value = row.get("summary_passed")
+    if value is True:
+        return "true"
+    if value is False:
+        return "false"
+    return "—"
+
+
+def _suite_banner(matrix: dict[str, Any]) -> str:
+    source = _mapping(matrix.get("source_suite"))
+    machine = _mapping(matrix.get("machine"))
+    iterations = source.get("iterations")
+    warmup = source.get("warmup_iterations")
+    python = machine.get("python") or "unknown"
+    return (
+        f"**suite:** n={iterations} warmup={warmup} python=`{python}`. "
+        "Shared-gate `summary.passed` is not Checkpoint GO."
+    )
+
+
+def render_tracker_paste_markdown(matrix: dict[str, Any]) -> str:
+    """Compact table for the tracker chat (elements / rules / time / refusals)."""
+    lines = [
+        "## Tracker paste (Dmitry 14.08 #2)",
+        "",
+        _suite_banner(matrix),
+        "",
+        "| Schema | Elements | Rules fired | Findings | passed | p50 ms | p95 ms | Refusals |",
+        "|---|---|---|---:|---|---:|---:|---|",
+    ]
+    for row in matrix.get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        timing = _mapping(row.get("timing_ms"))
+        lines.append(
+            "| {schema} | {products} | {fired} | {findings} | {passed} | {p50} | {p95} | {refusals} |".format(
+                schema=row.get("schema"),
+                products=_product_cell(row),
+                fired=_rules_fired_cell(row),
+                findings=row.get("findings_emitted"),
+                passed=_passed_cell(row),
+                p50=timing.get("p50"),
+                p95=timing.get("p95"),
+                refusals=_refusals_cell(row),
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "Paste-ready. Fixture kernel only. IFC4X3 `ids=failed` is fail-closed "
+            "`ifcVersion` (BSI 0101), not a product defect. Not customer accuracy.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def render_ifc_release_matrix_markdown(matrix: dict[str, Any]) -> str:
     lines = [
         _CLAIMS_HEADER,
@@ -252,21 +314,24 @@ def render_ifc_release_matrix_markdown(matrix: dict[str, Any]) -> str:
         "",
         str(matrix.get("claim_boundary") or ""),
         "",
-        "| Schema | IfcProduct | entities | rules eval | rules fired | findings | p50 ms | p95 ms | max ms | refusals |",
-        "|---|---|---:|---:|---|---:|---:|---:|---:|---|",
+        _suite_banner(matrix),
+        "",
+        "| Schema | IfcProduct | entities | rules eval | rules fired | findings | passed | p50 ms | p95 ms | max ms | refusals |",
+        "|---|---|---:|---:|---|---:|---|---:|---:|---:|---|",
     ]
     for row in matrix.get("rows") or []:
         if not isinstance(row, dict):
             continue
         timing = _mapping(row.get("timing_ms"))
         lines.append(
-            "| {schema} | {products} | {ent} | {rules} | {fired} | {findings} | {p50} | {p95} | {mx} | {refusals} |".format(
+            "| {schema} | {products} | {ent} | {rules} | {fired} | {findings} | {passed} | {p50} | {p95} | {mx} | {refusals} |".format(
                 schema=row.get("schema"),
                 products=_product_cell(row),
                 ent=row.get("ifc_entity_count"),
                 rules=row.get("rules_evaluated"),
                 fired=_rules_fired_cell(row),
                 findings=row.get("findings_emitted"),
+                passed=_passed_cell(row),
                 p50=timing.get("p50"),
                 p95=timing.get("p95"),
                 mx=timing.get("max"),
@@ -281,10 +346,14 @@ def render_ifc_release_matrix_markdown(matrix: dict[str, Any]) -> str:
             "issue_count / rules fired are fixture findings, **not claimed** product accuracy.",
             "",
             "Shared honesty refusals (all three packs, omitted from the refusals column): "
-            "clash skipped, raster skipped, dwg_dxf missing, cv_human_level missing, "
+            "raster skipped, dwg_dxf missing, cv_human_level missing, "
             "mep_system_clash not_verified, calculation_correctness not_implemented, "
             "qualified_signature missing, unit_scale/ifc_schema not_verified. "
+            "Clash skipped/failed is listed in the refusals column (tiny wall fixtures "
+            "often fail IfcClash geom init — honesty, not a silent pass). "
             "Native DWG is **not claimed** DWG-ready.",
+            "",
+            render_tracker_paste_markdown(matrix).rstrip(),
             "",
             f"Generated at: `{matrix.get('generated_at')}`",
             f"content_sha256: `{matrix.get('content_sha256')}`",

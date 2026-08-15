@@ -5,14 +5,14 @@ status: active
 version: "1.0.0"
 last_updated: "2026-08-14"
 claim_boundary: >
-  Self Red Team of the CI-green continuation. Checkpoint remains NO_GO.
+  Internal Red Team of the CI-green continuation. Checkpoint remains NO_GO.
   Does not close RT-001/002/003. Not product accuracy. Not 10D/Tangl integration.
   Not N43 lag=1 activation.
 ---
 
 # Red Team — CI wall-guid + baseline refresh
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** CI `main` on `88e726b` (jobs `test`, `lint`) + contour diagram vs Samolet vector  
 **Checkpoint:** **`NO_GO`**
 

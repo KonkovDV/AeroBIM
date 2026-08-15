@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import UTC, datetime
@@ -26,7 +27,10 @@ from aerobim.tools.run_open_corpora_profiles import (
     run_all_profiles,
 )
 
-INTERNAL_DATA = Path(r"C:\plans\aerobim-internal-data")
+INTERNAL_DATA = Path(
+    os.environ.get("AEROBIM_INTERNAL_DATA")
+    or (repo_root().parent / "aerobim-internal-data")
+)
 INTERNAL_SCRIPTS = INTERNAL_DATA / "scripts"
 
 

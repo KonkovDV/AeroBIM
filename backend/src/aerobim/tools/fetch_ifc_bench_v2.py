@@ -42,11 +42,16 @@ PRIORITY_PREFIXES = (
     "README.md",
     "LICENSE",
 )
-LOCAL_CANDIDATES = (
-    Path(r"C:\plans\AeroBIM-private\.local\ifc-bench-v2"),
-    Path(r"C:\plans\_aerobim_local_backup_2026-08-05\local\ifc-bench-v2"),
-    Path(r"C:\plans\_aerobim_local_backup_2026-08-05\ifc-bench-v2"),
-)
+def _local_candidates() -> list[Path]:
+    """Repo-relative and sibling checkouts. No machine-absolute paths."""
+    candidates: list[Path] = []
+    env = os.environ.get("AEROBIM_IFC_BENCH_V2")
+    if env:
+        candidates.append(Path(env))
+    root = repo_root()
+    candidates.append(root / ".local" / "ifc-bench-v2")
+    candidates.append(root.parent / "AeroBIM-private" / ".local" / "ifc-bench-v2")
+    return candidates
 
 
 def _ssl_context() -> ssl.SSLContext:
@@ -196,7 +201,7 @@ def select_files(
 def _resolve_from_dir(explicit: Path | None) -> Path | None:
     if explicit is not None and explicit.is_dir():
         return explicit
-    for candidate in LOCAL_CANDIDATES:
+    for candidate in _local_candidates():
         if (candidate / "questions" / "ifc-bench-v2.csv").is_file():
             return candidate
     return None

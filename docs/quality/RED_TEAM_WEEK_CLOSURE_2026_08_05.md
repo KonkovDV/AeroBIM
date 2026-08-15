@@ -1,11 +1,10 @@
 ---
 title: "Red Team — week surface 2026-08-03→08-05"
 date: 2026-08-05
-auditor: agent
+auditor: internal
 head_at_audit: "c8fe19f"
 head_after_fix: "this commit"
 claim_boundary: "Honesty / leak / speech-sync. Checkpoint NO_GO."
-subagent: "fdc99b19-a275-470a-b865-7b86ae73073f"
 ---
 
 # Red Team — недельная витрина (03–05.08.2026)

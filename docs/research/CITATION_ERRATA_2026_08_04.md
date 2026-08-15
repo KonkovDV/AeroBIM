@@ -33,12 +33,12 @@ claim_boundary: >-
 |---|---|---|
 | Arch-Eval (Wu et al. 2025) | **VERIFIED** | https://doi.org/10.1038/s41598-025-98236-0 · PMC12008193 · Sci Rep 15:13485 |
 | IFC-Bench (Hellin) | **VERIFIED** (dataset) / **PARTIAL** (peer venue wording) | GitHub archived v1 https://github.com/sylvainHellin/ifc-bench ; HF v2 https://huggingface.co/datasets/sylvainhellin/ifc-bench ; related paper arXiv:2605.01698. Prefer “Hellin IFC-Bench dataset” over inventing a single journal citation. |
-| AECV-Bench | **VERIFIED** (operator prior + re-opened) | arXiv:2601.04819 PDF opened this session |
+| AECV-Bench | **VERIFIED** (operator prior + re-opened) | arXiv:2601.04819 PDF opened 04.08.2026 |
 | AEC-Bench | **VERIFIED** (operator prior; not re-fetched body) | arXiv:2603.29199 |
 | MechVQA | **VERIFIED** (operator prior) | arXiv:2605.30794 |
 | BRAVO | **VERIFIED** (operator prior) | mediatum.ub.tum.de/doc/1854636 |
 
-## In-repo bibliography sample (Crossref this session)
+## In-repo bibliography sample (Crossref 04.08.2026)
 
 | DOI / id | File(s) | Status |
 |---|---|---|

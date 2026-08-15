@@ -124,9 +124,7 @@ class IfcClashDetector:
             raise FileNotFoundError(f"IFC file not found: {path_a}")
         if not path_b.exists():
             raise FileNotFoundError(f"IFC file not found: {path_b}")
-        return self._guarded(
-            lambda: self._run_federated_clearance(path_a, path_b, clearance_m)
-        )
+        return self._guarded(lambda: self._run_federated_clearance(path_a, path_b, clearance_m))
 
     def _guarded(self, runner: Callable[[], list[ClashResult]]) -> list[ClashResult]:
         try:
@@ -139,9 +137,10 @@ class IfcClashDetector:
         except ClashCapabilityError:
             raise
         except Exception as exc:
+            detail = str(exc).strip() or type(exc).__name__
             raise ClashCapabilityError(
                 "failed",
-                f"Clash detection failed: {exc}",
+                f"Clash detection failed: {detail}",
             ) from exc
 
     def _run_clash_detection(self, ifc_path: Path) -> list[ClashResult]:

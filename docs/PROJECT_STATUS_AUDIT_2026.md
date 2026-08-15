@@ -9,7 +9,7 @@ claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evid
 
 # PROJECT STATUS AUDIT — AeroBIM (2026-07-19)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Checkpoint:** **`NO_GO`** ([CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md))  
 **Claims SSOT:** [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · eng freeze [CLAIMS_LOCK_2026_07_31](../audit/reports/CLAIMS_LOCK_2026_07_31.md) · [pilot-claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) · [ENGINEERING_STATUS_2026_08](ENGINEERING_STATUS_2026_08.md)
 
@@ -27,8 +27,8 @@ claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evid
 | `pytest tests -q` | **662 passed, 4 skipped** (local 2026-07-20 Red Team remediation) | test |
 | `evaluate_extraction --min-macro-f1 0.70` | **PASS** (macro_f1≈0.86 on RU fixtures) | benchmark/fixture |
 | Frontend vitest | **25 passed** (main CI `frontend` job) | test |
-| Docker smoke | **NOT_RUN** in this session | needs env |
-| Live review smoke | **NOT_RUN** in this session | needs env |
+| Docker smoke | **NOT_RUN** on 2026-08 capture | needs env |
+| Live review smoke | **NOT_RUN** on 2026-08 capture | needs env |
 
 Baseline snapshot: [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) — src≈22808 LOC, tests≈14562 LOC, 581+ test functions (export tool; collect shows 654).
 

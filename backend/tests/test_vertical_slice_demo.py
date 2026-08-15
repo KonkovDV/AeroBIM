@@ -88,6 +88,8 @@ class VerticalSliceTests(unittest.TestCase):
             self.assertIn("kt2-overlay", html)
             self.assertIn("overlay-problem-zone.png", html)
             self.assertIn("kt2-claim-boundary", html)
+            self.assertIn("Not a CDE import", html)
+            self.assertIn("Checkpoint NO_GO", html)
             self.assertIn("summary.passed=", html)
             self.assertTrue((Path(tmp) / "run-manifest.json").is_file())
             self.assertEqual(result["checkpoint_verdict"], "NO_GO")
