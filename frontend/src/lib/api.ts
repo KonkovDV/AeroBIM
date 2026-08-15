@@ -34,7 +34,7 @@ function throwForFailedResponse(response: Response): never {
   if (response.status === 401) {
     throw new Error(
       import.meta.env.PROD || useDevProxy
-        ? "Unauthorized (401): terminate TLS at a reverse proxy that adds Authorization server-side (client bearer inject is disabled)."
+        ? "Unauthorized (401): terminate TLS at a reverse proxy / OIDC BFF session cookie (client bearer inject is disabled)."
         : "Unauthorized (401): use the Vite dev proxy (same-origin) so Authorization is injected server-side."
     );
   }
@@ -49,6 +49,7 @@ function throwForFailedResponse(response: Response): never {
 async function readJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     headers: authHeaders(),
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -61,6 +62,7 @@ async function readJson<T>(url: string): Promise<T> {
 async function readBytes(url: string): Promise<{ bytes: Uint8Array; contentType: string | null }> {
   const response = await fetch(url, {
     headers: authHeaders({ Accept: "*/*" }),
+    credentials: "include",
   });
   if (!response.ok) {
     throwForFailedResponse(response);
@@ -169,6 +171,7 @@ export async function fetchDrawingAssetPreviewBlobUrl(reportId: string, assetId:
 export async function downloadExport(reportId: string, format: "json" | "html" | "bcf"): Promise<void> {
   const response = await fetch(buildExportUrl(reportId, format), {
     headers: authHeaders({ Accept: "*/*" }),
+    credentials: "include",
   });
   if (!response.ok) {
     throw new Error(`Export failed with ${response.status}: ${response.statusText}`);
@@ -212,6 +215,7 @@ export async function postReviewEvent(
   const response = await fetch(`${apiBaseUrl}/v1/reports/${reportId}/review-events`, {
     method: "POST",
     headers: authHeaders({ "Content-Type": "application/json" }),
+    credentials: "include",
     body: JSON.stringify(body),
   });
   if (!response.ok) {
@@ -237,6 +241,7 @@ export async function uploadDocument(file: File): Promise<{
   const response = await fetch(`${apiBaseUrl}/v1/uploads`, {
     method: "POST",
     headers,
+    credentials: "include",
     body: form,
   });
   if (!response.ok) {

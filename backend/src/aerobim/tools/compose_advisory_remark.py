@@ -27,7 +27,7 @@ from aerobim.domain.advisory_remark_compose import (
 from aerobim.domain.hybrid.audit_event import build_route_audit_event
 from aerobim.domain.hybrid.data_classification import DataClassification
 from aerobim.domain.hybrid.trust_policy import RouteTarget, decide_route
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 
 
 def _advisory_audit_event(

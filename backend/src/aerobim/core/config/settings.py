@@ -13,6 +13,13 @@ _DEBUG_CORS_ORIGINS = (
 )
 
 
+def _read_float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    return float(raw)
+
+
 def _read_int(name: str, default: int) -> int:
     raw = os.getenv(name)
     if raw is None:
@@ -239,6 +246,10 @@ class Settings:
     report_ttl_days: int | None = None
     clash_affects_pass: bool = False
     """When true, hard clashes (or clash capability failure) set ``summary.passed=False``."""
+    clash_skip_tiny: bool = True
+    """Skip degenerate/tiny IFC products before IfcClash (``AEROBIM_CLASH_SKIP_TINY``)."""
+    clash_min_aabb_volume_m3: float = 1e-6
+    """AABB volume below which products are skipped when ``clash_skip_tiny`` is on."""
     require_clash: bool = False
     """When true, missing/skipped clash capability is treated as FAILED (no green pass)."""
     require_bsi_schema: bool = False
@@ -308,6 +319,12 @@ class Settings:
     match, login still issues CSRF+PKCE but omits ``idp_redirect_url`` (no open
     redirect). Does not flip ``auth_bff`` to implemented.
     """
+    oidc_bff_token_url: str | None = None
+    """Lab-only token endpoint (``AEROBIM_OIDC_BFF_TOKEN_URL``). Phase 3."""
+    oidc_bff_client_secret: str | None = None
+    """Confidential BFF client secret (``AEROBIM_OIDC_BFF_CLIENT_SECRET``). Phase 3."""
+    oidc_bff_cookie_secret: str | None = None
+    """Session cookie HMAC secret (``AEROBIM_OIDC_BFF_COOKIE_SECRET``). Phase 3."""
     # Optional Redis for durable async jobs
     redis_url: str | None = None
     # Optional bSI Validation Service / local schema certificate
@@ -532,6 +549,19 @@ class Settings:
         return bool(self.oidc_issuer and self.oidc_audience and self.oidc_jwks_url)
 
     @property
+    def oidc_bff_phase3_ready(self) -> bool:
+        """True only when Phase 3 IdP + cookie secrets are fully configured."""
+
+        return bool(
+            self.oidc_bff_client_id
+            and self.oidc_bff_authorize_url
+            and self.oidc_bff_token_url
+            and self.oidc_bff_client_secret
+            and self.oidc_bff_cookie_secret
+            and self.oidc_bff_redirect_uri_allowlist
+        )
+
+    @property
     def enforce_hitl_reviewer_auth(self) -> bool:
         """Block static bearer from expert HITL sign-off under pilot/production."""
 
@@ -708,6 +738,8 @@ class Settings:
             s3_prefix=(os.getenv("AEROBIM_S3_PREFIX") or "aerobim").strip() or "aerobim",
             report_ttl_days=_read_optional_int("AEROBIM_REPORT_TTL_DAYS"),
             clash_affects_pass=clash_affects_pass,
+            clash_skip_tiny=_read_bool("AEROBIM_CLASH_SKIP_TINY", True),
+            clash_min_aabb_volume_m3=_read_float("AEROBIM_CLASH_MIN_AABB_VOLUME_M3", 1e-6),
             require_clash=require_clash,
             require_bsi_schema=require_bsi_schema,
             signoff_profile=signoff_profile,
@@ -751,6 +783,11 @@ class Settings:
                 for uri in (os.getenv("AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST") or "").split(",")
                 if uri.strip()
             ),
+            oidc_bff_token_url=(os.getenv("AEROBIM_OIDC_BFF_TOKEN_URL") or "").strip() or None,
+            oidc_bff_client_secret=(os.getenv("AEROBIM_OIDC_BFF_CLIENT_SECRET") or "").strip()
+            or None,
+            oidc_bff_cookie_secret=(os.getenv("AEROBIM_OIDC_BFF_COOKIE_SECRET") or "").strip()
+            or None,
             redis_url=(os.getenv("AEROBIM_REDIS_URL") or "").strip() or None,
             bsi_validation_url=(os.getenv("AEROBIM_BSI_VALIDATION_URL") or "").strip() or None,
             bsi_api_token=(os.getenv("AEROBIM_BSI_API_TOKEN") or "").strip() or None,
@@ -897,6 +934,7 @@ class Settings:
 
         for label, candidate in (
             ("AEROBIM_OIDC_JWKS_URL", settings.oidc_jwks_url),
+            ("AEROBIM_OIDC_BFF_TOKEN_URL", settings.oidc_bff_token_url),
             ("AEROBIM_BSI_VALIDATION_URL", settings.bsi_validation_url),
             ("AEROBIM_BCF_API_BASE_URL", settings.bcf_api_base_url),
             ("AEROBIM_S3_ENDPOINT_URL", settings.s3_endpoint_url),

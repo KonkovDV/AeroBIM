@@ -23,7 +23,7 @@ from aerobim.domain.models import (
     SourceKind,
     ValidationRequest,
 )
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 
 # Schema-suite defaults: with n=5 nearest-rank p95 ≡ max, so one OS/MEP spike
 # (seen historically on IFC4 iter 5 ~568 ms) polluted the headline. n>=20 keeps
@@ -470,9 +470,11 @@ def benchmark_schema_suite(
     warmup_iterations: int,
     storage_dir: Path | None = None,
     group_by: str | None = None,
+    settings: Settings | None = None,
 ) -> dict[str, object]:
     """Run schema packs with a shared DI container to reduce cold-bootstrap noise."""
-    settings = Settings.from_env()
+    if settings is None:
+        settings = Settings.from_env()
     if storage_dir is not None:
         settings = replace(settings, storage_dir=storage_dir.resolve())
     container = bootstrap_container(settings)
@@ -748,6 +750,15 @@ def main() -> None:
         action="store_true",
         help="Write docs/evidence + audit/evidence IFC release benchmark artifacts",
     )
+    parser.add_argument(
+        "--clash-skip-tiny",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help=(
+            "Skip tiny/degenerate IFC products before IfcClash "
+            "(default: AEROBIM_CLASH_SKIP_TINY / True)"
+        ),
+    )
     args = parser.parse_args()
 
     pack_paths: list[Path] = []
@@ -772,6 +783,12 @@ def main() -> None:
         iterations = 3 if args.iterations is None else args.iterations
         warmup_iterations = 1 if args.warmup_iterations is None else args.warmup_iterations
 
+    settings = Settings.from_env()
+    if args.storage_dir is not None:
+        settings = replace(settings, storage_dir=args.storage_dir.resolve())
+    if args.clash_skip_tiny is not None:
+        settings = replace(settings, clash_skip_tiny=bool(args.clash_skip_tiny))
+
     if multi:
         payload = benchmark_schema_suite(
             pack_paths=pack_paths,
@@ -779,6 +796,7 @@ def main() -> None:
             warmup_iterations=warmup_iterations,
             storage_dir=args.storage_dir,
             group_by=args.group_by or ("schema" if args.schema_suite else None),
+            settings=settings,
         )
         if args.write_evidence:
             root = repo_root()
@@ -793,6 +811,7 @@ def main() -> None:
             iterations=iterations,
             warmup_iterations=warmup_iterations,
             storage_dir=args.storage_dir,
+            settings=settings,
         )
 
     serialized = json.dumps(payload, ensure_ascii=False, indent=2)

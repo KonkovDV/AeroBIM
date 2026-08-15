@@ -21,7 +21,7 @@ from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import RequirementSource, SourceKind, ValidationRequest
 from aerobim.infrastructure.adapters.json_section_diff_analyzer import JsonSectionDiffAnalyzer
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 
 CLAIM_BOUNDARY = (
     "Open sets lack expert TP/FP labels -> regression/timing only, "

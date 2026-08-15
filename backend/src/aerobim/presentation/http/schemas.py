@@ -165,6 +165,10 @@ class AuthBffStatus(BaseModel):
     status: str
     design: str
     dev_proxy: str
+    phase_2_stubs: str | None = None
+    phase_2_5_pkce: str | None = None
+    phase_3_pending: str | None = None
+    phase_3_lab: str | None = None
 
 
 class CustomerIntakeGateSnapshot(BaseModel):

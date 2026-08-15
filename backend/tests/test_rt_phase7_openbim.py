@@ -176,7 +176,7 @@ class Phase7CrossDocProvenanceTests(unittest.TestCase):
                 expected_value="REI90",
             ),
         ]
-        issues = uc._detect_cross_document_contradictions(reqs)
+        issues = uc._cross_doc_detector().detect(reqs)
         self.assertTrue(issues)
         self.assertEqual(issues[0].match_method, "entity+pset+prop")
         self.assertEqual(issues[0].origin, "deterministic")

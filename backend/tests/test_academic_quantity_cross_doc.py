@@ -27,10 +27,11 @@ class AcademicQuantityCrossDocTests(unittest.TestCase):
             audit_report_store=object(),  # type: ignore[arg-type]
         )
 
-        unit_mismatch = use_case._classify_conflict_kind("3.0", "m", "5.0", "m2")
+        detector = use_case._cross_doc_detector()
+        unit_mismatch = detector.classify_conflict_kind("3.0", "m", "5.0", "m2")
         self.assertEqual(unit_mismatch, ConflictKind.UNIT_MISMATCH)
 
-        hard_conflict = use_case._classify_conflict_kind("3.0", "m", "4.0", "m")
+        hard_conflict = detector.classify_conflict_kind("3.0", "m", "4.0", "m")
         self.assertEqual(hard_conflict, ConflictKind.HARD_CONFLICT)
 
     def test_values_conflict_string_only_would_differ_without_si(self) -> None:
@@ -42,7 +43,7 @@ class AcademicQuantityCrossDocTests(unittest.TestCase):
             remark_generator=object(),  # type: ignore[arg-type]
             audit_report_store=object(),  # type: ignore[arg-type]
         )
-        self.assertFalse(use_case._values_conflict("3000", "mm", "3", "m"))
+        self.assertFalse(use_case._cross_doc_detector().values_conflict("3000", "mm", "3", "m"))
 
     def test_values_conflict_prefers_typed_quantity_over_string_encoding(self) -> None:
         use_case = AnalyzeProjectPackageUseCase(
@@ -56,7 +57,7 @@ class AcademicQuantityCrossDocTests(unittest.TestCase):
         q_mm = parse_quantity(3000.0, "mm")
         q_m = parse_quantity(3.0, "m")
         self.assertFalse(
-            use_case._values_conflict(
+            use_case._cross_doc_detector().values_conflict(
                 "3000",
                 "mm",
                 "3.0",
@@ -66,7 +67,7 @@ class AcademicQuantityCrossDocTests(unittest.TestCase):
             )
         )
         self.assertTrue(
-            use_case._values_conflict(
+            use_case._cross_doc_detector().values_conflict(
                 "3000",
                 "mm",
                 "4.0",

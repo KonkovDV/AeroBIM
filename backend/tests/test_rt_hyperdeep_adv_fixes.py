@@ -275,7 +275,17 @@ class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
 
         host = MagicMock()
         host._priority_profile = "default"
-        host._attach_remarks.side_effect = lambda issues: list(issues)
+        enricher = MagicMock()
+        enricher.attach_remarks.side_effect = lambda issues: list(issues)
+
+        def _overlay(issues, *, request_id: str, allow_synthetic_public: bool = False):
+            return (
+                tuple(issues),
+                CapabilityStatus(CapabilityState.SKIPPED, "llm advisory not configured"),
+            )
+
+        enricher.overlay_llm_remarks.side_effect = _overlay
+        host._remark_enricher.return_value = enricher
         host._build_capabilities.return_value = __import__(
             "aerobim.domain.models", fromlist=["ReportCapabilities"]
         ).ReportCapabilities()
@@ -290,14 +300,6 @@ class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
         # Explicit disables — MagicMock auto-attrs would otherwise look "configured".
         host._llm_advisory_provider = DisabledLlmProvider()
         host._hybrid_route_gate = None
-
-        def _overlay(issues, *, request_id: str, allow_synthetic_public: bool = False):
-            return (
-                tuple(issues),
-                CapabilityStatus(CapabilityState.SKIPPED, "llm advisory not configured"),
-            )
-
-        host._overlay_llm_remarks.side_effect = _overlay
         return host
 
     def _bundles(self, request: ValidationRequest):

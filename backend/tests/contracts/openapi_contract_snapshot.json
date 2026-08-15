@@ -306,6 +306,50 @@
             "title": "Dev Proxy",
             "type": "string"
           },
+          "phase_2_5_pkce": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase 2 5 Pkce"
+          },
+          "phase_2_stubs": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase 2 Stubs"
+          },
+          "phase_3_lab": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase 3 Lab"
+          },
+          "phase_3_pending": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase 3 Pending"
+          },
           "status": {
             "title": "Status",
             "type": "string"
@@ -1646,8 +1690,8 @@
     },
     "/v1/auth/callback": {
       "get": {
-        "description": "Phase 2 stub: validate CSRF state; never issue production SSO session cookie.",
-        "operationId": "auth_callback_stub_v1_auth_callback_get",
+        "description": "Phase 2 stub or Phase 3 code exchange + HttpOnly session cookie.",
+        "operationId": "auth_callback_v1_auth_callback_get",
         "parameters": [
           {
             "in": "query",
@@ -1702,13 +1746,13 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Auth Callback Stub"
+        "summary": "Auth Callback"
       }
     },
     "/v1/auth/login": {
       "get": {
-        "description": "Phase 2.5 stub: CSRF + PKCE; optional IdP URL draft; no session cookie.",
-        "operationId": "auth_login_stub_v1_auth_login_get",
+        "description": "Phase 2.5 stub or Phase 3 lab login (IdP authorize URL).",
+        "operationId": "auth_login_v1_auth_login_get",
         "parameters": [
           {
             "in": "query",
@@ -1747,13 +1791,13 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Auth Login Stub"
+        "summary": "Auth Login"
       }
     },
     "/v1/auth/logout": {
       "post": {
-        "description": "Phase 2 stub: honesty only — does not clear global CSRF state or sessions.\n\nPublic logout must not wipe process-wide CSRF ``state`` (anonymous DoS).\nPhase 3 will bind logout to a verified session cookie.",
-        "operationId": "auth_logout_stub_v1_auth_logout_post",
+        "description": "Phase 2 honesty stub, or Phase 3 session revoke bound to the cookie.",
+        "operationId": "auth_logout_v1_auth_logout_post",
         "responses": {
           "200": {
             "content": {
@@ -1764,7 +1808,24 @@
             "description": "Successful Response"
           }
         },
-        "summary": "Auth Logout Stub"
+        "summary": "Auth Logout"
+      }
+    },
+    "/v1/auth/session": {
+      "get": {
+        "description": "Return the current BFF session (Phase 3 lab) without exposing tokens.",
+        "operationId": "auth_session_v1_auth_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Auth Session"
       }
     },
     "/v1/norm-packs/{pack_id}/rule-events": {

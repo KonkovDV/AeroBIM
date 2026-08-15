@@ -59,8 +59,9 @@ def test_guarded_adapters_actually_use_safe_urlopen() -> None:
         "infrastructure/adapters/vlm_advisory_client.py",
         "infrastructure/adapters/openai_compat_llm_provider.py",
         "infrastructure/security/oidc_token_validator.py",
+        "infrastructure/auth/oidc_bff_phase3.py",
     ):
         text = (_SRC / rel).read_text(encoding="utf-8")
         if "safe_urlopen" in text or "safe_datastore_urlopen" in text:
             users.append(rel)
-    assert len(users) == 5, f"expected 5 guarded outbound adapters, found: {users}"
+    assert len(users) == 6, f"expected 6 guarded outbound adapters, found: {users}"

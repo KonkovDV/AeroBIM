@@ -88,6 +88,13 @@ class OidcBffStubRouteTests(unittest.TestCase):
         self.assertEqual(response.status_code, 501)
         self.assertEqual(response.json()["status"], "NOT_IMPLEMENTED")
 
+    def test_session_stays_501_until_phase3_ready(self) -> None:
+        response = self.client.get("/v1/auth/session")
+        self.assertEqual(response.status_code, 501)
+        body = response.json()
+        self.assertEqual(body["status"], "NOT_IMPLEMENTED")
+        self.assertFalse(body["authenticated"])
+
 
 if __name__ == "__main__":
     unittest.main()

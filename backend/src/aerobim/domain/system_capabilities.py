@@ -160,6 +160,10 @@ def build_auth_bff_capability() -> dict[str, object]:
             "AEROBIM_OIDC_BFF_CLIENT_ID + AEROBIM_OIDC_BFF_AUTHORIZE_URL — still 501"
         ),
         "phase_3_pending": "HttpOnly session cookie + IdP code exchange + FE bearer removal",
+        "phase_3_lab": (
+            "Code-landed behind oidc_bff_phase3_ready (token URL + client secret + "
+            "cookie secret + redirect allowlist). Default remains NOT_IMPLEMENTED."
+        ),
     }
 
 

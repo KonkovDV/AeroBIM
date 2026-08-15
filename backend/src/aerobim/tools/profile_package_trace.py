@@ -12,7 +12,7 @@ from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.package_trace import PackageTraceCollector
 from aerobim.domain.run_manifest import build_run_manifest
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 from aerobim.tools.benchmark_project_package import (
     default_pack_path,
     load_benchmark_pack,

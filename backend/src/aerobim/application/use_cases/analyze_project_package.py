@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import json
-import logging
-from collections.abc import Iterable, Sequence
-from dataclasses import replace
+from collections.abc import Sequence
 from pathlib import Path
 
 from aerobim.application.services.analyze_orchestrators import (
@@ -12,18 +9,13 @@ from aerobim.application.services.analyze_orchestrators import (
     EvidenceAssembler,
     IngestionOrchestrator,
 )
-from aerobim.application.services.capability_matrix import (
-    RASTER_DRAWING_FORMATS,
-    RASTER_DRAWING_SUFFIXES,
-    build_report_capabilities,
-)
-from aerobim.application.services.capability_policy import build_signoff_policy
+from aerobim.application.services.capability_matrix import build_report_capabilities
+from aerobim.application.services.clash_detection_runner import ClashDetectionRunner
 from aerobim.application.services.compliance_agent_orchestrator import (
     ComplianceAgentOrchestrator,
 )
 from aerobim.application.services.cross_document_contradictions import (
     CrossDocumentContradictionDetector,
-    to_float,
 )
 from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.drawing_annotation_validation import (
@@ -31,34 +23,21 @@ from aerobim.application.services.drawing_annotation_validation import (
 )
 from aerobim.application.services.extraction_integrity_probe import probe_extraction_integrity
 from aerobim.application.services.hybrid_route_gate import HybridRouteGate
+from aerobim.application.services.ids_compliance_runner import IdsComplianceRunner
 from aerobim.application.services.mep_scope_probe import MepScopeProbe
 from aerobim.application.services.package_ingestion import PackageIngestionService
-from aerobim.application.services.spatial_predicates import issues_from_clash_results
+from aerobim.application.services.remark_enricher import RemarkEnricher
+from aerobim.application.services.signature_audit_runner import SignatureAuditRunner
 from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink
 from aerobim.domain.architecture import Contour
-from aerobim.domain.consistency import PackageManifest, claims_from_area_requirements
-from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.llm_advisory import LlmProvider
-from aerobim.domain.mep import (
-    FederatedMepScope,
-    MepSystemGraph,
-    MepSystemGraphProvider,
-)
+from aerobim.domain.mep import MepSystemGraphProvider
 from aerobim.domain.mep_aabb import MepAabbPairFilter
 from aerobim.domain.models import (
-    CapabilityState,
     CapabilityStatus,
-    ClashResult,
-    ComparisonOperator,
-    ConflictKind,
-    DrawingAnnotation,
-    DrawingAsset,
-    DrawingRegionRef,
     DrawingSource,
-    FindingCategory,
     ParsedRequirement,
     ReportCapabilities,
-    RequirementSource,
     Severity,
     ToleranceConfig,
     ValidationIssue,
@@ -95,28 +74,6 @@ from aerobim.domain.ports import (
     ReviewEventStore,
     SectionDiffAnalyzer,
 )
-from aerobim.domain.quantity import QuantityValue
-
-_RASTER_DRAWING_SUFFIXES = RASTER_DRAWING_SUFFIXES
-_RASTER_DRAWING_FORMATS = RASTER_DRAWING_FORMATS
-_DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
-_CAD_DRAWING_SUFFIXES = {".dxf", ".dwg"}
-_OFFICE_SUFFIXES = {".docx", ".xlsx", ".pptx", ".doc", ".xls", ".odt", ".ods"}
-_OPENREBAR_REPORT_CONTRACT_ID = "OpenRebar.reinforcement.report.v1"
-_OPENREBAR_WARNING_SEVERITY_CLASS: dict[str, str] = {
-    "OPENREBAR-CONTRACT": "critical",
-    "OPENREBAR-PROVENANCE-DIGEST": "critical",
-    "OPENREBAR-PROVENANCE-REFERENCE-MISSING": "critical",
-    "OPENREBAR-OPT-FALLBACK": "major",
-    "OPENREBAR-OPT-STRATEGY": "major",
-    "OPENREBAR-WASTE-METRIC-MISSING": "major",
-    "OPENREBAR-WASTE-THRESHOLD": "major",
-    "OPENREBAR-PROJECT-CODE": "minor",
-}
-_OPENREBAR_ENFORCED_ESCALATION_CLASSES = {"critical", "major"}
-
-
-_logger = logging.getLogger("aerobim.analyze")
 
 
 class _NullExternalEvidenceVerifier:
@@ -245,6 +202,44 @@ class AnalyzeProjectPackageUseCase:
         self._advisory = AdvisoryOrchestrator(self)
         self._evidence = EvidenceAssembler(self)
 
+    def _clash_runner(self) -> ClashDetectionRunner:
+        return ClashDetectionRunner(
+            clash_detector=self._clash_detector,
+            require_clash=self._require_clash,
+            clash_affects_pass=self._clash_affects_pass,
+            signoff_profile=self._signoff_profile,
+            require_bsi_schema=self._require_bsi_schema,
+            require_mep_system_clash=self._require_mep_system_clash,
+            quantity_consistency_checker=self._quantity_consistency_checker,
+            load_evidence_verifier=self._load_evidence_verifier,
+            logic_consistency_analyzer=self._logic_consistency_analyzer,
+        )
+
+    def _ids_runner(self) -> IdsComplianceRunner:
+        return IdsComplianceRunner(
+            ids_validator=self._ids_validator,
+            ids_document_auditor=self._ids_document_auditor,
+            ifc_schema_validator=self._ifc_schema_validator,
+            bsi_validation_service=self._bsi_validation_service,
+            section_diff_analyzer=self._section_diff_analyzer,
+            require_bsi_schema=self._require_bsi_schema,
+        )
+
+    def _signature_runner(self) -> SignatureAuditRunner:
+        return SignatureAuditRunner(
+            document_signature_auditor=self._document_signature_auditor,
+            package_inventory_loader=self._package_inventory_loader,
+        )
+
+    def _remark_enricher(self) -> RemarkEnricher:
+        return RemarkEnricher(
+            remark_generator=self._remark_generator,
+            llm_advisory_provider=self._llm_advisory_provider,
+            remark_locale=self._remark_locale,
+            llm_advisory_max_issues=self._llm_advisory_max_issues,
+            llm_max_concurrent=self._llm_max_concurrent,
+        )
+
     def execute(self, request: ValidationRequest) -> ValidationReport:
         collector: PackageTraceCollector | None = self._package_trace_collector
         if collector is None and self._hard_signoff_profile:
@@ -306,236 +301,9 @@ class AnalyzeProjectPackageUseCase:
             default_norm_rule_pack_path=self._default_norm_rule_pack_path,
         )
 
-    def _maybe_hydrate_office_requirement_source(
-        self, request: ValidationRequest
-    ) -> tuple[ValidationRequest, CapabilityStatus | None]:
-        return self._ingestion_service().maybe_hydrate_office_requirement_source(request)
-
-    def _run_cad_ingest(
-        self, request: ValidationRequest
-    ) -> tuple[tuple[DrawingAnnotation, ...], CapabilityStatus, list[ValidationIssue]]:
-        return self._ingestion_service().run_cad_ingest(request)
-
-    def _load_mep_federated_scope(self) -> FederatedMepScope | None:
-        return self._mep_probe().load_scope()
-
-    def _probe_mep_system_graph(
-        self, ifc_path: Path
-    ) -> tuple[CapabilityStatus, tuple[ValidationIssue, ...]]:
-        return self._mep_probe().probe(ifc_path)
-
     def _repo_root(self) -> Path:
         # use_cases → application → aerobim → src → backend → repo
         return Path(__file__).resolve().parents[5]
-
-    def _evaluate_mep_clearance_matrix(
-        self,
-        graph: MepSystemGraph,
-        scope: FederatedMepScope | None,
-    ) -> tuple[ValidationIssue, ...]:
-        # Note: MepScopeProbe.probe() evaluates the matrix internally; this
-        # delegate exists for direct callers only and is not on the probe path.
-        return self._mep_probe().evaluate_clearance_matrix(graph, scope)
-
-    def _run_quantity_consistency(
-        self,
-        ifc_path: Path,
-        requirements: Sequence[ParsedRequirement],
-    ) -> tuple[list[ValidationIssue], CapabilityStatus | None]:
-        """Return issues and optional capability override (FAILED on infra errors)."""
-
-        claims = claims_from_area_requirements(requirements)
-        if not claims:
-            return [], None
-        if self._quantity_consistency_checker is None:
-            # Claims present but checker absent: not a silent skip (false-pass).
-            return (
-                [],
-                CapabilityStatus(
-                    CapabilityState.NOT_VERIFIED,
-                    "QuantityConsistencyChecker not configured while area claims present",
-                ),
-            )
-        try:
-            return list(
-                self._quantity_consistency_checker.check(ifc_path, claims)
-            ), CapabilityStatus(CapabilityState.OK, "quantity consistency evaluated")
-        except Exception as exc:
-            _logger.exception("Quantity consistency check failed for %s", ifc_path)
-            # RT-C: infrastructure exception → ERROR + FAILED capability (blocks pass)
-            return (
-                [
-                    ValidationIssue(
-                        rule_id="AEROBIM-QTY-ERROR",
-                        severity=Severity.ERROR,
-                        message=f"Quantity consistency infrastructure failure: {exc}",
-                        category=FindingCategory.IFC_VALIDATION,
-                        source_id="quantity-consistency",
-                    )
-                ],
-                CapabilityStatus(
-                    CapabilityState.FAILED,
-                    f"Quantity consistency infrastructure failure: {exc}",
-                ),
-            )
-
-    def _run_load_evidence(
-        self, request: ValidationRequest
-    ) -> tuple[list[ValidationIssue], CapabilityStatus]:
-        if request.calculation_source is None:
-            return (
-                [],
-                CapabilityStatus(
-                    CapabilityState.SKIPPED, "numeric calculation match not evaluated"
-                ),
-            )
-        if self._load_evidence_verifier is None:
-            return (
-                [],
-                CapabilityStatus(CapabilityState.SKIPPED, "LoadEvidenceVerifier not configured"),
-            )
-        try:
-            issues = list(self._load_evidence_verifier.verify(request))
-        except Exception as exc:
-            _logger.exception("Load evidence verify failed for request %s", request.request_id)
-            return (
-                [
-                    ValidationIssue(
-                        rule_id="AEROBIM-LOAD-ERROR",
-                        severity=Severity.ERROR,
-                        message=f"Load evidence infrastructure failure: {exc}",
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        source_id="load-evidence",
-                    )
-                ],
-                CapabilityStatus(
-                    CapabilityState.FAILED,
-                    f"Load evidence infrastructure failure: {exc}",
-                ),
-            )
-        mismatches = [i for i in issues if i.rule_id == "AEROBIM-LOAD-MISMATCH"]
-        unevaluated = any(
-            i.rule_id
-            in {
-                "AEROBIM-LOAD-FORMAT",
-                "AEROBIM-LOAD-SCHEMA",
-                "AEROBIM-LOAD-JSON",
-                "AEROBIM-LOAD-ROW",
-            }
-            for i in issues
-        )
-        evaluated_ok = any(i.rule_id == "AEROBIM-LOAD-OK" for i in issues)
-        if mismatches:
-            capability = CapabilityStatus(
-                CapabilityState.FAILED,
-                f"{len(mismatches)} load match failure(s)",
-            )
-        elif unevaluated or not evaluated_ok:
-            capability = CapabilityStatus(
-                CapabilityState.NOT_VERIFIED,
-                "Load evidence present but сверка not fully evaluated",
-            )
-        else:
-            capability = CapabilityStatus(
-                CapabilityState.OK,
-                "Load evidence numeric match evaluated",
-            )
-        return issues, capability
-
-    def _run_logic_consistency(self, request: ValidationRequest) -> list[ValidationIssue]:
-        if self._logic_consistency_analyzer is None:
-            return []
-        has_req = bool(
-            request.requirement_source.text.strip() or request.requirement_source.path is not None
-        )
-        manifest = PackageManifest(
-            request_id=request.request_id,
-            ifc_path=request.ifc_path,
-            has_requirement_source=has_req,
-            has_technical_spec=request.technical_spec_source is not None,
-            has_calculation_source=request.calculation_source is not None,
-            has_ids=request.ids_path is not None,
-            drawing_count=len(request.drawing_sources),
-            drawing_sheet_ids=tuple((source.sheet_id or "") for source in request.drawing_sources),
-            pd_section_path=request.pd_section_path,
-            rd_section_path=request.rd_section_path,
-            revision=request.revision,
-            stage=request.stage,
-        )
-        return list(self._logic_consistency_analyzer.analyze(manifest))
-
-    def _effective_clash_affects_pass(self) -> bool:
-        """Hard profiles always force clash_affects_pass via sign-off policy (RT D03/G01)."""
-
-        return build_signoff_policy(
-            profile=self._signoff_profile,
-            require_clash=self._require_clash,
-            clash_affects_pass=self._clash_affects_pass,
-            require_bsi_schema=self._require_bsi_schema,
-            require_mep_system_clash=self._require_mep_system_clash,
-        ).clash_affects_pass
-
-    def _run_clash_detection(
-        self, ifc_path: Path
-    ) -> tuple[tuple[ClashResult, ...], CapabilityStatus, list[ValidationIssue]]:
-        if self._clash_detector is None:
-            if self._require_clash:
-                issue = ValidationIssue(
-                    rule_id="AEROBIM-CLASH-CAPABILITY",
-                    severity=Severity.ERROR,
-                    message="Clash detection required but detector is not configured",
-                    category=FindingCategory.SPATIAL,
-                    source_id="clash",
-                )
-                return (
-                    (),
-                    CapabilityStatus(CapabilityState.FAILED, "clash detector not configured"),
-                    [issue],
-                )
-            return (
-                (),
-                CapabilityStatus(CapabilityState.SKIPPED, "clash detector not configured"),
-                [],
-            )
-        try:
-            results = tuple(self._clash_detector.detect(ifc_path))
-            return (
-                results,
-                CapabilityStatus(CapabilityState.OK),
-                issues_from_clash_results(
-                    results,
-                    affects_pass=self._effective_clash_affects_pass(),
-                ),
-            )
-        except ClashCapabilityError as exc:
-            skipped = exc.status == "skipped"
-            # Required clash must never green-pass on a missing optional stack.
-            if skipped and self._require_clash:
-                state = CapabilityState.FAILED
-            else:
-                state = CapabilityState.SKIPPED if skipped else CapabilityState.FAILED
-            severity = Severity.ERROR if state == CapabilityState.FAILED else Severity.WARNING
-            issue = ValidationIssue(
-                rule_id="AEROBIM-CLASH-CAPABILITY",
-                severity=severity,
-                message=f"Clash detection capability {exc.status}: {exc.reason}",
-                category=FindingCategory.SPATIAL,
-                source_id="clash",
-            )
-            return (), CapabilityStatus(state, exc.reason), [issue]
-        except Exception as exc:  # noqa: BLE001
-            issue = ValidationIssue(
-                rule_id="AEROBIM-CLASH-CAPABILITY",
-                severity=Severity.ERROR,
-                message=f"Clash detection capability failed: {exc}",
-                category=FindingCategory.SPATIAL,
-                source_id="clash",
-            )
-            return (
-                (),
-                CapabilityStatus(CapabilityState.FAILED, str(exc)),
-                [issue],
-            )
 
     def _build_capabilities(
         self,
@@ -588,529 +356,10 @@ class AnalyzeProjectPackageUseCase:
             raster_analyzer_configured=self._raster_drawing_analyzer is not None,
         )
 
-    def _run_signature_audit(
-        self, request: ValidationRequest
-    ) -> tuple[CapabilityStatus | None, list[ValidationIssue]]:
-        """Optional detached-envelope audit on ifc_path (deterministic contour).
-
-        Runs when ``signature_envelope_path`` is set or ``require_signature_audit``.
-        Never claims УКЭП legal validity; trust chain stays not_verified.
-        """
-
-        should_run = request.require_signature_audit or request.signature_envelope_path is not None
-        if not should_run:
-            return None, []
-
-        from aerobim.domain.signature_immutability import (
-            CLAIM_BOUNDARY,
-            missing_envelope_result,
-        )
-
-        auditor = self._document_signature_auditor
-        if auditor is None:
-            if request.require_signature_audit:
-                reason = (
-                    "signature audit required but DocumentSignatureAuditor not configured; "
-                    f"{CLAIM_BOUNDARY}"
-                )
-                return (
-                    CapabilityStatus(CapabilityState.FAILED, reason),
-                    [
-                        ValidationIssue(
-                            rule_id="AEROBIM-SIGNATURE-MISSING",
-                            severity=Severity.ERROR,
-                            message=reason,
-                            category=FindingCategory.IFC_VALIDATION,
-                            source_id="signature-audit",
-                            origin="deterministic",
-                            evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
-                        )
-                    ],
-                )
-            return None, []
-
-        if request.ifc_path is None:
-            if request.require_signature_audit:
-                reason = f"signature audit required but ifc_path omitted; {CLAIM_BOUNDARY}"
-                return (
-                    CapabilityStatus(CapabilityState.FAILED, reason),
-                    [
-                        ValidationIssue(
-                            rule_id="AEROBIM-SIGNATURE-MISSING",
-                            severity=Severity.ERROR,
-                            message=reason,
-                            category=FindingCategory.IFC_VALIDATION,
-                            source_id="signature-audit",
-                            origin="deterministic",
-                            evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
-                        )
-                    ],
-                )
-            return None, []
-
-        result = auditor.audit(
-            request.ifc_path,
-            envelope_path=request.signature_envelope_path,
-            required_roles=request.required_signer_roles,
-        )
-        capability = result.to_capability_status()
-        issues: list[ValidationIssue] = []
-        if request.require_signature_audit and "missing_envelope" in result.reasons:
-            # Explicit missing required envelope: FAILED + blocking ERROR.
-            failed = missing_envelope_result(reason="missing_envelope")
-            capability = CapabilityStatus(
-                CapabilityState.FAILED,
-                "; ".join([*failed.reasons, failed.claim_boundary]),
-            )
-            issues.append(
-                ValidationIssue(
-                    rule_id="AEROBIM-SIGNATURE-MISSING",
-                    severity=Severity.ERROR,
-                    message=(
-                        "Required detached signature envelope missing next to content "
-                        f"(or at signature_envelope_path); {CLAIM_BOUNDARY}"
-                    ),
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="signature-audit",
-                    origin="deterministic",
-                    evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
-                )
-            )
-        elif result.overall_status == "failed":
-            issues.append(
-                ValidationIssue(
-                    rule_id="AEROBIM-SIGNATURE-AUDIT",
-                    severity=Severity.ERROR,
-                    message=(
-                        "Detached signature envelope audit failed "
-                        f"({', '.join(result.reasons)}); {CLAIM_BOUNDARY}"
-                    ),
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="signature-audit",
-                    origin="deterministic",
-                    evidence_refs=("claim_boundary:signature_ENG_PARTIAL",),
-                )
-            )
-        return capability, issues
-
-    def _run_package_completeness(
-        self, request: ValidationRequest
-    ) -> tuple[CapabilityStatus | None, list[ValidationIssue]]:
-        """Optional WP-05 package completeness (soft opt-in via request flag/path).
-
-        Runs when ``require_package_completeness`` or ``package_inventory_path`` is set.
-        Missing mandatory PD section → precise ERROR naming the section.
-        Never claims native DWG or statutory PP-87 exhaustiveness.
-        """
-
-        should_run = (
-            request.require_package_completeness or request.package_inventory_path is not None
-        )
-        if not should_run:
-            return None, []
-
-        from aerobim.domain.package_completeness import CLAIM_BOUNDARY
-
-        loader = self._package_inventory_loader
-        inventory_path = request.package_inventory_path
-        if inventory_path is None:
-            reason = (
-                "package completeness required but package_inventory_path not provided; "
-                f"{CLAIM_BOUNDARY}"
-            )
-            return (
-                CapabilityStatus(CapabilityState.FAILED, reason),
-                [
-                    ValidationIssue(
-                        rule_id="AEROBIM-PACKAGE-INVENTORY-MISSING",
-                        severity=Severity.ERROR,
-                        message=reason,
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        source_id="package-completeness",
-                        origin="deterministic",
-                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
-                    )
-                ],
-            )
-        if loader is None:
-            reason = (
-                "package completeness requested but PackageInventoryLoader not configured; "
-                f"{CLAIM_BOUNDARY}"
-            )
-            return (
-                CapabilityStatus(CapabilityState.FAILED, reason),
-                [
-                    ValidationIssue(
-                        rule_id="AEROBIM-PACKAGE-INVENTORY-MISSING",
-                        severity=Severity.ERROR,
-                        message=reason,
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        source_id="package-completeness",
-                        origin="deterministic",
-                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
-                    )
-                ],
-            )
-
-        try:
-            report = loader.assess(inventory_path)
-        except FileNotFoundError:
-            reason = f"Package inventory not found at {inventory_path}; {CLAIM_BOUNDARY}"
-            return (
-                CapabilityStatus(CapabilityState.FAILED, reason),
-                [
-                    ValidationIssue(
-                        rule_id="AEROBIM-PACKAGE-INVENTORY-MISSING",
-                        severity=Severity.ERROR,
-                        message=reason,
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        source_id="package-completeness",
-                        origin="deterministic",
-                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
-                    )
-                ],
-            )
-        except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
-            reason = f"Package inventory unreadable ({exc}); {CLAIM_BOUNDARY}"
-            return (
-                CapabilityStatus(CapabilityState.FAILED, reason),
-                [
-                    ValidationIssue(
-                        rule_id="AEROBIM-PACKAGE-INVENTORY-UNREADABLE",
-                        severity=Severity.ERROR,
-                        message=reason,
-                        category=FindingCategory.CROSS_DOCUMENT,
-                        source_id="package-completeness",
-                        origin="deterministic",
-                        evidence_refs=("claim_boundary:package_completeness_ENG_PARTIAL",),
-                    )
-                ],
-            )
-
-        return report.to_capability_status(), list(report.issues)
-
     def _probe_extraction_integrity(self, request: ValidationRequest) -> CapabilityStatus:
         return probe_extraction_integrity(
             self._extraction_integrity_producer,
             request.drawing_sources,
-        )
-
-    def _submit_bsi_validation(self, ifc_path: Path) -> tuple[str | None, list[ValidationIssue]]:
-        if self._bsi_validation_service is None:
-            return None, []
-        try:
-            request_id = self._bsi_validation_service.submit(ifc_path)
-            return request_id, []
-        except Exception as exc:  # noqa: BLE001 — surface remote/local cert failures
-            severity = Severity.ERROR if self._require_bsi_schema else Severity.WARNING
-            return None, [
-                ValidationIssue(
-                    rule_id="AEROBIM-BSI-VALIDATION",
-                    severity=severity,
-                    message=f"bSI Validation Service / schema certificate submit failed: {exc}",
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="bsi-schema",
-                )
-            ]
-
-    def _collect_schema_issues(self, ifc_path: Path) -> list[ValidationIssue]:
-        if self._ifc_schema_validator is None:
-            return []
-        return list(self._ifc_schema_validator.validate_schema(ifc_path))
-
-    def _collect_ids_audit_issues(self, request: ValidationRequest) -> list[ValidationIssue]:
-        if request.ids_path is None:
-            return []
-        if self._ids_document_auditor is None:
-            # RT D04: never silent-skip a requested IDS document audit.
-            return [
-                ValidationIssue(
-                    rule_id="AEROBIM-IDS-AUDIT-CAPABILITY",
-                    severity=Severity.ERROR,
-                    message=(
-                        "IDS document audit requested but no ids document auditor is configured"
-                    ),
-                    category=FindingCategory.IDS_VALIDATION,
-                    source_id="ids",
-                )
-            ]
-        return list(self._ids_document_auditor.audit(request.ids_path))
-
-    def _collect_ids_issues(self, request: ValidationRequest) -> list[ValidationIssue]:
-        if request.ids_path is None:
-            return []
-        if self._ids_validator is None:
-            # Requested IDS must fail closed — never crash the package contour.
-            return [
-                ValidationIssue(
-                    rule_id="AEROBIM-IDS-CAPABILITY",
-                    severity=Severity.ERROR,
-                    message="IDS validation requested but no ids validator is configured",
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="ids",
-                )
-            ]
-        if request.ifc_path is None:
-            return [
-                ValidationIssue(
-                    rule_id="AEROBIM-IDS-CAPABILITY",
-                    severity=Severity.ERROR,
-                    message="IDS validation requested but ifc_path was omitted",
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="ids",
-                )
-            ]
-        try:
-            return list(self._ids_validator.validate(request.ids_path, request.ifc_path))
-        except Exception as exc:  # noqa: BLE001 — adapter I/O must not silent-pass
-            _logger.exception("IDS validation failed for %s", request.ids_path)
-            return [
-                ValidationIssue(
-                    rule_id="AEROBIM-IDS-ERROR",
-                    severity=Severity.ERROR,
-                    message=f"IDS validation infrastructure failure: {exc}",
-                    category=FindingCategory.IFC_VALIDATION,
-                    source_id="ids",
-                )
-            ]
-
-    def _apply_openrebar_provenance_policy(
-        self,
-        issues: Sequence[ValidationIssue],
-        mode: str,
-    ) -> list[ValidationIssue]:
-        if mode != "enforced":
-            return list(issues)
-
-        escalated: list[ValidationIssue] = []
-        for issue in issues:
-            if issue.severity != Severity.WARNING:
-                escalated.append(issue)
-                continue
-
-            severity_class = _OPENREBAR_WARNING_SEVERITY_CLASS.get(issue.rule_id, "major")
-            if severity_class not in _OPENREBAR_ENFORCED_ESCALATION_CLASSES:
-                escalated.append(issue)
-                continue
-
-            escalated.append(
-                ValidationIssue(
-                    rule_id=issue.rule_id,
-                    severity=Severity.ERROR,
-                    message=issue.message,
-                    ifc_entity=issue.ifc_entity,
-                    category=issue.category,
-                    target_ref=issue.target_ref,
-                    property_set=issue.property_set,
-                    property_name=issue.property_name,
-                    operator=issue.operator,
-                    expected_value=issue.expected_value,
-                    observed_value=issue.observed_value,
-                    unit=issue.unit,
-                    element_guid=issue.element_guid,
-                    problem_zone=issue.problem_zone,
-                    remark=issue.remark,
-                )
-            )
-
-        return escalated
-
-    def _collect_norm_pack_requirements(
-        self,
-        request: ValidationRequest,
-    ) -> tuple[list[ParsedRequirement], CapabilityStatus]:
-        return self._ingestion_service().collect_norm_pack_requirements(request)
-
-    def _load_norm_packs(
-        self,
-        pack_paths: Sequence[Path],
-        *,
-        source: str,
-        tolerant: bool,
-    ) -> tuple[list[ParsedRequirement], CapabilityStatus]:
-        return self._ingestion_service().load_norm_packs(
-            pack_paths, source=source, tolerant=tolerant
-        )
-
-    def _collect_section_pairing_issues(
-        self,
-        request: ValidationRequest,
-    ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
-        pd_path = request.pd_section_path
-        rd_path = request.rd_section_path
-        if pd_path is None and rd_path is None:
-            return (), CapabilityStatus(
-                CapabilityState.SKIPPED, "PD/RD section pairing not requested"
-            )
-        if pd_path is None or rd_path is None:
-            raise ValueError(
-                "PD/RD section pairing requires both pd_section_path and rd_section_path"
-            )
-        if self._section_diff_analyzer is None:
-            raise RuntimeError("PD/RD section pairing requested but no analyzer is configured")
-        report = self._section_diff_analyzer.analyze(pd_path, rd_path)
-        reason = report.capability_reason(pd_path.name, rd_path.name)
-        # Honest capability: unrecognized discipline, zero canonical coverage, or
-        # residual unrecognized keys (raw-normalize pairing without registry) cannot
-        # look like a successful pairing.
-        if (
-            (not report.discipline.recognized)
-            or (report.pd_key_count > 0 and report.recognized_key_count == 0)
-            or bool(report.unrecognized_keys)
-        ):
-            return report.issues, CapabilityStatus(CapabilityState.FAILED, reason)
-        return report.issues, CapabilityStatus(CapabilityState.OK, reason)
-
-    def _collect_synthesized_requirements(
-        self, request: ValidationRequest
-    ) -> list[ParsedRequirement]:
-        return self._ingestion_service().collect_synthesized_requirements(request)
-
-    def _collect_drawing_annotations(
-        self, request: ValidationRequest
-    ) -> tuple[list[DrawingAnnotation], list[DrawingRegionRef], int]:
-        return self._ingestion_service().collect_drawing_annotations(request)
-
-    def _collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
-        return self._ingestion_service().collect_drawing_assets(request)
-
-    def _collect_raster_annotations(
-        self,
-        drawing_source: DrawingSource,
-    ) -> list[DrawingAnnotation]:
-        return self._ingestion_service().collect_raster_annotations(drawing_source)
-
-    def _has_structured_drawing_input(self, drawing_source: DrawingSource) -> bool:
-        return self._ingestion_service().has_structured_drawing_input(drawing_source)
-
-    def _collect_identity_sources(self, request: ValidationRequest) -> list[RequirementSource]:
-        return self._ingestion_service().collect_identity_sources(request)
-
-    def _is_raster_drawing_source(self, drawing_source: DrawingSource) -> bool:
-        return self._ingestion_service().is_raster_drawing_source(drawing_source)
-
-    def _detect_cross_document_contradictions(
-        self,
-        requirements: Sequence[ParsedRequirement],
-    ) -> list[ValidationIssue]:
-        return self._cross_doc_detector().detect(requirements)
-
-    def _detect_ambiguous_property_set_alignments(
-        self,
-        requirements: Sequence[ParsedRequirement],
-    ) -> list[ValidationIssue]:
-        return self._cross_doc_detector().detect_ambiguous_property_set_alignments(requirements)
-
-    def _resolve_quantity(
-        self,
-        value: str | None,
-        unit: str | None,
-        quantity: QuantityValue | None,
-    ) -> QuantityValue | None:
-        return self._cross_doc_detector().resolve_quantity(value, unit, quantity)
-
-    def _classify_conflict_kind(
-        self,
-        value_a: str | None,
-        unit_a: str | None,
-        value_b: str | None,
-        unit_b: str | None,
-        *,
-        quantity_a: QuantityValue | None = None,
-        quantity_b: QuantityValue | None = None,
-    ) -> ConflictKind:
-        return self._cross_doc_detector().classify_conflict_kind(
-            value_a,
-            unit_a,
-            value_b,
-            unit_b,
-            quantity_a=quantity_a,
-            quantity_b=quantity_b,
-        )
-
-    def _values_soft_conflict(
-        self,
-        value_a: str | None,
-        unit_a: str | None,
-        value_b: str | None,
-        unit_b: str | None,
-        *,
-        quantity_a: QuantityValue | None = None,
-        quantity_b: QuantityValue | None = None,
-    ) -> bool:
-        """True when same-unit numeric strings differ but stay within ε."""
-        return self._cross_doc_detector().values_soft_conflict(
-            value_a,
-            unit_a,
-            value_b,
-            unit_b,
-            quantity_a=quantity_a,
-            quantity_b=quantity_b,
-        )
-
-    def _values_conflict(
-        self,
-        value_a: str | None,
-        unit_a: str | None,
-        value_b: str | None,
-        unit_b: str | None,
-        *,
-        quantity_a: QuantityValue | None = None,
-        quantity_b: QuantityValue | None = None,
-    ) -> bool:
-        """Return True when two expected values are materially different.
-
-        Numeric pairs are compared with ε-tolerance from ``ToleranceConfig``;
-        non-numeric pairs use case-insensitive string comparison.
-        """
-        return self._cross_doc_detector().values_conflict(
-            value_a,
-            unit_a,
-            value_b,
-            unit_b,
-            quantity_a=quantity_a,
-            quantity_b=quantity_b,
-        )
-
-    def _normalize_cross_document_numeric_value(
-        self,
-        value: float,
-        unit: str | None,
-    ) -> tuple[float, str] | None:
-        return self._cross_doc_detector().normalize_numeric_value(value, unit)
-
-    def _validate_drawing_annotations(
-        self,
-        requirements: Sequence[ParsedRequirement],
-        drawing_annotations: Sequence[DrawingAnnotation],
-    ) -> list[ValidationIssue]:
-        return self._annotation_validator().validate(requirements, drawing_annotations)
-
-    def _attach_remarks(self, issues: Iterable[ValidationIssue]) -> list[ValidationIssue]:
-        enriched: list[ValidationIssue] = []
-        for issue in issues:
-            enriched.append(replace(issue, remark=self._remark_generator.generate(issue)))
-        return enriched
-
-    def _overlay_llm_remarks(
-        self,
-        issues: Iterable[ValidationIssue],
-        *,
-        request_id: str,
-        allow_synthetic_public: bool = False,
-    ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
-        """Attach AI remark drafts when LLM is ready; verdict fields unchanged."""
-
-        from aerobim.application.services.advisory_remark_overlay import overlay_llm_remarks
-
-        return overlay_llm_remarks(
-            tuple(issues),
-            provider=self._llm_advisory_provider,
-            request_id=request_id,
-            locale=self._remark_locale,
-            max_issues=self._llm_advisory_max_issues,
-            max_workers=self._llm_max_concurrent,
-            allow_synthetic_public=allow_synthetic_public,
         )
 
     def _confirm_annotation_ifc_links(
@@ -1131,25 +380,3 @@ class AnalyzeProjectPackageUseCase:
             index = None
         return tuple(confirm_annotation_ifc_links(links, index))
 
-    def _matches_annotation(
-        self, requirement: ParsedRequirement, annotation: DrawingAnnotation
-    ) -> bool:
-        return self._annotation_validator().matches_annotation(requirement, annotation)
-
-    def _compare_values(
-        self,
-        observed_value: str | None,
-        expected_value: str | None,
-        operator: ComparisonOperator,
-        unit: str | None = None,
-    ) -> bool:
-        """Compare observed vs expected using fuzzy ε-tolerance for numerics."""
-        return self._annotation_validator().compare_values(
-            observed_value,
-            expected_value,
-            operator,
-            unit=unit,
-        )
-
-    def _to_float(self, raw: str) -> float | None:
-        return to_float(raw)

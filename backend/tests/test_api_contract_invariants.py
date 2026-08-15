@@ -48,6 +48,7 @@ ALLOW_NO_AUTH = frozenset(
         "/v1/auth/login",
         "/v1/auth/callback",
         "/v1/auth/logout",
+        "/v1/auth/session",
     }
 )
 

@@ -27,7 +27,7 @@ from aerobim.domain.study_design import wilson_interval
 from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
     SpreadsheetLoadEvidenceAdapter,
 )
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 
 ENTITY_PRESENCE_REQ = "SAM-001|IFCWALL|Pset_WallCommon|FireRating|eq|REI60"
 _WALL_LINE = "#6=IFCWALL('38FRviGan7WhU9JrK165gm',$,'Fixture Wall',$,$,$,$,$,$);"

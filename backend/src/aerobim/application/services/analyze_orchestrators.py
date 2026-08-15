@@ -124,19 +124,23 @@ class IngestionOrchestrator:
         self._host = host
 
     def run(self, request: ValidationRequest) -> IngestionBundle:
-        request, office_capability = self._host._maybe_hydrate_office_requirement_source(request)
+        request, office_capability = (
+            self._host._ingestion_service().maybe_hydrate_office_requirement_source(request)
+        )
         structured_requirements = list(
             self._host._requirement_extractor.extract(request.requirement_source)
         )
         structured_requirements = [
             replace(req, confidence=score_confidence(req)) for req in structured_requirements
         ]
-        synthesized_requirements = self._host._collect_synthesized_requirements(request)
+        synthesized_requirements = self._host._ingestion_service().collect_synthesized_requirements(
+            request
+        )
         synthesized_requirements = [
             replace(req, confidence=score_confidence(req)) for req in synthesized_requirements
         ]
-        norm_pack_requirements, norm_pack_capability = self._host._collect_norm_pack_requirements(
-            request
+        norm_pack_requirements, norm_pack_capability = (
+            self._host._ingestion_service().collect_norm_pack_requirements(request)
         )
         norm_pack_issues: list[ValidationIssue] = []
         if norm_pack_capability.status is CapabilityState.FAILED:
@@ -153,9 +157,11 @@ class IngestionOrchestrator:
             [*structured_requirements, *synthesized_requirements, *norm_pack_requirements]
         )
         annotation_list, region_list, raster_annotation_count = (
-            self._host._collect_drawing_annotations(request)
+            self._host._ingestion_service().collect_drawing_annotations(request)
         )
-        cad_annotations, cad_capability, cad_issues = self._host._run_cad_ingest(request)
+        cad_annotations, cad_capability, cad_issues = (
+            self._host._ingestion_service().run_cad_ingest(request)
+        )
         drawing_annotations = tuple([*annotation_list, *cad_annotations])
         drawing_regions = mark_regions_for_hitl(tuple(region_list), drawing_annotations)
         region_hitl_issues = tuple(issues_for_hitl_regions(drawing_regions))
@@ -166,7 +172,7 @@ class IngestionOrchestrator:
                 requirements=requirements,
             )
         )
-        drawing_assets = tuple(self._host._collect_drawing_assets(request))
+        drawing_assets = tuple(self._host._ingestion_service().collect_drawing_assets(request))
         extraction_integrity = self._host._probe_extraction_integrity(request)
         return IngestionBundle(
             request=request,
@@ -201,21 +207,21 @@ class DeterministicValidationOrchestrator:
         if request.ifc_path is None:
             return self._run_document_only(request, ingested)
 
-        schema_issues = list(self._host._collect_schema_issues(request.ifc_path))
-        schema_request_id, schema_remote_issues = self._host._submit_bsi_validation(
+        schema_issues = list(self._host._ids_runner().collect_schema_issues(request.ifc_path))
+        schema_request_id, schema_remote_issues = self._host._ids_runner().submit_bsi_validation(
             request.ifc_path
         )
         schema_issues.extend(schema_remote_issues)
         schema_issues_t = tuple(schema_issues)
-        ids_audit_issues = tuple(self._host._collect_ids_audit_issues(request))
-        ids_issues = tuple(self._host._collect_ids_issues(request))
+        ids_audit_issues = tuple(self._host._ids_runner().collect_ids_audit_issues(request))
+        ids_issues = tuple(self._host._ids_runner().collect_ids_issues(request))
         ifc_issues = (
             tuple(self._host._ifc_validator.validate(request.ifc_path, requirements))
             if requirements
             else ()
         )
         drawing_issues = tuple(
-            self._host._validate_drawing_annotations(requirements, ingested.drawing_annotations)
+            self._host._annotation_validator().validate(requirements, ingested.drawing_annotations)
         )
         sheet_identity_issues = tuple(
             [
@@ -227,36 +233,40 @@ class DeterministicValidationOrchestrator:
             ]
         )
         cross_document_issues = tuple(
-            self._host._detect_cross_document_contradictions(requirements)
+            self._host._cross_doc_detector().detect(requirements)
         )
         revision_merge_issues = tuple(
-            detect_revision_merge_conflicts(self._host._collect_identity_sources(request))
+            detect_revision_merge_conflicts(
+                self._host._ingestion_service().collect_identity_sources(request)
+            )
         )
         section_pairing_issues, section_pairing_capability = (
-            self._host._collect_section_pairing_issues(request)
+            self._host._ids_runner().collect_section_pairing_issues(request)
         )
         reinforcement_mode = request.reinforcement_provenance_mode
         # Hard profiles always enforce OpenRebar provenance (RTATOM-G07); soft stays advisory.
         if getattr(self._host, "_hard_signoff_profile", False):
             reinforcement_mode = "enforced"
         reinforcement_provenance_issues = tuple(
-            self._host._apply_openrebar_provenance_policy(
+            self._host._ids_runner().apply_openrebar_provenance_policy(
                 self._host._external_evidence_verifier.verify(request),
                 reinforcement_mode,
             )
         )
-        clash_results, clash_capability, clash_issues = self._host._run_clash_detection(
-            request.ifc_path
+        clash_results, clash_capability, clash_issues = (
+            self._host._clash_runner().run_clash_detection(request.ifc_path)
         )
-        mep_capability, mep_issues = self._host._probe_mep_system_graph(request.ifc_path)
-        quantity_issues, quantity_capability = self._host._run_quantity_consistency(
+        mep_capability, mep_issues = self._host._mep_probe().probe(request.ifc_path)
+        quantity_issues, quantity_capability = self._host._clash_runner().run_quantity_consistency(
             request.ifc_path, requirements
         )
-        load_issues, calculation_match = self._host._run_load_evidence(request)
-        logic_issues = self._host._run_logic_consistency(request)
-        signature_capability, signature_issues = self._host._run_signature_audit(request)
+        load_issues, calculation_match = self._host._clash_runner().run_load_evidence(request)
+        logic_issues = self._host._clash_runner().run_logic_consistency(request)
+        signature_capability, signature_issues = self._host._signature_runner().run_signature_audit(
+            request
+        )
         package_completeness_capability, package_completeness_issues = (
-            self._host._run_package_completeness(request)
+            self._host._signature_runner().run_package_completeness(request)
         )
         engine_issues = tuple(
             [
@@ -350,7 +360,7 @@ class DeterministicValidationOrchestrator:
                 "ifc_path omitted — MEP system graph not evaluated (document-only)",
             )
         requirements = ingested.requirements
-        ids_audit_issues = tuple(self._host._collect_ids_audit_issues(request))
+        ids_audit_issues = tuple(self._host._ids_runner().collect_ids_audit_issues(request))
         # IDS against IFC cannot run without a model.
         ids_issues: tuple[ValidationIssue, ...]
         if request.ids_path is not None:
@@ -366,7 +376,7 @@ class DeterministicValidationOrchestrator:
         else:
             ids_issues = ()
         drawing_issues = tuple(
-            self._host._validate_drawing_annotations(requirements, ingested.drawing_annotations)
+            self._host._annotation_validator().validate(requirements, ingested.drawing_annotations)
         )
         sheet_identity_issues = tuple(
             [
@@ -378,28 +388,32 @@ class DeterministicValidationOrchestrator:
             ]
         )
         cross_document_issues = tuple(
-            self._host._detect_cross_document_contradictions(requirements)
+            self._host._cross_doc_detector().detect(requirements)
         )
         revision_merge_issues = tuple(
-            detect_revision_merge_conflicts(self._host._collect_identity_sources(request))
+            detect_revision_merge_conflicts(
+                self._host._ingestion_service().collect_identity_sources(request)
+            )
         )
         section_pairing_issues, section_pairing_capability = (
-            self._host._collect_section_pairing_issues(request)
+            self._host._ids_runner().collect_section_pairing_issues(request)
         )
         reinforcement_mode = request.reinforcement_provenance_mode
         if getattr(self._host, "_hard_signoff_profile", False):
             reinforcement_mode = "enforced"
         reinforcement_provenance_issues = tuple(
-            self._host._apply_openrebar_provenance_policy(
+            self._host._ids_runner().apply_openrebar_provenance_policy(
                 self._host._external_evidence_verifier.verify(request),
                 reinforcement_mode,
             )
         )
-        load_issues, calculation_match = self._host._run_load_evidence(request)
-        logic_issues = self._host._run_logic_consistency(request)
-        signature_capability, signature_issues = self._host._run_signature_audit(request)
+        load_issues, calculation_match = self._host._clash_runner().run_load_evidence(request)
+        logic_issues = self._host._clash_runner().run_logic_consistency(request)
+        signature_capability, signature_issues = self._host._signature_runner().run_signature_audit(
+            request
+        )
         package_completeness_capability, package_completeness_issues = (
-            self._host._run_package_completeness(request)
+            self._host._signature_runner().run_package_completeness(request)
         )
         engine_issues = tuple(
             [
@@ -744,7 +758,9 @@ class EvidenceAssembler:
             )
             for issue in [*intake_issues, *advisory.reconciled_issues]
         )
-        issues_with_remarks = tuple(self._host._attach_remarks(prioritized_issues))
+        issues_with_remarks = tuple(
+            self._host._remark_enricher().attach_remarks(prioritized_issues)
+        )
         overlay_traces: list[dict[str, object]] = []
         may_overlay, overlay_trace = self._evaluate_llm_overlay_gate(request)
         if overlay_trace is not None:
@@ -752,10 +768,12 @@ class EvidenceAssembler:
         if may_overlay:
             # Only trusted corpus prefixes may authorize synthetic_public egress.
             allow_synth = _advisory_object_kind(request) == "public_fixture"
-            issues_with_remarks, llm_advisory_capability = self._host._overlay_llm_remarks(
-                issues_with_remarks,
-                request_id=request.request_id,
-                allow_synthetic_public=allow_synth,
+            issues_with_remarks, llm_advisory_capability = (
+                self._host._remark_enricher().overlay_llm_remarks(
+                    issues_with_remarks,
+                    request_id=request.request_id,
+                    allow_synthetic_public=allow_synth,
+                )
             )
         else:
             reason = (overlay_trace or {}).get("reason") or "hybrid_route_gate blocked"

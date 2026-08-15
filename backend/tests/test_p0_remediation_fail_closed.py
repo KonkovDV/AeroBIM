@@ -56,7 +56,7 @@ class RequireClashFailClosedTests(unittest.TestCase):
         clash = MagicMock()
         clash.detect.side_effect = ClashCapabilityError("skipped", "ifcclash missing")
         uc = _minimal_uc(require_clash=True, clash_detector=clash)
-        _results, capability, issues = uc._run_clash_detection(Path("sample.ifc"))
+        _results, capability, issues = uc._clash_runner().run_clash_detection(Path("sample.ifc"))
         self.assertEqual(capability.status.value, "failed")
         self.assertEqual(issues[0].severity, Severity.ERROR)
 
@@ -64,7 +64,7 @@ class RequireClashFailClosedTests(unittest.TestCase):
         clash = MagicMock()
         clash.detect.side_effect = ClashCapabilityError("skipped", "ifcclash missing")
         uc = _minimal_uc(require_clash=False, clash_detector=clash)
-        _results, capability, issues = uc._run_clash_detection(Path("sample.ifc"))
+        _results, capability, issues = uc._clash_runner().run_clash_detection(Path("sample.ifc"))
         self.assertEqual(capability.status.value, "skipped")
         self.assertEqual(issues[0].severity, Severity.WARNING)
 

@@ -117,7 +117,7 @@ def attach_live_digests(matrix: dict[str, Any], pack_paths: list[Path]) -> None:
     """One extra analyze per pack after timing; does not enter p50/p95 windows."""
     from aerobim.core.config.settings import Settings
     from aerobim.core.di.tokens import Tokens
-    from aerobim.infrastructure.di.bootstrap import bootstrap_container
+    from aerobim.tools._cli_base import bootstrap_container
 
     settings = Settings.from_env()
     analyze = bootstrap_container(settings).resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)

@@ -56,7 +56,7 @@ class MepFederatedScopeWiringTests(unittest.TestCase):
             ifc = Path(tmpdir) / "model.ifc"
             ifc.write_text("ISO-10303-21;", encoding="utf-8")
             uc = _minimal_uc(mep_federated_scope_path=scope_path)
-            status = uc._probe_mep_system_graph(ifc)
+            status = uc._mep_probe().probe(ifc)
         self.assertEqual(status[0].status, CapabilityState.FAILED)
         self.assertIn("missing IFC paths", status[0].reason or "")
 
@@ -69,7 +69,7 @@ class MepFederatedScopeWiringTests(unittest.TestCase):
             ifc = Path(tmpdir) / "model.ifc"
             ifc.write_text("ISO-10303-21;", encoding="utf-8")
             uc = _minimal_uc(mep_federated_scope_path=template)
-            status, issues = uc._probe_mep_system_graph(ifc)
+            status, issues = uc._mep_probe().probe(ifc)
         self.assertEqual(status.status, CapabilityState.NOT_VERIFIED)
         self.assertIn("scope_status=NOT_VERIFIED", status.reason or "")
         self.assertEqual(issues, ())

@@ -17,7 +17,7 @@ from typing import Any
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.llm_extraction import ExtractionCandidate, LlmExtractionPort
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 
 CLAIM_LEVEL = "fixture_only"
 
