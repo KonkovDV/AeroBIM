@@ -11,6 +11,8 @@ claim_boundary: >
 
 # Audit: HEAD `005b7bc` × Task 07 × TechLab KT#2 × MIK
 
+> **Superseded 15.08 evening.** Published `main` is now `0402a7e` (clean tree, live-CLI rehearsal). Read [`AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md`](AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md). This file remains as a point-in-time note of the *dirty* tree against `005b7bc`.
+
 **Author relationship:** Internal self-assessment, 15.08.2026.  
 **Evaluated commit (GitHub verified):** `005b7bcb6fb2b9f353cc046b44fe68f1b519b776` (14.08 23:40 MSK).  
 **Parent:** `dd1a0a70aa1b6328ccfd912820fa88638f72899f`.  

@@ -438,6 +438,26 @@ class ClashDetectorPortTests(unittest.TestCase):
         self.assertIn("RuntimeError", ctx.exception.reason)
         self.assertNotEqual(ctx.exception.reason.strip(), "Clash detection failed:")
 
+    def test_clash_detector_empty_assertion_names_fixture_geom_init(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        with patch.object(detector, "_run_clash_detection", side_effect=AssertionError()):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector.detect(ifc_path)
+
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("AssertionError", ctx.exception.reason)
+        self.assertIn("tiny wall fixtures", ctx.exception.reason)
+        self.assertNotEqual(ctx.exception.reason.strip(), "Clash detection failed:")
+
     def test_clash_detector_cleans_temporary_output_directory(self) -> None:
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 

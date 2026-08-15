@@ -1,18 +1,19 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.10"
-last_updated: "2026-08-14"
+version: "1.6.11"
+last_updated: "2026-08-15"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
 
-# Engineering Status — 2026-08-09
+# Engineering Status — 2026-08-15
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-14 · **v1.6.10** — Wave A fixture substitutes (survey XSD intake, IfcClash clearance extra-method, IDS document audit, SP 63 cover *template*); RT-001/002/003 unchanged  
+**last_updated:** 2026-08-15 · **v1.6.11** — jury/MIK stage = доработка; Wave A substitutes unchanged; RT-001/002/003 unchanged  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Wave A Red Team:** [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md)  
+**Jury / MIK / Novator RT:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
 **Residuals Red Team:** [`quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md`](quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md)  
 **Wave-2 Red Team (К0/commercial/coverage):** [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md)  

@@ -2,7 +2,7 @@
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
 version: "4.4.1"
-last_updated: "2026-08-14"
+last_updated: "2026-08-15"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -15,6 +15,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 |---------|------|
 | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng readiness** (P0 WP-01…08 + Wave A fixture substitutes) — not Checkpoint GO |
 | [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md) | Red Team Wave A (survey XSD / clearance / IDS audit / SP 63 template); NO_GO |
+| [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Jury/MIK/Novator thinking-model RT; stage = доработка |
+| [`quality/AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md`](quality/AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md) | Audit of published `0402a7e` |
 | [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) | P0 Red Team rollup (self-audit; NO_GO) |
 | [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md) | **Red Team wave-2**: К0/tracker + commercial hygiene + coverage UI |
 | [`docs.md`](docs.md) | Jury technical justification (RU) |

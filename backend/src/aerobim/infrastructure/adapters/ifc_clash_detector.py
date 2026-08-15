@@ -138,6 +138,11 @@ class IfcClashDetector:
             raise
         except Exception as exc:
             detail = str(exc).strip() or type(exc).__name__
+            if isinstance(exc, AssertionError):
+                detail = (
+                    f"{detail}; IfcClash geometry init "
+                    "(typical on tiny wall fixtures; not a silent pass)"
+                )
             raise ClashCapabilityError(
                 "failed",
                 f"Clash detection failed: {detail}",

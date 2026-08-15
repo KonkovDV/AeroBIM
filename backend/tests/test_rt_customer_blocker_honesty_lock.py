@@ -205,5 +205,41 @@ class AcademicRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("Checkpoint stays **NO_GO**", text)
 
 
+class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
+    def test_jury_mik_novator_rt_does_not_close_blockers_or_skip_stage(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "quality"
+            / "RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md"
+        )
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("closes_rt003: false", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("доработка", text)
+        self.assertIn("валидация эффективности", text.lower())
+        self.assertIn("Лидеры инноваций", text)
+        self.assertIn("Checkpoint stays **NO_GO**", text)
+        self.assertNotIn("closes_rt001: true", text)
+        self.assertNotIn("closes_rt002: true", text)
+        self.assertNotIn("closes_rt003: true", text)
+
+    def test_mik_sla_is_protocol_ready_not_measured_eng_ready(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "partners"
+            / "MIK_PILOT_COMPLIANCE_2026.md"
+        )
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("PROTOCOL_READY", text)
+        self.assertIn("BLOCKED_CUSTOMER_DATA", text)
+        self.assertNotIn("ENG_READY | Числа выводимы", text)
+        self.assertIn("просрочен", text)
+
+
 if __name__ == "__main__":
     unittest.main()
