@@ -8,6 +8,8 @@ claim_boundary: "Rehearsal script. Fixture GO. Checkpoint NO_GO. Live CLI slice,
 
 # Demo rehearsal (30–40 min) — 20.08
 
+**Формула (0–3 мин, дословно):** Мы на стадии доработки. Одна команда показывает live CLI с fail-closed доказательным finding на fixture. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется до корпуса Самолёта, двух разметчиков, signed scope и CDE-подтверждения.
+
 **Открывать:** свежий `artifacts/vertical-slice-demo/report.html` после CLI.  
 **Не открывать:** `docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html` и snapshot `…/vertical-slice/report.html` (нет `#kt2-overlay`).  
 **Не просить:** раунд / SAFE / Checkpoint GO. Ask = слот + размеченный комплект.
@@ -28,8 +30,8 @@ python -m aerobim.tools.verify_kt2_handoff --write-status ../docs/evidence/kt2-h
 
 | Min | Open | Say |
 | --- | --- | --- |
-| 0–3 | README Checkpoint **NO_GO** + этот cover | Fixture готов показать. У заказчика — NO_GO: нет корпуса, нет подписанного профиля, MEP clash NOT_VERIFIED. Не «система сломана». |
-| 3–8 | [`KT2_JURY_FAQ_2026_08_12.md`](KT2_JURY_FAQ_2026_08_12.md) | Wave A ≠ CLOSED blockers. Local 2259 ≠ CI pin 2167. |
+| 0–3 | README Checkpoint **NO_GO** | Формула выше. Не «система сломана». |
+| 3–8 | [`KT2_JURY_FAQ_2026_08_12.md`](KT2_JURY_FAQ_2026_08_12.md) | Wave A ≠ CLOSED blockers. Локальный pytest ≠ CI pin README. |
 | 8–12 | `VERIFY.json` + `STATUS.json` | L1 gate зелёный **и** вердикт NO_GO. |
 | 12–22 | **live** `artifacts/vertical-slice-demo/report.html` → `#kt2-overlay` | Одна находка: лист, текст 150 mm / WALL-01, finding_id / source_id / evidence_refs, `summary.passed=false`. Не двери/окна. IFC = IfcOpenShell fixture, не Renga. |
 | 22–26 | `overlay-problem-zone.png` рядом | Детерминированная рамка, не CV. |

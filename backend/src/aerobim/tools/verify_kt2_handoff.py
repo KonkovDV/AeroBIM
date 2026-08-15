@@ -157,12 +157,10 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     else:
         _check("overlay_fixture_rendered", False, "missing overlay STATUS", rows)
 
-    academic = repo / "docs" / "pilot" / "KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md"
     align = repo / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
-    max_eng = repo / "docs" / "pilot" / "KT2_MAX_ENG_PLAN_2026_08_12.md"
-    _check("academic_plan", academic.is_file(), str(academic), rows)
+    ask = repo / "docs" / "partners" / "_08_15.md"
     _check("tri_source_alignment", align.is_file(), str(align), rows)
-    _check("max_eng_plan", max_eng.is_file(), str(max_eng), rows)
+    _check("samolet_kt2_ask", ask.is_file(), str(ask), rows)
 
     second_overlay = (
         repo / "docs" / "evidence" / "drawing-overlay-smoke-2026-08" / "overlay-sheet-header.png"
@@ -195,9 +193,7 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     )
 
     handoff_readme = handoff_dir / "README.md"
-    handoff_text = (
-        handoff_readme.read_text(encoding="utf-8") if handoff_readme.is_file() else ""
-    )
+    handoff_text = handoff_readme.read_text(encoding="utf-8") if handoff_readme.is_file() else ""
     _check(
         "handoff_readme_live_cli",
         "run_demo_vertical_slice" in handoff_text

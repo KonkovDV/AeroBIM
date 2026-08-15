@@ -28,8 +28,7 @@ from aerobim.tools.run_open_corpora_profiles import (
 )
 
 INTERNAL_DATA = Path(
-    os.environ.get("AEROBIM_INTERNAL_DATA")
-    or (repo_root().parent / "aerobim-internal-data")
+    os.environ.get("AEROBIM_INTERNAL_DATA") or (repo_root().parent / "aerobim-internal-data")
 )
 INTERNAL_SCRIPTS = INTERNAL_DATA / "scripts"
 

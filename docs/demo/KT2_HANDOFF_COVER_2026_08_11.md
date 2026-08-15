@@ -5,18 +5,18 @@ date: "2026-08-11"
 claim_boundary: "Fixture GO. Checkpoint NO_GO. Not customer accuracy."
 ---
 
-# КТ#2 — cover note (11.08.2026, речь 15.08)
+# КТ#2 — cover note (речь 15.08, HEAD `25ef3ee`)
 
 ## Одна фраза для экрана
 
-**Промежуточная версия на fixture готова показать; checkpoint у заказчика — NO_GO, пока нет корпуса / norm pack / MEP scope.**
+Мы на стадии доработки. Одна команда показывает live CLI с fail-closed доказательным finding на fixture. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется до корпуса Самолёта, двух разметчиков, signed scope и CDE-подтверждения.
 
 ## Что открыть 19–20.08
 
 1. `cd backend && python -m aerobim.tools.run_demo_vertical_slice`
 2. `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`, `#kt2-claim-boundary`)
 3. Не открывать `kt2-handoff-2026-08-11/wall-guid/report.html` как ядро среза.
-4. Репетиция: [`KT2_DEMO_REHEARSAL_2026_08_12.md`](KT2_DEMO_REHEARSAL_2026_08_12.md). Питч: [`../partners/_TECHLAB_2026_08.md`](../partners/_TECHLAB_2026_08.md) — первые 15 с = NO_GO, не раунд.
+4. Репетиция: [`KT2_DEMO_REHEARSAL_2026_08_12.md`](KT2_DEMO_REHEARSAL_2026_08_12.md). Питч: [`../partners/_TECHLAB_2026_08.md`](../partners/_TECHLAB_2026_08.md) — первые 15 с = формула, не раунд.
 
 ## Пакет
 
@@ -33,18 +33,20 @@ claim_boundary: "Fixture GO. Checkpoint NO_GO. Not customer accuracy."
 | Mentor pack | **done** |
 | RT-001 / RT-002 / RT-003 | **OPEN** (данные Самолёта) |
 | OIDC BFF | **501** Phase 2.5 stub — не production |
-| Academic closure plan (12.08) | [`../pilot/KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md`](../pilot/KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md) |
-| Max-eng plan | [`../pilot/KT2_MAX_ENG_PLAN_2026_08_12.md`](../pilot/KT2_MAX_ENG_PLAN_2026_08_12.md) |
 | Jury FAQ / rehearsal | [`KT2_JURY_FAQ_2026_08_12.md`](KT2_JURY_FAQ_2026_08_12.md) · [`KT2_DEMO_REHEARSAL_2026_08_12.md`](KT2_DEMO_REHEARSAL_2026_08_12.md) |
 | Tri-source alignment | [`../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md`](../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md) |
 | N43 baseline lag=1 | checklist [`../audit/N43_REHEARSAL_CHECKLIST_2026_08_17.md`](../audit/N43_REHEARSAL_CHECKLIST_2026_08_17.md) — activate **17.08** only |
 
 ## Календарь до конца окна КТ#2 (20.08)
 
-1. **15–16.08** — overlay / CDE wording / funding speech (live CLI, не wall-guid).  
-2. **17.08** — N43: `max_commits_behind=1` **только в этот день** ([checklist](../audit/N43_REHEARSAL_CHECKLIST_2026_08_17.md)). Не раньше.  
-3. **19.08** — видео (человек) + ЛК. Скрипт: [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md).  
-4. **20.08** — КТ#2. Буфер: только критический фикс. Wave A ≠ RT CLOSED.
+Только четыре закрытия:
+
+1. Live CLI на каждом показе.  
+2. **19.08** — видео (человек).  
+3. **19–20.08** — ЛК (человек).  
+4. Запрос заказчику: [`../partners/_08_15.md`](../partners/_08_15.md).
+
+N43 / AEC-Bench **не** входят в это окно. Wave A ≠ RT CLOSED. 20.08 — только критический фикс.
 
 ## Что просить на этой неделе (не раунд)
 

@@ -42,6 +42,8 @@ PRIORITY_PREFIXES = (
     "README.md",
     "LICENSE",
 )
+
+
 def _local_candidates() -> list[Path]:
     """Repo-relative and sibling checkouts. No machine-absolute paths."""
     candidates: list[Path] = []
