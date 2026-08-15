@@ -9,17 +9,28 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
 
 from aerobim.core.config.settings import Settings
 from aerobim.infrastructure.auth.oidc_bff_phase3 import (
     DEFAULT_BFF_SESSION_STORE,
     decode_jwt_payload_unverified,
     exchange_authorization_code,
+    parse_session_cookie,
     session_from_token_payload,
+    sign_session_cookie,
 )
 from aerobim.infrastructure.auth.oidc_bff_stubs import DEFAULT_BFF_STATE_STORE
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
 from aerobim.presentation.http.api import create_http_app
+
+
+def _nonce_from_redirect(url: str) -> str:
+    values = parse_qs(urlparse(url).query).get("nonce") or []
+    if not values:
+        raise AssertionError("authorize URL missing nonce")
+    return values[0]
 
 
 def _unsigned_jwt(payload: dict[str, object]) -> str:
@@ -76,6 +87,7 @@ class OidcBffPhase3Tests(unittest.TestCase):
         self.assertEqual(body["phase"], 3)
         self.assertTrue(body["idp_redirect_url"])
         self.assertIn("state=", body["idp_redirect_url"])
+        self.assertIn("nonce=", body["idp_redirect_url"])
 
     def test_callback_issues_httponly_cookie(self) -> None:
         login = self.client.get(
@@ -83,7 +95,8 @@ class OidcBffPhase3Tests(unittest.TestCase):
             params={"redirect_uri": "https://app.example.test/callback"},
         )
         state = login.json()["state"]
-        id_token = _unsigned_jwt({"sub": "user-1", "email": "a@example.test"})
+        nonce = _nonce_from_redirect(login.json()["idp_redirect_url"])
+        id_token = _unsigned_jwt({"sub": "user-1", "email": "a@example.test", "nonce": nonce})
         with patch(
             "aerobim.presentation.http.routes.system.exchange_authorization_code",
             return_value={"id_token": id_token, "access_token": "tok"},
@@ -94,12 +107,16 @@ class OidcBffPhase3Tests(unittest.TestCase):
             )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["session_cookie_issued"])
-        self.assertTrue(response.cookies.get("aerobim_bff_session"))
+        cookie = response.cookies.get("aerobim_bff_session")
+        self.assertTrue(cookie)
+        self.assertIn(".", cookie)
         session = self.client.get("/v1/auth/session")
         self.assertEqual(session.status_code, 200)
         self.assertEqual(session.json()["sub"], "user-1")
         self.assertIsNone(session.json()["access_token"])
         self.assertFalse(session.json()["identity_verified"])
+        capabilities = self.client.get("/v1/system/capabilities")
+        self.assertEqual(capabilities.status_code, 401)
 
     def test_logout_clears_session(self) -> None:
         login = self.client.get(
@@ -107,7 +124,8 @@ class OidcBffPhase3Tests(unittest.TestCase):
             params={"redirect_uri": "https://app.example.test/callback"},
         )
         state = login.json()["state"]
-        id_token = _unsigned_jwt({"sub": "user-1"})
+        nonce = _nonce_from_redirect(login.json()["idp_redirect_url"])
+        id_token = _unsigned_jwt({"sub": "user-1", "nonce": nonce})
         with patch(
             "aerobim.presentation.http.routes.system.exchange_authorization_code",
             return_value={"id_token": id_token},
@@ -120,11 +138,16 @@ class OidcBffPhase3Tests(unittest.TestCase):
         self.assertEqual(session.status_code, 401)
 
     def test_jwt_payload_helper(self) -> None:
-        token = _unsigned_jwt({"sub": "abc"})
+        token = _unsigned_jwt({"sub": "abc", "nonce": "n1"})
         self.assertEqual(decode_jwt_payload_unverified(token)["sub"], "abc")
-        subject, _email, verified = session_from_token_payload({"id_token": token})
+        subject, _email, verified = session_from_token_payload(
+            {"id_token": token},
+            expected_nonce="n1",
+        )
         self.assertEqual(subject, "abc")
         self.assertFalse(verified)
+        with self.assertRaises(OidcValidationError):
+            session_from_token_payload({"id_token": token}, expected_nonce="other")
 
     def test_callback_rejects_redirect_uri_off_allowlist(self) -> None:
         login = self.client.get(
@@ -144,6 +167,50 @@ class OidcBffPhase3Tests(unittest.TestCase):
         self.assertEqual(response.json()["error"], "invalid_redirect_uri")
         exchange.assert_not_called()
 
+    def test_callback_rejects_wrong_nonce(self) -> None:
+        login = self.client.get(
+            "/v1/auth/login",
+            params={"redirect_uri": "https://app.example.test/callback"},
+        )
+        state = login.json()["state"]
+        id_token = _unsigned_jwt({"sub": "user-1", "nonce": "not-the-login-nonce"})
+        with patch(
+            "aerobim.presentation.http.routes.system.exchange_authorization_code",
+            return_value={"id_token": id_token},
+        ):
+            response = self.client.get(
+                "/v1/auth/callback",
+                params={"state": state, "code": "auth-code"},
+            )
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json()["error"], "identity_verification_failed")
+
+    def test_tampered_session_cookie_is_rejected(self) -> None:
+        login = self.client.get(
+            "/v1/auth/login",
+            params={"redirect_uri": "https://app.example.test/callback"},
+        )
+        state = login.json()["state"]
+        nonce = _nonce_from_redirect(login.json()["idp_redirect_url"])
+        with patch(
+            "aerobim.presentation.http.routes.system.exchange_authorization_code",
+            return_value={"id_token": _unsigned_jwt({"sub": "user-1", "nonce": nonce})},
+        ):
+            issued = self.client.get("/v1/auth/callback", params={"state": state, "code": "c"})
+        cookie = issued.cookies.get("aerobim_bff_session")
+        self.assertTrue(cookie)
+        tampered = cookie[:-1] + ("0" if cookie[-1] != "0" else "1")
+        self.assertIsNone(parse_session_cookie(tampered, "cookie-secret"))
+        self.assertIsNotNone(parse_session_cookie(cookie, "cookie-secret"))
+        self.client.cookies.set("aerobim_bff_session", tampered)
+        session = self.client.get("/v1/auth/session")
+        self.assertEqual(session.status_code, 401)
+
+    def test_signed_cookie_roundtrip(self) -> None:
+        packed = sign_session_cookie("sid123", "cookie-secret")
+        self.assertEqual(parse_session_cookie(packed, "cookie-secret"), "sid123")
+        self.assertIsNone(parse_session_cookie("sid123", "cookie-secret"))
+
     def test_verified_validator_rejects_unsigned_id_token(self) -> None:
         from aerobim.infrastructure.security.oidc_token_validator import (
             OidcTokenValidator,
@@ -159,9 +226,13 @@ class OidcBffPhase3Tests(unittest.TestCase):
             audience="lab-client",
             jwks_url="https://idp.example.test/jwks",
         )
-        token = _unsigned_jwt({"sub": "abc"})
+        token = _unsigned_jwt({"sub": "abc", "nonce": "n1"})
         with self.assertRaises(OidcValidationError):
-            session_from_token_payload({"id_token": token}, validator=validator)
+            session_from_token_payload(
+                {"id_token": token},
+                validator=validator,
+                expected_nonce="n1",
+            )
 
     def test_token_exchange_rejects_loopback_ssrf(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "SSRF"):
@@ -183,6 +254,65 @@ class OidcBffPhase3Tests(unittest.TestCase):
         with patch.dict(os.environ, env, clear=False):
             with self.assertRaisesRegex(RuntimeError, "AEROBIM_OIDC_BFF_TOKEN_URL"):
                 Settings.from_env()
+
+
+class OidcBffAuthGetRateLimitTests(unittest.TestCase):
+    """GET /v1/auth/login|callback|session share the HTTP rate-limit budget when >0."""
+
+    def setUp(self) -> None:
+        DEFAULT_BFF_STATE_STORE.clear()
+        DEFAULT_BFF_SESSION_STORE.clear()
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        self._tmpdir = tempfile.TemporaryDirectory()
+        settings = Settings(
+            application_name="test",
+            environment="test",
+            host="127.0.0.1",
+            port=8080,
+            storage_dir=Path(self._tmpdir.name),
+            debug=True,
+            api_bearer_token="test-token",
+            http_rate_limit_per_minute=1,
+            oidc_bff_client_id="lab-client",
+            oidc_bff_authorize_url="https://idp.example.test/authorize",
+            oidc_bff_token_url="https://idp.example.test/token",
+            oidc_bff_client_secret="lab-secret",
+            oidc_bff_cookie_secret="cookie-secret",
+            oidc_bff_redirect_uri_allowlist=("https://app.example.test/callback",),
+        )
+        container = bootstrap_container(settings)
+        self.client = TestClient(create_http_app(container))
+
+    def tearDown(self) -> None:
+        self._tmpdir.cleanup()
+        DEFAULT_BFF_STATE_STORE.clear()
+        DEFAULT_BFF_SESSION_STORE.clear()
+
+    def test_second_login_is_rate_limited(self) -> None:
+        first = self.client.get(
+            "/v1/auth/login",
+            params={"redirect_uri": "https://app.example.test/callback"},
+        )
+        self.assertEqual(first.status_code, 200)
+        health = self.client.get("/health")
+        self.assertEqual(health.status_code, 200)
+        second = self.client.get(
+            "/v1/auth/login",
+            params={"redirect_uri": "https://app.example.test/callback"},
+        )
+        self.assertEqual(second.status_code, 429)
+
+    def test_session_shares_auth_get_budget(self) -> None:
+        first = self.client.get(
+            "/v1/auth/login",
+            params={"redirect_uri": "https://app.example.test/callback"},
+        )
+        self.assertEqual(first.status_code, 200)
+        session = self.client.get("/v1/auth/session")
+        self.assertEqual(session.status_code, 429)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,11 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # IFC-Bench v2 smoke (open_bench_only)
 
-**Date:** 2026-08-04; re-run 2026-08-14 (countable subset **25/1026**, not 514)  
+**Date:** 2026-08-04; re-run 2026-08-15 (countable subset **25/1026**, not 514)  
 **claim_level:** `open_bench_only`  
 **closes_rt001:** false  
 **Artifact:** [`ifc-bench-v2-smoke-latest.json`](ifc-bench-v2-smoke-latest.json)  
-**output_sha256:** `8f76efdf69fc0efb0407d7c0c557d03f40771e68fd5e29c518cf6f7591f57b34`
+**output_sha256:** `64cd4cff0867190a77762248b223bb5900f05cc10770c9cc61916c882bb74ea6`
 
 ## Denominators (honest)
 

@@ -100,6 +100,11 @@
       "rationale": "JWKS fetch via SSRF-guarded safe_urlopen."
     },
     {
+      "glob": "src/aerobim/infrastructure/auth/oidc_bff_phase3.py",
+      "rules": ["S310"],
+      "rationale": "Token exchange Request is opened only via SSRF-guarded safe_urlopen."
+    },
+    {
       "glob": "src/aerobim/infrastructure/adapters/federated_ifc_mep_system_graph.py",
       "rules": ["S112"],
       "rationale": "Skip corrupt optional graph fragments; logged upstream."

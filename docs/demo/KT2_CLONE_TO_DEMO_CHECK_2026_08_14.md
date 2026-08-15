@@ -11,7 +11,7 @@ README EN §Quick Start и README RU §Быстрый старт называю�
 
 `python -m aerobim.tools.run_demo_vertical_slice`
 
-из каталога `backend/`, после `pip install -e ".[dev,raster,pdf-agpl]"`.
+из каталога `backend/`, после `pip install -e ".[dev,raster]"` (оверлей = pypdfium2; `pdf-agpl` не обязателен).
 
 ## Входы на диске
 

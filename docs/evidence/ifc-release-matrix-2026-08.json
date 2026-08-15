@@ -4,7 +4,7 @@
   "claim_level": "fixture_only",
   "customer_accuracy_not_established": true,
   "claim_boundary": "Fixture schema-suite kernel timing and finding counts. issue_count is not accuracy. Not customer packages. Not TZ >90%.",
-  "generated_at": "2026-08-15T09:07:52.396083+00:00",
+  "generated_at": "2026-08-15T17:22:49.426402+00:00",
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
@@ -12,7 +12,7 @@
     "system": "Windows"
   },
   "source_suite": {
-    "generated_at": "2026-08-15T09:07:52.396083+00:00",
+    "generated_at": "2026-08-15T17:22:49.425880+00:00",
     "iterations": 20,
     "warmup_iterations": 2
   },
@@ -25,10 +25,10 @@
       "rules_evaluated": 3,
       "findings_emitted": 5,
       "timing_ms": {
-        "p50": 28.538,
-        "p95": 32.937,
-        "max": 33.548,
-        "spike_max_over_p50": 1.176
+        "p50": 28.012,
+        "p95": 36.717,
+        "max": 45.385,
+        "spike_max_over_p50": 1.62
       },
       "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip",
       "rules_fired": {
@@ -39,14 +39,14 @@
         "SAM-R-003": 1
       },
       "severity_counts": {
-        "error": 4,
-        "warning": 1
+        "error": 3,
+        "warning": 2
       },
       "refusals": [
         {
           "capability": "clash",
-          "status": "failed",
-          "reason": "Clash detection failed: AssertionError"
+          "status": "skipped",
+          "reason": "IfcClash unavailable: No module named 'ifcclash'"
         },
         {
           "capability": "unit_scale",
@@ -107,10 +107,10 @@
       "rules_evaluated": 3,
       "findings_emitted": 4,
       "timing_ms": {
-        "p50": 26.159,
-        "p95": 27.57,
-        "max": 27.613,
-        "spike_max_over_p50": 1.056
+        "p50": 28.187,
+        "p95": 32.266,
+        "max": 154.031,
+        "spike_max_over_p50": 5.465
       },
       "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip",
       "rules_fired": {
@@ -120,14 +120,14 @@
         "SAM-R-003": 1
       },
       "severity_counts": {
-        "error": 3,
-        "warning": 1
+        "error": 2,
+        "warning": 2
       },
       "refusals": [
         {
           "capability": "clash",
-          "status": "failed",
-          "reason": "Clash detection failed: AssertionError"
+          "status": "skipped",
+          "reason": "IfcClash unavailable: No module named 'ifcclash'"
         },
         {
           "capability": "unit_scale",
@@ -188,10 +188,10 @@
       "rules_evaluated": 3,
       "findings_emitted": 6,
       "timing_ms": {
-        "p50": 33.976,
-        "p95": 78.426,
-        "max": 90.353,
-        "spike_max_over_p50": 2.659
+        "p50": 35.621,
+        "p95": 56.957,
+        "max": 60.829,
+        "spike_max_over_p50": 1.708
       },
       "pset_name_mismatch_policy": "Raised as ValidationIssue (ambiguous Pset alignment), never silent skip",
       "rules_fired": {
@@ -202,14 +202,14 @@
         "SAM-R-003": 1
       },
       "severity_counts": {
-        "error": 5,
-        "warning": 1
+        "error": 4,
+        "warning": 2
       },
       "refusals": [
         {
           "capability": "clash",
-          "status": "failed",
-          "reason": "Clash detection failed: AssertionError"
+          "status": "skipped",
+          "reason": "IfcClash unavailable: No module named 'ifcclash'"
         },
         {
           "capability": "ids",
@@ -269,5 +269,5 @@
   ],
   "refusals_and_degradations_note": "Schema-suite packs are IFC+IDS wall Pset fixtures. Clash SKIPPED/FAILED and raster/MEP SKIPPED/NOT_VERIFIED are honesty, not a silent pass. DWG native remains FAILED.",
   "tracker_task": "Dmitry 14.08 #2: elements / fired rules / wall-clock / refusals. summary.passed is Shared-gate, not customer GO.",
-  "content_sha256": "a2347063743f0654a385c1961f3a9e99bf0ec9d7028d04870ceff5617fcb487b"
+  "content_sha256": "559dcd91f3bde3a485a6d5d8d77679586a1e13de079975e0cb36e010a6346391"
 }

@@ -287,8 +287,7 @@ class IfcClashDetector:
             reasons = "; ".join(f"{guid}:{reason}" for guid, reason in probe.skipped[:8])
             raise ClashCapabilityError(
                 "failed",
-                "Clash geometry probe skipped all products "
-                f"(tiny AABB or geom init); {reasons}",
+                f"Clash geometry probe skipped all products (tiny AABB or geom init); {reasons}",
             )
         if probe.skipped:
             return guid_include_selector(probe.included_guids)

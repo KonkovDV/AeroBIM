@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.14"
+version: "1.6.17"
 last_updated: "2026-08-15"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,17 +9,17 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-15
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-15 · **v1.6.14** — stage = доработка; live CLI demo; RT-001/002/003 unchanged  
+**last_updated:** 2026-08-15 · **v1.6.17** — tracker sprint 15.08 evening; live CLI demo; RT-001/002/003 unchanged  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Wave A Red Team:** [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md)  
-**Jury / MIK RT:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
+**Jury / MIK RT:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) · tracker sprint [`audit/RED_TEAM_TRACKER_SPRINT_2026_08_15.md`](../audit/RED_TEAM_TRACKER_SPRINT_2026_08_15.md)  
 **P0 Red Team:** [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md)  
 **Residuals Red Team:** [`quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md`](quality/RED_TEAM_ENG_RESIDUALS_2026_08_03.md)  
 **Wave-2 Red Team (К0/commercial/coverage):** [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md)  
 **Studio stamp/PII Red Team:** [`quality/RED_TEAM_GRANT_STAMP_PII_2026_08_03.md`](quality/RED_TEAM_GRANT_STAMP_PII_2026_08_03.md)  
 **Qwen local:** [`architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md`](architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md) · [`roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) · [`architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md)  
-**Demo / P4:** [`demo-format-2026-08.md`](demo-format-2026-08.md) · Exp B [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · Exp A [`evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md`](evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md) · RT Friday [`quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md`](quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md)  
+**Demo / P4:** [`demo-format-2026-08.md`](demo-format-2026-08.md) · Exp B [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · Exp A [`evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md`](evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md) · hunt [`evidence/DATASET_HUNT_LOG_2026_08.md`](evidence/DATASET_HUNT_LOG_2026_08.md) · RT Friday [`quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md`](quality/RED_TEAM_KT2_FRIDAY_PACK_2026_08_05.md)  
 **Release aliases:** [`RELEASE_POLICY.md`](RELEASE_POLICY.md) — `LOCAL` env alias dies after КТ#3 **2026-09-21**
 
 ## What improved (engineering — not customer GO)
@@ -49,9 +49,10 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **WP-02 Hybrid advisory pre-gate** | Gate on Analyze advisory + kimi smoke PUBLIC egress | Not verdict path; Checkpoint NO_GO |
 | **WP-01 runtime baseline** | Schema 1.4.0: passed/skipped/failed + gates + env fingerprint + **documented_env set equality (symdiff)** + **architecture_inventory** (48/72/63) checked in CI `--check-readme` + `docs-metadata-integrity` | Not Checkpoint GO |
 | **ADR-002 open-core** | **accepted** 2026-08-05; LICENSE stays MIT | Boundary defined; not commercial features delivered |
-| **OIDC BFF POST-05** | Phase 2 stubs + Phase 3 lab path (`oidc_bff_phase3_ready`); token exchange via `safe_urlopen`; lab sessions expose `identity_verified=false` unless JWKS validator is configured | Production IdP + cookie secret still required |
+| **OIDC BFF POST-05** | Phase 2 stubs + Phase 3 lab (`oidc_bff_phase3_ready`): nonce bind, HMAC session cookie, GET login/callback/**session** rate-limit; `safe_urlopen`; lab `identity_verified=false` without JWKS | Production IdP + FE bearer removal still required; default `auth_bff=NOT_IMPLEMENTED` |
 | **BCF T2** | Verifier `--checklist` / `--eng-readiness`; pack STATUS stays NOT_VERIFIED | Needs real CDE log/screenshot/hashes |
 | **Native DWG** | `python -m aerobim.tools.validate_dwg_toolchain` reports `dwg_native=NOT_IMPLEMENTED` | Never DWG-ready; STUB-ODA-CAD-001 |
+| **Tracker sprint 15.08 evening** | IFC-release matrix refresh (`clash=skipped` on tiny walls); dataset hunt + re-runs; consult pack; GTM KPI = scheduled demos | Not customer GO; Harbor NOT_RUN |
 | **IfcClash tiny walls** | Skip degenerate products (`AEROBIM_CLASH_SKIP_TINY`, default on); all-skipped still FAILED | Not a silent pass |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |
 | **P2-04 Annotation↔IFC** | Claimed GUID → `ifc_guid` only after spatial-index presence | Not human-adjudicated matching |
@@ -78,7 +79,18 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 
 Product accuracy >90%; customer SLA ≤30 min; native DWG; MEP delivered / `mep_system_clash=OK`; CDE_READY BCF; independent calc correctness; MIT-without-disclosure; bare-metal offline-ready; AABB/connects = verified geometric clash; open-corpora binary match / timing as product precision.
 
-## Reproduce wall-guid demo
+## Live CLI demo (KT#2)
+
+Do **not** present the 11.08 wall-guid snapshot HTML as a live overlay. The live path:
+
+```bash
+cd backend
+python -m aerobim.tools.run_demo_vertical_slice
+```
+
+Overlay PNG uses **pypdfium2** (LIC-001 Option B). Clone path is `pip install -e ".[dev,raster]"` — PyMuPDF / `pdf-agpl` is not required for the demo.
+
+## Reproduce wall-guid fixture pin
 
 ```bash
 cd backend

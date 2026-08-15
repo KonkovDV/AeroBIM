@@ -159,7 +159,7 @@ def build_auth_bff_capability() -> dict[str, object]:
             "S256 code_challenge on login; optional IdP authorize URL draft via "
             "AEROBIM_OIDC_BFF_CLIENT_ID + AEROBIM_OIDC_BFF_AUTHORIZE_URL — still 501"
         ),
-        "phase_3_pending": "HttpOnly session cookie + IdP code exchange + FE bearer removal",
+        "phase_3_pending": "Production IdP + FE bearer removal + verified identity",
         "phase_3_lab": (
             "Code-landed behind oidc_bff_phase3_ready (token URL + client secret + "
             "cookie secret + redirect allowlist). Default remains NOT_IMPLEMENTED."

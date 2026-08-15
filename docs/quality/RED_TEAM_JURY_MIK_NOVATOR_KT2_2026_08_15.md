@@ -2,15 +2,21 @@
 ---
 title: "Red Team — жюри Техлаб × МИК × Новатор (HEAD 0402a7e)"
 date: "2026-08-15"
-status: active
+status: SUPERSEDED
+superseded_by: ENGINEERING_STATUS_2026_08.md
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Adversarial jury review. Checkpoint NO_GO. Does not close RT-001/002/003.
+  Historical adversarial jury review of 0402a7e. Checkpoint NO_GO.
+  Does not close RT-001/002/003.
   Not product accuracy. Not paid-pilot result. Not Novator 2026 filing.
   Local pytest is not the CI pin 2167.
 ---
+
+> **SUPERSEDED (2026-08-15).** Object was public `main` after `0402a7e`, not current HEAD.
+> Live engineering status: [`ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
+> Checkpoint remains **NO_GO**; RT-001/002/003 remain **OPEN**.
 
 # Red Team: жюри Техлаба, контур МИК, критерии «Новатор Москвы»
 

@@ -349,8 +349,9 @@ def render_ifc_release_matrix_markdown(matrix: dict[str, Any]) -> str:
             "raster skipped, dwg_dxf missing, cv_human_level missing, "
             "mep_system_clash not_verified, calculation_correctness not_implemented, "
             "qualified_signature missing, unit_scale/ifc_schema not_verified. "
-            "Clash skipped/failed is listed in the refusals column (tiny wall fixtures "
-            "often fail IfcClash geom init — honesty, not a silent pass). "
+            "Clash skipped/failed is listed in the refusals column. Tiny wall fixtures "
+            "default to clash=skipped via AEROBIM_CLASH_SKIP_TINY (all-skipped still "
+            "fail-closed); geom-init FAILED remains honesty, not a silent pass. "
             "Native DWG is **not claimed** DWG-ready.",
             "",
             render_tracker_paste_markdown(matrix).rstrip(),

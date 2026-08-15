@@ -130,7 +130,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | Package completeness inventory (WP-05) | Available (eng) | fixture | Soft opt-in; no native DWG; not PP-87 / customer intake |
 | Open corpora measurability (WP-06) | Available (eng) | fixture/open | Fixture n=7 + BSI IDS TestCases n=290 (CC BY-ND); CI smoke pins — not product accuracy |
 | Quality measurement protocol (WP-07) | Available (eng) | protocol | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |
-| OIDC BFF Phase 2 stubs (POST-05) | NOT_IMPLEMENTED | design+stub | login/callback/logout + CSRF; no production session — Phase 3 pending |
+| OIDC BFF (POST-05) | NOT_IMPLEMENTED | design+stub+lab | Default 501; Phase 3 lab cookie only when `oidc_bff_phase3_ready` — not production SSO |
 | BCF T2 CDE import | NOT_VERIFIED | template | Checklist/verifier ready; needs real CDE log+screenshot+hashes |
 | Customer accuracy >90% / approved norms | Blocked | customer | See Claims Lock |
 
@@ -190,8 +190,8 @@ python3.12 -m venv .venv
 source .venv/bin/activate  # Linux/macOS
 # .venv\Scripts\activate   # Windows
 
-# Install (pdf-agpl = overlay PNG via PyMuPDF; raster = RapidOCR degrade path)
-pip install -e ".[dev,raster,pdf-agpl]"
+# Install (core PDF = pypdfium2; overlay PNG does not need PyMuPDF)
+pip install -e ".[dev,raster]"
 
 # KT#2 vertical slice (~10 min from clone): fail-loud; writes artifacts/vertical-slice-demo/
 python -m aerobim.tools.run_demo_vertical_slice
@@ -204,6 +204,7 @@ python -m aerobim.tools.run_demo_vertical_slice
 # pip install -e ".[clash]"    # enable geometry clash detection
 # pip install -e ".[docling]"  # enable non-text document extraction
 # pip install -e ".[enterprise]"  # enable S3/Postgres enterprise storage adapters
+# pip install -e ".[pdf-agpl]"  # legacy PyMuPDF tools only; not required for the demo overlay
 
 # Run tests
 pytest tests -q
@@ -378,6 +379,8 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Bearer for `/v1/*`; required unless `AEROBIM_ALLOW_ANONYMOUS_DEV` |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `false` | Opt-in anonymous API in development/test only (`from_env`) |
 | `AEROBIM_CLASH_AFFECTS_PASS` | `false` | Soft only in development/fixture; forced `true` under pilot/production sign-off |
+| `AEROBIM_CLASH_SKIP_TINY` | `true` | Skip degenerate/tiny IFC products before IfcClash; all-skipped still FAILED |
+| `AEROBIM_CLASH_MIN_AABB_VOLUME_M3` | `1e-6` | AABB volume threshold used when `AEROBIM_CLASH_SKIP_TINY` is on |
 | `AEROBIM_REQUIRE_CLASH` | `false` | Soft only in development/fixture; forced under pilot/production |
 | `AEROBIM_REQUIRE_MEP_SYSTEM_CLASH` | `false` | When true, MEP `NOT_VERIFIED` blocks Shared-gate pass |
 | `AEROBIM_MEP_FEDERATED_SCOPE_PATH` | *(unset)* | Federated MEP scope JSON (VERIFIED customer or ENG_FIXTURE) |
@@ -427,7 +430,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_BSI_API_TOKEN` | *(unset)* | Optional buildingSMART Validation Service token |
 | `AEROBIM_BSI_VALIDATION_URL` | *(built-in)* | Optional override for bSI Validation Service URL |
 | `AEROBIM_GATES_ATTESTED` | *(CI only)* | Comma-separated CI job names attested into runtime baseline; ignored locally; must equal required gate set under GitHub Actions (N-23) |
-| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | HTTP rate limit per client IP |
+| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; `0` disables |
 | `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
 | `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Optional Kimi OpenAI-compat base URL |
 | `AEROBIM_KIMI_API_KEY` | *(unset)* | Optional Kimi API key (never logged) |
@@ -445,9 +448,12 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_OIDC_JWKS_URL` | *(unset)* | OIDC JWKS URL |
 | `AEROBIM_OIDC_ROLES_CLAIM` | `roles` | OIDC claim name for roles |
 | `AEROBIM_OIDC_TENANT_CLAIM` | `tenant` | OIDC claim name for tenant |
-| `AEROBIM_OIDC_BFF_CLIENT_ID` | *(unset)* | Lab-only OIDC BFF public client id; `auth_bff` is **not claimed** production-ready |
+| `AEROBIM_OIDC_BFF_CLIENT_ID` | *(unset)* | Lab-only OIDC BFF public client id; `auth_bff` stays **NOT_IMPLEMENTED** unless lab Phase 3 is fully configured |
 | `AEROBIM_OIDC_BFF_AUTHORIZE_URL` | *(unset)* | Lab-only IdP authorize URL draft; not a production login |
-| `AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST` | *(unset)* | Comma-separated exact `redirect_uri` allowlist for Phase 2.5 drafts |
+| `AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST` | *(unset)* | Comma-separated exact `redirect_uri` allowlist for lab BFF redirects |
+| `AEROBIM_OIDC_BFF_TOKEN_URL` | *(unset)* | Lab-only token endpoint; required for Phase 3; SSRF-gated at boot |
+| `AEROBIM_OIDC_BFF_CLIENT_SECRET` | *(unset)* | Confidential BFF client secret (lab); never a production SSO claim |
+| `AEROBIM_OIDC_BFF_COOKIE_SECRET` | *(unset)* | HMAC secret for the lab session cookie; unset keeps Phase 3 off |
 | `AEROBIM_REDIS_URL` | *(unset)* | Optional Redis URL for rate-limit / cache backends |
 | `AEROBIM_VLM_ENABLED` | `false` | Opt-in advisory VLM drawing read; never sets `summary.passed` |
 
@@ -464,6 +470,8 @@ AEROBIM_BCF_API_VERSION
 AEROBIM_BSI_API_TOKEN
 AEROBIM_BSI_VALIDATION_URL
 AEROBIM_CLASH_AFFECTS_PASS
+AEROBIM_CLASH_MIN_AABB_VOLUME_M3
+AEROBIM_CLASH_SKIP_TINY
 AEROBIM_CORS_ORIGINS
 AEROBIM_CROSS_DOC_SEVERITY
 AEROBIM_DB_URL
@@ -513,7 +521,10 @@ AEROBIM_NORM_RULE_PACK
 AEROBIM_OIDC_AUDIENCE
 AEROBIM_OIDC_BFF_AUTHORIZE_URL
 AEROBIM_OIDC_BFF_CLIENT_ID
+AEROBIM_OIDC_BFF_CLIENT_SECRET
+AEROBIM_OIDC_BFF_COOKIE_SECRET
 AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST
+AEROBIM_OIDC_BFF_TOKEN_URL
 AEROBIM_OIDC_ISSUER
 AEROBIM_OIDC_JWKS_EXTRA_HOSTS
 AEROBIM_OIDC_JWKS_URL
@@ -557,7 +568,7 @@ aerobim/
 
 <!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->
 <!-- regenerated by: python -m aerobim.tools.export_runtime_baseline -->
-tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/runtime-baseline-latest.json · src ~73166 LOC; tests ~47733 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
+tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/runtime-baseline-latest.json · src ~74536 LOC; tests ~48215 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
 <!-- AEROBIM_RUNTIME_BASELINE:END -->
 
 ## Documentation

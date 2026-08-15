@@ -8,6 +8,8 @@ unless ``Settings.oidc_bff_phase3_ready`` is true (lab / mock IdP).
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import secrets
 import time
@@ -105,6 +107,39 @@ def session_cookie_name(*, secure: bool) -> str:
     return HOST_SESSION_COOKIE_NAME if secure else SESSION_COOKIE_NAME
 
 
+def sign_session_cookie(session_id: str, secret: str) -> str:
+    """Bind the opaque session id to ``AEROBIM_OIDC_BFF_COOKIE_SECRET`` (HMAC-SHA256)."""
+
+    digest = hmac.new(
+        secret.encode("utf-8"),
+        session_id.encode("ascii"),
+        hashlib.sha256,
+    ).hexdigest()
+    return f"{session_id}.{digest}"
+
+
+def parse_session_cookie(value: str | None, secret: str) -> str | None:
+    """Return the session id only when the HMAC matches. Never log ``value``."""
+
+    if not value or not secret or "." not in value:
+        return None
+    session_id, given = value.rsplit(".", 1)
+    if not session_id or not given:
+        return None
+    expected = hmac.new(
+        secret.encode("utf-8"),
+        session_id.encode("ascii"),
+        hashlib.sha256,
+    ).hexdigest()
+    try:
+        matched = hmac.compare_digest(expected, given)
+    except (TypeError, ValueError):
+        return None
+    if not matched:
+        return None
+    return session_id
+
+
 def decode_jwt_payload_unverified(token: str) -> dict[str, Any]:
     """Lab-only JWT payload decode — never proof of identity without a validator."""
 
@@ -170,12 +205,15 @@ def session_from_token_payload(
     payload: MappingLike,
     *,
     validator: OidcTokenValidator | None = None,
+    expected_nonce: str | None = None,
 ) -> tuple[str, str | None, bool]:
     """Extract subject + optional email from token-endpoint JSON.
 
     When ``validator`` is set (issuer/audience/JWKS configured), ``id_token``
     or ``access_token`` is signature-checked. Lab mock IdPs without JWKS keep
     an unverified identity and must surface ``identity_verified=false``.
+    ``expected_nonce`` must match the ``id_token`` nonce when an id_token is
+    present (OpenID Connect Core).
     """
 
     id_token = payload.get("id_token")
@@ -183,18 +221,34 @@ def session_from_token_payload(
     if validator is not None:
         token = str(id_token or access_token or "")
         if not token:
-            raise OidcValidationError(
-                "OIDC session requires a verifiable id_token or access_token"
-            )
+            raise OidcValidationError("OIDC session requires a verifiable id_token or access_token")
         claims = validator.validate(token)
+        _require_nonce(claims, expected_nonce, require=True)
         subject = str(claims.get("sub") or "unknown")
         email = claims.get("email")
         return subject, str(email) if email else None, True
     claims = decode_jwt_payload_unverified(str(id_token)) if id_token else {}
+    if id_token:
+        _require_nonce(claims, expected_nonce, require=True)
     subject = str(payload.get("sub") or claims.get("sub") or "unknown")
     email = claims.get("email") or payload.get("email")
     email_str = str(email) if email else None
     return subject, email_str, False
+
+
+def _require_nonce(
+    claims: MappingLike,
+    expected_nonce: str | None,
+    *,
+    require: bool,
+) -> None:
+    if not require:
+        return
+    if not expected_nonce:
+        raise OidcValidationError("OIDC login nonce was not bound to CSRF state")
+    got = claims.get("nonce")
+    if got != expected_nonce:
+        raise OidcValidationError("OIDC nonce mismatch")
 
 
 def build_phase3_login_payload(
@@ -244,6 +298,8 @@ __all__ = [
     "build_phase3_session_payload",
     "decode_jwt_payload_unverified",
     "exchange_authorization_code",
+    "parse_session_cookie",
     "session_cookie_name",
     "session_from_token_payload",
+    "sign_session_cookie",
 ]

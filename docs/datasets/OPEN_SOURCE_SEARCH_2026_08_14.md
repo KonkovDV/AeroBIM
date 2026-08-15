@@ -54,6 +54,21 @@ claim_boundary: "Inventory. Open corpora ≠ RF PD+expertise. Not product accura
 
 closes_rt001: false. closes_rt002: false. closes_rt003: false. Checkpoint **NO_GO**.
 
-## Что не прогоняли повторно сегодня
+## Прогон 15.08 вечер (CPython 3.12.10)
 
-Полный GNI 223 IfcOpenShell (уже в [`../evidence/open-ifc-stress-2026-08.md`](../evidence/open-ifc-stress-2026-08.md)). IFC-Bench 1026 QA (smoke 25/1026). Harbor 160 — календарь 17.08.
+Журнал: [`../evidence/DATASET_HUNT_LOG_2026_08.md`](../evidence/DATASET_HUNT_LOG_2026_08.md).
+
+| Комплект | Результат | Честность |
+|---|---|---|
+| Schema-suite n=20 | IFC2X3 findings 5 / IFC4 4 / IFC4X3 6; `passed=false`; `clash=skipped` (tiny-skip); IFC4X3 `ids=failed` | Fixture kernel. Not SLA. Not accuracy |
+| IFC-Bench v2 | scored **25/1026** matched 25, errors 0, pin ok | `open_bench_only`; not RT-001 |
+| AEC-Bench inventory | 196 tasks; Harbor **NOT_RUN**; 43 PDFs on disk | false-pass **NOT_MEASURED** |
+| Open corpora smoke | `pins_ok=true`; 7 cases | SHA only |
+| Renga header probe | MEASURED IFC4 / Renga 8.7; not Samolet | Not Exp A 18/22 IDS rerun |
+| PNST 909 22-scenario | Pack on disk; runtime snapshot still 05.08 | No CLI in tree; do not invent a fresh 18/22 |
+
+Новых лицензионно чистых пар «чертёж+IFC+замечание экспертизы» 15.08 не появилось. DrawingVQA — link-only.
+
+## Что не прогоняли повторно 15.08 вечером
+
+Полный GNI 223 IfcOpenShell (уже в [`../evidence/open-ifc-stress-2026-08.md`](../evidence/open-ifc-stress-2026-08.md)). Harbor 160 — по-прежнему **NOT_RUN**.

@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Commercial KPI + open-core options; forbidden phrases as non-claims; NO_GO" -->
 ---
 title: "Коммерческий KPI (назначенные демо) и монетизация open-core"
-date: "2026-08-14"
+date: "2026-08-15"
 claim_boundary: "GTM brief. No invented orgs. Checkpoint NO_GO. Not customer accuracy. Not claimed production-ready."
 ---
 
@@ -29,6 +29,8 @@ claim_boundary: "GTM brief. No invented orgs. Checkpoint NO_GO. Not customer acc
 | Checkpoint GO | **запрещено обещать** | |
 
 Живые имена и email **не коммитить**. Учёт — `.local/commercial-ops/` или копия CSV вне git. В репозитории остаются плейсхолдеры [`outreach-tracker-week-2026-08-10.csv`](outreach-tracker-week-2026-08-10.csv).
+
+**Статус 15.08:** бриф и форма отчёта готовы к передаче подрядчику. Число назначенных демо в git **не пишем** (owner-only). Не выдумывать 3–5.
 
 ### Бриф подрядчику (вставить в задачу)
 

@@ -53,9 +53,9 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RTATOM-I09/I10/I11/I14/I20 | **PARTIAL** | Datastore URL SSRF; quota release; BCF `inspect_zip`; baked pilot quotas; PG fail-closed |
 | RTATOM-F02/F05/F07 | **PARTIAL** | Client bearer inject removed; preview Blob MIME allowlist; WASM IFC 256 MiB |
 | RTATOM A2.5 / RT-POST-09 hashes | **CLOSED*** | `--require-hashes` + `--generate-hashes` locks; CI/Docker wire-up; pinned `pip==25.2` / `uv==0.8.22`. *Residual: unhashed pip/uv bootstrap wheels. |
-| RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: full OIDC BFF (POST-05) remains **DESIGNED / NOT_IMPLEMENTED** — see `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md`. |
+| RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: production OIDC BFF (POST-05) remains **DESIGNED / NOT_IMPLEMENTED**; Phase 3 is lab-only (`oidc_bff_phase3_ready`) — see `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md`. |
 
-Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile), RT-003 (unmeasured federated MEP). Residual: full OIDC BFF Phase 3 (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 2.5 PKCE landed 2026-08-11 — still 501). Eng pack: [`docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md`](../../docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md).
+Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile), RT-003 (unmeasured federated MEP). Residual: production OIDC BFF (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 3 lab path landed — default still 501 / `auth_bff=NOT_IMPLEMENTED`). Eng pack: [`docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md`](../../docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md).
 
 ## Closed in post-remediation wave (2026-07-19)
 
@@ -70,7 +70,7 @@ Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile
 | RT-POST-09 | **CLOSED*** | Actions SHA-pinned; hashed locks (`--generate-hashes`); CI/Docker `--require-hashes`; pinned pip 25.2 + uv 0.8.22; lock drift with hashes. *Residual: floating pip/uv bootstrap before pin. |
 | RT-POST-10/11 | **CLOSED** | `html.escape(quote=True)`; ZIP rejects `..` / absolute members |
 
-Still open for checkpoint: remaining RT-001 / RT-002 / RT-003 as rewritten 2026-08-14 (open data vs honest leftover). Residual: VITE bearer BFF **DESIGNED / NOT_IMPLEMENTED** (POST-05).
+Still open for checkpoint: remaining RT-001 / RT-002 / RT-003 as rewritten 2026-08-14 (open data vs honest leftover). Residual: production OIDC BFF **DESIGNED / NOT_IMPLEMENTED** (POST-05; Vite loopback inject remains dev-only).
 
 ## Closed in remediation commit (2026-07-17)
 

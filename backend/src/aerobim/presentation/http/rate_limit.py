@@ -19,6 +19,11 @@ _RATE_LIMITED_POST_PREFIXES = (
     "/v1/validate/",
     "/v1/uploads/",
 )
+_RATE_LIMITED_GET_EXACT = (
+    "/v1/auth/login",
+    "/v1/auth/callback",
+    "/v1/auth/session",
+)
 _JOB_POLL_PREFIX = "/v1/analyze/project-package/jobs/"
 _DEFAULT_JOB_POLL_PER_MINUTE = 300
 _WINDOW_SECONDS = 60.0
@@ -71,6 +76,20 @@ def add_rate_limit_middleware(
                         content={"detail": "Rate limit exceeded"},
                     )
                 response: Response = await call_next(request)
+                return response
+
+            if request.method == "GET" and path in _RATE_LIMITED_GET_EXACT:
+                if requests_per_minute > 0 and not backend.allow(
+                    bucket="auth-get",
+                    key=key,
+                    max_events=requests_per_minute,
+                    window_seconds=_WINDOW_SECONDS,
+                ):
+                    return JSONResponse(
+                        status_code=429,
+                        content={"detail": "Rate limit exceeded"},
+                    )
+                response = await call_next(request)
                 return response
 
             if request.method != "POST":

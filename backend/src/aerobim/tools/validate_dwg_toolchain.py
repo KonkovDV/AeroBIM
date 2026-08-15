@@ -32,9 +32,7 @@ def probe_dwg_toolchain(*, settings: Settings | None = None) -> dict[str, Any]:
 
     runtime = settings or Settings.from_env()
     ezdxf_present = find_spec("ezdxf") is not None
-    converters = {
-        name: bool(shutil.which(name)) for name in _CONVERTER_CANDIDATES
-    }
+    converters = {name: bool(shutil.which(name)) for name in _CONVERTER_CANDIDATES}
     oda = OdaCadModelIngestor(enabled=runtime.oda_cad_enabled)
     ingest = oda.ingest(Path("probe.dwg"))
     return {

@@ -38,12 +38,12 @@ production-ready.
 
 | Item | Status |
 |---|---|
-| OIDC Authorization Code + PKCE BFF with HttpOnly session cookie | **DESIGNED / NOT_IMPLEMENTED** |
+| OIDC Authorization Code + PKCE BFF with HttpOnly session cookie | **DESIGNED / NOT_IMPLEMENTED** (Phase 3 lab-only; default 501) |
 | Design spike | `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md` |
 | Public honesty | `GET /v1/auth/bff` → 501; capabilities `auth_bff.status=NOT_IMPLEMENTED` |
 | Dev-only | Vite loopback may inject `Authorization` — **not** production SSO |
 
-Do **not** claim SSO / production auth ready until POST-05 phases 2–3 ship.
+Do **not** claim SSO / production auth until POST-05 has a production IdP, JWKS-verified identity, and FE bearer removal. Phase 3 lab cookies are not that close.
 
 ## Negative security tests (inventory)
 

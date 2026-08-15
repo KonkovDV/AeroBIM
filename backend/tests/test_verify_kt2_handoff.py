@@ -26,6 +26,7 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         self.assertIn("rehearsal_forbids_wall_guid_html", names)
         self.assertIn("handoff_readme_live_cli", names)
         self.assertIn("snapshot_html_not_overlay_demo", names)
+        self.assertIn("readme_quickstart_demo_core_pdf", names)
 
     def test_wall_guid_snapshot_is_lf_and_verifies(self) -> None:
         wall = _REPO / "docs" / "evidence" / "kt2-handoff-2026-08-11" / "wall-guid"

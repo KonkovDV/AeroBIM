@@ -23,6 +23,7 @@ class OidcBffPhase2UnitTests(unittest.TestCase):
     def test_state_one_time_and_payload_honesty(self) -> None:
         store = InMemoryOidcBffStateStore()
         entry = store.issue()
+        self.assertTrue(entry.nonce)
         self.assertIsNotNone(store.consume(entry.state))
         self.assertIsNone(store.consume(entry.state))
         login = build_login_stub_payload(state_entry=entry)

@@ -1,7 +1,7 @@
 {
   "artifact_type": "aec_bench_false_pass",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-13T23:32:41.901992+00:00",
+  "generated_at": "2026-08-15T16:59:58.242769+00:00",
   "claim_level": "open_bench_only",
   "closes_rt001": false,
   "customer_accuracy_not_established": true,
@@ -53,5 +53,5 @@
     "true_negative": 50,
     "false_negative": 0
   },
-  "content_sha256": "21bd22130350a3b410f5ce9e97fb224b33032894b7fbd03f50effe028c90ebc7"
+  "content_sha256": "6133a564435051bc229788ff7d1f50a7123ae0847621c59f3425573adf57aa4e"
 }

@@ -10,15 +10,21 @@ anchors:
 
 # POST-05: OIDC BFF design (honesty spike)
 
-**Status:** **DESIGNED / NOT_IMPLEMENTED** (Phase 2 CSRF stubs + Phase 2.5 PKCE landed; Phase 3 pending)
+**Status:** **DESIGNED / NOT_IMPLEMENTED** (public default). Phase 2 CSRF stubs +
+Phase 2.5 PKCE + **Phase 3 lab path** (`oidc_bff_phase3_ready`) are in tree.
+Lab is not production SSO: default `GET /v1/auth/bff` stays **HTTP 501**,
+`auth_bff.status` stays **NOT_IMPLEMENTED**, and lab sessions without JWKS
+expose `identity_verified: false`.
 
 This document is the Wave A3 design spike. Phase 2 stub routes (`/v1/auth/login`,
 `/v1/auth/callback`, `/v1/auth/logout`) ship CSRF state binding only — no IdP
 registration, no production session cookie, and no reverse-proxy cookie termination.
 Phase 2.5 adds PKCE S256 (`code_challenge` on login; verifier server-side) and an
 optional IdP authorize URL *draft* when `AEROBIM_OIDC_BFF_CLIENT_ID` +
-`AEROBIM_OIDC_BFF_AUTHORIZE_URL` are set — responses remain **HTTP 501**.
-Frontend and API must keep reporting `auth_bff.status = NOT_IMPLEMENTED` until Phase 3.
+`AEROBIM_OIDC_BFF_AUTHORIZE_URL` are set — responses remain **HTTP 501** unless
+Phase 3 lab env is complete.
+Frontend and API must keep reporting `auth_bff.status = NOT_IMPLEMENTED` until a
+production IdP + cookie HMAC + FE bearer removal is evidenced.
 
 ## Problem
 
@@ -72,12 +78,14 @@ Capabilities payload (`schema_version` ≥ 1.2.0):
   "dev_proxy": "Vite loopback Authorization inject only",
   "phase_2_stubs": "login/callback/logout with CSRF state (no production session)",
   "phase_2_5_pkce": "S256 code_challenge; optional IdP URL draft via AEROBIM_OIDC_BFF_* — still 501",
-  "phase_3_pending": "HttpOnly session cookie + IdP code exchange + FE bearer removal"
+  "phase_3_pending": "Production IdP + FE bearer removal + verified identity",
+  "phase_3_lab": "Code-landed behind oidc_bff_phase3_ready; default remains NOT_IMPLEMENTED"
 }
 ```
 
-Public probe: `GET /v1/auth/bff` returns the same JSON with **HTTP 501** (no bearer required)
-so the frontend can discover the gap without treating absence as “auth ready”.
+Public probe: `GET /v1/auth/bff` returns the same JSON with **HTTP 501** by default
+(no bearer required). Phase 3 lab (`oidc_bff_phase3_ready`) returns **HTTP 200** with
+`status=LAB` — still not a production SSO claim.
 
 ## Out of scope (Phase 2 stubs)
 
@@ -96,5 +104,6 @@ Phase 2 routes (all **501** except CSRF reject **400**):
 
 Phase 2 is “stub complete” only when login/callback/logout exist, state is bound, and
 honesty still says NOT_IMPLEMENTED until phase 3 production cookie path is verified.
-Phase 3 closes POST-05 when production FE never sees bearer tokens and checkpoint docs
-flip `auth_bff` / POST-05 from DESIGNED/NOT_IMPLEMENTED to implemented with evidence.
+Phase 3 **lab** does not close POST-05. Production close requires: real IdP, JWKS-bound
+identity (`identity_verified=true`), HttpOnly cookie HMAC, FE never holding bearer tokens,
+and checkpoint docs flipping `auth_bff` from DESIGNED/NOT_IMPLEMENTED with evidence.

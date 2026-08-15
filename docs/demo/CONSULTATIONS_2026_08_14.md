@@ -7,7 +7,7 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 
 # Консультации — пакет к слотам
 
-**Срез:** 15.08.2026. Итоги созвонов в этот файл **не записывать, пока не будет заметок владельца.** Academic Red Team: [`../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md).
+**Срез:** 15.08.2026 вечер. Итоги созвонов в этот файл **не записывать, пока не будет заметок владельца.** Academic Red Team: [`../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md).
 
 ## 1. Е. Бурнаев (вторая консультация) — демо ядра
 
@@ -20,11 +20,11 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 | Что открыть | URL / команда |
 |---|---|
 | Репозиторий | https://github.com/KonkovDV/AeroBIM |
-| Живой срез (overlay на листе) | `cd backend && python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`) |
+| Живой срез (overlay на листе) | `cd backend && python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`). Растр PDF = **pypdfium2**; `pdf-agpl` / PyMuPDF **не** нужен |
 | Скрипт 3 мин (если слот с экраном) | [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) |
 | P2-04 wall-GUID (без overlay) | https://github.com/KonkovDV/AeroBIM/blob/main/docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html — **не** ядро среза; секции `#kt2-overlay` нет |
 
-На экране показать за 6 минут: Checkpoint **NO_GO**, `summary.passed=false`, `finding_id` / `source_id` / `evidence_refs`, capability table, IDS fail-closed (`IFC4` ≠ `IFC4X3` не алиасится). Не показывать счёт дверей/окон. Wave A не закрыла RT-001/002/003. Не просить раунд.
+На экране показать за 6 минут: Checkpoint **NO_GO**, `summary.passed=false`, `finding_id` / `source_id` / `evidence_refs`, capability table, IDS fail-closed (`IFC4` ≠ `IFC4X3` не алиасится). Overlay через pypdfium2. Не показывать счёт дверей/окон. Не показывать lab OIDC BFF Phase 3 как production SSO (`auth_bff` default `NOT_IMPLEMENTED`). Wave A не закрыла RT-001/002/003. Не просить раунд.
 
 ### Вопросы (не питч)
 
@@ -38,7 +38,7 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 
 ### Не говорить
 
-Точность >90%, SLA ≤30 мин, DWG-ready, MEP delivered, CDE-ready, Checkpoint GO, «production-ready».
+Точность >90%, SLA ≤30 мин, DWG-ready, MEP delivered, CDE-ready, Checkpoint GO, «production-ready», OIDC BFF / SSO ready.
 
 ## 2. Михаил (ИТ-ментор, Дептранс) — слот после пакета 11.08
 
@@ -47,7 +47,7 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 
 ### Повестка 20 мин
 
-1. Что изменилось с 11.08: IDS fail-closed, вертикальный срез 1.1, вектор «рядом с Tangl, не вместо 10D».  
+1. Что изменилось с 11.08: IDS fail-closed, вертикальный срез (`run_demo_vertical_slice` + pypdfium2 overlay), вектор «рядом с Tangl, не вместо 10D». Lab OIDC Phase 3 в дереве — **не** SSO пилота.  
 2. Вердикт P3-1 уже дан 08.08 (оверинжиниринг, слабый 2D/CV, вертикальный срез). На слоте — что *ещё* берём, не переспрашивать диагноз.  
 3. Что из Дептранс-контура (АГР IFC4 Reference View с 02.04.2026, распоряжение ДГП-Р-1/26) релевантно пилоту, **без** обещания полного профиля `moscow_agr`.  
 4. Что **берём в работу** — заполнить таблицу ниже после звонка.

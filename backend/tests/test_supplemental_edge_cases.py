@@ -247,7 +247,7 @@ class CompareValuesTests(unittest.TestCase):
 
         uc = self._make_uc()
         self.assertTrue(self._cmp(uc, "anything", None, ComparisonOperator.EXISTS))
-        self.assertFalse(self._cmp(uc,None, None, ComparisonOperator.EXISTS))
+        self.assertFalse(self._cmp(uc, None, None, ComparisonOperator.EXISTS))
 
     def test_non_numeric_gte_falls_back_to_string_equality(self) -> None:
         from aerobim.domain.models import ComparisonOperator
@@ -260,7 +260,7 @@ class CompareValuesTests(unittest.TestCase):
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertFalse(self._cmp(uc,None, "100", ComparisonOperator.EQUALS))
+        self.assertFalse(self._cmp(uc, None, "100", ComparisonOperator.EQUALS))
 
     # -- Fuzzy tolerance tests (ISO 12006-3 aligned) --
 
@@ -269,9 +269,7 @@ class CompareValuesTests(unittest.TestCase):
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(
-            self._cmp(uc, "200.0005", "200.0", ComparisonOperator.EQUALS, unit="mm")
-        )
+        self.assertTrue(self._cmp(uc, "200.0005", "200.0", ComparisonOperator.EQUALS, unit="mm"))
 
     def test_fuzzy_equals_outside_length_epsilon(self) -> None:
         """200.5 ≠ 200.0 — well outside 0.001 epsilon."""

@@ -11,10 +11,46 @@ import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
+
+
+def _rasterize_pdf_page(pdf_path: Path, page_number: int, *, scale: float) -> tuple[Any, str]:
+    """Rasterize one PDF page. Core path is pypdfium2 (LIC-001); PyMuPDF is fallback."""
+
+    from PIL import Image
+
+    try:
+        import pypdfium2 as pdfium
+    except ModuleNotFoundError:
+        pdfium = None
+    if pdfium is not None:
+        document = pdfium.PdfDocument(str(pdf_path))
+        try:
+            index = page_number - 1
+            if not 0 <= index < len(document):
+                raise ValueError(f"page {page_number} out of range (pages={len(document)})")
+            bitmap = document[index].render(scale=scale)
+            image = bitmap.to_pil()
+        finally:
+            document.close()
+        if not isinstance(image, Image.Image):
+            raise RuntimeError("pypdfium2 render did not yield a PIL image")
+        return image.convert("RGB"), "pypdfium2"
+
+    import pymupdf
+
+    doc = pymupdf.open(str(pdf_path))
+    try:
+        page = doc.load_page(page_number - 1)
+        pix = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), alpha=False)
+        image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+    finally:
+        doc.close()
+    return image.convert("RGB"), "pymupdf"
 
 
 def render_overlay(
@@ -24,18 +60,10 @@ def render_overlay(
     zone: dict[str, float],
     page_number: int = 1,
 ) -> dict[str, object]:
-    import pymupdf
-    from PIL import Image, ImageDraw
-
-    doc = pymupdf.open(str(pdf_path))
-    try:
-        page = doc.load_page(page_number - 1)
-        pix = page.get_pixmap(matrix=pymupdf.Matrix(2, 2), alpha=False)
-        img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
-    finally:
-        doc.close()
+    from PIL import ImageDraw
 
     scale = 2.0
+    img, renderer = _rasterize_pdf_page(pdf_path, page_number, scale=scale)
     x0 = float(zone["x"]) * scale
     y0 = float(zone["y"]) * scale
     x1 = x0 + float(zone["width"]) * scale
@@ -53,6 +81,7 @@ def render_overlay(
         "problem_zone": zone,
         "source_pdf": str(pdf_path.as_posix()),
         "rendered_at": datetime.now(tz=UTC).isoformat(),
+        "renderer": renderer,
         "claim_boundary": (
             "Deterministic bbox overlay on rasterized PDF page; not CV; "
             "not stamp product detection; illustration evidence for TZ drawing overlay."

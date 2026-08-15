@@ -9,6 +9,7 @@ SPRINT_ARCHIVE_TOOLS: Final[tuple[str, ...]] = (
     "run_sprint2_synthetic_baseline",
     "run_sprint_2_1_baseline",
     "run_sprint3_open_corpus_battery",
+    "run_demo_path",
 )
 
 EVALUATE_TOOLS: Final[tuple[str, ...]] = (
@@ -46,7 +47,7 @@ EXPORT_TOOLS: Final[tuple[str, ...]] = (
 CORE_OPERATOR_TOOLS: Final[tuple[str, ...]] = (
     "benchmark_project_package",
     "run_vertical_slice",
-    "run_demo_path",
+    "run_demo_vertical_slice",
     "validate_dwg_toolchain",
     "verify_bcf_t2_evidence",
     "verify_bcf_structural_handoff",
