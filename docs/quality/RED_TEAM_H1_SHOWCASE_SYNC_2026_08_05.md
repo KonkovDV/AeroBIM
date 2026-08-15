@@ -1,16 +1,15 @@
 ---
 title: "Red Team — Horizon-1 Step1 showcase sync @ 9b06a93"
 date: 2026-08-05
-auditor: agent
+auditor: internal
 head_at_audit: "9b06a93"
 head_after_fix: "this commit"
 claim_boundary: "Honesty / leak / claims audit. Not product accuracy. Checkpoint NO_GO."
-subagent: "46f1b07a-8a91-4d38-beb3-b2587289efde"
 ---
 
 # Red Team — витрина H1 Step1 (после `9b06a93`)
 
-Метод: scoped grep Claims Lock + чтение README / docs.md / NOVATOR / TRACKER / Exp B + subagent [Red Team showcase](46f1b07a-8a91-4d38-beb3-b2587289efde).
+Метод: scoped grep Claims Lock + чтение README / docs.md / NOVATOR / TRACKER / Exp B.
 
 ## Verdict
 

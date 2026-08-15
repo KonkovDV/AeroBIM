@@ -14,6 +14,8 @@ from aerobim.domain.models import (
 from aerobim.tools.export_ifc_release_matrix import (
     build_ifc_release_matrix,
     digest_rules_and_refusals,
+    render_ifc_release_matrix_markdown,
+    render_tracker_paste_markdown,
 )
 from aerobim.tools.run_vlm_stamp_comparison import build_vlm_comparison
 
@@ -59,6 +61,56 @@ class IfcReleaseMatrixShapeTests(unittest.TestCase):
         self.assertIn("dwg_dxf", names)
         self.assertIn("clash", names)
         self.assertIn("ids", digest["capabilities_ok"])
+
+    def test_committed_evidence_markdown_has_tracker_paste(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        path = root / "docs" / "evidence" / "ifc-release-matrix-2026-08.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("Tracker paste", text)
+        self.assertIn("n=20", text)
+        self.assertIn("false", text)
+        self.assertIn("not claimed", text.lower())
+        self.assertIn("IFC4X3", text)
+
+    def test_markdown_exposes_summary_passed_and_tracker_paste(self) -> None:
+        matrix = {
+            "claim_level": "fixture_only",
+            "customer_accuracy_not_established": True,
+            "claim_boundary": "issue_count is not accuracy.",
+            "source_suite": {"iterations": 20, "warmup_iterations": 2},
+            "machine": {"python": "3.12.10", "system": "Windows"},
+            "generated_at": "2026-08-15T00:00:00+00:00",
+            "content_sha256": "abc",
+            "refusals_and_degradations_note": "DWG native remains FAILED.",
+            "rows": [
+                {
+                    "schema": "IFC4X3",
+                    "product_entities": {"IfcWall": 1},
+                    "ifc_entity_count": 12,
+                    "rules_evaluated": 3,
+                    "rules_fired": {"AEROBIM-IDS-IFC-VERSION": 2},
+                    "findings_emitted": 6,
+                    "summary_passed": False,
+                    "timing_ms": {"p50": 31.5, "p95": 32.7, "max": 32.8},
+                    "refusals": [
+                        {"capability": "ids", "status": "failed"},
+                        {"capability": "clash", "status": "skipped"},
+                    ],
+                }
+            ],
+        }
+        markdown = render_ifc_release_matrix_markdown(matrix)
+        self.assertIn("n=20", markdown)
+        self.assertIn("python=`3.12.10`", markdown)
+        self.assertIn("passed", markdown)
+        self.assertIn("false", markdown)
+        self.assertIn("Tracker paste", markdown)
+        self.assertIn("ids=failed", markdown)
+        self.assertIn("clash=skipped", markdown)
+        paste = render_tracker_paste_markdown(matrix)
+        self.assertIn("IFC4X3", paste)
+        self.assertIn("AEROBIM-IDS-IFC-VERSION×2", paste)
+        self.assertIn("not customer accuracy", paste.lower())
 
 
 class VlmStampComparisonSkipTests(unittest.TestCase):

@@ -38,4 +38,4 @@ Generated: `2026-08-08T14:50:22.725567+00:00`
 - Часть open IFC — LICENSE_UNCLEAR → только внутренняя встреча.
 - IFC4 p95 в suite может быть выше из‑за cold start / MEP probe noise.
 
-JSON: `C:\plans\aerobim-internal-data\reports\sprint3-week-ifc-metrics.json`
+JSON: internal reports/sprint3-week-ifc-metrics.json (outside this Git tree).

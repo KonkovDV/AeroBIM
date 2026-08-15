@@ -1,17 +1,17 @@
-<!-- claims-lint: allow-file reason="Red Team of AI work plan; forbidden phrases listed as non-claims; NO_GO explicit" -->
+<!-- claims-lint: allow-file reason="Red Team of 14.08 work plan; forbidden phrases listed as non-claims; NO_GO explicit" -->
 ---
-title: "Red Team — AI work plan 14.08.2026 (no code)"
+title: "Red Team — work plan 14.08.2026 (no code)"
 status: active
 version: "1.0.0"
 last_updated: "2026-08-14"
 claim_boundary: >
-  Self Red Team of the AI work plan. Checkpoint remains NO_GO. Does not close
+  Internal Red Team of the 14.08 work plan. Checkpoint remains NO_GO. Does not close
   RT-001/002/003. Not product accuracy. Not Tangl/10D integration. No code changes.
 ---
 
-# Red Team — план работы для ИИ (код не трогаем)
+# Red Team — план работ 14.08 (код не трогаем)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** `docs/pilot/AI_WORK_PLAN_2026_08_14.md` (detailed no-code plan)  
 **Code / architecture:** **unchanged** (freeze: no new ports, adapters, DI)  
 **Checkpoint:** **`NO_GO`**

@@ -68,7 +68,7 @@ class ClassifierPublicFixtureTests(unittest.TestCase):
     def test_absolute_repo_samples_ifc_is_public_fixture(self) -> None:
         request = ValidationRequest(
             request_id="rt-clf-abs-ok",
-            ifc_path=Path(r"C:/plans/AeroBIM/samples/ifc/wall.ifc"),
+            ifc_path=Path("/opt/aerobim/samples/ifc/wall.ifc"),
             requirement_source=RequirementSource(),
             ids_path=Path("dummy.ids"),
             tenant_id="tenant-a",

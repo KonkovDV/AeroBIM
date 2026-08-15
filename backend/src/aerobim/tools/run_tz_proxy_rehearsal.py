@@ -419,9 +419,7 @@ def write_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
         "| --- | --- | ---: |",
     ]
     for row in pin_runs:
-        lines.append(
-            f"| {row.get('label')} | {row.get('status')} | {row.get('clash_count', '')} |"
-        )
+        lines.append(f"| {row.get('label')} | {row.get('status')} | {row.get('clash_count', '')} |")
     boundary = str(body["claim_boundary"])
     lines.extend(["", boundary, ""])
     md_path.write_text("\n".join(lines), encoding="utf-8")
@@ -433,9 +431,7 @@ def write_open_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
     clash = payload.get("rt003_geometric_clash") or {}
     raw_runs = clash.get("runs") or []
     pin_runs: list[dict[str, Any]] = [
-        row
-        for row in raw_runs
-        if isinstance(row, dict) and row.get("label") == "duplex_arc_vs_mep"
+        row for row in raw_runs if isinstance(row, dict) and row.get("label") == "duplex_arc_vs_mep"
     ]
     body: dict[str, Any] = {
         "schema_version": "1.0.0",
@@ -482,9 +478,7 @@ def write_open_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
         "| --- | --- | ---: |",
     ]
     for row in pin_runs:
-        lines.append(
-            f"| {row.get('label')} | {row.get('status')} | {row.get('clash_count', '')} |"
-        )
+        lines.append(f"| {row.get('label')} | {row.get('status')} | {row.get('clash_count', '')} |")
     boundary = str(body["claim_boundary"])
     lines.extend(["", boundary, ""])
     md_path.write_text("\n".join(lines), encoding="utf-8")

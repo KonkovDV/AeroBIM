@@ -10,6 +10,17 @@ from aerobim.tools.fetch_ifc_bench_v2 import _is_gpl_path, copy_local
 
 
 class FetchIfcBenchV2Tests(unittest.TestCase):
+    def test_source_has_no_machine_absolute_plans_path(self) -> None:
+        src = (
+            Path(__file__).resolve().parents[1]
+            / "src"
+            / "aerobim"
+            / "tools"
+            / "fetch_ifc_bench_v2.py"
+        )
+        text = src.read_text(encoding="utf-8")
+        self.assertNotIn(r"C:\plans", text)
+        self.assertNotIn("C:/plans", text)
     def test_gpl_paths_detected(self) -> None:
         excludes = {"4351", "hitos"}
         self.assertTrue(_is_gpl_path("projects/4351/arc.ifc", excludes))

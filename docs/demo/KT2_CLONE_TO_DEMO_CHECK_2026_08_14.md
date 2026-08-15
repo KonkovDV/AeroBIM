@@ -47,9 +47,10 @@ README EN §Quick Start и README RU §Быстрый старт называю�
 | `LIMITATIONS.json` sha256 | `78877c146bb9525b866e9c18f3605fa819615b8f8bc49628a596ffc5f20e1965` (stable) |
 | `report.json` / `report.html` / `findings.bcfzip` | **дрейф** `created_at` — сравнивать hash воспроизводимости, не сырые байты |
 
-HTML содержит: `#kt2-claim-boundary`, `#kt2-overlay`, `#kt2-text-evidence` (150 mm / WALL-01), `#kt2-capabilities`, `#kt2-release`, `finding_id` / `source_id` / `evidence_refs`, `summary.passed=false`.
+HTML содержит: `#kt2-claim-boundary`, `#kt2-overlay`, `#kt2-text-evidence` (150 mm / WALL-01), `#kt2-capabilities`, `#kt2-release`, `finding_id` / `source_id` / `evidence_refs`, `summary.passed=false`, «Not a CDE import», Checkpoint NO_GO.
 
-Видео **не** создавалось. Человек: [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md), due 2026-08-19.
+Видео **не** создавалось. Человек: [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md), due 2026-08-19.  
+Репетиция 20.08: [`KT2_DEMO_REHEARSAL_2026_08_12.md`](KT2_DEMO_REHEARSAL_2026_08_12.md) — live CLI, не wall-guid HTML.
 
 ## Что считать DoD
 

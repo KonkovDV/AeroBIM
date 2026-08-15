@@ -16,7 +16,7 @@ claim_boundary: "Inventory only. Not a GO/NO_GO product verdict. Not customer ac
 | Field | Value |
 | --- | --- |
 | Capture time (local) | 2026-08-11 (~10:05–10:30 MSK) |
-| Working directory | `C:\plans\AeroBIM` |
+| Working directory | this repository |
 | Remote | `https://github.com/KonkovDV/AeroBIM` (fetch/push) |
 | Branch | `main` tracking `origin/main` |
 | HEAD | `a818bfe2eeeaa2cf2b5c98cdd331887e519aacf7` |
@@ -62,7 +62,7 @@ claim_boundary: "Inventory only. Not a GO/NO_GO product verdict. Not customer ac
 
 **Note:** A4 signing enforcement was activated on **2026-08-11** (`7c75155`). Most August history before that date is unsigned (`N`). Recent tip commits on `main` are signed (`G`).
 
-Supporting lists (generated this session, not claims):
+Supporting lists (generated 11.08.2026, not claims):
 
 - `docs/audit/_window_commits_2026-08-11.tsv`
 - `docs/audit/_window_unique_files_2026-08-11.txt`

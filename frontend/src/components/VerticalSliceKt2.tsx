@@ -112,6 +112,8 @@ export default function VerticalSliceKt2({
       <h3>Fragment → finding → evidence → verdict</h3>
       <p className="compact-copy">
         PDF text-layer / stamp-title path. Not trained CV. Not customer accuracy.
+        Checkpoint NO_GO. Structural BCF ZIP is file ingest only. CDE import is
+        NOT_VERIFIED.
       </p>
       <p>
         <span>Package outcome</span>
@@ -142,6 +144,12 @@ export default function VerticalSliceKt2({
           <dt>Finding</dt>
           <dd>
             <code>{issue?.finding_id?.trim() || "—"}</code>
+            {issue?.source_id?.trim() ? (
+              <>
+                {" · source_id "}
+                <code>{issue.source_id.trim()}</code>
+              </>
+            ) : null}
             {issue?.rule_id ? ` · ${issue.rule_id}` : ""}
           </dd>
         </div>

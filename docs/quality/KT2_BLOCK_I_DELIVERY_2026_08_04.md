@@ -74,7 +74,7 @@ Headline: **`macro_extended=0.4325`** (Table 1 metric), `macro_bench_protocol=0.
 | Поле | Значение |
 |---|---|
 | `tokens_today` | **34** |
-| Billing console | **NOT_RUN this session** — оператор сверяет вручную |
+| Billing console | **NOT_RUN 04.08.2026** — оператор сверяет вручную |
 
 Δ billing ≫ 34 ожидаема (open-bench AECV мимо ledger).
 

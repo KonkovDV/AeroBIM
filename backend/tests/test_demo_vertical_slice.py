@@ -34,6 +34,8 @@ class DemoVerticalSliceTests(unittest.TestCase):
             self.assertIn("overlay-problem-zone.png", html)
             self.assertIn("kt2-claim-boundary", html)
             self.assertIn("Fixture demo", html)
+            self.assertIn("Checkpoint NO_GO", html)
+            self.assertIn("Not a CDE import", html)
             self.assertIn("summary.passed=", html)
             self.assertIn("summary.outcome=", html)
             self.assertIn("kt2-capabilities", html)

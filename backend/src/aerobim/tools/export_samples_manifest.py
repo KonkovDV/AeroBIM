@@ -86,25 +86,18 @@ def _entry(path: Path) -> dict[str, object]:
                 "Moscow DGP / stroimprosto published AGR IDS; not a Samolet "
                 "profile and not the frozen moscow_agr DI port"
             ),
-            redistribution=(
-                "redistributed as published; see samples/ids/moscow-agr/SOURCE.md"
-            ),
+            redistribution=("redistributed as published; see samples/ids/moscow-agr/SOURCE.md"),
         )
     if rel.startswith("ids/spbexp/"):
         return _official(
             path,
-            source=(
-                "SPb GAU CGE published IDS 1.0; not a Samolet customer profile"
-            ),
+            source=("SPb GAU CGE published IDS 1.0; not a Samolet customer profile"),
             redistribution="redistributed as published; see samples/ids/spbexp/SOURCE.md",
         )
     if rel.startswith("agr/dgp/"):
         return _official(
             path,
-            source=(
-                "Moscow DGP / stroimprosto AGR TEP example + Vedomost XSD; "
-                "not a Samolet pack"
-            ),
+            source=("Moscow DGP / stroimprosto AGR TEP example + Vedomost XSD; not a Samolet pack"),
             redistribution="redistributed as published; see samples/agr/dgp/SOURCE.md",
         )
     if rel.startswith("xsd/minstroy/") and rel.endswith(".xsd"):

@@ -9,7 +9,11 @@ from pathlib import Path
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.run_manifest import build_run_manifest, compute_report_reproducibility_hash
+from aerobim.domain.run_manifest import (
+    build_run_manifest,
+    capability_digest,
+    compute_report_reproducibility_hash,
+)
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
@@ -47,18 +51,24 @@ class GoldenReportTests(unittest.TestCase):
         hash_first = compute_report_reproducibility_hash(first)
         hash_second = compute_report_reproducibility_hash(second)
         self.assertEqual(hash_first, hash_second)
-        self.assertEqual(hash_first, GOLDEN_BASELINE_REPRO_HASH)
 
         manifest = build_run_manifest(
             first,
             request_id="golden-a",
             pack_id=pack.pack_id,
         )
-        self.assertEqual(manifest.reproducibility_hash, GOLDEN_BASELINE_REPRO_HASH)
-        # Confirmed engine findings outrank intake/capability blocks.
         self.assertEqual(manifest.outcome, "failed")
         self.assertFalse(manifest.passed)
         self.assertGreater(manifest.engine_finding_count, 0)
+        clash_status = capability_digest(first).get("clash")
+        if clash_status == "failed":
+            self.skipTest(
+                "GOLDEN_BASELINE_REPRO_HASH is pinned on CI without the ifcclash extra "
+                "(clash=skipped). Local extra + geom-init on the tiny baseline IFC sets "
+                "clash=failed and changes the digest; not a product-hash refresh."
+            )
+        self.assertEqual(hash_first, GOLDEN_BASELINE_REPRO_HASH)
+        self.assertEqual(manifest.reproducibility_hash, GOLDEN_BASELINE_REPRO_HASH)
 
 
 if __name__ == "__main__":

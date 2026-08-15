@@ -232,6 +232,18 @@ class BenchmarkProjectPackageToolTests(unittest.TestCase):
         self.assertEqual(benchmark_pack["pack_id"], payload["pack_id"])
         self.assertEqual(benchmark_pack["pack_version"], payload["pack_version"])
 
+    def test_ifc_release_markdown_uses_repo_relative_json_path(self) -> None:
+        from aerobim.tools.benchmark_project_package import (
+            _repo_display_path,
+            repo_root,
+        )
+
+        json_path = repo_root() / "audit" / "evidence" / "ifc-release-benchmark-2026-08.json"
+        self.assertEqual(
+            _repo_display_path(json_path),
+            "audit/evidence/ifc-release-benchmark-2026-08.json",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

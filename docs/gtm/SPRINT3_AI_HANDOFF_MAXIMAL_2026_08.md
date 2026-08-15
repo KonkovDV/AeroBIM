@@ -1,14 +1,14 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
-title: "AeroBIM Sprint 3 — maximal AI handoff report"
+title: "AeroBIM Sprint 3 — engineering continuation brief"
 date: 2026-08-07
-audience: successor_AI / internal Tehlab agent
+audience: engineering team
 repo: https://github.com/KonkovDV/AeroBIM
-local_repo: C:\plans\AeroBIM
-internal_corpus: C:\plans\aerobim-internal-data
+local_repo: this public repository
+internal_corpus: sibling directory outside Git (aerobim-internal-data)
 superseded_in_part_by: >-
-  C:\plans\aerobim-internal-data\reports\MAXIMAL_AI_HANDOFF_2026_08_08.md
-  (large-open wave complete: GNI fund, CISOL TD/unlabeled, BRIDGE, Eng_Diagrams,
+  Internal reports/MAXIMAL_HANDOFF_2026_08_08.md (outside this Git tree;
+  large-open wave complete: GNI fund, CISOL TD/unlabeled, BRIDGE, Eng_Diagrams,
   PID_dataset, PID2Graph + sample AeroBIM runs). Prefer that file for post-2026-08-08 continuation.
 claim_boundary: >-
   Checkpoint NO_GO (RT-001/002/003). No production-ready / customer-ready /
@@ -16,11 +16,10 @@ claim_boundary: >-
   Internal corpus must never be committed to public Git.
 ---
 
-# AeroBIM Sprint 3 — maximal handoff for successor AI
+# AeroBIM Sprint 3 — continuation brief
 
-This document is the **Sprint-3 week continuation brief**. For the **large-open download wave (2026-08-08)** read first:
-`C:\plans\aerobim-internal-data\reports\MAXIMAL_AI_HANDOFF_2026_08_08.md`.
-Prefer paths and evidence over re-deriving claims from chat memory.
+This document is the **Sprint-3 week continuation brief**. For the **large-open download wave (2026-08-08)** read first the internal report outside this Git tree (`reports/MAXIMAL_HANDOFF_2026_08_08.md` in the private data directory).
+Prefer paths and evidence over re-deriving claims from unfiled notes.
 
 ---
 
@@ -29,8 +28,8 @@ Prefer paths and evidence over re-deriving claims from chat memory.
 | Item | Value |
 |---|---|
 | Product | AeroBIM — openBIM acceptance / validation assistant |
-| Public repo | `C:\plans\AeroBIM` → `https://github.com/KonkovDV/AeroBIM` |
-| Internal data (OUTSIDE Git) | `C:\plans\aerobim-internal-data\` |
+| Public repo | this tree → `https://github.com/KonkovDV/AeroBIM` |
+| Internal data (OUTSIDE Git) | sibling directory `aerobim-internal-data/` |
 | Intended consumers of internal data | author, Tehlab, Samolet (internal only) |
 | Budget this phase | **$0** paid SDKs / licenses |
 | Project checkpoint | **NO_GO** (RT-001, RT-002, RT-003 open) |
@@ -106,7 +105,7 @@ Many Sprint 3 files were **local/uncommitted** at last status (do not assume pus
 
 ---
 
-## 3. Internal corpus layout (`C:\plans\aerobim-internal-data\`)
+## 3. Internal corpus layout (outside this Git tree)
 
 ```text
 aerobim-internal-data/
@@ -180,10 +179,10 @@ Manifests: `aerobim-internal-data/manifests/*.json`.
 Commands used:
 
 ```bash
-cd C:\plans\AeroBIM\backend
+cd backend
 python -m aerobim.tools.benchmark_project_package \
   --schema-suite --group-by schema --write-evidence \
-  --output C:\plans\aerobim-internal-data\reports\ifc-schema-suite-meeting-2026-08.json
+  --output ../docs/evidence/ifc-schema-suite-meeting-2026-08.json
 # defaults: iterations=20, warmup=2, shared container + suite prime
 ```
 
@@ -260,7 +259,7 @@ Refresh: `aerobim-internal-data/reports/expertise-dataset-report.md`
 
 ### Samolet intake
 
-Path: `C:\plans\aerobim-internal-data\raw\expertise\customer_samolet_drop\`  
+Path: `aerobim-internal-data/raw/expertise/customer_samolet_drop/` (outside this Git tree).  
 Need: `ifc/`, `pdf/`, `remarks/`, optional `ids/`, plus `AUTHORIZATION.txt`.  
 See also: `docs/partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`, `docs/datasets/customer-data-request-2026-08.md`.
 
@@ -323,7 +322,7 @@ See also: `docs/partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`, `docs/datasets/cus
 
 ---
 
-## 8. Architecture notes useful for next agent
+## 8. Architecture notes useful for continuation
 
 ### Analyze path
 
@@ -374,7 +373,7 @@ Port + adapters exist; evidence docs mark live Kimi/Qwen **NOT RUN** / `live_pro
 
 ---
 
-## 10. Recommended next actions for successor AI (ordered)
+## 10. Recommended next actions (ordered)
 
 1. **Meeting pack:** use §5 tables + `SPRINT3_WEEK_TASKS_STATUS` — do not invent accuracy %.
 2. **Samolet:** if files appear in `customer_samolet_drop/`, quarantine as `customer_internal`, hash, de-identify check, run Analyze **without** mixing into public packs, **without** external VLM.
@@ -386,11 +385,11 @@ Port + adapters exist; evidence docs mark live Kimi/Qwen **NOT RUN** / `live_pro
 8. **Do not** enable DWG or claim DWG support.
 9. **Gates after code changes:**
    ```bash
-   cd C:\plans\AeroBIM\backend
-   .\.venv\Scripts\python.exe -m ruff format --check src tests
-   .\.venv\Scripts\python.exe -m ruff check src tests
-   .\.venv\Scripts\python.exe -m mypy src
-   .\.venv\Scripts\python.exe -m pytest tests -q
+   cd backend
+   python -m ruff format --check src tests
+   python -m ruff check src tests
+   python -m mypy src
+   python -m pytest tests -q
    ```
 
 ---

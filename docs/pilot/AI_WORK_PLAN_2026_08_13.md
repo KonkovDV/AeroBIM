@@ -1,5 +1,5 @@
-<!-- claims-lint: allow-file reason="KT#2 AI work plan; quotes forbidden phrases as Never-do list; NO_GO explicit" -->
-# AI WORK PLAN — KT#2 (for the next agent)
+<!-- claims-lint: allow-file reason="KT#2 work plan; quotes forbidden phrases as Never-do list; NO_GO explicit" -->
+# Work plan — KT#2 (13.08.2026)
 
 **Tip:** current `main` after this delivery. **Checkpoint:** NO_GO. **Hours are calendar windows, not ideal-engineer time.**  
 **Every number must come from a run** (`artifacts/` or committed `docs/evidence/`). No hand-typed metrics.

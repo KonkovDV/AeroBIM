@@ -5,15 +5,16 @@ status: active
 version: "1.0.0"
 last_updated: "2026-08-14"
 claim_boundary: >
-  Self Red Team of Wave A after the operator lifted the ports/DI freeze.
+  Internal Red Team of Wave A after the operator lifted the ports/DI freeze.
   Checkpoint remains NO_GO. Does not close RT-001/002/003. Not customer
   accuracy. Not MEP delivered. Not CDE-ready. Not native DWG. Not a
-  structural solver. Full pytest not re-run; tests_passed pin stays 2167.
+  structural solver. CI tests_passed pin stays 2167. Local Windows pytest
+  2259/12/0 is not a README replacement (N-26).
 ---
 
 # Red Team — Wave A (survey XSD, clearance, IDS audit, SP 63 template)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** uncommitted Wave A vs `dd1a0a7` (MinStroy survey XSD intake, IfcClash clearance extra-method, clash→BCF file ingest, jurisdiction IDS document audit, SP 63 cover *template*)  
 **Code / architecture:** extra methods on existing `IfcClashDetector`; no new ports / DI tokens  
 **Checkpoint:** **`NO_GO`**
@@ -26,7 +27,7 @@ claim_boundary: >
 | Integrity (Medium) | **Findings below; none silently promote RT CLOSED** |
 | Claims Lock | **PASS intended** after this pack’s docs refresh |
 | Customer Checkpoint | Still **NO_GO** (RT-001/002/003) |
-| Full pytest | **Not claimed** — focused tests only; `tests_passed` remains **2167** |
+| Full pytest | **Not claimed as CI pin refresh.** Local Windows 15.08: 2259 passed / 12 skipped / 0 failed on HEAD `005b7bc` (`docs/evidence/runtime-baseline-wave-a-windows-2026-08-15.md`). `tests_passed` in README **stays 2167** (commit `88e726be`, N-26). |
 
 ## Findings
 
@@ -36,7 +37,7 @@ claim_boundary: >
 | RT-WA-02 | INFO | **CLOSED** | A2 first pin hashed 3 IDS files. Attack: «pack is clean» from n=3 | Pack-wide rerun: MOEXP 24 + AGR 4 + SPb 22 = **50** files, **0** document issues. Still not IfcTester CIM coverage |
 | RT-WA-03 | MED | **MITIGATED** | Survey-report zip title vs XSD root `GeologicalReport` (engineering-geological, not all-discipline) | Catalog `note` + `SOURCE.md` |
 | RT-WA-04 | MED | **MITIGATED** | 07.08.2026 news named construction-stage XSDs; they were **not** on the 14.08 catalog scrape | No invented files. `construction-stage catalog gap` in SOURCE.md |
-| RT-WA-05 | INFO | **ACCEPTED** | LOC pin updated (73101 / 47476 / 2271); `tests_passed=2167` and `commit_sha=88e726be20bc` **not** refreshed | Honest: do not invent a new suite total |
+| RT-WA-05 | INFO | **ACCEPTED** | LOC pin 73166/47587/2271; CI `tests_passed=2167` on `88e726be`. Local suite 15.08 measured 2259/12/0 — **not** copied into README | Honest split: CI pin vs local evidence file |
 | RT-WA-06 | MED | **MITIGATED** | SP 63 template uses `Pset_CoveringCommon.CoveringThickness` on IfcSlab/Beam/Column (IfcCovering pset, not SP 63 table 8.1 / exposure class) | Pack `status=synthetic-template`; `calculation_correctness` stays NOT_IMPLEMENTED |
 | RT-WA-07 | HIGH | **ACCEPTED** | None of A1–A6 close customer blockers | `closes_rt001/002/003=false`; honesty lock tests untouched |
 | RT-WA-08 | INFO | **MITIGATED** | `catalog_zip_url` rows are not live-fetched in CI | XSD sha256 pins in tests; zips stay out of git |

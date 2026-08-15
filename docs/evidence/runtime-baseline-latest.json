@@ -8,12 +8,12 @@
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2178,
+    "tests_collected": 2271,
     "tests_passed": 2167,
     "tests_skipped": 11,
     "tests_failed": 0,
-    "source_loc": 73101,
-    "test_loc": 47476,
+    "source_loc": 73166,
+    "test_loc": 47587,
     "test_functions": 2271,
     "uncollected": []
   },
@@ -50,12 +50,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 73101,
-    "backend_test_loc": 47476,
+    "backend_src_loc": 73166,
+    "backend_test_loc": 47587,
     "backend_test_functions": 2271,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/runtime-baseline-latest.json · src ~73101 LOC; tests ~47476 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/runtime-baseline-latest.json · src ~73166 LOC; tests ~47587 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",

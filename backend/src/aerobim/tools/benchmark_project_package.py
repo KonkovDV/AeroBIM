@@ -67,6 +67,14 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
 
 
+def _repo_display_path(path: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(repo_root().resolve()).as_posix()
+    except ValueError:
+        return path.name
+
+
 def default_pack_path() -> Path:
     return repo_root() / "samples" / "benchmarks" / "project-package-baseline.json"
 
@@ -675,7 +683,7 @@ def write_ifc_release_evidence(
         [
             "",
             f"Generated at: `{suite_payload.get('generated_at')}`",
-            f"JSON evidence: `{json_path.as_posix()}`",
+            f"JSON evidence: `{_repo_display_path(json_path)}`",
             "",
         ]
     )

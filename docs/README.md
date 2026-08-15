@@ -61,7 +61,7 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Claims ↔ evidence |
 | [`benchmark-evidence-2026.md`](benchmark-evidence-2026.md) | Fixture metric boundaries |
 | [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md) | Samolet pilot phases |
-| [`pilot/AI_WORK_PLAN_2026_08_14.md`](pilot/AI_WORK_PLAN_2026_08_14.md) | **План ИИ 14.08 (код freeze)** + исполнение |
+| [`pilot/AI_WORK_PLAN_2026_08_14.md`](pilot/AI_WORK_PLAN_2026_08_14.md) | План работ 14.08 (код freeze) + исполнение |
 | [`demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Скрипт видео 3 мин (человек 19.08) |
 | [`partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md`](partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md) | Письмо: IFC из Renga, не Tangl API |
 | [`pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md) | Parallel plan → Aug / Sep checkpoints |

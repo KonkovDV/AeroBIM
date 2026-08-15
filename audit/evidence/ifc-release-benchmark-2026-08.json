@@ -1,12 +1,12 @@
 {
   "artifact_type": "ifc_release_benchmark_suite",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-10T22:04:04.561088+00:00",
+  "generated_at": "2026-08-15T08:37:15.775009+00:00",
   "claim_level": "fixture_only",
   "customer_accuracy_not_established": true,
   "machine": {
     "platform": "Windows-11-10.0.26200-SP0",
-    "python": "3.13.7",
+    "python": "3.12.10",
     "machine": "AMD64",
     "system": "Windows"
   },
@@ -23,9 +23,9 @@
         {
           "iteration": 1,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-001",
-          "elapsed_ms": 29.949,
-          "report_id": "39747c43904c4bc489f2b3d515e08478",
-          "issue_count": 6,
+          "elapsed_ms": 31.251,
+          "report_id": "85c11a7041f94e1e894461a3a2e63721",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -33,9 +33,9 @@
         {
           "iteration": 2,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-002",
-          "elapsed_ms": 29.204,
-          "report_id": "75d75307fd81488c9c8583a4b420d155",
-          "issue_count": 6,
+          "elapsed_ms": 30.62,
+          "report_id": "aeea217ae2ec42e483263b0bde7218a2",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -43,9 +43,9 @@
         {
           "iteration": 3,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-003",
-          "elapsed_ms": 29.054,
-          "report_id": "0fb5a7767068469e8c115fbc650b7078",
-          "issue_count": 6,
+          "elapsed_ms": 30.807,
+          "report_id": "d80afc59daa34067a2f371488053931f",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -53,9 +53,9 @@
         {
           "iteration": 4,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-004",
-          "elapsed_ms": 29.32,
-          "report_id": "0aba95c83f8e44ba9671361270f2e39c",
-          "issue_count": 6,
+          "elapsed_ms": 30.376,
+          "report_id": "e21c3355eb4f433cb91aed6a4f529bce",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -63,9 +63,9 @@
         {
           "iteration": 5,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-005",
-          "elapsed_ms": 29.654,
-          "report_id": "b3d0a0f3390847bd9da7a3028f18f814",
-          "issue_count": 6,
+          "elapsed_ms": 31.353,
+          "report_id": "1352141895a3481dbe4206de3fe6542e",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -73,9 +73,9 @@
         {
           "iteration": 6,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-006",
-          "elapsed_ms": 30.191,
-          "report_id": "12e4d16ccea84ffaab53c70cd625a750",
-          "issue_count": 6,
+          "elapsed_ms": 31.568,
+          "report_id": "21f27609cb644931ac9a5d4bbef0e340",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -83,9 +83,9 @@
         {
           "iteration": 7,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-007",
-          "elapsed_ms": 29.932,
-          "report_id": "1ee6d0d78eed41178e8946bd9ff17cda",
-          "issue_count": 6,
+          "elapsed_ms": 30.689,
+          "report_id": "fae0ccb869d249bf88b405d7c91ad6d8",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -93,9 +93,9 @@
         {
           "iteration": 8,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-008",
-          "elapsed_ms": 30.47,
-          "report_id": "fdc859def1804a48a1bf50eb498dd2e3",
-          "issue_count": 6,
+          "elapsed_ms": 30.809,
+          "report_id": "7da22a68076340ab8eefa1a63cea3485",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -103,9 +103,9 @@
         {
           "iteration": 9,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-009",
-          "elapsed_ms": 29.753,
-          "report_id": "70df4f53775b442ba32da8cbe7e3c217",
-          "issue_count": 6,
+          "elapsed_ms": 30.342,
+          "report_id": "4685b783593d487c9c67697e9b86e20e",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -113,9 +113,9 @@
         {
           "iteration": 10,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-010",
-          "elapsed_ms": 30.165,
-          "report_id": "956d53a415f640b384121b28fd56fb9b",
-          "issue_count": 6,
+          "elapsed_ms": 29.089,
+          "report_id": "497010ecee68415697282a41cd2f06f2",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -123,9 +123,9 @@
         {
           "iteration": 11,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-011",
-          "elapsed_ms": 29.832,
-          "report_id": "012cdd1b4b46404eb895b420a17b7d97",
-          "issue_count": 6,
+          "elapsed_ms": 28.962,
+          "report_id": "004782219b6d4304be276a4d19e9803d",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -133,9 +133,9 @@
         {
           "iteration": 12,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-012",
-          "elapsed_ms": 28.921,
-          "report_id": "47cddd8477354c8d9fdab8784755b540",
-          "issue_count": 6,
+          "elapsed_ms": 31.448,
+          "report_id": "7b4c8750784b47c08d81808f9bbda5dd",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -143,9 +143,9 @@
         {
           "iteration": 13,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-013",
-          "elapsed_ms": 29.402,
-          "report_id": "4758d077083c474ebf058e22c0d2620e",
-          "issue_count": 6,
+          "elapsed_ms": 30.892,
+          "report_id": "43c2a0d9cb3c4207b851921a4d707e79",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -153,9 +153,9 @@
         {
           "iteration": 14,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-014",
-          "elapsed_ms": 29.252,
-          "report_id": "ee84d503a66a49738489eed78e1da653",
-          "issue_count": 6,
+          "elapsed_ms": 30.28,
+          "report_id": "2716534f285349758f2acd3202831a5d",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -163,9 +163,9 @@
         {
           "iteration": 15,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-015",
-          "elapsed_ms": 29.619,
-          "report_id": "4945934712294a51845a28745aaf1d30",
-          "issue_count": 6,
+          "elapsed_ms": 31.313,
+          "report_id": "75a9945e28814c52a3105cf2b504a2a3",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -173,9 +173,9 @@
         {
           "iteration": 16,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-016",
-          "elapsed_ms": 30.556,
-          "report_id": "5a8943228aed4cabbbf2255cd5dfea46",
-          "issue_count": 6,
+          "elapsed_ms": 30.734,
+          "report_id": "421a616005df4c968f4b1fbd127cad4d",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -183,9 +183,9 @@
         {
           "iteration": 17,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-017",
-          "elapsed_ms": 29.131,
-          "report_id": "916fbac11e74402c97f2d086393a8c76",
-          "issue_count": 6,
+          "elapsed_ms": 32.024,
+          "report_id": "551fe93048ef40a48d63c7d52db3ab0b",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -193,9 +193,9 @@
         {
           "iteration": 18,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-018",
-          "elapsed_ms": 32.498,
-          "report_id": "2f9acaa8325f49278ed41064382559ed",
-          "issue_count": 6,
+          "elapsed_ms": 31.912,
+          "report_id": "dfc90635f04348409d479cd8c32cc5bf",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -203,9 +203,9 @@
         {
           "iteration": 19,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-019",
-          "elapsed_ms": 29.663,
-          "report_id": "7d4c83de96e54ab4bac5381fd44f9a93",
-          "issue_count": 6,
+          "elapsed_ms": 31.925,
+          "report_id": "62b92e09268b414fb3fdedc6413d1602",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
@@ -213,29 +213,29 @@
         {
           "iteration": 20,
           "request_id": "benchmark-project-package-ifc2x3-schema-run-020",
-          "elapsed_ms": 30.992,
-          "report_id": "6758fe9582194f28bdc70d20fa062109",
-          "issue_count": 6,
+          "elapsed_ms": 31.298,
+          "report_id": "5d3818ba915a4f99a1f72f45f3df7938",
+          "issue_count": 5,
           "requirement_count": 3,
           "project_name": "IFC2x3 Schema Suite",
           "discipline": "architecture"
         }
       ],
       "summary": {
-        "min_ms": 28.921,
-        "max_ms": 32.498,
-        "avg_ms": 29.878,
-        "p50_ms": 29.663,
-        "p95_ms": 30.992,
-        "reports_per_second": 33.469,
+        "min_ms": 28.962,
+        "max_ms": 32.024,
+        "avg_ms": 30.885,
+        "p50_ms": 30.809,
+        "p95_ms": 31.925,
+        "reports_per_second": 32.378,
         "sample_n": 20,
         "p95_equals_max": false,
-        "spike_ratio_max_over_p50": 1.096,
+        "spike_ratio_max_over_p50": 1.039,
         "timing_stability_note": null
       },
       "artifact_type": "benchmark_project_package",
       "schema_version": "1.2.0",
-      "generated_at": "2026-08-10T22:04:03.062919+00:00",
+      "generated_at": "2026-08-15T08:37:14.221527+00:00",
       "claim_level": "fixture_only",
       "customer_accuracy_not_established": true,
       "accuracy_measured": false,
@@ -247,31 +247,31 @@
         "description": "IFC2x3 wall Pset/BaseQuantities schema-suite fixture (claim_level=fixture_only).",
         "ifc_schema": "IFC2X3",
         "corpus_kind": "fixture",
-        "pack_path": "samples/benchmarks/project-package-ifc2x3-schema.json"
+        "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json"
       },
       "pack_id": "project-package-ifc2x3-schema",
       "pack_version": "1.0.0",
       "description": "IFC2x3 wall Pset/BaseQuantities schema-suite fixture (claim_level=fixture_only).",
       "ifc_schema": "IFC2X3",
       "corpus_kind": "fixture",
-      "pack_path": "samples/benchmarks/project-package-ifc2x3-schema.json",
-      "ifc_sha256": "e13045b15358f307c62f12fb2da2a8896d7f9c7882db372fffe623806cc89640",
-      "ifc_bytes": 997,
+      "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json",
+      "ifc_sha256": "a68a0dc02084ddb378d4b227db6e2129b57a1df48d0f0e0ee019a3d487c69f91",
+      "ifc_bytes": 975,
       "ifc_entity_count": 12,
       "ifc_schema_from_header": "IFC2X3",
-      "peak_traced_memory_bytes": 1215212,
+      "peak_traced_memory_bytes": 991613,
       "dependencies": {
         "ifcopenshell": "0.8.5",
         "ifctester": "0.8.5",
-        "fastapi": "0.135.3"
+        "fastapi": "0.141.1"
       },
       "machine": {
         "platform": "Windows-11-10.0.26200-SP0",
-        "python": "3.13.7",
+        "python": "3.12.10",
         "machine": "AMD64",
         "system": "Windows"
       },
-      "storage_dir": "backend/var/reports"
+      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
     },
     {
       "iterations": 20,
@@ -280,8 +280,8 @@
         {
           "iteration": 1,
           "request_id": "benchmark-project-package-ifc4-schema-run-001",
-          "elapsed_ms": 28.383,
-          "report_id": "f2735860918940a280519625f7fae160",
+          "elapsed_ms": 30.234,
+          "report_id": "7599d04a8eb141bfa753204e1f068f2c",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -290,8 +290,8 @@
         {
           "iteration": 2,
           "request_id": "benchmark-project-package-ifc4-schema-run-002",
-          "elapsed_ms": 28.113,
-          "report_id": "888fc070e711478a8d7c04a8492fd1c4",
+          "elapsed_ms": 29.712,
+          "report_id": "30dd2764fd3f497890034b6a79b26073",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -300,8 +300,8 @@
         {
           "iteration": 3,
           "request_id": "benchmark-project-package-ifc4-schema-run-003",
-          "elapsed_ms": 28.112,
-          "report_id": "df6b8200f8884164bc43ac3d4cc7aa2f",
+          "elapsed_ms": 29.166,
+          "report_id": "2b8e4e06e1a849e78fe28d73097c4b58",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -310,8 +310,8 @@
         {
           "iteration": 4,
           "request_id": "benchmark-project-package-ifc4-schema-run-004",
-          "elapsed_ms": 27.572,
-          "report_id": "40a0fb5dded24349bbd5241ebfbe0b86",
+          "elapsed_ms": 29.866,
+          "report_id": "2fcc72855bcf4823806864b3c96d27f3",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -320,8 +320,8 @@
         {
           "iteration": 5,
           "request_id": "benchmark-project-package-ifc4-schema-run-005",
-          "elapsed_ms": 27.577,
-          "report_id": "85943fc6d8b444bc8bea4568a0000aad",
+          "elapsed_ms": 33.422,
+          "report_id": "8ccd7f43317c4b208c12fa9c120fc452",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -330,8 +330,8 @@
         {
           "iteration": 6,
           "request_id": "benchmark-project-package-ifc4-schema-run-006",
-          "elapsed_ms": 28.615,
-          "report_id": "6eba5dffd87146128df0d171ca4df31e",
+          "elapsed_ms": 28.869,
+          "report_id": "e96208c5931946ee90db1f661b7bc674",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -340,8 +340,8 @@
         {
           "iteration": 7,
           "request_id": "benchmark-project-package-ifc4-schema-run-007",
-          "elapsed_ms": 28.286,
-          "report_id": "635290641a094dd8a7981e6bb8434385",
+          "elapsed_ms": 31.162,
+          "report_id": "2b6e9e1d0b424080b32a9a750250e7dd",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -350,8 +350,8 @@
         {
           "iteration": 8,
           "request_id": "benchmark-project-package-ifc4-schema-run-008",
-          "elapsed_ms": 28.152,
-          "report_id": "7499ad6397d445378c2713b0b7c1c228",
+          "elapsed_ms": 31.28,
+          "report_id": "f2732d949ceb4120b5c0c5278cd442b4",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -360,8 +360,8 @@
         {
           "iteration": 9,
           "request_id": "benchmark-project-package-ifc4-schema-run-009",
-          "elapsed_ms": 27.402,
-          "report_id": "9b624257e5034e6e89248e7d78cd5e63",
+          "elapsed_ms": 29.809,
+          "report_id": "5bb6e963290d4afabaf064a7fda808b9",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -370,8 +370,8 @@
         {
           "iteration": 10,
           "request_id": "benchmark-project-package-ifc4-schema-run-010",
-          "elapsed_ms": 28.255,
-          "report_id": "d2244b330b3646b6a2b5826bab5ca7bd",
+          "elapsed_ms": 28.039,
+          "report_id": "6eeea17099df4fd991c5279c702361c7",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -380,8 +380,8 @@
         {
           "iteration": 11,
           "request_id": "benchmark-project-package-ifc4-schema-run-011",
-          "elapsed_ms": 28.102,
-          "report_id": "8547c2cf3f1a4a3abe80cfb2dc3460ea",
+          "elapsed_ms": 29.651,
+          "report_id": "c4a65adb8c8a4f6da5912c5e9d66dabe",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -390,8 +390,8 @@
         {
           "iteration": 12,
           "request_id": "benchmark-project-package-ifc4-schema-run-012",
-          "elapsed_ms": 28.865,
-          "report_id": "21c76a87a02d4de796aae8407680f1ee",
+          "elapsed_ms": 30.364,
+          "report_id": "b2f9644c8bfe42ab9b8df1b3df865df4",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -400,8 +400,8 @@
         {
           "iteration": 13,
           "request_id": "benchmark-project-package-ifc4-schema-run-013",
-          "elapsed_ms": 29.14,
-          "report_id": "f802bd12342347498945018226411169",
+          "elapsed_ms": 30.233,
+          "report_id": "623a6ae872c045e79f1f104754550a0b",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -410,8 +410,8 @@
         {
           "iteration": 14,
           "request_id": "benchmark-project-package-ifc4-schema-run-014",
-          "elapsed_ms": 28.011,
-          "report_id": "17451e9e2ddb4df19871b6d9c05b035c",
+          "elapsed_ms": 30.78,
+          "report_id": "8e3e18aa47cb479f988e861b265c9b7c",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -420,8 +420,8 @@
         {
           "iteration": 15,
           "request_id": "benchmark-project-package-ifc4-schema-run-015",
-          "elapsed_ms": 27.923,
-          "report_id": "fdfcf7ce2d6948c49c44fb241b2d3f61",
+          "elapsed_ms": 29.917,
+          "report_id": "c54eb7ff5fd04e0a888f0c2840c7d38d",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -430,8 +430,8 @@
         {
           "iteration": 16,
           "request_id": "benchmark-project-package-ifc4-schema-run-016",
-          "elapsed_ms": 29.356,
-          "report_id": "bc06b93e29d7466e8081e97a86cd2c6f",
+          "elapsed_ms": 30.199,
+          "report_id": "b007ea4170ed49a0a7ab5b43efd852a4",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -440,8 +440,8 @@
         {
           "iteration": 17,
           "request_id": "benchmark-project-package-ifc4-schema-run-017",
-          "elapsed_ms": 30.206,
-          "report_id": "f88da651d29146d3a7fb713e6cc7aecf",
+          "elapsed_ms": 31.066,
+          "report_id": "140d18f8ca634a35a01f0ecc55340b83",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -450,8 +450,8 @@
         {
           "iteration": 18,
           "request_id": "benchmark-project-package-ifc4-schema-run-018",
-          "elapsed_ms": 29.723,
-          "report_id": "404e54856eb04b8dbf4da11ba5e8c1ab",
+          "elapsed_ms": 30.61,
+          "report_id": "71000d64cd3e4e598c812c4482233a24",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -460,8 +460,8 @@
         {
           "iteration": 19,
           "request_id": "benchmark-project-package-ifc4-schema-run-019",
-          "elapsed_ms": 31.962,
-          "report_id": "8fa2de1faa814de8914e87e425b94d1f",
+          "elapsed_ms": 29.997,
+          "report_id": "5efbadd6bd064f26bc99174b7bd85522",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -470,8 +470,8 @@
         {
           "iteration": 20,
           "request_id": "benchmark-project-package-ifc4-schema-run-020",
-          "elapsed_ms": 28.565,
-          "report_id": "3a7df13848fc4219bb88828b9e28a836",
+          "elapsed_ms": 30.595,
+          "report_id": "fdb8667ece5143cbab2c1d9209893827",
           "issue_count": 4,
           "requirement_count": 3,
           "project_name": "IFC4 Schema Suite",
@@ -479,20 +479,20 @@
         }
       ],
       "summary": {
-        "min_ms": 27.402,
-        "max_ms": 31.962,
-        "avg_ms": 28.616,
-        "p50_ms": 28.255,
-        "p95_ms": 30.206,
-        "reports_per_second": 34.945,
+        "min_ms": 28.039,
+        "max_ms": 33.422,
+        "avg_ms": 30.249,
+        "p50_ms": 30.199,
+        "p95_ms": 31.28,
+        "reports_per_second": 33.059,
         "sample_n": 20,
         "p95_equals_max": false,
-        "spike_ratio_max_over_p50": 1.131,
+        "spike_ratio_max_over_p50": 1.107,
         "timing_stability_note": null
       },
       "artifact_type": "benchmark_project_package",
       "schema_version": "1.2.0",
-      "generated_at": "2026-08-10T22:04:03.803420+00:00",
+      "generated_at": "2026-08-15T08:37:14.979716+00:00",
       "claim_level": "fixture_only",
       "customer_accuracy_not_established": true,
       "accuracy_measured": false,
@@ -504,31 +504,31 @@
         "description": "IFC4 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
         "ifc_schema": "IFC4",
         "corpus_kind": "fixture",
-        "pack_path": "samples/benchmarks/project-package-ifc4-schema.json"
+        "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json"
       },
       "pack_id": "project-package-ifc4-schema",
       "pack_version": "1.0.0",
       "description": "IFC4 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
       "ifc_schema": "IFC4",
       "corpus_kind": "fixture",
-      "pack_path": "samples/benchmarks/project-package-ifc4-schema.json",
+      "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json",
       "ifc_sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
       "ifc_bytes": 997,
       "ifc_entity_count": 12,
       "ifc_schema_from_header": "IFC4",
-      "peak_traced_memory_bytes": 1165828,
+      "peak_traced_memory_bytes": 1014314,
       "dependencies": {
         "ifcopenshell": "0.8.5",
         "ifctester": "0.8.5",
-        "fastapi": "0.135.3"
+        "fastapi": "0.141.1"
       },
       "machine": {
         "platform": "Windows-11-10.0.26200-SP0",
-        "python": "3.13.7",
+        "python": "3.12.10",
         "machine": "AMD64",
         "system": "Windows"
       },
-      "storage_dir": "backend/var/reports"
+      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
     },
     {
       "iterations": 20,
@@ -537,9 +537,9 @@
         {
           "iteration": 1,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-001",
-          "elapsed_ms": 28.611,
-          "report_id": "80af79c47c1b4ed18e29ede7e7b5c1e7",
-          "issue_count": 4,
+          "elapsed_ms": 31.987,
+          "report_id": "30f23695ccf8439393f7bdb0e22ff0f1",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -547,9 +547,9 @@
         {
           "iteration": 2,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-002",
-          "elapsed_ms": 29.265,
-          "report_id": "d5de38f034b74f09a78742f34fa181bf",
-          "issue_count": 4,
+          "elapsed_ms": 30.914,
+          "report_id": "4b36a47a3c81484293f18baebe664b52",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -557,9 +557,9 @@
         {
           "iteration": 3,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-003",
-          "elapsed_ms": 29.479,
-          "report_id": "169bb62f4da54bd6ad36c8c066f7bf57",
-          "issue_count": 4,
+          "elapsed_ms": 32.717,
+          "report_id": "25446d214ea44b6487e40b7cc1509531",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -567,9 +567,9 @@
         {
           "iteration": 4,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-004",
-          "elapsed_ms": 28.622,
-          "report_id": "6c9912adbe624d1fb31c2725f88753df",
-          "issue_count": 4,
+          "elapsed_ms": 32.806,
+          "report_id": "0c1415e9a749462a91a4049f4c6a2988",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -577,9 +577,9 @@
         {
           "iteration": 5,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-005",
-          "elapsed_ms": 29.815,
-          "report_id": "fb8f4a5c15b84e49887d961960bbe97b",
-          "issue_count": 4,
+          "elapsed_ms": 31.64,
+          "report_id": "7e05fb0688cf4bda96ce8e221324c464",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -587,9 +587,9 @@
         {
           "iteration": 6,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-006",
-          "elapsed_ms": 29.1,
-          "report_id": "815b7e61b35747bbb02a8173b1b8ac6f",
-          "issue_count": 4,
+          "elapsed_ms": 30.973,
+          "report_id": "c0adbb2dc101483e960865c539240a24",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -597,9 +597,9 @@
         {
           "iteration": 7,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-007",
-          "elapsed_ms": 28.553,
-          "report_id": "ec1c2a135678427abd16b94adcd6324e",
-          "issue_count": 4,
+          "elapsed_ms": 31.537,
+          "report_id": "19867a011e4843969d0581d615f08d16",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -607,9 +607,9 @@
         {
           "iteration": 8,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-008",
-          "elapsed_ms": 28.987,
-          "report_id": "e017c356f93a437faba1d39d1fc2b091",
-          "issue_count": 4,
+          "elapsed_ms": 32.213,
+          "report_id": "92e2505d8ca54bd1b31e930f37e0f7f2",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -617,9 +617,9 @@
         {
           "iteration": 9,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-009",
-          "elapsed_ms": 28.672,
-          "report_id": "b696983aece8452e8246a80d33a74448",
-          "issue_count": 4,
+          "elapsed_ms": 30.532,
+          "report_id": "abfbc7b4423649f4b29fa3ec1c203399",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -627,9 +627,9 @@
         {
           "iteration": 10,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-010",
-          "elapsed_ms": 29.551,
-          "report_id": "2833665d507b4a5b8d0b6db5829cf5d9",
-          "issue_count": 4,
+          "elapsed_ms": 31.533,
+          "report_id": "79663be65015442fa2e6a92da4e6b379",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -637,9 +637,9 @@
         {
           "iteration": 11,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-011",
-          "elapsed_ms": 28.686,
-          "report_id": "cd168f94f20a4ef897603ac075c4ec87",
-          "issue_count": 4,
+          "elapsed_ms": 31.551,
+          "report_id": "eb6927a9ab42408dbe72f217603ab6be",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -647,9 +647,9 @@
         {
           "iteration": 12,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-012",
-          "elapsed_ms": 29.386,
-          "report_id": "2fa8cfde60a048f391b07b9460cdd33d",
-          "issue_count": 4,
+          "elapsed_ms": 31.004,
+          "report_id": "2d3de90ba73a4e1d84844628001550dc",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -657,9 +657,9 @@
         {
           "iteration": 13,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-013",
-          "elapsed_ms": 30.261,
-          "report_id": "41903e55369f452483f44ea2ffad2ded",
-          "issue_count": 4,
+          "elapsed_ms": 31.665,
+          "report_id": "25ed54f6aec447a0ad05907844cd6c39",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -667,9 +667,9 @@
         {
           "iteration": 14,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-014",
-          "elapsed_ms": 29.944,
-          "report_id": "71b238754de84de4b953db3f18749096",
-          "issue_count": 4,
+          "elapsed_ms": 31.047,
+          "report_id": "e54b0006156241c8a3618b625686566e",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -677,9 +677,9 @@
         {
           "iteration": 15,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-015",
-          "elapsed_ms": 30.657,
-          "report_id": "9dbabf1bfa524f1aaec48d3165468b84",
-          "issue_count": 4,
+          "elapsed_ms": 31.547,
+          "report_id": "e3db70fe5d60417e89eb651aaafc61af",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -687,9 +687,9 @@
         {
           "iteration": 16,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-016",
-          "elapsed_ms": 30.11,
-          "report_id": "95673f865ffa4d47bcbb535f1004e93e",
-          "issue_count": 4,
+          "elapsed_ms": 31.825,
+          "report_id": "109f2a6998b14c259ad84beb51ef83b3",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -697,9 +697,9 @@
         {
           "iteration": 17,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-017",
-          "elapsed_ms": 37.61,
-          "report_id": "0c40a1c09df94ec5bbd70296f276bd7e",
-          "issue_count": 4,
+          "elapsed_ms": 31.56,
+          "report_id": "2acc6e93d1174450a3ce29d788a443a6",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -707,9 +707,9 @@
         {
           "iteration": 18,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-018",
-          "elapsed_ms": 30.008,
-          "report_id": "91cbaa8050db422dbc451960d5c27177",
-          "issue_count": 4,
+          "elapsed_ms": 31.622,
+          "report_id": "1bcdcb0afbe14f5fb12264e176ecfc79",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -717,9 +717,9 @@
         {
           "iteration": 19,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-019",
-          "elapsed_ms": 29.214,
-          "report_id": "fc1786348e06478699cc44c244ca4d74",
-          "issue_count": 4,
+          "elapsed_ms": 32.096,
+          "report_id": "628a54058d584c4f94e857403973341a",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
@@ -727,29 +727,29 @@
         {
           "iteration": 20,
           "request_id": "benchmark-project-package-ifc4x3-schema-run-020",
-          "elapsed_ms": 30.22,
-          "report_id": "46250680fcf64aa08172564ae2eaa213",
-          "issue_count": 4,
+          "elapsed_ms": 31.68,
+          "report_id": "918a1cea15014d5ebb183470d08fcda1",
+          "issue_count": 6,
           "requirement_count": 3,
           "project_name": "IFC4x3 Schema Suite",
           "discipline": "architecture"
         }
       ],
       "summary": {
-        "min_ms": 28.553,
-        "max_ms": 37.61,
-        "avg_ms": 29.838,
-        "p50_ms": 29.386,
-        "p95_ms": 30.657,
-        "reports_per_second": 33.514,
+        "min_ms": 30.532,
+        "max_ms": 32.806,
+        "avg_ms": 31.622,
+        "p50_ms": 31.56,
+        "p95_ms": 32.717,
+        "reports_per_second": 31.624,
         "sample_n": 20,
         "p95_equals_max": false,
-        "spike_ratio_max_over_p50": 1.28,
+        "spike_ratio_max_over_p50": 1.039,
         "timing_stability_note": null
       },
       "artifact_type": "benchmark_project_package",
       "schema_version": "1.2.0",
-      "generated_at": "2026-08-10T22:04:04.560383+00:00",
+      "generated_at": "2026-08-15T08:37:15.774007+00:00",
       "claim_level": "fixture_only",
       "customer_accuracy_not_established": true,
       "accuracy_measured": false,
@@ -761,31 +761,31 @@
         "description": "IFC4x3 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
         "ifc_schema": "IFC4X3",
         "corpus_kind": "fixture",
-        "pack_path": "samples/benchmarks/project-package-ifc4x3-schema.json"
+        "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json"
       },
       "pack_id": "project-package-ifc4x3-schema",
       "pack_version": "1.0.0",
       "description": "IFC4x3 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
       "ifc_schema": "IFC4X3",
       "corpus_kind": "fixture",
-      "pack_path": "samples/benchmarks/project-package-ifc4x3-schema.json",
+      "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json",
       "ifc_sha256": "4ba0bdbe02db391b71c14978a2de10042dbf14c79ae7c048a7013ef2d753f07a",
       "ifc_bytes": 1005,
       "ifc_entity_count": 12,
       "ifc_schema_from_header": "IFC4X3",
-      "peak_traced_memory_bytes": 1259160,
+      "peak_traced_memory_bytes": 1240296,
       "dependencies": {
         "ifcopenshell": "0.8.5",
         "ifctester": "0.8.5",
-        "fastapi": "0.135.3"
+        "fastapi": "0.141.1"
       },
       "machine": {
         "platform": "Windows-11-10.0.26200-SP0",
-        "python": "3.13.7",
+        "python": "3.12.10",
         "machine": "AMD64",
         "system": "Windows"
       },
-      "storage_dir": "backend/var/reports"
+      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
     }
   ],
   "grouped": {
@@ -794,43 +794,43 @@
       "IFC2X3": {
         "pack_count": 1,
         "pack_paths": [
-          "samples/benchmarks/project-package-ifc2x3-schema.json"
+          "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json"
         ],
         "ifc_sha256": [
-          "e13045b15358f307c62f12fb2da2a8896d7f9c7882db372fffe623806cc89640"
+          "a68a0dc02084ddb378d4b227db6e2129b57a1df48d0f0e0ee019a3d487c69f91"
         ],
         "ifc_bytes": [
-          997
+          975
         ],
         "ifc_entity_count": [
           12
         ],
         "peak_traced_memory_bytes": [
-          1215212
+          991613
         ],
         "dependencies": [
           {
             "ifcopenshell": "0.8.5",
             "ifctester": "0.8.5",
-            "fastapi": "0.135.3"
+            "fastapi": "0.141.1"
           }
         ],
         "timing_ms": {
-          "min_ms": 28.921,
-          "max_ms": 32.498,
-          "avg_ms": 29.878,
-          "p50_ms": 29.663,
-          "p95_ms": 30.992,
-          "reports_per_second": 33.469,
+          "min_ms": 28.962,
+          "max_ms": 32.024,
+          "avg_ms": 30.885,
+          "p50_ms": 30.809,
+          "p95_ms": 31.925,
+          "reports_per_second": 32.378,
           "sample_n": 20,
           "p95_equals_max": false,
-          "spike_ratio_max_over_p50": 1.096,
+          "spike_ratio_max_over_p50": 1.039,
           "timing_stability_note": null
         },
         "issue_count": {
-          "min": 6,
-          "max": 6,
-          "last": 6
+          "min": 5,
+          "max": 5,
+          "last": 5
         },
         "requirement_count": {
           "min": 3,
@@ -840,21 +840,21 @@
         "packs": [
           {
             "pack_id": "project-package-ifc2x3-schema",
-            "pack_path": "samples/benchmarks/project-package-ifc2x3-schema.json",
-            "ifc_sha256": "e13045b15358f307c62f12fb2da2a8896d7f9c7882db372fffe623806cc89640",
+            "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json",
+            "ifc_sha256": "a68a0dc02084ddb378d4b227db6e2129b57a1df48d0f0e0ee019a3d487c69f91",
             "summary": {
-              "min_ms": 28.921,
-              "max_ms": 32.498,
-              "avg_ms": 29.878,
-              "p50_ms": 29.663,
-              "p95_ms": 30.992,
-              "reports_per_second": 33.469,
+              "min_ms": 28.962,
+              "max_ms": 32.024,
+              "avg_ms": 30.885,
+              "p50_ms": 30.809,
+              "p95_ms": 31.925,
+              "reports_per_second": 32.378,
               "sample_n": 20,
               "p95_equals_max": false,
-              "spike_ratio_max_over_p50": 1.096,
+              "spike_ratio_max_over_p50": 1.039,
               "timing_stability_note": null
             },
-            "issue_count": 6,
+            "issue_count": 5,
             "requirement_count": 3
           }
         ]
@@ -862,7 +862,7 @@
       "IFC4": {
         "pack_count": 1,
         "pack_paths": [
-          "samples/benchmarks/project-package-ifc4-schema.json"
+          "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json"
         ],
         "ifc_sha256": [
           "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d"
@@ -874,25 +874,25 @@
           12
         ],
         "peak_traced_memory_bytes": [
-          1165828
+          1014314
         ],
         "dependencies": [
           {
             "ifcopenshell": "0.8.5",
             "ifctester": "0.8.5",
-            "fastapi": "0.135.3"
+            "fastapi": "0.141.1"
           }
         ],
         "timing_ms": {
-          "min_ms": 27.402,
-          "max_ms": 31.962,
-          "avg_ms": 28.616,
-          "p50_ms": 28.255,
-          "p95_ms": 30.206,
-          "reports_per_second": 34.945,
+          "min_ms": 28.039,
+          "max_ms": 33.422,
+          "avg_ms": 30.249,
+          "p50_ms": 30.199,
+          "p95_ms": 31.28,
+          "reports_per_second": 33.059,
           "sample_n": 20,
           "p95_equals_max": false,
-          "spike_ratio_max_over_p50": 1.131,
+          "spike_ratio_max_over_p50": 1.107,
           "timing_stability_note": null
         },
         "issue_count": {
@@ -908,18 +908,18 @@
         "packs": [
           {
             "pack_id": "project-package-ifc4-schema",
-            "pack_path": "samples/benchmarks/project-package-ifc4-schema.json",
+            "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json",
             "ifc_sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
             "summary": {
-              "min_ms": 27.402,
-              "max_ms": 31.962,
-              "avg_ms": 28.616,
-              "p50_ms": 28.255,
-              "p95_ms": 30.206,
-              "reports_per_second": 34.945,
+              "min_ms": 28.039,
+              "max_ms": 33.422,
+              "avg_ms": 30.249,
+              "p50_ms": 30.199,
+              "p95_ms": 31.28,
+              "reports_per_second": 33.059,
               "sample_n": 20,
               "p95_equals_max": false,
-              "spike_ratio_max_over_p50": 1.131,
+              "spike_ratio_max_over_p50": 1.107,
               "timing_stability_note": null
             },
             "issue_count": 4,
@@ -930,7 +930,7 @@
       "IFC4X3": {
         "pack_count": 1,
         "pack_paths": [
-          "samples/benchmarks/project-package-ifc4x3-schema.json"
+          "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json"
         ],
         "ifc_sha256": [
           "4ba0bdbe02db391b71c14978a2de10042dbf14c79ae7c048a7013ef2d753f07a"
@@ -942,31 +942,31 @@
           12
         ],
         "peak_traced_memory_bytes": [
-          1259160
+          1240296
         ],
         "dependencies": [
           {
             "ifcopenshell": "0.8.5",
             "ifctester": "0.8.5",
-            "fastapi": "0.135.3"
+            "fastapi": "0.141.1"
           }
         ],
         "timing_ms": {
-          "min_ms": 28.553,
-          "max_ms": 37.61,
-          "avg_ms": 29.838,
-          "p50_ms": 29.386,
-          "p95_ms": 30.657,
-          "reports_per_second": 33.514,
+          "min_ms": 30.532,
+          "max_ms": 32.806,
+          "avg_ms": 31.622,
+          "p50_ms": 31.56,
+          "p95_ms": 32.717,
+          "reports_per_second": 31.624,
           "sample_n": 20,
           "p95_equals_max": false,
-          "spike_ratio_max_over_p50": 1.28,
+          "spike_ratio_max_over_p50": 1.039,
           "timing_stability_note": null
         },
         "issue_count": {
-          "min": 4,
-          "max": 4,
-          "last": 4
+          "min": 6,
+          "max": 6,
+          "last": 6
         },
         "requirement_count": {
           "min": 3,
@@ -976,21 +976,21 @@
         "packs": [
           {
             "pack_id": "project-package-ifc4x3-schema",
-            "pack_path": "samples/benchmarks/project-package-ifc4x3-schema.json",
+            "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json",
             "ifc_sha256": "4ba0bdbe02db391b71c14978a2de10042dbf14c79ae7c048a7013ef2d753f07a",
             "summary": {
-              "min_ms": 28.553,
-              "max_ms": 37.61,
-              "avg_ms": 29.838,
-              "p50_ms": 29.386,
-              "p95_ms": 30.657,
-              "reports_per_second": 33.514,
+              "min_ms": 30.532,
+              "max_ms": 32.806,
+              "avg_ms": 31.622,
+              "p50_ms": 31.56,
+              "p95_ms": 32.717,
+              "reports_per_second": 31.624,
               "sample_n": 20,
               "p95_equals_max": false,
-              "spike_ratio_max_over_p50": 1.28,
+              "spike_ratio_max_over_p50": 1.039,
               "timing_stability_note": null
             },
-            "issue_count": 4,
+            "issue_count": 6,
             "requirement_count": 3
           }
         ]

@@ -8,7 +8,7 @@ claim_boundary: "Self red-team. Checkpoint NO_GO. Not external audit."
 
 # Red Team — Eng residuals wave (2026-08-03)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Scope:** VLM smoke gate · signature deepen · OIDC Phase 2 · BCF T2 checklist · DWG honesty · BSI IDS import · bare-metal DEFERRED  
 **Checkpoint:** **NO_GO**
 

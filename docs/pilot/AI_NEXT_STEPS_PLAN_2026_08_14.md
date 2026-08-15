@@ -1,6 +1,6 @@
-<!-- claims-lint: allow-file reason="Execution plan for AI agent; forbidden phrases cited as non-claims per Claims Lock" -->
+<!-- claims-lint: allow-file reason="Engineering plan after Wave A; forbidden phrases cited as non-claims per Claims Lock" -->
 ---
-title: "План для ИИ-исполнителя — следующие шаги без «Самолёта»"
+title: "План работ — следующие шаги без корпуса «Самолёта»"
 date: "2026-08-14"
 status: active
 claim_boundary: >
@@ -8,10 +8,17 @@ claim_boundary: >
   14.08 evening by operator. Not customer accuracy. Not MEP delivered. Not CDE-ready.
 ---
 
-# План для ИИ-исполнителя (после 14.08)
+# План работ (после 14.08)
 
-Исполнитель: ИИ-агент в этом репо. Источник: интернет-разведка 14.08.2026 + состояние
-после коммита `dd1a0a7` (24/28 ТЗ = VERIFIED_FIXTURE_ONLY, customer VERIFIED = 0/28).
+Операторский план. **Wave A приземлена в `005b7bc`.** Следующий SSOT:
+[`AI_KT2_EXECUTOR_REPORT_2026_08_14.md`](AI_KT2_EXECUTOR_REPORT_2026_08_14.md) —
+**верификация + демо + baseline**, не новый фичевый слой.
+
+Funding Red Team 15.08: [`../quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](../quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md).  
+Academic Red Team 15.08 (Messick/Kane/ISO 19650/Solihin): [`../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md).  
+HEAD × Task 07 × MIK audit: [`../quality/AUDIT_HEAD_005B7BC_SAMOLET_TECHLAB_MIK_2026_08_15.md`](../quality/AUDIT_HEAD_005B7BC_SAMOLET_TECHLAB_MIK_2026_08_15.md).  
+Питч ведёт с NO_GO; ask = слот/комплект, не раунд. Не копировать local 2259 в README.  
+Репетиция 20.08: [`../demo/KT2_DEMO_REHEARSAL_2026_08_12.md`](../demo/KT2_DEMO_REHEARSAL_2026_08_12.md) — live CLI, не wall-guid HTML.
 
 ## 0. Жёсткие правила (нарушение = стоп)
 

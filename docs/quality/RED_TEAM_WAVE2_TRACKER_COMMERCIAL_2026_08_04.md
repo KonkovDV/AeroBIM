@@ -1,6 +1,6 @@
 # Red Team — Wave-2: Tracker К0 + commercial hygiene + coverage UI (2026-08-04)
 
-**Author relationship:** self + [Security Review](220ba608-c549-4739-a0b5-cda1ce659326)  
+**Author relationship:** Internal self-assessment plus internal security review  
 **Scope:** uncommitted wave after `385c4b9` — К0 tracker pack, commercial templates, private-doc quarantine, coverage schema 1.1.0 / CoverageMapPanel, LLM advisory rename + pilot egress hard-disable  
 **Checkpoint:** **`NO_GO`** (unchanged)  
 

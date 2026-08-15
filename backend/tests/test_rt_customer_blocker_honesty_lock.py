@@ -179,5 +179,31 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         self.assertNotIn("closes_rt001: true", text)
 
 
+class AcademicRedTeamHonestyTests(unittest.TestCase):
+    def test_academic_red_team_does_not_close_blockers_or_alias_proxies(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "quality"
+            / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md"
+        )
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("closes_rt003: false", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("Messick", text)
+        self.assertIn("Kane", text)
+        self.assertIn("Solihin", text)
+        self.assertIn("ISO 19650", text)
+        self.assertIn("Goodhart", text)
+        self.assertIn("NOT_IMPLEMENTED", text)
+        self.assertNotIn("closes_rt001: true", text)
+        self.assertNotIn("closes_rt002: true", text)
+        self.assertNotIn("closes_rt003: true", text)
+        self.assertIn("Checkpoint stays **NO_GO**", text)
+
+
 if __name__ == "__main__":
     unittest.main()

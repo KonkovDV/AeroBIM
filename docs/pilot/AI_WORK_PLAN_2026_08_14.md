@@ -1,6 +1,6 @@
-<!-- claims-lint: allow-file reason="Detailed work plan for AI agent; forbidden phrases listed as non-claims; NO_GO explicit" -->
+<!-- claims-lint: allow-file reason="Detailed work plan (docs freeze); forbidden phrases listed as non-claims; NO_GO explicit" -->
 ---
-title: "AeroBIM — детальный план работы для ИИ (14.08.2026, код не трогаем)"
+title: "AeroBIM — детальный план работ (14.08.2026, код не трогаем)"
 date: "2026-08-14"
 status: active
 claim_boundary: >
@@ -9,7 +9,7 @@ claim_boundary: >
   integration. Not product >90%. Not MEP delivered. Not CDE-ready. Not DWG-ready.
 ---
 
-# Детальный план работы для ИИ (код не трогаем)
+# Детальный план работ (код не трогаем)
 
 **Дата:** 14 августа 2026  
 **Checkpoint:** **NO_GO** (RT-001/002/003)  
@@ -70,7 +70,7 @@ claim_boundary: >
 
 ---
 
-## 2. План работы для ИИ (по дням)
+## 2. План работ (по дням)
 
 ### 14.08 (сегодня, после встречи 08:00)
 

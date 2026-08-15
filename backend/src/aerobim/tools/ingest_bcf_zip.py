@@ -46,9 +46,7 @@ def ingest_payload(path: Path) -> dict[str, object]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Ingest a BCFZIP from disk (not CDE import)."
-    )
+    parser = argparse.ArgumentParser(description="Ingest a BCFZIP from disk (not CDE import).")
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args(argv)

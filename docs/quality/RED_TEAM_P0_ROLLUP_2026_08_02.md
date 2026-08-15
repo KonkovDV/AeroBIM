@@ -8,7 +8,7 @@ claim_boundary: "Self red-team rollup. Checkpoint NO_GO. Not external audit / no
 
 # Red Team rollup — P0 WP-01..08 (2026-08-02)
 
-**Author relationship:** self  
+**Author relationship:** Internal self-assessment  
 **Package:** TechLab Task 07 P0 eng work packages WP-01 → WP-08  
 **Checkpoint:** **`NO_GO`**
 
