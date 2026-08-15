@@ -483,8 +483,8 @@ class DatastoreUrlSsrfTests(unittest.TestCase):
             assert_safe_datastore_url,
         )
 
-        with self.assertRaises(UnsafeOutboundUrlError):
-            assert_safe_datastore_url("redis://10.0.0.5:6379/0", resolve_dns=False)
+        # RFC1918 is allowed for operator-configured Redis/Postgres (Docker/k8s).
+        assert_safe_datastore_url("redis://10.0.0.5:6379/0", resolve_dns=False)
         with self.assertRaises(UnsafeOutboundUrlError):
             assert_safe_datastore_url(
                 "postgresql+asyncpg://u:p@169.254.169.254/db",

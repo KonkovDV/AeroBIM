@@ -14,7 +14,10 @@ from aerobim.core.di.tokens import Tokens
 from aerobim.core.security.path_jail import PathJailError, reject_symlinks
 from aerobim.domain.check_coverage import coverage_from_report, derive_report_scope
 from aerobim.domain.models import ReportListFilters
-from aerobim.domain.object_acl import AuthPrincipal, principal_may_access_report
+from aerobim.domain.object_acl import (
+    AuthPrincipal,
+    principal_may_access_tenant_id,
+)
 from aerobim.presentation.http.context import (
     ApiContext,
     attachment_content_disposition,
@@ -23,6 +26,7 @@ from aerobim.presentation.http.context import (
 from aerobim.presentation.http.errors import (
     public_bad_request_detail,
     public_hitl_state_conflict_detail,
+    public_not_found_detail,
 )
 from aerobim.presentation.http.schemas import ReviewEventRequest
 
@@ -53,16 +57,18 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
             if not principal_tenant:
                 entries = []
             else:
-                # list_reports returns summaries; reload for tenant binding when enforced.
+                # Prefer summary/peek tenant — do not reconstruct findings for list ACL.
                 filtered = []
+                peek = getattr(audit_store, "peek_tenant_id", None)
                 for entry in entries:
-                    report = audit_store.get(entry.report_id)
-                    if report is None:
-                        continue
-                    if principal_may_access_report(
+                    tenant = (getattr(entry, "tenant_id", None) or "").strip() or None
+                    if not tenant and callable(peek):
+                        raw = peek(entry.report_id)
+                        tenant = raw.strip() if isinstance(raw, str) else None
+                    if principal_may_access_tenant_id(
                         enforce_object_acl=True,
                         principal=principal,
-                        report=report,
+                        tenant_id=tenant,
                     ):
                         filtered.append(entry)
                 entries = filtered
@@ -74,10 +80,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        report = ctx.load_authorized_report(report_id, principal)
         return ctx.serialize_public_report(report)
 
     @router.get("/v1/reports/{report_id}/coverage")
@@ -88,10 +91,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         # Read-only, verdict-neutral: per-source check-coverage derived on-the-fly from
         # the stored report ('no findings' != 'not checked'). Never sets summary.passed.
         ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        report = ctx.load_authorized_report(report_id, principal)
         return coverage_from_report(report, scope=derive_report_scope(report)).to_dict(
             report=report
         )
@@ -108,10 +108,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         from aerobim.presentation.http.errors import public_hitl_forbidden_detail
 
         ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        ctx.load_authorized_report(report_id, principal)
         if not principal_may_append_hitl_event(
             enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
             require_hitl_reviewer_roles=settings.require_hitl_reviewer_roles,
@@ -170,10 +167,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        ctx.load_authorized_report(report_id, principal)
         review_store = ctx.container.resolve(Tokens.REVIEW_EVENT_STORE)
         events = review_store.list_for_report(report_id)
         return {"events": [asdict(e) for e in events], "count": len(events)}
@@ -184,10 +178,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        ctx.load_authorized_report(report_id, principal)
         review_store = ctx.container.resolve(Tokens.REVIEW_EVENT_STORE)
         events = review_store.list_for_report(report_id)
         return {"report_id": report_id, "kpi": summarize_review_events(events)}
@@ -198,10 +189,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> Response | FileResponse:
         ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        ctx.load_authorized_report(report_id, principal)
         filename, source_payload = ctx.resolve_report_ifc_source(report_id, principal=principal)
         if isinstance(source_payload, bytes):
             download_name = filename or f"{report_id}.ifc"
@@ -213,7 +201,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         try:
             reject_symlinks(Path(source_payload), base=settings.storage_dir.resolve())
         except PathJailError as exc:
-            raise HTTPException(status_code=404, detail="IFC source not found") from exc
+            raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         return FileResponse(
             path=source_payload,
             media_type="application/octet-stream",
@@ -235,10 +223,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
     ) -> Response | FileResponse:
         ctx.validate_report_id(report_id)
         ctx.validate_drawing_asset_id(asset_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        ctx.load_authorized_report(report_id, principal)
         drawing_asset, preview_payload = ctx.resolve_report_drawing_asset_preview(
             report_id, asset_id, principal=principal
         )
@@ -253,7 +238,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         try:
             reject_symlinks(Path(preview_payload), base=settings.storage_dir.resolve())
         except PathJailError as exc:
-            raise HTTPException(status_code=404, detail="Drawing preview not found") from exc
+            raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         return FileResponse(
             path=preview_payload,
             media_type=media_type,

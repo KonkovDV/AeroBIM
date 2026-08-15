@@ -276,6 +276,30 @@ class OidcBranchTests(unittest.TestCase):
             principal = ctx.require_bearer_auth("Bearer some-jwt")
             self.assertEqual(principal.tenant_id, "t-custom")
 
+    def test_tid_and_org_id_are_not_used_as_tenant(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(
+                Path(tmp),
+                oidc=_OidcValidator(claims={"tid": "azure-tid", "org_id": "org-1", "sub": "sub-1"}),
+            )
+            exc = _status(ctx.require_bearer_auth, "Bearer some-jwt")
+            self.assertEqual(exc.status_code, 401)
+            self.assertEqual(exc.detail, "OIDC token missing required tenant claim")
+
+    def test_bearer_and_oidc_schemes_are_distinct(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bearer_ctx = _make_ctx(Path(tmp), api_bearer_token="secret-token")
+            bearer = bearer_ctx.require_bearer_auth("Bearer secret-token")
+            self.assertEqual(bearer.auth_scheme, "bearer")
+            self.assertTrue(bearer.is_service_token)
+            oidc_ctx = _make_ctx(
+                Path(tmp),
+                oidc=_OidcValidator(claims={"tenant_id": "t-oidc", "sub": "user-1"}),
+            )
+            oidc = oidc_ctx.require_bearer_auth("Bearer some-jwt")
+            self.assertEqual(oidc.auth_scheme, "oidc")
+            self.assertFalse(oidc.is_service_token)
+
     def test_blank_tenant_claim_is_401(self) -> None:
         # Kills AddNot / Delete_Not on `if not tenant` (L162) + 401 codes (L165).
         with tempfile.TemporaryDirectory() as tmp:
@@ -373,13 +397,23 @@ class IfcSizeLimitBoundaryTests(unittest.TestCase):
 class ResolveBoundTenantTests(unittest.TestCase):
     """Tenant binding rules (L275-292)."""
 
-    def test_acl_on_returns_principal_tenant(self) -> None:
+    def test_acl_on_matching_payload_returns_principal_tenant(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), enforce_object_acl=True)
             bound = ctx.resolve_bound_tenant(
-                AuthPrincipal(tenant_id="tenant-a"), payload_tenant_id="spoof"
+                AuthPrincipal(tenant_id="tenant-a"), payload_tenant_id="tenant-a"
             )
             self.assertEqual(bound, "tenant-a")
+
+    def test_acl_on_spoofed_payload_is_400(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(Path(tmp), enforce_object_acl=True)
+            exc = _status(
+                ctx.resolve_bound_tenant,
+                AuthPrincipal(tenant_id="tenant-a"),
+                payload_tenant_id="spoof",
+            )
+            self.assertEqual(exc.status_code, 400)
 
     def test_acl_on_unbound_principal_is_403(self) -> None:
         # Kills Is_IsNot / AddNot on `if principal_tenant is None` (L285) + 403.
@@ -388,13 +422,23 @@ class ResolveBoundTenantTests(unittest.TestCase):
             exc = _status(ctx.resolve_bound_tenant, AuthPrincipal(tenant_id="  "))
             self.assertEqual(exc.status_code, 403)
 
-    def test_acl_off_principal_wins_over_payload(self) -> None:
-        # Kills ReplaceOrWithAnd on the return chain (L292).
+    def test_acl_off_conflicting_payload_is_400(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(Path(tmp), enforce_object_acl=False)
+            principal = AuthPrincipal(tenant_id="tenant-a")
+            exc = _status(
+                ctx.resolve_bound_tenant,
+                principal,
+                payload_tenant_id="tenant-x",
+            )
+            self.assertEqual(exc.status_code, 400)
+
+    def test_acl_off_matching_payload_returns_principal(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), enforce_object_acl=False)
             principal = AuthPrincipal(tenant_id="tenant-a")
             self.assertEqual(
-                ctx.resolve_bound_tenant(principal, payload_tenant_id="tenant-x"),
+                ctx.resolve_bound_tenant(principal, payload_tenant_id="tenant-a"),
                 "tenant-a",
             )
 

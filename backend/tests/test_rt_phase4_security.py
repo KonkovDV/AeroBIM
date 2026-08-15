@@ -136,9 +136,8 @@ class ObjectStoreFallbackTests(unittest.TestCase):
             s3_bucket="aerobim-pilot",
             signoff_profile="samolet_pilot",
         )
-        with patch.object(
-            bootstrap_module,
-            "S3ObjectStore",
+        with patch(
+            "aerobim.infrastructure.di._di_factories.S3ObjectStore",
             side_effect=RuntimeError("boto3 missing"),
         ):
             with self.assertRaises(RuntimeError):
@@ -155,9 +154,8 @@ class ObjectStoreFallbackTests(unittest.TestCase):
             s3_bucket="aerobim-dev",
             signoff_profile="development",
         )
-        with patch.object(
-            bootstrap_module,
-            "S3ObjectStore",
+        with patch(
+            "aerobim.infrastructure.di._di_factories.S3ObjectStore",
             side_effect=RuntimeError("boto3 missing"),
         ):
             store = bootstrap_module._build_object_store(settings)

@@ -13,17 +13,24 @@ def build_rate_limit_backend(
     redis_url: str | None,
     *,
     signoff_profile: str = "development",
+    fail_closed: bool = False,
 ) -> RateLimitBackend:
-    """Prefer Redis when configured; fall back to in-process on import/connect errors."""
+    """Prefer Redis when configured; in-process only when not fail-closed."""
 
+    hard_profile = signoff_profile in {"samolet_pilot", "production"}
     if not redis_url:
+        if fail_closed:
+            raise RuntimeError(
+                "Redis rate limiter required outside development/test but "
+                "AEROBIM_REDIS_URL is unset"
+            )
         return InProcessRateLimitBackend()
     try:
         from aerobim.infrastructure.security.redis_rate_limiter import RedisRateLimitBackend
 
         return RedisRateLimitBackend(redis_url)
     except Exception as exc:
-        if signoff_profile in {"samolet_pilot", "production"}:
+        if fail_closed or hard_profile:
             raise RuntimeError(
                 "Redis rate limiter required for pilot/production but unavailable"
             ) from exc

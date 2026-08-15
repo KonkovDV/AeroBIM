@@ -25,12 +25,18 @@ class Post01ProductionSignoffDefaultTests(unittest.TestCase):
     def test_production_env_defaults_to_production_signoff(self) -> None:
         previous = {
             k: os.environ.get(k)
-            for k in ("AEROBIM_ENV", "AEROBIM_SIGNOFF_PROFILE", "AEROBIM_API_BEARER_TOKEN")
+            for k in (
+                "AEROBIM_ENV",
+                "AEROBIM_SIGNOFF_PROFILE",
+                "AEROBIM_API_BEARER_TOKEN",
+                "AEROBIM_REDIS_URL",
+            )
         }
         try:
             os.environ["AEROBIM_ENV"] = "production"
             os.environ.pop("AEROBIM_SIGNOFF_PROFILE", None)
             os.environ["AEROBIM_API_BEARER_TOKEN"] = "tok"
+            os.environ["AEROBIM_REDIS_URL"] = "redis://127.0.0.1:6379/0"
             settings = Settings.from_env()
             self.assertEqual(settings.signoff_profile, "production")
             self.assertTrue(settings.require_clash)

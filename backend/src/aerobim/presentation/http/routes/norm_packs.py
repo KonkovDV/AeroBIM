@@ -35,11 +35,7 @@ def build_norm_packs_router(ctx: ApiContext) -> APIRouter:
         tenant_id = ctx.resolve_bound_tenant(principal)
         ctx.assert_norm_pack_access(principal, tenant_id=tenant_id)
         if payload.report_id:
-            ctx.validate_report_id(payload.report_id)
-            linked = ctx.audit_store.get(payload.report_id)
-            if linked is None:
-                raise HTTPException(status_code=404, detail=f"Report {payload.report_id} not found")
-            ctx.assert_report_access(linked, principal)
+            ctx.load_authorized_report(payload.report_id, principal)
         subject = (principal.subject or "").strip()
         if subject:
             proposed_by = subject

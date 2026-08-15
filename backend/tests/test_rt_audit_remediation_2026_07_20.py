@@ -57,6 +57,8 @@ class ComposeAuthHygieneTests(unittest.TestCase):
         self.assertIn("AEROBIM_ENV: production", text)
         self.assertIn("AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?", text)
         self.assertIn('AEROBIM_ALLOW_ANONYMOUS_DEV: "false"', text)
+        self.assertIn("AEROBIM_REDIS_URL: redis://redis:6379/0", text)
+        self.assertIn("redis:7.4-alpine", text)
         self.assertNotIn("dev-local-token-change-me", text)
 
 

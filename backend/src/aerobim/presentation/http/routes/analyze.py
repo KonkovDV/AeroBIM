@@ -16,6 +16,7 @@ from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.errors import (
     public_analyze_concurrency_limit_detail,
     public_bad_request_detail,
+    public_not_found_detail,
     public_service_unavailable_detail,
     public_sync_analyze_disabled_detail,
 )
@@ -43,7 +44,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         request_id = payload.request_id or uuid4().hex
-        logger.info("validate_ifc started", request_id=request_id, ifc_path=payload.ifc_path)
+        logger.info("validate_ifc started", request_id=request_id)
         try:
             ifc_resolved = ctx.resolve_safe_path(payload.ifc_path, principal=principal)
             ctx.enforce_ifc_size(ifc_resolved)
@@ -217,16 +218,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         job_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
-        ctx.validate_job_id(job_id)
-        get_job_status_use_case = ctx.container.resolve(
-            Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
-        )
-        job = get_job_status_use_case.execute(job_id)
-        if job is None:
-            raise HTTPException(
-                status_code=404, detail=f"Analyze project-package job {job_id} not found"
-            )
-        ctx.assert_job_access(job, principal)
+        job = ctx.load_authorized_job(job_id, principal)
         return ctx.serialize_analyze_project_package_job(job)
 
     @router.post("/v1/analyze/project-package/jobs/{job_id}/cancel")
@@ -234,22 +226,11 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         job_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
-        ctx.validate_job_id(job_id)
-        get_job_status_use_case = ctx.container.resolve(
-            Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
-        )
-        existing = get_job_status_use_case.execute(job_id)
-        if existing is None:
-            raise HTTPException(
-                status_code=404, detail=f"Analyze project-package job {job_id} not found"
-            )
-        ctx.assert_job_access(existing, principal)
+        ctx.load_authorized_job(job_id, principal)
         job_store = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
         job = job_store.request_cancel(job_id)
         if job is None:
-            raise HTTPException(
-                status_code=404, detail=f"Analyze project-package job {job_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
         return ctx.serialize_analyze_project_package_job(job)
 
     return router

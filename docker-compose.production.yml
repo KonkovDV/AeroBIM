@@ -31,6 +31,10 @@ services:
       # Compose fails fast if the variable is missing — no default token.
       AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?Set AEROBIM_API_BEARER_TOKEN to a long random secret}
       AEROBIM_ALLOW_ANONYMOUS_DEV: "false"
+      AEROBIM_REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_started
     volumes:
       - reports-data:/data/reports
       - ./samples:/data/samples:ro
@@ -41,5 +45,12 @@ services:
       retries: 3
       start_period: 10s
 
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
 volumes:
   reports-data:
+  redis-data:

@@ -135,12 +135,18 @@ def _build_object_store(settings: Settings) -> ObjectStore:
 
 
 def _build_job_store(settings: Settings) -> AnalyzeProjectPackageJobStore:
+    if not settings.is_dev_environment:
+        if not settings.redis_url:
+            raise RuntimeError(
+                "AEROBIM_REDIS_URL is required outside development/test; "
+                "in-memory analyze job store is not allowed"
+            )
+        return RedisAnalyzeProjectPackageJobStore(settings.redis_url)
     if settings.redis_url:
         try:
             return RedisAnalyzeProjectPackageJobStore(settings.redis_url)
         except RuntimeError:
-            if not settings.is_dev_environment:
-                raise
+            pass
     return InMemoryAnalyzeProjectPackageJobStore(
         snapshot_path=settings.storage_dir / "analyze_project_package_jobs.snapshot.json"
     )

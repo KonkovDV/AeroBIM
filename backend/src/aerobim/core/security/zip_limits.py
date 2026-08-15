@@ -49,6 +49,8 @@ def _inspect_zipfile(
         if info.is_dir():
             continue
         name = info.filename.replace("\\", "/")
+        if any(ord(ch) < 32 for ch in name):
+            raise ZipBombError(f"ZIP member path is not allowed: {info.filename!r}")
         if name.startswith("/") or name.startswith("../") or "/../" in f"/{name}/":
             raise ZipBombError(f"ZIP member path is not allowed: {info.filename!r}")
         if ":" in name.split("/")[0]:

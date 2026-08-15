@@ -23,6 +23,12 @@ class AuthPrincipal:
     """True for static shared bearer — may be blocked from expert HITL writes."""
     roles: frozenset[str] = field(default_factory=frozenset)
     """Normalized role names from OIDC claims (casefold)."""
+    auth_scheme: str = "anonymous"
+    """How the principal was bound: ``anonymous`` | ``bearer`` | ``oidc``.
+
+    Distinct from ``is_service_token``: static bearer is never an OIDC user,
+    and OIDC is never the shared API token even when both are configured.
+    """
 
 
 HITL_EXPERT_EVENT_TYPES = frozenset({"accepted", "rejected", "edited", "edited_remark", "waived"})
@@ -81,6 +87,22 @@ def _tenants_match(left: str | None, right: str | None) -> bool:
     return a.casefold() == b.casefold()
 
 
+def principal_may_access_tenant_id(
+    *,
+    enforce_object_acl: bool,
+    principal: AuthPrincipal,
+    tenant_id: str | None,
+) -> bool:
+    """ACL check against a tenant id without loading the report payload."""
+
+    if not enforce_object_acl:
+        return True
+    bound = (tenant_id or "").strip()
+    if not bound:
+        return False
+    return _tenants_match(principal.tenant_id, bound)
+
+
 def principal_may_access_report(
     *,
     enforce_object_acl: bool,
@@ -89,13 +111,11 @@ def principal_may_access_report(
 ) -> bool:
     """Return False when enforced ACL denies cross-tenant artifact access."""
 
-    if not enforce_object_acl:
-        return True
-    report_tenant = (report.tenant_id or "").strip()
-    if not report_tenant:
-        # Legacy reports without tenant binding are denied under enforced ACL.
-        return False
-    return _tenants_match(principal.tenant_id, report_tenant)
+    return principal_may_access_tenant_id(
+        enforce_object_acl=enforce_object_acl,
+        principal=principal,
+        tenant_id=getattr(report, "tenant_id", None),
+    )
 
 
 def principal_may_access_job(
@@ -136,6 +156,7 @@ __all__ = [
     "principal_may_access_job",
     "principal_may_access_norm_pack",
     "principal_may_access_report",
+    "principal_may_access_tenant_id",
     "principal_may_append_hitl_event",
     "principal_may_edit_norm_pack",
 ]
