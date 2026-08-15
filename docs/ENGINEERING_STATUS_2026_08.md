@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.17"
+version: "1.6.19"
 last_updated: "2026-08-15"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-15
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-15 · **v1.6.17** — tracker sprint 15.08 evening; live CLI demo; RT-001/002/003 unchanged  
+**last_updated:** 2026-08-15 · **v1.6.19** — defensive engineering pass (ACL/anti-enum/Redis fail-closed); RT-001/002/003 unchanged  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Wave A Red Team:** [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md)  
@@ -32,7 +32,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **Task 7 weekly eng status** | `python -m aerobim.tools.export_weekly_eng_status` → `docs/evidence/weekly-eng-status-latest.json`; funnel = OWNER_ONLY | Never invent commercial counts |
 | **Task 4 adjudication plan** | `plan_adjudication_corpus` → recommended_n=111 for interim 0.60 @ expected 0.75 | Sizes labeling only; not precision |
 | **External P1/P4 research** | Renga pin + IDS inventory 18/22; SPb/Amur AR recount; GOST **21.101-2026** п.8.2.4 GUID | Owner: Renga ToS cite; DWG A/B/C |
-| **P4 Experiment A (Renga ПНСТ 909)** | **ToS GO**; runtime **18/22** IDS clean; 4 out_of_pack | Evidence [`evidence/pnst909-22-scenario-runtime-latest.json`](evidence/pnst909-22-scenario-runtime-latest.json); not product accuracy |
+| **P4 Experiment A (Renga ПНСТ 909)** | **ToS GO**; runtime **18/22** IDS clean (snapshot 05.08); CLI in tree; live pack truncated → SKIPPED_PACK_INCOMPLETE | Evidence [`evidence/pnst909-22-scenario-runtime-latest.json`](evidence/pnst909-22-scenario-runtime-latest.json); not product accuracy |
 | **Regulatory 21.101** | Marks OS/ODD/MBT; edition config; N-2 clause **8.2.4** | No full-compliance claim |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
 | **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |
@@ -53,6 +53,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **BCF T2** | Verifier `--checklist` / `--eng-readiness`; pack STATUS stays NOT_VERIFIED | Needs real CDE log/screenshot/hashes |
 | **Native DWG** | `python -m aerobim.tools.validate_dwg_toolchain` reports `dwg_native=NOT_IMPLEMENTED` | Never DWG-ready; STUB-ODA-CAD-001 |
 | **Tracker sprint 15.08 evening** | IFC-release matrix refresh (`clash=skipped` on tiny walls); dataset hunt + re-runs; consult pack; GTM KPI = scheduled demos | Not customer GO; Harbor NOT_RUN |
+| **Defensive engineering pass (15.08)** | OIDC tenant only from `AEROBIM_OIDC_TENANT_CLAIM`; ACL-before-read + 404 anti-enum; Redis required outside dev; ZIP NUL/XML depth+text; runtime lock excludes PyMuPDF | Not RT-001/002/003 CLOSED; not RELEASE_GO |
+| **Dataset CLI (task 3, late 15.08)** | PNST 22-scenario CLI + frozen pairing; IFC-Bench v2 **27/1026** countable (`skip_breakdown` + two verified probes); Ishigaki gold-IDS smoke SKIPPED; DrawingVQA link-only | Not 18/22 rerun; Harbor NOT_RUN; not RT-001 |
 | **IfcClash tiny walls** | Skip degenerate products (`AEROBIM_CLASH_SKIP_TINY`, default on); all-skipped still FAILED | Not a silent pass |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |
 | **P2-04 Annotation↔IFC** | Claimed GUID → `ifc_guid` only after spatial-index presence | Not human-adjudicated matching |

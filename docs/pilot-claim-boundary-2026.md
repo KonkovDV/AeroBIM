@@ -104,7 +104,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Optional raster/PDF drawing path (OCR baseline) | `RasterDrawingAnalyzer` port — deterministic today |
 | Non-deterministic text extraction training | Not in pilot sign-off path |
 | Full OIDC multi-tenant auth | OIDC JWT validation available; full SSO/BFF still post-pilot |
-| arq/Redis async queue | Redis job store available when `AEROBIM_REDIS_URL` set; arq workers still post-pilot |
+| arq/Redis async queue | Redis job store **required** outside development; in-memory is dev/test only; arq workers still post-pilot |
 | BCF API / OpenCDE integration | Topic push foundation live; **CDE import T2 NOT_VERIFIED**; full hub sync post-pilot |
 | Live bSI Validation Service submit in pilot | Local cert / mocked client tested; live hub needs credentials |
 | LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |

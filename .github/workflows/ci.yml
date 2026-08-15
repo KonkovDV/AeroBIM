@@ -93,6 +93,21 @@ jobs:
           check("requirements-lock.txt", ["--extra=raster"])
           check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster", "--extra=pdf-agpl"])
           PY
+      - name: Runtime lock must not install optional AGPL PyMuPDF
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          lock = Path("requirements-lock.txt").read_text(encoding="utf-8")
+          for line in lock.splitlines():
+              s = line.strip().lower().rstrip("\\").strip()
+              if s.startswith("pymupdf==") or s.startswith("pymupdf["):
+                  raise SystemExit(
+                      "pymupdf must not appear in requirements-lock.txt; "
+                      "keep it behind optional extra pdf-agpl / requirements-dev-lock.txt"
+                  )
+          print("runtime lock excludes pymupdf OK")
+          PY
       - name: Claims Lock linter (WP-R10)
         run: python ../scripts/lint_claims.py
       - name: Claims Lock full-docs scan (WP-A5)

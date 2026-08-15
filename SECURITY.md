@@ -89,12 +89,12 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 - OIDC JWKS is fetched only via SSRF-guarded `safe_urlopen` (no unguarded `PyJWKClient` HTTP).
 - OIDC JWKS hostname must match issuer hostname unless listed in `AEROBIM_OIDC_JWKS_EXTRA_HOSTS` (multi-host IdP allowlist).
 - Frontend never embeds bearer tokens; Vite loopback proxy may inject `Authorization` in dev only. Production builds require reverse-proxy / BFF auth (POST-05 default **DESIGNED / NOT_IMPLEMENTED** — `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md`; public `GET /v1/auth/bff` returns 501 honesty JSON unless lab Phase 3 is configured, which is still not a production SSO claim).
-- Untrusted XML (BCF ZIP members, IDS documents) parses via `defusedxml` with byte/element caps (`xml_limits`); object-store `get_bytes` streams with `max_get_bytes` (default = max IFC). Presigned/file:// URLs remain a residual caller responsibility.
+- Untrusted XML (BCF ZIP members, IDS documents) parses via `defusedxml` with byte/element/depth/text caps (`xml_limits`); object-store `get_bytes` streams with `max_get_bytes` (default = max IFC). Presigned/file:// URLs remain a residual caller responsibility.
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash / MEP / schema / unit_scale). Soft `AEROBIM_CLASH_AFFECTS_PASS=false` is ignored under pilot/production.
 - OIDC JWT validation pins algorithms (RS256), verifies `iss`, `aud`, and `exp`; tenant claim only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`).
 - Cross-tenant object ACL denials return **HTTP 404** (not 403).
 - Outbound JWKS / buildingSMART Validation Service / OpenCDE fetches pass an SSRF URL allowlist guard; DNS is resolved once and connections are IP-pinned; non-global addresses (incl. CGNAT `100.64/10`) are blocked.
-- Redis (`AEROBIM_REDIS_URL`) and Postgres (`AEROBIM_DB_URL`) are SSRF-gated at settings load when not localhost / unix socket; Postgres→FS fallback is fail-closed under `audit_fail_closed` / hard profiles.
+- Redis (`AEROBIM_REDIS_URL`) is **required** outside development/test (durable analyze jobs + shared rate limiter). In-memory job store and in-process limiter are development/test only. Redis/Postgres URLs are SSRF-gated at settings load; RFC1918 datastore peers are allowed, metadata/link-local are not. Postgres→FS fallback is fail-closed under `audit_fail_closed` / hard profiles.
 - Tenant-scoped filesystem artifact reads assert `tenants/{encoded}/` prefix; `safe_storage_token` / path jail apply **NFKC** before encode/jail; encodes `/\_:` to avoid prefix collisions.
 - HITL transitions use server event-store SSOT for `previous_state`; norm-pack actors bind to authenticated subject.
 - Committed reports carry content hash; get denies tampered JSON. Cancelled analyze jobs discard report artifacts.
@@ -108,8 +108,9 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 - HTTP responses set `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, and an API-safe CSP (`default-src 'none'`…); HTML export uses a slightly relaxed CSP (`style-src 'unsafe-inline'; img-src data:`).
 - Production compose publishes `127.0.0.1:8080` only; LAN exposure requires a reverse proxy.
 - Soft `development`/`fixture` sign-off profiles cannot weaken pilot/production capability gates; evidence-bundle PASS claims are evaluated under production policy.
-- Backend image base is digest-pinned (`python:3.12-slim@sha256:…`); CI/Docker install from hashed locks via `pip install --require-hashes` (pip/uv bootstrap pin residual only).
-- PDF raster/preview uses PyMuPDF on authenticated uploads — keep patched; treat untrusted PDF rendering as residual host risk (sandbox not yet shipped).
+- Backend image base is digest-pinned (`python:3.12-slim@sha256:…`); CI/Docker install from hashed locks via `pip install --require-hashes` (pip/uv bootstrap pin residual only). Core PDF path is pypdfium2 + pdfminer.six; optional `pdf-agpl` PyMuPDF is **not** in the runtime lock or production image.
+- Duplicate / oversized / smuggled `Authorization` headers are rejected with HTTP 401 before token parsing.
+- PDF preview/raster of untrusted uploads remains a residual host risk (timeouts/page caps apply; sandbox not yet shipped).
 - Security regression battery is exercised in CI job `security-regression` (engineering only; not a production multi-tenant certification). See `audit/reports/SECURITY_AUDIT_2026_07_31.md`.
 - Storage path resolution rejects symlinks and path escapes under `AEROBIM_STORAGE_DIR`; report JSON reads use `open_storage_file` (POSIX `O_NOFOLLOW` when available). ZIP path inspect streams via `ZipFile(path)` without `read_bytes`; members with `..` or absolute paths are rejected (including BCF consumers via `inspect_zip_bytes`).
 - IFC inputs larger than `AEROBIM_MAX_IFC_BYTES` (default 256 MiB) are rejected with HTTP 413; frontend WASM IFC memory is capped at 256 MiB.
