@@ -20,7 +20,7 @@ Authority: [`audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_B
 | **RT-002** | OPEN | Schema↔loader full `approval` object; synthetic promotion blocked | Signed customer pack + matching `pack_hash` |
 | **RT-003** / MEP-CLASH-001 | OPEN | Domain+DI fail-closed; ENG_FIXTURE rehearsal; never `mep_system_clash=OK` | Federated customer IFC + signed scope memo + matrix + verified geometry |
 | **STUB-ODA-CAD-001** | OPEN | Legal flag vs SDK honesty split; analyze uses ezdxf only | Licensed ODA/Teigha + legal review + customer DWG evidence |
-| **POST-05 OIDC BFF** | NOT_IMPLEMENTED | Phase 2.5 CSRF + PKCE S256 + optional lab authorize URL draft; HTTP **501** | Phase 3 HttpOnly session + code exchange + FE bearer removal |
+| **POST-05 OIDC BFF** | NOT_IMPLEMENTED | Phase 2.5 CSRF + PKCE; Phase 3 lab cookie + nonce + HMAC when `oidc_bff_phase3_ready`; default HTTP **501** | Production IdP + JWKS identity + FE bearer removal |
 
 ## RT-001 intake (do next with customer)
 
@@ -49,19 +49,22 @@ Authority: [`audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_B
 | `=true` without SDK | `NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON` — legal gate open ≠ product |
 | Analyze path | Always `EzdxfCadModelIngestor` via `CAD_MODEL_INGESTOR` |
 
-## OIDC BFF Phase 2.5
+## OIDC BFF Phase 2.5 / Phase 3 lab
 
-Lab env (optional, still **501** / `NOT_IMPLEMENTED`):
+Default (no lab env): **501** / `auth_bff.status=NOT_IMPLEMENTED`.
 
 ```text
 AEROBIM_OIDC_BFF_CLIENT_ID=...
 AEROBIM_OIDC_BFF_AUTHORIZE_URL=https://idp/.../authorize
+AEROBIM_OIDC_BFF_REDIRECT_URI_ALLOWLIST=https://app.example/callback
+AEROBIM_OIDC_BFF_TOKEN_URL=https://idp/.../token
+AEROBIM_OIDC_BFF_CLIENT_SECRET=...
+AEROBIM_OIDC_BFF_COOKIE_SECRET=...
 ```
 
-`GET /v1/auth/login` issues `state` + PKCE `code_challenge` (S256); `code_verifier` stays server-side.
-Optional `idp_redirect_url` draft when both env vars + `redirect_uri` are set.
-
-Phase 3 still pending: cookie session, token exchange, FE no bearer.
+`GET /v1/auth/login` issues `state` + PKCE `code_challenge` (S256) + OIDC `nonce`; `code_verifier` stays server-side.
+Phase 3 lab (all of the above set) issues an HMAC-bound HttpOnly cookie after code exchange via `safe_urlopen`.
+Without JWKS, `identity_verified=false`. This is **not** production SSO and does **not** bypass `require_bearer_auth` on `/v1/*`.
 
 ## Honesty lock tests
 
@@ -72,4 +75,4 @@ MEP/DWG contracts never OK; auth_bff NOT_IMPLEMENTED; analyze CAD ≠ ODA.
 
 - Marking Checkpoint GO / RT-001–003 CLOSED without customer evidence
 - Inventing federated MEP / customer norm pack / precision corpus
-- Claiming native DWG or production SSO from stubs / Phase 2.5
+- Claiming native DWG or production SSO from stubs / Phase 2.5 / Phase 3 lab cookies

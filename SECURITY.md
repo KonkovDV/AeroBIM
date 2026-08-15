@@ -88,7 +88,7 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 - Non-dev `AEROBIM_ENV` rejects soft `AEROBIM_SIGNOFF_PROFILE=development|fixture` (must be `production` or `samolet_pilot`).
 - OIDC JWKS is fetched only via SSRF-guarded `safe_urlopen` (no unguarded `PyJWKClient` HTTP).
 - OIDC JWKS hostname must match issuer hostname unless listed in `AEROBIM_OIDC_JWKS_EXTRA_HOSTS` (multi-host IdP allowlist).
-- Frontend never embeds bearer tokens; Vite loopback proxy may inject `Authorization` in dev only. Production builds require reverse-proxy / BFF auth (POST-05 **DESIGNED / NOT_IMPLEMENTED** — `docs/architecture/_2026_07.md`; public `GET /v1/auth/bff` returns 501 honesty JSON).
+- Frontend never embeds bearer tokens; Vite loopback proxy may inject `Authorization` in dev only. Production builds require reverse-proxy / BFF auth (POST-05 default **DESIGNED / NOT_IMPLEMENTED** — `docs/architecture/_2026_07.md`; public `GET /v1/auth/bff` returns 501 honesty JSON unless lab Phase 3 is configured, which is still not a production SSO claim).
 - Untrusted XML (BCF ZIP members, IDS documents) parses via `defusedxml` with byte/element caps (`xml_limits`); object-store `get_bytes` streams with `max_get_bytes` (default = max IFC). Presigned/file:// URLs remain a residual caller responsibility.
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash / MEP / schema / unit_scale). Soft `AEROBIM_CLASH_AFFECTS_PASS=false` is ignored under pilot/production.
 - OIDC JWT validation pins algorithms (RS256), verifies `iss`, `aud`, and `exp`; tenant claim only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`).

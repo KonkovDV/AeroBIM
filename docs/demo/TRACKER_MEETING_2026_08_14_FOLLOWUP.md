@@ -20,7 +20,28 @@ claim_boundary: "Afternoon task list from the team chat. Morning minutes still a
 5. Коммерческий трек: переформулировать задачу подрядчику с касаний на назначенные встречи/демо, зафиксировать измеримый результат (сколько демо назначено); цель — минимум 3–5 назначенных демо.
 6. На следующей встрече обсудить варианты модели монетизации при открытом коде.
 
-Статус исполнения: [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
+Статус исполнения (15.08 вечер): [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
+
+| # | Задача | Статус 15.08 | Артефакт |
+|---|---|---|---|
+| 1 | Доработать продукт к КТ#2 | Eng contour landed (vertical slice, pypdfium2 overlay, OIDC lab P3). Checkpoint **NO_GO** | live CLI |
+| 2 | Таблица IFC2X3 / IFC4 / IFC4X3 | Refresh n=20; paste below | [`../evidence/ifc-release-matrix-2026-08.md`](../evidence/ifc-release-matrix-2026-08.md) |
+| 3 | Датасеты: поиск + прогон | Hunt + re-run log | [`../evidence/DATASET_HUNT_LOG_2026_08.md`](../evidence/DATASET_HUNT_LOG_2026_08.md) |
+| 4 |  / Михаил | Вопросы + демо-ссылка готовы; минут **нет** до заметок владельца | [`CONSULTATIONS_2026_08_14.md`](CONSULTATIONS_2026_08_14.md) |
+| 5 | Коммерческий KPI = назначенные демо | Бриф подрядчику готов. Живой счёт — только `.local/commercial-ops/` | [`../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`](../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md) |
+| 6 | Монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; C/D не на этой неделе | тот же GTM |
+
+### Tracker paste — три релиза IFC (задача 2)
+
+Fixture kernel only. `summary.passed=false` is Shared-gate, not Checkpoint GO. IFC4X3 `ids=failed` is fail-closed `ifcVersion`. `clash=skipped` = tiny-wall skip, not a silent pass.
+
+| Schema | Elements | Rules fired | Findings | passed | p50 ms | p95 ms | Refusals |
+|---|---|---|---:|---|---:|---:|---|
+| IFC2X3 | IfcWall×1 | AEROBIM-CLASH-CAPABILITY×1, AEROBIM-QTY-MISSING×1, IDS-Wall Width Quantity×1, SAM-R-002×1, SAM-R-003×1 | 5 | false | 28.012 | 36.717 | clash=skipped |
+| IFC4 | IfcWall×1 | AEROBIM-CLASH-CAPABILITY×1, AEROBIM-QTY-MISSING×1, SAM-R-002×1, SAM-R-003×1 | 4 | false | 28.187 | 32.266 | clash=skipped |
+| IFC4X3 | IfcWall×1 | AEROBIM-CLASH-CAPABILITY×1, AEROBIM-IDS-IFC-VERSION×2, AEROBIM-QTY-MISSING×1, SAM-R-002×1, SAM-R-003×1 | 6 | false | 35.621 | 56.957 | clash=skipped, ids=failed |
+
+Generated `2026-08-15T17:22:49Z`, `content_sha256=559dcd91…46391`. Not customer accuracy.
 
 ## Checkpoint и запреты
 

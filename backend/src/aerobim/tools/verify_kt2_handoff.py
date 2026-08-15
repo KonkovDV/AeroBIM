@@ -212,6 +212,26 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         rows,
     )
 
+    readme = repo / "README.md"
+    readme_text = readme.read_text(encoding="utf-8") if readme.is_file() else ""
+    qs_start = readme_text.find("## Quick Start")
+    qs_end = readme_text.find("\n## ", qs_start + 3) if qs_start >= 0 else -1
+    quick_start = readme_text[qs_start:qs_end] if qs_start >= 0 and qs_end > qs_start else ""
+    required_installs = [
+        line
+        for line in quick_start.splitlines()
+        if "pip install -e" in line and not line.lstrip().startswith("#")
+    ]
+    core_demo_install = any(
+        '".[dev,raster]"' in line and "pdf-agpl" not in line for line in required_installs
+    )
+    _check(
+        "readme_quickstart_demo_core_pdf",
+        core_demo_install and "run_demo_vertical_slice" in quick_start,
+        "README Quick Start must install .[dev,raster] without requiring pdf-agpl for the live CLI",
+        rows,
+    )
+
     ok = all(bool(r["ok"]) for r in rows)
     return {
         "ok": ok,

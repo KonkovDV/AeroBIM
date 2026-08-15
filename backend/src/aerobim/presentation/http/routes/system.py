@@ -15,16 +15,18 @@ from aerobim.infrastructure.auth.oidc_bff_phase3 import (
     build_phase3_login_payload,
     build_phase3_session_payload,
     exchange_authorization_code,
+    parse_session_cookie,
     session_cookie_name,
     session_from_token_payload,
+    sign_session_cookie,
 )
-from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
 from aerobim.infrastructure.auth.oidc_bff_stubs import (
     DEFAULT_BFF_STATE_STORE,
     build_callback_stub_payload,
     build_login_stub_payload,
     build_logout_stub_payload,
 )
+from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
 from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.schemas import SystemCapabilitiesResponse
 
@@ -37,8 +39,18 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
     def _cookie_secure() -> bool:
         return not ctx.settings.debug and not ctx.settings.is_dev_environment
 
+    def _cookie_secret() -> str:
+        return ctx.settings.oidc_bff_cookie_secret or ""
+
     def _cookie_name() -> str:
         return session_cookie_name(secure=_cookie_secure())
+
+    def _session_from_request(request: Request):
+        raw = request.cookies.get(_cookie_name())
+        session_id = parse_session_cookie(raw, _cookie_secret())
+        if session_id is None:
+            return None
+        return session_store.get(session_id)
 
     @router.get("/health")
     def health() -> dict[str, object]:
@@ -142,6 +154,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
             subject, email, identity_verified = session_from_token_payload(
                 tokens,
                 validator=ctx.oidc_validator,
+                expected_nonce=consumed.nonce,
             )
         except OidcValidationError as exc:
             return JSONResponse(
@@ -184,7 +197,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
         json_response = JSONResponse(status_code=200, content=payload)
         json_response.set_cookie(
             key=_cookie_name(),
-            value=session.session_id,
+            value=sign_session_cookie(session.session_id, _cookie_secret()),
             httponly=True,
             secure=_cookie_secure(),
             samesite="lax",
@@ -199,9 +212,9 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
 
         if not ctx.settings.oidc_bff_phase3_ready:
             return JSONResponse(status_code=501, content=build_logout_stub_payload())
-        cookie_id = request.cookies.get(_cookie_name())
-        if cookie_id:
-            session_store.revoke(cookie_id)
+        session = _session_from_request(request)
+        if session is not None:
+            session_store.revoke(session.session_id)
         payload = {
             **build_auth_bff_capability(),
             "status": "LAB",
@@ -228,8 +241,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
                     "message": "Phase 3 session endpoint inactive until oidc_bff_phase3_ready.",
                 },
             )
-        cookie_id = request.cookies.get(_cookie_name())
-        session = session_store.get(cookie_id) if cookie_id else None
+        session = _session_from_request(request)
         if session is None:
             return JSONResponse(status_code=401, content={"authenticated": False, "phase": 3})
         return JSONResponse(status_code=200, content=build_phase3_session_payload(session))

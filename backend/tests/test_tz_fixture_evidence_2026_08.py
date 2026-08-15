@@ -65,6 +65,7 @@ class DrawingOverlayEvidenceTests(unittest.TestCase):
             )
             self.assertTrue(out.is_file())
             self.assertEqual(len(str(meta["sha256"])), 64)
+            self.assertEqual(meta["renderer"], "pypdfium2")
             self.assertIn("not CV", str(meta["claim_boundary"]))
 
 

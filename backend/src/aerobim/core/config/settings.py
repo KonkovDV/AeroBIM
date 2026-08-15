@@ -281,7 +281,8 @@ class Settings:
     Env: ``AEROBIM_MAX_CONCURRENT_ANALYZE_JOBS_PER_TENANT``.
     """
     http_rate_limit_per_minute: int = 0
-    """Per-client POST rate limit for analyze/validate/upload routes (RT-RATE-001).
+    """Per-client rate limit for analyze/validate/upload POSTs and lab OIDC
+    login/callback GETs (RT-RATE-001).
 
     Env: ``AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE``. ``0`` disables. Production/pilot
     default 120 when unset.

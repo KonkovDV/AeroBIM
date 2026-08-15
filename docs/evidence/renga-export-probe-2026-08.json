@@ -3,7 +3,7 @@
   "artifact_type": "renga_export_probe",
   "claim_level": "renga_export_probe",
   "claim_boundary": "Header-level probe of one IFC: FILE_SCHEMA, FILE_NAME originating_system, and official MOEXP ifcVersion=IFC4 fail-closed. Publisher PNST 909 sample is not a Samolet export, not product accuracy, not Exp A 18/22 rerun. Vertical-slice demo IFC stays IfcOpenShell. This Renga 8.7 pack sample is FILE_SCHEMA IFC4 (not IFC4X3). IFC4X3 fail-closed remains on the IfcOpenShell fixture. Checkpoint NO_GO.",
-  "generated_at": "2026-08-14T12:09:25.615266+00:00",
+  "generated_at": "2026-08-15T17:22:50.107337+00:00",
   "status": "MEASURED",
   "ifc_path": ".local/renga-pnst909/pack/IFC/pnst909-c14-mf-renga-87.ifc",
   "ifc_name": "pnst909-c14-mf-renga-87.ifc",
@@ -28,7 +28,7 @@
   "schema_fail_closed": false,
   "fail_closed_rule_id": null,
   "mismatch_spec_names": [],
-  "elapsed_ms": 2.913,
+  "elapsed_ms": 2.506,
   "checkpoint": "NO_GO",
   "pack_header_sample": {
     "date": "2026-08-14",
@@ -43,5 +43,5 @@
     "not_a_full_census": true,
     "not_proof_renga_never_emits_ifc4x3": true
   },
-  "content_sha256": "42a137cbae750d83993fec84469477014742e18898e52a21499d744c7aa46246"
+  "content_sha256": "f24eee483f518e9ac0eb7f80a27ff6deecbb8ca944e84ab00be7c008ebc50223"
 }

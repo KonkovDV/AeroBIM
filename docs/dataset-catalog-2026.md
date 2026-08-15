@@ -10,6 +10,9 @@
 | buildingSMART IDS TestCases | PUBLIC_REAL | official binary cases | **CC BY-ND 4.0** | regression only | low (pin+NOTICE) |
 | buildingSMART BCF/IDS XSD | PUBLIC_REAL | schemas | **CC BY-ND 4.0** | schema validation | low (RT-W-01) |
 | **IFC-Bench v2** (Hellin) | PUBLIC_REAL | 1027 QA | QA **CC BY 4.0**; models per-file | open_bench_only when scored | pin: `samples/benchmarks/ifc-bench-v2/`; exclude GPLv3 models from MIT tree |
+| **AEC-Bench** (Nomic, arXiv:2603.29199) | PUBLIC_REAL | 196 agent tasks + gold | Apache 2.0 | inventory; Harbor **NOT_RUN** | `.local/aec-bench`; ≠ RT-001 |
+| **GNI-BIM** (Zenodo 19722012) | EDUCATIONAL | none (student IFC) | CC BY 4.0 | stress/header only | `.local/gni-bim`; not RF expertise |
+| **DrawingVQA** (arXiv:2607.15418) | PUBLIC / research | 92 expert Q | check upstream | **not downloaded** | link-only; VLM stays advisory |
 | KAAN / OSArch / BatchPlan / ArchCAD / FloorPlanCAD / CODE-ACCORD | PUBLIC / research | varies | **PARTIAL — open primary license** | pin_or_link_only | license |
 | Минстрой типовая ПД / реестр повторного применения | PUBLIC_META | none | N/A | **DEAD_CHANNEL** (no file download) | use Renga instead |
 | Renga / ПНСТ 909 open sets | PUBLIC_REAL (link) | none in-repo | vendor ToS | **PRIORITY** → `.local/renga-pnst909/` | Exp A + 22 IDS scenarios |

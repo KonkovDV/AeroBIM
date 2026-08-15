@@ -33,7 +33,7 @@ python -m aerobim.tools.run_federated_mep_inventory --samolet-demo-copyleft
 |---|---|
 | RT-001 / RT-002 / RT-003 | OPEN |
 | Native DWG / LibreDWG | Не линкуем. Показ: IFC + PDF/A (или DXF от заказчика) |
-| PyMuPDF AGPL | Уже extra `pdf-agpl` для overlay PNG; **нет** в runtime lock / Docker |
+| PyMuPDF AGPL | Optional extra `pdf-agpl` for legacy tools; KT#2 overlay uses **pypdfium2**. **Нет** в runtime lock / Docker |
 | Checkpoint | **NO_GO** |
 
 Политика: [`../license-policy-2026.md`](../license-policy-2026.md) § «Две полосы».

@@ -2,7 +2,7 @@
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
 version: "1.4.0"
-last_updated: "2026-08-14"
+last_updated: "2026-08-15"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
@@ -51,7 +51,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Samolet CONFIDENTIAL via Yandex Studio *cloud* | Hybrid classification | Studio cloud = PUBLIC/INTERNAL only; on-prem Studio or local for RESTRICTED |
 | «Qwen 3.8 in product» without SBOM pin | Weights not in offline bundle | Local open-weight or Studio URI+version pin with evidence |
 | Open-corpora binary match / timing = product accuracy | RT-001 | WP-06 regression/timing only; fixture n=7 + BSI IDS n=290 (CC BY-ND); never >90% |
-| OIDC BFF / SSO ready | POST-05 Phase 3 IdP | Phase 2 stubs only; `auth_bff.status=NOT_IMPLEMENTED` |
+| OIDC BFF / SSO ready | POST-05 production IdP | Phase 2 stubs + Phase 3 lab; `auth_bff.status=NOT_IMPLEMENTED` |
 | УКЭП / trust chain verified | crypto adapter missing | Envelope presence/hash audit only; `trust_chain=not_verified` |
 | Wilson interim planner output = publishable customer precision | RT-001 | WP-07 `demonstrates_interim_target_publishable=false`; protocol only |
 
@@ -77,7 +77,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + journal; RT-002 OPEN |
 | Package completeness inventory (WP-05) | Soft opt-in; fixture-grade; no native DWG |
 | Open corpora profiles (WP-06) | `samples/benchmarks/open-corpora/`; fixture n=7 + BSI IDS `regression-bsi` n=290 (CC BY-ND unmodified); CI smoke pins |
-| OIDC BFF Phase 2 stubs (POST-05) | login/callback/logout + CSRF; status stays NOT_IMPLEMENTED — Phase 3 IdP pending |
+| OIDC BFF Phase 2 stubs (POST-05) | login/callback/logout + CSRF; Phase 3 lab behind `oidc_bff_phase3_ready`; status stays NOT_IMPLEMENTED |
 | BCF T2 checklist verifier | `--checklist` dry-run; STATUS stays NOT_VERIFIED until real CDE evidence |
 | VLM kimi smoke PUBLIC egress gate | `vlm_smoke_gate` before client; blocked → zero bytes |
 | Quality measurement protocol (WP-07) | [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md); interim 0.60; never >90% |

@@ -2,15 +2,20 @@
 ---
 title: "Audit — HEAD 0402a7e vs Task 07, TechLab KT#2, MIK, Novator criteria"
 date: "2026-08-15"
-status: active
+status: SUPERSEDED
+superseded_by: ENGINEERING_STATUS_2026_08.md
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Release audit of published commit 0402a7e. Checkpoint NO_GO.
+  Historical release audit of published commit 0402a7e. Checkpoint NO_GO.
   Does not close RT-001/002/003. Not product accuracy. Not a term sheet.
   Local pytest is not a CI pin replacement (N-26).
 ---
+
+> **SUPERSEDED (2026-08-15).** This audit evaluated `0402a7e`, not current `main`.
+> Live engineering status: [`ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
+> Checkpoint remains **NO_GO**; RT-001/002/003 remain **OPEN**.
 
 # Audit: HEAD `0402a7e` × Task 07 × TechLab × MIK × Novator thinking-model
 

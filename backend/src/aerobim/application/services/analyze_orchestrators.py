@@ -232,9 +232,7 @@ class DeterministicValidationOrchestrator:
                 ),
             ]
         )
-        cross_document_issues = tuple(
-            self._host._cross_doc_detector().detect(requirements)
-        )
+        cross_document_issues = tuple(self._host._cross_doc_detector().detect(requirements))
         revision_merge_issues = tuple(
             detect_revision_merge_conflicts(
                 self._host._ingestion_service().collect_identity_sources(request)
@@ -387,9 +385,7 @@ class DeterministicValidationOrchestrator:
                 ),
             ]
         )
-        cross_document_issues = tuple(
-            self._host._cross_doc_detector().detect(requirements)
-        )
+        cross_document_issues = tuple(self._host._cross_doc_detector().detect(requirements))
         revision_merge_issues = tuple(
             detect_revision_merge_conflicts(
                 self._host._ingestion_service().collect_identity_sources(request)

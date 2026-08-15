@@ -379,4 +379,3 @@ class AnalyzeProjectPackageUseCase:
         else:
             index = None
         return tuple(confirm_annotation_ifc_links(links, index))
-

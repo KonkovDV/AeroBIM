@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Renga publisher IFC probe; not Samolet; NO_GO" -->
 ---
 title: "Renga IFC export probe"
-date: 2026-08-14
+date: 2026-08-15
 claim_level: renga_export_probe
 claim_boundary: >-
   Header-level probe of one IFC: FILE_SCHEMA, FILE_NAME originating_system, and official MOEXP ifcVersion=IFC4 fail-closed. Publisher PNST 909 sample is not a Samolet export, not product accuracy, not Exp A 18/22 rerun. Vertical-slice demo IFC stays IfcOpenShell. This Renga 8.7 pack sample is FILE_SCHEMA IFC4 (not IFC4X3). IFC4X3 fail-closed remains on the IfcOpenShell fixture. Checkpoint NO_GO.
@@ -25,8 +25,8 @@ Vertical-slice demo IFC is **not** replaced. Publisher PNST 909 sample is **not*
 - MOEXP IDS: `samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids`
 - schema_mismatch_count: **0** / 20 specs
 - schema_fail_closed: **False** (`None`)
-- elapsed_ms: 2.913
-- content_sha256: `42a137cbae750d83993fec84469477014742e18898e52a21499d744c7aa46246`
+- elapsed_ms: 2.506
+- content_sha256: `f24eee483f518e9ac0eb7f80a27ff6deecbb8ca944e84ab00be7c008ebc50223`
 
 ## Pack header sample (this machine)
 

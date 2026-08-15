@@ -19,6 +19,9 @@ Independent security-review of the diff: **no Critical/High**. Honesty surfaces 
 | MED | Unguarded token exchange (`urllib.request.urlopen`) — SSRF + outbound-guard CI fail | `safe_urlopen`; boot SSRF on `AEROBIM_OIDC_BFF_TOKEN_URL`; adapter listed in outbound invariant |
 | MED | Unverified JWT `sub`/`email` bound into lab session | JWKS `OidcTokenValidator` when registered; else `identity_verified: false` |
 | MED | Callback used stored `redirect_uri` without re-check | Exact allowlist match required before token exchange |
+| MED | Unsigned JWT nonce not bound to CSRF `state` | Login issues `nonce`; callback requires `id_token.nonce` match |
+| MED | Opaque session id in cookie without integrity | HMAC-SHA256 (`session_id.hexdigest`) via `AEROBIM_OIDC_BFF_COOKIE_SECRET` |
+| LOW | GET `/v1/auth/login\|callback` unbounded | Same per-client budget as analyze POSTs when `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE>0` |
 
 ## Still OPEN (by design)
 
@@ -27,6 +30,7 @@ Independent security-review of the diff: **no Critical/High**. Honesty surfaces 
 - BCF T2 CDE import `NOT_VERIFIED` (`claim_allowed: false`)
 - Lab mock IdP without JWKS: session exists, `identity_verified=false`
 - Partial IfcClash skip: capability can stay OK while tiny products are omitted (all-skipped still fail-closed)
+- Lab session cookie HMAC + nonce bind + GET auth rate-limit (this pass) do **not** make `auth_bff` production
 
 ## Honesty
 

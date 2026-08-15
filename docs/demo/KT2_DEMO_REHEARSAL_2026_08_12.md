@@ -20,6 +20,7 @@ claim_boundary: "Rehearsal script. Fixture GO. Checkpoint NO_GO. Live CLI slice,
 $ProgressPreference = 'SilentlyContinue'
 cd backend
 # предпочтительно: .venv-3.12\Scripts\python.exe
+# clone path: pip install -e ".[dev,raster]"  (pdf-agpl не нужен для оверлея)
 python -m aerobim.tools.run_demo_vertical_slice
 python -m aerobim.tools.verify_kt2_handoff --write-status ../docs/evidence/kt2-handoff-2026-08-11/VERIFY.json
 ```

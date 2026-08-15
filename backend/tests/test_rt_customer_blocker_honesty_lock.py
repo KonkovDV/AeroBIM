@@ -129,6 +129,7 @@ class OidcBffPhase25PkceTests(unittest.TestCase):
         self.assertIsInstance(url, str)
         self.assertIn("code_challenge=", url)
         self.assertIn("code_challenge_method=S256", url)
+        self.assertIn("nonce=", url)
         self.assertIn("client_id=aerobim-lab", url)
         self.assertEqual(login["status"], "NOT_IMPLEMENTED")
         self.assertTrue(login["redirect_uri_allowlisted"])
@@ -138,6 +139,7 @@ class OidcBffPhase25PkceTests(unittest.TestCase):
             redirect_uri="https://app.example/cb",
             state=entry.state,
             code_challenge=entry.code_challenge,
+            nonce=entry.nonce,
         )
         self.assertEqual(url, draft)
 

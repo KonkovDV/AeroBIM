@@ -15,14 +15,16 @@ class ToolCatalogTests(unittest.TestCase):
     def test_catalog_groups_include_core_and_sprint(self) -> None:
         groups = catalog()
         self.assertIn("validate_dwg_toolchain", groups["core"])
+        self.assertIn("run_demo_vertical_slice", groups["core"])
+        self.assertIn("run_demo_path", groups["sprint_archive"])
         self.assertIn("run_sprint2_synthetic_baseline", groups["sprint_archive"])
         self.assertTrue(groups["evaluate"])
         self.assertTrue(groups["export"])
-        active = __import__(
-            "aerobim.tools.tool_catalog", fromlist=["active_tools"]
-        ).active_tools()
+        active = __import__("aerobim.tools.tool_catalog", fromlist=["active_tools"]).active_tools()
         self.assertLessEqual(len(active), 40)
         self.assertIn("validate_dwg_toolchain", active)
+        self.assertIn("run_demo_vertical_slice", active)
+        self.assertNotIn("run_demo_path", active)
 
     def test_output_json_writes_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

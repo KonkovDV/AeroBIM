@@ -1,8 +1,8 @@
 """POST-05 OIDC BFF Phase 2/2.5 stubs — CSRF + PKCE S256, no production session.
 
-Honesty: ``auth_bff.status`` stays ``NOT_IMPLEMENTED`` until Phase 3 ships a verified
-HttpOnly session cookie path. Phase 2.5 adds PKCE material and an optional IdP
-authorize URL *draft* when lab env is set — still HTTP 501, never a production SSO.
+Honesty: ``auth_bff.status`` stays ``NOT_IMPLEMENTED`` until a production IdP
+path is evidenced. Phase 2.5 adds PKCE material and an optional IdP authorize URL
+*draft* when lab env is set — still HTTP 501 by default, never a production SSO.
 """
 
 from __future__ import annotations
@@ -22,13 +22,14 @@ _STATE_TTL_SECONDS = 600
 
 @dataclass(frozen=True)
 class OidcBffStubState:
-    """One-time CSRF ``state`` (+ PKCE verifier held server-side only)."""
+    """One-time CSRF ``state`` (+ PKCE verifier + OIDC nonce, server-side)."""
 
     state: str
     created_at: float
     redirect_uri: str | None = None
     code_verifier: str | None = None
     code_challenge: str | None = None
+    nonce: str | None = None
 
 
 class InMemoryOidcBffStateStore:
@@ -44,12 +45,14 @@ class InMemoryOidcBffStateStore:
         code_verifier = secrets.token_urlsafe(64)
         digest = hashlib.sha256(code_verifier.encode("ascii")).digest()
         code_challenge = base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+        nonce = secrets.token_urlsafe(32)
         entry = OidcBffStubState(
             state=state,
             created_at=time.monotonic(),
             redirect_uri=redirect_uri,
             code_verifier=code_verifier,
             code_challenge=code_challenge,
+            nonce=nonce,
         )
         self._states[state] = entry
         return entry
@@ -88,11 +91,14 @@ def build_idp_authorize_url_draft(
     redirect_uri: str,
     state: str,
     code_challenge: str,
+    nonce: str,
     scope: str = "openid profile",
 ) -> str:
     """Build Authorization Code + PKCE authorize URL (lab draft only).
 
     Callers must not treat presence of this URL as production BFF readiness.
+    ``nonce`` is required (OpenID Connect Core) so an ``id_token`` can be bound
+    to this login attempt.
     """
 
     query = urlencode(
@@ -102,6 +108,7 @@ def build_idp_authorize_url_draft(
             "redirect_uri": redirect_uri,
             "scope": scope,
             "state": state,
+            "nonce": nonce,
             "code_challenge": code_challenge,
             "code_challenge_method": "S256",
         }
@@ -126,13 +133,20 @@ def build_login_stub_payload(
     idp_redirect_url: str | None = None
     allow = tuple(redirect_uri_allowlist or ())
     redirect_allowed = bool(effective_redirect) and effective_redirect in allow
-    if authorize_endpoint and client_id and redirect_allowed and state_entry.code_challenge:
+    if (
+        authorize_endpoint
+        and client_id
+        and redirect_allowed
+        and state_entry.code_challenge
+        and state_entry.nonce
+    ):
         idp_redirect_url = build_idp_authorize_url_draft(
             authorize_endpoint=authorize_endpoint,
             client_id=client_id,
             redirect_uri=effective_redirect,  # type: ignore[arg-type]
             state=state_entry.state,
             code_challenge=state_entry.code_challenge,
+            nonce=state_entry.nonce,
         )
     return {
         **capability,
