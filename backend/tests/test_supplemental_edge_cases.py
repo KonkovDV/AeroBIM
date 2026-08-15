@@ -217,47 +217,50 @@ class CompareValuesTests(unittest.TestCase):
         uc._tolerance = tolerance or ToleranceConfig()
         return uc
 
+    def _cmp(self, uc, *args, **kwargs):
+        return uc._annotation_validator().compare_values(*args, **kwargs)
+
     def test_lte_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(uc._compare_values("100", "200", ComparisonOperator.LESS_OR_EQUAL))
-        self.assertTrue(uc._compare_values("200", "200", ComparisonOperator.LESS_OR_EQUAL))
-        self.assertFalse(uc._compare_values("300", "200", ComparisonOperator.LESS_OR_EQUAL))
+        self.assertTrue(self._cmp(uc, "100", "200", ComparisonOperator.LESS_OR_EQUAL))
+        self.assertTrue(self._cmp(uc, "200", "200", ComparisonOperator.LESS_OR_EQUAL))
+        self.assertFalse(self._cmp(uc, "300", "200", ComparisonOperator.LESS_OR_EQUAL))
 
     def test_gte_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(uc._compare_values("200", "100", ComparisonOperator.GREATER_OR_EQUAL))
-        self.assertFalse(uc._compare_values("50", "100", ComparisonOperator.GREATER_OR_EQUAL))
+        self.assertTrue(self._cmp(uc, "200", "100", ComparisonOperator.GREATER_OR_EQUAL))
+        self.assertFalse(self._cmp(uc, "50", "100", ComparisonOperator.GREATER_OR_EQUAL))
 
     def test_equals_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(uc._compare_values("REI60", "REI60", ComparisonOperator.EQUALS))
-        self.assertFalse(uc._compare_values("REI90", "REI60", ComparisonOperator.EQUALS))
+        self.assertTrue(self._cmp(uc, "REI60", "REI60", ComparisonOperator.EQUALS))
+        self.assertFalse(self._cmp(uc, "REI90", "REI60", ComparisonOperator.EQUALS))
 
     def test_exists_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(uc._compare_values("anything", None, ComparisonOperator.EXISTS))
-        self.assertFalse(uc._compare_values(None, None, ComparisonOperator.EXISTS))
+        self.assertTrue(self._cmp(uc, "anything", None, ComparisonOperator.EXISTS))
+        self.assertFalse(self._cmp(uc,None, None, ComparisonOperator.EXISTS))
 
     def test_non_numeric_gte_falls_back_to_string_equality(self) -> None:
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(uc._compare_values("abc", "abc", ComparisonOperator.GREATER_OR_EQUAL))
-        self.assertFalse(uc._compare_values("abc", "xyz", ComparisonOperator.GREATER_OR_EQUAL))
+        self.assertTrue(self._cmp(uc, "abc", "abc", ComparisonOperator.GREATER_OR_EQUAL))
+        self.assertFalse(self._cmp(uc, "abc", "xyz", ComparisonOperator.GREATER_OR_EQUAL))
 
     def test_none_observed_returns_false(self) -> None:
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertFalse(uc._compare_values(None, "100", ComparisonOperator.EQUALS))
+        self.assertFalse(self._cmp(uc,None, "100", ComparisonOperator.EQUALS))
 
     # -- Fuzzy tolerance tests (ISO 12006-3 aligned) --
 
@@ -267,7 +270,7 @@ class CompareValuesTests(unittest.TestCase):
 
         uc = self._make_uc()
         self.assertTrue(
-            uc._compare_values("200.0005", "200.0", ComparisonOperator.EQUALS, unit="mm")
+            self._cmp(uc, "200.0005", "200.0", ComparisonOperator.EQUALS, unit="mm")
         )
 
     def test_fuzzy_equals_outside_length_epsilon(self) -> None:
@@ -275,7 +278,7 @@ class CompareValuesTests(unittest.TestCase):
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertFalse(uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm"))
+        self.assertFalse(self._cmp(uc, "200.5", "200.0", ComparisonOperator.EQUALS, unit="mm"))
 
     def test_fuzzy_gte_within_epsilon_boundary(self) -> None:
         """199.9995 is within ε of 200.0 for GTE (passes with tolerance)."""
@@ -283,7 +286,7 @@ class CompareValuesTests(unittest.TestCase):
 
         uc = self._make_uc()
         self.assertTrue(
-            uc._compare_values("199.9995", "200.0", ComparisonOperator.GREATER_OR_EQUAL, unit="mm")
+            self._cmp(uc, "199.9995", "200.0", ComparisonOperator.GREATER_OR_EQUAL, unit="mm")
         )
 
     def test_fuzzy_lte_within_epsilon_boundary(self) -> None:
@@ -292,7 +295,7 @@ class CompareValuesTests(unittest.TestCase):
 
         uc = self._make_uc()
         self.assertTrue(
-            uc._compare_values("200.0005", "200.0", ComparisonOperator.LESS_OR_EQUAL, unit="mm")
+            self._cmp(uc, "200.0005", "200.0", ComparisonOperator.LESS_OR_EQUAL, unit="mm")
         )
 
     def test_fuzzy_area_unit(self) -> None:
@@ -300,8 +303,8 @@ class CompareValuesTests(unittest.TestCase):
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(uc._compare_values("42.005", "42.0", ComparisonOperator.EQUALS, unit="м2"))
-        self.assertFalse(uc._compare_values("42.05", "42.0", ComparisonOperator.EQUALS, unit="м2"))
+        self.assertTrue(self._cmp(uc, "42.005", "42.0", ComparisonOperator.EQUALS, unit="м2"))
+        self.assertFalse(self._cmp(uc, "42.05", "42.0", ComparisonOperator.EQUALS, unit="м2"))
 
     def test_fuzzy_custom_tolerance(self) -> None:
         """Custom tolerance: 1.0 epsilon makes 200.5 ≈ 200.0."""
@@ -309,15 +312,15 @@ class CompareValuesTests(unittest.TestCase):
 
         custom = ToleranceConfig(length_epsilon=1.0)
         uc = self._make_uc(tolerance=custom)
-        self.assertTrue(uc._compare_values("200.5", "200.0", ComparisonOperator.EQUALS, unit="mm"))
+        self.assertTrue(self._cmp(uc, "200.5", "200.0", ComparisonOperator.EQUALS, unit="mm"))
 
     def test_no_unit_uses_default_epsilon(self) -> None:
         """Without unit, default_epsilon=1e-6 applies."""
         from aerobim.domain.models import ComparisonOperator
 
         uc = self._make_uc()
-        self.assertTrue(uc._compare_values("42.0000005", "42.0", ComparisonOperator.EQUALS))
-        self.assertFalse(uc._compare_values("42.001", "42.0", ComparisonOperator.EQUALS))
+        self.assertTrue(self._cmp(uc, "42.0000005", "42.0", ComparisonOperator.EQUALS))
+        self.assertFalse(self._cmp(uc, "42.001", "42.0", ComparisonOperator.EQUALS))
 
 
 # ---------------------------------------------------------------------------

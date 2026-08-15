@@ -28,7 +28,7 @@ from typing import Any
 from xml.etree import ElementTree
 
 from aerobim.core.config.settings import Settings
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 from aerobim.tools.benchmark_project_package import default_pack_path, repo_root
 
 _SCHEMA_VERSION = "1.1.0"

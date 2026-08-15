@@ -18,7 +18,7 @@ from typing import Any
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.advisory_remark_compose import PROMPT_VERSION, build_remark_llm_request
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 
 CLAIM_BOUNDARY = (
     "Reproducibility probe only. Splits P1 (deterministic_intrasession) vs P2 "

@@ -11,7 +11,7 @@ from pathlib import Path
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import FindingCategory
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack
 
 

@@ -69,6 +69,50 @@ def build_t2_checklist_report(*, directory: Path | None = None) -> dict[str, Any
     }
 
 
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[4]
+
+
+def build_t2_eng_readiness_report() -> dict[str, Any]:
+    """In-repo T2 engineering readiness — never flips claim_allowed / VERIFIED."""
+
+    repo = _repo_root()
+    runbook = repo / "docs" / "pilot" / "BCF_T2_IMPORT_RUNBOOK_2026.md"
+    status_path = repo / "audit" / "evidence" / "cde-import-proof" / "STATUS.json"
+    template = repo / "audit" / "evidence" / "cde-import-proof" / "T2_EVIDENCE_TEMPLATE.json"
+    t1_candidates = sorted((repo / "audit" / "evidence").glob("bcf-structural-handoff-*.json"))
+    status_payload: dict[str, Any] = {}
+    if status_path.is_file():
+        try:
+            loaded = json.loads(status_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                status_payload = loaded
+        except (OSError, json.JSONDecodeError):
+            status_payload = {}
+    checklist = build_t2_checklist_report(directory=status_path.parent)
+    tooling_ready = runbook.is_file() and template.is_file() and bool(t1_candidates)
+    return {
+        "artifact_type": "bcf_t2_eng_readiness",
+        "schema_version": "1.0.0",
+        "tier": "T2",
+        "status": "NOT_VERIFIED",
+        "claim_allowed": False,
+        "tooling_ready": tooling_ready,
+        "runbook": str(runbook.relative_to(repo).as_posix()) if runbook.is_file() else None,
+        "t1_structural_evidence": [
+            str(path.relative_to(repo).as_posix()) for path in t1_candidates
+        ],
+        "status_file": str(status_path.relative_to(repo).as_posix()),
+        "status_json_status": status_payload.get("status", "NOT_VERIFIED"),
+        "checklist": checklist,
+        "blocker": (
+            "Real CDE import session (BIMcollab or Trimble Connect) is required "
+            "before STATUS.json may flip to VERIFIED."
+        ),
+        "forbidden_claims": sorted(_FORBIDDEN_CLAIMS),
+    }
+
+
 def _missing_artifact_reason(missing: list[str]) -> str:
     if not missing:
         return "customer CDE import environment is not provided"
@@ -275,6 +319,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Dry-run: print required T2 artifacts checklist (never claim_allowed)",
     )
+    parser.add_argument(
+        "--eng-readiness",
+        action="store_true",
+        help="Engineering pack readiness (T1 + tooling); never flips claim_allowed",
+    )
     parser.add_argument("--json", action="store_true", help="Print JSON only")
     args = parser.parse_args(argv)
     if args.checklist:
@@ -283,6 +332,10 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0
+    if args.eng_readiness:
+        report = build_t2_eng_readiness_report()
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0 if report.get("tooling_ready") else 2
     report = verify_bcf_t2_evidence_dir(
         args.dir.resolve(),
         structural_evidence=(

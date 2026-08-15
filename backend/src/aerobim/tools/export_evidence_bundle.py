@@ -32,7 +32,7 @@ from aerobim.domain.check_coverage import (
 )
 from aerobim.domain.package_source_integrity import build_package_source_hash_chain
 from aerobim.domain.run_manifest import build_run_manifest
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
 _SCHEMA_VERSION = "1.1.0"

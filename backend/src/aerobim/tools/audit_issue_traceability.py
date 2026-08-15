@@ -8,7 +8,7 @@ from pathlib import Path
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
-from aerobim.infrastructure.di.bootstrap import bootstrap_container
+from aerobim.tools._cli_base import bootstrap_container
 
 
 def audit_report_traceability(report_id: str, storage_dir: Path | None = None) -> dict[str, object]:

@@ -48,8 +48,8 @@ from aerobim.domain.vlm_response_schema import (  # noqa: E402
 from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (  # noqa: E402
     HeuristicLayoutRegionDetector,
 )
-from aerobim.infrastructure.di.bootstrap import bootstrap_container  # noqa: E402
 from aerobim.presentation.http.report_html import render_report_html  # noqa: E402
+from aerobim.tools._cli_base import bootstrap_container  # noqa: E402
 from aerobim.tools.benchmark_project_package import load_benchmark_pack  # noqa: E402
 
 _ALLOWED_DRAWING_SUFFIXES = {".pdf", ".txt", ".json"}
@@ -814,7 +814,17 @@ def main() -> int:
         required=True,
         help="Directory for report.json / report.html / slice-summary.json",
     )
+    parser.add_argument(
+        "--clash-skip-tiny",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Skip tiny/degenerate IFC products before IfcClash (default on)",
+    )
     args = parser.parse_args()
+    if args.clash_skip_tiny is not None:
+        import os
+
+        os.environ["AEROBIM_CLASH_SKIP_TINY"] = "true" if args.clash_skip_tiny else "false"
     result = run_vertical_slice(args.manifest, args.output)
     print(
         json.dumps({k: v for k, v in result.items() if k != "_paths"}, ensure_ascii=False, indent=2)

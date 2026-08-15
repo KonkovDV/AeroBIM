@@ -549,3 +549,7 @@ class PackageIngestionService:
                 )
             )
         return sources
+
+
+PackageIngestionRunner = PackageIngestionService
+DrawingAnalysisRunner = PackageIngestionService

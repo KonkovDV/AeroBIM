@@ -119,7 +119,7 @@ def test_core_has_no_project_imports() -> None:
 
 
 def test_all_di_tokens_registered() -> None:
-    """Every token in Tokens class must be registered in bootstrap_container."""
+    """Every token in Tokens class must be registered in the DI package."""
     from aerobim.core.di.tokens import Tokens
 
     token_namespace = cast(dict[str, object], Tokens.__dict__)
@@ -127,10 +127,12 @@ def test_all_di_tokens_registered() -> None:
         v for k, v in token_namespace.items() if not k.startswith("_") and isinstance(v, str)
     }
 
-    bootstrap_path = _SRC_ROOT / "infrastructure" / "di" / "bootstrap.py"
-    bootstrap_src = bootstrap_path.read_text(encoding="utf-8")
+    di_dir = _SRC_ROOT / "infrastructure" / "di"
+    bootstrap_src = "\n".join(
+        path.read_text(encoding="utf-8") for path in sorted(di_dir.glob("*.py"))
+    )
 
     for token in token_values:
         assert (
             f"Tokens.{token.upper().replace(' ', '_')}" in bootstrap_src or token in bootstrap_src
-        ), f"Token '{token}' not found in bootstrap.py"
+        ), f"Token '{token}' not found in infrastructure/di/"

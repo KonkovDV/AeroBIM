@@ -53,6 +53,7 @@ def to_float(raw: str) -> float | None:
 
 
 class CrossDocumentContradictionDetector:
+
     """Deterministic cross-document conflict detector with ε-tolerance."""
 
     def __init__(self, tolerance: ToleranceConfig, severity: Severity) -> None:
@@ -388,3 +389,6 @@ class CrossDocumentContradictionDetector:
             return None
         canonical_unit, factor = normalized
         return value * factor, canonical_unit
+
+
+CrossDocConsistencyChecker = CrossDocumentContradictionDetector

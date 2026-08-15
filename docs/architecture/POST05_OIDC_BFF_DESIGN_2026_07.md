@@ -59,7 +59,7 @@ Normative choices (Jul 2026 BCP):
 | **1** | Design + honesty surface (`auth_bff`, this doc, `GET /v1/auth/bff` → 501) | **DONE** |
 | **2** | Stub `/v1/auth/login` + callback + logout with CSRF `state` store (no production IdP) | **STUBS LANDED** (`infrastructure/auth/oidc_bff_stubs.py`); `auth_bff.status` still **NOT_IMPLEMENTED** |
 | **2.5** | PKCE S256 on login + optional lab authorize URL draft (`AEROBIM_OIDC_BFF_*`) | **LANDED 2026-08-11** — still HTTP 501 / NOT_IMPLEMENTED |
-| **3** | Production reverse-proxy cookie session + IdP code exchange + FE removal of any bearer inject | NOT_IMPLEMENTED |
+| **3** | Lab-gated session cookie + IdP code exchange (`oidc_bff_phase3_ready`); production FE bearer removal | **CODE LANDED / LAB** — default `auth_bff.status` remains **NOT_IMPLEMENTED** until a real IdP is configured. Token exchange uses `safe_urlopen`. Lab sessions without JWKS expose `identity_verified: false`. |
 
 ## Honesty surface
 

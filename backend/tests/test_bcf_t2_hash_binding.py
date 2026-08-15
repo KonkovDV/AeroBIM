@@ -160,6 +160,15 @@ class T2ArtifactBindingTests(unittest.TestCase):
         self.assertFalse(report["claim_allowed"])
         self.assertEqual(len(report["checklist"]), 5)
 
+    def test_eng_readiness_never_flips_claim(self) -> None:
+        from aerobim.tools.verify_bcf_t2_evidence import build_t2_eng_readiness_report
+
+        report = build_t2_eng_readiness_report()
+        self.assertFalse(report["claim_allowed"])
+        self.assertEqual(report["status"], "NOT_VERIFIED")
+        self.assertTrue(report["tooling_ready"])
+        self.assertTrue(report["t1_structural_evidence"])
+
 
 if __name__ == "__main__":
     unittest.main()

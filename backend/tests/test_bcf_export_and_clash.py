@@ -461,7 +461,7 @@ class ClashDetectorPortTests(unittest.TestCase):
     def test_clash_detector_cleans_temporary_output_directory(self) -> None:
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
-        detector = IfcClashDetector()
+        detector = IfcClashDetector(skip_tiny_elements=False)
         ifc_path = (
             Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
         )
@@ -542,7 +542,7 @@ class ClashDetectorPortTests(unittest.TestCase):
     def test_detect_between_builds_federated_clash_set(self) -> None:
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
-        detector = IfcClashDetector()
+        detector = IfcClashDetector(skip_tiny_elements=False)
         ifc_a = (
             Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
         )
@@ -625,7 +625,7 @@ class ClashDetectorPortTests(unittest.TestCase):
     def test_detect_clearance_between_builds_clearance_clash_set(self) -> None:
         from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
-        detector = IfcClashDetector()
+        detector = IfcClashDetector(skip_tiny_elements=False)
         ifc_a = (
             Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
         )
@@ -755,6 +755,81 @@ class ClashDetectorPortTests(unittest.TestCase):
         self.assertEqual(payload["cde_import"], "NOT_VERIFIED")
         self.assertFalse(payload["closes_rt003"])
         self.assertTrue(payload["structural_ok"])
+
+
+class ClashTinyWallSkipTests(unittest.TestCase):
+    def test_aabb_volume_helper(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import aabb_volume_m3
+
+        self.assertAlmostEqual(aabb_volume_m3(0, 0, 0, 1, 2, 3), 6.0)
+        self.assertEqual(aabb_volume_m3(1, 1, 1, 0, 0, 0), 0.0)
+
+    def test_guid_include_selector(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import guid_include_selector
+
+        self.assertIsNone(guid_include_selector([]))
+        self.assertEqual(guid_include_selector(["abc", " def "]), "#abc, #def")
+
+    def test_self_clash_set_includes_selector(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import self_clash_set
+
+        payload = self_clash_set(Path("model.ifc"), selector="#guid-1")
+        self.assertEqual(payload["a"][0]["selector"], "#guid-1")
+
+    def test_skip_tiny_disabled_keeps_assertion_mapping(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector(skip_tiny_elements=False)
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+        with patch.object(detector, "_run_clash_sets", side_effect=AssertionError()):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector.detect(ifc_path)
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("tiny wall fixtures", ctx.exception.reason)
+
+    def test_selector_for_skips_tiny_products(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import (
+            ClashGeometryProbe,
+            IfcClashDetector,
+        )
+
+        detector = IfcClashDetector(skip_tiny_elements=True, min_aabb_volume_m3=1e-6)
+        probe = ClashGeometryProbe(
+            included_guids=("keep-me",),
+            skipped=(("tiny-wall", "aabb_volume=1.0e-09m3 below 1e-06"),),
+        )
+        with patch(
+            "aerobim.infrastructure.adapters.ifc_clash_detector.probe_clash_geometry",
+            return_value=probe,
+        ):
+            selector = detector._selector_for(Path("model.ifc"))
+        self.assertEqual(selector, "#keep-me")
+
+    def test_selector_for_fails_when_all_products_skipped(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import (
+            ClashGeometryProbe,
+            IfcClashDetector,
+        )
+
+        detector = IfcClashDetector(skip_tiny_elements=True)
+        probe = ClashGeometryProbe(
+            included_guids=(),
+            skipped=(("tiny-wall", "geom init AssertionError"),),
+        )
+        with patch(
+            "aerobim.infrastructure.adapters.ifc_clash_detector.probe_clash_geometry",
+            return_value=probe,
+        ):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector._selector_for(Path("model.ifc"))
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("skipped all products", ctx.exception.reason)
 
 
 if __name__ == "__main__":
