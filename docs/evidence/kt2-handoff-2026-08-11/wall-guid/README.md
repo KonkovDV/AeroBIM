@@ -6,6 +6,8 @@ Report: `47848247aed244fa878acff822df86e9`
 Derived outcome (docs mapping): `BLOCKED`  
 Code: `aerobim-backend@0.1.0+701a267`
 
+**Not the KT#2 overlay demo.** Do not open `report.html` for `#kt2-overlay`. Live CLI: `python -m aerobim.tools.run_demo_vertical_slice`. Frozen clash reason on this HTML may be blank (`Clash detection failed:`); live detector names the exception type.
+
 ## Artifacts
 
 - `manifest.json` — pack identity, hashes, Shared-gate + derived outcome

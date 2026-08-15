@@ -186,6 +186,35 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     rehearsal = repo / "docs" / "demo" / "KT2_DEMO_REHEARSAL_2026_08_12.md"
     _check("jury_faq", faq.is_file(), str(faq), rows)
     _check("demo_rehearsal", rehearsal.is_file(), str(rehearsal), rows)
+    rehearsal_text = rehearsal.read_text(encoding="utf-8") if rehearsal.is_file() else ""
+    _check(
+        "rehearsal_forbids_wall_guid_html",
+        "wall-guid/report.html" in rehearsal_text and "Не открывать" in rehearsal_text,
+        "rehearsal must forbid wall-guid/report.html as overlay demo",
+        rows,
+    )
+
+    handoff_readme = handoff_dir / "README.md"
+    handoff_text = (
+        handoff_readme.read_text(encoding="utf-8") if handoff_readme.is_file() else ""
+    )
+    _check(
+        "handoff_readme_live_cli",
+        "run_demo_vertical_slice" in handoff_text
+        and "Do not open" in handoff_text
+        and "wall-guid/report.html" in handoff_text,
+        "handoff README must lead with live CLI and forbid snapshot HTML overlay",
+        rows,
+    )
+
+    snapshot_html = handoff_dir / "vertical-slice" / "report.html"
+    snapshot = snapshot_html.read_text(encoding="utf-8") if snapshot_html.is_file() else ""
+    _check(
+        "snapshot_html_not_overlay_demo",
+        snapshot_html.is_file() and "kt2-overlay" not in snapshot,
+        "11.08 snapshot must remain without #kt2-overlay (live CLI is the demo)",
+        rows,
+    )
 
     ok = all(bool(r["ok"]) for r in rows)
     return {

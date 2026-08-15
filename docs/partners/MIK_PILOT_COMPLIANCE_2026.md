@@ -3,7 +3,7 @@
 title: "МИК (Фонд «Московский инновационный кластер») — контур соответствия пилота"
 status: active
 version: "1.0.0"
-last_updated: "2026-07-26"
+last_updated: "2026-08-15"
 claim_boundary: "Пункты регламента МИК, не подтверждённые документами Фонда на руках, помечены VERIFY_WITH_OPERATOR — не выдумываем формулировки нормативки. Checkpoint NO_GO."
 tags: [aerobim, mik, techlab, samolet, pilot, grant, compliance]
 ---
@@ -34,7 +34,7 @@ tags: [aerobim, mik, techlab, samolet, pilot, grant, compliance]
 | M2 | Соглашение о пилотном тестировании с Фондом | — | **VERIFY_WITH_OPERATOR** | Запросить шаблон у менеджера МИК; юр. реквизиты вне репо |
 | M3 | **Программа пилотного тестирования** (цели, методика, метрики) | [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md) + [`../pilot/EXPERT_LABELING_INSTRUCTION_2026.md`](../pilot/EXPERT_LABELING_INSTRUCTION_2026.md) | ENG_READY | Переупаковать в формат Фонда после получения шаблона |
 | M4 | **План-график этапов** пилота | Календарь КТ1–КТ3 в [`../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md) (20.07 / 4–20.08 / 3–21.09) | ENG_READY | Даты уже синхронизированы с Самолётом |
-| M5 | Измеримые критерии результата | 5 критериев пилота (BCF в СОД; TP≥0.60; экономия ≥20%; SLA ≤30 мин; каталог ≥20) + обоснование размера корпуса ([Wave Q](../quality/RANKER_AB_CORPUS_PLANNING_WAVE_2026_07_26.md): ≥62, рекомендация 111) | ENG_READY | Числа выводимы, не постулированы |
+| M5 | Измеримые критерии результата | Протокол 5 критериев пилота (BCF в СОД; TP≥0.60; экономия ≥20%; SLA ≤30 мин; каталог ≥20) + планировщик n | **PROTOCOL_READY** / measurement **BLOCKED_CUSTOMER_DATA** | Методика есть; **замеров на комплекте Самолёта нет**. Не читать как ENG_READY SLA |
 | M6 | Протоколы испытаний по этапам | Evidence-бандлы (`export_evidence_bundle`: хэши входов, отчёты, capability coverage, timings, commit) + `verify_evidence_bundle` | ENG_READY | Детерминированно воспроизводимы |
 | M7 | **Акт/заключение площадки о результатах** | Поля готовы: precision-report (publishable-гейт), SLA-отчёт (`claim_level`), agreement-артефакт (κ/α), BCF T2 evidence pack | BLOCKED_CUSTOMER_DATA | Подписывает Самолёт; наши инструменты дают приложения к акту |
 | M8 | Финансовая отчётность по гранту (2 млн ₽) | — | **VERIFY_WITH_OPERATOR** | Смета/затраты — вне инженерного репо; запросить формы 449-ПП |
@@ -72,8 +72,9 @@ intake-gates (`customer-intake-gate.json`) и Claims Lock — fail-closed
 ## 4. Действия (владелец: Tech lead / проектный офис)
 
 - [ ] Запросить у менеджера МИК: шаблон соглашения, форму программы
-      пилотирования, форму акта, требования финансовой отчётности (до 3 авг —
-      синхронно с scope memo Самолёта из kickoff-карты)
+      пилотирования, форму акта, требования финансовой отчётности.
+      Целевой слот «до 3 авг» **просрочен** на 15.08 — статус остаётся
+      VERIFY_WITH_OPERATOR, формы Фонда **не** сочиняем.
 - [ ] После получения — переупаковать M3/M4/M5 в формы Фонда (контент готов)
 - [ ] Внести дедлайны Фонда в [`CUSTOMER_KICKOFF_MAP_2026_07_26.md`](../pilot/CUSTOMER_KICKOFF_MAP_2026_07_26.md)
 - [ ] Единая трассируемость трёх источников: [`../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md`](../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md)
