@@ -15,6 +15,13 @@ class InMemoryAuditStore:
     def get(self, report_id: str) -> ValidationReport | None:
         return self._reports.get(report_id)
 
+    def peek_tenant_id(self, report_id: str) -> str | None:
+        report = self._reports.get(report_id)
+        if report is None:
+            return None
+        tenant = (report.tenant_id or "").strip()
+        return tenant or None
+
     def list_reports(
         self,
         filters: ReportListFilters | None = None,

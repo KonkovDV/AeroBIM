@@ -91,7 +91,9 @@ def _is_blocked_ip(address: str) -> bool:
     try:
         ip = ipaddress.ip_address(address)
     except ValueError:
-        return False
+        return True
+    if ip.version == 6 and ip.ipv4_mapped is not None:
+        return _is_blocked_ip(str(ip.ipv4_mapped))
     # is_global=False covers RFC1918, loopback, link-local, CGNAT 100.64/10, etc.
     if not ip.is_global:
         return True
@@ -155,6 +157,24 @@ def assert_oidc_jwks_host_bound(
     )
 
 
+def _is_blocked_datastore_ip(address: str) -> bool:
+    """Datastore peers may live on RFC1918/ULA; metadata and link-local stay blocked."""
+
+    try:
+        ip = ipaddress.ip_address(address)
+    except ValueError:
+        return True
+    if ip.is_loopback:
+        return False
+    if ip.is_link_local or ip.is_multicast or ip.is_reserved:
+        return True
+    if ip.version == 4 and ip in ipaddress.ip_network("0.0.0.0/8"):
+        return True
+    if ip.version == 6 and ip.ipv4_mapped is not None:
+        return _is_blocked_datastore_ip(str(ip.ipv4_mapped))
+    return False
+
+
 def assert_safe_datastore_url(url: str, *, resolve_dns: bool = True) -> str:
     """Validate Redis / Postgres connection URLs at settings load (RTATOM-I09/I10).
 
@@ -184,8 +204,28 @@ def assert_safe_datastore_url(url: str, *, resolve_dns: bool = True) -> str:
     if host.lower() in _LOCAL_DATASTORE_HOSTS:
         return cleaned
 
-    # Reuse HTTP SSRF host/IP policy (blocks metadata, CGNAT, RFC1918, etc.).
-    assert_safe_outbound_url(f"https://{host}/", allow_http=False, resolve_dns=resolve_dns)
+    literal = _parse_literal_ip_host(host)
+    if literal is not None:
+        if _is_blocked_datastore_ip(str(literal)):
+            raise UnsafeOutboundUrlError(f"Datastore host is blocked: {host}")
+        return cleaned
+
+    if resolve_dns:
+        port = parsed.port or 6379
+        try:
+            infos = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+        except socket.gaierror as exc:
+            raise UnsafeOutboundUrlError(f"Datastore host DNS resolution failed: {host}") from exc
+        if not infos:
+            raise UnsafeOutboundUrlError(
+                f"Datastore host DNS resolution returned no addresses: {host}"
+            )
+        for info in infos:
+            address = str(info[4][0])
+            if _is_blocked_datastore_ip(address):
+                raise UnsafeOutboundUrlError(
+                    f"Datastore host {host!r} resolves to blocked address {address}"
+                )
     return cleaned
 
 

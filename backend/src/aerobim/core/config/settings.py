@@ -592,6 +592,18 @@ class Settings:
 
         return self.signoff_profile in {"samolet_pilot", "production"}
 
+    def require_durable_runtime(self) -> None:
+        """Fail closed: non-dev must not silently use in-memory jobs / in-process limits."""
+
+        if self.is_dev_environment:
+            return
+        if not (self.redis_url or "").strip():
+            raise RuntimeError(
+                "Non-development deployments require AEROBIM_REDIS_URL "
+                "for durable analyze jobs and shared rate limiting "
+                f"(AEROBIM_ENV={self.environment!r})"
+            )
+
     def require_secure_auth(self) -> None:
         """Fail closed: non-dev deployments must configure bearer and/or OIDC."""
         if self.is_dev_environment:
@@ -998,4 +1010,5 @@ class Settings:
                 raise RuntimeError(f"Unsafe datastore URL in {label}: {exc}") from exc
         settings.require_secure_auth()
         settings.require_oidc_runtime_deps()
+        settings.require_durable_runtime()
         return settings

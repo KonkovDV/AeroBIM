@@ -49,3 +49,12 @@ def test_guard_actually_scans_known_users() -> None:
         and _IMPORT_RE.search(path.read_text(encoding="utf-8"))
     ]
     assert used, "expected at least one adapter/tool importing a restricted engine"
+
+
+def test_runtime_lock_excludes_optional_pymupdf() -> None:
+    lock = Path(__file__).resolve().parents[1] / "requirements-lock.txt"
+    for line in lock.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip().lower().rstrip("\\").strip()
+        assert not stripped.startswith("pymupdf==") and not stripped.startswith("pymupdf["), (
+            "pymupdf must stay behind extra pdf-agpl; runtime lock must not install it"
+        )

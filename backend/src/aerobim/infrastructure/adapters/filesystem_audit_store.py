@@ -562,6 +562,32 @@ class FilesystemAuditStore:
         except (json.JSONDecodeError, KeyError, TypeError, ValueError, UnicodeDecodeError):
             return None
 
+    def peek_tenant_id(self, report_id: str) -> str | None:
+        """Read tenant binding without reconstructing findings/artifacts."""
+
+        self._prune_expired_reports()
+        target = self._report_json_path(report_id)
+        if not target.exists() or not self.is_report_committed(report_id):
+            return None
+        try:
+            with open_storage_file(target, base=self._storage_dir, mode="rb") as handle:
+                raw = handle.read()
+            if not self._verify_report_integrity(report_id, raw):
+                return None
+            data = json.loads(raw.decode("utf-8"))
+            if not isinstance(data, dict):
+                return None
+            tenant = data.get("tenant_id")
+            if isinstance(tenant, str) and tenant.strip():
+                return tenant.strip()
+            return None
+        except ReportIntegrityError:
+            if self._fail_closed:
+                raise
+            return None
+        except (json.JSONDecodeError, OSError, UnicodeDecodeError, TypeError, ValueError):
+            return None
+
     def discard(self, report_id: str) -> bool:
         """Remove report JSON, commit marker, and drawing assets (cancel tombstone)."""
 

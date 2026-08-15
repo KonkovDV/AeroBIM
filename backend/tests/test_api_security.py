@@ -911,7 +911,7 @@ class ApiIfcSourceEndpointTests(unittest.TestCase):
         response = self.client.get(f"/v1/reports/{report_id}/source/ifc")
 
         self.assertEqual(response.status_code, 404)
-        self.assertIn("IFC source", response.json()["detail"])
+        self.assertEqual(response.json()["detail"], "Object not found")
 
     def test_report_ifc_source_rejects_paths_outside_storage_boundary(self) -> None:
         outside_dir = Path(tempfile.mkdtemp())
@@ -1016,7 +1016,7 @@ class ApiDrawingAssetPreviewEndpointTests(unittest.TestCase):
         response = self.client.get(f"/v1/reports/{report_id}/drawing-assets/{asset_id}/preview")
 
         self.assertEqual(response.status_code, 404)
-        self.assertIn("Drawing asset preview", response.json()["detail"])
+        self.assertEqual(response.json()["detail"], "Object not found")
 
     def test_report_drawing_asset_preview_returns_404_when_asset_missing(self) -> None:
         report_id, _asset_id, _preview_path = self._seed_report_with_drawing_asset()

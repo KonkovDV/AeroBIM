@@ -116,6 +116,7 @@ class Adv05PilotFailClosedTests(unittest.TestCase):
                 "AEROBIM_AUDIT_FAIL_CLOSED",
                 "AEROBIM_BSI_LOCAL_CERT",
                 "AEROBIM_API_BEARER_TOKEN",
+                "AEROBIM_REDIS_URL",
             )
         }
         try:
@@ -129,6 +130,7 @@ class Adv05PilotFailClosedTests(unittest.TestCase):
             os.environ["AEROBIM_AUDIT_FAIL_CLOSED"] = "false"
             os.environ["AEROBIM_BSI_LOCAL_CERT"] = "true"
             os.environ["AEROBIM_API_BEARER_TOKEN"] = "test-token"
+            os.environ["AEROBIM_REDIS_URL"] = "redis://127.0.0.1:6379/0"
             settings = Settings.from_env()
             self.assertTrue(settings.require_clash)
             self.assertTrue(settings.clash_affects_pass)

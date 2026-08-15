@@ -14,6 +14,10 @@ from aerobim.presentation.http.context import (
     ApiContext,
     attachment_content_disposition,
 )
+from aerobim.presentation.http.errors import (
+    public_export_unavailable_detail,
+    public_not_found_detail,
+)
 from aerobim.presentation.http.report_html import render_report_html
 from aerobim.presentation.http.report_pdf import render_report_pdf_bytes
 from aerobim.presentation.http.schemas import PushBcfApiRequest
@@ -21,18 +25,13 @@ from aerobim.presentation.http.schemas import PushBcfApiRequest
 
 def build_exports_router(ctx: ApiContext) -> APIRouter:
     router = APIRouter()
-    audit_store = ctx.audit_store
 
     @router.get("/v1/reports/{report_id}/export/json")
     def export_report_json(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> JSONResponse:
-        ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        report = ctx.load_authorized_report(report_id, principal)
         return JSONResponse(
             content=ctx.serialize_public_report(report),
             headers={"Content-Disposition": attachment_content_disposition(f"{report_id}.json")},
@@ -43,11 +42,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> HTMLResponse:
-        ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        report = ctx.load_authorized_report(report_id, principal)
         data: dict[str, Any] = ctx.serialize_public_report(report)
         scope = derive_report_scope(report)
         data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
@@ -62,11 +57,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> Response:
-        ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        report = ctx.load_authorized_report(report_id, principal)
         data: dict[str, Any] = ctx.serialize_public_report(report)
         scope = derive_report_scope(report)
         data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
@@ -89,11 +80,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         - ``2.1`` (default) — stable BCF 2.1 export.
         - ``3`` or ``3.0`` — experimental BCF 3.0 export (buildingSMART BCF 3.0).
         """
-        ctx.validate_report_id(report_id)
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
+        report = ctx.load_authorized_report(report_id, principal)
 
         if version in {"3", "3.0"}:
             from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
@@ -117,7 +104,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         """Push report topics to a remote OpenCDE BCF API 3.0 hub."""
-        ctx.validate_report_id(report_id)
+        ctx.load_authorized_report(report_id, principal)
         project_id = (payload.project_id or ctx.settings.bcf_api_project_id or "").strip()
         if not project_id:
             raise HTTPException(
@@ -131,28 +118,16 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
             )
         configured_project = (ctx.settings.bcf_api_project_id or "").strip()
         if configured_project and project_id.lower() != configured_project.lower():
-            raise HTTPException(
-                status_code=403,
-                detail="project_id does not match AEROBIM_BCF_API_PROJECT_ID",
-            )
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
         if not ctx.container.is_registered(Tokens.PUSH_REPORT_TO_BCF_API_USE_CASE):
             raise HTTPException(status_code=503, detail="BCF API push use case is not registered")
-
-        report = audit_store.get(report_id)
-        if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
-        ctx.assert_report_access(report, principal)
 
         push_use_case = ctx.container.resolve(Tokens.PUSH_REPORT_TO_BCF_API_USE_CASE)
         try:
             result = push_use_case.execute(report_id, project_id=project_id)
         except LookupError as exc:
-            from aerobim.presentation.http.errors import public_not_found_detail
-
             raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         except RuntimeError as exc:
-            from aerobim.presentation.http.errors import public_export_unavailable_detail
-
             raise HTTPException(status_code=503, detail=public_export_unavailable_detail()) from exc
 
         return {

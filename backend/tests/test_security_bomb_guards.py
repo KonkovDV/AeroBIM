@@ -111,6 +111,33 @@ class XmlBombGuardTests(unittest.TestCase):
         with self.assertRaises(XmlBombError):
             safe_fromstring("<a><b/><c/></a>", max_elements=1)
 
+    def test_nesting_depth_cap_rejected(self) -> None:
+        nested = "<a>" * 8 + "</a>" * 8
+        with self.assertRaises(XmlBombError):
+            safe_fromstring(nested, max_depth=3)
+
+    def test_text_node_cap_rejected(self) -> None:
+        with self.assertRaises(XmlBombError):
+            safe_fromstring(f"<a>{'x' * 50}</a>", max_text_chars=10)
+
+    def test_nul_zip_member_rejected(self) -> None:
+        from aerobim.core.security.zip_limits import _inspect_zipfile
+
+        class _Info:
+            filename = "evil\x00.txt"
+            file_size = 1
+            compress_size = 1
+
+            def is_dir(self) -> bool:
+                return False
+
+        class _Archive:
+            def infolist(self) -> list[object]:
+                return [_Info()]
+
+        with self.assertRaises(ZipBombError):
+            _inspect_zipfile(_Archive())  # type: ignore[arg-type]
+
 
 if __name__ == "__main__":
     unittest.main()

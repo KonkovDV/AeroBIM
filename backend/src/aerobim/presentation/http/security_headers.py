@@ -17,6 +17,45 @@ _HTML_CSP = (
 )
 _PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=()"
 _HSTS = "max-age=31536000; includeSubDomains"
+_MAX_AUTHORIZATION_HEADER_BYTES = 8192
+
+
+def add_auth_header_hygiene_middleware(app: FastAPI) -> None:
+    """Reject duplicate / oversized / smuggled Authorization headers before auth."""
+
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.responses import JSONResponse
+
+    class _AuthHeaderHygieneMiddleware(BaseHTTPMiddleware):
+        async def dispatch(
+            self,
+            request: Request,
+            call_next: Callable[[Request], Awaitable[Response]],
+        ) -> Response:
+            values = request.headers.getlist("authorization")
+            if len(values) > 1:
+                return JSONResponse(
+                    status_code=401,
+                    content={"detail": "Invalid Authorization header"},
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            if values:
+                raw = values[0]
+                if len(raw.encode("utf-8")) > _MAX_AUTHORIZATION_HEADER_BYTES:
+                    return JSONResponse(
+                        status_code=401,
+                        content={"detail": "Invalid Authorization header"},
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+                if raw.lower().count("bearer ") > 1:
+                    return JSONResponse(
+                        status_code=401,
+                        content={"detail": "Invalid Authorization header"},
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+            return await call_next(request)
+
+    app.add_middleware(_AuthHeaderHygieneMiddleware)
 
 
 def add_security_headers_middleware(app: FastAPI) -> None:

@@ -43,8 +43,14 @@ from aerobim.domain.object_acl import (
     principal_may_access_job,
     principal_may_access_norm_pack,
     principal_may_access_report,
+    principal_may_access_tenant_id,
 )
 from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
+from aerobim.presentation.http.errors import (
+    public_bad_request_detail,
+    public_not_found_detail,
+    public_storage_boundary_detail,
+)
 from aerobim.presentation.http.package_request_builders import (
     build_project_package_request,
     build_requirement_source,
@@ -142,7 +148,11 @@ class ApiContext:
 
         if configured_token is None and not oidc_ready:
             if settings.is_dev_environment and settings.allow_anonymous_dev:
-                return AuthPrincipal(tenant_id=settings.api_tenant_id, subject="anonymous-dev")
+                return AuthPrincipal(
+                    tenant_id=settings.api_tenant_id,
+                    subject="anonymous-dev",
+                    auth_scheme="anonymous",
+                )
             if settings.is_dev_environment:
                 raise HTTPException(
                     status_code=401,
@@ -180,6 +190,7 @@ class ApiContext:
                 tenant_id=settings.api_tenant_id,
                 subject="api-bearer",
                 is_service_token=True,
+                auth_scheme="bearer",
             )
 
         if oidc_ready:
@@ -187,10 +198,11 @@ class ApiContext:
             try:
                 claims = self.oidc_validator.validate(token)
                 claim_name = (settings.oidc_tenant_claim or "tenant_id").strip() or "tenant_id"
+                # Tenant comes only from AEROBIM_OIDC_TENANT_CLAIM (default name
+                # tenant_id). Never tid / org_id / api_tenant_id fallbacks.
                 tenant_claim = claims.get(claim_name)
                 tenant = _oidc_tenant_from_claim(tenant_claim)
                 if not tenant:
-                    # RT A07: never fall back to api_tenant_id for OIDC principals.
                     raise HTTPException(
                         status_code=401,
                         detail="OIDC token missing required tenant claim",
@@ -207,11 +219,11 @@ class ApiContext:
                     tenant_id=tenant,
                     subject=str(subject) if subject is not None else None,
                     roles=roles,
+                    auth_scheme="oidc",
                 )
             except HTTPException:
                 raise
             except OidcValidationError as exc:
-                # RT A13: never leak validator detail to clients.
                 self.logger.warning("OIDC token validation failed", detail=str(exc))
                 raise HTTPException(
                     status_code=401,
@@ -281,11 +293,7 @@ class ApiContext:
             report=report,
         ):
             return
-        # RT-POST-02: identical to missing — do not confirm cross-tenant existence.
-        raise HTTPException(
-            status_code=404,
-            detail=f"Report {getattr(report, 'report_id', '')} not found",
-        )
+        raise HTTPException(status_code=404, detail=public_not_found_detail())
 
     def assert_job_access(self, job: AnalyzeProjectPackageJob, principal: AuthPrincipal) -> None:
         if principal_may_access_job(
@@ -294,10 +302,7 @@ class ApiContext:
             job=job,
         ):
             return
-        raise HTTPException(
-            status_code=404,
-            detail=f"Analyze project-package job {getattr(job, 'job_id', '')} not found",
-        )
+        raise HTTPException(status_code=404, detail=public_not_found_detail())
 
     def assert_norm_pack_access(self, principal: AuthPrincipal, *, tenant_id: str | None) -> None:
         if principal_may_access_norm_pack(
@@ -306,10 +311,42 @@ class ApiContext:
             tenant_id=tenant_id,
         ):
             return
-        raise HTTPException(
-            status_code=404,
-            detail="Norm pack not found",
+        raise HTTPException(status_code=404, detail=public_not_found_detail())
+
+    def load_authorized_report(self, report_id: str, principal: AuthPrincipal) -> ValidationReport:
+        """ACL-before-payload: peek tenant, then load the report body."""
+
+        self.validate_report_id(report_id)
+        peek = getattr(self.audit_store, "peek_tenant_id", None)
+        if self.settings.enforce_object_acl and callable(peek):
+            raw_tenant = peek(report_id)
+            tenant = raw_tenant.strip() if isinstance(raw_tenant, str) else None
+            if not principal_may_access_tenant_id(
+                enforce_object_acl=True,
+                principal=principal,
+                tenant_id=tenant,
+            ):
+                raise HTTPException(status_code=404, detail=public_not_found_detail())
+        report = self.audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+        self.assert_report_access(report, principal)
+        return report
+
+    def load_authorized_job(
+        self, job_id: str, principal: AuthPrincipal
+    ) -> AnalyzeProjectPackageJob:
+        """ACL-before-serialize: 404 for missing and cross-tenant jobs."""
+
+        self.validate_job_id(job_id)
+        get_job_status_use_case = self.container.resolve(
+            Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
         )
+        job = get_job_status_use_case.execute(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+        self.assert_job_access(job, principal)
+        return job
 
     def resolve_bound_tenant(
         self,
@@ -317,9 +354,16 @@ class ApiContext:
         *,
         payload_tenant_id: str | None = None,
     ) -> str | None:
-        """Bind request tenant from principal; block client spoof when ACL is on."""
+        """Bind request tenant from principal; reject body/principal spoof."""
 
         principal_tenant = (principal.tenant_id or "").strip() or None
+        payload_tenant = (payload_tenant_id or "").strip() or None
+        if (
+            payload_tenant
+            and principal_tenant
+            and payload_tenant.casefold() != principal_tenant.casefold()
+        ):
+            raise HTTPException(status_code=400, detail=public_bad_request_detail())
         if self.settings.enforce_object_acl:
             if principal_tenant is None:
                 raise HTTPException(
@@ -327,7 +371,6 @@ class ApiContext:
                     detail="Object ACL requires authenticated tenant binding",
                 )
             return principal_tenant
-        payload_tenant = (payload_tenant_id or "").strip() or None
         return principal_tenant or payload_tenant
 
     # -- Identifier validation ----------------------------------------------
@@ -424,7 +467,7 @@ class ApiContext:
         settings = self.settings
         report = self.audit_store.get(report_id)
         if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
 
         if report.ifc_object_key and self.object_store is not None:
             if principal is not None:
@@ -433,9 +476,7 @@ class ApiContext:
                 )
             payload = self.object_store.get_bytes(report.ifc_object_key)
             if payload is None:
-                raise HTTPException(
-                    status_code=404, detail=f"IFC source for report {report_id} not found"
-                )
+                raise HTTPException(status_code=404, detail=public_not_found_detail())
             return report.ifc_path.name, payload
 
         candidate = report.ifc_path
@@ -449,8 +490,6 @@ class ApiContext:
         try:
             reject_symlinks(resolved, base=base)
         except PathJailError as exc:
-            from aerobim.presentation.http.errors import public_storage_boundary_detail
-
             raise HTTPException(status_code=409, detail=public_storage_boundary_detail()) from exc
         if settings.enforce_object_acl:
             tenant = (getattr(report, "tenant_id", None) or "").strip()
@@ -464,13 +503,9 @@ class ApiContext:
                         tenant_id=tenant,
                     )
                 except PathJailError as exc:
-                    from aerobim.presentation.http.errors import public_not_found_detail
-
                     raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         if not resolved.exists():
-            raise HTTPException(
-                status_code=404, detail=f"IFC source for report {report_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
         return report.ifc_path.name, resolved
 
     def resolve_report_drawing_asset_preview(
@@ -483,13 +518,13 @@ class ApiContext:
         settings = self.settings
         report = self.audit_store.get(report_id)
         if report is None:
-            raise HTTPException(status_code=404, detail=f"Report {report_id} not found")
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
 
         drawing_asset = next(
             (asset for asset in report.drawing_assets if asset.asset_id == asset_id), None
         )
         if drawing_asset is None or not drawing_asset.stored_filename:
-            raise HTTPException(status_code=404, detail=f"Drawing asset {asset_id} not found")
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
 
         if drawing_asset.object_key and self.object_store is not None:
             if principal is not None:
@@ -498,9 +533,7 @@ class ApiContext:
                 )
             payload = self.object_store.get_bytes(drawing_asset.object_key)
             if payload is None:
-                raise HTTPException(
-                    status_code=404, detail=f"Drawing asset preview for {asset_id} not found"
-                )
+                raise HTTPException(status_code=404, detail=public_not_found_detail())
             return drawing_asset, payload
 
         asset_root = (settings.storage_dir / "drawing-assets" / report_id).resolve()
@@ -512,8 +545,6 @@ class ApiContext:
         try:
             reject_symlinks(resolved, base=settings.storage_dir.resolve())
         except PathJailError as exc:
-            from aerobim.presentation.http.errors import public_storage_boundary_detail
-
             raise HTTPException(status_code=409, detail=public_storage_boundary_detail()) from exc
         if settings.enforce_object_acl:
             tenant = (getattr(report, "tenant_id", None) or "").strip()
@@ -527,13 +558,9 @@ class ApiContext:
                         tenant_id=tenant,
                     )
                 except PathJailError as exc:
-                    from aerobim.presentation.http.errors import public_not_found_detail
-
                     raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
         if not resolved.exists():
-            raise HTTPException(
-                status_code=404, detail=f"Drawing asset preview for {asset_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
         return drawing_asset, resolved
 
     # -- Request builders ------------------------------------------------------

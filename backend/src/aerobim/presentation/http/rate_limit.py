@@ -36,6 +36,7 @@ def add_rate_limit_middleware(
     job_poll_per_minute: int = 0,
     redis_url: str | None = None,
     signoff_profile: str = "development",
+    fail_closed: bool = False,
 ) -> None:
     """Attach per-client limiter for expensive routes (shared when Redis is configured)."""
 
@@ -48,6 +49,7 @@ def add_rate_limit_middleware(
     backend: RateLimitBackend = build_rate_limit_backend(
         redis_url,
         signoff_profile=signoff_profile,
+        fail_closed=fail_closed,
     )
 
     class _RateLimitMiddleware(BaseHTTPMiddleware):

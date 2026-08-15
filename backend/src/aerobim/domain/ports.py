@@ -129,6 +129,8 @@ class AuditReportStore(Protocol):
 
     def get(self, report_id: str) -> ValidationReport | None: ...
 
+    def peek_tenant_id(self, report_id: str) -> str | None: ...
+
     def list_reports(
         self,
         filters: ReportListFilters | None = None,

@@ -145,7 +145,7 @@ class ClashDetectionRunner:
                 self._quantity_consistency_checker.check(ifc_path, claims)
             ), CapabilityStatus(CapabilityState.OK, "quantity consistency evaluated")
         except Exception as exc:
-            _logger.exception("Quantity consistency check failed for %s", ifc_path)
+            _logger.exception("Quantity consistency check failed")
             return (
                 [
                     ValidationIssue(

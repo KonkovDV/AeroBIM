@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import VerticalSliceKt2, { outcomeClass, overlayRectStyle } from "./VerticalSliceKt2";
+import VerticalSliceKt2, { formatPackageOutcome, outcomeClass, overlayRectStyle } from "./VerticalSliceKt2";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
 
 /** KT#2 demo contract: stamp/title finding is visible with evidence + fail-closed verdict. */
@@ -91,6 +91,13 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(outcomeClass("failed", false)).toBe("outcome-fail");
     expect(outcomeClass("blocked", false)).toBe("outcome-block");
     expect(outcomeClass("review_required", false)).toBe("outcome-review");
+  });
+
+  it("does not treat summary.passed as Published authorization", () => {
+    expect(formatPackageOutcome("pass", true)).not.toMatch(/Published/i);
+    expect(formatPackageOutcome("blocked", true)).not.toMatch(/Published/i);
+    expect(formatPackageOutcome(undefined, true)).toBe("Passed (legacy)");
+    expect(formatPackageOutcome(undefined, true)).not.toMatch(/Published/i);
   });
 
   it("places the bbox from problem_zone on the fixture letter page", () => {

@@ -8,6 +8,8 @@ from xml.etree.ElementTree import Element, ElementTree, ParseError
 
 DEFAULT_MAX_XML_BYTES = 16 * 1024 * 1024  # 16 MiB
 DEFAULT_MAX_ELEMENTS = 200_000
+DEFAULT_MAX_DEPTH = 64
+DEFAULT_MAX_TEXT_CHARS = 1_000_000
 
 
 class XmlBombError(ValueError):
@@ -36,11 +38,40 @@ def _enforce_element_cap(root: Element, *, max_elements: int) -> None:
         raise XmlBombError(f"XML has too many elements ({count} > {max_elements})")
 
 
+def _element_depth(root: Element) -> int:
+    max_depth = 1
+    stack: list[tuple[Element, int]] = [(root, 1)]
+    while stack:
+        node, depth = stack.pop()
+        max_depth = max(max_depth, depth)
+        next_depth = depth + 1
+        stack.extend((child, next_depth) for child in list(node))
+    return max_depth
+
+
+def _enforce_depth_and_text_caps(
+    root: Element,
+    *,
+    max_depth: int,
+    max_text_chars: int,
+) -> None:
+    if _element_depth(root) > max_depth:
+        raise XmlBombError(f"XML nesting exceeds maximum depth ({max_depth})")
+    for node in root.iter():
+        for chunk in (node.text, node.tail):
+            if chunk is not None and len(chunk) > max_text_chars:
+                raise XmlBombError(
+                    f"XML text node exceeds maximum length ({len(chunk)} > {max_text_chars})"
+                )
+
+
 def safe_fromstring(
     data: bytes | str,
     *,
     max_bytes: int = DEFAULT_MAX_XML_BYTES,
     max_elements: int = DEFAULT_MAX_ELEMENTS,
+    max_depth: int = DEFAULT_MAX_DEPTH,
+    max_text_chars: int = DEFAULT_MAX_TEXT_CHARS,
 ) -> Element:
     """Parse XML from bytes/str with size + element caps (defusedxml)."""
 
@@ -58,6 +89,7 @@ def safe_fromstring(
     except ParseError:
         raise
     _enforce_element_cap(root, max_elements=max_elements)
+    _enforce_depth_and_text_caps(root, max_depth=max_depth, max_text_chars=max_text_chars)
     return cast(Element, root)
 
 
@@ -66,6 +98,8 @@ def safe_parse(
     *,
     max_bytes: int = DEFAULT_MAX_XML_BYTES,
     max_elements: int = DEFAULT_MAX_ELEMENTS,
+    max_depth: int = DEFAULT_MAX_DEPTH,
+    max_text_chars: int = DEFAULT_MAX_TEXT_CHARS,
 ) -> ElementTree:
     """Parse XML from a filesystem path with size + element caps (defusedxml)."""
 
@@ -82,12 +116,16 @@ def safe_parse(
         raise XmlBombError(f"XML rejected by defusedxml: {exc}") from exc
     except ParseError:
         raise
-    _enforce_element_cap(tree.getroot(), max_elements=max_elements)
+    root = tree.getroot()
+    _enforce_element_cap(root, max_elements=max_elements)
+    _enforce_depth_and_text_caps(root, max_depth=max_depth, max_text_chars=max_text_chars)
     return cast(ElementTree, tree)
 
 
 __all__ = [
+    "DEFAULT_MAX_DEPTH",
     "DEFAULT_MAX_ELEMENTS",
+    "DEFAULT_MAX_TEXT_CHARS",
     "DEFAULT_MAX_XML_BYTES",
     "XmlBombError",
     "safe_fromstring",

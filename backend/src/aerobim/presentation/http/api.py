@@ -41,7 +41,10 @@ def create_http_app(container: Container) -> FastAPI:
     from aerobim.presentation.http.routes.reports import build_reports_router
     from aerobim.presentation.http.routes.system import build_system_router
     from aerobim.presentation.http.routes.uploads import build_uploads_router
-    from aerobim.presentation.http.security_headers import add_security_headers_middleware
+    from aerobim.presentation.http.security_headers import (
+        add_auth_header_hygiene_middleware,
+        add_security_headers_middleware,
+    )
 
     settings = container.resolve(Tokens.SETTINGS)
 
@@ -61,6 +64,7 @@ def create_http_app(container: Container) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),
+        allow_credentials=False,
         allow_methods=["GET", "POST"],
         allow_headers=[
             "Authorization",
@@ -69,7 +73,9 @@ def create_http_app(container: Container) -> FastAPI:
             "X-Request-ID",
             "Accept",
         ],
+        expose_headers=["X-Request-ID"],
     )
+    add_auth_header_hygiene_middleware(app)
     add_correlation_middleware(app)
     add_security_headers_middleware(app)
     job_poll_per_minute = (
@@ -83,6 +89,7 @@ def create_http_app(container: Container) -> FastAPI:
         job_poll_per_minute=job_poll_per_minute,
         redis_url=settings.redis_url,
         signoff_profile=settings.signoff_profile,
+        fail_closed=not settings.is_dev_environment,
     )
 
     ctx = ApiContext(container)

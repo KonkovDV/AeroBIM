@@ -48,6 +48,7 @@ class PostgresAuditStore:
             Column("issue_count", Integer, nullable=False),
             Column("project_name", String(256), nullable=True),
             Column("discipline", String(128), nullable=True),
+            Column("tenant_id", String(128), nullable=True),
         )
         self._engine = create_async_engine(db_url)
         self._insert_sql = text(
@@ -59,7 +60,8 @@ class PostgresAuditStore:
                 passed,
                 issue_count,
                 project_name,
-                discipline
+                discipline,
+                tenant_id
             ) VALUES (
                 :report_id,
                 :request_id,
@@ -67,7 +69,8 @@ class PostgresAuditStore:
                 :passed,
                 :issue_count,
                 :project_name,
-                :discipline
+                :discipline,
+                :tenant_id
             )
             ON CONFLICT (report_id) DO UPDATE SET
                 request_id = EXCLUDED.request_id,
@@ -75,7 +78,8 @@ class PostgresAuditStore:
                 passed = EXCLUDED.passed,
                 issue_count = EXCLUDED.issue_count,
                 project_name = EXCLUDED.project_name,
-                discipline = EXCLUDED.discipline
+                discipline = EXCLUDED.discipline,
+                tenant_id = EXCLUDED.tenant_id
             """
         )
         self._list_sql = text(
@@ -87,14 +91,20 @@ class PostgresAuditStore:
                 passed,
                 issue_count,
                 project_name,
-                discipline
+                discipline,
+                tenant_id
             FROM reports
             WHERE
                 (:project IS NULL OR lower(coalesce(project_name, '')) LIKE :project_like)
                 AND (:discipline IS NULL OR lower(coalesce(discipline, '')) LIKE :discipline_like)
                 AND (:passed IS NULL OR passed = :passed)
+                AND (:tenant_id IS NULL OR tenant_id = :tenant_id)
             ORDER BY created_at DESC
             """
+        )
+        self._peek_tenant_sql = text("SELECT tenant_id FROM reports WHERE report_id = :report_id")
+        self._alter_tenant_sql = text(
+            "ALTER TABLE reports ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(128)"
         )
         _run_coro(self._init_schema())
 
@@ -106,22 +116,30 @@ class PostgresAuditStore:
     def get(self, report_id: str) -> ValidationReport | None:
         return self._payload_store.get(report_id)
 
+    def peek_tenant_id(self, report_id: str) -> str | None:
+        try:
+            peeked = _run_coro(self._peek_tenant_id_async(report_id))
+        except Exception:
+            peeked = None
+        if peeked:
+            return peeked
+        return self._payload_store.peek_tenant_id(report_id)
+
     def list_reports(
         self,
         filters: ReportListFilters | None = None,
     ) -> list[ReportSummaryEntry]:
-        # Tenant-scoped lists must go through the payload store (index has no tenant_id).
-        if filters is not None and (filters.tenant_id or "").strip():
-            return self._payload_store.list_reports(filters)
         try:
             return _run_coro(self._list_reports_async(filters))
         except Exception:
-            # Index unavailable — fall back to payload store filters.
+            if getattr(self._payload_store, "_fail_closed", False):
+                raise
             return self._payload_store.list_reports(filters)
 
     async def _init_schema(self) -> None:
         async with self._engine.begin() as conn:
             await conn.run_sync(self._metadata.create_all)
+            await conn.execute(self._alter_tenant_sql)
 
     async def _index_report(self, report: ValidationReport) -> None:
         async with self._engine.begin() as conn:
@@ -135,6 +153,7 @@ class PostgresAuditStore:
                     "issue_count": report.summary.issue_count,
                     "project_name": report.project_name,
                     "discipline": report.discipline,
+                    "tenant_id": (report.tenant_id or "").strip() or None,
                 },
             )
 
@@ -145,6 +164,9 @@ class PostgresAuditStore:
         project = filters.project.strip() if filters and filters.project else None
         discipline = filters.discipline.strip() if filters and filters.discipline else None
         passed = filters.passed if filters else None
+        tenant_id = (
+            filters.tenant_id.strip() if filters and (filters.tenant_id or "").strip() else None
+        )
         async with self._engine.connect() as conn:
             rows = await conn.execute(
                 self._list_sql,
@@ -154,10 +176,12 @@ class PostgresAuditStore:
                     "discipline": discipline,
                     "discipline_like": f"%{discipline.lower()}%" if discipline else "%",
                     "passed": passed,
+                    "tenant_id": tenant_id,
                 },
             )
             entries: list[ReportSummaryEntry] = []
             for row in rows.mappings():
+                tenant_value = row.get("tenant_id")
                 entries.append(
                     ReportSummaryEntry(
                         report_id=str(row["report_id"]),
@@ -167,6 +191,18 @@ class PostgresAuditStore:
                         issue_count=int(row["issue_count"]),
                         project_name=row["project_name"],
                         discipline=row["discipline"],
+                        tenant_id=str(tenant_value) if tenant_value else None,
                     )
                 )
             return entries
+
+    async def _peek_tenant_id_async(self, report_id: str) -> str | None:
+        async with self._engine.connect() as conn:
+            row = await conn.execute(self._peek_tenant_sql, {"report_id": report_id})
+            mapping = row.mappings().first()
+            if mapping is None:
+                return None
+            tenant = mapping.get("tenant_id")
+            if isinstance(tenant, str) and tenant.strip():
+                return tenant.strip()
+            return None
