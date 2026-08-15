@@ -1,11 +1,13 @@
 <!-- claims-lint: allow-file reason="3-min human video script; forbidden phrases as non-claims; NO_GO explicit" -->
 ---
 title: "КТ#2 — скрипт видео 3 мин (человек, 19.08)"
-date: "2026-08-14"
+date: "2026-08-15"
 claim_boundary: "Script for a human. Fixture demo. Checkpoint NO_GO. Not CV. Not CDE-ready. Not Renga export."
 ---
 
 # Скрипт видео 3 минуты (19.08, человек)
+
+**Формула (0–20 с, дословно):** Мы на стадии доработки. Одна команда показывает live CLI с fail-closed доказательным finding на fixture. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется до корпуса Самолёта, двух разметчиков, signed scope и CDE-подтверждения.
 
 **Не снимает ИИ.** Перед записью на чистой машине:
 
@@ -23,7 +25,7 @@ python -m aerobim.tools.run_demo_vertical_slice
 
 | Сек | Экран | Текст (дословно) |
 | ---: | --- | --- |
-| 0–20 | README Checkpoint `NO_GO` | «Промежуточная версия на учебном комплекте. Checkpoint у заказчика — NO_GO: нет корпуса РФ-экспертизы и нет подписанного профиля Самолёта.» |
+| 0–20 | README Checkpoint `NO_GO` | Формула выше (дословно). |
 | 20–50 | терминал, команда | «Одна команда из README. Fail-loud. Пишет HTML, JSON, PNG оверлея и BCF ZIP.» |
 | 50–100 | `report.html` → `#kt2-overlay` | «Лист, текстовое доказательство, finding_id, source_id, evidence_refs, summary.passed=false. Вердикт не PASS. Рамка детерминированная, это не CV. Fixture demo.» |
 | 100–130 | `overlay-problem-zone.png` рядом | «Оверлей — sibling PNG. Не обученный детектор штампа.» |

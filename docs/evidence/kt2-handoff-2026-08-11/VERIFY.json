@@ -51,19 +51,14 @@
       "detail": "status=fixture_rendered claim=fixture_only"
     },
     {
-      "check": "academic_plan",
-      "ok": true,
-      "detail": "C:\\plans\\AeroBIM\\docs\\pilot\\KT2_ACADEMIC_CLOSURE_PLAN_2026_08_12.md"
-    },
-    {
       "check": "tri_source_alignment",
       "ok": true,
       "detail": "C:\\plans\\AeroBIM\\docs\\tz\\KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
     },
     {
-      "check": "max_eng_plan",
+      "check": "samolet_kt2_ask",
       "ok": true,
-      "detail": "C:\\plans\\AeroBIM\\docs\\pilot\\KT2_MAX_ENG_PLAN_2026_08_12.md"
+      "detail": "C:\\plans\\AeroBIM\\docs\\partners\\SAMOLET_KT2_ASK_2026_08_15.md"
     },
     {
       "check": "overlay_second_zone",
@@ -84,6 +79,21 @@
       "check": "demo_rehearsal",
       "ok": true,
       "detail": "C:\\plans\\AeroBIM\\docs\\demo\\KT2_DEMO_REHEARSAL_2026_08_12.md"
+    },
+    {
+      "check": "rehearsal_forbids_wall_guid_html",
+      "ok": true,
+      "detail": "rehearsal must forbid wall-guid/report.html as overlay demo"
+    },
+    {
+      "check": "handoff_readme_live_cli",
+      "ok": true,
+      "detail": "handoff README must lead with live CLI and forbid snapshot HTML overlay"
+    },
+    {
+      "check": "snapshot_html_not_overlay_demo",
+      "ok": true,
+      "detail": "11.08 snapshot must remain without #kt2-overlay (live CLI is the demo)"
     }
   ]
 }

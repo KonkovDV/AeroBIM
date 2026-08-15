@@ -15,7 +15,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 |---------|------|
 | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng readiness** (P0 WP-01…08 + Wave A fixture substitutes) — not Checkpoint GO |
 | [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md) | Red Team Wave A (survey XSD / clearance / IDS audit / SP 63 template); NO_GO |
-| [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Jury/MIK/Novator thinking-model RT; stage = доработка |
+| [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Jury/MIK RT; stage = доработка; not a speech card |
 | [`quality/AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md`](quality/AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md) | Audit of published `0402a7e` |
 | [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) | P0 Red Team rollup (self-audit; NO_GO) |
 | [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md) | **Red Team wave-2**: К0/tracker + commercial hygiene + coverage UI |
@@ -32,11 +32,14 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md`](partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md) | Протокол измерения/приёмки задачи №7 (ТИМ) |
 | [`partners/FOUR_CHECK_STATES_OPERATOR_2026_08.md`](partners/FOUR_CHECK_STATES_OPERATOR_2026_08.md) | Пять операторских состояний карты покрытия |
 | [`qa-defense-2026.md`](qa-defense-2026.md) | Заготовки ответов 20–30 с |
-| [`partners/NOVATOR_JURY_PACK_2026_08.md`](partners/NOVATOR_JURY_PACK_2026_08.md) | **Верхний слой для жюри** (Новатор/Техлаб): экономика, матрица, питч, roadmap |
+| [`partners/NOVATOR_JURY_PACK_2026_08.md`](partners/NOVATOR_JURY_PACK_2026_08.md) | Internal thinking-model (not speech, not a 2026 filing) |
 | [`partners/SEVEN_CONCLUSIONS_MULTIFRAME_PLAN_2026_08.md`](partners/SEVEN_CONCLUSIONS_MULTIFRAME_PLAN_2026_08.md) | Семь выводов × рамки; приоритет без инженерного обхода |
 | [`partners/KORTUNOV_QUESTION_P3_1_2026_08.md`](partners/KORTUNOV_QUESTION_P3_1_2026_08.md) | Вопрос IT-ментору: зрелость vs переинжиниринг |
 | [`partners/GLOSSARY_JURY_RU_2026_08.md`](partners/GLOSSARY_JURY_RU_2026_08.md) | Глоссарий жаргона для заявки |
 | [`partners/diagrams/README.md`](partners/diagrams/README.md) | 4 схемы (контур, provenance, fail-closed, матрица) |
+| [`partners/SAMOLET_KT2_ASK_2026_08_15.md`](partners/SAMOLET_KT2_ASK_2026_08_15.md) | Intake ask: pack / profile / adjudicators / CDE |
+| [`partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md) | Unsigned Samolet profile v0.1; RT-002 OPEN |
+| [`partners/MIK_OPERATOR_ASK_2026_08_15.md`](partners/MIK_OPERATOR_ASK_2026_08_15.md) | Ask Fund for agreement/act/finance templates |
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness |
 | [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md) | Self-audit / gate status |
 | [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Allowed vs forbidden claims |

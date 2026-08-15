@@ -21,6 +21,7 @@ class FetchIfcBenchV2Tests(unittest.TestCase):
         text = src.read_text(encoding="utf-8")
         self.assertNotIn(r"C:\plans", text)
         self.assertNotIn("C:/plans", text)
+
     def test_gpl_paths_detected(self) -> None:
         excludes = {"4351", "hitos"}
         self.assertTrue(_is_gpl_path("projects/4351/arc.ifc", excludes))

@@ -241,5 +241,58 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("просрочен", text)
 
 
+_SPEECH_FORMULA_MARKERS = (
+    "Мы на стадии доработки",
+    "Одна команда показывает live CLI",
+    "Валидация эффективности и внедрение ещё не начались",
+    "`NO_GO` сохраняется до корпуса Самолёта",
+)
+
+
+class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
+    def _repo(self) -> Path:
+        return Path(__file__).resolve().parents[2]
+
+    def test_speech_surfaces_use_formula_and_omit_contest_name(self) -> None:
+        repo = self._repo()
+        surfaces = (
+            repo / "docs" / "partners" / "PITCH_NOVALTOR_TECHLAB_2026_08.md",
+            repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md",
+            repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
+            repo / "docs" / "demo" / "KT2_HANDOFF_COVER_2026_08_11.md",
+            repo / "docs" / "docs.md",
+        )
+        for path in surfaces:
+            text = path.read_text(encoding="utf-8")
+            for marker in _SPEECH_FORMULA_MARKERS:
+                self.assertIn(marker, text, msg=path.name)
+            self.assertNotIn("Новатор", text, msg=path.name)
+            self.assertNotIn("2259", text, msg=path.name)
+
+    def test_customer_ask_names_four_intake_items(self) -> None:
+        path = self._repo() / "docs" / "partners" / "SAMOLET_KT2_ASK_2026_08_15.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("adjudicators", text)
+        self.assertIn("CDE", text)
+        self.assertIn("pack_hash", text)
+        self.assertNotIn("closes_rt001: true", text)
+
+    def test_unsigned_profile_and_mik_ask_keep_blockers_open(self) -> None:
+        repo = self._repo()
+        profile = (
+            repo / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
+        ).read_text(encoding="utf-8")
+        mik = (repo / "docs" / "partners" / "MIK_OPERATOR_ASK_2026_08_15.md").read_text(
+            encoding="utf-8"
+        )
+        for text in (profile, mik):
+            self.assertIn("closes_rt002: false", text)
+            self.assertNotIn("closes_rt002: true", text)
+        self.assertIn("unsigned", profile)
+        self.assertIn("VERIFY_WITH_OPERATOR", mik)
+        self.assertIn("доработки", mik)
+
+
 if __name__ == "__main__":
     unittest.main()

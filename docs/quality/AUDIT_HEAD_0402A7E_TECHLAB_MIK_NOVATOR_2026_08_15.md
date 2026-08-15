@@ -16,8 +16,7 @@ claim_boundary: >
 
 **Author relationship:** Internal self-assessment, 15.08.2026.  
 **Evaluated commit:** `0402a7e18a1c9093a96188178c851e6df922d45c` (docs/kt2 jury pack + IFC matrix + voice hygiene).  
-**Parent:** `005b7bcb6fb2b9f353cc046b44fe68f1b519b776`.  
-**Supersedes:** [`AUDIT_HEAD_005B7BC_SAMOLET_TECHLAB_MIK_2026_08_15.md`](AUDIT_HEAD_005B7BC_SAMOLET_TECHLAB_MIK_2026_08_15.md) (that file described a *dirty* tree; GitHub is now clean).
+**Parent:** `005b7bcb6fb2b9f353cc046b44fe68f1b519b776`.
 
 ## 1. Executive verdict
 

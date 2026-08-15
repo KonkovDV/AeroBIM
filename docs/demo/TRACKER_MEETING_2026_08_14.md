@@ -51,4 +51,4 @@ IfcTester считает `ifcVersion` метаданными (официальн
 
 Follow-up после 08:00: [`TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](TRACKER_MEETING_2026_08_14_FOLLOWUP.md) (заметок трекера в repo нет).
 
-План 7 дней: [`../pilot/KT2_7DAY_PLAN_2026_08_13.md`](../pilot/KT2_7DAY_PLAN_2026_08_13.md)
+Статус: [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md). Запрос заказчику: [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md).
