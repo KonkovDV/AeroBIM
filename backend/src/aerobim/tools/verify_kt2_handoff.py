@@ -232,11 +232,29 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         rows,
     )
 
+    dry_run = repo / "docs" / "demo" / "KT2_VIDEO_DRY_RUN_2026_08.md"
+    _check("kt2_video_dry_run", dry_run.is_file(), str(dry_run), rows)
+    docs_mp4 = sorted((repo / "docs").rglob("*.mp4"))
+    _check(
+        "kt2_demo_mp4_not_in_docs",
+        not docs_mp4,
+        "none" if not docs_mp4 else ",".join(p.as_posix() for p in docs_mp4),
+        rows,
+    )
+    local_primary = repo / "artifacts" / "demo" / "kt2-demo.mp4"
+    local_fallback = repo / "artifacts" / "demo" / "kt2-demo-fallback.mp4"
+    if local_primary.is_file() or local_fallback.is_file():
+        mp4_status = "PRESENT_LOCAL_NOT_IN_GIT"
+    else:
+        mp4_status = "NOT_IN_GIT"
+    # Operator records 17–19.08. Missing mp4 must stay visible, not fail CI, not fake a file.
+    _check("kt2_demo_mp4_status", True, mp4_status, rows)
+
     ok = all(bool(r["ok"]) for r in rows)
     return {
         "ok": ok,
         "artifact_type": "kt2_handoff_verification",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "checkpoint_verdict": verdict,
         "claim_boundary": (
             "L1 fixture/methodology verification only; never flips Checkpoint GO; "

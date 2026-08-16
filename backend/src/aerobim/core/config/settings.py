@@ -237,6 +237,13 @@ class Settings:
     priority_profile: str = "default"
     """Reviewer priority profile: ``default`` or ``samolet`` (TechLab fire/cross-doc boost)."""
     db_url: str | None = None
+    postgres_apply_ddl: bool = True
+    """When true (pilot default), PostgresAuditStore runs create_all + tenant_id ALTER at boot.
+
+    Set ``AEROBIM_POSTGRES_APPLY_DDL=0`` for a DML-only runtime role after applying
+    ``infrastructure/sql/001_reports_tenant_id.sql`` (RT16-DDL-01). Missing
+    ``reports.tenant_id`` then fails closed — never skip the column.
+    """
     s3_endpoint_url: str | None = None
     s3_bucket: str | None = None
     s3_region: str = "us-east-1"
@@ -759,6 +766,7 @@ class Settings:
             cross_doc_contradiction_severity=cross_doc_severity,
             priority_profile=priority_profile,
             db_url=(os.getenv("AEROBIM_DB_URL") or "").strip() or None,
+            postgres_apply_ddl=_read_bool("AEROBIM_POSTGRES_APPLY_DDL", True),
             s3_endpoint_url=(os.getenv("AEROBIM_S3_ENDPOINT_URL") or "").strip() or None,
             s3_bucket=(os.getenv("AEROBIM_S3_BUCKET") or "").strip() or None,
             s3_region=(os.getenv("AEROBIM_S3_REGION") or "us-east-1").strip() or "us-east-1",
@@ -1028,4 +1036,9 @@ class Settings:
         settings.require_secure_auth()
         settings.require_oidc_runtime_deps()
         settings.require_durable_runtime()
+        if not profile_gate and settings.http_rate_limit_per_minute <= 0:
+            logging.getLogger(__name__).warning(
+                "HD2-RL-02: HTTP rate limit is off (max_events<=0 → allow). "
+                "samolet_pilot/production reject AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE<=0 at boot."
+            )
         return settings

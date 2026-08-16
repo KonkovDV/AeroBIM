@@ -15,7 +15,7 @@ claim_boundary: "Self-audit. Checkpoint NO_GO until RT-001/002/003. Fixture evid
 
 > **Refresh 2026-08-01:** eng remediations landed on `main` (HEAD `8f02baf`): LIC-001 Option B (core PDF `pypdfium2`+`pdfminer`; PyMuPDF `pdf-agpl` only); OCR-aware EI; public CC BY IFC samples; **P2-04** claimed-GUID → `ifc_guid` only after spatial-index presence; **P2-02** `edge_kinds` + optional AABB broadphase (`geometry_verified=False`); Docker offline track VERIFIED / bare-metal **DEFERRED**. Checkpoint remains **NO_GO** (RT-001/002/003 OPEN). See [ENGINEERING_STATUS_2026_08](ENGINEERING_STATUS_2026_08.md).
 >
-> **Refresh 2026-08-02:** P0 TechLab eng package WP-01…08 landed under Claims Lock — [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md) · Red Team [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md). Актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json). Hybrid AI: WP-02 advisory pre-gate on Analyze (verdict-neutral, OFF==ON). Цифры в §1 ниже — исторический снимок 2026-07-19/20 (не переписываю). Checkpoint **NO_GO**.
+> **Refresh 2026-08-02:** P0 TechLab eng package WP-01…08 landed under Claims Lock — [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md). Актуальные гейты/метрики — [runtime baseline](evidence/runtime-baseline-latest.json). Hybrid AI: WP-02 advisory pre-gate on Analyze (verdict-neutral, OFF==ON). Цифры в §1 ниже — исторический снимок 2026-07-19/20 (не переписываю). Checkpoint **NO_GO**.
 
 ## 1. Gate runs (this audit)
 

@@ -226,15 +226,13 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 
 ## Документация (пакет для жюри Техлаба)
 
-На GitHub — **только** код и материалы для жюри Task 07 (+ curated eng status / Red Team summaries в `docs/quality/`). Служебные runbook’и, phase RT dumps и archive не публикуются.
+На GitHub — **только** код и материалы для жюри Task 07. Служебные runbook’и и сессионные дампы не публикуются.
 
 | Нужно | Документ |
 |------|----------|
 | Старт | [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · [`docs/README.md`](docs/README.md) |
 | Eng-статус (авг 2026) | [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) |
-| P0 Red Team rollup | [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) |
 | Accepted risks (KT#2) | [`docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) |
-| Class A/B Red Team pass | [`docs/quality/RED_TEAM_CLASS_A_B_PASS_2026_08_09.md`](docs/quality/RED_TEAM_CLASS_A_B_PASS_2026_08_09.md) |
 | Жюри (RU) | [`docs/docs.md`](docs/docs.md) |
 | Стратегия × Самолёт | [`docs/samolet.md`](docs/samolet.md) |
 | ТЗ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |

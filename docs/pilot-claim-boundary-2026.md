@@ -51,7 +51,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Mixed CAD package honesty (RT-D) | Unparsed `.dwg` in package with successful `.dxf` → `capabilities.dwg_dxf=FAILED` (DXF success must not mask DWG) |
 | Advisory isolation (RT-E / RT-017) | Same non-empty package: advisory ON vs OFF → identical deterministic findings + identical `summary.passed`; only advisory remarks/warnings may differ |
 | HITL §12 visual distinction | Advisory candidate vs confirmed finding, low-confidence cue, `review_required` outcome — visually distinct + vitest; text XSS prevented by React (no `dangerouslySetInnerHTML`); preview MIME allowlist (`api.ts`) |
-| Hyper-deep Red Team static audit (2026-07-28) | `audit/reports/RED_TEAM_HYPERDEEP_2026_07_28.md` — no new exploitable defect; verdict single-source (`summary_passed_from_outcome`); advisory OFF==ON re-confirmed; OIDC validator build fail-closed without `assert` |
+| Fail-closed Shared-gate (2026-07-28) | Verdict single-source (`summary_passed_from_outcome`); advisory OFF==ON re-confirmed; OIDC validator build fail-closed without `assert` |
 | Non-dev auth fail-closed (RT-F) | `AEROBIM_ENV != development` + empty bearer + no OIDC → Settings/bootstrap refuse start |
 | RT-001 protocol readiness (engineering) | Customer labels template + `dual_independent` method + agreement-template + runbook `--agreement-json`; **publishable still HOLD** without customer corpus |
 | RT-002 schema↔loader parity | `customer_approved`/`approved` require full `approval` object in JSON Schema (ref-only rejected) |

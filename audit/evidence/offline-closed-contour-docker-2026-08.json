@@ -23,6 +23,6 @@
     {"check": "test_offline_bundle_manifest", "result": "PASS 13/13"}
   ],
   "operator_docs": "docs/offline-deployment-2026.md",
-  "hyperdeep_report": "docs/audit/RED_TEAM_HYPERDEEP_CLOSED_CONTOUR_2026_08_08.md",
+  "hyperdeep_report": "docs/offline-deployment-2026.md",
   "supersedes": "audit/evidence/offline-bundle-smoke-2026-07-31.json"
 }

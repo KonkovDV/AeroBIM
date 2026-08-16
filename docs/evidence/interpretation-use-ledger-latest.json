@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-16T08:58:34.979491+00:00",
+  "generated_at": "2026-08-16T12:15:44.793955+00:00",
   "audited_head": "375109c",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
@@ -108,7 +108,7 @@
       "requirement": "BCF замечания в СОД",
       "licensed_inference": "BCF 2.1 ZIP export (структурный)",
       "blocked_inference": "CDE import VERIFIED / T2 roundtrip",
-      "evidence": "docs/quality/T2_EVIDENCE_INTEGRITY_WAVE_2026_07_25.md",
+      "evidence": "docs/pilot-claim-boundary-2026.md",
       "kt3_condition": "Log + screenshot + hashes именованного CDE Самолёта",
       "licensed_use": "fixture_demo",
       "closes_rt001": false,

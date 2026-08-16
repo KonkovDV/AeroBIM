@@ -7,7 +7,7 @@ ports_delta: "+0"
 adapters_delta: "+0"
 tokens_delta: "+0"
 brief: "ARCHITECTURE_REVIEW_BRIEF_2026_08.md"
-prior: "../quality/TASK0_DEEP_REPO_AUDIT_2026_08_05.md"
+prior: "ARCHITECTURE_REVIEW_BRIEF_2026_08.md"
 ---
 
 # Задача 0 — полный аудит репозитория (стоп)

@@ -43,11 +43,12 @@ _EXCLUDE_PATH_FRAGMENTS = (
     "COMPETITIVE_MATRIX",
     "REPO_DEEP_MAP",
     # Honesty / literature docs that quote forbidden phrases as non-claims (N-29 migration).
+    # HDX-LINT-01: docs/partners/ is a default scan root — do not directory-blind it.
+    # COMPETITIVE_MATRIX stays excluded (quotes rival accuracy/SLA as inventory).
     "docs/architecture/",
     "docs/ai/",
     "docs/roadmap/",
     "docs/research/",
-    "docs/partners/",
     "docs/quality/",
     "docs/review/",
     "docs/gtm/",
@@ -261,7 +262,7 @@ def _candidate_files(roots: list[Path] | None = None) -> list[Path]:
 
 
 def exclusion_stats(*, roots: list[Path] | None = None) -> dict[str, int]:
-    """HDX-LINT-01: directory excludes stay, but the blind-zone size is visible."""
+    """HDX-LINT-01: remaining directory excludes stay visible; partners speech docs are scanned."""
 
     excluded_by_fragment = 0
     excluded_by_suffix = 0

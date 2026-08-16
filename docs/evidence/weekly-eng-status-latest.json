@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.2.0",
+  "schema_version": "1.3.0",
   "artifact_type": "aerobim_weekly_eng_status",
-  "generated_at": "2026-08-05T20:06:21.578883+00:00",
-  "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint NO_GO until RT-001/002/003. Fixture != customer accuracy.",
+  "generated_at": "2026-08-16T11:57:44.587270+00:00",
+  "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint NO_GO until RF PD+expertise corpus, Samolet acceptance profile, and measured federated MEP. Fixture != customer accuracy.",
   "checkpoint": "NO_GO",
   "rt_open": [
     "RT-001",
@@ -16,33 +16,39 @@
     "replied": null,
     "demo_agreed": null,
     "note": "Do not publish contacted/replied/demo zeros or invented counts to GH. If outreach-log absent, mark data_missing — never soft-pedal.",
-    "data_status": "PRESENT_OWNER_FILE",
-    "bytes": 1692,
-    "contacted_marker": false,
-    "replied_marker": false,
-    "demo_marker": false,
-    "print_as": "commercial block present (counts OWNER-filled only)"
+    "data_status": "MISSING",
+    "print_as": "commercial block empty — no outreach-log.md"
   },
   "runtime_baseline": {
-    "commit_sha": "2aa573be0c89a3fcc4862acce895e4b126a22fb2",
-    "schema_version": "1.2.1",
+    "commit_sha": "88e726be20bc4f36c2e811b594efa82e517af01f",
+    "schema_version": "1.4.0",
     "metrics": {
-      "backend_src_loc": 56039,
-      "backend_test_loc": 39354,
-      "backend_test_functions": 1886,
+      "backend_src_loc": 74536,
+      "backend_test_loc": 48215,
+      "backend_test_functions": 2271,
       "extraction_macro_f1": 0.8600000000000001
     },
     "architecture_inventory": {
-      "public_domain_protocols": 46,
-      "adapter_modules": 71,
-      "di_tokens": 59
+      "public_domain_protocols": 48,
+      "adapter_modules": 72,
+      "di_tokens": 63
     },
     "quality_gates": {
-      "ruff": "UNKNOWN",
-      "mypy": "UNKNOWN",
-      "pytest": "UNKNOWN",
-      "vitest": "UNKNOWN",
-      "build": "UNKNOWN"
+      "ruff": {
+        "status": "PASS"
+      },
+      "mypy": {
+        "status": "PASS"
+      },
+      "pytest": {
+        "status": "PASS"
+      },
+      "vitest": {
+        "status": "PASS"
+      },
+      "build": {
+        "status": "PASS"
+      }
     }
   },
   "coverage_map": {
@@ -64,6 +70,8 @@
   "pnst909_22_scenario_axis": {
     "inventory": "docs/evidence/pnst909-22-scenario-ids-inventory-latest.json",
     "runtime": "docs/evidence/pnst909-22-scenario-runtime-latest.json",
+    "pairing": "docs/evidence/pnst909-22-scenario-pairing.json",
+    "cli": "python -m aerobim.tools.run_pnst909_22_scenario_runtime",
     "tos_cite": "GO",
     "summary": {
       "scenarios_total": 22,
@@ -79,7 +87,10 @@
       "share_executed": 0.818,
       "share_ids_available": 0.818
     },
-    "runtime_status": "PARTIAL_18_OF_22_CLEAN"
+    "runtime_generated_at": "2026-08-05T20:04:31.762645+00:00",
+    "runtime_status": "PARTIAL_18_OF_22_CLEAN",
+    "ishigaki_cli": "python -m aerobim.tools.run_ishigaki_ids_bench_smoke",
+    "ishigaki_evidence": "docs/evidence/ishigaki-ids-bench-smoke-latest.json"
   },
   "adjudication_corpus_plan": {
     "artifact_type": "adjudication_corpus_plan",
@@ -149,6 +160,27 @@
     ],
     "claim_boundary": "sizes the dual-expert labeling effort only; predicts no precision value; fixture evidence never becomes customer evidence (RT-001)"
   },
+  "interpretation_use": {
+    "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
+    "cli": "python -m aerobim.tools.export_interpretation_use_ledger",
+    "checkpoint": "NO_GO"
+  },
+  "ifc_cache_ram_ceiling": {
+    "schema_version": "1.0.0",
+    "artifact_type": "ifc_cache_ram_ceiling",
+    "generated_at": null,
+    "claim_boundary": "Process-local LRU ceiling (max_cached_models × max_ifc_bytes). Not federated-pack RSS, not VM sizing, not customer SLA. closes_rt003=false.",
+    "max_cached_models": 8,
+    "max_bytes_per_model": 268435456,
+    "ceiling_bytes": 2147483648,
+    "ceiling_gib": 2.0,
+    "measured_rss_delta_bytes": null,
+    "representative_scale": false,
+    "closes_rt003": false,
+    "checkpoint": "NO_GO",
+    "cli": "python -m aerobim.tools.export_ifc_cache_ram_ceiling",
+    "evidence": "docs/evidence/ifc-cache-ram-ceiling-latest.json"
+  },
   "next_levers": [
     "Exp A: 18/22 IDS runtime_clean published (ToS GO) — do not sell as precision",
     "PNST scenarios 3/18/21/22 still out_of_pack (no IDS in download)",
@@ -156,7 +188,7 @@
     "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
     "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
     "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",
-    "RT-002 Samolet customer-approved acceptance profile (MOEXP IDS already public)",
-    "RT-003 federated MEP scope memo"
+    "RT-002 Samolet-signed acceptance profile (public MOEXP IDS ≠ that profile)",
+    "RT-003 measure public federated IFC (west_riverside / sixty5); not MEP delivered"
   ]
 }

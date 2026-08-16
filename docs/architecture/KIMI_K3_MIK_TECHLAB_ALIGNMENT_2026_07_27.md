@@ -72,8 +72,8 @@ advisory-слоя. Любой публичный текст про K3 — чер
 - NDA-комплект Самолёта под грантом МИК → публичный K3 API **запрещён**
   (`kimi_advisory_ready()` hard-disable под `samolet_pilot`/`production`);
   только малый Kimi-VL on-prem (tier C) или детерминизм-only.
-- Реализация ([Wave T](../quality/KIMI_K3_ADVISORY_WAVE_2026_07_27.md)) уже
-  кодирует этот fail-closed tier-гейт.
+- Реализация fail-closed tier-гейта уже в коде (`kimi_advisory_ready()`);
+  см. [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
 
 ## 5. Явно НЕ заявляется
 

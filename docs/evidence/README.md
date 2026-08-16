@@ -2,7 +2,7 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.8"
+version: "2.5.9"
 last_updated: "2026-08-16"
 ---
 
@@ -22,6 +22,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`DATASET_HUNT_LOG_2026_08.md`](DATASET_HUNT_LOG_2026_08.md) | Tracker task-3: hunt + live re-runs 15.08 / confirm 16.08. Open benches ≠ RT-001. Harbor NOT_RUN. PNST CLI skip-honest; Ishigaki gold XML processability |
 | [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md) | Data availability: git fixtures vs `.local/` benches vs missing customer corpus; Checkpoint NO_GO |
 | [`interpretation-use-ledger-latest.json`](interpretation-use-ledger-latest.json) · [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: licensed vs blocked inferences. Not customer precision. Checkpoint NO_GO |
+| [`ifc-cache-ram-ceiling-latest.json`](ifc-cache-ram-ceiling-latest.json) | Process-local IFC LRU ceiling 8×256 MiB = 2 GiB. Not federated RSS, not VM profile, not RT-003 |
 | [`ifc-release-matrix-2026-08.md`](ifc-release-matrix-2026-08.md) · [`.json`](ifc-release-matrix-2026-08.json) | Fixture IFC2X3/IFC4/IFC4X3 kernel: findings 5/4/6, `passed=false`, `clash=skipped`. sha `559dcd91…46391`. Not customer accuracy |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `6133a564…57aa4e` |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
@@ -55,7 +56,7 @@ Related (not under `docs/evidence/`):
 | [`../../samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/) | WP-06 open-corpora profiles (regression/timing only) |
 | [`../../samples/xsd/minstroy/SOURCE.md`](../../samples/xsd/minstroy/SOURCE.md) | MinStroy XSD intake; PZ 01.07 / ZnP 01.01 + survey assignment/report; construction-stage catalog gap; not RT-001 |
 | [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md) | Red Team reading of live AECV numbers |
-| [`../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md`](../quality/RED_TEAM_KT2_HUB_MEP_2026_08_14.md) | Red Team of Hub IFC-Bench / West Riverside / AEC prefetch (`ca6801d`); RT-HUB-01/02/03 mitigated |
+| [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) | RT-003: public federated inventory exists; clash NOT_VERIFIED |
 | [`../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 quality protocol |
 
 ## Reproducible package evidence bundle

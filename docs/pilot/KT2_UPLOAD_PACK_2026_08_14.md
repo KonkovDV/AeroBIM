@@ -53,8 +53,7 @@ claim_boundary: "File list + cabinet procedure. Video and LK = human. Checkpoint
 | 13 | 10D intake (предлагаемая граница) | [`../demo/KT2_10D_INTAKE_CONTRACT_2026_08.md`](../demo/KT2_10D_INTAKE_CONTRACT_2026_08.md) |
 | 14 | Корпус SSOT (заморожен до 20.08) | [`../demo/KT2_CORPUS_SSOT_2026_08.md`](../demo/KT2_CORPUS_SSOT_2026_08.md) |
 | 15 | Dry-run видео / fallback CLI | [`../demo/KT2_VIDEO_DRY_RUN_2026_08.md`](../demo/KT2_VIDEO_DRY_RUN_2026_08.md) |
-| 16 | Personas Wave 2 | [`../quality/RED_TEAM_PERSONAS_WAVE2_2026_08_16.md`](../quality/RED_TEAM_PERSONAS_WAVE2_2026_08_16.md) |
-| 17 | Hostile QA (репетиция A–J) | [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) |
+| 16 | Hostile QA (репетиция A–J) | [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) |
 
 Если GitHub должен отражать датасетный проход (IFC-Bench **27/1026**, CLI ПНСТ, Ishigaki processability) — сначала commit+push, потом грузить ссылку. HD-контур уже на `origin/main` (`4b410c9`). Датасетный контур — отдельный коммит после этого файла.
 

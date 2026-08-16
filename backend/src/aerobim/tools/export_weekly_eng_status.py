@@ -71,6 +71,15 @@ def _commercial_block(root: Path) -> dict[str, Any]:
     return block
 
 
+def _ifc_cache_ram_ceiling() -> dict[str, Any]:
+    from aerobim.infrastructure.adapters.ifc_file_open import ifc_cache_ram_ceiling_payload
+
+    payload = ifc_cache_ram_ceiling_payload()
+    payload["cli"] = "python -m aerobim.tools.export_ifc_cache_ram_ceiling"
+    payload["evidence"] = "docs/evidence/ifc-cache-ram-ceiling-latest.json"
+    return payload
+
+
 def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
     root = repo or _repo_root()
     baseline = _load_json(root / "docs" / "evidence" / "runtime-baseline-latest.json") or {}
@@ -79,7 +88,7 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
     )
     pnst_rt = _load_json(root / "docs" / "evidence" / "pnst909-22-scenario-runtime-latest.json")
     return {
-        "schema_version": "1.2.0",
+        "schema_version": "1.3.0",
         "artifact_type": "aerobim_weekly_eng_status",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_boundary": (
@@ -123,6 +132,7 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
             "cli": "python -m aerobim.tools.export_interpretation_use_ledger",
             "checkpoint": "NO_GO",
         },
+        "ifc_cache_ram_ceiling": _ifc_cache_ram_ceiling(),
         "next_levers": [
             "Exp A: 18/22 IDS runtime_clean published (ToS GO) — do not sell as precision",
             "PNST scenarios 3/18/21/22 still out_of_pack (no IDS in download)",

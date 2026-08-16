@@ -27,6 +27,11 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         self.assertIn("handoff_readme_live_cli", names)
         self.assertIn("snapshot_html_not_overlay_demo", names)
         self.assertIn("readme_quickstart_demo_core_pdf", names)
+        self.assertIn("kt2_video_dry_run", names)
+        self.assertIn("kt2_demo_mp4_not_in_docs", names)
+        mp4 = next(c for c in result["checks"] if c["check"] == "kt2_demo_mp4_status")
+        self.assertTrue(mp4["ok"])
+        self.assertIn(mp4["detail"], {"NOT_IN_GIT", "PRESENT_LOCAL_NOT_IN_GIT"})
 
     def test_wall_guid_snapshot_is_lf_and_verifies(self) -> None:
         wall = _REPO / "docs" / "evidence" / "kt2-handoff-2026-08-11" / "wall-guid"

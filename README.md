@@ -58,8 +58,7 @@ Pre-construction package review (expertise / chief engineer / doc QC): model ↔
 > LIC-001 Option B; P2-04 / P2-02 honesty; Docker offline track; **P0 TechLab eng package WP-01…08**
 > (runtime baseline, Hybrid advisory pre-gate, signature envelope, norm pack v2, package completeness,
 > open-corpora n=7, quality protocol interim 0.60, README/baseline sync) — see
-> [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) ·
-> Red Team rollup [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
+> [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md).
 > Fixture GO ≠ Checkpoint GO.
 
 AeroBIM runs a deterministic Shared-gate style check (ISO 19650 framing: evidence for *Shared*, not contractual *Published* authorization). It fuses IFC property/quantity checks, IDS, drawings, and calculation text into a single report with explicit capability honesty, finding provenance, and BCF **ZIP export**. Independent CDE import and customer accuracy claims remain **out of scope until evidenced**. Architecture SSOT: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
@@ -580,7 +579,7 @@ tests_passed: backend=2167, frontend=54; commit 88e726be20bc; see docs/evidence/
 
 ## Documentation
 
-Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architecture + curated eng status / Red Team summaries under `docs/quality/`. Operator runbooks, phase RT dumps, and archive stay in `.local/` (not published).
+Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architecture + curated eng status. Operator runbooks and session dumps stay in `.local/` (not published).
 
 | Need | Document |
 |------|----------|
@@ -590,9 +589,7 @@ Public GitHub is the **TechLab jury pack only**: code + TZ / claims / architectu
 | TZ Task 07 | [`docs/tz/README.md`](docs/tz/README.md) |
 | Claims lock | [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
 | Eng freeze / status | [`audit/reports/CLAIMS_LOCK_2026_07_31.md`](audit/reports/CLAIMS_LOCK_2026_07_31.md) · [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) |
-| P0 Red Team rollup | [`docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](docs/quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) |
 | Accepted risks (KT#2) | [`docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) |
-| Class A/B Red Team pass | [`docs/quality/RED_TEAM_CLASS_A_B_PASS_2026_08_09.md`](docs/quality/RED_TEAM_CLASS_A_B_PASS_2026_08_09.md) |
 | Checkpoint | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · **NO_GO** |
 | Project status audit | [`docs/PROJECT_STATUS_AUDIT_2026.md`](docs/PROJECT_STATUS_AUDIT_2026.md) |
 | Capability × claim matrix | [`docs/capability-claim-matrix-2026.md`](docs/capability-claim-matrix-2026.md) |

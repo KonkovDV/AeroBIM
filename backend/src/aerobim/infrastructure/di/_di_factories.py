@@ -453,7 +453,11 @@ def _build_audit_report_store(current: Container) -> AuditReportStore:
     )
     if settings.db_url:
         try:
-            return PostgresAuditStore(db_url=settings.db_url, payload_store=payload_store)
+            return PostgresAuditStore(
+                db_url=settings.db_url,
+                payload_store=payload_store,
+                apply_ddl=settings.postgres_apply_ddl,
+            )
         except Exception:
             # Fail-closed when audit_fail_closed / hard profile — no silent FS fallback.
             if settings.audit_fail_closed or not settings.is_dev_environment:

@@ -162,7 +162,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "BCF замечания в СОД",
         "BCF 2.1 ZIP export (структурный)",
         "CDE import VERIFIED / T2 roundtrip",
-        "docs/quality/T2_EVIDENCE_INTEGRITY_WAVE_2026_07_25.md",
+        "docs/pilot-claim-boundary-2026.md",
         "Log + screenshot + hashes именованного CDE Самолёта",
         "fixture_demo",
     ),

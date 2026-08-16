@@ -8,7 +8,7 @@ claim_boundary: "Soft window check. Does not flip N43. Does not regenerate runti
 # N43 monitoring (пункт 17.2, срез 14.08)
 
 Политика до 17.08: `max_commits_behind=50`, waiver `N43-baseline-one-commit-lag` = **deferred**.  
-Чеклист активации: [`N43_REHEARSAL_CHECKLIST_2026_08_17.md`](N43_REHEARSAL_CHECKLIST_2026_08_17.md).
+Активация lag=1 — **не раньше 17.08**; операторский чеклист не публикуется.
 
 | Поле | Значение |
 | --- | --- |

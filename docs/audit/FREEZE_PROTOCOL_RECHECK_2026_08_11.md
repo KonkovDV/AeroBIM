@@ -60,7 +60,7 @@ claim_boundary: "Governance evidence only. Checkpoint NO_GO for RT-001/002/003 u
 | Cover note | [`../demo/KT2_HANDOFF_COVER_2026_08_11.md`](../demo/KT2_HANDOFF_COVER_2026_08_11.md) |
 | Tri-source alignment | [`../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md`](../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md) |
 | Handoff verify gate | `python -m aerobim.tools.verify_kt2_handoff` → [`../evidence/kt2-handoff-2026-08-11/VERIFY.json`](../evidence/kt2-handoff-2026-08-11/VERIFY.json) |
-| RT recheck 12.08 | [`RED_TEAM_KT2_HANDOFF_2026_08_12.md`](RED_TEAM_KT2_HANDOFF_2026_08_12.md) |
+| RT recheck 12.08 | [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) — RT-001/002/003 still OPEN |
 
 ## Команды (воспроизводимо)
 
