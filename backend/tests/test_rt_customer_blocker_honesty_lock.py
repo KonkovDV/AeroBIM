@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import tempfile
 import unittest
@@ -516,6 +517,58 @@ class JuryPackHygieneTests(unittest.TestCase):
         )
         for rel in forbidden:
             self.assertFalse(self._is_tracked(rel), msg=rel)
+
+
+_SUBMISSION_FIELDS = (
+    "01-repository",
+    "02-documentation",
+    "03-presentation",
+    "04-prototype",
+    "05-additional",
+)
+
+
+class SubmissionPackHonestyTests(unittest.TestCase):
+    """KT#2 submission folders mirror the intake form without inflating status."""
+
+    def _submission(self) -> Path:
+        return Path(__file__).resolve().parents[2] / "submission"
+
+    def test_every_form_field_has_a_section(self) -> None:
+        for field in _SUBMISSION_FIELDS:
+            self.assertTrue((self._submission() / field / "README.md").is_file(), msg=field)
+
+    def test_submission_pack_keeps_checkpoint_no_go(self) -> None:
+        index = (self._submission() / "README.md").read_text(encoding="utf-8")
+        self.assertIn("NO_GO", index)
+        self.assertIn("RT-001/002/003 OPEN", index)
+        for field in _SUBMISSION_FIELDS:
+            self.assertIn(field, index, msg=field)
+
+    def test_coverage_map_does_not_claim_tz_targets_as_measured(self) -> None:
+        text = (self._submission() / "TZ_REQUIREMENTS_COVERAGE_2026_08.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("не измерено", text)
+        self.assertIn("NO_GO", text)
+        # TZ targets may be quoted as customer criteria, never as our result.
+        for forbidden in (
+            "точность >90% достигнута",
+            "SLA выполнен",
+            "RT-001 CLOSED",
+            "RT-002 CLOSED",
+            "RT-003 CLOSED",
+        ):
+            self.assertNotIn(forbidden, text, msg=forbidden)
+
+    def test_submission_links_resolve(self) -> None:
+        pattern = re.compile(r"\]\((?!https?:|mailto:)([^)#]+)")
+        broken: list[str] = []
+        for path in sorted(self._submission().rglob("*.md")):
+            for match in pattern.finditer(path.read_text(encoding="utf-8")):
+                if not (path.parent / match.group(1)).resolve().exists():
+                    broken.append(f"{path.name} -> {match.group(1)}")
+        self.assertEqual(broken, [])
 
 
 if __name__ == "__main__":

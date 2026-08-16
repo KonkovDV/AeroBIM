@@ -4,6 +4,9 @@
   "paths": [
     "README.md",
     "README.ru.md",
+    "submission/README.md",
+    "submission/03-presentation/README.md",
+    "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md",
     "docs/DATASETS.md",
     "docs/PROJECT_STATUS_AUDIT_2026.md",
     "docs/architecture/ADR-002-open-core-commercial-boundary-2026.md",

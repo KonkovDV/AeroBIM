@@ -31,6 +31,7 @@ _SCAN_ROOTS = (
     _REPO / "docs" / "partners",
     _REPO / "docs" / "demo-format-2026-08.md",
     _REPO / "docs" / "customer",
+    _REPO / "submission",
 )
 
 _EXCLUDE_SUFFIXES = {".min.js"}
