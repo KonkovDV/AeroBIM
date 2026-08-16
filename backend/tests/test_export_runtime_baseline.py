@@ -66,6 +66,25 @@ class ParsePytestJunitTests(unittest.TestCase):
         self.assertEqual(parsed["tests_skipped"], 2)
         self.assertEqual(parsed["tests_failed"], 1)
 
+    def test_pytest9_subtest_inflated_header_counts_testcase_elements(self) -> None:
+        # pytest 9 native subtests inflate the header tests= attribute; the
+        # definition inventory counts <testcase> elements only.
+        xml = """<?xml version="1.0" encoding="utf-8"?>
+        <testsuite name="pytest" tests="12" skipped="1" failures="1" errors="0">
+          <testcase classname="m.T" name="test_a"/>
+          <testcase classname="m.T" name="test_b"><skipped/></testcase>
+          <testcase classname="m.T" name="test_c"><failure>boom</failure></testcase>
+        </testsuite>
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "junit.xml"
+            path.write_text(xml, encoding="utf-8")
+            parsed = parse_pytest_junit(path)
+        self.assertEqual(parsed["tests_collected"], 3)
+        self.assertEqual(parsed["tests_passed"], 1)
+        self.assertEqual(parsed["tests_skipped"], 1)
+        self.assertEqual(parsed["tests_failed"], 1)
+
 
 class CompletenessErrorsTests(unittest.TestCase):
     def _complete(self) -> dict:
