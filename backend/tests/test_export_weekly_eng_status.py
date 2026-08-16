@@ -16,6 +16,19 @@ class WeeklyEngStatusTests(unittest.TestCase):
         self.assertEqual(payload["checkpoint"], "NO_GO")
         self.assertEqual(payload["commercial_funnel"]["status"], "OWNER_ONLY")
         self.assertIn("No invented commercial funnel", payload["claim_boundary"])
+        self.assertEqual(
+            payload["pnst909_22_scenario_axis"]["cli"],
+            "python -m aerobim.tools.run_pnst909_22_scenario_runtime",
+        )
+        self.assertTrue(
+            str(payload["pnst909_22_scenario_axis"].get("runtime_generated_at") or "").startswith(
+                "2026-08-05"
+            )
+        )
+        self.assertEqual(
+            payload["pnst909_22_scenario_axis"]["ishigaki_cli"],
+            "python -m aerobim.tools.run_ishigaki_ids_bench_smoke",
+        )
         self.assertAlmostEqual(payload["coverage_map"]["kr_detectable_share_approx"], 0.167)
         # R-4: commercial key must appear before eng blocks in insertion order.
         keys = list(payload.keys())

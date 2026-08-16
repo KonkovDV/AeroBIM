@@ -69,6 +69,16 @@ class IfcBenchSmokeTests(unittest.TestCase):
             _parse_expected_number("Column Types:\n- M_W-Wide Flange-Column:W250X67: 80 columns"),
             80.0,
         )
+        self.assertEqual(
+            _parse_expected_number("Total Railings: 10\nRailing Types:\n- Railing: 10"),
+            10.0,
+        )
+        self.assertEqual(
+            _parse_expected_number(
+                "Heating Systems: 42 systems\n\nSystem Categories:\n- Transport Systems: 38 systems"
+            ),
+            42.0,
+        )
         self.assertIsNone(
             _parse_expected_number("I cannot calculate the number of window on the north facade.")
         )
@@ -129,7 +139,7 @@ class IfcBenchSmokeTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt001"])
         self.assertEqual(payload["benchmark"]["question_count"], 1026)
         self.assertTrue(payload["benchmark"]["questions_sha256_matches_pin"])
-        self.assertGreaterEqual(payload["summary"]["scored"], 20)
+        self.assertGreaterEqual(payload["summary"]["scored"], 27)
         self.assertEqual(payload["summary"]["mismatched"], 0)
         self.assertLess(payload["summary"]["scored"], payload["summary"]["total_questions"])
         self.assertEqual(payload["eval_split"]["published_test_rows"], 514)
@@ -137,8 +147,41 @@ class IfcBenchSmokeTests(unittest.TestCase):
             payload["eval_split"]["scored_in_test"] + payload["eval_split"]["scored_in_train"],
             payload["summary"]["scored"],
         )
+        breakdown = payload["summary"]["skip_breakdown"]
+        self.assertGreaterEqual(breakdown["gpl_project_excluded"], 1)
+        self.assertIn("first_number_on_unmapped", breakdown)
+        self.assertLess(
+            breakdown["how_many_unmapped_non_gpl"] + payload["summary"]["scored"],
+            payload["summary"]["total_questions"],
+        )
         raw = json.dumps(payload)
         self.assertIn("scored=", raw)
+
+    def test_skip_breakdown_gpl_and_incomplete(self) -> None:
+        from aerobim.tools.run_ifc_bench_smoke import evaluate_dataset
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            qdir = root / "questions"
+            qdir.mkdir()
+            (qdir / "ifc-bench-v2.csv").write_text(
+                "id,question,ground_truth,ifc_model,project,category\n"
+                "1,What railings are installed?,Total Railings: 6,arc,hitos,count\n"
+                "2,How many widgets?,I cannot calculate the number.,arc,duplex,count\n"
+                "3,Describe the atrium.,The atrium is glazed.,arc,duplex,nl\n",
+                encoding="utf-8",
+            )
+            (root / "projects").mkdir(parents=True)
+            payload = evaluate_dataset(root, version="v2")
+        by_id = {row["question_id"]: row for row in payload["results"]}
+        # skipped rows are omitted from results; use skip_breakdown
+        breakdown = payload["summary"]["skip_breakdown"]
+        self.assertEqual(payload["summary"]["total_questions"], 3)
+        self.assertEqual(payload["summary"]["scored"], 0)
+        self.assertEqual(breakdown["gpl_project_excluded"], 1)
+        self.assertEqual(breakdown["incomplete_info"], 1)
+        self.assertEqual(breakdown["non_numeric_gt"], 1)
+        self.assertEqual(by_id, {})
 
     def test_docs_evidence_uses_repo_relative_dataset_root(self) -> None:
         from aerobim.tools.run_ifc_bench_smoke import _sanitize_docs_evidence, repo_root

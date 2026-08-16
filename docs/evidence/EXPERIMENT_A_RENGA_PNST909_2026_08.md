@@ -13,7 +13,7 @@ claim_boundary: >-
 
 **Статус пакета:** `PACK_PINNED_LOCAL` (2026-08-05).  
 **ToS cite:** **GO** (2026-08-05) — владелец: Renga подтвердила ссылку + агрегированные метрики покрытия.  
-**Статус прогона:** **PARTIAL_RUN** — IDS runtime на **18/22** сценариях (`runtime_clean`, 0 findings на эталоне); 4 сценария без IDS в комплекте. Evidence: [`pnst909-22-scenario-runtime-latest.json`](pnst909-22-scenario-runtime-latest.json).
+**Статус прогона:** **PARTIAL_RUN** — IDS runtime на **18/22** сценариях (`runtime_clean`, 0 findings на эталоне); 4 сценария без IDS в комплекте. Снимок [`pnst909-22-scenario-runtime-latest.json`](pnst909-22-scenario-runtime-latest.json) от **2026-08-05**. CLI `run_pnst909_22_scenario_runtime` in tree; live extract on this machine is a header sample (`SKIPPED_PACK_INCOMPLETE`). Do not invent a fresh 18/22.
 
 ## Почему не реестр Минстроя
 
@@ -62,5 +62,5 @@ claim_boundary: >-
 | NOTICE/ToS + PIN + inventory | **DONE** |
 | Публичный stub без бинарников | **DONE** |
 | Запрос в Renga на цитирование метрик | **GO** (2026-08-05) |
-| Прогон Exp A / IDS 22 сценария | **PARTIAL** — 18/22 executed clean; 4 out_of_pack |
+| Прогон Exp A / IDS 22 сценария | **PARTIAL** — 18/22 executed clean (05.08). CLI in tree 15.08; live pack truncated; do not invent a fresh 18/22 |
 | Не коммитить бинарники в GH | **инвариант** |

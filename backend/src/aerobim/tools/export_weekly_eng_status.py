@@ -108,9 +108,14 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
         "pnst909_22_scenario_axis": {
             "inventory": "docs/evidence/pnst909-22-scenario-ids-inventory-latest.json",
             "runtime": "docs/evidence/pnst909-22-scenario-runtime-latest.json",
+            "pairing": "docs/evidence/pnst909-22-scenario-pairing.json",
+            "cli": "python -m aerobim.tools.run_pnst909_22_scenario_runtime",
             "tos_cite": "GO",
             "summary": (pnst_rt or pnst_inv or {}).get("summary"),
+            "runtime_generated_at": (pnst_rt or {}).get("generated_at"),
             "runtime_status": "PARTIAL_18_OF_22_CLEAN",
+            "ishigaki_cli": "python -m aerobim.tools.run_ishigaki_ids_bench_smoke",
+            "ishigaki_evidence": "docs/evidence/ishigaki-ids-bench-smoke-latest.json",
         },
         "adjudication_corpus_plan": _adjudication_preview(),
         "next_levers": [

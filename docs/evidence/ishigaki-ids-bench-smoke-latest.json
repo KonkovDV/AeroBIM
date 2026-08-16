@@ -1,0 +1,1033 @@
+{
+  "artifact_type": "ishigaki_ids_bench_smoke",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-08-16T08:34:25.702803+00:00",
+  "claim_level": "open_bench_only",
+  "claim_boundary": "Ishigaki-IDS-Bench gold IDS document audit only (CC BY 4.0). No IFC in the upstream set. Not LLM generation F1. Not product accuracy. Does not close RT-001. Checkpoint NO_GO.",
+  "status": "EXECUTED",
+  "dataset_root": ".local/ishigaki-ids-bench",
+  "source": {
+    "kind": "hf_test_jsonl",
+    "jsonl": "data/test.jsonl",
+    "jsonl_sha256": "38b734582e29ca0af7ddbd174f8b6ec01a36bd9b79d5c63b0335612f3524f831",
+    "jsonl_bytes": 854789,
+    "extracted": 166,
+    "skipped_rows": 0
+  },
+  "citation": {
+    "arxiv": "2605.22079",
+    "huggingface": "ONESTRUCTION/Ishigaki-IDS-Bench",
+    "license": "CC BY 4.0",
+    "gold_ids_published": 166,
+    "real_ifc": false
+  },
+  "closes_rt001": false,
+  "checkpoint": "NO_GO",
+  "summary": {
+    "ids_files": 166,
+    "audited": 166,
+    "error_files": 0,
+    "warning_files": 0,
+    "clean_files": 166
+  },
+  "files": [
+    {
+      "path": "extracted-gold-ids/row-0001.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0002.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0003.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0004.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0005.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0006.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0007.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0008.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0009.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0010.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0011.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0012.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0013.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0014.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0015.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0016.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0017.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0018.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0019.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0020.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0021.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0022.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0023.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0024.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0025.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0026.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0027.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0028.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0029.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0030.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0031.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0032.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0033.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0034.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0035.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0036.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0037.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0038.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0039.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0040.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0041.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0042.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0043.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0044.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0045.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0046.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0047.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0048.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0049.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0050.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0051.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0052.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0053.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0054.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0055.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0056.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0057.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0058.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0059.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0060.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0061.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0062.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0063.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0064.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0065.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0066.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0067.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0068.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0069.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0070.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0071.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0072.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0073.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0074.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0075.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0076.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0077.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0078.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0079.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0080.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0081.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0082.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0083.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0084.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0085.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0086.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0087.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0088.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0089.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0090.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0091.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0092.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0093.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0094.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0095.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0096.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0097.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0098.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0099.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0100.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0101.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0102.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0103.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0104.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0105.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0106.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0107.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0108.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0109.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0110.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0111.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0112.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0113.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0114.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0115.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0116.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0117.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0118.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0119.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0120.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0121.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0122.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0123.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0124.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0125.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0126.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0127.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0128.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0129.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0130.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0131.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0132.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0133.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0134.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0135.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0136.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0137.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0138.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0139.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0140.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0141.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0142.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0143.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0144.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0145.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0146.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0147.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0148.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0149.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0150.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0151.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0152.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0153.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0154.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0155.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0156.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0157.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0158.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0159.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0160.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0161.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0162.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0163.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0164.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0165.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    {
+      "path": "extracted-gold-ids/row-0166.ids",
+      "issue_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    }
+  ],
+  "note": "Document processability of published gold IDS XML. Upstream has no real IFC. Not LLM IDS-generation F1 and not product accuracy.",
+  "content_sha256": "f48fa55f255fec411940fc725ac4361e6b06658f40652793539c1ee72a31637e"
+}

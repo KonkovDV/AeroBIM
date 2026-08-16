@@ -27,9 +27,10 @@ Rule: same as BSI — verbatim NOTICE + pin, or link-only until license GO. No d
 | buildingSMART IDS TestCases | Yes | CC BY-ND 4.0 | Vendored + NOTICE + pins | **READY** | 290 regression pairs |
 | buildingSMART BCF/IDS XSD | Yes | CC BY-ND 4.0 | Vendored + NOTICE | **READY** | RT-W-01 |
 | AeroBIM fixtures / Level-B | Yes | Fixture / MIT | In-tree | **READY** | Synthetic floor for Sprint 2 PDF |
-| **IFC-Bench v2** | Pin only | QA **CC BY 4.0**; models per-file (exclude GPLv3 from MIT tree) | `.local/ifc-bench-v2` + [`ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | **PINNED** | Measured 1026 QA rows; smoke 25/1026 scored @ 1.0 (`docs/evidence/ifc-bench-v2-smoke-latest.json`) |
+| **IFC-Bench v2** | Pin only | QA **CC BY 4.0**; models per-file (exclude GPLv3 from MIT tree) | `.local/ifc-bench-v2` + [`ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | **PINNED** | Measured 1026 QA rows; smoke 27/1026 scored @ 1.0 (`docs/evidence/ifc-bench-v2-smoke-latest.json`); re-run 16.08 pin ok |
+| **Ishigaki-IDS-Bench** | Local pin only | CC BY 4.0 | `.local/ishigaki-ids-bench/data/test.jsonl` | **AUDITED** | Gold XML processability 166/166; no IFC; not LLM F1 |
 | Типовые замечания КР (Киров) | Evidence doc + `.local` PDF | Public PDF | Exp B evidence | **USED** | Coverage map only |
-| ПНСТ 909-2024 МКД (Renga) | Local pin only (no GH vendor) | Publisher ToS («ознакомительные») | `.local/renga-pnst909/` (45 IDS / 198 IFC) | **PACK_PINNED / Exp A** | Stub [`RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](RENGA_PNST909_LOCAL_PIN_2026_08_05.md); ToS before metrics publish |
+| ПНСТ 909-2024 МКД (Renga) | Local pin only (no GH vendor) | Publisher ToS («ознакомительные») | Publisher pack 45 IDS / 198 IFC; **this host** = header sample only | **PACK_PINNED / Exp A** | Runtime **18/22** snapshot 05.08 kept; live CLI `SKIPPED_PACK_INCOMPLETE` |
 | Реестр Минстроя ПД повторного применения | No | N/A (no download) | — | **DEAD_CHANNEL** | Exp A → Renga |
 | Закупки на проектирование | No | Public procurement | link_only | **INVENTORY** | Language of pain / acceptance |
 | СПб / Амур типовые ошибки АР | No | Public HTML | `.local/evidence-sources/` | **PLANNED** | Exp B AR recount |

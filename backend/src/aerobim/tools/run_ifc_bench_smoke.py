@@ -22,9 +22,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.copyleft_lane import GPLV3_IFC_BENCH_PROJECTS
+
 CLAIM_BOUNDARY = (
     "IFC-Bench open_bench_only: deterministic countable subset via "
     "IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001."
+)
+_GPL_PROJECTS = frozenset(GPLV3_IFC_BENCH_PROJECTS)
+_INCOMPLETE_GT_RE = re.compile(
+    r"cannot|not available|information not|no (?:explicit )?(?:heating|hvac) ",
+    re.IGNORECASE,
 )
 
 # HF card listed this for an earlier snapshot; measured 2026-08-04 after dedup = e47c…
@@ -66,6 +73,7 @@ class ProbeResult:
     status: str  # matched | mismatched | skipped | error
     detail: str | None = None
     question_id: str = ""
+    skip_reason: str | None = None
 
 
 def repo_root() -> Path:
@@ -162,6 +170,8 @@ def _parse_expected_number(answer: str) -> float | None:
         r"(?:the stair has|has)\s+(\d+(?:\.\d+)?)\s+steps?",
         r"total heating components:\s*(\d+)",
         r"total air terminals:\s*(\d+)",
+        r"total railings:\s*(\d+)",
+        r"heating systems:\s*(\d+)\s+systems",
         r"(\d+)\s+columns\b",
         r"(?:there are|are)\s+(\d+(?:\.\d+)?)",
     ):
@@ -203,6 +213,67 @@ def _open_ifc(path: Path) -> Any:
     import ifcopenshell
 
     return ifcopenshell.open(str(path))
+
+
+def _entity_count(model: Any, type_name: str) -> int:
+    """Count entities; missing schema types are 0, not a smoke abort."""
+    try:
+        return len(model.by_type(type_name))
+    except Exception:  # noqa: BLE001 — IFC2X3 vs IFC4 type names
+        return 0
+
+
+def _gt_incomplete(answer: str) -> bool:
+    return bool(_INCOMPLETE_GT_RE.search(answer or ""))
+
+
+def _classify_skip(*, project: str, answer: str, expected: float | None, mapped: bool) -> str:
+    if project in _GPL_PROJECTS:
+        return "gpl_project_excluded"
+    if _gt_incomplete(answer):
+        return "incomplete_info"
+    if expected is None:
+        return "non_numeric_gt"
+    if not mapped:
+        return "unmapped_nl"
+    return "non_numeric_gt"
+
+
+def _skip_breakdown(results: list[ProbeResult]) -> dict[str, Any]:
+    counts = {
+        "unmapped_nl": 0,
+        "non_numeric_gt": 0,
+        "incomplete_info": 0,
+        "gpl_project_excluded": 0,
+    }
+    first_number_on_unmapped = 0
+    how_many_unmapped_non_gpl = 0
+    for row in results:
+        if row.status != "skipped":
+            continue
+        reason = row.skip_reason or "unmapped_nl"
+        if reason in counts:
+            counts[reason] += 1
+        else:
+            counts["unmapped_nl"] += 1
+        if reason == "unmapped_nl" and row.expected is not None:
+            first_number_on_unmapped += 1
+        if (
+            reason == "unmapped_nl"
+            and "how many" in (row.question or "").lower()
+            and row.project not in _GPL_PROJECTS
+        ):
+            how_many_unmapped_non_gpl += 1
+    return {
+        **counts,
+        "first_number_on_unmapped": first_number_on_unmapped,
+        "how_many_unmapped_non_gpl": how_many_unmapped_non_gpl,
+        "note": (
+            "A first-number parse on an unmapped row is not a safe countable probe. "
+            "Do not treat first_number_on_unmapped as extra product accuracy. "
+            "GPLv3 projects are excluded from the MIT smoke, not scored as errors."
+        ),
+    }
 
 
 def _is_external_door(door: Any) -> bool | None:
@@ -414,7 +485,11 @@ def _probes_for_model(
         return {
             "which component types comprise the heating system": (
                 "digital_hub_heating_distribution_element_count",
-                lambda m: len(m.by_type("IfcDistributionElement")),
+                lambda m: _entity_count(m, "IfcDistributionElement"),
+            ),
+            "what heating systems are present": (
+                "digital_hub_heating_system_count",
+                lambda m: _entity_count(m, "IfcSystem"),
             ),
         }
     if project == "digital_hub" and ifc_model == "ventilation":
@@ -429,6 +504,13 @@ def _probes_for_model(
             "how many piles are used in this building": (
                 "sixty5_str_pile_count",
                 lambda m: len(m.by_type("IfcPile")),
+            ),
+        }
+    if project == "wbdg_office" and ifc_model == "arc":
+        return {
+            "total number of railings": (
+                "wbdg_arc_railing_count",
+                lambda m: _entity_count(m, "IfcRailing"),
             ),
         }
     if project == "wbdg_office" and ifc_model == "mep":
@@ -506,6 +588,23 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                 )
             )
             continue
+        expected_preview = _parse_expected_number(answer)
+        if project in _GPL_PROJECTS:
+            results.append(
+                ProbeResult(
+                    question=question,
+                    project=project,
+                    ifc_model=ifc_model,
+                    probe_id="gpl_excluded",
+                    predicted=None,
+                    expected=expected_preview,
+                    status="skipped",
+                    detail="GPLv3 IFC-Bench project excluded from MIT smoke",
+                    question_id=question_id,
+                    skip_reason="gpl_project_excluded",
+                )
+            )
+            continue
         q_lower = question.lower()
         probes = _probes_for_model(project, ifc_model, version=version)
         matched_key = max((k for k in probes if k in q_lower), key=len, default=None)
@@ -517,10 +616,16 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     ifc_model=ifc_model,
                     probe_id="unmapped",
                     predicted=None,
-                    expected=_parse_expected_number(answer),
+                    expected=expected_preview,
                     status="skipped",
                     detail="no deterministic probe for this NL question",
                     question_id=question_id,
+                    skip_reason=_classify_skip(
+                        project=project,
+                        answer=answer,
+                        expected=expected_preview,
+                        mapped=False,
+                    ),
                 )
             )
             continue
@@ -568,12 +673,17 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
             if expected is None:
                 status = "skipped"
                 detail = "ground-truth answer has no comparable number"
+                skip_reason = _classify_skip(
+                    project=project, answer=answer, expected=expected, mapped=True
+                )
             elif isinstance(predicted, (int, float)) and _numbers_close(predicted, expected):
                 status = "matched"
                 detail = None
+                skip_reason = None
             else:
                 status = "mismatched"
                 detail = f"predicted={predicted!r} expected={expected!r}"
+                skip_reason = None
             results.append(
                 ProbeResult(
                     question=question,
@@ -585,6 +695,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     status=status,
                     detail=detail,
                     question_id=question_id,
+                    skip_reason=skip_reason,
                 )
             )
         except Exception as exc:  # noqa: BLE001 — smoke must not abort pack
@@ -613,7 +724,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
     pinned = _PINNED_V2_SHA_MEASURED if version == "v2" else _PINNED_V1_SHA_HF
     return {
         "artifact_type": f"ifc_bench_{version}_smoke",
-        "schema_version": "1.2.0",
+        "schema_version": "1.3.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_level": "open_bench_only",
         "claim_boundary": CLAIM_BOUNDARY,
@@ -643,12 +754,13 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
             "mismatched": len(scored) - len(matched),
             "skipped_unmapped_or_uncomparable": len(skipped),
             "errors": len(errors),
+            "skip_breakdown": _skip_breakdown(results),
             "exact_match_rate_on_scored": (
                 round(len(matched) / len(scored), 4) if scored else None
             ),
             "denominator_note": (
                 f"scored={len(scored)} of total_questions={len(results)}; "
-                "unmapped NL and non-numeric GT skipped; missing IFC → error"
+                "unmapped NL, incomplete GT, and GPLv3 projects skipped; missing IFC → error"
             ),
             "note": (
                 "Rate is over the deterministic countable subset only "

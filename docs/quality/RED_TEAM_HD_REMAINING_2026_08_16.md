@@ -28,4 +28,4 @@ RT-001 / RT-002 / RT-003. Postgres DDL в рантайме — нормальн�
 
 ## Git
 
-В коммит — hardening и отчёты HD. Датасетный WIP (Ishigaki, PNST CLI, IFC-Bench JSON) оставляем в дереве, в этот коммит не кладём.
+HD close-out: `4b410c9` on `origin/main`. This remaining-work note is not the dataset contour. Dataset hunt / PNST CLI / IFC-Bench 27/1026 / Ishigaki processability land in a separate commit.

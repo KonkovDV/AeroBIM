@@ -1,7 +1,7 @@
 {
   "artifact_type": "ifc_bench_v2_smoke",
-  "schema_version": "1.2.0",
-  "generated_at": "2026-08-15T17:03:11.647512+00:00",
+  "schema_version": "1.3.0",
+  "generated_at": "2026-08-16T08:30:18.560289+00:00",
   "claim_level": "open_bench_only",
   "claim_boundary": "IFC-Bench open_bench_only: deterministic countable subset via IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001.",
   "closes_rt001": false,
@@ -196,20 +196,29 @@
     "published_test_rows": 514,
     "published_train_rows": 512,
     "scored_in_test": 12,
-    "scored_in_train": 13,
+    "scored_in_train": 15,
     "scored_unlisted": 0,
     "note": "Published test split is 514 rows. This block only says how many of the deterministic scored probes fall in that split. It is not a 514 false-pass rate."
   },
   "summary": {
     "total_questions": 1026,
-    "scored": 25,
-    "matched": 25,
+    "scored": 27,
+    "matched": 27,
     "mismatched": 0,
-    "skipped_unmapped_or_uncomparable": 1001,
+    "skipped_unmapped_or_uncomparable": 999,
     "errors": 0,
+    "skip_breakdown": {
+      "unmapped_nl": 634,
+      "non_numeric_gt": 66,
+      "incomplete_info": 110,
+      "gpl_project_excluded": 189,
+      "first_number_on_unmapped": 634,
+      "how_many_unmapped_non_gpl": 53,
+      "note": "A first-number parse on an unmapped row is not a safe countable probe. Do not treat first_number_on_unmapped as extra product accuracy. GPLv3 projects are excluded from the MIT smoke, not scored as errors."
+    },
     "exact_match_rate_on_scored": 1.0,
-    "denominator_note": "scored=25 of total_questions=1026; unmapped NL and non-numeric GT skipped; missing IFC → error",
-    "note": "Rate is over the deterministic countable subset only (25/1026 questions). Unmapped NL items are skipped."
+    "denominator_note": "scored=27 of total_questions=1026; unmapped NL, incomplete GT, and GPLv3 projects skipped; missing IFC → error",
+    "note": "Rate is over the deterministic countable subset only (27/1026 questions). Unmapped NL items are skipped."
   },
   "results": [
     {
@@ -221,7 +230,8 @@
       "expected": 42.0,
       "status": "matched",
       "detail": null,
-      "question_id": "93"
+      "question_id": "93",
+      "skip_reason": null
     },
     {
       "question": "How many X-RAY rooms are there in total?",
@@ -232,7 +242,8 @@
       "expected": 1.0,
       "status": "matched",
       "detail": null,
-      "question_id": "95"
+      "question_id": "95",
+      "skip_reason": null
     },
     {
       "question": "How many rooms are there in the clinic ?",
@@ -243,7 +254,8 @@
       "expected": 269.0,
       "status": "matched",
       "detail": null,
-      "question_id": "99"
+      "question_id": "99",
+      "skip_reason": null
     },
     {
       "question": "How many toilet rooms are there on the second floor?",
@@ -254,7 +266,8 @@
       "expected": 8.0,
       "status": "matched",
       "detail": null,
-      "question_id": "117"
+      "question_id": "117",
+      "skip_reason": null
     },
     {
       "question": "What is the floor to floor height between the first and the second floor?",
@@ -265,7 +278,8 @@
       "expected": 4.57,
       "status": "matched",
       "detail": null,
-      "question_id": "118"
+      "question_id": "118",
+      "skip_reason": null
     },
     {
       "question": "What are the dimensions of the window with guid 0otfaO0qPDAhynjJ6DmgH8?",
@@ -276,7 +290,8 @@
       "expected": 1.735,
       "status": "matched",
       "detail": null,
-      "question_id": "119"
+      "question_id": "119",
+      "skip_reason": null
     },
     {
       "question": "how many windows are there in this building?",
@@ -287,7 +302,8 @@
       "expected": 58.0,
       "status": "matched",
       "detail": null,
-      "question_id": "123"
+      "question_id": "123",
+      "skip_reason": null
     },
     {
       "question": "How many doors are there in this building?",
@@ -298,7 +314,8 @@
       "expected": 254.0,
       "status": "matched",
       "detail": null,
-      "question_id": "124"
+      "question_id": "124",
+      "skip_reason": null
     },
     {
       "question": "How many walls are load-bearing compared with non-load-bearing?",
@@ -309,7 +326,8 @@
       "expected": 0.0,
       "status": "matched",
       "detail": null,
-      "question_id": "158"
+      "question_id": "158",
+      "skip_reason": null
     },
     {
       "question": "Which component types comprise the heating system and how many of each?",
@@ -320,7 +338,20 @@
       "expected": 1795.0,
       "status": "matched",
       "detail": null,
-      "question_id": "200"
+      "question_id": "200",
+      "skip_reason": null
+    },
+    {
+      "question": "What heating systems are present in this building, and what is the count of systems by category?",
+      "project": "digital_hub",
+      "ifc_model": "heating",
+      "probe_id": "digital_hub_heating_system_count",
+      "predicted": 42,
+      "expected": 42.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "211",
+      "skip_reason": null
     },
     {
       "question": "How many air terminals serve each building storey?",
@@ -331,7 +362,8 @@
       "expected": 148.0,
       "status": "matched",
       "detail": null,
-      "question_id": "237"
+      "question_id": "237",
+      "skip_reason": null
     },
     {
       "question": "What is the width of the door 1hOSvn6df7F8_7GcBWlRGQ ?",
@@ -342,7 +374,8 @@
       "expected": 1.25,
       "status": "matched",
       "detail": null,
-      "question_id": "242"
+      "question_id": "242",
+      "skip_reason": null
     },
     {
       "question": "What is the floor-to-floor height between the ground floor and first floor?",
@@ -353,7 +386,8 @@
       "expected": 3.1,
       "status": "matched",
       "detail": null,
-      "question_id": "244"
+      "question_id": "244",
+      "skip_reason": null
     },
     {
       "question": "How many interior doors are there in this building?",
@@ -364,7 +398,8 @@
       "expected": 10.0,
       "status": "matched",
       "detail": null,
-      "question_id": "274"
+      "question_id": "274",
+      "skip_reason": null
     },
     {
       "question": "How many rooms are there in house A?",
@@ -375,7 +410,8 @@
       "expected": 10.0,
       "status": "matched",
       "detail": null,
-      "question_id": "279"
+      "question_id": "279",
+      "skip_reason": null
     },
     {
       "question": "How many bedrooms are there?",
@@ -386,7 +422,8 @@
       "expected": 4.0,
       "status": "matched",
       "detail": null,
-      "question_id": "281"
+      "question_id": "281",
+      "skip_reason": null
     },
     {
       "question": "How many steps does the stair in house A have?",
@@ -397,7 +434,8 @@
       "expected": 16.0,
       "status": "matched",
       "detail": null,
-      "question_id": "282"
+      "question_id": "282",
+      "skip_reason": null
     },
     {
       "question": "how many bathroom are there ?",
@@ -408,7 +446,8 @@
       "expected": 4.0,
       "status": "matched",
       "detail": null,
-      "question_id": "285"
+      "question_id": "285",
+      "skip_reason": null
     },
     {
       "question": "Which rooms have thermostats installed?",
@@ -419,7 +458,8 @@
       "expected": 2.0,
       "status": "matched",
       "detail": null,
-      "question_id": "294"
+      "question_id": "294",
+      "skip_reason": null
     },
     {
       "question": "How many light fixtures are specified in the model, and what is the breakdown by type?",
@@ -430,7 +470,8 @@
       "expected": 14.0,
       "status": "matched",
       "detail": null,
-      "question_id": "302"
+      "question_id": "302",
+      "skip_reason": null
     },
     {
       "question": "How many piles are used in this building, and could you provide a breakdown by pile type including quantities and percentages?",
@@ -441,7 +482,20 @@
       "expected": 146.0,
       "status": "matched",
       "detail": null,
-      "question_id": "878"
+      "question_id": "878",
+      "skip_reason": null
+    },
+    {
+      "question": "What is the total number of railings installed in the building and what are their types?",
+      "project": "wbdg_office",
+      "ifc_model": "arc",
+      "probe_id": "wbdg_arc_railing_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "974",
+      "skip_reason": null
     },
     {
       "question": "How many MEP components exist per type?",
@@ -452,7 +506,8 @@
       "expected": 1456.0,
       "status": "matched",
       "detail": null,
-      "question_id": "984"
+      "question_id": "984",
+      "skip_reason": null
     },
     {
       "question": "How many water heaters are in this building, and what are their specifications?",
@@ -463,7 +518,8 @@
       "expected": 1.0,
       "status": "matched",
       "detail": null,
-      "question_id": "996"
+      "question_id": "996",
+      "skip_reason": null
     },
     {
       "question": "How many electrical receptacles are installed in total, and what is the distribution by type?",
@@ -474,7 +530,8 @@
       "expected": 441.0,
       "status": "matched",
       "detail": null,
-      "question_id": "1014"
+      "question_id": "1014",
+      "skip_reason": null
     },
     {
       "question": "Which types of columns are present in this building, and how many?",
@@ -485,9 +542,10 @@
       "expected": 80.0,
       "status": "matched",
       "detail": null,
-      "question_id": "1020"
+      "question_id": "1020",
+      "skip_reason": null
     }
   ],
-  "skipped_count": 1001,
-  "output_sha256": "64cd4cff0867190a77762248b223bb5900f05cc10770c9cc61916c882bb74ea6"
+  "skipped_count": 999,
+  "output_sha256": "6ca587ebe79e4d7d4cb76a5b42f9111991476568111262d5d1c06ffd059477e1"
 }
