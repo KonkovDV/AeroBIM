@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.5.2"
+version: "4.5.3"
 last_updated: "2026-08-16"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."

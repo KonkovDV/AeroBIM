@@ -51,9 +51,9 @@
     {
       "label": "AeroBIM: commit",
       "type": "shell",
-      "command": "powershell -ExecutionPolicy Bypass -File ../scripts/git_commit.ps1 -Message \"${input:commitMessage}\"",
+      "command": "git commit -m \"${input:commitMessage}\"",
       "options": {
-        "cwd": "${workspaceFolder}/backend"
+        "cwd": "${workspaceFolder}"
       },
       "problemMatcher": []
     }

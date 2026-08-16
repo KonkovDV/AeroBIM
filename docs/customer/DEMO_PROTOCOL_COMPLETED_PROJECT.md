@@ -53,7 +53,7 @@ Propose four buckets for customer discussion (map to AeroBIM CRITICAL / WARNING 
 | **Minor** | Correct before archive; limited impact under stated context |
 | **Info** | Data quality, incompleteness, recommendation |
 
-This taxonomy is **PROPOSED_NOT_CUSTOMER_APPROVED**. See also [`severity-taxonomy-draft.md`](../customer-demo/severity-taxonomy-draft.md).
+This taxonomy is **PROPOSED_NOT_CUSTOMER_APPROVED**. See also [`FOUR_CHECK_STATES_OPERATOR_2026_08.md`](../partners/FOUR_CHECK_STATES_OPERATOR_2026_08.md).
 
 | Customer label | Customer definition (quote) | AeroBIM bucket | Notes | Approved by |
 |---|---|---|---|---|

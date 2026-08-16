@@ -350,7 +350,6 @@ AEROBIM_VLM_ENABLED
 
 ```bash
 git config core.hooksPath .githooks
-powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "docs: ..."
 ```
 
 <!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->

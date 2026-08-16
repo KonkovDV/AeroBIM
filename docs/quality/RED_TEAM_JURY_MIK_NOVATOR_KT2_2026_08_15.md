@@ -1,29 +1,47 @@
 <!-- claims-lint: allow-file reason="TechLab/MIK/Novator jury Red Team; forbidden phrases as attacks/non-claims; Checkpoint NO_GO" -->
 ---
-title: "Red Team — жюри Техлаб × МИК × Новатор (HEAD 0402a7e)"
-date: "2026-08-15"
-status: SUPERSEDED
-superseded_by: ENGINEERING_STATUS_2026_08.md
+title: "Red Team — жюри Техлаб × МИК × Новатор"
+date: "2026-08-16"
+status: active
+version: "1.1.0"
+last_updated: "2026-08-16"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Historical adversarial jury review of 0402a7e. Checkpoint NO_GO.
+  Adversarial jury review of the public GitHub pack. Checkpoint NO_GO.
   Does not close RT-001/002/003.
   Not product accuracy. Not paid-pilot result. Not Novator 2026 filing.
-  Local pytest is not the CI pin 2167.
+  Local pytest is not the CI pin.
 ---
 
-> **SUPERSEDED (2026-08-15).** Object was public `main` after `0402a7e`, not current HEAD.
-> Live engineering status: [`ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
-> Checkpoint remains **NO_GO**; RT-001/002/003 remain **OPEN**.
+# Red Team: жюри Техлаба, контур МИК (16.08)
 
-# Red Team: жюри Техлаба, контур МИК, критерии «Новатор Москвы»
-
-**Author relationship:** Internal self-assessment, 15.08.2026 (second pass).  
-**Object:** public GitHub `main` after [`0402a7e`](https://github.com/KonkovDV/AeroBIM/commit/0402a7e18a1c9093a96188178c851e6df922d45c).  
 **Persona:** член жюри / эксперт площадки, который клонирует репозиторий и читает верхний слой, не чат оператора.  
 **Checkpoint:** **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.
+
+**Stage call:** AeroBIM is in **доработка** (КТ#2 20.08). Validation of *effectiveness* (`валидация эффективности`) and *implementation* have **not started**. Speaking as if they have is a kill.
+
+**Новатор 2026:** not a filing. Criteria are a thinking model only. Honest 2027 nomination, if any: «Меняющие реальность» — **not** «Лидеры инноваций» (no legal entity, no revenue).
+
+## Current pass (public `main`, 16.08)
+
+Object: TechLab jury pack after unpublished operator dumps. Live demo = `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Do not open `docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html` as overlay.
+
+| ID | Attack | Status |
+|---|---|---|
+| RT-JURY-K01 | Clone reads as LLM/session dump (mentor briefs, rewrite-author, local pytest pin) | **MITIGATED** — unpublished from GitHub; gitignore |
+| RT-JURY-D01 | Open `wall-guid/report.html` as overlay | **MITIGATED** — live CLI first; hashed HTML is fixture pin, not overlay |
+| RT-JURY-D02 | Open `vertical-slice/report.html` | **FIXED** — unpublished from the public tree |
+| RT-JURY-G01 | Quote a local pytest count against the README CI pin | **MITIGATED** — local pin unpublished; CI pin stays in `runtime-baseline-latest.json` |
+| RT-JURY-M01 | «Отобраны → продукт готов» | **MITIGATED** — stage = доработка |
+| RT-JURY-C01 | Kitchen cleanup flips Checkpoint GO | **REJECTED** — RT-001/002/003 stay OPEN |
+
+Engineering readiness improved. **Customer and MIK-act readiness did not.** Checkpoint stays **NO_GO**.
+
+## Historical pass (15.08, object `0402a7e`)
+
+The 15.08 attack tree below is kept as the MIK / Новатор thinking-model. It does not license GO.
 
 ## 0. External frame (opened 15.08.2026)
 
@@ -70,7 +88,7 @@ Engineering readiness improved. **Customer and MIK-act readiness did not.**
 | ID | Attack | Why it lands | Status |
 |---|---|---|---|
 | RT-JURY-D01 | Open `wall-guid/report.html` as the overlay demo | No `#kt2-overlay`; clash reason was blank on 11.08 snapshot | **FIXED** — handoff table leads with live CLI; snapshot labelled; verifier checks it |
-| RT-JURY-D02 | Open `vertical-slice/report.html` (11.08) | Same miss | **FIXED** — folder README already superseded; verifier asserts no `#kt2-overlay` |
+| RT-JURY-D02 | Open `vertical-slice/report.html` (11.08) | Same miss | **FIXED** — unpublished from the public tree |
 | RT-JURY-D03 | Stale AUDIT_HEAD says GitHub still dirty / rehearsal still wall-guid | After `0402a7e` that sentence is false → integrity kill | **FIXED** — superseded banner + audit of `0402a7e` |
 | RT-JURY-D04 | Clash `failed:` empty string on committed wall-guid HTML | Looks broken, not honest | **ACCEPTED** on frozen HTML (hash pin). Live detector now names type + fixture geom-init. Do not rewrite the 11.08 bundle |
 | RT-JURY-D05 | IFC4X3 extra `AEROBIM-IDS-IFC-VERSION` sold as accuracy | Fail-closed BSI 0101 | **MITIGATED** in matrix evidence; keep repeating |

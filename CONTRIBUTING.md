@@ -65,15 +65,8 @@ python -m ruff format src tests
 
 Keep commit authorship truthful. If an AI assistant materially contributed, prefer an explicit `Co-authored-by:` trailer (or an equivalent honest note in the commit body). Do not strip or rewrite provenance trailers.
 
-1. Commit from your shell or the VS Code task **AeroBIM: commit**.
-2. Or run:
-
-```powershell
-cd AeroBIM
-powershell -ExecutionPolicy Bypass -File scripts/git_commit.ps1 -Message "type: description"
-```
-
-Optional hooks: `git config core.hooksPath .githooks` (pass-through; does not erase co-authors).
+1. Commit from your shell. Keep authorship truthful (`Co-authored-by:` allowed).
+2. Optional hooks: `git config core.hooksPath .githooks` (pass-through; does not erase co-authors).
 
 ## Pull Request Checklist
 

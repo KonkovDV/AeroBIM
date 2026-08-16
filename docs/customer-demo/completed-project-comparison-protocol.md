@@ -44,7 +44,7 @@ AI-only is **not** automatically a system error. Customer expert assigns one of:
 
 ## Severity scale (propose, then agree)
 
-AeroBIM default: CRITICAL / WARNING / INFO — see [`severity-taxonomy-draft.md`](severity-taxonomy-draft.md).  
+AeroBIM default: CRITICAL / WARNING / INFO — see [`FOUR_CHECK_STATES_OPERATOR_2026_08.md`](../partners/FOUR_CHECK_STATES_OPERATOR_2026_08.md).  
 Map customer labels via an agreed table before scoring criticality agreement. Scale mismatch is a common false “poor compare”.
 
 ## Comparison table (fill after adjudication only)

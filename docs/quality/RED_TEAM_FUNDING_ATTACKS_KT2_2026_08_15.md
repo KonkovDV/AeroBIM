@@ -112,4 +112,4 @@ If a partner needs GO language, **walk away**. Substituting fixture evidence is 
 - BuiltWorlds / Venture West 2026: field-ready + end-user feedback at seed.  
 - Building Ventures thesis (F4): domain expertise. Bau Ventures: no dashboard-only, no unpaid behavior change.
 
-Internal SSOT: `CRITICAL_BLOCKERS.md`, Claims Lock, ADR-001, Wave A RT 14.08, Academic RT 15.08 [`RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](RED_TEAM_ACADEMIC_KT2_2026_08_15.md), local pytest pin `docs/evidence/runtime-baseline-wave-a-windows-2026-08-15.md`.
+Internal SSOT: `CRITICAL_BLOCKERS.md`, Claims Lock, ADR-001, Academic RT 15.08 [`RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](RED_TEAM_ACADEMIC_KT2_2026_08_15.md), CI pin in [`../evidence/runtime-baseline-latest.json`](../evidence/runtime-baseline-latest.json). Local pytest counts are not a second public pin.

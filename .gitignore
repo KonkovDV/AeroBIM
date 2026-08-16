@@ -150,6 +150,21 @@ audit/reports/HYBRID_AI_THREAT*
 audit/reports/EXTRACTION_INTEGRITY_AUDIT*
 docs/evidence/sprint2-baseline-report.html
 docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html
+docs/architecture/ARCHITECTURE_DEEP_AUDIT*
+docs/architecture/ARCHITECTURE_REVIEW_BRIEF*
+docs/architecture/LLM_BUDGET_BILLING*
+docs/architecture/YANDEX_STUDIO_GRANT_OPS*
+docs/research/INDUSTRY_LECTURE_NOTES*
+docs/research/sprint-2-1-research-to-code*
+docs/evidence/RED_TEAM_P2_REMEDIATION*
+docs/evidence/runtime-baseline-wave-a-*
+docs/customer-demo/severity-taxonomy-draft.md
+audit/sprint-2-1-*
+scripts/rewrite-author*
+scripts/git_commit.ps1
+scripts/commit_staged_n43*
+scripts/fix_b5690*
+scripts/activate_a4_signing*
 
 # Build outputs
 bin/
