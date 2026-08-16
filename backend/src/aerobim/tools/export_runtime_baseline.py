@@ -777,17 +777,31 @@ def parse_vitest_json(path: Path) -> dict[str, int]:
 
 
 def parse_pytest_junit(path: Path) -> dict[str, int]:
-    """Parse pytest JUnit XML into passed / skipped / failed / errors counts."""
+    """Parse pytest JUnit XML into passed / skipped / failed / errors counts.
+
+    pytest 9 native subtests inflate the testsuite header ``tests`` attribute
+    (subtest nodes add no ``<testcase>`` element), which breaks parity against
+    the AST/collect-only definition inventory. Count real ``<testcase>``
+    elements when present; fall back to header attributes for header-only
+    suites.
+    """
     root = ET.parse(path).getroot()
     suites = [root] if root.tag == "testsuite" else list(root.findall("testsuite"))
     if not suites and root.tag == "testsuites":
         suites = list(root.findall("testsuite"))
     tests = skipped = failures = errors = 0
     for suite in suites:
-        tests += int(suite.attrib.get("tests", 0))
-        skipped += int(suite.attrib.get("skipped", 0))
-        failures += int(suite.attrib.get("failures", 0))
-        errors += int(suite.attrib.get("errors", 0))
+        cases = list(suite.findall("testcase"))
+        if cases:
+            tests += len(cases)
+            skipped += sum(1 for case in cases if case.find("skipped") is not None)
+            failures += sum(1 for case in cases if case.find("failure") is not None)
+            errors += sum(1 for case in cases if case.find("error") is not None)
+        else:
+            tests += int(suite.attrib.get("tests", 0))
+            skipped += int(suite.attrib.get("skipped", 0))
+            failures += int(suite.attrib.get("failures", 0))
+            errors += int(suite.attrib.get("errors", 0))
     failed = failures + errors
     passed = max(tests - skipped - failed, 0)
     return {
@@ -1101,9 +1115,11 @@ def export_runtime_baseline(
             "tests_failed": tests_failed,
             "tests_unaccounted": (
                 collected - tests_passed - tests_skipped - tests_failed
-                if all(
-                    isinstance(value, int)
-                    for value in (collected, tests_passed, tests_skipped, tests_failed)
+                if (
+                    collected is not None
+                    and tests_passed is not None
+                    and tests_skipped is not None
+                    and tests_failed is not None
                 )
                 else None
             ),
