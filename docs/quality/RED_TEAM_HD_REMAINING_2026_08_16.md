@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — что чинить после HD-аудита"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 last_updated: "2026-08-16"
 claim_boundary: "Engineering backlog only. Checkpoint NO_GO until RT-001/002/003."
 ---
@@ -19,7 +19,8 @@ NO_GO не снимаем. Самолёту по-прежнему нужны к�
 - квота: hold-файл на reserve; через час брошенный hold откатывается;
 - JWKS: неизвестный `kid` не дёргает IdP чаще чем раз в 30 с;
 - XFF: в бакет попадает только валидный IP;
-- IDS: проход спеки только при `status is True` (строка `"failed"` больше не выглядит как успех);
+- IDS: проход спеки только при `status is True` (строка `"failed"` больше не выглядит как успех); не-bool status и `False` без requirement-rows → ERROR (HD7-IDS-03);
+- MOEXP coverage exporter: тот же контракт; missing/non-bool → `unknown_or_skipped` (HD8-TOOL-01);
 - clash без GUID — ошибка движка, не пустой вердикт.
 
 ## Не трогаем кодом
@@ -28,4 +29,4 @@ RT-001 / RT-002 / RT-003. Postgres DDL в рантайме — нормальн�
 
 ## Git
 
-HD close-out: `4b410c9` on `origin/main`. This remaining-work note is not the dataset contour. Dataset hunt / PNST CLI / IFC-Bench 27/1026 / Ishigaki processability land in a separate commit.
+HD close-out: `4b410c9`. Dataset hunt: `375109c`. Academic IUA ledger is the next docs/code contour (Kane: licensed vs blocked inferences). Checkpoint NO_GO.

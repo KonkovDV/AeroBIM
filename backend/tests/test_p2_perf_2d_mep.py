@@ -101,6 +101,8 @@ class IfcParseSessionTests(unittest.TestCase):
             self.assertEqual(len(markers), 1)
             payload = json.loads(markers[0].read_text(encoding="utf-8"))
             self.assertIn("claim_boundary", payload)
+            self.assertNotIn("path", payload)
+            self.assertIn("path_digest", payload)
 
 
 class DrawingCoordinateSystemTests(unittest.TestCase):
@@ -371,6 +373,21 @@ class AnnotationIfcMatchingTests(unittest.TestCase):
         link = link_annotation_to_ifc_target(ann)
         confirmed = confirm_annotation_ifc_links((link,), None)
         self.assertEqual(len(confirmed), 1)
+        self.assertIsNone(confirmed[0].ifc_guid)
+
+    def test_confirm_strips_preset_guid_when_index_none(self) -> None:
+        from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink
+
+        link = AnnotationIfcLink(
+            annotation_id="ann-index-down",
+            sheet_id="AR-01",
+            target_ref="Wall PQ",
+            ifc_guid=WALL_GUID,
+            match_basis="target_ref",
+            confidence=0.55,
+            evidence_ref=f"claimed_guid:{WALL_GUID}#drawing:AR-01:Wall PQ",
+        )
+        confirmed = confirm_annotation_ifc_links((link,), None)
         self.assertIsNone(confirmed[0].ifc_guid)
 
     def test_confirm_strips_preset_guid_without_claimed_evidence(self) -> None:

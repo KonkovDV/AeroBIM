@@ -7,7 +7,8 @@
 
 Это не утверждение «мы лучше Solibri». Это оси, где гипотеза AeroBIM отличима, и оси, где зрелые продукты объективно сильнее.
 
-OSINT-срез и вектор: [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+OSINT-срез и вектор: [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).  
+Пять решений Задачи 07 (поля Анализ 3): [`../demo/KT2_TASK07_COMPARISON_2026_08.md`](../demo/KT2_TASK07_COMPARISON_2026_08.md) — не эта таблица Solibri/Navisworks.
 
 ## Матрица
 

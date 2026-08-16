@@ -133,6 +133,22 @@ class Hd2QuotaLockTests(unittest.TestCase):
             self.assertEqual(list(store._root.glob("*/holds/*.json")), [])
 
 
+class Hd2UploadReserveOrderTests(unittest.TestCase):
+    def test_upload_route_reserves_quota_before_writing_quarantine(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "src"
+            / "aerobim"
+            / "presentation"
+            / "http"
+            / "routes"
+            / "uploads.py"
+        ).read_text(encoding="utf-8")
+        reserve_at = source.index("upload_quota_store.reserve(")
+        write_at = source.index('quarantine.open("wb")')
+        self.assertLess(reserve_at, write_at)
+
+
 class Hd2RateLimitKeyTests(unittest.TestCase):
     def test_xff_used_only_from_trusted_peer(self) -> None:
         trusted = frozenset({"10.0.0.1"})

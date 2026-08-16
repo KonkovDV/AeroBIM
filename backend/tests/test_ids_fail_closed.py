@@ -12,7 +12,9 @@ from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.domain.ids_schema_gate import (
     RULE_IFC_VERSION,
     RULE_SKIPPED,
+    RULE_STATUS_TYPE,
     collect_schema_mismatches,
+    ids_reporter_status_is_bool,
     model_schema_allowed,
     parse_ids_specification_versions,
     parse_ifc_file_name,
@@ -172,6 +174,12 @@ class IdsSchemaGateDomainTests(unittest.TestCase):
         self.assertIsNone(
             skipped_spec_fail_closed_rule_id(is_skipped=False, status=True, is_ifc_version=True)
         )
+        self.assertIsNone(skipped_spec_fail_closed_rule_id(status="false"))
+        self.assertFalse(ids_reporter_status_is_bool("false"))
+        self.assertFalse(ids_reporter_status_is_bool("true"))
+        self.assertTrue(ids_reporter_status_is_bool(False))
+        self.assertTrue(ids_reporter_status_is_bool(True))
+        self.assertEqual(RULE_STATUS_TYPE, "AEROBIM-IDS-STATUS-TYPE")
 
 
 class IdsFailClosedMappingTests(unittest.TestCase):

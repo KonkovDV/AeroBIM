@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.30"
+version: "1.6.36"
 last_updated: "2026-08-16"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-16
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-16 · **v1.6.30** — tracker task 3: IFC-Bench 27/1026 re-run, PNST CLI skip-honest, Ishigaki gold-XML processability; RT-001/002/003 still OPEN  
+**last_updated:** 2026-08-16 · **v1.6.36** — Fail-closed MOEXP/VLM/release `--day latest`; IFC Acceptance Gate 1.1.0 + KT#2 pack in tree; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Wave A Red Team:** [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md)  
@@ -63,10 +63,15 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **HD3 engines (16.08)** | IDS missing `status` → SKIPPED/ERROR; malformed IfcClash → failed; IFC cache LRU(8); BFF cookie ≠ principal; unknown BCF version 400 | Not RT-001/002/003 CLOSED |
 | **HD2 seams (16.08)** | JWKS kid refetch; `origin=advisory` out of reproducibility hash; DI singleton lock; trusted XFF; upload reserve-ahead + stale quota lock | Not RT-001/002/003 CLOSED |
 | **Defensive engineering pass (15.08)** | OIDC tenant only from `AEROBIM_OIDC_TENANT_CLAIM`; ACL-before-read + 404 anti-enum; Redis required outside dev; ZIP NUL/XML depth+text; runtime lock excludes PyMuPDF | Not RT-001/002/003 CLOSED; not RELEASE_GO |
+| **Grand Jury + KT#2 speech (16.08)** | Four-jury review filed; PII-first + sequence-not-rollback framing; fixture timing sheet (not SLA); Ask Самолёту refreshed (27/1026, 18/22 snapshot 05.08) | Not RT-001/002/003 CLOSED; Checkpoint NO_GO |
+| **Personas Wave 2 (16.08)** | 5-up Task-07 table; 10D intake page; corpus SSOT freeze; ASK owner+ack 20.08; Plan B date 15.09; F1 cell already fixture-qualified | Not RT-001/002/003 CLOSED; mp4 dry-run = operator |
+| **Round 7 ATOMIC (16.08)** | Spec non-bool / empty-row IDS fail-closed; mixed numeric parse mismatch; Dias 2026 + bSI Validation Service as baseline (not Task-07 rival) | Not RT-001/002/003 CLOSED; [`quality/RED_TEAM_ATOMIC_2026_08_16.md`](quality/RED_TEAM_ATOMIC_2026_08_16.md) |
+| **Round 8 ATOMIC2 (16.08)** | MOEXP coverage pass only if `status is True`; unknown/skipped counted; P2-04 strips `ifc_guid` when spatial index is None | Not RT-001/002/003 CLOSED; snapshot JSON not regenerated |
+| **IUA ledger (16.08)** | Kane Interpretation/Use table: what fixture/open-bench scores may mean for TZ / tracker / KT2–KT3 / IDS 1.0 / ISO 19650 | Not RT-001/002/003 CLOSED; [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md) |
 | **Dataset CLI (task 3, 16.08)** | PNST 22-scenario CLI + frozen pairing; live pack truncated → `SKIPPED_PACK_INCOMPLETE` (05.08 **18/22** kept). IFC-Bench v2 **27/1026** re-run pin ok. Ishigaki gold XML processability 166/166 (not generation F1, no IFC). DrawingVQA link-only | Not a fresh 18/22; Harbor NOT_RUN; not RT-001 |
 | **IfcClash tiny walls** | Skip degenerate products (`AEROBIM_CLASH_SKIP_TINY`, default on); all-skipped still FAILED | Not a silent pass |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |
-| **P2-04 Annotation↔IFC** | Claimed GUID → `ifc_guid` only after spatial-index presence | Not human-adjudicated matching |
+| **P2-04 Annotation↔IFC** | Claimed GUID → `ifc_guid` only after spatial-index presence; index None clears pre-set guid | Not human-adjudicated matching |
 | **P2-02 MEP honesty** | `edge_kinds` + optional AABB broadphase | RT-003 OPEN; never `mep_system_clash=OK` |
 | **Offline** | Docker image-track smoke; bare-metal **DEFERRED** (`offline_bundle wheelhouse` exits 2) | Not “any air-gap without Docker” |
 | **Checkpoint #2 pin** | Wall-guid evidence bundle pin | Live CDE T2 still NOT_VERIFIED |

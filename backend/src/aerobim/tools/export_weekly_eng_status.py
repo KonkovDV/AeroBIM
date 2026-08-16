@@ -118,6 +118,11 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
             "ishigaki_evidence": "docs/evidence/ishigaki-ids-bench-smoke-latest.json",
         },
         "adjudication_corpus_plan": _adjudication_preview(),
+        "interpretation_use": {
+            "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
+            "cli": "python -m aerobim.tools.export_interpretation_use_ledger",
+            "checkpoint": "NO_GO",
+        },
         "next_levers": [
             "Exp A: 18/22 IDS runtime_clean published (ToS GO) — do not sell as precision",
             "PNST scenarios 3/18/21/22 still out_of_pack (no IDS in download)",

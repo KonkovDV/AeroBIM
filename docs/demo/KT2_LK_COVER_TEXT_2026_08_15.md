@@ -18,7 +18,8 @@ AeroBIM — детерминированная проверка комплект
 Стадия: **доработка**. Checkpoint **NO_GO**. Валидация эффективности и внедрение у заказчика ещё не начались. Три блокера открыты: корпус ПД+экспертиза (RT-001), подписанный нормативный пакет Самолёта (RT-002), измеренный федеративный MEP-clash (RT-003). Открытые бенчи и учебный пакет Renga эти блокеры не закрывают.
 
 Прототип (ссылка): https://github.com/KonkovDV/AeroBIM  
-Живой срез: `cd backend && python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`). Overlay PDF = pypdfium2. Демо-IFC в репозитории — IfcOpenShell fixture, не выгрузка Renga и не модель Самолёта.
+Первые 30 секунд: live CLI Acceptance Gate + честная строка «без разметки заказчиком цифры не публикуем».  
+Живой срез (sell-path): `cd backend && python -m aerobim.tools.run_demo_ifc_acceptance_gate` → `artifacts/ifc-acceptance-gate-demo/acceptance-gate.json`. Overlay PDF (P1, если время): `python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`). Overlay = pypdfium2. Демо-IFC в репозитории — IfcOpenShell fixture, не выгрузка Renga и не модель Самолёта.
 
 Что можно смотреть сейчас (fixture / open-bench, не точность продукта):
 

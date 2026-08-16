@@ -13,10 +13,10 @@ claim_boundary: "Fixture GO. Checkpoint NO_GO. Not customer accuracy."
 
 ## Что открыть 19–20.08
 
-1. `cd backend && python -m aerobim.tools.run_demo_vertical_slice`
-2. `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`, `#kt2-claim-boundary`)
+1. `cd backend && python -m aerobim.tools.run_demo_ifc_acceptance_gate` → `artifacts/ifc-acceptance-gate-demo/`
+2. Overlay P1, если время: `python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`)
 3. Не открывать `kt2-handoff-2026-08-11/wall-guid/report.html` как ядро среза.
-4. Репетиция: [`KT2_DEMO_REHEARSAL_2026_08_12.md`](KT2_DEMO_REHEARSAL_2026_08_12.md). Питч: [`../partners/PITCH_NOVALTOR_TECHLAB_2026_08.md`](../partners/PITCH_NOVALTOR_TECHLAB_2026_08.md) — первые 15 с = формула, не раунд.
+4. Репетиция: [`KT2_DEMO_REHEARSAL_2026_08_12.md`](KT2_DEMO_REHEARSAL_2026_08_12.md). Питч: [`../partners/PITCH_NOVALTOR_TECHLAB_2026_08.md`](../partners/PITCH_NOVALTOR_TECHLAB_2026_08.md) — первые 15 с = формула, не раунд. Первые 30 с продукта: сценарий трекера №4, без публикации цифр без разметки.
 
 ## Пакет
 
@@ -41,10 +41,10 @@ claim_boundary: "Fixture GO. Checkpoint NO_GO. Not customer accuracy."
 
 Только четыре закрытия:
 
-1. Live CLI на каждом показе.  
-2. **19.08** — видео (человек).  
+1. Live CLI на каждом показе (Gate; overlay — fallback).  
+2. **17–18.08** — сухой прогон + fallback-ролик ([`KT2_VIDEO_DRY_RUN_2026_08.md`](KT2_VIDEO_DRY_RUN_2026_08.md)); **19.08** — видео (человек).  
 3. **19–20.08** — ЛК (человек): отозвать текущее решение → обновить страницу → «Загрузить решение». Текст: [`KT2_LK_COVER_TEXT_2026_08_15.md`](KT2_LK_COVER_TEXT_2026_08_15.md). Команду не менять.  
-4. Запрос заказчику: [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md).
+4. Запрос заказчику: [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md) (owner + ack 20.08).
 
 N43 / AEC-Bench **не** входят в это окно. Wave A ≠ RT CLOSED. 20.08 — только критический фикс.
 

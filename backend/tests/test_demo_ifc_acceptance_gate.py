@@ -25,6 +25,10 @@ class DemoIfcAcceptanceGateTests(unittest.TestCase):
             self.assertFalse((out / "overlay-problem-zone.png").is_file())
             payload = json.loads((out / "acceptance-gate.json").read_text(encoding="utf-8"))
             self.assertEqual(payload["artifact_type"], "aerobim_ifc_acceptance_gate")
+            self.assertEqual(payload["schema_version"], "1.1.0")
+            self.assertEqual(payload["outcome_scope"], "full_package")
+            self.assertEqual(payload["findings_scope"], "ifc_ids")
+            self.assertIn("blocking_outside_projection_count", payload)
             self.assertIn("ids_validation", payload["capabilities"])
             self.assertTrue(payload["findings"][0]["rule_id"])
 

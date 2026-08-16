@@ -2,7 +2,7 @@
 ---
 title: "IFC Acceptance Gate — product freeze (16.08.2026)"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 last_updated: "2026-08-16"
 closes_rt001: false
 closes_rt002: false
@@ -65,7 +65,7 @@ CLI продукта: `python -m aerobim.tools.run_demo_ifc_acceptance_gate` →
 
 Проверки: файл открывается; схема допустима; spatial structure; GUID; обязательные entity/Pset; тип и единица; классификаторы; IDS; выбранные quantity; простые геометрические ограничения по профилю.
 
-Выход: `acceptance-gate.json` — `outcome` + `passed` (**ADR-001**: `passed=true` только у `pass` / `pass_with_warnings`; не рисовать `PASS_WITH_WARNINGS` при `passed=false`) + capabilities (`ifc_schema`, `ids_validation`, `property_validation`, `geometry`, `dwg_native`, `mep_system_clash`) + findings (GUID, rule, expected/observed, evidence_refs) + manifest (engine, rule_pack_hash, input_hash, reproducibility_hash).
+Выход: `acceptance-gate.json` — `outcome` + `passed` (**ADR-001**: `passed=true` только у `pass` / `pass_with_warnings`; не рисовать `PASS_WITH_WARNINGS` при `passed=false`) + `outcome_scope: full_package` / `findings_scope: ifc_ids` + `blocking_outside_projection_count` (ERROR вне IFC/IDS, чтобы «красный» пакет не выглядел пустым) + capabilities (`ifc_schema`, `ids_validation`, `property_validation`, `geometry`, `dwg_native`, `mep_system_clash`) + findings (GUID, rule, expected/observed, evidence_refs) + manifest (engine, rule_pack_hash, input_hash, reproducibility_hash).
 
 ## Сценарий 2 (после Gate): один факт cross-document
 

@@ -2,14 +2,28 @@
 ---
 title: "Запрос Самолёту к КТ#2 — пакет, профиль, adjudicators, CDE"
 date: "2026-08-15"
+last_updated: "2026-08-16"
 status: active
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Intake ask only. Does not claim measured SLA or product accuracy.
-  Checkpoint NO_GO until the four items arrive.
+  Checkpoint NO_GO until the four items arrive. Public proxy benches ≠ Samolet pack.
 ---
+
+# Владелец и сроки
+
+Контакт на стороне Самолёта в репозитории **не назван** — ФИО не выдумываем.
+
+| Роль | Кто | Дедлайн |
+|---|---|---|
+| Owner запроса | оператор репозитория (`KonkovDV`) | письмо в git с 15.08 |
+| Эскалация | трекер Дмитрий Сигиневич (чат 14.08) | если нет ack к КТ#2 |
+| Ack Самолёта | сторона заказчика (имя — когда назовут) | **20.08.2026** (КТ#2): подтверждение, что запрос получен |
+| Пункты 1–4 (пакет) | Самолёт | целевой к КТ#3 **21.09**; иначе Plan B **15.09** ([`../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md)) |
+
+Pentest заказчика в профиле приёмки пилота — **просим сами**, не пятый обязательный intake-пункт.
 
 # Письмо заказчику (скопировать)
 
@@ -75,3 +89,15 @@ critical recall, evidence-chain, время отчёта, доля принят�
 Длинный бриф: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_WHAT_WE_NEED_2026_07-ru.md).  
 IFC из Renga, не API Tangl: [`SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md`](SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md).  
 Клин пилота: [`WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md).
+
+## Свежесть 16.08 — публичный прокси ≠ ваш комплект
+
+Что уже прогнано **не на данных Самолёта** (охота: [`../evidence/DATASET_HUNT_LOG_2026_08.md`](../evidence/DATASET_HUNT_LOG_2026_08.md)):
+
+| Pack | Что можно сказать | Чего нельзя |
+|---|---|---|
+| IFC-Bench v2 | countable **27/1026**, `open_bench_only` | не 514, не точность продукта |
+| ПНСТ 909 22 сценария | снимок **18/22 от 05.08**; CLI в дереве | не «пересняли сегодня»; live pack = header sample → `SKIPPED_PACK_INCOMPLETE` |
+| Harbor / AEC-Bench agent | **NOT_RUN** | не подставлять 0.7283 как false-pass AeroBIM |
+
+Четыре пункта письма выше по-прежнему **открыты**. Без них RT-001/002 не закрыть и SLA/TP не мерить.

@@ -2,8 +2,8 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.2.0"
-last_updated: "2026-08-14"
+version: "1.3.0"
+last_updated: "2026-08-16"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -149,7 +149,7 @@ P0 Red Team rollup: [`../quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](../quality/R
 | Package ≤30 min | `measure_package_sla` on **agreed** pack | done (fixture); customer TBD | MVP |
 | Cognitive load reduction | Priority profile + HITL KPI | partial | P0 |
 
-**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) and Claims Lock.
+**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), Claims Lock, and the Kane IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) (SAM-05 / SAM-06). Fixture AABB precision on n=6 is **not** this row.
 
 ## 7. Appendices (data)
 

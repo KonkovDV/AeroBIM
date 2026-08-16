@@ -215,7 +215,11 @@ def confirm_annotation_ifc_links(
     iou_tolerance: float = 0.0,
 ) -> list[AnnotationIfcLink]:
     if spatial_index is None:
-        return list(links)
+        # Index unavailable: never keep a pre-set ifc_guid (P2-04 / HD8-P204-01).
+        return [
+            replace(link, ifc_guid=None) if link.ifc_guid is not None else link
+            for link in links
+        ]
     bboxes = annotation_bboxes or {}
     return [
         confirm_link_against_spatial_index(

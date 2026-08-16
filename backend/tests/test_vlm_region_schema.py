@@ -218,6 +218,13 @@ class RegionObservationGroundingTests(unittest.TestCase):
         self.assertFalse(res.readable)
         self.assertEqual(res.reason, "blurred scan")
 
+    def test_missing_readable_is_not_readable(self) -> None:
+        raw = {"observations": [_obs([0.1, 0.1, 0.4, 0.3])]}
+        res = ground_vlm_region_observations(raw, sheet_id="S1", region_id="r1")
+        self.assertTrue(res.parse_ok)
+        self.assertFalse(res.readable)
+        self.assertEqual(len(res.observations), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

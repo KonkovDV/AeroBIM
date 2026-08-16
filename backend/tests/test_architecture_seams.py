@@ -64,6 +64,7 @@ class ArchitectureSeamTests(unittest.TestCase):
         mep = next(row for row in payload["rows"] if "MEP" in row["requirement"])
         self.assertEqual(mep["status"], "missing")
         self.assertEqual(payload["author_relationship"], "self")
+        self.assertFalse(payload["interpretation_use"]["closes_rt001"])
 
     def test_honesty_capabilities_never_silently_ok(self) -> None:
         caps = ReportCapabilities()

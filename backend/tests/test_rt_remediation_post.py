@@ -68,14 +68,20 @@ class Post03SsrfGuardTests(unittest.TestCase):
         with self.assertRaises(UnsafeOutboundUrlError):
             assert_safe_outbound_url("http://example.com/x", resolve_dns=False)
 
-    def test_rejects_decimal_and_hex_loopback_literals(self) -> None:
+    def test_rejects_dotted_shorthand_and_octal_loopback(self) -> None:
         for url in (
-            "http://2130706433/",
-            "http://0x7f000001/",
+            "http://127.1/",
+            "http://0177.0.0.1/",
         ):
             with self.subTest(url=url):
                 with self.assertRaises(UnsafeOutboundUrlError):
                     assert_safe_outbound_url(url, allow_http=True, resolve_dns=False)
+
+    def test_null_proxy_handler_ignores_env_proxy_table(self) -> None:
+        from aerobim.core.security.outbound_url import _NullProxyHandler
+
+        handler = _NullProxyHandler()
+        self.assertEqual(getattr(handler, "proxies", {}), {})
 
 
 class Post06UnitScaleAndPilotSkippedTests(unittest.TestCase):

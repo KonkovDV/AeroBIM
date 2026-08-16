@@ -95,9 +95,18 @@ def generate_tz_matrix_status(
     ]
     return {
         "artifact_type": "aerobim_tz_matrix_status",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "author_relationship": "self",
+        "claim_boundary": (
+            "Capability snapshot. Fixture OK ≠ customer done. "
+            "Not product accuracy. Checkpoint NO_GO."
+        ),
+        "interpretation_use": {
+            "licensed_use": "engine_regression",
+            "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
+            "closes_rt001": False,
+        },
         "corpus_kind": "fixture" if not customer_evidence else "customer",
         "customer_corpus_present": customer_evidence,
         "capabilities_snapshot": {

@@ -246,6 +246,59 @@ def _file_allow_reason(text: str) -> str | None:
     return None
 
 
+def _candidate_files(roots: list[Path] | None = None) -> list[Path]:
+    if not roots:
+        return _iter_scan_files()
+    files: list[Path] = []
+    for root in roots:
+        if root.is_file():
+            files.append(root)
+            continue
+        if not root.is_dir():
+            continue
+        files.extend(path for path in root.rglob("*") if path.is_file())
+    return sorted(set(files))
+
+
+def exclusion_stats(*, roots: list[Path] | None = None) -> dict[str, int]:
+    """HDX-LINT-01: directory excludes stay, but the blind-zone size is visible."""
+
+    excluded_by_fragment = 0
+    excluded_by_suffix = 0
+    excluded_evidence = 0
+    scanned = 0
+    for path in _candidate_files(roots):
+        if path.suffix.lower() in _EXCLUDE_SUFFIXES:
+            excluded_by_suffix += 1
+            continue
+        try:
+            rel = path.relative_to(_repo_root()).as_posix()
+        except ValueError:
+            scanned += 1
+            continue
+        if any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS):
+            excluded_by_fragment += 1
+            continue
+        if "/evidence/" in f"/{rel}" and path.suffix.lower() in {".json", ".pdf", ".html", ".txt"}:
+            excluded_evidence += 1
+            continue
+        scanned += 1
+    return {
+        "scanned": scanned,
+        "excluded_by_fragment": excluded_by_fragment,
+        "excluded_by_suffix": excluded_by_suffix,
+        "excluded_evidence": excluded_evidence,
+    }
+
+
+def _format_exclusion_stats(stats: dict[str, int]) -> str:
+    return (
+        f"scanned={stats['scanned']} "
+        f"excluded_by_fragment={stats['excluded_by_fragment']} "
+        f"excluded_evidence={stats['excluded_evidence']}"
+    )
+
+
 def _line_allowed(line: str) -> bool:
     return _ALLOW_RE.search(line) is not None
 
@@ -257,17 +310,7 @@ def lint_claims(
 ) -> list[str]:
     patterns = _patterns_from_matrix(matrix_path)
     violations: list[str] = []
-    files: list[Path] = []
-    if roots:
-        for root in roots:
-            if root.is_file():
-                files.append(root)
-            elif root.is_dir():
-                files.extend(p for p in root.rglob("*") if p.is_file())
-    else:
-        files = _iter_scan_files()
-
-    for path in sorted(set(files)):
+    for path in _candidate_files(roots):
         if not _should_scan(path):
             continue
         try:
@@ -483,12 +526,30 @@ def main(argv: list[str] | None = None) -> int:
 
     errors.extend(lint_citation_twins())
 
+    stats: dict[str, int] | None = None
+    if not args.matrix_guard and not args.claim_boundary_guard:
+        scan_roots = list(_SCAN_ROOTS)
+        if args.full_docs:
+            scan_roots.append(_REPO / "docs")
+        stats = exclusion_stats(roots=scan_roots)
+
     if errors:
         for message in errors:
             print(message, file=sys.stderr)
+        if stats is not None:
+            print(
+                f"claims-lint: {_format_exclusion_stats(stats)} "
+                "(directory excludes remain a manual honesty path)",
+                file=sys.stderr,
+            )
         return 1
     mode = "matrix-guard" if args.matrix_guard else "claims-lint"
-    print(f"{mode}: OK (0 violations)")
+    if args.claim_boundary_guard:
+        mode = "claim-boundary-guard"
+    if stats is not None:
+        print(f"{mode}: OK (0 violations; {_format_exclusion_stats(stats)})")
+    else:
+        print(f"{mode}: OK (0 violations)")
     return 0
 
 

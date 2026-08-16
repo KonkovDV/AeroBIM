@@ -7,7 +7,9 @@ from typing import Any
 from aerobim.domain.ids_schema_gate import (
     RULE_IFC_VERSION,
     RULE_SKIPPED,
+    RULE_STATUS_TYPE,
     collect_schema_mismatches,
+    ids_reporter_status_is_bool,
     parse_ids_specification_versions,
     parse_ifc_file_schema,
     skipped_spec_fail_closed_rule_id,
@@ -165,6 +167,22 @@ class IfcTesterIdsValidator:
             if spec_status is True:
                 continue
 
+            spec_issue_start = len(issues)
+            if not ids_reporter_status_is_bool(spec_status):
+                issues.append(
+                    ValidationIssue(
+                        rule_id=RULE_STATUS_TYPE,
+                        severity=Severity.ERROR,
+                        message=(
+                            f"[IDS] {spec_name}: specification status is not a boolean "
+                            f"({type(spec_status).__name__}={spec_status!r}); "
+                            "fail-closed treats non-bool status as FAILED"
+                        ),
+                        category=FindingCategory.IDS_VALIDATION,
+                        origin="deterministic",
+                    )
+                )
+
             requirements = spec.get("requirements") or []
             cardinality = str(spec.get("cardinality") or "").lower()
 
@@ -231,6 +249,20 @@ class IfcTesterIdsValidator:
                             entity_element=None,
                         )
                     )
+
+            if spec_status is not True and len(issues) == spec_issue_start:
+                issues.append(
+                    self._build_issue(
+                        spec_name=spec_name,
+                        facet_type="Specification",
+                        description="specification did not pass",
+                        entity_reason=(
+                            f"status={spec_status!r} produced no requirement findings; "
+                            "fail-closed treats this as FAILED"
+                        ),
+                        entity_element=None,
+                    )
+                )
 
         return issues
 

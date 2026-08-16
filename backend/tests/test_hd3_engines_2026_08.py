@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import unittest
 
 from aerobim.domain.errors import ClashCapabilityError
@@ -57,6 +58,16 @@ class Hd3BffTests(unittest.TestCase):
     def test_signed_cookie_roundtrip_ascii(self) -> None:
         token = sign_session_cookie("sid123", "secret")
         self.assertEqual(parse_session_cookie(token, "secret"), "sid123")
+
+    def test_api_bearer_auth_does_not_accept_session_cookie(self) -> None:
+        from aerobim.presentation.http.context import ApiContext
+
+        params = inspect.signature(ApiContext.require_bearer_auth).parameters
+        self.assertIn("authorization", params)
+        self.assertFalse(any("cookie" in name.lower() for name in params))
+        source = inspect.getsource(ApiContext.require_bearer_auth)
+        self.assertIn("BFF lab cookies are never accepted", source)
+        self.assertIn("HD3-BFF-01", source)
 
 
 class Hd3IfcLruTests(unittest.TestCase):

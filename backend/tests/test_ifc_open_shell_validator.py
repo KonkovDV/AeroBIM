@@ -324,5 +324,37 @@ class IfcOpenShellValidatorUnitNormalizationTests(unittest.TestCase):
         self.assertAlmostEqual(float(issues[0].observed_value), 0.2, places=4)
 
 
+class IfcOpenShellNumericParseTests(unittest.TestCase):
+    def test_thousand_separator_does_not_string_pass_numeric_expected(self) -> None:
+        requirement = ParsedRequirement(
+            rule_id="R-num",
+            operator=ComparisonOperator.EQUALS,
+            expected_value="1234.56",
+        )
+        self.assertFalse(
+            IfcOpenShellValidator()._matches_requirement("1.234,56", requirement, {})
+        )
+
+    def test_unparsable_observed_against_numeric_expected_is_mismatch(self) -> None:
+        requirement = ParsedRequirement(
+            rule_id="R-num",
+            operator=ComparisonOperator.EQUALS,
+            expected_value="5.0",
+        )
+        self.assertFalse(
+            IfcOpenShellValidator()._matches_requirement("abc", requirement, {})
+        )
+
+    def test_alphanumeric_equals_still_uses_string_compare(self) -> None:
+        requirement = ParsedRequirement(
+            rule_id="R-text",
+            operator=ComparisonOperator.EQUALS,
+            expected_value="REI60",
+        )
+        self.assertTrue(
+            IfcOpenShellValidator()._matches_requirement("REI60", requirement, {})
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

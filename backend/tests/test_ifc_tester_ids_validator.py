@@ -100,6 +100,62 @@ class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
         issues = validator._map_results(fake_results)
         self.assertGreater(len(issues), 0)
 
+    def test_string_false_empty_spec_is_not_a_pass(self) -> None:
+        from aerobim.domain.ids_schema_gate import RULE_STATUS_TYPE
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        validator = IfcTesterIdsValidator()
+        issues = validator._map_results(
+            {
+                "specifications": [
+                    {
+                        "name": "Drift",
+                        "status": "false",
+                        "requirements": [],
+                    }
+                ]
+            }
+        )
+        self.assertGreater(len(issues), 0)
+        self.assertTrue(any(issue.rule_id == RULE_STATUS_TYPE for issue in issues))
+        self.assertTrue(all(issue.severity is Severity.ERROR for issue in issues))
+
+    def test_string_true_empty_spec_is_not_a_pass(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        validator = IfcTesterIdsValidator()
+        issues = validator._map_results(
+            {
+                "specifications": [
+                    {
+                        "name": "LooksPassed",
+                        "status": "true",
+                        "requirements": [],
+                    }
+                ]
+            }
+        )
+        self.assertGreater(len(issues), 0)
+
+    def test_bool_false_empty_spec_is_not_a_pass(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        validator = IfcTesterIdsValidator()
+        issues = validator._map_results(
+            {
+                "specifications": [
+                    {
+                        "name": "FailedEmpty",
+                        "status": False,
+                        "cardinality": "required",
+                        "requirements": [],
+                    }
+                ]
+            }
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertIn("no requirement findings", issues[0].message)
+
     def test_map_results_missing_requirement_status_is_failure(self) -> None:
         from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 
