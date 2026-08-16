@@ -148,7 +148,12 @@ def _load_pack_manifest(path: Path) -> Path:
     return resolved
 
 
-def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
+def run_vertical_slice(
+    manifest: Path,
+    output_dir: Path,
+    *,
+    cv_sidecar: bool = True,
+) -> dict[str, Any]:
     pack_path = _load_pack_manifest(manifest)
     pack = load_benchmark_pack(pack_path)
     request = pack.request
@@ -232,39 +237,46 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
 
     overlay_meta: dict[str, Any] | None = None
     overlay_error: str | None = None
-    pdf_for_overlay: Path | None = None
-    for entry in input_entries:
-        path_str = str(entry.get("path") or "")
-        if path_str.endswith(".pdf"):
-            candidate = root / path_str
-            if candidate.is_file():
-                pdf_for_overlay = candidate
-                break
-    overlay_zone = next(
-        (ann.problem_zone for ann in report.drawing_annotations if ann.problem_zone is not None),
-        None,
-    )
-    if pdf_for_overlay is not None and overlay_zone is not None:
-        try:
-            from aerobim.tools.render_drawing_overlay_evidence import render_overlay
-
-            overlay_meta = render_overlay(
-                pdf_path=pdf_for_overlay,
-                out_png=output_dir / "overlay-problem-zone.png",
-                zone={
-                    "x": float(overlay_zone.x or 0.0),
-                    "y": float(overlay_zone.y or 0.0),
-                    "width": float(overlay_zone.width or 0.0),
-                    "height": float(overlay_zone.height or 0.0),
-                },
-                page_number=int(overlay_zone.page_number or 1),
-            )
-        except ImportError as exc:
-            overlay_error = f"overlay renderer unavailable: {exc}"
-    elif pdf_for_overlay is None:
-        overlay_error = "no PDF input for overlay"
+    if not cv_sidecar:
+        overlay_error = "cv_sidecar_disabled"
     else:
-        overlay_error = "no drawing annotation with problem_zone"
+        pdf_for_overlay: Path | None = None
+        for entry in input_entries:
+            path_str = str(entry.get("path") or "")
+            if path_str.endswith(".pdf"):
+                candidate = root / path_str
+                if candidate.is_file():
+                    pdf_for_overlay = candidate
+                    break
+        overlay_zone = next(
+            (
+                ann.problem_zone
+                for ann in report.drawing_annotations
+                if ann.problem_zone is not None
+            ),
+            None,
+        )
+        if pdf_for_overlay is not None and overlay_zone is not None:
+            try:
+                from aerobim.tools.render_drawing_overlay_evidence import render_overlay
+
+                overlay_meta = render_overlay(
+                    pdf_path=pdf_for_overlay,
+                    out_png=output_dir / "overlay-problem-zone.png",
+                    zone={
+                        "x": float(overlay_zone.x or 0.0),
+                        "y": float(overlay_zone.y or 0.0),
+                        "width": float(overlay_zone.width or 0.0),
+                        "height": float(overlay_zone.height or 0.0),
+                    },
+                    page_number=int(overlay_zone.page_number or 1),
+                )
+            except ImportError as exc:
+                overlay_error = f"overlay renderer unavailable: {exc}"
+        elif pdf_for_overlay is None:
+            overlay_error = "no PDF input for overlay"
+        else:
+            overlay_error = "no drawing annotation with problem_zone"
 
     git_sha = _git_sha(root)
     git_dirty = _git_dirty(root)
@@ -326,307 +338,328 @@ def run_vertical_slice(manifest: Path, output_dir: Path) -> dict[str, Any]:
     bcf_path = output_dir / "findings.bcfzip"
     bcf_path.write_bytes(export_bcf(report))
 
-    # Evidence envelope: deterministic provenance per extracted drawing annotation.
-    # P0: text-layer vs OCR flags — this demo PDF uses pdfminer text layer (not OCR).
-    ocr_used = False
-    text_layer_available = True
-    for annotation in report.drawing_annotations:
-        if annotation.source and "ocr" in annotation.source.lower():
-            ocr_used = True
-            text_layer_available = False
+    if cv_sidecar:
+        # Evidence envelope: deterministic provenance per extracted drawing annotation.
+        # P0: text-layer vs OCR flags — this demo PDF uses pdfminer text layer (not OCR).
+        ocr_used = False
+        text_layer_available = True
+        for annotation in report.drawing_annotations:
+            if annotation.source and "ocr" in annotation.source.lower():
+                ocr_used = True
+                text_layer_available = False
+                break
+
+        evidence_records: list[dict[str, Any]] = []
+        for annotation in report.drawing_annotations:
+            pz = annotation.problem_zone
+            source_path = next(
+                (
+                    str(e["path"])
+                    for e in input_entries
+                    if e.get("sheet_id") == annotation.sheet_id and "sha256" in e
+                ),
+                None,
+            )
+            input_sha = next(
+                (
+                    e.get("sha256")
+                    for e in input_entries
+                    if e.get("sheet_id") == annotation.sheet_id and "sha256" in e
+                ),
+                None,
+            )
+            method = (
+                "ocr" if annotation.source and "ocr" in annotation.source.lower() else "pdf_text_layer"
+            )
+            record = {
+                "annotation_id": annotation.annotation_id,
+                "method": method,
+                "method_version": "raster-drawing-analyzer@1",
+                "claim": (
+                    "OCR extraction, not engineering understanding"
+                    if method == "ocr"
+                    else "PDF text-layer extraction, not trained CV"
+                ),
+                "source_path": source_path,
+                "source_sha256": input_sha,
+                "page": pz.page_number if pz else None,
+                "region_bbox": [pz.x, pz.y, pz.width, pz.height] if pz else None,
+                "extracted_value": annotation.observed_value,
+                "normalized_value": annotation.observed_value,
+                "unit": annotation.unit,
+                "target_ref": annotation.target_ref,
+                "measure_name": annotation.measure_name,
+                "sheet_id": annotation.sheet_id,
+                "quality_flags": {
+                    "heuristic_baseline": True,
+                    "cv_verified": False,
+                    "ocr_used": method == "ocr",
+                    "text_layer_available": method == "pdf_text_layer",
+                    "low_confidence": False,
+                    "requires_expert": False,
+                },
+                "evidence_hash": hashlib.sha256(
+                    json.dumps(
+                        {
+                            "source_sha256": input_sha,
+                            "annotation_id": annotation.annotation_id,
+                            "value": annotation.observed_value,
+                            "method": method,
+                        },
+                        sort_keys=True,
+                    ).encode("utf-8")
+                ).hexdigest(),
+            }
+            evidence_records.append(record)
+
+        # P1.1: heuristic layout regions (stamp/title/spec/dim) — HEURISTIC_BASELINE.
+        detector = HeuristicLayoutRegionDetector()
+        layout_regions: list[dict[str, Any]] = []
+        for entry in input_entries:
+            if entry.get("format") != "pdf" and not str(entry.get("path", "")).endswith(".pdf"):
+                continue
+            pdf_path = root / str(entry["path"])
+            if not pdf_path.is_file():
+                continue
+            for region in detector.detect(pdf_path, sheet_id=str(entry.get("sheet_id") or "A-101")):
+                layout_regions.append(asdict(region))
+
+        # P3 scaffold: annotation → IFC candidate links (claimed GUID only; no invention).
+        ifc_links = [
+            link_annotation_to_ifc_target(ann, requirements=report.requirements).as_dict()
+            for ann in report.drawing_annotations
+        ]
+
+        # P0 honesty: zero annotations on a raster/PDF request → not "no errors".
+        raster_zero_yield = len(report.drawing_annotations) == 0 and any(
+            str(e.get("path", "")).endswith((".pdf", ".png", ".jpg", ".jpeg", ".webp"))
+            for e in input_entries
+        )
+        empty_ocr_status = (
+            {
+                "status": "INSUFFICIENT_DATA",
+                "operator_status": "insufficient_data",
+                "note": (
+                    "Zero drawing annotations from PDF/raster path — fail-closed "
+                    "(capabilities.raster FAILED); never treat as CHECKED_OK / no findings"
+                ),
+            }
+            if raster_zero_yield
+            else {
+                "status": "CHECKED_WITH_EXTRACTION",
+                "operator_status": "findings_or_annotations_present",
+                "note": "At least one drawing annotation extracted",
+            }
+        )
+
+        # --- P1.2 region metrics vs fixture labels (honest IoU@50, not product mAP) ---
+        region_score: dict[str, Any] | None = None
+        labels_path = root / "samples/demo/vertical-slice-2026-08-11/region_labels.json"
+        if labels_path.is_file() and layout_regions:
+            preds = labels_from_dicts(
+                [
+                    {
+                        "sheet_id": str(r.get("sheet_id") or ""),
+                        "layout_role": str(r.get("layout_role") or ""),
+                        "bbox_xyxy": list(r.get("bbox_xyxy") or ()),
+                    }
+                    for r in layout_regions
+                ]
+            )
+            label_payload = json.loads(labels_path.read_text(encoding="utf-8"))
+            labels = labels_from_dicts(list(label_payload.get("regions") or []))
+            region_score = score_region_detections(preds, labels, iou_threshold=0.5).as_dict()
+
+        # --- P2 vector primitives + symbol candidates (NOT verified counts) ---
+        vector_extract: dict[str, Any] | None = None
+        symbol_candidates: list[dict[str, Any]] = []
+        for entry in input_entries:
+            path_str = str(entry.get("path") or "")
+            if not path_str.endswith(".pdf"):
+                continue
+            pdf_path = root / path_str
+            if not pdf_path.is_file():
+                continue
+            extraction = extract_pdf_vector_primitives(pdf_path)
+            vector_extract = extraction.as_dict()
+            symbol_candidates = [
+                c.as_dict() for c in propose_symbol_candidates_from_vectors(extraction)
+            ]
             break
 
-    evidence_records: list[dict[str, Any]] = []
-    for annotation in report.drawing_annotations:
-        pz = annotation.problem_zone
-        source_path = next(
-            (
-                str(e["path"])
-                for e in input_entries
-                if e.get("sheet_id") == annotation.sheet_id and "sha256" in e
-            ),
-            None,
-        )
-        input_sha = next(
-            (
-                e.get("sha256")
-                for e in input_entries
-                if e.get("sheet_id") == annotation.sheet_id and "sha256" in e
-            ),
-            None,
-        )
-        method = (
-            "ocr" if annotation.source and "ocr" in annotation.source.lower() else "pdf_text_layer"
-        )
-        record = {
-            "annotation_id": annotation.annotation_id,
-            "method": method,
-            "method_version": "raster-drawing-analyzer@1",
-            "claim": (
-                "OCR extraction, not engineering understanding"
-                if method == "ocr"
-                else "PDF text-layer extraction, not trained CV"
-            ),
-            "source_path": source_path,
-            "source_sha256": input_sha,
-            "page": pz.page_number if pz else None,
-            "region_bbox": [pz.x, pz.y, pz.width, pz.height] if pz else None,
-            "extracted_value": annotation.observed_value,
-            "normalized_value": annotation.observed_value,
-            "unit": annotation.unit,
-            "target_ref": annotation.target_ref,
-            "measure_name": annotation.measure_name,
-            "sheet_id": annotation.sheet_id,
-            "quality_flags": {
-                "heuristic_baseline": True,
-                "cv_verified": False,
-                "ocr_used": method == "ocr",
-                "text_layer_available": method == "pdf_text_layer",
-                "low_confidence": False,
-                "requires_expert": False,
-            },
-            "evidence_hash": hashlib.sha256(
-                json.dumps(
-                    {
-                        "source_sha256": input_sha,
-                        "annotation_id": annotation.annotation_id,
-                        "value": annotation.observed_value,
-                        "method": method,
-                    },
-                    sort_keys=True,
-                ).encode("utf-8")
-            ).hexdigest(),
-        }
-        evidence_records.append(record)
+        # --- P3 geometric tolerance confirm (optional bbox_for; demo with fake index) ---
+        class _GeoIndex:
+            def __init__(
+                self, guids: set[str], boxes: dict[str, tuple[float, float, float, float]]
+            ) -> None:
+                self._guids = guids
+                self._boxes = boxes
 
-    # P1.1: heuristic layout regions (stamp/title/spec/dim) — HEURISTIC_BASELINE.
-    detector = HeuristicLayoutRegionDetector()
-    layout_regions: list[dict[str, Any]] = []
-    for entry in input_entries:
-        if entry.get("format") != "pdf" and not str(entry.get("path", "")).endswith(".pdf"):
-            continue
-        pdf_path = root / str(entry["path"])
-        if not pdf_path.is_file():
-            continue
-        for region in detector.detect(pdf_path, sheet_id=str(entry.get("sheet_id") or "A-101")):
-            layout_regions.append(asdict(region))
+            def lookup(self, global_id: str) -> object | None:
+                return object() if global_id in self._guids else None
 
-    # P3 scaffold: annotation → IFC candidate links (claimed GUID only; no invention).
-    ifc_links = [
-        link_annotation_to_ifc_target(ann, requirements=report.requirements).as_dict()
-        for ann in report.drawing_annotations
-    ]
+            def bbox_xyxy_for(self, global_id: str) -> tuple[float, float, float, float] | None:
+                return self._boxes.get(global_id)
 
-    # P0 honesty: zero annotations on a raster/PDF request → not "no errors".
-    raster_zero_yield = len(report.drawing_annotations) == 0 and any(
-        str(e.get("path", "")).endswith((".pdf", ".png", ".jpg", ".jpeg", ".webp"))
-        for e in input_entries
-    )
-    empty_ocr_status = (
-        {
-            "status": "INSUFFICIENT_DATA",
-            "operator_status": "insufficient_data",
-            "note": (
-                "Zero drawing annotations from PDF/raster path — fail-closed "
-                "(capabilities.raster FAILED); never treat as CHECKED_OK / no findings"
-            ),
-        }
-        if raster_zero_yield
-        else {
-            "status": "CHECKED_WITH_EXTRACTION",
-            "operator_status": "findings_or_annotations_present",
-            "note": "At least one drawing annotation extracted",
-        }
-    )
+        geo_confirm_demo: dict[str, Any] | None = None
+        if report.drawing_annotations:
+            ann0 = report.drawing_annotations[0]
+            claimed = None
+            if ann0.problem_zone and ann0.problem_zone.element_guid:
+                claimed = ann0.problem_zone.element_guid.strip()
+            # Demo: when no claimed GUID, show geo gate machinery on synthetic claim.
+            demo_guid = claimed or "DEMO-GUID-GEO-TOLERANCE"
+            link = link_annotation_to_ifc_target(ann0, requirements=report.requirements)
+            if claimed is None:
+                from dataclasses import replace as _replace
 
-    # --- P1.2 region metrics vs fixture labels (honest IoU@50, not product mAP) ---
-    region_score: dict[str, Any] | None = None
-    labels_path = root / "samples/demo/vertical-slice-2026-08-11/region_labels.json"
-    if labels_path.is_file() and layout_regions:
-        preds = labels_from_dicts(
-            [
-                {
-                    "sheet_id": str(r.get("sheet_id") or ""),
-                    "layout_role": str(r.get("layout_role") or ""),
-                    "bbox_xyxy": list(r.get("bbox_xyxy") or ()),
-                }
-                for r in layout_regions
-            ]
-        )
-        label_payload = json.loads(labels_path.read_text(encoding="utf-8"))
-        labels = labels_from_dicts(list(label_payload.get("regions") or []))
-        region_score = score_region_detections(preds, labels, iou_threshold=0.5).as_dict()
-
-    # --- P2 vector primitives + symbol candidates (NOT verified counts) ---
-    vector_extract: dict[str, Any] | None = None
-    symbol_candidates: list[dict[str, Any]] = []
-    for entry in input_entries:
-        path_str = str(entry.get("path") or "")
-        if not path_str.endswith(".pdf"):
-            continue
-        pdf_path = root / path_str
-        if not pdf_path.is_file():
-            continue
-        extraction = extract_pdf_vector_primitives(pdf_path)
-        vector_extract = extraction.as_dict()
-        symbol_candidates = [
-            c.as_dict() for c in propose_symbol_candidates_from_vectors(extraction)
-        ]
-        break
-
-    # --- P3 geometric tolerance confirm (optional bbox_for; demo with fake index) ---
-    class _GeoIndex:
-        def __init__(
-            self, guids: set[str], boxes: dict[str, tuple[float, float, float, float]]
-        ) -> None:
-            self._guids = guids
-            self._boxes = boxes
-
-        def lookup(self, global_id: str) -> object | None:
-            return object() if global_id in self._guids else None
-
-        def bbox_xyxy_for(self, global_id: str) -> tuple[float, float, float, float] | None:
-            return self._boxes.get(global_id)
-
-    geo_confirm_demo: dict[str, Any] | None = None
-    if report.drawing_annotations:
-        ann0 = report.drawing_annotations[0]
-        claimed = None
-        if ann0.problem_zone and ann0.problem_zone.element_guid:
-            claimed = ann0.problem_zone.element_guid.strip()
-        # Demo: when no claimed GUID, show geo gate machinery on synthetic claim.
-        demo_guid = claimed or "DEMO-GUID-GEO-TOLERANCE"
-        link = link_annotation_to_ifc_target(ann0, requirements=report.requirements)
-        if claimed is None:
-            from dataclasses import replace as _replace
-
-            link = _replace(
-                link,
-                evidence_ref=f"claimed_guid:{demo_guid}#{ann0.target_ref}",
-            )
-        ann_bbox = (
-            (
-                float(ann0.problem_zone.x or 0.0),
-                float(ann0.problem_zone.y or 0.0),
-                float((ann0.problem_zone.x or 0.0) + (ann0.problem_zone.width or 0.0)),
-                float((ann0.problem_zone.y or 0.0) + (ann0.problem_zone.height or 0.0)),
-            )
-            if ann0.problem_zone
-            else None
-        )
-        # Matching box → geo_ok; then mismatch → geo_mismatch (prove gate works).
-        ok_index = _GeoIndex({demo_guid}, {demo_guid: ann_bbox} if ann_bbox else {})
-        bad_index = _GeoIndex(
-            {demo_guid},
-            {demo_guid: (0.0, 0.0, 1.0, 1.0)},
-        )
-        ok_link = confirm_link_against_spatial_index(
-            link, ok_index, annotation_bbox=ann_bbox, iou_tolerance=0.25
-        )
-        bad_link = confirm_link_against_spatial_index(
-            link, bad_index, annotation_bbox=ann_bbox, iou_tolerance=0.25
-        )
-        geo_confirm_demo = {
-            "iou_tolerance": 0.25,
-            "match_ok_guid_set": ok_link.ifc_guid is not None,
-            "match_ok_evidence": ok_link.evidence_ref,
-            "mismatch_clears_guid": bad_link.ifc_guid is None,
-            "mismatch_evidence": bad_link.evidence_ref,
-            "claim": "geometric tolerance gate; never invents GUIDs",
-        }
-
-    # --- P4 structured advisory candidate (schema-validated; never touches passed) ---
-    passed_before_advisory = report.summary.passed
-    advisory_candidate = {
-        "sheet_id": "A-101",
-        "region_id": "content-crop-demo",
-        "readable": True,
-        "unreadable_reason": None,
-        "observations": [
-            {
-                "kind": "candidate_class",
-                "raw_value": "WALL-01 thickness 150 mm",
-                "normalized_value": None,
-                "unit": "mm",
-                "ifc_target_hint": "WALL-01",
-                "bbox_rel": [0.1, 0.1, 0.4, 0.2],
-                "confidence": 0.55,
-                "evidence_note": "structured advisory candidate on cropped region only",
-            }
-        ],
-    }
-    schema_check = validate_observations_response(advisory_candidate)
-    passed_after_advisory = report.summary.passed
-    advisory_guard = {
-        "schema_conformant": schema_check.conformant,
-        "schema_violations": list(schema_check.violations),
-        "summary_passed_before": passed_before_advisory,
-        "summary_passed_after": passed_after_advisory,
-        "passed_unchanged": passed_before_advisory == passed_after_advisory,
-        "crop_only": True,
-        "whole_sheet_forbidden": True,
-        "schema_kinds_include_candidate_class": "candidate_class"
-        in str(OBSERVATIONS_RESPONSE_SCHEMA),
-        "claim": "VLM advisory structured candidate; never changes summary.passed",
-    }
-
-    # CV phase status (roadmap P0–P4) — honest progress, not product claims.
-    cv_phases = {
-        "P0_ocr_raster": {
-            "status": "baseline_ready",
-            "claim": "OCR extraction, not engineering understanding",
-            "ocr_used": ocr_used,
-            "text_layer_available": text_layer_available,
-            "empty_yield_policy": "INSUFFICIENT_DATA + raster FAILED (not silent pass)",
-        },
-        "P1_region_detector": {
-            "status": "metrics_harness_ready" if region_score else "heuristic_baseline",
-            "claim": "region detection: heuristic baseline, not trained CV",
-            "roles": sorted(
-                {
-                    str(r.get("layout_role"))
-                    for r in layout_regions
-                    if isinstance(r.get("layout_role"), str)
-                }
-            ),
-            "region_count": len(layout_regions),
-            "hitl_required_count": sum(1 for r in layout_regions if r.get("hitl_required")),
-            "iou50_score": region_score,
-        },
-        "P2_symbol_spotting": {
-            "status": "vector_baseline_candidates",
-            "claim": (
-                "vector extraction + symbol candidates; counts NOT_CHECKED as verified findings"
-            ),
-            "vector": (
-                {
-                    "page_count": vector_extract.get("page_count"),
-                    "primitive_counts": vector_extract.get("primitive_counts"),
-                    "method": vector_extract.get("method"),
-                }
-                if vector_extract
+                link = _replace(
+                    link,
+                    evidence_ref=f"claimed_guid:{demo_guid}#{ann0.target_ref}",
+                )
+            ann_bbox = (
+                (
+                    float(ann0.problem_zone.x or 0.0),
+                    float(ann0.problem_zone.y or 0.0),
+                    float((ann0.problem_zone.x or 0.0) + (ann0.problem_zone.width or 0.0)),
+                    float((ann0.problem_zone.y or 0.0) + (ann0.problem_zone.height or 0.0)),
+                )
+                if ann0.problem_zone
                 else None
-            ),
-            "symbol_candidate_count": len(symbol_candidates),
-            "symbol_candidates_sample": symbol_candidates[:5],
-            "note": "requires labeled corpus before any precision claim",
-        },
-        "P3_ifc_mapping": {
-            "status": "geo_tolerance_ready",
-            "claim": "annotation-IFC candidate + optional IoU tolerance confirm",
-            "link_count": len(ifc_links),
-            "confirmed_guid_count": sum(1 for link in ifc_links if link.get("ifc_guid")),
-            "geo_confirm_demo": geo_confirm_demo,
-        },
-        "P4_vlm_advisory": {
-            "status": "structured_candidate_ready",
-            "claim": "VLM advisory never changes summary.passed (ADR-001)",
-            "summary_passed_source": "deterministic_engine_only",
-            "observed_summary_passed": report.summary.passed,
-            "advisory_guard": advisory_guard,
-            "advisory_candidate": advisory_candidate,
-        },
-    }
+            )
+            # Matching box → geo_ok; then mismatch → geo_mismatch (prove gate works).
+            ok_index = _GeoIndex({demo_guid}, {demo_guid: ann_bbox} if ann_bbox else {})
+            bad_index = _GeoIndex(
+                {demo_guid},
+                {demo_guid: (0.0, 0.0, 1.0, 1.0)},
+            )
+            ok_link = confirm_link_against_spatial_index(
+                link, ok_index, annotation_bbox=ann_bbox, iou_tolerance=0.25
+            )
+            bad_link = confirm_link_against_spatial_index(
+                link, bad_index, annotation_bbox=ann_bbox, iou_tolerance=0.25
+            )
+            geo_confirm_demo = {
+                "iou_tolerance": 0.25,
+                "match_ok_guid_set": ok_link.ifc_guid is not None,
+                "match_ok_evidence": ok_link.evidence_ref,
+                "mismatch_clears_guid": bad_link.ifc_guid is None,
+                "mismatch_evidence": bad_link.evidence_ref,
+                "claim": "geometric tolerance gate; never invents GUIDs",
+            }
+
+        # --- P4 structured advisory candidate (schema-validated; never touches passed) ---
+        passed_before_advisory = report.summary.passed
+        advisory_candidate = {
+            "sheet_id": "A-101",
+            "region_id": "content-crop-demo",
+            "readable": True,
+            "unreadable_reason": None,
+            "observations": [
+                {
+                    "kind": "candidate_class",
+                    "raw_value": "WALL-01 thickness 150 mm",
+                    "normalized_value": None,
+                    "unit": "mm",
+                    "ifc_target_hint": "WALL-01",
+                    "bbox_rel": [0.1, 0.1, 0.4, 0.2],
+                    "confidence": 0.55,
+                    "evidence_note": "structured advisory candidate on cropped region only",
+                }
+            ],
+        }
+        schema_check = validate_observations_response(advisory_candidate)
+        passed_after_advisory = report.summary.passed
+        advisory_guard = {
+            "schema_conformant": schema_check.conformant,
+            "schema_violations": list(schema_check.violations),
+            "summary_passed_before": passed_before_advisory,
+            "summary_passed_after": passed_after_advisory,
+            "passed_unchanged": passed_before_advisory == passed_after_advisory,
+            "crop_only": True,
+            "whole_sheet_forbidden": True,
+            "schema_kinds_include_candidate_class": "candidate_class"
+            in str(OBSERVATIONS_RESPONSE_SCHEMA),
+            "claim": "VLM advisory structured candidate; never changes summary.passed",
+        }
+
+        # CV phase status (roadmap P0–P4) — honest progress, not product claims.
+        cv_phases = {
+            "P0_ocr_raster": {
+                "status": "baseline_ready",
+                "claim": "OCR extraction, not engineering understanding",
+                "ocr_used": ocr_used,
+                "text_layer_available": text_layer_available,
+                "empty_yield_policy": "INSUFFICIENT_DATA + raster FAILED (not silent pass)",
+            },
+            "P1_region_detector": {
+                "status": "metrics_harness_ready" if region_score else "heuristic_baseline",
+                "claim": "region detection: heuristic baseline, not trained CV",
+                "roles": sorted(
+                    {
+                        str(r.get("layout_role"))
+                        for r in layout_regions
+                        if isinstance(r.get("layout_role"), str)
+                    }
+                ),
+                "region_count": len(layout_regions),
+                "hitl_required_count": sum(1 for r in layout_regions if r.get("hitl_required")),
+                "iou50_score": region_score,
+            },
+            "P2_symbol_spotting": {
+                "status": "vector_baseline_candidates",
+                "claim": (
+                    "vector extraction + symbol candidates; counts NOT_CHECKED as verified findings"
+                ),
+                "vector": (
+                    {
+                        "page_count": vector_extract.get("page_count"),
+                        "primitive_counts": vector_extract.get("primitive_counts"),
+                        "method": vector_extract.get("method"),
+                    }
+                    if vector_extract
+                    else None
+                ),
+                "symbol_candidate_count": len(symbol_candidates),
+                "symbol_candidates_sample": symbol_candidates[:5],
+                "note": "requires labeled corpus before any precision claim",
+            },
+            "P3_ifc_mapping": {
+                "status": "geo_tolerance_ready",
+                "claim": "annotation-IFC candidate + optional IoU tolerance confirm",
+                "link_count": len(ifc_links),
+                "confirmed_guid_count": sum(1 for link in ifc_links if link.get("ifc_guid")),
+                "geo_confirm_demo": geo_confirm_demo,
+            },
+            "P4_vlm_advisory": {
+                "status": "structured_candidate_ready",
+                "claim": "VLM advisory never changes summary.passed (ADR-001)",
+                "summary_passed_source": "deterministic_engine_only",
+                "observed_summary_passed": report.summary.passed,
+                "advisory_guard": advisory_guard,
+                "advisory_candidate": advisory_candidate,
+            },
+        }
+    else:
+        evidence_records = []
+        layout_regions = []
+        ifc_links = []
+        region_score = None
+        vector_extract = None
+        symbol_candidates = []
+        geo_confirm_demo = None
+        ocr_used = False
+        text_layer_available = True
+        empty_ocr_status = {
+            "status": "NOT_RUN",
+            "operator_status": "cv_sidecar_disabled",
+            "note": "Acceptance Gate path; overlay/CV is P1",
+        }
+        cv_phases = {
+            "disabled": True,
+            "claim": "overlay/CV sidecar is P1; never writes summary.passed",
+        }
+
 
     # Honest sidecar: explicit limitations and reproduction steps for the demo.
     limitations = {

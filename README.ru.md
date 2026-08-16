@@ -13,13 +13,13 @@
 
 | Корзина | Что |
 | --- | --- |
-| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice`. IDS МОГЭ → IfcTester. Предупреждение: ГОСТ Р 21.101-2020 заменён 2026. Обменный контур ЦИМ АГР класса 1 (не полный профиль). |
+| **Работает (fixture)** | **Продуктовый путь:** `python -m aerobim.tools.run_demo_ifc_acceptance_gate` — IFC+IDS → `acceptance-gate.json` + HTML/JSON/BCF. Overlay PDF — P1: `run_demo_vertical_slice`. IDS МОГЭ → IfcTester. Предупреждение: ГОСТ Р 21.101-2020 заменён 2026. Обменный контур ЦИМ АГР класса 1 (не полный профиль). |
 | **Подтверждено внешне** | [IDS Мособлгосэкспертизы](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/) · AEC-Bench 196 задач ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199); Harbor NOT_RUN; gold `null_always_clean` 134/184 FP) |
 | **Экспериментально** | VLM advisory; штамп с листа в облако не уходит (PII). Qwen — живой roundtrip на fixture; Kimi на Studio закрыт гейтом. Стресс 15 IFC в репо; GNI **224** header / **223** IfcOpenShell (1 oversize) |
 | **Честный дефицит** | Корпус заказчика / «ПД РФ + заключение экспертизы»; подписанный профиль приёмки Самолёта; clash federated MEP (инвентарь duplex/mep есть) |
 | **Не утверждаем** | Not claimed: >90%, DWG-ready, MEP delivered, CDE-ready BCF, Tangl/10D integration. Native DWG = **FAILED** |
 
-Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC — IfcOpenShell, не Renga и не Самолёт. Образец издателя ПНСТ 909: `python -m aerobim.tools.run_renga_export_probe`. OSINT 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+Tangl проверяет **модель**; AeroBIM — **комплект**. Не заменяем 10D, Renga, CDE или эксперта: **IFC Acceptance Gate**. Клин: [`docs/partners/_2026_08_16.md`](docs/partners/_2026_08_16.md). Демо-IFC — IfcOpenShell, не Renga и не Самолёт. Образец издателя ПНСТ 909: `python -m aerobim.tools.run_renga_export_probe`. OSINT 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 Видео 3 мин: [`docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) — запись **19.08**, человек.  
 Трекер 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md)
@@ -160,6 +160,11 @@ pip install -e ".[dev,raster]"
 # pip install -e ".[enterprise]"
 # pip install -e ".[pdf-agpl]"  # только legacy PyMuPDF; оверлей демо = pypdfium2
 
+# Продуктовый путь: IFC Acceptance Gate
+python -m aerobim.tools.run_demo_ifc_acceptance_gate
+# artifacts/ifc-acceptance-gate-demo/report.html + acceptance-gate.json
+
+# P1 overlay (видео КТ#2 пока на этой команде)
 python -m aerobim.tools.run_demo_vertical_slice
 # Открыть artifacts/vertical-slice-demo/report.html — фрагмент, оверлей, текст,
 # finding_id/source_id/evidence_refs, таблица capabilities, run-manifest.json, BCF ZIP.

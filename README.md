@@ -13,19 +13,19 @@
 
 | Корзина | Что |
 | --- | --- |
-| **Работает (fixture)** | `python -m aerobim.tools.run_demo_vertical_slice` — PDF text-layer → finding + overlay PNG + HTML/JSON + BCF ZIP. IFC2x3/4/4x3 kernel matrix. Official MOEXP IDS → IfcTester coverage. Stale-norm warning (21.101-2020→2026). AGR exchange-shape fixture (not full moscow_agr). |
+| **Работает (fixture)** | **Product path:** `python -m aerobim.tools.run_demo_ifc_acceptance_gate` — IFC+IDS → `acceptance-gate.json` + HTML/JSON/BCF (`summary.passed=false`). Overlay PDF is P1: `run_demo_vertical_slice`. IFC2x3/4/4x3 kernel. Official MOEXP IDS → IfcTester. Stale-norm warning (21.101-2020→2026). AGR exchange-shape fixture (not full moscow_agr). |
 | **Подтверждено внешне** | IDS Мособлгосэкспертизы ([TIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/)) + AEC-Bench inventory 196 ([arXiv:2603.29199](https://arxiv.org/abs/2603.29199)). Цифры покрытия IDS — только после прогона, см. evidence. |
 | **Экспериментально** | VLM advisory (штамп с листа **не отправляем** — PII). Qwen live roundtrip на title/spec fixture; Kimi на Studio закрыт гейтом. Не точность продукта. Open IFC: fixtures 15/15; GNI **224** header / **223** IfcOpenShell (1 oversize skip). Student models, not product accuracy. |
 | **Заблокировано не молчанием заказчика** | Корпус «ПД РФ + заключение экспертизы» публично не существует. Профиль приёмки Самолёта не подписан. Federated MEP clash на публичных IFC **NOT_VERIFIED** (инвентарь duplex/mep измерен). |
 | **Не утверждаем** | Not claimed: accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, calculation check, Tangl/10D integration. Native DWG = **FAILED**. |
 
-Tangl проверяет **модель**; AeroBIM — **комплект**. Демо-IFC в репо — IfcOpenShell fixture, не выгрузка Renga и не Самолёт. Публичный образец издателя (ПНСТ 909, Renga 8.7) измеряется отдельно: `python -m aerobim.tools.run_renga_export_probe` (бинарник gitignored). OSINT + вектор 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+Tangl проверяет **модель**; AeroBIM — **комплект**. Не заменяем 10D, Renga, CDE или эксперта: **IFC Acceptance Gate** поверх существующего контура. Клин: [`docs/partners/_2026_08_16.md`](docs/partners/_2026_08_16.md). Демо-IFC в репо — IfcOpenShell fixture, не выгрузка Renga и не Самолёт. Публичный образец издателя (ПНСТ 909, Renga 8.7) измеряется отдельно: `python -m aerobim.tools.run_renga_export_probe` (бинарник gitignored). OSINT + вектор 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 Видео 3 мин: [`docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) — запись **19.08**, человек.  
 Встреча трекера 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) · follow-up [`docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md).  
 Запрос Самолёту: [`docs/partners/_08_15.md`](docs/partners/_08_15.md).
 
-Open-source **acceptance-criteria assistant** for openBIM packages (IFC + IDS + cross-document evidence): helps an expert catch package contradictions **before** site work.
+Open-source **IFC Acceptance Gate** for openBIM packages: IFC + IDS/requirements → evidence-backed findings → HTML/JSON/BCF. Helps an expert catch package defects **before** coordination/expertise. Not a CDE, not a viewer, not an expert replacement.
 
 ## Problem (concrete example)
 
@@ -193,7 +193,12 @@ source .venv/bin/activate  # Linux/macOS
 # Install (core PDF = pypdfium2; overlay PNG does not need PyMuPDF)
 pip install -e ".[dev,raster]"
 
-# KT#2 vertical slice (~10 min from clone): fail-loud; writes artifacts/vertical-slice-demo/
+# Product path: IFC Acceptance Gate (fixture; no overlay required)
+python -m aerobim.tools.run_demo_ifc_acceptance_gate
+# Open artifacts/ifc-acceptance-gate-demo/report.html and acceptance-gate.json
+# summary.passed=false. Checkpoint NO_GO. Not customer accuracy.
+
+# P1 overlay modality (KT#2 video still uses this command)
 python -m aerobim.tools.run_demo_vertical_slice
 # Open artifacts/vertical-slice-demo/report.html — fragment, overlay, text evidence,
 # finding_id/source_id/evidence_refs, capability table, run-manifest.json, BCF ZIP.

@@ -16,6 +16,7 @@ class ToolCatalogTests(unittest.TestCase):
         groups = catalog()
         self.assertIn("validate_dwg_toolchain", groups["core"])
         self.assertIn("run_demo_vertical_slice", groups["core"])
+        self.assertIn("run_demo_ifc_acceptance_gate", groups["core"])
         self.assertIn("run_demo_path", groups["sprint_archive"])
         self.assertIn("run_sprint2_synthetic_baseline", groups["sprint_archive"])
         self.assertTrue(groups["evaluate"])
@@ -24,7 +25,9 @@ class ToolCatalogTests(unittest.TestCase):
         self.assertLessEqual(len(active), 40)
         self.assertIn("validate_dwg_toolchain", active)
         self.assertIn("run_demo_vertical_slice", active)
+        self.assertIn("run_demo_ifc_acceptance_gate", active)
         self.assertNotIn("run_demo_path", active)
+        self.assertNotIn("export_sprint2_dataset_manifest", active)
 
     def test_output_json_writes_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
