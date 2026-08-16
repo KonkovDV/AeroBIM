@@ -159,10 +159,12 @@ def test_install_scripts_refuse_demo_token_without_flag(tmp_path: Path) -> None:
     sh = (tmp_path / "install_offline.sh").read_text(encoding="utf-8")
     ps1 = (tmp_path / "install_offline.ps1").read_text(encoding="utf-8")
     assert "AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN" in sh
+    assert "AEROBIM_ENV=development" in sh
     assert "network none" in sh
     assert "-p " not in sh
     assert "full closed-contour probe" in sh
     assert "AEROBIM_OFFLINE_ALLOW_DEMO_TOKEN" in ps1
+    assert "AEROBIM_ENV=development" in ps1
     assert "docker run" in ps1 and "-p " not in ps1.split("docker run", 1)[1]
     assert "full closed-contour probe" in ps1
 
