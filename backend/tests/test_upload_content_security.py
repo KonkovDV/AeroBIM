@@ -126,6 +126,92 @@ class UploadApiSecurityTests(unittest.TestCase):
             self.assertTrue(stored.is_file())
             self.assertFalse((Path(tmp) / "quarantine" / body["upload_id"] / "pilot.ifc").exists())
 
+    def test_rejected_uploads_release_reserved_quota(self) -> None:
+        """HD2-UP-01: 415/422 after reserve must not leak daily quota."""
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        from aerobim.core.security.upload_quota import FilesystemUploadQuotaStore
+
+        def _snap(root: Path) -> tuple[int, int, int]:
+            store = FilesystemUploadQuotaStore(root)
+            quota = store.snapshot("anonymous-dev")
+            holds = list((root / "quotas").glob("*/holds/*.json"))
+            return quota.bytes_used, quota.upload_count, len(holds)
+
+        def _settings(root: Path, **extra: object) -> Settings:
+            values: dict[str, object] = {
+                "application_name": "aerobim-test",
+                "environment": "test",
+                "host": "127.0.0.1",
+                "port": 8080,
+                "storage_dir": root,
+                "debug": True,
+                "max_upload_bytes": 1024,
+                "max_uploads_per_tenant_day": 8,
+                "max_upload_bytes_per_tenant_day": 50_000,
+                "allow_anonymous_dev": True,
+            }
+            values.update(extra)
+            return Settings(**values)  # type: ignore[arg-type]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            container = bootstrap_container(_settings(Path(tmp)))
+            client = TestClient(create_http_app(container))
+            mismatch = client.post(
+                "/v1/uploads",
+                files={"file": ("model.ifc", b"%PDF-1.7\n", "application/pdf")},
+            )
+            self.assertEqual(mismatch.status_code, 415, mismatch.text)
+            self.assertEqual(_snap(Path(tmp)), (0, 0, 0))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            container = bootstrap_container(_settings(Path(tmp), max_upload_bytes=16))
+            client = TestClient(create_http_app(container))
+            oversize = client.post(
+                "/v1/uploads",
+                files={"file": ("model.ifc", b"ISO-10303-21;EXTRA", "application/octet-stream")},
+            )
+            self.assertEqual(oversize.status_code, 413, oversize.text)
+            self.assertEqual(_snap(Path(tmp)), (0, 0, 0))
+
+        import io
+        import zipfile
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as archive:
+            for index in range(300):
+                archive.writestr(f"m{index}.txt", b"x")
+        with tempfile.TemporaryDirectory() as tmp:
+            container = bootstrap_container(
+                _settings(Path(tmp), max_upload_bytes=200_000, max_upload_bytes_per_tenant_day=1_000_000)
+            )
+            client = TestClient(create_http_app(container))
+            zipped = client.post(
+                "/v1/uploads",
+                files={"file": ("pack.zip", buf.getvalue(), "application/zip")},
+            )
+            self.assertEqual(zipped.status_code, 422, zipped.text)
+            self.assertEqual(_snap(Path(tmp)), (0, 0, 0))
+
+    def test_stream_413_handler_drops_quota(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "src"
+            / "aerobim"
+            / "presentation"
+            / "http"
+            / "routes"
+            / "uploads.py"
+        ).read_text(encoding="utf-8")
+        oversize_at = source.index("if total > max_bytes:")
+        handler = source[oversize_at:]
+        http_exc_at = handler.index("except HTTPException:")
+        drop_at = handler.index("_drop_quota()")
+        self.assertLess(http_exc_at, drop_at)
+
     def test_zip_bomb_members_rejected(self) -> None:
         try:
             from fastapi.testclient import TestClient

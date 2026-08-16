@@ -165,6 +165,32 @@ class VerifyReleaseEvidenceTests(unittest.TestCase):
             self.assertIsNone(err)
             self.assertEqual(day, "2026-08-16")
 
+    def test_cli_day_default_is_latest_not_today(self) -> None:
+        from aerobim.tools.verify_release_evidence import DEFAULT_RELEASE_EVIDENCE_DAY
+
+        self.assertEqual(DEFAULT_RELEASE_EVIDENCE_DAY, "latest")
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "src"
+            / "aerobim"
+            / "tools"
+            / "verify_release_evidence.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("default=DEFAULT_RELEASE_EVIDENCE_DAY", source)
+        self.assertNotRegex(source, r'add_argument\(\s*"--day"[^)]*default="20')
+
+    def test_none_or_empty_day_resolves_like_latest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            evidence = repo / "docs" / "evidence"
+            evidence.mkdir(parents=True)
+            (evidence / "release-status-2026-08-06.json").write_text("{}", encoding="utf-8")
+            (evidence / "release-status-2026-08-16.json").write_text("{}", encoding="utf-8")
+            for day_arg in (None, "", "latest"):
+                day, err = resolve_release_evidence_day(repo, day_arg)
+                self.assertIsNone(err, msg=repr(day_arg))
+                self.assertEqual(day, "2026-08-16", msg=repr(day_arg))
+
     def test_latest_fails_closed_when_no_dated_status(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)

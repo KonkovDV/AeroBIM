@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+DEFAULT_RELEASE_EVIDENCE_DAY = "latest"
 ALLOWED_SYNTHETIC_CLAIM_LEVELS = frozenset({"synthetic_only", "fixture_only"})
 FORBIDDEN_CUSTOMER_CLAIM_LEVELS = frozenset(
     {
@@ -36,7 +37,7 @@ def resolve_release_evidence_day(repo: Path, day: str | None) -> tuple[str | Non
     Missing dated artifacts fail closed — never silently reuse 2026-08-06.
     """
 
-    requested = (day or "latest").strip() or "latest"
+    requested = (day or DEFAULT_RELEASE_EVIDENCE_DAY).strip() or DEFAULT_RELEASE_EVIDENCE_DAY
     if requested != "latest":
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", requested):
             return None, f"invalid --day {requested!r}; expected YYYY-MM-DD or latest"
@@ -344,7 +345,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo", type=Path, default=None)
     parser.add_argument(
         "--day",
-        default="latest",
+        default=DEFAULT_RELEASE_EVIDENCE_DAY,
         help="Dated evidence day (YYYY-MM-DD). Default latest = max dated release-status-*.json.",
     )
     parser.add_argument(

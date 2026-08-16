@@ -12,7 +12,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -42,16 +44,7 @@ _EXCLUDE_PATH_FRAGMENTS = (
     "ENGINEERING_STATUS_2026_08.md",
     "COMPETITIVE_MATRIX",
     "REPO_DEEP_MAP",
-    # Honesty / literature docs that quote forbidden phrases as non-claims (N-29 migration).
-    # HDX-LINT-01: docs/partners/ is a default scan root — do not directory-blind it.
-    # COMPETITIVE_MATRIX stays excluded (quotes rival accuracy/SLA as inventory).
-    "docs/architecture/",
-    "docs/ai/",
-    "docs/roadmap/",
-    "docs/research/",
-    "docs/quality/",
-    "docs/review/",
-    "docs/gtm/",
+    # HDX-LINT-01: no directory blinds. Quote-inventory files stay fragment-excluded.
     "FINDINGS_RECLASSIFICATION",
     "docs/evidence/local/",
     "kt2-handoff-2026-08-11/wall-guid/",
@@ -154,6 +147,27 @@ def _repo_root() -> Path:
     return _REPO
 
 
+@lru_cache(maxsize=1)
+def _git_tracked_relpaths() -> frozenset[str] | None:
+    """Tracked files only. None = git unavailable (temp fixtures / tarball)."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "-z"],
+            cwd=_REPO,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    if result.returncode != 0:
+        return None
+    return frozenset(
+        part.replace("\\", "/")
+        for part in result.stdout.decode("utf-8", errors="replace").split("\0")
+        if part.strip()
+    )
+
+
 def _load_forbidden_claim_phrases(matrix_path: Path) -> list[str]:
     if not matrix_path.is_file():
         return []
@@ -215,6 +229,9 @@ def _should_scan(path: Path) -> bool:
         rel = path.relative_to(_repo_root()).as_posix()
     except ValueError:
         return True
+    tracked = _git_tracked_relpaths()
+    if tracked is not None and rel not in tracked:
+        return False
     if any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS):
         return False
     # Evidence JSON/PDF/HTML/txt quote forbidden phrases as denial/inventory
@@ -262,12 +279,14 @@ def _candidate_files(roots: list[Path] | None = None) -> list[Path]:
 
 
 def exclusion_stats(*, roots: list[Path] | None = None) -> dict[str, int]:
-    """HDX-LINT-01: remaining directory excludes stay visible; partners speech docs are scanned."""
+    """HDX-LINT-01: fragment excludes stay visible; directory blinds removed."""
 
+    excluded_untracked = 0
     excluded_by_fragment = 0
     excluded_by_suffix = 0
     excluded_evidence = 0
     scanned = 0
+    tracked = _git_tracked_relpaths()
     for path in _candidate_files(roots):
         if path.suffix.lower() in _EXCLUDE_SUFFIXES:
             excluded_by_suffix += 1
@@ -276,6 +295,9 @@ def exclusion_stats(*, roots: list[Path] | None = None) -> dict[str, int]:
             rel = path.relative_to(_repo_root()).as_posix()
         except ValueError:
             scanned += 1
+            continue
+        if tracked is not None and rel not in tracked:
+            excluded_untracked += 1
             continue
         if any(fragment in rel for fragment in _EXCLUDE_PATH_FRAGMENTS):
             excluded_by_fragment += 1
@@ -289,6 +311,7 @@ def exclusion_stats(*, roots: list[Path] | None = None) -> dict[str, int]:
         "excluded_by_fragment": excluded_by_fragment,
         "excluded_by_suffix": excluded_by_suffix,
         "excluded_evidence": excluded_evidence,
+        "excluded_untracked": excluded_untracked,
     }
 
 
@@ -296,6 +319,7 @@ def _format_exclusion_stats(stats: dict[str, int]) -> str:
     return (
         f"scanned={stats['scanned']} "
         f"excluded_by_fragment={stats['excluded_by_fragment']} "
+        f"excluded_untracked={stats.get('excluded_untracked', 0)} "
         f"excluded_evidence={stats['excluded_evidence']}"
     )
 

@@ -233,6 +233,8 @@ class AcademicLiteratureTriageHonestyTests(unittest.TestCase):
         self.assertIn("IDS 1.1", text)
         self.assertIn("Harbor **NOT_RUN**", text)
         self.assertIn("Checkpoint stays **NO_GO**", text)
+        self.assertIn("107043", text)
+        self.assertIn("validate.buildingsmart.org", text)
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
         self.assertNotIn("closes_rt003: true", text)
@@ -276,6 +278,29 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("BLOCKED_CUSTOMER_DATA", text)
         self.assertNotIn("ENG_READY | Числа выводимы", text)
         self.assertIn("просрочен", text)
+
+
+class FinalVerdictHonestyTests(unittest.TestCase):
+    def test_final_verdict_stays_no_go_and_omits_unpublished_prompts(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "quality"
+            / "RED_TEAM_FINAL_VERDICT_2026_08_16.md"
+        )
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("closes_rt003: false", text)
+        self.assertIn("Checkpoint stays **NO_GO**", text)
+        self.assertIn("доработка", text)
+        self.assertIn("KT2_", text)
+        self.assertNotIn("docs/ai/MASTER_RED_TEAM_PROMPT_2026_08_16.md", text)
+        self.assertNotIn("docs/quality/RED_TEAM_ATOMIC_2026_08_16.md", text)
+        self.assertNotIn("closes_rt001: true", text)
+        self.assertNotIn("closes_rt002: true", text)
+        self.assertNotIn("closes_rt003: true", text)
 
 
 _SPEECH_FORMULA_MARKERS = (

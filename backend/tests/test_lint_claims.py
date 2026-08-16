@@ -248,6 +248,35 @@ class LintClaimsTests(unittest.TestCase):
         )
         self.assertEqual(hits, [])
 
+    def test_jury_trees_are_not_directory_blind(self) -> None:
+        """HDX-LINT-01: architecture/quality/gtm scan; RED_TEAM stays fragment-excluded."""
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import (  # type: ignore[import-not-found]
+                _EXCLUDE_PATH_FRAGMENTS,
+                _should_scan,
+            )
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        self.assertNotIn("docs/architecture/", _EXCLUDE_PATH_FRAGMENTS)
+        self.assertNotIn("docs/quality/", _EXCLUDE_PATH_FRAGMENTS)
+        self.assertNotIn("docs/gtm/", _EXCLUDE_PATH_FRAGMENTS)
+        self.assertTrue(
+            _should_scan(_REPO / "docs" / "architecture" / "ADR-001-verdict-ownership-2026.md")
+        )
+        self.assertTrue(
+            _should_scan(_REPO / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md")
+        )
+        self.assertTrue(
+            _should_scan(_REPO / "docs" / "gtm" / "SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md")
+        )
+        self.assertFalse(
+            _should_scan(
+                _REPO / "docs" / "quality" / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md"
+            )
+        )
+
     def test_exclusion_stats_count_fragment_blind_zone(self) -> None:
         sys.path.insert(0, str(_REPO / "scripts"))
         try:
@@ -261,6 +290,7 @@ class LintClaimsTests(unittest.TestCase):
         stats = exclusion_stats(roots=list(_SCAN_ROOTS))
         self.assertGreater(stats["excluded_by_fragment"], 0)
         self.assertGreaterEqual(stats["scanned"], 1)
+        self.assertIn("excluded_untracked", stats)
 
     def test_builtin_patterns_include_russian_forbidden_markers(self) -> None:
         sys.path.insert(0, str(_REPO / "scripts"))

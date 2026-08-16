@@ -21,6 +21,7 @@
 | ID | Theme | Evidence |
 | --- | --- | --- |
 | N-32 / A-1 | Expert HITL vs shared bearer | `principal_may_append_hitl_event` + claim boundary |
+| HD2-RL-02 | Rate limit 0 in development | Settings docstring + boot WARNING; hard profiles fail closed |
 | N-33 / A-2 | Review-event sequence race | Concurrent append test — property holds |
 | N-34 / A-3 | Co-author metadata rewrite | Hook passthrough + honesty docs |
 | N-35 / A-4 | Decorative commit-signing enforce | `enforce_ci: false` honesty fork |
