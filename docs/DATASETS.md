@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Dataset attribution; license names and corpus counts are citations not product claims" -->
 ---
 title: "AeroBIM dataset attribution"
-date: "2026-08-14"
+date: "2026-08-16"
 claim_boundary: "Attribution and license hygiene. Open corpora ≠ RF PD+expertise corpus. Not product accuracy. GPLv3 IFC stays out of this MIT tree."
 ---
 
@@ -25,7 +25,7 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - License: Apache 2.0
 - Published: 196 tasks, 9 families, three coverage levels (intrasheet / intradrawing / intraproject)
 - Compliance-judgment slice: Mushkani, Bérard, Koseki, [arXiv:2607.29058](https://arxiv.org/abs/2607.29058) — 160 tasks / 29 projects (126 Does Not Meet, 26 Meets, 8 Missing Information)
-- AeroBIM: inventory smoke `docs/evidence/aec-bench-smoke-latest.json` (196 tasks, 196 `gt.json`). Harbor agent **NOT_RUN**. Drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean` floor: **134** FP / **50** TN on **184** labeled tasks (rate **0.7283**, observation unit = task). [`docs/evidence/aec-bench-false-pass-2026-08.md`](evidence/aec-bench-false-pass-2026-08.md) · sha `989d0472…6e5124`. This is **not** RT-001 (RF PD + expertise conclusion).
+- AeroBIM: inventory smoke `docs/evidence/aec-bench-smoke-latest.json` (196 tasks, 196 `gt.json`). Harbor agent **NOT_RUN**. Drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean` floor: **134** FP / **50** TN on **184** labeled tasks (rate **0.7283**, observation unit = task). [`docs/evidence/aec-bench-false-pass-2026-08.md`](evidence/aec-bench-false-pass-2026-08.md) · sha `6133a564…57aa4e`. This is **not** RT-001 (RF PD + expertise conclusion).
 
 ## IFC-Bench V2
 
@@ -37,7 +37,7 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - Paper [arXiv:2605.01698](https://arxiv.org/abs/2605.01698) states 1 027 tasks across **37 IFC models / 21 projects**. Do not blend card and paper counts in one sentence.
 - Solihin-adapted classes 1–4; eval-split `eval-split-hellin2026.csv` (514 test / 512 train after leak fix)
 - Multidisciplinary models used as **pointers**, not vendored: `west_riverside_hospital` (CC BY 3.0, OpenIFC / Wawan Solihin), `sixty5`, `dental_clinic`, `duplex`, `wbdg_office` (CC BY 4.0), `digital_hub` (MIT, RWTH Aachen E3D)
-- AeroBIM: pins + gitignored checkout of QA CSV + non-GPL IFC (`duplex`, `dental_clinic`, `digital_hub`, `sixty5`, `wbdg_office`, `west_riverside_hospital`). GPLv3 dirs never enter git; Samolet-local demo may copy them into `.local/` with `--samolet-demo-copyleft` ([`pilot/SAMOLET_DEMO_COPYLEFT_LANE_2026_08_14.md`](pilot/SAMOLET_DEMO_COPYLEFT_LANE_2026_08_14.md)). Deterministic smoke **25/1026** scored (`output_sha256=8f76efdf…7b34`). Of those 25, eval-split has **12** test / **13** train — not a 514 false-pass figure. `west_riverside` is on disk for federated MEP inventory; it has **0** rows in the v2 QA CSV. Smoke: `docs/evidence/ifc-bench-v2-smoke-latest.json`
+- AeroBIM: pins + gitignored checkout of QA CSV + non-GPL IFC (`duplex`, `dental_clinic`, `digital_hub`, `sixty5`, `wbdg_office`, `west_riverside_hospital`). GPLv3 dirs never enter git; Samolet-local demo may copy them into `.local/` with `--samolet-demo-copyleft` ([`pilot/SAMOLET_DEMO_COPYLEFT_LANE_2026_08_14.md`](pilot/SAMOLET_DEMO_COPYLEFT_LANE_2026_08_14.md)). Deterministic smoke **27/1026** scored (`output_sha256=0a1679f8…9bfa35`). Of those 27, eval-split has **12** test / **15** train — not a 514 false-pass figure. `skip_breakdown` (gpl 189 / incomplete 110 / non_numeric 66 / unmapped_nl 634) is the honest denominator, not extra accuracy. `west_riverside` is on disk for federated MEP inventory; it has **0** rows in the v2 QA CSV. Smoke: `docs/evidence/ifc-bench-v2-smoke-latest.json`
 
 ## GNI BIM Dataset
 
@@ -84,6 +84,28 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - License: CC BY-ND 4.0 (unmodified vendored files)
 - Path: `samples/ids/buildingsmart-testcases/`
 - AeroBIM fail-closed divergences (ifcVersion vs FILE_SCHEMA): `AEROBIM_FAIL_CLOSED_DIVERGENCES.json` · evidence `docs/evidence/ids-fail-closed-2026-08.md`
+
+## Ishigaki-IDS-Bench
+
+- Authors / org: ONESTRUCTION
+- Data: https://huggingface.co/datasets/ONESTRUCTION/Ishigaki-IDS-Bench
+- Paper: [arXiv:2605.22079](https://arxiv.org/abs/2605.22079)
+- License: CC BY 4.0
+- Published: 166 gold IDS (JA/EN). **No real IFC** in the upstream set.
+- World practice: document processability of gold IDS (IDS-Audit-tool class), not LLM generation F1 as product accuracy.
+- AeroBIM: `python -m aerobim.tools.run_ishigaki_ids_bench_smoke` reads HF `data/test.jsonl` (sha `38b73458…3524f831`, 166 rows). Document auditor: **166/166** gold XML well-formed + IDS 1.0 XSD + structural facets. **Not** the paper's generation F1. **No IFC.** Evidence `docs/evidence/ishigaki-ids-bench-smoke-latest.json`. Do not quote 166/166 as product accuracy.
+
+## DrawingVQA
+
+- Data: https://huggingface.co/datasets/S2-MIND/DrawingVQA
+- Paper: [arXiv:2607.15418](https://arxiv.org/abs/2607.15418)
+- License: questions **CC BY-NC-SA 4.0**; drawings are **not public**.
+- AeroBIM: **link-only**. Do not vendor into this MIT tree. VLM stays advisory (ADR-001).
+
+## Renga ПНСТ 909-2024 (publisher pack)
+
+- Source: rengabim.com/shablons (ознакомительные цели ≠ OSS). ToS cite **GO** 2026-08-05 for aggregated metrics.
+- AeroBIM: header probe MEASURED (IFC4 / Renga 8.7, not Samolet). 22-scenario pairing frozen at [`docs/evidence/pnst909-22-scenario-pairing.json`](evidence/pnst909-22-scenario-pairing.json). Runtime **18/22** snapshot dated **2026-08-05**. CLI `python -m aerobim.tools.run_pnst909_22_scenario_runtime` is in tree; live extract on this machine is a header sample only (`SKIPPED_PACK_INCOMPLETE`). Do not invent a fresh 18/22.
 
 ## What is still missing
 

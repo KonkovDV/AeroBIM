@@ -69,6 +69,26 @@ closes_rt001: false. closes_rt002: false. closes_rt003: false. Checkpoint **NO_G
 
 Новых лицензионно чистых пар «чертёж+IFC+замечание экспертизы» 15.08 не появилось. DrawingVQA — link-only.
 
-## Что не прогоняли повторно 15.08 вечером
+## Прогон 15.08 поздний вечер
+
+Журнал: [`../evidence/DATASET_HUNT_LOG_2026_08.md`](../evidence/DATASET_HUNT_LOG_2026_08.md).
+
+| Комплект | Результат | Честность |
+|---|---|---|
+| IFC-Bench v2 | scored **27/1026** matched 27, errors 0, pin ok; skip_breakdown gpl 189 | `open_bench_only`; not RT-001; not 514 |
+| PNST 909 22-scenario | CLI in tree; live pack = header sample → SKIPPED_PACK_INCOMPLETE | 05.08 **18/22** snapshot kept; do not invent a fresh 18/22 |
+| Ishigaki-IDS-Bench | SKIPPED (no local `*.ids`) | Not 166/166; no real IFC; not LLM F1 |
+| Open corpora smoke | `pins_ok=true`; 7 cases | SHA only |
+
+## Confirm 16.08
+
+| Комплект | Результат | Честность |
+|---|---|---|
+| IFC-Bench v2 | scored **27/1026** matched 27, pin ok | `open_bench_only`; not RT-001 |
+| Open corpora smoke | `pins_ok=true`; 7 cases | SHA only |
+| PNST 909 22-scenario | CLI in tree; `SKIPPED_PACK_INCOMPLETE` | 05.08 **18/22** snapshot kept |
+| Ishigaki-IDS-Bench | 166 gold XML audited; 166 processable | Not generation F1; no IFC; not product accuracy |
+
+## Что не прогоняли повторно 15.08 вечером / 16.08
 
 Полный GNI 223 IfcOpenShell (уже в [`../evidence/open-ifc-stress-2026-08.md`](../evidence/open-ifc-stress-2026-08.md)). Harbor 160 — по-прежнему **NOT_RUN**.

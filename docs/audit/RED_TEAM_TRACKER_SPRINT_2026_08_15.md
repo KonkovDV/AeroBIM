@@ -25,8 +25,8 @@ Independent review of OIDC BFF Phase 3, rate-limit, overlay renderer: nonce bind
 | Sev | Finding | Disposition |
 |---|---|---|
 | MED | Schema-suite clash flipped `failed` → `skipped` after tiny-skip | **Closed:** live matrix + exporter note name `AEROBIM_CLASH_SKIP_TINY`; all-skipped still fail-closed. Not a silent pass |
-| MED | Tracker asked to re-run PNST 909 22-scenario IDS | **Closed as honesty:** pack on disk; runtime snapshot stays 05.08; **no CLI in tree**. Do not invent 18/22 tonight |
-| LOW | IFC-Bench / AEC-Bench numbers can be misread as product accuracy | **Closed:** hunt log + smoke JSON `open_bench_only`, Harbor **NOT_RUN**, 25/1026 countable subset |
+| MED | Tracker asked to re-run PNST 909 22-scenario IDS | **Closed as honesty (15.08):** pack on disk; runtime snapshot stays 05.08; **no CLI in tree that night**. **16.08:** CLI is in tree; live pack is still a header sample → `SKIPPED_PACK_INCOMPLETE`; still do not invent 18/22 |
+| LOW | IFC-Bench / AEC-Bench numbers can be misread as product accuracy | **Closed:** hunt log + smoke JSON `open_bench_only`, Harbor **NOT_RUN**, 27/1026 countable subset |
 | LOW | Consult minutes could be invented | **Closed:** journal stays empty until owner notes; Burnaev 12.08 still unrecorded |
 | LOW | Commercial KPI could be faked as 3–5 | **Closed:** GTM says live count is `.local/commercial-ops/` only; git does not invent scheduled demos |
 
@@ -38,6 +38,10 @@ Independent review of OIDC BFF Phase 3, rate-limit, overlay renderer: nonce bind
 - STUB-ODA-CAD-001 / MEP-CLASH-001
 - OIDC production IdP + FE bearer removal
 - No PNST 22-scenario regenerator in tree
+
+## 16.08 addendum
+
+CLI `run_pnst909_22_scenario_runtime` is now in tree. Frozen pairing covers 22 scenarios. Live pack on the audit host is still a header sample, so the CLI returns `SKIPPED_PACK_INCOMPLETE` and does **not** overwrite the 05.08 18/22 snapshot. Ishigaki gold XML document-audit is processability, not generation F1.
 
 ## Do not say after this pass
 

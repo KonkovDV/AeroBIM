@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.3"
-last_updated: "2026-08-15"
+version: "2.5.5"
+last_updated: "2026-08-16"
 ---
 
 # Evidence fixtures
@@ -19,7 +19,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`norm-pack-spbexp-coverage-2026-08.md`](norm-pack-spbexp-coverage-2026-08.md) · [`.json`](norm-pack-spbexp-coverage-2026-08.json) | Official SPb GAU CGE IDS 1.0; second GAU pack; not Samolet |
 | [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Qwen LIVE on fixture; Kimi GATED; `comparison_not_run`. Not a bake-off; not product accuracy |
 | [`vertical-slice-demo-live-2026-08-14.md`](vertical-slice-demo-live-2026-08-14.md) | Live `run_demo_vertical_slice` pin: exit 0, `summary.passed=false`, NO_GO; PNG/manifest hashes stable; report/BCF drift via `created_at` |
-| [`DATASET_HUNT_LOG_2026_08.md`](DATASET_HUNT_LOG_2026_08.md) | Tracker task-3: hunt + live re-runs 15.08 evening. Open benches ≠ RT-001. Harbor NOT_RUN. PNST 22-scenario CLI absent |
+| [`DATASET_HUNT_LOG_2026_08.md`](DATASET_HUNT_LOG_2026_08.md) | Tracker task-3: hunt + live re-runs 15.08 / confirm 16.08. Open benches ≠ RT-001. Harbor NOT_RUN. PNST CLI skip-honest; Ishigaki gold XML processability |
 | [`ifc-release-matrix-2026-08.md`](ifc-release-matrix-2026-08.md) · [`.json`](ifc-release-matrix-2026-08.json) | Fixture IFC2X3/IFC4/IFC4X3 kernel: findings 5/4/6, `passed=false`, `clash=skipped`. sha `559dcd91…46391`. Not customer accuracy |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `6133a564…57aa4e` |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
@@ -30,7 +30,9 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`gni-anonymization-pin-2026-08.md`](gni-anonymization-pin-2026-08.md) · [`.json`](gni-anonymization-pin-2026-08.json) | MIT anonymization scripts pinned; execution SKIPPED (hardcoded paths; Zenodo already anonymized) |
 | [`federated-clash-planted-2026-08.md`](federated-clash-planted-2026-08.md) · [`.json`](federated-clash-planted-2026-08.json) | Planted federated IfcClash (walls; pipe vs wall). Engine rehearsal. `closes_rt003=false`, `mep_system_clash=NOT_VERIFIED` |
 | [`federated-clash-duplex-2026-08.md`](federated-clash-duplex-2026-08.md) · [`.json`](federated-clash-duplex-2026-08.json) | IFC-Bench duplex ARC vs MEP IfcClash (837 hits). Open bench. `closes_rt003=false` |
-| [`ifc-bench-v2-smoke-latest.json`](ifc-bench-v2-smoke-latest.json) · [`ifc-bench-v2-smoke-2026-08-04.md`](ifc-bench-v2-smoke-2026-08-04.md) | Countable subset **25/1026** (12 test / 13 train of those 25). Not 514 false-pass. `output_sha256=64cd4cff…b74ea6` |
+| [`ifc-bench-v2-smoke-latest.json`](ifc-bench-v2-smoke-latest.json) · [`ifc-bench-v2-smoke-2026-08-04.md`](ifc-bench-v2-smoke-2026-08-04.md) | Countable subset **27/1026** (12 test / 15 train of those 27). Not 514 false-pass. `output_sha256=6ca587eb…9477e1` |
+| [`pnst909-22-scenario-pairing.json`](pnst909-22-scenario-pairing.json) · [`PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md`](PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md) | Frozen 22-scenario IDS/IFC pairing. Runtime snapshot **18/22** dated 05.08. Live pack truncated → CLI SKIPPED_PACK_INCOMPLETE |
+| [`ishigaki-ids-bench-smoke-latest.json`](ishigaki-ids-bench-smoke-latest.json) | Ishigaki gold-IDS document audit: 166/166 XML processable. CC BY 4.0; no real IFC. Not LLM F1 |
 | [`moexp-on-gni-sample-2026-08.md`](moexp-on-gni-sample-2026-08.md) · [`.json`](moexp-on-gni-sample-2026-08.json) | Official MOEXP IDS on one GNI student IFC. 389/389 fail. Not CIM compliance |
 | [`upstream-validate-overlap-2026-08.md`](upstream-validate-overlap-2026-08.md) | What duplicates bSI validate / Gherkin / ifcbench; keep vs replace. Not a run |
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
