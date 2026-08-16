@@ -10,6 +10,7 @@ SPRINT_ARCHIVE_TOOLS: Final[tuple[str, ...]] = (
     "run_sprint_2_1_baseline",
     "run_sprint3_open_corpus_battery",
     "run_demo_path",
+    "export_sprint2_dataset_manifest",
 )
 
 EVALUATE_TOOLS: Final[tuple[str, ...]] = (
@@ -39,7 +40,6 @@ EXPORT_TOOLS: Final[tuple[str, ...]] = (
     "export_runtime_baseline",
     "export_samples_manifest",
     "export_solihin_rule_classes",
-    "export_sprint2_dataset_manifest",
     "export_stale_norm_scan",
     "export_weekly_eng_status",
 )
@@ -48,6 +48,7 @@ CORE_OPERATOR_TOOLS: Final[tuple[str, ...]] = (
     "benchmark_project_package",
     "run_vertical_slice",
     "run_demo_vertical_slice",
+    "run_demo_ifc_acceptance_gate",
     "validate_dwg_toolchain",
     "verify_bcf_t2_evidence",
     "verify_bcf_structural_handoff",

@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 # Конкурентная матрица AeroBIM (помеченный анализ)
 
-**Дата:** 2026-08-04 · **refresh:** 2026-08-14 (RU-девелоперы / Tangl / 10D)  
+**Дата:** 2026-08-04 · **refresh:** 2026-08-16 (AI-review / ИСП РАН / BIM Inspector; клин: [`WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md))  
 **claim_level:** competitive_analysis_only — **не** product accuracy  
 **closes_rt001:** false  
 
@@ -23,6 +23,8 @@ OSINT-срез и вектор: [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`
 | Доля рынка / узнаваемость | высокая | высокая | средняя | **нулевая** |
 | Native DWG / CDE-ready BCF import | сильнее | сильнее | сильнее в issues | **не заявляется** |
 
+Solibri CheckPoint (cloud + ACC/Procore, AI-assistant beta — публичный срез 2025–2026) не отменяет строку Solibri: зрелый model QA. AeroBIM не утверждает «делаем то, чего Solibri не умеет вообще». Ниша — cross-modal evidence / provenance / fail-closed / on-prem API, не глубина BIM-правил. Revizto / ACC / Navisworks / Bentley iTwin — конкуренты за процесс замечаний и lifecycle, не замена клина IFC+IDS+пакет.
+
 ## Как читать
 
 1. Две нижние строки (зрелость / доля рынка) — сознательные уступки: без них таблица выглядит как маркетинг.  
@@ -40,8 +42,21 @@ OSINT-срез и вектор: [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`
 | **Самолёт 10D** | СОД, качество площадки, цикл стройки; с сен 2025 фокус inward | Маршрут документа, 38 модулей | Не платформа. Модуль QA комплекта *до* площадки | `[П]` TAdviser / CIO.osp |
 | **А101 / Vitro-CAD** | CDE, согласование ПД и Revit; ПМЭФ-2026 × МИК — полигон **зрелых** ИТ | Документооборот проектирования | Второй логотип только после измеримого пилота; сейчас early для их фильтра | `[П]` |
 | **ГАЛС / Sarex** | СОД + чек-листы АФК/ПД/РД (кейс 07.2026) | Чек-лист в маршруте | Не утверждать Tangl Control / Pilot-BIM без первички. Клин слабее Самолёта | `[П]` sarex.io |
-| **ПИК / PikTools** | Автоматизация Revit | Авторская среда | Самолёт на Renga — чужой Revit-стек не копируем | `[П]` Habr ПИК Digital |
+| **ПИК / PikTools / BIM Inspector** | Автоматизация Revit + внутренний checker перед МГЭ | Production-контур и данные ПИК | Самолёт на Renga — чужой Revit-стек не копируем; не «мы единственные, кто проверяет BIM» | `[П]` bimteam.ru/bi · Habr ПИК Digital |
+| **SmartIDS / VALIDBIM (ИСП РАН)** | Требования → IDS; IFC verification | Академический контур IDS/IFC | Сшивка требование↔модель↔документ↔журнал, не только свойства IFC | `[П]` ispras.ru |
 | **ТИМ.Нейро / NormaChecker** | Нормативный корпус (заявлен больше) | Размер норм | RT-002 OPEN; наш ров — пакет + journal, не «600 норм на слайде» | `[Ф]`/`[Н]` |
+
+## AI-review / 2D (срез 16.08.2026)
+
+Не прямой BIM-checker. Опасны на демо: быстрый визуальный эффект без IFC.
+
+| Игрок | Что закрывает | Где сильнее AeroBIM | Где мы отличимы (гипотеза) | Метка |
+|---|---|---|---|---|
+| **Structured AI / Nomic / Specset / Helonic** | PDF/чертежи, RFI, codes, цитаты | Скорость 2D-шоу | Не продаём «магию PDF»; продаём измеримый IFC/IDS слой + provenance | `[П]` публичные сайты |
+| **Togal.AI** | Takeoff, измерение, сравнение листов | 2D quantity | Не наш первый клин | `[П]` |
+| **Document Crunch / Trimble** | Контрактный / проектный риск | Юридический NLP | Не IFC/геометрия | `[П]` |
+| **VitruAI** | Revit + нормы; финал у лицензиата | Revit-native | Самолёт — Renga/IFC; мы не заменяем эксперта | `[П]` |
+| **IfcOpenShell / IfcTester / BIMTester / open IFC Model Checker** | Бесплатная база IFC/IDS | Зрелость парсера | Не конкурент: это наш runtime; лицензии — LIC-001 | `[П]` docs.ifcopenshell.org |
 
 **Правило речи:** «Tangl проверяет модель; мы — комплект. 10D ведёт документ; мы не заменяем 10D.»
 

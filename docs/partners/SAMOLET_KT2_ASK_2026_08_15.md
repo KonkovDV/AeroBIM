@@ -37,7 +37,18 @@ claim_boundary: >
 Плюс короткий signed scope: дисциплины, стадия, что не проверяем (DWG native,
 MEP system-clash, CV как приёмка).
 
+Объём (не «данные для обучения» — evaluation pack):
+  1 пакет — вертикальный demo;
+  3–5 пакетов — smoke;
+  20–30 пакетов — первичная оценка;
+  hidden holdout — не подгонять порог.
+П.3 (два эксперта) обязателен для adjudication.
+
 Без п.1–4 не мерим SLA ≤30 мин и interim TP≥0.60 на вашем комплекте.
+KPI пилота — не «точность >90%» ТЗ (не определена), а воспроизводимость,
+critical recall, evidence-chain, время отчёта, доля принятых замечаний,
+снижение ручного времени. Протокол: PROTOCOL_QUALITY_ACCEPTANCE_TASK07.
+Клин: IFC+IDS+evidence, не native DWG и не замена 10D/Tangl.
 Канал передачи — NDA, не публичный git.
 
 Репозиторий: https://github.com/KonkovDV/AeroBIM
@@ -62,4 +73,5 @@ MEP system-clash, CV как приёмка).
 Профиль (unsigned): [`SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).  
 Запрос МИК: [`MIK_OPERATOR_ASK_2026_08_15.md`](MIK_OPERATOR_ASK_2026_08_15.md).  
 Длинный бриф: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_WHAT_WE_NEED_2026_07-ru.md).  
-IFC из Renga, не API Tangl: [`SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md`](SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md).
+IFC из Renga, не API Tangl: [`SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md`](SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md).  
+Клин пилота: [`WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md).

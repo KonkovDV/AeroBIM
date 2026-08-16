@@ -10,7 +10,7 @@ For someone who already replied or agreed to a walkthrough. Do **not** paste int
 
 AeroBIM team, Techlab Moscow program (Moscow Innovation Cluster), Samolet task track. Open core: github.com/KonkovDV/AeroBIM.
 
-We align available package sources and show discrepancies with source links. **Documentation fitness decision stays with your specialist.**
+We align available package sources and show discrepancies with source links. **Documentation fitness decision stays with your specialist.** AeroBIM does not replace your CDE, BIM authoring, or the expert: it is an evidence-first validation layer on one agreed scenario (IFC + IDS/requirement pack first). Scope freeze: [`../partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](../partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md).
 
 ## Limited pilot (what we propose)
 

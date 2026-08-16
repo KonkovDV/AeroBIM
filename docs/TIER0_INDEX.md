@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.4.1"
-last_updated: "2026-08-15"
+version: "4.4.3"
+last_updated: "2026-08-16"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -38,6 +38,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`partners/GLOSSARY_JURY_RU_2026_08.md`](partners/GLOSSARY_JURY_RU_2026_08.md) | Глоссарий жаргона для заявки |
 | [`partners/diagrams/README.md`](partners/diagrams/README.md) | 4 схемы (контур, provenance, fail-closed, матрица) |
 | [`partners/SAMOLET_KT2_ASK_2026_08_15.md`](partners/SAMOLET_KT2_ASK_2026_08_15.md) | Intake ask: pack / profile / adjudicators / CDE |
+| [`partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md) | Product freeze: IFC Acceptance Gate; not 10D/Tangl replacement |
 | [`partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md) | Unsigned Samolet profile v0.1; RT-002 OPEN |
 | [`partners/MIK_OPERATOR_ASK_2026_08_15.md`](partners/MIK_OPERATOR_ASK_2026_08_15.md) | Ask Fund for agreement/act/finance templates |
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness |
