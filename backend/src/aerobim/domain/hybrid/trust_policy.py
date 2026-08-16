@@ -1,6 +1,6 @@
 """Trust Policy / route-decision engine for the Hybrid AI contour (domain-pure).
 
-Implements the class × target matrix (see HYBRID_AI_ROUTING_POLICY_2026_07_28.md)
+Implements the class × target matrix (see HYBRID_AI_FINAL_REPORT_2026_07_28.md)
 **fail-closed**: any unresolved or forbidden combination returns ``BLOCKED`` with no
 external call. The engine decides eligibility ONLY; it never performs I/O, never
 touches ``summary.passed`` (ADR-001), and takes ``classification``/``tenant_id``/

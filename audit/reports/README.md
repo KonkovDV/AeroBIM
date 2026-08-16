@@ -1,8 +1,8 @@
 ---
 title: "Public audit reports — TechLab"
 status: active
-version: "2.2.0"
-last_updated: "2026-08-01"
+version: "2.3.0"
+last_updated: "2026-08-16"
 ---
 
 # Audit reports (public)

@@ -98,10 +98,10 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `TRK-01`: `docs/partners/_2026_08_16.md`
 - `TRK-02`: `docs/evidence/ifc-release-matrix-2026-08.md`
 - `TRK-03`: `docs/evidence/DATASET_HUNT_LOG_2026_08.md`
-- `TRK-04`: `docs/demo/CONSULTATIONS_2026_08_14.md`
+- `TRK-04`: `docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`
 - `TRK-05`: `docs/gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`
 - `TRK-06`: `docs/architecture/ADR-002-open-core-commercial-boundary-2026.md`
-- `TL-01`: `docs/pilot/KT2_UPLOAD_PACK_2026_08_14.md`
+- `TL-01`: `docs/docs.md`
 - `TL-02`: `docs/partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md`
 - `MIK-01`: `docs/partners/MIK_PILOT_COMPLIANCE_2026.md`
 - `MIK-02`: `docs/docs.md`

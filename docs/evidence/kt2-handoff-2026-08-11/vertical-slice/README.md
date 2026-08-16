@@ -7,7 +7,7 @@ claim_boundary: "Historical HTML. Not live CLI. Checkpoint NO_GO. Not customer a
 
 # Snapshot 11.08 — superseded
 
-This folder is a **frozen 11.08** evidence snapshot. The HTML has **no** `#kt2-overlay`.
+This folder is a **frozen 11.08** evidence snapshot. Snapshot HTML is **not** published. The live demo is CLI only.
 
 For demo and clone-to-demo use the live CLI:
 

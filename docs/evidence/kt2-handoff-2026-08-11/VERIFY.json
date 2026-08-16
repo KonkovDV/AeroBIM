@@ -1,7 +1,7 @@
 {
   "ok": true,
   "artifact_type": "kt2_handoff_verification",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "checkpoint_verdict": "NO_GO",
   "claim_boundary": "L1 fixture/methodology verification only; never flips Checkpoint GO; not customer accuracy; not TZ >90%.",
   "checks": [
@@ -76,14 +76,14 @@
       "detail": "C:\\plans\\AeroBIM\\docs\\demo\\KT2_JURY_FAQ_2026_08_12.md"
     },
     {
-      "check": "demo_rehearsal",
+      "check": "kt2_video_script",
       "ok": true,
-      "detail": "C:\\plans\\AeroBIM\\docs\\demo\\KT2_DEMO_REHEARSAL_2026_08_12.md"
+      "detail": "C:\\plans\\AeroBIM\\docs\\demo\\KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md"
     },
     {
       "check": "rehearsal_forbids_wall_guid_html",
       "ok": true,
-      "detail": "rehearsal must forbid wall-guid/report.html as overlay demo"
+      "detail": "video script must forbid wall-guid/report.html as overlay demo"
     },
     {
       "check": "handoff_readme_live_cli",
@@ -93,7 +93,22 @@
     {
       "check": "snapshot_html_not_overlay_demo",
       "ok": true,
-      "detail": "11.08 snapshot must remain without #kt2-overlay (live CLI is the demo)"
+      "detail": "11.08 snapshot HTML must be unpublished or remain without #kt2-overlay (live CLI is the demo)"
+    },
+    {
+      "check": "readme_quickstart_demo_core_pdf",
+      "ok": true,
+      "detail": "README Quick Start must install .[dev,raster] without requiring pdf-agpl for the live CLI"
+    },
+    {
+      "check": "kt2_demo_mp4_not_in_docs",
+      "ok": true,
+      "detail": "none"
+    },
+    {
+      "check": "kt2_demo_mp4_status",
+      "ok": true,
+      "detail": "NOT_IN_GIT"
     }
   ]
 }

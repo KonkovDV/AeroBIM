@@ -519,8 +519,8 @@ FAIR-заявки от чужой инфраструктуры. Проба P₁/
 «Как отправить структурированный запрос», «Общие вопросы Yandex AI Studio», справочник
 заголовков поддержки. Анонсы Yandex B2B Tech о доступе к Qwen3 и о пакетном режиме.
 
-Документы проекта на коммите `15f4d1b`: `TZ_RUNTIME_MATRIX`, `HYBRID_AI_ROUTING_POLICY`,
-`HYBRID_AI_THREAT_MODEL`, `HYBRID_AI_FINAL_REPORT`, `DATA_GOVERNANCE_AUDIT`,
+Документы проекта на коммите `15f4d1b`: `TZ_RUNTIME_MATRIX`,
+`HYBRID_AI_FINAL_REPORT`, `DATA_GOVERNANCE_AUDIT`,
 `QUALITY_MEASUREMENT_PROTOCOL`, `capability-claim-matrix-2026`, `ADR-001`,
 `YANDEX_AI_STUDIO_GRANT_KT2`, `QWEN_LOCAL_KT2_PLAN`, `llm_provider_policy.json`,
 исходный код `openai_compat_llm_provider.py`, `llm_token_budget.py`, `settings.py`.
