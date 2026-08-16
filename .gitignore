@@ -154,11 +154,16 @@ docs/architecture/ARCHITECTURE_DEEP_AUDIT*
 docs/architecture/ARCHITECTURE_REVIEW_BRIEF*
 docs/architecture/LLM_BUDGET_BILLING*
 docs/architecture/YANDEX_STUDIO_GRANT_OPS*
+docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP*
+docs/architecture/WORLD_PRACTICES_LITERATURE*
 docs/research/INDUSTRY_LECTURE_NOTES*
 docs/research/sprint-2-1-research-to-code*
 docs/evidence/RED_TEAM_P2_REMEDIATION*
 docs/evidence/runtime-baseline-wave-a-*
 docs/customer-demo/severity-taxonomy-draft.md
+docs/ai/LLM_COMPARATIVE_BENCHMARK.md
+docs/pilot/HARNESS_AND_DEMO_RUNBOOK*
+docs/partners/LETTER_OF_INTEREST_SAMOLET_TEMPLATE*
 audit/sprint-2-1-*
 scripts/rewrite-author*
 scripts/git_commit.ps1

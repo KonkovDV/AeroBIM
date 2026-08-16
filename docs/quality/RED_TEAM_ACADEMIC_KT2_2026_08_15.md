@@ -44,7 +44,7 @@ Validity is not a property of a tool. It is a property of **an inference from a 
 | Messick, S. (1995). *Am. Psychol.* 50(9), 741–749. [doi:10.1037/0003-066X.50.9.741](https://doi.org/10.1037/0003-066X.50.9.741) | Six aspects: content, substantive, structural, generalizability, external, consequential. Using a score for a decision it does not support is a validity failure even if the number is reproducible. |
 | Kane, M. T. (2013). Validating the interpretations and uses of test scores. *J. Educ. Meas.* 50(1), 1–73. | An Interpretation/Use Argument (IUA) must state the *use*. Our IUA for L1/L2 stops at “engine regression”. The IUA for Task 07 success criteria (precision ≥0.60, time saved ≥20%, CDE-visible BCF) is **not yet licensed**. |
 | Cronbach, L. J., & Meehl, P. E. (1955). Construct validity in psychological tests. *Psychol. Bull.* 52(4), 281–302. | Nomological net: 50 IDS / 0 document issues sits in the net of *document well-formedness*, not *Samolet acceptance*. |
-| Goodhart, C. (1975/1984); Campbell, D. T. (1979) | When a measure becomes a target it ceases to be a good measure. `tests_passed`, `50/0`, `2259`, `macro_f1=0.86` are targets-in-waiting. |
+| Goodhart, C. (1975/1984); Campbell, D. T. (1979) | When a measure becomes a target it ceases to be a good measure. `tests_passed`, `50/0`, a local pytest count, `macro_f1=0.86` are targets-in-waiting. |
 | Saltzer, J. H., & Schroeder, M. D. (1975). The protection of information in computer systems. *Proc. IEEE* 63(9). | Fail-safe defaults: SKIPPED IDS under pilot/production → FAILED. This is a *control* property, not an accuracy property. |
 | Leveson, N. (2011). *Engineering a Safer World*. MIT Press (STAMP/STPA). | Safety is a control constraint. `summary.passed` is a Shared-gate constraint (ADR-001), not “the package is fit to build”. |
 | ISO 19650-2:2018 cl. 5.6–5.7 | Review / authorize / accept the information model is an **organizational** act. Automated checking may support 5.6.3; it does not replace 5.7 authorization. |
@@ -78,7 +78,7 @@ Internal SSOT: [`OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](OPEN_BENCH_VS_RT00
 | “IDS certified / Samolet profile” | Audit ≠ checking; MOEXP ≠ EIR of the appointing party |
 | “MEP delivered” | No signed clearance matrix; HVAC fixture has no tessellation |
 | “SP 63 verified” | Template is Solihin class 1 on a covering pset, not class 4 proof |
-| “2259 tests ⇒ HEAD fully verified in README” | N-26: CI pin remains 2167 @ `88e726be` |
+| “local pytest count ⇒ HEAD fully verified in README” | N-26: CI pin remains 2167 @ `88e726be` |
 | Checkpoint GO | RT-001/002/003 OPEN by construction |
 
 ## 3. Messick six aspects × Wave A (substitution map)
@@ -92,7 +92,7 @@ Wave A is **content/substantive evidence for the engine**. Treating it as **exte
 | Clearance ~30 mm extra-method | Substantive (IfcClash clearance mode runs) | Generalizability: MEP on federated customer IFC | **threat** |
 | Clash → our BCF → consume | Substantive (T1 ZIP round-trip) | External: CDE import / ISO 19650 exchange | **threat** |
 | SP 63 cover template | Content (a rule-pack *shape*) | Class 4 proof of reinforcement | **threat** |
-| pytest 2259 / 12 / 0 | Structural (code regression on this machine) | Consequential: “production-ready” | **threat** |
+| local pytest count (not the CI pin) | Structural (code regression on this machine) | Consequential: “production-ready” | **threat** |
 | extraction F1 0.86 | External on **fixture corpus only** | External on customer drawings | **threat** |
 | Vertical slice overlay | Content + substantive (text-layer path) | Drawing literacy (AECV symbol task) | **mitigated if doors/windows forbidden** |
 
@@ -160,7 +160,7 @@ IDs continue the funding series so speech packs stay aligned.
 | RT-ACAD-03 | Construct substitution: XSD intake → expertise | MinStroy survey/geological only | `closes_rt001: false` |
 | RT-ACAD-04 | Construct substitution: BCF ZIP → ISO 19650 exchange | own consume; `cde_import=NOT_VERIFIED` | HTML “Not a CDE import” |
 | RT-ACAD-05 | Construct underrepresentation: SP 63 class 1 as class 4 | covering pset 20 mm | `calculation_correctness=NOT_IMPLEMENTED` |
-| RT-ACAD-06 | Goodhart: pytest count as quality | 2259 local vs 2167 CI | N-26; do not copy |
+| RT-ACAD-06 | Goodhart: pytest count as quality | local pytest ≠ CI pin | N-26; do not copy |
 | RT-ACAD-07 | Generalizability: fixture F1 0.86 as product | extraction eval corpus | claim_level fixture |
 | RT-ACAD-08 | Task contamination: AECV doors/windows as demo | arXiv:2601.04819 Table 1 | rehearsal forbids it |
 | RT-ACAD-09 | Consequential: hide NO_GO | pitch 05.08 | pitch 15.08 leads with NO_GO |

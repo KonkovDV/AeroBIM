@@ -3,7 +3,7 @@
 title: "Red Team — жюри Техлаб × МИК × Новатор"
 date: "2026-08-16"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 last_updated: "2026-08-16"
 closes_rt001: false
 closes_rt002: false
@@ -24,16 +24,17 @@ claim_boundary: >
 
 **Новатор 2026:** not a filing. Criteria are a thinking model only. Honest 2027 nomination, if any: «Меняющие реальность» — **not** «Лидеры инноваций» (no legal entity, no revenue).
 
-## Current pass (public `main`, 16.08)
+## Current pass (public `main`, 16.08 — triage)
 
 Object: TechLab jury pack after unpublished operator dumps. Live demo = `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Do not open `docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html` as overlay.
 
 | ID | Attack | Status |
 |---|---|---|
 | RT-JURY-K01 | Clone reads as LLM/session dump (mentor briefs, rewrite-author, local pytest pin) | **MITIGATED** — unpublished from GitHub; gitignore |
+| RT-JURY-K02 | README leads with tracker-meeting notes; Studio «deep analysis» / harness runbook / LOI template still on the tree | **MITIGATED** — front door = TIER0 + Hostile QA + Samolet ask; dumps unpublished |
 | RT-JURY-D01 | Open `wall-guid/report.html` as overlay | **MITIGATED** — live CLI first; hashed HTML is fixture pin, not overlay |
 | RT-JURY-D02 | Open `vertical-slice/report.html` | **FIXED** — unpublished from the public tree |
-| RT-JURY-G01 | Quote a local pytest count against the README CI pin | **MITIGATED** — local pin unpublished; CI pin stays in `runtime-baseline-latest.json` |
+| RT-JURY-G01 | Quote a local pytest count against the README CI pin | **MITIGATED** — local pin unpublished; CI pin stays in `runtime-baseline-latest.json`; TIER0 Academic/Funding RT do not quote the local count |
 | RT-JURY-M01 | «Отобраны → продукт готов» | **MITIGATED** — stage = доработка |
 | RT-JURY-C01 | Kitchen cleanup flips Checkpoint GO | **REJECTED** — RT-001/002/003 stay OPEN |
 

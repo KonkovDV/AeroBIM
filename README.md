@@ -22,7 +22,7 @@
 Tangl проверяет **модель**; AeroBIM — **комплект**. Не заменяем 10D, Renga, CDE или эксперта: **IFC Acceptance Gate** поверх существующего контура. Клин: [`docs/partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](docs/partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md). Демо-IFC в репо — IfcOpenShell fixture, не выгрузка Renga и не Самолёт. Публичный образец издателя (ПНСТ 909, Renga 8.7) измеряется отдельно: `python -m aerobim.tools.run_renga_export_probe` (бинарник gitignored). OSINT + вектор 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 Видео 3 мин: [`docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) — запись **19.08**, человек.  
-Встреча трекера 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) · follow-up [`docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md).  
+Пакет жюри: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · Hostile QA [`docs/demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](docs/demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md).  
 Запрос Самолёту: [`docs/partners/SAMOLET_KT2_ASK_2026_08_15.md`](docs/partners/SAMOLET_KT2_ASK_2026_08_15.md).
 
 Open-source **IFC Acceptance Gate** for openBIM packages: IFC + IDS/requirements → evidence-backed findings → HTML/JSON/BCF. Helps an expert catch package defects **before** coordination/expertise. Not a CDE, not a viewer, not an expert replacement.

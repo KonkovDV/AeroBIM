@@ -19,9 +19,9 @@ claim_boundary: "Methodology and engineering contour only. Customer precision / 
 | # | Поток | Результат | Критерий готовности | Артефакты в репо |
 |---|--------|-----------|---------------------|------------------|
 | 1 | Протокол пилота + методика разметки | Утверждённый протокол + инструкция двум экспертам | У каждого типа проверки: вход, ожидаемый результат, источник доказательства, эксперт, способ измерения | [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md), [`EXPERT_LABELING_INSTRUCTION_2026.md`](EXPERT_LABELING_INSTRUCTION_2026.md), [`../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) |
-| 2 | Живой демо-прогон + evidence-бандл | Воспроизводимый демо-сценарий | Повторный запуск сопоставим; у замечания есть ссылка на файл/лист/элемент | [`HARNESS_AND_DEMO_RUNBOOK_2026.md`](HARNESS_AND_DEMO_RUNBOOK_2026.md), `aerobim.tools.export_evidence_bundle` |
+| 2 | Живой демо-прогон + evidence-бандл | Воспроизводимый демо-сценарий | Повторный запуск сопоставим; у замечания есть ссылка на файл/лист/элемент | `python -m aerobim.tools.run_demo_ifc_acceptance_gate`, `aerobim.tools.export_evidence_bundle` |
 | 3 | Norm pack + RASE | Шаблон + первый набор правил (fail-closed) | У правила: источник, область, исключения, исполняемый критерий, тест; неподтверждённый pack ≠ positive verdict | [`NORM_PACK_RASE_GUIDE_2026.md`](NORM_PACK_RASE_GUIDE_2026.md), `samples/rule-packs/norm-rule-pack.schema.json`, `customer-norm-pack-intake-template.json` |
-| 4 | Harness размеченного среза | Отчёт TP/FP/FN + κ + время без ручных таблиц | Один запуск → метрики, конфиг, размер корпуса, согласие экспертов, ошибки по категориям | [`HARNESS_AND_DEMO_RUNBOOK_2026.md`](HARNESS_AND_DEMO_RUNBOOK_2026.md), `evaluate_detection_precision`, `measure_adjudicator_agreement` |
+| 4 | Harness размеченного среза | Отчёт TP/FP/FN + κ + время без ручных таблиц | Один запуск → метрики, конфиг, размер корпуса, согласие экспертов, ошибки по категориям | `evaluate_detection_precision`, `measure_adjudicator_agreement` |
 | 5 | Матрица трассируемости ТЗ | Требование → модуль → evidence → статус → next | Нет требования без статуса, владельца и критерия | [`../tz/TZ_COMPLIANCE_MATRIX_2026.md`](../tz/TZ_COMPLIANCE_MATRIX_2026.md), [`../tz/README.md`](../tz/README.md), Claims Lock |
 
 ## Календарь

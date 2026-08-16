@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.43"
+version: "1.6.44"
 last_updated: "2026-08-16"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-16
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-16 · **v1.6.43** — jury Red Team 16.08: remaining mentor/ops dumps unpublished; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
+**last_updated:** 2026-08-16 · **v1.6.44** — jury triage 16.08: Studio deep-analysis / harness runbook / LOI template unpublished; local pytest count off TIER0; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Jury / MIK:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  

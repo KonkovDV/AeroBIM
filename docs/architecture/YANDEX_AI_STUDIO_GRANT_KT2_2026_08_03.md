@@ -5,7 +5,6 @@ date: 2026-08-03
 status: active
 version: "1.4.0"
 claim_boundary: "Grant strategy note. Not Checkpoint GO. Card-bound → hard stop = revoke API key. Open-bench AECV counting measured 2026-08-04 (macro 0.4325) ≠ product accuracy. Thinking off only via chat_template_kwargs."
-source_analysis: "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md"
 ---
 
 # Yandex grant: AI Studio + GPU T4 (2026-08-03)
@@ -228,7 +227,7 @@ Grant tokens ≈ 1% cost of one WP-07 Wilson sample. Deficit for Checkpoint: **a
 
 ## Pointers
 
-- Deep analysis: [`YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md`](YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md)
+- Advisory contour: [`../ai/LLM_ADVISORY_CONTOUR.md`](../ai/LLM_ADVISORY_CONTOUR.md)
 - Feasibility: [`QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md`](QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md)
 - Plan: [`../roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md`](../roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md)
 - Routing policy: [`../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md)

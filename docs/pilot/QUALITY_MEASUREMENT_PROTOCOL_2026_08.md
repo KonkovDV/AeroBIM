@@ -12,7 +12,7 @@ claim_boundary: "Protocol only. Fixture/open corpora never publish product accur
 Executable companion: `python -m aerobim.tools.compute_quality_protocol_stats`  
 Open-data rails (regression / timing only): [`samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/README.md) · `run_open_corpora_profiles`  
 Expert labeling instruction: [`EXPERT_LABELING_INSTRUCTION_2026.md`](EXPERT_LABELING_INSTRUCTION_2026.md)  
-Harness runbook: [`HARNESS_AND_DEMO_RUNBOOK_2026.md`](HARNESS_AND_DEMO_RUNBOOK_2026.md)
+Harness: `evaluate_detection_precision` / `measure_adjudicator_agreement`. Live demo: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.
 
 ## 1. Purpose and claim boundary
 

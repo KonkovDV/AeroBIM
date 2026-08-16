@@ -77,5 +77,4 @@ N=50, K=12, H=40, W=2500, S=0.20 →
 ## 6. Связанные документы
 
 - Методика пилота: [`docs/docs.md`](../docs.md) §8–9, §13  
-- Письмо заинтересованности (шаблон): [`LETTER_OF_INTEREST_SAMOLET_TEMPLATE_2026_08.md`](LETTER_OF_INTEREST_SAMOLET_TEMPLATE_2026_08.md)  
 - Дорожная карта 3+: [`ROADMAP_3Y_2026_08.md`](ROADMAP_3Y_2026_08.md)

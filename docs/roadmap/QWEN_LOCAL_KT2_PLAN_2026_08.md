@@ -6,7 +6,6 @@ last_updated: "2026-08-03"
 claim_boundary: "Engineering plan. Alibaba Max forbidden. Yandex Studio RF = T2 PUBLIC/INTERNAL. Checkpoint NO_GO."
 source_report: "docs/architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md"
 grant_note: "docs/architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md"
-deep_analysis: "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md"
 ---
 
 # Qwen + Yandex AI Studio — KT#2 plan (4–20 Aug 2026)

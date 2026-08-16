@@ -11,7 +11,7 @@ claim_boundary: >
 
 # Red Team: атаки жюри, венчура и негативные траектории (15.08.2026)
 
-**Author relationship:** Internal self-assessment, after Wave A + local pytest on HEAD `005b7bc`.  
+**Author relationship:** Internal self-assessment after Wave A substitutes.  
 **Checkpoint:** **`NO_GO`**.  
 **Ask this week:** слот демо / корпус / профиль — **не** раунд. Юрлица нет.
 
@@ -40,7 +40,7 @@ Engineering readiness improved. Customer and investor readiness did **not**.
 | RT-FUND-03 | «MinStroy XSD = экспертиза» | Intake format, not remark corpus | **MITIGATED** |
 | RT-FUND-04 | «Clash→BCF = CDE-ready» | Own ZIP consume; `cde_import=NOT_VERIFIED` | **MITIGATED** (HTML/UI 15.08: «Not a CDE import») |
 | RT-FUND-05 | «SP 63 template = solver» | 20 mm covering pset, not table 8.1 | **MITIGATED** |
-| RT-FUND-06 | «tests_passed=2167 means HEAD fully tested» | CI pin `88e726be`; local Windows 2259/12/0 is not publishable (N-26) | **ACCEPTED** — do not copy 2259 into README |
+| RT-FUND-06 | «tests_passed=2167 means HEAD fully tested» | CI pin `88e726be`; a local pytest count is not publishable (N-26) | **ACCEPTED** — do not copy a local count into README |
 | RT-FUND-07 | Open 0.86 / 0.43 as product accuracy | Fixture F1 vs AECV open-bench | **MITIGATED** in pitch card; keep repeating |
 | RT-FUND-08 | Harbor 160 skipped → invent false-pass % | Inventory 196 only | **ACCEPTED** SKIPPED |
 
@@ -71,7 +71,7 @@ Engineering readiness improved. Customer and investor readiness did **not**.
 4. **GPL contamination.** LibreDWG «на выходных» → LICENSE conflict.  
 5. **Program violation.** А101/Галс как «второй заказчик Техлаба» → конфликт с AM 05.08.  
 6. **Demo miss 19.08.** Открывают `wall-guid/report.html` без `#kt2-overlay` → «нет продукта». Live CLI: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.  
-7. **CI/local test split.** Ассоциат видит 2167 в README и 2259 локально → «врут в метриках». Держать pin CI; local pin отдельно.  
+7. **CI/local test split.** Ассоциат видит CI pin в README и другой счётчик локально → «врут в метриках». Держать pin CI; local count отдельно.  
 8. **Harbor theatre.** Гонят 160 задач ради слайда → чужой бенч как accuracy.  
 9. **Entity delay.** Слоты есть, договора нет → демо сгорают.  
 10. **Single-customer capture.** Только Самолёт; без тёплых слотов экспертизы воронка = 0 вне программы.
@@ -92,7 +92,7 @@ Engineering readiness improved. Customer and investor readiness did **not**.
 | P0 | Hide NO_GO / ask for «инвест» on slide | speech | **pitch patched** |
 | P0 | One-pager implies dual-rater эталон exists | speech | **one-pager patched** |
 | P0 | Wave A = RT CLOSED | speech | FAQ + this RT |
-| P0 | Copy 2259 into README | eng | **refused** (N-26) |
+| P0 | Copy a local pytest count into README | eng | **refused** (N-26) |
 | P1 | Wrong demo HTML for Burnaev | docs | **done 15.08** |
 | P1 | CDE wording in UI | eng | **done 15.08** |
 | P1 | Stale Wave A «pytest not run» | docs | **this RT + Wave A note** |
