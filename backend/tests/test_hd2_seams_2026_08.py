@@ -19,7 +19,10 @@ from aerobim.core.security.upload_quota import FilesystemUploadQuotaStore
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 from aerobim.domain.run_manifest import engine_signature
 from aerobim.infrastructure.adapters.bcf_report_exporter import bcf_topic_zip_dir
-from aerobim.infrastructure.security.oidc_token_validator import OidcTokenValidator, OidcValidationError
+from aerobim.infrastructure.security.oidc_token_validator import (
+    OidcTokenValidator,
+    OidcValidationError,
+)
 from aerobim.presentation.http.rate_limit import client_bucket_host
 
 

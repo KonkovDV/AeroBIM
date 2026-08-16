@@ -320,7 +320,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "IND-06",
         "industry",
         "AEC-Bench (Mankodiya et al. 2026, arXiv:2603.29199)",
-        "Inventory 196 tasks / 9 families; Harbor agent NOT_RUN; authors: coding agents fail visual grounding",
+        "Inventory 196 tasks / 9 families; Harbor agent NOT_RUN; "
+        "authors: coding agents fail visual grounding",
         "AEC-Bench run as product drawing literacy / RT-001 CLOSED",
         "docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md",
         "Harbor only as labeled open-bench, never as Samolet PD",
@@ -420,7 +421,8 @@ def ledger_payload(*, generated_at: str) -> dict[str, Any]:
 
 def render_markdown(payload: dict[str, Any]) -> str:
     lines = [
-        '<!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->',
+        "<!-- claims-lint: allow-file "
+        'reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->',
         "---",
         'title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"',
         f'date: "{str(payload.get("generated_at") or "")[:10]}"',
@@ -442,8 +444,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         f"- Checkpoint **{CHECKPOINT}**",
         f"- audited_head `{payload.get('audited_head')}`",
-        f"- closes_rt001/002/003: **false**",
-        f"- CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`",
+        "- closes_rt001/002/003: **false**",
+        "- CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`",
         "",
         "Продуктовая точность по-прежнему только через `PrecisionClaim.publishable` "
         "(corpus_kind=customer, ≥2 разметчика, κ/α). Этот ledger её не выдаёт.",

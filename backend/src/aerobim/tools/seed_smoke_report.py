@@ -7,8 +7,6 @@ import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 
-import pymupdf
-
 from aerobim.domain.models import (
     ClashResult,
     ComparisonOperator,
@@ -64,6 +62,13 @@ def _extract_product_guids(ifc_path: Path) -> list[str]:
 
 
 def _create_smoke_pdf(storage_dir: Path) -> Path:
+    try:
+        import pymupdf
+    except ModuleNotFoundError as exc:  # optional AGPL extra
+        raise RuntimeError(
+            "Smoke-sheet generation requires PyMuPDF. Install the optional 'pdf-agpl' extra."
+        ) from exc
+
     input_dir = storage_dir / "smoke-inputs"
     input_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = input_dir / "smoke-review-sheet.pdf"

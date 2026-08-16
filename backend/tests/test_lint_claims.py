@@ -272,9 +272,7 @@ class LintClaimsTests(unittest.TestCase):
             _should_scan(_REPO / "docs" / "gtm" / "SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md")
         )
         self.assertFalse(
-            _should_scan(
-                _REPO / "docs" / "quality" / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md"
-            )
+            _should_scan(_REPO / "docs" / "quality" / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md")
         )
 
     def test_exclusion_stats_count_fragment_blind_zone(self) -> None:

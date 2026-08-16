@@ -121,7 +121,10 @@ class TokenVault:
             self.evictions += 1
 
     def restore(self, *, tenant_id: str, token: str) -> str | None:
-        return self._by_tenant.get(tenant_id, {}).get(token)
+        bucket = self._by_tenant.get(tenant_id)
+        if bucket is None:
+            return None
+        return bucket.get(token)
 
 
 def truncate_flagged(value: str, *, max_len: int) -> tuple[str, bool]:

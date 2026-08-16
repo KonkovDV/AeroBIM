@@ -15,7 +15,6 @@ from __future__ import annotations
 import unicodedata
 from dataclasses import dataclass
 
-
 _GROUPING_SPACES = (
     "\u00a0",  # NBSP
     "\u202f",  # narrow NBSP

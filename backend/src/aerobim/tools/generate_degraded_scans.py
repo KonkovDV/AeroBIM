@@ -27,9 +27,10 @@ import hashlib
 import json
 import random
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
-import pymupdf
+if TYPE_CHECKING:
+    import pymupdf
 
 _DEFAULT_DPI_VARIANTS = (150, 96, 72)
 _DEFAULT_ANGLES = (1.0, 3.0)
@@ -43,6 +44,13 @@ def _sha256_bytes(payload: bytes) -> str:
 
 
 def _render_page(page: pymupdf.Page, *, dpi: int, rotate_degrees: float = 0.0) -> pymupdf.Pixmap:
+    try:
+        import pymupdf
+    except ModuleNotFoundError as exc:  # optional AGPL extra
+        raise RuntimeError(
+            "Degraded-scan generation requires PyMuPDF. Install the optional 'pdf-agpl' extra."
+        ) from exc
+
     matrix = pymupdf.Matrix(dpi / 72.0, dpi / 72.0)
     if rotate_degrees:
         matrix = matrix * pymupdf.Matrix(rotate_degrees)
@@ -100,6 +108,13 @@ def generate_degraded_scans(
     source_bytes = source_path.read_bytes()
     source_sha = _sha256_bytes(source_bytes)
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        import pymupdf
+    except ModuleNotFoundError as exc:  # optional AGPL extra
+        raise RuntimeError(
+            "Degraded-scan generation requires PyMuPDF. Install the optional 'pdf-agpl' extra."
+        ) from exc
 
     document = pymupdf.open(source_path)
     try:

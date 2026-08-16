@@ -217,8 +217,7 @@ def confirm_annotation_ifc_links(
     if spatial_index is None:
         # Index unavailable: never keep a pre-set ifc_guid (P2-04 / HD8-P204-01).
         return [
-            replace(link, ifc_guid=None) if link.ifc_guid is not None else link
-            for link in links
+            replace(link, ifc_guid=None) if link.ifc_guid is not None else link for link in links
         ]
     bboxes = annotation_bboxes or {}
     return [

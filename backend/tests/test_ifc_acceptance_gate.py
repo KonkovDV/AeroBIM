@@ -40,7 +40,9 @@ def _issue(**kwargs: object) -> ValidationIssue:
     return ValidationIssue(**payload)  # type: ignore[arg-type]
 
 
-def _report(*, passed: bool, outcome: PackageOutcome, issues: tuple[ValidationIssue, ...]) -> ValidationReport:
+def _report(
+    *, passed: bool, outcome: PackageOutcome, issues: tuple[ValidationIssue, ...]
+) -> ValidationReport:
     return ValidationReport(
         report_id="r1",
         request_id="q1",

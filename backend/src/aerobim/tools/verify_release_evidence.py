@@ -51,9 +51,7 @@ def resolve_release_evidence_day(repo: Path, day: str | None) -> tuple[str | Non
         if path.is_file() and (match := _RELEASE_STATUS_DAY_RE.fullmatch(path.name))
     ]
     if not dates:
-        return None, (
-            "no release-status-YYYY-MM-DD.json found; pass --day YYYY-MM-DD explicitly"
-        )
+        return None, ("no release-status-YYYY-MM-DD.json found; pass --day YYYY-MM-DD explicitly")
     return max(dates), None
 
 

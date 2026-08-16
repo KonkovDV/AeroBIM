@@ -331,9 +331,7 @@ class IfcOpenShellNumericParseTests(unittest.TestCase):
             operator=ComparisonOperator.EQUALS,
             expected_value="1234.56",
         )
-        self.assertTrue(
-            IfcOpenShellValidator()._matches_requirement("1.234,56", requirement, {})
-        )
+        self.assertTrue(IfcOpenShellValidator()._matches_requirement("1.234,56", requirement, {}))
 
     def test_eu_grouped_observed_mismatches_different_plain_expected(self) -> None:
         requirement = ParsedRequirement(
@@ -341,9 +339,7 @@ class IfcOpenShellNumericParseTests(unittest.TestCase):
             operator=ComparisonOperator.EQUALS,
             expected_value="1234.56",
         )
-        self.assertFalse(
-            IfcOpenShellValidator()._matches_requirement("1.000,00", requirement, {})
-        )
+        self.assertFalse(IfcOpenShellValidator()._matches_requirement("1.000,00", requirement, {}))
 
     def test_unparsable_observed_against_numeric_expected_is_mismatch(self) -> None:
         requirement = ParsedRequirement(
@@ -351,9 +347,7 @@ class IfcOpenShellNumericParseTests(unittest.TestCase):
             operator=ComparisonOperator.EQUALS,
             expected_value="5.0",
         )
-        self.assertFalse(
-            IfcOpenShellValidator()._matches_requirement("abc", requirement, {})
-        )
+        self.assertFalse(IfcOpenShellValidator()._matches_requirement("abc", requirement, {}))
 
     def test_alphanumeric_equals_still_uses_string_compare(self) -> None:
         requirement = ParsedRequirement(
@@ -361,9 +355,7 @@ class IfcOpenShellNumericParseTests(unittest.TestCase):
             operator=ComparisonOperator.EQUALS,
             expected_value="REI60",
         )
-        self.assertTrue(
-            IfcOpenShellValidator()._matches_requirement("REI60", requirement, {})
-        )
+        self.assertTrue(IfcOpenShellValidator()._matches_requirement("REI60", requirement, {}))
 
     def test_ru_grouped_expected_parses_for_numeric_equals(self) -> None:
         requirement = ParsedRequirement(

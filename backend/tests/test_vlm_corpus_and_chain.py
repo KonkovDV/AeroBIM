@@ -15,12 +15,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import pymupdf
+import pytest
 
 from aerobim.tools.export_detections_from_report import build_detections_document
 from aerobim.tools.generate_degraded_scans import generate_degraded_scans
 from aerobim.tools.generate_vlm_fixture_corpus import generate_vlm_fixture_corpus
 from aerobim.tools.run_pilot_harness import run_pilot_harness
+
+pymupdf = pytest.importorskip("pymupdf")
 
 _REPO = Path(__file__).resolve().parents[2]
 

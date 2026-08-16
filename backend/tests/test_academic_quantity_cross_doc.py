@@ -134,7 +134,9 @@ class CrossDocHd10SeamTests(unittest.TestCase):
                 self._width(SourceKind.CALCULATION, "10.005", "м2"),
             ]
         )
-        area_issues = [issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT]
+        area_issues = [
+            issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT
+        ]
         self.assertEqual(len(area_issues), 1)
         self.assertEqual(area_issues[0].conflict_kind, ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE)
         self.assertEqual(area_issues[0].severity, Severity.INFO)
@@ -173,7 +175,9 @@ class CrossDocHd10SeamTests(unittest.TestCase):
                 self._width(SourceKind.CALCULATION, "2000", "m2"),
             ]
         )
-        area_issues = [issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT]
+        area_issues = [
+            issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT
+        ]
         self.assertEqual(len(area_issues), 1)
         self.assertEqual(area_issues[0].conflict_kind, ConflictKind.HARD_CONFLICT)
 
@@ -187,7 +191,9 @@ class CrossDocHd10SeamTests(unittest.TestCase):
                 self._width(SourceKind.CALCULATION, "1254", "m2"),
             ]
         )
-        area_issues = [issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT]
+        area_issues = [
+            issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT
+        ]
         self.assertEqual(len(area_issues), 1)
         self.assertEqual(area_issues[0].conflict_kind, ConflictKind.UNPARSED_NUMERIC)
         self.assertIn("Unparsed numeric", area_issues[0].message)

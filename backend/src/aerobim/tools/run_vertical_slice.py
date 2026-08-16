@@ -369,7 +369,9 @@ def run_vertical_slice(
                 None,
             )
             method = (
-                "ocr" if annotation.source and "ocr" in annotation.source.lower() else "pdf_text_layer"
+                "ocr"
+                if annotation.source and "ocr" in annotation.source.lower()
+                else "pdf_text_layer"
             )
             record = {
                 "annotation_id": annotation.annotation_id,
@@ -659,7 +661,6 @@ def run_vertical_slice(
             "disabled": True,
             "claim": "overlay/CV sidecar is P1; never writes summary.passed",
         }
-
 
     # Honest sidecar: explicit limitations and reproduction steps for the demo.
     limitations = {

@@ -23,8 +23,7 @@ def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> 
     }.get(issue.category, 0)
     conflict_score = (
         10
-        if issue.conflict_kind
-        in {ConflictKind.HARD_CONFLICT, ConflictKind.UNPARSED_NUMERIC}
+        if issue.conflict_kind in {ConflictKind.HARD_CONFLICT, ConflictKind.UNPARSED_NUMERIC}
         else 0
     )
     score = sev_score + cat_score + conflict_score + _clash_triage_boost(issue)

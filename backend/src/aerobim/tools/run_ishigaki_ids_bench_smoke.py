@@ -264,9 +264,7 @@ def audit_gold_ids(
         )
 
     ids_files = sorted(
-        path
-        for path in dataset_root.rglob("*.ids")
-        if path.is_file() and path.name != "_probe.ids"
+        path for path in dataset_root.rglob("*.ids") if path.is_file() and path.name != "_probe.ids"
     )
     if not ids_files:
         return skipped_payload(

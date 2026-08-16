@@ -387,7 +387,9 @@ def _open_pinned(request: Request, *, timeout: float, allow_http: bool) -> Any:
             def https_open(self, req):  # type: ignore[no-untyped-def]
                 return self.do_open(_PinnedHTTPSConnection, req)
 
-        opener = build_opener(_NullProxyHandler(), _RejectRedirects, _PinnedHTTPSHandler(context=context))
+        opener = build_opener(
+            _NullProxyHandler(), _RejectRedirects, _PinnedHTTPSHandler(context=context)
+        )
     else:
         if not allow_http:
             raise UnsafeOutboundUrlError("HTTP outbound is disabled")
@@ -418,7 +420,9 @@ def safe_datastore_urlopen(request: Request, *, timeout: float) -> Any:
             try:
                 infos = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
             except socket.gaierror as exc:
-                raise UnsafeOutboundUrlError(f"Datastore host DNS resolution failed: {host}") from exc
+                raise UnsafeOutboundUrlError(
+                    f"Datastore host DNS resolution failed: {host}"
+                ) from exc
             if not infos:
                 raise UnsafeOutboundUrlError(
                     f"Datastore host DNS resolution returned no addresses: {host}"
@@ -449,9 +453,7 @@ def safe_datastore_urlopen(request: Request, *, timeout: float) -> Any:
             method=request.get_method(),
         )
         try:
-            return _open_pinned(
-                pinned_request, timeout=timeout, allow_http=parsed.scheme == "http"
-            )
+            return _open_pinned(pinned_request, timeout=timeout, allow_http=parsed.scheme == "http")
         except URLError as exc:
             raise UnsafeOutboundUrlError(f"Datastore request failed: {exc}") from exc
     return urlopen(request, timeout=timeout)  # noqa: S310 — unix / non-HTTP after jail

@@ -278,9 +278,7 @@ class CrossDocumentContradictionDetector:
         """
         if value_a is None or value_b is None:
             return ConflictKind.AMBIGUOUS_MAPPING
-        if (
-            looks_like_numeric_token(value_a) and parse_localized_number(value_a) is None
-        ) or (
+        if (looks_like_numeric_token(value_a) and parse_localized_number(value_a) is None) or (
             looks_like_numeric_token(value_b) and parse_localized_number(value_b) is None
         ):
             return ConflictKind.UNPARSED_NUMERIC
@@ -301,11 +299,7 @@ class CrossDocumentContradictionDetector:
                 if si_compare(q_a, q_b, epsilon=eps):
                     return ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
                 return ConflictKind.HARD_CONFLICT
-            if (
-                unit_a
-                and unit_b
-                and normalize_unit_token(unit_a) != normalize_unit_token(unit_b)
-            ):
+            if unit_a and unit_b and normalize_unit_token(unit_a) != normalize_unit_token(unit_b):
                 return ConflictKind.UNIT_MISMATCH
             eps = self._tolerance.epsilon_for_unit(q_a.ucum_code or unit_a or unit_b or "")
             if si_compare(q_a, q_b, epsilon=eps):
@@ -315,11 +309,7 @@ class CrossDocumentContradictionDetector:
         a_num = to_float(value_a.strip())
         b_num = to_float(value_b.strip())
         if a_num is not None and b_num is not None:
-            if (
-                unit_a
-                and unit_b
-                and normalize_unit_token(unit_a) != normalize_unit_token(unit_b)
-            ):
+            if unit_a and unit_b and normalize_unit_token(unit_a) != normalize_unit_token(unit_b):
                 return ConflictKind.UNIT_MISMATCH
             eps = self._tolerance.epsilon_for_unit(unit_a or unit_b or "")
             if abs(a_num - b_num) <= eps:

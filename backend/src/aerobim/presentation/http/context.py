@@ -329,7 +329,7 @@ class ApiContext:
                 tenant_id=tenant,
             ):
                 raise HTTPException(status_code=404, detail=public_not_found_detail())
-        report = self.audit_store.get(report_id)
+        report: ValidationReport | None = self.audit_store.get(report_id)
         if report is None:
             raise HTTPException(status_code=404, detail=public_not_found_detail())
         self.assert_report_access(report, principal)
@@ -344,7 +344,7 @@ class ApiContext:
         get_job_status_use_case = self.container.resolve(
             Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
         )
-        job = get_job_status_use_case.execute(job_id)
+        job: AnalyzeProjectPackageJob | None = get_job_status_use_case.execute(job_id)
         if job is None:
             raise HTTPException(status_code=404, detail=public_not_found_detail())
         self.assert_job_access(job, principal)

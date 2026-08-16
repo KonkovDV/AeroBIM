@@ -83,7 +83,10 @@ class OidcTokenValidator:
                 now = time.monotonic()
                 self._unknown_kid_until[kid] = now + _FORCE_JWKS_COOLDOWN_S
                 if len(self._unknown_kid_until) > _UNKNOWN_KID_CAP:
-                    oldest = min(self._unknown_kid_until, key=self._unknown_kid_until.get)
+                    oldest = min(
+                        self._unknown_kid_until,
+                        key=lambda kid: self._unknown_kid_until[kid],
+                    )
                     self._unknown_kid_until.pop(oldest, None)
                 raise OidcValidationError(f"No JWKS key matched kid={kid!r}")
             signing_key = PyJWK.from_dict(key_data)

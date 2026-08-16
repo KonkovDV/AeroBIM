@@ -49,8 +49,13 @@ def _validate_path_components(normalized: str) -> None:
     (``safe_storage_token`` encodes ``:`` as ``!3a``).
     """
     for component in _COMPONENT_SPLIT.split(normalized):
-        if not component or component in (".", ".."):
+        if not component or component == ".":
             continue
+        if component == "..":
+            # Split-level reject: Path.parts misses ".." on POSIX when the
+            # vector uses Windows separators ("..\\evil" is one component there).
+            # Message keeps the boundary contract pinned by RT phase-4 tests.
+            raise PathJailError(f"Path escapes storage boundary: {normalized}")
         if ":" in component:
             # NTFS alternate data streams: evil.png::$DATA / evil.txt:hidden.
             raise PathJailError("Colons / NTFS data streams are not allowed in paths")

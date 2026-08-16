@@ -12,6 +12,7 @@ from aerobim.domain.system_capabilities import (
 )
 from aerobim.infrastructure.auth.oidc_bff_phase3 import (
     DEFAULT_BFF_SESSION_STORE,
+    OidcBffSession,
     build_phase3_login_payload,
     build_phase3_session_payload,
     exchange_authorization_code,
@@ -45,7 +46,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
     def _cookie_name() -> str:
         return session_cookie_name(secure=_cookie_secure())
 
-    def _session_from_request(request: Request):
+    def _session_from_request(request: Request) -> OidcBffSession | None:
         raw = request.cookies.get(_cookie_name())
         session_id = parse_session_cookie(raw, _cookie_secret())
         if session_id is None:

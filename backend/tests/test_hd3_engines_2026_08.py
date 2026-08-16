@@ -26,9 +26,7 @@ class Hd3ClashMapperTests(unittest.TestCase):
 
     def test_clash_without_guids_fail_closed(self) -> None:
         with self.assertRaises(ClashCapabilityError) as ctx:
-            clash_results_from_sets(
-                [{"clashes": {"1": {"a_name": "Pipe", "b_name": "Duct"}}}]
-            )
+            clash_results_from_sets([{"clashes": {"1": {"a_name": "Pipe", "b_name": "Duct"}}}])
         self.assertEqual(ctx.exception.status, "failed")
 
 

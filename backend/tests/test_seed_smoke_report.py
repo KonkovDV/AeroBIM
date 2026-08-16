@@ -5,9 +5,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.tools.seed_smoke_report import SMOKE_REPORT_ID, seed_smoke_report
+
+pytest.importorskip("pymupdf")
 
 
 class SeedSmokeReportTests(unittest.TestCase):
