@@ -46,10 +46,11 @@ function throwForFailedResponse(response: Response): never {
   throw new Error(`Request failed with ${response.status}: ${response.statusText}`);
 }
 
-async function readJson<T>(url: string): Promise<T> {
+async function readJson<T>(url: string, init?: { signal?: AbortSignal }): Promise<T> {
   const response = await fetch(url, {
     headers: authHeaders(),
     credentials: "include",
+    signal: init?.signal,
   });
 
   if (!response.ok) {
@@ -89,7 +90,10 @@ export function buildDrawingAssetPreviewUrl(reportId: string, assetId: string): 
   return `${apiBaseUrl}/v1/reports/${reportId}/drawing-assets/${assetId}/preview`;
 }
 
-export async function fetchReports(filters: ReportListFilters = {}): Promise<ReportListResponse> {
+export async function fetchReports(
+  filters: ReportListFilters = {},
+  init?: { signal?: AbortSignal },
+): Promise<ReportListResponse> {
   const query = new URLSearchParams();
   if (filters.project) {
     query.set("project", filters.project);
@@ -102,11 +106,14 @@ export async function fetchReports(filters: ReportListFilters = {}): Promise<Rep
   }
   const queryString = query.toString();
   const url = queryString ? `${apiBaseUrl}/v1/reports?${queryString}` : `${apiBaseUrl}/v1/reports`;
-  return readJson<ReportListResponse>(url);
+  return readJson<ReportListResponse>(url, init);
 }
 
-export async function fetchReport(reportId: string): Promise<ValidationReport> {
-  return readJson<ValidationReport>(`${apiBaseUrl}/v1/reports/${reportId}`);
+export async function fetchReport(
+  reportId: string,
+  init?: { signal?: AbortSignal },
+): Promise<ValidationReport> {
+  return readJson<ValidationReport>(`${apiBaseUrl}/v1/reports/${reportId}`, init);
 }
 
 export interface CheckCoverageSourceRow {

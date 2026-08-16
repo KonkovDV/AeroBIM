@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.39"
+version: "1.6.40"
 last_updated: "2026-08-16"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-16
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-16 · **v1.6.39** — Academic literature triage (AEC-Bench / ifc-bench v2 / LLM-as-judge / clash 2026 / ISO 19650-6); RT-001/002/003 still OPEN  
+**last_updated:** 2026-08-16 · **v1.6.40** — HD10: SI ε-guard + NFKC units in cross-doc classify; AbortController on report fetches; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Jury / MIK:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
@@ -22,6 +22,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 
 | Track | Eng status | Customer |
 |---|---|---|
+| **HD10 cross-doc / reports** | `classify_conflict_kind` compares SI within ε (no false HARD on equal values); unit tokens NFKC-folded; report list/detail fetches abort on filter change | Not RT CLOSED; not customer accuracy |
 | **Wave A (14.08 evening)** | MinStroy survey XSD intake; IfcClash `detect_clearance_between` extra-method on gap pair; clash→BCF **file ingest**; jurisdiction IDS document audit (50 files); SP 63 cover *template* | Not RT-001/002/003 CLOSED; HVAC fixture unused (no geometry); `cde_import=NOT_VERIFIED`; not a solver |
 | **IDS fail-closed (0.4)** | SKIPPED / `ifcVersion` mismatch → ERROR; BSI 0101 live | Not product accuracy; labeled divergences |
 | **Task 2 partial package** | `ifc_path` optional on analyze; document-only mode SKIPPED/NOT_VERIFIED for IFC engines; fail-closed if clash/MEP required | Not Checkpoint GO; not product accuracy |

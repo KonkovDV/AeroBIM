@@ -17,7 +17,7 @@ from aerobim.domain.models import (
     ToleranceConfig,
     ValidationIssue,
 )
-from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
+from aerobim.domain.quantity import QuantityValue, normalize_unit_token, parse_quantity, si_compare
 
 _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "m": ("m", 1.0),
@@ -253,9 +253,13 @@ class CrossDocumentContradictionDetector:
         """Classify a detected cross-document conflict into a ``ConflictKind``.
 
         Decision order:
-        1. UNIT_MISMATCH — same dimensionality but inconsistent unit encoding.
-        2. HARD_CONFLICT — values differ after full SI normalisation.
-        3. AMBIGUOUS_MAPPING — non-numeric values with no unit context.
+        1. UNIT_MISMATCH — incompatible or inconsistent unit encoding
+           (including dimension mismatch, e.g. m vs m2).
+        2. SOFT_CONFLICT_WITHIN_TOLERANCE — SI values agree within ε.
+           Fail-closed guard: never claim HARD on equal / in-band values
+           even if a caller skipped ``values_conflict``.
+        3. HARD_CONFLICT — values differ after full SI normalisation.
+        4. AMBIGUOUS_MAPPING — non-numeric values with no unit context.
         """
         if value_a is None or value_b is None:
             return ConflictKind.AMBIGUOUS_MAPPING
@@ -272,16 +276,33 @@ class CrossDocumentContradictionDetector:
             if q_a.ucum_code and q_b.ucum_code:
                 if q_a.dimension != q_b.dimension:
                     return ConflictKind.UNIT_MISMATCH
+                eps = self._tolerance.epsilon_for_unit(q_a.ucum_code)
+                if si_compare(q_a, q_b, epsilon=eps):
+                    return ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
                 return ConflictKind.HARD_CONFLICT
-            if unit_a and unit_b and unit_a.strip().lower() != unit_b.strip().lower():
+            if (
+                unit_a
+                and unit_b
+                and normalize_unit_token(unit_a) != normalize_unit_token(unit_b)
+            ):
                 return ConflictKind.UNIT_MISMATCH
+            eps = self._tolerance.epsilon_for_unit(q_a.ucum_code or unit_a or unit_b or "")
+            if si_compare(q_a, q_b, epsilon=eps):
+                return ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
             return ConflictKind.HARD_CONFLICT
 
         a_num = to_float(value_a.strip())
         b_num = to_float(value_b.strip())
         if a_num is not None and b_num is not None:
-            if unit_a and unit_b and unit_a.strip().lower() != unit_b.strip().lower():
+            if (
+                unit_a
+                and unit_b
+                and normalize_unit_token(unit_a) != normalize_unit_token(unit_b)
+            ):
                 return ConflictKind.UNIT_MISMATCH
+            eps = self._tolerance.epsilon_for_unit(unit_a or unit_b or "")
+            if abs(a_num - b_num) <= eps:
+                return ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
             return ConflictKind.HARD_CONFLICT
 
         # Non-numeric / uncalibrated strings: do not pretend hard SI conflict.
@@ -305,8 +326,8 @@ class CrossDocumentContradictionDetector:
         if a_str.lower() == b_str.lower():
             return False
         # Unit-normalized equivalence (1 m vs 1000 mm) is not a soft conflict.
-        unit_a_norm = (unit_a or "").strip().lower()
-        unit_b_norm = (unit_b or "").strip().lower()
+        unit_a_norm = normalize_unit_token(unit_a)
+        unit_b_norm = normalize_unit_token(unit_b)
         if unit_a_norm and unit_b_norm and unit_a_norm != unit_b_norm:
             return False
         if self.values_conflict(
@@ -383,7 +404,7 @@ class CrossDocumentContradictionDetector:
     ) -> tuple[float, str] | None:
         if unit is None:
             return None
-        normalized = _CROSS_DOC_UNIT_TO_SI_FACTOR.get(unit.strip().lower())
+        normalized = _CROSS_DOC_UNIT_TO_SI_FACTOR.get(normalize_unit_token(unit))
         if normalized is None:
             return None
         canonical_unit, factor = normalized
