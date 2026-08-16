@@ -255,6 +255,8 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("валидация эффективности", text.lower())
         self.assertIn("Лидеры инноваций", text)
         self.assertIn("Checkpoint stays **NO_GO**", text)
+        self.assertIn("RT-JURY-K01", text)
+        self.assertIn("vertical-slice/report.html", text)
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
         self.assertNotIn("closes_rt003: true", text)
@@ -441,6 +443,24 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertNotIn("1.3.0", text)
         self.assertNotIn("±0.5%", text)
         self.assertNotIn("11 пунктов", text)
+
+
+class JuryPackHygieneTests(unittest.TestCase):
+    def _repo(self) -> Path:
+        return Path(__file__).resolve().parents[2]
+
+    def test_operator_kitchen_scripts_are_unpublished(self) -> None:
+        repo = self._repo()
+        forbidden = (
+            repo / "scripts" / "rewrite-author-konkovdv.sh",
+            repo / "scripts" / "git_commit.ps1",
+            repo / "scripts" / "fix_b5690_github_uid.ps1",
+            repo / "docs" / "architecture" / "ARCHITECTURE_REVIEW_BRIEF_2026_08.md",
+            repo / "docs" / "evidence" / "runtime-baseline-wave-a-windows-2026-08-15.md",
+            repo / "docs" / "evidence" / "kt2-handoff-2026-08-11" / "vertical-slice" / "report.html",
+        )
+        for path in forbidden:
+            self.assertFalse(path.is_file(), msg=path.as_posix())
 
 
 if __name__ == "__main__":
