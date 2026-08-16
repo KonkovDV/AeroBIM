@@ -71,7 +71,7 @@ class CatalogHonestyTests(unittest.TestCase):
 
         pins = {
             "conclusion-01-03.xsd": (
-                "a5a1b4d32d407ebbcde26e5687110d3535edfe31d85038f3540026ed465c59e8"
+                "46387fa5b4d41f7fad64ff67e8d9aa0b48c6d59864b2eca2acc4c9822aba90ec"
             ),
             "explanatorynote-01-07.xsd": (
                 "742dc8ec7f2df425b27fd59d419f3d01e4f25f53025475f9e71f7f4f45459df4"
@@ -86,7 +86,7 @@ class CatalogHonestyTests(unittest.TestCase):
                 "e3fbc7b338d2b5a7d88855d41904cea5077e681b804489c017f3017823a12569"
             ),
             "DesignAssignment-01-00.xsd": (
-                "ee8dd45c7b8d71f63a5991209c2f91edfa05daf530e411ae3071191d3f1406f4"
+                "f566de807cc3f74b807f0498dfd9e31948d14bc7c4146a4b9c1df1f8e2964b23"
             ),
             "EngineeringSurveysTask-01-00.xsd": (
                 "7da19458da8d4201f7b42d3ecc858e18f191c6112f2fed0dcf90a2eb22b3b112"
