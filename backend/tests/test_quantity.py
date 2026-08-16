@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.domain.quantity import parse_quantity, si_compare
+from aerobim.domain.quantity import normalize_unit_token, parse_quantity, si_compare
 
 
 class ParseQuantityTests(unittest.TestCase):
@@ -48,6 +48,18 @@ class ParseQuantityTests(unittest.TestCase):
         self.assertIsNone(q.ucum_code)
         self.assertIsNone(q.dimension)
         self.assertIsNone(q.si_value)
+
+    def test_nfkc_compatibility_superscript_looks_up_area(self) -> None:
+        q = parse_quantity(50.0, "м\u00b2")
+        self.assertEqual(q.ucum_code, "m2")
+        self.assertEqual(q.dimension, "area")
+        self.assertEqual(q.si_value, 50.0)
+        self.assertEqual(normalize_unit_token("м\u00b2"), normalize_unit_token("м2"))
+
+    def test_nfkc_fullwidth_letter_looks_up_metre(self) -> None:
+        q = parse_quantity(3.0, "\uff4d")  # fullwidth latin small letter m
+        self.assertEqual(q.ucum_code, "m")
+        self.assertEqual(q.si_value, 3.0)
 
 
 class SiCompareTests(unittest.TestCase):

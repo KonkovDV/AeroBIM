@@ -12,7 +12,19 @@ References:
 
 from __future__ import annotations
 
+import unicodedata
 from dataclasses import dataclass
+
+
+def normalize_unit_token(unit: str | None) -> str:
+    """NFKC + case-fold a unit token so «м²» and «м2» compare equal.
+
+    Superscript two (U+00B2) and compatibility superscripts (U+2072) fold to
+    ASCII ``2``. Call this before every registry lookup and unit-string compare.
+    """
+    if not unit:
+        return ""
+    return unicodedata.normalize("NFKC", unit.strip()).lower()
 
 
 @dataclass(frozen=True)
@@ -108,7 +120,7 @@ def parse_quantity(value: float, unit: str) -> QuantityValue:
     Unknown units are accepted but will have ucum_code=None,
     dimension=None, and si_value=None.
     """
-    normalized = unit.strip().lower()
+    normalized = normalize_unit_token(unit)
     registry_entry = _UNIT_REGISTRY.get(normalized)
     if registry_entry is None:
         return QuantityValue(value=value, unit=unit)

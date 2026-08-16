@@ -334,20 +334,24 @@ export default function App() {
   }, [filterPresets]);
 
   useEffect(() => {
+    const controller = new AbortController();
     let cancelled = false;
     setReportsLoading(true);
-    fetchReports({
-      project: deferredProjectFilter.trim() || undefined,
-      discipline: deferredDisciplineFilter.trim() || undefined,
-      passed:
-        deferredStatusFilter === "passed"
-          ? true
-          : deferredStatusFilter === "failed"
-            ? false
-            : undefined,
-    })
+    fetchReports(
+      {
+        project: deferredProjectFilter.trim() || undefined,
+        discipline: deferredDisciplineFilter.trim() || undefined,
+        passed:
+          deferredStatusFilter === "passed"
+            ? true
+            : deferredStatusFilter === "failed"
+              ? false
+              : undefined,
+      },
+      { signal: controller.signal },
+    )
       .then((response) => {
-        if (cancelled) {
+        if (cancelled || controller.signal.aborted) {
           return;
         }
         setReports(response.reports);
@@ -369,19 +373,20 @@ export default function App() {
         });
       })
       .catch((error: unknown) => {
-        if (cancelled) {
+        if (cancelled || controller.signal.aborted) {
           return;
         }
         setReportsError(error instanceof Error ? error.message : "Failed to load reports.");
       })
       .finally(() => {
-        if (!cancelled) {
+        if (!cancelled && !controller.signal.aborted) {
           setReportsLoading(false);
         }
       });
 
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [deferredProjectFilter, deferredDisciplineFilter, deferredStatusFilter]);
 
@@ -391,11 +396,12 @@ export default function App() {
       return;
     }
 
+    const controller = new AbortController();
     let cancelled = false;
     setReportLoading(true);
-    fetchReport(selectedReportId)
+    fetchReport(selectedReportId, { signal: controller.signal })
       .then((report) => {
-        if (cancelled) {
+        if (cancelled || controller.signal.aborted) {
           return;
         }
         setSelectedReport(report);
@@ -406,20 +412,21 @@ export default function App() {
         setRemarkSaveState("idle");
       })
       .catch((error: unknown) => {
-        if (cancelled) {
+        if (cancelled || controller.signal.aborted) {
           return;
         }
         setReportError(error instanceof Error ? error.message : "Failed to load the report.");
         setSelectedReport(null);
       })
       .finally(() => {
-        if (!cancelled) {
+        if (!cancelled && !controller.signal.aborted) {
           setReportLoading(false);
         }
       });
 
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [selectedReportId]);
 

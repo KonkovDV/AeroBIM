@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal
 
 from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.package_outcome import PackageOutcome
-from aerobim.domain.quantity import QuantityValue
+from aerobim.domain.quantity import QuantityValue, normalize_unit_token
 
 if TYPE_CHECKING:
     from aerobim.domain.norm_rule_eligibility import ExpertConfirmationEntry, RaseRoles
@@ -758,7 +758,7 @@ class ToleranceConfig:
         """Return the appropriate ε based on the measurement unit."""
         if unit is None:
             return self.default_epsilon
-        normalised = unit.strip().lower()
+        normalised = normalize_unit_token(unit)
         if normalised in {"m", "м", "mm", "мм", "cm", "см"}:
             return self.length_epsilon
         if normalised in {"ft", "feet", "foot", "in", "inch", "inches"}:

@@ -284,13 +284,48 @@ describe("App", () => {
 
     expect(await screen.findByText("Hospital Beta")).toBeTruthy();
     expect(screen.queryByText("Residential Tower Alpha")).toBeNull();
-    expect(fetchReportsMock).toHaveBeenLastCalledWith({
-      project: "hospital",
-      discipline: "mech",
-      passed: true,
-    });
+    expect(fetchReportsMock).toHaveBeenLastCalledWith(
+      {
+        project: "hospital",
+        discipline: "mech",
+        passed: true,
+      },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
     fireEvent.click(screen.getByRole("button", { name: /bbbbbbbb/i }));
     expect((await screen.findAllByText("Hospital beta issue")).length).toBeGreaterThan(0);
+  });
+
+  it("ignores a stale reports list after filters change", async () => {
+    const firstReport = buildReport();
+    const secondReport = buildSecondReport();
+    let releaseStale: (value: { reports: MockReportSummary[]; count: number }) => void = () => {
+      throw new Error("stale reports gate was not armed");
+    };
+    const staleGate = new Promise<{ reports: MockReportSummary[]; count: number }>((resolve) => {
+      releaseStale = resolve;
+    });
+
+    fetchReportsMock.mockImplementationOnce(async () => staleGate);
+    fetchReportsMock.mockResolvedValue({
+      reports: [toReportSummary(secondReport)],
+      count: 1,
+    });
+    fetchReportMock.mockImplementation(async (reportId: string) => {
+      return reportId === secondReport.report_id ? secondReport : firstReport;
+    });
+
+    render(<App />);
+    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
+
+    await waitFor(() => {
+      expect(fetchReportsMock.mock.calls.length).toBeGreaterThanOrEqual(2);
+    });
+
+    releaseStale({ reports: [toReportSummary(firstReport)], count: 1 });
+
+    expect(await screen.findByText("Hospital Beta")).toBeTruthy();
+    expect(screen.queryByText("Residential Tower Alpha")).toBeNull();
   });
 
   it("groups report cards by project when grouping mode is enabled", async () => {
@@ -329,11 +364,14 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
-    expect(fetchReportsMock).toHaveBeenCalledWith({
-      project: "hospital",
-      discipline: "mech",
-      passed: true,
-    });
+    expect(fetchReportsMock).toHaveBeenCalledWith(
+      {
+        project: "hospital",
+        discipline: "mech",
+        passed: true,
+      },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
     expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("hospital");
     expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("mech");
     expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
@@ -350,11 +388,14 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
-    expect(fetchReportsMock).toHaveBeenCalledWith({
-      project: "hospital",
-      discipline: "mech",
-      passed: true,
-    });
+    expect(fetchReportsMock).toHaveBeenCalledWith(
+      {
+        project: "hospital",
+        discipline: "mech",
+        passed: true,
+      },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
 
     fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "tower" } });
     fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "arch" } });
