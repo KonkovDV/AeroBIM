@@ -38,6 +38,9 @@ class InterpretationUseLedgerTests(unittest.TestCase):
         ids = {row["row_id"] for row in payload["rows"]}
         self.assertIn("TRK-03", ids)
         self.assertIn("IND-01", ids)
+        self.assertIn("IND-06", ids)
+        self.assertIn("IND-10", ids)
+        self.assertGreaterEqual(payload["row_count"], 22)
         self.assertEqual(len(ids), payload["row_count"])
 
     def test_export_writes_docs_evidence(self) -> None:

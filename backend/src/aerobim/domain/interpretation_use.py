@@ -16,7 +16,7 @@ from typing import Any
 
 LEDGER_ID = "aerobim_interpretation_use_ledger"
 SCHEMA_VERSION = "1.0.0"
-AUDITED_HEAD = "375109c"
+AUDITED_HEAD = "f9389bf"
 CHECKPOINT = "NO_GO"
 CLAIM_BOUNDARY = (
     "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture "
@@ -316,6 +316,56 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Не заменяет L3 customer corpus (Mushkani et al. project-level unit)",
         "open_bench",
     ),
+    _row(
+        "IND-06",
+        "industry",
+        "AEC-Bench (Mankodiya et al. 2026, arXiv:2603.29199)",
+        "Inventory 196 tasks / 9 families; Harbor agent NOT_RUN; authors: coding agents fail visual grounding",
+        "AEC-Bench run as product drawing literacy / RT-001 CLOSED",
+        "docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md",
+        "Harbor only as labeled open-bench, never as Samolet PD",
+        "open_bench",
+    ),
+    _row(
+        "IND-07",
+        "industry",
+        "LLM-as-judge 2026 (arXiv:2606.19544; 2509.20293; 2604.15224)",
+        "VLM remains advisory candidate; TP/FP require dual human raters and κ",
+        "Model confirms findings / judges precision / stakes-framed verdict",
+        "docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md",
+        "PrecisionClaim.publishable remains the only accuracy gate",
+        "protocol_planning",
+    ),
+    _row(
+        "IND-08",
+        "industry",
+        "Clash management 2026 (Buildings 16(13):2623) + Mehrbod/Hu/Lin",
+        "Geometric overlap on fixture; mep_system_clash=NOT_VERIFIED",
+        "MEP delivered; AABB inventory as coordination-complete",
+        "docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md",
+        "Signed clearance + federated customer IFC (RT-003)",
+        "protocol_planning",
+    ),
+    _row(
+        "IND-09",
+        "industry",
+        "ISO 19650-6:2025 health and safety information",
+        "Not implemented; Shared-gate is 5.6-like control only (ADR-001)",
+        "ISO 19650 compliant / Part 6 delivered / 5.7 automated",
+        "docs/architecture/ADR-001-verdict-ownership-2026.md",
+        "Do not claim Part 6; 5.7 stays human",
+        "not_licensed",
+    ),
+    _row(
+        "IND-10",
+        "industry",
+        "buildingSMART IDS 1.1 (feedback 2026, not final)",
+        "IDS 1.0 remains the approved standard (1 June 2024)",
+        "IDS 1.1 as current standard / certified profile",
+        "samples/ids-xsd/ids.xsd",
+        "Stay on IDS 1.0 checking + audit split until 1.1 is final",
+        "engine_regression",
+    ),
 )
 
 
@@ -351,6 +401,10 @@ def ledger_payload(*, generated_at: str) -> dict[str, Any]:
             "ISO 19650-2:2018 cl. 5.6–5.7",
             "buildingSMART IDS 1.0 (2024-06-01)",
             "Solihin & Eastman 2015",
+            "Hellin et al. 2026 ifc-bench v2 (arXiv:2605.01698) — QA ≠ package acceptance",
+            "Mankodiya et al. 2026 AEC-Bench (arXiv:2603.29199) — Harbor not a customer run",
+            "LLM-as-judge 2026 (arXiv:2606.19544) — agreement ≠ Cohen κ",
+            "ISO 19650-6:2025 — H&S sharing, not 5.7 authorization",
         ],
         "closes_rt001": False,
         "closes_rt002": False,

@@ -16,7 +16,7 @@ claim_boundary: >-
 Валидность — свойство **вывода из оценки**, не свойства программы (Messick 1995; Kane 2013). Этот файл — SSOT: что текущие цифры AeroBIM имеют право значить для Самолёта, трекера Дмитрия, Техлаба, МИК и отраслевых стандартов, и чего они значить не имеют.
 
 - Checkpoint **NO_GO**
-- audited_head `375109c`
+- audited_head `f9389bf`
 - closes_rt001/002/003: **false**
 - CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`
 
@@ -46,6 +46,11 @@ claim_boundary: >-
 | IND-03 | industry | Solihin & Eastman 2015 rule classes | Class 1–3 inventory of in-repo rules; class 4 not claimed | SP 63 template = proof of solution | `engine_regression` |
 | IND-04 | industry | ПНСТ 909-2024 (Renga publisher pack) | Aggregated 18/22 IDS runtime_clean snapshot 05.08 after ToS GO | Свежий 18/22; customer precision; эталон Самолёта | `open_bench` |
 | IND-05 | industry | IFC-Bench v2 / Ishigaki-IDS-Bench (open science) | Countable 27/1026; gold XML processability 166/166; observation unit stated | Paper generation F1; 514 false-pass; product accuracy | `open_bench` |
+| IND-06 | industry | AEC-Bench (Mankodiya et al. 2026, arXiv:2603.29199) | Inventory 196 tasks / 9 families; Harbor agent NOT_RUN; authors: coding agents fail visual grounding | AEC-Bench run as product drawing literacy / RT-001 CLOSED | `open_bench` |
+| IND-07 | industry | LLM-as-judge 2026 (arXiv:2606.19544; 2509.20293; 2604.15224) | VLM remains advisory candidate; TP/FP require dual human raters and κ | Model confirms findings / judges precision / stakes-framed verdict | `protocol_planning` |
+| IND-08 | industry | Clash management 2026 (Buildings 16(13):2623) + Mehrbod/Hu/Lin | Geometric overlap on fixture; mep_system_clash=NOT_VERIFIED | MEP delivered; AABB inventory as coordination-complete | `protocol_planning` |
+| IND-09 | industry | ISO 19650-6:2025 health and safety information | Not implemented; Shared-gate is 5.6-like control only (ADR-001) | ISO 19650 compliant / Part 6 delivered / 5.7 automated | `not_licensed` |
+| IND-10 | industry | buildingSMART IDS 1.1 (feedback 2026, not final) | IDS 1.0 remains the approved standard (1 June 2024) | IDS 1.1 as current standard / certified profile | `engine_regression` |
 
 ## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
 
@@ -75,6 +80,11 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | IND-03 | Class 4 только с расчётным solver, которого нет |
 | IND-04 | Полный extract + сценарии 3/18/21/22, если издатель даст IDS |
 | IND-05 | Не заменяет L3 customer corpus (Mushkani et al. project-level unit) |
+| IND-06 | Harbor only as labeled open-bench, never as Samolet PD |
+| IND-07 | PrecisionClaim.publishable remains the only accuracy gate |
+| IND-08 | Signed clearance + federated customer IFC (RT-003) |
+| IND-09 | Do not claim Part 6; 5.7 stays human |
+| IND-10 | Stay on IDS 1.0 checking + audit split until 1.1 is final |
 
 ## Evidence pointers
 
@@ -100,3 +110,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `IND-03`: `docs/evidence/solihin-rule-classes-2026-08.md`
 - `IND-04`: `docs/evidence/PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md`
 - `IND-05`: `docs/evidence/ifc-bench-v2-smoke-latest.json`
+- `IND-06`: `docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`
+- `IND-07`: `docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`
+- `IND-08`: `docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`
+- `IND-09`: `docs/architecture/ADR-001-verdict-ownership-2026.md`
+- `IND-10`: `samples/ids-xsd/ids.xsd`

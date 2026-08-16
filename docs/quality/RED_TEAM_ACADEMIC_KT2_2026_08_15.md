@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Academic Red Team; forbidden phrases as validity threats/non-claims; Checkpoint NO_GO" -->
 ---
 title: "Academic Red Team — construct validity, ISO 19650, Solihin classes, KT#2"
-date: "2026-08-15"
+date: "2026-08-16"
 status: active
 closes_rt001: false
 closes_rt002: false
@@ -10,12 +10,13 @@ claim_boundary: >
   Adversarial validity argument, not a product score. Checkpoint NO_GO.
   Fixture evidence is Messick content/substantive, not criterion validity.
   Not product accuracy. Not MEP delivered. Not CDE-ready. Not native DWG.
-  Local pytest 2259 is not the CI pin 2167.
+  Local pytest count is not the CI pin (N-26).
 ---
 
-# Academic Red Team (KT#2 window, 15.08.2026)
+# Academic Red Team (KT#2 window, refreshed 16.08.2026)
 
-**Object:** AeroBIM HEAD `005b7bcb` plus the dirty rehearsal/speech tree.  
+**Object:** public `main` after [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (jury pack; session dumps off the tree).  
+**Literature companion:** [`ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](ACADEMIC_LITERATURE_TRIAGE_2026_08.md) — August 2026 papers, IDS 1.1 status, ISO 19650-6, LLM-as-judge, clash FP.  
 **Question:** which *inferences* from current artefacts are licensed, and which are construct-invalid if spoken at KT#2, to Task 07, or to a seed associate?  
 **Checkpoint:** **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.
 
@@ -55,7 +56,7 @@ Validity is not a property of a tool. It is a property of **an inference from a 
 | buildingSMART IDS 1.0 (1 June 2024) | IDS *checking* = IFC against IDS. IDS *audit* = the `.ids` document itself. XmlIdsDocumentAuditor is the latter. |
 | Teece, D. J. (1986). Profiting from technological innovation. *Res. Policy* 15(6), 285–305. | Appropriability: MIT + no entity ⇒ complementary assets (services, labelled pack, HITL) are the only current rent. Not a SKU. |
 
-Internal SSOT: [`OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md), [`../evidence/tz-proxy-rehearsal-2026-08.md`](../evidence/tz-proxy-rehearsal-2026-08.md), ADR-001, Claims Lock, [`RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md).
+Internal SSOT: [`OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md), [`../evidence/tz-proxy-rehearsal-2026-08.md`](../evidence/tz-proxy-rehearsal-2026-08.md), ADR-001, Claims Lock, [`RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md), [`ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](ACADEMIC_LITERATURE_TRIAGE_2026_08.md).
 
 ## 2. Interpretation/Use Argument (Kane)
 
@@ -169,7 +170,16 @@ IDs continue the funding series so speech packs stay aligned.
 | RT-ACAD-13 | Inter-rater: invent κ | no dual labels | protocol exists, numbers do not |
 | RT-ACAD-14 | Clash FP: AABB/inventory as delivered clash | duplex 654 | NOT_VERIFIED |
 | RT-ACAD-15 | Appropriability: MIT = nothing to sell | LICENSE | services speech, not SAFE |
-| RT-ACAD-16 | Consequential: GitHub reads as LLM dump | README «План ИИ»; executor prompt; Cursor UUIDs | **MITIGATED 15.08** — operator briefs; product VLM/ADR-001 kept; `closes_rt*` unchanged |
+| RT-ACAD-16 | Consequential: GitHub reads as LLM dump | README «План ИИ»; executor prompt; Cursor UUIDs | **MITIGATED 15–16.08** — session dumps off public tree; product VLM/ADR-001 kept; `closes_rt*` unchanged |
+| RT-ACAD-17 | Construct substitution: IFC-Bench QA → expertise act | Hellin et al. 2026 (arXiv:2605.01698); 27/1026 smoke | `open_bench_only`; RT-001 OPEN |
+| RT-ACAD-18 | Construct substitution: AEC-Bench inventory → agent reads Samolet PD | Mankodiya et al. 2026 (arXiv:2603.29199); Harbor NOT_RUN | Do not name inventory as a run |
+| RT-ACAD-19 | VLM-as-judge replaces dual raters | arXiv:2606.19544 κ-deflation | `PrecisionClaim.publishable` only |
+| RT-ACAD-20 | Stakes signaling on advisory prompts | arXiv:2604.15224 | Model text must not say the pilot depends on the model |
+| RT-ACAD-21 | Geometric hit → coordination issue | *Buildings* 16(13):2623 (2026) | `mep_system_clash=NOT_VERIFIED` |
+| RT-ACAD-22 | IDS 1.1 / «certified» as current standard | bSI feedback May 2026; IDS 1.0 remains final | Audit ≠ checking ≠ Samolet EIR |
+| RT-ACAD-23 | «ISO 19650 compliant» without part number | ISO 19650-6:2025 is H&S sharing, not 5.7 | ADR-001; Part 6 not implemented |
+| RT-ACAD-24 | Planner n=111 spoken as measured 0.60 | Wilson / Brown–Cai–DasGupta 2001 | `protocol_planning` only |
+| RT-ACAD-25 | BCF ZIP → OpenCDE Foundation + named CDE | BCF-API 3.0 requires Foundation | T2 `NOT_VERIFIED` |
 
 ## 10. Tracker (Dmitry) mapping — academic reading of the six tasks
 
@@ -196,6 +206,10 @@ Legal entity; paid pilot / LOI; Samolet pack + two adjudicators; Renga IFC as-is
 
 ## 13. One sentence for the jury
 
-> We have a fail-closed, evidence-linked checker whose *fixture* scores are reproducible; we do not yet have a Kane-licensed argument that those scores mean Task 07 success on a Samolet package. Checkpoint stays **NO_GO** until the labelled pack exists.
+> We have a fail-closed, evidence-linked checker whose *fixture* scores are reproducible; we do not yet have a Kane-licensed argument that those scores mean Task 07 success on a Samolet package. August 2026 literature (AEC-Bench, ifc-bench v2, LLM-as-judge, clash-management reviews) **tightens** that boundary rather than relaxing it. Checkpoint stays **NO_GO** until the labelled pack exists.
 
 Formula: not more functions → more evidence → narrower scope → real pack → measured effect → then integration.
+
+## 14. Literature refresh (16.08)
+
+Full map, citations, and P0–P2 triage: [`ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](ACADEMIC_LITERATURE_TRIAGE_2026_08.md). That pass does **not** close RT-001/002/003 and does **not** treat Harbor-not-run as a score.

@@ -201,10 +201,40 @@ class AcademicRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("ISO 19650", text)
         self.assertIn("Goodhart", text)
         self.assertIn("NOT_IMPLEMENTED", text)
+        self.assertIn("Checkpoint stays **NO_GO**", text)
+        self.assertIn("ACADEMIC_LITERATURE_TRIAGE_2026_08.md", text)
+        self.assertIn("RT-ACAD-17", text)
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
         self.assertNotIn("closes_rt003: true", text)
+
+
+class AcademicLiteratureTriageHonestyTests(unittest.TestCase):
+    def test_literature_triage_does_not_close_blockers_or_run_harbor(self) -> None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "quality"
+            / "ACADEMIC_LITERATURE_TRIAGE_2026_08.md"
+        )
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("closes_rt003: false", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("Messick", text)
+        self.assertIn("Kane", text)
+        self.assertIn("2603.29199", text)
+        self.assertIn("2605.01698", text)
+        self.assertIn("2606.19544", text)
+        self.assertIn("ISO 19650-6:2025", text)
+        self.assertIn("IDS 1.1", text)
+        self.assertIn("Harbor **NOT_RUN**", text)
         self.assertIn("Checkpoint stays **NO_GO**", text)
+        self.assertNotIn("closes_rt001: true", text)
+        self.assertNotIn("closes_rt002: true", text)
+        self.assertNotIn("closes_rt003: true", text)
 
 
 class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
