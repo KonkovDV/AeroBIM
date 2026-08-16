@@ -195,6 +195,37 @@ class LintClaimsTests(unittest.TestCase):
                 sys.path.pop(0)
         self.assertEqual(hits, [])
 
+    def test_fabricated_doi_outside_audit_trail_is_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "live.md"
+            path.write_text("See doi:10.1016/j.aei.2026.103676 for the method.\n", encoding="utf-8")
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import lint_citation_twins  # type: ignore[import-not-found]
+
+                hits = lint_citation_twins(roots=[path])
+            finally:
+                if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertTrue(any("fabricated_doi" in h for h in hits))
+
+    def test_elsevier_year_twin_is_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "twins.md"
+            path.write_text(
+                "10.1016/j.aei.2025.103676 and 10.1016/j.aei.2026.103676\n",
+                encoding="utf-8",
+            )
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import lint_citation_twins  # type: ignore[import-not-found]
+
+                hits = lint_citation_twins(roots=[path])
+            finally:
+                if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertTrue(any("elsevier_year_twin" in h or "fabricated_doi" in h for h in hits))
+
 
 if __name__ == "__main__":
     unittest.main()

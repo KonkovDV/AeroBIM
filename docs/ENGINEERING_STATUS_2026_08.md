@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.21"
+version: "1.6.29"
 last_updated: "2026-08-16"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-16
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-16 · **v1.6.21** — IFC Acceptance Gate product freeze + demo CLI; RT-001/002/003 unchanged  
+**last_updated:** 2026-08-16 · **v1.6.29** — quota hold reconcile, JWKS cooldown, XFF-as-IP, IDS `status is True`, clash GUID fail-closed; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Wave A Red Team:** [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md)  
@@ -51,9 +51,17 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **ADR-002 open-core** | **accepted** 2026-08-05; LICENSE stays MIT | Boundary defined; not commercial features delivered |
 | **OIDC BFF POST-05** | Phase 2 stubs + Phase 3 lab (`oidc_bff_phase3_ready`): nonce bind, HMAC session cookie, GET login/callback/**session** rate-limit; `safe_urlopen`; lab `identity_verified=false` without JWKS | Production IdP + FE bearer removal still required; default `auth_bff=NOT_IMPLEMENTED` |
 | **BCF T2** | Verifier `--checklist` / `--eng-readiness`; pack STATUS stays NOT_VERIFIED | Needs real CDE log/screenshot/hashes |
-| **Native DWG** | `python -m aerobim.tools.validate_dwg_toolchain` reports `dwg_native=NOT_IMPLEMENTED` | Never DWG-ready; STUB-ODA-CAD-001 |
+| **Native DWG** | `python -m aerobim.tools.validate_dwg_toolchain` reports `dwg_native=NOT_IMPLEMENTED` | Forbidden: never DWG-ready; STUB-ODA-CAD-001 |
 | **Tracker sprint 15.08 evening** | IFC-release matrix refresh (`clash=skipped` on tiny walls); dataset hunt + re-runs; consult pack; GTM KPI = scheduled demos | Not customer GO; Harbor NOT_RUN |
 | **Wedge freeze (16.08)** | Product = IFC Acceptance Gate; CLI `run_demo_ifc_acceptance_gate` (`cv_sidecar=False`); overlay = P1 | Market GO ≠ Checkpoint GO; [`partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md) |
+| **HD triage remediations (16.08)** | 429 stamps CSP/XFO; outbound pin+null-proxy+shorthand; claims RU markers + four scanned files; baseline `tests_unaccounted=93` | Not RT-001/002/003 CLOSED |
+| **HD close-out (16.08)** | Quota hold+reconcile; JWKS 30s cooldown; XFF must be an IP; IDS pass only if `status is True`; clash without GUID → failed | Not RT-001/002/003 CLOSED |
+| **HD deep analysis (16.08)** | Five-round write-up; not a customer accuracy grade | Not RT-001/002/003 CLOSED |
+| **HD5 perimeter (16.08)** | SQL parameterized (confirm); DDL-at-boot documented; VLM egress allowlist confirm; HTML href allowlist; PDF CR/LF → space | Not RT-001/002/003 CLOSED |
+| **HD synthesis (16.08)** | Four-round culture score filed; evidentiary NO_GO confirmed; not a customer accuracy grade | Not RT-001/002/003 CLOSED |
+| **HD4 academic (16.08)** | Wilson n=111 regression; DOI year-twin lint; leak-scan JSON atoms; TokenVault LRU(4096); INV-02 documented as convention not type | Not RT-001/002/003 CLOSED |
+| **HD3 engines (16.08)** | IDS missing `status` → SKIPPED/ERROR; malformed IfcClash → failed; IFC cache LRU(8); BFF cookie ≠ principal; unknown BCF version 400 | Not RT-001/002/003 CLOSED |
+| **HD2 seams (16.08)** | JWKS kid refetch; `origin=advisory` out of reproducibility hash; DI singleton lock; trusted XFF; upload reserve-ahead + stale quota lock | Not RT-001/002/003 CLOSED |
 | **Defensive engineering pass (15.08)** | OIDC tenant only from `AEROBIM_OIDC_TENANT_CLAIM`; ACL-before-read + 404 anti-enum; Redis required outside dev; ZIP NUL/XML depth+text; runtime lock excludes PyMuPDF | Not RT-001/002/003 CLOSED; not RELEASE_GO |
 | **Dataset CLI (task 3, late 15.08)** | PNST 22-scenario CLI + frozen pairing; IFC-Bench v2 **27/1026** countable (`skip_breakdown` + two verified probes); Ishigaki gold-IDS smoke SKIPPED; DrawingVQA link-only | Not 18/22 rerun; Harbor NOT_RUN; not RT-001 |
 | **IfcClash tiny walls** | Skip degenerate products (`AEROBIM_CLASH_SKIP_TINY`, default on); all-skipped still FAILED | Not a silent pass |
@@ -81,7 +89,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 
 ## Forbidden (unchanged)
 
-Product accuracy >90%; customer SLA ≤30 min; native DWG; MEP delivered / `mep_system_clash=OK`; CDE_READY BCF; independent calc correctness; MIT-without-disclosure; bare-metal offline-ready; AABB/connects = verified geometric clash; open-corpora binary match / timing as product precision.
+Forbidden until evidenced: Product accuracy >90%; customer SLA ≤30 min; native DWG; MEP delivered / `mep_system_clash=OK`; CDE_READY BCF; independent calc correctness; MIT-without-disclosure; bare-metal offline-ready; AABB/connects = verified geometric clash; open-corpora binary match / timing as product precision.
 
 ## Live CLI demo (KT#2)
 

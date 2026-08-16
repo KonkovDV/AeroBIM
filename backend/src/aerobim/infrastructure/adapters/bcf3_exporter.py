@@ -46,6 +46,7 @@ from dataclasses import dataclass
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from aerobim.domain.clash_triage import TriagedClash, triage_clash_results
+from aerobim.infrastructure.adapters.bcf_report_exporter import bcf_topic_zip_dir
 from aerobim.domain.models import (
     FindingCategory,
     Severity,
@@ -89,10 +90,11 @@ def export_bcf3(report: ValidationReport) -> bytes:
         if topics:
             zf.writestr("extensions.xml", _extensions_xml(topics))
         for topic in topics:
-            zf.writestr(f"{topic.topic_guid}/", "")
-            zf.writestr(f"{topic.topic_guid}/markup.bcf", _build_markup3(topic))
+            topic_dir = bcf_topic_zip_dir(topic.topic_guid)
+            zf.writestr(f"{topic_dir}/", "")
+            zf.writestr(f"{topic_dir}/markup.bcf", _build_markup3(topic))
             zf.writestr(
-                f"{topic.topic_guid}/viewpoint.bcfv",
+                f"{topic_dir}/viewpoint.bcfv",
                 _build_viewpoint3(topic),
             )
 

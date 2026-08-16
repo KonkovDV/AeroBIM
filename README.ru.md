@@ -44,7 +44,7 @@ Project-package analyze; IFC / IDS / cross-doc; детерминированны
 
 > **Checkpoint: `NO_GO`** — внутренний статус готовности к *подписанию у заказчика*, **не** оценка «система не работает».  
 > По-русски: код и fixtures есть; **нет** корпуса «ПД РФ + заключение экспертизы», **нет** подписанного профиля приёмки «Самолёта», clash federated MEP **NOT_VERIFIED** (инвентарь duplex/mep измерен). Официальные IDS Мособлгосэкспертизы **уже опубликованы** и лежат в репозитории. Формулировка «нет утверждённых норм» — ложь. Без customer-профиля и корпуса checkpoint не снимаем.  
-> Остаётся: **RT-001** (корпус РФ-экспертизы; открытые AEC-Bench / IFC-Bench / GNI — другой контур), **RT-002** (профиль приёмки Самолёта ≠ IDS МОГЭ), **RT-003** (инвентарь публичных IFC есть, clash нет, не MEP delivered) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
+> Остаётся: **RT-001** (корпус РФ-экспертизы; открытые AEC-Bench / IFC-Bench / GNI — другой контур), **RT-002** (профиль приёмки Самолёта ≠ IDS МОГЭ), **RT-003** (инвентарь публичных IFC есть, clash нет, не заявляется MEP delivered) — [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).  
 > Запрещено до доказательств: точность >90%, DWG-ready, MEP delivered, CDE-ready BCF, корректность расчётов.  
 > SSOT: [Claims Lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) · [eng status авг 2026](docs/ENGINEERING_STATUS_2026_08.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md).  
 > Инженерная готовность выросла (WP-01…08 и др.) **без** закрытия customer-блокеров — Fixture GO ≠ Checkpoint GO.
@@ -344,6 +344,7 @@ AEROBIM_S3_REGION
 AEROBIM_S3_SECRET_ACCESS_KEY
 AEROBIM_SIGNOFF_PROFILE
 AEROBIM_STORAGE_DIR
+AEROBIM_TRUSTED_PROXY_IPS
 AEROBIM_VLM_ENABLED
 <!-- AEROBIM_DOCUMENTED_ENV:END -->
 

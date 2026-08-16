@@ -176,6 +176,8 @@ class ApiContext:
                 detail="Missing Authorization header",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        # BFF lab cookies are never accepted here. Unverified Phase-3 sessions
+        # (identity_verified=False) cannot become AuthPrincipal (HD3-BFF-01).
 
         scheme, _, token = authorization.partition(" ")
         if scheme.lower() != "bearer" or not token:

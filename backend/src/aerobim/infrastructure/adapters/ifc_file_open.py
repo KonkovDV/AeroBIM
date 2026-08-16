@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import threading
+from collections import OrderedDict
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -18,11 +19,13 @@ from typing import Any
 
 from aerobim.domain.ifc_spatial_index import IfcSpatialIndex
 
+_DEFAULT_MAX_CACHED_MODELS = 8
 _lock = threading.Lock()
-_memory: dict[tuple[str, int, int], Any] = {}
+_memory: OrderedDict[tuple[str, int, int], Any] = OrderedDict()
 _index_memory: dict[tuple[str, int, int], IfcSpatialIndex] = {}
 _cache_dir: Path | None = None
-_stats: dict[str, int] = {"opens": 0, "hits": 0, "misses": 0, "indexes_built": 0}
+_max_cached_models = _DEFAULT_MAX_CACHED_MODELS
+_stats: dict[str, int] = {"opens": 0, "hits": 0, "misses": 0, "indexes_built": 0, "evictions": 0}
 
 
 @dataclass(frozen=True)
@@ -35,11 +38,17 @@ class IfcParseSession:
     ifc_path: Path
 
 
-def configure_ifc_parse_cache(cache_dir: str | Path | None) -> None:
+def configure_ifc_parse_cache(
+    cache_dir: str | Path | None,
+    *,
+    max_models: int | None = None,
+) -> None:
     """Wire from bootstrap when Settings.ifc_parse_cache_dir is set."""
 
-    global _cache_dir
+    global _cache_dir, _max_cached_models
     with _lock:
+        if max_models is not None:
+            _max_cached_models = max(1, int(max_models))
         if cache_dir is None or str(cache_dir).strip() == "":
             _cache_dir = None
             return
@@ -51,11 +60,12 @@ def configure_ifc_parse_cache(cache_dir: str | Path | None) -> None:
 def reset_ifc_parse_cache_for_tests() -> None:
     """Clear memory + config (unit tests only)."""
 
-    global _cache_dir
+    global _cache_dir, _max_cached_models
     with _lock:
         _memory.clear()
         _index_memory.clear()
         _cache_dir = None
+        _max_cached_models = _DEFAULT_MAX_CACHED_MODELS
         for key in _stats:
             _stats[key] = 0
 
@@ -65,6 +75,13 @@ def ifc_parse_cache_stats() -> dict[str, int]:
 
     with _lock:
         return dict(_stats)
+
+
+def _evict_overflow_locked() -> None:
+    while len(_memory) > _max_cached_models:
+        old_key, _ = _memory.popitem(last=False)
+        _index_memory.pop(old_key, None)
+        _stats["evictions"] += 1
 
 
 def open_ifc_session(ifc_path: Path) -> IfcParseSession:
@@ -106,6 +123,7 @@ def open_ifc_model(ifc_path: Path) -> Any:
     with _lock:
         cached = _memory.get(key)
         if cached is not None:
+            _memory.move_to_end(key)
             _touch_marker(resolved, hit=True)
             _stats["opens"] += 1
             _stats["hits"] += 1
@@ -115,6 +133,8 @@ def open_ifc_model(ifc_path: Path) -> Any:
     model = ifcopenshell.open(str(resolved))
     with _lock:
         _memory[key] = model
+        _memory.move_to_end(key)
+        _evict_overflow_locked()
         _touch_marker(resolved, hit=False)
     return model
 
@@ -125,7 +145,8 @@ def _touch_marker(ifc_path: Path, *, hit: bool) -> None:
     digest = hashlib.sha256(str(ifc_path).encode("utf-8")).hexdigest()[:16]
     marker = _cache_dir / f"{digest}.json"
     payload = {
-        "path": str(ifc_path),
+        "path_digest": digest,
+        "name": ifc_path.name,
         "cache_hit": hit,
         "touched_at": datetime.now(UTC).isoformat(),
         "claim_boundary": "NFR observability only — not customer SLA evidence",

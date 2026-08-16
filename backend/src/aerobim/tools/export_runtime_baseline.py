@@ -822,6 +822,27 @@ def completeness_errors(baseline: dict[str, Any]) -> list[str]:
                 errors.append(f"backend.{key} must be a non-negative int, got {value!r}")
         if isinstance(backend.get("tests_passed"), int) and backend["tests_passed"] == 0:
             errors.append("backend.tests_passed is 0 (refusing empty run as complete)")
+        unaccounted = backend.get("tests_unaccounted")
+        if unaccounted is not None:
+            if not isinstance(unaccounted, int) or unaccounted < 0:
+                errors.append(
+                    f"backend.tests_unaccounted must be a non-negative int, got {unaccounted!r}"
+                )
+            elif all(
+                isinstance(backend.get(key), int)
+                for key in ("tests_collected", "tests_passed", "tests_skipped", "tests_failed")
+            ):
+                expected = (
+                    backend["tests_collected"]
+                    - backend["tests_passed"]
+                    - backend["tests_skipped"]
+                    - backend["tests_failed"]
+                )
+                if unaccounted != expected:
+                    errors.append(
+                        "backend.tests_unaccounted must equal collected − passed − skipped − "
+                        f"failed ({expected}), got {unaccounted}"
+                    )
 
     frontend = baseline.get("frontend")
     if not isinstance(frontend, dict):
@@ -1078,6 +1099,23 @@ def export_runtime_baseline(
             "tests_passed": tests_passed,
             "tests_skipped": tests_skipped,
             "tests_failed": tests_failed,
+            "tests_unaccounted": (
+                collected - tests_passed - tests_skipped - tests_failed
+                if all(
+                    isinstance(value, int)
+                    for value in (collected, tests_passed, tests_skipped, tests_failed)
+                )
+                else None
+            ),
+            "tests_unaccounted_note": (
+                "collected − passed − skipped − failed; remainder is typically "
+                "deselected/xfail vs the CI JUnit pin (HD-DOC-02)"
+                if all(
+                    isinstance(value, int)
+                    for value in (collected, tests_passed, tests_skipped, tests_failed)
+                )
+                else None
+            ),
             "source_loc": src_loc,
             "test_loc": test_loc,
             "test_functions": test_count,

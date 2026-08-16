@@ -17,7 +17,12 @@ return 1
 
 
 class RedisRateLimitBackend:
-    """Fixed-window counter shared across app replicas via Redis."""
+    """Fixed-window counter shared across app replicas via Redis.
+
+    HD2-RL-01: this is a fixed window (INCR+EXPIRE). In-process
+    ``InProcessRateLimitBackend`` is a sliding window. The same
+    ``max_events`` can admit ~2× burst at a Redis window boundary.
+    """
 
     def __init__(self, redis_url: str, *, key_prefix: str = "aerobim:ratelimit:") -> None:
         try:

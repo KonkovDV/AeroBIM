@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
+from threading import RLock
 from typing import Any
 
 Factory = Callable[["Container"], Any]
@@ -23,6 +24,7 @@ class Registration:
 class Container:
     def __init__(self) -> None:
         self._registrations: dict[str, Registration] = {}
+        self._singleton_lock = RLock()
 
     def register(
         self,
@@ -40,9 +42,12 @@ class Container:
             raise KeyError(f"Token is not registered: {token}")
 
         if registration.lifecycle is Lifecycle.SINGLETON:
-            if registration.instance is None:
-                registration.instance = registration.factory(self)
-            return registration.instance
+            if registration.instance is not None:
+                return registration.instance
+            with self._singleton_lock:
+                if registration.instance is None:
+                    registration.instance = registration.factory(self)
+                return registration.instance
 
         return registration.factory(self)
 

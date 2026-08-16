@@ -173,6 +173,15 @@ class WilsonIntervalTests(unittest.TestCase):
         k = round(0.75 * n)
         self.assertLessEqual(wilson_interval(k, n).half_width, 0.08)
 
+    def test_hd4_interim_n111_reproduces_docs(self) -> None:
+        # HD4-STAT-02: docs "recommended_n=111 for interim 0.60" is the planner output.
+        n = required_n_for_wilson_halfwidth(0.60, half_width=0.09)
+        self.assertEqual(n, 111)
+        k = round(0.60 * n)
+        half_width = wilson_interval(k, n).half_width
+        self.assertLessEqual(half_width, 0.09)
+        self.assertAlmostEqual(half_width, 0.0895, places=4)
+
 
 class ExactBinomialPowerTests(unittest.TestCase):
     def test_hand_computed_critical_value_n20(self) -> None:

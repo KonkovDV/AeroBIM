@@ -3,7 +3,10 @@
   "schema_version": "1.0.0",
   "note": "SSOT for the public-docs claims-drift guard (TR-401 / Red Team A1). Derived from audit/reports/CLAIMS_LOCK_2026_07_17.md. Each phrase is forbidden as an AFFIRMATIVE product claim; every occurrence in a scanned file must sit on a line that also carries a negation/honesty marker (e.g. 'Not claimed', 'Forbidden', 'Blocked', 'Missing'). Enforced by backend/tests/test_claims_forbidden_wording_guard.py.",
   "scanned_files": [
-    "README.md"
+    "README.md",
+    "README.ru.md",
+    "docs/TIER0_INDEX.md",
+    "docs/ENGINEERING_STATUS_2026_08.md"
   ],
   "forbidden_affirmative_phrases": [
     "accuracy >90%",
@@ -31,6 +34,13 @@
     "out of scope",
     "no_go",
     "not wired",
-    "not a "
+    "not a ",
+    "запрещено",
+    "не заявляется",
+    "не утвержд",
+    "не реализовано",
+    "не проверено",
+    "вне scope",
+    "до доказательств"
   ]
 }

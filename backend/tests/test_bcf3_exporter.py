@@ -404,9 +404,6 @@ class Bcf3HttpEndpointTests(unittest.TestCase):
             version_xml = zf.read("bcf.version").decode("utf-8")
         self.assertIn("3.0", version_xml)
 
-    def test_unknown_version_defaults_to_21(self) -> None:
+    def test_unknown_version_returns_400(self) -> None:
         response = self._client.get(f"/v1/reports/{self._report_id}/export/bcf?version=99")
-        self.assertEqual(200, response.status_code)
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zf:
-            version_xml = zf.read("bcf.version").decode("utf-8")
-        self.assertIn("2.1", version_xml)
+        self.assertEqual(400, response.status_code)

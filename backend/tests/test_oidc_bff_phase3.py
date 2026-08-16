@@ -304,6 +304,10 @@ class OidcBffAuthGetRateLimitTests(unittest.TestCase):
             params={"redirect_uri": "https://app.example.test/callback"},
         )
         self.assertEqual(second.status_code, 429)
+        self.assertEqual(second.headers.get("x-frame-options"), "DENY")
+        self.assertIn("default-src", second.headers.get("content-security-policy", ""))
+        self.assertTrue(second.headers.get("x-request-id"))
+        self.assertEqual(second.headers.get("retry-after"), "60")
 
     def test_session_shares_auth_get_budget(self) -> None:
         first = self.client.get(

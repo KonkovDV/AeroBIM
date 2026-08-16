@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -38,7 +39,7 @@ class IfcTesterIdsValidator:
                 "ifcopenshell and ifctester are required for IDS validation"
             ) from exc
 
-        ids_xml = ids_path.read_text(encoding="utf-8", errors="replace")
+        ids_xml = ids_path.read_bytes().decode("utf-8-sig", errors="replace")
         header = ifc_path.read_bytes()[: 64 * 1024].decode("utf-8", errors="replace")
         model_schema = parse_ifc_file_schema(header)
         our_mismatches = collect_schema_mismatches(
@@ -46,14 +47,28 @@ class IfcTesterIdsValidator:
             specs=parse_ids_specification_versions(ids_xml),
         )
 
-        specs = ids.open(str(ids_path))
-        from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+        # One decoded document for both parsers (HD3-IDS-02): IfcTester must not
+        # re-decode the on-disk bytes independently of our version gate.
+        with tempfile.NamedTemporaryFile(
+            suffix=".ids",
+            prefix="aerobim-ids-",
+            delete=False,
+            mode="w",
+            encoding="utf-8",
+        ) as handle:
+            handle.write(ids_xml)
+            decoded_ids_path = Path(handle.name)
+        try:
+            specs = ids.open(str(decoded_ids_path))
+            from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 
-        ifc_file = open_ifc_model(ifc_path)
-        specs.validate(ifc_file)
+            ifc_file = open_ifc_model(ifc_path)
+            specs.validate(ifc_file)
 
-        json_reporter = reporter.Json(specs)
-        results = json_reporter.report()
+            json_reporter = reporter.Json(specs)
+            results = json_reporter.report()
+        finally:
+            decoded_ids_path.unlink(missing_ok=True)
 
         mapped = self._map_results(results)
         independent_names = {mismatch.spec_name for mismatch in our_mismatches}
@@ -109,10 +124,10 @@ class IfcTesterIdsValidator:
 
         for spec in results.get("specifications", []):
             spec_name = spec.get("name", "Unknown Specification")
-            spec_status = spec.get("status", True)
+            spec_status = spec.get("status")
             skip_rule = skipped_spec_fail_closed_rule_id(
                 is_skipped=spec.get("is_skipped"),
-                status=spec.get("status"),
+                status=spec_status,
                 is_ifc_version=spec.get("is_ifc_version"),
             )
             if skip_rule is not None:
@@ -147,7 +162,7 @@ class IfcTesterIdsValidator:
                     )
                 continue
 
-            if spec_status:
+            if spec_status is True:
                 continue
 
             requirements = spec.get("requirements") or []
@@ -187,7 +202,7 @@ class IfcTesterIdsValidator:
                 continue
 
             for requirement in requirements:
-                if requirement.get("status", True):
+                if requirement.get("status") is True:
                     continue
 
                 facet_type = requirement.get("facet_type", "")

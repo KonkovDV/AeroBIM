@@ -13,6 +13,7 @@ from typing import TypeVar
 
 _LOCK_ATTEMPTS = 50
 _LOCK_SLEEP_S = 0.02
+_LOCK_STALE_S = 120.0
 
 _T = TypeVar("_T")
 
@@ -100,6 +101,13 @@ class FilesystemUploadQuotaStore:
                 finally:
                     lock_path.unlink(missing_ok=True)
             except FileExistsError:
+                try:
+                    age = time.time() - lock_path.stat().st_mtime
+                except OSError:
+                    age = 0.0
+                if age >= _LOCK_STALE_S:
+                    lock_path.unlink(missing_ok=True)
+                    continue
                 time.sleep(_LOCK_SLEEP_S)
         raise RuntimeError(f"Could not acquire upload-quota lock for {path.name}")
 
@@ -153,7 +161,80 @@ class FilesystemUploadQuotaStore:
 
         return self._with_exclusive_lock(path, _mutate)
 
-    def reserve(self, tenant_id: str, *, size_bytes: int) -> QuotaSnapshot:
+    def _hold_path(self, tenant_id: str, hold_id: str) -> Path:
+        from aerobim.core.security.path_jail import PathJailError, safe_storage_token
+
+        folder = self._path(tenant_id, self._day()).parent / "holds"
+        folder.mkdir(parents=True, exist_ok=True)
+        try:
+            token = safe_storage_token(hold_id)
+        except PathJailError as exc:
+            raise UploadQuotaExceeded(f"Invalid quota hold id: {exc}") from exc
+        return folder / f"{token}.json"
+
+    def _write_hold(
+        self,
+        tenant_id: str,
+        hold_id: str,
+        *,
+        size_bytes: int,
+        count: int,
+        day: str,
+    ) -> None:
+        path = self._hold_path(tenant_id, hold_id)
+        payload = {
+            "tenant_id": tenant_id or "anonymous",
+            "hold_id": hold_id,
+            "day": day,
+            "size_bytes": max(0, int(size_bytes)),
+            "count": max(0, int(count)),
+            "created_at": time.time(),
+        }
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        os.replace(str(tmp), str(path))
+
+    def clear_hold(self, tenant_id: str, hold_id: str) -> None:
+        """Drop the crash marker after a finished or rolled-back upload."""
+        try:
+            self._hold_path(tenant_id, hold_id).unlink(missing_ok=True)
+        except UploadQuotaExceeded:
+            return
+
+    def reconcile_stale_holds(self, *, max_age_seconds: float = 3600.0) -> int:
+        """Release counters for holds left behind after a process crash."""
+        if max_age_seconds < 0:
+            raise ValueError("max_age_seconds must be non-negative")
+        if not self._root.exists():
+            return 0
+        now = time.time()
+        released = 0
+        for hold in self._root.glob("*/holds/*.json"):
+            try:
+                payload = json.loads(hold.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            created = float(payload.get("created_at") or 0.0)
+            if created <= 0.0 or now - created < max_age_seconds:
+                continue
+            tenant = str(payload.get("tenant_id") or "").strip()
+            size_bytes = int(payload.get("size_bytes") or 0)
+            count = int(payload.get("count") or 1)
+            if not tenant:
+                hold.unlink(missing_ok=True)
+                continue
+            self.release(tenant, size_bytes=size_bytes, count=count)
+            hold.unlink(missing_ok=True)
+            released += 1
+        return released
+
+    def reserve(
+        self,
+        tenant_id: str,
+        *,
+        size_bytes: int,
+        hold_id: str | None = None,
+    ) -> QuotaSnapshot:
         """Atomically check quotas and increment counters under one exclusive lock."""
 
         day = self._day()
@@ -173,6 +254,14 @@ class FilesystemUploadQuotaStore:
             data["upload_count"] = int(data["upload_count"]) + 1
             data["bytes_used"] = int(data["bytes_used"]) + max(0, int(size_bytes))
             self._atomic_write(path, data)
+            if hold_id:
+                self._write_hold(
+                    tenant_id,
+                    hold_id,
+                    size_bytes=size_bytes,
+                    count=1,
+                    day=day,
+                )
             return QuotaSnapshot(
                 tenant_id=tenant_id or "anonymous",
                 day=day,

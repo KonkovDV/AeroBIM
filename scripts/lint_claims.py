@@ -361,6 +361,73 @@ def matrix_guard(
     return violations
 
 
+# HD4-CIT-02: fabricated Elsevier year-twins (errata 2026-08-04). Audit-trail
+# docs may quote the DOI; live citations must not.
+_FABRICATED_DOIS = frozenset({"10.1016/j.aei.2026.103676"})
+_ELSEVIER_DOI_RE = re.compile(
+    r"10\.1016/j\.(?P<journal>[a-z]+)\.(?P<year>20\d{2})\.(?P<article>\d+)",
+    re.IGNORECASE,
+)
+_CITATION_AUDIT_TRAIL_FRAGMENTS = (
+    "CITATION_ERRATA",
+    "SOURCE_VERIFICATION_REPORT",
+    "AECV_BASELINE_COMPARE",
+    "RED_TEAM",
+)
+_CITATION_SCAN_SUFFIXES = {".md", ".rst", ".txt"}
+
+
+def _is_citation_audit_trail(rel: str) -> bool:
+    posix = rel.replace("\\", "/")
+    return any(fragment in posix for fragment in _CITATION_AUDIT_TRAIL_FRAGMENTS)
+
+
+def lint_citation_twins(*, roots: list[Path] | None = None) -> list[str]:
+    """Reject fabricated DOI twins outside bibliography errata / audit trail."""
+    scan_roots = roots if roots is not None else [_REPO / "README.md", _REPO / "README.ru.md", _REPO / "docs"]
+    files: list[Path] = []
+    for root in scan_roots:
+        if root.is_file():
+            files.append(root)
+        elif root.is_dir():
+            files.extend(p for p in root.rglob("*") if p.is_file())
+
+    violations: list[str] = []
+    years_by_article: dict[tuple[str, str], set[str]] = {}
+    for path in sorted(set(files)):
+        if path.suffix.lower() not in _CITATION_SCAN_SUFFIXES:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        try:
+            rel = path.relative_to(_repo_root()).as_posix()
+        except ValueError:
+            rel = path.as_posix()
+        trail = _is_citation_audit_trail(rel)
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            lowered = line.lower()
+            for doi in _FABRICATED_DOIS:
+                if doi.lower() in lowered and not trail:
+                    violations.append(f"{rel}:{lineno}: [fabricated_doi] {doi}")
+            if trail:
+                continue
+            for match in _ELSEVIER_DOI_RE.finditer(line):
+                key = (match.group("journal").lower(), match.group("article"))
+                years_by_article.setdefault(key, set()).add(match.group("year"))
+    for (journal, article), years in sorted(years_by_article.items()):
+        if len(years) < 2:
+            continue
+        ordered = sorted(years)
+        violations.append(
+            "[elsevier_year_twin] "
+            f"10.1016/j.{journal}.{ordered[0]}.{article} vs year {ordered[1]} "
+            "(Elsevier article numbers are not reused across years)"
+        )
+    return violations
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -413,6 +480,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.full_docs:
             roots.append(_REPO / "docs")
         errors.extend(lint_claims(matrix_path=args.matrix, roots=roots))
+
+    errors.extend(lint_citation_twins())
 
     if errors:
         for message in errors:

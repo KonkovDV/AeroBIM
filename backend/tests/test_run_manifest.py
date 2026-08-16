@@ -66,6 +66,22 @@ class RunManifestTests(unittest.TestCase):
         self.assertEqual(len(sig), 1)
         self.assertEqual(sig[0][0], "RULE-1")
 
+    def test_engine_signature_excludes_advisory_origin_without_agent_prefix(self) -> None:
+        from aerobim.domain.models import FindingCategory
+
+        report = _Report(
+            [
+                ValidationIssue(
+                    rule_id="IDS-001",
+                    severity=Severity.INFO,
+                    category=FindingCategory.IFC_VALIDATION,
+                    message="llm",
+                    origin="advisory",
+                ),
+            ]
+        )
+        self.assertEqual(engine_signature(report), ())
+
     def test_reproducibility_hash_stable_for_same_inputs(self) -> None:
         engine = (("RULE-1", "error", "ifc-property", "", "bad"),)
         caps = {"mep_system_clash": "not_verified"}

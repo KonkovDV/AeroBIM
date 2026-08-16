@@ -22,6 +22,7 @@ from urllib.request import (
     HTTPRedirectHandler,
     HTTPSHandler,
     OpenerDirector,
+    ProxyHandler,
     Request,
     build_opener,
     urlopen,
@@ -67,7 +68,60 @@ class _RejectRedirects(HTTPRedirectHandler):
         raise UnsafeOutboundUrlError(f"Outbound HTTP redirects are not allowed ({code} → {newurl})")
 
 
+class _NullProxyHandler(ProxyHandler):
+    """Ignore HTTP(S)_PROXY / ALL_PROXY so DNS-pinned IPs are not sent via a proxy."""
+
+    def __init__(self) -> None:
+        super().__init__({})
+
+
 _NONCANONICAL_IPV4_HOST = re.compile(r"^(?:\d+|0x[0-9a-fA-F]+)$")
+_DOTTED_IPV4_SHORTHAND = re.compile(r"^(?:\d+|0x[0-9a-fA-F]+)(?:\.(?:\d+|0x[0-9a-fA-F]+)){1,3}$")
+
+
+def _parse_ipv4_numeric_token(token: str) -> int:
+    """Parse one IPv4 token: decimal, ``0x`` hex, or leading-zero octal (BSD inet_aton)."""
+
+    lowered = token.lower()
+    if lowered.startswith("0x"):
+        return int(token, 16)
+    if token.isdigit() and len(token) > 1 and token.startswith("0"):
+        return int(token, 8)
+    return int(token, 10)
+
+
+def _dotted_ipv4_shorthand_address(host: str) -> ipaddress.IPv4Address | None:
+    """Map ``127.1`` / ``0177.0.0.1`` to an IPv4 address (HD-SEC-03)."""
+
+    parts = host.split(".")
+    try:
+        nums = [_parse_ipv4_numeric_token(part) for part in parts]
+    except ValueError:
+        return None
+    if any(n < 0 for n in nums):
+        return None
+    try:
+        if len(nums) == 4:
+            if any(n > 255 for n in nums):
+                return None
+            value = (nums[0] << 24) | (nums[1] << 16) | (nums[2] << 8) | nums[3]
+        elif len(nums) == 3:
+            if nums[0] > 255 or nums[1] > 255 or nums[2] > 0xFFFF:
+                return None
+            value = (nums[0] << 24) | (nums[1] << 16) | nums[2]
+        elif len(nums) == 2:
+            if nums[0] > 255 or nums[1] > 0xFFFFFF:
+                return None
+            value = (nums[0] << 24) | nums[1]
+        elif len(nums) == 1:
+            if nums[0] > 0xFFFFFFFF:
+                return None
+            value = nums[0]
+        else:
+            return None
+        return ipaddress.IPv4Address(value)
+    except (ValueError, OverflowError):
+        return None
 
 
 def _parse_literal_ip_host(host: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address | None:
@@ -78,12 +132,17 @@ def _parse_literal_ip_host(host: str) -> ipaddress.IPv4Address | ipaddress.IPv6A
     except ValueError:
         pass
     if _NONCANONICAL_IPV4_HOST.fullmatch(host):
+        parsed = _dotted_ipv4_shorthand_address(host)
+        if parsed is not None:
+            return parsed
         try:
             value = int(host, 0)
             if 0 <= value <= 0xFFFFFFFF:
                 return ipaddress.ip_address(value)
         except (ValueError, OverflowError):
             return None
+    if _DOTTED_IPV4_SHORTHAND.fullmatch(host):
+        return _dotted_ipv4_shorthand_address(host)
     return None
 
 
@@ -125,7 +184,9 @@ def assert_safe_outbound_url(
     return pinned.url
 
 
-_LOCAL_DATASTORE_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+_LOCAL_DATASTORE_HOSTS = frozenset(
+    {"localhost", "127.0.0.1", "::1", "ip6-localhost", "ip6-loopback", "[::1]"}
+)
 
 
 def assert_oidc_jwks_host_bound(
@@ -300,20 +361,104 @@ def resolve_and_pin_outbound_url(
     )
 
 
+def _open_pinned(request: Request, *, timeout: float, allow_http: bool) -> Any:
+    opener: OpenerDirector
+    if request.full_url.lower().startswith("https:"):
+        context = ssl.create_default_context()
+        # Host header already set by caller to original hostname for SNI/cert.
+        server_hostname = request.get_header("Host") or ""
+        if ":" in server_hostname and not server_hostname.startswith("["):
+            server_hostname = server_hostname.rsplit(":", 1)[0]
+        server_hostname = server_hostname.strip("[]")
+
+        class _PinnedHTTPSConnection(http.client.HTTPSConnection):
+            def connect(self) -> None:  # noqa: ANN201 — stdlib signature
+                sock = socket.create_connection((self.host, self.port), self.timeout)
+                tunnel_host = getattr(self, "_tunnel_host", None)
+                if tunnel_host:
+                    self.sock = sock
+                    tunnel = getattr(self, "_tunnel", None)
+                    if callable(tunnel):
+                        tunnel()
+                    sock = self.sock
+                self.sock = context.wrap_socket(sock, server_hostname=server_hostname)
+
+        class _PinnedHTTPSHandler(HTTPSHandler):
+            def https_open(self, req):  # type: ignore[no-untyped-def]
+                return self.do_open(_PinnedHTTPSConnection, req)
+
+        opener = build_opener(_NullProxyHandler(), _RejectRedirects, _PinnedHTTPSHandler(context=context))
+    else:
+        if not allow_http:
+            raise UnsafeOutboundUrlError("HTTP outbound is disabled")
+        opener = build_opener(_NullProxyHandler(), _RejectRedirects, HTTPHandler())
+    return opener.open(request, timeout=timeout)
+
+
 def safe_datastore_urlopen(request: Request, *, timeout: float) -> Any:
     """Loopback / unix-datastore ``urlopen`` after :func:`assert_safe_datastore_url`.
 
     Public :func:`safe_urlopen` rejects loopback by design. Local vLLM must still
     go through this seam so adapters never call raw ``urlopen`` themselves
-    (outbound-guard invariant).
+    (outbound-guard invariant). HTTP(S) peers are DNS-pinned (HD-SEC-01).
     """
 
-    assert_safe_datastore_url(request.full_url, resolve_dns=False)
-    return urlopen(request, timeout=timeout)  # noqa: S310 — guarded by datastore jail
+    url = request.full_url
+    assert_safe_datastore_url(url, resolve_dns=True)
+    parsed = urlparse(url)
+    if parsed.scheme in {"http", "https"}:
+        host = parsed.hostname
+        if host is None:
+            raise UnsafeOutboundUrlError("Datastore URL must include a hostname")
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        literal = _parse_literal_ip_host(host)
+        if literal is not None:
+            pinned_ip = str(literal)
+        else:
+            try:
+                infos = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+            except socket.gaierror as exc:
+                raise UnsafeOutboundUrlError(f"Datastore host DNS resolution failed: {host}") from exc
+            if not infos:
+                raise UnsafeOutboundUrlError(
+                    f"Datastore host DNS resolution returned no addresses: {host}"
+                )
+            pinned_ip = str(infos[0][4][0])
+            if _is_blocked_datastore_ip(pinned_ip):
+                raise UnsafeOutboundUrlError(
+                    f"Datastore host {host!r} resolves to blocked address {pinned_ip}"
+                )
+        explicit_port = parsed.port is not None
+        netloc = _format_netloc(pinned_ip, port, scheme=parsed.scheme, explicit_port=explicit_port)
+        pinned_url = urlunparse(
+            (
+                parsed.scheme,
+                netloc,
+                parsed.path or "",
+                parsed.params,
+                parsed.query,
+                parsed.fragment,
+            )
+        )
+        headers = {key: value for key, value in request.header_items()}
+        headers["Host"] = host if not explicit_port else f"{host}:{port}"
+        pinned_request = Request(
+            pinned_url,
+            data=request.data,
+            headers=headers,
+            method=request.get_method(),
+        )
+        try:
+            return _open_pinned(
+                pinned_request, timeout=timeout, allow_http=parsed.scheme == "http"
+            )
+        except URLError as exc:
+            raise UnsafeOutboundUrlError(f"Datastore request failed: {exc}") from exc
+    return urlopen(request, timeout=timeout)  # noqa: S310 — unix / non-HTTP after jail
 
 
 def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False) -> Any:
-    """``urlopen`` wrapper: SSRF host check, DNS pin, no redirects, no second DNS."""
+    """``urlopen`` wrapper: SSRF host check, DNS pin, no redirects, no second DNS, no env proxy."""
 
     pinned = resolve_and_pin_outbound_url(request.full_url, allow_http=allow_http, resolve_dns=True)
     parsed = urlparse(pinned.url)
@@ -341,36 +486,8 @@ def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False) 
         headers=headers,
         method=request.get_method(),
     )
-
-    if pinned.scheme == "https":
-        context = ssl.create_default_context()
-        server_hostname = pinned.hostname
-
-        class _PinnedHTTPSConnection(http.client.HTTPSConnection):
-            def connect(self) -> None:  # noqa: ANN201 — stdlib signature
-                sock = socket.create_connection((self.host, self.port), self.timeout)
-                tunnel_host = getattr(self, "_tunnel_host", None)
-                if tunnel_host:
-                    self.sock = sock
-                    tunnel = getattr(self, "_tunnel", None)
-                    if callable(tunnel):
-                        tunnel()
-                    sock = self.sock
-                self.sock = context.wrap_socket(sock, server_hostname=server_hostname)
-
-        class _PinnedHTTPSHandler(HTTPSHandler):
-            def https_open(self, req):  # type: ignore[no-untyped-def]
-                return self.do_open(_PinnedHTTPSConnection, req)
-
-        opener: OpenerDirector = build_opener(
-            _RejectRedirects,
-            _PinnedHTTPSHandler(context=context),
-        )
-    else:
-        opener = build_opener(_RejectRedirects, HTTPHandler())
-
     try:
-        return opener.open(pinned_request, timeout=timeout)
+        return _open_pinned(pinned_request, timeout=timeout, allow_http=allow_http)
     except URLError as exc:
         raise UnsafeOutboundUrlError(f"Outbound request failed: {exc}") from exc
 

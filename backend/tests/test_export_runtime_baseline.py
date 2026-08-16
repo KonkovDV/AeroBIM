@@ -122,6 +122,20 @@ class CompletenessErrorsTests(unittest.TestCase):
         errors = completeness_errors(payload)
         self.assertTrue(any("tests_passed is 0" in e for e in errors))
 
+    def test_unaccounted_mismatch_is_incomplete(self) -> None:
+        payload = self._complete()
+        payload["backend"]["tests_unaccounted"] = 99
+        errors = completeness_errors(payload)
+        self.assertTrue(any("tests_unaccounted" in e for e in errors))
+
+    def test_matching_unaccounted_is_complete(self) -> None:
+        payload = self._complete()
+        payload["backend"]["tests_unaccounted"] = 2  # 100 − 90 − 8 − 0
+        payload["publishable"] = True
+        payload["artifact_completeness"] = "full"
+        payload["working_tree_clean"] = True
+        self.assertEqual(completeness_errors(payload), [])
+
 
 class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
     def test_schema_includes_environment_and_null_counts_by_default(self) -> None:

@@ -212,6 +212,23 @@ class IdsFailClosedMappingTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertEqual(issues[0].rule_id, RULE_SKIPPED)
 
+    def test_map_results_missing_status_key_is_error(self) -> None:
+        validator = IfcTesterIdsValidator()
+        issues = validator._map_results(
+            {
+                "specifications": [
+                    {
+                        "name": "Status omitted",
+                        "is_skipped": False,
+                        "is_ifc_version": True,
+                        "requirements": [],
+                    }
+                ]
+            }
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule_id, RULE_SKIPPED)
+
     def test_passing_spec_without_skip_stays_empty(self) -> None:
         validator = IfcTesterIdsValidator()
         issues = validator._map_results(
