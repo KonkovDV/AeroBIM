@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.5.0"
+version: "4.5.1"
 last_updated: "2026-08-16"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -29,6 +29,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness |
 | [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Jury / MIK stage = доработка |
 | [`quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) | Academic honesty (Messick / Kane) |
+| [`quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md) | August 2026 literature × IUA (Harbor NOT_RUN) |
 | [`quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) | Diligence / hostile funding attacks |
 | [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Licensed vs blocked inferences |
 | [`quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Accepted risks at KT#2 |

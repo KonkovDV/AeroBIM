@@ -72,3 +72,17 @@ python -m aerobim.tools.run_pnst909_22_scenario_runtime
 IFC-Bench / GNI / full ПНСТ extracts require a local checkout under `.local/` (not vendored). PNST CLI returns `SKIPPED_PACK_INCOMPLETE` when the live pack is a header sample — that skip is the honest result.
 
 Checkpoint **NO_GO**.
+
+## 6. Literature that calibrates (does not close RT-001)
+
+August 2026 map: [`../quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](../quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md). Short reading:
+
+| Paper | Licenses | Does not license |
+|---|---|---|
+| AEC-Bench [arXiv:2603.29199](https://arxiv.org/abs/2603.29199) | Inventory 196; Harbor **NOT_RUN** here | Agent drawing literacy on Samolet PD |
+| Hellin et al. ifc-bench v2 [arXiv:2605.01698](https://arxiv.org/abs/2605.01698) | Countable 27/1026 smoke | Package-acceptance precision |
+| LLM-as-judge [arXiv:2606.19544](https://arxiv.org/abs/2606.19544) | Dual human raters + κ | Model as TP/FP judge |
+| *Buildings* 16(13):2623 (2026) | Clash detection ≠ coordination | MEP delivered |
+| ISO 19650-6:2025 | H&S information sharing (not implemented) | «ISO 19650 compliant» without a part number |
+
+Checkpoint **NO_GO**.
