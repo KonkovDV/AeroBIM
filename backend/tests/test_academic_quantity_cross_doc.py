@@ -152,6 +152,46 @@ class CrossDocHd10SeamTests(unittest.TestCase):
             [],
         )
 
+    def test_ru_grouped_area_equals_plain_si(self) -> None:
+        detector = self._detector()
+        issues = detector.detect(
+            [
+                self._width(SourceKind.STRUCTURED_TEXT, "1 254,30", "м2"),
+                self._width(SourceKind.CALCULATION, "1254.30", "m2"),
+            ]
+        )
+        self.assertEqual(
+            [issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT],
+            [],
+        )
+
+    def test_ru_grouped_area_hard_conflicts_when_values_differ(self) -> None:
+        detector = self._detector()
+        issues = detector.detect(
+            [
+                self._width(SourceKind.STRUCTURED_TEXT, "1 254,30", "м2"),
+                self._width(SourceKind.CALCULATION, "2000", "m2"),
+            ]
+        )
+        area_issues = [issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT]
+        self.assertEqual(len(area_issues), 1)
+        self.assertEqual(area_issues[0].conflict_kind, ConflictKind.HARD_CONFLICT)
+
+    def test_ambiguous_grouped_token_is_unparsed_not_mapping(self) -> None:
+        detector = self._detector()
+        kind = detector.classify_conflict_kind("1.254", "m2", "1254", "m2")
+        self.assertEqual(kind, ConflictKind.UNPARSED_NUMERIC)
+        issues = detector.detect(
+            [
+                self._width(SourceKind.STRUCTURED_TEXT, "1.254", "м2"),
+                self._width(SourceKind.CALCULATION, "1254", "m2"),
+            ]
+        )
+        area_issues = [issue for issue in issues if issue.category == FindingCategory.CROSS_DOCUMENT]
+        self.assertEqual(len(area_issues), 1)
+        self.assertEqual(area_issues[0].conflict_kind, ConflictKind.UNPARSED_NUMERIC)
+        self.assertIn("Unparsed numeric", area_issues[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()

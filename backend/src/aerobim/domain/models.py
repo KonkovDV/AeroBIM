@@ -213,6 +213,10 @@ class ConflictKind(StrEnum):
     """Property names or entity references are too ambiguous to determine whether
     the two requirements address the same physical property."""
 
+    UNPARSED_NUMERIC = "unparsed-numeric"
+    """Token looks numeric (RU grouping / mixed separators) but was not parsed.
+    Fail-closed: do not treat as mapping ambiguity or as a silent string match."""
+
 
 @dataclass(frozen=True)
 class RequirementSource:

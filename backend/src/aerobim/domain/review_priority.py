@@ -21,7 +21,12 @@ def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> 
         FindingCategory.DRAWING_VALIDATION: 5,
         FindingCategory.IFC_VALIDATION: 0,
     }.get(issue.category, 0)
-    conflict_score = 10 if issue.conflict_kind == ConflictKind.HARD_CONFLICT else 0
+    conflict_score = (
+        10
+        if issue.conflict_kind
+        in {ConflictKind.HARD_CONFLICT, ConflictKind.UNPARSED_NUMERIC}
+        else 0
+    )
     score = sev_score + cat_score + conflict_score + _clash_triage_boost(issue)
 
     if normalized == "samolet":

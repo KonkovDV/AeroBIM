@@ -16,6 +16,148 @@ import unicodedata
 from dataclasses import dataclass
 
 
+_GROUPING_SPACES = (
+    "\u00a0",  # NBSP
+    "\u202f",  # narrow NBSP
+    "\u2009",  # thin space
+    "\u2007",  # figure space
+)
+
+_NUMERIC_CHARS = frozenset("0123456789+-., ") | frozenset(_GROUPING_SPACES)
+
+
+def looks_like_numeric_token(raw: str | None) -> bool:
+    """True when the token is digit/separator-only (RU grouping included)."""
+    if raw is None:
+        return False
+    text = unicodedata.normalize("NFKC", raw).strip()
+    if not text or not any(char.isdigit() for char in text):
+        return False
+    return all(char in _NUMERIC_CHARS for char in text)
+
+
+def parse_localized_number(raw: str | None) -> float | None:
+    """Parse RU/EU/US grouped decimals without guessing ambiguous tokens.
+
+    Accepts ``1 254,30``, NBSP grouping, ``1.254,30`` (dot thousands + comma
+    decimal), and ``1,254.30`` (US). Rejects ``1.254`` (one-digit integer +
+    three fraction digits: thousands vs decimal). ``10.005`` stays a decimal.
+    """
+    if raw is None:
+        return None
+    text = unicodedata.normalize("NFKC", raw).strip()
+    if not text:
+        return None
+    for space in _GROUPING_SPACES:
+        text = text.replace(space, " ")
+    text = " ".join(text.split())
+    if any(char.isalpha() for char in text) or not any(char.isdigit() for char in text):
+        return None
+
+    sign = 1.0
+    if text[0] in "+-":
+        sign = -1.0 if text[0] == "-" else 1.0
+        text = text[1:].lstrip()
+        if not text:
+            return None
+
+    if " " in text:
+        joined = _join_space_thousands(text)
+        if joined is None:
+            return None
+        text = joined
+
+    parsed = _parse_comma_dot_body(text)
+    if parsed is None:
+        return None
+    return sign * parsed
+
+
+def _valid_thousand_chunks(chunks: list[str]) -> bool:
+    if not chunks or not chunks[0].isdigit() or not (1 <= len(chunks[0]) <= 3):
+        return False
+    return all(chunk.isdigit() and len(chunk) == 3 for chunk in chunks[1:])
+
+
+def _join_space_thousands(text: str) -> str | None:
+    parts = text.split(" ")
+    if len(parts) < 2:
+        return None
+    last = parts[-1]
+    decimal_sep = None
+    if "," in last and "." in last:
+        return None
+    if last.count(",") == 1 and "." not in last:
+        decimal_sep = ","
+    elif last.count(".") == 1 and "," not in last:
+        decimal_sep = "."
+    elif "," in last or "." in last:
+        return None
+    if decimal_sep is None:
+        chunks = parts
+        if not _valid_thousand_chunks(chunks):
+            return None
+        return "".join(chunks)
+    int_last, frac = last.split(decimal_sep, 1)
+    chunks = [*parts[:-1], int_last]
+    if not frac.isdigit() or not _valid_thousand_chunks(chunks):
+        return None
+    return f"{''.join(chunks)}{decimal_sep}{frac}"
+
+
+def _parse_comma_dot_body(body: str) -> float | None:
+    if not body or any(char not in "0123456789.," for char in body):
+        return None
+    last_comma = body.rfind(",")
+    last_dot = body.rfind(".")
+    if last_comma != -1 and last_dot != -1:
+        if last_comma > last_dot:
+            return _split_thousands_and_decimal(body, thousands=".", decimal=",")
+        return _split_thousands_and_decimal(body, thousands=",", decimal=".")
+    if last_comma != -1:
+        if body.count(",") == 1:
+            left, right = body.split(",", 1)
+            if left.isdigit() and right.isdigit():
+                return float(f"{left}.{right}")
+            return None
+        return _integer_thousands(body, ",")
+    if last_dot != -1:
+        if body.count(".") == 1:
+            left, right = body.split(".", 1)
+            if not left.isdigit() or not right.isdigit():
+                return None
+            if left[0] != "0" and len(left) == 1 and len(right) == 3:
+                return None
+            return float(f"{left}.{right}")
+        return _integer_thousands(body, ".")
+    if body.isdigit():
+        return float(body)
+    return None
+
+
+def _split_thousands_and_decimal(body: str, *, thousands: str, decimal: str) -> float | None:
+    integer, frac = body.rsplit(decimal, 1)
+    if not frac.isdigit():
+        return None
+    if thousands in integer:
+        chunks = integer.split(thousands)
+        if not _valid_thousand_chunks(chunks):
+            return None
+        digits = "".join(chunks)
+    else:
+        digits = integer
+    if not digits.isdigit():
+        return None
+    return float(f"{digits}.{frac}")
+
+
+def _integer_thousands(body: str, separator: str) -> float | None:
+    chunks = body.split(separator)
+    if not _valid_thousand_chunks(chunks):
+        return None
+    return float("".join(chunks))
+
+
 def normalize_unit_token(unit: str | None) -> str:
     """NFKC + case-fold a unit token so «м²» and «м2» compare equal.
 

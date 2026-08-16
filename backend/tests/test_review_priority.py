@@ -24,6 +24,16 @@ class ReviewPriorityTests(unittest.TestCase):
         )
         self.assertEqual(compute_issue_priority(issue, profile="default"), 55)
 
+    def test_unparsed_numeric_matches_hard_conflict_priority(self) -> None:
+        issue = ValidationIssue(
+            rule_id="XDOC-UNPARSED",
+            severity=Severity.ERROR,
+            message="unparsed",
+            category=FindingCategory.CROSS_DOCUMENT,
+            conflict_kind=ConflictKind.UNPARSED_NUMERIC,
+        )
+        self.assertEqual(compute_issue_priority(issue, profile="default"), 55)
+
     def test_samolet_boosts_fire_rule(self) -> None:
         issue = ValidationIssue(
             rule_id="REQ-FIRE-001",
