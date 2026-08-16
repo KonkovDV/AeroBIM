@@ -22,6 +22,7 @@
 Tangl проверяет **модель**; AeroBIM — **комплект**. Не заменяем 10D, Renga, CDE или эксперта: **IFC Acceptance Gate**. Клин: [`docs/partners/_2026_08_16.md`](docs/partners/_2026_08_16.md). Демо-IFC — IfcOpenShell, не Renga и не Самолёт. Образец издателя ПНСТ 909: `python -m aerobim.tools.run_renga_export_probe`. OSINT 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 Видео 3 мин: [`docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) — запись **19.08**, человек.  
+Пакет подачи КТ#2 (пять полей формы): [`submission/README.md`](submission/README.md) · покрытие ТЗ [`submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md`](submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md).  
 Пакет жюри: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · Hostile QA [`docs/demo/`](docs/demo/).
 
 **AeroBIM** — открытый ассистент критериев приёмки для openBIM-комплектов: помогает эксперту найти расхождения между BIM-моделью, чертежами, ТЗ и правилами **до** стройки.
@@ -231,6 +232,7 @@ SSOT запрещённых формулировок: [audit/reports/CLAIMS_LOCK
 | Нужно | Документ |
 |------|----------|
 | Старт | [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · [`docs/README.md`](docs/README.md) |
+| Пакет подачи КТ#2 | [`submission/README.md`](submission/README.md) |
 | Eng-статус (авг 2026) | [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) |
 | Accepted risks (KT#2) | [`docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) |
 | Жюри (RU) | [`docs/docs.md`](docs/docs.md) |

@@ -1,0 +1,48 @@
+<!-- claims-lint: allow-file reason="Submission index quoting TZ evaluation targets as non-claims; NO_GO explicit" -->
+---
+title: "КТ#2 — пакет подачи (Техлаб Москва, Задача 07)"
+status: active
+version: "1.0.0"
+last_updated: "2026-08-16"
+claim_boundary: >
+  Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
+  evaluation targets, not AeroBIM measurements. Checkpoint NO_GO;
+  RT-001/002/003 OPEN. Fixture ≠ customer корпус.
+---
+
+# Пакет подачи КТ#2
+
+**Команда:** AeroBIM · **Задача:** 07 «Система автоматизированной верификации проектной и рабочей документации» · **Заказчик:** ГК «Самолёт» · **КТ#2:** 20.08.2026
+
+**Checkpoint: `NO_GO`.** Не прячем. Блокеры RT-001/002/003 закрываются только evidence заказчика: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+
+## Поля формы приёма решения → подпапки
+
+| Поле формы | Подпапка | Что открыть первым |
+|---|---|---|
+| **Репозиторий** \* | [`01-repository/`](01-repository/README.md) | Структура, сборка, лицензия, CI |
+| **Документация** \* | [`02-documentation/`](02-documentation/README.md) | Техобоснование + матрица ТЗ + границы заявлений |
+| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | Каркас слайдов, речь, запреты формулировок |
+| **Прототип** \* | [`04-prototype/`](04-prototype/README.md) | Команды запуска, live CLI, веб-интерфейс |
+| **Дополнительные материалы** | [`05-additional/`](05-additional/README.md) | Evidence, датасеты, красная команда, конкуренты |
+
+Ссылка на репозиторий для всех пяти полей: **https://github.com/KonkovDV/AeroBIM** (доступ по ссылке открыт, лицензия MIT).
+
+## Покрытие требований ТЗ
+
+Полная построчная карта — [`TZ_REQUIREMENTS_COVERAGE_2026_08.md`](TZ_REQUIREMENTS_COVERAGE_2026_08.md).
+
+| Раздел ТЗ | Где закрыт | Честный остаток |
+|---|---|---|
+| Термины (OCR / CV / NLP / BIM) | [`../docs/tz/TZ_COMPLIANCE_MATRIX_2026.md`](../docs/tz/TZ_COMPLIANCE_MATRIX_2026.md) §1 | CV в вердикте нет — advisory |
+| Концепция (ассистент, не замена) | [`../docs/docs.md`](../docs/docs.md) | — |
+| Целевые задачи (графика, сверка, ошибки) | матрица §2–4 | расчётного решателя нет — сверка |
+| Функциональность (загрузка, анализ, AI, UI) | [`04-prototype/`](04-prototype/README.md) | чтение DWG без конвертации — `NOT_IMPLEMENTED` |
+| Источники и ограничения | [`../samples/tz-appendix/README.md`](../samples/tz-appendix/README.md) | корпус заказчика — RT-001 OPEN |
+| Критерии оценивания | [`TZ_REQUIREMENTS_COVERAGE_2026_08.md`](TZ_REQUIREMENTS_COVERAGE_2026_08.md) §6 | целевые значения ТЗ **не измерены** на комплекте заказчика |
+
+## Что мы не заявляем
+
+Точность продукта на комплекте заказчика; выполненный SLA заказчика; чтение DWG без конвертации; сданный MEP system clash; доказанный импорт BCF в СОД; независимая корректность расчётов; production-статус. Реестр: [`../docs/capability-claim-matrix-2026.md`](../docs/capability-claim-matrix-2026.md).
+
+Формула стадии (дословно, для любых вопросов «где вы сейчас»): [`../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../docs/demo/KT2_JURY_FAQ_2026_08_12.md).

@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.5.5"
+version: "4.5.6"
 last_updated: "2026-08-16"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -45,6 +45,10 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`../README.md`](../README.md) · [`../README.ru.md`](../README.ru.md) | Product README |
 
 Operator runbooks, session audits, and commercial PII live under `.local/` — not on GitHub.
+
+## Submission pack (форма приёма решения)
+
+Пять полей формы разложены по подпапкам: [`../submission/README.md`](../submission/README.md). Построчное покрытие ТЗ Задачи 07: [`../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md`](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md).
 
 ## Pre-flight (KT#2, 20.08)
 
