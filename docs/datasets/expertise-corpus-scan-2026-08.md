@@ -52,7 +52,7 @@ Related SSOT: [`OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../quality/OPEN_BEN
 
 ## Data request checklist (customer intake — RT-001)
 
-Use this when engaging a pilot org. Do **not** commit specific company names or contacts to git; track in private ops log or [`outreach-tracker-week-2026-08-10.csv`](../gtm/outreach-tracker-week-2026-08-10.csv) with placeholders until verified.
+Use this when engaging a pilot org. Do **not** commit specific company names or contacts to git; keep them in a private ops log outside the repository until the engagement is confirmed.
 
 ### Files needed
 
