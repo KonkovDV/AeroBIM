@@ -75,11 +75,11 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
         upload_id = uuid4().hex
         try:
             ctx.upload_quota_store.reconcile_stale_holds()
-            ctx.upload_quota_store.reserve(
-                tenant_key, size_bytes=max_bytes, hold_id=upload_id
-            )
+            ctx.upload_quota_store.reserve(tenant_key, size_bytes=max_bytes, hold_id=upload_id)
         except UploadQuotaExceeded as exc:
-            logger.warning("upload quota reserve-ahead failed", tenant_id=tenant_key, detail=str(exc))
+            logger.warning(
+                "upload quota reserve-ahead failed", tenant_id=tenant_key, detail=str(exc)
+            )
             raise HTTPException(
                 status_code=429,
                 detail=public_upload_quota_exceeded_detail(),
@@ -197,9 +197,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
         if total < held_bytes:
             try:
-                ctx.upload_quota_store.release(
-                    tenant_key, size_bytes=held_bytes - total, count=0
-                )
+                ctx.upload_quota_store.release(tenant_key, size_bytes=held_bytes - total, count=0)
             except Exception:  # noqa: BLE001 — keep held_bytes; promote path still compensates
                 logger.warning(
                     "upload quota shrink failed",

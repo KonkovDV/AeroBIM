@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import pymupdf
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -18,6 +18,8 @@ from aerobim.domain.models import (
     ValidationRequest,
 )
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+
+pymupdf = pytest.importorskip("pymupdf")
 
 
 class _NoOpRequirementExtractor:

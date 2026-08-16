@@ -19,7 +19,7 @@ import tempfile
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.models import ClashResult
@@ -141,7 +141,7 @@ def probe_clash_geometry(
     import ifcopenshell.geom
 
     model = ifcopenshell.open(str(ifc_path))
-    settings = ifcopenshell.geom.settings()
+    settings = cast(Any, ifcopenshell.geom.settings)()
     settings.set(settings.USE_WORLD_COORDS, True)
     included: list[str] = []
     skipped: list[tuple[str, str]] = []
@@ -153,7 +153,7 @@ def probe_clash_geometry(
         if getattr(product, "Representation", None) is None:
             continue
         try:
-            shape = ifcopenshell.geom.create_shape(settings, product)
+            shape = cast(Any, ifcopenshell.geom.create_shape(settings, product))
             verts = shape.geometry.verts
             xs = verts[0::3]
             ys = verts[1::3]

@@ -186,7 +186,9 @@ class UploadApiSecurityTests(unittest.TestCase):
                 archive.writestr(f"m{index}.txt", b"x")
         with tempfile.TemporaryDirectory() as tmp:
             container = bootstrap_container(
-                _settings(Path(tmp), max_upload_bytes=200_000, max_upload_bytes_per_tenant_day=1_000_000)
+                _settings(
+                    Path(tmp), max_upload_bytes=200_000, max_upload_bytes_per_tenant_day=1_000_000
+                )
             )
             client = TestClient(create_http_app(container))
             zipped = client.post(

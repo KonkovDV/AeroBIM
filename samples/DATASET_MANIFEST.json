@@ -1,7 +1,7 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-14T20:25:44.619822+00:00",
+  "generated_at": "2026-08-16T20:25:56.296721+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
   "file_count": 873,
   "vendored_count": 15,
@@ -556,7 +556,7 @@
     },
     {
       "path": "benchmarks/ifc-bench-v2/README.md",
-      "sha256": "391d402b797f7a80f0c7c3cb476cc27031c1dc0c3cfade6882573c9c17cbaf96",
+      "sha256": "78d00b418bc1d522348aba2779560f6710a11ea619a9ef4da750f2b3a60ed834",
       "bytes": 868,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",

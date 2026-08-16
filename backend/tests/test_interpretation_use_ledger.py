@@ -23,9 +23,7 @@ class InterpretationUseLedgerTests(unittest.TestCase):
         validate_ledger()
         self.assertGreaterEqual(len(LEDGER), 18)
         sources = {row.source for row in LEDGER}
-        self.assertTrue(
-            {"samolet", "tracker", "techlab", "mik", "industry"}.issubset(sources)
-        )
+        self.assertTrue({"samolet", "tracker", "techlab", "mik", "industry"}.issubset(sources))
         self.assertTrue(all(row.licensed_use not in FORBIDDEN_LICENSED_USES for row in LEDGER))
         self.assertTrue(all(not row.closes_rt001 for row in LEDGER))
 

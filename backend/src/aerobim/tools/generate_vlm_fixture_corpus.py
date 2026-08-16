@@ -40,8 +40,6 @@ import random
 from pathlib import Path
 from typing import Any, cast
 
-import pymupdf
-
 _STAGES = ("P", "R")
 _DISCIPLINES = ("AR", "KZH", "OV")
 _MARK_POOLS: tuple[tuple[str, ...], ...] = (
@@ -86,6 +84,13 @@ def _make_sheet_content(rng: random.Random, index: int) -> dict[str, Any]:
 
 
 def _render_sheet(content: dict[str, Any], rng: random.Random) -> bytes:
+    try:
+        import pymupdf
+    except ModuleNotFoundError as exc:  # optional AGPL extra
+        raise RuntimeError(
+            "VLM fixture generation requires PyMuPDF. Install the optional 'pdf-agpl' extra."
+        ) from exc
+
     document = pymupdf.open()
     page = document.new_page(width=842, height=595)  # A4 landscape, points
 

@@ -46,13 +46,13 @@ from dataclasses import dataclass
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from aerobim.domain.clash_triage import TriagedClash, triage_clash_results
-from aerobim.infrastructure.adapters.bcf_report_exporter import bcf_topic_zip_dir
 from aerobim.domain.models import (
     FindingCategory,
     Severity,
     ValidationIssue,
     ValidationReport,
 )
+from aerobim.infrastructure.adapters.bcf_report_exporter import bcf_topic_zip_dir
 
 _BCF30_VERSION = "3.0"
 

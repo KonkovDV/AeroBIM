@@ -5,10 +5,12 @@ import unittest
 from datetime import UTC, datetime
 from pathlib import Path
 
-import pymupdf
+import pytest
 
 from aerobim.domain.models import DrawingAsset, ValidationReport, ValidationSummary
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+
+pymupdf = pytest.importorskip("pymupdf")
 
 
 class FilesystemAuditStoreDrawingAssetTests(unittest.TestCase):

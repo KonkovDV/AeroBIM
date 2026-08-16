@@ -306,9 +306,7 @@ class JsonSectionDiffAnalyzer:
     ) -> ConflictKind | None:
         expected_number = self._to_float(expected.value)
         observed_number = self._to_float(observed.value)
-        if (
-            looks_like_numeric_token(expected.value) and expected_number is None
-        ) or (
+        if (looks_like_numeric_token(expected.value) and expected_number is None) or (
             looks_like_numeric_token(observed.value) and observed_number is None
         ):
             return ConflictKind.UNPARSED_NUMERIC

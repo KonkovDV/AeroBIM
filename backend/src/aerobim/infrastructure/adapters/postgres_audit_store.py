@@ -187,9 +187,8 @@ class PostgresAuditStore:
         project = filters.project.strip() if filters and filters.project else None
         discipline = filters.discipline.strip() if filters and filters.discipline else None
         passed = filters.passed if filters else None
-        tenant_id = (
-            filters.tenant_id.strip() if filters and (filters.tenant_id or "").strip() else None
-        )
+        tenant_raw = (filters.tenant_id or "").strip() if filters else ""
+        tenant_id = tenant_raw or None
         async with self._engine.connect() as conn:
             rows = await conn.execute(
                 self._list_sql,

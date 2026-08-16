@@ -8,7 +8,7 @@ from pathlib import Path
 
 import ifcopenshell
 import ifcopenshell.api
-import pymupdf
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -17,6 +17,8 @@ from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+pymupdf = pytest.importorskip("pymupdf")
 
 
 def _has_optional_module(module_name: str) -> bool:

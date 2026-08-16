@@ -12,9 +12,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import pymupdf
+import pytest
 
 from aerobim.tools.generate_degraded_scans import generate_degraded_scans
+
+pymupdf = pytest.importorskip("pymupdf")
 
 
 def _make_sheet(path: Path) -> None:

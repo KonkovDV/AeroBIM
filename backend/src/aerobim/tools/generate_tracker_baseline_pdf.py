@@ -7,8 +7,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pymupdf
-
 REPO = Path(__file__).resolve().parents[4]
 OUT_PRIMARY = REPO / "docs" / "evidence" / "baseline-2026-08.pdf"
 OUT_ALIAS = REPO / "docs" / "evidence" / "tracker-baseline-2026-08-07.pdf"
@@ -221,6 +219,13 @@ def main() -> int:
     fontfile = next((p for p in font_candidates if p.exists()), None)
     if fontfile is None:
         raise SystemExit("No Cyrillic TTF found")
+
+    try:
+        import pymupdf
+    except ModuleNotFoundError as exc:  # optional AGPL extra
+        raise RuntimeError(
+            "Baseline PDF generation requires PyMuPDF. Install the optional 'pdf-agpl' extra."
+        ) from exc
 
     fontname = "baseline-ru"
     doc = pymupdf.open()

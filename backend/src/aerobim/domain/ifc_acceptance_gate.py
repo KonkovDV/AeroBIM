@@ -98,6 +98,7 @@ def _acceptance_finding(issue: Any) -> dict[str, Any] | None:
         return None
     category = _enum_value(_field(issue, "category")) or ""
     evidence = _field(issue, "evidence_refs") or ()
+    evidence_refs: tuple[str, ...]
     if isinstance(evidence, str):
         evidence_refs = (evidence,)
     else:
