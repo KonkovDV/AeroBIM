@@ -268,3 +268,29 @@ class Hd2SettingsTests(unittest.TestCase):
                     os.environ.pop(key, None)
                 else:
                     os.environ[key] = value
+
+    def test_postgres_apply_ddl_false_from_env(self) -> None:
+        from aerobim.core.config.settings import Settings
+
+        keys = (
+            "AEROBIM_POSTGRES_APPLY_DDL",
+            "AEROBIM_ENV",
+            "AEROBIM_SIGNOFF_PROFILE",
+        )
+        previous = {k: os.environ.get(k) for k in keys}
+        try:
+            os.environ["AEROBIM_POSTGRES_APPLY_DDL"] = "0"
+            os.environ["AEROBIM_ENV"] = "development"
+            os.environ["AEROBIM_SIGNOFF_PROFILE"] = "development"
+            settings = Settings.from_env()
+            self.assertFalse(settings.postgres_apply_ddl)
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+
+
+if __name__ == "__main__":
+    unittest.main()

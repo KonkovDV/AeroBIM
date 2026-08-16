@@ -20,6 +20,8 @@ from typing import Any
 from aerobim.domain.ifc_spatial_index import IfcSpatialIndex
 
 _DEFAULT_MAX_CACHED_MODELS = 8
+# Aligned with Settings._DEFAULT_MAX_IFC_BYTES (bSI Validation Service 256 MiB).
+_DEFAULT_MAX_BYTES_PER_CACHED_MODEL = 256 * 1024 * 1024
 _lock = threading.Lock()
 _memory: OrderedDict[tuple[str, int, int], Any] = OrderedDict()
 _index_memory: dict[tuple[str, int, int], IfcSpatialIndex] = {}
@@ -75,6 +77,60 @@ def ifc_parse_cache_stats() -> dict[str, int]:
 
     with _lock:
         return dict(_stats)
+
+
+def ifc_cache_ram_ceiling_bytes(
+    *,
+    max_models: int | None = None,
+    max_bytes_per_model: int | None = None,
+) -> int:
+    """Process-local LRU ceiling: max_models × max accepted IFC bytes.
+
+    Not federated-pack RSS, not VM sizing, not customer SLA (RT16-RAM-01).
+    """
+
+    models = _DEFAULT_MAX_CACHED_MODELS if max_models is None else max(1, int(max_models))
+    per = (
+        _DEFAULT_MAX_BYTES_PER_CACHED_MODEL
+        if max_bytes_per_model is None
+        else max(0, int(max_bytes_per_model))
+    )
+    return models * per
+
+
+def ifc_cache_ram_ceiling_payload(
+    *,
+    max_models: int | None = None,
+    max_bytes_per_model: int | None = None,
+    generated_at: str | None = None,
+) -> dict[str, Any]:
+    """Honest ceiling record. ``measured_rss_delta_bytes`` stays null until measured."""
+
+    models = _DEFAULT_MAX_CACHED_MODELS if max_models is None else max(1, int(max_models))
+    per = (
+        _DEFAULT_MAX_BYTES_PER_CACHED_MODEL
+        if max_bytes_per_model is None
+        else max(0, int(max_bytes_per_model))
+    )
+    ceiling = ifc_cache_ram_ceiling_bytes(max_models=models, max_bytes_per_model=per)
+    return {
+        "schema_version": "1.0.0",
+        "artifact_type": "ifc_cache_ram_ceiling",
+        "generated_at": generated_at,
+        "claim_boundary": (
+            "Process-local LRU ceiling (max_cached_models × max_ifc_bytes). "
+            "Not federated-pack RSS, not VM sizing, not customer SLA. "
+            "closes_rt003=false."
+        ),
+        "max_cached_models": models,
+        "max_bytes_per_model": per,
+        "ceiling_bytes": ceiling,
+        "ceiling_gib": ceiling / (1024**3),
+        "measured_rss_delta_bytes": None,
+        "representative_scale": False,
+        "closes_rt003": False,
+        "checkpoint": "NO_GO",
+    }
 
 
 def _evict_overflow_locked() -> None:

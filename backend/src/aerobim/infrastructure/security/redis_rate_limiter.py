@@ -36,6 +36,8 @@ class RedisRateLimitBackend:
         self._script = self._redis.register_script(_REDIS_ALLOW_SCRIPT)
 
     def allow(self, *, bucket: str, key: str, max_events: int, window_seconds: float) -> bool:
+        # HD2-RL-02: 0 = limiter off (by design in development). Pilot/production
+        # reject <=0 at Settings boot.
         if max_events <= 0:
             return True
         ttl = max(1, int(math.ceil(window_seconds)))

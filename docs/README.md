@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Documentation — TechLab jury surface"
 status: active
-version: "3.3.0"
-last_updated: "2026-08-14"
+version: "3.4.0"
+last_updated: "2026-08-16"
 tags: [aerobim, documentation, samolet, techlab, jury]
 claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng readiness ≠ customer GO. Operator/debug docs are local (.local/)."
 ---
@@ -10,19 +10,15 @@ claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng r
 # Documentation (TechLab jury)
 
 Checkpoint: **`NO_GO`** — [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).  
-Aug 2026 eng readiness: [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).  
-P0 eng package WP-01…08 Red Team rollup: [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md).
+Aug 2026 eng readiness: [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).
 
-Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and curated eng/Red Team summaries under `docs/quality/`. Operator runbooks, phase Red Team dumps,  archive, team-private dumps (TZ/PPTX/photos), and commercial contact pipelines live under `.local/` (not published). Public `docs/customer-discovery/` = anonymized templates only.
-
-**Red Team / eng remediations through 2026-08-02:** Claims Lock / blockers / ADR-001 / SECURITY aligned with fail-closed Shared-gate; P0 WP-01…08 eng-delivered under Claims Lock. Customer blockers RT-001/002/003 remain open.
+Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and a short curated set under `docs/quality/`. Operator runbooks, session audits, and commercial contact pipelines live under `.local/` (not published). Public `docs/customer-discovery/` = anonymized templates only.
 
 ## Read first
 
 | File | Role |
 |------|------|
 | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng status** (P0 WP-01…08 + LIC-001 / P2 / offline) |
-| [`quality/RED_TEAM_P0_ROLLUP_2026_08_02.md`](quality/RED_TEAM_P0_ROLLUP_2026_08_02.md) | P0 Red Team rollup (self; Checkpoint NO_GO) |
 | [`docs.md`](docs.md) | **Jury memo (RU)** |
 | [`samolet.md`](samolet.md) | Strategy × Samolet 10D (июль 2026) |
 | [`gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) | **OSINT 14.08 + вектор** (Renga/Tangl/10D, монетизация) |
@@ -69,9 +65,5 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md`](pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md) | Demo evidence + precision harness |
 | [`pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md`](pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md) | DWG / MEP / calc / BCF→СОД gap + priority |
 | [`../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Hybrid AI design report; WP-02 advisory pre-gate landed after report |
-| [`quality/RED_TEAM_WP01_03_2026_08_02.md`](quality/RED_TEAM_WP01_03_2026_08_02.md) | Red Team WP-01..03 |
-| [`quality/RED_TEAM_WP04_05_2026_08_02.md`](quality/RED_TEAM_WP04_05_2026_08_02.md) | Red Team WP-04/05 |
-| [`quality/RED_TEAM_WP06_08_2026_08_02.md`](quality/RED_TEAM_WP06_08_2026_08_02.md) | Red Team WP-06..08 |
-| [`quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md`](quality/RED_TEAM_WAVE2_TRACKER_COMMERCIAL_2026_08_04.md) | Red Team wave-2: tracker К0 + commercial hygiene |
 | [`TIER0_INDEX.md`](TIER0_INDEX.md) | Compact map |
 | [`ai-safety-and-document-ingestion-2026.md`](ai-safety-and-document-ingestion-2026.md) | Trust boundaries / AI safety |

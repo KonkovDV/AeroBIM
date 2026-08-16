@@ -24,6 +24,8 @@ class InProcessRateLimitBackend:
         self._lock = Lock()
 
     def allow(self, *, bucket: str, key: str, max_events: int, window_seconds: float) -> bool:
+        # HD2-RL-02: 0 = limiter off (by design in development). Pilot/production
+        # reject <=0 at Settings boot; do not treat this branch as a silent prod disable.
         if max_events <= 0:
             return True
         composite = f"{bucket}:{key}"

@@ -92,6 +92,20 @@ class Hd3IfcLruTests(unittest.TestCase):
         self.assertGreaterEqual(ifc_parse_cache_stats()["evictions"], 1)
         reset_ifc_parse_cache_for_tests()
 
+    def test_ram_ceiling_is_eight_times_256_mib(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_file_open import (
+            ifc_cache_ram_ceiling_bytes,
+            ifc_cache_ram_ceiling_payload,
+        )
+
+        self.assertEqual(ifc_cache_ram_ceiling_bytes(), 8 * 256 * 1024 * 1024)
+        payload = ifc_cache_ram_ceiling_payload()
+        self.assertEqual(payload["ceiling_bytes"], 2147483648)
+        self.assertIsNone(payload["measured_rss_delta_bytes"])
+        self.assertFalse(payload["closes_rt003"])
+        self.assertFalse(payload["representative_scale"])
+        self.assertEqual(payload["checkpoint"], "NO_GO")
+
 
 if __name__ == "__main__":
     unittest.main()

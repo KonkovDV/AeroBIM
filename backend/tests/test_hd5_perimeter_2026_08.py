@@ -7,7 +7,12 @@ import unittest
 from pathlib import Path
 
 from aerobim.core.simple_pdf import escape_pdf_literal, write_simple_pdf
-from aerobim.infrastructure.adapters.postgres_audit_store import PostgresAuditStore
+from aerobim.infrastructure.adapters import postgres_audit_store
+from aerobim.infrastructure.adapters.postgres_audit_store import (
+    MISSING_TENANT_ID_MSG,
+    REPORTS_TENANT_ID_DDL,
+    PostgresAuditStore,
+)
 
 
 class SimplePdfEscapeTests(unittest.TestCase):
@@ -34,6 +39,22 @@ class PostgresDdlBoundaryTests(unittest.TestCase):
         doc = PostgresAuditStore.__doc__ or ""
         self.assertIn("HD5-PGSQL-02", doc)
         self.assertIn("DML-only", doc)
+        self.assertIn("RT16-DDL-01", doc)
+
+    def test_rt16_deploy_sql_matches_runtime_alter(self) -> None:
+        sql_path = (
+            Path(postgres_audit_store.__file__).resolve().parent.parent
+            / "sql"
+            / "001_reports_tenant_id.sql"
+        )
+        self.assertTrue(sql_path.is_file())
+        sql = sql_path.read_text(encoding="utf-8")
+        self.assertIn(REPORTS_TENANT_ID_DDL, sql)
+        self.assertIn("tenant_id", sql)
+
+    def test_dml_only_boot_fails_closed_without_tenant_column(self) -> None:
+        self.assertIn("AEROBIM_POSTGRES_APPLY_DDL=0", MISSING_TENANT_ID_MSG)
+        self.assertIn("001_reports_tenant_id.sql", MISSING_TENANT_ID_MSG)
 
 
 if __name__ == "__main__":

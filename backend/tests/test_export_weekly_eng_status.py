@@ -29,6 +29,10 @@ class WeeklyEngStatusTests(unittest.TestCase):
             payload["interpretation_use"]["ledger"],
             "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
         )
+        ceiling = payload["ifc_cache_ram_ceiling"]
+        self.assertEqual(ceiling["ceiling_bytes"], 8 * 256 * 1024 * 1024)
+        self.assertIsNone(ceiling["measured_rss_delta_bytes"])
+        self.assertFalse(ceiling["closes_rt003"])
         self.assertAlmostEqual(payload["coverage_map"]["kr_detectable_share_approx"], 0.167)
         # R-4: commercial key must appear before eng blocks in insertion order.
         keys = list(payload.keys())

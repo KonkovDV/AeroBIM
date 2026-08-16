@@ -26,7 +26,7 @@ Banner on MD/PDF: **SYNTHETIC/FIXTURE ONLY** · **CUSTOMER ACCURACY NOT ESTABLIS
 | Runtime baseline | [`docs/evidence/runtime-baseline-latest.json`](../evidence/runtime-baseline-latest.json) |
 | Release status JSON | [`docs/evidence/release-status-2026-08-06.json`](../evidence/release-status-2026-08-06.json) |
 | Release status MD | [`docs/quality/RELEASE_STATUS_2026-08-06.md`](RELEASE_STATUS_2026-08-06.md) |
-| Hyperdeep audit | [`docs/quality/AEROBIM_HYPERDEEP_AUDIT_2026-08-06.md`](AEROBIM_HYPERDEEP_AUDIT_2026-08-06.md) |
+| Engineering status | [`docs/ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) |
 | Verifier | `python -m aerobim.tools.verify_release_evidence` |
 
 ## Customer materials (exact names)
@@ -44,7 +44,7 @@ Banner on MD/PDF: **SYNTHETIC/FIXTURE ONLY** · **CUSTOMER ACCURACY NOT ESTABLIS
 |---|---|
 | Claims Lock | [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) |
 | Intake gate | [`audit/evidence/customer-intake-gate.json`](../../audit/evidence/customer-intake-gate.json) — `BLOCKED_NO_CUSTOMER_DATA` |
-| RT hyperdeep (security) | [`docs/quality/RED_TEAM_HYPERDEEP_2026_08_06.md`](RED_TEAM_HYPERDEEP_2026_08_06.md) (cite commit `1804f62`) |
+| Engineering status | [`docs/ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) |
 
 ## SUPERSEDED / historical
 

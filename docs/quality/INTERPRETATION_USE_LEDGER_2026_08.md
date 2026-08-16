@@ -84,7 +84,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-04`: `docs/architecture/ADR-003-dwg-oda-trial-kt3-2026.md`
 - `SAM-05`: `docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`
 - `SAM-06`: `python -m aerobim.tools.measure_package_sla`
-- `SAM-07`: `docs/quality/T2_EVIDENCE_INTEGRITY_WAVE_2026_07_25.md`
+- `SAM-07`: `docs/pilot-claim-boundary-2026.md`
 - `TRK-01`: `docs/partners/_2026_08_16.md`
 - `TRK-02`: `docs/evidence/ifc-release-matrix-2026-08.md`
 - `TRK-03`: `docs/evidence/DATASET_HUNT_LOG_2026_08.md`

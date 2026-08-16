@@ -35,6 +35,7 @@ artifacts/*
 !artifacts/README.md
 !artifacts/demo/
 !artifacts/demo/.gitkeep
+artifacts/demo/*.mp4
 
 # IDE / agent (not product source)
 .cursor/
@@ -95,6 +96,26 @@ docs/evidence/samolet-sla-customer-*.json
 docs/samolet-techlab-scorecard-2026.zip
 *.log
 backend/cache/
+
+# Session dumps / AI audit kitchen (not the TechLab jury pack)
+docs/quality/RED_TEAM_ATOMIC*.md
+docs/quality/RED_TEAM_HYPERDEEP*.md
+docs/quality/RED_TEAM_HD_REMAINING*.md
+docs/quality/RT_RUN_*.md
+docs/quality/PLAIN_LANGUAGE_SESSION*.md
+docs/quality/*_WAVE_*.md
+docs/ai/MASTER_RED_TEAM_PROMPT*.md
+docs/audit/RED_TEAM_*.md
+!docs/audit/RED_TEAM_NPA_LEGAL_FORCE_2026_08_14.md
+docs/quality/RED_TEAM_WAVE*.md
+docs/quality/AEROBIM_HYPERDEEP*
+docs/quality/TASK0_*
+docs/audit/_*.txt
+docs/audit/_*.tsv
+docs/audit/N43_REHEARSAL*
+docs/demo/mentor-mikhail-*/
+docs/demo/mentor-call-*.md
+docs/review/
 
 # Build outputs
 bin/

@@ -40,10 +40,7 @@ claim_boundary: "Prep pack only. No invented call minutes. Checkpoint NO_GO. Not
 
 Точность >90%, SLA ≤30 мин, DWG-ready, MEP delivered, CDE-ready, Checkpoint GO, «production-ready», OIDC BFF / SSO ready.
 
-## 2. Михаил (ИТ-ментор, Дептранс) — слот после пакета 11.08
-
-Предыдущий пакет: [`mentor-mikhail-2026-08-11/README.md`](mentor-mikhail-2026-08-11/README.md).  
-Вопрос P3-1 (Кортунов / зрелость vs переинжиниринг): [`../partners/SEVEN_CONCLUSIONS_MULTIFRAME_PLAN_2026_08.md`](../partners/SEVEN_CONCLUSIONS_MULTIFRAME_PLAN_2026_08.md).
+## 2. Михаил (ИТ-ментор, Дептранс)
 
 ### Повестка 20 мин
 

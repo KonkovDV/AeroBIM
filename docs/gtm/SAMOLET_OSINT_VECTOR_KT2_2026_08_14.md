@@ -185,7 +185,7 @@ Freeze **запрещает** то, что убьёт вектор: адапте
 4. Речь жюри/трекера: Tangl=модель, мы=комплект; демо-IFC ≠ Renga.  
 5. НПА: ЦИМ АГР + СтроимПросто в regulatory baseline.  
 6. Честная пометка fixture IFC.  
-7. Red Team этого пакета: [`../quality/RED_TEAM_SAMOLET_OSINT_VECTOR_2026_08_14.md`](../quality/RED_TEAM_SAMOLET_OSINT_VECTOR_2026_08_14.md).
+7. Claims Lock + этот мемо — SSOT вектора; Checkpoint **NO_GO**.
 
 ### 9.2 До загрузки КТ#2 (20.08) — без новых портов
 

@@ -1,7 +1,6 @@
 # И1 closed-contour offline — Docker evidence (2026-08-08)
 
-**Status:** **CLOSED** (Docker image-track, hyperdeep audited)  
-**Hyperdeep report:** [`docs/audit/RED_TEAM_HYPERDEEP_CLOSED_CONTOUR_2026_08_08.md`](../audit/RED_TEAM_HYPERDEEP_CLOSED_CONTOUR_2026_08_08.md)  
+**Status:** **CLOSED** (Docker image-track)  
 **JSON:** [`offline-closed-contour-docker-2026-08.json`](../../audit/evidence/offline-closed-contour-docker-2026-08.json)  
 **Runbook:** [`docs/offline-deployment-2026.md`](../../docs/offline-deployment-2026.md)
 

@@ -30,12 +30,11 @@ claim_boundary: "Fixture GO. Checkpoint NO_GO. Not customer accuracy."
 | Harness synthetic + `--require-publishable` fail-closed | **done** (exit 1) |
 | Clash AABB fixture n=5 | **fixture_measured** |
 | Drawing overlay PNG | **fixture_rendered** |
-| Mentor pack | **done** |
 | RT-001 / RT-002 / RT-003 | **OPEN** (данные Самолёта) |
 | OIDC BFF | **501** Phase 2.5 stub — не production |
 | Jury FAQ / rehearsal | [`KT2_JURY_FAQ_2026_08_12.md`](KT2_JURY_FAQ_2026_08_12.md) · [`KT2_DEMO_REHEARSAL_2026_08_12.md`](KT2_DEMO_REHEARSAL_2026_08_12.md) |
 | Tri-source alignment | [`../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md`](../tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md) |
-| N43 baseline lag=1 | checklist [`../audit/N43_REHEARSAL_CHECKLIST_2026_08_17.md`](../audit/N43_REHEARSAL_CHECKLIST_2026_08_17.md) — activate **17.08** only |
+| N43 baseline lag=1 | activate **17.08** only; see [`../audit/N43_MONITORING_SNAPSHOT_2026_08_14.md`](../audit/N43_MONITORING_SNAPSHOT_2026_08_14.md) |
 
 ## Календарь до конца окна КТ#2 (20.08)
 

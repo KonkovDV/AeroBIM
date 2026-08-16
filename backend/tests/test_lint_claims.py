@@ -226,6 +226,28 @@ class LintClaimsTests(unittest.TestCase):
                     sys.path.pop(0)
             self.assertTrue(any("elsevier_year_twin" in h or "fabricated_doi" in h for h in hits))
 
+    def test_partners_speech_docs_are_not_directory_blind(self) -> None:
+        """HDX-LINT-01: docs/partners/ is a scan root and must actually be linted."""
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import (  # type: ignore[import-not-found]
+                _should_scan,
+                lint_claims,
+            )
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        ask = _REPO / "docs" / "partners" / "_08_15.md"
+        competitive = _REPO / "docs" / "partners" / "COMPETITIVE_MATRIX_2026_08.md"
+        self.assertTrue(ask.is_file())
+        self.assertTrue(_should_scan(ask))
+        self.assertFalse(_should_scan(competitive))
+        hits = lint_claims(
+            matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md",
+            roots=[ask],
+        )
+        self.assertEqual(hits, [])
+
     def test_exclusion_stats_count_fragment_blind_zone(self) -> None:
         sys.path.insert(0, str(_REPO / "scripts"))
         try:

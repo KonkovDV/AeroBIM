@@ -95,7 +95,6 @@ full_audit: "ARCHITECTURE_DEEP_AUDIT_2026_08_05.md"
 | Документ | Зачем |
 |---|---|
 | [Полный аудит](ARCHITECTURE_DEEP_AUDIT_2026_08_05.md) | 0.1–0.5 таблицы |
-| [Task 0 raw](../quality/TASK0_DEEP_REPO_AUDIT_2026_08_05.md) | первичный проход |
 | [Exp B](../evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) | покрытие типовых замечаний |
 | [Task 3](../evidence/TASK3_COMPLETENESS_DEMONSTRATOR_2026_08_05.md) | 25п.п. полноты → ≈8,3 подтверждено |
 | [ADR-001](ADR-001-verdict-ownership-2026.md) | кто ставит `summary.passed` |

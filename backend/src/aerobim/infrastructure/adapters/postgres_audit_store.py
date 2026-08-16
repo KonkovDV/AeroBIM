@@ -8,6 +8,12 @@ from typing import Any
 from aerobim.domain.models import ReportListFilters, ReportSummaryEntry, ValidationReport
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
+REPORTS_TENANT_ID_DDL = "ALTER TABLE reports ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(128)"
+MISSING_TENANT_ID_MSG = (
+    "reports.tenant_id missing; apply infrastructure/sql/001_reports_tenant_id.sql "
+    "as a deploy step, then start with AEROBIM_POSTGRES_APPLY_DDL=0 (RT16-DDL-01)"
+)
+
 
 def _run_coro[T](coro: Coroutine[Any, Any, T]) -> T:
     """Run an async coroutine from sync code without nesting ``asyncio.run`` unsafely."""
@@ -23,11 +29,11 @@ def _run_coro[T](coro: Coroutine[Any, Any, T]) -> T:
 class PostgresAuditStore:
     """Postgres-backed report summary index with filesystem/object payload fallback.
 
-    HD5-PGSQL-02: construction runs ``create_all`` plus
-    ``ALTER TABLE … ADD COLUMN IF NOT EXISTS tenant_id``. The connected role
-    therefore needs CREATE/ALTER for bootstrap. Acceptable for a pilot.
-    Least-privilege production should apply schema via out-of-band migrations
-    and then use a DML-only role — this adapter does not split those paths yet.
+    HD5-PGSQL-02 / RT16-DDL-01: default construction runs ``create_all`` plus
+    ``ALTER TABLE … ADD COLUMN IF NOT EXISTS tenant_id`` (pilot bootstrap).
+    Set ``apply_ddl=False`` (``AEROBIM_POSTGRES_APPLY_DDL=0``) for a DML-only
+    role after applying ``infrastructure/sql/001_reports_tenant_id.sql``.
+    Missing ``tenant_id`` then raises — never skip the column.
     """
 
     def __init__(
@@ -35,9 +41,11 @@ class PostgresAuditStore:
         *,
         db_url: str,
         payload_store: FilesystemAuditStore,
+        apply_ddl: bool = True,
     ) -> None:
         self._payload_store = payload_store
         self._db_url = db_url
+        self._apply_ddl = apply_ddl
         try:
             from sqlalchemy import Boolean, Column, Integer, MetaData, String, Table, text
             from sqlalchemy.ext.asyncio import create_async_engine
@@ -110,8 +118,11 @@ class PostgresAuditStore:
             """
         )
         self._peek_tenant_sql = text("SELECT tenant_id FROM reports WHERE report_id = :report_id")
-        self._alter_tenant_sql = text(
-            "ALTER TABLE reports ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(128)"
+        self._alter_tenant_sql = text(REPORTS_TENANT_ID_DDL)
+        self._tenant_probe_sql = text(
+            "SELECT 1 FROM information_schema.columns "
+            "WHERE table_schema = current_schema() "
+            "AND table_name = 'reports' AND column_name = 'tenant_id'"
         )
         _run_coro(self._init_schema())
 
@@ -145,8 +156,13 @@ class PostgresAuditStore:
 
     async def _init_schema(self) -> None:
         async with self._engine.begin() as conn:
-            await conn.run_sync(self._metadata.create_all)
-            await conn.execute(self._alter_tenant_sql)
+            if self._apply_ddl:
+                await conn.run_sync(self._metadata.create_all)
+                await conn.execute(self._alter_tenant_sql)
+                return
+            row = await conn.execute(self._tenant_probe_sql)
+            if row.first() is None:
+                raise RuntimeError(MISSING_TENANT_ID_MSG)
 
     async def _index_report(self, report: ValidationReport) -> None:
         async with self._engine.begin() as conn:
