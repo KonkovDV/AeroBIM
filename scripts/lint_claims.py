@@ -5,6 +5,10 @@ Rules source: docs/capability-claim-matrix-2026.md (forbidden table) + TZ matrix
 Explicit allow only: ``claims-lint: allow reason="..."`` per line or
 ``claims-lint: allow-file reason="..."`` in the first ten lines **and** path listed in
 ``audit/claims_allow_file_registry.json`` (N-29: header alone is not amnesty).
+
+HDS-SUB-02: a negation marker on a heading or list item covers following
+list items until the next heading or a non-list paragraph (loose Markdown
+lists with blank lines between items stay in the same run).
 """
 
 from __future__ import annotations
@@ -14,6 +18,7 @@ import json
 import re
 import subprocess
 import sys
+from collections.abc import Sequence
 from functools import lru_cache
 from pathlib import Path
 
@@ -58,6 +63,22 @@ _ALLOW_RE = re.compile(
 _ALLOW_FILE_RE = re.compile(
     r"claims-lint:\s*allow-file\s+reason=(?P<q>\"[^\"]+\"|'[^']+')",
     re.IGNORECASE,
+)
+_MARKDOWN_MARKUP = re.compile(r"[*_`~\[\]()]")
+_LIST_ITEM_RE = re.compile(r"^(?:[-*+]|\d+[.)])\s+\S")
+_WORDING_SSOT = _REPO / "audit" / "claims_forbidden_wording.json"
+# Heading-scoped carry only. Broad same-line markers such as "missing" must
+# not amnesty an entire section (HDS-SUB-02).
+_SECTION_NEGATION_MARKERS = (
+    "запрещено",
+    "forbidden",
+    "not claimed",
+    "не заявляется",
+    "не утвержд",
+    "out of scope",
+    "вне scope",
+    "until evidenced",
+    "до доказательств",
 )
 
 _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
@@ -329,6 +350,60 @@ def _line_allowed(line: str) -> bool:
     return _ALLOW_RE.search(line) is not None
 
 
+@lru_cache(maxsize=1)
+def _negation_markers() -> tuple[str, ...]:
+    if not _WORDING_SSOT.is_file():
+        return _SECTION_NEGATION_MARKERS
+    try:
+        payload = json.loads(_WORDING_SSOT.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return _SECTION_NEGATION_MARKERS
+    raw = payload.get("negation_markers", []) if isinstance(payload, dict) else []
+    markers = tuple(str(item) for item in raw if str(item).strip())
+    return markers or _SECTION_NEGATION_MARKERS
+
+
+def _normalized_line(line: str) -> str:
+    return _MARKDOWN_MARKUP.sub("", line.lower())
+
+
+def _line_has_marker(line: str, markers: Sequence[str]) -> bool:
+    normalized = _normalized_line(line)
+    return any(marker.lower() in normalized for marker in markers)
+
+
+def _is_markdown_list_item(stripped: str) -> bool:
+    return _LIST_ITEM_RE.match(stripped) is not None
+
+
+def negation_coverage(
+    lines: Sequence[str],
+    markers: Sequence[str] | None = None,
+) -> list[bool]:
+    """True when a line sits in an inherited negation context (HDS-SUB-02)."""
+    pool = tuple(markers) if markers is not None else _negation_markers()
+    covered = [False] * len(lines)
+    section_on = False
+    list_on = False
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            section_on = _line_has_marker(line, _SECTION_NEGATION_MARKERS)
+            list_on = False
+            covered[index] = _line_has_marker(line, pool)
+            continue
+        if not stripped:
+            continue
+        if _is_markdown_list_item(stripped):
+            own = _line_has_marker(line, pool)
+            list_on = own or list_on or section_on
+            covered[index] = own or list_on
+            continue
+        list_on = False
+        covered[index] = _line_has_marker(line, pool)
+    return covered
+
+
 def lint_claims(
     *,
     matrix_path: Path,
@@ -351,8 +426,10 @@ def lint_claims(
         # N-29 kill: header alone is insufficient; path must be in registry.
         if allow_file_reason and rel in _ALLOW_FILE_PATHS:
             continue
-        for lineno, line in enumerate(text.splitlines(), start=1):
-            if _line_allowed(line):
+        lines = text.splitlines()
+        inherited = negation_coverage(lines, _SECTION_NEGATION_MARKERS)
+        for lineno, line in enumerate(lines, start=1):
+            if _line_allowed(line) or inherited[lineno - 1]:
                 continue
             for rule_id, pattern in patterns:
                 if pattern.search(line):

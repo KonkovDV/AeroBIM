@@ -127,7 +127,7 @@ class UploadApiSecurityTests(unittest.TestCase):
             self.assertFalse((Path(tmp) / "quarantine" / body["upload_id"] / "pilot.ifc").exists())
 
     def test_rejected_uploads_release_reserved_quota(self) -> None:
-        """HD2-UP-01: 415/422 after reserve must not leak daily quota."""
+        """HD2-UP-01: 415/413/422 after reserve must release held_bytes (no quota leak)."""
         try:
             from fastapi.testclient import TestClient
         except ModuleNotFoundError as exc:
@@ -199,6 +199,7 @@ class UploadApiSecurityTests(unittest.TestCase):
             self.assertEqual(_snap(Path(tmp)), (0, 0, 0))
 
     def test_stream_413_handler_drops_quota(self) -> None:
+        """HD2-UP-01: stream 413 must call _drop_quota() so held_bytes are released."""
         source = (
             Path(__file__).resolve().parents[1]
             / "src"
@@ -208,6 +209,12 @@ class UploadApiSecurityTests(unittest.TestCase):
             / "routes"
             / "uploads.py"
         ).read_text(encoding="utf-8")
+        self.assertIn("held_bytes = max_bytes", source)
+        drop_start = source.index("def _drop_quota")
+        drop_end = source.index("try:\n            safe_name")
+        drop_fn = source[drop_start:drop_end]
+        self.assertIn("size_bytes=held_bytes", drop_fn)
+        self.assertIn("held_bytes = 0", drop_fn)
         oversize_at = source.index("if total > max_bytes:")
         handler = source[oversize_at:]
         http_exc_at = handler.index("except HTTPException:")

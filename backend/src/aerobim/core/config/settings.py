@@ -745,7 +745,7 @@ class Settings:
             http_rate_limit_per_minute = 0
         if profile_gate and http_rate_limit_per_minute <= 0:
             raise RuntimeError(
-                "AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE must be > 0 under "
+                "HD2-RL-02: AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE must be > 0 under "
                 "samolet_pilot/production (0 silently disables the limiter)"
             )
         http_trusted_proxy_ips = tuple(

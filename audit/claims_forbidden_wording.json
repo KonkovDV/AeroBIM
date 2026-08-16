@@ -1,12 +1,19 @@
 {
   "artifact_type": "claims_forbidden_wording",
   "schema_version": "1.0.0",
-  "note": "SSOT for the public-docs claims-drift guard (TR-401 / Red Team A1). Derived from audit/reports/CLAIMS_LOCK_2026_07_17.md. Each phrase is forbidden as an AFFIRMATIVE product claim; every occurrence in a scanned file must sit on a line that also carries a negation/honesty marker (e.g. 'Not claimed', 'Forbidden', 'Blocked', 'Missing'). Enforced by backend/tests/test_claims_forbidden_wording_guard.py.",
+  "note": "SSOT for the public-docs claims-drift guard (TR-401 / Red Team A1). Derived from audit/reports/CLAIMS_LOCK_2026_07_17.md. Each phrase is forbidden as an AFFIRMATIVE product claim. Same-line negation markers always count; HDS-SUB-02 also carries a heading/list marker onto following list items until the next heading or a non-list paragraph. Enforced by backend/tests/test_claims_forbidden_wording_guard.py.",
   "scanned_files": [
     "README.md",
     "README.ru.md",
     "docs/TIER0_INDEX.md",
-    "docs/ENGINEERING_STATUS_2026_08.md"
+    "docs/ENGINEERING_STATUS_2026_08.md",
+    "submission/README.md",
+    "submission/01-repository/README.md",
+    "submission/02-documentation/README.md",
+    "submission/03-presentation/README.md",
+    "submission/04-prototype/README.md",
+    "submission/05-additional/README.md",
+    "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md"
   ],
   "forbidden_affirmative_phrases": [
     "accuracy >90%",
