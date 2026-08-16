@@ -1,4 +1,3 @@
-<!-- claims-lint: allow-file reason="Presentation guardrails listing forbidden phrases as non-claims; NO_GO explicit" -->
 ---
 title: "Поле «Презентация» — каркас, речь, запреты"
 status: active
@@ -47,6 +46,14 @@ claim_boundary: >
 
 ## Запрещено в кадре и в голосе
 
-Точность >90%; выполненный SLA ≤30 мин на комплекте заказчика; экономия ≥20%; native DWG; MEP delivered; интеграция с Tangl / 10D; CDE-ready BCF; «ИИ понимает чертёж как инженер»; Checkpoint GO.
+- точность >90%
+- выполненный SLA ≤30 мин на комплекте заказчика
+- экономия ≥20%
+- native DWG
+- MEP delivered
+- интеграция с Tangl / 10D
+- CDE-ready BCF
+- «ИИ понимает чертёж как инженер»
+- Checkpoint GO
 
 Полный реестр: [`../../docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md). Нарушение ловится `scripts/lint_claims.py` в CI.

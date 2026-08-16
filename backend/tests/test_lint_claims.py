@@ -302,6 +302,78 @@ class LintClaimsTests(unittest.TestCase):
         self.assertIsNotNone(by_id["forbidden_native_dwg"].search("нативный DWG"))
         self.assertIsNotNone(by_id["forbidden_cde_ready"].search("готово к CDE"))
 
+    def test_scan_roots_include_submission_pack(self) -> None:
+        """HDS-SUB-01: jury-facing submission/ stays in default scan roots."""
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import _SCAN_ROOTS  # type: ignore[import-not-found]
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        self.assertIn(_REPO / "submission", _SCAN_ROOTS)
+
+    def test_heading_negation_covers_following_list_items(self) -> None:
+        """HDS-SUB-02: list items inherit a heading/list negation marker."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ok.md"
+            path.write_text(
+                "## Запрещено\n\n- production-ready\n- native DWG\n- CDE-ready\n",
+                encoding="utf-8",
+            )
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import lint_claims  # type: ignore[import-not-found]
+
+                hits = lint_claims(
+                    matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md",
+                    roots=[path],
+                )
+            finally:
+                if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertEqual(hits, [])
+
+    def test_new_heading_resets_inherited_negation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "bad.md"
+            path.write_text(
+                "## Запрещено\n\n- production-ready\n\n## Status\n\nWe are production-ready.\n",
+                encoding="utf-8",
+            )
+            sys.path.insert(0, str(_REPO / "scripts"))
+            try:
+                from lint_claims import lint_claims  # type: ignore[import-not-found]
+
+                hits = lint_claims(
+                    matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md",
+                    roots=[path],
+                )
+            finally:
+                if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                    sys.path.pop(0)
+            self.assertTrue(any("forbidden_production_ready" in hit for hit in hits))
+            self.assertTrue(
+                any("We are production-ready" in hit for hit in hits)
+            )
+
+    def test_presentation_readme_is_scanned_without_allow_file(self) -> None:
+        """Jury presentation pack is content-scanned; heading negation must hold."""
+        path = _REPO / "submission" / "03-presentation" / "README.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertNotIn("claims-lint: allow-file", text[:400])
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import lint_claims  # type: ignore[import-not-found]
+
+            hits = lint_claims(
+                matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md",
+                roots=[path],
+            )
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        self.assertEqual(hits, [])
+
 
 if __name__ == "__main__":
     unittest.main()
