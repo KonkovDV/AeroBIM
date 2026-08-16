@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -442,12 +443,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("closes_rt001: false", text)
 
     def test_plan_b_date_is_on_tracker_followup(self) -> None:
-        path = (
-            self._repo()
-            / "docs"
-            / "demo"
-            / "TRACKER_MEETING_2026_08_14_FOLLOWUP.md"
-        )
+        path = self._repo() / "docs" / "demo" / "TRACKER_MEETING_2026_08_14_FOLLOWUP.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("15.09.2026", text)
         self.assertIn("re-scope", text)
@@ -487,19 +483,23 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertNotIn("11 пунктов", text)
 
 
+def _git_ls_files(*args: str) -> str:
+    git = shutil.which("git")
+    if not git:
+        raise unittest.SkipTest("git executable not found")
+    return subprocess.check_output(
+        [git, "ls-files", *args],
+        cwd=Path(__file__).resolve().parents[2],
+        text=True,
+    )
+
+
 class JuryPackHygieneTests(unittest.TestCase):
     def _repo(self) -> Path:
         return Path(__file__).resolve().parents[2]
 
     def _is_tracked(self, rel: str) -> bool:
-        result = subprocess.run(
-            ["git", "ls-files", "--", rel],
-            cwd=self._repo(),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        return bool(result.stdout.strip())
+        return bool(_git_ls_files("--", rel).strip())
 
     def test_operator_kitchen_is_unpublished_from_git(self) -> None:
         forbidden = (
@@ -561,12 +561,23 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, text, msg=forbidden)
 
-    def test_submission_links_resolve(self) -> None:
+    def _tracked_paths(self) -> frozenset[Path]:
+        repo = self._submission().parent
+        paths: set[Path] = set()
+        for line in _git_ls_files().splitlines():
+            resolved = (repo / line).resolve()
+            paths.add(resolved)
+            paths.update(resolved.parents)
+        return frozenset(paths)
+
+    def test_submission_links_resolve_on_a_fresh_clone(self) -> None:
+        # Resolve against tracked files: a gitignored local copy is not a published target.
+        tracked = self._tracked_paths()
         pattern = re.compile(r"\]\((?!https?:|mailto:)([^)#]+)")
         broken: list[str] = []
         for path in sorted(self._submission().rglob("*.md")):
             for match in pattern.finditer(path.read_text(encoding="utf-8")):
-                if not (path.parent / match.group(1)).resolve().exists():
+                if (path.parent / match.group(1)).resolve() not in tracked:
                     broken.append(f"{path.name} -> {match.group(1)}")
         self.assertEqual(broken, [])
 
