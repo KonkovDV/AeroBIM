@@ -16,7 +16,7 @@ claim_boundary: "Fixture metrics ≠ customer precision. Publish customer number
 |--------------|----------------|
 | Инженерный fixture | `samples/` + pack JSON из CI / eng fixtures |
 | Customer (когда появится) | `samples/customer/` **local only, never git** |
-| Env / профиль | [`SAMOLET_PILOT_ENV_RUNBOOK_2026_07.md`](SAMOLET_PILOT_ENV_RUNBOOK_2026_07.md) |
+| Env / профиль | Fixture packs under `samples/`; customer packs stay local (`samples/customer/`, never git) |
 
 ### Полный контур (чек)
 

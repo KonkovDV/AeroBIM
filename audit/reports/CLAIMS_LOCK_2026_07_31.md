@@ -58,6 +58,6 @@
 - Extraction: `docs/extraction-integrity-2026.md`, `domain/extraction_integrity.py`
   (digit-run text↔OCR collision ENG_PARTIAL when RapidOCR present; not literature closure)
 - Signature: `docs/signature-and-immutability-2026.md`
-- Full P-001…P-020 re-audit: `RED_TEAM_AUDIT_2026_07_31.md` §6 (reaudit addendum)
+- Full P-001…P-020 re-audit: [`CRITICAL_BLOCKERS.md`](CRITICAL_BLOCKERS.md) (checkpoint still **NO_GO**)
 - Remote Task 07 verify: `docs/quality/RED_TEAM_KT2_REMOTE_AUDIT_VERIFY_2026_08_03.md`
 - Citation errata (ASK-BIM venue): `docs/research/CITATION_ERRATA_2026_08_03.md`

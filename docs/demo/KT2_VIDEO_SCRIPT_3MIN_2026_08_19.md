@@ -22,7 +22,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 ```
 
 Открыть **свежий** `artifacts/ifc-acceptance-gate-demo/report.html` и `acceptance-gate.json`.  
-Не открывать snapshot `docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html`.
+Не открывать snapshot HTML из `docs/evidence/kt2-handoff-2026-08-11/` (`wall-guid/report.html` и `vertical-slice/report.html`). Live demo — только CLI.
 
 Сценарий: IDS/атрибут стены (FireRating) на fixture IFC. Не «ИИ понял чертёж». Overlay — отдельная команда `run_demo_vertical_slice`, не обязательна на этой записи.
 
@@ -45,4 +45,4 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 ## После записи
 
 Файл: `artifacts/demo/kt2-demo.mp4` (локально; в git не класть, если >лимита).  
-Скриншот загрузки в ЛК — человек, 19–20.08. Список файлов ЛК: [`../pilot/KT2_UPLOAD_PACK_2026_08_14.md`](../pilot/KT2_UPLOAD_PACK_2026_08_14.md).
+Скриншот загрузки в ЛК — человек, 19–20.08. Операторский список файлов ЛК не публикуется в git.

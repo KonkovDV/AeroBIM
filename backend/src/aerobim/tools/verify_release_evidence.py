@@ -192,11 +192,8 @@ def _check_required_files(repo: Path, errors: list[str], day: str) -> None:
         evidence / "sprint2-baseline-report.md",
         evidence / "sprint2-baseline-report.pdf",
         repo / "docs" / "customer" / "CUSTOMER_ONE_PAGER.md",
-        repo / "docs" / "customer" / "CUSTOMER_OUTREACH_TRACKER.csv",
         repo / "docs" / "customer" / f"CUSTOMER_DEMO_PROTOCOL_{day}.md",
-        repo / "docs" / "quality" / f"RELEASE_EVIDENCE_INDEX_{day}.md",
         evidence / f"release-status-{day}.json",
-        repo / "docs" / "quality" / f"RELEASE_STATUS_{day}.md",
     ]
     for path in required:
         if not path.is_file():

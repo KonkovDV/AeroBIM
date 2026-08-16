@@ -14,7 +14,7 @@ tags: [aerobim, samolet, techlab, gap, dwg, mep, calc, bcf, cde]
 **Финальная КТ:** 21 сентября 2026  
 **Принцип:** порт / DI / fixture ≠ промышленная возможность. LLM не выставляет вердикт.
 
-Связанные SSOT: [`PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md), [`FOUR_DIRECTION_HONESTY_IMPL_REPORT_2026_07_24.md`](FOUR_DIRECTION_HONESTY_IMPL_REPORT_2026_07_24.md), [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md), [`../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md), [`../architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](../architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md).
+Связанные SSOT: [`PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md), [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md), [`../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md), [`../architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](../architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md).
 
 ---
 

@@ -214,7 +214,7 @@ ADR-002 is the **open-core commercial boundary** (LICENSE stays MIT). The Studio
 | **T1 / private on-prem** (≈ C2) | AI Studio Docker/Helm / Stackland in Samolet contour — CONFIDENTIAL / RESTRICTED |
 | Same adapter | `OpenAICompatLlmProvider`; only `AEROBIM_LLM_BASE_URL` (+ key) changes |
 
-See [`../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md`](../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md).
+See [`../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md).
 
 ## Claims Lock — allowed / forbidden
 
@@ -231,4 +231,4 @@ Grant tokens ≈ 1% cost of one WP-07 Wilson sample. Deficit for Checkpoint: **a
 - Deep analysis: [`YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md`](YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md)
 - Feasibility: [`QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md`](QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md)
 - Plan: [`../roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md`](../roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md)
-- Routing policy: [`../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md`](../../audit/reports/HYBRID_AI_ROUTING_POLICY_2026_07_28.md)
+- Routing policy: [`../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md)

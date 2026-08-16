@@ -291,7 +291,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             repo / "docs" / "partners" / "PITCH_NOVALTOR_TECHLAB_2026_08.md",
             repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md",
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
-            repo / "docs" / "demo" / "KT2_HANDOFF_COVER_2026_08_11.md",
             repo / "docs" / "docs.md",
         )
         for path in surfaces:
@@ -417,8 +416,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("RU **fixture** ground truth", text)
         self.assertIn("macro F1 ≈ 0.86 (fixture-only; RT-001 OPEN", text)
 
-    def test_upload_pack_lists_wave2_artifacts(self) -> None:
-        path = self._repo() / "docs" / "pilot" / "KT2_UPLOAD_PACK_2026_08_14.md"
+    def test_tier0_lists_wave2_artifacts(self) -> None:
+        path = self._repo() / "docs" / "TIER0_INDEX.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("KT2_TASK07_COMPARISON_2026_08.md", text)
         self.assertIn("KT2_10D_INTAKE_CONTRACT_2026_08.md", text)

@@ -10,8 +10,8 @@ tags: [aerobim, vlm, ocr, qwen, kimi, gemma, benchmark, pilot]
 # Протокол сравнения VLM для распознавания инженерных документов
 
 **Окно исполнения:** 4–20 августа 2026 (после выхода весов Kimi K3 — 27 июля).
-**Связанные SSOT:** [`PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md),
-[`../quality/CUSTOMER_PILOT_BACKLOG_2026_07_21.md`](../quality/CUSTOMER_PILOT_BACKLOG_2026_07_21.md) (P3: GraphRAG/IfcLLM product — **forbidden**; VLM — advisory).
+**Связанные SSOT:** [`PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md)
+(P3: GraphRAG/IfcLLM product — **forbidden**; VLM — advisory).
 
 ## Академические якоря (июль 2026)
 

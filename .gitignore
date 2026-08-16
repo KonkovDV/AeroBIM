@@ -117,6 +117,40 @@ docs/demo/mentor-mikhail-*/
 docs/demo/mentor-call-*.md
 docs/review/
 
+# Operator / session kitchen — local only, never the TechLab jury pack
+docs/quality/CUSTOMER_PILOT_BACKLOG*
+docs/quality/FINDINGS_RECLASSIFICATION*
+docs/quality/RELEASE_EVIDENCE_INDEX*
+docs/quality/RELEASE_STATUS_*
+docs/quality/TRACKER_FRIDAY_OPENING*
+docs/quality/TRACKER_MEETING_PACK*
+docs/demo/CONSULTATIONS*
+docs/demo/KT2_DEMO_REHEARSAL*
+docs/demo/KT2_HANDOFF_COVER*
+docs/demo/KT2_LK_COVER*
+docs/demo/KT2_CLONE_TO_DEMO_CHECK*
+docs/audit/FREEZE_PROTOCOL*
+docs/audit/N43_MONITORING*
+docs/audit/RT_CUSTOMER_BLOCKERS*
+docs/customer/CUSTOMER_OUTREACH_TRACKER.csv
+docs/gtm/customer-outreach*
+docs/gtm/outreach-tracker*
+docs/customer-outreach-sprint-*
+docs/pilot/SAMOLET_PILOT_ENV_RUNBOOK*
+docs/pilot/KT2_UPLOAD_PACK*
+docs/pilot/CUSTOMER_KICKOFF_MAP*
+docs/pilot/FOUR_DIRECTION_HONESTY_IMPL*
+docs/pilot/SAMOLET_DEMO_COPYLEFT*
+audit/reports/RT_STATS_*
+audit/reports/SPRINT3_RED_TEAM*
+audit/reports/HYBRID_AI_ARCHITECTURE*
+audit/reports/HYBRID_AI_RESEARCH*
+audit/reports/HYBRID_AI_ROUTING*
+audit/reports/HYBRID_AI_THREAT*
+audit/reports/EXTRACTION_INTEGRITY_AUDIT*
+docs/evidence/sprint2-baseline-report.html
+docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html
+
 # Build outputs
 bin/
 obj/

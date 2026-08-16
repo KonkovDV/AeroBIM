@@ -24,7 +24,7 @@ claim_boundary: "Подготовительный документ. Checkpoint N
 ### A. Демо и техника
 
 **A1. «Это запись или живьём? Может, у вас под столом заготовленный результат?»**
-→ «Живьём: CLI Acceptance Gate на чистой машине, SHA коммита и reproducibility-hash в манифесте. Повторный прогон — хеш совпадёт. Если железо падает — говорю и перехожу на fallback-ролик / live CLI». Чеклист: [`KT2_VIDEO_DRY_RUN_2026_08.md`](KT2_VIDEO_DRY_RUN_2026_08.md). Команда: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.
+→ «Живьём: CLI Acceptance Gate на чистой машине, SHA коммита и reproducibility-hash в манифесте. Повторный прогон — хеш совпадёт. Если железо падает — говорю и перехожу на fallback-ролик / live CLI». Чеклист: [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md). Команда: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.
 
 **A2. «Почему демо на вашей фикстуре, а не на наших файлах?»**
 → «Потому что подписанного профиля приёмки и корпуса от вас ещё нет (RT-001/002). На чужих данных без вашего эталона любой результат — вранье о точности. Письмо — четыре пункта, уже у трекера». [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md).
@@ -221,7 +221,7 @@ claim_boundary: "Подготовительный документ. Checkpoint N
 - [x] Квота резервируется до записи quarantine.
 
 **Демо-контур:**
-- [x] Чеклист dry-run — [`KT2_VIDEO_DRY_RUN_2026_08.md`](KT2_VIDEO_DRY_RUN_2026_08.md); mp4 **NOT_IN_GIT**.
+- [x] Чеклист записи — [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md); mp4 **NOT_IN_GIT**.
 - [ ] Чистая машина: SHA-пин коммита в первом кадре (оператор 17–19.08).
 - [ ] Offline Docker как запасной контур (оператор).
 - [ ] Репетиция банка A–J вслух два раза; ответ ≤ 45 с, дальше мост к протоколу.

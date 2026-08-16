@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Documentation — TechLab jury surface"
 status: active
-version: "3.4.0"
+version: "3.4.1"
 last_updated: "2026-08-16"
 tags: [aerobim, documentation, samolet, techlab, jury]
 claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng readiness ≠ customer GO. Operator/debug docs are local (.local/)."

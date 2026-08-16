@@ -34,7 +34,7 @@ DWG **не входит** в обязательный контур приёмк�
 
 **DXF path:** optional `ezdxf` может извлечь TEXT/MTEXT при **экспорте DXF заказчиком**. Это не claim native DWG.
 
-**Показ Самолёту (14.08):** лицензия GPL-3 — не повод прятать *входные* GPLv3 IFC в `.local/`. LibreDWG в процесс AeroBIM **не линкуем** (неполнота + нельзя отдать GPL-сборку другим). Демо DWG = IFC + PDF/A. Полоса: [`pilot/SAMOLET_DEMO_COPYLEFT_LANE_2026_08_14.md`](pilot/SAMOLET_DEMO_COPYLEFT_LANE_2026_08_14.md).
+**Показ Самолёту (14.08):** лицензия GPL-3 — не повод прятать *входные* GPLv3 IFC в `.local/`. LibreDWG в процесс AeroBIM **не линкуем** (неполнота + нельзя отдать GPL-сборку другим). Демо DWG = IFC + PDF/A. GPLv3-деревья в git не входят.
 
 ---
 

@@ -31,7 +31,6 @@ def _write_json(path: Path, payload: dict) -> None:
 def _minimal_repo(tmp: Path, *, publishable: bool = False, closes_rt: bool = False) -> Path:
     evidence = tmp / "docs" / "evidence"
     customer = tmp / "docs" / "customer"
-    quality = tmp / "docs" / "quality"
     audit = tmp / "audit" / "evidence"
 
     sprint2 = {
@@ -92,15 +91,7 @@ def _minimal_repo(tmp: Path, *, publishable: bool = False, closes_rt: bool = Fal
         (evidence / name).write_bytes(b"%PDF-1.4\n" + b"x" * 120)
 
     _write(customer / "CUSTOMER_ONE_PAGER.md", "# one pager\n")
-    _write(
-        customer / "CUSTOMER_OUTREACH_TRACKER.csv",
-        "organization,segment,contact_role,contact_name,channel,"
-        "date_contacted,response,demo_agreed,pilot_agreed,data_available,"
-        "expert_available,NDA_required,next_step,owner,notes\n",
-    )
     _write(customer / f"CUSTOMER_DEMO_PROTOCOL_{DAY}.md", "# demo\n")
-    _write(quality / f"RELEASE_EVIDENCE_INDEX_{DAY}.md", "# index\n")
-    _write(quality / f"RELEASE_STATUS_{DAY}.md", "# status\n")
     return tmp
 
 

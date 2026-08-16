@@ -198,7 +198,7 @@ Rejected packs may still inform discovery — not RT-001 closure.
 
 ## 11. Intake workflow
 
-1. **Discovery call** — qualify DWG/IFC/PDF mix, expertise conclusion availability ([`customer-outreach-sprint-3-2026-08.md`](../customer-outreach-sprint-3-2026-08.md)).
+1. **Discovery call** — qualify DWG/IFC/PDF mix, expertise conclusion availability ([`../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`](../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md)).
 2. **NDA** — signed before transfer.
 3. **Scope memo** — discipline, formats, de-ID rules, excluded claims.
 4. **Transfer** — on-prem preferred; encrypted channel if remote.

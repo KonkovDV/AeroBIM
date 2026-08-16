@@ -70,7 +70,7 @@ Engineering readiness improved. Customer and investor readiness did **not**.
 3. **MIT fork.** Заказчик копирует ядро, оставляет себе норм-пак. Выручка = 0, если речь не A/B.  
 4. **GPL contamination.** LibreDWG «на выходных» → LICENSE conflict.  
 5. **Program violation.** А101/Галс как «второй заказчик Техлаба» → конфликт с AM 05.08.  
-6. **Demo miss 19.08.** Открывают `wall-guid/report.html` без `#kt2-overlay` → «нет продукта». *(CONSULTATIONS исправлен 15.08.)*  
+6. **Demo miss 19.08.** Открывают `wall-guid/report.html` без `#kt2-overlay` → «нет продукта». Live CLI: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.  
 7. **CI/local test split.** Ассоциат видит 2167 в README и 2259 локально → «врут в метриках». Держать pin CI; local pin отдельно.  
 8. **Harbor theatre.** Гонят 160 задач ради слайда → чужой бенч как accuracy.  
 9. **Entity delay.** Слоты есть, договора нет → демо сгорают.  

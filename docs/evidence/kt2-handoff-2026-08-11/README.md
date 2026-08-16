@@ -12,7 +12,7 @@ claim_boundary: "Fixture GO / methodology handoff. Checkpoint NO_GO until RT-001
 
 Machine status: [`STATUS.json`](./STATUS.json)
 
-**Superseded demo HTML:** `vertical-slice/report.html` is the **11.08 snapshot** and does not contain `#kt2-overlay`. For the live CLI demo run `python -m aerobim.tools.run_demo_vertical_slice` and use pin [`../vertical-slice-demo-live-2026-08-14.md`](../vertical-slice-demo-live-2026-08-14.md). Do not open the 11.08 HTML on the tracker call.
+**Superseded 11.08 HTML is not in the public tree.** For the live CLI demo run `python -m aerobim.tools.run_demo_vertical_slice` and use pin [`../vertical-slice-demo-live-2026-08-14.md`](../vertical-slice-demo-live-2026-08-14.md). Do not open snapshot HTML as overlay.
 
 ## What to open in the meeting (30–40 min)
 
@@ -21,13 +21,13 @@ Machine status: [`STATUS.json`](./STATUS.json)
 | 1 | **Live overlay demo** | `python -m aerobim.tools.run_demo_vertical_slice` → `artifacts/vertical-slice-demo/report.html` (`#kt2-overlay`) |
 | 2 | This STATUS | `docs/evidence/kt2-handoff-2026-08-11/STATUS.json` |
 | 3 | Wall-guid **GUID-mismatch bundle** (not overlay) | `wall-guid/` — `summary.passed=false`. **Do not** open `wall-guid/report.html` as the KT#2 slice |
-| 4 | Vertical slice **11.08 snapshot** (superseded HTML) | `vertical-slice/slice-summary.json` + `LIMITATIONS.json` — **not** `vertical-slice/report.html` |
+| 4 | Vertical slice **11.08 snapshot** (JSON only) | `vertical-slice/slice-summary.json` + `LIMITATIONS.json` |
 | 5 | Harness dry-run (synthetic, not publishable) | `harness-dryrun/pilot-harness-report.json` |
 | 6 | Clash fixture measure (AABB n=5) | [`../clash-measurement-slice-2026-08/`](../clash-measurement-slice-2026-08/) |
 | 7 | Drawing overlay smoke PNG | [`../drawing-overlay-smoke-2026-08/`](../drawing-overlay-smoke-2026-08/) |
-| 8 | Demo rehearsal | [`../../demo/KT2_DEMO_REHEARSAL_2026_08_12.md`](../../demo/KT2_DEMO_REHEARSAL_2026_08_12.md) |
+| 8 | Video script | [`../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) |
 
-**Do not open** `wall-guid/report.html` or `vertical-slice/report.html` as the overlay demo (no `#kt2-overlay` on the 11.08 HTML).
+**Do not open** `wall-guid/report.html` as the overlay demo (no `#kt2-overlay` on the 11.08 HTML).
 
 ## Regenerate (fixture only)
 

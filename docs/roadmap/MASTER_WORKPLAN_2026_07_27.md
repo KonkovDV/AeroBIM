@@ -13,7 +13,7 @@ tags: [aerobim, samolet, techlab, mik, workplan, checkpoints, roadmap]
 ([`TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md`](../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md)),
 календаря Checkpoint #2
 ([`PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md)),
-kickoff-карты ([`CUSTOMER_KICKOFF_MAP_2026_07_26.md`](../pilot/CUSTOMER_KICKOFF_MAP_2026_07_26.md))
+kickoff ASK ([`SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md))
 и контура МИК ([`MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md)).
 Этот файл — операционный план исполнителя на 28.07–21.09; он **не** заменяет
 перечисленные SSOT и не ослабляет Claims Lock.

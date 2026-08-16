@@ -27,7 +27,7 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         self.assertIn("handoff_readme_live_cli", names)
         self.assertIn("snapshot_html_not_overlay_demo", names)
         self.assertIn("readme_quickstart_demo_core_pdf", names)
-        self.assertIn("kt2_video_dry_run", names)
+        self.assertIn("kt2_video_script", names)
         self.assertIn("kt2_demo_mp4_not_in_docs", names)
         mp4 = next(c for c in result["checks"] if c["check"] == "kt2_demo_mp4_status")
         self.assertTrue(mp4["ok"])

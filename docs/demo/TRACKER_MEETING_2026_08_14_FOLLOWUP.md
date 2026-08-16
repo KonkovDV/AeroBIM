@@ -27,7 +27,7 @@ claim_boundary: "Afternoon task list from the team chat. Morning minutes still a
 | 1 | Доработать продукт к КТ#2 | Eng contour landed (vertical slice, pypdfium2 overlay, OIDC lab P3). Checkpoint **NO_GO** | live CLI |
 | 2 | Таблица IFC2X3 / IFC4 / IFC4X3 | Refresh n=20; paste below | [`../evidence/ifc-release-matrix-2026-08.md`](../evidence/ifc-release-matrix-2026-08.md) |
 | 3 | Датасеты: поиск + прогон | 16.08: hunt + CLI in tree. IFC-Bench **27/1026** pin ok. PNST `SKIPPED_PACK_INCOMPLETE`, 18/22 snapshot 05.08 kept. Ishigaki gold XML processability 166/166 (not F1) | [`../evidence/DATASET_HUNT_LOG_2026_08.md`](../evidence/DATASET_HUNT_LOG_2026_08.md) |
-| 4 | Бурнаев / Михаил | Вопросы + демо-ссылка готовы; минут **нет** до заметок владельца | [`CONSULTATIONS_2026_08_14.md`](CONSULTATIONS_2026_08_14.md) |
+| 4 | Бурнаев / Михаил | Вопросы + демо-ссылка готовы; минут **нет** до заметок владельца | этот follow-up; live CLI |
 | 5 | Коммерческий KPI = назначенные демо | Бриф подрядчику готов. Живой счёт — только `.local/commercial-ops/` | [`../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`](../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md) |
 | 6 | Монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; C/D не на этой неделе | тот же GTM |
 

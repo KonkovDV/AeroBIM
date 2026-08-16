@@ -137,48 +137,34 @@ class Sprint2BaselineReportTests(unittest.TestCase):
 
 class Sprint2CustomerDocsTests(unittest.TestCase):
     def test_outreach_csv_header_schema(self) -> None:
-        for name in (
-            "CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv",
-            "CUSTOMER_OUTREACH_TRACKER.csv",
-        ):
-            path = REPO / "docs" / "customer" / name
-            text = path.read_text(encoding="utf-8")
-            header = text.splitlines()[0]
-            required = [
-                "organization",
-                "segment",
-                "contact_role",
-                "contact_name",
-                "channel",
-                "date_contacted",
-                "response",
-                "demo_agreed",
-                "pilot_agreed",
-                "data_available",
-                "expert_available",
-                "NDA_required",
-                "next_step",
-                "owner",
-                "notes",
-            ]
-            cols = [c.strip() for c in header.split(",")]
-            self.assertEqual(cols, required, msg=name)
-            if name.endswith("_TEMPLATE.csv"):
-                data_rows = [ln for ln in text.splitlines()[1:] if ln.strip()]
-                self.assertEqual(
-                    data_rows,
-                    [],
-                    msg="outreach CSV template must not invent real customer data rows",
-                )
-
-    def test_outreach_tracker_tim_not_contacted(self) -> None:
-        path = REPO / "docs" / "customer" / "CUSTOMER_OUTREACH_TRACKER.csv"
-        rows = [ln for ln in path.read_text(encoding="utf-8").splitlines()[1:] if ln.strip()]
-        self.assertEqual(len(rows), 1)
-        self.assertIn("Транспортные инновации Москвы", rows[0])
-        self.assertIn("not_contacted", rows[0])
-        self.assertIn("prepare outreach", rows[0])
-        self.assertNotIn("agreed", rows[0].lower().split("prepare")[0])  # no false demo_agreed
+        path = REPO / "docs" / "customer" / "CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv"
+        text = path.read_text(encoding="utf-8")
+        header = text.splitlines()[0]
+        required = [
+            "organization",
+            "segment",
+            "contact_role",
+            "contact_name",
+            "channel",
+            "date_contacted",
+            "response",
+            "demo_agreed",
+            "pilot_agreed",
+            "data_available",
+            "expert_available",
+            "NDA_required",
+            "next_step",
+            "owner",
+            "notes",
+        ]
+        cols = [c.strip() for c in header.split(",")]
+        self.assertEqual(cols, required)
+        data_rows = [ln for ln in text.splitlines()[1:] if ln.strip()]
+        self.assertEqual(
+            data_rows,
+            [],
+            msg="outreach CSV template must not invent real customer data rows",
+        )
 
     def test_customer_docs_exist(self) -> None:
         for name in (
@@ -189,7 +175,6 @@ class Sprint2CustomerDocsTests(unittest.TestCase):
             "CUSTOMER_ONE_PAGER.md",
             "CUSTOMER_INTERVIEW_FORM.md",
             "CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv",
-            "CUSTOMER_OUTREACH_TRACKER.csv",
         ):
             self.assertTrue((REPO / "docs" / "customer" / name).is_file(), msg=name)
 

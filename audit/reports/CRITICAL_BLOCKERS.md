@@ -2,18 +2,17 @@
 
 **Operational freeze SHA:** `f2615e7` (2026-07-21 eng F–L: precision gates, SLA claim gate, BCF ladder, revision compare, threat model, open-core ADR) — refresh when claiming metrics.  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
-**RTATOM tip (2026-07-21):** Wave **A1 DONE** + Wave **A2.5 hashes CLOSED** + Wave **A3 engineering CLOSED*** (POST-05 BFF design-only). Landing `8473b66` — see `docs/quality/RTATOM_FULL_REMEDIATION_PLAN_2026_07_20.md`.  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» corpus — open benches + MinStroy XML intake exist), **RT-002** (no Samolet-signed acceptance profile — official MOEXP/AGR/SPb IDS **are** public), **RT-003** (public duplex IfcClash RUN; `mep_system_clash` NOT_VERIFIED; not MEP delivered). Do not write «нет утверждённого нормативного пакета».
 
-**Reclassification (v4):** [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md)
+**Reclassification (v4):** N-18 CLOSED 2026-08-09 (attestation cannot be forged locally). Current engineering surface: [`docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md).
 
 ## Open engineering/legal blockers (2026-07-31 audit)
 
 | ID | Severity | Status | Summary |
 |---|---|---|---|
-| N-18 | **P0** | **CLOSED 2026-08-09** (WP-A1b) | CLI `--attested-by ci` allowed local forgery of publishability. Fix: attestation derived only from `GITHUB_ACTIONS` env; flag removed; `test_attestation_cannot_be_forged_locally`. Reclass: [`docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md`](../../docs/quality/FINDINGS_RECLASSIFICATION_2026_08_09.md). |
+| N-18 | **P0** | **CLOSED 2026-08-09** (WP-A1b) | CLI `--attested-by ci` allowed local forgery of publishability. Fix: attestation derived only from `GITHUB_ACTIONS` env; flag removed; `test_attestation_cannot_be_forged_locally`. |
 
 | ID | Severity | Status | Summary |
 |---|---|---|---|
@@ -55,7 +54,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RTATOM A2.5 / RT-POST-09 hashes | **CLOSED*** | `--require-hashes` + `--generate-hashes` locks; CI/Docker wire-up; pinned `pip==25.2` / `uv==0.8.22`. *Residual: unhashed pip/uv bootstrap wheels. |
 | RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: production OIDC BFF (POST-05) remains **DESIGNED / NOT_IMPLEMENTED**; Phase 3 is lab-only (`oidc_bff_phase3_ready`) — see `docs/architecture/POST05_OIDC_BFF_DESIGN_2026_07.md`. |
 
-Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile), RT-003 (unmeasured federated MEP). Residual: production OIDC BFF (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 3 lab path landed — default still 501 / `auth_bff=NOT_IMPLEMENTED`). Eng pack: [`docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md`](../../docs/audit/RT_CUSTOMER_BLOCKERS_ENG_PACK_2026_08_11.md).
+Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile), RT-003 (unmeasured federated MEP). Residual: production OIDC BFF (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 3 lab path landed — default still 501 / `auth_bff=NOT_IMPLEMENTED`). Eng surface: [`docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md).
 
 ## Closed in post-remediation wave (2026-07-19)
 

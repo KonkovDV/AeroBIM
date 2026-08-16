@@ -1,7 +1,7 @@
 """Hybrid AI routing contour (domain-pure).
 
 Data classification + fail-closed trust-policy engine. No I/O, no verdict impact
-(ADR-001). See audit/reports/HYBRID_AI_ARCHITECTURE_2026_07_28.md.
+(ADR-001). See audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md.
 """
 
 from aerobim.domain.hybrid.audit_event import (

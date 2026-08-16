@@ -76,5 +76,5 @@ intake-gates (`customer-intake-gate.json`) и Claims Lock — fail-closed
       Целевой слот «до 3 авг» **просрочен** на 15.08 — статус остаётся
       VERIFY_WITH_OPERATOR, формы Фонда **не** сочиняем.
 - [ ] После получения — переупаковать M3/M4/M5 в формы Фонда (контент готов)
-- [ ] Внести дедлайны Фонда в [`CUSTOMER_KICKOFF_MAP_2026_07_26.md`](../pilot/CUSTOMER_KICKOFF_MAP_2026_07_26.md)
+- [ ] Внести дедлайны Фонда в [`MIK_OPERATOR_ASK_2026_08_15.md`](MIK_OPERATOR_ASK_2026_08_15.md)
 - [ ] Единая трассируемость трёх источников: [`../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md`](../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md)

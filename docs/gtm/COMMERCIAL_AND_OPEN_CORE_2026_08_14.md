@@ -40,7 +40,7 @@ claim_boundary: "GTM brief. No invented orgs. Checkpoint NO_GO. Not customer acc
 Не говорить: точность >90%, DWG-ready, MEP delivered, CDE-ready, production-ready, Checkpoint GO.
 Успех строки: demo_scheduled=yes + дата + роль ЛПР.
 Касание без слота = 0 в отчёте.
-Шаблоны: docs/gtm/customer-outreach-week-2026-08-10.md §1–2.
+Шаблоны: `docs/customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv`.
 ```
 
 ### Еженедельный отчёт подрядчика (форма)

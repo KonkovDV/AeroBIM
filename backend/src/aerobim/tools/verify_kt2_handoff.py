@@ -181,14 +181,14 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         _check("bcf_t1_structural", False, f"missing {bcf_t1}", rows)
 
     faq = repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md"
-    rehearsal = repo / "docs" / "demo" / "KT2_DEMO_REHEARSAL_2026_08_12.md"
+    video = repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md"
     _check("jury_faq", faq.is_file(), str(faq), rows)
-    _check("demo_rehearsal", rehearsal.is_file(), str(rehearsal), rows)
-    rehearsal_text = rehearsal.read_text(encoding="utf-8") if rehearsal.is_file() else ""
+    _check("kt2_video_script", video.is_file(), str(video), rows)
+    video_text = video.read_text(encoding="utf-8") if video.is_file() else ""
     _check(
         "rehearsal_forbids_wall_guid_html",
-        "wall-guid/report.html" in rehearsal_text and "Не открывать" in rehearsal_text,
-        "rehearsal must forbid wall-guid/report.html as overlay demo",
+        "wall-guid/report.html" in video_text and "Не открывать" in video_text,
+        "video script must forbid wall-guid/report.html as overlay demo",
         rows,
     )
 
@@ -207,8 +207,8 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     snapshot = snapshot_html.read_text(encoding="utf-8") if snapshot_html.is_file() else ""
     _check(
         "snapshot_html_not_overlay_demo",
-        snapshot_html.is_file() and "kt2-overlay" not in snapshot,
-        "11.08 snapshot must remain without #kt2-overlay (live CLI is the demo)",
+        (not snapshot_html.is_file()) or ("kt2-overlay" not in snapshot),
+        "11.08 snapshot HTML must be unpublished or remain without #kt2-overlay (live CLI is the demo)",
         rows,
     )
 
@@ -232,8 +232,6 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         rows,
     )
 
-    dry_run = repo / "docs" / "demo" / "KT2_VIDEO_DRY_RUN_2026_08.md"
-    _check("kt2_video_dry_run", dry_run.is_file(), str(dry_run), rows)
     docs_mp4 = sorted((repo / "docs").rglob("*.mp4"))
     _check(
         "kt2_demo_mp4_not_in_docs",

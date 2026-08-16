@@ -9,11 +9,7 @@ tags: [aerobim, hybrid-ai, final-report, routing, privacy, audit]
 
 # AeroBIM Hybrid AI — финальный отчёт
 
-Итог по внедрению безопасного Hybrid AI-контура (бриф §1–§25). Companion-документы:
-[`HYBRID_AI_ARCHITECTURE`](HYBRID_AI_ARCHITECTURE_2026_07_28.md) ·
-[`HYBRID_AI_ROUTING_POLICY`](HYBRID_AI_ROUTING_POLICY_2026_07_28.md) ·
-[`HYBRID_AI_THREAT_MODEL`](HYBRID_AI_THREAT_MODEL_2026_07_28.md) ·
-[`HYBRID_AI_RESEARCH_REVIEW`](HYBRID_AI_RESEARCH_REVIEW_2026_07_28.md).
+Итог по внедрению безопасного Hybrid AI-контура (бриф §1–§25). Этот файл — публичный SSOT; рабочие companion-черновики не входят в jury pack.
 
 ## 1. Краткий вывод
 Построен **P0/P1 фундамент** проверяемой маршрутизации данных: классификация (5 уровней),
