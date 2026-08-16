@@ -20,6 +20,26 @@ _HSTS = "max-age=31536000; includeSubDomains"
 _MAX_AUTHORIZATION_HEADER_BYTES = 8192
 
 
+def stamp_security_headers(response: Response, *, path: str) -> Response:
+    """Apply ASVS headers to any response, including middleware short-circuits (HD-MW-01)."""
+
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Permissions-Policy", _PERMISSIONS_POLICY)
+    response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+    response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+    response.headers.setdefault("Strict-Transport-Security", _HSTS)
+    if path.startswith("/v1/") or path in {"/health", "/ready", "/metrics"}:
+        response.headers.setdefault("Cache-Control", "no-store")
+    content_type = (response.headers.get("content-type") or "").lower()
+    if "text/html" in content_type:
+        response.headers["Content-Security-Policy"] = _HTML_CSP
+    else:
+        response.headers.setdefault("Content-Security-Policy", _STRICT_CSP)
+    return response
+
+
 def add_auth_header_hygiene_middleware(app: FastAPI) -> None:
     """Reject duplicate / oversized / smuggled Authorization headers before auth."""
 
@@ -69,23 +89,6 @@ def add_security_headers_middleware(app: FastAPI) -> None:
             call_next: Callable[[Request], Awaitable[Response]],
         ) -> Response:
             response: Response = await call_next(request)
-            response.headers.setdefault("X-Content-Type-Options", "nosniff")
-            response.headers.setdefault("Referrer-Policy", "no-referrer")
-            response.headers.setdefault("X-Frame-Options", "DENY")
-            response.headers.setdefault("Permissions-Policy", _PERMISSIONS_POLICY)
-            response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
-            response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
-            # Harmless on HTTP; required when TLS terminates at the app or a proxy that
-            # forwards this response. Reverse proxies may override.
-            response.headers.setdefault("Strict-Transport-Security", _HSTS)
-            path = request.url.path or ""
-            if path.startswith("/v1/") or path in {"/health", "/ready", "/metrics"}:
-                response.headers.setdefault("Cache-Control", "no-store")
-            content_type = (response.headers.get("content-type") or "").lower()
-            if "text/html" in content_type:
-                response.headers["Content-Security-Policy"] = _HTML_CSP
-            else:
-                response.headers.setdefault("Content-Security-Policy", _STRICT_CSP)
-            return response
+            return stamp_security_headers(response, path=request.url.path or "")
 
     app.add_middleware(_SecurityHeadersMiddleware)

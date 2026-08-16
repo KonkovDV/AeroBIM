@@ -406,6 +406,13 @@ class NormRulePack:
 
 @dataclass(frozen=True)
 class ValidationIssue:
+    """Engine or advisory finding.
+
+    HD4-INV-02: nothing in this type forbids ``severity=ERROR`` with
+    ``origin="advisory"``. The invariant is construction discipline +
+    DeterminismGate; store reconstruction trusts the integrity hash.
+    """
+
     rule_id: str
     severity: Severity
     message: str

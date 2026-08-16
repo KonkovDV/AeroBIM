@@ -81,15 +81,20 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         - ``3`` or ``3.0`` — experimental BCF 3.0 export (buildingSMART BCF 3.0).
         """
         report = ctx.load_authorized_report(report_id, principal)
-
-        if version in {"3", "3.0"}:
+        normalized = (version or "").strip()
+        if normalized in {"3", "3.0"}:
             from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
 
             bcf_bytes = export_bcf3(report)
-        else:
+        elif normalized in {"2.1", "2"}:
             from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
             bcf_bytes = export_bcf(report)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported BCF version (use 2.1 or 3.0)",
+            )
 
         return Response(
             content=bcf_bytes,

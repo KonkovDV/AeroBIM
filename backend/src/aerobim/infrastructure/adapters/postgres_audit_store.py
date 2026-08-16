@@ -21,7 +21,14 @@ def _run_coro[T](coro: Coroutine[Any, Any, T]) -> T:
 
 
 class PostgresAuditStore:
-    """Postgres-backed report summary index with filesystem/object payload fallback."""
+    """Postgres-backed report summary index with filesystem/object payload fallback.
+
+    HD5-PGSQL-02: construction runs ``create_all`` plus
+    ``ALTER TABLE … ADD COLUMN IF NOT EXISTS tenant_id``. The connected role
+    therefore needs CREATE/ALTER for bootstrap. Acceptable for a pilot.
+    Least-privilege production should apply schema via out-of-band migrations
+    and then use a DML-only role — this adapter does not split those paths yet.
+    """
 
     def __init__(
         self,

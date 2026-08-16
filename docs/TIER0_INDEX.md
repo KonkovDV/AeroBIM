@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.4.3"
+version: "4.4.11"
 last_updated: "2026-08-16"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -14,6 +14,14 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | Surface | Role |
 |---------|------|
 | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng readiness** (P0 WP-01…08 + Wave A fixture substitutes) — not Checkpoint GO |
+| [`quality/RED_TEAM_HD_REMAINING_2026_08_16.md`](quality/RED_TEAM_HD_REMAINING_2026_08_16.md) | Remaining work after HD close-out; Checkpoint NO_GO |
+| [`quality/RED_TEAM_HYPERDEEP_DEEP_ANALYSIS_2026_08_16.md`](quality/RED_TEAM_HYPERDEEP_DEEP_ANALYSIS_2026_08_16.md) | Five-round narrative; Checkpoint NO_GO |
+| [`quality/RED_TEAM_HYPERDEEP_5_PERIMETER_2026_08_16.md`](quality/RED_TEAM_HYPERDEEP_5_PERIMETER_2026_08_16.md) | Hyper-deep round 5 (SQL/VLM/HTML/PDF); remediations in 1.6.27; Checkpoint NO_GO |
+| [`quality/RED_TEAM_HYPERDEEP_SYNTHESIS_2026_08_16.md`](quality/RED_TEAM_HYPERDEEP_SYNTHESIS_2026_08_16.md) | Five-round culture synthesis (opinion 8/10); Checkpoint NO_GO |
+| [`quality/RED_TEAM_HYPERDEEP_4_ACADEMIC_2026_08_16.md`](quality/RED_TEAM_HYPERDEEP_4_ACADEMIC_2026_08_16.md) | Hyper-deep round 4 (academic); remediations in 1.6.25; Checkpoint NO_GO |
+| [`quality/RED_TEAM_HYPERDEEP_3_ENGINES_2026_08_16.md`](quality/RED_TEAM_HYPERDEEP_3_ENGINES_2026_08_16.md) | Hyper-deep round 3 (engines); remediations in 1.6.24; Checkpoint NO_GO |
+| [`quality/RED_TEAM_HYPERDEEP_2_SEAMS_2026_08_16.md`](quality/RED_TEAM_HYPERDEEP_2_SEAMS_2026_08_16.md) | Hyper-deep round 2 (seams); remediations in 1.6.23; Checkpoint NO_GO |
+| [`quality/RED_TEAM_HYPERDEEP_TRIAGE_2026_08_16.md`](quality/RED_TEAM_HYPERDEEP_TRIAGE_2026_08_16.md) | Hyper-deep triage 16.08; remediations in 1.6.22; Checkpoint NO_GO |
 | [`quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md`](quality/RED_TEAM_WAVE_A_KT2_2026_08_14.md) | Red Team Wave A (survey XSD / clearance / IDS audit / SP 63 template); NO_GO |
 | [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Jury/MIK RT; stage = доработка; not a speech card |
 | [`quality/AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md`](quality/AUDIT_HEAD_0402A7E_TECHLAB_MIK_NOVATOR_2026_08_15.md) | Audit of published `0402a7e` |

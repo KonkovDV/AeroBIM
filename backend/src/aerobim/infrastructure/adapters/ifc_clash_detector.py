@@ -192,27 +192,41 @@ def _clash_type_label(clash: Mapping[str, Any], clash_set: Mapping[str, Any]) ->
 
 def clash_results_from_sets(clash_sets: Sequence[Mapping[str, Any]]) -> list[ClashResult]:
     results: list[ClashResult] = []
+    discarded = 0
     for clash_set_result in clash_sets:
         clashes = clash_set_result.get("clashes", {})
         if not isinstance(clashes, Mapping):
+            discarded += 1
             continue
         for clash in clashes.values():
             if not isinstance(clash, Mapping):
+                discarded += 1
                 continue
             clash_type = _clash_type_label(clash, clash_set_result)
+            a_guid = str(clash.get("a_global_id") or "").strip()
+            b_guid = str(clash.get("b_global_id") or "").strip()
+            if not a_guid or not b_guid:
+                discarded += 1
+                continue
             label = "Clearance" if clash_type == "clearance" else "Hard clash"
             description = (
                 f"{label} between {clash.get('a_name', '?')} and {clash.get('b_name', '?')}"
             )
             results.append(
                 ClashResult(
-                    element_a_guid=str(clash.get("a_global_id", "")),
-                    element_b_guid=str(clash.get("b_global_id", "")),
+                    element_a_guid=a_guid,
+                    element_b_guid=b_guid,
                     clash_type=clash_type,
                     distance=float(clash.get("distance", 0.0) or 0.0),
                     description=description,
                 )
             )
+    if discarded:
+        _LOGGER.error("IfcClash mapper discarded %s malformed clash records", discarded)
+        raise ClashCapabilityError(
+            "failed",
+            f"IfcClash result format drift: discarded {discarded} malformed clash record(s)",
+        )
     return results
 
 

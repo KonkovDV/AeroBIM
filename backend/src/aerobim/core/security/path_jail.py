@@ -142,9 +142,23 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
     Re-checks for planted symlinks immediately before open to shrink TOCTOU windows.
     """
     reject_symlinks(path, base=base)
-    if mode == "rb" and hasattr(os, "O_NOFOLLOW"):
+    nofollow = getattr(os, "O_NOFOLLOW", 0)
+    if mode == "rb" and nofollow:
         try:
-            fd = os.open(str(path), os.O_RDONLY | os.O_NOFOLLOW)
+            fd = os.open(str(path), os.O_RDONLY | nofollow)
+        except OSError as exc:
+            raise PathJailError(
+                f"Cannot open storage path without following links: {path}"
+            ) from exc
+        return os.fdopen(fd, mode)
+    write_flags = {
+        "wb": os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+        "ab": os.O_WRONLY | os.O_CREAT | os.O_APPEND,
+        "xb": os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+    }
+    if mode in write_flags and nofollow:
+        try:
+            fd = os.open(str(path), write_flags[mode] | nofollow, 0o644)
         except OSError as exc:
             raise PathJailError(
                 f"Cannot open storage path without following links: {path}"

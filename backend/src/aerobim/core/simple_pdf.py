@@ -5,6 +5,23 @@ from __future__ import annotations
 from pathlib import Path
 
 
+def escape_pdf_literal(line: str) -> str:
+    """Escape text for a PDF ``(...)`` string (HD5-PDF-01).
+
+    Backslash and parentheses are escaped. CR/LF become spaces so a content
+    stream cannot break mid-literal. Non-ASCII is replaced (Helvetica).
+    """
+    return (
+        line.replace("\\", "\\\\")
+        .replace("(", "\\(")
+        .replace(")", "\\)")
+        .replace("\r", " ")
+        .replace("\n", " ")
+        .encode("ascii", "replace")
+        .decode("ascii")
+    )
+
+
 def write_simple_pdf(path: Path, lines: list[str], *, lines_per_page: int = 50) -> None:
     """Write a plain-text PDF with paginated content blocks."""
 
@@ -25,13 +42,7 @@ def write_simple_pdf(path: Path, lines: list[str], *, lines_per_page: int = 50) 
     for page_lines in pages:
         content_lines = ["BT /F1 9 Tf 40 780 Td 11 TL"]
         for i, line in enumerate(page_lines):
-            safe = (
-                line.replace("\\", "\\\\")
-                .replace("(", "\\(")
-                .replace(")", "\\)")
-                .encode("ascii", "replace")
-                .decode("ascii")
-            )
+            safe = escape_pdf_literal(line)
             if i == 0:
                 content_lines.append(f"({safe}) Tj")
             else:

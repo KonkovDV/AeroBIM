@@ -77,6 +77,51 @@ class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
         issues = validator._map_results(fake_results)
         self.assertEqual(len(issues), 0)
 
+    def test_string_failed_status_is_not_a_pass(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        validator = IfcTesterIdsValidator()
+        fake_results = {
+            "specifications": [
+                {
+                    "name": "Wall Fire Rating",
+                    "status": "failed",
+                    "requirements": [
+                        {
+                            "facet_type": "Property",
+                            "description": "must exist",
+                            "status": False,
+                            "failed_entities": [{"element": "guid-1"}],
+                        }
+                    ],
+                }
+            ]
+        }
+        issues = validator._map_results(fake_results)
+        self.assertGreater(len(issues), 0)
+
+    def test_map_results_missing_requirement_status_is_failure(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
+
+        validator = IfcTesterIdsValidator()
+        fake_results = {
+            "specifications": [
+                {
+                    "name": "Wall Fire Rating",
+                    "status": False,
+                    "requirements": [
+                        {
+                            "facet_type": "Property",
+                            "description": "status omitted",
+                            "failed_entities": [],
+                        }
+                    ],
+                }
+            ]
+        }
+        issues = validator._map_results(fake_results)
+        self.assertEqual(len(issues), 1)
+
     def test_map_results_handles_empty_specifications(self) -> None:
         from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator
 

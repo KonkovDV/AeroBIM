@@ -65,3 +65,18 @@ def test_planned_and_never_are_not_bare_negation_markers() -> None:
     markers = [m.lower() for m in _string_list(_load_ssot()["negation_markers"])]
     assert "planned" not in markers
     assert "never" not in markers
+
+
+def test_ssot_covers_ru_markers_and_core_surfaces() -> None:
+    ssot = _load_ssot()
+    markers = [m.lower() for m in _string_list(ssot["negation_markers"])]
+    scanned = _string_list(ssot["scanned_files"])
+    for marker in ("запрещено", "не заявляется", "до доказательств"):
+        assert marker in markers
+    for rel in (
+        "README.md",
+        "README.ru.md",
+        "docs/TIER0_INDEX.md",
+        "docs/ENGINEERING_STATUS_2026_08.md",
+    ):
+        assert rel in scanned

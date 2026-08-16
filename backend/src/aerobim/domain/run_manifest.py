@@ -48,6 +48,9 @@ _CAPABILITY_FIELDS = (
 
 
 def _is_advisory_issue(issue: Any) -> bool:
+    origin = str(getattr(issue, "origin", "") or "").strip().lower()
+    if origin == "advisory":
+        return True
     rule_id = str(getattr(issue, "rule_id", "") or "")
     source_id = str(getattr(issue, "source_id", "") or "")
     if source_id == "compliance-agent":

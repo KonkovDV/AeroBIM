@@ -10,7 +10,9 @@ geometry, rare values and system names can re-identify. Honest guarantees:
 - Tokens are opaque ``sha256`` prefixes — a model cannot reverse a token, and the
   salt / restore key is never part of any payload.
 - The restore table (``TokenVault``) is **local-only and tenant-scoped**: a restore
-  for the wrong tenant returns ``None``. It never leaves the local contour.
+  for the wrong tenant returns ``None``. It never leaves the local contour. Per-tenant
+  LRU cap (default 4096) evicts oldest mappings; restore of an evicted token is
+  ``None`` (HD4-PG-03).
 - Fail-closed field policy: a field not explicitly ``keep``/``tokenize`` is REMOVED
   (do not egress fields the policy did not allow).
 - Restore must run ONLY after response verification and must never feed the verdict
@@ -23,11 +25,17 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+from collections import OrderedDict
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
 _MASK_VERSION = "1.0.0"
+# HD4-PG-02: substring scan skips needles shorter than this (JSON punctuation /
+# trivial tokens such as "A1"). Short secrets are a documented residual.
+_MIN_LEAK_SCAN_CHARS = 3
+# HD4-PG-03: per-tenant restore-table cap (process-lifetime; eviction is LRU).
+_DEFAULT_VAULT_CAP = 4096
 
 
 class PrivacyLeakError(ValueError):
@@ -49,12 +57,30 @@ def _canonical_tenant(tenant_id: str) -> str:
     return text
 
 
-def _assert_no_residual_leak(masked: Mapping[str, Any], sensitive_values: list[str]) -> None:
-    """Fail closed if a kept field still contains a tokenized/removed raw value."""
+def _residual_needles(value: Any) -> tuple[str, ...]:
+    """Python ``str`` and JSON atom forms (HD4-PG-02: ``True`` vs ``true``)."""
+    python_form = str(value)
+    try:
+        json_form = json.dumps(value, ensure_ascii=False)
+    except TypeError:
+        json_form = json.dumps(python_form, ensure_ascii=False)
+    needles: list[str] = []
+    for candidate in (python_form, json_form):
+        if len(candidate) >= _MIN_LEAK_SCAN_CHARS and candidate not in needles:
+            needles.append(candidate)
+    return tuple(needles)
+
+
+def _assert_no_residual_leak(masked: Mapping[str, Any], sensitive_values: list[Any]) -> None:
+    """Fail closed if a kept field still contains a tokenized/removed raw value.
+
+    Needles shorter than ``_MIN_LEAK_SCAN_CHARS`` are skipped (documented residual).
+    """
     serialized = json.dumps(masked, ensure_ascii=False, default=str)
     for raw in sensitive_values:
-        if len(raw) >= 3 and raw in serialized:
-            raise PrivacyLeakError("masked output still contains a sensitive raw value")
+        for needle in _residual_needles(raw):
+            if needle in serialized:
+                raise PrivacyLeakError("masked output still contains a sensitive raw value")
 
 
 @dataclass(frozen=True)
@@ -69,18 +95,30 @@ class MaskResult:
 
 
 class TokenVault:
-    """Local-only, tenant-scoped restore table. Never serialized or egressed."""
+    """Local-only, tenant-scoped restore table. Never serialized or egressed.
 
-    def __init__(self) -> None:
-        self._by_tenant: dict[str, dict[str, str]] = {}
+    HD4-PG-03: bounded per tenant (LRU). Restore of an evicted token returns
+    ``None`` — masking is not a durable identity store.
+    """
+
+    def __init__(self, *, max_entries_per_tenant: int = _DEFAULT_VAULT_CAP) -> None:
+        if max_entries_per_tenant < 1:
+            raise ValueError("max_entries_per_tenant must be >= 1")
+        self._max_entries_per_tenant = max_entries_per_tenant
+        self._by_tenant: dict[str, OrderedDict[str, str]] = {}
+        self.evictions = 0
 
     def put(self, *, tenant_id: str, token: str, original: str) -> None:
-        bucket = self._by_tenant.setdefault(tenant_id, {})
+        bucket = self._by_tenant.setdefault(tenant_id, OrderedDict())
         existing = bucket.get(token)
         if existing is not None and existing != original:
             # A truncated-digest collision would silently corrupt restore — fail closed.
             raise ValueError(f"token collision for tenant {tenant_id!r}: {token}")
         bucket[token] = original
+        bucket.move_to_end(token)
+        while len(bucket) > self._max_entries_per_tenant:
+            bucket.popitem(last=False)
+            self.evictions += 1
 
     def restore(self, *, tenant_id: str, token: str) -> str | None:
         return self._by_tenant.get(tenant_id, {}).get(token)
@@ -153,7 +191,7 @@ class PrivacyGuard:
         sent: list[str] = []
         removed: list[str] = []
         tokenized: list[str] = []
-        sensitive_values: list[str] = []
+        sensitive_values: list[Any] = []
         for key, value in payload.items():
             action = rules.get(key, "remove")  # fail-closed default: drop unlisted
             if action == "keep":
@@ -164,12 +202,12 @@ class PrivacyGuard:
                 sent.append(key)
             elif action.startswith("tokenize:"):
                 kind = action.split(":", 1)[1] or key
-                sensitive_values.append(str(value))
+                sensitive_values.append(value)
                 masked[key] = self.tokenize(str(value), tenant_id=tenant, kind=kind)
                 sent.append(key)
                 tokenized.append(key)
             else:
-                sensitive_values.append(str(value))
+                sensitive_values.append(value)
                 removed.append(key)
         _assert_no_residual_leak(masked, sensitive_values)
         return MaskResult(

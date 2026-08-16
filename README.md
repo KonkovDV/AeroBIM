@@ -123,7 +123,7 @@ Statuses below are **repository / fixture** capabilities unless marked otherwise
 | Offline Docker image-track | Available | eng | И1 **CLOSED** — `closed-contour --smoke`; bare-metal OUT_OF_SCOPE |
 | IFC knowledge graph (I9) | Advisory scaffold | fixture | Port+DI+`query_ifc_kg`+fixture QA; **not GraphRAG / IfcLLM product** |
 | Independent calculation *correctness* | Not implemented | — | сверка источников only — not a calculation solver |
-| Frontend vitest review-shell | Green in CI | release-readiness | **48** passed (rontend CI job) |
+| Frontend vitest review-shell | Green in CI | release-readiness | **54** passed (frontend CI job; SSOT `frontend.tests_passed` in runtime baseline) |
 | Hybrid AI routing + advisory pre-gate (WP-02) | Available (eng) | fixture | Gate before advisory observations; OFF==ON for `summary.passed`; masking ≠ anonymity; Checkpoint NO_GO |
 | Detached signature envelope (WP-03) | ENG_PARTIAL | fixture | Hash/roles audit; trust_chain always NOT_VERIFIED — never «УКЭП проверена» |
 | Norm pack v2 eligibility (WP-04) | Available (eng) | fixture | RASE + execution_mode + expert journal; fixture ≠ Samolet-signed profile |
@@ -175,7 +175,7 @@ Iteration B.1 has started with a compatibility-first storage foundation:
 Current behaviour is intentionally safe-by-default:
 
 - without enterprise extras, AeroBIM keeps working with local storage;
-- when `AEROBIM_DB_URL` and enterprise dependencies are available, report summaries are indexed in Postgres;
+- when `AEROBIM_DB_URL` and enterprise dependencies are available, report summaries are indexed in Postgres. Constructor bootstrap issues `CREATE TABLE` / `ALTER TABLE` (HD5-PGSQL-02: runtime role needs DDL). Pilot-acceptable; production should migrate schema out of band, then use a DML-only role — not Checkpoint GO;
 - IFC source binaries and persisted drawing previews are stored behind the `ObjectStore` abstraction, so S3/MinIO rollout no longer requires HTTP contract changes.
 
 ## Quick Start
@@ -395,7 +395,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | Remark template language for deterministic generators (`ru` / `en`) |
 | `AEROBIM_PRIORITY_PROFILE` | `default` | Review priority weighting profile (`default`; `samolet` in fixture SLA smoke only) |
-| `AEROBIM_DB_URL` | *(unset)* | Optional Postgres URL for report summary indexing |
+| `AEROBIM_DB_URL` | *(unset)* | Optional Postgres URL for report summary indexing. Boot runs CREATE/ALTER (HD5-PGSQL-02); production: migrate out of band, DML-only role |
 | `AEROBIM_REPORT_TTL_DAYS` | *(unset)* | Optional TTL for persisted report payloads; unset means unlimited retention |
 | `AEROBIM_S3_BUCKET` | *(unset)* | Optional S3/MinIO bucket for object storage |
 | `AEROBIM_S3_ENDPOINT_URL` | *(unset)* | Optional MinIO/custom S3 endpoint |
@@ -435,7 +435,8 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_BSI_API_TOKEN` | *(unset)* | Optional buildingSMART Validation Service token |
 | `AEROBIM_BSI_VALIDATION_URL` | *(built-in)* | Optional override for bSI Validation Service URL |
 | `AEROBIM_GATES_ATTESTED` | *(CI only)* | Comma-separated CI job names attested into runtime baseline; ignored locally; must equal required gate set under GitHub Actions (N-23) |
-| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; `0` disables |
+| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; `0` disables in development; **must be >0** under pilot/production |
+| `AEROBIM_TRUSTED_PROXY_IPS` | *(unset)* | Comma-separated peer IPs allowed to supply `X-Forwarded-For` for rate-limit keys; empty = never trust XFF |
 | `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
 | `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Optional Kimi OpenAI-compat base URL |
 | `AEROBIM_KIMI_API_KEY` | *(unset)* | Optional Kimi API key (never logged) |
@@ -551,6 +552,7 @@ AEROBIM_S3_REGION
 AEROBIM_S3_SECRET_ACCESS_KEY
 AEROBIM_SIGNOFF_PROFILE
 AEROBIM_STORAGE_DIR
+AEROBIM_TRUSTED_PROXY_IPS
 AEROBIM_VLM_ENABLED
 <!-- AEROBIM_DOCUMENTED_ENV:END -->
 

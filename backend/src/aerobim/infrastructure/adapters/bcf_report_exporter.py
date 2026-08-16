@@ -68,6 +68,15 @@ def _stable_uuid(seed: str) -> str:
     return str(uuid.UUID(digest[:32]))
 
 
+def bcf_topic_zip_dir(topic_guid: str) -> str:
+    """Canonical UUID directory name; reject path separators (HD2-BCF-01)."""
+
+    try:
+        return str(uuid.UUID(str(topic_guid)))
+    except ValueError as exc:
+        raise ValueError(f"BCF topic guid is not a UUID: {topic_guid!r}") from exc
+
+
 def export_bcf(report: ValidationReport) -> bytes:
     """Return a BCF 2.1 ZIP archive as raw bytes."""
     buf = io.BytesIO()
@@ -76,9 +85,10 @@ def export_bcf(report: ValidationReport) -> bytes:
         zf.writestr("bcf.version", _bcf_version_xml())
 
         for topic in _collect_topics(report):
-            zf.writestr(f"{topic.topic_guid}/", "")
-            zf.writestr(f"{topic.topic_guid}/markup.bcf", _build_markup(topic))
-            zf.writestr(f"{topic.topic_guid}/viewpoint.bcfv", _build_viewpoint(topic))
+            topic_dir = bcf_topic_zip_dir(topic.topic_guid)
+            zf.writestr(f"{topic_dir}/", "")
+            zf.writestr(f"{topic_dir}/markup.bcf", _build_markup(topic))
+            zf.writestr(f"{topic_dir}/viewpoint.bcfv", _build_viewpoint(topic))
 
     return buf.getvalue()
 

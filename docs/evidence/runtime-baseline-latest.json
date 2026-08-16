@@ -12,6 +12,8 @@
     "tests_passed": 2167,
     "tests_skipped": 11,
     "tests_failed": 0,
+    "tests_unaccounted": 93,
+    "tests_unaccounted_note": "collected − passed − skipped − failed; remainder is typically deselected/xfail vs the CI JUnit pin (HD-DOC-02)",
     "source_loc": 74536,
     "test_loc": 48215,
     "test_functions": 2271,

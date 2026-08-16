@@ -13,7 +13,11 @@ class RateLimitBackend(Protocol):
 
 
 class InProcessRateLimitBackend:
-    """Per-process sliding window (dev / single-replica fallback)."""
+    """Per-process sliding window (dev / single-replica fallback).
+
+    HD2-RL-01: Redis backend is fixed-window; do not treat in-process tests as
+    covering Redis boundary burst behaviour.
+    """
 
     def __init__(self) -> None:
         self._events: dict[str, deque[float]] = defaultdict(deque)

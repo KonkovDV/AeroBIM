@@ -145,6 +145,28 @@ class PrivacyGuardTests(unittest.TestCase):
         token = guard.tokenize("GID-1", tenant_id="tenant-a", kind="global_id")
         self.assertEqual(len(token.rsplit("_", 1)[1]), 32)  # 128-bit hex
 
+    def test_bool_json_form_is_scanned_for_leaks(self) -> None:
+        # HD4-PG-02: JSON serializes True as "true"; Python str is "True".
+        guard = _guard()
+        with self.assertRaises(PrivacyLeakError):
+            guard.mask_payload(
+                {"flag": True, "note": "kept true in prose"},
+                tenant_id="tenant-a",
+                rules={"flag": "remove", "note": "keep"},
+            )
+
+    def test_vault_lru_evicts_oldest_per_tenant(self) -> None:
+        # HD4-PG-03: process-lifetime vault is capped; restore of evicted → None.
+        vault = TokenVault(max_entries_per_tenant=2)
+        guard = PrivacyGuard(tenant_salt="local-deploy-salt", vault=vault)
+        t1 = guard.tokenize("a", tenant_id="tenant-a", kind="k")
+        t2 = guard.tokenize("b", tenant_id="tenant-a", kind="k")
+        t3 = guard.tokenize("c", tenant_id="tenant-a", kind="k")
+        self.assertEqual(vault.evictions, 1)
+        self.assertIsNone(guard.restore(t1, tenant_id="tenant-a"))
+        self.assertEqual(guard.restore(t2, tenant_id="tenant-a"), "b")
+        self.assertEqual(guard.restore(t3, tenant_id="tenant-a"), "c")
+
 
 if __name__ == "__main__":
     unittest.main()

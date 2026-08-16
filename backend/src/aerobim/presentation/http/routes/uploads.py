@@ -72,21 +72,41 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                     detail=public_upload_too_large_detail(),
                 )
 
+        upload_id = uuid4().hex
         try:
-            ctx.upload_quota_store.assert_can_accept(tenant_key, size_bytes=max_bytes)
+            ctx.upload_quota_store.reconcile_stale_holds()
+            ctx.upload_quota_store.reserve(
+                tenant_key, size_bytes=max_bytes, hold_id=upload_id
+            )
         except UploadQuotaExceeded as exc:
-            logger.warning("upload quota pre-check failed", tenant_id=tenant_key, detail=str(exc))
+            logger.warning("upload quota reserve-ahead failed", tenant_id=tenant_key, detail=str(exc))
             raise HTTPException(
                 status_code=429,
                 detail=public_upload_quota_exceeded_detail(),
             ) from exc
+        held_bytes = max_bytes
+
+        def _drop_quota() -> None:
+            nonlocal held_bytes
+            if held_bytes <= 0:
+                ctx.upload_quota_store.clear_hold(tenant_key, upload_id)
+                return
+            try:
+                ctx.upload_quota_store.release(tenant_key, size_bytes=held_bytes)
+            except Exception:  # noqa: BLE001 — best-effort compensate
+                logger.warning(
+                    "upload quota release failed",
+                    tenant_id=tenant_key,
+                    size_bytes=held_bytes,
+                )
+            held_bytes = 0
+            ctx.upload_quota_store.clear_hold(tenant_key, upload_id)
 
         try:
             safe_name = sanitize_upload_filename(file.filename or "upload.bin")
         except PathJailError as exc:
+            _drop_quota()
             raise HTTPException(status_code=400, detail="Invalid upload filename") from exc
-
-        upload_id = uuid4().hex
         relative_path = f"{tenant_prefix}uploads/{upload_id}/{safe_name}"
         base = settings.storage_dir.resolve()
         quarantine = (
@@ -97,6 +117,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
             target = resolve_storage_path(relative_path, base=settings.storage_dir)
         except PathJailError as exc:
+            _drop_quota()
             raise HTTPException(status_code=400, detail="Invalid upload path") from exc
         quarantine.parent.mkdir(parents=True, exist_ok=True)
         try:
@@ -104,6 +125,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             if not quarantine.resolve().is_relative_to(base):
                 raise PathJailError("Quarantine path escapes storage boundary")
         except PathJailError as exc:
+            _drop_quota()
             raise HTTPException(status_code=409, detail="Upload path rejected") from exc
 
         total = 0
@@ -128,9 +150,11 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                     handle.write(chunk)
         except HTTPException:
             quarantine.unlink(missing_ok=True)
+            _drop_quota()
             raise
         except OSError as exc:
             quarantine.unlink(missing_ok=True)
+            _drop_quota()
             logger.error("upload write failed", detail=str(exc))
             raise HTTPException(
                 status_code=500,
@@ -139,6 +163,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
         if total == 0:
             quarantine.unlink(missing_ok=True)
+            _drop_quota()
             raise HTTPException(status_code=400, detail="Empty upload")
 
         try:
@@ -155,6 +180,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                 inspect_zip_path(quarantine)
         except UploadContentError as exc:
             quarantine.unlink(missing_ok=True)
+            _drop_quota()
             logger.warning("upload content rejected", detail=str(exc))
             raise HTTPException(
                 status_code=415,
@@ -162,21 +188,26 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             ) from exc
         except ZipBombError as exc:
             quarantine.unlink(missing_ok=True)
+            _drop_quota()
             logger.warning("upload zip rejected", detail=str(exc))
             raise HTTPException(
                 status_code=422,
                 detail=public_upload_zip_rejected_detail(),
             ) from exc
 
-        try:
-            quota = ctx.upload_quota_store.reserve(tenant_key, size_bytes=total)
-        except UploadQuotaExceeded as exc:
-            quarantine.unlink(missing_ok=True)
-            logger.warning("upload quota reserve failed", tenant_id=tenant_key, detail=str(exc))
-            raise HTTPException(
-                status_code=429,
-                detail=public_upload_quota_exceeded_detail(),
-            ) from exc
+        if total < held_bytes:
+            try:
+                ctx.upload_quota_store.release(
+                    tenant_key, size_bytes=held_bytes - total, count=0
+                )
+            except Exception:  # noqa: BLE001 — keep held_bytes; promote path still compensates
+                logger.warning(
+                    "upload quota shrink failed",
+                    tenant_id=tenant_key,
+                    size_bytes=held_bytes - total,
+                )
+            else:
+                held_bytes = total
 
         target.parent.mkdir(parents=True, exist_ok=True)
         try:
@@ -184,14 +215,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             quarantine.replace(target)
         except (OSError, PathJailError) as exc:
             quarantine.unlink(missing_ok=True)
-            try:
-                ctx.upload_quota_store.release(tenant_key, size_bytes=total)
-            except Exception:  # noqa: BLE001 — best-effort compensate; surface promote error
-                logger.warning(
-                    "upload quota release failed after promote error",
-                    tenant_id=tenant_key,
-                    size_bytes=total,
-                )
+            _drop_quota()
             logger.error("upload promote failed", detail=str(exc))
             raise HTTPException(
                 status_code=500,
@@ -209,20 +233,15 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                 del payload
             except Exception as exc:
                 target.unlink(missing_ok=True)
-                try:
-                    ctx.upload_quota_store.release(tenant_key, size_bytes=total)
-                except Exception:  # noqa: BLE001 — best-effort compensate
-                    logger.warning(
-                        "upload quota release failed after object-store error",
-                        tenant_id=tenant_key,
-                        size_bytes=total,
-                    )
+                _drop_quota()
                 logger.error("object store put failed", detail=str(exc))
                 raise HTTPException(
                     status_code=500,
                     detail=public_upload_object_store_failed_detail(),
                 ) from exc
 
+        ctx.upload_quota_store.clear_hold(tenant_key, upload_id)
+        quota = ctx.upload_quota_store.snapshot(tenant_key)
         return {
             "upload_id": upload_id,
             "filename": safe_name,

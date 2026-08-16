@@ -10,6 +10,11 @@ annotations). References unknown to the engine are stamped ``[ungrounded]``
 (hallucinated-reference class — TACO EACL 2026 / Chain-of-Verification
 practice: every advisory claim must bind to verifiable evidence). Grounding
 never raises severity and never flips ``summary.passed``.
+
+HD4-INV-02: advisory writers must not construct ``Severity.ERROR`` — that is a
+construction convention plus this gate's INFO demotion, not a type isolation.
+Deserialized issues keep the stored severity; integrity is the content-hash
+(RTATOM-G11), not the type system.
 """
 
 from __future__ import annotations

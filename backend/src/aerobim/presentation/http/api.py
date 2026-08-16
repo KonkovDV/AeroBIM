@@ -60,7 +60,25 @@ def create_http_app(container: Container) -> FastAPI:
     else:
         app = FastAPI(title="aerobim-backend", version="0.2.0")
 
-    # -- Middleware stack (order matters: outermost first) --
+    # Innermost first. Last add_middleware is outermost (Starlette).
+    # Rate-limit must sit inside security-headers/correlation so 429 keeps CSP/HSTS
+    # and X-Request-ID (HD-MW-01). CORS stays outside rate-limit so OPTIONS preflight
+    # is not 429'd before the CORS response.
+    job_poll_per_minute = (
+        _DEFAULT_JOB_POLL_PER_MINUTE
+        if settings.signoff_profile in {"samolet_pilot", "production"}
+        else 0
+    )
+    add_rate_limit_middleware(
+        app,
+        requests_per_minute=settings.http_rate_limit_per_minute,
+        job_poll_per_minute=job_poll_per_minute,
+        redis_url=settings.redis_url,
+        signoff_profile=settings.signoff_profile,
+        fail_closed=not settings.is_dev_environment,
+        trusted_proxy_ips=settings.http_trusted_proxy_ips,
+    )
+    add_auth_header_hygiene_middleware(app)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),
@@ -75,22 +93,8 @@ def create_http_app(container: Container) -> FastAPI:
         ],
         expose_headers=["X-Request-ID"],
     )
-    add_auth_header_hygiene_middleware(app)
     add_correlation_middleware(app)
     add_security_headers_middleware(app)
-    job_poll_per_minute = (
-        _DEFAULT_JOB_POLL_PER_MINUTE
-        if settings.signoff_profile in {"samolet_pilot", "production"}
-        else 0
-    )
-    add_rate_limit_middleware(
-        app,
-        requests_per_minute=settings.http_rate_limit_per_minute,
-        job_poll_per_minute=job_poll_per_minute,
-        redis_url=settings.redis_url,
-        signoff_profile=settings.signoff_profile,
-        fail_closed=not settings.is_dev_environment,
-    )
 
     ctx = ApiContext(container)
 

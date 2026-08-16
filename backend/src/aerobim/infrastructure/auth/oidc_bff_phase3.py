@@ -126,14 +126,14 @@ def parse_session_cookie(value: str | None, secret: str) -> str | None:
     session_id, given = value.rsplit(".", 1)
     if not session_id or not given:
         return None
-    expected = hmac.new(
-        secret.encode("utf-8"),
-        session_id.encode("ascii"),
-        hashlib.sha256,
-    ).hexdigest()
     try:
+        expected = hmac.new(
+            secret.encode("utf-8"),
+            session_id.encode("ascii"),
+            hashlib.sha256,
+        ).hexdigest()
         matched = hmac.compare_digest(expected, given)
-    except (TypeError, ValueError):
+    except (UnicodeEncodeError, TypeError, ValueError):
         return None
     if not matched:
         return None
@@ -236,6 +236,19 @@ def session_from_token_payload(
     return subject, email_str, False
 
 
+def require_verified_bff_session(session: OidcBffSession | None) -> OidcBffSession:
+    """Authz gate: lab sessions with ``identity_verified=False`` must not authorize.
+
+    HTTP API auth uses ``require_bearer_auth`` (static bearer / signed OIDC JWT).
+    BFF cookies are never an AuthPrincipal. This helper exists so any future
+    cookie-to-principal path cannot skip the signature check (HD3-BFF-01).
+    """
+
+    if session is None or not session.identity_verified:
+        raise PermissionError("unverified OIDC BFF session cannot authorize")
+    return session
+
+
 def _require_nonce(
     claims: MappingLike,
     expected_nonce: str | None,
@@ -298,6 +311,7 @@ __all__ = [
     "build_phase3_session_payload",
     "decode_jwt_payload_unverified",
     "exchange_authorization_code",
+    "require_verified_bff_session",
     "parse_session_cookie",
     "session_cookie_name",
     "session_from_token_payload",
