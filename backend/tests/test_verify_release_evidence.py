@@ -10,7 +10,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.tools.verify_release_evidence import verify_release_evidence
+from aerobim.tools.verify_release_evidence import (
+    resolve_release_evidence_day,
+    verify_release_evidence,
+)
 
 DAY = "2026-08-06"
 SHA = "d96a59ac6704357336ae46f7d61f6435be4c6a2c"
@@ -159,6 +162,26 @@ class VerifyReleaseEvidenceTests(unittest.TestCase):
             result = verify_release_evidence(repo=repo, day=DAY, complete=True)
             self.assertFalse(result["ok"])
             self.assertTrue(any("quality_gates.pytest" in e for e in result["errors"]))
+
+    def test_latest_picks_max_dated_release_status(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            evidence = repo / "docs" / "evidence"
+            evidence.mkdir(parents=True)
+            (evidence / "release-status-2026-08-06.json").write_text("{}", encoding="utf-8")
+            (evidence / "release-status-2026-08-16.json").write_text("{}", encoding="utf-8")
+            day, err = resolve_release_evidence_day(repo, "latest")
+            self.assertIsNone(err)
+            self.assertEqual(day, "2026-08-16")
+
+    def test_latest_fails_closed_when_no_dated_status(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "docs" / "evidence").mkdir(parents=True)
+            result = verify_release_evidence(repo=repo, day="latest", complete=False)
+            self.assertFalse(result["ok"])
+            self.assertFalse(result["complete"])
+            self.assertTrue(any("pass --day" in e for e in result["errors"]))
 
 
 if __name__ == "__main__":

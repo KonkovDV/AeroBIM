@@ -280,6 +280,31 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("pack_hash", text)
         self.assertNotIn("closes_rt001: true", text)
 
+    def test_fixture_timing_sheet_is_not_customer_sla(self) -> None:
+        path = self._repo() / "docs" / "demo" / "KT2_FIXTURE_TIMING_2026_08_16.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("representative_scale=false", text)
+        self.assertIn("Not ≤30 min SLA", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("sla_pass on the toy pack is not a claim", text)
+
+    def test_ask_names_proxy_corpus_without_inventing_live_18_22(self) -> None:
+        path = self._repo() / "docs" / "partners" / "_08_15.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("27/1026", text)
+        self.assertIn("18/22 от 05.08", text)
+        self.assertIn("SKIPPED_PACK_INCOMPLETE", text)
+        self.assertIn("NOT_RUN", text)
+        self.assertIn("не «пересняли сегодня»", text)
+
+    def test_data_statement_does_not_close_rt001(self) -> None:
+        path = self._repo() / "docs" / "evidence" / "DATA_STATEMENT_2026_08.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("never customer evidence", text)
+        self.assertIn("NOT_RUN", text)
+        self.assertNotIn("closes_rt001: true", text)
+
     def test_unsigned_profile_and_mik_ask_keep_blockers_open(self) -> None:
         repo = self._repo()
         profile = (
@@ -294,6 +319,99 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("unsigned", profile)
         self.assertIn("VERIFY_WITH_OPERATOR", mik)
         self.assertIn("доработки", mik)
+
+
+class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
+    def _repo(self) -> Path:
+        return Path(__file__).resolve().parents[2]
+
+    def test_task07_comparison_does_not_adopt_competitor_accuracy(self) -> None:
+        path = self._repo() / "docs" / "demo" / "KT2_TASK07_COMPARISON_2026_08.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("NO_GO", text)
+        self.assertIn("не переносим как факт", text)
+        self.assertIn("покажите методику", text)
+        self.assertIn("NormaChecker", text)
+        self.assertIn("WAIVE", text)
+        self.assertIn("AIDOX", text)
+        self.assertIn("AI Project Control", text)
+        self.assertIn("fixture GT only", text)
+        self.assertNotIn("closes_rt001: true", text)
+
+    def test_corpus_ssot_frozen_until_kt2(self) -> None:
+        path = self._repo() / "docs" / "demo" / "KT2_CORPUS_SSOT_2026_08.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn('frozen_until: "2026-08-20"', text)
+        self.assertIn("27/1026", text)
+        self.assertIn("18/22", text)
+        self.assertIn("05.08", text)
+        self.assertIn("NOT_RUN", text)
+        self.assertIn("NO_GO", text)
+
+    def test_10d_intake_is_proposed_boundary_not_cde_ready(self) -> None:
+        path = self._repo() / "docs" / "demo" / "KT2_10D_INTAKE_CONTRACT_2026_08.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("project_id", text)
+        self.assertIn("package_id", text)
+        self.assertIn("revision", text)
+        self.assertIn("rule_pack_id", text)
+        self.assertIn("Not CDE-ready", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("AEROBIM_API_BEARER_TOKEN", text)
+
+    def test_ask_names_owner_and_ack_deadline(self) -> None:
+        path = self._repo() / "docs" / "partners" / "_08_15.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("KonkovDV", text)
+        self.assertIn("", text)
+        self.assertIn("20.08.2026", text)
+        self.assertIn("15.09", text)
+        self.assertIn("closes_rt001: false", text)
+
+    def test_plan_b_date_is_on_tracker_followup(self) -> None:
+        path = (
+            self._repo()
+            / "docs"
+            / "demo"
+            / "TRACKER_MEETING_2026_08_14_FOLLOWUP.md"
+        )
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("15.09.2026", text)
+        self.assertIn("re-scope", text)
+        self.assertIn("Не kill сегодня", text)
+        self.assertIn("NO_GO", text)
+
+    def test_alignment_f1_cell_is_fixture_qualified(self) -> None:
+        path = self._repo() / "docs" / "samolet-techlab-alignment-2026.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("RU **fixture** ground truth", text)
+        self.assertIn("macro F1 ≈ 0.86 (fixture-only; RT-001 OPEN", text)
+
+    def test_upload_pack_lists_wave2_artifacts(self) -> None:
+        path = self._repo() / "docs" / "pilot" / "KT2_UPLOAD_PACK_2026_08_14.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("KT2_TASK07_COMPARISON_2026_08.md", text)
+        self.assertIn("KT2_10D_INTAKE_CONTRACT_2026_08.md", text)
+        self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
+        self.assertIn("", text)
+
+    def test_hostile_qa_playbook_pins_ssot_and_stays_no_go(self) -> None:
+        path = self._repo() / "docs" / "demo" / ""
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("NO_GO", text)
+        self.assertIn("schema 1.4.0", text)
+        self.assertIn("порядок секунды", text)
+        self.assertIn("KT2_TASK07_COMPARISON_2026_08.md", text)
+        self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
+        self.assertIn("четыре пункта", text)
+        self.assertIn("15.09", text)
+        self.assertNotIn("2259", text)
+        self.assertNotIn("开场", text)
+        self.assertNotIn("开放", text)
+        self.assertNotIn("yourselves", text)
+        self.assertNotIn("1.3.0", text)
+        self.assertNotIn("±0.5%", text)
+        self.assertNotIn("11 пунктов", text)
 
 
 if __name__ == "__main__":

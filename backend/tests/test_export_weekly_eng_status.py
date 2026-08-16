@@ -26,8 +26,8 @@ class WeeklyEngStatusTests(unittest.TestCase):
             )
         )
         self.assertEqual(
-            payload["pnst909_22_scenario_axis"]["ishigaki_cli"],
-            "python -m aerobim.tools.run_ishigaki_ids_bench_smoke",
+            payload["interpretation_use"]["ledger"],
+            "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
         )
         self.assertAlmostEqual(payload["coverage_map"]["kr_detectable_share_approx"], 0.167)
         # R-4: commercial key must appear before eng blocks in insertion order.

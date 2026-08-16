@@ -226,6 +226,32 @@ class LintClaimsTests(unittest.TestCase):
                     sys.path.pop(0)
             self.assertTrue(any("elsevier_year_twin" in h or "fabricated_doi" in h for h in hits))
 
+    def test_exclusion_stats_count_fragment_blind_zone(self) -> None:
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import (  # type: ignore[import-not-found]
+                _SCAN_ROOTS,
+                exclusion_stats,
+            )
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        stats = exclusion_stats(roots=list(_SCAN_ROOTS))
+        self.assertGreater(stats["excluded_by_fragment"], 0)
+        self.assertGreaterEqual(stats["scanned"], 1)
+
+    def test_builtin_patterns_include_russian_forbidden_markers(self) -> None:
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import _BUILTIN_PATTERNS  # type: ignore[import-not-found]
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        by_id = dict(_BUILTIN_PATTERNS)
+        self.assertIsNotNone(by_id["forbidden_accuracy_gt_90"].search("точность более 90%"))
+        self.assertIsNotNone(by_id["forbidden_native_dwg"].search("нативный DWG"))
+        self.assertIsNotNone(by_id["forbidden_cde_ready"].search("готово к CDE"))
+
 
 if __name__ == "__main__":
     unittest.main()

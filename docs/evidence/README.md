@@ -2,7 +2,7 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.5"
+version: "2.5.8"
 last_updated: "2026-08-16"
 ---
 
@@ -20,6 +20,8 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Qwen LIVE on fixture; Kimi GATED; `comparison_not_run`. Not a bake-off; not product accuracy |
 | [`vertical-slice-demo-live-2026-08-14.md`](vertical-slice-demo-live-2026-08-14.md) | Live `run_demo_vertical_slice` pin: exit 0, `summary.passed=false`, NO_GO; PNG/manifest hashes stable; report/BCF drift via `created_at` |
 | [`DATASET_HUNT_LOG_2026_08.md`](DATASET_HUNT_LOG_2026_08.md) | Tracker task-3: hunt + live re-runs 15.08 / confirm 16.08. Open benches ≠ RT-001. Harbor NOT_RUN. PNST CLI skip-honest; Ishigaki gold XML processability |
+| [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md) | Data availability: git fixtures vs `.local/` benches vs missing customer corpus; Checkpoint NO_GO |
+| [`interpretation-use-ledger-latest.json`](interpretation-use-ledger-latest.json) · [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: licensed vs blocked inferences. Not customer precision. Checkpoint NO_GO |
 | [`ifc-release-matrix-2026-08.md`](ifc-release-matrix-2026-08.md) · [`.json`](ifc-release-matrix-2026-08.json) | Fixture IFC2X3/IFC4/IFC4X3 kernel: findings 5/4/6, `passed=false`, `clash=skipped`. sha `559dcd91…46391`. Not customer accuracy |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `6133a564…57aa4e` |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
@@ -39,7 +41,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; WP-01 complete required in CI) |
 | [`runtime-baseline-wave-a-windows-2026-08-15.md`](runtime-baseline-wave-a-windows-2026-08-15.md) | Local Wave A pytest on HEAD `005b7bc`: 2259 passed / 12 skipped / 0 failed. **Not** CI pin; does not replace 2167 |
-| [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run still operator |
+| [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run still operator. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
 | [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json) | Synthetic detection twin (`synthetic_only`) |
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Legacy fixture SLA snapshot |

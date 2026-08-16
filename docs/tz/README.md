@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM TZ Response Pack"
 status: active
-version: "2.0.0"
-last_updated: "2026-07-19"
+version: "2.1.0"
+last_updated: "2026-08-16"
 tags: [aerobim, tz, index]
 claim_boundary: "Checkpoint NO_GO until RT-001/002/003."
 ---
@@ -19,7 +19,8 @@ claim_boundary: "Checkpoint NO_GO until RT-001/002/003."
 | [`TZ_BUILD_AND_QUALITY_2026.md`](TZ_BUILD_AND_QUALITY_2026.md) | Черновик кода/сборки (влит в ТЗ §6) |
 | [`TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md`](TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md) | Образ + презентация (влит в ТЗ §7–8) |
 | [`TZ_ACCOMPANYING_DOCS_2026.md`](TZ_ACCOMPANYING_DOCS_2026.md) | Сопроводительная документация (влит в ТЗ §10) |
-| [`TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md`](TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md) | **Самолёт × Техлаб × МИК** — трассируемость трёх источников (+ [`МИК-контур`](../partners/MIK_PILOT_COMPLIANCE_2026.md)) |
+| [`TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md`](TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md) | **Самолёт × Техлаб × МИК × отрасль × трекер** — трассируемость |
+| [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: licensed vs blocked inferences |
 
 Data appendices: [`../../samples/tz-appendix/`](../../samples/tz-appendix/).
 

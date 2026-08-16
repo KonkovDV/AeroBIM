@@ -115,6 +115,8 @@ class QualityProtocolStatsTests(unittest.TestCase):
             self.assertEqual(code, 0)
             payload = json.loads(out.read_text(encoding="utf-8"))
             self.assertEqual(payload["artifact_type"], "quality_protocol_stats")
+            self.assertEqual(payload["interpretation_use"]["licensed_use"], "protocol_planning")
+            self.assertFalse(payload["interpretation_use"]["closes_rt001"])
 
 
 class OpenCorporaProfilesTests(unittest.TestCase):

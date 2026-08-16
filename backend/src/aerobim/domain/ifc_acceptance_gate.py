@@ -4,16 +4,22 @@ Claim boundary: fixture/engineering contract only. Not customer accuracy,
 not TZ >90%, not CDE-ready, not native DWG. ``passed`` follows ADR-001:
 true only for ``pass`` / ``pass_with_warnings``. Never emit
 ``PASS_WITH_WARNINGS`` with ``passed=false``.
+
+``outcome`` / ``passed`` follow the full package (``outcome_scope=full_package``).
+``findings`` stay IFC/IDS (``findings_scope=ifc_ids``). Errors outside that
+projection are counted in ``blocking_outside_projection_count`` so a red
+package cannot look empty on the product face.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from aerobim.domain.models import FindingCategory
+from aerobim.domain.advisory_origin import is_advisory_issue
+from aerobim.domain.models import FindingCategory, Severity
 from aerobim.domain.package_outcome import PackageOutcome, summary_passed_from_outcome
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 ARTIFACT_TYPE = "aerobim_ifc_acceptance_gate"
 CLAIM_BOUNDARY = (
     "IFC Acceptance Gate fixture contract. Checkpoint NO_GO. "
@@ -76,24 +82,21 @@ def _remark_text(issue: Any) -> str | None:
     return str(body) if body else None
 
 
-def _is_advisory(issue: Any) -> bool:
-    origin = _field(issue, "origin")
-    origin_value = _enum_value(origin) if origin is not None else None
-    if origin_value == "advisory":
-        return True
-    rule_id = str(_field(issue, "rule_id") or "")
-    source_id = str(_field(issue, "source_id") or "")
-    if source_id == "compliance-agent":
-        return True
-    return rule_id.startswith("AGENT-") or rule_id.startswith("AEROBIM-AGENT-")
+def _is_blocking_severity(severity: str | None) -> bool:
+    return (severity or "").lower() == Severity.ERROR.value
+
+
+def _in_acceptance_projection(issue: Any) -> bool:
+    category = _enum_value(_field(issue, "category")) or ""
+    return category in _ACCEPTANCE_CATEGORIES
 
 
 def _acceptance_finding(issue: Any) -> dict[str, Any] | None:
-    if _is_advisory(issue):
+    if is_advisory_issue(issue):
+        return None
+    if not _in_acceptance_projection(issue):
         return None
     category = _enum_value(_field(issue, "category")) or ""
-    if category not in _ACCEPTANCE_CATEGORIES:
-        return None
     evidence = _field(issue, "evidence_refs") or ()
     if isinstance(evidence, str):
         evidence_refs = (evidence,)
@@ -149,15 +152,21 @@ def project_ifc_acceptance_gate(
         outcome_value = "pass" if passed else "failed"
 
     caps = _field(report, "capabilities")
-    findings = [
-        row
-        for issue in (_field(report, "issues") or ())
-        if (row := _acceptance_finding(issue)) is not None
-    ]
-    blocking = [
-        row
-        for row in findings
-        if (row.get("severity") or "").lower() in {"error", "critical"}
+    issues = tuple(_field(report, "issues") or ())
+    findings = [row for issue in issues if (row := _acceptance_finding(issue)) is not None]
+    blocking = [row for row in findings if _is_blocking_severity(row.get("severity"))]
+    outside_projection_blocking = [
+        {
+            "finding_id": _field(issue, "finding_id"),
+            "rule_id": _field(issue, "rule_id"),
+            "severity": _enum_value(_field(issue, "severity")),
+            "category": _enum_value(_field(issue, "category")),
+            "source_id": _field(issue, "source_id"),
+        }
+        for issue in issues
+        if not is_advisory_issue(issue)
+        and not _in_acceptance_projection(issue)
+        and _is_blocking_severity(_enum_value(_field(issue, "severity")))
     ]
     return {
         "artifact_type": ARTIFACT_TYPE,
@@ -165,10 +174,14 @@ def project_ifc_acceptance_gate(
         "claim_boundary": CLAIM_BOUNDARY,
         "checkpoint_verdict": "NO_GO",
         "customer_accuracy": False,
+        "outcome_scope": "full_package",
+        "findings_scope": "ifc_ids",
         "outcome": outcome_value,
         "passed": passed,
         "finding_count": len(findings),
         "blocking_finding_count": len(blocking),
+        "blocking_outside_projection_count": len(outside_projection_blocking),
+        "outside_projection_blocking": outside_projection_blocking,
         "capabilities": {
             "ifc_schema": _capability_state(caps, "ifc_schema"),
             "ids_validation": _capability_state(caps, "ids"),

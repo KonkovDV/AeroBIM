@@ -408,7 +408,12 @@ class IfcOpenShellValidator:
             # EQUALS: tolerance band |obs - exp| <= ε
             return abs(obs_si - exp_si) <= eps
 
-        # Non-numeric fallback: exact string comparison
+        # Mixed parse (numeric expected vs unparsable observed, or the reverse)
+        # is a mismatch — not a silent string pass. Both-unparsable keeps
+        # alphanumeric EQUALS (e.g. FireRating REI60).
+        if (observed_number is None) != (expected_number is None):
+            return False
+
         return str(observed_value) == requirement.expected_value
 
     def _to_float(self, value: Any) -> float | None:

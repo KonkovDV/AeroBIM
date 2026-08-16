@@ -2,8 +2,8 @@
 ---
 title: "Quality measurement protocol — AeroBIM pilot (Aug 2026)"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-14"
+version: "1.1.0"
+last_updated: "2026-08-16"
 claim_boundary: "Protocol only. Fixture/open corpora never publish product accuracy. Interim confirmed-finding target is 0.60 — not >90%."
 ---
 
@@ -186,3 +186,13 @@ Wilson intervals (§4) remain the planner for a **project-level** rate after clu
 | False-pass on AEC-Bench | Harbor **NOT_RUN**; gold-only `null_always_clean` in `aec-bench-false-pass-2026-08` |
 
 Do not publish a product accuracy number from any of these without a Samolet (or RF-expertise) corpus.
+
+## 12. Interpretation/Use ledger (КТ#2 → КТ#3)
+
+Score uses that **are** and **are not** licensed today live in one executable table:
+
+- Domain: `aerobim.domain.interpretation_use`
+- CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`
+- Human: [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md)
+
+Wilson intervals from this tool remain **protocol planning**. They do not move a ledger row from `protocol_planning` to customer precision.

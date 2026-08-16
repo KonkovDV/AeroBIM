@@ -12,6 +12,7 @@ from aerobim.tools.export_moexp_ids_coverage import (
     STATUS_FAIL,
     STATUS_LOAD_ERROR,
     STATUS_PASS,
+    STATUS_UNKNOWN,
     STATUS_UNSUPPORTED,
     attach_by_kind,
     build_moexp_ids_coverage,
@@ -22,6 +23,7 @@ from aerobim.tools.export_moexp_ids_coverage import (
     discover_ids,
     evaluate_ids_file,
     render_moexp_ids_coverage_markdown,
+    specification_row_from_reporter,
 )
 
 
@@ -47,6 +49,39 @@ class MoexpIdsCoverageUnitTests(unittest.TestCase):
             classify_specification(unsupported=False, load_error=None, spec_passed=False),
             STATUS_FAIL,
         )
+        self.assertEqual(
+            classify_specification(unsupported=False, load_error=None, spec_passed=None),
+            STATUS_UNKNOWN,
+        )
+
+    def test_missing_reporter_status_is_not_a_pass(self) -> None:
+        row = specification_row_from_reporter({"name": "Drift"})
+        self.assertIsNone(row["passed_on_fixture"])
+        self.assertEqual(row["status"], STATUS_UNKNOWN)
+        self.assertEqual(row["status_drift"], "missing_or_null_status")
+
+    def test_string_false_reporter_status_is_not_a_pass(self) -> None:
+        row = specification_row_from_reporter({"name": "Drift", "status": "false"})
+        self.assertIsNone(row["passed_on_fixture"])
+        self.assertEqual(row["status"], STATUS_UNKNOWN)
+        self.assertEqual(row["status_drift"], "non_bool_status")
+
+    def test_bool_true_reporter_status_is_pass(self) -> None:
+        row = specification_row_from_reporter({"name": "Ok", "status": True})
+        self.assertIs(row["passed_on_fixture"], True)
+        self.assertEqual(row["status"], STATUS_PASS)
+        self.assertNotIn("status_drift", row)
+
+    def test_no_ids_status_true_default_in_backend_src(self) -> None:
+        root = Path(__file__).resolve().parents[1] / "src"
+        pattern = 'get("status"' + ", True)"
+        alt = "get('status'" + ", True)"
+        hits: list[str] = []
+        for path in root.rglob("*.py"):
+            text = path.read_text(encoding="utf-8")
+            if pattern in text or alt in text:
+                hits.append(str(path.relative_to(root)))
+        self.assertEqual(hits, [])
 
     def test_classify_ids_kind_from_official_filename(self) -> None:
         self.assertEqual(
@@ -90,7 +125,7 @@ class MoexpIdsCoverageUnitTests(unittest.TestCase):
         by_kind = payload["summary"]["by_kind"]
         self.assertEqual(by_kind[KIND_ATTRIBUTES]["specifications"], 10)
         self.assertEqual(by_kind[KIND_CLASSIFICATION]["specifications"], 8)
-        self.assertEqual(payload["schema_version"], "1.1.0")
+        self.assertEqual(payload["schema_version"], "1.2.0")
         self.assertIn("content_sha256", payload)
 
     def test_render_states_boundaries(self) -> None:
@@ -109,6 +144,7 @@ class MoexpIdsCoverageUnitTests(unittest.TestCase):
                     "executable_fail_on_fixture": 2,
                     "unsupported": 0,
                     "load_error": 0,
+                    "unknown_or_skipped": 0,
                     "by_domain": {
                         "oks": {
                             "files": 1,
@@ -141,6 +177,7 @@ class MoexpIdsCoverageUnitTests(unittest.TestCase):
         self.assertIn("closes_rt002_customer_profile:** `False`", md)
         self.assertIn("By pack kind", md)
         self.assertIn("| attributes |", md)
+        self.assertIn("Unknown / skipped status", md)
 
 
 class MoexpIdsPackPresenceTests(unittest.TestCase):

@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 RULE_IFC_VERSION = "AEROBIM-IDS-IFC-VERSION"
 RULE_SKIPPED = "AEROBIM-IDS-SKIPPED"
+RULE_STATUS_TYPE = "AEROBIM-IDS-STATUS-TYPE"
 
 # Same default list IfcTester uses when the attribute is omitted.
 DEFAULT_IDS_IFC_VERSIONS: frozenset[str] = frozenset({"IFC2X3", "IFC4", "IFC4X3_ADD2"})
@@ -250,3 +251,9 @@ def skipped_spec_fail_closed_rule_id(
     if is_skipped is True:
         return RULE_SKIPPED
     return None
+
+
+def ids_reporter_status_is_bool(status: object) -> bool:
+    """IfcTester Json reporter emits JSON booleans. Any other type is format drift."""
+
+    return isinstance(status, bool)

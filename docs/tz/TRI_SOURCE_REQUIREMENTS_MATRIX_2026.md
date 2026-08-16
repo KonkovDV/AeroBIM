@@ -2,23 +2,27 @@
 ---
 title: "Трёхисточниковая матрица требований: Самолёт × Техлаб × МИК"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-15"
+version: "1.1.0"
+last_updated: "2026-08-16"
 claim_boundary: "Матрица трассирует требования, не повышает статусы: fixture ≠ customer; Checkpoint NO_GO до RT-001/002/003."
 tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 ---
 
 # Требования трёх сторон программы → AeroBIM (SSOT-навигатор)
 
-Пилот имеет **три** источника требований с разными ролями. До 2026-07-26
+Пилот имеет **пять** источников требований с разными ролями. До 2026-07-26
 репозиторий покрывал два; контур МИК добавлен
 ([`MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md)).
+16.08: Interpretation/Use ledger сводит все источники в лицензированные выводы
+(Kane 2013) — [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md).
 
 | Сторона | Роль | Чего требует | Канонический документ ответа |
 |---|---|---|---|
 | **Самолёт** | Заказчик-площадка | Функциональность (ТР-1..62), KPI качества, данные/эксперты со своей стороны | [`TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) + [`TZ_COMPLIANCE_MATRIX_2026.md`](TZ_COMPLIANCE_MATRIX_2026.md) |
 | **Техлаб** | Программа отбора (жюри) | Заявка, MVP-демо, честные формулировки, критерии пилота на 2 млн ₽ | [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md) + [`../partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
 | **МИК (Фонд)** | Оператор/грантодатель | Соглашение, программа испытаний, план-график, акт результатов, финотчётность | [`../partners/MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md) |
+| **Отрасль** | Нормы openBIM / приёмки | IDS 1.0, ISO 19650-2 5.7, Solihin 1–4, ПНСТ 909 | [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) IND-* |
+| **Трекер (Дмитрий)** | Операционный спринт к КТ#2 | 6 задач 14.08 ~15:26 | [`../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](../demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md) · ledger TRK-* |
 
 ## Сводная матрица по темам
 
@@ -56,5 +60,6 @@ PARTIAL · BLOCKED_CUSTOMER_DATA · VERIFY_WITH_OPERATOR · OUT (заявлен�
 - [x] Самолёт: ТР-матрица без пустых TBD (§19 ТЗ v2)
 - [x] Техлаб: заявка + readiness + критерии пилота + «do not claim»
 - [x] МИК: контур документирован, M1–M9 с владельцами
+- [x] IUA ledger (16.08): лицензированные выводы Kane по пяти источникам
 - [ ] Формы Фонда получены и M2/M8 закрыты (запрос «до 3 авг» **просрочен**; статус VERIFY_WITH_OPERATOR)
 - [ ] Акт МИК подписан по результатам КТ3 (сентябрь)

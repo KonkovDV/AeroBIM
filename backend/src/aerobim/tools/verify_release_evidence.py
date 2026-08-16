@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,33 @@ FORBIDDEN_CUSTOMER_CLAIM_LEVELS = frozenset(
     }
 )
 REQUIRED_RUNTIME_GATES = ("ruff", "mypy", "pytest")
+_RELEASE_STATUS_DAY_RE = re.compile(r"^release-status-(\d{4}-\d{2}-\d{2})\.json$")
+
+
+def resolve_release_evidence_day(repo: Path, day: str | None) -> tuple[str | None, str | None]:
+    """Resolve ``latest`` to the max dated ``release-status-YYYY-MM-DD.json``.
+
+    Missing dated artifacts fail closed — never silently reuse 2026-08-06.
+    """
+
+    requested = (day or "latest").strip() or "latest"
+    if requested != "latest":
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", requested):
+            return None, f"invalid --day {requested!r}; expected YYYY-MM-DD or latest"
+        return requested, None
+    evidence = repo / "docs" / "evidence"
+    if not evidence.is_dir():
+        return None, "no docs/evidence directory; pass --day YYYY-MM-DD explicitly"
+    dates = [
+        match.group(1)
+        for path in evidence.iterdir()
+        if path.is_file() and (match := _RELEASE_STATUS_DAY_RE.fullmatch(path.name))
+    ]
+    if not dates:
+        return None, (
+            "no release-status-YYYY-MM-DD.json found; pass --day YYYY-MM-DD explicitly"
+        )
+    return max(dates), None
 
 
 def _repo_root() -> Path:
@@ -215,12 +243,30 @@ def _check_commit_alignment(
 def verify_release_evidence(
     *,
     repo: Path | None = None,
-    day: str = "2026-08-06",
+    day: str = "latest",
     complete: bool = True,
 ) -> dict[str, Any]:
     root = repo or _repo_root()
     errors: list[str] = []
     evidence = root / "docs" / "evidence"
+    resolved_day, day_error = resolve_release_evidence_day(root, day)
+    if resolved_day is None:
+        errors.append(day_error or "release evidence day unresolved")
+        return {
+            "artifact_type": "aerobim_release_evidence_verification",
+            "schema_version": "1.0.0",
+            "ok": False,
+            "verification": "failed",
+            "errors": errors,
+            "day": day,
+            "complete": complete,
+            "sprint2_path": None,
+            "claim_boundary": (
+                "Engineering release packaging only. Synthetic/fixture evidence "
+                "never establishes customer accuracy. Checkpoint remains NO_GO."
+            ),
+        }
+    day = resolved_day
 
     _check_required_files(root, errors, day)
 
@@ -299,7 +345,11 @@ def verify_release_evidence(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=None)
-    parser.add_argument("--day", default="2026-08-06")
+    parser.add_argument(
+        "--day",
+        default="latest",
+        help="Dated evidence day (YYYY-MM-DD). Default latest = max dated release-status-*.json.",
+    )
     parser.add_argument(
         "--complete",
         action=argparse.BooleanOptionalAction,
@@ -313,6 +363,8 @@ def main(argv: list[str] | None = None) -> int:
         complete=bool(args.complete),
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
+    if not result.get("complete", True):
+        print("NOTE: verification ran with complete=false (relaxed gates).")
     if result["ok"]:
         print("OK: release evidence consistent (synthetic_only; customer blocked).")
         return 0

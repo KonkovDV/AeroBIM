@@ -163,6 +163,8 @@ def build_quality_protocol_stats(
     expected_p: float | None = None,
     margin: float | None = None,
     confidence: float = 0.95,
+    corpus_kind: str = "unspecified",
+    observation_unit: str = "finding_counts_synthetic",
 ) -> dict[str, Any]:
     """Compose Wilson PR report and/or sample-size plan into one artifact."""
 
@@ -175,10 +177,31 @@ def build_quality_protocol_stats(
             "provide TP/FP/FN counts and/or expected_p+margin for sample-size planning"
         )
 
+    kind = (corpus_kind or "unspecified").strip() or "unspecified"
+    unit = (observation_unit or "finding_counts_synthetic").strip() or "finding_counts_synthetic"
     artifact: dict[str, Any] = {
         "artifact_type": "quality_protocol_stats",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "claim_boundary": CLAIM_BOUNDARY,
+        "interpretation_use": {
+            "framework": "Kane 2013 IUA",
+            "licensed_use": "protocol_planning",
+            "corpus_kind": kind,
+            "observation_unit": unit,
+            "closes_rt001": False,
+            "demonstrates_interim_target_publishable": False,
+            "not_licensed": [
+                "customer_precision",
+                "tz_gt_90",
+                "customer_sla",
+                "checkpoint_go",
+            ],
+            "note": (
+                "corpus_kind=customer on this CLI is a label only. "
+                "PrecisionClaim.publishable remains the product-accuracy gate."
+            ),
+            "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
+        },
         "ranking_quality_reference": {
             "tool": "python -m aerobim.tools.evaluate_ranking_quality",
             "metric": "tie-aware nDCG@5/10/full with cluster-bootstrap CI",
@@ -235,6 +258,17 @@ def main(argv: list[str] | None = None) -> int:
         help="Confidence level for Wilson intervals (default 0.95)",
     )
     parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument(
+        "--corpus-kind",
+        choices=("unspecified", "fixture", "open_bench", "customer"),
+        default="unspecified",
+        help="Label only. customer does not make PrecisionClaim publishable.",
+    )
+    parser.add_argument(
+        "--observation-unit",
+        default="finding_counts_synthetic",
+        help="Wilson counts unit (finding vs project). Protocol §10 prefers project.",
+    )
     args = parser.parse_args(argv)
 
     report = build_quality_protocol_stats(
@@ -244,6 +278,8 @@ def main(argv: list[str] | None = None) -> int:
         expected_p=args.expected_p,
         margin=args.margin,
         confidence=args.confidence,
+        corpus_kind=args.corpus_kind,
+        observation_unit=args.observation_unit,
     )
     rendered = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     if args.output is not None:

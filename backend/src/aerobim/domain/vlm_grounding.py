@@ -273,7 +273,7 @@ def ground_vlm_region_observations(
             reason="VLM region response has no 'observations' array",
         )
 
-    readable = bool(raw.get("readable", True))
+    readable = raw.get("readable") is True
     grounded: list[VlmObservation] = []
     hitl = 0
     dropped = 0

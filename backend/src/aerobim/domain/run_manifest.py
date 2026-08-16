@@ -12,6 +12,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from aerobim.domain.advisory_origin import is_advisory_issue
 from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, Contour, StageBudget
 from aerobim.domain.package_outcome import PackageOutcome
 
@@ -47,23 +48,12 @@ _CAPABILITY_FIELDS = (
 )
 
 
-def _is_advisory_issue(issue: Any) -> bool:
-    origin = str(getattr(issue, "origin", "") or "").strip().lower()
-    if origin == "advisory":
-        return True
-    rule_id = str(getattr(issue, "rule_id", "") or "")
-    source_id = str(getattr(issue, "source_id", "") or "")
-    if source_id == "compliance-agent":
-        return True
-    return rule_id.startswith("AGENT-") or rule_id.startswith("AEROBIM-AGENT-")
-
-
 def engine_signature(report: _ReportLike) -> tuple[tuple[str, str, str, str, str], ...]:
     """Deterministic findings only — excludes advisory agent noise."""
 
     rows: list[tuple[str, str, str, str, str]] = []
     for issue in report.issues:
-        if _is_advisory_issue(issue):
+        if is_advisory_issue(issue):
             continue
         category = getattr(issue, "category", "")
         category_value = category.value if hasattr(category, "value") else str(category)

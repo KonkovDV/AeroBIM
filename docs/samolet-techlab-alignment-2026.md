@@ -2,8 +2,8 @@
 ---
 title: "Samolet TechLab Alignment 2026 (Academic)"
 status: active
-version: "1.2.0"
-last_updated: "2026-07-19"
+version: "1.2.2"
+last_updated: "2026-08-16"
 tags: [aerobim, samolet, techlab, openBIM, academic, traceability]
 claim_boundary: "Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ product accuracy."
 ---
@@ -50,8 +50,10 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 | Information management | **ISO 19650-1/-2** (lite: stage, revision, container) | Report/API optional fields — not full CDE |
 | Quantities | ISO 12006-3 ε-band tolerance algebra | Cross-doc SI-normalised compare |
 | Research software | FAIR + CODE ([`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md)) | Tag `pilot-2026-pre`, frozen corpus, CI gates |
-| Academic evaluation | Precision/recall on extraction; ablation A0–A3 | RU ground truth; macro F1 ≈ 0.86 |
+| Academic evaluation | Precision/recall on extraction; ablation A0–A3 | RU **fixture** ground truth; macro F1 ≈ 0.86 (fixture-only; RT-001 OPEN — not customer accuracy) |
 | Industry analogs | Solibri / Navisworks (rule+clash); open validators | Bounded claim: open pilot path, not global superiority |
+| Requirement-driven IDS workflow | Dias, Miceli Junior, Pellanda, *Automation in Construction* 2026, [doi:10.1016/j.autcon.2026.107043](https://doi.org/10.1016/j.autcon.2026.107043) (IDScribe / cost QTO) | Analog only: IDS as computable information requirements. AeroBIM sell-path = IFC+IDS evidence gate, not IDScribe, not cost take-off |
+| Schema validation baseline | [buildingSMART IFC Validation Service](https://validate.buildingsmart.org/) | Cited in [`evidence/upstream-validate-overlap-2026-08.md`](evidence/upstream-validate-overlap-2026-08.md). Not a Task-07 rival. Not claimed as running the Validation Service |
 
 **Explicit non-goals for Samolet claims:** full SP/GOST corpus automation; autonomous sign-off; universal 30-minute SLA without measured corpus.
 

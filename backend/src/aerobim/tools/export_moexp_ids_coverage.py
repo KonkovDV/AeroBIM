@@ -38,6 +38,8 @@ STATUS_PASS = "executable_pass_on_fixture"
 STATUS_FAIL = "executable_fail_on_fixture"
 STATUS_UNSUPPORTED = "unsupported"
 STATUS_LOAD_ERROR = "load_error"
+STATUS_UNKNOWN = "unknown_or_skipped_status"
+COVERAGE_SCHEMA_VERSION = "1.2.0"
 KIND_ATTRIBUTES = "attributes"
 KIND_CLASSIFICATION = "classification"
 KIND_OTHER = "other"
@@ -75,7 +77,42 @@ def classify_specification(
         return STATUS_LOAD_ERROR
     if spec_passed is True:
         return STATUS_PASS
-    return STATUS_FAIL
+    if spec_passed is False:
+        return STATUS_FAIL
+    return STATUS_UNKNOWN
+
+
+def specification_row_from_reporter(spec: dict[str, Any]) -> dict[str, Any]:
+    """Map one IfcTester Json spec. Pass only when ``status is True`` (HD8-TOOL-01)."""
+
+    reporter_status = spec.get("status")
+    if reporter_status is True:
+        spec_passed: bool | None = True
+        drift: str | None = None
+    elif reporter_status is False:
+        spec_passed = False
+        drift = None
+    elif reporter_status is None:
+        spec_passed = None
+        drift = "missing_or_null_status"
+    else:
+        spec_passed = None
+        drift = "non_bool_status"
+    row: dict[str, Any] = {
+        "name": spec.get("name") or "Unknown Specification",
+        "ifc_version": spec.get("ifcVersion") or spec.get("ifc_version"),
+        "cardinality": spec.get("cardinality"),
+        "total_applicable": spec.get("total_applicable"),
+        "passed_on_fixture": spec_passed,
+        "status": classify_specification(
+            unsupported=False,
+            load_error=None,
+            spec_passed=spec_passed,
+        ),
+    }
+    if drift is not None:
+        row["status_drift"] = drift
+    return row
 
 
 def classify_ids_kind(file_name: str) -> str:
@@ -159,21 +196,7 @@ def evaluate_ids_file(
             specset.validate(model)
             reported = reporter.Json(specset).report()
             for spec in reported.get("specifications") or []:
-                passed = bool(spec.get("status", True))
-                spec_rows.append(
-                    {
-                        "name": spec.get("name") or "Unknown Specification",
-                        "ifc_version": spec.get("ifcVersion") or spec.get("ifc_version"),
-                        "cardinality": spec.get("cardinality"),
-                        "total_applicable": spec.get("total_applicable"),
-                        "passed_on_fixture": passed,
-                        "status": classify_specification(
-                            unsupported=False,
-                            load_error=None,
-                            spec_passed=passed,
-                        ),
-                    }
-                )
+                spec_rows.append(specification_row_from_reporter(spec))
         except Exception as exc:  # noqa: BLE001 — coverage must not swallow
             load_error = f"{type(exc).__name__}: {exc}"
             spec_rows.append(
@@ -228,6 +251,7 @@ def _summarize(files: list[dict[str, Any]]) -> dict[str, Any]:
         STATUS_FAIL: 0,
         STATUS_UNSUPPORTED: 0,
         STATUS_LOAD_ERROR: 0,
+        STATUS_UNKNOWN: 0,
     }
     for spec in specs:
         status = str(spec.get("status") or STATUS_LOAD_ERROR)
@@ -241,6 +265,7 @@ def _summarize(files: list[dict[str, Any]]) -> dict[str, Any]:
         "executable_fail_on_fixture": counts[STATUS_FAIL],
         "unsupported": counts[STATUS_UNSUPPORTED],
         "load_error": counts[STATUS_LOAD_ERROR],
+        "unknown_or_skipped": counts[STATUS_UNKNOWN],
         "by_domain": _by_domain(files),
         "by_kind": _by_kind(files),
     }
@@ -254,6 +279,7 @@ def _empty_bucket() -> dict[str, int]:
         "executable_fail_on_fixture": 0,
         "unsupported": 0,
         "load_error": 0,
+        "unknown_or_skipped": 0,
     }
 
 
@@ -270,6 +296,8 @@ def _accumulate_file(bucket: dict[str, int], row: dict[str, Any]) -> None:
                 bucket["executable_fail_on_fixture"] += 1
             elif status == STATUS_UNSUPPORTED:
                 bucket["unsupported"] += 1
+            elif status == STATUS_UNKNOWN:
+                bucket["unknown_or_skipped"] += 1
             else:
                 bucket["load_error"] += 1
         return
@@ -279,6 +307,7 @@ def _accumulate_file(bucket: dict[str, int], row: dict[str, Any]) -> None:
     bucket["executable_fail_on_fixture"] += int(counts.get(STATUS_FAIL) or 0)
     bucket["unsupported"] += int(counts.get(STATUS_UNSUPPORTED) or 0)
     bucket["load_error"] += int(counts.get(STATUS_LOAD_ERROR) or 0)
+    bucket["unknown_or_skipped"] += int(counts.get(STATUS_UNKNOWN) or 0)
 
 
 def _by_domain(files: list[dict[str, Any]]) -> dict[str, Any]:
@@ -330,6 +359,11 @@ def _file_coverage_rows(evaluated: list[dict[str, Any]]) -> list[dict[str, Any]]
                     for spec in row.get("specifications") or []
                     if spec.get("status") == STATUS_LOAD_ERROR
                 ),
+                STATUS_UNKNOWN: sum(
+                    1
+                    for spec in row.get("specifications") or []
+                    if spec.get("status") == STATUS_UNKNOWN
+                ),
             },
             "failed_specification_names": [
                 spec.get("name")
@@ -340,6 +374,11 @@ def _file_coverage_rows(evaluated: list[dict[str, Any]]) -> list[dict[str, Any]]
                 spec
                 for spec in row.get("specifications") or []
                 if spec.get("status") in {STATUS_UNSUPPORTED, STATUS_LOAD_ERROR}
+            ],
+            "unknown_or_skipped_specification_names": [
+                spec.get("name")
+                for spec in row.get("specifications") or []
+                if spec.get("status") == STATUS_UNKNOWN
             ],
         }
         for row in evaluated
@@ -370,7 +409,7 @@ def build_ids_engine_coverage(
     )
     payload: dict[str, Any] = {
         "artifact_type": artifact_type,
-        "schema_version": "1.1.0",
+        "schema_version": COVERAGE_SCHEMA_VERSION,
         "claim_level": CLAIM_LEVEL,
         "customer_accuracy_not_established": True,
         "closes_rt002_customer_profile": False,
@@ -453,6 +492,7 @@ def render_moexp_ids_coverage_markdown(coverage: dict[str, Any]) -> str:
         f"| Executable (IfcTester ran) | {summary.get('executable')} |",
         f"| Unsupported facets | {summary.get('unsupported')} |",
         f"| Load errors | {summary.get('load_error')} |",
+        f"| Unknown / skipped status | {summary.get('unknown_or_skipped')} |",
         "",
         "## Fixture probe (not CIM compliance)",
         "",
@@ -526,7 +566,7 @@ def attach_by_kind(coverage: dict[str, Any]) -> dict[str, Any]:
         summary = {}
         coverage["summary"] = summary
     summary["by_kind"] = _by_kind(files)
-    coverage["schema_version"] = "1.1.0"
+    coverage["schema_version"] = COVERAGE_SCHEMA_VERSION
     coverage.pop("content_sha256", None)
     encoded = json.dumps(coverage, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
     coverage["content_sha256"] = _sha256_bytes(encoded)

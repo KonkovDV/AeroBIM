@@ -119,6 +119,53 @@ class IfcAcceptanceGateTests(unittest.TestCase):
         )
         self.assertEqual(len(gate["findings"]), 1)
         self.assertEqual(gate["findings"][0]["finding_id"], "F-0001")
+        self.assertEqual(gate["outcome_scope"], "full_package")
+        self.assertEqual(gate["findings_scope"], "ifc_ids")
+        self.assertEqual(gate["blocking_outside_projection_count"], 1)
+        self.assertEqual(gate["outside_projection_blocking"][0]["rule_id"], "DRAW-1")
+        self.assertEqual(gate["schema_version"], "1.1.0")
+
+    def test_package_completeness_error_is_visible_outside_ifc_ids_projection(self) -> None:
+        completeness = _issue(
+            rule_id="AEROBIM-PACKAGE-INVENTORY-MISSING",
+            category=FindingCategory.CROSS_DOCUMENT,
+            finding_id="F-pc",
+            source_id="package-completeness",
+        )
+        gate = project_ifc_acceptance_gate(
+            _report(passed=False, outcome=PackageOutcome.FAILED, issues=(completeness,)),
+            engine_version=None,
+            rule_pack_hash=None,
+            input_hash=None,
+            created_at=None,
+        )
+        self.assertFalse(gate["passed"])
+        self.assertEqual(gate["outcome"], "failed")
+        self.assertEqual(gate["finding_count"], 0)
+        self.assertEqual(gate["blocking_finding_count"], 0)
+        self.assertEqual(gate["blocking_outside_projection_count"], 1)
+        self.assertEqual(
+            gate["outside_projection_blocking"][0]["source_id"], "package-completeness"
+        )
+        with self.assertRaises(AcceptanceGateError):
+            require_fixture_gate(gate)
+
+    def test_warning_outside_projection_is_not_blocking(self) -> None:
+        drawing = _issue(
+            rule_id="DRAW-W",
+            category=FindingCategory.DRAWING_VALIDATION,
+            severity=Severity.WARNING,
+            finding_id="F-w",
+        )
+        gate = project_ifc_acceptance_gate(
+            _report(passed=False, outcome=PackageOutcome.FAILED, issues=(drawing,)),
+            engine_version=None,
+            rule_pack_hash=None,
+            input_hash=None,
+            created_at=None,
+        )
+        self.assertEqual(gate["blocking_outside_projection_count"], 0)
+        self.assertEqual(gate["outside_projection_blocking"], [])
 
     def test_require_fixture_gate_rejects_green_or_empty(self) -> None:
         green = project_ifc_acceptance_gate(

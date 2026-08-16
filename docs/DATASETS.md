@@ -9,6 +9,8 @@ claim_boundary: "Attribution and license hygiene. Open corpora ≠ RF PD+experti
 
 AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is the CC BY / Apache attribution surface. Counts below are **upstream published** figures (cite the source), not AeroBIM measurement.
 
+**Data availability (Grand Jury gap г):** [`evidence/DATA_STATEMENT_2026_08.md`](evidence/DATA_STATEMENT_2026_08.md) — what is in git, what is `.local/`, what does not exist (RT-001/002 OPEN).
+
 ## Do not put in this repository
 
 | Model / artefact | License | Public MIT tree | Samolet local demo |
