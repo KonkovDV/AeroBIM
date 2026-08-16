@@ -22,7 +22,7 @@
 Tangl проверяет **модель**; AeroBIM — **комплект**. Не заменяем 10D, Renga, CDE или эксперта: **IFC Acceptance Gate**. Клин: [`docs/partners/_2026_08_16.md`](docs/partners/_2026_08_16.md). Демо-IFC — IfcOpenShell, не Renga и не Самолёт. Образец издателя ПНСТ 909: `python -m aerobim.tools.run_renga_export_probe`. OSINT 14.08: [`docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
 
 Видео 3 мин: [`docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) — запись **19.08**, человек.  
-Трекер 14.08: [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md)
+Пакет жюри: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · Hostile QA [`docs/demo/`](docs/demo/).
 
 **AeroBIM** — открытый ассистент критериев приёмки для openBIM-комплектов: помогает эксперту найти расхождения между BIM-моделью, чертежами, ТЗ и правилами **до** стройки.
 

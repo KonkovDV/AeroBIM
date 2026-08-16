@@ -1,7 +1,7 @@
 """Ranking-quality harness: tie-aware nDCG@k over adjudicated graded labels.
 
-Closes the TZ v2 "nDCG (graded 0/1/2)" harness item (previously *planned*,
-see HARNESS_AND_DEMO_RUNBOOK_2026.md). Input is a ranking artifact with one
+Closes the TZ v2 "nDCG (graded 0/1/2)" harness item (previously *planned*;
+see QUALITY_MEASUREMENT_PROTOCOL_2026_08.md). Input is a ranking artifact with one
 entry per case: ranked findings carrying the deterministic priority score
 and the adjudicated relevance grade (0 = noise/FP, 1 = useful, 2 = critical).
 

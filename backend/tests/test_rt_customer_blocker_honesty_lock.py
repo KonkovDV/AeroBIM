@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -256,7 +257,9 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("Лидеры инноваций", text)
         self.assertIn("Checkpoint stays **NO_GO**", text)
         self.assertIn("RT-JURY-K01", text)
+        self.assertIn("RT-JURY-K02", text)
         self.assertIn("vertical-slice/report.html", text)
+        self.assertNotIn("2259", text)
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
         self.assertNotIn("closes_rt003: true", text)
@@ -300,6 +303,19 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             for marker in _SPEECH_FORMULA_MARKERS:
                 self.assertIn(marker, text, msg=path.name)
             self.assertNotIn("Новатор", text, msg=path.name)
+            self.assertNotIn("2259", text, msg=path.name)
+
+    def test_tier0_red_teams_omit_local_pytest_count(self) -> None:
+        repo = self._repo()
+        surfaces = (
+            repo / "docs" / "quality" / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md",
+            repo / "docs" / "quality" / "RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md",
+            repo / "docs" / "ENGINEERING_STATUS_2026_08.md",
+            repo / "README.md",
+            repo / "README.ru.md",
+        )
+        for path in surfaces:
+            text = path.read_text(encoding="utf-8")
             self.assertNotIn("2259", text, msg=path.name)
 
     def test_customer_ask_names_four_intake_items(self) -> None:
@@ -449,18 +465,32 @@ class JuryPackHygieneTests(unittest.TestCase):
     def _repo(self) -> Path:
         return Path(__file__).resolve().parents[2]
 
-    def test_operator_kitchen_scripts_are_unpublished(self) -> None:
-        repo = self._repo()
-        forbidden = (
-            repo / "scripts" / "rewrite-author-konkovdv.sh",
-            repo / "scripts" / "git_commit.ps1",
-            repo / "scripts" / "fix_b5690_github_uid.ps1",
-            repo / "docs" / "architecture" / "ARCHITECTURE_REVIEW_BRIEF_2026_08.md",
-            repo / "docs" / "evidence" / "runtime-baseline-wave-a-windows-2026-08-15.md",
-            repo / "docs" / "evidence" / "kt2-handoff-2026-08-11" / "vertical-slice" / "report.html",
+    def _is_tracked(self, rel: str) -> bool:
+        result = subprocess.run(
+            ["git", "ls-files", "--", rel],
+            cwd=self._repo(),
+            capture_output=True,
+            text=True,
+            check=False,
         )
-        for path in forbidden:
-            self.assertFalse(path.is_file(), msg=path.as_posix())
+        return bool(result.stdout.strip())
+
+    def test_operator_kitchen_is_unpublished_from_git(self) -> None:
+        forbidden = (
+            "scripts/rewrite-author-konkovdv.sh",
+            "scripts/git_commit.ps1",
+            "scripts/fix_b5690_github_uid.ps1",
+            "docs/architecture/ARCHITECTURE_REVIEW_BRIEF_2026_08.md",
+            "docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP_ANALYSIS_2026_08_03.md",
+            "docs/architecture/WORLD_PRACTICES_LITERATURE_REFRESH_2026_07_28.md",
+            "docs/ai/LLM_COMPARATIVE_BENCHMARK.md",
+            "docs/pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md",
+            "docs/partners/LETTER_OF_INTEREST_SAMOLET_TEMPLATE_2026_08.md",
+            "docs/evidence/runtime-baseline-wave-a-windows-2026-08-15.md",
+            "docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html",
+        )
+        for rel in forbidden:
+            self.assertFalse(self._is_tracked(rel), msg=rel)
 
 
 if __name__ == "__main__":
