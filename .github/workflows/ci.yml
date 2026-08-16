@@ -267,7 +267,10 @@ jobs:
         run: |
           # Do NOT --run-gates here: this job has no frontend node_modules, and re-pytest
           # is flaky under ifcopenshell teardown. Upstream needs: jobs already passed.
-          python -m aerobim.tools.export_runtime_baseline --check-readme --check-complete
+          # Generate BEFORE the drift check: when the committed artifact drifts, the check
+          # still fails the job (alarm intact), but the refreshed CI-attested artifact is
+          # produced first and uploaded below, so the maintainer can commit it. A stale
+          # committed artifact must never block its own refresh (chicken-and-egg).
           python -m aerobim.tools.export_runtime_baseline \
             --gate ruff=PASS \
             --gate mypy=PASS \
@@ -296,6 +299,7 @@ jobs:
               print("CI-generated baseline is not publishable; refusing soft-fail bootstrap", file=sys.stderr)
               raise SystemExit(1)
           PY
+          python -m aerobim.tools.export_runtime_baseline --check-readme --check-complete
       - name: Upload CI-generated runtime baseline
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
