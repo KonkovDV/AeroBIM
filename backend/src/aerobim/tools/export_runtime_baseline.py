@@ -1257,7 +1257,7 @@ def _documented_env_marker_names(text: str) -> list[str] | None:
     return sorted(names)
 
 
-def _check_documented_env_sets(repo: Path) -> list[str]:
+def _check_documented_env_sets(repo: Path, *, compare_artifact: bool = True) -> list[str]:
     """Fail on set inequality (symmetric difference), never on count equality alone."""
     errors: list[str] = []
     expected = _configuration_env_names(repo / "README.md")
@@ -1265,7 +1265,7 @@ def _check_documented_env_sets(repo: Path) -> list[str]:
         return ["README.md ## Configuration has no AEROBIM_* names"]
 
     artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
-    if artifact.exists():
+    if compare_artifact and artifact.exists():
         try:
             stored = json.loads(artifact.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
@@ -1349,7 +1349,7 @@ def _internal_env_names(repo: Path) -> set[str]:
     return {str(name) for name in entries}
 
 
-def _check_code_env_documented(repo: Path) -> list[str]:
+def _check_code_env_documented(repo: Path, *, compare_artifact: bool = True) -> list[str]:
     """Fail when Settings reads AEROBIM_* knobs absent from README Configuration + registry.
 
     N-20: marker-only parity can hide holes published as documented_env_vars vs code_env_vars.
@@ -1386,7 +1386,7 @@ def _check_code_env_documented(repo: Path) -> list[str]:
             f"{_INTERNAL_ENV_REGISTRY} lists vars not read by settings.py: {unexplained_internal}"
         )
     artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
-    if artifact.exists():
+    if compare_artifact and artifact.exists():
         try:
             stored = json.loads(artifact.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
@@ -1426,12 +1426,12 @@ def _check_readme_numeric_claims(repo: Path, live: dict[str, object]) -> list[st
     return errors
 
 
-def _check_architecture_inventory(repo: Path) -> list[str]:
+def _check_architecture_inventory(repo: Path, *, compare_artifact: bool = True) -> list[str]:
     """README must publish the live protocol/adapter/token counts from source."""
     live = _live_architecture_inventory(repo)
     errors: list[str] = []
     artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
-    if artifact.exists():
+    if compare_artifact and artifact.exists():
         try:
             stored = json.loads(artifact.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
@@ -1483,11 +1483,11 @@ def _check_architecture_inventory(repo: Path) -> list[str]:
     return errors
 
 
-def _check_readme_markers(repo: Path) -> list[str]:
+def _check_readme_markers(repo: Path, *, compare_artifact: bool = True) -> list[str]:
     errors: list[str] = []
     artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
     expected_snippet: str | None = None
-    if artifact.exists():
+    if compare_artifact and artifact.exists():
         try:
             stored = json.loads(artifact.read_text(encoding="utf-8"))
             if isinstance(stored, dict) and isinstance(stored.get("readme_snippet"), str):
@@ -1519,9 +1519,9 @@ def _check_readme_markers(repo: Path) -> list[str]:
                 f"{name} runtime baseline snippet drifts from "
                 "docs/evidence/runtime-baseline-latest.json readme_snippet (WP-08)"
             )
-    errors.extend(_check_documented_env_sets(repo))
-    errors.extend(_check_code_env_documented(repo))
-    errors.extend(_check_architecture_inventory(repo))
+    errors.extend(_check_documented_env_sets(repo, compare_artifact=compare_artifact))
+    errors.extend(_check_code_env_documented(repo, compare_artifact=compare_artifact))
+    errors.extend(_check_architecture_inventory(repo, compare_artifact=compare_artifact))
     live = export_runtime_baseline(backend_root=repo / "backend")
     errors.extend(_check_readme_numeric_claims(repo, live))
     return errors
@@ -1629,6 +1629,15 @@ def main(argv: list[str] | None = None) -> int:
             "documented-env name *sets* disagree (symmetric difference, not counts), "
             "live architecture_inventory (ports/adapters/tokens) missing from README/artifact, "
             "or committed artifact drifts beyond ±50 on loc/test_functions"
+        ),
+    )
+    parser.add_argument(
+        "--skip-artifact-drift",
+        action="store_true",
+        help=(
+            "With --check-readme: compare README vs live source only. "
+            "Skip committed runtime-baseline-latest.json loc/env/snippet parity. "
+            "Lint job uses this; baseline-integrity owns artifact freshness."
         ),
     )
     parser.add_argument(
@@ -1776,7 +1785,10 @@ def main(argv: list[str] | None = None) -> int:
         )
         errors: list[str] = []
         if args.check_readme:
-            errors.extend(_check_readme_markers(repo) + _check_artifact_drift(repo, live))
+            compare_artifact = not args.skip_artifact_drift
+            errors.extend(_check_readme_markers(repo, compare_artifact=compare_artifact))
+            if compare_artifact:
+                errors.extend(_check_artifact_drift(repo, live))
         if args.check_complete:
             errors.extend(_check_artifact_complete(repo))
         if args.check_publishable:

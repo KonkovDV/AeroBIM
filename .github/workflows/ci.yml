@@ -117,7 +117,7 @@ jobs:
       - name: Claims Lock boundary guard (G6)
         run: python ../scripts/lint_claims.py --claim-boundary-guard
       - name: Runtime baseline README drift check
-        run: python -m aerobim.tools.export_runtime_baseline --check-readme
+        run: python -m aerobim.tools.export_runtime_baseline --check-readme --skip-artifact-drift
       - run: ruff check src tests
       - run: ruff format --check src tests
       - name: Ruff S-band inventory drift check

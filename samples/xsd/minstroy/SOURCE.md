@@ -33,12 +33,12 @@ Fail-closed: do not treat XMLSchema10 empty-elements as pass. The documentation 
 
 | File | Role | SHA-256 | Bytes |
 | --- | --- | --- | ---: |
-| `conclusion-01-03.xsd` | ECPE / catalog match | `a5a1b4d32d407ebbcde26e5687110d3535edfe31d85038f3540026ed465c59e8` | 341893 |
+| `conclusion-01-03.xsd` | ECPE / catalog match | `46387fa5b4d41f7fad64ff67e8d9aa0b48c6d59864b2eca2acc4c9822aba90ec` | 336542 |
 | `explanatorynote-01-07.xsd` | **ECPE in-force**; catalog `p9_4` zip member | `742dc8ec7f2df425b27fd59d419f3d01e4f25f53025475f9e71f7f4f45459df4` | 586987 |
 | `DesignAssignment-01-01.xsd` | **ECPE in-force**; catalog `p12_2` zip member | `38ff89664f1c8c3bd8fef9366d1ee747aa3313ada6c32dc026d5658d3c040be5` | 579951 |
 | `explanatorynote-01-06.xsd` | previous named listing (`версия 01.06.zip`) | `e3fbc7b338d2b5a7d88855d41904cea5077e681b804489c017f3017823a12569` | 594624 |
 | `explanatorynote-01-05.xsd` | previous main-listing 1.05 | `6002c961b155322b52ec64462eadb2c58049a0ad7f4411372b4e1f4b432f5f58` | 573278 |
-| `DesignAssignment-01-00.xsd` | previous main-listing 01.00 | `ee8dd45c7b8d71f63a5991209c2f91edfa05daf530e411ae3071191d3f1406f4` | 554673 |
+| `DesignAssignment-01-00.xsd` | previous main-listing 01.00 | `f566de807cc3f74b807f0498dfd9e31948d14bc7c4146a4b9c1df1f8e2964b23` | 544958 |
 | `EngineeringSurveysTask-01-00.xsd` | catalog survey assignment 01.00 | `7da19458da8d4201f7b42d3ecc858e18f191c6112f2fed0dcf90a2eb22b3b112` | 250229 |
 | `GeologicalReport-01-00.xsd` | catalog survey report zip; XSD root is geological | `b6d55df9621c34ada95420347397b32e8d926e80218736c3ee75dad6c8618b9e` | 370274 |
 

@@ -9,3 +9,6 @@
 *.ids binary
 *.zip binary
 *.bcf binary
+*.dwg binary
+*.dxf binary
+*.xsd binary

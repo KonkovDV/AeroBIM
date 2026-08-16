@@ -5,7 +5,7 @@
   "conversion_tool_version": "2026-08-14",
   "derived_format": "dxf",
   "derived_path": "minimal-entities.dxf",
-  "derived_sha256": "38a1f180317075624a0cb2819406eb905c655bacff0ce86cede57687a57d7307",
+  "derived_sha256": "ed6c088f707801e525ff3ea2fb8734fd1af284307490b9b1dd7a7a4fc9a154af",
   "loss_notes": [
     "layers may be flattened or renamed",
     "blocks/XREF may be unresolved or exploded",

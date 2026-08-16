@@ -700,6 +700,50 @@ class BaselineDriftAndReadmeAttackTests(unittest.TestCase):
                 errors = _check_readme_markers(repo)
             self.assertTrue(any("readme_snippet" in e for e in errors))
 
+    def test_skip_artifact_ignores_stale_snippet(self) -> None:
+        from aerobim.tools.export_runtime_baseline import _check_readme_markers
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            evidence = repo / "docs" / "evidence"
+            evidence.mkdir(parents=True)
+            (evidence / "runtime-baseline-latest.json").write_text(
+                json.dumps({"readme_snippet": "stale snippet from old CI"}),
+                encoding="utf-8",
+            )
+            readme = (
+                "# AeroBIM\n\n"
+                "<!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->\n"
+                "live snippet\n"
+                "<!-- AEROBIM_RUNTIME_BASELINE:END -->\n"
+            )
+            (repo / "README.md").write_text(readme, encoding="utf-8")
+            (repo / "README.ru.md").write_text(readme, encoding="utf-8")
+            with (
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_documented_env_sets",
+                    return_value=[],
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_code_env_documented",
+                    return_value=[],
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_architecture_inventory",
+                    return_value=[],
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline.export_runtime_baseline",
+                    return_value={"metrics": {}},
+                ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_readme_numeric_claims",
+                    return_value=[],
+                ),
+            ):
+                errors = _check_readme_markers(repo, compare_artifact=False)
+            self.assertEqual(errors, [])
+
 
 if __name__ == "__main__":
     unittest.main()
