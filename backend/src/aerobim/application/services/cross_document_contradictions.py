@@ -17,7 +17,14 @@ from aerobim.domain.models import (
     ToleranceConfig,
     ValidationIssue,
 )
-from aerobim.domain.quantity import QuantityValue, normalize_unit_token, parse_quantity, si_compare
+from aerobim.domain.quantity import (
+    QuantityValue,
+    looks_like_numeric_token,
+    normalize_unit_token,
+    parse_localized_number,
+    parse_quantity,
+    si_compare,
+)
 
 _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "m": ("m", 1.0),
@@ -46,10 +53,7 @@ _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
 
 
 def to_float(raw: str) -> float | None:
-    try:
-        return float(raw.replace(",", "."))
-    except ValueError:
-        return None
+    return parse_localized_number(raw)
 
 
 class CrossDocumentContradictionDetector:
@@ -132,16 +136,25 @@ class CrossDocumentContradictionDetector:
                             quantity_b=req.quantity,
                         )
                         severity = self._severity
+                    if conflict_kind is ConflictKind.UNPARSED_NUMERIC:
+                        message = (
+                            f"Unparsed numeric token in cross-document pair: {property_label} "
+                            f"'{prev_val}' (from {prev_req.source_kind.value}) vs "
+                            f"'{val}' (from {req.source_kind.value}). "
+                            "Not classified as mapping ambiguity."
+                        )
+                    else:
+                        message = (
+                            f"Cross-document contradiction: {property_label} "
+                            f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
+                            f"but '{val}' (from {req.source_kind.value})"
+                        )
                     match_method = "entity+pset+prop" if property_set else "entity+prop"
                     issues.append(
                         ValidationIssue(
                             rule_id=f"CROSS-DOC-{entity}-{prop}",
                             severity=severity,
-                            message=(
-                                f"Cross-document contradiction: {property_label} "
-                                f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
-                                f"but '{val}' (from {req.source_kind.value})"
-                            ),
+                            message=message,
                             ifc_entity=entity,
                             category=FindingCategory.CROSS_DOCUMENT,
                             property_set=prev_req.property_set or req.property_set,
@@ -253,6 +266,8 @@ class CrossDocumentContradictionDetector:
         """Classify a detected cross-document conflict into a ``ConflictKind``.
 
         Decision order:
+        0. UNPARSED_NUMERIC — token looks numeric but grouping/separators
+           are ambiguous (fail-closed; not mapping ambiguity).
         1. UNIT_MISMATCH — incompatible or inconsistent unit encoding
            (including dimension mismatch, e.g. m vs m2).
         2. SOFT_CONFLICT_WITHIN_TOLERANCE — SI values agree within ε.
@@ -263,6 +278,12 @@ class CrossDocumentContradictionDetector:
         """
         if value_a is None or value_b is None:
             return ConflictKind.AMBIGUOUS_MAPPING
+        if (
+            looks_like_numeric_token(value_a) and parse_localized_number(value_a) is None
+        ) or (
+            looks_like_numeric_token(value_b) and parse_localized_number(value_b) is None
+        ):
+            return ConflictKind.UNPARSED_NUMERIC
 
         q_a = self.resolve_quantity(value_a, unit_a, quantity_a)
         q_b = self.resolve_quantity(value_b, unit_b, quantity_b)

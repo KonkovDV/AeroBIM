@@ -24,7 +24,12 @@ from aerobim.domain.models import (
     ToleranceConfig,
     ValidationIssue,
 )
-from aerobim.domain.quantity import QuantityValue, parse_quantity
+from aerobim.domain.quantity import (
+    QuantityValue,
+    looks_like_numeric_token,
+    parse_localized_number,
+    parse_quantity,
+)
 from aerobim.domain.section_pairing import (
     DisciplineInfo,
     SectionPairingReport,
@@ -301,6 +306,12 @@ class JsonSectionDiffAnalyzer:
     ) -> ConflictKind | None:
         expected_number = self._to_float(expected.value)
         observed_number = self._to_float(observed.value)
+        if (
+            looks_like_numeric_token(expected.value) and expected_number is None
+        ) or (
+            looks_like_numeric_token(observed.value) and observed_number is None
+        ):
+            return ConflictKind.UNPARSED_NUMERIC
         if expected_number is None or observed_number is None:
             if expected.value.strip().casefold() == observed.value.strip().casefold():
                 return None
@@ -471,10 +482,7 @@ class JsonSectionDiffAnalyzer:
         return str(raw).strip()
 
     def _to_float(self, raw: str) -> float | None:
-        try:
-            return float(raw.replace(",", "."))
-        except ValueError:
-            return None
+        return parse_localized_number(raw)
 
     def _display_value(self, value: _SectionValue) -> str:
         return f"{value.value} {value.unit}".strip() if value.unit else value.value

@@ -9,7 +9,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.domain.quantity import normalize_unit_token, parse_quantity, si_compare
+from aerobim.domain.quantity import (
+    looks_like_numeric_token,
+    normalize_unit_token,
+    parse_localized_number,
+    parse_quantity,
+    si_compare,
+)
 
 
 class ParseQuantityTests(unittest.TestCase):
@@ -87,6 +93,35 @@ class SiCompareTests(unittest.TestCase):
         a = parse_quantity(3.0, "foo")
         b = parse_quantity(3.0, "bar")
         self.assertFalse(si_compare(a, b))
+
+
+class LocalizedNumberTests(unittest.TestCase):
+    def test_ru_space_and_nbsp_grouping(self) -> None:
+        self.assertEqual(parse_localized_number("1 254,30"), 1254.30)
+        self.assertEqual(parse_localized_number("1\u00a0254,30"), 1254.30)
+        self.assertEqual(parse_localized_number("1 254"), 1254.0)
+
+    def test_eu_dot_thousands_comma_decimal(self) -> None:
+        self.assertEqual(parse_localized_number("1.254,30"), 1254.30)
+
+    def test_us_comma_thousands_dot_decimal(self) -> None:
+        self.assertEqual(parse_localized_number("1,254.30"), 1254.30)
+
+    def test_plain_comma_decimal_and_dot_decimal(self) -> None:
+        self.assertEqual(parse_localized_number("1254,30"), 1254.30)
+        self.assertEqual(parse_localized_number("3.0"), 3.0)
+        self.assertEqual(parse_localized_number("1,5"), 1.5)
+
+    def test_ambiguous_single_dot_three_fraction_digits_rejected(self) -> None:
+        self.assertIsNone(parse_localized_number("1.254"))
+        self.assertTrue(looks_like_numeric_token("1.254"))
+        self.assertEqual(parse_localized_number("0.254"), 0.254)
+        self.assertEqual(parse_localized_number("10.005"), 10.005)
+
+    def test_non_numeric_tokens(self) -> None:
+        self.assertIsNone(parse_localized_number("REI60"))
+        self.assertFalse(looks_like_numeric_token("REI60"))
+        self.assertIsNone(parse_localized_number("12 54,30"))
 
 
 class QuantityValueImmutabilityTests(unittest.TestCase):

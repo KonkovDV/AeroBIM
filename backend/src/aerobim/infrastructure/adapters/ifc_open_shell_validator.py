@@ -16,6 +16,7 @@ from aerobim.domain.models import (
     ValidationIssue,
     issue_from_requirement,
 )
+from aerobim.domain.quantity import normalize_unit_token, parse_localized_number
 
 # Maps requirement unit string → (IFC unit type, factor to convert that unit to SI).
 _UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
@@ -167,7 +168,7 @@ class IfcOpenShellValidator:
             if (
                 not unit_scales_ok
                 and requirement.unit
-                and requirement.unit.strip().lower() in _UNIT_TO_SI_FACTOR
+                and normalize_unit_token(requirement.unit) in _UNIT_TO_SI_FACTOR
             ):
                 issues.append(
                     issue_from_requirement(
@@ -343,7 +344,7 @@ class IfcOpenShellValidator:
         """Convert *observed* (IFC project units) and *expected* to SI."""
         if unit is None:
             return observed, expected
-        mapping = _UNIT_TO_SI_FACTOR.get(unit.strip().lower())
+        mapping = _UNIT_TO_SI_FACTOR.get(normalize_unit_token(unit))
         if mapping is None:
             return observed, expected
         ifc_unit_type, expected_to_si = mapping
@@ -360,7 +361,7 @@ class IfcOpenShellValidator:
         number = self._to_float(observed_value)
         if number is None or unit is None:
             return str(observed_value)
-        mapping = _UNIT_TO_SI_FACTOR.get(unit.strip().lower())
+        mapping = _UNIT_TO_SI_FACTOR.get(normalize_unit_token(unit))
         if mapping is None:
             return str(observed_value)
         ifc_unit_type, expected_to_si = mapping
@@ -417,9 +418,8 @@ class IfcOpenShellValidator:
         return str(observed_value) == requirement.expected_value
 
     def _to_float(self, value: Any) -> float | None:
-        if value is None:
+        if value is None or isinstance(value, bool):
             return None
-        try:
-            return float(str(value).replace(",", ".").strip())
-        except ValueError:
-            return None
+        if isinstance(value, (int, float)):
+            return float(value)
+        return parse_localized_number(str(value))
