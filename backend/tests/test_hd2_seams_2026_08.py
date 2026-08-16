@@ -269,6 +269,34 @@ class Hd2SettingsTests(unittest.TestCase):
                 else:
                     os.environ[key] = value
 
+    def test_samolet_pilot_rejects_zero_rate_limit(self) -> None:
+        from aerobim.core.config.settings import Settings
+
+        previous = {
+            k: os.environ.get(k)
+            for k in (
+                "AEROBIM_ENV",
+                "AEROBIM_SIGNOFF_PROFILE",
+                "AEROBIM_API_BEARER_TOKEN",
+                "AEROBIM_REDIS_URL",
+                "AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE",
+            )
+        }
+        try:
+            os.environ["AEROBIM_ENV"] = "production"
+            os.environ["AEROBIM_SIGNOFF_PROFILE"] = "samolet_pilot"
+            os.environ["AEROBIM_API_BEARER_TOKEN"] = "tok"
+            os.environ["AEROBIM_REDIS_URL"] = "redis://127.0.0.1:6379/0"
+            os.environ["AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE"] = "0"
+            with self.assertRaisesRegex(RuntimeError, "AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE"):
+                Settings.from_env()
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+
     def test_postgres_apply_ddl_false_from_env(self) -> None:
         from aerobim.core.config.settings import Settings
 

@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.44"
+version: "1.6.46"
 last_updated: "2026-08-16"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-16
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-16 · **v1.6.44** — jury triage 16.08: Studio deep-analysis / harness runbook / LOI template unpublished; local pytest count off TIER0; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
+**last_updated:** 2026-08-16 · **v1.6.46** — KT#2 card mapped 5/5 in TIER0_INDEX; Re-Audit #2 remainder closed; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Jury / MIK:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
@@ -62,7 +62,9 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **KT#2 speech pack (16.08)** | PII-first + sequence-not-rollback framing; fixture timing sheet (not SLA); Ask Самолёту (27/1026, 18/22 snapshot 05.08); 5-up Task-07 table; 10D intake page; corpus SSOT freeze | Not RT-001/002/003 CLOSED; mp4 = operator 17–19.08 |
 | **IUA ledger (16.08)** | Kane Interpretation/Use table: what fixture/open-bench scores may mean for TZ / tracker / KT2–KT3 / IDS 1.0 / ISO 19650 | Not RT-001/002/003 CLOSED; [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md) |
 | **Academic literature triage (16.08)** | Kane/Messick map of Aug 2026 papers; Harbor NOT_RUN; IDS 1.1 not final; ISO 19650-6 not implemented | Not RT-001/002/003 CLOSED; [`quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md) |
-| **Residual close-out (16.08)** | `docs/partners/` claims-lint unblind (HDX-LINT-01); Postgres `001_reports_tenant_id.sql` + `AEROBIM_POSTGRES_APPLY_DDL=0`; IFC LRU ceiling 8×256 MiB JSON; mp4 gitignored | Not RT-001/002/003 CLOSED; mp4 still operator; HD2-RL-02 still 0=off in dev |
+| **Residual close-out (16.08)** | `docs/partners/` claims-lint unblind (HDX-LINT-01); Postgres `001_reports_tenant_id.sql` + `AEROBIM_POSTGRES_APPLY_DDL=0`; IFC LRU ceiling 8×256 MiB JSON; mp4 gitignored | Not RT-001/002/003 CLOSED; mp4 still operator |
+| **Re-Audit #2 remainder (16.08)** | `--day` default `latest` fail-closed; claims-lint scans tracked architecture/quality/gtm (no directory blinds); 413/415/422 upload quota release tests; `0` rate-limit rejected at boot on `samolet_pilot`/`production` | Not RT-001/002/003 CLOSED; 0=off remains development-only |
+| **KT#2 readiness card (16.08)** | 5/5 requirements executable: [`TIER0_INDEX.md`](TIER0_INDEX.md) → video script + approach + 5-up comparison + playbook + status. Live CLI `run_demo_ifc_acceptance_gate` reproducible on fixture | Not RT-001/002/003 CLOSED; mp4 = operator 17–19.08; ЛК upload = human |
 | **Dataset CLI (task 3, 16.08)** | PNST 22-scenario CLI + frozen pairing; live pack truncated → `SKIPPED_PACK_INCOMPLETE` (05.08 **18/22** kept). IFC-Bench v2 **27/1026** re-run pin ok. Ishigaki gold XML processability 166/166 (not generation F1, no IFC). DrawingVQA link-only | Not a fresh 18/22; Harbor NOT_RUN; not RT-001 |
 | **IfcClash tiny walls** | Skip degenerate products (`AEROBIM_CLASH_SKIP_TINY`, default on); all-skipped still FAILED | Not a silent pass |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |

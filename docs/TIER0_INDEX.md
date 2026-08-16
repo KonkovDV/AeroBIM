@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.5.4"
+version: "4.5.5"
 last_updated: "2026-08-16"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -45,3 +45,17 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [`../README.md`](../README.md) · [`../README.ru.md`](../README.ru.md) | Product README |
 
 Operator runbooks, session audits, and commercial PII live under `.local/` — not on GitHub.
+
+## Pre-flight (KT#2, 20.08)
+
+Executable readiness = 5/5. Checkpoint **NO_GO**. Fixes are code+tests in this tree; rehearsal / operator mp4 / ЛК upload are human (`RED_TEAM_FINAL_VERDICT_2026_08_16.md` §4).
+
+| # | Requirement (KT#2 card) | Deliverable in this tree | Gate |
+|---|---|---|---|
+| 1 | Видео 2–3 мин (17–19.08) | [`demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | live CLI; PII-first; snapshot HTML запрещён |
+| 2 | Подход к решению | [`docs.md`](docs.md) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) + [`partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`](partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md) | deterministic gate; advisory ≠ verdict |
+| 3 | Сравнение решений | [`demo/KT2_TASK07_COMPARISON_2026_08.md`](demo/KT2_TASK07_COMPARISON_2026_08.md) | competitor numbers = их claims |
+| 4 | Харденинг | [`demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §2 | §0 formula; RED_TEAM_FINAL_VERDICT §1 |
+| 5 | Версия для проверки | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) → `run_demo_ifc_acceptance_gate` | fail-closed; reproducibility hash |
+
+Люди: dry-run 17–18.08, запись 19.08, ЛК upload 19–20.08. Не код.

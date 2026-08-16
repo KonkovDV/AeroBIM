@@ -3,7 +3,7 @@
 title: "Academic literature triage — Kane IUA × AEC 2026 (КТ#2)"
 date: "2026-08-16"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -76,6 +76,8 @@ Checkpoint stays **NO_GO**.
 | L-BCF | BCF-API 3.0 + OpenCDE Foundation; Documents API | ZIP ≠ API; Foundation обязателен до BCF-API | Structural ZIP T1; `cde_import=NOT_VERIFIED` | CDE-ready; «BCF виден в СОД» |
 | L-19650-6 | ISO 19650-6:2025 (H&S information) | Классификация и обмен рисками; не ISO 31000 | Не заявляем внедрение Part 6 | «Соответствуем всей серии 19650» |
 | L-WIL | Frontiers *Psychol.* (2026) 1705653; Brown et al. (2001) | Wilson для биномиальных долей у краёв 0/1 | Планировщик n=111 @ interim 0.60 | Уолд-интервал; n=111 как уже снятый P |
+| L-IDS-WF | Dias, Miceli Junior, Pellanda (2026). Requirement-driven BIM verification via IDS. *Autom. Constr.* [doi:10.1016/j.autcon.2026.107043](https://doi.org/10.1016/j.autcon.2026.107043) | IDScribe / cost QTO: IDS as computable information requirements | Analog: IFC+IDS evidence gate is a checking workflow, not a take-off product | «Мы — IDScribe»; cost QTO как Task-07 delivered |
+| L-BSI-VS | [buildingSMART IFC Validation Service](https://validate.buildingsmart.org/) | Schema / info takeoff / Gherkin normative layers | Slide anchor: we overlap schema checking locally; map in `evidence/upstream-validate-overlap-2026-08.md` | «Гоняем официальный Validation Service»; шестой конкурент Задачи 07 |
 
 P3 (не критерий): вендорские гайды Navisworks 2026, n8n-воркфлоу VLM, showcase «zero errors on 137 sheets» без протокола разметки.
 
