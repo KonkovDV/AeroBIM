@@ -313,6 +313,12 @@ class FinalVerdictHonestyTests(unittest.TestCase):
         self.assertNotIn("closes_rt003: true", text)
 
 
+_SPEECH_FORMULA_VERBATIM = (
+    "Мы на стадии доработки. Одна команда показывает находку с доказательствами "
+    "на учебном комплекте. Валидация эффективности и внедрение ещё не начались. "
+    "`NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, "
+    "подписанного профиля приёмки и подтверждения импорта в СОД."
+)
 _SPEECH_FORMULA_MARKERS = (
     "Мы на стадии доработки",
     "Одна команда показывает находку с доказательствами на учебном комплекте",
@@ -353,6 +359,22 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("находку с доказательствами на учебном комплекте", ru)
         self.assertNotIn("finding на fixture", ru)
         self.assertNotIn("fail-closed доказатель", ru)
+
+    def test_seven_jury_surfaces_carry_verbatim_formula(self) -> None:
+        repo = self._repo()
+        surfaces = (
+            repo / "README.md",
+            repo / "README.ru.md",
+            repo / "docs" / "docs.md",
+            repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
+            repo / "docs" / "pilot-claim-boundary-2026.md",
+            repo / "submission" / "README.md",
+            repo / "submission" / "03-presentation" / "README.md",
+            repo / "submission" / "03-presentation" / "slides.md",
+        )
+        for path in surfaces:
+            text = path.read_text(encoding="utf-8")
+            self.assertIn(_SPEECH_FORMULA_VERBATIM, text, msg=path.as_posix())
 
     def test_jury_memo_does_not_pin_a_stale_head_sha(self) -> None:
         text = (self._repo() / "docs" / "docs.md").read_text(encoding="utf-8")
@@ -666,6 +688,11 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         text = slides.read_text(encoding="utf-8")
         self.assertIn("NO_GO", text)
         self.assertIn("## Запрещено в кадре и в голосе", text)
+        self.assertIn("требование → правило → объект → доказательство", text)
+        self.assertIn("run_demo_ifc_acceptance_gate", text)
+        self.assertIn("hidden holdout", text)
+        self.assertIn("Не API 10D", text)
+        self.assertNotIn("интегрированы с 10D", text.lower())
 
     def test_github_community_health_files_exist(self) -> None:
         root = self._submission().parent
