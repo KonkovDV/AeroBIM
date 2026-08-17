@@ -13,6 +13,8 @@
 IFC + IDS + sheets + specification texts go in. Findings you can follow to a sheet and a GUID come out — HTML, JSON, BCF. The reviewer still decides. AeroBIM is not a CDE, not a model viewer, and not a replacement for the expert.
 
 > **Checkpoint #2 (20 Aug 2026), Moscow TechLab task 07, customer Samolet Group.** Intake pack: [`submission/README.md`](submission/README.md). We are in *refinement*. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `NO_GO` until a Samolet corpus, two raters, a signed acceptance profile, and CDE proof.
+>
+> Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
 <p align="center">
   <img src="docs/evidence/drawing-overlay-smoke-2026-08/overlay-wall-thickness.png" alt="Fixture overlay: WALL-01 thickness 150 mm boxed on a PDF sheet" width="720">
