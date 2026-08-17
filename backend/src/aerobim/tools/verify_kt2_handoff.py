@@ -201,7 +201,13 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     _check(
         "rehearsal_forbids_wall_guid_html",
         "wall-guid/report.html" in video_text and "Не открывать" in video_text,
-        "video script must forbid wall-guid/report.html as overlay demo",
+        "video notice must forbid wall-guid/report.html as overlay demo",
+        rows,
+    )
+    _check(
+        "kt2_video_not_recorded",
+        "не записываем" in video_text and "не прилагаем" in video_text,
+        "KT#2 video is withdrawn; live CLI is the demo",
         rows,
     )
 
@@ -256,7 +262,7 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         mp4_status = "PRESENT_LOCAL_NOT_IN_GIT"
     else:
         mp4_status = "NOT_IN_GIT"
-    # Operator records 17–19.08. Missing mp4 must stay visible, not fail CI, not fake a file.
+    # Video is withdrawn. Missing mp4 is the intended state, not a CI failure.
     _check("kt2_demo_mp4_status", True, mp4_status, rows)
 
     ok = all(bool(r["ok"]) for r in rows)

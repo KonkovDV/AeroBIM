@@ -203,7 +203,7 @@ IDs continue the funding series so speech packs stay aligned.
 
 ## 12. Human-only (cannot be closed by coding)
 
-Legal entity; paid pilot / LOI; Samolet pack + two adjudicators; Renga IFC as-is; named CDE import target; video 19.08; bSI Validation account; Burnaev/Mikhail minutes; domain-founder CV. Inventing any of these is a consequential-validity failure.
+Legal entity; paid pilot / LOI; Samolet pack + two adjudicators; Renga IFC as-is; named CDE import target; bSI Validation account; domain-founder CV. Video is withdrawn (not recorded). Inventing any of these is a consequential-validity failure.
 
 ## 13. One sentence for the jury
 

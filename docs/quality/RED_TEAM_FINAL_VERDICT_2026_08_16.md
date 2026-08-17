@@ -49,13 +49,13 @@ auditor: "internal architecture re-check, 16.08"
 
 ## 4. Готовность к КТ#2 (20.08)
 
-Код/доки готовы к честной демонстрации. Процессный риск: dry-run видео 17–18.08, SSOT корпуса заморожен, owner на [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md). Демо — [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §0.
+Код/доки готовы к честной демонстрации. Видео 2–3 мин **не записываем и не прилагаем.** Показ — живой CLI. SSOT корпуса заморожен, owner на [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md). Демо — [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §0.
 
 ## 5. Public SSOT and remaining operator work
 
 Публичный SSOT: TIER0 + Hostile QA §0 + этот вердикт. Operator kitchen prompts stay gitignored and are not GitHub sources.
 
-Следующие шаги **не в коде:** видео оператора, пакет Самолёта, dual raters. На «почему NO_GO» — формула playbook §0: NO_GO первым, три условия GO, протокол прежде процента.
+Следующие шаги **не в коде:** загрузка в ЛК, пакет Самолёта, dual raters. Видео не записываем. На «почему NO_GO» — формула playbook §0: NO_GO первым, три условия GO, протокол прежде процента.
 
 Checkpoint stays **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.
 

@@ -49,5 +49,5 @@ Authority: Самолёт ТЗ → контрактные критерии Те�
 
 - Status: [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md)  
 - Handoff: [`../evidence/kt2-handoff-2026-08-11/`](../evidence/kt2-handoff-2026-08-11/)  
-- Cover: [`../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md)  
+- Demo: live CLI [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) — video not attached  
 - Blockers: [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)

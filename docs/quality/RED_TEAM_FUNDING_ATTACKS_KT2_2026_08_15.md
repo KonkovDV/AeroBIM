@@ -109,7 +109,7 @@ Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08
 | P1 | Wrong demo HTML for Burnaev | docs | **done 15.08** |
 | P1 | CDE wording in UI | eng | **done 15.08** |
 | P1 | Stale Wave A «pytest not run» | docs | **this RT + Wave A note** |
-| P2 | Video 19.08, BSI account, Samolet pack, federated IFC | human | cannot fake |
+| P2 | BSI account, Samolet pack, federated IFC | human | cannot fake |
 | P2 | Domain founder CV | human | don’t invent |
 | DEFER | AEC-Bench Harbor, ODA, live CDE, new MEP provider | calendar | not before KT#2 artifacts |
 

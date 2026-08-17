@@ -35,8 +35,9 @@ claim_boundary: >
 |---|---|
 | [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md) | Формула стадии дословно; списки «можно / нельзя говорить» |
 | [`../../docs/demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../../docs/demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) | 45 враждебных вопросов, 10 категорий, ответ ≤ 45 секунд |
-| [`../../docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../../docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Скрипт трёхминутного видео с посекундным таймингом |
 | [`../../docs/partners/GLOSSARY_JURY_RU_2026_08.md`](../../docs/partners/GLOSSARY_JURY_RU_2026_08.md) | Термины для нетехнического члена жюри |
+
+Ролик 2–3 мин **не записываем и не прилагаем.** Показ — живой CLI: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Уведомление: [`../../docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../../docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md).
 
 Формула стадии (дословно):
 

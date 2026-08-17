@@ -167,7 +167,7 @@ Scale: 0 = missing, 1 = protocol/fixture only, 2 = customer-evidenced.
 
 ## 5. Still human-only
 
-Video 19.08; ЛК upload; entity; Samolet pack + two adjudicators; Renga IFC as-is; named CDE target; MIK agreement templates; Роспатент number; builder CV; Burnaev/Mikhail minutes.
+ЛК upload; entity; Samolet pack + two adjudicators; Renga IFC as-is; named CDE target; MIK agreement templates; Роспатент number; builder CV. Video is withdrawn (not recorded).
 
 ## 6. One sentence for the jury
 

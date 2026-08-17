@@ -12,7 +12,7 @@ claim_boundary: "Fixture GO / methodology handoff. Checkpoint NO_GO until RT-001
 
 Machine status: [`STATUS.json`](./STATUS.json)
 
-**17.08 sell-path (wedge freeze):** `python -m aerobim.tools.run_demo_ifc_acceptance_gate` → `artifacts/ifc-acceptance-gate-demo/`. Overlay `run_demo_vertical_slice` is P1 of the same evidence chain, not the 3-minute video.
+**17.08 sell-path (wedge freeze):** `python -m aerobim.tools.run_demo_ifc_acceptance_gate` → `artifacts/ifc-acceptance-gate-demo/`. Overlay `run_demo_vertical_slice` is P1 of the same evidence chain. Video 2–3 min is **not recorded and not attached**.
 
 **Superseded 11.08 HTML is not in the public tree.** Live overlay (P1): `python -m aerobim.tools.run_demo_vertical_slice` and pin [`../vertical-slice-demo-live-2026-08-14.md`](../vertical-slice-demo-live-2026-08-14.md). Do not open snapshot HTML as overlay.
 
@@ -28,7 +28,7 @@ Machine status: [`STATUS.json`](./STATUS.json)
 | 5 | Harness dry-run (synthetic, not publishable) | `harness-dryrun/pilot-harness-report.json` |
 | 6 | Clash fixture measure (AABB n=6) | [`../clash-measurement-slice-2026-08/`](../clash-measurement-slice-2026-08/) |
 | 7 | Drawing overlay smoke PNG | [`../drawing-overlay-smoke-2026-08/`](../drawing-overlay-smoke-2026-08/) |
-| 8 | Video script | [`../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) |
+| 8 | Video | Not recorded. Notice: [`../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) |
 
 **Do not open** `wall-guid/report.html` as the overlay demo (no `#kt2-overlay` on the 11.08 HTML).
 

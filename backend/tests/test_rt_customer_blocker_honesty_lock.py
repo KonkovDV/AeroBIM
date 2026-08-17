@@ -336,7 +336,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         repo = self._repo()
         surfaces = (
             repo / "docs" / "partners" / "PITCH_NOVALTOR_TECHLAB_2026_08.md",
-            repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md",
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             repo / "docs" / "docs.md",
             repo / "submission" / "03-presentation" / "slides.md",
@@ -375,6 +374,26 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
             self.assertIn(_SPEECH_FORMULA_VERBATIM, text, msg=path.as_posix())
+
+    def test_kt2_video_is_withdrawn_not_promised(self) -> None:
+        repo = self._repo()
+        notice = (
+            repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md"
+        ).read_text(encoding="utf-8")
+        tier0 = (repo / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
+        presentation = (
+            repo / "submission" / "03-presentation" / "README.md"
+        ).read_text(encoding="utf-8")
+        for text, label in (
+            (notice, "video notice"),
+            (tier0, "TIER0"),
+            (presentation, "presentation README"),
+        ):
+            self.assertIn("не записываем", text, msg=label)
+            self.assertIn("не прилагаем", text, msg=label)
+            self.assertNotIn("Оператор записывает 19.08", text, msg=label)
+        self.assertIn("wall-guid/report.html", notice)
+        self.assertIn("Не открывать", notice)
 
     def test_jury_memo_does_not_pin_a_stale_head_sha(self) -> None:
         text = (self._repo() / "docs" / "docs.md").read_text(encoding="utf-8")

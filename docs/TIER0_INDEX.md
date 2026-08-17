@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — карта для жюри Техлаба"
 status: active
-version: "4.5.8"
+version: "4.5.9"
 last_updated: "2026-08-17"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -22,7 +22,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Техобоснование для жюри](docs.md) | `docs.md` |
 | [Инженерный статус](ENGINEERING_STATUS_2026_08.md) | Готовность ≠ Checkpoint GO |
 | [Враждебный QA](demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) | Скрипты привязаны к SSOT |
-| [Скрипт видео 3 мин](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Оператор записывает 19.08 |
+| [Видео к КТ#2](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Не записываем и не прилагаем; показ = живой CLI |
 | [Карточка речи / FAQ](demo/KT2_JURY_FAQ_2026_08_12.md) | Формула стадии |
 | [Тайминг на фикстуре](demo/KT2_FIXTURE_TIMING_2026_08_16.md) | Порядок величины — не SLA заказчика |
 | [Сравнение решений Задачи 07](demo/KT2_TASK07_COMPARISON_2026_08.md) | Пять решений; цифры конкурентов = их claims |
@@ -58,14 +58,14 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 ## Pre-flight (KT#2, 20.08)
 
-Intake-form completeness = **5/5 fields**: в дереве есть сдаваемый файл по каждому полю формы. Это ≠ Checkpoint GO, не стадия 3 МИК, не измеренный эффект. Checkpoint **NO_GO**. Правки — код и тесты в этом дереве; репетиция / mp4 оператора / загрузка в ЛК — люди ([итоговый вердикт красной команды](quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) §4).
+Intake-form completeness = **5/5 fields**: в дереве есть сдаваемый файл по каждому полю формы (репозиторий, документация, презентация, прототип, доп. материалы). Это ≠ Checkpoint GO, не стадия 3 МИК, не измеренный эффект. Checkpoint **NO_GO**. Правки — код и тесты в этом дереве; загрузка в ЛК — человек ([итоговый вердикт красной команды](quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) §4). Ролик 2–3 мин **не записываем и не прилагаем**.
 
 | # | Требование карточки КТ#2 | Что лежит в дереве | Гейт |
 |---|---|---|---|
-| 1 | Видео 2–3 мин (17–19.08) | [скрипт видео 3 мин](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | живой CLI; сначала ПДн; снимок HTML запрещён |
+| 1 | Видео 2–3 мин | Не прилагаем. Показ: `run_demo_ifc_acceptance_gate` ([уведомление](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md)) | mp4 нет; снимок HTML запрещён |
 | 2 | Подход к решению | [техобоснование](docs.md) + [готовность](partners/TECHLAB_TASK_07_READINESS_2026.md) + [клин](partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md) | детерминированный гейт; подсказка ≠ вердикт |
 | 3 | Сравнение решений | [сравнение Задачи 07](demo/KT2_TASK07_COMPARISON_2026_08.md) | цифры конкурентов = их claims |
 | 4 | Харденинг | [враждебный QA](demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §2 | формула §0; [итоговый вердикт](quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) §1 |
 | 5 | Версия для проверки | [инженерный статус](ENGINEERING_STATUS_2026_08.md) → `run_demo_ifc_acceptance_gate` | отказ при пропуске; хеш воспроизводимости |
 
-Люди: dry-run 17–18.08, запись 19.08, загрузка в ЛК 19–20.08. Не код.
+Люди: загрузка в ЛК 19–20.08. Видео не записываем. Не код.
