@@ -16,12 +16,6 @@ IFC + IDS + sheets + specification texts go in. Findings you can follow to a she
 >
 > Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
-<p align="center">
-  <img src="docs/evidence/drawing-overlay-smoke-2026-08/overlay-wall-thickness.png" alt="Fixture overlay: WALL-01 thickness 150 mm boxed on a PDF sheet" width="720">
-</p>
-
-<p align="center"><sub>Deterministic box on a <em>fixture</em> sheet (wall thickness 150 mm / WALL-01). Not computer vision, not a customer drawing, not product accuracy.</sub></p>
-
 ## The seam where packs break
 
 A schedule on a PDF sheet states one area. The IFC wall with the same identifier states another. Each file opens cleanly on its own. The defect lives *between* them and usually surfaces on site.
