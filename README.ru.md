@@ -247,22 +247,22 @@ python -m aerobim.tools.export_evidence_bundle \
 
 | Тема | Документ |
 |---|---|
-| Начать здесь | [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md) · [`docs/README.md`](docs/README.md) |
-| Пакет подачи КТ#2 | [`submission/README.md`](submission/README.md) |
-| Карточка речи для жюри | [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
-| Заметки трекера (Tangl / 10D) | [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) |
-| Контур оператора МИК / Техлаб | [`docs/partners/MIK_PILOT_COMPLIANCE_2026.md`](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
-| Поверхность атак diligence | [`docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
-| Реестр блокеров и checkpoint | [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) |
-| Что заявляется, а что нет | [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) · [`docs/capability-claim-matrix-2026.md`](docs/capability-claim-matrix-2026.md) · [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
-| Инженерный статус | [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md) · [`docs/PROJECT_STATUS_AUDIT_2026.md`](docs/PROJECT_STATUS_AUDIT_2026.md) |
-| Принятые риски | [`docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) |
-| Архитектура | [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) |
-| Требования и трассировка | [`docs/tz/README.md`](docs/tz/README.md) · [`docs/samolet-techlab-alignment-2026.md`](docs/samolet-techlab-alignment-2026.md) |
-| Как измеряется качество | [`docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) · [`docs/benchmark-evidence-2026.md`](docs/benchmark-evidence-2026.md) |
-| Фикстуры, корпуса, доказательства | [`docs/evidence/README.md`](docs/evidence/README.md) · [`samples/benchmarks/README.md`](samples/benchmarks/README.md) · [`samples/benchmarks/open-corpora/README.md`](samples/benchmarks/open-corpora/README.md) |
-| Лицензии и автономное развёртывание | [`docs/license-policy-2026.md`](docs/license-policy-2026.md) · [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md) |
-| Воспроизводимость | [`docs/REPRODUCIBILITY-2026.md`](docs/REPRODUCIBILITY-2026.md) |
+| Начать здесь | [карта Tier-0 для жюри](docs/TIER0_INDEX.md) · [индекс документации](docs/README.md) |
+| Пакет подачи КТ#2 | [пакет подачи](submission/README.md) |
+| Карточка речи для жюри | [FAQ жюри](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
+| Заметки трекера (Tangl / 10D) | [встреча 14.08](docs/demo/TRACKER_MEETING_2026_08_14.md) |
+| Контур оператора МИК / Техлаб | [соответствие пилота МИК](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
+| Поверхность атак diligence | [атаки diligence / funding](docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
+| Реестр блокеров и checkpoint | [критические блокеры](audit/reports/CRITICAL_BLOCKERS.md) |
+| Что заявляется, а что нет | [границы заявлений](docs/pilot-claim-boundary-2026.md) · [матрица возможностей](docs/capability-claim-matrix-2026.md) · [claims lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
+| Инженерный статус | [статус августа 2026](docs/ENGINEERING_STATUS_2026_08.md) · [аудит статуса](docs/PROJECT_STATUS_AUDIT_2026.md) |
+| Принятые риски | [реестр принятых рисков](docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) |
+| Архитектура | [целевая архитектура](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Требования и трассировка | [пакет ТЗ](docs/tz/README.md) · [выравнивание Техлаб](docs/samolet-techlab-alignment-2026.md) |
+| Как измеряется качество | [протокол качества](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) · [доказательства бенчмарков](docs/benchmark-evidence-2026.md) |
+| Фикстуры, корпуса, доказательства | [индекс evidence](docs/evidence/README.md) · [бенчмарки](samples/benchmarks/README.md) · [открытые корпуса](samples/benchmarks/open-corpora/README.md) |
+| Лицензии и автономное развёртывание | [политика лицензий](docs/license-policy-2026.md) · [офлайн-развёртывание](docs/offline-deployment-2026.md) |
+| Воспроизводимость | [воспроизводимость](docs/REPRODUCIBILITY-2026.md) |
 
 Управление проектом: [Contributing](CONTRIBUTING.md) · [нормы поведения](CODE_OF_CONDUCT.md) · [политика безопасности](SECURITY.md) · [поддержка](SUPPORT.md) · [сопровождающие](MAINTAINERS.md) · [релизы](RELEASE_POLICY.md).
 

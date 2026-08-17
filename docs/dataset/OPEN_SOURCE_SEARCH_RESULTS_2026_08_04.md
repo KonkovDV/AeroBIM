@@ -36,7 +36,7 @@ claim_boundary: >-
 - CSV sha256 (HF): v2 `8f08f5d04834a79310eb7de81f2d6812e74d53a01363affdb815bf86dfc4dbf4`  
 - Paper: arXiv:2605.01698; GNI 2026 Hellin/Nousias/Borrmann  
 
-**AeroBIM today:** v2 smoke **25/1026** countable probes @ 1.0 on subset; measured CSV sha `e47ccd…` (HF card pin stale). Evidence: [`../evidence/ifc-bench-v2-smoke-latest.json`](../evidence/ifc-bench-v2-smoke-latest.json). Not product accuracy; does not close RT-001.
+**AeroBIM today:** v2 smoke **27/1026** countable probes @ 1.0 on subset (16.08 pin; 04.08 subset was 25). Measured CSV sha `e47ccd…` (HF card pin stale). Evidence: [IFC-Bench v2 smoke JSON](../evidence/ifc-bench-v2-smoke-latest.json). Not product accuracy; does not close RT-001.
 
 ### 1.2. KAAN — **PARTIAL — do not vendor**
 

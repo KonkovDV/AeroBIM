@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-17T16:47:48.776283+00:00",
+  "generated_at": "2026-08-17T17:09:31.034525+00:00",
   "audited_head": "f9389bf",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
