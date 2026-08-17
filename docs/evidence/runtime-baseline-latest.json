@@ -1,22 +1,22 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "199690e5d11dd54fac9d68ff070646d9f567b4f7",
-  "tree_sha": "0401efca38dc2a9a311372838b9df7efe5d94e6a",
+  "commit_sha": "8bdf6d16629ea7f2fc4fb0d1fb46cd3e40f51519",
+  "tree_sha": "4ce879c97633146f875424050b143f4f07c95528",
   "working_tree_clean": true,
-  "generated_at": "2026-08-17T19:11:26.681838+00:00",
+  "generated_at": "2026-08-17T20:21:02.553915+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2487,
-    "tests_passed": 2469,
+    "tests_collected": 2488,
+    "tests_passed": 2470,
     "tests_skipped": 18,
     "tests_failed": 0,
     "tests_unaccounted": 0,
     "tests_unaccounted_note": "collected − passed − skipped − failed; remainder is typically deselected/xfail vs the CI JUnit pin (HD-DOC-02)",
-    "source_loc": 77833,
-    "test_loc": 51404,
-    "test_functions": 2487,
+    "source_loc": 77837,
+    "test_loc": 51459,
+    "test_functions": 2488,
     "uncollected": []
   },
   "frontend": {
@@ -52,12 +52,12 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 77833,
-    "backend_test_loc": 51404,
-    "backend_test_functions": 2487,
+    "backend_src_loc": 77837,
+    "backend_test_loc": 51459,
+    "backend_test_functions": 2488,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2469, frontend=56; commit 199690e5d11d; see docs/evidence/runtime-baseline-latest.json · src ~77833 LOC; tests ~51404 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2470, frontend=56; commit 8bdf6d16629e; see docs/evidence/runtime-baseline-latest.json · src ~77837 LOC; tests ~51459 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
@@ -219,10 +219,10 @@
   },
   "attestation": {
     "attested_by": "ci",
-    "run_id": "32058339430",
+    "run_id": "32064789304",
     "run_attempt": 1,
     "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main",
-    "github_sha": "199690e5d11dd54fac9d68ff070646d9f567b4f7",
+    "github_sha": "8bdf6d16629ea7f2fc4fb0d1fb46cd3e40f51519",
     "runner_os": "Linux",
     "runner_python": "3.12.13",
     "gates_attested": [
