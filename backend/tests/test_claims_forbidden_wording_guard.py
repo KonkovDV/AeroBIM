@@ -86,13 +86,16 @@ def test_ssot_covers_ru_markers_and_core_surfaces() -> None:
     ssot = _load_ssot()
     markers = [m.lower() for m in _string_list(ssot["negation_markers"])]
     scanned = _string_list(ssot["scanned_files"])
-    for marker in ("запрещено", "не заявляется", "до доказательств"):
+    for marker in ("запрещено", "нельзя", "не заявляется", "до доказательств"):
         assert marker in markers
     for rel in (
         "README.md",
         "README.ru.md",
         "docs/TIER0_INDEX.md",
         "docs/ENGINEERING_STATUS_2026_08.md",
+        "docs/docs.md",
+        "docs/demo/KT2_JURY_FAQ_2026_08_12.md",
+        "docs/pilot-claim-boundary-2026.md",
         "submission/README.md",
         "submission/03-presentation/README.md",
         "submission/03-presentation/slides.md",
@@ -111,6 +114,19 @@ def test_heading_negation_covers_following_list_items() -> None:
             "- CDE-ready",
         ],
         ["запрещено", "not claimed"],
+    )
+    assert coverage[2] and coverage[3]
+
+
+def test_nelzya_heading_covers_following_list_items() -> None:
+    coverage = _negation_coverage()(
+        [
+            "## Нельзя говорить",
+            "",
+            "- SLA ≤30",
+            "- Checkpoint GO",
+        ],
+        ["нельзя", "запрещено", "not claimed"],
     )
     assert coverage[2] and coverage[3]
 

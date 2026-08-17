@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-17T17:15:37.211166+00:00",
+  "generated_at": "2026-08-17T18:24:50.899976+00:00",
   "audited_head": "f9389bf",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
@@ -165,7 +165,7 @@
     {
       "row_id": "TRK-04",
       "source": "tracker",
-      "requirement": "Задача 4:  / ИТ-ментор Михаил",
+      "requirement": "Задача 4: научный консультант / ИТ-ментор",
       "licensed_inference": "Вопросы и демо-ссылка в репозитории",
       "blocked_inference": "Выдуманные минуты консультаций",
       "evidence": "docs/demo/TRACKER_MEETING_2026_08_14.md",
@@ -180,7 +180,7 @@
       "row_id": "TRK-05",
       "source": "tracker",
       "requirement": "Задача 5: KPI = назначенные демо (3–5)",
-      "licensed_inference": "Живой счёт только .local/commercial-ops/",
+      "licensed_inference": "Живой счёт только в локальном операторском слое (не в git)",
       "blocked_inference": "Назначенные демо как git-факт",
       "evidence": "docs/gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md",
       "kt3_condition": "Owner file; git не изобретает воронку",

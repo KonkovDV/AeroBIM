@@ -167,6 +167,7 @@ docs/partners/LETTER_OF_INTEREST_SAMOLET_TEMPLATE*
 audit/sprint-2-1-*
 scripts/rewrite-author*
 scripts/git_commit.ps1
+scripts/bootstrap_claims_allow_file.py
 scripts/commit_staged_n43*
 scripts/fix_b5690*
 scripts/activate_a4_signing*

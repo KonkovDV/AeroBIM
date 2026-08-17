@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.7.1"
-last_updated: "2026-08-16"
+version: "1.7.2"
+last_updated: "2026-08-17"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -10,11 +10,14 @@ tags: [aerobim, pilot, claims, evidence]
 
 This document separates **verified repository evidence** from **roadmap intent** for pilot and accelerator communications.
 
+**Формула стадии (дословно):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
+
+**Checkpoint:** **`NO_GO`**. RT-001 / RT-002 / RT-003 OPEN. Form 5/5 ≠ Checkpoint GO. Spoken formula SSOT: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+
 **Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
 **TZ preparation SSOT:** [`tz/README.md`](tz/README.md).  
 **Forbidden wording SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md).  
-**Eng readiness (not Checkpoint GO):** [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md).  
-**Checkpoint:** **`NO_GO`** until RT-001/002/003 close ([`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md)).
+**Eng readiness (not Checkpoint GO):** [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md).
 
 ## TZ MVP scope (honest framing)
 
@@ -139,7 +142,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 ```bash
 cd backend
 python -m venv .venv-pilot
-.venv-pilot\Scripts\activate   # Windows
+source .venv-pilot/bin/activate   # POSIX
+.venv-pilot\Scripts\activate      # Windows
 pip install -e ".[dev,raster]"
 python -m ruff format --check src tests
 python -m ruff check src tests
