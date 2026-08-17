@@ -25,7 +25,7 @@ claim_boundary: >
 | [`../../docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md) | Разрешённые и запрещённые формулировки |
 | [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 и статус `NO_GO` |
 | [`../../docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md) | Инженерный статус на дату |
-| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: что цифры вправе значить (freeze `f9389bf`) |
+| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: что цифры вправе значить (заморозка `f9389bf`) |
 
 ## 2. Разделы ТЗ, закрытые отдельными документами
 
@@ -54,10 +54,10 @@ claim_boundary: >
 
 ## 4. Нормативный контур
 
-[`../../docs/regulatory-baseline-2026.md`](../../docs/regulatory-baseline-2026.md) — срез норм; ГОСТ Р 21.101-2026 п. 8.2.4 (GUID документа) разобран в [`../../docs/evidence/N2_GUID_GOST_21_101_2026_2026_08.md`](../../docs/evidence/N2_GUID_GOST_21_101_2026_2026_08.md). Официальные IDS Мособлгосэкспертизы подключены как reference-пак; профиль приёмки «Самолёта» не подписан (RT-002 OPEN).
+[`../../docs/regulatory-baseline-2026.md`](../../docs/regulatory-baseline-2026.md) — срез норм; ГОСТ Р 21.101-2026 п. 8.2.4 (GUID документа) разобран в [`../../docs/evidence/N2_GUID_GOST_21_101_2026_2026_08.md`](../../docs/evidence/N2_GUID_GOST_21_101_2026_2026_08.md). Официальные IDS Мособлгосэкспертизы подключены как эталонный набор; профиль приёмки «Самолёта» не подписан (RT-002 OPEN).
 
 Полноты «всех норм» не заявляем: машиночитаемо проверяется то, что выражено в IDS или rule pack.
 
 ## 5. Что запрошено у заказчика
 
-[`../../docs/partners/_08_15.md`](../../docs/partners/_08_15.md) — четыре пункта intake: комплект одной ревизии, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Без них измерение на данных заказчика невозможно, и Checkpoint остаётся `NO_GO`.
+[`../../docs/partners/_08_15.md`](../../docs/partners/_08_15.md) — четыре пункта запроса: комплект одной ревизии, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Без них измерение на данных заказчика невозможно, и Checkpoint остаётся `NO_GO`.
