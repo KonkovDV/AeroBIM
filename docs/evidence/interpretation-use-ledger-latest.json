@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-17T18:24:50.899976+00:00",
+  "generated_at": "2026-08-17T18:42:47.426623+00:00",
   "audited_head": "f9389bf",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
@@ -208,7 +208,7 @@
       "row_id": "TL-01",
       "source": "techlab",
       "requirement": "КТ#2 (до 20.08): этап МИК «доработка»",
-      "licensed_inference": "Предварительная версия в ЛК; GitHub прототип; видео — человек",
+      "licensed_inference": "Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI",
       "blocked_inference": "Валидация эффективности начата; внедрение начато",
       "evidence": "docs/docs.md",
       "kt3_condition": "КТ#3 03–21.09 — итоговое решение",

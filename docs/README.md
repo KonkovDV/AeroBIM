@@ -58,7 +58,7 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [Capability / claim matrix](capability-claim-matrix-2026.md) | Allowed vs forbidden |
 | [Benchmark evidence](benchmark-evidence-2026.md) | Fixture metric boundaries |
 | [Samolet pilot protocol](pilot-protocol-samolet-2026.md) | Pilot phases |
-| [3-minute video script](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Operator records 19.08 |
+| [Видео к КТ#2](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Не записываем и не прилагаем |
 | [Renga IFC request](partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md) | IFC from Renga, not Tangl API |
 | [Parallel workplan](pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md) | Aug / Sep checkpoints |
 | [Expert labeling](pilot/EXPERT_LABELING_INSTRUCTION_2026.md) | Dual-blind TP/FP/FN + κ |
