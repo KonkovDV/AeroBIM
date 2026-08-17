@@ -485,8 +485,8 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertTrue(errors)
         self.assertTrue(any("not_publishable" in e for e in errors))
 
-    def test_compare_allows_parent_commit_sha(self) -> None:
-        """Shallow CI clones have no HEAD^ — mock parent helpers instead of rev-parse."""
+    def test_compare_allows_one_commit_allowlisted_lag(self) -> None:
+        """N-43 active: parent SHA matches only when HEAD~1 lag is on allowed_lag_paths."""
         from aerobim.tools.export_runtime_baseline import compare_baseline_snapshots
 
         head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -517,17 +517,62 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             "attestation": {"attested_by": "ci"},
             "publishable": True,
         }
+
+        def _git(_repo: Path, *args: str) -> str:
+            if args == ("rev-parse", f"{head}~1"):
+                return parent
+            return ""
+
         with (
             patch(
-                "aerobim.tools.export_runtime_baseline._parent_commit_shas",
-                side_effect=lambda _repo, commit: [parent] if commit == head else [],
+                "aerobim.tools.export_runtime_baseline._one_commit_lag_allowed",
+                return_value=True,
             ),
+            patch("aerobim.tools.export_runtime_baseline._git", side_effect=_git),
             patch(
                 "aerobim.tools.export_runtime_baseline._tree_sha_for_commit",
                 side_effect=lambda _repo, commit: parent_tree if commit == parent else None,
             ),
         ):
             self.assertEqual(compare_baseline_snapshots(committed, generated, repo=_REPO), [])
+
+    def test_compare_rejects_parent_sha_when_lag_not_allowlisted(self) -> None:
+        """N-43: a parent SHA is not enough if the tip commit touched non-allowlisted paths."""
+        from aerobim.tools.export_runtime_baseline import compare_baseline_snapshots
+
+        head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        parent = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        committed = {
+            "commit_sha": parent,
+            "tree_sha": "dddddddddddddddddddddddddddddddddddddddd",
+            "schema_version": "1.4.0",
+            "metrics": {
+                "backend_src_loc": 100,
+                "backend_test_loc": 100,
+                "backend_test_functions": 100,
+            },
+            "attestation": {"attested_by": "ci"},
+            "publishable": True,
+        }
+        generated = {
+            "commit_sha": head,
+            "tree_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "schema_version": "1.4.0",
+            "metrics": {
+                "backend_src_loc": 100,
+                "backend_test_loc": 100,
+                "backend_test_functions": 100,
+            },
+            "attestation": {"attested_by": "ci"},
+            "publishable": True,
+        }
+        with patch(
+            "aerobim.tools.export_runtime_baseline._one_commit_lag_allowed",
+            return_value=False,
+        ):
+            errors = compare_baseline_snapshots(committed, generated, repo=_REPO)
+        self.assertTrue(any("commit_sha" in err for err in errors))
+        self.assertTrue(any("tree_sha" in err for err in errors))
 
 
 class DocumentedEnvSetTests(unittest.TestCase):
