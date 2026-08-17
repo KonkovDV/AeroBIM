@@ -29,6 +29,19 @@ def _check(name: str, ok: bool, detail: str, rows: list[dict[str, Any]]) -> None
     rows.append({"check": name, "ok": ok, "detail": detail})
 
 
+def _readme_demo_block(readme_text: str) -> str:
+    """First install/demo section: historical Quick Start or current Try it heading."""
+    for heading in ("## Quick Start", "## Try it"):
+        start = readme_text.find(heading)
+        if start < 0:
+            continue
+        end = readme_text.find("\n## ", start + 3)
+        if end > start:
+            return readme_text[start:end]
+        return readme_text[start:]
+    return ""
+
+
 def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     status_path = handoff_dir / "STATUS.json"
@@ -214,9 +227,7 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
 
     readme = repo / "README.md"
     readme_text = readme.read_text(encoding="utf-8") if readme.is_file() else ""
-    qs_start = readme_text.find("## Quick Start")
-    qs_end = readme_text.find("\n## ", qs_start + 3) if qs_start >= 0 else -1
-    quick_start = readme_text[qs_start:qs_end] if qs_start >= 0 and qs_end > qs_start else ""
+    quick_start = _readme_demo_block(readme_text)
     required_installs = [
         line
         for line in quick_start.splitlines()
@@ -228,7 +239,7 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     _check(
         "readme_quickstart_demo_core_pdf",
         core_demo_install and "run_demo_vertical_slice" in quick_start,
-        "README Quick Start must install .[dev,raster] without requiring pdf-agpl for the live CLI",
+        "README demo section must install .[dev,raster] without requiring pdf-agpl for the live CLI",
         rows,
     )
 
