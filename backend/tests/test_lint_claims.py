@@ -352,9 +352,7 @@ class LintClaimsTests(unittest.TestCase):
                 if sys.path and sys.path[0] == str(_REPO / "scripts"):
                     sys.path.pop(0)
             self.assertTrue(any("forbidden_production_ready" in hit for hit in hits))
-            self.assertTrue(
-                any("We are production-ready" in hit for hit in hits)
-            )
+            self.assertTrue(any("We are production-ready" in hit for hit in hits))
 
     def test_presentation_readme_is_scanned_without_allow_file(self) -> None:
         """Jury presentation pack is content-scanned; heading negation must hold."""

@@ -190,8 +190,6 @@ class LiveRegistrySmokeTests(unittest.TestCase):
                 str(_BACKEND.parent / "governance/deferred_controls_registry.json"),
                 "--policy",
                 str(_BACKEND.parent / "governance/commit_signing_policy.json"),
-                "--today",
-                "2026-08-09",
             ],
             check=False,
             capture_output=True,

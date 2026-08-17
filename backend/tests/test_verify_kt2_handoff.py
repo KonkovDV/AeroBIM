@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.tools.verify_evidence_bundle import verify_evidence_bundle
-from aerobim.tools.verify_kt2_handoff import verify_kt2_handoff
+from aerobim.tools.verify_kt2_handoff import _readme_demo_block, verify_kt2_handoff
 
 _REPO = Path(__file__).resolve().parents[2]
 
@@ -32,6 +32,15 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         mp4 = next(c for c in result["checks"] if c["check"] == "kt2_demo_mp4_status")
         self.assertTrue(mp4["ok"])
         self.assertIn(mp4["detail"], {"NOT_IN_GIT", "PRESENT_LOCAL_NOT_IN_GIT"})
+
+    def test_readme_demo_block_accepts_try_it_heading(self) -> None:
+        block = _readme_demo_block(
+            '## Try it\n\npip install -e ".[dev,raster]"\n'
+            "python -m aerobim.tools.run_demo_vertical_slice\n\n## Who it is for\n"
+        )
+        self.assertIn('".[dev,raster]"', block)
+        self.assertIn("run_demo_vertical_slice", block)
+        self.assertNotIn("Who it is for", block)
 
     def test_wall_guid_snapshot_is_lf_and_verifies(self) -> None:
         wall = _REPO / "docs" / "evidence" / "kt2-handoff-2026-08-11" / "wall-guid"

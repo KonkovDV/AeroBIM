@@ -38,7 +38,7 @@
   },
   "next_calendar": [
     "13-16.08: keep TZ honesty; no customer invention",
-    "17.08: N43 activate per checklist",
+    "17.08: N43 activated (max_commits_behind=1)",
     "20.08: KT#2 meeting — fixture GO + NO_GO"
   ]
 }
