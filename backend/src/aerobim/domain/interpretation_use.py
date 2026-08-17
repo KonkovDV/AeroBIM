@@ -484,7 +484,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
         if evidence.startswith(("python -m ", "python ")):
             lines.append(f"- `{row['row_id']}`: `{evidence}`")
         else:
-            lines.append(f"- `{row['row_id']}`: [{_evidence_label(evidence)}]({_evidence_href(evidence)})")
+            lines.append(
+                f"- `{row['row_id']}`: [{_evidence_label(evidence)}]({_evidence_href(evidence)})"
+            )
     lines.append("")
     return "\n".join(lines)
 
