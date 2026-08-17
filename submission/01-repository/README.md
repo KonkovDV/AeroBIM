@@ -19,7 +19,7 @@ claim_boundary: >
 | [`../../backend/`](../../backend/) | Python 3.12 · FastAPI · IfcOpenShell · IfcTester · слои domain/application/infrastructure/presentation |
 | [`../../frontend/`](../../frontend/) | React · 3D-просмотр IFC (web-ifc) · 2D-наложение · панель замечаний |
 | [`../../samples/`](../../samples/) | Фикстуры, нормо-паки, каталог типовых ошибок, приложения ТЗ |
-| [`../../docs/`](../../docs/) | Документация, матрицы соответствия, evidence |
+| [`../../docs/`](../../docs/) | Документация, матрицы соответствия, доказательства |
 | [`../../audit/`](../../audit/) | Claims Lock, реестр блокеров, реестр исключений линта |
 | [`../../scripts/`](../../scripts/) | Гейты честности: `lint_claims.py`, `check_docs_metadata_integrity.py` |
 | [`../../governance/`](../../governance/) | Политики репозитория |
@@ -39,7 +39,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 
 Каноническая: [`../../docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../../docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md). Требования ТЗ к архитектуре: [`../../docs/tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](../../docs/tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md).
 
-Четыре контура: `INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING`. Технический статус `summary.passed` ставят **только** детерминированные движки — ADR-001: [`../../docs/architecture/ADR-001-verdict-ownership-2026.md`](../../docs/architecture/ADR-001-verdict-ownership-2026.md). Языковые и визуальные модели остаются advisory и статус не меняют.
+Четыре контура: `INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING`. Технический статус `summary.passed` ставят **только** детерминированные движки — ADR-001: [`../../docs/architecture/ADR-001-verdict-ownership-2026.md`](../../docs/architecture/ADR-001-verdict-ownership-2026.md). Языковые и визуальные модели только подсказывают и статус не меняют.
 
 ## Качество и воспроизводимость
 
@@ -53,7 +53,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 | Безопасность | [`../../SECURITY.md`](../../SECURITY.md) |
 | Лицензии зависимостей | [`../../docs/license-policy-2026.md`](../../docs/license-policy-2026.md) |
 
-Ядро PDF — `pypdfium2` + `pdfminer.six`; AGPL-компоненты вынесены в необязательный экстра (LIC-001 Option B).
+Ядро PDF — `pypdfium2` + `pdfminer.six`; AGPL-компоненты вынесены в необязательный набор (LIC-001 Option B).
 
 ## Гейты честности в дереве
 
@@ -63,4 +63,4 @@ python scripts/lint_claims.py --matrix-guard     # заблокированны�
 python scripts/check_docs_metadata_integrity.py  # версии и даты документов
 ```
 
-Эти проверки запрещают в публичных текстах заявления, не подкреплённые evidence, — включая наши собственные. После гигиенических коммитов CI pin может отставать от HEAD до следующего прогона CI (N-43).
+Эти проверки запрещают в публичных текстах заявления, не подкреплённые доказательствами, — включая наши собственные. После гигиенических коммитов CI pin может отставать от HEAD до следующего прогона CI (N-43).

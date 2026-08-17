@@ -315,9 +315,10 @@ class FinalVerdictHonestyTests(unittest.TestCase):
 
 _SPEECH_FORMULA_MARKERS = (
     "Мы на стадии доработки",
-    "Одна команда показывает live CLI",
+    "Одна команда показывает находку с доказательствами на учебном комплекте",
     "Валидация эффективности и внедрение ещё не начались",
-    "`NO_GO` сохраняется до корпуса Самолёта",
+    "`NO_GO` сохраняется, пока нет корпуса Самолёта",
+    "подписанного профиля приёмки",
 )
 
 
@@ -332,6 +333,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md",
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             repo / "docs" / "docs.md",
+            repo / "submission" / "03-presentation" / "slides.md",
         )
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
@@ -340,10 +342,17 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self.assertNotIn("Новатор", text, msg=path.name)
             self.assertNotIn("2259", text, msg=path.name)
             self.assertNotIn("25ef3ee", text, msg=path.name)
+            self.assertNotIn("finding на fixture", text, msg=path.name)
+            self.assertNotIn("live CLI с fail-closed", text, msg=path.name)
+            self.assertNotIn("signed scope и CDE", text, msg=path.name)
         pitch = (self._repo() / "docs" / "partners" / "PITCH_NOVALTOR_TECHLAB_2026_08.md").read_text(
             encoding="utf-8"
         )
         self.assertIn("run_demo_ifc_acceptance_gate", pitch)
+        ru = (self._repo() / "README.ru.md").read_text(encoding="utf-8")
+        self.assertIn("находку с доказательствами на учебном комплекте", ru)
+        self.assertNotIn("finding на fixture", ru)
+        self.assertNotIn("fail-closed доказатель", ru)
 
     def test_jury_memo_does_not_pin_a_stale_head_sha(self) -> None:
         text = (self._repo() / "docs" / "docs.md").read_text(encoding="utf-8")

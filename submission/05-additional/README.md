@@ -30,17 +30,17 @@ claim_boundary: >
 
 ## 3. Самопроверка (красная команда)
 
-Серия внутренних состязательных аудитов 15–17.08 с реестром находок:
+Серия внутренних аудитов 15–17.08 с реестром находок:
 
 | Отчёт | Вектор |
 |---|---|
 | [`../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md`](../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) | Итоговый вердикт серии |
 | [`../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Атаки шести столов: Техлаб, МИК, трекер, ИТ-ментор, наука, венчур |
 | [`../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) | Академическая корректность заявлений |
-| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane Interpretation/Use ledger: лицензированные и запрещённые выводы (freeze `f9389bf`) |
+| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane Interpretation/Use: лицензированные и запрещённые выводы (заморозка `f9389bf`) |
 | [`../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Принятые риски с обоснованием |
 
-Мы публикуем собственные найденные слабости. Это осознанная позиция: проверяемость важнее гладкой картинки.
+Мы публикуем найденные слабости сами, чтобы жюри не находило их первым.
 
 ## 4. Рынок и позиционирование
 
