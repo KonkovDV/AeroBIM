@@ -171,6 +171,20 @@ scripts/commit_staged_n43*
 scripts/fix_b5690*
 scripts/activate_a4_signing*
 
+# Operator session leftovers unpublished 2026-08-17 (jury clone must not read as a chat dump)
+docs/gtm/SAMOLET_OSINT_VECTOR*
+docs/demo/TRACKER_MEETING_*FOLLOWUP*
+docs/quality/RED_TEAM_REAUDIT*
+docs/evidence/DATASET_HUNT_LOG*
+
+# Local debug / editor / agent scratch (never the TechLab pack)
+*.orig
+*.rej
+*~
+.ipynb_checkpoints/
+.claude/
+.codex/
+
 # Build outputs
 bin/
 obj/

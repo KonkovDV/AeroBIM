@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-08-16"
+date: "2026-08-17"
 status: active
 version: "1.0.0"
 closes_rt001: false
@@ -97,8 +97,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-07`: `docs/pilot-claim-boundary-2026.md`
 - `TRK-01`: `docs/partners/_2026_08_16.md`
 - `TRK-02`: `docs/evidence/ifc-release-matrix-2026-08.md`
-- `TRK-03`: `docs/evidence/DATASET_HUNT_LOG_2026_08.md`
-- `TRK-04`: `docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md`
+- `TRK-03`: `docs/demo/KT2_CORPUS_SSOT_2026_08.md`
+- `TRK-04`: `docs/demo/TRACKER_MEETING_2026_08_14.md`
 - `TRK-05`: `docs/gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`
 - `TRK-06`: `docs/architecture/ADR-002-open-core-commercial-boundary-2026.md`
 - `TL-01`: `docs/docs.md`

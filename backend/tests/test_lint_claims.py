@@ -269,7 +269,7 @@ class LintClaimsTests(unittest.TestCase):
             _should_scan(_REPO / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md")
         )
         self.assertTrue(
-            _should_scan(_REPO / "docs" / "gtm" / "SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md")
+            _should_scan(_REPO / "docs" / "gtm" / "COMMERCIAL_AND_OPEN_CORE_2026_08_14.md")
         )
         self.assertFalse(
             _should_scan(_REPO / "docs" / "quality" / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md")

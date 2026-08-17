@@ -442,8 +442,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("15.09", text)
         self.assertIn("closes_rt001: false", text)
 
-    def test_plan_b_date_is_on_tracker_followup(self) -> None:
-        path = self._repo() / "docs" / "demo" / "TRACKER_MEETING_2026_08_14_FOLLOWUP.md"
+    def test_plan_b_date_is_on_tracker_meeting(self) -> None:
+        path = self._repo() / "docs" / "demo" / "TRACKER_MEETING_2026_08_14.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("15.09.2026", text)
         self.assertIn("re-scope", text)
@@ -514,9 +514,28 @@ class JuryPackHygieneTests(unittest.TestCase):
             "docs/partners/LETTER_OF_INTEREST_SAMOLET_TEMPLATE_2026_08.md",
             "docs/evidence/runtime-baseline-wave-a-windows-2026-08-15.md",
             "docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html",
+            "docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md",
+            "docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md",
+            "docs/quality/RED_TEAM_REAUDIT2_2026_08_16.md",
+            "docs/evidence/DATASET_HUNT_LOG_2026_08.md",
         )
         for rel in forbidden:
             self.assertFalse(self._is_tracked(rel), msg=rel)
+
+    def test_tracked_markdown_omits_ai_auditor_kitchen_fingerprints(self) -> None:
+        listed = _git_ls_files("*.md")
+        needles = ("ZCode", "rewrite-author-konkovdv", "эта машина", "Что делать ИИ дальше")
+        hits: list[str] = []
+        repo = self._repo()
+        for rel in listed.splitlines():
+            rel = rel.strip().replace("\\", "/")
+            if not rel:
+                continue
+            text = (repo / rel).read_text(encoding="utf-8")
+            for needle in needles:
+                if needle in text:
+                    hits.append(f"{rel}: {needle}")
+        self.assertEqual(hits, [])
 
 
 _SUBMISSION_FIELDS = (

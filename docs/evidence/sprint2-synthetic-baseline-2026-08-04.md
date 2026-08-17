@@ -21,4 +21,4 @@
 - TZ 90% threshold NOT confirmed
 - Does not close RT-001
 
-JSON twin: `C:/plans/AeroBIM/docs/evidence/sprint2-synthetic-baseline-2026-08-04.json`
+JSON twin: [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json)

@@ -21,8 +21,8 @@ Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury
 | [`../submission/README.md`](../submission/README.md) | **КТ#2 form pack** (five fields + TZ coverage) |
 | [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md) | **Aug 2026 eng status** (P0 WP-01…08 + LIC-001 / P2 / offline) |
 | [`docs.md`](docs.md) | **Jury memo (RU)** |
-| [`samolet.md`](samolet.md) | Strategy × Samolet 10D (июль 2026) |
-| [`gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md) | **OSINT 14.08 + вектор** (Renga/Tangl/10D, монетизация) |
+| [`samolet.md`](samolet.md) | Strategy × Samolet 10D |
+| [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/COMPETITIVE_MATRIX_2026_08.md) | Task-07 neighbours (Tangl / 10D); their claims, not ours |
 | [`tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Customer TZ v2.0 |
 | [`tz/README.md`](tz/README.md) | Full TZ pack index |
 | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) | Verified vs planned |
