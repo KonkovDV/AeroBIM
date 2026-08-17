@@ -538,6 +538,28 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         for field in _SUBMISSION_FIELDS:
             self.assertTrue((self._submission() / field / "README.md").is_file(), msg=field)
 
+    def test_presentation_pack_has_slide_copy(self) -> None:
+        slides = self._submission() / "03-presentation" / "slides.md"
+        text = slides.read_text(encoding="utf-8")
+        self.assertIn("NO_GO", text)
+        self.assertIn("## Запрещено в кадре и в голосе", text)
+
+    def test_github_community_health_files_exist(self) -> None:
+        root = self._submission().parent
+        for name in (
+            "LICENSE",
+            "SECURITY.md",
+            "CONTRIBUTING.md",
+            "CODE_OF_CONDUCT.md",
+            "SUPPORT.md",
+            "MAINTAINERS.md",
+            "CITATION.cff",
+            ".github/CODEOWNERS",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            ".github/repository-metadata.md",
+        ):
+            self.assertTrue((root / name).is_file(), msg=name)
+
     def test_submission_pack_keeps_checkpoint_no_go(self) -> None:
         index = (self._submission() / "README.md").read_text(encoding="utf-8")
         self.assertIn("NO_GO", index)

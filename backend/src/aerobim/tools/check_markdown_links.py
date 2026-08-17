@@ -1,4 +1,4 @@
-"""CI markdown link checker — fail on dead relative links in docs/ + README*.md."""
+"""CI markdown link checker — fail on dead relative links in jury-facing Markdown."""
 
 from __future__ import annotations
 
@@ -18,7 +18,18 @@ _UUID_RE = re.compile(
 
 def _iter_markdown(root: Path) -> list[Path]:
     files: list[Path] = []
-    for pattern in ("README.md", "README.ru.md", "docs/**/*.md", "audit/reports/*.md"):
+    for pattern in (
+        "README.md",
+        "README.ru.md",
+        "CODE_OF_CONDUCT.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        "SUPPORT.md",
+        "MAINTAINERS.md",
+        "docs/**/*.md",
+        "audit/reports/*.md",
+        "submission/**/*.md",
+    ):
         files.extend(root.glob(pattern))
     # De-dupe while preserving order
     seen: set[Path] = set()

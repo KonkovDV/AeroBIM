@@ -95,6 +95,7 @@ def test_ssot_covers_ru_markers_and_core_surfaces() -> None:
         "docs/ENGINEERING_STATUS_2026_08.md",
         "submission/README.md",
         "submission/03-presentation/README.md",
+        "submission/03-presentation/slides.md",
         "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md",
     ):
         assert rel in scanned
