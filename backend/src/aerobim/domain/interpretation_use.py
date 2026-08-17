@@ -17,7 +17,7 @@ from typing import Any
 
 LEDGER_ID = "aerobim_interpretation_use_ledger"
 SCHEMA_VERSION = "1.0.0"
-AUDITED_HEAD = "f9389bf"
+AUDITED_HEAD = "f9389bf"  # IUA freeze; hygiene commits after this do not reopen validity
 CHECKPOINT = "NO_GO"
 CLAIM_BOUNDARY = (
     "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture "
@@ -444,7 +444,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "отраслевых стандартов, и чего они значить не имеют.",
         "",
         f"- Checkpoint **{CHECKPOINT}**",
-        f"- audited_head `{payload.get('audited_head')}`",
+        f"- IUA freeze (construct-validity object, not HEAD): `{payload.get('audited_head')}`",
         "- closes_rt001/002/003: **false**",
         "- CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`",
         "",

@@ -15,7 +15,7 @@ claim_boundary: >
 
 # Academic Red Team (KT#2 window, refreshed 16.08.2026)
 
-**Object:** public `main` after [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (jury pack; session dumps off the tree).  
+**Object:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (construct-validity object). Hygiene on 17.08 (readable links, 27/1026 pin, kitchen unpublished) does not reopen the IUA or close RT-001/002/003.  
 **Literature companion:** [`ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](ACADEMIC_LITERATURE_TRIAGE_2026_08.md) — August 2026 papers, IDS 1.1 status, ISO 19650-6, LLM-as-judge, clash FP.  
 **Question:** which *inferences* from current artefacts are licensed, and which are construct-invalid if spoken at KT#2, to Task 07, or to a seed associate?  
 **Checkpoint:** **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.

@@ -11,6 +11,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 **`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md) · [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
 
+**Kane IUA (30 s).** Licensed today: fixture demo, fail-closed IDS (BSI 0101), open-bench countable **27/1026**, protocol planning. Blocked: customer precision, TZ >90%, customer SLA, MEP delivered, CDE import, Checkpoint GO. Ledger: [Interpretation/Use](quality/INTERPRETATION_USE_LEDGER_2026_08.md). IUA freeze `f9389bf` — later hygiene commits do not reopen validity.
+
 | Document | Role |
 |---------|------|
 | [Jury technical justification (RU)](docs.md) | `docs.md` |

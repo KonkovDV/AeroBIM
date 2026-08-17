@@ -4,7 +4,7 @@ title: "Red Team — жюри Техлаб × МИК × Новатор"
 date: "2026-08-16"
 status: active
 version: "1.1.1"
-last_updated: "2026-08-16"
+last_updated: "2026-08-17"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -24,9 +24,9 @@ claim_boundary: >
 
 **Новатор 2026:** not a filing. Criteria are a thinking model only. Honest 2027 nomination, if any: «Меняющие реальность» — **not** «Лидеры инноваций» (no legal entity, no revenue).
 
-## Current pass (public `main`, 16.08 — triage)
+## Current pass (public `main`, 17.08 — triage)
 
-Object: TechLab jury pack after unpublished operator dumps. Live demo = `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Do not open `docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html` as overlay.
+Object: TechLab jury pack after unpublished operator dumps + link/pin hygiene. Live demo = `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Overlay `run_demo_vertical_slice` is P1. Do not open `docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html` as overlay. IUA freeze remains `f9389bf`.
 
 | ID | Attack | Status |
 |---|---|---|
@@ -34,7 +34,12 @@ Object: TechLab jury pack after unpublished operator dumps. Live demo = `python 
 | RT-JURY-K02 | README leads with tracker-meeting notes; Studio «deep analysis» / harness runbook / LOI template still on the tree | **MITIGATED** — front door = TIER0 + Hostile QA + Samolet ask; dumps unpublished |
 | RT-JURY-D01 | Open `wall-guid/report.html` as overlay | **MITIGATED** — live CLI first; hashed HTML is fixture pin, not overlay |
 | RT-JURY-D02 | Open `vertical-slice/report.html` | **FIXED** — unpublished from the public tree |
+| RT-JURY-D06 | 11.08 handoff README still leads with overlay as *the* demo | **FIXED** 17.08 — sell-path = Acceptance Gate; overlay kept as P1; `run_demo_vertical_slice` remains for the verifier |
 | RT-JURY-G01 | Quote a local pytest count against the README CI pin | **MITIGATED** — local pin unpublished; CI pin stays in `runtime-baseline-latest.json`; TIER0 Academic/Funding RT do not quote the local count |
+| RT-JURY-I01 | Jury memo pins a stale `HEAD` SHA (`25ef3ee`) | **FIXED** 17.08 — formula SSOT is the FAQ; no floating HEAD in `docs.md` |
+| RT-JURY-I02 | AABB n=5 vs n=6 vs duplex 654 conflated as one clash score | **FIXED** 17.08 — fixture P/R **n=6**; duplex **654** = inventory, `geometry_verified=false` |
+| RT-JURY-I03 | N-43: committed runtime baseline lags HEAD after hygiene commits | **ACCEPTED** — CI pin `acac02bd` stays until the next CI-attested artifact; do not mint a local attestation |
+| RT-JURY-V01 | Fixture fail-closed sold as Messick *criterion* validity for Samolet | **ACCEPTED** — Kane IUA still FAIL for customer use; ledger freeze `f9389bf` |
 | RT-JURY-M01 | «Отобраны → продукт готов» | **MITIGATED** — stage = доработка |
 | RT-JURY-C01 | Kitchen cleanup flips Checkpoint GO | **REJECTED** — RT-001/002/003 stay OPEN |
 
