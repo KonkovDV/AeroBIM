@@ -2,8 +2,8 @@
 ---
 title: "Покрытие требований ТЗ Задачи 07 — карта подачи КТ#2"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-16"
+version: "1.0.1"
+last_updated: "2026-08-17"
 claim_boundary: >
   Requirement-to-artifact map. TZ targets (точность >90%, до 30 минут) are the
   customer's evaluation criteria, not AeroBIM measurements. Fixture and open
@@ -61,8 +61,8 @@ claim_boundary: >
 
 | Требование | Реализация | Статус |
 |---|---|---|
-| Пересечения инженерных систем | Контур коллизий (IfcClash) на федеративном комплекте | ждёт заказчика (RT-003) |
-| Геометрические конфликты в BIM | Пересечения на учебной модели измерены | на фикстуре |
+| Пересечения инженерных систем | Контур коллизий (IfcClash) на федеративном комплекте; инвентарь AABB overlap ≠ system clash | ждёт заказчика (RT-003) |
+| Геометрические конфликты в BIM | AABB на учебной фикстуре измерены: precision=1.0, recall=1.0, **n=6** (6 confirmed overlaps / 16 walls). Duplex AABB **654** — inventory, `geometry_verified=false`, не та метрика. Это не «коллизии по ТЗ >90%» | на фикстуре |
 | Расчётные ошибки, в т.ч. нагрузки | Сверка результатов и исходных данных; независимая перепроверка расчёта не реализована | частично |
 | Некорректные площади | Алгебра количеств и сверка площадей | на фикстуре |
 | Неэффективное использование пространства | Экспертная оценка; автоматической метрики нет | не реализовано |
@@ -153,3 +153,5 @@ claim_boundary: >
 ## 8. Что закрывает разрыв
 
 Checkpoint **`NO_GO`** снимается не кодом, а четырьмя поставками заказчика: комплект ПД/РД одной ревизии с IFC, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Запрос: [`../docs/partners/SAMOLET_KT2_ASK_2026_08_15.md`](../docs/partners/SAMOLET_KT2_ASK_2026_08_15.md).
+
+Допустимые интерпретации текущих цифр: [Kane IUA ledger](../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) (freeze `f9389bf`). Sell-path: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`; overlay `run_demo_vertical_slice` — P1.

@@ -646,6 +646,8 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertIn("RT-001/002/003 OPEN", index)
         for field in _SUBMISSION_FIELDS:
             self.assertIn(field, index, msg=field)
+        self.assertIn("Шесть столов", index)
+        self.assertIn("доработка", index)
 
     def test_coverage_map_does_not_claim_tz_targets_as_measured(self) -> None:
         text = (self._submission() / "TZ_REQUIREMENTS_COVERAGE_2026_08.md").read_text(
@@ -653,6 +655,10 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         )
         self.assertIn("не измерено", text)
         self.assertIn("NO_GO", text)
+        self.assertIn("n=6", text)
+        self.assertIn("654", text)
+        self.assertIn("f9389bf", text)
+        self.assertIn("run_demo_ifc_acceptance_gate", text)
         # TZ targets may be quoted as customer criteria, never as our result.
         for forbidden in (
             "точность >90% достигнута",
@@ -671,6 +677,29 @@ class SubmissionPackHonestyTests(unittest.TestCase):
             paths.add(resolved)
             paths.update(resolved.parents)
         return frozenset(paths)
+
+    def test_repository_field_discloses_ci_pin(self) -> None:
+        text = (self._submission() / "01-repository" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("2455", text)
+        self.assertIn("acac02bd", text)
+        self.assertIn("локальный pytest", text)
+
+    def test_prototype_field_leads_with_acceptance_gate(self) -> None:
+        text = (self._submission() / "04-prototype" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("run_demo_ifc_acceptance_gate", text)
+        self.assertIn("run_demo_vertical_slice", text)
+        self.assertIn("P1", text)
+
+    def test_additional_field_has_six_desk_red_team(self) -> None:
+        text = (self._submission() / "05-additional" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("шести столов", text)
+        self.assertIn("INTERPRETATION_USE_LEDGER_2026_08.md", text)
 
     def test_submission_links_resolve_on_a_fresh_clone(self) -> None:
         # Resolve against tracked files: a gitignored local copy is not a published target.

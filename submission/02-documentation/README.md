@@ -1,8 +1,8 @@
 ---
 title: "Поле «Документация» — состав сопроводительного пакета"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-16"
+version: "1.0.1"
+last_updated: "2026-08-17"
 claim_boundary: >
   Documentation index only. Checkpoint NO_GO; RT-001/002/003 OPEN.
   Fixture evidence ≠ customer корпус.
@@ -25,6 +25,7 @@ claim_boundary: >
 | [`../../docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md) | Разрешённые и запрещённые формулировки |
 | [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 и статус `NO_GO` |
 | [`../../docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md) | Инженерный статус на дату |
+| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: что цифры вправе значить (freeze `f9389bf`) |
 
 ## 2. Разделы ТЗ, закрытые отдельными документами
 
