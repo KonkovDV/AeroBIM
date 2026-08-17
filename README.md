@@ -432,6 +432,8 @@ python -m mypy src
 pytest tests -q
 ```
 
+Or all fast CI gates in one command from the repo root (~15 s): `python scripts/pre_push_gate.py` with the backend venv python. A local `pre-push` hook can call it automatically.
+
 Measurements are reproducible commands, not stored numbers:
 
 ```bash
