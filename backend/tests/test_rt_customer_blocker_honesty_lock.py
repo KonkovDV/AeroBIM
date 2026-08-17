@@ -365,11 +365,16 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             repo / "README.md",
             repo / "README.ru.md",
             repo / "docs" / "docs.md",
+            repo / "docs" / "TIER0_INDEX.md",
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             repo / "docs" / "pilot-claim-boundary-2026.md",
             repo / "submission" / "README.md",
+            repo / "submission" / "01-repository" / "README.md",
+            repo / "submission" / "02-documentation" / "README.md",
             repo / "submission" / "03-presentation" / "README.md",
             repo / "submission" / "03-presentation" / "slides.md",
+            repo / "submission" / "04-prototype" / "README.md",
+            repo / "submission" / "05-additional" / "README.md",
         )
         for path in surfaces:
             text = path.read_text(encoding="utf-8")

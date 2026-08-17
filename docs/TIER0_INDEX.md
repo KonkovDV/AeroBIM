@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — карта для жюри Техлаба"
 status: active
-version: "4.5.10"
+version: "4.5.11"
 last_updated: "2026-08-17"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -10,6 +10,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 # Tier-0 — карта для жюри Техлаба
 
 **`NO_GO`** — [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md) · [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [граница заявлений](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
+
+**Формула стадии (дословно, SSOT [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
 **Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После гигиены pin может отставать (N-43); локальный pytest не публикуем.
 

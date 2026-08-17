@@ -22,6 +22,7 @@
   "forbidden_affirmative_phrases": [
     "accuracy >90%",
     "dwg-ready",
+    "native dwg",
     "cde-ready",
     "cde interoperable",
     "human-level cv",
@@ -32,8 +33,12 @@
     "qwen3.8-max ready",
     "checkpoint go",
     "sla ≤30",
+    "sla ≤30 минут",
     "экономия ≥20%",
-    "ии понимает чертёж как инженер"
+    "точность >90%",
+    "ии понимает чертёж как инженер",
+    "интегрированы с tangl",
+    "закрыли тз самолёта"
   ],
   "negation_markers": [
     "not claimed",
@@ -59,6 +64,7 @@
     "не утвержд",
     "не реализовано",
     "не проверено",
+    "не измерено",
     "вне scope",
     "до доказательств"
   ]
