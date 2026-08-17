@@ -16,7 +16,7 @@ claim_boundary: >
 
 **Checkpoint: `NO_GO`.** Не прячем. Стадия МИК — **доработка**. Блокеры RT-001/002/003 закрываются только доказательствами заказчика: [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md).
 
-**Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin `acac02bd` ([`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json), `attested_by=ci`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После гигиены pin может отставать (N-43); локальный pytest не публикуем.
+**Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После гигиены pin может отставать (N-43); локальный pytest не публикуем.
 
 ## Пять полей формы → пять папок
 
@@ -50,7 +50,7 @@ claim_boundary: >
 | Техлаб | Доработка. Живой CLI. Учебный комплект. `NO_GO`. |
 | МИК | Стадия доработки. Валидация эффективности не начата. Пять полей формы — не акт Checkpoint. |
 | Трекер | Tangl = модель, мы = комплект. Задачи 1–3 в репо; письмо Самолёту — оператор. |
-| ИТ-ментор | Пропуск IDS роняет комплект. CI pin `acac02bd` / 2455. Отставание N-43 принято. |
+| ИТ-ментор | Пропуск IDS роняет комплект. CI pin = `runtime-baseline-latest.json`. Отставание N-43 принято. |
 | Наука | Kane: на учебном комплекте цифры про содержание — да; про Самолёта — нет. Заморозка `f9389bf`. |
 | Венчур | Юрлица нет. Слот + комплект, не SAFE. |
 

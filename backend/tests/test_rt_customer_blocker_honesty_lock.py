@@ -377,13 +377,13 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
 
     def test_kt2_video_is_withdrawn_not_promised(self) -> None:
         repo = self._repo()
-        notice = (
-            repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md"
-        ).read_text(encoding="utf-8")
+        notice = (repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md").read_text(
+            encoding="utf-8"
+        )
         tier0 = (repo / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
-        presentation = (
-            repo / "submission" / "03-presentation" / "README.md"
-        ).read_text(encoding="utf-8")
+        presentation = (repo / "submission" / "03-presentation" / "README.md").read_text(
+            encoding="utf-8"
+        )
         for text, label in (
             (notice, "video notice"),
             (tier0, "TIER0"),
@@ -414,9 +414,9 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("n=6", slice_readme)
         self.assertNotIn("n=5 (AABB", slice_readme)
         self.assertNotIn("at n=5", slice_readme)
-        tri = (
-            self._repo() / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
-        ).read_text(encoding="utf-8")
+        tri = (self._repo() / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("AABB n=6 fixture", tri)
         self.assertNotIn("AABB n=5 fixture", tri)
         handoff = (
@@ -439,11 +439,10 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertNotIn("Executable readiness = 5/5", text)
 
     def test_kt2_object_commit_card_is_on_jury_index(self) -> None:
-        submission = (self._repo() / "submission" / "README.md").read_text(
-            encoding="utf-8"
-        )
+        submission = (self._repo() / "submission" / "README.md").read_text(encoding="utf-8")
         self.assertIn("Объект КТ#2", submission)
-        self.assertIn("acac02bd", submission)
+        self.assertIn("runtime-baseline-latest.json", submission)
+        self.assertIn("attested_by=ci", submission)
         self.assertIn("f9389bf", submission)
 
     def test_jury_surfaces_omit_third_party_surnames(self) -> None:
@@ -472,9 +471,9 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
                 self.assertNotIn(needle, text, msg=f"{path.name}: {needle}")
 
     def test_faq_separates_coverage_map_from_product_accuracy(self) -> None:
-        text = (
-            self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md"
-        ).read_text(encoding="utf-8")
+        text = (self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("coverage_map_only", text)
         self.assertIn("16,7%", text)
         self.assertIn("не точность продукта", text)
@@ -600,7 +599,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("NO_GO", text)
         self.assertIn("27/1026", text)
         self.assertIn("run_demo_ifc_acceptance_gate", text)
-        self.assertIn("2455", text)
+        self.assertIn("runtime-baseline-latest.json", text)
         self.assertIn("оператор, не git-факт", text)
         self.assertNotIn("25/1026", text)
 
@@ -780,25 +779,19 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         return frozenset(paths)
 
     def test_repository_field_discloses_ci_pin(self) -> None:
-        text = (self._submission() / "01-repository" / "README.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("2455", text)
-        self.assertIn("acac02bd", text)
+        text = (self._submission() / "01-repository" / "README.md").read_text(encoding="utf-8")
+        self.assertIn("runtime-baseline-latest.json", text)
+        self.assertIn("attested_by=ci", text)
         self.assertIn("локальный pytest", text)
 
     def test_prototype_field_leads_with_acceptance_gate(self) -> None:
-        text = (self._submission() / "04-prototype" / "README.md").read_text(
-            encoding="utf-8"
-        )
+        text = (self._submission() / "04-prototype" / "README.md").read_text(encoding="utf-8")
         self.assertIn("run_demo_ifc_acceptance_gate", text)
         self.assertIn("run_demo_vertical_slice", text)
         self.assertIn("P1", text)
 
     def test_additional_field_has_six_desk_red_team(self) -> None:
-        text = (self._submission() / "05-additional" / "README.md").read_text(
-            encoding="utf-8"
-        )
+        text = (self._submission() / "05-additional" / "README.md").read_text(encoding="utf-8")
         self.assertIn("шести столов", text)
         self.assertIn("INTERPRETATION_USE_LEDGER_2026_08.md", text)
 
