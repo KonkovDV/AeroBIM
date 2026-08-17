@@ -789,9 +789,7 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         presentation = (self._submission() / "03-presentation" / "README.md").read_text(
             encoding="utf-8"
         )
-        tier0 = (
-            self._submission().parent / "docs" / "TIER0_INDEX.md"
-        ).read_text(encoding="utf-8")
+        tier0 = (self._submission().parent / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
         for text, label in ((presentation, "03-presentation"), (tier0, "TIER0")):
             self.assertIn(video_withdrawn, text, msg=label)
 
