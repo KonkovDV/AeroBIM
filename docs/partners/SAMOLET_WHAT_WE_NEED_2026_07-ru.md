@@ -31,7 +31,7 @@ tags: [aerobim, samolet, intake, techlab, ru]
 
 ### 0.1 Стек Самолёта (срез 14.08.2026) — не просить лишнего
 
-Публично: **Renga + Tangl (BIM-данные, Power BI) + 10D / S.Control**. OSINT: [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+Публично: **Renga + Tangl (BIM-данные, Power BI) + 10D / S.Control**. Стек: [`../samolet.md`](../samolet.md).
 
 | Просить | Не просить |
 |---|---|

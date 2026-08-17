@@ -16,7 +16,7 @@ claim_boundary: >
 
 Academic gap from Grand Jury 16.08: the project cited the world; it did not have a single **data statement**. This file is that statement. It does **not** create a Samolet corpus.
 
-License/attribution SSOT: [`../DATASETS.md`](../DATASETS.md). File-level pins: [`../../samples/DATASET_MANIFEST.json`](../../samples/DATASET_MANIFEST.json). Hunt + live re-runs: [`DATASET_HUNT_LOG_2026_08.md`](DATASET_HUNT_LOG_2026_08.md).
+License/attribution SSOT: [`../DATASETS.md`](../DATASETS.md). File-level pins: [`../../samples/DATASET_MANIFEST.json`](../../samples/DATASET_MANIFEST.json). Frozen counts: [`../demo/KT2_CORPUS_SSOT_2026_08.md`](../demo/KT2_CORPUS_SSOT_2026_08.md).
 
 ## 1. What is in the public git tree
 

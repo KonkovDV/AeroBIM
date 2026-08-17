@@ -27,7 +27,7 @@ IfcTester считает `ifcVersion` метаданными (официальн
 
 Демо-IFC **должны** быть выгрузкой **Renga**, не Revit: стек заказчика Renga + Tangl (вебинар Tangl × «Самолёт», кластер Пушкино; дирекция ИМ — А. Панькин).
 
-**Честность прямо сейчас:** `samples/ifc/walls-multi-entity.ifc` — IfcOpenShell 0.8.4, схема IFC4, имя «Samolet Multi Fixture». Это **не** выгрузка Renga. На трекере не притворяться. Вектор: Tangl проверяет модель; мы — комплект; 10D не заменяем. OSINT 14.08: [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+**Честность прямо сейчас:** `samples/ifc/walls-multi-entity.ifc` — IfcOpenShell 0.8.4, схема IFC4, имя «Samolet Multi Fixture». Это **не** выгрузка Renga. На трекере не притворяться. Вектор: Tangl проверяет модель; мы — комплект; 10D не заменяем. Публичный стек: [`../samolet.md`](../samolet.md) · [`../partners/COMPETITIVE_MATRIX_2026_08.md`](../partners/COMPETITIVE_MATRIX_2026_08.md).
 
 ## Честный статус (открытые данные, не молчание заказчика)
 
@@ -49,6 +49,6 @@ IfcTester считает `ifcVersion` метаданными (официальн
 
 Новые порты/DI, Iteration B.x, демо «посчитай двери», перекрас GO, GPLv3-модели IFC-Bench в репозиторий.
 
-Follow-up после 08:00: [`TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](TRACKER_MEETING_2026_08_14_FOLLOWUP.md) (заметок трекера в repo нет).
+План Б: если к КТ#3 нет пакета Самолёта (четыре пункта в [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md)), дата решения **15.09.2026** — scale / re-scope / kill. **Не kill сегодня.**
 
 Статус: [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md). Запрос заказчику: [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md).

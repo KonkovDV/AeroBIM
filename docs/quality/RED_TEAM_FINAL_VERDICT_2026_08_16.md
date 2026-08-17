@@ -11,8 +11,8 @@ claim_boundary: >
   Итоговый аудит-вердикт. Checkpoint NO_GO; RT-001/002/003 OPEN —
   закрываются только customer evidence. Не заявление точности/SLA.
   Не лицензирует GO. Operator kitchen prompts are not on the public tree.
-audited_head: "3ca6b21 + working-tree remainder close-out (HD9/HDX/HD2-UP/HD2-RL)"
-auditor: "ZCode, финальный синтез серии 16.08"
+audited_head: "3ca6b21"
+auditor: "internal architecture re-check, 16.08"
 ---
 
 # Final Verdict — AeroBIM, вечер перед КТ#2
@@ -23,7 +23,7 @@ auditor: "ZCode, финальный синтез серии 16.08"
 |---|---|---|---|
 | Re-audit #1 (`4b410c9`) | 17 | 14 | UP-01, BFF-01, RL-02 (by-design) |
 | Re-audit #2 (`3ca6b21`) | 13 | 9 | VER-01, LINT-01, RL-02 |
-| Remainder close-out (working tree after #2) | 4 | 4 | — |
+| Remainder close-out after re-check #2 | 4 | 4 | — |
 
 | ID | Статус | Доказательство |
 |---|---|---|
@@ -51,9 +51,9 @@ auditor: "ZCode, финальный синтез серии 16.08"
 
 Код/доки готовы к честной демонстрации. Процессный риск: dry-run видео 17–18.08, SSOT корпуса заморожен, owner на [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md). Демо — [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §0.
 
-## 5. Что делать ИИ дальше
+## 5. Public SSOT and remaining operator work
 
-Публичный SSOT: TIER0 + Hostile QA §0 + этот вердикт + Re-Audit #2. **Не** публиковать и не цитировать как GitHub-файлы operator kitchen (`MASTER_RED_TEAM_PROMPT*`, `RED_TEAM_ATOMIC*`, HYPERDEEP dumps) — они gitignored.
+Публичный SSOT: TIER0 + Hostile QA §0 + этот вердикт. Operator kitchen prompts stay gitignored and are not GitHub sources.
 
 Следующие шаги **не в коде:** видео оператора, пакет Самолёта, dual raters. На «почему NO_GO» — формула playbook §0: NO_GO первым, три условия GO, протокол прежде процента.
 

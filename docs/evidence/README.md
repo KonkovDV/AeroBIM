@@ -19,7 +19,6 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`norm-pack-spbexp-coverage-2026-08.md`](norm-pack-spbexp-coverage-2026-08.md) · [`.json`](norm-pack-spbexp-coverage-2026-08.json) | Official SPb GAU CGE IDS 1.0; second GAU pack; not Samolet |
 | [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Qwen LIVE on fixture; Kimi GATED; `comparison_not_run`. Not a bake-off; not product accuracy |
 | [`vertical-slice-demo-live-2026-08-14.md`](vertical-slice-demo-live-2026-08-14.md) | Live `run_demo_vertical_slice` pin: exit 0, `summary.passed=false`, NO_GO; PNG/manifest hashes stable; report/BCF drift via `created_at` |
-| [`DATASET_HUNT_LOG_2026_08.md`](DATASET_HUNT_LOG_2026_08.md) | Tracker task-3: hunt + live re-runs 15.08 / confirm 16.08. Open benches ≠ RT-001. Harbor NOT_RUN. PNST CLI skip-honest; Ishigaki gold XML processability |
 | [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md) | Data availability: git fixtures vs `.local/` benches vs missing customer corpus; Checkpoint NO_GO |
 | [`interpretation-use-ledger-latest.json`](interpretation-use-ledger-latest.json) · [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: licensed vs blocked inferences. Not customer precision. Checkpoint NO_GO |
 | [`ifc-cache-ram-ceiling-latest.json`](ifc-cache-ram-ceiling-latest.json) | Process-local IFC LRU ceiling 8×256 MiB = 2 GiB. Not federated RSS, not VM profile, not RT-003 |

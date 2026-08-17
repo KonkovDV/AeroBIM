@@ -26,7 +26,7 @@ claim_boundary: >
 - [`../evidence/samolet-sla-fixture-p95-2026-08-04.json`](../evidence/samolet-sla-fixture-p95-2026-08-04.json) — `claim_level: fixture_only`, `allowed_wording: Fixture wall-clock only; gate=p95; not customer комплект SLA`
 - [`../evidence/kt2-handoff-2026-08-11/wall-guid/timings.json`](../evidence/kt2-handoff-2026-08-11/wall-guid/timings.json)
 
-Sell-path КТ#2: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Живое время — с экрана терминала на этой машине; **не** подставлять p95 игрушечного пакета как время Acceptance Gate.
+Sell-path КТ#2: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Живое время — только с экрана живого прогона; **не** подставлять p95 игрушечного пакета как время Acceptance Gate.
 
 ## Что говорить (дословно)
 

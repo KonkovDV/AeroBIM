@@ -254,7 +254,7 @@ Solibri и Navisworks сильнее AeroBIM по зрелости model checkin
 
 Публичный след AIDOX и AI Project Control на 09.08.2026 **слабо верифицируем** вне карточки МИК (`[Н]`). Цифры «точность >90%» / «≈30 минут» у всех четырёх **без методики замера** — в наши документы как факт **не переносятся** (И15; `claim_boundary`: not product accuracy; RT-001 / competitor claims are not ours).
 
-**Refresh 14.08.2026:** главный сосед по смыслу — **Tangl + 10D**, не Solibri. Самолёт уже клиент Tangl (BIM-данные, Power BI); 10D с сен 2025 смотрит внутрь группы. Вектор и источники: [`gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md). RU-строки матрицы: [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/COMPETITIVE_MATRIX_2026_08.md).
+**Refresh 14.08.2026:** главный сосед по смыслу — **Tangl + 10D**, не Solibri. Самолёт уже клиент Tangl (BIM-данные, Power BI); 10D с сен 2025 смотрит внутрь группы. RU-строки матрицы: [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/COMPETITIVE_MATRIX_2026_08.md).
 
 ## 7.4 Честный проигрыш
 

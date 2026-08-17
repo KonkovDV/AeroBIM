@@ -35,7 +35,7 @@ claim_boundary: "Inventory. Open corpora ≠ RF PD+expertise. Not product accura
 | ifcfast G55 + Solibri BCF | Есть GT, это клиентские файлы | Нет (RT-003); не вендорить |
 | IfcClash 0.8.5 | Движок, не корпус | Нет (RT-003) |
 
-## Прогон уже скачанного (эта машина, 14.08)
+## Прогон уже скачанного (локальный pin, 14.08)
 
 | Комплект | Команда | Результат | Ошибка → фикс |
 |---|---|---|---|
@@ -56,7 +56,7 @@ closes_rt001: false. closes_rt002: false. closes_rt003: false. Checkpoint **NO_G
 
 ## Прогон 15.08 вечер (CPython 3.12.10)
 
-Журнал: [`../evidence/DATASET_HUNT_LOG_2026_08.md`](../evidence/DATASET_HUNT_LOG_2026_08.md).
+Журнал: [`../demo/KT2_CORPUS_SSOT_2026_08.md`](../demo/KT2_CORPUS_SSOT_2026_08.md).
 
 | Комплект | Результат | Честность |
 |---|---|---|
@@ -71,7 +71,7 @@ closes_rt001: false. closes_rt002: false. closes_rt003: false. Checkpoint **NO_G
 
 ## Прогон 15.08 поздний вечер
 
-Журнал: [`../evidence/DATASET_HUNT_LOG_2026_08.md`](../evidence/DATASET_HUNT_LOG_2026_08.md).
+Журнал: [`../demo/KT2_CORPUS_SSOT_2026_08.md`](../demo/KT2_CORPUS_SSOT_2026_08.md).
 
 | Комплект | Результат | Честность |
 |---|---|---|

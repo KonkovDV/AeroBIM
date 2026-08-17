@@ -208,4 +208,4 @@ TP=6 FP=2 FN=0 on planted detectable set (n=6).
 
 - Next: customer dual adjudication (RT-001), planted clash IFC pair, licensed Mode A corpus under review.
 
-JSON twin: `C:/plans/AeroBIM/docs/evidence/sprint2-baseline-report.json`
+JSON twin: [`sprint2-baseline-report.json`](sprint2-baseline-report.json)

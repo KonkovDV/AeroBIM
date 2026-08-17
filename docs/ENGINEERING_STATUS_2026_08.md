@@ -9,13 +9,13 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-16
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-16 · **v1.6.46** — KT#2 card mapped 5/5 in TIER0_INDEX; Re-Audit #2 remainder closed; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
+**last_updated:** 2026-08-16 · **v1.6.46** — KT#2 card mapped 5/5 in TIER0_INDEX; architecture re-check remainder closed; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Jury / MIK:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
 **Academic honesty:** [`quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) · IUA [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md) · literature [`quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md)  
 **Qwen / Studio:** [`architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md`](architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md) · [`roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) · [`architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md)  
-**Demo / P4:** [`demo-format-2026-08.md`](demo-format-2026-08.md) · Exp B [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · Exp A [`evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md`](evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md) · hunt [`evidence/DATASET_HUNT_LOG_2026_08.md`](evidence/DATASET_HUNT_LOG_2026_08.md)  
+**Demo / P4:** [`demo-format-2026-08.md`](demo-format-2026-08.md) · Exp B [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · Exp A [`evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md`](evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md) · corpus freeze [`demo/KT2_CORPUS_SSOT_2026_08.md`](demo/KT2_CORPUS_SSOT_2026_08.md)  
 **Release aliases:** [`RELEASE_POLICY.md`](RELEASE_POLICY.md) — `LOCAL` env alias dies after КТ#3 **2026-09-21**
 
 ## What improved (engineering — not customer GO)

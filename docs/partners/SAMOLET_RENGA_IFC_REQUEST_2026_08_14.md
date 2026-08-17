@@ -9,7 +9,7 @@ claim_boundary: "Intake letter only. Not Tangl API. Not 10D access. Checkpoint N
 
 **Кому:** дирекция информационного моделирования (публичный champion вебинаров — А. Панькин).  
 **Не кому:** ИТ-блок «ещё одной платформы»; вендор Tangl «дайте API».  
-**Опора:** [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_WHAT_WE_NEED_2026_07-ru.md) §0.1 · [`../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md`](../gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md).
+**Опора:** [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_WHAT_WE_NEED_2026_07-ru.md) §0.1 · [`../samolet.md`](../samolet.md).
 
 ---
 

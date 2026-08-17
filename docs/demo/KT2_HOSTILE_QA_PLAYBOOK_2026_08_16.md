@@ -141,7 +141,7 @@ claim_boundary: "Подготовительный документ. Checkpoint N
 → «GO закрывают корпус, профиль приёмки, измеренный MEP — RT-001/002/003. Сроки ваших решений — не наши. Готовность своей стороны — есть».
 
 **G4. «Что если пилот провалится?»**
-→ «Дата решения 15.09: scale / re-scope / kill. Не kill сегодня. Критерии — по данным holdout, не по настроению». [`TRACKER_MEETING_2026_08_14_FOLLOWUP.md`](TRACKER_MEETING_2026_08_14_FOLLOWUP.md).
+→ «Дата решения 15.09: scale / re-scope / kill. Не kill сегодня. Критерии — по данным holdout, не по настроению». [`TRACKER_MEETING_2026_08_14.md`](TRACKER_MEETING_2026_08_14.md) · [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md).
 
 **G5. «Монетизация open-source?»**
 → «Открытое ядро; платные — customer packs, нормы, деплой/SLA, интеграции. Ров в данных и доверии».

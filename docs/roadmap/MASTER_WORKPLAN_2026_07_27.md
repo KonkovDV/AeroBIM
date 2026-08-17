@@ -100,5 +100,4 @@ kickoff ASK ([`SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_
 | 2026-07-27 | `pytest tests -q` | **1129 passed, 7 skipped** (20.9s) |
 | 2026-07-27 | Wave S (DWG derived-provenance + conversion QA): ruff + mypy (207 files) + pytest | PASS · **1149 passed, 7 skipped** |
 
-Примечание: exe-лаунчер `.venv\Scripts\mypy.exe` на этой машине возвращает
-пустой exit 1; каноничный запуск — `python -m mypy src` (воспроизведено дважды).
+Примечание: Windows `.venv\Scripts\mypy.exe` can return empty exit 1; canonical run is `python -m mypy src`.
