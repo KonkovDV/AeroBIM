@@ -40,7 +40,7 @@ IfcTester считает `ifcVersion` метаданными (официальн
 
 ## Честный статус (открытые данные, не молчание заказчика)
 
-| Вопрос Сигиневича | Ответ |
+| Вопрос трекера | Ответ |
 | --- | --- |
 | Checkpoint | **NO_GO**. Не перекрашиваем. |
 | «Нет норм?» | **Ложь.** IDS Мособлгосэкспертизы публичны: [moexp.ru ТИМ](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/). Engine coverage: [`../evidence/norm-pack-moexp-coverage-2026-08.md`](../evidence/norm-pack-moexp-coverage-2026-08.md). Нет **подписанного профиля приёмки Самолёта** и нет **корпуса моделей Самолёта** — это две другие вещи |

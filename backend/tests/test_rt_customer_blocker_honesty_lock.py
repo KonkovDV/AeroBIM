@@ -428,7 +428,14 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("f9389bf", submission)
 
     def test_jury_surfaces_omit_third_party_surnames(self) -> None:
-        needles = ("Поздняков", "Самоходкин", "Бурнаев", "трекера Дмитрия")
+        needles = (
+            "Поздняков",
+            "Самоходкин",
+            "Бурнаев",
+            "трекера Дмитрия",
+            "Сигиневич",
+            "Дмитрий Сигиневич",
+        )
         surfaces = (
             self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             self._repo() / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md",
@@ -436,6 +443,9 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self._repo() / "docs" / "TIER0_INDEX.md",
             self._repo() / "README.ru.md",
             self._repo() / "submission" / "README.md",
+            self._repo() / "docs" / "partners" / "SAMOLET_KT2_ASK_2026_08_15.md",
+            self._repo() / "docs" / "demo" / "TRACKER_MEETING_2026_08_14.md",
+            self._repo() / "docs" / "tz" / "TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md",
         )
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
@@ -555,7 +565,9 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         path = self._repo() / "docs" / "partners" / "SAMOLET_KT2_ASK_2026_08_15.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("KonkovDV", text)
-        self.assertIn("Сигиневич", text)
+        self.assertIn("трекер проекта", text)
+        self.assertNotIn("Сигиневич", text)
+        self.assertNotIn("Дмитрий Сигиневич", text)
         self.assertIn("20.08.2026", text)
         self.assertIn("15.09", text)
         self.assertIn("closes_rt001: false", text)

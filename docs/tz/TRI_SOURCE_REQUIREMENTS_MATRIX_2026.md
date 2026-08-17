@@ -3,7 +3,7 @@
 title: "Трёхисточниковая матрица требований: Самолёт × Техлаб × МИК"
 status: active
 version: "1.1.0"
-last_updated: "2026-08-16"
+last_updated: "2026-08-17"
 claim_boundary: "Матрица трассирует требования, не повышает статусы: fixture ≠ customer; Checkpoint NO_GO до RT-001/002/003."
 tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 ---
@@ -22,7 +22,7 @@ tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 | **Техлаб** | Программа отбора (жюри) | Заявка, MVP-демо, честные формулировки, критерии пилота на 2 млн ₽ | [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md) + [`../partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
 | **МИК (Фонд)** | Оператор/грантодатель | Соглашение, программа испытаний, план-график, акт результатов, финотчётность | [`../partners/MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md) |
 | **Отрасль** | Нормы openBIM / приёмки | IDS 1.0, ISO 19650-2 5.7, Solihin 1–4, ПНСТ 909 | [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) IND-* |
-| **Трекер (Дмитрий)** | Операционный спринт к КТ#2 | 6 задач 14.08 ~15:26 | [`../demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) · ledger TRK-* |
+| **Трекер** | Операционный спринт к КТ#2 | 6 задач 14.08 ~15:26 | [`../demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) · ledger TRK-* |
 
 ## Сводная матрица по темам
 
