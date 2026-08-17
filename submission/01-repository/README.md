@@ -2,7 +2,7 @@
 title: "Поле «Репозиторий» — карта кода и сборки"
 status: active
 version: "1.0.0"
-last_updated: "2026-08-16"
+last_updated: "2026-08-17"
 claim_boundary: >
   Repository map only. No accuracy or SLA claims. Checkpoint NO_GO;
   RT-001/002/003 OPEN.
@@ -46,6 +46,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 | Что | Где |
 |---|---|
 | CI | [`../../.github/workflows/`](../../.github/workflows/) · бейдж в [`../../README.md`](../../README.md) |
+| Сообщество GitHub | [`../../LICENSE`](../../LICENSE) · [`../../SECURITY.md`](../../SECURITY.md) · [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) · [`../../CODE_OF_CONDUCT.md`](../../CODE_OF_CONDUCT.md) · [`../../SUPPORT.md`](../../SUPPORT.md) |
 | Пины прогонов | [`../../docs/evidence/runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json) |
 | Воспроизводимость | [`../../docs/REPRODUCIBILITY-2026.md`](../../docs/REPRODUCIBILITY-2026.md) |
 | Известные дефекты | [`../../KNOWN_BUGS.md`](../../KNOWN_BUGS.md) |

@@ -7,99 +7,52 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**An acceptance-criteria checker for openBIM submittal packages.** IFC models, IDS rule sets, drawings and specification texts go in; findings with traceable evidence come out as HTML, JSON and BCF. AeroBIM helps a reviewer catch package defects **before** coordination and expertise. It is not a CDE, not a viewer, and not a replacement for the reviewer.
+> **Checkpoint #2 intake (20 Aug 2026).** Five form fields, TZ coverage and the claim boundary: [`submission/README.md`](submission/README.md). Checkpoint `NO_GO` until customer evidence (RT-001 / RT-002 / RT-003).
 
-> ### Checkpoint: `NO_GO`
->
-> This is internal readiness for *customer sign-off*, not a statement that the system does not run. Code and fixtures work. Three blockers stay open, and none of them can be closed by writing code:
->
-> - **RT-001** — no corpus of Russian design documentation paired with expertise conclusions. AEC-Bench, IFC-Bench and GNI exist and are a different contour.
-> - **RT-002** — no acceptance profile signed by the customer. The official Moscow Region State Expertise IDS files ship in this repository; that is not the same thing.
-> - **RT-003** — federated MEP clash is **NOT_VERIFIED**. The public federated inventory is measured; the clash run is not.
->
-> Blocker register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · claim boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) · verdict ownership: [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) · engineering status: [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md).
->
-> Not claimed until evidenced: product accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, independent correctness of calculations. A green fixture run is not a sign-off.
+**AeroBIM checks a construction submittal the way an expert starts to: the model against the rules, the drawings against the model, the texts against both.**
 
-## The problem
+You give it IFC models, IDS rule sets, sheets and specification texts. It gives back findings you can follow to a sheet and a GUID — as HTML, JSON and BCF. The reviewer still decides. AeroBIM is not a CDE, not a model viewer, and not a replacement for the expert.
 
-A schedule on a PDF sheet states one area; the IFC wall carrying the same GUID states another. Each file is clean when opened alone — the defect exists only between them, and it usually surfaces on site. AeroBIM raises a finding with provenance down to the sheet and the GUID, leaves the verdict to the reviewer, and never authorises the Shared → Published transition.
+## The seam where packs break
 
-## How it works
+A schedule on a PDF sheet states one area. The IFC wall with the same identifier states another. Each file opens cleanly on its own. The defect exists only *between* them, and it usually surfaces on site.
 
-A project package goes in, deterministic checks run, one fused report comes out:
+That is the class of problem AeroBIM is built for. It raises a finding with provenance down to the sheet and the GUID, leaves the verdict to the reviewer, and never authorises the ISO 19650 Shared → Published transition.
 
-- **IFC** property and quantity validation on IfcOpenShell — IFC2x3, IFC4 and IFC4x3 through one kernel.
-- **IDS 1.0** validation on IfcTester, including the official Moscow Region State Expertise rule sets shipped in `samples/`.
-- **Cross-document** comparison of the model against drawing annotations, specifications and calculation texts, with an ISO 12006-3 tolerance band.
-- **Report** carrying per-finding provenance (`finding_id`, `source_id`, `evidence_refs`), a capability table, HTML and JSON export, and a structural BCF 2.1 / 3.0 ZIP.
+The project takes part in the Moscow Tehlab programme (task 07, customer — Samolet Group). That is a participation status. It is not a claim that effectiveness has been measured on the customer's own pack.
 
-Two properties make the result auditable. The verdict is deterministic: identical inputs produce an identical `summary.passed`. And silence is never success — every optional engine reports `ok`, `skipped` or `failed`, and any `FAILED` capability forces `summary.passed=false`, so a missing engine cannot look like a clean pass.
+## What a run actually does
 
-The framing follows ISO 19650: AeroBIM produces evidence for the *Shared* state and never the contractual *Published* authorisation. Architecture: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
+A pack goes in. Deterministic checks run. One fused report comes out.
 
-## Where it applies
+1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (ISO 16739:2005), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
+2. **The rules.** IDS 1.0 is validated with IfcTester. Official Moscow Region State Expertise rule sets ship in `samples/`. A requested rule set that cannot load fails closed — it cannot look like a pass.
+3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with an ISO 12006-3 tolerance band and Russian/European grouped decimals. Sources are compared; nothing is recomputed. Independent correctness of calculations is not implemented.
+4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D and the evidence on the sheet.
 
-Review of a submittal package before construction — expertise, chief project engineer, documentation quality control — at the seam between model, drawings and requirements. Not a CDE replacement and not a site defect journal.
+Two properties make the result auditable.
 
-## Capabilities
+- **Same input, same `summary.passed`.** The technical flag is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled at all, drafts remark wording only and never writes `summary.passed`. Under customer sign-off profiles, outbound advisory calls are forbidden.
+- **Silence is never success.** Every optional engine reports `ok`, `skipped` or `failed`. Any `FAILED` capability forces `summary.passed=false`. A missing clash engine cannot hide inside a green report. The same boundary is served on `GET /v1/system/capabilities`.
 
-Every status below is a **repository or fixture** capability unless stated otherwise. Fixture results are not product accuracy: the customer corpus that would allow such a claim is blocker RT-001.
+`summary.passed` is a Shared-gate under configured rules. It is not contractual fitness and not permission to build. Target architecture: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
-| Capability | Status | Evidence | Notes |
-|---|---|---|---|
-| IFC property and quantity validation | Available | fixture | IfcOpenShell; IFC2x3, IFC4, IFC4x3 through one kernel |
-| IDS 1.0 validation | Available | fixture | IfcTester; a requested rule set that cannot load fails closed |
-| Cross-document contradiction detection | Available | fixture | `ConflictKind` taxonomy (subset), configurable severity |
-| Drawing annotation ↔ IFC cross-validation | Available | fixture | A claimed GUID becomes `ifc_guid` only after presence in the spatial index; not human-adjudicated |
-| ISO 12006-3 tolerance algebra (ε-band) | Available | fixture | — |
-| Requirements extraction from narrative text | Available | fixture | Deterministic patterns; no model signs anything off |
-| Russian AEC extraction benchmark | Available | fixture | macro_f1 on a fixture corpus is not product accuracy |
-| ISO 19650-lite report metadata | Available | fixture | Stage, revision and container fields only — not a CDE |
-| Capability honesty on every report | Available | fixture | `FAILED` blocks `summary.passed`; also served on `/v1/system/capabilities` |
-| Finding provenance | Available | fixture | `finding_id`, `source_id`, `evidence_refs`; persistence rejects a finding without them |
-| Tenant and object ACL on artifacts | Available | fixture | Bearer or OIDC principal matched against report `tenant_id` |
-| BCF 2.1 / 3.0 ZIP export | Available | fixture | Structural export, two independent consumers, file ingest; import into a third-party CDE stays NOT_VERIFIED |
-| HTML and JSON report export | Available | fixture | — |
-| Deterministic PDF text and crop | Available | core | pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium` |
-| Browser IFC viewer and 2D overlay | Available | fixture | web-ifc + Three.js review shell |
-| Offline Docker bundle | Available | eng | Verified by `closed-contour --smoke`; bare metal without Docker is out of scope |
-| Norm rule packs | Available | eng | Eligibility rules plus expert journal; a fixture pack is not a customer-signed profile |
-| Package completeness inventory | Available | eng | Opt-in; not a regulatory completeness verdict |
-| Quality measurement protocol | Available | protocol | Wilson intervals and a sample-size planner; interim target 0.60 |
-| Detached signature envelope | Partial | fixture | Hashes and roles only; the trust chain stays NOT_VERIFIED |
-| Clash detection (IfcClash) | Optional extra | optional | `.[clash]`; engine rehearsal, not MEP system clash; SKIPPED becomes FAILED when required |
-| Image OCR (RapidOCR) | Optional extra | optional | `.[raster]`; zero yield becomes FAILED when OCR was requested |
-| PyMuPDF | Optional extra | `pdf-agpl` | Dual AGPL-3.0 / Artifex; absent from the runtime lock and the Docker image |
-| Advisory LLM and VLM overlay | Experimental | fixture | Drafts remark text only, never writes `summary.passed`; outbound calls are forbidden under customer profiles |
-| OpenCDE BCF API push | Experimental | — | Not a substitute for proven import into a customer CDE |
-| IFC knowledge graph | Experimental | fixture | Advisory query scaffold |
-| DXF ingest | Partial, not verified | fixture | Optional ezdxf; not DWG support |
-| DWG native analysis | Missing | — | Fail-closed and never OK; PDF or IFC accepted instead as derived input with provenance |
-| Human-level CV / drawing literacy | Missing | — | OCR degradation is not machine reading of a drawing |
-| MEP system-aware clash | Not verified | fixture only | `geometry_verified=False` always; public federated IFC unmeasured (RT-003) |
-| Independent correctness of calculations | Not implemented | — | Sources are compared, nothing is recomputed |
-| Browser OIDC session | Not implemented | lab | Returns 501 by default; the lab cookie path is not production SSO |
-| BCF import into an independent CDE | Not verified | — | Checklist and verifier are ready; a real CDE log with hashes is missing |
-| Customer accuracy >90% and approved norms | Blocked | customer | Requires the corpus (RT-001) and the signed profile (RT-002) |
+```mermaid
+flowchart LR
+  pack["IFC + IDS + drawings + texts"] --> checks["Deterministic checks"]
+  checks --> report["Report with evidence"]
+  report --> reviewer["Reviewer decides"]
+```
 
-### IFC coverage
-
-IFC2x3 (ISO 16739:2005), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) all pass through the same validator adapters, and fixtures for all three live in `samples/ifc/`. Where property-set naming diverges between releases, the difference is reported as a `ValidationIssue` instead of a silent skip. Per-feature degradation rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
-
-### BCF evidence
-
-Export is proven; import into somebody else's CDE is not, and the two are kept apart deliberately. The structural ZIP is available (`/export/bcf`, and `?version=3` for BCF 3.0) and evidenced by two independent consumers in [`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json). Import into an independent CDE remains NOT_VERIFIED — [`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json) — and round-trip fidelity is blocked behind it. Until that proof exists, the wording “BCF ready for CDE” and “CDE interoperable” is forbidden. Full ladder: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md).
-
-## Quick Start
+## Try it
 
 ```bash
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM/backend
 
-# CPython 3.12, the version CI pins. Windows: py -3.12 -m venv .venv
-python3.12 -m venv .venv
-source .venv/bin/activate  # Linux/macOS
+# CPython 3.12, the version CI pins.
+python3.12 -m venv .venv            # Windows: py -3.12 -m venv .venv
+source .venv/bin/activate           # Windows PowerShell: .\.venv\Scripts\Activate.ps1
 
 # Core PDF is pypdfium2; the overlay does not need PyMuPDF
 pip install -e ".[dev,raster]"
@@ -117,11 +70,57 @@ pytest tests -q
 python -m aerobim.main   # → http://127.0.0.1:8080/health
 ```
 
-Both demos end with `summary.passed=false`, which is the expected result: the fixture package contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy.
+Both demos end with `summary.passed=false`, which is the expected result: the fixture pack contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy.
 
-Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for anything above).
+Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for anything above). The review shell: `cd frontend && npm ci && npm run dev`.
 
-## API
+## Who it is for
+
+Review of a submittal before construction — state expertise, the chief project engineer, documentation quality control — at the seam between model, drawings and requirements. Not a CDE replacement and not a site defect journal.
+
+From 1 April 2026, GOST R 21.101-2026 §8.2.4 requires a stable GUID on each electronic design document so revisions can be tracked. AeroBIM has addressed findings to stable identifiers (model element / source) from the first day. That is a coincidence of mechanism, not a claim of full conformity with the standard.
+
+## Checkpoint: `NO_GO`
+
+This is internal readiness for *customer sign-off*, not a statement that the system does not run. Code and fixtures work. Three blockers stay open, and none of them can be closed by writing code:
+
+- **RT-001** — no corpus of Russian design documentation paired with expertise conclusions. AEC-Bench, IFC-Bench and GNI exist and are a different contour.
+- **RT-002** — no acceptance profile signed by the customer. The official Moscow Region State Expertise IDS files ship in this repository; that is not the same thing.
+- **RT-003** — federated MEP clash is **NOT_VERIFIED**. The public federated inventory is measured; the clash run is not.
+
+Blocker register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · claim boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md) · engineering status: [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md).
+
+Not claimed until evidenced: product accuracy >90%, DWG-ready, MEP delivered, CDE-ready BCF, human-level CV, production-ready. A green fixture run is not a sign-off. Native analysis of DWG files is missing (fail-closed); PDF or IFC may be accepted as derived input with provenance — this is not claimed as DWG-ready. MEP system clash delivered is not claimed (RT-003, `geometry_verified=False`). BCF ZIP export is proven by two independent consumers ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)); import into an independent CDE remains **NOT_VERIFIED** ([`audit/evidence/cde-import-proof/STATUS.json`](audit/evidence/cde-import-proof/STATUS.json)). Until that proof exists, the wording “BCF ready for CDE” and “CDE interoperable” is forbidden. Evidence ladder: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md).
+
+## What runs today
+
+Every status below is a **repository or fixture** capability unless stated otherwise. Fixture results are not product accuracy: the customer corpus that would allow such a claim is blocker RT-001.
+
+**On the fixture packs you can clone today**
+
+- IFC property and quantity validation; IDS 1.0, fail-closed if the rule set cannot load
+- Cross-document contradictions (`ConflictKind` taxonomy, configurable severity) and drawing annotation ↔ IFC (a claimed GUID becomes `ifc_guid` only after it is present in the spatial index)
+- ISO 12006-3 tolerance algebra; deterministic requirement extraction from narrative text (no model signs anything off)
+- Capability honesty on every report; tenant/object ACL on artifacts; HTML/JSON export; structural BCF 2.1 / 3.0 ZIP
+- Deterministic PDF text and crop (pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`)
+- Browser IFC viewer and 2D overlay; offline Docker bundle (`closed-contour --smoke`; bare metal without Docker is out of scope)
+- Norm rule packs (eligibility + expert journal; a fixture pack is not a customer-signed profile) and an opt-in package completeness inventory (not a regulatory completeness verdict)
+- Quality measurement protocol (Wilson intervals, sample-size planner; interim target 0.60) — protocol, not a published product score
+
+**Optional, partial, or missing**
+
+- Geometry clash: optional extra `.[clash]` — engine rehearsal, not MEP system clash; SKIPPED becomes FAILED when clash is required
+- Image OCR: optional extra `.[raster]`; zero yield becomes FAILED when OCR was requested
+- PyMuPDF: optional extra `pdf-agpl` (AGPL-3.0 / Artifex); absent from the runtime lock and the Docker image
+- Advisory LLM/VLM overlay: experimental drafts only; never writes `summary.passed`
+- OpenCDE BCF API push: experimental; not a substitute for proven import into a customer CDE
+- IFC knowledge graph: experimental advisory query scaffold
+- DXF ingest: optional ezdxf, partial and not verified; not DWG support
+- Detached signature envelope: hashes and roles only; the trust chain stays **NOT_VERIFIED**
+- Browser OIDC session: not implemented (default 501); the lab cookie path is not production SSO
+- Customer accuracy >90% and approved norms: blocked on RT-001 and RT-002
+
+## HTTP API
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -158,7 +157,7 @@ Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible b
 
 ## Configuration
 
-All settings are read from environment variables (see [`backend/.env.example`](backend/.env.example)):
+A local clone runs on defaults. The table is the full operator surface: every `AEROBIM_*` knob the code reads is listed here and checked in CI against [`backend/.env.example`](backend/.env.example).
 
 | Variable | Default | Description |
 |---|---|---|
@@ -223,7 +222,7 @@ All settings are read from environment variables (see [`backend/.env.example`](b
 | `AEROBIM_BSI_API_TOKEN` | *(unset)* | Optional buildingSMART Validation Service token |
 | `AEROBIM_BSI_VALIDATION_URL` | *(built-in)* | Optional override for bSI Validation Service URL |
 | `AEROBIM_GATES_ATTESTED` | *(CI only)* | Comma-separated CI job names attested into the runtime baseline; ignored locally, and must equal the required gate set under GitHub Actions |
-| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; `0` disables in development; **must be >0** under pilot/production |
+| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; HD2-RL-02: `0` disables in development; **must be >0** under pilot/production |
 | `AEROBIM_TRUSTED_PROXY_IPS` | *(unset)* | Comma-separated peer IPs allowed to supply `X-Forwarded-For` for rate-limit keys; empty = never trust XFF |
 | `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
 | `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Optional Kimi OpenAI-compat base URL |
@@ -346,11 +345,11 @@ AEROBIM_VLM_ENABLED
 -->
 <!-- AEROBIM_DOCUMENTED_ENV:END -->
 
-## Repository layout
+## Repository
 
 ```text
 backend/      FastAPI service: core → domain → application → infrastructure → presentation
-frontend/     Browser review shell
+frontend/     Browser review shell (IFC 3D + drawing overlay)
 samples/      IFC, IDS, drawing and specification fixtures; benchmark packs
 docs/         Documentation and evidence artifacts
 audit/        Claims lock, blocker register, citable honesty fixtures
@@ -376,7 +375,7 @@ python -m mypy src
 pytest tests -q
 ```
 
-The measurement rails are reproducible commands, not stored numbers:
+Measurements are reproducible commands, not stored numbers:
 
 ```bash
 python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
@@ -389,7 +388,7 @@ python -m aerobim.tools.export_evidence_bundle \
   --output ../artifacts/evidence-bundle/techlab-demo
 ```
 
-Throughput and F1 figures are environment-specific and fixture-scoped. Any performance statement must ship with the pack path, CLI flags, machine fingerprint and artifact hashes. Citation metadata: [`CITATION.cff`](CITATION.cff) and [`docs/CITATION.bib`](docs/CITATION.bib).
+Throughput and F1 figures are environment-specific and fixture-scoped. Any performance statement must ship with the pack path, CLI flags, machine fingerprint and artifact hashes. Citation: [`CITATION.cff`](CITATION.cff) · [`docs/CITATION.bib`](docs/CITATION.bib).
 
 ## Documentation
 
@@ -410,7 +409,7 @@ This repository publishes the reviewable set: code, requirements, claim boundari
 | Licensing and offline deployment | [`docs/license-policy-2026.md`](docs/license-policy-2026.md) · [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md) |
 | Reproducibility | [`docs/REPRODUCIBILITY-2026.md`](docs/REPRODUCIBILITY-2026.md) |
 
-Project governance: [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [Support](SUPPORT.md) · [Maintainers](MAINTAINERS.md) · [Release policy](RELEASE_POLICY.md).
+Project governance: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Support](SUPPORT.md) · [Maintainers](MAINTAINERS.md) · [Release policy](RELEASE_POLICY.md).
 
 ## Stack
 
@@ -421,4 +420,3 @@ Python 3.12+ with FastAPI and Uvicorn. The buildingSMART toolchain — IfcOpenSh
 MIT for code authored in this repository. Third-party components keep their own licences: pypdfium2, pdfminer.six and Pillow are permissive; IfcOpenShell and IfcTester are LGPL-3.0-or-later; web-ifc is MPL-2.0; PyMuPDF is dual AGPL-3.0 / Artifex commercial and therefore stays an optional extra, absent from the runtime lock and the Docker image.
 
 Machine-readable inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · policy: [`docs/license-policy-2026.md`](docs/license-policy-2026.md). This is not a legal opinion, and the product as a whole must not be described as MIT without disclosing third-party components.
-
