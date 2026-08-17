@@ -350,9 +350,9 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self.assertNotIn("finding на fixture", text, msg=path.name)
             self.assertNotIn("live CLI с fail-closed", text, msg=path.name)
             self.assertNotIn("signed scope и CDE", text, msg=path.name)
-        pitch = (self._repo() / "docs" / "partners" / "_TECHLAB_2026_08.md").read_text(
-            encoding="utf-8"
-        )
+        pitch = (
+            self._repo() / "docs" / "partners" / "_TECHLAB_2026_08.md"
+        ).read_text(encoding="utf-8")
         self.assertIn("run_demo_ifc_acceptance_gate", pitch)
         ru = (self._repo() / "README.ru.md").read_text(encoding="utf-8")
         self.assertIn("находку с доказательствами на учебном комплекте", ru)
