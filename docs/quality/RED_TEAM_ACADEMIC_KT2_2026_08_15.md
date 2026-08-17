@@ -79,7 +79,7 @@ Internal SSOT: [`OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](OPEN_BENCH_VS_RT00
 | “IDS certified / Samolet profile” | Audit ≠ checking; MOEXP ≠ EIR of the appointing party |
 | “MEP delivered” | No signed clearance matrix; HVAC fixture has no tessellation |
 | “SP 63 verified” | Template is Solihin class 1 on a covering pset, not class 4 proof |
-| “local pytest count ⇒ HEAD fully verified in README” | N-26: CI pin remains 2455 @ `acac02bd` |
+| “local pytest count ⇒ HEAD fully verified in README” | N-26: CI pin = `runtime-baseline-latest.json`; do not copy a local count |
 | Checkpoint GO | RT-001/002/003 OPEN by construction |
 
 ## 3. Messick six aspects × Wave A (substitution map)

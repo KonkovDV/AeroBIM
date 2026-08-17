@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — карта для жюри Техлаба"
 status: active
-version: "4.5.9"
+version: "4.5.10"
 last_updated: "2026-08-17"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -11,7 +11,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 **`NO_GO`** — [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md) · [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [граница заявлений](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
 
-**Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin `acac02bd` ([`docs/evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json), `attested_by=ci`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После гигиены pin может отставать (N-43); локальный pytest не публикуем.
+**Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После гигиены pin может отставать (N-43); локальный pytest не публикуем.
 
 **Kane IUA (30 s).** Сегодня можно: учебный показ, IDS с отказом при пропуске (BSI 0101), открытый бенч **27/1026**, протокол. Запрещено: точность на комплекте заказчика, ТЗ >90%, SLA заказчика, MEP delivered, импорт в СОД, Checkpoint GO. Журнал: [Interpretation/Use](quality/INTERPRETATION_USE_LEDGER_2026_08.md). IUA freeze `f9389bf` — позднейшая гигиена не переоткрывает валидность.
 

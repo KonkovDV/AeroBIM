@@ -47,7 +47,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 |---|---|
 | CI | [`../../.github/workflows/`](../../.github/workflows/) · бейдж в [`../../README.md`](../../README.md) |
 | Сообщество GitHub | [`../../LICENSE`](../../LICENSE) · [`../../SECURITY.md`](../../SECURITY.md) · [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) · [`../../CODE_OF_CONDUCT.md`](../../CODE_OF_CONDUCT.md) · [`../../SUPPORT.md`](../../SUPPORT.md) |
-| Пины прогонов | [`../../docs/evidence/runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json) (CI pin `acac02bd`, `tests_passed=2455` / `collected=2473`; локальный pytest ≠ pin) |
+| Пины прогонов | [`../../docs/evidence/runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json) (CI pin = `commit_sha` / `tests_passed` / `tests_collected` в этом JSON, `attested_by=ci`; локальный pytest ≠ pin) |
 | Воспроизводимость | [`../../docs/REPRODUCIBILITY-2026.md`](../../docs/REPRODUCIBILITY-2026.md) |
 | Известные дефекты | [`../../KNOWN_BUGS.md`](../../KNOWN_BUGS.md) |
 | Безопасность | [`../../SECURITY.md`](../../SECURITY.md) |

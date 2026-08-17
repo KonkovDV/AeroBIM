@@ -32,13 +32,13 @@ Engineering readiness improved. Customer and investor readiness did **not**.
 
 ## Current pass (17.08 evening — VC desk)
 
-Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08). TIER0 «5/5» is intake-form completeness, not traction. CI pin `acac02bd` / `tests_passed=2455` is not HEAD-complete (N-43 / RT-FUND-06). Kane IUA freeze `f9389bf` does not license customer precision.
+Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08). TIER0 «5/5» is intake-form completeness, not traction. CI pin is `runtime-baseline-latest.json` (`attested_by=ci`) and is not HEAD-complete (N-43 / RT-FUND-06). Kane IUA freeze `f9389bf` does not license customer precision.
 
 | ID | Kill line | Status 17.08 evening |
 |---|---|---|
 | RT-FUND-25 | «5/5 executable readiness = you are GO / fundable» | **FIXED** — TIER0 now says form fields, not Checkpoint GO |
 | RT-FUND-26 | «Letter already with the tracker / Samolet» | **FIXED** — form in git; delivery is operator, not a git fact |
-| RT-FUND-06 | README `tests_passed` means HEAD fully tested | **ACCEPTED** — pin `acac02bd`; do not copy a local count |
+| RT-FUND-06 | README `tests_passed` means HEAD fully tested | **ACCEPTED** — pin = `runtime-baseline-latest.json`; do not copy a local count |
 | RT-FUND-10 | No entity → no SAFE | **ACCEPTED** — human; do not promise a round |
 | RT-FUND-19 | No paid pilot, no LOI | **ACCEPTED** — KPI = 3–5 scheduled demos; git demos = 0 |
 
@@ -53,7 +53,7 @@ Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08
 | RT-FUND-03 | «MinStroy XSD = экспертиза» | Intake format, not remark corpus | **MITIGATED** |
 | RT-FUND-04 | «Clash→BCF = CDE-ready» | Own ZIP consume; `cde_import=NOT_VERIFIED` | **MITIGATED** (HTML/UI 15.08: «Not a CDE import») |
 | RT-FUND-05 | «SP 63 template = solver» | 20 mm covering pset, not table 8.1 | **MITIGATED** |
-| RT-FUND-06 | «README `tests_passed` means HEAD fully tested» | CI pin `acac02bd` (`tests_passed=2455`); a local pytest count is not publishable (N-26) | **ACCEPTED** — do not copy a local count into README |
+| RT-FUND-06 | «README `tests_passed` means HEAD fully tested» | CI pin = `runtime-baseline-latest.json`; a local pytest count is not publishable (N-26) | **ACCEPTED** — do not copy a local count into README |
 | RT-FUND-07 | Open 0.86 / 0.43 as product accuracy | Fixture F1 vs AECV open-bench | **MITIGATED** in pitch card; keep repeating |
 | RT-FUND-08 | Harbor 160 skipped → invent false-pass % | Inventory 196 only | **ACCEPTED** SKIPPED |
 

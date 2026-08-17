@@ -35,7 +35,7 @@ Object: clone as TechLab jury, MIK stage officer, tracker Siginevich, IT mentor,
 | RT-JURY-D01 | TechLab | Open `wall-guid/report.html` as overlay | **MITIGATED** — live CLI first; hashed HTML is pin |
 | RT-JURY-D02 | TechLab | Open `vertical-slice/report.html` | **FIXED** — unpublished from the public tree |
 | RT-JURY-D06 | TechLab | 11.08 handoff / 5:30 pitch still overlay-first | **FIXED** 17.08 evening — sell-path = Acceptance Gate on handoff, pitch, tracker addendum |
-| RT-JURY-G01 | IT mentor | Quote a local pytest count against the CI pin | **MITIGATED** — CI pin `acac02bd` / 2455 |
+| RT-JURY-G01 | IT mentor | Quote a local pytest count against the CI pin | **MITIGATED** — CI pin = `runtime-baseline-latest.json`; local pytest ≠ pin |
 | RT-JURY-I01 | TechLab | Jury memo pins a stale `HEAD` SHA (`25ef3ee`) | **FIXED** — formula SSOT is the FAQ |
 | RT-JURY-I02 | TechLab | AABB n=5 vs n=6 vs duplex 654 as one score | **FIXED** — fixture P/R **n=6**; 654 = inventory |
 | RT-JURY-I04 | IT mentor | Clash README matrix quote still `n=5` while JSON `support=6` | **FIXED** 17.08 evening — matrix wording **n=6** |
