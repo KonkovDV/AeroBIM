@@ -1,8 +1,8 @@
 ---
 title: "Поле «Дополнительные материалы» — доказательства и самопроверка"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-16"
+version: "1.0.1"
+last_updated: "2026-08-17"
 claim_boundary: >
   Supporting evidence index. Open benches and fixtures are not the customer
   корпус. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -30,13 +30,14 @@ claim_boundary: >
 
 ## 3. Самопроверка (красная команда)
 
-Серия внутренних состязательных аудитов за 16.08 с реестром находок:
+Серия внутренних состязательных аудитов 15–17.08 с реестром находок:
 
 | Отчёт | Вектор |
 |---|---|
 | [`../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md`](../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) | Итоговый вердикт серии |
-| [`../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Атаки со стороны жюри |
+| [`../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Атаки шести столов: Техлаб, МИК, трекер, ИТ-ментор, наука, венчур |
 | [`../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) | Академическая корректность заявлений |
+| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane Interpretation/Use ledger: лицензированные и запрещённые выводы (freeze `f9389bf`) |
 | [`../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Принятые риски с обоснованием |
 
 Мы публикуем собственные найденные слабости. Это осознанная позиция: проверяемость важнее гладкой картинки.

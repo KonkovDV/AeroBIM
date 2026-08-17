@@ -1,8 +1,8 @@
 ---
 title: "Поле «Прототип» — запуск и проверяемое поведение"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-16"
+version: "1.0.1"
+last_updated: "2026-08-17"
 claim_boundary: >
   Runnable prototype on fixtures. Not customer корпус, not measured SLA,
   not product accuracy. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -28,7 +28,8 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 
 | Команда | Что демонстрирует |
 |---|---|
-| `python -m aerobim.tools.run_demo_vertical_slice` | Наложение проблемной зоны на PDF-чертёж (детерминированные рамки) |
+| `python -m aerobim.tools.run_demo_ifc_acceptance_gate` | **Основной sell-path:** IFC + IDS → находка с доказательствами, `summary.passed=false` на fixture |
+| `python -m aerobim.tools.run_demo_vertical_slice` | Overlay (P1): наложение проблемной зоны на PDF-чертёж (детерминированные рамки) |
 | `python -m aerobim.tools.measure_package_sla` | Измерение времени обработки комплекта по протоколу |
 | `python -m aerobim.tools.evaluate_detection_precision` | Расчёт TP/FP по размеченному набору |
 | `python -m aerobim.tools.validate_dwg_toolchain` | Честный отчёт: чтение DWG без конвертации — `NOT_IMPLEMENTED` |

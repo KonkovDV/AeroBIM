@@ -47,7 +47,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 |---|---|
 | CI | [`../../.github/workflows/`](../../.github/workflows/) · бейдж в [`../../README.md`](../../README.md) |
 | Сообщество GitHub | [`../../LICENSE`](../../LICENSE) · [`../../SECURITY.md`](../../SECURITY.md) · [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) · [`../../CODE_OF_CONDUCT.md`](../../CODE_OF_CONDUCT.md) · [`../../SUPPORT.md`](../../SUPPORT.md) |
-| Пины прогонов | [`../../docs/evidence/runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json) |
+| Пины прогонов | [`../../docs/evidence/runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json) (CI pin `acac02bd`, `tests_passed=2455` / `collected=2473`; локальный pytest ≠ pin) |
 | Воспроизводимость | [`../../docs/REPRODUCIBILITY-2026.md`](../../docs/REPRODUCIBILITY-2026.md) |
 | Известные дефекты | [`../../KNOWN_BUGS.md`](../../KNOWN_BUGS.md) |
 | Безопасность | [`../../SECURITY.md`](../../SECURITY.md) |
@@ -63,4 +63,4 @@ python scripts/lint_claims.py --matrix-guard     # заблокированны�
 python scripts/check_docs_metadata_integrity.py  # версии и даты документов
 ```
 
-Эти проверки запрещают в публичных текстах заявления, не подкреплённые evidence, — включая наши собственные.
+Эти проверки запрещают в публичных текстах заявления, не подкреплённые evidence, — включая наши собственные. После гигиенических коммитов CI pin может отставать от HEAD до следующего прогона CI (N-43).
