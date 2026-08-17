@@ -2,7 +2,7 @@
 ---
 title: "КТ#2 — пакет подачи (Техлаб Москва, Задача 07)"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 last_updated: "2026-08-17"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
@@ -15,6 +15,8 @@ claim_boundary: >
 **Команда:** AeroBIM · **Задача:** 07 «Система автоматизированной верификации проектной и рабочей документации» · **Заказчик:** ГК «Самолёт» · **КТ#2:** 20.08.2026
 
 **Checkpoint: `NO_GO`.** Не прячем. Стадия МИК — **доработка**. Блокеры RT-001/002/003 закрываются только доказательствами заказчика: [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md).
+
+**Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin `acac02bd` ([`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json), `attested_by=ci`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После гигиены pin может отставать (N-43); локальный pytest не публикуем.
 
 ## Пять полей формы → пять папок
 

@@ -71,6 +71,7 @@ _WORDING_SSOT = _REPO / "audit" / "claims_forbidden_wording.json"
 # not amnesty an entire section (HDS-SUB-02).
 _SECTION_NEGATION_MARKERS = (
     "запрещено",
+    "нельзя",
     "forbidden",
     "not claimed",
     "не заявляется",

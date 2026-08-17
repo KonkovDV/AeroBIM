@@ -393,7 +393,40 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("27/1026", text)
         self.assertIn("Intake-form", text)
         self.assertIn("Six desks", text)
+        self.assertIn("Объект КТ#2", text)
+        self.assertIn("RED_TEAM_FINAL_VERDICT_2026_08_16.md", text)
         self.assertNotIn("Executable readiness = 5/5", text)
+
+    def test_kt2_object_commit_card_is_on_jury_index(self) -> None:
+        submission = (self._repo() / "submission" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Объект КТ#2", submission)
+        self.assertIn("acac02bd", submission)
+        self.assertIn("f9389bf", submission)
+
+    def test_jury_surfaces_omit_third_party_surnames(self) -> None:
+        needles = ("Поздняков", "Самоходкин", "Бурнаев", "трекера Дмитрия")
+        surfaces = (
+            self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
+            self._repo() / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md",
+            self._repo() / "backend" / "src" / "aerobim" / "domain" / "interpretation_use.py",
+            self._repo() / "docs" / "TIER0_INDEX.md",
+            self._repo() / "README.ru.md",
+            self._repo() / "submission" / "README.md",
+        )
+        for path in surfaces:
+            text = path.read_text(encoding="utf-8")
+            for needle in needles:
+                self.assertNotIn(needle, text, msg=f"{path.name}: {needle}")
+
+    def test_faq_separates_coverage_map_from_product_accuracy(self) -> None:
+        text = (
+            self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("coverage_map_only", text)
+        self.assertIn("16,7%", text)
+        self.assertIn("не точность продукта", text)
 
     def test_tier0_red_teams_omit_local_pytest_count(self) -> None:
         repo = self._repo()
@@ -588,6 +621,7 @@ class JuryPackHygieneTests(unittest.TestCase):
             "docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md",
             "docs/quality/RED_TEAM_REAUDIT2_2026_08_16.md",
             "docs/evidence/DATASET_HUNT_LOG_2026_08.md",
+            "scripts/bootstrap_claims_allow_file.py",
         )
         for rel in forbidden:
             self.assertFalse(self._is_tracked(rel), msg=rel)
