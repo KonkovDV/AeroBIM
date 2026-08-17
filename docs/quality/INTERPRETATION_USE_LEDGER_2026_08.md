@@ -16,7 +16,7 @@ claim_boundary: >-
 Валидность — свойство **вывода из оценки**, не свойства программы (Messick 1995; Kane 2013). Этот файл — SSOT: что текущие цифры AeroBIM имеют право значить для Самолёта, , Техлаба, МИК и отраслевых стандартов, и чего они значить не имеют.
 
 - Checkpoint **NO_GO**
-- audited_head `f9389bf`
+- IUA freeze (construct-validity object, not HEAD): `f9389bf`
 - closes_rt001/002/003: **false**
 - CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`
 

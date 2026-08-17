@@ -28,7 +28,7 @@ Authority: Самолёт ТЗ → контрактные критерии Те�
 | Fund agreement / finance | — | — | M2/M8 | — | **VERIFY_WITH_OPERATOR** |
 | Site act | — | — | M7 | Appendices ready | **BLOCKED_CUSTOMER** |
 | Drawing overlay | TZ UI | — | — | Smoke PNG + panel | **L1 ready (not CV)** |
-| Clash measure | TZ accuracy | — | — | AABB n=5 fixture | **L1 only** |
+| Clash measure | TZ accuracy | — | — | AABB n=6 fixture | **L1 only** |
 
 ## 2. World-practice crosswalk (Aug 2026)
 

@@ -262,7 +262,11 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("Checkpoint stays **NO_GO**", text)
         self.assertIn("RT-JURY-K01", text)
         self.assertIn("RT-JURY-K02", text)
+        self.assertIn("RT-JURY-I01", text)
+        self.assertIn("RT-JURY-I02", text)
+        self.assertIn("RT-JURY-D06", text)
         self.assertIn("vertical-slice/report.html", text)
+        self.assertIn("run_demo_ifc_acceptance_gate", text)
         self.assertNotIn("2259", text)
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
@@ -331,6 +335,44 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
                 self.assertIn(marker, text, msg=path.name)
             self.assertNotIn("Новатор", text, msg=path.name)
             self.assertNotIn("2259", text, msg=path.name)
+            self.assertNotIn("25ef3ee", text, msg=path.name)
+
+    def test_jury_memo_does_not_pin_a_stale_head_sha(self) -> None:
+        text = (self._repo() / "docs" / "docs.md").read_text(encoding="utf-8")
+        self.assertNotIn("HEAD `", text)
+        self.assertIn("карточка речи", text)
+
+    def test_aabb_fixture_n6_is_not_conflated_with_duplex_inventory(self) -> None:
+        faq = (self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("n=6", faq)
+        self.assertIn("654", faq)
+        self.assertIn("geometry_verified=false", faq)
+        self.assertIn("Messick", faq)
+        slice_readme = (
+            self._repo() / "docs" / "evidence" / "clash-measurement-slice-2026-08" / "README.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("n=6", slice_readme)
+        self.assertNotIn("at n=5", slice_readme)
+        tri = (
+            self._repo() / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AABB n=6 fixture", tri)
+        self.assertNotIn("AABB n=5 fixture", tri)
+        handoff = (
+            self._repo() / "docs" / "evidence" / "kt2-handoff-2026-08-11" / "README.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("run_demo_ifc_acceptance_gate", handoff)
+        self.assertIn("run_demo_vertical_slice", handoff)
+        self.assertIn("AABB n=6", handoff)
+        self.assertNotIn("AABB n=5", handoff)
+
+    def test_tier0_states_kane_iua_freeze(self) -> None:
+        text = (self._repo() / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
+        self.assertIn("Kane IUA", text)
+        self.assertIn("f9389bf", text)
+        self.assertIn("27/1026", text)
 
     def test_tier0_red_teams_omit_local_pytest_count(self) -> None:
         repo = self._repo()

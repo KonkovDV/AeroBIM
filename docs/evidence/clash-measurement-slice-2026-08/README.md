@@ -4,7 +4,7 @@ title: "Clash measurement slice — fixture measured (2026-08-11)"
 status: active
 version: "0.2.0"
 date: "2026-08-11"
-claim_boundary: "Fixture AABB P/R only. Allowed: geometric intersection of extents, measured P/R at n=5 — never «коллизия по ТЗ >90%», never customer corpus, never IfcClash mesh product claim."
+claim_boundary: "Fixture AABB P/R only. Allowed: geometric intersection of extents, measured P/R at n=6 — never «коллизия по ТЗ >90%», never customer corpus, never IfcClash mesh product claim."
 ---
 
 # Clash measurement slice (updated 2026-08-11)
