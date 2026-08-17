@@ -3,7 +3,7 @@
 title: "Red Team — жюри Техлаб × МИК × Новатор"
 date: "2026-08-16"
 status: active
-version: "1.1.1"
+version: "1.2.0"
 last_updated: "2026-08-17"
 closes_rt001: false
 closes_rt002: false
@@ -24,26 +24,43 @@ claim_boundary: >
 
 **Новатор 2026:** not a filing. Criteria are a thinking model only. Honest 2027 nomination, if any: «Меняющие реальность» — **not** «Лидеры инноваций» (no legal entity, no revenue).
 
-## Current pass (public `main`, 17.08 — triage)
+## Current pass (public `main`, 17.08 evening — six desks)
 
-Object: TechLab jury pack after unpublished operator dumps + link/pin hygiene. Live demo = `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Overlay `run_demo_vertical_slice` is P1. Do not open `docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html` as overlay. IUA freeze remains `f9389bf`.
+Object: clone as TechLab jury, MIK stage officer, tracker Siginevich, IT mentor, scientific consultant, seed associate. Live demo = `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Overlay `run_demo_vertical_slice` is P1. Do not open `docs/evidence/kt2-handoff-2026-08-11/wall-guid/report.html` as overlay. IUA freeze remains `f9389bf`.
 
-| ID | Attack | Status |
-|---|---|---|
-| RT-JURY-K01 | Clone reads as LLM/session dump (mentor briefs, rewrite-author, local pytest pin) | **MITIGATED** — unpublished from GitHub; gitignore |
-| RT-JURY-K02 | README leads with tracker-meeting notes; Studio «deep analysis» / harness runbook / LOI template still on the tree | **MITIGATED** — front door = TIER0 + Hostile QA + Samolet ask; dumps unpublished |
-| RT-JURY-D01 | Open `wall-guid/report.html` as overlay | **MITIGATED** — live CLI first; hashed HTML is fixture pin, not overlay |
-| RT-JURY-D02 | Open `vertical-slice/report.html` | **FIXED** — unpublished from the public tree |
-| RT-JURY-D06 | 11.08 handoff README still leads with overlay as *the* demo | **FIXED** 17.08 — sell-path = Acceptance Gate; overlay kept as P1; `run_demo_vertical_slice` remains for the verifier |
-| RT-JURY-G01 | Quote a local pytest count against the README CI pin | **MITIGATED** — local pin unpublished; CI pin stays in `runtime-baseline-latest.json`; TIER0 Academic/Funding RT do not quote the local count |
-| RT-JURY-I01 | Jury memo pins a stale `HEAD` SHA (`25ef3ee`) | **FIXED** 17.08 — formula SSOT is the FAQ; no floating HEAD in `docs.md` |
-| RT-JURY-I02 | AABB n=5 vs n=6 vs duplex 654 conflated as one clash score | **FIXED** 17.08 — fixture P/R **n=6**; duplex **654** = inventory, `geometry_verified=false` |
-| RT-JURY-I03 | N-43: committed runtime baseline lags HEAD after hygiene commits | **ACCEPTED** — CI pin `acac02bd` stays until the next CI-attested artifact; do not mint a local attestation |
-| RT-JURY-V01 | Fixture fail-closed sold as Messick *criterion* validity for Samolet | **ACCEPTED** — Kane IUA still FAIL for customer use; ledger freeze `f9389bf` |
-| RT-JURY-M01 | «Отобраны → продукт готов» | **MITIGATED** — stage = доработка |
-| RT-JURY-C01 | Kitchen cleanup flips Checkpoint GO | **REJECTED** — RT-001/002/003 stay OPEN |
+| ID | Desk | Attack | Status |
+|---|---|---|---|
+| RT-JURY-K01 | TechLab | Clone reads as LLM/session dump | **MITIGATED** — unpublished; gitignore |
+| RT-JURY-K02 | TechLab | README leads with tracker dumps / Studio analysis | **MITIGATED** — front door = TIER0 + Hostile QA + Samolet ask |
+| RT-JURY-D01 | TechLab | Open `wall-guid/report.html` as overlay | **MITIGATED** — live CLI first; hashed HTML is pin |
+| RT-JURY-D02 | TechLab | Open `vertical-slice/report.html` | **FIXED** — unpublished from the public tree |
+| RT-JURY-D06 | TechLab | 11.08 handoff / 5:30 pitch still overlay-first | **FIXED** 17.08 evening — sell-path = Acceptance Gate on handoff, pitch, tracker addendum |
+| RT-JURY-G01 | IT mentor | Quote a local pytest count against the CI pin | **MITIGATED** — CI pin `acac02bd` / 2455 |
+| RT-JURY-I01 | TechLab | Jury memo pins a stale `HEAD` SHA (`25ef3ee`) | **FIXED** — formula SSOT is the FAQ |
+| RT-JURY-I02 | TechLab | AABB n=5 vs n=6 vs duplex 654 as one score | **FIXED** — fixture P/R **n=6**; 654 = inventory |
+| RT-JURY-I04 | IT mentor | Clash README matrix quote still `n=5` while JSON `support=6` | **FIXED** 17.08 evening — matrix wording **n=6** |
+| RT-JURY-I03 | IT mentor | N-43: runtime baseline lags HEAD after hygiene | **ACCEPTED** — do not mint a local attestation |
+| RT-JURY-T06 | Tracker | 14.08 one-pager overlay-first + «1980 / 656» as if current | **MITIGATED** — addendum 17.08; historical row labelled snapshot |
+| RT-JURY-S01 | Tracker | «Письмо уже у трекера» as a git fact | **FIXED** — form in repo; delivery = operator |
+| RT-JURY-F01 | MIK / VC | «Executable readiness 5/5» read as Checkpoint GO / traction | **FIXED** — 5/5 = intake-form fields, not GO |
+| RT-JURY-V01 | Science | Fixture fail-closed sold as Messick *criterion* for Samolet | **ACCEPTED** — Kane IUA still FAIL for customer use |
+| RT-JURY-M01 | MIK | «Отобраны → продукт готов / валидирован» | **MITIGATED** — stage = доработка |
+| RT-JURY-C01 | All | Kitchen cleanup flips Checkpoint GO | **REJECTED** — RT-001/002/003 stay OPEN |
 
-Engineering readiness improved. **Customer and MIK-act readiness did not.** Checkpoint stays **NO_GO**.
+### Six-desk scorecard (17.08 evening)
+
+Scale: 0 = missing, 1 = protocol/fixture only, 2 = customer-evidenced. Do not average into product accuracy.
+
+| Desk | What they open first | Licensed today | Kill if spoken | Score |
+|---|---|---|---|---|
+| **TechLab jury** | README formula → `submission/` → live CLI | Fail-closed finding on fixture; stage = доработка | Snapshot HTML as overlay; 27/1026 as product accuracy | 1 |
+| **MIK** | Four-stage model + `docs.md` calendar | Stage 2 доработка; protocol for stage 3 exists | Валидация эффективности / внедрение as current fact; ENG_READY SLA | 1 (stage 2) / **0** (stages 3–4) |
+| **Tracker** | [`TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) + addendum | Tasks 1–3: gate + IFC matrix + countable open benches; Plan B 15.09 | Overlay as *the* product; 1980/656 as CI; letter «already sent» | 1 |
+| **IT mentor** | Live CLI + fail-closed IDS + CI pin | Reproducible gate; SKIPPED→FAILED; N-43 lag disclosed | Local pytest as README pin; clash README n=5 vs JSON n=6 | 1–2 (engine) |
+| **Science** | Kane IUA ledger freeze `f9389bf` | Content/substantive for the engine; criterion FAIL for Samolet | Fixture F1 / AABB P/R as Task-07 precision | 1 (IUA) / **0** (criterion) |
+| **VC / seed** | Funding RT; no entity | Ask = slot + labelled pack; MIT + services | SAFE / paid-pilot 2 млн as awarded; 5/5 as traction | **NOT READY** |
+
+Engineering readiness improved. **Customer, MIK-act, and fundraise readiness did not.** Checkpoint stays **NO_GO**.
 
 ## Historical pass (15.08, object `0402a7e`)
 
@@ -128,7 +145,7 @@ Scale: 0 = missing, 1 = protocol/fixture only, 2 = customer-evidenced.
 |---|---|---|
 | Match to Самолет Task 07 (IFC+PDF+IDS path) | 1 | Fixture demo exists; customer pack absent |
 | Scientific-technical novelty (hybrid + fail-closed) | 1–2 | Architecture is real; not a unique moat vs in-house |
-| Demo / presentation | 1 | Live CLI survives; snapshot HTML still in tree as a trap |
+| Demo / presentation | 1 | Live CLI survives; 11.08 `wall-guid` HTML remains a hash pin, not overlay |
 | Honesty / defence | 2 | NO_GO first is the strongest jury asset |
 | Effectiveness validation (МИК stage 3) | **0** | No labelled pack, no dual raters, no time-saved |
 | Implementation (МИК stage 4) | **0** | No CDE, no entity, no paid pilot |

@@ -60,5 +60,5 @@ Customer / pilot IFC with real solids for n≈50 dual-blind labels is still requ
 
 ## Matrix wording
 
-`precision=1.0 recall=1.0 n=5 (AABB extents, fixture_only; not customer; not TZ >90%)`  
+`precision=1.0 recall=1.0 n=6 (AABB extents, fixture_only; not customer; not TZ >90%)`  
 and run `python scripts/lint_claims.py --matrix-guard`.

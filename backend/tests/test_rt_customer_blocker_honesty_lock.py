@@ -265,6 +265,10 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("RT-JURY-I01", text)
         self.assertIn("RT-JURY-I02", text)
         self.assertIn("RT-JURY-D06", text)
+        self.assertIn("RT-JURY-I04", text)
+        self.assertIn("RT-JURY-T06", text)
+        self.assertIn("RT-JURY-F01", text)
+        self.assertIn("six desks", text.lower())
         self.assertIn("vertical-slice/report.html", text)
         self.assertIn("run_demo_ifc_acceptance_gate", text)
         self.assertNotIn("2259", text)
@@ -336,6 +340,10 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self.assertNotIn("Новатор", text, msg=path.name)
             self.assertNotIn("2259", text, msg=path.name)
             self.assertNotIn("25ef3ee", text, msg=path.name)
+        pitch = (self._repo() / "docs" / "partners" / "PITCH_NOVALTOR_TECHLAB_2026_08.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("run_demo_ifc_acceptance_gate", pitch)
 
     def test_jury_memo_does_not_pin_a_stale_head_sha(self) -> None:
         text = (self._repo() / "docs" / "docs.md").read_text(encoding="utf-8")
@@ -354,6 +362,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self._repo() / "docs" / "evidence" / "clash-measurement-slice-2026-08" / "README.md"
         ).read_text(encoding="utf-8")
         self.assertIn("n=6", slice_readme)
+        self.assertNotIn("n=5 (AABB", slice_readme)
         self.assertNotIn("at n=5", slice_readme)
         tri = (
             self._repo() / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
@@ -373,6 +382,9 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("Kane IUA", text)
         self.assertIn("f9389bf", text)
         self.assertIn("27/1026", text)
+        self.assertIn("Intake-form", text)
+        self.assertIn("Six desks", text)
+        self.assertNotIn("Executable readiness = 5/5", text)
 
     def test_tier0_red_teams_omit_local_pytest_count(self) -> None:
         repo = self._repo()
@@ -492,6 +504,9 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("Не kill сегодня", text)
         self.assertIn("NO_GO", text)
         self.assertIn("27/1026", text)
+        self.assertIn("run_demo_ifc_acceptance_gate", text)
+        self.assertIn("2455", text)
+        self.assertIn("оператор, не git-факт", text)
         self.assertNotIn("25/1026", text)
 
     def test_alignment_f1_cell_is_fixture_qualified(self) -> None:
@@ -517,6 +532,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT2_TASK07_COMPARISON_2026_08.md", text)
         self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
         self.assertIn("четыре пункта", text)
+        self.assertIn("оператор, не git-факт", text)
+        self.assertNotIn("уже у трекера", text)
         self.assertIn("15.09", text)
         self.assertNotIn("2259", text)
         self.assertNotIn("开场", text)

@@ -3,9 +3,18 @@
 title: "Встреча с трекером 14.08.2026 08:00"
 date: "2026-08-14"
 claim_boundary: "Fixture demo. Checkpoint NO_GO. Not customer accuracy. Not DWG-ready. Not MEP delivered."
+last_updated: "2026-08-17"
 ---
 
 # Трекеру, 14 августа 08:00 — одна страница
+
+## Addendum 17.08 (не переписывает протокол 14.08)
+
+Sell-path к КТ#2: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Overlay `run_demo_vertical_slice` — P1; это то, что показывали 14.08, не ядро вердикта.
+
+CI pin: `tests_passed=2455` / `tests_collected=2473` @ `acac02bd` в [`../evidence/runtime-baseline-latest.json`](../evidence/runtime-baseline-latest.json). Строка «1980 проверок / 656 тестов» ниже — **срез 14.08**, не текущий pin. Локальный pytest не подменяет CI.
+
+Форма запроса Самолёту: [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md). Доставка трекеру — оператор, не git-факт.
 
 ## Главное за 30 секунд
 

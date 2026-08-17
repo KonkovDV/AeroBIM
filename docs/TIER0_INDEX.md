@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — TechLab jury"
 status: active
-version: "4.5.6"
+version: "4.5.7"
 last_updated: "2026-08-17"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -12,6 +12,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 **`NO_GO`** — [CRITICAL_BLOCKERS](../audit/reports/CRITICAL_BLOCKERS.md) · [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [claim-boundary](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
 
 **Kane IUA (30 s).** Licensed today: fixture demo, fail-closed IDS (BSI 0101), open-bench countable **27/1026**, protocol planning. Blocked: customer precision, TZ >90%, customer SLA, MEP delivered, CDE import, Checkpoint GO. Ledger: [Interpretation/Use](quality/INTERPRETATION_USE_LEDGER_2026_08.md). IUA freeze `f9389bf` — later hygiene commits do not reopen validity.
+
+**Six desks (17.08).** TechLab / MIK / tracker / IT mentor / science / VC: [Jury × MIK red team](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) § Current pass. Form 5/5 ≠ Checkpoint GO.
 
 | Document | Role |
 |---------|------|
@@ -54,7 +56,7 @@ Operator runbooks, session audits, and commercial PII live under `.local/` — n
 
 ## Pre-flight (KT#2, 20.08)
 
-Executable readiness = 5/5. Checkpoint **NO_GO**. Fixes are code+tests in this tree; rehearsal / operator mp4 / ЛК upload are human (`RED_TEAM_FINAL_VERDICT_2026_08_16.md` §4).
+Intake-form completeness = **5/5 fields** have a deliverable in this tree. That is not Checkpoint GO, not MIK stage 3, not a measured effect. Checkpoint **NO_GO**. Fixes are code+tests in this tree; rehearsal / operator mp4 / ЛК upload are human (`RED_TEAM_FINAL_VERDICT_2026_08_16.md` §4).
 
 | # | Requirement (KT#2 card) | Deliverable in this tree | Gate |
 |---|---|---|---|

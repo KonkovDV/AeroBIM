@@ -1,15 +1,15 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.46"
+version: "1.6.47"
 last_updated: "2026-08-17"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
 
-# Engineering Status — 2026-08-16
+# Engineering Status — 2026-08-17
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-16 · **v1.6.46** — KT#2 card mapped 5/5 in TIER0_INDEX; architecture re-check remainder closed; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
+**last_updated:** 2026-08-17 · **v1.6.47** — six-desk RT (TechLab/MIK/tracker/IT/science/VC); form 5/5 ≠ GO; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Jury / MIK:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
@@ -64,7 +64,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **Academic literature triage (16.08)** | Kane/Messick map of Aug 2026 papers; Harbor NOT_RUN; IDS 1.1 not final; ISO 19650-6 not implemented | Not RT-001/002/003 CLOSED; [`quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md) |
 | **Residual close-out (16.08)** | `docs/partners/` claims-lint unblind (HDX-LINT-01); Postgres `001_reports_tenant_id.sql` + `AEROBIM_POSTGRES_APPLY_DDL=0`; IFC LRU ceiling 8×256 MiB JSON; mp4 gitignored | Not RT-001/002/003 CLOSED; mp4 still operator |
 | **Architecture re-check remainder (16.08)** | `--day` default `latest` fail-closed; claims-lint scans tracked architecture/quality/gtm (no directory blinds); 413/415/422 upload quota release tests; `0` rate-limit rejected at boot on `samolet_pilot`/`production` | Not RT-001/002/003 CLOSED; 0=off remains development-only |
-| **KT#2 readiness card (16.08)** | 5/5 requirements executable: [`TIER0_INDEX.md`](TIER0_INDEX.md) → video script + approach + 5-up comparison + playbook + status. Live CLI `run_demo_ifc_acceptance_gate` reproducible on fixture | Not RT-001/002/003 CLOSED; mp4 = operator 17–19.08; ЛК upload = human |
+| **KT#2 readiness card (16.08)** | 5/5 **intake-form fields** have a tree deliverable: [`TIER0_INDEX.md`](TIER0_INDEX.md) → video script + approach + 5-up comparison + playbook + status. Live CLI `run_demo_ifc_acceptance_gate` reproducible on fixture | Not RT-001/002/003 CLOSED; not Checkpoint GO; mp4 = operator 17–19.08; ЛК upload = human |
+| **Six-desk RT (17.08 evening)** | TechLab / MIK / tracker / IT mentor / science / VC pass: Gate sell-path, AABB n=6, tracker addendum, letter ≠ git-fact, Kane freeze `f9389bf` | Not RT CLOSED; N-43 lag **ACCEPTED**; criterion IUA still FAIL |
 | **N-43 baseline lag (17.08)** | Committed CI pin remains `acac02bd` (`tests_passed=2455`). Hygiene commits after that do not mint a local attestation | Not Checkpoint GO; next CI must refresh `runtime-baseline-latest.json` |
 | **Dataset CLI (task 3, 16.08)** | PNST 22-scenario CLI + frozen pairing; live pack truncated → `SKIPPED_PACK_INCOMPLETE` (05.08 **18/22** kept). IFC-Bench v2 **27/1026** re-run pin ok. Ishigaki gold XML processability 166/166 (not generation F1, no IFC). DrawingVQA link-only | Not a fresh 18/22; Harbor NOT_RUN; not RT-001 |
 | **IfcClash tiny walls** | Skip degenerate products (`AEROBIM_CLASH_SKIP_TINY`, default on); all-skipped still FAILED | Not a silent pass |

@@ -3,6 +3,7 @@
 title: "Red Team + VC diligence attacks — AeroBIM КТ#2"
 date: "2026-08-15"
 status: active
+last_updated: "2026-08-17"
 claim_boundary: >
   Adversarial review for TechLab/jury and hypothetical seed diligence.
   Checkpoint NO_GO. Does not close RT-001/002/003. Not a term sheet.
@@ -28,6 +29,18 @@ claim_boundary: >
 | KT#2 speech | **Survivable if** NO_GO is first, demo is live slice, Wave A is not sold as CLOSED |
 
 Engineering readiness improved. Customer and investor readiness did **not**.
+
+## Current pass (17.08 evening — VC desk)
+
+Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08). TIER0 «5/5» is intake-form completeness, not traction. CI pin `acac02bd` / `tests_passed=2455` is not HEAD-complete (N-43 / RT-FUND-06). Kane IUA freeze `f9389bf` does not license customer precision.
+
+| ID | Kill line | Status 17.08 evening |
+|---|---|---|
+| RT-FUND-25 | «5/5 executable readiness = you are GO / fundable» | **FIXED** — TIER0 now says form fields, not Checkpoint GO |
+| RT-FUND-26 | «Letter already with the tracker / Samolet» | **FIXED** — form in git; delivery is operator, not a git fact |
+| RT-FUND-06 | README `tests_passed` means HEAD fully tested | **ACCEPTED** — pin `acac02bd`; do not copy a local count |
+| RT-FUND-10 | No entity → no SAFE | **ACCEPTED** — human; do not promise a round |
+| RT-FUND-19 | No paid pilot, no LOI | **ACCEPTED** — KPI = 3–5 scheduled demos; git demos = 0 |
 
 ## Attack tree (how a hostile partner actually kills you)
 

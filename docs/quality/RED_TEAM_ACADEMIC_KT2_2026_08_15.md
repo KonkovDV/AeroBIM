@@ -3,6 +3,7 @@
 title: "Academic Red Team — construct validity, ISO 19650, Solihin classes, KT#2"
 date: "2026-08-16"
 status: active
+last_updated: "2026-08-17"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -13,9 +14,9 @@ claim_boundary: >
   Local pytest count is not the CI pin (N-26).
 ---
 
-# Academic Red Team (KT#2 window, refreshed 16.08.2026)
+# Academic Red Team (KT#2 window, refreshed 17.08.2026)
 
-**Object:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (construct-validity object). Hygiene on 17.08 (readable links, 27/1026 pin, kitchen unpublished) does not reopen the IUA or close RT-001/002/003.  
+**Object:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (construct-validity object). Hygiene on 17.08 (six-desk pass: sell-path Gate, AABB n=6, kitchen unpublished) does not reopen the IUA or close RT-001/002/003.  
 **Literature companion:** [`ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](ACADEMIC_LITERATURE_TRIAGE_2026_08.md) — August 2026 papers, IDS 1.1 status, ISO 19650-6, LLM-as-judge, clash FP.  
 **Question:** which *inferences* from current artefacts are licensed, and which are construct-invalid if spoken at KT#2, to Task 07, or to a seed associate?  
 **Checkpoint:** **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.
@@ -24,7 +25,7 @@ This pass is not another feature list. It is an **interpretation/use argument** 
 
 ## 0. Verdict
 
-Engineering readiness improved (Wave A substitutes, live vertical slice, fail-closed IDS version). **Customer readiness did not change.** Fixture GO ≠ checkpoint GO.
+Engineering readiness improved (Wave A substitutes, live Acceptance Gate, fail-closed IDS version). Overlay remains P1 of the same evidence chain. **Customer readiness did not change.** Fixture GO ≠ checkpoint GO. Scientific consultant desk: Messick *content/substantive* for the engine can be PASS; *criterion/consequential* for «pilot on Samolet packs» stays FAIL.
 
 | Lane | Result |
 |---|---|
@@ -62,7 +63,7 @@ Internal SSOT: [`OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](OPEN_BENCH_VS_RT00
 
 **Claimed score uses that ARE licensed today**
 
-1. “This command produces a non-PASS finding with overlay, provenance, and a structural BCF ZIP on a **fixture** pack.”  
+1. “This command (`run_demo_ifc_acceptance_gate`) produces a non-PASS finding with provenance and a structural BCF ZIP on a **fixture** pack. Overlay is P1, not the criterion score.”  
 2. “IDS `ifcVersion` vs `FILE_SCHEMA` is fail-closed (BSI case 0101).”  
 3. “Capability states that are SKIPPED/MISSING/NOT_VERIFIED do not silently pass.”  
 4. “Document-level audit of 50 official `.ids` files found 0 XML/schema issues under AeroBIM’s IDS 1.0 XSD auditor.”

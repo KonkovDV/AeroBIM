@@ -16,7 +16,7 @@ claim_boundary: >
 
 # Триаж литературы и Red Team валидности (срез 16.08.2026)
 
-**Объект:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf). Гигиена 17.08 (ссылки, pin 27/1026) не переоткрывает IUA и не закрывает RT-001/002/003.  
+**Объект:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf). Шесть столов 17.08 (Gate sell-path, AABB n=6, tracker addendum) не переоткрывают IUA и не закрывают RT-001/002/003.  
 **Вопрос:** какие *выводы* из текущих артефактов AeroBIM лицензирует научная картина августа 2026, и какие выводы она прямо запрещает, если их произнести на КТ#2.  
 **Метод:** Interpretation/Use Argument (Kane, 2013) поверх шести аспектов Messick (1995), затем атакующее дерево.  
 **Checkpoint:** **`NO_GO`**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.
