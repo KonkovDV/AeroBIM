@@ -1,20 +1,22 @@
 ---
-title: "Поле «Презентация» — каркас, речь, запреты"
+title: "Поле «Презентация» — дека, речь, запреты"
 status: active
-version: "1.0.1"
+version: "1.1.0"
 last_updated: "2026-08-17"
 claim_boundary: >
-  Slide skeleton and speech hygiene only. Numbers come from the frozen SSOT.
-  Checkpoint NO_GO; RT-001/002/003 OPEN.
+  Main deck is aerobim_kt2.pptx / aerobim_kt2.pdf. Slide copy in slides.md.
+  Video not recorded. Checkpoint NO_GO; RT-001/002/003 OPEN.
 ---
 
 # Презентация
 
-Файл деки (бинарник) готовит оператор к 19.08, если нужен файл в форму. Ролик 2–3 мин **не записываем и не прилагаем.** В git лежит **каркас, текст слайдов и дисциплина формулировок**, а не mp4 и не pptx.
+**Основная дека для формы и показа:** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
 
-Готовый текст восьми слайдов для переноса в деку: [`slides.md`](slides.md).
+Текст слайдов и дисциплина формулировок (SSOT для речи): [`slides.md`](slides.md). Ролик 2–3 мин **не записываем и не прилагаем.** Показ продукта — живой CLI, не mp4 и не снимок HTML.
 
-## Каркас слайдов (6–8)
+## Каркас слайдов
+
+Дека в форме — **12 слайдов** в [`aerobim_kt2.pptx`](aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Таблица ниже — опорный каркас речи, не покадровый дубль.
 
 | № | Слайд | Обязательный тезис |
 |---|---|---|

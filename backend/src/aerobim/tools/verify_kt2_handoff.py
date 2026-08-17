@@ -210,6 +210,10 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         "KT#2 video is withdrawn; live CLI is the demo",
         rows,
     )
+    deck_pptx = repo / "submission" / "03-presentation" / "aerobim_kt2.pptx"
+    deck_pdf = repo / "submission" / "03-presentation" / "aerobim_kt2.pdf"
+    _check("kt2_presentation_pptx", deck_pptx.is_file(), str(deck_pptx), rows)
+    _check("kt2_presentation_pdf", deck_pdf.is_file(), str(deck_pdf), rows)
 
     handoff_readme = handoff_dir / "README.md"
     handoff_text = handoff_readme.read_text(encoding="utf-8") if handoff_readme.is_file() else ""
