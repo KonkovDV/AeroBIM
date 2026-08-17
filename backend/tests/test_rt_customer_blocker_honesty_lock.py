@@ -773,6 +773,28 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         ):
             self.assertNotIn(needle, deck, msg=needle)
 
+    def test_submission_surfaces_are_consistent_about_deck_and_video(self) -> None:
+        deck = "aerobim_kt2.pptx"
+        video_withdrawn = "не записываем"
+        surfaces = (
+            (self._submission() / "README.md", deck),
+            (self._submission() / "01-repository" / "README.md", deck),
+            (self._submission() / "02-documentation" / "README.md", deck),
+            (self._submission() / "05-additional" / "README.md", deck),
+            (self._submission() / "TZ_REQUIREMENTS_COVERAGE_2026_08.md", deck),
+        )
+        for path, needle in surfaces:
+            text = path.read_text(encoding="utf-8")
+            self.assertIn(needle, text, msg=path.name)
+        presentation = (self._submission() / "03-presentation" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        tier0 = (
+            self._submission().parent / "docs" / "TIER0_INDEX.md"
+        ).read_text(encoding="utf-8")
+        for text, label in ((presentation, "03-presentation"), (tier0, "TIER0")):
+            self.assertIn(video_withdrawn, text, msg=label)
+
     def test_github_community_health_files_exist(self) -> None:
         root = self._submission().parent
         for name in (
