@@ -1,7 +1,7 @@
 ---
 title: "Поле «Репозиторий» — карта кода и сборки"
 status: active
-version: "1.0.1"
+version: "1.0.2"
 last_updated: "2026-08-17"
 claim_boundary: >
   Repository map only. No accuracy or SLA claims. Checkpoint NO_GO;
@@ -65,6 +65,9 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 python scripts/lint_claims.py                    # запрещённые формулировки
 python scripts/lint_claims.py --matrix-guard     # заблокированные строки матрицы ТЗ
 python scripts/check_docs_metadata_integrity.py  # версии и даты документов
+python -m aerobim.tools.verify_kt2_handoff        # самопроверка пакета КТ#2 (в т.ч. наличие деки)
 ```
+
+Презентация для формы лежит в [`../03-presentation/`](../03-presentation/README.md): [`aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx) + [`aerobim_kt2.pdf`](../03-presentation/aerobim_kt2.pdf). Видео не записываем.
 
 Эти проверки запрещают в публичных текстах заявления, не подкреплённые доказательствами, — включая наши собственные. После гигиенических коммитов CI pin может отставать от HEAD до следующего прогона CI (N-43).

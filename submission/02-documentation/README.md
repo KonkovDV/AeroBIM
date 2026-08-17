@@ -1,7 +1,7 @@
 ---
 title: "Поле «Документация» — состав сопроводительного пакета"
 status: active
-version: "1.0.2"
+version: "1.0.3"
 last_updated: "2026-08-17"
 claim_boundary: >
   Documentation index only. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -14,7 +14,7 @@ claim_boundary: >
 
 **Формула стадии (дословно, SSOT [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
-Порядок чтения для жюри — [`../../docs/TIER0_INDEX.md`](../../docs/TIER0_INDEX.md).
+Порядок чтения для жюри — [`../../docs/TIER0_INDEX.md`](../../docs/TIER0_INDEX.md). Дека подачи: [`../03-presentation/aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx) / [`../03-presentation/aerobim_kt2.pdf`](../03-presentation/aerobim_kt2.pdf).
 
 ## 1. Обязательное ядро
 

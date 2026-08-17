@@ -1,7 +1,7 @@
 ---
 title: "Поле «Дополнительные материалы» — доказательства и самопроверка"
 status: active
-version: "1.0.2"
+version: "1.0.3"
 last_updated: "2026-08-17"
 claim_boundary: >
   Supporting evidence index. Open benches and fixtures are not the customer
@@ -58,6 +58,7 @@ claim_boundary: >
 - снимок HTML 11.08 и `wall-guid/report.html` как overlay;
 - локальный pytest как CI pin;
 - письмо трекеру как факт git;
+- ролик как «видео-демо»: в git есть `aerobim_kt2.pptx` / `aerobim_kt2.pdf`, но mp4 нет и не появится;
 - юрлицо, SAFE, оплаченный пилот, 2 млн ₽.
 
 Мы публикуем найденные слабости сами, чтобы жюри не находило их первым.
