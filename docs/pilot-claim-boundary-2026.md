@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.7.2"
+version: "1.7.3"
 last_updated: "2026-08-17"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -92,7 +92,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Hybrid AI routing + WP-02 advisory pre-gate (eng) | `HybridRouteGate` mandatory before Analyze advisory observations; domain-pure, verdict-neutral (OFF==ON), fail-closed; never sets `summary.passed` |
 | Detached signature envelope (WP-03) | Presence/hash/roles; `qualified_signature` ENG_PARTIAL; trust_chain always NOT_VERIFIED |
 | Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + `execution_mode` + expert journal; fixture ≠ customer pack (RT-002 OPEN) |
-| Package completeness inventory (WP-05) | Soft opt-in inventory checks; no native DWG claim; fixture-grade only |
+| Package completeness inventory (WP-05) | Soft opt-in inventory checks; DWG native read not implemented; fixture-grade only |
 | Open corpora profiles (WP-06) | 3 pinned profiles; honest regression n=7; regression/timing only — not product accuracy |
 | Quality measurement protocol (WP-07) | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |
 | Wedge freeze 16.08 (IFC+IDS evidence layer) | [`partners/_2026_08_16.md`](partners/_2026_08_16.md) — scope freeze; not 10D/Tangl replacement; Checkpoint **NO_GO** |

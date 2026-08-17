@@ -97,8 +97,12 @@ def test_ssot_covers_ru_markers_and_core_surfaces() -> None:
         "docs/demo/KT2_JURY_FAQ_2026_08_12.md",
         "docs/pilot-claim-boundary-2026.md",
         "submission/README.md",
+        "submission/01-repository/README.md",
+        "submission/02-documentation/README.md",
         "submission/03-presentation/README.md",
         "submission/03-presentation/slides.md",
+        "submission/04-prototype/README.md",
+        "submission/05-additional/README.md",
         "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md",
     ):
         assert rel in scanned

@@ -1,7 +1,7 @@
 ---
 title: "Поле «Репозиторий» — карта кода и сборки"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 last_updated: "2026-08-17"
 claim_boundary: >
   Repository map only. No accuracy or SLA claims. Checkpoint NO_GO;
@@ -10,7 +10,11 @@ claim_boundary: >
 
 # Репозиторий
 
-**Ссылка для формы:** https://github.com/KonkovDV/AeroBIM — публичный, MIT, доступ по ссылке без регистрации.
+**Ссылка для формы:** https://github.com/KonkovDV/AeroBIM — публичный, доступ по ссылке без регистрации.
+
+**Формула стадии (дословно, SSOT [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
+
+Ядро репозитория распространяется по MIT. Лицензии сторонних зависимостей указаны отдельно: IfcOpenShell и IfcTester — LGPL-3.0+; web-ifc — MPL-2.0; AGPL-компоненты (PyMuPDF) вынесены в необязательный extra и не входят в основной runtime-контур. Политика: [`../../docs/license-policy-2026.md`](../../docs/license-policy-2026.md). Это не юридическое заключение.
 
 ## Структура
 
@@ -18,7 +22,7 @@ claim_boundary: >
 |---|---|
 | [`../../backend/`](../../backend/) | Python 3.12 · FastAPI · IfcOpenShell · IfcTester · слои domain/application/infrastructure/presentation |
 | [`../../frontend/`](../../frontend/) | React · 3D-просмотр IFC (web-ifc) · 2D-наложение · панель замечаний |
-| [`../../samples/`](../../samples/) | Фикстуры, нормо-паки, каталог типовых ошибок, приложения ТЗ |
+| [`../../samples/`](../../samples/) | Учебные комплекты (fixture): IFC, IDS, чертежи, нормо-паки. Это не выгрузка Renga заказчика и не комплект Самолёта |
 | [`../../docs/`](../../docs/) | Документация, матрицы соответствия, доказательства |
 | [`../../audit/`](../../audit/) | Claims Lock, реестр блокеров, реестр исключений линта |
 | [`../../scripts/`](../../scripts/) | Гейты честности: `lint_claims.py`, `check_docs_metadata_integrity.py` |
@@ -39,7 +43,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 
 Каноническая: [`../../docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../../docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md). Требования ТЗ к архитектуре: [`../../docs/tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](../../docs/tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md).
 
-Четыре контура: `INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING`. Технический статус `summary.passed` ставят **только** детерминированные движки — ADR-001: [`../../docs/architecture/ADR-001-verdict-ownership-2026.md`](../../docs/architecture/ADR-001-verdict-ownership-2026.md). Языковые и визуальные модели только подсказывают и статус не меняют.
+Четыре контура: загрузка → детерминированная проверка → советующий контур → отчёт с доказательствами. Технический статус `summary.passed` ставят **только** детерминированные движки — ADR-001: [`../../docs/architecture/ADR-001-verdict-ownership-2026.md`](../../docs/architecture/ADR-001-verdict-ownership-2026.md). Языковые и визуальные модели только подсказывают и статус не меняют. Интеграцию с Tangl / 10D не заявляем: возможна только file/API-граница.
 
 ## Качество и воспроизводимость
 
@@ -53,7 +57,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 | Безопасность | [`../../SECURITY.md`](../../SECURITY.md) |
 | Лицензии зависимостей | [`../../docs/license-policy-2026.md`](../../docs/license-policy-2026.md) |
 
-Ядро PDF — `pypdfium2` + `pdfminer.six`; AGPL-компоненты вынесены в необязательный набор (LIC-001 Option B).
+Ядро PDF — `pypdfium2` + `pdfminer.six`; набор `pdf-agpl` (PyMuPDF) для показа не нужен.
 
 ## Гейты честности в дереве
 

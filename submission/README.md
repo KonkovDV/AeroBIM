@@ -2,7 +2,7 @@
 ---
 title: "КТ#2 — пакет подачи (Техлаб Москва, Задача 07)"
 status: active
-version: "1.1.1"
+version: "1.1.2"
 last_updated: "2026-08-17"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's

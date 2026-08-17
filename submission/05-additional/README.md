@@ -1,7 +1,7 @@
 ---
 title: "Поле «Дополнительные материалы» — доказательства и самопроверка"
 status: active
-version: "1.0.1"
+version: "1.0.2"
 last_updated: "2026-08-17"
 claim_boundary: >
   Supporting evidence index. Open benches and fixtures are not the customer
@@ -10,49 +10,54 @@ claim_boundary: >
 
 # Дополнительные материалы
 
-## 1. Доказательства прогонов
+**Формула стадии (дословно, SSOT [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
-[`../../docs/evidence/`](../../docs/evidence/) — артефакты с датами, хешами и указанием, чем они **не** являются.
+Индекс доказательств: [`../../docs/evidence/`](../../docs/evidence/). Каждый артефакт помечен, чем он **не** является.
 
-| Материал | Что показывает |
+## Можно показывать жюри
+
+| Материал | Роль |
 |---|---|
-| [`../../docs/evidence/kt2-handoff-2026-08-11/README.md`](../../docs/evidence/kt2-handoff-2026-08-11/README.md) | Пакет передачи КТ#2 с самопроверкой |
-| [`../../docs/evidence/ids-fail-closed-2026-08.md`](../../docs/evidence/ids-fail-closed-2026-08.md) | Поведение IDS-контура при пропусках |
-| [`../../docs/evidence/drawing-overlay-smoke-2026-08/README.md`](../../docs/evidence/drawing-overlay-smoke-2026-08/README.md) | Наложение ошибки на чертёж |
-| [`../../docs/evidence/renga-export-probe-2026-08.md`](../../docs/evidence/renga-export-probe-2026-08.md) | Проба выгрузки Renga (стек заказчика) |
+| [`../../docs/evidence/kt2-handoff-2026-08-11/README.md`](../../docs/evidence/kt2-handoff-2026-08-11/README.md) | Пакет передачи; live CLI, не снимок HTML |
+| [`../../docs/evidence/ids-fail-closed-2026-08.md`](../../docs/evidence/ids-fail-closed-2026-08.md) | IDS: пропуск обязательной проверки роняет комплект |
 | [`../../docs/evidence/DATA_STATEMENT_2026_08.md`](../../docs/evidence/DATA_STATEMENT_2026_08.md) | Происхождение данных |
+| [`../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md`](../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) | Итоговый вердикт серии |
+| [`../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Атаки шести столов |
+| [`../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md`](../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md) | Пять решений Задачи 07; цифры конкурентов = их claims |
+| [`../../CITATION.cff`](../../CITATION.cff) | Цитирование проекта |
 
-## 2. Датасеты и открытые прокси
+## Только как fixture / open-bench / protocol evidence
 
-[`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md) — замороженная строка цифр открытых прокси. Корпусом заказчика они не являются.
+Не корпус Самолёта. Не точность продукта. Не SLA заказчика.
 
-Открытые наборы служат регрессией и репетицией движка. Корпусом заказчика они не являются, и в них нет разметки TP/FP от инженеров «Самолёта» — поэтому RT-001 остаётся открытым.
+| Материал | Граница |
+|---|---|
+| [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md) | Замороженная строка открытых прокси; RT-001 OPEN |
+| [`../../docs/evidence/drawing-overlay-smoke-2026-08/README.md`](../../docs/evidence/drawing-overlay-smoke-2026-08/README.md) | Наложение на учебный лист; P1 |
+| [`../../docs/evidence/renga-export-probe-2026-08.md`](../../docs/evidence/renga-export-probe-2026-08.md) | Проба выгрузки Renga; не комплект заказчика |
+| [`../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Protocol-only: методика до данных |
+| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA, заморозка `f9389bf` |
+| [`../../docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](../../docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md) | Литература × IUA; Harbor NOT_RUN |
+| [`../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) | Академическая корректность заявлений |
 
-## 3. Самопроверка (красная команда)
+Открытые наборы — регрессия движка. В них нет разметки TP/FP инженеров «Самолёта».
 
-Серия внутренних аудитов 15–17.08 с реестром находок:
+## Внутренний red-team (можно открыть, не продавать как GO)
 
 | Отчёт | Вектор |
 |---|---|
-| [`../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md`](../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) | Итоговый вердикт серии |
-| [`../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Атаки шести столов: Техлаб, МИК, трекер, ИТ-ментор, наука, венчур |
-| [`../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) | Академическая корректность заявлений |
-| [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane Interpretation/Use: лицензированные и запрещённые выводы (заморозка `f9389bf`) |
-| [`../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Принятые риски с обоснованием |
+| [`../../docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) | Вопросы венчура; ask = слот + комплект, не SAFE |
+| [`../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Принятые риски, включая N-43 |
+| [`../../docs/partners/COMPETITIVE_MATRIX_2026_08.md`](../../docs/partners/COMPETITIVE_MATRIX_2026_08.md) | Аналоги; не измеренный факт AeroBIM |
+| [`../../docs/partners/ROADMAP_3Y_2026_08.md`](../../docs/partners/ROADMAP_3Y_2026_08.md) | `planning_only`. LOI / пилоты — будущие зависимости, не git-факт |
+| [`../../docs/demo/KT2_10D_INTAKE_CONTRACT_2026_08.md`](../../docs/demo/KT2_10D_INTAKE_CONTRACT_2026_08.md) | Предлагаемые поля; не коннектор 10D |
+
+## Нельзя выдавать за доказательство в этом поле
+
+- operator kitchen, session dumps, промты для ИИ (лежат в `.local/`, не на GitHub);
+- снимок HTML 11.08 и `wall-guid/report.html` как overlay;
+- локальный pytest как CI pin;
+- письмо трекеру как факт git;
+- юрлицо, SAFE, оплаченный пилот, 2 млн ₽.
 
 Мы публикуем найденные слабости сами, чтобы жюри не находило их первым.
-
-## 4. Рынок и позиционирование
-
-| Документ | Содержание |
-|---|---|
-| [`../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md`](../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md) | Пять решений Задачи 07 по одинаковым полям |
-| [`../../docs/partners/COMPETITIVE_MATRIX_2026_08.md`](../../docs/partners/COMPETITIVE_MATRIX_2026_08.md) | Мировые и российские аналоги |
-| [`../../docs/partners/ROADMAP_3Y_2026_08.md`](../../docs/partners/ROADMAP_3Y_2026_08.md) | Дорожная карта |
-| [`../../docs/demo/KT2_10D_INTAKE_CONTRACT_2026_08.md`](../../docs/demo/KT2_10D_INTAKE_CONTRACT_2026_08.md) | Предлагаемая граница с СОД заказчика |
-
-## 5. Академический контур
-
-[`../../docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](../../docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md) — разбор литературы 2026 года и того, что из неё применимо. [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) — журнал допустимых интерпретаций: что конкретный замер вправе означать, а что нет.
-
-Цитирование проекта: [`../../CITATION.cff`](../../CITATION.cff).
