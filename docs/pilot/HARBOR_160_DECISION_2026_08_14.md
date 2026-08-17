@@ -18,4 +18,4 @@ claim_boundary: "Default SKIPPED. Harbor NOT_RUN. Not product accuracy. Not RT-0
 | Ключ Studio | уже гонял **AECV-Bench**, не Harbor |
 
 17.08 оператор либо (а) подтверждает SKIPPED одной строкой в этом файле, либо (б) запускает Harbor и пишет evidence.  
-Запрещено: подставлять 0.7283 как false-pass AeroBIM; писать «514 false-pass» (IFC-Bench countable = **25/1026**).
+Запрещено: подставлять 0.7283 как false-pass AeroBIM; писать «514 false-pass» (IFC-Bench countable = **27/1026**).

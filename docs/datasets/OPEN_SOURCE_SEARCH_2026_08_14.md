@@ -61,7 +61,7 @@ closes_rt001: false. closes_rt002: false. closes_rt003: false. Checkpoint **NO_G
 | Комплект | Результат | Честность |
 |---|---|---|
 | Schema-suite n=20 | IFC2X3 findings 5 / IFC4 4 / IFC4X3 6; `passed=false`; `clash=skipped` (tiny-skip); IFC4X3 `ids=failed` | Fixture kernel. Not SLA. Not accuracy |
-| IFC-Bench v2 | scored **25/1026** matched 25, errors 0, pin ok | `open_bench_only`; not RT-001 |
+| IFC-Bench v2 | scored **27/1026** countable (16.08 pin), errors 0 | `open_bench_only`; not RT-001 |
 | AEC-Bench inventory | 196 tasks; Harbor **NOT_RUN**; 43 PDFs on disk | false-pass **NOT_MEASURED** |
 | Open corpora smoke | `pins_ok=true`; 7 cases | SHA only |
 | Renga header probe | MEASURED IFC4 / Renga 8.7; not Samolet | Not Exp A 18/22 IDS rerun |

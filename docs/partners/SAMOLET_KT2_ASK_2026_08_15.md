@@ -2,7 +2,7 @@
 ---
 title: "Запрос Самолёту к КТ#2 — пакет, профиль, adjudicators, CDE"
 date: "2026-08-15"
-last_updated: "2026-08-16"
+last_updated: "2026-08-17"
 status: active
 closes_rt001: false
 closes_rt002: false

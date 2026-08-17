@@ -449,6 +449,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("re-scope", text)
         self.assertIn("Не kill сегодня", text)
         self.assertIn("NO_GO", text)
+        self.assertIn("27/1026", text)
+        self.assertNotIn("25/1026", text)
 
     def test_alignment_f1_cell_is_fixture_qualified(self) -> None:
         path = self._repo() / "docs" / "samolet-techlab-alignment-2026.md"

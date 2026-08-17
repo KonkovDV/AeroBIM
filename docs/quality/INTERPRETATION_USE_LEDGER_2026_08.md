@@ -88,30 +88,30 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 
 ## Evidence pointers
 
-- `SAM-01`: `docs/architecture/ADR-001-verdict-ownership-2026.md`
+- `SAM-01`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
 - `SAM-02`: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`
 - `SAM-03`: `python -m aerobim.tools.run_demo_vertical_slice`
-- `SAM-04`: `docs/architecture/ADR-003-dwg-oda-trial-kt3-2026.md`
-- `SAM-05`: `docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`
+- `SAM-04`: [ADR-003-dwg-oda-trial-kt3-2026.md](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md)
+- `SAM-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
 - `SAM-06`: `python -m aerobim.tools.measure_package_sla`
-- `SAM-07`: `docs/pilot-claim-boundary-2026.md`
-- `TRK-01`: `docs/partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md`
-- `TRK-02`: `docs/evidence/ifc-release-matrix-2026-08.md`
-- `TRK-03`: `docs/demo/KT2_CORPUS_SSOT_2026_08.md`
-- `TRK-04`: `docs/demo/TRACKER_MEETING_2026_08_14.md`
-- `TRK-05`: `docs/gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md`
-- `TRK-06`: `docs/architecture/ADR-002-open-core-commercial-boundary-2026.md`
-- `TL-01`: `docs/docs.md`
-- `TL-02`: `docs/partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md`
-- `MIK-01`: `docs/partners/MIK_PILOT_COMPLIANCE_2026.md`
-- `MIK-02`: `docs/docs.md`
-- `IND-01`: `samples/ids-xsd/ids.xsd`
-- `IND-02`: `docs/architecture/ADR-001-verdict-ownership-2026.md`
-- `IND-03`: `docs/evidence/solihin-rule-classes-2026-08.md`
-- `IND-04`: `docs/evidence/PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md`
-- `IND-05`: `docs/evidence/ifc-bench-v2-smoke-latest.json`
-- `IND-06`: `docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`
-- `IND-07`: `docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`
-- `IND-08`: `docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`
-- `IND-09`: `docs/architecture/ADR-001-verdict-ownership-2026.md`
-- `IND-10`: `samples/ids-xsd/ids.xsd`
+- `SAM-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
+- `TRK-01`: [WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md](../partners/WEDGE_FREEZE_EVIDENCE_LAYER_2026_08_16.md)
+- `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
+- `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)
+- `TRK-04`: [TRACKER_MEETING_2026_08_14.md](../demo/TRACKER_MEETING_2026_08_14.md)
+- `TRK-05`: [COMMERCIAL_AND_OPEN_CORE_2026_08_14.md](../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md)
+- `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
+- `TL-01`: [docs.md](../docs.md)
+- `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
+- `MIK-01`: [MIK_PILOT_COMPLIANCE_2026.md](../partners/MIK_PILOT_COMPLIANCE_2026.md)
+- `MIK-02`: [docs.md](../docs.md)
+- `IND-01`: [ids.xsd](../../samples/ids-xsd/ids.xsd)
+- `IND-02`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `IND-03`: [solihin-rule-classes-2026-08.md](../evidence/solihin-rule-classes-2026-08.md)
+- `IND-04`: [PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md](../evidence/PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md)
+- `IND-05`: [ifc-bench-v2-smoke-latest.json](../evidence/ifc-bench-v2-smoke-latest.json)
+- `IND-06`: [ACADEMIC_LITERATURE_TRIAGE_2026_08.md](ACADEMIC_LITERATURE_TRIAGE_2026_08.md)
+- `IND-07`: [ACADEMIC_LITERATURE_TRIAGE_2026_08.md](ACADEMIC_LITERATURE_TRIAGE_2026_08.md)
+- `IND-08`: [MEP_SYSTEM_CLASH_GAP_2026_07.md](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
+- `IND-09`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `IND-10`: [ids.xsd](../../samples/ids-xsd/ids.xsd)

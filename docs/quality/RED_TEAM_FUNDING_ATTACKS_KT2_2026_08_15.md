@@ -40,7 +40,7 @@ Engineering readiness improved. Customer and investor readiness did **not**.
 | RT-FUND-03 | «MinStroy XSD = экспертиза» | Intake format, not remark corpus | **MITIGATED** |
 | RT-FUND-04 | «Clash→BCF = CDE-ready» | Own ZIP consume; `cde_import=NOT_VERIFIED` | **MITIGATED** (HTML/UI 15.08: «Not a CDE import») |
 | RT-FUND-05 | «SP 63 template = solver» | 20 mm covering pset, not table 8.1 | **MITIGATED** |
-| RT-FUND-06 | «tests_passed=2167 means HEAD fully tested» | CI pin `88e726be`; a local pytest count is not publishable (N-26) | **ACCEPTED** — do not copy a local count into README |
+| RT-FUND-06 | «tests_passed=2167 means HEAD fully tested» | CI pin `acac02bd`; a local pytest count is not publishable (N-26) | **ACCEPTED** — do not copy a local count into README |
 | RT-FUND-07 | Open 0.86 / 0.43 as product accuracy | Fixture F1 vs AECV open-bench | **MITIGATED** in pitch card; keep repeating |
 | RT-FUND-08 | Harbor 160 skipped → invent false-pass % | Inventory 196 only | **ACCEPTED** SKIPPED |
 

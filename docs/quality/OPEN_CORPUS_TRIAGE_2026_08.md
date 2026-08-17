@@ -75,7 +75,7 @@ IDS declares `ifcVersion="IFC2X3 IFC4 IFC4X3_ADD2"` for both specifications (Fir
 |---|---|---|---|
 | `regression` (fixture IDS↔IFC) | **7** | fixture regression | **None identified** — pins in [`regression.json`](../../samples/benchmarks/open-corpora/profiles/regression.json) |
 | `regression-bsi` (buildingSMART TestCases) | **290** | open regression (CC BY-ND) | Not re-triaged this week — import gate in CI |
-| IFC-Bench v2 smoke | 25/1026 scored | `open_bench_only` | Smoke pass — not full corpus triage |
+| IFC-Bench v2 smoke | 27/1026 scored | `open_bench_only` | Smoke pass — not full corpus triage |
 | Sprint-2 synthetic | 15 cases | `synthetic_only` | N/A — planted defects |
 
 **Week decision:** No (a) parser or (b) rule-gap code changes scheduled unless a new failing CI run proves a regression on IFC4/IFC4x3 pass fixtures. IFC2x3 quantity name divergence stays **documented honest non-support**.

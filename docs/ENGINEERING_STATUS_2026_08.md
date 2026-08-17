@@ -2,7 +2,7 @@
 title: "AeroBIM Engineering Status — August 2026"
 status: active
 version: "1.6.46"
-last_updated: "2026-08-16"
+last_updated: "2026-08-17"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
 

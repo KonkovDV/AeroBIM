@@ -41,6 +41,37 @@ class InterpretationUseLedgerTests(unittest.TestCase):
         self.assertGreaterEqual(payload["row_count"], 22)
         self.assertEqual(len(ids), payload["row_count"])
 
+    def test_evidence_markdown_links_files_and_keeps_cli_as_code(self) -> None:
+        from aerobim.domain.interpretation_use import (
+            _evidence_href,
+            _evidence_label,
+            render_markdown,
+        )
+
+        self.assertEqual(
+            _evidence_href("docs/architecture/ADR-001-verdict-ownership-2026.md"),
+            "../architecture/ADR-001-verdict-ownership-2026.md",
+        )
+        self.assertEqual(
+            _evidence_href("docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md"),
+            "ACADEMIC_LITERATURE_TRIAGE_2026_08.md",
+        )
+        self.assertEqual(
+            _evidence_href("samples/ids-xsd/ids.xsd"),
+            "../../samples/ids-xsd/ids.xsd",
+        )
+        self.assertEqual(
+            _evidence_label("docs/architecture/ADR-001-verdict-ownership-2026.md"),
+            "ADR-001-verdict-ownership-2026.md",
+        )
+        markdown = render_markdown(ledger_payload(generated_at="2026-08-17T00:00:00+00:00"))
+        self.assertIn(
+            "[ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)",
+            markdown,
+        )
+        self.assertIn("`python -m aerobim.tools.run_demo_ifc_acceptance_gate`", markdown)
+        self.assertNotIn("](python -m ", markdown)
+
     def test_export_writes_docs_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / "ledger.json"

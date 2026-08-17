@@ -78,7 +78,7 @@ Internal SSOT: [`OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](OPEN_BENCH_VS_RT00
 | “IDS certified / Samolet profile” | Audit ≠ checking; MOEXP ≠ EIR of the appointing party |
 | “MEP delivered” | No signed clearance matrix; HVAC fixture has no tessellation |
 | “SP 63 verified” | Template is Solihin class 1 on a covering pset, not class 4 proof |
-| “local pytest count ⇒ HEAD fully verified in README” | N-26: CI pin remains 2167 @ `88e726be` |
+| “local pytest count ⇒ HEAD fully verified in README” | N-26: CI pin remains 2455 @ `acac02bd` |
 | Checkpoint GO | RT-001/002/003 OPEN by construction |
 
 ## 3. Messick six aspects × Wave A (substitution map)
@@ -131,7 +131,7 @@ Pilot protocol already pre-registers Wilson intervals, dual adjudication, and κ
 - Held-out FN is not identified.  
 - Unit of analysis (finding vs sheet vs section vs project) is not locked with the customer.
 
-Open benches (AEC-Bench inventory 196, GNI 224/223, IFC-Bench smoke 25/1026) occupy Messick *content* of “there exist IFC files”. They do not occupy the *criterion* of “Russian PD/RD + expertise remarks”. AECV-Bench §6 states the corpus limits in the paper itself.
+Open benches (AEC-Bench inventory 196, GNI 224/223, IFC-Bench smoke 27/1026) occupy Messick *content* of “there exist IFC files”. They do not occupy the *criterion* of “Russian PD/RD + expertise remarks”. AECV-Bench §6 states the corpus limits in the paper itself.
 
 Clash literature is the same pattern: detection recall of *geometric overlap* ≠ precision of *coordination-relevant issues* (Mehrbod 2019; Lin & Huang 2019; Hu et al. 2019). Duplex AABB 654 pairs are inventory, not clashes.
 

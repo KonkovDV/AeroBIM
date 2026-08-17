@@ -12,6 +12,7 @@ or CDE-ready BCF. RT-001 / RT-002 / RT-003 stay OPEN.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
 LEDGER_ID = "aerobim_interpretation_use_ledger"
@@ -479,6 +480,26 @@ def render_markdown(payload: dict[str, Any]) -> str:
         ]
     )
     for row in payload.get("rows") or []:
-        lines.append(f"- `{row['row_id']}`: `{row['evidence']}`")
+        evidence = row["evidence"]
+        if evidence.startswith(("python -m ", "python ")):
+            lines.append(f"- `{row['row_id']}`: `{evidence}`")
+        else:
+            lines.append(f"- `{row['row_id']}`: [{_evidence_label(evidence)}]({_evidence_href(evidence)})")
     lines.append("")
     return "\n".join(lines)
+
+
+def _evidence_label(path: str) -> str:
+    return Path(path).name.replace("\\", "/")
+
+
+def _evidence_href(path: str) -> str:
+    for prefix, target in (
+        ("docs/quality/", ""),
+        ("docs/", "../"),
+        ("samples/", "../../samples/"),
+        ("audit/", "../../audit/"),
+    ):
+        if path.startswith(prefix):
+            return target + path[len(prefix) :]
+    return path
