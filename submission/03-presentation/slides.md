@@ -1,16 +1,16 @@
 ---
-title: "КТ#2 — текст слайдов (перенос в деку 19.08)"
+title: "КТ#2 — текст слайдов (SSOT речи к деке)"
 status: active
-version: "1.1.1"
+version: "1.2.0"
 last_updated: "2026-08-17"
 claim_boundary: >
-  Slide copy only. Numbers come from the frozen SSOT. Checkpoint NO_GO;
-  RT-001/002/003 OPEN. Not a recorded deck.
+  Slide copy SSOT for aerobim_kt2.pptx / aerobim_kt2.pdf. Checkpoint NO_GO;
+  RT-001/002/003 OPEN. Not a recorded video.
 ---
 
 # Текст слайдов КТ#2
 
-Одна колода, язык — русский. Бинарник деки в git не кладётся: его готовит оператор 19.08 из этого текста. Источник цифр: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Формула стадии: [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md).
+Основная дека: [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Этот файл — текст для речи и сверки формулировок. Источник цифр: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Формула стадии: [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md).
 
 ## Слайд 1. Проблема
 

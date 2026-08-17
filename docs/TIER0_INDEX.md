@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Tier-0 — карта для жюри Техлаба"
 status: active
-version: "4.5.11"
+version: "4.5.12"
 last_updated: "2026-08-17"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -56,7 +56,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 ## Submission pack (форма приёма решения)
 
-Пять полей формы разложены по подпапкам: [пакет подачи КТ#2](../submission/README.md). Построчное покрытие ТЗ Задачи 07: [карта требований ТЗ](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md).
+Пять полей формы разложены по подпапкам: [пакет подачи КТ#2](../submission/README.md). Презентация в форме: [`aerobim_kt2.pptx`](../submission/03-presentation/aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](../submission/03-presentation/aerobim_kt2.pdf). Построчное покрытие ТЗ Задачи 07: [карта требований ТЗ](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md).
 
 ## Pre-flight (KT#2, 20.08)
 

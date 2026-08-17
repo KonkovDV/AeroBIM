@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 from aerobim.core.config.settings import Settings
@@ -643,6 +644,24 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertNotIn("11 пунктов", text)
 
 
+def _pptx_plain_text(path: Path) -> str:
+    ns = re.compile(r"<a:t[^>]*>(.*?)</a:t>", re.S)
+    chunks: list[str] = []
+    with zipfile.ZipFile(path) as archive:
+        names = [
+            name
+            for name in archive.namelist()
+            if name.startswith("ppt/slides/slide")
+            and name.endswith(".xml")
+            and "/_rels/" not in name
+        ]
+        names.sort(key=lambda item: int(re.search(r"slide(\d+)", item).group(1)))
+        for name in names:
+            xml = archive.read(name).decode("utf-8", errors="replace")
+            chunks.extend(ns.findall(xml))
+    return "\n".join(chunks)
+
+
 def _git_ls_files(*args: str) -> str:
     git = shutil.which("git")
     if not git:
@@ -728,6 +747,31 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertIn("hidden holdout", text)
         self.assertIn("Не API 10D", text)
         self.assertNotIn("интегрированы с 10D", text.lower())
+
+    def test_presentation_pack_tracks_main_deck(self) -> None:
+        root = self._submission() / "03-presentation"
+        pptx = root / "aerobim_kt2.pptx"
+        pdf = root / "aerobim_kt2.pdf"
+        self.assertTrue(pptx.is_file(), msg=str(pptx))
+        self.assertTrue(pdf.is_file(), msg=str(pdf))
+        tracked = _git_ls_files(
+            "--",
+            "submission/03-presentation/aerobim_kt2.pptx",
+            "submission/03-presentation/aerobim_kt2.pdf",
+        )
+        self.assertIn("aerobim_kt2.pptx", tracked)
+        self.assertIn("aerobim_kt2.pdf", tracked)
+        deck = _pptx_plain_text(pptx).lower()
+        self.assertIn("no_go", deck)
+        self.assertIn("run_demo_ifc_acceptance_gate", deck)
+        for needle in (
+            "checkpoint go",
+            ">90%",
+            "mep delivered",
+            "cde-ready",
+            "native dwg",
+        ):
+            self.assertNotIn(needle, deck, msg=needle)
 
     def test_github_community_health_files_exist(self) -> None:
         root = self._submission().parent

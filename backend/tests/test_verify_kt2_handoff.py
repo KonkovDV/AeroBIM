@@ -29,6 +29,8 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         self.assertIn("readme_quickstart_demo_core_pdf", names)
         self.assertIn("kt2_video_script", names)
         self.assertIn("kt2_video_not_recorded", names)
+        self.assertIn("kt2_presentation_pptx", names)
+        self.assertIn("kt2_presentation_pdf", names)
         self.assertIn("kt2_demo_mp4_not_in_docs", names)
         withdrawn = next(c for c in result["checks"] if c["check"] == "kt2_video_not_recorded")
         self.assertTrue(withdrawn["ok"], msg=withdrawn)

@@ -2,7 +2,7 @@
 ---
 title: "КТ#2 — пакет подачи (Техлаб Москва, Задача 07)"
 status: active
-version: "1.1.2"
+version: "1.1.3"
 last_updated: "2026-08-17"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
@@ -24,7 +24,7 @@ claim_boundary: >
 |---|---|---|
 | **Репозиторий** \* | [`01-repository/`](01-repository/README.md) | Структура, сборка, лицензия, CI |
 | **Документация** \* | [`02-documentation/`](02-documentation/README.md) | Техобоснование + матрица ТЗ + границы заявлений |
-| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | Каркас слайдов, речь, запреты формулировок |
+| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](03-presentation/aerobim_kt2.pdf); речь: [`slides.md`](03-presentation/slides.md) |
 | **Прототип** \* | [`04-prototype/`](04-prototype/README.md) | Команды запуска, живой CLI, веб-интерфейс |
 | **Дополнительные материалы** | [`05-additional/`](05-additional/README.md) | Доказательства, датасеты, красная команда, конкуренты |
 
