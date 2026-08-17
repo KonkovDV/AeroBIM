@@ -86,9 +86,9 @@ python -m aerobim.main   # → http://127.0.0.1:8080/health
 |---|---|
 | Жюри Техлаба / МИК | Формула выше → [`submission/README.md`](submission/README.md) → команда только что выше |
 | Самолёт (ТЗ) | Карта покрытия [`submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md`](submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) · запрос [`docs/partners/_08_15.md`](docs/partners/_08_15.md) |
-| Трекер | [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) — Tangl проверяет **модель**; AeroBIM проверяет **комплект**; мы не заменяем 10D |
-| ИТ-ментор | Fail-closed IDS, live CLI, пятислойная архитектура ниже |
-| Научный ментор | Сначала протокол, потом цифры: [`docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) · fixture F1 — не точность продукта |
+| Трекер | [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) (14.08 + addendum 17.08) — Tangl проверяет **модель**; AeroBIM проверяет **комплект**; мы не заменяем 10D |
+| ИТ-ментор | Fail-closed IDS, live CLI `run_demo_ifc_acceptance_gate`, пятислойная архитектура ниже. CI pin ≠ локальный pytest |
+| Научный ментор | Сначала протокол, потом цифры: [`docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) · Kane IUA [`docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) · fixture F1 — не точность продукта |
 | Инвестор / diligence | Юрлица нет, раунда на этой неделе нет. Запрос = слот в календаре и размеченный комплект, не SAFE. [`docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
 
 ## Что происходит за один прогон
