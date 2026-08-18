@@ -76,16 +76,7 @@ python -m aerobim.main   # → http://127.0.0.1:8080/health
 
 ## Кому эта страница
 
-Это указатель по ролям, не отзыв.
-
-| Читатель | С чего начать |
-|---|---|
-| Жюри Техлаба / МИК | Формула выше → [`submission/README.md`](submission/README.md) → команда только что выше |
-| Самолёт (ТЗ) | Карта покрытия [`submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md`](submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) · запрос [`docs/partners/_08_15.md`](docs/partners/_08_15.md) |
-| Трекер | [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) (14.08 + дополнение 17.08) — Tangl проверяет **модель**; AeroBIM проверяет **комплект**; мы не заменяем 10D |
-| ИТ-ментор | Пропуск обязательной проверки IDS роняет комплект. Команда `run_demo_ifc_acceptance_gate`. Пятислойная архитектура ниже. CI pin ≠ локальный pytest |
-| Научный ментор | Сначала протокол, потом цифры: [`docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) · Kane IUA [`docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) · учебный комплект F1 — не точность продукта |
-| Инвестор | Юрлица нет, раунда на этой неделе нет. Просим слот в календаре и размеченный комплект, не SAFE. [`docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
+Жюри Техлаба и МИК: формула выше → [`submission/README.md`](submission/README.md) → команда запуска. Это пакет доработки, не акт Checkpoint.
 
 ## Что происходит за один прогон
 
