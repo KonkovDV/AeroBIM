@@ -4,7 +4,7 @@ status: active
 version: "3.4.3"
 last_updated: "2026-08-17"
 tags: [aerobim, documentation, samolet, techlab, jury]
-claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng readiness ≠ customer GO. Operator/debug docs are local (.local/)."
+claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng readiness ≠ customer GO. Working/debug docs stay local, outside git."
 ---
 
 # Documentation (TechLab jury)
@@ -12,7 +12,7 @@ claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng r
 Checkpoint: **`NO_GO`** — [blocker register](../audit/reports/CRITICAL_BLOCKERS.md).  
 Aug 2026 eng readiness: [engineering status](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).
 
-Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and a short curated set under `docs/quality/`. Operator runbooks, session audits, and commercial contact pipelines live under `.local/` (not published). Public `docs/customer-discovery/` = anonymized templates only.
+Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and a short curated set under `docs/quality/`. Internal runbooks, session audits, and commercial contact pipelines stay local, outside git. Public `docs/customer-discovery/` = anonymized templates only.
 
 ## Read first
 
