@@ -115,7 +115,7 @@ flowchart LR
 
 ГОСТ Р 21.101-2026 п. 8.2.4 (с 1 апреля 2026) требует устойчивый GUID у каждого электронного документа проектной документации. AeroBIM с первого дня ведёт находки к устойчивому идентификатору. Это совпадение механизма, а не заявление о полном соответствии стандарту.
 
-Реестр: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · инженерный статус: [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md). Карточка речи: [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md).
+Реестр: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md). Карточка речи: [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md).
 
 ## OpenBIM и как мы измеряем
 
@@ -127,9 +127,10 @@ flowchart LR
 | ISO 19650 | Lite-поля на отчёте (метаданные Shared-gate) | Это не СОД; ISO 19650-6 — обмен H&S, не этот гейт |
 | FAIR research software | `CITATION.cff`, реестр лицензий, воспроизводимые команды | Учебный комплект F1 ≠ точность продукта |
 
-Карта выравнивания: [`docs/tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md`](docs/tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md).
-
 ## Что работает сегодня
+
+<details>
+<summary>Возможности на учебных комплектах (не точность продукта; корпус заказчика — RT-001)</summary>
 
 Все статусы ниже — уровень репозитория или учебных комплектов, если не указано иное. Результат на фикстурах не является точностью продукта: корпус заказчика, который позволил бы такое утверждение, — это блокер RT-001.
 
@@ -156,6 +157,8 @@ flowchart LR
 - Конверт открепленной подписи: только хеши и роли; цепочка доверия остаётся **NOT_VERIFIED**
 - Браузерная сессия OIDC: не реализовано (по умолчанию 501); лабораторный контур cookie не является промышленным входом по SSO
 - Точность >90% и утверждённые нормы: упирается в RT-001 и RT-002
+
+</details>
 
 ## HTTP API
 
@@ -199,9 +202,12 @@ presentation/    HTTP-слой FastAPI, middleware корреляции
 
 Артефакты лежат за портом `ObjectStore`, поэтому локальное хранилище и совместимые с S3 бакеты — один и тот же путь в коде. При заданном `AEROBIM_DB_URL` сводки отчётов дополнительно индексируются в Postgres; для пилота это допустимо, но до промышленной эксплуатации схему следует переносить миграцией вне приложения.
 
-Полная таблица переменных окружения — в [README.md](README.md), раздел Configuration. Локальный запуск работает на значениях по умолчанию.
+Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` свёрнута в [английском README](README.md), раздел Configuration: это поверхность CI, не витрина КТ#2.
 
 ## Разработка
+
+<details>
+<summary>Локальные команды CI и CLI измерений</summary>
 
 Локально запускается то же, что и в CI:
 
@@ -228,6 +234,8 @@ python -m aerobim.tools.export_evidence_bundle \
 
 Показатели производительности и F1 зависят от среды и относятся к учебным комплектам. Любое утверждение о производительности публикуется вместе с путём к паку, флагами запуска, отпечатком машины и хешами артефактов. Цитирование: [`CITATION.cff`](CITATION.cff) · [`docs/CITATION.bib`](docs/CITATION.bib).
 
+</details>
+
 ## Документация
 
 В репозитории публикуется проверяемый набор: код, требования, границы утверждений, архитектура и доказательства. Служебные инструкции и рабочие журналы умышленно не публикуются.
@@ -236,17 +244,10 @@ python -m aerobim.tools.export_evidence_bundle \
 |---|---|
 | Начать здесь | [карта для жюри](docs/TIER0_INDEX.md) · [техническое обоснование](docs/docs.md) |
 | Пакет подачи КТ#2 | [пакет подачи](submission/README.md) |
-| Карточка речи | [FAQ жюри](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
-| Контур программы МИК | [соответствие пилота МИК](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
-| Реестр блокеров | [критические блокеры](audit/reports/CRITICAL_BLOCKERS.md) |
-| Что заявляется, а что нет | [границы заявлений](docs/pilot-claim-boundary-2026.md) · [матрица возможностей](docs/capability-claim-matrix-2026.md) |
-| Архитектура | [целевая архитектура](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
-| Требования | [пакет ТЗ](docs/tz/README.md) · [карта покрытия](submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) |
-| Как измеряется качество | [протокол качества](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) |
-| Учебные комплекты и доказательства | [индекс доказательств](docs/evidence/README.md) |
+| Блокеры | [критические блокеры](audit/reports/CRITICAL_BLOCKERS.md) |
+| Что заявляется | [границы заявлений](docs/pilot-claim-boundary-2026.md) |
+| Архитектура | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | Лицензии | [политика лицензий](docs/license-policy-2026.md) |
-
-Управление проектом: [Contributing](CONTRIBUTING.md) · [нормы поведения](CODE_OF_CONDUCT.md) · [политика безопасности](SECURITY.md) · [поддержка](SUPPORT.md) · [сопровождающие](MAINTAINERS.md) · [релизы](RELEASE_POLICY.md).
 
 ## Цитирование
 
