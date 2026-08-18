@@ -115,7 +115,7 @@ BCF ZIP export is structural T1 ([`audit/evidence/bcf-structural-handoff-2026-07
 
 GOST R 21.101-2026 §8.2.4 (from 1 April 2026) requires a stable GUID on each electronic design document. AeroBIM has addressed findings to stable identifiers from day one. That is a coincidence of mechanism, not a claim of full conformity with the standard.
 
-Register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md) · engineering status: [`docs/ENGINEERING_STATUS_2026_08.md`](docs/ENGINEERING_STATUS_2026_08.md). Speech card: [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md).
+Register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md). Speech card: [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md).
 
 ## OpenBIM and how we measure
 
@@ -125,13 +125,12 @@ Register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS
 | Dual-rater precision before published accuracy | Wilson planner and κ/α harness exist; no κ without customer labels | Customer corpus + two adjudicators (RT-001) |
 | BCF → CDE | Structural ZIP (T1) | T2 import log in Samolet CDE |
 | ISO 19650 | Lite fields on the report (Shared-gate metadata) | Not a CDE; ISO 19650-6 is H&S sharing, not this gate |
-| FAIR research software | `CITATION.cff`, licence inventory, reproducible commands | Fixture F1 ≠ product accuracy |
-
-Alignment map: [`docs/tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md`](docs/tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md).
+| FAIR research software | `CITATION.cff`, licence inventory, reproducible commands | Fixture F1 ≠ product accuracy.
 
 ## What runs today
 
-Every status below is a **repository or fixture** capability unless stated otherwise. Fixture results are not product accuracy: the customer corpus that would allow such a claim is blocker RT-001.
+<details>
+<summary>Fixture capabilities (not product accuracy; customer corpus is RT-001)</summary>
 
 **On the fixture packs you can clone today**
 
@@ -156,6 +155,8 @@ Every status below is a **repository or fixture** capability unless stated other
 - Detached signature envelope: hashes and roles only; the trust chain stays **NOT_VERIFIED**
 - Browser OIDC session: not implemented (default 501); the lab cookie path is not production SSO
 - Customer accuracy >90% and approved norms: blocked on RT-001 and RT-002
+
+</details>
 
 ## HTTP API
 
@@ -201,7 +202,7 @@ Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible b
 
 ## Configuration
 
-A local clone runs on defaults. The table is the full configuration surface: every `AEROBIM_*` knob the code reads is listed here and checked in CI against [`backend/.env.example`](backend/.env.example).
+A local clone runs on defaults. The collapsed table is the full configuration surface: every `AEROBIM_*` knob the code reads is listed there and checked in CI against [`backend/.env.example`](backend/.env.example). It is not a KT#2 evaluation surface.
 
 <details>
 <summary>Full <code>AEROBIM_*</code> table (CI-checked against <code>backend/.env.example</code>)</summary>
@@ -413,6 +414,9 @@ tests_passed: backend=2470, frontend=56; commit 8bdf6d16629e; see docs/evidence/
 
 ## Development
 
+<details>
+<summary>Local CI commands and measurement CLIs</summary>
+
 Run locally what CI runs:
 
 ```bash
@@ -438,6 +442,8 @@ python -m aerobim.tools.export_evidence_bundle \
 
 Throughput and F1 figures are environment-specific and fixture-scoped. Any performance statement must ship with the pack path, CLI flags, machine fingerprint and artifact hashes. Citation: [`CITATION.cff`](CITATION.cff) · [`docs/CITATION.bib`](docs/CITATION.bib).
 
+</details>
+
 ## Documentation
 
 This repository publishes the reviewable set: code, requirements, claim boundaries, architecture and evidence. Internal runbooks and working notes are deliberately not published.
@@ -445,18 +451,11 @@ This repository publishes the reviewable set: code, requirements, claim boundari
 | Topic | Document |
 |---|---|
 | Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) |
-| Checkpoint #2 submission pack | [Submission pack](submission/README.md) |
-| Jury speech card | [Jury FAQ](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
-| MIK programme contour | [MIK pilot compliance](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
-| Blocker register | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
-| What is claimed and what is not | [Claim boundary](docs/pilot-claim-boundary-2026.md) · [Capability matrix](docs/capability-claim-matrix-2026.md) |
-| Architecture | [Target architecture](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
-| Requirements | [TZ pack](docs/tz/README.md) · [Coverage map](submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) |
-| How quality is measured | [Quality protocol](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) |
-| Fixtures and evidence | [Evidence index](docs/evidence/README.md) |
+| Checkpoint #2 pack | [Submission pack](submission/README.md) |
+| Blockers | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
+| What is claimed | [Claim boundary](docs/pilot-claim-boundary-2026.md) |
+| Architecture | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | Licensing | [License policy](docs/license-policy-2026.md) |
-
-Project governance: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Support](SUPPORT.md) · [Maintainers](MAINTAINERS.md) · [Release policy](RELEASE_POLICY.md).
 
 ## Cite
 
