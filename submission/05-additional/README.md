@@ -1,8 +1,8 @@
 ---
 title: "Поле «Дополнительные материалы» — доказательства и самопроверка"
 status: active
-version: "1.0.3"
-last_updated: "2026-08-17"
+version: "1.0.4"
+last_updated: "2026-08-18"
 claim_boundary: >
   Supporting evidence index. Open benches and fixtures are not the customer
   корпус. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -23,6 +23,7 @@ claim_boundary: >
 | [`../../docs/evidence/DATA_STATEMENT_2026_08.md`](../../docs/evidence/DATA_STATEMENT_2026_08.md) | Происхождение данных |
 | [`../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md`](../../docs/quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) | Итоговый вердикт серии |
 | [`../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Атаки шести столов |
+| [`../../docs/quality/KT2_PACK_AUDIT_2026_08_18.md`](../../docs/quality/KT2_PACK_AUDIT_2026_08_18.md) | Аудит пакета подачи 18.08: гейты, живой CLI, дека, CI |
 | [`../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md`](../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md) | Пять решений Задачи 07; цифры конкурентов = их claims |
 | [`../../CITATION.cff`](../../CITATION.cff) | Цитирование проекта |
 
