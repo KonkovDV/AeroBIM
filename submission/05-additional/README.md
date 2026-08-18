@@ -1,7 +1,7 @@
 ---
 title: "Поле «Дополнительные материалы» — доказательства и самопроверка"
 status: active
-version: "1.0.4"
+version: "1.0.5"
 last_updated: "2026-08-18"
 claim_boundary: >
   Supporting evidence index. Open benches and fixtures are not the customer
@@ -10,7 +10,7 @@ claim_boundary: >
 
 # Дополнительные материалы
 
-**Формула стадии (дословно, SSOT [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
+**Формула стадии (дословно; источник — [карточка речи для жюри](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
 Индекс доказательств: [`../../docs/evidence/`](../../docs/evidence/). Каждый артефакт помечен, чем он **не** является.
 
@@ -48,14 +48,14 @@ claim_boundary: >
 | Отчёт | Вектор |
 |---|---|
 | [`../../docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](../../docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) | Вопросы венчура; ask = слот + комплект, не SAFE |
-| [`../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Принятые риски, включая N-43 |
+| [`../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md`](../../docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) | Принятые риски пакета КТ#2 |
 | [`../../docs/partners/COMPETITIVE_MATRIX_2026_08.md`](../../docs/partners/COMPETITIVE_MATRIX_2026_08.md) | Аналоги; не измеренный факт AeroBIM |
 | [`../../docs/partners/ROADMAP_3Y_2026_08.md`](../../docs/partners/ROADMAP_3Y_2026_08.md) | `planning_only`. LOI / пилоты — будущие зависимости, не git-факт |
 | [`../../docs/demo/KT2_10D_INTAKE_CONTRACT_2026_08.md`](../../docs/demo/KT2_10D_INTAKE_CONTRACT_2026_08.md) | Предлагаемые поля; не коннектор 10D |
 
 ## Нельзя выдавать за доказательство в этом поле
 
-- operator kitchen, session dumps, промты для ИИ (лежат в `.local/`, не на GitHub);
+- внутренние рабочие материалы подготовки пакета (черновики, заметки, журналы) — они не публикуются;
 - снимок HTML 11.08 и `wall-guid/report.html` как overlay;
 - локальный pytest как CI pin;
 - письмо трекеру как факт git;

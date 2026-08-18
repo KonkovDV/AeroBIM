@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Tier-0 — карта для жюри Техлаба"
 status: active
-version: "4.5.12"
-last_updated: "2026-08-17"
+version: "4.5.13"
+last_updated: "2026-08-18"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -11,9 +11,9 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 **`NO_GO`** — [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md) · [CLAIMS_LOCK](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [граница заявлений](pilot-claim-boundary-2026.md) · [ADR-001](architecture/ADR-001-verdict-ownership-2026.md)
 
-**Формула стадии (дословно, SSOT [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
+**Формула стадии (дословно; источник — [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
-**Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После гигиены pin может отставать (N-43); локальный pytest не публикуем.
+**Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После правок документации pin может отставать на несколько коммитов до следующего прогона CI; локальные прогоны pytest не публикуем.
 
 **Kane IUA (30 s).** Сегодня можно: учебный показ, IDS с отказом при пропуске (BSI 0101), открытый бенч **27/1026**, протокол. Запрещено: точность на комплекте заказчика, ТЗ >90%, SLA заказчика, MEP delivered, импорт в СОД, Checkpoint GO. Журнал: [Interpretation/Use](quality/INTERPRETATION_USE_LEDGER_2026_08.md). IUA freeze `f9389bf` — позднейшая гигиена не переоткрывает валидность.
 
@@ -23,7 +23,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 |---------|------|
 | [Техобоснование для жюри](docs.md) | `docs.md` |
 | [Инженерный статус](ENGINEERING_STATUS_2026_08.md) | Готовность ≠ Checkpoint GO |
-| [Враждебный QA](demo/) | Скрипты привязаны к SSOT |
+| [Враждебный QA](demo/) | Скрипты привязаны к формуле речи |
 | [Видео к КТ#2](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Не записываем и не прилагаем; показ = живой CLI |
 | [Карточка речи / FAQ](demo/KT2_JURY_FAQ_2026_08_12.md) | Формула стадии |
 | [Тайминг на фикстуре](demo/KT2_FIXTURE_TIMING_2026_08_16.md) | Порядок величины — не SLA заказчика |
@@ -52,7 +52,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Карточка защиты QA](qa-defense-2026.md) | Ответы на 20–30 с |
 | [README](../README.md) · [README (RU)](../README.ru.md) | Продуктовый README |
 
-Операторские runbook, сессионные аудиты и коммерческие ПДн лежат в `.local/` — не на GitHub.
+Внутренние рабочие материалы и коммерческие персональные данные не публикуются.
 
 ## Submission pack (форма приёма решения)
 
@@ -70,4 +70,4 @@ Intake-form completeness = **5/5 fields**: в дереве есть сдавае
 | 4 | Харденинг | [враждебный QA](demo/) §2 | формула §0; [итоговый вердикт](quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) §1 |
 | 5 | Версия для проверки | [инженерный статус](ENGINEERING_STATUS_2026_08.md) → `run_demo_ifc_acceptance_gate` | отказ при пропуске; хеш воспроизводимости |
 
-Люди: загрузка в ЛК 19–20.08. Видео не записываем. Не код.
+Люди: загрузка в личный кабинет 19–20.08 — действие вне репозитория. Видео не записываем.

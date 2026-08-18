@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.7.3"
-last_updated: "2026-08-17"
+version: "1.7.4"
+last_updated: "2026-08-18"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -12,7 +12,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 
 **Формула стадии (дословно):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
-**Checkpoint:** **`NO_GO`**. RT-001 / RT-002 / RT-003 OPEN. Form 5/5 ≠ Checkpoint GO. Spoken formula SSOT: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+**Checkpoint:** **`NO_GO`**. RT-001 / RT-002 / RT-003 OPEN. Form 5/5 ≠ Checkpoint GO. Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
 
 **Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
 **TZ preparation SSOT:** [`tz/README.md`](tz/README.md).  

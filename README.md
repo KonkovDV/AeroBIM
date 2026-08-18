@@ -210,7 +210,7 @@ Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible b
 
 ## Configuration
 
-A local clone runs on defaults. The table is the full operator surface: every `AEROBIM_*` knob the code reads is listed here and checked in CI against [`backend/.env.example`](backend/.env.example).
+A local clone runs on defaults. The table is the full configuration surface: every `AEROBIM_*` knob the code reads is listed here and checked in CI against [`backend/.env.example`](backend/.env.example).
 
 <details>
 <summary>Full <code>AEROBIM_*</code> table (CI-checked against <code>backend/.env.example</code>)</summary>
@@ -451,7 +451,7 @@ Throughput and F1 figures are environment-specific and fixture-scoped. Any perfo
 
 ## Documentation
 
-This repository publishes the reviewable set: code, requirements, claim boundaries, architecture and evidence. Operator runbooks and session logs are deliberately not published.
+This repository publishes the reviewable set: code, requirements, claim boundaries, architecture and evidence. Internal runbooks and working notes are deliberately not published.
 
 | Topic | Document |
 |---|---|
@@ -459,7 +459,7 @@ This repository publishes the reviewable set: code, requirements, claim boundari
 | Checkpoint #2 submission pack | [Submission pack](submission/README.md) |
 | Jury speech card | [Jury FAQ](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
 | Tracker notes (Tangl / 10D) | [Tracker meeting 14.08](docs/demo/TRACKER_MEETING_2026_08_14.md) |
-| MIK / TechLab operator contour | [MIK pilot compliance](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
+| MIK / TechLab programme contour | [MIK pilot compliance](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
 | Diligence attack surface | [Funding / diligence attacks](docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
 | Blocker register and checkpoint | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
 | What is claimed and what is not | [Claim boundary](docs/pilot-claim-boundary-2026.md) · [Capability matrix](docs/capability-claim-matrix-2026.md) · [Claims lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
