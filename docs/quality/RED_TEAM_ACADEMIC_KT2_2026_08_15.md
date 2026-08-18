@@ -3,7 +3,7 @@
 title: "Academic Red Team — construct validity, ISO 19650, Solihin classes, KT#2"
 date: "2026-08-16"
 status: active
-last_updated: "2026-08-17"
+last_updated: "2026-08-18"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -16,7 +16,7 @@ claim_boundary: >
 
 # Academic Red Team (KT#2 window, refreshed 17.08.2026)
 
-**Object:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (construct-validity object). Hygiene on 17.08 (six-desk pass: sell-path Gate, AABB n=6, kitchen unpublished) does not reopen the IUA or close RT-001/002/003.  
+**Object:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (construct-validity object). Hygiene on 17.08 (six-desk pass: sell-path Gate, AABB n=6, working materials unpublished) does not reopen the IUA or close RT-001/002/003.  
 **Literature companion:** [`ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](ACADEMIC_LITERATURE_TRIAGE_2026_08.md) — August 2026 papers, IDS 1.1 status, ISO 19650-6, LLM-as-judge, clash FP.  
 **Question:** which *inferences* from current artefacts are licensed, and which are construct-invalid if spoken at KT#2, to Task 07, or to a seed associate?  
 **Checkpoint:** **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.

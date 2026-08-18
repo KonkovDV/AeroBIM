@@ -27,5 +27,5 @@ Data appendices: [`../../samples/tz-appendix/`](../../samples/tz-appendix/).
 ## Drawing AI / research posture
 
 - Drawing OCR/CV/VLM literacy is **not** a pilot acceptance claim — [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)
-- Architecture SSOT: [`../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md)
+- Целевая архитектура: [`../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md)
 - Claims Lock: [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)

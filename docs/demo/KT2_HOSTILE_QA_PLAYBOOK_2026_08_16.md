@@ -2,8 +2,8 @@
 ---
 title: "KT#2 Hostile QA Playbook — 5-минутный питч, злобные вопросы, скрипты ответов"
 status: active
-version: "1.2.0"
-last_updated: "2026-08-17"
+version: "1.2.1"
+last_updated: "2026-08-18"
 claim_boundary: "Подготовительный документ. Checkpoint NO_GO; RT-001/002/003 OPEN. Скрипты не создают новых клеймов; все числа — из SSOT-артефактов. Запрещённые формулировки — audit/claims_forbidden_wording.json."
 ---
 
@@ -222,5 +222,5 @@ claim_boundary: "Подготовительный документ. Checkpoint N
 
 **Демо-контур:**
 - [x] Видео 2–3 мин не записываем и не прилагаем. Показ = live CLI. mp4 **NOT_IN_GIT**. Notice: [`KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md).
-- [ ] Offline Docker как запасной контур (оператор).
+- [ ] Offline Docker как запасной контур (вручную).
 - [ ] Репетиция банка A–J вслух два раза; ответ ≤ 45 с, дальше мост к протоколу.

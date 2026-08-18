@@ -3,7 +3,7 @@
 title: "Red Team + VC diligence attacks — AeroBIM КТ#2"
 date: "2026-08-15"
 status: active
-last_updated: "2026-08-17"
+last_updated: "2026-08-18"
 claim_boundary: >
   Adversarial review for TechLab/jury and hypothetical seed diligence.
   Checkpoint NO_GO. Does not close RT-001/002/003. Not a term sheet.
@@ -37,7 +37,7 @@ Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08
 | ID | Kill line | Status 17.08 evening |
 |---|---|---|
 | RT-FUND-25 | «5/5 executable readiness = you are GO / fundable» | **FIXED** — TIER0 now says form fields, not Checkpoint GO |
-| RT-FUND-26 | «Letter already with the tracker / Samolet» | **FIXED** — form in git; delivery is operator, not a git fact |
+| RT-FUND-26 | «Letter already with the tracker / Samolet» | **FIXED** — form in git; delivery is a human action, not a git fact |
 | RT-FUND-06 | README `tests_passed` means HEAD fully tested | **ACCEPTED** — pin = `runtime-baseline-latest.json`; do not copy a local count |
 | RT-FUND-10 | No entity → no SAFE | **ACCEPTED** — human; do not promise a round |
 | RT-FUND-19 | No paid pilot, no LOI | **ACCEPTED** — KPI = 3–5 scheduled demos; git demos = 0 |
@@ -71,7 +71,7 @@ Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08
 | RT-FUND-16 | «Where is the builder?» | Pitch already: don’t invent a construction CV | Name only facts; otherwise say the gap | **human** |
 | RT-FUND-17 | «Adoption is the constraint, you keep adding ports» | Freeze lifted 14.08; extra-methods only | Show one command, not a layer diagram | process |
 | RT-FUND-18 | «Asking for invest at NO_GO» | Pitch 4:00–5:00 said «пилот + инвест» | **Fixed:** ask slot / pack / dual raters, not a round | speech |
-| RT-FUND-19 | «No paid pilot, no LOI» | Funnel in `.local` only; git demos = 0 | 3–5 scheduled demos is the only GTM KPI | **human** |
+| RT-FUND-19 | «No paid pilot, no LOI» | Funnel stays local, outside git; git demos = 0 | 3–5 scheduled demos is the only GTM KPI | **human** |
 | RT-FUND-20 | «SSO/OIDC production» | BFF 501 | Never say production SSO | intact |
 | RT-FUND-21 | «Native DWG in TZ» | FAILED/MISSING | IFC+PDF path; ODA = human KT#3 | intact |
 | RT-FUND-22 | Exit story / strategic CVC | None | Don’t invent an acquirer. CVC wants parent ROI (Zacua: 41% CVC strategic alignment) | **don’t fake** |
@@ -93,7 +93,7 @@ Ask remains **slot + labelled pack**, not a SAFE. No legal entity (journal 14.08
 
 | ID | Attack | Why it lands | Status 15.08 |
 |---|---|---|---|
-| RT-FUND-23 | «Репозиторий ведёт языковая модель» | README «План ИИ»; copy-paste промпт; Cursor UUID субагентов | **MITIGATED** — операторские брифы, UUID сняты. Продуктовый ИИ (ADR-001 / VLM advisory) **сохранён** |
+| RT-FUND-23 | «Репозиторий ведёт языковая модель» | Признаки машинной генерации в текстах | **MITIGATED** — тексты переписаны человеком, служебные метки сняты. Продуктовый ИИ (ADR-001 / VLM advisory) **сохранён** |
 | RT-FUND-24 | «Вычистили ИИ = вычистили честность» | Риск стереть `closes_rt*=false` / NO_GO | **REFUSED** — honesty lock и Checkpoint **NO_GO** не ослаблялись |
 
 ## Triage (что чинить кодом/речью vs что только человеком)

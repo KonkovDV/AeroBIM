@@ -18,7 +18,7 @@ claim_boundary: >-
 - AR+STR pairs complete: **7** / 9 stems (upstream: 7 of 9 teams)
 - largest file: `{"path": "2026_BIMprojects/2026_BIMprojects/model_6_arc.ifc", "bytes": 561838129}` (upstream could not load ~536 MB architecture; header-only still opens)
 - IfcOpenShell: `{"ok": 223, "skipped_oversize": 1}`
-- extra roots: `[{"dir": "C:\\plans\\AeroBIM\\.local\\bim-whale-ifc-samples", "status": "RUN", "file_count": 6, "open_ok": 6, "schema_counts": {"IFC2X3": 6}, "ifc_open_counts": {"ok": 6}}]`
+- extra roots: `[{"dir": ".local/bim-whale-ifc-samples", "status": "RUN", "file_count": 6, "open_ok": 6, "schema_counts": {"IFC2X3": 6}, "ifc_open_counts": {"ok": 6}}]`
 - DOI: [10.5281/zenodo.19722012](https://doi.org/10.5281/zenodo.19722012)
 - content_sha256: `1682899c2eed89810708cd0999d5a98b5b4a7ecfaaf46c3f241fabafc2c5c746`
 

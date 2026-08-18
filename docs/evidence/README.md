@@ -2,13 +2,13 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.9"
-last_updated: "2026-08-16"
+version: "2.5.10"
+last_updated: "2026-08-18"
 ---
 
 # Evidence fixtures
 
-Only **citeable** snapshots for TechLab review and reproducibility. Phase-command dumps stay under `.local/`. Curated Red Team summaries: [`../quality/`](../quality/).
+Only **citeable** snapshots for TechLab review and reproducibility. Working dumps stay local, outside git. Curated Red Team summaries: [`../quality/`](../quality/).
 
 | File | Role |
 |------|------|
@@ -40,7 +40,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Phase-comman
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; WP-01 complete required in CI) |
-| [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run still operator. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
+| [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
 | [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json) | Synthetic detection twin (`synthetic_only`) |
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Legacy fixture SLA snapshot |

@@ -14,7 +14,7 @@
 |---|---|---|
 | **Renga / ПНСТ 909-2024** (IFC по разделам + IDS, RU-свойства) | Сквозной RU-профиль | **pin_or_link_only** — лицензию сверить перед копированием в `samples/` |
 | buildingSMART IDS TestCases (CC BY-ND, уже в репо) | Регресс IDS | READY |
-| IFC-Bench duplex/dental (non-GPL) | Countable smoke | PINNED / local `.local/` |
+| IFC-Bench duplex/dental (non-GPL) | Countable smoke | PINNED / local checkout, outside git |
 | Перечни типовых замечаний госэкспертиз (публичные) | Каталог классов ошибок для разметки | Ссылка + цитата; не выдавать за корпус Самолёта |
 
 ## Что говорить на демо

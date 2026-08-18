@@ -3,8 +3,8 @@
 title: "Red Team — жюри Техлаб × МИК × Новатор"
 date: "2026-08-16"
 status: active
-version: "1.2.0"
-last_updated: "2026-08-17"
+version: "1.2.1"
+last_updated: "2026-08-18"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Red Team: жюри Техлаба, контур МИК (16.08)
 
-**Persona:** член жюри / эксперт площадки, который клонирует репозиторий и читает верхний слой, не чат оператора.  
+**Persona:** член жюри / эксперт площадки, который клонирует репозиторий и читает верхний слой, не рабочие чаты команды.  
 **Checkpoint:** **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.
 
 **Stage call:** AeroBIM is in **доработка** (КТ#2 20.08). Validation of *effectiveness* (`валидация эффективности`) and *implementation* have **not started**. Speaking as if they have is a kill.
@@ -41,11 +41,11 @@ Object: clone as TechLab jury, MIK stage officer, tracker Siginevich, IT mentor,
 | RT-JURY-I04 | IT mentor | Clash README matrix quote still `n=5` while JSON `support=6` | **FIXED** 17.08 evening — matrix wording **n=6** |
 | RT-JURY-I03 | IT mentor | N-43: runtime baseline lags HEAD after hygiene | **ACCEPTED** — do not mint a local attestation |
 | RT-JURY-T06 | Tracker | 14.08 one-pager overlay-first + «1980 / 656» as if current | **MITIGATED** — addendum 17.08; historical row labelled snapshot |
-| RT-JURY-S01 | Tracker | «Письмо уже у трекера» as a git fact | **FIXED** — form in repo; delivery = operator |
+| RT-JURY-S01 | Tracker | «Письмо уже у трекера» as a git fact | **FIXED** — form in repo; delivery is a human action, not a git fact |
 | RT-JURY-F01 | MIK / VC | «Executable readiness 5/5» read as Checkpoint GO / traction | **FIXED** — 5/5 = intake-form fields, not GO |
 | RT-JURY-V01 | Science | Fixture fail-closed sold as Messick *criterion* for Samolet | **ACCEPTED** — Kane IUA still FAIL for customer use |
 | RT-JURY-M01 | MIK | «Отобраны → продукт готов / валидирован» | **MITIGATED** — stage = доработка |
-| RT-JURY-C01 | All | Kitchen cleanup flips Checkpoint GO | **REJECTED** — RT-001/002/003 stay OPEN |
+| RT-JURY-C01 | All | Cosmetic cleanup flips Checkpoint GO | **REJECTED** — RT-001/002/003 stay OPEN |
 
 ### Six-desk scorecard (17.08 evening)
 
@@ -123,7 +123,7 @@ Engineering readiness improved. **Customer and MIK-act readiness did not.**
 | RT-JURY-N01 | Pitch as «Лидеры инноваций» | Needs юрлицо + выручка | **FAIL if claimed.** Nomination if 2027: «Меняющие реальность» at most |
 | RT-JURY-N02 | Team / builder (criterion 2.6) | RBC: team competence is scored | **OPEN / human** — do not invent a construction CV |
 | RT-JURY-N03 | IP 1.3 / Роспатент | Checklist exists, no application number in git | **OPEN / human** |
-| RT-JURY-N04 | Scale / market | Funnel in `.local` only; git demos = 0 | KPI = 3–5 scheduled demos |
+| RT-JURY-N04 | Scale / market | Funnel stays local, outside git; git demos = 0 | KPI = 3–5 scheduled demos |
 | RT-JURY-N05 | Presentation logic | Live CLI + NO_GO 15s is the only surviving shape | Rehearsal already rewritten |
 | RT-JURY-N06 | Competitive edge vs Tangl/10D | Public stack is Renga+Tangl+10D | Speech: Tangl = model, we = package. Do not claim integration |
 

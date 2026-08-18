@@ -2,8 +2,8 @@
 ---
 title: "Data availability statement — AeroBIM corpora (16.08.2026)"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-16"
+version: "1.0.1"
+last_updated: "2026-08-18"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -29,7 +29,7 @@ License/attribution SSOT: [`../DATASETS.md`](../DATASETS.md). File-level pins: [
 
 `DATASET_MANIFEST.json` (generated 2026-08-14): **873** listed files, **15** vendored; `corpus_kind=fixture`; `production_use: fixture only; never customer evidence`.
 
-## 2. What lives only on the operator machine (gitignored `.local/`)
+## 2. What lives only on the local machine (outside git)
 
 Not in GitHub. Not a substitute for RT-001.
 
@@ -58,7 +58,7 @@ Ask to obtain (1)–(4): [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partne
 
 ## 4. Ethics / PII
 
-Stamp/title-block pixels are not sent to cloud VLM (PII clip). Customer files, if they arrive, stay under NDA / `.local/` — not this git tree.
+Stamp/title-block pixels are not sent to cloud VLM (PII clip). Customer files, if they arrive, stay under NDA outside git — not this git tree.
 
 ## 5. How to reproduce what **is** public
 
@@ -69,7 +69,7 @@ python -m aerobim.tools.run_ifc_bench_smoke --version v2 --also-docs-evidence
 python -m aerobim.tools.run_pnst909_22_scenario_runtime
 ```
 
-IFC-Bench / GNI / full ПНСТ extracts require a local checkout under `.local/` (not vendored). PNST CLI returns `SKIPPED_PACK_INCOMPLETE` when the live pack is a header sample — that skip is the honest result.
+IFC-Bench / GNI / full ПНСТ extracts require a local checkout outside git (not vendored). PNST CLI returns `SKIPPED_PACK_INCOMPLETE` when the live pack is a header sample — that skip is the honest result.
 
 Checkpoint **NO_GO**.
 

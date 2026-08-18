@@ -3,7 +3,7 @@
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
 date: "2026-08-17"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -35,7 +35,7 @@ claim_boundary: >-
 | TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
 | TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
 | TRK-04 | tracker | Задача 4: научный консультант / ИТ-ментор | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
-| TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
+| TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только локально, вне git | Назначенные демо как git-факт | `operational_hygiene` |
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
