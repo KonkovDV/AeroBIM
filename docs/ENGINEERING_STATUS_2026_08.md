@@ -1,22 +1,19 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.53"
+version: "1.6.54"
 last_updated: "2026-08-18"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
 
-# Engineering Status — 2026-08-17
+# Engineering Status — 2026-08-18
 
-**HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-18 · **v1.6.53** — jury-surface hygiene; KT#2 pack audit green; pptx/pdf in presentation field; video withdrawn; form 5/5 ≠ GO; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
-**Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
-**Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
-**Jury / MIK:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
-**Academic honesty:** [`quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) · IUA [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md) · literature [`quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md)  
-**Qwen / Studio:** [`architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md`](architecture/QWEN38_AEROBIM_FEASIBILITY_2026_08_03.md) · [`roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) · [`architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md)  
-**Demo / P4:** [`demo-format-2026-08.md`](demo-format-2026-08.md) · Exp B [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · Exp A [`evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md`](evidence/EXPERIMENT_A_RENGA_PNST909_2026_08.md) · corpus freeze [`demo/KT2_CORPUS_SSOT_2026_08.md`](demo/KT2_CORPUS_SSOT_2026_08.md)  
-**Release aliases:** [`RELEASE_POLICY.md`](RELEASE_POLICY.md) — `LOCAL` env alias dies after КТ#3 **2026-09-21**
+**Цифры тестов:** [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
+**last_updated:** 2026-08-18 · **v1.6.54** — вход документации для жюри сужен; Checkpoint **NO_GO**; RT-001/002/003 OPEN  
+**Checkpoint:** **`NO_GO`** — RT-001 (корпус ПД + экспертиза; открытые бенчи ≠ этот корпус) / RT-002 (подписанный профиль Самолёта; официальные IDS МОГЭ уже есть) / RT-003 (публичный федеративный инвентарь есть; clash NOT_VERIFIED; not MEP delivered)  
+**Запрещённые формулировки:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · датированная заморозка [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
+**Жюри / МИК:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
+**Академическая честность:** [`quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md`](quality/RED_TEAM_ACADEMIC_KT2_2026_08_15.md) · IUA [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md) · литература [`quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md)
 
 ## What improved (engineering — not customer GO)
 
@@ -33,7 +30,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **P4 Experiment A (Renga ПНСТ 909)** | **ToS GO**; runtime **18/22** IDS clean (snapshot 05.08); CLI in tree; live pack truncated → SKIPPED_PACK_INCOMPLETE | Evidence [`evidence/pnst909-22-scenario-runtime-latest.json`](evidence/pnst909-22-scenario-runtime-latest.json); not product accuracy |
 | **Regulatory 21.101** | Marks OS/ODD/MBT; edition config; N-2 clause **8.2.4** | No full-compliance claim |
 | **Demo format 2026-08** | 30–40 min script + criticality + discrepancy rule + on-prem expertise path | Ready for tracker pack |
-| **Commercial ops quarantine** | Live funnel/outreach only under `.local/commercial-ops/`; public = templates | Funnel numbers = owner only |
+| **Commercial ops quarantine** | Live funnel/outreach only locally, outside git; public = templates | Funnel numbers = owner only |
 | **LOCAL→ADVISORY alias** | Boot WARNING; remove after 2026-09-21 | Docs must not reintroduce LOCAL-only |
 | **CRITICAL_BLOCKERS RT-004…017** | Closed sections lead with **СТАТУС: ЗАКРЫТО** | RT-001/002/003 still OPEN → NO_GO |
 | **Eng residuals wave** | VLM smoke gate; signature deepen; OIDC Phase 2 stubs; BCF T2 checklist; DWG native fail-closed; BSI IDS n=290 CC BY-ND; bare-metal wheelhouse DEFERRED | Checkpoint NO_GO unchanged |
@@ -67,10 +64,8 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **KT#2 readiness card (16.08)** | 5/5 **intake-form fields** have a tree deliverable: [`TIER0_INDEX.md`](TIER0_INDEX.md) → approach + 5-up comparison + playbook + status. Live CLI `run_demo_ifc_acceptance_gate` reproducible on fixture | Not RT-001/002/003 CLOSED; not Checkpoint GO; видео не прилагаем; ЛК upload = human |
 | **Six-desk RT (17.08 evening)** | TechLab / MIK / tracker / IT mentor / science / VC pass: Gate sell-path, AABB n=6, tracker addendum, letter ≠ git-fact, Kane freeze `f9389bf` | Not RT CLOSED; N-43 lag **ACCEPTED**; criterion IUA still FAIL |
 | **KT#2 video withdrawn (17.08)** | Ролик 2–3 мин не записываем и в форму не прикладываем. Показ = `run_demo_ifc_acceptance_gate`. Notice: [`demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Not a recorded demo; not Checkpoint GO |
-| **Jury-surface hygiene (18.08)** | Пять полей формы, корневые README, TIER0, техобоснование и вердикт красной команды очищены от служебного жаргона и локальных следов; формула стадии и проверяемые пины не тронуты | Not RT-001/002/003 CLOSED; Checkpoint NO_GO |
-| **KT#2 pack audit (18.08)** | Вечерний срез проверен: pre-push gate (11 гейтов), 85 honesty tests, live CLI `passed=false` ожидаем / NO_GO, дека tracked, CI green на `386dba8` — [`quality/KT2_PACK_AUDIT_2026_08_18.md`](quality/KT2_PACK_AUDIT_2026_08_18.md) | Not RT-001/002/003 CLOSED; Checkpoint NO_GO |
+| **Jury-facing indexes (18.08)** | Вход `docs/README` и карта TIER0 сужены до документов Техлаба и МИК; служебный журнал разработки снят с обязательного чтения | Not RT-001/002/003 CLOSED; Checkpoint NO_GO |
 | **KT#2 deck in git (17.08)** | Поле «Презентация»: [`../submission/03-presentation/aerobim_kt2.pptx`](../submission/03-presentation/aerobim_kt2.pptx) + [`../submission/03-presentation/aerobim_kt2.pdf`](../submission/03-presentation/aerobim_kt2.pdf). Речь: `slides.md`. Видео по-прежнему не прилагаем | Not Checkpoint GO |
-| **N-43 baseline lag (17.08)** | Committed CI pin is [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`). Hygiene commits do not mint a local attestation; SHA/counts are not copied onto jury cards | Not Checkpoint GO; refresh the JSON from a CI artifact, then README markers |
 | **Dataset CLI (task 3, 16.08)** | PNST 22-scenario CLI + frozen pairing; live pack truncated → `SKIPPED_PACK_INCOMPLETE` (05.08 **18/22** kept). IFC-Bench v2 **27/1026** re-run pin ok. Ishigaki gold XML processability 166/166 (not generation F1, no IFC). DrawingVQA link-only | Not a fresh 18/22; Harbor NOT_RUN; not RT-001 |
 | **IfcClash tiny walls** | Skip degenerate products (`AEROBIM_CLASH_SKIP_TINY`, default on); all-skipped still FAILED | Not a silent pass |
 | **LIC-001 Option B** | Core PDF = `pypdfium2` + `pdfminer.six`; PyMuPDF optional `pdf-agpl` only | Not a legal opinion |

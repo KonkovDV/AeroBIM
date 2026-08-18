@@ -16,7 +16,7 @@ claim_boundary: >
 
 # Academic Red Team (KT#2 window, refreshed 17.08.2026)
 
-**Object:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (construct-validity object). Hygiene on 17.08 (six-desk pass: sell-path Gate, AABB n=6, working materials unpublished) does not reopen the IUA or close RT-001/002/003.  
+**Object:** IUA freeze [`f9389bf`](https://github.com/KonkovDV/AeroBIM/commit/f9389bf) (construct-validity object). Later text edits (17.08: основной показ Gate, AABB n=6, рабочие материалы не публикуются) do not reopen the IUA or close RT-001/002/003.  
 **Literature companion:** [`ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](ACADEMIC_LITERATURE_TRIAGE_2026_08.md) — August 2026 papers, IDS 1.1 status, ISO 19650-6, LLM-as-judge, clash FP.  
 **Question:** which *inferences* from current artefacts are licensed, and which are construct-invalid if spoken at KT#2, to Task 07, or to a seed associate?  
 **Checkpoint:** **NO_GO**. `closes_rt001: false`. `closes_rt002: false`. `closes_rt003: false`.
@@ -171,7 +171,7 @@ IDs continue the funding series so speech packs stay aligned.
 | RT-ACAD-13 | Inter-rater: invent κ | no dual labels | protocol exists, numbers do not |
 | RT-ACAD-14 | Clash FP: AABB/inventory as delivered clash | duplex 654 | NOT_VERIFIED |
 | RT-ACAD-15 | Appropriability: MIT = nothing to sell | LICENSE | services speech, not SAFE |
-| RT-ACAD-16 | Consequential: GitHub reads as LLM dump | README «План ИИ»; executor prompt; Cursor UUIDs | **MITIGATED 15–16.08** — session dumps off public tree; product VLM/ADR-001 kept; `closes_rt*` unchanged |
+| RT-ACAD-16 | Consequential: GitHub reads as LLM dump | Machine-generated traces in public texts | **MITIGATED 15–16.08** — working drafts off public tree; product VLM/ADR-001 kept; `closes_rt*` unchanged |
 | RT-ACAD-17 | Construct substitution: IFC-Bench QA → expertise act | Hellin et al. 2026 (arXiv:2605.01698); 27/1026 smoke | `open_bench_only`; RT-001 OPEN |
 | RT-ACAD-18 | Construct substitution: AEC-Bench inventory → agent reads Samolet PD | Mankodiya et al. 2026 (arXiv:2603.29199); Harbor NOT_RUN | Do not name inventory as a run |
 | RT-ACAD-19 | VLM-as-judge replaces dual raters | arXiv:2606.19544 κ-deflation | `PrecisionClaim.publishable` only |
@@ -199,7 +199,7 @@ IDs continue the funding series so speech packs stay aligned.
 - Honesty lock test on **this file** (`closes_rt001: false` etc.).  
 - Live re-run of the schema-suite on CPython 3.12.10, n=20: IFC2X3 findings 5 / IFC4 4 / IFC4X3 6; all `summary.passed=false`. Clash on these wall fixtures is **failed** (`AssertionError` from IfcClash geom init) — listed as a refusal, not a silent pass.  
 - Open-corpora **smoke** (SHA pins `pins_ok=true`, 7 regression cases), not Harbor 160.  
-- Voice hygiene 15.08: strip meta-agent prompts and Cursor review UUIDs. Do **not** treat that as closing RT-001. Product advisory VLM stays.
+- Public texts 15.08: meta-agent traces removed from the tree. Do **not** treat that as closing RT-001. Product advisory VLM stays.
 
 ## 12. Human-only (cannot be closed by coding)
 

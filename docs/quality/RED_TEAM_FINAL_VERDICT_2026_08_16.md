@@ -2,7 +2,7 @@
 ---
 title: "Final Verdict — полная перепроверка КБ AeroBIM (академический уровень)"
 status: active
-version: "1.1.1"
+version: "1.1.2"
 last_updated: "2026-08-18"
 closes_rt001: false
 closes_rt002: false
@@ -15,24 +15,11 @@ audited_head: "3ca6b21"
 auditor: "internal architecture re-check, 16.08"
 ---
 
-# Final Verdict — AeroBIM, вечер перед КТ#2
+# Итоговая проверка — AeroBIM, перед КТ#2
 
-## 1. Скорборд всех волн исправлений (финал)
+## 1. Что проверено
 
-| Волна | Проверено | Закрыто корректно | Остаток после волны |
-|---|---|---|---|
-| Re-audit #1 (`4b410c9`) | 17 | 14 | UP-01, BFF-01, RL-02 (by-design) |
-| Re-audit #2 (`3ca6b21`) | 13 | 9 | VER-01, LINT-01, RL-02 |
-| Remainder close-out after re-check #2 | 4 | 4 | — |
-
-| ID | Статус | Доказательство |
-|---|---|---|
-| HD9-VER-01 | **FIXED** | `--day` default = `latest` (`DEFAULT_RELEASE_EVIDENCE_DAY`); fail-closed без dated `release-status-*.json` |
-| HD2-UP-01 | **FIXED** | reserve-ahead; 413/415/422 → `bytes_used=0`, `upload_count=0`, без holds |
-| HDX-LINT-01 | **FIXED** | нет directory blinds; scan = git-tracked; lint prints `scanned` / `excluded_by_fragment` / `excluded_untracked` / `excluded_evidence` |
-| HD2-RL-02 | **BY-DESIGN** | `0` = off только в development. `samolet_pilot` / `production` reject `<=0` at boot (default 120). Accepted Risks |
-
-Регрессий: 0. Незакрытых MEDIUM+: 0. Вердикт-контур не затронут.
+Повторные разборы кода и документов 16.08 закрыли найденные дефекты контура (загрузка, линт, значение «0» как отключение только в development). Регрессий нет. Контур технического вердикта не менялся.
 
 ## 2. Архитектура
 
@@ -40,7 +27,7 @@ auditor: "internal architecture re-check, 16.08"
 
 ## 3. Внешние требования (без смены Checkpoint)
 
-- **Техлаб / ТЗ#07:** IFC+IDS sell-path; «≤30 мин» только в SLA-протоколе; framing «последовательность, не откат» — playbook §A/I.
+- **Техлаб / ТЗ#07:** основной показ IFC+IDS; «≤30 мин» только в SLA-протоколе; речь «последовательность, не откат» — playbook §A/I.
 - **МИК:** стадия **доработка**. Валидация эффективности и внедрение не начались.
 - **Самолёт:** ask-пакет готов; RT-001/002/003 = внешние зависимости; Plan B 15.09.
 - **Нормативка:** 21.101-2026, МОГЭ/AGR/СПб IDS vendored; «все нормы» не заявляется.
@@ -49,7 +36,7 @@ auditor: "internal architecture re-check, 16.08"
 
 ## 4. Готовность к КТ#2 (20.08)
 
-Код/доки готовы к честной демонстрации. Видео 2–3 мин **не записываем и не прилагаем.** Показ — живой CLI. SSOT корпуса заморожен, owner на [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md). Демо — [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §0.
+Код и документы готовы к честной демонстрации. Видео 2–3 мин **не записываем и не прилагаем.** Показ — живой CLI. Строка корпуса заморожена; запрос заказчику — [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md). Ответы на вопросы — [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §0.
 
 ## 5. Публичные источники и оставшаяся человеческая работа
 

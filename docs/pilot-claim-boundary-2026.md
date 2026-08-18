@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.7.4"
+version: "1.7.5"
 last_updated: "2026-08-18"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -15,9 +15,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 **Checkpoint:** **`NO_GO`**. RT-001 / RT-002 / RT-003 OPEN. Form 5/5 ≠ Checkpoint GO. Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
 
 **Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
-**TZ preparation SSOT:** [`tz/README.md`](tz/README.md).  
-**Forbidden wording SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md).  
-**Eng readiness (not Checkpoint GO):** [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md).
+**Индекс ТЗ:** [`tz/README.md`](tz/README.md).  
+**Запрещённые формулировки:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · датированная заморозка [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md).
 
 ## TZ MVP scope (honest framing)
 

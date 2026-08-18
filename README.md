@@ -432,8 +432,6 @@ python -m mypy src
 pytest tests -q
 ```
 
-Or all fast CI gates in one command from the repo root (~15 s): `python scripts/pre_push_gate.py` with the backend venv python. A local `pre-push` hook can call it automatically.
-
 Measurements are reproducible commands, not stored numbers:
 
 ```bash
@@ -455,22 +453,17 @@ This repository publishes the reviewable set: code, requirements, claim boundari
 
 | Topic | Document |
 |---|---|
-| Start here | [Tier-0 jury map](docs/TIER0_INDEX.md) · [Documentation index](docs/README.md) |
+| Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) |
 | Checkpoint #2 submission pack | [Submission pack](submission/README.md) |
 | Jury speech card | [Jury FAQ](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
-| Tracker notes (Tangl / 10D) | [Tracker meeting 14.08](docs/demo/TRACKER_MEETING_2026_08_14.md) |
-| MIK / TechLab programme contour | [MIK pilot compliance](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
-| Diligence attack surface | [Funding / diligence attacks](docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
-| Blocker register and checkpoint | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
-| What is claimed and what is not | [Claim boundary](docs/pilot-claim-boundary-2026.md) · [Capability matrix](docs/capability-claim-matrix-2026.md) · [Claims lock](audit/reports/CLAIMS_LOCK_2026_07_17.md) |
-| Engineering status | [August 2026 status](docs/ENGINEERING_STATUS_2026_08.md) · [Project status audit](docs/PROJECT_STATUS_AUDIT_2026.md) |
-| Accepted risks | [Accepted risks registry](docs/quality/ACCEPTED_RISKS_REGISTRY_KT2_2026_08_09.md) |
+| MIK programme contour | [MIK pilot compliance](docs/partners/MIK_PILOT_COMPLIANCE_2026.md) |
+| Blocker register | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
+| What is claimed and what is not | [Claim boundary](docs/pilot-claim-boundary-2026.md) · [Capability matrix](docs/capability-claim-matrix-2026.md) |
 | Architecture | [Target architecture](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
-| Requirements and traceability | [TZ pack](docs/tz/README.md) · [TechLab alignment](docs/samolet-techlab-alignment-2026.md) |
-| How quality is measured | [Quality protocol](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) · [Benchmark evidence](docs/benchmark-evidence-2026.md) |
-| Fixtures, corpora, evidence | [Evidence index](docs/evidence/README.md) · [Benchmarks](samples/benchmarks/README.md) · [Open corpora](samples/benchmarks/open-corpora/README.md) |
-| Licensing and offline deployment | [License policy](docs/license-policy-2026.md) · [Offline deployment](docs/offline-deployment-2026.md) |
-| Reproducibility | [Reproducibility](docs/REPRODUCIBILITY-2026.md) |
+| Requirements | [TZ pack](docs/tz/README.md) · [Coverage map](submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) |
+| How quality is measured | [Quality protocol](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) |
+| Fixtures and evidence | [Evidence index](docs/evidence/README.md) |
+| Licensing | [License policy](docs/license-policy-2026.md) |
 
 Project governance: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Support](SUPPORT.md) · [Maintainers](MAINTAINERS.md) · [Release policy](RELEASE_POLICY.md).
 

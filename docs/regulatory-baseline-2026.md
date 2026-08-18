@@ -2,7 +2,7 @@
 ---
 title: "Regulatory baseline 2026 — what touches AeroBIM"
 date: 2026-08-05
-last_updated: "2026-08-14"
+last_updated: "2026-08-18"
 status: LIVING
 claim_boundary: >-
   Date/status inventory for engineering. Not legal advice. Not «соответствуем ГОСТ целиком».
@@ -62,6 +62,6 @@ Inventory может задать `package_developed_on` + rule → поле `do
 
 **Ловушка ПП 878:** ЕГРЗ = ПП от **24.07.2017** № 878. ПП от **10.07.2019** № 878 — радиоэлектроника, не ЕГРЗ.
 
-## Канвас среза
+## Иерархия и границы
 
-Иерархия и границы заявлений: канвас `npa-cim-expertise-2026-08-14` (Cursor canvas рядом с чатом исследования).
+Иерархия нормативных актов и границы заявлений разобраны в этом же файле: что проверяет продукт, что остаётся актом экспертизы, что относится к ЕГРЗ.

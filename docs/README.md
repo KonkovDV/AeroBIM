@@ -1,69 +1,55 @@
 ---
-title: "AeroBIM Documentation — TechLab jury surface"
+title: "Документация AeroBIM — вход для жюри Техлаба и МИК"
 status: active
-version: "3.4.3"
-last_updated: "2026-08-17"
+version: "3.5.0"
+last_updated: "2026-08-18"
 tags: [aerobim, documentation, samolet, techlab, jury]
 claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint NO_GO. Eng readiness ≠ customer GO. Working/debug docs stay local, outside git."
 ---
 
-# Documentation (TechLab jury)
+# Документация
 
-Checkpoint: **`NO_GO`** — [blocker register](../audit/reports/CRITICAL_BLOCKERS.md).  
-Aug 2026 eng readiness: [engineering status](ENGINEERING_STATUS_2026_08.md) (not Checkpoint GO).
+Checkpoint: **`NO_GO`**. Стадия МИК — **доработка**. Это не «система не запускается»: на учебном комплекте проверка работает. Нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
-Public GitHub carries **only** materials needed for Samolet TechLab Task 07 jury review: product code, TZ pack, honest claims, architecture, citeable fixtures, and a short curated set under `docs/quality/`. Internal runbooks, session audits, and commercial contact pipelines stay local, outside git. Public `docs/customer-discovery/` = anonymized templates only.
+Компактная карта: [`TIER0_INDEX.md`](TIER0_INDEX.md). Пакет пяти полей формы: [`../submission/README.md`](../submission/README.md).
 
-## Read first
+## С чего начать
 
-| Document | Role |
-|------|------|
-| [КТ#2 form pack](../submission/README.md) | Five fields + TZ coverage |
-| [Engineering status](ENGINEERING_STATUS_2026_08.md) | Aug 2026 P0 WP-01…08 + LIC-001 / P2 / offline |
-| [Jury memo (RU)](docs.md) | Technical justification |
-| [Samolet strategy](samolet.md) | Strategy × Samolet 10D |
-| [Competitive matrix](partners/COMPETITIVE_MATRIX_2026_08.md) | Task-07 neighbours (Tangl / 10D); their claims, not ours |
-| [Customer TZ v2.0](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Task 07 TZ |
-| [TZ pack index](tz/README.md) | Full TZ pack |
-| [Claim boundary](pilot-claim-boundary-2026.md) | Verified vs planned |
-| [Claims lock](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | Forbidden wording |
-| [Eng freeze 2026-07-31](../audit/reports/CLAIMS_LOCK_2026_07_31.md) | Dated freeze |
-| [Critical blockers](../audit/reports/CRITICAL_BLOCKERS.md) | RT-001/002/003 |
-| [Target architecture](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | Hybrid design |
-| [ADR-001 verdict ownership](architecture/ADR-001-verdict-ownership-2026.md) | Who owns `summary.passed` |
-| [TechLab alignment R1–R15](samolet-techlab-alignment-2026.md) | Traceability |
-| [Task 07 readiness](partners/TECHLAB_TASK_07_READINESS_2026.md) | Readiness / form |
-| [MEP clash gap](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | MEP honesty |
-| [Geometry honesty plan](roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md) | Deepen path |
-| [License policy](license-policy-2026.md) | LIC-001 Option B |
-| [Offline deployment](offline-deployment-2026.md) | Docker offline; bare-metal deferred |
-| [Quality measurement protocol](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | WP-07 |
-| [Open corpora profiles](../samples/benchmarks/open-corpora/README.md) | WP-06 |
+| Документ | Зачем |
+|---|---|
+| [`docs.md`](docs.md) | Техническое обоснование |
+| [`TIER0_INDEX.md`](TIER0_INDEX.md) | Короткая карта пакета |
+| [`tz/TZ_COMPLIANCE_MATRIX_2026.md`](tz/TZ_COMPLIANCE_MATRIX_2026.md) | Построчное соответствие ТЗ |
+| [`../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md`](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) | Карта ТЗ этой подачи |
+| [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) | Что проверено, а что запланировано |
+| [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md) | RT-001 / RT-002 / RT-003 |
+| [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md) | Формула речи |
+| [`architecture/ADR-001-verdict-ownership-2026.md`](architecture/ADR-001-verdict-ownership-2026.md) | Кто ставит технический статус |
+| [`evidence/DATA_STATEMENT_2026_08.md`](evidence/DATA_STATEMENT_2026_08.md) | Какие данные есть и каких нет |
+| [`evidence/README.md`](evidence/README.md) | Цитируемые учебные прогоны |
 
-## Supporting (still jury-facing)
+## ТЗ и архитектура
 
-| Document | Role |
-|------|------|
-| [Application blurb](partners/TECHLAB_SAMOLET_APPLICATION_2026.md) | TechLab form text |
-| [Strategic assessment](partners/AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md) | Positioning |
-| [What we need from Samolet](partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md) | Ask (RU; stack-aware 14.08) |
-| [Competitive matrix](partners/COMPETITIVE_MATRIX_2026_08.md) | Axes + RU developers |
-| [TZ runtime matrix](../audit/reports/TZ_RUNTIME_MATRIX.md) | Runtime capabilities |
-| [Claims ↔ evidence](../audit/reports/CLAIMS_EVIDENCE_MATRIX.md) | Evidence map |
-| [Reproducibility](REPRODUCIBILITY-2026.md) | FAIR / how to reproduce |
-| [IFC compatibility](ifc-compatibility-matrix.md) | Schema support |
-| [Citeable fixtures](evidence/README.md) | Evidence index |
-| [Public audit index](../audit/reports/README.md) | Audit reports |
-| [Project status audit](PROJECT_STATUS_AUDIT_2026.md) | Self-audit / gates |
-| [Capability / claim matrix](capability-claim-matrix-2026.md) | Allowed vs forbidden |
-| [Benchmark evidence](benchmark-evidence-2026.md) | Fixture metric boundaries |
-| [Samolet pilot protocol](pilot-protocol-samolet-2026.md) | Pilot phases |
-| [Видео к КТ#2](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Не записываем и не прилагаем |
-| [Renga IFC request](partners/SAMOLET_RENGA_IFC_REQUEST_2026_08_14.md) | IFC from Renga, not Tangl API |
-| [Parallel workplan](pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md) | Aug / Sep checkpoints |
-| [Expert labeling](pilot/EXPERT_LABELING_INSTRUCTION_2026.md) | Dual-blind TP/FP/FN + κ |
-| [Norm pack / RASE guide](pilot/NORM_PACK_RASE_GUIDE_2026.md) | Rule packs |
-| [Four-direction gap](pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md) | DWG / MEP / calc / BCF→СОД |
-| [Hybrid AI report](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) | Design; WP-02 advisory pre-gate landed after report |
-| [Tier-0 jury map](TIER0_INDEX.md) | Compact map |
-| [AI safety / ingestion](ai-safety-and-document-ingestion-2026.md) | Trust boundaries |
+| Документ | Зачем |
+|---|---|
+| [`tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Текст ТЗ задачи 07 |
+| [`tz/README.md`](tz/README.md) | Индекс пакета ТЗ |
+| [`architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | Целевая архитектура |
+| [`capability-claim-matrix-2026.md`](capability-claim-matrix-2026.md) | Что можно и нельзя говорить |
+| [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) | Запрещённые формулировки |
+
+## Показ и доказательства
+
+| Документ | Зачем |
+|---|---|
+| [`demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) | Ответы на жёсткие вопросы |
+| [`demo/KT2_TASK07_COMPARISON_2026_08.md`](demo/KT2_TASK07_COMPARISON_2026_08.md) | Сравнение пяти решений; цифры конкурентов — их заявления |
+| [`demo/KT2_CORPUS_SSOT_2026_08.md`](demo/KT2_CORPUS_SSOT_2026_08.md) | Замороженная строка открытых прокси |
+| [`partners/SAMOLET_KT2_ASK_2026_08_15.md`](partners/SAMOLET_KT2_ASK_2026_08_15.md) | Четыре пункта запроса заказчику |
+| [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Разбор атак жюри и МИК |
+| [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Что цифры имеют право значить |
+| [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Как измерять качество, когда появятся данные |
+
+Ролик 2–3 мин не записываем и не прилагаем. Показ — живая команда `run_demo_ifc_acceptance_gate`.
+
+Рабочие журналы, черновики и коммерческие контакты в этот каталог не входят.
