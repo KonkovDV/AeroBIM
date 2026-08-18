@@ -2,15 +2,15 @@
 ---
 title: "Final Verdict — полная перепроверка КБ AeroBIM (академический уровень)"
 status: active
-version: "1.1.0"
-last_updated: "2026-08-16"
+version: "1.1.1"
+last_updated: "2026-08-18"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Итоговый аудит-вердикт. Checkpoint NO_GO; RT-001/002/003 OPEN —
   закрываются только customer evidence. Не заявление точности/SLA.
-  Не лицензирует GO. Operator kitchen prompts are not on the public tree.
+  Не лицензирует GO. Internal working drafts are not on the public tree.
 audited_head: "3ca6b21"
 auditor: "internal architecture re-check, 16.08"
 ---
@@ -51,9 +51,9 @@ auditor: "internal architecture re-check, 16.08"
 
 Код/доки готовы к честной демонстрации. Видео 2–3 мин **не записываем и не прилагаем.** Показ — живой CLI. SSOT корпуса заморожен, owner на [`../partners/SAMOLET_KT2_ASK_2026_08_15.md`](../partners/SAMOLET_KT2_ASK_2026_08_15.md). Демо — [`../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md`](../demo/KT2_HOSTILE_QA_PLAYBOOK_2026_08_16.md) §0.
 
-## 5. Public SSOT and remaining operator work
+## 5. Публичные источники и оставшаяся человеческая работа
 
-Публичный SSOT: TIER0 + Hostile QA §0 + этот вердикт. Operator kitchen prompts stay gitignored and are not GitHub sources.
+Публичные источники: TIER0 + Hostile QA §0 + этот вердикт. Внутренние черновики не публикуются и не являются источниками на GitHub.
 
 Следующие шаги **не в коде:** загрузка в ЛК, пакет Самолёта, dual raters. Видео не записываем. На «почему NO_GO» — формула playbook §0: NO_GO первым, три условия GO, протокол прежде процента.
 

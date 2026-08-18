@@ -1,8 +1,8 @@
 ---
 title: "Поле «Прототип» — запуск и проверяемое поведение"
 status: active
-version: "1.0.2"
-last_updated: "2026-08-17"
+version: "1.0.3"
+last_updated: "2026-08-18"
 claim_boundary: >
   Runnable prototype on fixtures. Not customer корпус, not measured SLA,
   not product accuracy. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -12,7 +12,7 @@ claim_boundary: >
 
 Запускается из репозитория одной командой на **учебном комплекте**. Данных заказчика в дереве нет.
 
-**Формула стадии (дословно, SSOT [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
+**Формула стадии (дословно; источник — [карточка речи для жюри](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
 
 ## Что запускается на чистом клоне (основной показ)
 
@@ -22,9 +22,9 @@ pip install -e ".[dev,raster]"
 python -m aerobim.tools.run_demo_ifc_acceptance_gate
 ```
 
-На выходе — `artifacts/ifc-acceptance-gate-demo/` (каталог gitignore, в форму не кладётся): `acceptance-gate.json`, `report.html`, `report.json`, `findings.bcfzip`.
+На выходе — каталог `artifacts/ifc-acceptance-gate-demo/` (создаётся локально, в репозиторий не входит): `acceptance-gate.json`, `report.html`, `report.json`, `findings.bcfzip`.
 
-Это **fixture-only**. Снимок HTML из [`../../docs/evidence/kt2-handoff-2026-08-11/`](../../docs/evidence/kt2-handoff-2026-08-11/) демонстрацией не является. Не открывать `wall-guid/report.html` как overlay.
+Это **fixture-only**. HTML-снимок в [`../../docs/evidence/kt2-handoff-2026-08-11/`](../../docs/evidence/kt2-handoff-2026-08-11/) — архив прогона 11.08, а не живой показ.
 
 ## Что показывает находка
 
@@ -36,11 +36,11 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 | Что такое finding? | Требование → правило → объект → evidence. Не акт экспертизы и не точность продукта. |
 | Почему это не customer accuracy? | Комплекта Самолёта в дереве нет (RT-001 OPEN). Учебный F1 / AABB n=6 / 27/1026 — другие контуры. |
 | Что если обязательная проверка не прошла? | Capability `FAILED` роняет комплект. Молчание не считается успехом. |
-| Доказывает ли BCF ZIP импорт в СОД? | Нет. Структурный архив T1 есть. Импорт в СОД заказчика — `NOT_VERIFIED` (RT, не код). |
+| Доказывает ли BCF ZIP импорт в СОД? | Нет. Структурный архив T1 есть. Импорт в СОД заказчика — `NOT_VERIFIED` (это блокер, не код). |
 
 ## Дополнительные команды (не ядро показа)
 
-Не ставить рядом с основным демо как «тоже продукт». Каждая строка — отдельный класс.
+Эти команды вспомогательные и не заменяют основной показ. Каждая строка — отдельный класс.
 
 | Класс | Команда | Граница |
 |---|---|---|
@@ -48,7 +48,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 | **P1, fixture-only** | `python -m aerobim.tools.run_demo_vertical_slice` | Оверлей на PDF. Не ядро вердикта |
 | **protocol-only, fixture-only** | `python -m aerobim.tools.measure_package_sla` | Порядок времени на учебном комплекте. Не SLA заказчика |
 | **protocol-only, fixture-only** | `python -m aerobim.tools.evaluate_detection_precision` | TP/FP на размеченной синтетике. Не точность Самолёта |
-| **honesty** | `python -m aerobim.tools.validate_dwg_toolchain` | Чтение DWG без конвертации — `NOT_IMPLEMENTED` |
+| **самопроверка** | `python -m aerobim.tools.validate_dwg_toolchain` | Чтение DWG без конвертации — `NOT_IMPLEMENTED` |
 | **protocol-only** | `python -m aerobim.tools.verify_kt2_handoff` | Самопроверка пакета КТ#2. Не customer evidence |
 
 ## Веб-интерфейс (P1, не показ КТ#2)

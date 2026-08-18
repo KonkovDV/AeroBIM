@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Engineering Status — August 2026"
 status: active
-version: "1.6.52"
+version: "1.6.53"
 last_updated: "2026-08-18"
 claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ RF corpus. Public MOEXP IDS ≠ Samolet profile. Fixture != customer."
 ---
@@ -9,7 +9,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 # Engineering Status — 2026-08-17
 
 **HEAD (docs refresh):** see [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json)  
-**last_updated:** 2026-08-18 · **v1.6.52** — KT#2 pack audit green; pptx/pdf in presentation field; video withdrawn; form 5/5 ≠ GO; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
+**last_updated:** 2026-08-18 · **v1.6.53** — jury-surface hygiene; KT#2 pack audit green; pptx/pdf in presentation field; video withdrawn; form 5/5 ≠ GO; Checkpoint **NO_GO**; RT-001/002/003 still OPEN  
 **Checkpoint:** **`NO_GO`** — RT-001 (RF PD+expertise corpus; open benches ≠ that corpus) / RT-002 (Samolet-signed profile; official MOEXP IDS exist) / RT-003 (public federated IFC inventory exists; clash NOT_VERIFIED; not MEP delivered)  
 **Claims SSOT:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · dated freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md)  
 **Jury / MIK:** [`quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md)  
@@ -67,6 +67,7 @@ claim_boundary: "Engineering readiness only. Checkpoint NO_GO. Open benches ≠ 
 | **KT#2 readiness card (16.08)** | 5/5 **intake-form fields** have a tree deliverable: [`TIER0_INDEX.md`](TIER0_INDEX.md) → approach + 5-up comparison + playbook + status. Live CLI `run_demo_ifc_acceptance_gate` reproducible on fixture | Not RT-001/002/003 CLOSED; not Checkpoint GO; видео не прилагаем; ЛК upload = human |
 | **Six-desk RT (17.08 evening)** | TechLab / MIK / tracker / IT mentor / science / VC pass: Gate sell-path, AABB n=6, tracker addendum, letter ≠ git-fact, Kane freeze `f9389bf` | Not RT CLOSED; N-43 lag **ACCEPTED**; criterion IUA still FAIL |
 | **KT#2 video withdrawn (17.08)** | Ролик 2–3 мин не записываем и в форму не прикладываем. Показ = `run_demo_ifc_acceptance_gate`. Notice: [`demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) | Not a recorded demo; not Checkpoint GO |
+| **Jury-surface hygiene (18.08)** | Пять полей формы, корневые README, TIER0, техобоснование и вердикт красной команды очищены от служебного жаргона и локальных следов; формула стадии и проверяемые пины не тронуты | Not RT-001/002/003 CLOSED; Checkpoint NO_GO |
 | **KT#2 pack audit (18.08)** | Вечерний срез проверен: pre-push gate (11 гейтов), 85 honesty tests, live CLI `passed=false` ожидаем / NO_GO, дека tracked, CI green на `386dba8` — [`quality/KT2_PACK_AUDIT_2026_08_18.md`](quality/KT2_PACK_AUDIT_2026_08_18.md) | Not RT-001/002/003 CLOSED; Checkpoint NO_GO |
 | **KT#2 deck in git (17.08)** | Поле «Презентация»: [`../submission/03-presentation/aerobim_kt2.pptx`](../submission/03-presentation/aerobim_kt2.pptx) + [`../submission/03-presentation/aerobim_kt2.pdf`](../submission/03-presentation/aerobim_kt2.pdf). Речь: `slides.md`. Видео по-прежнему не прилагаем | Not Checkpoint GO |
 | **N-43 baseline lag (17.08)** | Committed CI pin is [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`). Hygiene commits do not mint a local attestation; SHA/counts are not copied onto jury cards | Not Checkpoint GO; refresh the JSON from a CI artifact, then README markers |
