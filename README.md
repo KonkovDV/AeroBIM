@@ -76,16 +76,7 @@ Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-t
 
 ## Who this page is for
 
-Routing only — none of these people have endorsed the product.
-
-| Reader | Start here |
-|---|---|
-| TechLab / MIK jury | Formula above → [`submission/README.md`](submission/README.md) → the command just above |
-| Samolet (TZ) | Coverage map [`submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md`](submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) · ask [`docs/partners/SAMOLET_KT2_ASK_2026_08_15.md`](docs/partners/SAMOLET_KT2_ASK_2026_08_15.md) |
-| Tracker | [`docs/demo/TRACKER_MEETING_2026_08_14.md`](docs/demo/TRACKER_MEETING_2026_08_14.md) (14.08 + addendum 17.08) — Tangl checks the **model**; AeroBIM checks the **pack**; we do not replace 10D |
-| IT mentor | Fail-closed IDS, live CLI `run_demo_ifc_acceptance_gate`, five-layer architecture below. CI pin ≠ local pytest |
-| Scientific mentor | Protocol before numbers: [`docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) · Kane IUA [`docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) · fixture F1 is not product accuracy |
-| Investor / diligence | No legal entity, no round this week. Ask = calendar slot + labeled pack, not a SAFE. [`docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md`](docs/quality/RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md) |
+TechLab / MIK jury: formula above → [`submission/README.md`](submission/README.md) → the command just above. This is a refinement pack, not a Checkpoint act.
 
 ## What a run actually does
 

@@ -1,7 +1,7 @@
 ---
 title: "Поле «Прототип» — запуск и проверяемое поведение"
 status: active
-version: "1.0.3"
+version: "1.0.4"
 last_updated: "2026-08-18"
 claim_boundary: >
   Runnable prototype on fixtures. Not customer корпус, not measured SLA,
@@ -40,16 +40,10 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 
 ## Дополнительные команды (не ядро показа)
 
-Эти команды вспомогательные и не заменяют основной показ. Каждая строка — отдельный класс.
-
 | Класс | Команда | Граница |
 |---|---|---|
-| **Основной показ** | `python -m aerobim.tools.run_demo_ifc_acceptance_gate` | Fixture-only; `summary.passed=false` ожидаем |
-| **P1, fixture-only** | `python -m aerobim.tools.run_demo_vertical_slice` | Оверлей на PDF. Не ядро вердикта |
-| **protocol-only, fixture-only** | `python -m aerobim.tools.measure_package_sla` | Порядок времени на учебном комплекте. Не SLA заказчика |
-| **protocol-only, fixture-only** | `python -m aerobim.tools.evaluate_detection_precision` | TP/FP на размеченной синтетике. Не точность Самолёта |
-| **самопроверка** | `python -m aerobim.tools.validate_dwg_toolchain` | Чтение DWG без конвертации — `NOT_IMPLEMENTED` |
-| **protocol-only** | `python -m aerobim.tools.verify_kt2_handoff` | Самопроверка пакета КТ#2. Не customer evidence |
+| **Основной показ** | `python -m aerobim.tools.run_demo_ifc_acceptance_gate` | Учебный комплект; `summary.passed=false` ожидаем |
+| **P1** | `python -m aerobim.tools.run_demo_vertical_slice` | Оверлей на PDF. Не ядро вердикта |
 
 ## Веб-интерфейс (P1, не показ КТ#2)
 
@@ -59,9 +53,7 @@ npm ci
 npm run dev
 ```
 
-Просмотр IFC в 3D, наложение на 2D, список замечаний, правка текста экспертом. Это оболочка ревью, не замена live CLI.
-
-API: живая схема на `GET /openapi.json` запущенного сервиса (генерируется `backend/scripts/export_openapi.py`; дампы в git не коммитятся). Загрузка — `POST /v1/uploads`.
+Просмотр IFC в 3D, наложение на 2D, список замечаний, правка текста экспертом. Это оболочка ревью, не замена живой команды.
 
 ## Что прототип делает честно
 
