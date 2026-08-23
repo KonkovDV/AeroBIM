@@ -3,7 +3,7 @@
   "schema_version": "1.0.0",
   "generated_at": "2026-08-16T20:57:24.190476+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 873,
+  "file_count": 876,
   "vendored_count": 15,
   "files": [
     {
@@ -9344,8 +9344,8 @@
     },
     {
       "path": "ifc/README.md",
-      "sha256": "afb3b1a0a868ada61aae5be0a64215e788b107e91dd1a2bc7d09c0d89b5280d4",
-      "bytes": 828,
+      "sha256": "96a7bfa79a78b5e9fabe4eb20223d2f98f1fb5a783385bb94f629cf41c116c3b",
+      "bytes": 936,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -9670,6 +9670,42 @@
       "path": "mep/hvac-sprinkler-systems.ifc",
       "sha256": "35b499476ae537e2bed66953aa095360830cdf5ce5346ac6c1642dc420bc9b5b",
       "bytes": 921,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "norm-packs/moscow_agr_2026/APPROVAL_BOUNDARY.md",
+      "sha256": "32f8e920f8e0a2bb21d07d200d22037f711a0114f7808d53ae1f79bdce36972f",
+      "bytes": 2115,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "norm-packs/moscow_agr_2026/SOURCE_PROVENANCE.json",
+      "sha256": "738e636d90c63e2ab204e77824d5888c41d0da13ee71cd2607fb888cbe38bb8a",
+      "bytes": 1716,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "norm-packs/moscow_agr_2026/pack.json",
+      "sha256": "468f5edfdff56dc1b8d624771940ba97fd5be512bdeb50f765a7170ddfb7c379",
+      "bytes": 8846,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

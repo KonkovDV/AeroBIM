@@ -15,22 +15,8 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.core.security.path_jail import PathJailError, resolve_storage_path
+from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS
 
-INTAKE_GATE_KEYS = (
-    "nda_signed",
-    "scope_memo_signed",
-    "customer_package_in_samples_customer",
-    "customer_approved_norm_pack_with_approval_ref",
-    "ids_or_property_table_present",
-    "dual_human_adjudicators_named",
-    "cohens_kappa_or_krippendorff_alpha_reported",
-    "confusion_matrix_reported",
-    "zero_unresolved_labels",
-    "precision_claim_publishable",
-    "cde_bcf_import_evidence",
-    "customer_sla_pack_measured",
-    "mep_federated_scope",
-)
 _GATE_KEYS = INTAKE_GATE_KEYS
 
 _FORBIDDEN_RULES = (

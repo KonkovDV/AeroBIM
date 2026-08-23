@@ -10,7 +10,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Final
 
-from aerobim.application.services.customer_intake_gate import INTAKE_GATE_KEYS
+from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS
 
 PLAN_B_DECISION: Final = "re-scope"
 OWNER_DECISION_DATE: Final = "2026-08-23"
