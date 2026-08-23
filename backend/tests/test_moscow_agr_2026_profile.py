@@ -39,18 +39,14 @@ class MoscowAgr2026ProfileTests(unittest.TestCase):
         self.assertFalse(policy.require_bsi_schema)
         self.assertTrue(policy.enforce_object_acl)
         self.assertTrue(policy.audit_fail_closed)
-        self.assertTrue(
-            policy.summary_passed(error_count=0, capabilities=ReportCapabilities())
-        )
+        self.assertTrue(policy.summary_passed(error_count=0, capabilities=ReportCapabilities()))
 
     def test_agr_ignores_require_clash_true_override(self) -> None:
         policy = build_signoff_policy(profile="moscow_agr_2026", require_clash=True)
         self.assertFalse(policy.require_clash)
 
     def test_honesty_stamp_cites_city_order_not_demo(self) -> None:
-        stamped = apply_demo_scope_honesty(
-            ReportCapabilities(), profile="moscow_agr_2026"
-        )
+        stamped = apply_demo_scope_honesty(ReportCapabilities(), profile="moscow_agr_2026")
         self.assertIs(stamped.clash.status, CapabilityState.SKIPPED)
         self.assertIn("DGP-R-1/26", stamped.clash.reason or "")
         self.assertIn("RT-003 remains OPEN", stamped.clash.reason or "")

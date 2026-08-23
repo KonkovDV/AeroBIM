@@ -35,9 +35,7 @@ class SamoletPilotDemoProfileTests(unittest.TestCase):
         self.assertFalse(policy.require_bsi_schema)
         self.assertTrue(policy.enforce_object_acl)
         self.assertTrue(policy.audit_fail_closed)
-        self.assertTrue(
-            policy.summary_passed(error_count=0, capabilities=ReportCapabilities())
-        )
+        self.assertTrue(policy.summary_passed(error_count=0, capabilities=ReportCapabilities()))
 
     def test_demo_ignores_require_clash_true_override(self) -> None:
         policy = build_signoff_policy(profile="samolet_pilot_demo", require_clash=True)
@@ -47,9 +45,7 @@ class SamoletPilotDemoProfileTests(unittest.TestCase):
         policy = build_signoff_policy(profile="samolet_pilot")
         self.assertTrue(policy.require_clash)
         self.assertTrue(policy.require_mep_system_clash)
-        self.assertFalse(
-            policy.summary_passed(error_count=0, capabilities=ReportCapabilities())
-        )
+        self.assertFalse(policy.summary_passed(error_count=0, capabilities=ReportCapabilities()))
 
     def test_honesty_stamp_rewrites_unverified_not_ok(self) -> None:
         stamped = apply_demo_scope_honesty(ReportCapabilities())

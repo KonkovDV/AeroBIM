@@ -22,9 +22,7 @@ SignOffProfileName = Literal[
 ]
 
 CUSTOMER_HARD_PROFILES: frozenset[str] = frozenset({"samolet_pilot", "production"})
-HONEST_SCOPE_PROFILES: frozenset[str] = frozenset(
-    {"samolet_pilot_demo", "moscow_agr_2026"}
-)
+HONEST_SCOPE_PROFILES: frozenset[str] = frozenset({"samolet_pilot_demo", "moscow_agr_2026"})
 CLOSED_EGRESS_PROFILES: frozenset[str] = frozenset(
     {"samolet_pilot", "samolet_pilot_demo", "moscow_agr_2026", "production"}
 )
@@ -36,12 +34,10 @@ _DEMO_REWRITE_STATES = frozenset(
     }
 )
 _DEMO_CLASH_REASON = (
-    "geometric clash is outside the demo-pilot boundary (RT-003 OPEN); "
-    "not required and not faked"
+    "geometric clash is outside the demo-pilot boundary (RT-003 OPEN); not required and not faked"
 )
 _DEMO_MEP_REASON = (
-    "MEP system clash is outside the demo-pilot boundary (RT-003 OPEN); "
-    "not required and not faked"
+    "MEP system clash is outside the demo-pilot boundary (RT-003 OPEN); not required and not faked"
 )
 _AGR_CLASH_REASON = (
     "geometric clash is outside Moscow AGR CIM scope (DGP-R-1/26); "

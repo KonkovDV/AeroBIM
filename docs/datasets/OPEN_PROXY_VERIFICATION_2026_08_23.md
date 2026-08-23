@@ -10,7 +10,8 @@ claim_boundary: >
   Link check + mapping onto pins already in this repo. Open IFC/IDS/BCF
   do not close RT-001 (RF PD + expertise labels), RT-002 (Samolet-signed
   profile), or RT-003 (federated MEP delivered). Not product accuracy.
-  Not ≥90%. Not CDE-ready. Manual TP/FP on student IFC is not dual-expert κ.
+  Not a customer SLA. Not a published-state CDE. Manual TP/FP on student
+  IFC is not dual-expert κ.
 ---
 
 # Открытые источники: что реально скачивается и чего они не закрывают

@@ -76,7 +76,9 @@ def _mutate_area(text: str, rng: random.Random) -> tuple[str, str]:
     if match:
         original = match.group(2)
         mutated = f"{float(original) * (1.15 + rng.random() * 0.2):.3f}"
-        return text[: match.start(2)] + mutated + text[match.end(2) :], f"area {original}->{mutated}"
+        return text[: match.start(2)] + mutated + text[
+            match.end(2) :
+        ], f"area {original}->{mutated}"
     match = re.search(r"\b([0-9]+\.[0-9]+)\b", text)
     if not match:
         return text, "no-area-token"
@@ -94,7 +96,9 @@ def _mutate_level(text: str, rng: random.Random) -> tuple[str, str]:
     if match:
         original = match.group(2)
         mutated = f"{float(original) + 1.2 + rng.random():.3f}"
-        return text[: match.start(2)] + mutated + text[match.end(2) :], f"storey {original}->{mutated}"
+        return text[: match.start(2)] + mutated + text[
+            match.end(2) :
+        ], f"storey {original}->{mutated}"
     if "IFCBUILDINGSTOREY" in text.upper():
         mutated = text.replace("Level 1", "Level 9", 1).replace("Этаж 1", "Этаж 9", 1)
         if mutated != text:
@@ -168,9 +172,7 @@ def _apply_class(defect_class: str, dest: Path, rng: random.Random) -> dict[str,
 
     def _mutate_named_text(needles: tuple[str, ...], delta: float) -> dict[str, Any]:
         candidates = [
-            path
-            for path in text_files
-            if any(needle in path.name.lower() for needle in needles)
+            path for path in text_files if any(needle in path.name.lower() for needle in needles)
         ] or text_files
         if not candidates:
             record["note"] = "no-text-sidecar"
@@ -271,9 +273,9 @@ def main(argv: list[str] | None = None) -> int:
         help="Comma-separated subset of defect classes (default: all + CONTROL)",
     )
     args = parser.parse_args(argv)
-    classes = tuple(
-        part.strip().upper() for part in args.classes.split(",") if part.strip()
-    ) or None
+    classes = (
+        tuple(part.strip().upper() for part in args.classes.split(",") if part.strip()) or None
+    )
     manifest = inject_defects(
         args.source.resolve(),
         args.output.resolve(),

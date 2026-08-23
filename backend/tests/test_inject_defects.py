@@ -69,9 +69,7 @@ class InjectDefectsTests(unittest.TestCase):
             root = Path(temporary_directory)
             pack = self._seed_pack(root)
             inject_defects(pack, root / "out", seed=7, classes=("AREA_MISMATCH",))
-            mutated = (root / "out" / "area_mismatch" / "model.ifc").read_text(
-                encoding="utf-8"
-            )
+            mutated = (root / "out" / "area_mismatch" / "model.ifc").read_text(encoding="utf-8")
             self.assertNotIn("12.5", mutated.split("IFCQUANTITYAREA", 1)[-1][:80])
 
 

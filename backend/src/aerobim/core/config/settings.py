@@ -262,7 +262,7 @@ class Settings:
     require_bsi_schema: bool = False
     """When true, bSI/schema submit failures are ERROR and block pass via issues."""
     signoff_profile: str = "development"
-    """Policy profile: development|fixture|samolet_pilot|samolet_pilot_demo|moscow_agr_2026|production."""
+    """Sign-off policy profile (see ``capability_policy.SignOffProfileName``)."""
     require_mep_system_clash: bool = False
     """When true, MEP capability must be OK; NOT_VERIFIED/FAILED blocks summary.passed."""
     audit_fail_closed: bool = False
