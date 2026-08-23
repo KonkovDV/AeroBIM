@@ -1,0 +1,25 @@
+{
+  "artifact": "source_provenance",
+  "pack_id": "MOSCOW-AGR-2026",
+  "closes_rt002_customer": false,
+  "closes_rt002a_regulatory": true,
+  "closes_rt002b_corporate": false,
+  "unfreezes_moscow_agr_di": false,
+  "city_npa": "ДГП-Р-1/26/64-16-6/26",
+  "effective_date": "2026-04-02",
+  "ids_source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
+  "ids_zip_sha256_from_source_md": "d04f5dd82a80c80bf7be7ca0660399107c75d26d0ea7b8f1f3af612410ada1ec",
+  "ids_tree_files": {
+    "jurisdiction-profile-pointer.json": "e9e8268784c5d60ec3121f2f04cdd43a02005a2613c453674e3b0299e9019985",
+    "pack/АГР_Общие требования v9.ids": "3a495d980bdd94cb5f97833e6615a6eb201fc647ee9e656e5d2d7702e102e9d0",
+    "pack/АГР_ЦИМ БиО v8.ids": "7aab644c6a935b83343e32c38c8da1b52636899a928324d137417a43603c3d3c",
+    "pack/АГР_ЦИМ ПС.ids": "71b4fd3a44bc11140184dfb8ec283fce0d32ae8710b4e9e83706b14cd95620e6",
+    "pack/Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids": "a7e5f42381fe26057e5b841a569c3869072b3e95bb8858f95a7848e269b4f582",
+    "SOURCE.md": "e6110b10ad0f2edb5ba05f09f65710b7a57c2949b1ccdabe57619ba417ae301c"
+  },
+  "ids_pack_tree_hash": "80acba84e6edf9b5a88813111460c2fde8e2de853c5f6027b4362d5aad9c2045",
+  "moexp_ids_not_copied": "samples/ids/moexp/ is the MOGE pack; this JSON pack is a small AR subset of Moscow AGR IDS properties only",
+  "class1_exchange_checks": "backend/src/aerobim/domain/agr_exchange_checks.py — not this pack",
+  "pack_hash": "f13fd0f06074fc03caf0ac311729229094c7447e5ddfea291153458344bdb104",
+  "claim_boundary": "City-as-publisher. Not Samolet EIR. Not product accuracy. Checkpoint NO_GO."
+}

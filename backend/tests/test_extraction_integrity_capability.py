@@ -22,7 +22,14 @@ def test_failed_extraction_integrity_blocks_pass_in_every_profile() -> None:
             CapabilityState.FAILED, "rendered text contradicts extracted text"
         )
     )
-    for profile in ("development", "fixture", "samolet_pilot", "production"):
+    for profile in (
+        "development",
+        "fixture",
+        "samolet_pilot",
+        "samolet_pilot_demo",
+        "moscow_agr_2026",
+        "production",
+    ):
         policy = build_signoff_policy(profile=profile)
         assert policy.summary_passed(error_count=0, capabilities=caps) is False, profile
         assert "extraction_integrity" in policy.failed_capabilities_blocking_pass(caps)

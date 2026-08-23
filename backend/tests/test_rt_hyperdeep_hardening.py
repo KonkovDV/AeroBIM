@@ -121,6 +121,9 @@ class CapabilityPolicyHyperTests(unittest.TestCase):
     def test_profile_aliases(self) -> None:
         self.assertEqual(normalize_signoff_profile("samolet"), "samolet_pilot")
         self.assertEqual(normalize_signoff_profile("prod"), "production")
+        self.assertEqual(normalize_signoff_profile("pilot_demo"), "samolet_pilot_demo")
+        self.assertEqual(normalize_signoff_profile("moscow_agr"), "moscow_agr_2026")
+        self.assertEqual(normalize_signoff_profile("agr_2026"), "moscow_agr_2026")
 
     def test_uc_require_mep_blocks_empty_graph_not_verified(self) -> None:
         class _EmptyMep:

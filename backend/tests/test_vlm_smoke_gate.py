@@ -68,6 +68,18 @@ class VlmSmokeGateTests(unittest.TestCase):
         self.assertIsNotNone(reason)
         self.assertIn("samolet_pilot", reason or "")
 
+    def test_documented_aliases_block_smoke_without_settings(self) -> None:
+        for alias, canonical in (
+            ("moscow_agr", "moscow_agr_2026"),
+            ("agr_2026", "moscow_agr_2026"),
+            ("pilot_demo", "samolet_pilot_demo"),
+        ):
+            with self.subTest(alias=alias):
+                with patch.dict("os.environ", {"AEROBIM_SIGNOFF_PROFILE": alias}):
+                    reason = smoke_signoff_blocks_external()
+                self.assertIsNotNone(reason)
+                self.assertIn(canonical, reason or "")
+
     def test_advisory_smoke_blocked_never_builds_client(self) -> None:
         factory = MagicMock()
         with tempfile.TemporaryDirectory() as tmp:

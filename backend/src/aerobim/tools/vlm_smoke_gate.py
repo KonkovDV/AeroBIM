@@ -98,9 +98,15 @@ def smoke_signoff_blocks_external(*, settings: Any | None = None) -> str | None:
         profile = (os.getenv("AEROBIM_SIGNOFF_PROFILE") or "dev").strip().lower() or "dev"
     else:
         profile = (getattr(settings, "signoff_profile", None) or "dev").strip().lower()
-    if profile in {"samolet_pilot", "production"}:
+    from aerobim.application.services.capability_policy import (
+        is_closed_egress_profile,
+        normalize_signoff_profile,
+    )
+
+    canonical = normalize_signoff_profile(profile)
+    if is_closed_egress_profile(canonical):
         return (
-            f"signoff_profile={profile!r} forbids external VLM smoke egress "
+            f"signoff_profile={canonical!r} forbids external VLM smoke egress "
             "(use open-data/dev profile or the DI path with vlm_advisory_ready)"
         )
     return None

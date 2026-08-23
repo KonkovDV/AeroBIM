@@ -112,3 +112,5 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 ## What is still missing
 
 Public «российский комплект ПД + фактическое заключение экспертизы» does not exist. Samolet project models under NDA are not here. Those two sentences are the remaining RT-001 / customer-corpus deficit. Everything else in this file was available under a free license and is now cited.
+
+Link-check of a later open-proxy list (Schependomlaan zip, ПНСТ/Renga, ifcfast#141, clash-experiments): [`datasets/OPEN_PROXY_VERIFICATION_2026_08_23.md`](datasets/OPEN_PROXY_VERIFICATION_2026_08_23.md). Still `closes_rt001/002/003: false`.

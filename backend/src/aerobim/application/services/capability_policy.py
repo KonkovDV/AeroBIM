@@ -7,12 +7,50 @@ All profile-aware blocking decisions must flow through ``SignOffCapabilityPolicy
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal
 
-from aerobim.domain.models import CapabilityState, ReportCapabilities
+from aerobim.domain.models import CapabilityState, CapabilityStatus, ReportCapabilities
 
-SignOffProfileName = Literal["development", "fixture", "samolet_pilot", "production"]
+SignOffProfileName = Literal[
+    "development",
+    "fixture",
+    "samolet_pilot",
+    "samolet_pilot_demo",
+    "moscow_agr_2026",
+    "production",
+]
+
+CUSTOMER_HARD_PROFILES: frozenset[str] = frozenset({"samolet_pilot", "production"})
+HONEST_SCOPE_PROFILES: frozenset[str] = frozenset(
+    {"samolet_pilot_demo", "moscow_agr_2026"}
+)
+CLOSED_EGRESS_PROFILES: frozenset[str] = frozenset(
+    {"samolet_pilot", "samolet_pilot_demo", "moscow_agr_2026", "production"}
+)
+_DEMO_REWRITE_STATES = frozenset(
+    {
+        CapabilityState.SKIPPED,
+        CapabilityState.NOT_VERIFIED,
+        CapabilityState.MISSING,
+    }
+)
+_DEMO_CLASH_REASON = (
+    "geometric clash is outside the demo-pilot boundary (RT-003 OPEN); "
+    "not required and not faked"
+)
+_DEMO_MEP_REASON = (
+    "MEP system clash is outside the demo-pilot boundary (RT-003 OPEN); "
+    "not required and not faked"
+)
+_AGR_CLASH_REASON = (
+    "geometric clash is outside Moscow AGR CIM scope (DGP-R-1/26); "
+    "not required and not faked. RT-003 remains OPEN"
+)
+_AGR_MEP_REASON = (
+    "federated MEP system clash is outside Moscow AGR CIM scope; "
+    "not required and not faked. RT-003 remains OPEN"
+)
 
 _PASS_BLOCKING_FAILED_FIELDS: tuple[str, ...] = (
     "clash",
@@ -90,7 +128,7 @@ class SignOffCapabilityPolicy:
                 blocked.append("mep_system_clash")
         # RT-POST-06/07: pilot/production require verified unit_scale and do not
         # treat SKIPPED calculation/quantity as an implicit pass.
-        if self.profile in {"samolet_pilot", "production"}:
+        if self.profile in CUSTOMER_HARD_PROFILES:
             for name in ("unit_scale", "calculation_match", "quantity"):
                 status = getattr(capabilities, name, None)
                 if status is None or status.status in _REQUIRED_NON_OK:
@@ -151,6 +189,22 @@ _PROFILE_DEFAULTS: dict[SignOffProfileName, dict[str, bool]] = {
         "enforce_object_acl": True,
         "audit_fail_closed": True,
     },
+    "samolet_pilot_demo": {
+        "require_clash": False,
+        "clash_affects_pass": False,
+        "require_bsi_schema": False,
+        "require_mep_system_clash": False,
+        "enforce_object_acl": True,
+        "audit_fail_closed": True,
+    },
+    "moscow_agr_2026": {
+        "require_clash": False,
+        "clash_affects_pass": False,
+        "require_bsi_schema": False,
+        "require_mep_system_clash": False,
+        "enforce_object_acl": True,
+        "audit_fail_closed": True,
+    },
     "production": {
         "require_clash": True,
         "clash_affects_pass": True,
@@ -170,9 +224,44 @@ def normalize_signoff_profile(raw: str | None) -> SignOffProfileName:
         return "fixture"
     if value in {"samolet", "samolet_pilot", "pilot"}:
         return "samolet_pilot"
+    if value in {"samolet_pilot_demo", "pilot_demo"}:
+        return "samolet_pilot_demo"
+    if value in {"moscow_agr_2026", "moscow_agr", "agr_2026"}:
+        return "moscow_agr_2026"
     if value in {"production", "prod"}:
         return "production"
     return "development"
+
+
+def is_customer_hard_profile(name: str) -> bool:
+    return name in CUSTOMER_HARD_PROFILES
+
+
+def is_closed_egress_profile(name: str) -> bool:
+    return name in CLOSED_EGRESS_PROFILES
+
+
+def apply_demo_scope_honesty(
+    capabilities: ReportCapabilities,
+    *,
+    profile: str | None = None,
+) -> ReportCapabilities:
+    """Stamp clash/MEP as SKIPPED out-of-scope on honest-scope contours.
+
+    Does not rewrite OK/FAILED (a real engine result stays). Does not close RT-003.
+    ``moscow_agr_2026`` cites AGR CIM scope, not demo convenience.
+    """
+
+    name = normalize_signoff_profile(profile) if profile else "samolet_pilot_demo"
+    clash_reason = _AGR_CLASH_REASON if name == "moscow_agr_2026" else _DEMO_CLASH_REASON
+    mep_reason = _AGR_MEP_REASON if name == "moscow_agr_2026" else _DEMO_MEP_REASON
+    clash = capabilities.clash
+    mep = capabilities.mep_system_clash
+    if clash.status in _DEMO_REWRITE_STATES:
+        clash = CapabilityStatus(CapabilityState.SKIPPED, clash_reason)
+    if mep.status in _DEMO_REWRITE_STATES:
+        mep = CapabilityStatus(CapabilityState.SKIPPED, mep_reason)
+    return replace(capabilities, clash=clash, mep_system_clash=mep)
 
 
 def build_signoff_policy(
@@ -188,13 +277,16 @@ def build_signoff_policy(
     """Merge explicit overrides onto profile defaults.
 
     Soft profiles (``development`` / ``fixture``) allow explicit overrides.
-    Hard profiles (``samolet_pilot`` / ``production``) always use profile
-    defaults — weakening overrides are ignored (RT D03).
+    Hard customer profiles (``samolet_pilot`` / ``production``) always use
+    profile defaults — weakening overrides are ignored (RT D03).
+    ``samolet_pilot_demo`` / ``moscow_agr_2026`` are locked honest-scope
+    contours: clash/MEP stay out of scope (not faked); ACL/audit stay on.
+    Neither closes RT-003. ``moscow_agr_2026`` is not a customer-hard profile.
     """
 
     name = normalize_signoff_profile(profile)
     defaults = _PROFILE_DEFAULTS[name]
-    hard = name in {"samolet_pilot", "production"}
+    hard = name in CUSTOMER_HARD_PROFILES or name in HONEST_SCOPE_PROFILES
 
     def _pick(key: str, override: bool | None) -> bool:
         if hard or override is None:

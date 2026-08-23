@@ -262,7 +262,7 @@ class Settings:
     require_bsi_schema: bool = False
     """When true, bSI/schema submit failures are ERROR and block pass via issues."""
     signoff_profile: str = "development"
-    """Capability policy profile: development|fixture|samolet_pilot|production."""
+    """Policy profile: development|fixture|samolet_pilot|samolet_pilot_demo|moscow_agr_2026|production."""
     require_mep_system_clash: bool = False
     """When true, MEP capability must be OK; NOT_VERIFIED/FAILED blocks summary.passed."""
     audit_fail_closed: bool = False
@@ -505,7 +505,12 @@ class Settings:
         """
         if not self.vlm_enabled:
             return False
-        if self.signoff_profile in {"samolet_pilot", "production"}:
+        if self.signoff_profile in {
+            "samolet_pilot",
+            "samolet_pilot_demo",
+            "moscow_agr_2026",
+            "production",
+        }:
             return False
         if not (self.vlm_api_base_url and self.vlm_api_key):
             return False
@@ -531,7 +536,12 @@ class Settings:
 
         if not self.llm_local_enabled:
             return False
-        if self.signoff_profile in {"samolet_pilot", "production"}:
+        if self.signoff_profile in {
+            "samolet_pilot",
+            "samolet_pilot_demo",
+            "moscow_agr_2026",
+            "production",
+        }:
             return False
         if not self.llm_base_url:
             return False
@@ -681,25 +691,44 @@ class Settings:
             raw_signoff = str(signoff_raw_env).strip().lower()
             if raw_signoff in {"samolet", "samolet_pilot", "pilot"}:
                 signoff_profile = "samolet_pilot"
+            elif raw_signoff in {"samolet_pilot_demo", "pilot_demo"}:
+                signoff_profile = "samolet_pilot_demo"
+            elif raw_signoff in {"moscow_agr_2026", "moscow_agr", "agr_2026"}:
+                signoff_profile = "moscow_agr_2026"
             elif raw_signoff in {"production", "prod"}:
                 signoff_profile = "production"
             elif raw_signoff in {"fixture", "fixtures"}:
                 signoff_profile = "fixture"
             else:
                 signoff_profile = "development"
-        # Non-dev deployments must not soft-open Shared-gate via development/fixture profile.
-        if env_name not in _DEV_ENVIRONMENTS and signoff_profile in {"development", "fixture"}:
+        # Non-dev deployments must not soft-open Shared-gate via development/fixture/demo.
+        if env_name not in _DEV_ENVIRONMENTS and signoff_profile in {
+            "development",
+            "fixture",
+            "samolet_pilot_demo",
+            "moscow_agr_2026",
+        }:
             raise RuntimeError(
                 f"AEROBIM_SIGNOFF_PROFILE={signoff_profile!r} is not allowed when "
                 f"AEROBIM_ENV={env_name!r}; use 'production' or 'samolet_pilot'"
             )
         profile_gate = signoff_profile in {"samolet_pilot", "production"}
+        demo_gate = signoff_profile in {"samolet_pilot_demo", "moscow_agr_2026"}
         # Pilot/production are fail-closed: env cannot weaken required gates.
         if profile_gate:
             require_clash = True
             clash_affects_pass = True
             require_bsi_schema = True
             require_mep_system_clash = True
+            enforce_object_acl = True
+            audit_fail_closed = True
+        elif demo_gate:
+            # Demo contour: clash/MEP/bSI-submit out of scope (honest SKIPPED), not faked.
+            # ACL/audit stay on. FAILED engines still block. Does not close RT-003.
+            require_clash = False
+            clash_affects_pass = False
+            require_bsi_schema = False
+            require_mep_system_clash = False
             enforce_object_acl = True
             audit_fail_closed = True
         else:
@@ -716,8 +745,8 @@ class Settings:
             audit_fail_closed = bool(_optional_bool("AEROBIM_AUDIT_FAIL_CLOSED") or False)
         # Local SPF certificate is development-only; never under pilot/production.
         bsi_local_cert = _read_bool("AEROBIM_BSI_LOCAL_CERT", False) and not profile_gate
-        # Hard profiles always escalate cross-doc contradictions (RTATOM-G05).
-        if profile_gate:
+        # Hard customer profiles and the demo contour escalate cross-doc contradictions.
+        if profile_gate or demo_gate:
             cross_doc_severity = "error"
 
         max_uploads_per_tenant_day = _read_optional_int("AEROBIM_MAX_UPLOADS_PER_TENANT_DAY")
@@ -923,7 +952,12 @@ class Settings:
                 llm_base_url=settings.llm_base_url or "https://llm.api.cloud.yandex.net/v1",
             )
         if settings.llm_local_enabled and not settings.llm_local_ready():
-            if settings.signoff_profile in {"samolet_pilot", "production"}:
+            if settings.signoff_profile in {
+                "samolet_pilot",
+                "samolet_pilot_demo",
+                "moscow_agr_2026",
+                "production",
+            }:
                 # Profile hard-disables advisory egress; do not fail boot if flag left on.
                 pass
             else:

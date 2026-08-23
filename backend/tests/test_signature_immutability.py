@@ -399,7 +399,14 @@ class SignatureUseCaseWiringTests(unittest.TestCase):
         caps = ReportCapabilities(
             qualified_signature=CapabilityStatus(CapabilityState.FAILED, "missing_envelope")
         )
-        for profile in ("development", "fixture", "samolet_pilot", "production"):
+        for profile in (
+            "development",
+            "fixture",
+            "samolet_pilot",
+            "samolet_pilot_demo",
+            "moscow_agr_2026",
+            "production",
+        ):
             policy = build_signoff_policy(profile=profile)
             self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps), profile)
 

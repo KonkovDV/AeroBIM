@@ -10,6 +10,7 @@ from aerobim.application.services.analyze_orchestrators import (
     IngestionOrchestrator,
 )
 from aerobim.application.services.capability_matrix import build_report_capabilities
+from aerobim.application.services.capability_policy import apply_demo_scope_honesty
 from aerobim.application.services.clash_detection_runner import ClashDetectionRunner
 from aerobim.application.services.compliance_agent_orchestrator import (
     ComplianceAgentOrchestrator,
@@ -152,7 +153,8 @@ class AnalyzeProjectPackageUseCase:
         _valid_severities = {"error", "warning", "info"}
         # Hard profiles always escalate cross-doc contradictions to ERROR (RTATOM-G05).
         hard_profile = signoff_profile in {"samolet_pilot", "production"}
-        effective_cross_doc = "error" if hard_profile else cross_doc_severity
+        demo_profile = signoff_profile in {"samolet_pilot_demo", "moscow_agr_2026"}
+        effective_cross_doc = "error" if hard_profile or demo_profile else cross_doc_severity
         self._cross_doc_severity = Severity(
             effective_cross_doc if effective_cross_doc in _valid_severities else "warning"
         )
@@ -329,7 +331,7 @@ class AnalyzeProjectPackageUseCase:
         package_completeness: CapabilityStatus | None = None,
         office_ingest: CapabilityStatus | None = None,
     ) -> ReportCapabilities:
-        return build_report_capabilities(
+        assembled = build_report_capabilities(
             requirements=requirements,
             ifc_issues=ifc_issues,
             ids_path=ids_path,
@@ -355,6 +357,9 @@ class AnalyzeProjectPackageUseCase:
             require_bsi_schema=self._require_bsi_schema,
             raster_analyzer_configured=self._raster_drawing_analyzer is not None,
         )
+        if self._signoff_profile in {"samolet_pilot_demo", "moscow_agr_2026"}:
+            return apply_demo_scope_honesty(assembled, profile=self._signoff_profile)
+        return assembled
 
     def _probe_extraction_integrity(self, request: ValidationRequest) -> CapabilityStatus:
         return probe_extraction_integrity(
