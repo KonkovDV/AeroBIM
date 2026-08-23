@@ -41,7 +41,7 @@ Silence is never success: a skipped mandatory engine cannot hide inside a green 
 | | |
 |---|---|
 | **Runs on this clone** | Fixture packs, fail-closed IDS, live CLI, CI, overlay, structural BCF |
-| **Waits on the customer** | RT-001 corpus · RT-002 signed Samolet profile · RT-003 federated MEP · BCF import into their CDE |
+| **Waits on measurement** | Independent labeled pack (two raters) for RT-001a · Samolet-signed profile RT-002b · federated MEP RT-003 · BCF import into their CDE |
 | **Not claimed** | Product accuracy >90% · customer SLA ≤30 min · native DWG · MEP delivered · CDE-ready BCF · production-ready |
 
 Full boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md). Blockers: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
