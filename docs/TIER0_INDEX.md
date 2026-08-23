@@ -2,7 +2,7 @@
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
 version: "4.7.0"
-last_updated: "2026-08-18"
+last_updated: "2026-08-23"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -32,6 +32,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Строка корпуса](demo/KT2_CORPUS_SSOT_2026_08.md) | Замороженные открытые прокси |
 | [Поля обмена 10D](demo/KT2_10D_INTAKE_CONTRACT_2026_08.md) | Предложение; не коннектор 10D |
 | [Запрос к Самолёту](partners/_08_15.md) | Четыре пункта, без которых NO_GO |
+| [КТ#3 без файлов заказчика](partners/_2026_08_23.md) | Re-scope 23.08; ждать комплект не план |
 | [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed` |
 | [Итоговый вердикт](quality/RED_TEAM_FINAL_VERDICT_2026_08_16.md) | Checkpoint NO_GO |
 | [Красная команда жюри / МИК](quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) | Стадия = доработка |

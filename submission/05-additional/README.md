@@ -2,7 +2,7 @@
 title: "Поле «Дополнительные материалы» — доказательства"
 status: active
 version: "1.0.7"
-last_updated: "2026-08-18"
+last_updated: "2026-08-23"
 claim_boundary: >
   Supporting evidence index. Open benches and fixtures are not the customer
   корпус. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -23,6 +23,7 @@ claim_boundary: >
 | [`../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Что цифры вправе значить |
 | [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md) | Замороженные открытые прокси; это не корпус Самолёта |
 | [`../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Методика до данных заказчика |
+| [`../../docs/partners/_2026_08_23.md`](../../docs/partners/_2026_08_23.md) | КТ#3 без файлов заказчика: re-scope, не GO |
 
 Открытые наборы и учебные комплекты — регрессия движка. В них нет разметки инженеров «Самолёта».
 

@@ -3,7 +3,7 @@
 title: "КТ#2 — пакет подачи (Техлаб Москва, Задача 07)"
 status: active
 version: "1.1.5"
-last_updated: "2026-08-18"
+last_updated: "2026-08-23"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
   evaluation targets, not AeroBIM measurements. Checkpoint NO_GO;
@@ -17,6 +17,8 @@ claim_boundary: >
 **Checkpoint: `NO_GO`.** Не прячем. Стадия МИК — **доработка**. Блокеры RT-001/002/003 закрываются только доказательствами заказчика: [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md).
 
 **Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После правок документации pin может отставать на несколько коммитов до следующего прогона CI; локальные прогоны pytest не публикуем.
+
+**Объект КТ#3 (без файлов заказчика).** Владелец принял re-scope 23.08: комплект Самолёта не ожидается. Показ остаётся живым CLI. Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. RT-001/002/003 **OPEN**. Решение: [`../docs/partners/_2026_08_23.md`](../docs/partners/_2026_08_23.md).
 
 ## Пять полей формы → пять папок
 

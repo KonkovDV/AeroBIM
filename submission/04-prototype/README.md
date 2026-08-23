@@ -2,7 +2,7 @@
 title: "Поле «Прототип» — запуск и проверяемое поведение"
 status: active
 version: "1.0.4"
-last_updated: "2026-08-18"
+last_updated: "2026-08-23"
 claim_boundary: >
   Runnable prototype on fixtures. Not customer корпус, not measured SLA,
   not product accuracy. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -25,6 +25,14 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 На выходе — каталог `artifacts/ifc-acceptance-gate-demo/` (создаётся локально, в репозиторий не входит): `acceptance-gate.json`, `report.html`, `report.json`, `findings.bcfzip`.
 
 Это **fixture-only**. HTML-снимок в [`../../docs/evidence/kt2-handoff-2026-08-11/`](../../docs/evidence/kt2-handoff-2026-08-11/) — архив прогона 11.08, а не живой показ.
+
+Пакет КТ#3, если файлов заказчика нет (re-scope, не GO):
+
+```bash
+python -m aerobim.tools.run_kt3_without_customer
+```
+
+Решение: [`../../docs/partners/_2026_08_23.md`](../../docs/partners/_2026_08_23.md).
 
 ## Что показывает находка
 

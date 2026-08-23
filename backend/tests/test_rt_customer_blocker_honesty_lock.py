@@ -167,6 +167,8 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
         self.assertNotIn("closes_rt003: true", text)
+        self.assertIn("run_kt3_without_customer", text)
+        self.assertIn("_2026_08_23.md", text)
 
     def test_tz_proxy_rehearsal_doc_stays_no_go(self) -> None:
         path = (
@@ -607,7 +609,28 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("run_demo_ifc_acceptance_gate", text)
         self.assertIn("runtime-baseline-latest.json", text)
         self.assertIn("оператор, не git-факт", text)
+        self.assertIn("run_kt3_without_customer", text)
         self.assertNotIn("25/1026", text)
+
+    def test_kt3_rescope_without_customer_stays_no_go(self) -> None:
+        path = self._repo() / "docs" / "partners" / "_2026_08_23.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("re-scope", text)
+        self.assertIn("2026-08-23", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("run_kt3_without_customer", text)
+        self.assertIn("run_demo_ifc_acceptance_gate", text)
+        self.assertNotIn("closes_rt001: true", text)
+        self.assertNotIn("валидация эффективности начата", text.lower())
+        intake = (self._repo() / "audit" / "evidence" / "customer-intake-gate.json").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("run_kt3_without_customer", intake)
+        self.assertIn("Do not wait for samples/customer/", intake)
+        submission = (self._repo() / "submission" / "README.md").read_text(encoding="utf-8")
+        self.assertIn("Объект КТ#3", submission)
+        self.assertIn("run_kt3_without_customer", submission)
 
     def test_alignment_f1_cell_is_fixture_qualified(self) -> None:
         path = self._repo() / "docs" / "samolet-techlab-alignment-2026.md"
@@ -622,6 +645,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT2_10D_INTAKE_CONTRACT_2026_08.md", text)
         self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
         self.assertIn("", text)
+        self.assertIn("_2026_08_23.md", text)
 
     def test_hostile_qa_playbook_pins_ssot_and_stays_no_go(self) -> None:
         path = self._repo() / "docs" / "demo" / ""

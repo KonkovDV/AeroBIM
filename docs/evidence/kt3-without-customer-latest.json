@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "kt3_without_customer",
+  "claim_level": "fixture_and_proxy_only",
+  "claim_boundary": "Owner re-scope 2026-08-23: customer files are not expected. KT#3 is the live fixture gate plus public/synthetic proxies. Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false.",
+  "generated_at": "2026-08-23T00:00:00+00:00",
+  "checkpoint": "NO_GO",
+  "mik_stage": "доработка",
+  "validation_effectiveness_started": false,
+  "deployment_started": false,
+  "plan_b_decision": "re-scope",
+  "owner_decision_date": "2026-08-23",
+  "program_fork_date": "2026-09-15",
+  "customer_files_expected": false,
+  "waiting_for_customer": false,
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "demo_command": "python -m aerobim.tools.run_demo_ifc_acceptance_gate",
+  "pack_command": "python -m aerobim.tools.run_kt3_without_customer",
+  "evidence": [
+    {
+      "role": "demo_manifest",
+      "path": "samples/demo/vertical-slice-2026-08-11/manifest.json",
+      "present": true
+    },
+    {
+      "role": "synthetic_label_freeze",
+      "path": "samples/benchmarks/rt001-preregistration-synthetic-freeze-2026-08-14.json",
+      "present": true
+    },
+    {
+      "role": "jurisdiction_ids_pointer",
+      "path": "samples/ids/moexp/jurisdiction-profile-pointer.json",
+      "present": true
+    },
+    {
+      "role": "corpus_ssot",
+      "path": "docs/demo/KT2_CORPUS_SSOT_2026_08.md",
+      "present": true
+    },
+    {
+      "role": "tz_proxy_rehearsal",
+      "path": "docs/evidence/tz-proxy-rehearsal-2026-08.md",
+      "present": true
+    },
+    {
+      "role": "planted_federated_clash",
+      "path": "docs/evidence/federated-clash-planted-2026-08.md",
+      "present": true
+    },
+    {
+      "role": "intake_gate",
+      "path": "audit/evidence/customer-intake-gate.json",
+      "present": true
+    },
+    {
+      "role": "rt_without_samolet",
+      "path": "docs/datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md",
+      "present": true
+    }
+  ],
+  "intake_status": "BLOCKED_NO_CUSTOMER_DATA",
+  "intake_true_gates": [],
+  "synthetic_freeze_closes_rt001": false,
+  "jurisdiction_samolet_alias": false,
+  "customer_pack_hash": null
+}

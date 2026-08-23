@@ -26,8 +26,8 @@
     "customer_approved_without_approval_ref": false
   },
   "next_actions": [
-    "Deliver customer files to gitignored samples/customer/",
-    "Run dual-human adjudication + aerobim-validate-customer-intake-gate",
+    "Do not wait for samples/customer/ before KT#3 — owner re-scope 2026-08-23",
+    "Run python -m aerobim.tools.run_kt3_without_customer",
     "Keep checkpoint NO_GO until RT-001/002/003 evidenced"
   ],
   "references": [
