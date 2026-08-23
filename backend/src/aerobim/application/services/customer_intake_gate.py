@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.core.security.path_jail import PathJailError, resolve_storage_path
-from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS
+from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS as INTAKE_GATE_KEYS
 
 _GATE_KEYS = INTAKE_GATE_KEYS
 
