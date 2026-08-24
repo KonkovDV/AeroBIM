@@ -48,11 +48,17 @@ def repo_root() -> Path:
 
 
 def _sha256_file(path: Path) -> str:
+    """SHA-256 of on-disk bytes. Used for ``.ids`` (git ``binary``; publisher XML)."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _sha256_text_ci(path: Path) -> str:
-    """Hash UTF-8 text as Linux CI would (LF), matching DATASET_MANIFEST."""
+    """Hash UTF-8 text as Linux CI would (LF), matching DATASET_MANIFEST.
+
+    JSON is ``*.json text eol=lf`` in ``.gitattributes``. Windows worktrees can
+    still show CRLF; stripping CR makes evidence ``manifest_sha256`` match the
+    file Git ships, not the local checkout. Do not use this for ``.ids``.
+    """
     data = path.read_bytes()
     if b"\r\n" in data and b"\x00" not in data[:8192]:
         try:
@@ -229,7 +235,15 @@ def validate_profile(
         try:
             return path.resolve().relative_to(root.resolve()).as_posix()
         except ValueError:
-            return str(path)
+            canonical = {
+                "ids.xsd": "samples/ids-xsd/ids.xsd",
+                "wall-pset-qto-pass.ifc": "samples/ifc/wall-pset-qto-pass.ifc",
+            }.get(path.name)
+            if canonical is not None:
+                return canonical
+            raise OfficialIdsProfileError(
+                f"refusing to record a path outside the repo: {path}"
+            ) from None
 
     return {
         "artifact_type": EVIDENCE_ARTIFACT_TYPE,
@@ -288,6 +302,174 @@ def validate_profile(
     }
 
 
+_HOST_LEAK_MARKERS = (
+    "C:/plans/",
+    "C:\\plans\\",
+    "Windows-11-",
+    "/Users/",
+    "/home/",
+)
+
+
+def _walk_strings(payload: Any) -> list[str]:
+    found: list[str] = []
+    if isinstance(payload, dict):
+        for value in payload.values():
+            found.extend(_walk_strings(value))
+    elif isinstance(payload, list):
+        for value in payload:
+            found.extend(_walk_strings(value))
+    elif isinstance(payload, str):
+        found.append(payload)
+    return found
+
+
+def _assert_repo_relative_evidence(payload: dict[str, Any]) -> None:
+    """Published evidence must not carry a host checkout path."""
+    for text in _walk_strings(payload):
+        lowered = text.replace("\\", "/")
+        for marker in _HOST_LEAK_MARKERS:
+            if marker.lower() in text or marker.lower() in lowered:
+                raise OfficialIdsProfileError(
+                    f"published evidence contains a host path marker ({marker!r})"
+                )
+        if len(text) >= 3 and text[0].isalpha() and text[1:3] in (":/", ":\\"):
+            raise OfficialIdsProfileError(
+                f"published evidence contains an absolute path: {text}"
+            )
+
+
+def _require_repo_file(root: Path, rel: object, *, what: str) -> Path:
+    """Resolve a published relative path; reject abs, ``..``, and jail escapes."""
+    if not isinstance(rel, str) or not rel or rel.startswith("/"):
+        raise OfficialIdsProfileError(f"{what} must be a repo-relative POSIX path")
+    if ".." in Path(rel).parts:
+        raise OfficialIdsProfileError(f"{what} must not contain ..")
+    path = _must_stay_under(root, root / rel, what=what)
+    if not path.is_file():
+        raise OfficialIdsProfileError(f"{what} missing on disk: {rel}")
+    return path
+
+
+def verify_committed_evidence(
+    root: Path,
+    *,
+    evidence_path: Path | None = None,
+    live: dict[str, Any] | None = None,
+) -> None:
+    """Recompute hashes of the files next to the evidence; do not trust the JSON.
+
+    ``generated_at`` is ignored: a five-minute gap between the run and the
+    commit is not a bind. The bind is SHA-256 of the sitting manifest and
+    of every ``.ids`` listed in the artifact.
+    """
+    evidence_path = evidence_path or (root / DEFAULT_EVIDENCE_OUT)
+    if not evidence_path.is_file():
+        raise OfficialIdsProfileError(f"committed evidence missing: {evidence_path}")
+    try:
+        committed = json.loads(evidence_path.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise OfficialIdsProfileError(
+            f"committed evidence is not valid UTF-8 JSON: {exc}"
+        ) from exc
+    if not isinstance(committed, dict):
+        raise OfficialIdsProfileError("committed evidence is not an object")
+
+    _assert_repo_relative_evidence(committed)
+
+    manifest_path = _require_repo_file(
+        root, committed.get("manifest_path"), what="committed evidence manifest_path"
+    )
+    recomputed_manifest = _sha256_text_ci(manifest_path)
+    recorded_manifest = committed.get("manifest_sha256")
+    if recorded_manifest != recomputed_manifest:
+        raise OfficialIdsProfileError(
+            "committed evidence manifest_sha256 does not match the sitting manifest "
+            f"({committed.get('manifest_path')})"
+        )
+
+    xsd_meta = committed.get("ids_xsd") if isinstance(committed.get("ids_xsd"), dict) else {}
+    xsd_path = _require_repo_file(root, xsd_meta.get("path"), what="committed evidence ids_xsd.path")
+    if xsd_meta.get("xsd_sha256") != _sha256_file(xsd_path):
+        raise OfficialIdsProfileError(
+            "committed evidence ids_xsd.xsd_sha256 does not match the sitting XSD"
+        )
+
+    probe_meta = (
+        committed.get("fixture_probe") if isinstance(committed.get("fixture_probe"), dict) else {}
+    )
+    _require_repo_file(root, probe_meta.get("ifc"), what="committed evidence fixture_probe.ifc")
+
+    profile = load_manifest(manifest_path)
+    pack_root = _must_stay_under(
+        root, _resolve_under(root, Path(profile.pack_root)), what="pack_root"
+    )
+    rows = committed.get("files")
+    if not isinstance(rows, list):
+        raise OfficialIdsProfileError("committed evidence files[] is missing")
+    by_path = {row.get("path"): row for row in rows if isinstance(row, dict)}
+    declared = {entry.path for entry in profile.files}
+    if set(by_path) != declared:
+        raise OfficialIdsProfileError(
+            "committed evidence files[] does not match the sitting manifest inventory"
+        )
+    for entry in profile.files:
+        row = by_path[entry.path]
+        on_disk = pack_root / entry.path
+        if not on_disk.is_file():
+            raise OfficialIdsProfileError(f"evidence file missing on disk: {entry.path}")
+        disk_sha = _sha256_file(on_disk)
+        if row.get("sha256") != disk_sha:
+            raise OfficialIdsProfileError(
+                f"committed evidence sha256 does not match sitting file: {entry.path}"
+            )
+        if row.get("sha256") != entry.sha256:
+            raise OfficialIdsProfileError(
+                f"committed evidence sha256 does not match the sitting manifest: {entry.path}"
+            )
+
+    if committed.get("canonical_profile_hash") != canonical_profile_hash(profile):
+        raise OfficialIdsProfileError(
+            "committed evidence canonical_profile_hash does not match the sitting manifest"
+        )
+    for flag in (
+        "signed_by_customer",
+        "closes_rt001",
+        "closes_rt002",
+        "closes_rt003",
+        "samolet_alias",
+    ):
+        if committed.get(flag) is not False:
+            raise OfficialIdsProfileError(f"committed evidence {flag} must be JSON false")
+
+    if live is not None:
+        for key in (
+            "manifest_sha256",
+            "canonical_profile_hash",
+            "signed_by_customer",
+            "closes_rt001",
+            "closes_rt002",
+            "closes_rt003",
+            "samolet_alias",
+        ):
+            if committed.get(key) != live.get(key):
+                raise OfficialIdsProfileError(
+                    f"committed evidence {key} does not match the live validation payload"
+                )
+        live_xsd = live.get("ids_xsd") if isinstance(live.get("ids_xsd"), dict) else {}
+        if xsd_meta.get("xsd_sha256") != live_xsd.get("xsd_sha256"):
+            raise OfficialIdsProfileError(
+                "committed evidence ids_xsd.xsd_sha256 does not match the live validation payload"
+            )
+        live_probe = live.get("fixture_probe") if isinstance(live.get("fixture_probe"), dict) else {}
+        committed_probe = probe_meta
+        for key in ("signature_sha256", "issues_per_run", "identical"):
+            if committed_probe.get(key) != live_probe.get(key):
+                raise OfficialIdsProfileError(
+                    f"committed evidence fixture_probe.{key} does not match the live run"
+                )
+
+
 def write_evidence(payload: dict[str, Any], out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(
@@ -308,6 +490,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Validate only; do not write the evidence artifact",
     )
+    parser.add_argument(
+        "--verify-committed-evidence",
+        action="store_true",
+        help=(
+            "After a live run, recompute hashes of the sitting manifest and "
+            ".ids files and compare them to the committed evidence JSON"
+        ),
+    )
     args = parser.parse_args(argv)
 
     root = args.root.resolve()
@@ -318,6 +508,13 @@ def main(argv: list[str] | None = None) -> int:
             xsd_path=args.xsd,
             probe_ifc=args.probe_ifc,
         )
+        if args.verify_committed_evidence:
+            verify_committed_evidence(
+                root,
+                evidence_path=args.evidence_out or (root / DEFAULT_EVIDENCE_OUT),
+                live=payload,
+            )
+            print("committed evidence re-hash OK")
     except OfficialIdsProfileError as exc:
         print(f"SPB-CGE PROFILE FAILED: {exc}", file=sys.stderr)
         return 1

@@ -182,6 +182,9 @@ class SpbCgeProfileDeterminismTests(unittest.TestCase):
         self.assertIs(payload["closes_rt003"], False)
         self.assertIs(payload["signed_by_customer"], False)
         self.assertEqual(payload["provenance_status"], "OFFICIAL_PUBLISHED")
+        from aerobim.tools.validate_spb_cge_profile import verify_committed_evidence
+
+        verify_committed_evidence(REPO_ROOT, live=payload)
 
     def test_committed_evidence_binds_to_current_manifest(self) -> None:
         from aerobim.tools.validate_spb_cge_profile import (
@@ -202,6 +205,78 @@ class SpbCgeProfileDeterminismTests(unittest.TestCase):
             entry for entry in dataset["files"] if entry["path"] == "profiles/spb-cge/manifest.json"
         )
         self.assertEqual(recorded["sha256"], evidence["manifest_sha256"])
+        from aerobim.tools.validate_spb_cge_profile import verify_committed_evidence
+
+        verify_committed_evidence(REPO_ROOT)
+
+    def test_stale_evidence_manifest_hash_is_rejected(self) -> None:
+        from aerobim.tools.validate_spb_cge_profile import (
+            DEFAULT_EVIDENCE_OUT,
+            verify_committed_evidence,
+        )
+
+        raw = json.loads((REPO_ROOT / DEFAULT_EVIDENCE_OUT).read_text(encoding="utf-8"))
+        raw["manifest_sha256"] = "0" * 64
+        with tempfile.TemporaryDirectory() as tmp:
+            tampered = Path(tmp) / "evidence.json"
+            tampered.write_text(json.dumps(raw, ensure_ascii=False), encoding="utf-8")
+            with self.assertRaises(OfficialIdsProfileError) as ctx:
+                verify_committed_evidence(REPO_ROOT, evidence_path=tampered)
+        self.assertIn("manifest_sha256", str(ctx.exception))
+
+    def test_stale_evidence_xsd_hash_is_rejected(self) -> None:
+        from aerobim.tools.validate_spb_cge_profile import (
+            DEFAULT_EVIDENCE_OUT,
+            verify_committed_evidence,
+        )
+
+        raw = json.loads((REPO_ROOT / DEFAULT_EVIDENCE_OUT).read_text(encoding="utf-8"))
+        raw["ids_xsd"] = dict(raw["ids_xsd"])
+        raw["ids_xsd"]["xsd_sha256"] = "0" * 64
+        with tempfile.TemporaryDirectory() as tmp:
+            tampered = Path(tmp) / "evidence.json"
+            tampered.write_text(json.dumps(raw, ensure_ascii=False), encoding="utf-8")
+            with self.assertRaises(OfficialIdsProfileError) as ctx:
+                verify_committed_evidence(REPO_ROOT, evidence_path=tampered)
+        self.assertIn("xsd_sha256", str(ctx.exception))
+
+    def test_coverage_json_has_no_host_checkout_paths(self) -> None:
+        coverage_path = (
+            REPO_ROOT / "docs" / "evidence" / "norm-pack-spbexp-coverage-2026-08.json"
+        )
+        text = coverage_path.read_text(encoding="utf-8")
+        self.assertNotIn("C:/plans", text)
+        self.assertNotIn("Windows-11-", text)
+        payload = json.loads(text)
+        self.assertEqual(payload["pack_dir"], "samples/ids/spbexp/pack")
+        self.assertTrue(str(payload["fixture_ifc"]["path"]).startswith("samples/"))
+        self.assertTrue(str(payload["files"][0]["path"]).startswith("samples/"))
+        self.assertEqual(payload["summary"]["executable_pass_on_fixture"], 195)
+        self.assertEqual(payload["summary"]["executable_fail_on_fixture"], 161)
+
+    def test_publisher_oks_folder_is_verbatim(self) -> None:
+        publisher_folder = "Требования к ЦИМ ОК _V.3.1.0"
+        folder = PACK_ROOT / "oks" / publisher_folder
+        self.assertTrue(folder.is_dir(), folder)
+        prefix = f"oks/{publisher_folder}/"
+        oks_paths = [
+            entry["path"]
+            for entry in _manifest_payload()["files"]
+            if entry["path"].startswith("oks/")
+        ]
+        self.assertTrue(oks_paths)
+        self.assertTrue(all(path.startswith(prefix) for path in oks_paths))
+
+    def test_source_md_states_hash_policy_and_publisher_rights(self) -> None:
+        text = (REPO_ROOT / "samples" / "ids" / "spbexp" / "SOURCE.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("MIT license applies only to AeroBIM code", text)
+        self.assertIn("raw bytes", text)
+        self.assertIn("CRLF→LF", text)
+        self.assertIn("Требования к ЦИМ ОК _V.3.1.0", text)
+        self.assertIn("1543", text)
+        self.assertIn("195 pass / 161 fail", text)
 
 
 class SpbCgeProfileNegativeTests(unittest.TestCase):

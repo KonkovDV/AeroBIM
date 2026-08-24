@@ -8,14 +8,12 @@
   "source_page": "https://www.spbexp.ru/bim/docs/",
   "generated_at": "2026-08-14T17:07:48.321729+00:00",
   "machine": {
-    "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
-    "machine": "AMD64",
-    "system": "Windows"
+    "note": "Host OS/CPU omitted from published evidence."
   },
-  "pack_dir": "C:/plans/AeroBIM/samples/ids/spbexp/pack",
+  "pack_dir": "samples/ids/spbexp/pack",
   "fixture_ifc": {
-    "path": "C:/plans/AeroBIM/samples/ifc/wall-pset-qto-pass.ifc",
+    "path": "samples/ifc/wall-pset-qto-pass.ifc",
     "sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
     "bytes": 997,
     "note": "Open wall Pset fixture. Fail on fixture ≠ unsupported spec."
@@ -148,7 +146,7 @@
   "files": [
     {
       "domain": "ЧАСТЬ 2. СПОЗУ",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Базовая модель).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Базовая модель).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Базовая модель).ids",
       "kind": "other",
       "sha256": "38493c4b546a562090f8f94ef08c686fb90e95f1300dbe5da071f12d69f984b5",
@@ -176,7 +174,7 @@
     },
     {
       "domain": "ЧАСТЬ 2. СПОЗУ",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Окружающей застройки).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Окружающей застройки).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Окружающей застройки).ids",
       "kind": "other",
       "sha256": "cfce4582ab440f1c700a64d03900829251d6cc971ed5595b2f223ffa8d21057d",
@@ -201,7 +199,7 @@
     },
     {
       "domain": "ЧАСТЬ 2. СПОЗУ",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Планировочная организация земельного участка).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Планировочная организация земельного участка).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Планировочная организация земельного участка).ids",
       "kind": "other",
       "sha256": "0fad7d68f60fac6c56ccc7cc24fe9c9f878b0eb61741d403341926bb87918121",
@@ -240,7 +238,7 @@
     },
     {
       "domain": "ЧАСТЬ 3. АР",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 3. АР/IDS СПб ГАУ ЦГЭ (Архитектурные решения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 3. АР/IDS СПб ГАУ ЦГЭ (Архитектурные решения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Архитектурные решения).ids",
       "kind": "other",
       "sha256": "81cb78faf2c168a7c20b487b98059668c0a5d0165c6e015c53d406c702da6370",
@@ -279,7 +277,7 @@
     },
     {
       "domain": "ЧАСТЬ 4. КР",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 4. КР/IDS СПб ГАУ ЦГЭ (Конструктивные решения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 4. КР/IDS СПб ГАУ ЦГЭ (Конструктивные решения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Конструктивные решения).ids",
       "kind": "other",
       "sha256": "16fdd817cb230820b3baefe3f0b1ae78804d51ab42d3d27fb9bef8ed2a4cee4f",
@@ -322,7 +320,7 @@
     },
     {
       "domain": "5.1 ИОС1",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.1 ИОС1/IDS СПб ГАУ ЦГЭ (Система электроснабжения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.1 ИОС1/IDS СПб ГАУ ЦГЭ (Система электроснабжения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система электроснабжения).ids",
       "kind": "other",
       "sha256": "e7a4cedda364d1b6c844b68106ffbfc12adbead23c7e5950d3595be476751a5a",
@@ -357,7 +355,7 @@
     },
     {
       "domain": "5.2 ИОС2",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система водоснабжения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система водоснабжения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система водоснабжения).ids",
       "kind": "other",
       "sha256": "dfa35d97cf80289102e042cdfe875e8be74892c34b921d3b3e1bd5e6beb98b77",
@@ -387,7 +385,7 @@
     },
     {
       "domain": "5.2 ИОС2",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система противопожарного водоснабжения (спринклерное пожаротушение)).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система противопожарного водоснабжения (спринклерное пожаротушение)).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система противопожарного водоснабжения (спринклерное пожаротушение)).ids",
       "kind": "other",
       "sha256": "d6af5aa30ad67350009c26d3410eb46d926919900a043ade29f1a98b01879038",
@@ -417,7 +415,7 @@
     },
     {
       "domain": "5.3 ИОС3",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.3 ИОС3/IDS СПб ГАУ ЦГЭ (Система водоотведения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.3 ИОС3/IDS СПб ГАУ ЦГЭ (Система водоотведения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система водоотведения).ids",
       "kind": "other",
       "sha256": "530959532dcf6268489374cba68586f69152ea93ca22f6c706b310b1d521bb97",
@@ -448,7 +446,7 @@
     },
     {
       "domain": "5.4 ИОС4",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система вентиляции).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система вентиляции).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система вентиляции).ids",
       "kind": "other",
       "sha256": "c9014b41fbdbbd2b7ffd2afd2dff87963fc0110a8af9c65d7b93bced09f3267d",
@@ -480,7 +478,7 @@
     },
     {
       "domain": "5.4 ИОС4",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система кондиционирования).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система кондиционирования).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система кондиционирования).ids",
       "kind": "other",
       "sha256": "5d87aa5ab2e97d286e9547b25a81060f667dc2cd9e83925d31c6cc39f3f7de79",
@@ -509,7 +507,7 @@
     },
     {
       "domain": "5.4 ИОС4",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система отопления).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система отопления).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система отопления).ids",
       "kind": "other",
       "sha256": "272cc8be39c65e4302de627a81bafc5758db4c7530a799aa994cf81805010299",
@@ -538,7 +536,7 @@
     },
     {
       "domain": "5.4 ИОС4",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система теплоснабжения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система теплоснабжения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система теплоснабжения).ids",
       "kind": "other",
       "sha256": "24bb4b29d0d4053e421eff74fd0100a16df65946e7899afe941de0368652a1b6",
@@ -569,7 +567,7 @@
     },
     {
       "domain": "5.4 ИОС4",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система холодоснабжения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система холодоснабжения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система холодоснабжения).ids",
       "kind": "other",
       "sha256": "07595be56b76c434ec6f93e4f4492f73bbe39524e99a7b6accf6da02d98b5a24",
@@ -598,7 +596,7 @@
     },
     {
       "domain": "5.5 ИОС5",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.5 ИОС5/IDS СПб ГАУ ЦГЭ (Сети связи).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.5 ИОС5/IDS СПб ГАУ ЦГЭ (Сети связи).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Сети связи).ids",
       "kind": "other",
       "sha256": "872e514ac7e95be7a33e7805358e8b7da87e4f694dd91aeed29444bf7077d9e9",
@@ -635,7 +633,7 @@
     },
     {
       "domain": "5.6 ИОС6",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.6 ИОС6/IDS СПб ГАУ ЦГЭ (Система газоснабжения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.6 ИОС6/IDS СПб ГАУ ЦГЭ (Система газоснабжения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Система газоснабжения).ids",
       "kind": "other",
       "sha256": "d69fd52e53810b9a8a2739ba3a64ee056f3f1c9646a26efa6f1871b2a9796ce6",
@@ -665,7 +663,7 @@
     },
     {
       "domain": "ЧАСТЬ 6. ТХ",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 6. ТХ/IDS СПб ГАУ ЦГЭ (Технологические решения).ids",
+      "path": "samples/ids/spbexp/pack/oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 6. ТХ/IDS СПб ГАУ ЦГЭ (Технологические решения).ids",
       "file_name": "IDS СПб ГАУ ЦГЭ (Технологические решения).ids",
       "kind": "other",
       "sha256": "66d467c16902232c537ba269b33b8353aa9f824d587c4257dcc814969e1f5081",
@@ -691,7 +689,7 @@
     },
     {
       "domain": "rii",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Рельеф_1.1.0_(IDS_1.0).ids",
+      "path": "samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Рельеф_1.1.0_(IDS_1.0).ids",
       "file_name": "ЦГЭ.ЦИМ.РИИ_ИГДИ_Рельеф_1.1.0_(IDS_1.0).ids",
       "kind": "other",
       "sha256": "f92984d823c5dbe3669a56996992cb5466ebd44f488e55c2363b3410017ac392",
@@ -715,7 +713,7 @@
     },
     {
       "domain": "rii",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Ситуация_1.1.0_(IDS_1.0).ids",
+      "path": "samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Ситуация_1.1.0_(IDS_1.0).ids",
       "file_name": "ЦГЭ.ЦИМ.РИИ_ИГДИ_Ситуация_1.1.0_(IDS_1.0).ids",
       "kind": "other",
       "sha256": "006d45001e44758eb82292427681a233da33946f797c6b538c57856baa90f692",
@@ -737,7 +735,7 @@
     },
     {
       "domain": "rii",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГИ_1.1.0_(IDS_1.0).ids",
+      "path": "samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГИ_1.1.0_(IDS_1.0).ids",
       "file_name": "ЦГЭ.ЦИМ.РИИ_ИГИ_1.1.0_(IDS_1.0).ids",
       "kind": "other",
       "sha256": "07cd61c4c0e406b32fec950aa67ba3210b2ef067ba1086d9556c00b26263a0e1",
@@ -768,7 +766,7 @@
     },
     {
       "domain": "rii",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГМИ_1.1.0_(IDS_1.0).ids",
+      "path": "samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИГМИ_1.1.0_(IDS_1.0).ids",
       "file_name": "ЦГЭ.ЦИМ.РИИ_ИГМИ_1.1.0_(IDS_1.0).ids",
       "kind": "other",
       "sha256": "4370fa28e5ca77ac8f1cc50dac6ad736ac5e309f58785a7adcc3eba407e7ac35",
@@ -790,7 +788,7 @@
     },
     {
       "domain": "rii",
-      "path": "C:/plans/AeroBIM/samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИЭИ_1.1.0_(IDS_1.0).ids",
+      "path": "samples/ids/spbexp/pack/rii/ЦГЭ.ЦИМ.РИИ_ИЭИ_1.1.0_(IDS_1.0).ids",
       "file_name": "ЦГЭ.ЦИМ.РИИ_ИЭИ_1.1.0_(IDS_1.0).ids",
       "kind": "other",
       "sha256": "1ce1a7471fae713301bfa8c344e121cde73829f789560904bc19b0274147dbff",
@@ -814,5 +812,5 @@
   "pack_id": "spbexp",
   "samolet_alias": false,
   "customer_signed": false,
-  "content_sha256": "438708700e41dd372daf4e75c522d76794498bb389ae2a6b754506c0ef29f4ac"
+  "content_sha256": "dde568f15d011ed18630918b284d1d5a58dabe30796ed1ece1816a05d1a33e8f"
 }

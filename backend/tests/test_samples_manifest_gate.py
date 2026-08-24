@@ -25,6 +25,8 @@ def _entries() -> dict[str, dict[str, object]]:
 
 def _sha256(path: Path) -> str:
     data = path.read_bytes()
+    if path.suffix.lower() == ".ids":
+        return hashlib.sha256(data).hexdigest()
     # Match committed LF text on Windows CRLF worktrees (see export_samples_manifest).
     if b"\r\n" in data and b"\x00" not in data[:8192]:
         try:

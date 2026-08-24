@@ -1,7 +1,7 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-24T17:49:10.421513+00:00",
+  "generated_at": "2026-08-24T19:25:58.798516+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
   "file_count": 879,
   "vendored_count": 15,
@@ -9032,8 +9032,8 @@
     },
     {
       "path": "ids/spbexp/SOURCE.md",
-      "sha256": "398e8b46e4821ad71e35803b5bdc0badce7eb94634ffb7733fc7f206fa25424b",
-      "bytes": 1507,
+      "sha256": "a69687730a313c22225ab0512ff3e8e44d1a84ff9d447eeb27e9af23dec730ab",
+      "bytes": 3604,
       "provenance": "third_party_official",
       "source": "SPb GAU CGE published IDS 1.0; not a Samolet customer profile",
       "license_status": "publisher_terms",

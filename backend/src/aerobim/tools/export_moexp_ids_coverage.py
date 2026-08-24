@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from time import perf_counter
@@ -18,7 +19,7 @@ from typing import Any
 from aerobim.domain.models import ValidationIssue
 from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
-from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
+from aerobim.tools.benchmark_project_package import repo_root
 
 
 def _mapping(value: object) -> dict[str, Any]:
@@ -51,6 +52,16 @@ def _sha256_bytes(raw: bytes) -> str:
 
 def _sha256_file(path: Path) -> str:
     return _sha256_bytes(path.read_bytes())
+
+
+def _repo_relative(path: Path, root: Path | None = None) -> str:
+    """Repo-relative POSIX path for published evidence. Host checkouts stay out."""
+    base = (root or repo_root()).resolve()
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(base).as_posix()
+    except ValueError as exc:
+        raise ValueError(f"refusing to record a path outside the repo: {resolved}") from exc
 
 
 def default_pack_dir(root: Path | None = None) -> Path:
@@ -165,7 +176,7 @@ def evaluate_ids_file(
         load_error = f"ifctester missing: {exc}"
         return {
             "domain": domain,
-            "path": str(ids_path.as_posix()),
+            "path": _repo_relative(ids_path),
             "file_name": ids_path.name,
             "kind": classify_ids_kind(ids_path.name),
             "sha256": _sha256_file(ids_path),
@@ -210,7 +221,7 @@ def evaluate_ids_file(
 
     return {
         "domain": domain,
-        "path": str(ids_path.as_posix()),
+        "path": _repo_relative(ids_path),
         "file_name": ids_path.name,
         "kind": classify_ids_kind(ids_path.name),
         "sha256": _sha256_file(ids_path),
@@ -416,10 +427,13 @@ def build_ids_engine_coverage(
         "claim_boundary": claim_boundary,
         "source_page": source_page,
         "generated_at": datetime.now(tz=UTC).isoformat(),
-        "machine": _machine_fingerprint(),
-        "pack_dir": str(pack_dir.as_posix()),
+        "machine": {
+            "python": sys.version.split()[0],
+            "note": "Host OS/CPU omitted from published evidence.",
+        },
+        "pack_dir": _repo_relative(pack_dir),
         "fixture_ifc": {
-            "path": str(ifc_path.as_posix()),
+            "path": _repo_relative(ifc_path),
             "sha256": _sha256_file(ifc_path) if ifc_path.is_file() else None,
             "bytes": ifc_path.stat().st_size if ifc_path.is_file() else None,
             "note": "Open wall Pset fixture. Fail on fixture ≠ unsupported spec.",
@@ -457,7 +471,7 @@ def build_moexp_ids_coverage(
             "closes_rt003": False,
             "mappings": _inventory_mappings(pack_dir),
             "fixture_ifc": {
-                "path": str(ifc_path.as_posix()),
+                "path": _repo_relative(ifc_path),
                 "sha256": _sha256_file(ifc_path) if ifc_path.is_file() else None,
                 "bytes": ifc_path.stat().st_size if ifc_path.is_file() else None,
                 "note": (

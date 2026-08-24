@@ -40,8 +40,10 @@ def _looks_text(data: bytes) -> bool:
 
 
 def _sha256(path: Path) -> str:
-    """Hash bytes as committed on Linux CI (LF text), not Windows CRLF worktrees."""
+    """JSON: LF-normalized (Linux CI). ``.ids``: raw bytes (git binary, publisher XML)."""
     data = path.read_bytes()
+    if path.suffix.lower() == ".ids":
+        return hashlib.sha256(data).hexdigest()
     if b"\r\n" in data and _looks_text(data):
         data = data.replace(b"\r\n", b"\n")
     return hashlib.sha256(data).hexdigest()
