@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-16T20:57:24.190476+00:00",
+  "generated_at": "2026-08-23T23:44:35.922700+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 876,
+  "file_count": 877,
   "vendored_count": 15,
   "files": [
     {
@@ -31,6 +31,18 @@
       "personal_data": false
     },
     {
+      "path": "agr/dgp/CITY_IFC_MANIFEST.json",
+      "sha256": "abc63305951aaadeace90c5e2b981ff25b5891d9d9acb61669fdf90b621b1e6c",
+      "bytes": 2989,
+      "provenance": "third_party_official",
+      "source": "Moscow DGP / stroimprosto AGR TEP example + Vedomost XSD; not a Samolet pack",
+      "license_status": "publisher_terms",
+      "attribution_required": true,
+      "redistribution": "redistributed as published; see samples/agr/dgp/SOURCE.md",
+      "production_use": "fixture engine coverage only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "agr/dgp/IFC_RusSets_AGR_PROPERTY.txt",
       "sha256": "73910d1eee6cf524f4980e00a21b750bfc9ca3abd5c15cd5b213d7f779507354",
       "bytes": 41563,
@@ -44,8 +56,8 @@
     },
     {
       "path": "agr/dgp/SOURCE.md",
-      "sha256": "d92c77b5a4b69590802d64173eb129df0fe069ae1fafde33fe916a04efb376db",
-      "bytes": 1750,
+      "sha256": "5e953aa8d17f4c994c661e0e1e7c49d23e2900df0acf7a21098acd7555c8dd6c",
+      "bytes": 1983,
       "provenance": "third_party_official",
       "source": "Moscow DGP / stroimprosto AGR TEP example + Vedomost XSD; not a Samolet pack",
       "license_status": "publisher_terms",
@@ -8936,8 +8948,8 @@
     },
     {
       "path": "ids/moscow-agr/SOURCE.md",
-      "sha256": "e6110b10ad0f2edb5ba05f09f65710b7a57c2949b1ccdabe57619ba417ae301c",
-      "bytes": 1505,
+      "sha256": "8fc6653241aa70378d645d2217fbf67eb947d5fd64f7f2c4b894f3d2d2b6a586",
+      "bytes": 1756,
       "provenance": "third_party_official",
       "source": "Moscow DGP / stroimprosto published AGR IDS; not a Samolet profile and not the frozen moscow_agr DI port",
       "license_status": "publisher_terms",

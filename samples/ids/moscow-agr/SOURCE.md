@@ -16,7 +16,7 @@ Extracted IDS: [`pack/`](pack/).
 
 ## Not in this pack
 
-- Example IFC models on the same page (НН_К00_ПС_АГР.ifc and siblings) — **not vendored** (size / city ToS). URLs stay on the article.
+- Example IFC models on the same page — **not vendored** (size / city ToS). URLs + sizes: [`../../agr/dgp/CITY_IFC_MANIFEST.json`](../../agr/dgp/CITY_IFC_MANIFEST.json). Local pin: [`../../../docs/dataset/MOSCOW_AGR_CITY_EXAMPLES_LOCAL_PIN_2026_08_24.md`](../../../docs/dataset/MOSCOW_AGR_CITY_EXAMPLES_LOCAL_PIN_2026_08_24.md). Fetch: `python -m aerobim.tools.fetch_moscow_agr_city_examples`.
 - TRM container zip (~5 MB) — `.local/` only.
 - Login-walled XML АГР / САГР zip builders (`/lk/xmlagr`, `/lk/sagr-zip`).
 

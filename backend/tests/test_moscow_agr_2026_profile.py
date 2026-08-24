@@ -52,6 +52,7 @@ class MoscowAgr2026ProfileTests(unittest.TestCase):
         self.assertIn("RT-003 remains OPEN", stamped.clash.reason or "")
         self.assertIs(stamped.mep_system_clash.status, CapabilityState.SKIPPED)
         self.assertIn("not faked", stamped.mep_system_clash.reason or "")
+        self.assertIn("не подделывается", stamped.mep_system_clash.reason or "")
 
     def test_honesty_stamp_keeps_failed_engine_result(self) -> None:
         caps = ReportCapabilities(

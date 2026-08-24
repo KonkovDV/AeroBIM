@@ -12,6 +12,8 @@ RT-002 is closed in **regulatory** volume (`RT-002a`): this pack has `status=app
 
 JSON schema vocabulary maps pack `status=approved` onto the engine badge `customer_approved`. That badge here means **city-as-publisher**, not “Samolet signed this pack”. Do not say “customer stack = Renga”. Do not say product accuracy >90%. Do not say RT-003 is closed. Clash/MEP stay honest SKIPPED under `AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026`.
 
+This pack is a **measurement ruler**, not a commercial AGR self-check. From 2026-06-29 Moscow requires a free positive city CIM report at AGR filing; AeroBIM does not sell a substitute for that portal.
+
 Schema 2.0.0 `expert_confirmation_journal` is present and **empty**: the JSON encoding of city IDS properties is not expert-confirmed. Deterministic v2 rules therefore do not enter positive checking until a journal `confirmed` entry exists. That is fail-closed, not a hidden green pass.
 
 ## What this pack is

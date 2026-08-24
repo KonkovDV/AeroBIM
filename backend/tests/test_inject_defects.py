@@ -72,6 +72,16 @@ class InjectDefectsTests(unittest.TestCase):
             mutated = (root / "out" / "area_mismatch" / "model.ifc").read_text(encoding="utf-8")
             self.assertNotIn("12.5", mutated.split("IFCQUANTITYAREA", 1)[-1][:80])
 
+    def test_city_agr_examples_are_blocked(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            blocked = root / "moscow-agr-examples" / "ifc"
+            blocked.mkdir(parents=True)
+            (blocked / "model.ifc").write_text(_MINI_IFC, encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                inject_defects(blocked, root / "out", seed=1)
+            self.assertIn("not a clean PD pack", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

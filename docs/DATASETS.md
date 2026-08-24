@@ -63,6 +63,7 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - Publisher: knowledge base stroimprosto.mos.ru (article [cim-agr](https://stroimprosto.mos.ru/knowledge/article/cim-agr/))
 - Pack: `samples/ids/moscow-agr/` (4 IDS from public `IDS.zip`)
 - Related XML: `samples/agr/dgp/` (`AGR_TEO.xml`, `Vedomost_AGR_VED_NEW.xsd`)
+- Example IFCs: local pin [`.local/moscow-agr-examples/`](dataset/MOSCOW_AGR_CITY_EXAMPLES_LOCAL_PIN_2026_08_24.md) — **not** a PD pack, **not** RT-001
 - This is a **city AGR** IDS pack. It is **not** a Samolet-signed acceptance profile and **not** the frozen `moscow_agr` DI port.
 
 ## Official SPb GAU «ЦГЭ» IDS 1.0

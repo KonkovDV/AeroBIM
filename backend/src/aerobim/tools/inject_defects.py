@@ -224,6 +224,12 @@ def inject_defects(
 
     if not source.is_dir():
         raise FileNotFoundError(f"source pack directory not found: {source}")
+    source_posix = source.resolve().as_posix().lower()
+    if "moscow-agr-examples" in source_posix:
+        raise ValueError(
+            "City AGR CIM examples are not a clean PD pack; inject_defects is blocked. "
+            "Checkpoint NO_GO."
+        )
     selected = classes or DEFECT_CLASSES
     unknown = [name for name in selected if name not in DEFECT_CLASSES]
     if unknown:

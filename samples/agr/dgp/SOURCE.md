@@ -24,4 +24,4 @@ Mapping URL: https://stroimprosto.mos.ru/storage/app/uploads/public/6a6/c82/cde/
 
 - `AGR_TEO.xml` and `Vedomost_AGR.xsd` are **different documents**. Do not validate TEP against Vedomost XSD.
 - No published XSD for `ArchitecturalUrbanPlanningSolution` was listed on the article (14.08.2026). Root-localname check is the class-1 proxy.
-- Example IFC models on the article are **not** in git.
+- Example IFC models on the article are **not** in git. Manifest: [`CITY_IFC_MANIFEST.json`](CITY_IFC_MANIFEST.json). Local pin + rehearsal: [`../../../docs/dataset/MOSCOW_AGR_CITY_EXAMPLES_LOCAL_PIN_2026_08_24.md`](../../../docs/dataset/MOSCOW_AGR_CITY_EXAMPLES_LOCAL_PIN_2026_08_24.md).

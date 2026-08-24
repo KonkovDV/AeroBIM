@@ -39,6 +39,7 @@ Not in GitHub. Not a substitute for RT-001.
 | AEC-Bench | Apache 2.0 | 196-task inventory; gold-only floor 0.7283 | Harbor agent (**NOT_RUN**) |
 | GNI-BIM | CC BY 4.0 models | prior stress 224 header / 223 IfcOpenShell | student models as customer PD |
 | Renga ПНСТ 909 publisher pack | vendor ToS | **18/22 snapshot 05.08**; live extract truncated | a fresh 18/22 on this host |
+| Moscow AGR city example IFCs | city ToS; `.local/` only | pin + class-1 exchange / IDS rehearsal | PD pack; RT-001; `inject_defects` |
 | Ishigaki-IDS-Bench | CC BY 4.0 | 166/166 gold XML processable; **no real IFC** | paper LLM F1 as product accuracy |
 | DrawingVQA | questions CC BY-NC-SA 4.0; drawings not public | **not downloaded** | MIT-tree vendoring |
 

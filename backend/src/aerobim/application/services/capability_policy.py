@@ -44,8 +44,10 @@ _AGR_CLASH_REASON = (
     "not required and not faked. RT-003 remains OPEN"
 )
 _AGR_MEP_REASON = (
-    "federated MEP system clash is outside Moscow AGR CIM scope; "
-    "not required and not faked. RT-003 remains OPEN"
+    "federated MEP system clash is outside Moscow AGR CIM scope "
+    "(федеративная проверка инженерных систем вне границы профиля АГР — "
+    "не требуется и не подделывается); not required and not faked. "
+    "RT-003 remains OPEN"
 )
 
 _PASS_BLOCKING_FAILED_FIELDS: tuple[str, ...] = (

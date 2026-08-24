@@ -1,0 +1,77 @@
+{
+  "schema": "aerobim_moscow_agr_city_ifc_manifest_v1",
+  "source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
+  "retrieved_head": "2026-08-24",
+  "local_root": ".local/moscow-agr-examples/ifc",
+  "claim_boundary": "City-published AGR CIM examples from the same article as the official IDS/TEP. Not a PD pack (no sheets, TZ, two revisions, calcs, expertise remarks). Not a Samolet pack. Not RT-001. Binaries stay gitignored.",
+  "closes_rt001": false,
+  "closes_rt002b": false,
+  "closes_rt003": false,
+  "tep_sidecar": "samples/agr/dgp/AGR_TEO.xml",
+  "tep_expected_root": "ArchitecturalUrbanPlanningSolution",
+  "vedomost_xml": "samples/agr/dgp/Vedomost_AGR.xml",
+  "vedomost_xsd": "samples/agr/dgp/Vedomost_AGR_VED_NEW.xsd",
+  "ids_pack": "samples/ids/moscow-agr/pack",
+  "signoff_profile": "moscow_agr_2026",
+  "files": [
+    {
+      "id": "ps",
+      "local_name": "NN_K00_PS_AGR.ifc",
+      "role": "project_situation",
+      "url": "https://stroimprosto.mos.ru/storage/app/uploads/public/69c/d30/703/69cd30703dc43348426852.ifc",
+      "expected_bytes": 90618,
+      "filename_fields": 4,
+      "ids_default": true,
+      "ids_names": ["АГР_ЦИМ ПС.ids"]
+    },
+    {
+      "id": "bio",
+      "local_name": "NN_K00_BIO_AGR.ifc",
+      "role": "landscaping",
+      "url": "https://stroimprosto.mos.ru/storage/app/uploads/public/69c/d30/775/69cd30775400e838769844.ifc",
+      "expected_bytes": 525747,
+      "filename_fields": 4,
+      "ids_default": true,
+      "ids_names": ["АГР_ЦИМ БиО v8.ids"]
+    },
+    {
+      "id": "ar_s00",
+      "local_name": "NN_K01_S00_AR_AGR.ifc",
+      "role": "basement_ar",
+      "url": "https://stroimprosto.mos.ru/storage/app/uploads/public/69f/31e/729/69f31e72955af618406639.ifc",
+      "expected_bytes": 2663953,
+      "filename_fields": 5,
+      "ids_default": true,
+      "ids_names": [
+        "АГР_Общие требования v9.ids",
+        "Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids"
+      ]
+    },
+    {
+      "id": "ar_s01",
+      "local_name": "NN_K01_S01_AR_AGR.ifc",
+      "role": "section_1_ar",
+      "url": "https://stroimprosto.mos.ru/storage/app/uploads/public/69f/31e/784/69f31e784a851689012837.ifc",
+      "expected_bytes": 50768979,
+      "filename_fields": 5,
+      "ids_default": false,
+      "ids_names": [
+        "АГР_Общие требования v9.ids",
+        "Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids"
+      ]
+    },
+    {
+      "id": "ar_s02",
+      "local_name": "NN_K01_S02_AR_AGR.ifc",
+      "role": "section_2_ar",
+      "url": "https://stroimprosto.mos.ru/storage/app/uploads/public/69f/31e/7cf/69f31e7cf14d5228288085.ifc",
+      "expected_bytes": 27913226,
+      "filename_fields": 5,
+      "ids_default": false,
+      "ids_names": [
+        "АГР_Общие требования v9.ids",
+        "Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids"
+      ]
+    }
+  ]
+}

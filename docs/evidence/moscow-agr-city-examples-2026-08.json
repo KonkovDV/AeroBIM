@@ -1,0 +1,320 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "moscow_agr_city_examples",
+  "claim_level": "moscow_agr_city_example_rehearsal",
+  "claim_boundary": "City-published AGR CIM examples (stroimprosto.mos.ru cim-agr). Not a PD pack: no sheets, TZ, two revisions, calculations, or expertise remarks. Not a Samolet-signed profile. Class-1 AGR exchange + official IDS engine coverage only. Checkpoint NO_GO.",
+  "generated_at": "2026-08-23T23:45:17.708866+00:00",
+  "status": "RUN",
+  "closes_rt001": false,
+  "closes_rt002b": false,
+  "closes_rt003": false,
+  "checkpoint": "NO_GO",
+  "pd_pack": false,
+  "missing_pd_parts": [
+    "sheets",
+    "two_revisions",
+    "tz",
+    "calculations",
+    "expertise_remarks",
+    "dual_raters"
+  ],
+  "signoff_profile": "moscow_agr_2026",
+  "signoff_policy": {
+    "require_clash": false,
+    "clash_affects_pass": false,
+    "require_mep_system_clash": false
+  },
+  "clash_mep": "SKIPPED",
+  "honesty": {
+    "clash": {
+      "state": "skipped",
+      "reason": "geometric clash is outside Moscow AGR CIM scope (DGP-R-1/26); not required and not faked. RT-003 remains OPEN"
+    },
+    "mep_system_clash": {
+      "state": "skipped",
+      "reason": "federated MEP system clash is outside Moscow AGR CIM scope; not required and not faked. RT-003 remains OPEN"
+    }
+  },
+  "tep_reused_official_example": true,
+  "injector_ran": false,
+  "injector_blocked_reason": "City examples are CIM+TEP rehearsal, not a clean PD pack. inject_defects stays blocked.",
+  "legal_qualification": {
+    "as_of": "2026-08-14",
+    "product_function": "precheck_exchange_shape",
+    "legal_force_of_cited_npa": "territorial_npa",
+    "ids_zip_legal_force": "not_npa",
+    "territorial_scope": "moscow",
+    "cited_instrument_ids": [
+      "MOSCOW-17-PP",
+      "DGP-R-1-26"
+    ],
+    "substitutes_agr_certificate": false,
+    "substitutes_grk_art_49_expertise": false,
+    "substitutes_pp614_im_obligation": false,
+    "substitutes_egrz_remark_corpus": false,
+    "federal_im_obligation_created": false,
+    "closes_rt002": false,
+    "claim_boundary": "Legal-force labels for engineering honesty. Not a court opinion. Not statutory compliance of a customer package. Checkpoint NO_GO."
+  },
+  "vedomost_xsd_rule_ids": [],
+  "ifc": [
+    {
+      "declared_filename": "NN_K00_PS_AGR.ifc",
+      "bytes": 90618,
+      "sha256": "a265d47639dd72e810d888a2ec7326a7cd1303aaeda3637ae947ba6bb9813c18",
+      "ifc_rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "ifc_shape_clean": false,
+      "tep_reused_official_example": true,
+      "tep_rule_ids": [],
+      "rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "exchange_clean": false,
+      "id": "ps",
+      "role": "project_situation",
+      "filename_fields": 4
+    },
+    {
+      "declared_filename": "NN_K00_BIO_AGR.ifc",
+      "bytes": 525747,
+      "sha256": "5d4edda2d939c60e154c28e52d98e382c3eba533cd9b42cdaf3247609113ad35",
+      "ifc_rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "ifc_shape_clean": false,
+      "tep_reused_official_example": true,
+      "tep_rule_ids": [],
+      "rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "exchange_clean": false,
+      "id": "bio",
+      "role": "landscaping",
+      "filename_fields": 4
+    },
+    {
+      "declared_filename": "NN_K01_S00_AR_AGR.ifc",
+      "bytes": 2663953,
+      "sha256": "c77ca0c7433165810703aeaf5979120b088e04d45e24cc47ce8a034ff54b9803",
+      "ifc_rule_ids": [],
+      "ifc_shape_clean": true,
+      "tep_reused_official_example": true,
+      "tep_rule_ids": [],
+      "rule_ids": [],
+      "exchange_clean": true,
+      "id": "ar_s00",
+      "role": "basement_ar",
+      "filename_fields": 5
+    },
+    {
+      "declared_filename": "NN_K01_S01_AR_AGR.ifc",
+      "bytes": 50768979,
+      "sha256": "bc9101d42b8a826c7a5846ea6c27e9e79f4f67f218adf5c9e3d655b2b40f3220",
+      "ifc_rule_ids": [],
+      "ifc_shape_clean": true,
+      "tep_reused_official_example": true,
+      "tep_rule_ids": [],
+      "rule_ids": [],
+      "exchange_clean": true,
+      "id": "ar_s01",
+      "role": "section_1_ar",
+      "filename_fields": 5
+    },
+    {
+      "declared_filename": "NN_K01_S02_AR_AGR.ifc",
+      "bytes": 27913226,
+      "sha256": "557baa9ba9d2501e52b9f3c2cdc75514b6f22ff36985131801bcb9fe756d0c90",
+      "ifc_rule_ids": [],
+      "ifc_shape_clean": true,
+      "tep_reused_official_example": true,
+      "tep_rule_ids": [],
+      "rule_ids": [],
+      "exchange_clean": true,
+      "id": "ar_s02",
+      "role": "section_2_ar",
+      "filename_fields": 5
+    }
+  ],
+  "ids": [
+    {
+      "id": "ps",
+      "ifc": "NN_K00_PS_AGR.ifc",
+      "ids_names": [
+        "АГР_ЦИМ ПС.ids"
+      ],
+      "summary": {
+        "ids_file_count": 1,
+        "specification_count": 1,
+        "executable": 1,
+        "executable_pass_on_fixture": 1,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0,
+        "unknown_or_skipped": 0,
+        "by_domain": {
+          "pack": {
+            "files": 1,
+            "specifications": 1,
+            "executable_pass_on_fixture": 1,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          }
+        },
+        "by_kind": {
+          "attributes": {
+            "files": 0,
+            "specifications": 0,
+            "executable_pass_on_fixture": 0,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          },
+          "classification": {
+            "files": 0,
+            "specifications": 0,
+            "executable_pass_on_fixture": 0,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          },
+          "other": {
+            "files": 1,
+            "specifications": 1,
+            "executable_pass_on_fixture": 1,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "bio",
+      "ifc": "NN_K00_BIO_AGR.ifc",
+      "ids_names": [
+        "АГР_ЦИМ БиО v8.ids"
+      ],
+      "summary": {
+        "ids_file_count": 1,
+        "specification_count": 1,
+        "executable": 1,
+        "executable_pass_on_fixture": 1,
+        "executable_fail_on_fixture": 0,
+        "unsupported": 0,
+        "load_error": 0,
+        "unknown_or_skipped": 0,
+        "by_domain": {
+          "pack": {
+            "files": 1,
+            "specifications": 1,
+            "executable_pass_on_fixture": 1,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          }
+        },
+        "by_kind": {
+          "attributes": {
+            "files": 0,
+            "specifications": 0,
+            "executable_pass_on_fixture": 0,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          },
+          "classification": {
+            "files": 0,
+            "specifications": 0,
+            "executable_pass_on_fixture": 0,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          },
+          "other": {
+            "files": 1,
+            "specifications": 1,
+            "executable_pass_on_fixture": 1,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "ar_s00",
+      "ifc": "NN_K01_S00_AR_AGR.ifc",
+      "ids_names": [
+        "АГР_Общие требования v9.ids",
+        "Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids"
+      ],
+      "summary": {
+        "ids_file_count": 2,
+        "specification_count": 100,
+        "executable": 100,
+        "executable_pass_on_fixture": 99,
+        "executable_fail_on_fixture": 1,
+        "unsupported": 0,
+        "load_error": 0,
+        "unknown_or_skipped": 0,
+        "by_domain": {
+          "pack": {
+            "files": 2,
+            "specifications": 100,
+            "executable_pass_on_fixture": 99,
+            "executable_fail_on_fixture": 1,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          }
+        },
+        "by_kind": {
+          "attributes": {
+            "files": 1,
+            "specifications": 14,
+            "executable_pass_on_fixture": 14,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          },
+          "classification": {
+            "files": 1,
+            "specifications": 86,
+            "executable_pass_on_fixture": 85,
+            "executable_fail_on_fixture": 1,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          },
+          "other": {
+            "files": 0,
+            "specifications": 0,
+            "executable_pass_on_fixture": 0,
+            "executable_fail_on_fixture": 0,
+            "unsupported": 0,
+            "load_error": 0,
+            "unknown_or_skipped": 0
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "ifc_count": 5,
+    "exchange_clean_count": 3,
+    "ids_runs": 3
+  },
+  "content_sha256": "6541005a4acbe1b0096f5d87ab9ec3c43ea0db67ba607d262667b604d20d880e"
+}
