@@ -241,9 +241,7 @@ class SpbCgeProfileDeterminismTests(unittest.TestCase):
         self.assertIn("xsd_sha256", str(ctx.exception))
 
     def test_coverage_json_has_no_host_checkout_paths(self) -> None:
-        coverage_path = (
-            REPO_ROOT / "docs" / "evidence" / "norm-pack-spbexp-coverage-2026-08.json"
-        )
+        coverage_path = REPO_ROOT / "docs" / "evidence" / "norm-pack-spbexp-coverage-2026-08.json"
         text = coverage_path.read_text(encoding="utf-8")
         self.assertNotIn("C:/plans", text)
         self.assertNotIn("Windows-11-", text)
@@ -268,9 +266,7 @@ class SpbCgeProfileDeterminismTests(unittest.TestCase):
         self.assertTrue(all(path.startswith(prefix) for path in oks_paths))
 
     def test_source_md_states_hash_policy_and_publisher_rights(self) -> None:
-        text = (REPO_ROOT / "samples" / "ids" / "spbexp" / "SOURCE.md").read_text(
-            encoding="utf-8"
-        )
+        text = (REPO_ROOT / "samples" / "ids" / "spbexp" / "SOURCE.md").read_text(encoding="utf-8")
         self.assertIn("MIT license applies only to AeroBIM code", text)
         self.assertIn("raw bytes", text)
         self.assertIn("CRLF→LF", text)

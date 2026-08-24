@@ -334,9 +334,7 @@ def _assert_repo_relative_evidence(payload: dict[str, Any]) -> None:
                     f"published evidence contains a host path marker ({marker!r})"
                 )
         if len(text) >= 3 and text[0].isalpha() and text[1:3] in (":/", ":\\"):
-            raise OfficialIdsProfileError(
-                f"published evidence contains an absolute path: {text}"
-            )
+            raise OfficialIdsProfileError(f"published evidence contains an absolute path: {text}")
 
 
 def _require_repo_file(root: Path, rel: object, *, what: str) -> Path:
@@ -369,9 +367,7 @@ def verify_committed_evidence(
     try:
         committed = json.loads(evidence_path.read_text(encoding="utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise OfficialIdsProfileError(
-            f"committed evidence is not valid UTF-8 JSON: {exc}"
-        ) from exc
+        raise OfficialIdsProfileError(f"committed evidence is not valid UTF-8 JSON: {exc}") from exc
     if not isinstance(committed, dict):
         raise OfficialIdsProfileError("committed evidence is not an object")
 
@@ -389,7 +385,9 @@ def verify_committed_evidence(
         )
 
     xsd_meta = committed.get("ids_xsd") if isinstance(committed.get("ids_xsd"), dict) else {}
-    xsd_path = _require_repo_file(root, xsd_meta.get("path"), what="committed evidence ids_xsd.path")
+    xsd_path = _require_repo_file(
+        root, xsd_meta.get("path"), what="committed evidence ids_xsd.path"
+    )
     if xsd_meta.get("xsd_sha256") != _sha256_file(xsd_path):
         raise OfficialIdsProfileError(
             "committed evidence ids_xsd.xsd_sha256 does not match the sitting XSD"
@@ -461,7 +459,9 @@ def verify_committed_evidence(
             raise OfficialIdsProfileError(
                 "committed evidence ids_xsd.xsd_sha256 does not match the live validation payload"
             )
-        live_probe = live.get("fixture_probe") if isinstance(live.get("fixture_probe"), dict) else {}
+        live_probe = (
+            live.get("fixture_probe") if isinstance(live.get("fixture_probe"), dict) else {}
+        )
         committed_probe = probe_meta
         for key in ("signature_sha256", "issues_per_run", "identical"):
             if committed_probe.get(key) != live_probe.get(key):
