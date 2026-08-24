@@ -39,11 +39,18 @@ The OKS zip on the publisher page is `Trebovaniya-k-TSIM-OKS-_V.3.1.0.zip` (ОК
 
 Do not add 195+161 and expect 1543. Same 22 files, different geometry. Neither number is CIM compliance or an expertise conclusion. Host checkout paths were stripped from the 14.08 JSON; the specification counts were not re-run.
 
+IfcTester is the execution engine for both counters. That is **not** the buildingSMART IDS-Audit-tool binary (document audit of the 22 files is `docs/evidence/ids-audit-2026-08.json`).
+
+## Live re-fetch (2026-08-24)
+
+HTTP GET of both publisher zip URLs on 2026-08-24: SHA-256 and byte sizes match the table above (OKS `8ea565d4…dea7` / 116839; RII `a9a7956c…a77b` / 16408). The publisher page still lists those zips. The page HTML also mentions linear-object CIM; that subject stays **out of pack**. Vendored `pack/` bytes are unchanged.
+
 ## Not in this pack
 
 - PDF textual requirements (archive on the same page).
 - Topographic-sign IFC library zip.
 - SPb typical-remark HTML catalogs (already cited for Exp B; not IDS).
+- **ЦИМ ЛО** (linear-object CIM). Separate CGE subject; not in the 17 OKS + 5 RII files.
 
 ## Regenerate coverage
 

@@ -14,13 +14,34 @@
     "commit_sha": "c0951f3"
   },
   "checks": [
-    {"check": "RT-CC-H01 install script host port-publish removed", "result": "REMEDIATED"},
-    {"check": "RT-CC-H02 demo token gate", "result": "REMEDIATED"},
-    {"check": "RT-CC-H03 smoke egress+auth probes", "result": "REMEDIATED"},
-    {"check": "RT-CC-H10 install full probe parity", "result": "REMEDIATED"},
-    {"check": "RT-CC-H11 bundle/backend drift detection", "result": "REMEDIATED"},
-    {"check": "offline_bundle closed-contour --smoke", "result": "PASS probes OK"},
-    {"check": "test_offline_bundle_manifest", "result": "PASS 13/13"}
+    {
+      "check": "RT-CC-H01 install script host port-publish removed",
+      "result": "REMEDIATED"
+    },
+    {
+      "check": "RT-CC-H02 demo token gate",
+      "result": "REMEDIATED"
+    },
+    {
+      "check": "RT-CC-H03 smoke egress+auth probes",
+      "result": "REMEDIATED"
+    },
+    {
+      "check": "RT-CC-H10 install full probe parity",
+      "result": "REMEDIATED"
+    },
+    {
+      "check": "RT-CC-H11 bundle/backend drift detection",
+      "result": "REMEDIATED"
+    },
+    {
+      "check": "offline_bundle closed-contour --smoke",
+      "result": "PASS probes OK"
+    },
+    {
+      "check": "test_offline_bundle_manifest",
+      "result": "PASS 13/13"
+    }
   ],
   "operator_docs": "docs/offline-deployment-2026.md",
   "hyperdeep_report": "docs/offline-deployment-2026.md",

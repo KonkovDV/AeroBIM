@@ -13,9 +13,17 @@
   "verify_command": "cd backend && python -m aerobim.tools.verify_kt2_handoff",
   "verify_artifact": "docs/evidence/kt2-handoff-2026-08-11/VERIFY.json",
   "components": {
-    "wall_guid_bundle": {"path": "docs/evidence/kt2-handoff-2026-08-11/wall-guid", "verification": "passed"},
-    "vertical_slice": {"path": "docs/evidence/kt2-handoff-2026-08-11/vertical-slice"},
-    "harness_dryrun": {"path": "docs/evidence/kt2-handoff-2026-08-11/harness-dryrun", "publishable": false},
+    "wall_guid_bundle": {
+      "path": "docs/evidence/kt2-handoff-2026-08-11/wall-guid",
+      "verification": "passed"
+    },
+    "vertical_slice": {
+      "path": "docs/evidence/kt2-handoff-2026-08-11/vertical-slice"
+    },
+    "harness_dryrun": {
+      "path": "docs/evidence/kt2-handoff-2026-08-11/harness-dryrun",
+      "publishable": false
+    },
     "clash_measurement": {
       "path": "docs/evidence/clash-measurement-slice-2026-08",
       "status": "fixture_measured",
@@ -26,7 +34,10 @@
     "drawing_overlay": {
       "path": "docs/evidence/drawing-overlay-smoke-2026-08",
       "status": "fixture_rendered",
-      "zones": ["wall_thickness", "sheet_header"]
+      "zones": [
+        "wall_thickness",
+        "sheet_header"
+      ]
     },
     "bcf_t1": {
       "path": "docs/evidence/kt2-handoff-2026-08-11/bcf-t1",

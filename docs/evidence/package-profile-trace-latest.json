@@ -3,7 +3,7 @@
   "artifact_type": "aerobim_package_profile_trace",
   "schema_version": "1.0.0",
   "pack_id": "project-package-baseline",
-  "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-baseline.json",
+  "pack_path": "samples/benchmarks/project-package-baseline.json",
   "request_id": "profile-project-package-baseline",
   "analyze_total_ms": 503.997,
   "summary_passed": false,

@@ -43,6 +43,6 @@
     "pack_id": "project-package-pilot-moscow-v1",
     "pack_version": "1.0.0",
     "description": "Pilot Moscow package: fire-safety + structure checks over a single IFC fixture with IDS, narrative RU requirements, calculation text, and drawing evidence.",
-    "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+    "storage_dir": "backend/var/reports"
   }
 }

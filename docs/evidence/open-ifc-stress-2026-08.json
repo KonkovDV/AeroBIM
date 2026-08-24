@@ -3043,7 +3043,7 @@
   ],
   "extra": [
     {
-      "dir": "C:\\plans\\AeroBIM\\.local\\bim-whale-ifc-samples",
+      "dir": ".local/bim-whale-ifc-samples",
       "status": "RUN",
       "file_count": 6,
       "open_ok": 6,
@@ -3129,5 +3129,5 @@
       ]
     }
   ],
-  "content_sha256": "1682899c2eed89810708cd0999d5a98b5b4a7ecfaaf46c3f241fabafc2c5c746"
+  "content_sha256": "e0b6e7858f0d8e650b8f0f9713c2b33b118a13ab11d66ea2c3d4c4a3a0211462"
 }

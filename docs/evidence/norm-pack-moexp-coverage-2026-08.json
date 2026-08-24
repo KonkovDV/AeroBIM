@@ -14,9 +14,9 @@
     "machine": "AMD64",
     "system": "Windows"
   },
-  "pack_dir": "C:/plans/AeroBIM/samples/ids/moexp/pack",
+  "pack_dir": "samples/ids/moexp/pack",
   "fixture_ifc": {
-    "path": "C:/plans/AeroBIM/samples/ifc/wall-pset-qto-pass.ifc",
+    "path": "samples/ifc/wall-pset-qto-pass.ifc",
     "sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
     "bytes": 997,
     "note": "Open wall Pset fixture. Not a MOEXP CIM. Fail on fixture ≠ unsupported spec."
@@ -166,7 +166,7 @@
   "files": [
     {
       "domain": "ad-uds",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/ad-uds/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АД_и_УДС_v3.3.ids",
+      "path": "samples/ids/moexp/pack/ad-uds/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АД_и_УДС_v3.3.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АД_и_УДС_v3.3.ids",
       "sha256": "1b09ac34c5791cd966b9b253f64a3fe2d083c2aad531f49ab6b8f0380911b6a9",
       "bytes": 79265,
@@ -229,7 +229,7 @@
     },
     {
       "domain": "ad-uds",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/ad-uds/IDS_v1.1_Требования_МОГЭ_к_ЦИМ_АД_и_УДС_v3.3.ids",
+      "path": "samples/ids/moexp/pack/ad-uds/IDS_v1.1_Требования_МОГЭ_к_ЦИМ_АД_и_УДС_v3.3.ids",
       "file_name": "IDS_v1.1_Требования_МОГЭ_к_ЦИМ_АД_и_УДС_v3.3.ids",
       "sha256": "de65d4720bba40fe46524d1f01c3ad2e402429ff701d7246401d7b5c17c81a80",
       "bytes": 236765,
@@ -294,7 +294,7 @@
     },
     {
       "domain": "nis",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/nis/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_НИС_v3.3.ids",
+      "path": "samples/ids/moexp/pack/nis/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_НИС_v3.3.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_НИС_v3.3.ids",
       "sha256": "e3546833a892b0e41803d1ac397104e0f635467064008cd72341f456d94661fd",
       "bytes": 65553,
@@ -354,7 +354,7 @@
     },
     {
       "domain": "nis",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/nis/IDS_v1.1_Требования_МОГЭ_к_ЦИМ_НИС_v3.3.ids",
+      "path": "samples/ids/moexp/pack/nis/IDS_v1.1_Требования_МОГЭ_к_ЦИМ_НИС_v3.3.ids",
       "file_name": "IDS_v1.1_Требования_МОГЭ_к_ЦИМ_НИС_v3.3.ids",
       "sha256": "3234cdb9c7b2e1b1aa650a442b056b41a71f443a5693afb097662146eaf56226",
       "bytes": 339894,
@@ -431,7 +431,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids",
       "sha256": "ca920b776b24d7f6a5f21fa686de947b17805ba8f4d2daa97109003074d0c8fe",
       "bytes": 154560,
@@ -474,7 +474,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ВК_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ВК_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ВК_v3.2.ids",
       "sha256": "b8601cda2414b490ab28ba98a47a0040dc5e4ce2f094e8531654c9c16a786bd5",
       "bytes": 43653,
@@ -505,7 +505,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ГС_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ГС_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ГС_v3.2.ids",
       "sha256": "cf04a6e6612c57e57241cadf8d6406aa62a0d94ebc3040c5566922f2dab6d075",
       "bytes": 30065,
@@ -534,7 +534,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ИТП_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ИТП_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ИТП_v3.2.ids",
       "sha256": "461b06c710f6dd926c4f73e07c036e9378b05c2cc033783b7b73779bb34ab9d7",
       "bytes": 12357,
@@ -558,7 +558,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ОВиК_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ОВиК_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ОВиК_v3.2.ids",
       "sha256": "43dcfbef0a38a5cbd6c8b9f40edf6f6753b005233c879620a04817a748dcbe6b",
       "bytes": 62721,
@@ -592,7 +592,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_СС_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_СС_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_СС_v3.2.ids",
       "sha256": "324fc36982c1a63b63d1bc363d14d13dce38db10b47137e3b6121ab64f4b29ca",
       "bytes": 14966,
@@ -618,7 +618,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ЭС_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ЭС_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ИОС_ЭС_v3.2.ids",
       "sha256": "cf90c830caf0831e168c05eafe735b2c6c9039cc2fbb26338e8c62ad55e84982",
       "bytes": 24593,
@@ -646,7 +646,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_КР_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_КР_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_КР_v3.2.ids",
       "sha256": "fa9b8724f5e5df48025b23289618febb1bf80ccd570ebb24886b03a667b8286f",
       "bytes": 92375,
@@ -682,7 +682,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ПЗУ_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ПЗУ_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ПЗУ_v3.2.ids",
       "sha256": "45370ee454f8e14212fab743b21280d119698961b8148497a2e9707a758ac2a3",
       "bytes": 216355,
@@ -745,7 +745,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ТХ_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ТХ_v3.2.ids",
       "file_name": "IDS_v1.0_Требования_МОГЭ_к_ЦИМ_ТХ_v3.2.ids",
       "sha256": "4686dbb24331d8da7a2e2c6e71bb606ed0c02c67fce8a52869298da9f85f460d",
       "bytes": 18506,
@@ -771,7 +771,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АР_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АР_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_АР_v3.2.ids",
       "sha256": "e0781f1e7fcafea71164c727742b20c7a81c4ed9039269f8bf18cd6deaa23447",
       "bytes": 30428,
@@ -814,7 +814,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ВК_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ВК_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ВК_v3.2.ids",
       "sha256": "644d070aeddce8112b1625480ef04d50ca4df9b44b375e1bb5481fbc58d86303",
       "bytes": 13236,
@@ -845,7 +845,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ГС_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ГС_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ГС_v3.2.ids",
       "sha256": "3885c98706d75238af4c5a60102844920e2d491ebf294d833fb1a8c731990650",
       "bytes": 8846,
@@ -873,7 +873,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ИТП_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ИТП_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ИТП_v3.2.ids",
       "sha256": "bab6c0d40a3642ea1f0d05c13a70015b0ba5c858d90e4c0f23bc05811df24049",
       "bytes": 2462,
@@ -897,7 +897,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ОВиК_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ОВиК_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ОВиК_v3.2.ids",
       "sha256": "a118bef110769c3ed0d0f277d9836dac4065d46634765ed2e254009fe7e0f360",
       "bytes": 17778,
@@ -931,7 +931,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_СС_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_СС_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_СС_v3.2.ids",
       "sha256": "60ca61b269680fa053c2af285744686c317971c683400f7f083ebdd1670da370",
       "bytes": 5737,
@@ -957,7 +957,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ЭС_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ЭС_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ИОС_ЭС_v3.2.ids",
       "sha256": "2d499ba2232d13b278fb03aadb0002581903bc88863ddeb4afbbd5e5183e790d",
       "bytes": 9227,
@@ -985,7 +985,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_КР_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_КР_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_КР_v3.2.ids",
       "sha256": "6083a82aee3a4a417e8bf625a55c294af94e8f8f51d32c4d83d9ae728fecb02d",
       "bytes": 20605,
@@ -1021,7 +1021,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ПЗУ_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ПЗУ_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ПЗУ_v3.2.ids",
       "sha256": "cbb80e63843209d28f9af7e9583a0eb1022504ae395093157b9039e1f8426eb9",
       "bytes": 62603,
@@ -1082,7 +1082,7 @@
     },
     {
       "domain": "oks",
-      "path": "C:/plans/AeroBIM/samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ТХ_v3.2.ids",
+      "path": "samples/ids/moexp/pack/oks/IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ТХ_v3.2.ids",
       "file_name": "IDS_v1.1_Проверка_КСИ_элементов_ЦИМ_МОГЭ_ТХ_v3.2.ids",
       "sha256": "6aea83edd4c3f496e2e44486b5878dc1f7a6dedaeb5b1e10cbaeb2f09d67158c",
       "bytes": 4303,
@@ -1106,5 +1106,5 @@
       "kind": "classification"
     }
   ],
-  "content_sha256": "6c00afc4d68a4c5152de45f6bb81c21b905608cbd6444e9d975c4700e91abb05"
+  "content_sha256": "becfd9f20ef492f56b6a810eb87c0123b0b057cd51b72973d6bb91a504a445c5"
 }

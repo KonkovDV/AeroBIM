@@ -16,7 +16,7 @@
         "width": 150.0,
         "height": 14.0
       },
-      "source_pdf": "C:/plans/AeroBIM/samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+      "source_pdf": "samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
       "rendered_at": "2026-08-12T13:41:11.996285+00:00",
       "claim_boundary": "Deterministic bbox overlay on rasterized PDF page; not CV; not stamp product detection; illustration evidence for TZ drawing overlay."
     },
@@ -30,7 +30,7 @@
         "width": 220.0,
         "height": 28.0
       },
-      "source_pdf": "C:/plans/AeroBIM/samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
+      "source_pdf": "samples/demo/vertical-slice-2026-08-11/techlab-a101-wall-thickness.pdf",
       "rendered_at": "2026-08-12T13:41:12.012024+00:00",
       "claim_boundary": "Deterministic bbox overlay on rasterized PDF page; not CV; not stamp product detection; illustration evidence for TZ drawing overlay."
     }

@@ -264,7 +264,7 @@ def main(argv: list[str] | None = None) -> int:
 
     ved_issues = collect_agr_vedomost_xsd_issues(xml_path=ved_xml, xsd_path=ved_xsd)
     exchange_clean = [row for row in ifc_rows if row.get("exchange_clean")]
-    payload: dict[str, Any] = {
+    payload = {
         "schema_version": "1.0.0",
         "artifact_type": "moscow_agr_city_examples",
         "claim_level": CLAIM_LEVEL,

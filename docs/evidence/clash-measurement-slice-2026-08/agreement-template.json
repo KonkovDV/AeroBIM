@@ -6,7 +6,10 @@
   "adjudicator_a": "eng-a",
   "adjudicator_b": "eng-b",
   "adjudicator_count": 2,
-  "adjudicators": ["eng-a", "eng-b"],
+  "adjudicators": [
+    "eng-a",
+    "eng-b"
+  ],
   "paired_items": 4,
   "alpha_units": 4,
   "cohens_kappa": 0.75,

@@ -7,11 +7,17 @@
     "method": "dual_independent",
     "completed_at": "REPLACE-ISO8601-WITH-TZ",
     "adjudicators": [
-      { "id": "eng-a", "role": "discipline engineer" },
-      { "id": "eng-b", "role": "independent adjudicator" }
+      {
+        "id": "eng-a",
+        "role": "discipline engineer"
+      },
+      {
+        "id": "eng-b",
+        "role": "independent adjudicator"
+      }
     ]
   },
-    "protocol_notes": [
+  "protocol_notes": [
     "Promote dataset_status to adjudicated only after κ≥0.60 agreement artifact",
     "Set held_out_split=true (or evaluation_split=held_out) before any publishable claim",
     "Split finding_class clash vs non-clash; set case.discipline (ar|ov|kzh|…)",

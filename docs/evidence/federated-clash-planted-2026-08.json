@@ -39,5 +39,5 @@
       "note": "Planted IfcPipeSegment vs IfcWall. Geometric intersection rehearsal, not MEP system-aware clash and not a signed clearance matrix."
     }
   ],
-  "content_sha256": "5ff1ecc6fe9e0b9df96a8650e9fdb9f8b0efca91939e1f3d16f994b5245dca9c"
+  "content_sha256": "e4db36d0e6cb2f3122e67f6f3e07af8e16ceeb7a5df055ed41fa8617da0e5b77"
 }

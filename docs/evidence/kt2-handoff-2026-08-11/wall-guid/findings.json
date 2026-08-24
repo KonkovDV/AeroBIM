@@ -27,7 +27,7 @@
     },
     "conflict_kind": null,
     "priority": 30,
-    "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+    "source_id": "samples/requirements/techlab-demo-rules.txt",
     "evidence_modality": null,
     "confidence": 1.0,
     "norm_source": null,
@@ -42,7 +42,7 @@
     ],
     "finding_id": "c489103760fb35e5efe0caeb22c7d4f7",
     "evidence_refs": [
-      "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt"
+      "samples/requirements/techlab-demo-rules.txt"
     ],
     "tenant_id": null,
     "project_id": "Wall GUID Demo",
@@ -77,7 +77,7 @@
     },
     "conflict_kind": null,
     "priority": 30,
-    "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+    "source_id": "samples/requirements/techlab-demo-rules.txt",
     "evidence_modality": null,
     "confidence": 1.0,
     "norm_source": null,
@@ -92,7 +92,7 @@
     ],
     "finding_id": "16979a6e6129d8ef416ad1216b464f97",
     "evidence_refs": [
-      "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt"
+      "samples/requirements/techlab-demo-rules.txt"
     ],
     "tenant_id": null,
     "project_id": "Wall GUID Demo",
@@ -127,7 +127,7 @@
     },
     "conflict_kind": null,
     "priority": 30,
-    "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+    "source_id": "samples/requirements/techlab-demo-rules.txt",
     "evidence_modality": null,
     "confidence": 0.95,
     "norm_source": null,
@@ -142,7 +142,7 @@
     ],
     "finding_id": "4c5d09b9cbff04568ba3f1b7174ea99d",
     "evidence_refs": [
-      "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt"
+      "samples/requirements/techlab-demo-rules.txt"
     ],
     "tenant_id": null,
     "project_id": "Wall GUID Demo",
@@ -177,7 +177,7 @@
     },
     "conflict_kind": null,
     "priority": 30,
-    "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+    "source_id": "samples/requirements/techlab-demo-rules.txt",
     "evidence_modality": null,
     "confidence": 0.95,
     "norm_source": null,
@@ -192,7 +192,7 @@
     ],
     "finding_id": "e451fb2984ac50f979143b6b4ffc1a89",
     "evidence_refs": [
-      "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt"
+      "samples/requirements/techlab-demo-rules.txt"
     ],
     "tenant_id": null,
     "project_id": "Wall GUID Demo",
@@ -227,7 +227,7 @@
     },
     "conflict_kind": null,
     "priority": 30,
-    "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+    "source_id": "samples/requirements/techlab-demo-rules.txt",
     "evidence_modality": null,
     "confidence": 1.0,
     "norm_source": null,
@@ -242,7 +242,7 @@
     ],
     "finding_id": "fe4f028b00fa9ba938409a1421846913",
     "evidence_refs": [
-      "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt"
+      "samples/requirements/techlab-demo-rules.txt"
     ],
     "tenant_id": null,
     "project_id": "Wall GUID Demo",
@@ -323,7 +323,7 @@
     },
     "conflict_kind": null,
     "priority": 20,
-    "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+    "source_id": "samples/requirements/techlab-demo-rules.txt",
     "evidence_modality": null,
     "confidence": null,
     "norm_source": null,
@@ -334,7 +334,7 @@
     "rase_elements": [],
     "finding_id": "7f6348647d2c54e2a8dfe3e025321ef9",
     "evidence_refs": [
-      "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt"
+      "samples/requirements/techlab-demo-rules.txt"
     ],
     "tenant_id": null,
     "project_id": "Wall GUID Demo",
@@ -369,7 +369,7 @@
     },
     "conflict_kind": null,
     "priority": 20,
-    "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+    "source_id": "samples/requirements/techlab-demo-rules.txt",
     "evidence_modality": null,
     "confidence": null,
     "norm_source": null,
@@ -380,7 +380,7 @@
     "rase_elements": [],
     "finding_id": "ef86770d957680fe18379b8d62afc9b5",
     "evidence_refs": [
-      "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt"
+      "samples/requirements/techlab-demo-rules.txt"
     ],
     "tenant_id": null,
     "project_id": "Wall GUID Demo",

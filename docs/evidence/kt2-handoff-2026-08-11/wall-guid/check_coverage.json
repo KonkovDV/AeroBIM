@@ -54,7 +54,7 @@
     ],
     "sources": [
       {
-        "source_id": "C:\\plans\\AeroBIM\\samples\\requirements\\techlab-demo-rules.txt",
+        "source_id": "samples/requirements/techlab-demo-rules.txt",
         "families": {
           "ifc-validation": "checked_findings",
           "ids-validation": "not_checked",

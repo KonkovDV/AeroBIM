@@ -9,7 +9,7 @@
   },
   "extraction_quality": {
     "artifact_type": "extraction_quality_report",
-    "manifest": "C:\\plans\\AeroBIM\\samples\\benchmarks\\russian-aec-ground-truth.json",
+    "manifest": "samples/benchmarks/russian-aec-ground-truth.json",
     "macro_precision": 0.86,
     "macro_recall": 0.86,
     "macro_f1": 0.8600000000000001,

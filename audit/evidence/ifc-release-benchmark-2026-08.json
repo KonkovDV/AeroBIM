@@ -247,14 +247,14 @@
         "description": "IFC2x3 wall Pset/BaseQuantities schema-suite fixture (claim_level=fixture_only).",
         "ifc_schema": "IFC2X3",
         "corpus_kind": "fixture",
-        "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json"
+        "pack_path": "samples/benchmarks/project-package-ifc2x3-schema.json"
       },
       "pack_id": "project-package-ifc2x3-schema",
       "pack_version": "1.0.0",
       "description": "IFC2x3 wall Pset/BaseQuantities schema-suite fixture (claim_level=fixture_only).",
       "ifc_schema": "IFC2X3",
       "corpus_kind": "fixture",
-      "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json",
+      "pack_path": "samples/benchmarks/project-package-ifc2x3-schema.json",
       "ifc_sha256": "a68a0dc02084ddb378d4b227db6e2129b57a1df48d0f0e0ee019a3d487c69f91",
       "ifc_bytes": 975,
       "ifc_entity_count": 12,
@@ -271,7 +271,7 @@
         "machine": "AMD64",
         "system": "Windows"
       },
-      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+      "storage_dir": "backend/var/reports"
     },
     {
       "iterations": 20,
@@ -504,14 +504,14 @@
         "description": "IFC4 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
         "ifc_schema": "IFC4",
         "corpus_kind": "fixture",
-        "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json"
+        "pack_path": "samples/benchmarks/project-package-ifc4-schema.json"
       },
       "pack_id": "project-package-ifc4-schema",
       "pack_version": "1.0.0",
       "description": "IFC4 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
       "ifc_schema": "IFC4",
       "corpus_kind": "fixture",
-      "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json",
+      "pack_path": "samples/benchmarks/project-package-ifc4-schema.json",
       "ifc_sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
       "ifc_bytes": 997,
       "ifc_entity_count": 12,
@@ -528,7 +528,7 @@
         "machine": "AMD64",
         "system": "Windows"
       },
-      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+      "storage_dir": "backend/var/reports"
     },
     {
       "iterations": 20,
@@ -761,14 +761,14 @@
         "description": "IFC4x3 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
         "ifc_schema": "IFC4X3",
         "corpus_kind": "fixture",
-        "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json"
+        "pack_path": "samples/benchmarks/project-package-ifc4x3-schema.json"
       },
       "pack_id": "project-package-ifc4x3-schema",
       "pack_version": "1.0.0",
       "description": "IFC4x3 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
       "ifc_schema": "IFC4X3",
       "corpus_kind": "fixture",
-      "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json",
+      "pack_path": "samples/benchmarks/project-package-ifc4x3-schema.json",
       "ifc_sha256": "4ba0bdbe02db391b71c14978a2de10042dbf14c79ae7c048a7013ef2d753f07a",
       "ifc_bytes": 1005,
       "ifc_entity_count": 12,
@@ -785,7 +785,7 @@
         "machine": "AMD64",
         "system": "Windows"
       },
-      "storage_dir": "C:\\plans\\AeroBIM\\backend\\var\\reports"
+      "storage_dir": "backend/var/reports"
     }
   ],
   "grouped": {
@@ -794,7 +794,7 @@
       "IFC2X3": {
         "pack_count": 1,
         "pack_paths": [
-          "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json"
+          "samples/benchmarks/project-package-ifc2x3-schema.json"
         ],
         "ifc_sha256": [
           "a68a0dc02084ddb378d4b227db6e2129b57a1df48d0f0e0ee019a3d487c69f91"
@@ -840,7 +840,7 @@
         "packs": [
           {
             "pack_id": "project-package-ifc2x3-schema",
-            "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc2x3-schema.json",
+            "pack_path": "samples/benchmarks/project-package-ifc2x3-schema.json",
             "ifc_sha256": "a68a0dc02084ddb378d4b227db6e2129b57a1df48d0f0e0ee019a3d487c69f91",
             "summary": {
               "min_ms": 40.434,
@@ -862,7 +862,7 @@
       "IFC4": {
         "pack_count": 1,
         "pack_paths": [
-          "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json"
+          "samples/benchmarks/project-package-ifc4-schema.json"
         ],
         "ifc_sha256": [
           "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d"
@@ -908,7 +908,7 @@
         "packs": [
           {
             "pack_id": "project-package-ifc4-schema",
-            "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4-schema.json",
+            "pack_path": "samples/benchmarks/project-package-ifc4-schema.json",
             "ifc_sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
             "summary": {
               "min_ms": 39.603,
@@ -930,7 +930,7 @@
       "IFC4X3": {
         "pack_count": 1,
         "pack_paths": [
-          "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json"
+          "samples/benchmarks/project-package-ifc4x3-schema.json"
         ],
         "ifc_sha256": [
           "4ba0bdbe02db391b71c14978a2de10042dbf14c79ae7c048a7013ef2d753f07a"
@@ -976,7 +976,7 @@
         "packs": [
           {
             "pack_id": "project-package-ifc4x3-schema",
-            "pack_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-ifc4x3-schema.json",
+            "pack_path": "samples/benchmarks/project-package-ifc4x3-schema.json",
             "ifc_sha256": "4ba0bdbe02db391b71c14978a2de10042dbf14c79ae7c048a7013ef2d753f07a",
             "summary": {
               "min_ms": 40.076,

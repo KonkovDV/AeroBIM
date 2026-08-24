@@ -20,7 +20,11 @@
   "verdict_impact": "none (domain-pure; does not touch summary.passed; ADR-001)",
   "class_x_target_matrix": {
     "note": "status with a verified tenant; owner_consent/private_mode_confirmed=false unless noted",
-    "PUBLIC": {"LOCAL": "LOCAL", "PRIVATE": "PRIVATE", "PUBLIC": "PUBLIC_MASKED"},
+    "PUBLIC": {
+      "LOCAL": "LOCAL",
+      "PRIVATE": "PRIVATE",
+      "PUBLIC": "PUBLIC_MASKED"
+    },
     "INTERNAL": {
       "LOCAL": "LOCAL",
       "PRIVATE": "PRIVATE",
@@ -36,7 +40,11 @@
       "PRIVATE": "BLOCKED (PRIVATE only with private_mode_confirmed)",
       "PUBLIC": "BLOCKED"
     },
-    "SECRET": {"LOCAL": "BLOCKED", "PRIVATE": "BLOCKED", "PUBLIC": "BLOCKED"}
+    "SECRET": {
+      "LOCAL": "BLOCKED",
+      "PRIVATE": "BLOCKED",
+      "PUBLIC": "BLOCKED"
+    }
   },
   "fail_closed_defaults": {
     "unknown_tenant": "BLOCKED (no external call)",

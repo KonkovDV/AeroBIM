@@ -36,7 +36,7 @@ A broken, missing, hash-mismatched, or non-IDS-1.0 file **fails the run**. Silen
 | `docs/evidence/norm-pack-spbexp-coverage-2026-08.json` | 2026-08-14 | Specification pass/fail on the wall fixture (195 / 161 of 356). |
 | `docs/evidence/spb-cge-profile-validation-2026-08.json` | 2026-08-24 | Two full-profile IfcTester issue lists (1543 + 1543). One spec can emit many entity-level issues. |
 
-Same 22 files. 195+161 is not 1543. Neither is CIM compliance. Paths in the 14.08 JSON are repo-relative.
+Same 22 files. 195+161 is not 1543. Neither is CIM compliance. Paths in the 14.08 JSON are repo-relative. Engine is IfcTester, not the buildingSMART IDS-Audit-tool binary. **ЦИМ ЛО** is out of pack.
 
 Publisher OKS folder `Требования к ЦИМ ОК _V.3.1.0` is the name inside the publisher zip (ОК, space before `_V`), not an AeroBIM typo. Hashing policy and license: `samples/ids/spbexp/SOURCE.md`.
 

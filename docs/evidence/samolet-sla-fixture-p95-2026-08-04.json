@@ -24,37 +24,37 @@
   "pack_hash": "bb41905c7c1c7c88bcb03fd00d73b0b0b1b60fa401ba6e9402b85f98878f62cc",
   "file_inventory": [
     {
-      "path": "C:/plans/AeroBIM/samples/benchmarks/project-package-pilot-moscow-v1.json",
+      "path": "samples/benchmarks/project-package-pilot-moscow-v1.json",
       "bytes": 1096,
       "sha256": "bb41905c7c1c7c88bcb03fd00d73b0b0b1b60fa401ba6e9402b85f98878f62cc"
     },
     {
-      "path": "C:/plans/AeroBIM/samples/ifc/walls-multi-entity.ifc",
+      "path": "samples/ifc/walls-multi-entity.ifc",
       "bytes": 1142,
       "sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe"
     },
     {
-      "path": "C:/plans/AeroBIM/samples/ids/wall-fire-rating.ids",
+      "path": "samples/ids/wall-fire-rating.ids",
       "bytes": 1304,
       "sha256": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99"
     },
     {
-      "path": "C:/plans/AeroBIM/samples/calculations/techlab-area-calc.txt",
+      "path": "samples/calculations/techlab-area-calc.txt",
       "bytes": 491,
       "sha256": "89039586054ece80924a7ae69c0f0bbdef25d94ebc91f9a89156641854b4ec9a"
     },
     {
-      "path": "C:/plans/AeroBIM/samples/requirements/techlab-fire-safety-rules.txt",
+      "path": "samples/requirements/techlab-fire-safety-rules.txt",
       "bytes": 944,
       "sha256": "e55cd609015b91d33244d0c1fa5166a4f0cc53298520e7ccde7e1334c6d73a5b"
     },
     {
-      "path": "C:/plans/AeroBIM/samples/specifications/techlab-tz.txt",
+      "path": "samples/specifications/techlab-tz.txt",
       "bytes": 643,
       "sha256": "b2e27c58d7e58a341edc3e198dca3cbff5c17da07c97a3c3c99fcfb3d0a74a7d"
     },
     {
-      "path": "C:/plans/AeroBIM/samples/drawings/techlab-annotations.txt",
+      "path": "samples/drawings/techlab-annotations.txt",
       "bytes": 260,
       "sha256": "3b589b5d2e4b08b92aabbf319f4fa9c07869739a24cde40413881ec726d44075"
     }
@@ -104,7 +104,7 @@
     "avg_minutes": null,
     "p95_minutes": null
   },
-  "command": "python -m aerobim.tools.measure_package_sla --pack C:\\plans\\AeroBIM\\samples\\benchmarks\\project-package-pilot-moscow-v1.json --max-minutes 30.0 --iterations 3 --warmup-iterations 0",
+  "command": "python -m aerobim.tools.measure_package_sla --pack samples/benchmarks/project-package-pilot-moscow-v1.json --max-minutes 30.0 --iterations 3 --warmup-iterations 0",
   "corpus_kind": "fixture",
   "claim_level": "fixture_only",
   "allowed_wording": "Fixture wall-clock only; gate=p95; not customer комплект SLA"

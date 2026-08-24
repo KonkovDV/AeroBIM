@@ -9,7 +9,7 @@
   "benchmark": {
     "name": "IFC-Bench-v1",
     "citation": "Hellin et al., EC3 2025 / github.com/sylvainHellin/ifc-bench",
-    "dataset_root": "C:\\plans\\AeroBIM\\.local\\ifc-bench",
+    "dataset_root": ".local/ifc-bench",
     "questions_sha256": "a2e413d44f0f4c8ad174f2bbef154ae151f22eb7b83536bbbdb7a6f5d30e7877",
     "question_count": 105,
     "ifc_files": [
@@ -118,6 +118,6 @@
     }
   ],
   "skipped_count": 98,
-  "output_path": "C:\\plans\\AeroBIM\\artifacts\\open-bench\\ifc-bench-v1-smoke.json",
+  "output_path": "artifacts/open-bench/ifc-bench-v1-smoke.json",
   "output_sha256": "34e736f787e0ac970127c2b3be5bba629eee5c30642156cfa53c2262be2479a7"
 }

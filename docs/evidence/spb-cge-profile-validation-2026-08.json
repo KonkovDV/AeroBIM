@@ -217,5 +217,8 @@
     "signature_sha256": "88f7d6853a3b41a141b50221638e1be3186eaa1ea428a935e29a8926967a8f83",
     "note": "Fail on the wall fixture means the specs executed; it is not a CIM compliance verdict and not an expertise conclusion."
   },
-  "claim_boundary": "Проверка по опубликованному набору правил СПб ГАУ «ЦГЭ», без статуса экспертизы. Не закрывает RT-001/RT-002/RT-003; не подписанный заказчиком профиль приёмки."
+  "claim_boundary": "Проверка по опубликованному набору правил СПб ГАУ «ЦГЭ», без статуса экспертизы. Не закрывает RT-001/RT-002/RT-003; не подписанный заказчиком профиль приёмки.",
+  "engine": "IfcTester",
+  "not_buildingsmart_ids_audit_tool_binary": true,
+  "fixture_probe_is_not_expertise_verdict": true
 }

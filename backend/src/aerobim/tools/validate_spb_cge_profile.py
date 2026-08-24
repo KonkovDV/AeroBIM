@@ -299,6 +299,9 @@ def validate_profile(
             "экспертизы. Не закрывает RT-001/RT-002/RT-003; не подписанный заказчиком "
             "профиль приёмки."
         ),
+        "engine": "IfcTester",
+        "not_buildingsmart_ids_audit_tool_binary": True,
+        "fixture_probe_is_not_expertise_verdict": True,
     }
 
 
@@ -384,7 +387,8 @@ def verify_committed_evidence(
             f"({committed.get('manifest_path')})"
         )
 
-    xsd_meta = committed.get("ids_xsd") if isinstance(committed.get("ids_xsd"), dict) else {}
+    raw_xsd = committed.get("ids_xsd")
+    xsd_meta: dict[str, Any] = raw_xsd if isinstance(raw_xsd, dict) else {}
     xsd_path = _require_repo_file(
         root, xsd_meta.get("path"), what="committed evidence ids_xsd.path"
     )
@@ -393,9 +397,8 @@ def verify_committed_evidence(
             "committed evidence ids_xsd.xsd_sha256 does not match the sitting XSD"
         )
 
-    probe_meta = (
-        committed.get("fixture_probe") if isinstance(committed.get("fixture_probe"), dict) else {}
-    )
+    raw_probe = committed.get("fixture_probe")
+    probe_meta: dict[str, Any] = raw_probe if isinstance(raw_probe, dict) else {}
     _require_repo_file(root, probe_meta.get("ifc"), what="committed evidence fixture_probe.ifc")
 
     profile = load_manifest(manifest_path)
@@ -439,6 +442,16 @@ def verify_committed_evidence(
     ):
         if committed.get(flag) is not False:
             raise OfficialIdsProfileError(f"committed evidence {flag} must be JSON false")
+    if committed.get("engine") != "IfcTester":
+        raise OfficialIdsProfileError("committed evidence engine must be IfcTester")
+    if committed.get("not_buildingsmart_ids_audit_tool_binary") is not True:
+        raise OfficialIdsProfileError(
+            "committed evidence must state it is not the buildingSMART IDS-Audit-tool binary"
+        )
+    if committed.get("fixture_probe_is_not_expertise_verdict") is not True:
+        raise OfficialIdsProfileError(
+            "committed evidence must state the fixture probe is not an expertise verdict"
+        )
 
     if live is not None:
         for key in (
@@ -454,14 +467,14 @@ def verify_committed_evidence(
                 raise OfficialIdsProfileError(
                     f"committed evidence {key} does not match the live validation payload"
                 )
-        live_xsd = live.get("ids_xsd") if isinstance(live.get("ids_xsd"), dict) else {}
+        raw_live_xsd = live.get("ids_xsd")
+        live_xsd: dict[str, Any] = raw_live_xsd if isinstance(raw_live_xsd, dict) else {}
         if xsd_meta.get("xsd_sha256") != live_xsd.get("xsd_sha256"):
             raise OfficialIdsProfileError(
                 "committed evidence ids_xsd.xsd_sha256 does not match the live validation payload"
             )
-        live_probe = (
-            live.get("fixture_probe") if isinstance(live.get("fixture_probe"), dict) else {}
-        )
+        raw_live_probe = live.get("fixture_probe")
+        live_probe: dict[str, Any] = raw_live_probe if isinstance(raw_live_probe, dict) else {}
         committed_probe = probe_meta
         for key in ("signature_sha256", "issues_per_run", "identical"):
             if committed_probe.get(key) != live_probe.get(key):

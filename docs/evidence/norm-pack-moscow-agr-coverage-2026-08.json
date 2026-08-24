@@ -13,9 +13,9 @@
     "machine": "AMD64",
     "system": "Windows"
   },
-  "pack_dir": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack",
+  "pack_dir": "samples/ids/moscow-agr/pack",
   "fixture_ifc": {
-    "path": "C:/plans/AeroBIM/samples/ifc/wall-pset-qto-pass.ifc",
+    "path": "samples/ifc/wall-pset-qto-pass.ifc",
     "sha256": "66e9facfe125770a489124b203bb81c21e4d0702b593347f17bb7aa8e7240d1d",
     "bytes": 997,
     "note": "Open wall Pset fixture. Fail on fixture ≠ unsupported spec."
@@ -68,7 +68,7 @@
   "files": [
     {
       "domain": "pack",
-      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/АГР_Общие требования v9.ids",
+      "path": "samples/ids/moscow-agr/pack/АГР_Общие требования v9.ids",
       "file_name": "АГР_Общие требования v9.ids",
       "kind": "attributes",
       "sha256": "3a495d980bdd94cb5f97833e6615a6eb201fc647ee9e656e5d2d7702e102e9d0",
@@ -93,7 +93,7 @@
     },
     {
       "domain": "pack",
-      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/АГР_ЦИМ БиО v8.ids",
+      "path": "samples/ids/moscow-agr/pack/АГР_ЦИМ БиО v8.ids",
       "file_name": "АГР_ЦИМ БиО v8.ids",
       "kind": "other",
       "sha256": "7aab644c6a935b83343e32c38c8da1b52636899a928324d137417a43603c3d3c",
@@ -115,7 +115,7 @@
     },
     {
       "domain": "pack",
-      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/АГР_ЦИМ ПС.ids",
+      "path": "samples/ids/moscow-agr/pack/АГР_ЦИМ ПС.ids",
       "file_name": "АГР_ЦИМ ПС.ids",
       "kind": "other",
       "sha256": "71b4fd3a44bc11140184dfb8ec283fce0d32ae8710b4e9e83706b14cd95620e6",
@@ -137,7 +137,7 @@
     },
     {
       "domain": "pack",
-      "path": "C:/plans/AeroBIM/samples/ids/moscow-agr/pack/Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids",
+      "path": "samples/ids/moscow-agr/pack/Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids",
       "file_name": "Классификация_элементов_ЦИМ_МССК_5_0_1_1.ids",
       "kind": "classification",
       "sha256": "a7e5f42381fe26057e5b841a569c3869072b3e95bb8858f95a7848e269b4f582",
@@ -163,5 +163,5 @@
   "pack_id": "moscow-agr",
   "samolet_alias": false,
   "customer_signed": false,
-  "content_sha256": "6c3cc896aa896a49b65472e9906256f51024f630b436e7a0ba0a00347cf1828a"
+  "content_sha256": "6b9b630850b31a2097c62197f3b717094d87ad20492977dcd462ff5662ca12db"
 }

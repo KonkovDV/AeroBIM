@@ -6,7 +6,7 @@
   "customer_accuracy_not_established": true,
   "live_provider": false,
   "corpus_kind": "fixture",
-  "corpus_path": "C:\\plans\\AeroBIM\\samples\\benchmarks\\russian-aec-ground-truth.json",
+  "corpus_path": "samples/benchmarks/russian-aec-ground-truth.json",
   "fixture_count": 10,
   "models": {
     "regex": "deterministic NarrativeRuleSynthesizer+StructuredRequirementExtractor",
@@ -34,5 +34,5 @@
     }
   },
   "conclusion": "Live Kimi/Qwen extraction did not run (no API keys / provider not ready); only regex baseline scored on fixtures — LLM worth-it vs regex is not established.",
-  "sibling_evidence": "C:/plans/AeroBIM/docs/evidence/llm-extraction-kimi-vs-qwen-2026-08.json"
+  "sibling_evidence": "docs/evidence/llm-extraction-kimi-vs-qwen-2026-08.json"
 }

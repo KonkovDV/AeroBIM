@@ -9,7 +9,7 @@
   "execution": "SKIPPED",
   "execution_reason": "Scripts hardcode operator paths and depend on pandas/tqdm. Released GNI IFC are already anonymized. Do not rewrite.",
   "status": "PINNED",
-  "reason": "C:\\plans\\AeroBIM\\.local\\gni-bim-code",
+  "reason": ".local/gni-bim-code",
   "files": [
     {
       "path": "code/LICENSE",
@@ -30,6 +30,6 @@
       "present": true
     }
   ],
-  "repo_relative_hint": "C:/plans/AeroBIM/.local/gni-bim-code",
-  "content_sha256": "10087987dc16db8f47302183b30cb771feca366642adc2d96ddcd075a82ff403"
+  "repo_relative_hint": ".local/gni-bim-code",
+  "content_sha256": "fca680a53a0b81afba96100260e7691da767f3196c3c0d6658a79181cb0a2218"
 }

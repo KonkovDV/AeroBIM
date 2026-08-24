@@ -2,8 +2,8 @@
   "artifact_type": "pilot_harness_report",
   "schema_version": "1.0.0",
   "inputs": {
-    "labels": "C:\\plans\\AeroBIM\\samples\\benchmarks\\detection-precision\\labels-synthetic.json",
-    "detections": "C:\\plans\\AeroBIM\\samples\\benchmarks\\detection-precision\\detections-synthetic.json",
+    "labels": "samples/benchmarks/detection-precision/labels-synthetic.json",
+    "detections": "samples/benchmarks/detection-precision/detections-synthetic.json",
     "adjudication_csv": null,
     "ranking_labels": null
   },

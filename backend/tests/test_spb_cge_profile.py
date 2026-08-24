@@ -273,6 +273,22 @@ class SpbCgeProfileDeterminismTests(unittest.TestCase):
         self.assertIn("Требования к ЦИМ ОК _V.3.1.0", text)
         self.assertIn("1543", text)
         self.assertIn("195 pass / 161 fail", text)
+        self.assertIn("ЦИМ ЛО", text)
+        self.assertIn("IfcTester", text)
+        self.assertIn("IDS-Audit-tool", text)
+        self.assertIn("expertise conclusion", text)
+        self.assertIn("Live re-fetch (2026-08-24)", text)
+        self.assertIn("SHA-256 and byte sizes match", text)
+
+    def test_pack_excludes_linear_object_cim(self) -> None:
+        ids_files = list(PACK_ROOT.rglob("*.ids"))
+        self.assertEqual(len(ids_files), 22)
+        blob = "\n".join(path.as_posix() for path in ids_files).casefold()
+        self.assertNotIn("цим ло", blob)
+        self.assertNotIn("линейных объект", blob)
+        manifest = _manifest_payload()
+        not_applies = " ".join(manifest["scope"]["not_applies_to"]).casefold()
+        self.assertIn("линейн", not_applies)
 
 
 class SpbCgeProfileNegativeTests(unittest.TestCase):
