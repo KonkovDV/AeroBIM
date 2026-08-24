@@ -252,9 +252,9 @@ class Briefing1045RedTeamHonestyTests(unittest.TestCase):
         return Path(__file__).resolve().parents[2]
 
     def test_briefing_files_agr_at_dgp_not_mge_and_keeps_no_go(self) -> None:
-        briefing = (
-            self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md"
-        ).read_text(encoding="utf-8")
+        briefing = (self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("closes_rt001: false", briefing)
         self.assertIn("closes_rt002: false", briefing)
         self.assertIn("closes_rt003: false", briefing)
@@ -264,26 +264,22 @@ class Briefing1045RedTeamHonestyTests(unittest.TestCase):
         self.assertNotIn("АГР в МГЭ", briefing)
         self.assertNotIn("closes_rt002: true", briefing)
         letter = (
-            self._repo()
-            / "docs"
-            / "partners"
-            / "outreach"
-            / "LETTER_10D_OEM_DRAFT.md"
+            self._repo() / "docs" / "partners" / "outreach" / "LETTER_10D_OEM_DRAFT.md"
         ).read_text(encoding="utf-8")
         self.assertIn("ДГП", letter)
         self.assertNotIn("IDS-шлюз МГЭ", letter)
         self.assertNotIn("требованиям МГЭ к ЦИМ АГР", letter)
 
     def test_xml_agr_dual_sku_and_a101_pilot_not_production(self) -> None:
-        briefing = (
-            self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md"
-        ).read_text(encoding="utf-8")
+        briefing = (self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("3 000", briefing)
         self.assertIn("1 700", briefing)
         self.assertIn("пилот объёмов", briefing)
-        osint = (
-            self._repo() / "docs" / "partners" / "TECHLAB_KT3_OSINT_2026_08_24.md"
-        ).read_text(encoding="utf-8")
+        osint = (self._repo() / "docs" / "partners" / "TECHLAB_KT3_OSINT_2026_08_24.md").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("3 000 ₽/мес", osint)
         self.assertIn("1 700", osint)
         self.assertIn("4 000", osint)
