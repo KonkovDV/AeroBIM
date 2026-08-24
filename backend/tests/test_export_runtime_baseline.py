@@ -486,7 +486,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertTrue(any("not_publishable" in e for e in errors))
 
     def test_compare_allows_one_commit_allowlisted_lag(self) -> None:
-        """N-43 active: parent SHA matches only when HEAD~1 lag is on allowed_lag_paths."""
+        """When max_commits_behind==1, parent SHA matches only on allowlisted lag paths."""
         from aerobim.tools.export_runtime_baseline import compare_baseline_snapshots
 
         head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -524,6 +524,10 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             return ""
 
         with (
+            patch(
+                "aerobim.tools.export_runtime_baseline._max_commits_behind",
+                return_value=1,
+            ),
             patch(
                 "aerobim.tools.export_runtime_baseline._one_commit_lag_allowed",
                 return_value=True,
@@ -566,9 +570,15 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             "attestation": {"attested_by": "ci"},
             "publishable": True,
         }
-        with patch(
-            "aerobim.tools.export_runtime_baseline._one_commit_lag_allowed",
-            return_value=False,
+        with (
+            patch(
+                "aerobim.tools.export_runtime_baseline._max_commits_behind",
+                return_value=1,
+            ),
+            patch(
+                "aerobim.tools.export_runtime_baseline._one_commit_lag_allowed",
+                return_value=False,
+            ),
         ):
             errors = compare_baseline_snapshots(committed, generated, repo=_REPO)
         self.assertTrue(any("commit_sha" in err for err in errors))

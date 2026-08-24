@@ -120,6 +120,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Still true (two different deficits):** no Samolet **model corpus**, and no Samolet-signed `customer_approved` acceptance profile (`approval` object + `pack_hash` + jurisdiction + per-rule clause).  
 - **Addendum 24.08.2026 10:45:** measurement profile = public examination IDS (RT-002a, city/MOEXP as publisher). Samolet signature is “deployed at the customer” (RT-002b), not “measured against live norms”. `closes_rt002` (customer) stays **false**. Do not unfreeze the CUT `moscow_agr` DI port.
 - **Product HOLD — RT-002 still OPEN as a customer blocker** until signed Samolet profile. Public MOEXP IDS do not invent Samolet evidence.
+- **Addendum 24.08.2026 (SPb GAU CGE profile):** `samples/profiles/spb-cge/` indexes the published CGE IDS 1.0 pack (`samples/ids/spbexp/`). Provenance `OFFICIAL_PUBLISHED`. `signed_by_customer=false`. Does **not** close RT-001 or RT-002 (RT-002b remains Samolet-signed acceptance). Fail-closed load; not an expertise verdict.
 
 ### RT-003 — Federated MEP not measured (public models exist)
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  

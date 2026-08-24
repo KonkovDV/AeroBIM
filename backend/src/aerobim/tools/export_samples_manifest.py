@@ -109,6 +109,23 @@ def _entry(path: Path) -> dict[str, object]:
             ),
             redistribution="redistributed as published; see samples/xsd/minstroy/SOURCE.md",
         )
+    if rel.startswith("profiles/spb-cge/"):
+        return {
+            "path": rel,
+            "sha256": _sha256(path),
+            "bytes": path.stat().st_size,
+            "provenance": "project_authored_fixture",
+            "source": (
+                "AeroBIM-authored index of SPb GAU CGE published IDS 1.0 "
+                "(samples/ids/spbexp/); not itself an official IDS file and not a "
+                "Samolet customer profile"
+            ),
+            "license_status": "repo_mit",
+            "attribution_required": False,
+            "redistribution": "allowed under repo MIT",
+            "production_use": "fixture only; never customer evidence",
+            "personal_data": False,
+        }
     vendored = rel.startswith(_VENDORED_PREFIXES)
     if vendored:
         return {
@@ -166,7 +183,10 @@ def merge_missing_into(existing: dict[str, object]) -> dict[str, object]:
         if rel == "DATASET_MANIFEST.json":
             continue
         if rel in by_path:
-            by_path[rel] = _refresh_hash(by_path[rel], path)
+            if rel.startswith("profiles/spb-cge/"):
+                by_path[rel] = _entry(path)
+            else:
+                by_path[rel] = _refresh_hash(by_path[rel], path)
             continue
         by_path[rel] = _entry(path)
     merged = dict(existing)

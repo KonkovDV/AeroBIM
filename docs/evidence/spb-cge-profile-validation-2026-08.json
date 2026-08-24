@@ -1,0 +1,221 @@
+{
+  "artifact_type": "spb_cge_profile_validation",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-24T17:49:14.850046+00:00",
+  "profile_id": "SPBEXP-GAU-CGE-IDS",
+  "human_name": "СПб ГАУ «ЦГЭ» — опубликованные машиночитаемые требования к ЦИМ (ЦИМ ОКС ред. 3.1.0 от 09.12.2024; ЦИМ РИИ ред. 1.1.0 от 10.12.2024)",
+  "provenance_status": "OFFICIAL_PUBLISHED",
+  "signed_by_customer": false,
+  "samolet_alias": false,
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "source_page": "https://www.spbexp.ru/bim/docs/",
+  "retrieval_date": "2026-08-14",
+  "manifest_path": "samples/profiles/spb-cge/manifest.json",
+  "manifest_sha256": "f598dea11db95e385da2c6f914944055b715fe8dae8fa186db8a6053c6baa0e5",
+  "canonical_profile_hash": "205ce8f8b859fa1e927e3ca08d88a35fbecba931aa739cfb18a98b07c70fa78f",
+  "ids_xsd": {
+    "path": "samples/ids-xsd/ids.xsd",
+    "ids_schema_version": "1.0",
+    "xsd_sha256": "01d24814a8583d06433c736724f6178a5ff4d2f7c48e00758db581b70126e601"
+  },
+  "files": [
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Базовая модель).ids",
+      "subject": "oks",
+      "sha256": "38493c4b546a562090f8f94ef08c686fb90e95f1300dbe5da071f12d69f984b5",
+      "size_bytes": 72403,
+      "doc_edition": "3.1",
+      "specifications": 5
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Окружающей застройки).ids",
+      "subject": "oks",
+      "sha256": "cfce4582ab440f1c700a64d03900829251d6cc971ed5595b2f223ffa8d21057d",
+      "size_bytes": 8234,
+      "doc_edition": "3.1",
+      "specifications": 2
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 2. СПОЗУ/IDS СПб ГАУ ЦГЭ (Планировочная организация земельного участка).ids",
+      "subject": "oks",
+      "sha256": "0fad7d68f60fac6c56ccc7cc24fe9c9f878b0eb61741d403341926bb87918121",
+      "size_bytes": 104183,
+      "doc_edition": "3.1",
+      "specifications": 16
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 3. АР/IDS СПб ГАУ ЦГЭ (Архитектурные решения).ids",
+      "subject": "oks",
+      "sha256": "81cb78faf2c168a7c20b487b98059668c0a5d0165c6e015c53d406c702da6370",
+      "size_bytes": 200541,
+      "doc_edition": "3.1",
+      "specifications": 16
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 4. КР/IDS СПб ГАУ ЦГЭ (Конструктивные решения).ids",
+      "subject": "oks",
+      "sha256": "16fdd817cb230820b3baefe3f0b1ae78804d51ab42d3d27fb9bef8ed2a4cee4f",
+      "size_bytes": 204958,
+      "doc_edition": "3.1",
+      "specifications": 21
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.1 ИОС1/IDS СПб ГАУ ЦГЭ (Система электроснабжения).ids",
+      "subject": "oks",
+      "sha256": "e7a4cedda364d1b6c844b68106ffbfc12adbead23c7e5950d3595be476751a5a",
+      "size_bytes": 151263,
+      "doc_edition": "3.1",
+      "specifications": 33
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система водоснабжения).ids",
+      "subject": "oks",
+      "sha256": "dfa35d97cf80289102e042cdfe875e8be74892c34b921d3b3e1bd5e6beb98b77",
+      "size_bytes": 87812,
+      "doc_edition": "3.1",
+      "specifications": 21
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.2 ИОС2/IDS СПб ГАУ ЦГЭ (Система противопожарного водоснабжения (спринклерное пожаротушение)).ids",
+      "subject": "oks",
+      "sha256": "d6af5aa30ad67350009c26d3410eb46d926919900a043ade29f1a98b01879038",
+      "size_bytes": 56455,
+      "doc_edition": "3.1",
+      "specifications": 14
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.3 ИОС3/IDS СПб ГАУ ЦГЭ (Система водоотведения).ids",
+      "subject": "oks",
+      "sha256": "530959532dcf6268489374cba68586f69152ea93ca22f6c706b310b1d521bb97",
+      "size_bytes": 75857,
+      "doc_edition": "3.1",
+      "specifications": 18
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система вентиляции).ids",
+      "subject": "oks",
+      "sha256": "c9014b41fbdbbd2b7ffd2afd2dff87963fc0110a8af9c65d7b93bced09f3267d",
+      "size_bytes": 82859,
+      "doc_edition": "3.1",
+      "specifications": 21
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система кондиционирования).ids",
+      "subject": "oks",
+      "sha256": "5d87aa5ab2e97d286e9547b25a81060f667dc2cd9e83925d31c6cc39f3f7de79",
+      "size_bytes": 115023,
+      "doc_edition": "3.1",
+      "specifications": 27
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система отопления).ids",
+      "subject": "oks",
+      "sha256": "272cc8be39c65e4302de627a81bafc5758db4c7530a799aa994cf81805010299",
+      "size_bytes": 59624,
+      "doc_edition": "3.1",
+      "specifications": 15
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система теплоснабжения).ids",
+      "subject": "oks",
+      "sha256": "24bb4b29d0d4053e421eff74fd0100a16df65946e7899afe941de0368652a1b6",
+      "size_bytes": 72769,
+      "doc_edition": "3.1",
+      "specifications": 18
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.4 ИОС4/IDS СПб ГАУ ЦГЭ (Система холодоснабжения).ids",
+      "subject": "oks",
+      "sha256": "07595be56b76c434ec6f93e4f4492f73bbe39524e99a7b6accf6da02d98b5a24",
+      "size_bytes": 92547,
+      "doc_edition": "3.1",
+      "specifications": 22
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.5 ИОС5/IDS СПб ГАУ ЦГЭ (Сети связи).ids",
+      "subject": "oks",
+      "sha256": "872e514ac7e95be7a33e7805358e8b7da87e4f694dd91aeed29444bf7077d9e9",
+      "size_bytes": 114828,
+      "doc_edition": "3.1",
+      "specifications": 24
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 5. ИОС/5.6 ИОС6/IDS СПб ГАУ ЦГЭ (Система газоснабжения).ids",
+      "subject": "oks",
+      "sha256": "d69fd52e53810b9a8a2739ba3a64ee056f3f1c9646a26efa6f1871b2a9796ce6",
+      "size_bytes": 72869,
+      "doc_edition": "3.1",
+      "specifications": 19
+    },
+    {
+      "path": "oks/Требования к ЦИМ ОК _V.3.1.0/ЧАСТЬ 6. ТХ/IDS СПб ГАУ ЦГЭ (Технологические решения).ids",
+      "subject": "oks",
+      "sha256": "66d467c16902232c537ba269b33b8353aa9f824d587c4257dcc814969e1f5081",
+      "size_bytes": 19473,
+      "doc_edition": "3.1",
+      "specifications": 3
+    },
+    {
+      "path": "rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Рельеф_1.1.0_(IDS_1.0).ids",
+      "subject": "rii",
+      "sha256": "f92984d823c5dbe3669a56996992cb5466ebd44f488e55c2363b3410017ac392",
+      "size_bytes": 5382,
+      "doc_edition": "1.1.0",
+      "specifications": 2
+    },
+    {
+      "path": "rii/ЦГЭ.ЦИМ.РИИ_ИГДИ_Ситуация_1.1.0_(IDS_1.0).ids",
+      "subject": "rii",
+      "sha256": "006d45001e44758eb82292427681a233da33946f797c6b538c57856baa90f692",
+      "size_bytes": 65533,
+      "doc_edition": "1.1.0",
+      "specifications": 32
+    },
+    {
+      "path": "rii/ЦГЭ.ЦИМ.РИИ_ИГИ_1.1.0_(IDS_1.0).ids",
+      "subject": "rii",
+      "sha256": "07cd61c4c0e406b32fec950aa67ba3210b2ef067ba1086d9556c00b26263a0e1",
+      "size_bytes": 45803,
+      "doc_edition": "1.1.0",
+      "specifications": 15
+    },
+    {
+      "path": "rii/ЦГЭ.ЦИМ.РИИ_ИГМИ_1.1.0_(IDS_1.0).ids",
+      "subject": "rii",
+      "sha256": "4370fa28e5ca77ac8f1cc50dac6ad736ac5e309f58785a7adcc3eba407e7ac35",
+      "size_bytes": 9186,
+      "doc_edition": "1.1.0",
+      "specifications": 4
+    },
+    {
+      "path": "rii/ЦГЭ.ЦИМ.РИИ_ИЭИ_1.1.0_(IDS_1.0).ids",
+      "subject": "rii",
+      "sha256": "1ce1a7471fae713301bfa8c344e121cde73829f789560904bc19b0274147dbff",
+      "size_bytes": 15987,
+      "doc_edition": "1.1.0",
+      "specifications": 8
+    }
+  ],
+  "totals": {
+    "files": 22,
+    "specifications": 356,
+    "subjects": [
+      "oks",
+      "rii"
+    ]
+  },
+  "fixture_probe": {
+    "ifc": "samples/ifc/wall-pset-qto-pass.ifc",
+    "runs": 2,
+    "identical": true,
+    "issues_per_run": [
+      1543,
+      1543
+    ],
+    "signature_sha256": "88f7d6853a3b41a141b50221638e1be3186eaa1ea428a935e29a8926967a8f83",
+    "note": "Fail on the wall fixture means the specs executed; it is not a CIM compliance verdict and not an expertise conclusion."
+  },
+  "claim_boundary": "Проверка по опубликованному набору правил СПб ГАУ «ЦГЭ», без статуса экспертизы. Не закрывает RT-001/RT-002/RT-003; не подписанный заказчиком профиль приёмки."
+}

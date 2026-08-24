@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-23T23:44:35.922700+00:00",
+  "generated_at": "2026-08-24T17:49:10.421513+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 877,
+  "file_count": 879,
   "vendored_count": 15,
   "files": [
     {
@@ -9692,8 +9692,8 @@
     },
     {
       "path": "norm-packs/moscow_agr_2026/APPROVAL_BOUNDARY.md",
-      "sha256": "32f8e920f8e0a2bb21d07d200d22037f711a0114f7808d53ae1f79bdce36972f",
-      "bytes": 2115,
+      "sha256": "8f4fe218bd567fd1344cfbb6309a55a7dbf8ffe153bdf7fe7331721fd777a151",
+      "bytes": 2318,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -9828,6 +9828,30 @@
       "bytes": 3047,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "profiles/spb-cge/manifest.json",
+      "sha256": "f598dea11db95e385da2c6f914944055b715fe8dae8fa186db8a6053c6baa0e5",
+      "bytes": 15167,
+      "provenance": "project_authored_fixture",
+      "source": "AeroBIM-authored index of SPb GAU CGE published IDS 1.0 (samples/ids/spbexp/); not itself an official IDS file and not a Samolet customer profile",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "profiles/spb-cge/manifest.schema.json",
+      "sha256": "56c3fedf6e57f992f382bca1acad681426a8d2e43e6a64e02ce262ae6914d1ab",
+      "bytes": 5120,
+      "provenance": "project_authored_fixture",
+      "source": "AeroBIM-authored index of SPb GAU CGE published IDS 1.0 (samples/ids/spbexp/); not itself an official IDS file and not a Samolet customer profile",
       "license_status": "repo_mit",
       "attribution_required": false,
       "redistribution": "allowed under repo MIT",

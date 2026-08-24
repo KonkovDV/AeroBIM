@@ -85,7 +85,7 @@ TechLab / MIK jury: formula above → [`submission/README.md`](submission/README
 A pack goes in. Deterministic checks run. One fused report comes out.
 
 1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (ISO 16739:2005), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
-2. **The rules.** IDS 1.0 is validated with IfcTester. Official Moscow Region State Expertise rule sets ship in `samples/`. A requested rule set that cannot load fails closed — it cannot look like a pass.
+2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. A requested rule set that cannot load fails closed — it cannot look like a pass.
 3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with an ISO 12006-3 tolerance band and Russian/European grouped decimals. Sources are compared; nothing is recomputed. Independent correctness of calculations is not implemented.
 4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D and the evidence on the sheet.
 
@@ -110,7 +110,7 @@ This is readiness for *customer sign-off*, not “the system does not run”. Co
 | ID | Still open | Not the same thing |
 |---|---|---|
 | **RT-001** | No Russian PD pack paired with expertise conclusions | Open benches (AEC-Bench, IFC-Bench, GNI) are a different contour |
-| **RT-002** | No Samolet-signed acceptance profile | Official Moscow Region State Expertise IDS files already ship in `samples/` |
+| **RT-002** | No Samolet-signed acceptance profile | Official Moscow Region State Expertise and SPb GAU CGE IDS files already ship in `samples/` |
 | **RT-003** | Federated MEP clash **NOT_VERIFIED** | Public federated inventory is measured; MEP delivered is not claimed |
 
 BCF ZIP export is structural T1 ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Import into an independent CDE is **NOT_VERIFIED**. Native DWG is missing (fail-closed). Independent calculation correctness is not implemented — sources are compared, not recomputed.
