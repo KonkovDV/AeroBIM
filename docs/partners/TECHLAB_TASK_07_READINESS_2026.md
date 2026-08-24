@@ -1,15 +1,18 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
+
+> **Нумерация раздачи, не Положение.** Историческое «07» в имени файла может не совпадать с приложением 4 Положения. До ответа оператора МИК в публичных формулировках номер не используем. См. [`./_2026_08_25.md`](./_2026_08_25.md).
+
 ---
-title: "TechLab Samolet Task 07 Readiness 2026"
+title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
 status: active
 version: "1.3.0"
 last_updated: "2026-08-16"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
-# Task 07 readiness — automated verification of PD/RD
+# Samolet PD/RD verification task readiness — automated verification of PD/RD
 
-**Official task:** Система автоматизированной верификации проектной и рабочей документации — **Задача 07**  
+**Official task:** Система автоматизированной верификации проектной и рабочей документации — **задаче Самолёта по верификации ПД/РД**  
 **Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site.  
 **Prize:** paid pilot testing fund **2 000 000 ₽**  
 **Task page:** https://i.moscow/techlab/samolet  
@@ -22,7 +25,7 @@ Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED
 
 ## 1. Official mandate → AeroBIM
 
-| Task 07 requirement | AeroBIM today | Status |
+| Samolet PD/RD verification task requirement | AeroBIM today | Status |
 |---------------------|---------------|--------|
 | Work with **2D drawings** | Structured annotations + PDF/OCR baseline + 2D overlay | PARTIAL (CV deferred; OCR optional-extra) |
 | Work with **BIM models** | IFC + IDS + schema pre-gate + optional clash | VERIFIED_FIXTURE_ONLY |
@@ -103,7 +106,7 @@ Red Team / Claims Lock: без «>90%», без «DWG готов», без «MEP
 
 Символов ориентир: ~2,5–3 тыс. (умещается в типичные формы). Полный pitch/ask — ниже и в readiness memo.
 
-### Pilot env profile (Samolet Task 07)
+### Pilot env profile (Samolet Samolet PD/RD verification task)
 
 **Development / fixture** profiles keep soft gates so local installs without `.[clash]` stay usable.  
 **Customer / production** packages must run fail-closed: unset `AEROBIM_SIGNOFF_PROFILE` under `AEROBIM_ENV=production` defaults to `production` sign-off (RT-POST-01), which forces clash / bSI schema / MEP requirements. Explicit pilot profile:

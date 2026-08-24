@@ -1,4 +1,7 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
+
+> **Нумерация раздачи, не Положение.** Историческое «07» в имени файла может не совпадать с приложением 4 Положения. До ответа оператора МИК в публичных формулировках номер не используем. См. [`../partners/_2026_08_25.md`](../partners/_2026_08_25.md).
+
 ---
 title: "ТЗ Самолет × ТехЛаб 2026 — Задача 07 (редакция v2.0)"
 status: active

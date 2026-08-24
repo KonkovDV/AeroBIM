@@ -7,10 +7,10 @@ last_updated: "2026-07-10"
 tags: [aerobim, techlab, samolet, application]
 ---
 
-# AeroBIM — TechLab Moscow (Samolet task #07)
+# AeroBIM — TechLab Moscow (Samolet Samolet PD/RD verification task)
 
 **Partner:** Samolet (Московский инновационный кластер / TechLab)  
-**Task:** Система автоматизированной верификации проектной и рабочей документации — **Задача 07**  
+**Task:** Система автоматизированной верификации проектной и рабочей документации — **задаче Самолёта по верификации ПД/РД**  
 **Task page:** https://i.moscow/techlab/samolet  
 **Prize:** платное пилотное тестирование **2 000 000 ₽**  
 **Readiness / claims:** [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)  

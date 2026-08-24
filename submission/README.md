@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Submission index quoting TZ evaluation targets as non-claims; NO_GO explicit" -->
 ---
-title: "КТ#2 — пакет подачи (Техлаб Москва, Задача 07)"
+title: "КТ#2 — пакет подачи (Техлаб Москва, задаче Самолёта по верификации ПД/РД)"
 status: active
 version: "1.1.5"
 last_updated: "2026-08-23"
