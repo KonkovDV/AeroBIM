@@ -13,9 +13,10 @@ Usage from the repo root with the backend venv python:
     backend/.venv/Scripts/python.exe scripts/pre_push_gate.py          # fast gates
     backend/.venv/Scripts/python.exe scripts/pre_push_gate.py --full   # + mypy src
 
-Full pytest/vitest stay in CI. If the baseline drift check fails, that is the
-designed N-43 alarm (committed pin older than the tree); the script prints the
-CI-artifact recovery steps instead of letting the push surprise you.
+Full pytest/vitest stay in CI. LOC drift vs the committed pin is a warning
+here (you cannot mint a CI-attested pin locally). CI ``baseline-integrity``
+still fails until the attested artifact is committed. Broken README markers
+still block the push.
 """
 
 from __future__ import annotations
@@ -77,21 +78,22 @@ _STEPS_FULL: list[tuple[str, list[str], Path]] = [
     ("mypy src", [PY, "-m", "mypy", "src"], BACKEND),
 ]
 
-# CI checks out baseline-integrity with a shallow clone, so the N-43
-# commits-behind counter cannot run there (unknown depth, warning only). What
-# actually fails CI is LOC/metrics drift ("Baseline drift for ...") and broken
-# README markers. Mirror that: fail on those, print commits-behind as a warning.
-_BASELINE_SOFT_PREFIXES = ("baseline_commits_behind=", "baseline_stale_by_")
+# CI shallow-clones baseline-integrity, so the commits-behind counter is a
+# warning there. LOC drift is also a *local* warning: recovery is "push, then
+# commit the CI artifact". Blocking the push made that recovery impossible.
+# Hard-fail only broken README markers / completeness, which you can fix here.
+_BASELINE_SOFT_PREFIXES = (
+    "baseline_commits_behind=",
+    "baseline_stale_by_",
+    "Baseline drift for ",
+)
 
 _BASELINE_RECOVERY = """\
-Baseline LOC drift is the designed N-43 alarm: the committed pin is older than
-the tree. Recovery:
-  1. push this branch — baseline-integrity fails once and uploads
-     the CI-attested artifact (expected, not a regression)
-  2. download ci-runtime-baseline from that run into
-     docs/evidence/runtime-baseline-latest.json and sync the README markers
-  3. commit the refresh and push again; the second run goes green
-Do NOT mint a baseline from a local pytest run (attested_by=ci only).\
+Runtime baseline pin is older than the tree (LOC drift). This does not block
+the local push. CI baseline-integrity will fail once and upload an attested
+artifact. Commit that file into docs/evidence/runtime-baseline-latest.json,
+sync README markers, push again. Do NOT mint a pin from local pytest
+(attested_by=ci only).\
 """
 
 
@@ -109,12 +111,12 @@ def _run(name: str, cmd: list[str], cwd: Path) -> tuple[bool, str]:
             line for line in lines if not line.startswith(_BASELINE_SOFT_PREFIXES)
         ]
         if not hard:
-            print(f"warn {name} ({elapsed:.1f}s) — commits-behind lag, invisible to CI", flush=True)
+            print(f"warn {name} ({elapsed:.1f}s) — pin lags the tree (CI will refresh)", flush=True)
             print(output, flush=True)
+            print("\n" + _BASELINE_RECOVERY, flush=True)
             return True, ""
         print(f"FAIL {name} ({elapsed:.1f}s)", flush=True)
         print("\n".join(hard), flush=True)
-        print("\n" + _BASELINE_RECOVERY, flush=True)
         return False, output
     print(f"FAIL {name} ({elapsed:.1f}s)", flush=True)
     print(output, flush=True)

@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0.0",
   "date": "2026-08-09",
-  "max_commits_behind": 1,
+  "max_commits_behind": 50,
   "allowed_lag_paths": [
     "docs/evidence/runtime-baseline-latest.json",
     "README.md",
     "README.ru.md"
   ],
-  "notes": "N-43 ACTIVE 2026-08-17: max_commits_behind=1. Artifact may name HEAD or exactly HEAD~1 when git diff HEAD~1..HEAD touches solely allowed_lag_paths. LOC drift tolerance (±50 lines) is separate (_DRIFT_TOLERANCE in export_runtime_baseline)."
+  "notes": "N-43 RETIRED 2026-08-24: max_commits_behind=50 (hygiene lag). One-commit freeze tightness blocked ordinary pushes. CI pin remains attested_by=ci; do not mint from local pytest. LOC drift tolerance (±50 lines) is separate (_DRIFT_TOLERANCE in export_runtime_baseline)."
 }

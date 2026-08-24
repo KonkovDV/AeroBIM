@@ -8,15 +8,15 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AeroBIM catches disagreements between files in a construction pack: a schedule area against the IFC area, a PD elevation against an RD elevation, a brief requirement against what the files actually contain. Each file opens cleanly on its own. The defect lives in the seam and usually surfaces on site.**
+**AeroBIM catches disagreements between files in a construction pack: a schedule area against the IFC area, a PD elevation against an RD elevation, a brief requirement against what the files actually contain — and it does this against public machine-readable examination requirements. Each file opens cleanly on its own. The defect lives in the seam and usually surfaces on site.**
 
 From 2 April 2026, Moscow requires AGR CIM in IFC under DGP order № ДГП-Р-1/26/64-16-6/26. That is a **city filing rule**, not a Samolet-signed acceptance profile and not a product accuracy claim.
 
 IFC + IDS + sheets + specification texts go in. Findings you can follow to a sheet and a GUID come out — HTML, JSON, BCF. The reviewer still decides. AeroBIM is not a CDE, not a model viewer, and not a replacement for the expert.
 
-> **Checkpoint #2 (20 Aug 2026), Moscow TechLab task 07, customer Samolet Group.** Intake pack: [`submission/README.md`](submission/README.md). We are in *refinement*. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `NO_GO` until a Samolet corpus, two raters, a signed acceptance profile, and CDE proof.
+> **Checkpoint #2 (20 Aug 2026), Moscow TechLab task 07, customer Samolet Group.** Intake pack: [`submission/README.md`](submission/README.md). We are in *refinement*. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `NO_GO` until an independent labeled pack, two raters, an acceptance profile (public examination IDS for measurement; Samolet signature for deployment), and CDE proof.
 >
-> Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, подписанного профиля приёмки и подтверждения импорта в СОД.
+> Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) и подтверждения импорта в СОД.
 
 ## The seam where packs break
 
@@ -41,7 +41,7 @@ Silence is never success: a skipped mandatory engine cannot hide inside a green 
 | | |
 |---|---|
 | **Runs on this clone** | Fixture packs, fail-closed IDS, live CLI, CI, overlay, structural BCF |
-| **Waits on measurement** | Independent labeled pack (two raters) for RT-001a · Samolet-signed profile RT-002b · federated MEP RT-003 · BCF import into their CDE |
+| **Waits on measurement** | Independent labeled pack (two raters) for RT-001a · public examination IDS as measurement profile RT-002a · Samolet-signed profile RT-002b · federated MEP RT-003 · BCF import into their CDE |
 | **Not claimed** | Product accuracy >90% · customer SLA ≤30 min · native DWG · MEP delivered · CDE-ready BCF · production-ready |
 
 Full boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md). Blockers: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).

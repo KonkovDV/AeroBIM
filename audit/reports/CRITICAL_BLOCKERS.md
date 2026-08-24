@@ -4,7 +4,7 @@
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» corpus — open benches + MinStroy XML intake exist), **RT-002** (no Samolet-signed acceptance profile — official MOEXP/AGR/SPb IDS **are** public), **RT-003** (public duplex IfcClash RUN; `mep_system_clash` NOT_VERIFIED; not MEP delivered). Do not write «нет утверждённого нормативного пакета».
+**Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» pairs; rules exist), **RT-002a** CLOSED regulatory (public MOEXP/AGR/SPb IDS + `pack_hash`, city as publisher) / **RT-002b** OPEN (no Samolet-signed profile), **RT-003** (public duplex IfcClash RUN; `mep_system_clash` NOT_VERIFIED; not MEP delivered). Never write undifferentiated «RT-002 CLOSED». Do not write «нет утверждённого нормативного пакета».
 
 **Reclassification (v4):** N-18 CLOSED 2026-08-09 (attestation cannot be forged locally). Current engineering surface: [`docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md).
 
@@ -118,7 +118,8 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Category:** Norms  
 - **«Нет утверждённого нормативного пакета» is false.** GAU MO «Мособлгосэкспертиза» published IDS + IFC4 mappings on [TIM / BIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/). Also public: Москомэкспертиза МКЭ-ОД/19-39 (ред. 10.10.2024), МКЭ-ОД/24-178 (25.12.2024), Moscow AGR CIM requirements, Glavgosexpertiza IM recommendations, «Требования к ИМ ОКС, Часть 1» ред. 4.0 (clash-absence section), SPb CGE element→IFC tables, СП 333 / 331, ГОСТ Р 10.*, ПНСТ 909-2024. Pack + engine coverage: `samples/ids/moexp/` · [`docs/evidence/norm-pack-moexp-coverage-2026-08.md`](../../docs/evidence/norm-pack-moexp-coverage-2026-08.md).  
 - **Still true (two different deficits):** no Samolet **model corpus**, and no Samolet-signed `customer_approved` acceptance profile (`approval` object + `pack_hash` + jurisdiction + per-rule clause).  
-- **Product HOLD — RT-002 still OPEN** until signed Samolet profile. Public MOEXP IDS do not invent Samolet evidence.
+- **Addendum 24.08.2026 10:45:** measurement profile = public examination IDS (RT-002a, city/MOEXP as publisher). Samolet signature is “deployed at the customer” (RT-002b), not “measured against live norms”. `closes_rt002` (customer) stays **false**. Do not unfreeze the CUT `moscow_agr` DI port.
+- **Product HOLD — RT-002 still OPEN as a customer blocker** until signed Samolet profile. Public MOEXP IDS do not invent Samolet evidence.
 
 ### RT-003 — Federated MEP not measured (public models exist)
 - **Severity:** BLOCKER (if claimed) / CRITICAL (gap honesty)  

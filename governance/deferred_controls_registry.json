@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.2",
   "date": "2026-08-11",
-  "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. A4 flipped ACTIVE 2026-08-11 (both policy flags). N43 lag=1 flipped ACTIVE 2026-08-17.",
+  "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. A4 flipped ACTIVE 2026-08-11 (both policy flags). N43 retired 2026-08-24 (max_commits_behind=50).",
   "waivers": [
     {
       "id": "A4-signing-enforcement",
@@ -20,8 +20,8 @@
       "id": "N43-baseline-one-commit-lag",
       "control": "Допуск дрейфа baseline: 1 коммит только для артефакта/README",
       "mechanism": "governance/baseline_integrity_policy.json + export_runtime_baseline",
-      "state": "active",
-      "reason": "Activated 2026-08-17 freeze rehearsal. max_commits_behind=1; one-commit lag only when HEAD touches allowed_lag_paths.",
+      "state": "retired",
+      "reason": "Retired 2026-08-24: one-commit lag made pre-push a catch-22 (fail local, then say push so CI can refresh). max_commits_behind=50. CI pin still attested_by=ci; local pytest is not a pin.",
       "activates_on": "2026-08-17",
       "owner": "KonkovDV",
       "policy_numeric": {

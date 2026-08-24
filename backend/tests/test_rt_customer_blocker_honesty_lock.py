@@ -245,6 +245,65 @@ class AcademicLiteratureTriageHonestyTests(unittest.TestCase):
         self.assertNotIn("closes_rt003: true", text)
 
 
+class Briefing1045RedTeamHonestyTests(unittest.TestCase):
+    """AGR is DGP, not MGE; xml-agr has two SKUs; slice stays NO_GO."""
+
+    def _repo(self) -> Path:
+        return Path(__file__).resolve().parents[2]
+
+    def test_briefing_files_agr_at_dgp_not_mge_and_keeps_no_go(self) -> None:
+        briefing = (
+            self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", briefing)
+        self.assertIn("closes_rt002: false", briefing)
+        self.assertIn("closes_rt003: false", briefing)
+        self.assertIn("NO_GO", briefing)
+        self.assertIn("АГР в ДГП", briefing)
+        self.assertIn("не экспертиза проектной документации МГЭ", briefing)
+        self.assertNotIn("АГР в МГЭ", briefing)
+        self.assertNotIn("closes_rt002: true", briefing)
+        letter = (
+            self._repo()
+            / "docs"
+            / "partners"
+            / "outreach"
+            / "LETTER_10D_OEM_DRAFT.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("ДГП", letter)
+        self.assertNotIn("IDS-шлюз МГЭ", letter)
+        self.assertNotIn("требованиям МГЭ к ЦИМ АГР", letter)
+
+    def test_xml_agr_dual_sku_and_a101_pilot_not_production(self) -> None:
+        briefing = (
+            self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("3 000", briefing)
+        self.assertIn("1 700", briefing)
+        self.assertIn("пилот объёмов", briefing)
+        osint = (
+            self._repo() / "docs" / "partners" / "TECHLAB_KT3_OSINT_2026_08_24.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("3 000 ₽/мес", osint)
+        self.assertIn("1 700", osint)
+        self.assertIn("4 000", osint)
+
+    def test_red_team_audit_does_not_paint_go(self) -> None:
+        path = self._repo() / "docs" / "partners" / "_2026_08_24.md"
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("closes_rt001: false", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("closes_rt003: false", text)
+        self.assertIn("NO_GO", text)
+        self.assertIn("RT-002a", text)
+        self.assertIn("RT-002b", text)
+        self.assertNotIn("closes_rt001: true", text)
+        self.assertNotIn("closes_rt002: true", text)
+        self.assertNotIn("closes_rt003: true", text)
+        self.assertNotIn("стек заказчика = Renga", text.split("## ")[0])
+
+
 class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
     def test_jury_mik_novator_rt_does_not_close_blockers_or_skip_stage(self) -> None:
         path = (
@@ -319,15 +378,16 @@ class FinalVerdictHonestyTests(unittest.TestCase):
 _SPEECH_FORMULA_VERBATIM = (
     "Мы на стадии доработки. Одна команда показывает находку с доказательствами "
     "на учебном комплекте. Валидация эффективности и внедрение ещё не начались. "
-    "`NO_GO` сохраняется, пока нет корпуса Самолёта, двух разметчиков, "
-    "подписанного профиля приёмки и подтверждения импорта в СОД."
+    "`NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, "
+    "профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) "
+    "и подтверждения импорта в СОД."
 )
 _SPEECH_FORMULA_MARKERS = (
     "Мы на стадии доработки",
     "Одна команда показывает находку с доказательствами на учебном комплекте",
     "Валидация эффективности и внедрение ещё не начались",
-    "`NO_GO` сохраняется, пока нет корпуса Самолёта",
-    "подписанного профиля приёмки",
+    "`NO_GO` сохраняется, пока нет независимого размеченного корпуса",
+    "профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение)",
 )
 
 

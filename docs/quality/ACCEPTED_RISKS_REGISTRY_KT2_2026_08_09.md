@@ -30,12 +30,12 @@
 | B-10 | Browser hardening headers | HSTS / Permissions-Policy / COOP / CORP / no-store |
 | N-46 | In-tree private Red Team digests | Moved to sibling `AeroBIM-private/`; pre-commit path guard |
 | A-2 residual | Stale O_EXCL lock forever | Reclaim locks older than 60s + test |
+| N-43 | Baseline SHA lag vs HEAD (1-commit freeze) | Retired 24.08: `max_commits_behind=50`. Catch-22 on pre-push. CI pin still `attested_by=ci`. |
 
 ## Still deferred (honesty)
 
 | ID | Theme | Note |
 | --- | --- | --- |
-| N-43 | Baseline SHA lag vs HEAD | Soft ±50 commit drift; zero on freeze day 19.08 |
 | N-45 / A-4 | GPG enforce | Policy ratchet ready; `enforce_ci` waits for uploaded pubkey |
 | N-47 | RUF100 off | 105 unused noqa under `--extend-select RUF100` — after freeze |
 | N-48 | CodeQL not in CI job list | Separate `codeql.yml` workflow — verify Actions tab |
