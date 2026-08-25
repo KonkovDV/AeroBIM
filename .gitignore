@@ -39,6 +39,9 @@ artifacts/demo/*.mp4
 
 # IDE / agent (not product source)
 .cursor/
+# Multi-root Cursor/VS Code workspace is C:\SynAPS\APS.code-workspace.
+# Do not keep a copy in this git root (it is not AeroBIM product source).
+APS.code-workspace
 
 # Local operator artifacts — keep OUTSIDE this worktree when possible
 # (sibling ../AeroBIM-private/). A tracked .local/ inside a public repo is N-46 risk.
