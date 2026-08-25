@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.7.3"
+version: "4.7.4"
 last_updated: "2026-08-25"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -36,6 +36,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Запрос к Самолёту](partners/_08_15.md) | Четыре пункта, без которых NO_GO |
 | [Разбор 24.08 10:45](partners/BRIEFING_2026_08_24_1045.md) | Клин + IDS; RT-002a/b; оффер; бинарные метрики |
 | [Red Team 24.08](partners/_2026_08_24.md) | OSINT + атаки на формулировки; checkpoint NO_GO |
+| [Red Team КТ#3 25.08](partners/_KT3_2026_08_25.md) | Срез 35dbfd6; share locator снят с дерева; RT OPEN |
 | [КТ#3 без файлов заказчика](partners/_2026_08_23.md) | Re-scope 23.08; ждать комплект в git не план |
 | [Ответы Самолёта 25.08](partners/) | SSOT ответов; URL ≠ корпус; RT OPEN |
 | [План по ответам 25.08](roadmap/SAMOLET_ANSWERS_WORKPLAN_2026_08_25.md) | Фазы A–D; не закрывает RT |

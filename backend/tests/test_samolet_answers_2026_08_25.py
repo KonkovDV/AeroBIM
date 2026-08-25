@@ -170,6 +170,8 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt002"])
         self.assertFalse(payload["closes_rt003"])
         self.assertFalse(payload["share_ingested_in_git"])
+        self.assertTrue(payload["share_url_received"])
+        self.assertNotIn("share_url", payload)
         self.assertEqual(payload["checkpoint"], "NO_GO")
         self.assertEqual(payload["native_rvt_nwd"], "not_implemented")
 
@@ -190,6 +192,7 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         path = self._repo() / "audit" / "evidence" / "customer-intake-gate.json"
         payload = json.loads(path.read_text(encoding="utf-8"))
         self.assertTrue(payload["share_url_received"])
+        self.assertIsNone(payload.get("share_url"))
         self.assertFalse(payload["share_ingested_in_git"])
         self.assertFalse(payload["closes_rt001"])
         gates = payload["gates"]
@@ -203,6 +206,38 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertEqual(catalog["customer_confirmed_patterns"], 0)
         self.assertFalse(catalog["customer_share_ingested"])
         self.assertEqual(catalog["catalog_status"], "synthetic-scaffold")
+        self.assertNotIn("customer_share_url", catalog)
+
+    def test_working_tree_does_not_republish_share_uuid(self) -> None:
+        """Red Team KT#3: NDA locator must not sit in the public working tree."""
+
+        needle = "-".join(("[redacted]", "5c44", "7e47", "8021", "[redacted]"))
+        roots = (
+            self._repo() / "audit",
+            self._repo() / "backend" / "src",
+            self._repo() / "backend" / "tests",
+            self._repo() / "docs",
+            self._repo() / "samples",
+            self._repo() / "submission",
+            self._repo() / "frontend" / "src",
+        )
+        hits: list[str] = []
+        skip_parts = {".git", "node_modules", "__pycache__", ".venv", "artifacts"}
+        for root in roots:
+            if not root.is_dir():
+                continue
+            for path in root.rglob("*"):
+                if not path.is_file():
+                    continue
+                if any(part in skip_parts for part in path.parts):
+                    continue
+                try:
+                    text = path.read_text(encoding="utf-8")
+                except (OSError, UnicodeDecodeError):
+                    continue
+                if needle in text:
+                    hits.append(str(path.relative_to(self._repo())))
+        self.assertEqual(hits, [])
 
 
 class SplitUploadApiTests(unittest.TestCase):

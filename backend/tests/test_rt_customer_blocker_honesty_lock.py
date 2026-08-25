@@ -707,6 +707,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("SAMOLET_ANSWERS_WORKPLAN_2026_08_25.md", text)
         self.assertIn("KT3_JURY_FAQ_2026_08_25.md", text)
         self.assertIn("KT3_OPERATOR_RUNBOOK_2026_08_25.md", text)
+        self.assertIn("_KT3_2026_08_25.md", text)
         self.assertIn("-kr13-coverage-map-2026-08.md", text)
 
     def test_hostile_qa_playbook_pins_ssot_and_stays_no_go(self) -> None:

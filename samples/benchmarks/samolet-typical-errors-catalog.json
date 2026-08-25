@@ -4,7 +4,6 @@
   "catalog_status": "synthetic-scaffold",
   "description": "Engineering scaffold for Samolet TechLab intake. All entries require customer confirmation; mapping to a rule or finding class is not evidence that a pattern is detected with customer-grade precision.",
   "source": "https://i.moscow/techlab/samolet",
-  "customer_share_url": "",
   "customer_share_received_at": "2026-08-25",
   "customer_share_ingested": false,
   "customer_confirmed_patterns": 0,

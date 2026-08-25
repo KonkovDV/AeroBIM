@@ -242,8 +242,8 @@ class SystemCapabilitiesResponse(BaseModel):
     customer_intake_gate: CustomerIntakeGateSnapshot
     samolet_mvp_answers: dict[str, object] = Field(
         description=(
-            "Samolet questionnaire answers (2026-08-25). Share URL is not a hashed pack. "
-            "closes_rt001/002/003 stay false."
+            "Samolet questionnaire answers (2026-08-25). Share received is not a hashed pack. "
+            "closes_rt001/002/003 stay false. No NDA locator on this surface."
         ),
     )
     llm_advisory: LlmAdvisoryCapability

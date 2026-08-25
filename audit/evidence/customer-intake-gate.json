@@ -26,7 +26,7 @@
     "customer_approved_without_approval_ref": false
   },
   "share_url_received": true,
-  "share_url": "",
+  "share_url": null,
   "share_received_at": "2026-08-25",
   "share_ingested_in_git": false,
   "closes_rt001": false,

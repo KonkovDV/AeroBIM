@@ -12,7 +12,6 @@ from aerobim.core.security.upload_limits import (
     WASM_IFC_VIEWER_CAP_BYTES,
 )
 
-SAMOLET_SHARE_URL = ""
 SAMOLET_ANSWERS_RECEIVED_AT = "2026-08-25"
 
 
@@ -22,7 +21,7 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
     return {
         "received_at": SAMOLET_ANSWERS_RECEIVED_AT,
         "source": "docs/partners/",
-        "share_url": SAMOLET_SHARE_URL,
+        "share_url_received": True,
         "share_ingested_in_git": False,
         "closes_rt001": False,
         "closes_rt002": False,
@@ -56,6 +55,5 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
 
 __all__ = [
     "SAMOLET_ANSWERS_RECEIVED_AT",
-    "SAMOLET_SHARE_URL",
     "samolet_mvp_answers_payload",
 ]
