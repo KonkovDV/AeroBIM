@@ -76,7 +76,11 @@ TZ_GAP_ROWS: tuple[dict[str, str], ...] = (
         "gap_id": "space_efficiency",
         "label": "Эффективность использования пространства",
         "status": "not_checked",
-        "reason": "Метрика не определена заказчиком; нормы не задают «неэффективность»",
+        "reason": (
+            "Самолёт 25.08: продаваемая площадь, избыточные техпомещения, "
+            "широкие коридоры, мёртвые зоны МОП. Пороги не подписаны; "
+            "advisory inventory ≠ delivered metric"
+        ),
         "tz_matrix": "§2 целевые задачи / space efficiency",
     },
 )

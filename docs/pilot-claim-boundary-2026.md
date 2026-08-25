@@ -2,7 +2,7 @@
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
 version: "1.7.5"
-last_updated: "2026-08-24"
+last_updated: "2026-08-25"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -87,7 +87,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | TZ Response Pack (architecture/build/presentation TBD fills) | [`docs/tz/README.md`](tz/README.md) |
 | Multipart document upload | `POST /v1/uploads` → storage-relative path |
 | EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |
-| Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark`) |
+| Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark` / `accepted` / `rejected`) |
 | Hybrid AI routing + WP-02 advisory pre-gate (eng) | `HybridRouteGate` mandatory before Analyze advisory observations; domain-pure, verdict-neutral (OFF==ON), fail-closed; never sets `summary.passed` |
 | Detached signature envelope (WP-03) | Presence/hash/roles; `qualified_signature` ENG_PARTIAL; trust_chain always NOT_VERIFIED |
 | Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + `execution_mode` + expert journal; fixture ≠ customer pack (RT-002 OPEN) |

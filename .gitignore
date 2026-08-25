@@ -88,6 +88,7 @@ audit/evidence/redteam-*.json
 audit/evidence/phase10-*.json
 
 # Samolet / customer pilot (never commit NDA corpus)
+files/
 samples/benchmarks/project-package-samolet-pilot-v1.json
 samples/customer/**
 !samples/customer/README.md

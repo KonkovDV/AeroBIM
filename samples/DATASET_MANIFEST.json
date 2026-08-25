@@ -940,8 +940,8 @@
     },
     {
       "path": "benchmarks/samolet-typical-errors-catalog.json",
-      "sha256": "0e6324531237e702863d4386d1a7383993779d3e4b3ec793d401daeef326ce3c",
-      "bytes": 10693,
+      "sha256": "409981c3c98f54b5e125278b74a4eb5f87401c9654e316edd6ff9492f58b3c8e",
+      "bytes": 13047,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -1264,8 +1264,8 @@
     },
     {
       "path": "customer/README.md",
-      "sha256": "56a67a1f788bac1e3fc4f90b20fd9458c54df63ce026d49c4d6da946cddae265",
-      "bytes": 518,
+      "sha256": "7c1b2d21b9df81cd0ecaa7429039d6d8aa43dce6329869f82918773e7bd2ba2d",
+      "bytes": 731,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

@@ -1144,6 +1144,12 @@
             "title": "Notes",
             "type": "array"
           },
+          "samolet_mvp_answers": {
+            "additionalProperties": true,
+            "description": "Samolet questionnaire answers (2026-08-25). Share URL is not a hashed pack. closes_rt001/002/003 stay false.",
+            "title": "Samolet Mvp Answers",
+            "type": "object"
+          },
           "schema_version": {
             "title": "Schema Version",
             "type": "string"
@@ -1159,6 +1165,7 @@
           "mep_intake",
           "auth_bff",
           "customer_intake_gate",
+          "samolet_mvp_answers",
           "llm_advisory",
           "forbidden_ok_states",
           "forbidden_claim_phrases",
@@ -2796,7 +2803,7 @@
     },
     "/v1/uploads": {
       "post": {
-        "description": "Multipart document ingest into the storage jail (TZ P0).\n\nReturns a storage-relative ``path`` suitable for ``ifc_path`` / drawing paths\non subsequent analyze calls. Validates extension + magic bytes and enforces\n``max_upload_bytes`` for all document types. Content is quarantined until\nchecks pass, then promoted under ``tenants/{tenant}/uploads/``.",
+        "description": "Multipart document ingest into the storage jail (TZ P0).\n\nReturns a storage-relative ``path`` suitable for ``ifc_path`` / drawing paths\non subsequent analyze calls. Validates extension + magic bytes and enforces\nper-type ingest caps (office vs model) under the ``max_upload_bytes`` envelope.\nContent is quarantined until checks pass, then promoted under\n``tenants/{tenant}/uploads/``.",
         "operationId": "upload_document_v1_uploads_post",
         "parameters": [
           {

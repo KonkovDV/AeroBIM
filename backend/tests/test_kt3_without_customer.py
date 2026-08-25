@@ -37,8 +37,18 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt001"])
         self.assertFalse(payload["closes_rt002"])
         self.assertFalse(payload["closes_rt003"])
-        self.assertFalse(payload["validation_effectiveness_started"])
+        self.assertFalse(payload["nda_corpus_in_git"])
+        self.assertEqual(payload["schema_version"], "1.1.0")
+        self.assertEqual(payload["rt002_split"]["b_corporate"], "OPEN")
+        self.assertTrue(payload["rt002_split"]["undifferentiated_closed_forbidden"])
+        self.assertTrue(any("90%" in item for item in payload["tz_explicit_gaps"]))
+        roles = {row["role"] for row in payload["evidence"]}
+        self.assertIn("tz_v2", roles)
+        self.assertIn("kt3_jury_card", roles)
+        self.assertIn("moscow_agr_ruler", roles)
+        self.assertIn("house5_kr_coverage_map", roles)
         self.assertEqual(payload["intake_true_gates"], [])
+        self.assertFalse(payload["validation_effectiveness_started"])
         self.assertTrue(all(row["present"] for row in payload["evidence"]))
 
     def test_payload_rejects_closed_blockers_and_customer_expectation(self) -> None:
@@ -61,6 +71,10 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         dirty["checkpoint"] = "GO"
         with self.assertRaises(Kt3WithoutCustomerError):
             require_honest_kt3_payload(dirty)
+        dirty = dict(base)
+        dirty["nda_corpus_in_git"] = True
+        with self.assertRaises(Kt3WithoutCustomerError):
+            require_honest_kt3_payload(dirty)
 
     def test_cli_writes_artifacts_and_prints_re_scope(self) -> None:
         code = kt3_main(["--generated-at", f"{OWNER_DECISION_DATE}T00:00:00+00:00"])
@@ -70,6 +84,7 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         payload = json.loads(latest.read_text(encoding="utf-8"))
         self.assertEqual(payload["plan_b_decision"], "re-scope")
         self.assertFalse(payload["closes_rt001"])
+        self.assertFalse(payload["nda_corpus_in_git"])
 
     def test_build_payload_wrapper_matches_domain(self) -> None:
         payload = build_payload(REPO_ROOT, generated_at=f"{OWNER_DECISION_DATE}T00:00:00+00:00")
@@ -86,3 +101,22 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertIn("- closes_rt003: **false**", md)
         self.assertNotIn("**False**", md)
         self.assertIn("customer_files_expected: false", md)
+        self.assertIn("nda_corpus_in_git: false", md)
+        self.assertIn("KT3_JURY_FAQ_2026_08_25.md", md)
+
+    def test_jury_card_and_runbook_keep_honesty_pins(self) -> None:
+        faq = (REPO_ROOT / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md").read_text(
+            encoding="utf-8"
+        )
+        runbook = (REPO_ROOT / "docs" / "demo" / "KT3_OPERATOR_RUNBOOK_2026_08_25.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("NO_GO", faq)
+        self.assertIn("run_demo_ifc_acceptance_gate", faq)
+        self.assertIn("RT-002 CLOSED", faq)
+        self.assertIn("coverage_map_only", faq)
+        self.assertIn("run_demo_ifc_acceptance_gate", runbook)
+        self.assertIn("IDS-Wall Fire Rating", runbook)
+        self.assertIn("nda_corpus_in_git=false", runbook)
+        self.assertIn("samolet_pilot", runbook)
+        self.assertIn("coverage_map_only", runbook)

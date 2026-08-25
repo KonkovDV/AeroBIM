@@ -2,9 +2,10 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClashResult, DrawingAsset, ValidationIssue, ValidationReport } from "./lib/types";
 
-const { fetchReportsMock, fetchReportMock } = vi.hoisted(() => ({
+const { fetchReportsMock, fetchReportMock, postReviewEventMock } = vi.hoisted(() => ({
   fetchReportsMock: vi.fn(),
   fetchReportMock: vi.fn(),
+  postReviewEventMock: vi.fn(),
 }));
 
 const clipboardWriteTextMock = vi.fn();
@@ -17,6 +18,7 @@ vi.mock("./lib/api", async () => {
     ...actual,
     fetchReports: fetchReportsMock,
     fetchReport: fetchReportMock,
+    postReviewEvent: postReviewEventMock,
     getApiBaseUrl: () => "http://localhost:8080",
   };
 });
@@ -222,6 +224,8 @@ describe("App", () => {
     const report = buildReport();
     fetchReportsMock.mockReset();
     fetchReportMock.mockReset();
+    postReviewEventMock.mockReset();
+    postReviewEventMock.mockResolvedValue({ event: {} });
     fetchReportsMock.mockResolvedValue({
       reports: [toReportSummary(report)],
       count: 1,
@@ -750,5 +754,29 @@ describe("App", () => {
       expect(badge.className).toContain("outcome-block");
       expect(badge.className).not.toContain("outcome-fail");
     }
+  });
+
+  it("lets an expert confirm or reject a remark before export", async () => {
+    render(<App />);
+
+    const confirm = await screen.findByRole("button", { name: /confirm remark/i });
+    fireEvent.click(confirm);
+    await waitFor(() => {
+      expect(postReviewEventMock).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ event_type: "accepted" }),
+      );
+    });
+    expect(await screen.findByText("Confirmed")).toBeTruthy();
+
+    const reject = screen.getByRole("button", { name: /reject remark/i });
+    fireEvent.click(reject);
+    await waitFor(() => {
+      expect(postReviewEventMock).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ event_type: "rejected" }),
+      );
+    });
+    expect(await screen.findByText("Rejected")).toBeTruthy();
   });
 });

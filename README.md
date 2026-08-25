@@ -68,6 +68,10 @@ python -m aerobim.tools.run_demo_vertical_slice
 # → artifacts/vertical-slice-demo/report.html: sheet fragment, overlay,
 #   text evidence, capability table, run manifest, BCF ZIP
 
+# 3. KT#3 pack without customer files in git (re-scope, still NO_GO)
+python -m aerobim.tools.run_kt3_without_customer
+# → artifacts/kt3-without-customer/latest.json
+
 pytest tests -q
 python -m aerobim.main   # → http://127.0.0.1:8080/health
 ```
@@ -228,7 +232,10 @@ A local clone runs on defaults. The collapsed table is the full configuration su
 | `AEROBIM_MEP_FEDERATED_SCOPE_PATH` | *(unset)* | Federated MEP scope JSON (VERIFIED customer or ENG_FIXTURE) |
 | `AEROBIM_MEP_AABB_FILTER` | `true` | Optional AABB broadphase for MEP matrix pairs; still `geometry_verified=False` |
 | `AEROBIM_PDF_BACKEND` | `pdfium` | Core PDF: `pdfium` / `none`; optional legacy `pymupdf` only with `pdf-agpl` |
-| `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC size: 256 MiB (268 435 456 bytes). Comparable to the buildingSMART Validation Service cap of 256 MB on an uncompressed `.ifc`, not the same unit |
+| `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC **analyze** size: 256 MiB (268 435 456 bytes). Comparable to the buildingSMART Validation Service cap of 256 MB on an uncompressed `.ifc`, not the same unit. Independent of Samolet-stated 1.5 GB **ingest** |
+| `AEROBIM_MAX_OFFICE_BYTES` | `268435456` (dev); `500000000` on `samolet_pilot`/`production` unless `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS=0` | Office ingest cap (PDF/Office). Customer stated 500 MB decimal (2026-08-25) |
+| `AEROBIM_MAX_MODEL_BYTES` | `268435456` (dev); `1500000000` on `samolet_pilot`/`production` unless `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS=0` | Model ingest cap (IFC/ZIP/CAD). Customer stated 1.5 GB decimal. Does **not** raise analyze or the WASM viewer (still 256 MiB) |
+| `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS` | `true` under `samolet_pilot`/`production`; ignored in development | Apply the stated 500 MB / 1.5 GB ingest caps. Analyze IFC default stays 256 MiB |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | Remark template language for deterministic generators (`ru` / `en`) |
 | `AEROBIM_PRIORITY_PROFILE` | `default` | Review priority weighting profile (`default`; `samolet` in fixture SLA smoke only) |
@@ -308,6 +315,7 @@ AEROBIM_ALLOW_ANONYMOUS_DEV
 AEROBIM_API_BEARER_TOKEN
 AEROBIM_API_TENANT_ID
 AEROBIM_APP_NAME
+AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS
 AEROBIM_BCF_API_BASE_URL
 AEROBIM_BCF_API_PROJECT_ID
 AEROBIM_BCF_API_TOKEN
@@ -359,6 +367,8 @@ AEROBIM_LLM_RESPONSE_FORMAT_MODE
 AEROBIM_LLM_SEND_SEED
 AEROBIM_LLM_TIMEOUT_SECONDS
 AEROBIM_MAX_IFC_BYTES
+AEROBIM_MAX_MODEL_BYTES
+AEROBIM_MAX_OFFICE_BYTES
 AEROBIM_MEP_AABB_FILTER
 AEROBIM_MEP_FEDERATED_SCOPE_PATH
 AEROBIM_MEP_SCOPE_MEMO_REF

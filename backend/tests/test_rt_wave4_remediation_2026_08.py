@@ -42,13 +42,28 @@ class HitlRbacRoleGateTests(unittest.TestCase):
             )
         )
 
-    def test_oidc_with_reviewer_role_allowed(self) -> None:
+    def test_oidc_with_expert_alias_allowed(self) -> None:
         principal = AuthPrincipal(
             tenant_id="t1",
             subject="user-1",
-            roles=frozenset({"reviewer"}),
+            roles=frozenset({"expert"}),
         )
         self.assertTrue(
+            principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=True,
+                require_hitl_reviewer_roles=True,
+                principal=principal,
+                event_type="accepted",
+            )
+        )
+
+    def test_oidc_user_alias_denied_in_production(self) -> None:
+        principal = AuthPrincipal(
+            tenant_id="t1",
+            subject="user-1",
+            roles=frozenset({"user"}),
+        )
+        self.assertFalse(
             principal_may_append_hitl_event(
                 enforce_hitl_reviewer_auth=True,
                 require_hitl_reviewer_roles=True,

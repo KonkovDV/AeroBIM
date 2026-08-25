@@ -1,0 +1,12 @@
+﻿# Cursor indexing / Agent file discovery.
+**/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.venv/
+backend/.venv*/
+frontend/dist/
+frontend/artifacts/
+var/
+artifacts/
+.local/

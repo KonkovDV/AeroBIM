@@ -837,6 +837,10 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertIn("calculation_correctness_verified", forbidden)
         self.assertIn("CDE_READY", forbidden)
         self.assertIn("dwg_supported", forbidden)
+        answers = body["samolet_mvp_answers"]
+        self.assertFalse(answers["closes_rt001"])
+        self.assertFalse(answers["share_ingested_in_git"])
+        self.assertEqual(answers["native_rvt_nwd"], "not_implemented")
 
     def test_auth_bff_discovery_is_public_501(self) -> None:
         response = self.client.get("/v1/auth/bff")

@@ -3,7 +3,7 @@
 title: "КТ#2 — пакет подачи (Техлаб Москва, задаче Самолёта по верификации ПД/РД)"
 status: active
 version: "1.1.5"
-last_updated: "2026-08-23"
+last_updated: "2026-08-25"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
   evaluation targets, not AeroBIM measurements. Checkpoint NO_GO;
@@ -18,7 +18,7 @@ claim_boundary: >
 
 **Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После правок документации pin может отставать на несколько коммитов до следующего прогона CI; локальные прогоны pytest не публикуем.
 
-**Объект КТ#3 (без файлов заказчика).** Владелец принял re-scope 23.08: комплект Самолёта не ожидается. Показ остаётся живым CLI. Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. RT-001/002/003 **OPEN**. Решение: [`../docs/partners/_2026_08_23.md`](../docs/partners/_2026_08_23.md).
+**Объект КТ#3 (без файлов заказчика в git).** Владелец принял re-scope 23.08: пакет показа не ждёт `samples/customer/`. 25.08 заказчик дал share URL; файлов в репозитории по-прежнему нет. Показ остаётся живым CLI. Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Сценарий: [`../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). RT-001/002/003 **OPEN**. Решение: [`../docs/partners/_2026_08_23.md`](../docs/partners/_2026_08_23.md). Ответы Самолёта 25.08 — `docs/partners/`.
 
 ## Пять полей формы → пять папок
 

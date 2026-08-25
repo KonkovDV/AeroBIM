@@ -6,7 +6,7 @@
 title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
 status: active
 version: "1.3.0"
-last_updated: "2026-08-16"
+last_updated: "2026-08-25"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
@@ -17,7 +17,7 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Prize:** paid pilot testing fund **2 000 000 ₽**  
 **Task page:** https://i.moscow/techlab/samolet  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
-**МИК stage:** **доработка** (КТ#2). Валидация эффективности и внедрение **не начаты**.  
+**МИК stage:** **доработка** (КТ#3 открывается 03.09). Валидация эффективности и внедрение **не начаты**. Показ: [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md).  
 **Eng status (Aug 2026):** [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) · jury RT [`../quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) · IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md).  
 **Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [`AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md`](AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md)
 

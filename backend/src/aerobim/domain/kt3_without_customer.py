@@ -20,9 +20,10 @@ DEMO_COMMAND: Final = "python -m aerobim.tools.run_demo_ifc_acceptance_gate"
 PACK_COMMAND: Final = "python -m aerobim.tools.run_kt3_without_customer"
 
 CLAIM_BOUNDARY: Final = (
-    "Owner re-scope 2026-08-23: customer files are not expected. "
+    "Owner re-scope 2026-08-23: customer files are not expected in git. "
     "KT#3 is the live fixture gate plus public/synthetic proxies. "
-    "Not product accuracy. Not customer SLA. Not MEP delivered. "
+    "Operator-local NDA under files/ is not samples/customer and does not "
+    "close RT-001. Not product accuracy. Not customer SLA. Not MEP delivered. "
     "Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false."
 )
 
@@ -38,6 +39,36 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
     ("planted_federated_clash", "docs/evidence/federated-clash-planted-2026-08.md"),
     ("intake_gate", "audit/evidence/customer-intake-gate.json"),
     ("rt_without_samolet", "docs/datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md"),
+    ("tz_v2", "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md"),
+    ("samolet_answers", "docs/partners/"),
+    ("moscow_agr_ruler", "samples/norm-packs/moscow_agr_2026/pack.json"),
+    ("kt3_jury_card", "docs/demo/KT3_JURY_FAQ_2026_08_25.md"),
+    ("kt3_operator_runbook", "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md"),
+    (
+        "house5_kr_coverage_map",
+        "docs/evidence/-kr13-coverage-map-2026-08.md",
+    ),
+)
+
+TZ_MVP_DEMONSTRABLE: Final[tuple[str, ...]] = (
+    "TR-3 IFC geometry/attributes",
+    "TR-8 IDS checking",
+    "TR-20 problem_zone",
+    "TR-21 template remarks RU/EN",
+    "TR-22 HITL edit/confirm/reject",
+    "TR-25 clean-architecture layers",
+    "TR-27 DeterminismGate",
+    "TR-29 capability honesty",
+    "TR-43 reproducible demo path",
+)
+
+TZ_EXPLICIT_GAPS: Final[tuple[str, ...]] = (
+    "TR-6 native DWG",
+    "TR-13 calculation_correctness",
+    "TR-15 mep_system_clash",
+    "TR-17 unsigned space-efficiency metric",
+    "TR-48 publishable product accuracy >90%",
+    "TR-49 customer SLA",
 )
 
 
@@ -99,7 +130,7 @@ def assemble_kt3_without_customer(
     pointer = _load_json(repo / "samples/ids/moexp/jurisdiction-profile-pointer.json")
 
     payload: dict[str, Any] = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "artifact_type": "kt3_without_customer",
         "claim_level": CLAIM_LEVEL,
         "claim_boundary": CLAIM_BOUNDARY,
@@ -113,11 +144,24 @@ def assemble_kt3_without_customer(
         "program_fork_date": PROGRAM_FORK_DATE,
         "customer_files_expected": False,
         "waiting_for_customer": False,
+        "nda_corpus_in_git": False,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
+        "rt002_split": {
+            "a_regulatory": "CLOSED",
+            "b_corporate": "OPEN",
+            "undifferentiated_closed_forbidden": True,
+        },
         "demo_command": DEMO_COMMAND,
         "pack_command": PACK_COMMAND,
+        "show_tracks": {
+            "jury_laptop": [DEMO_COMMAND, PACK_COMMAND],
+            "regulatory_leg": "AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026",
+            "owner_optional_nda": ("files/ is gitignored; coverage_map_only; never RT-001 CLOSED"),
+        },
+        "tz_mvp_demonstrable": list(TZ_MVP_DEMONSTRABLE),
+        "tz_explicit_gaps": list(TZ_EXPLICIT_GAPS),
         "evidence": evidence,
         "intake_status": gate.get("status"),
         "intake_true_gates": true_gates,
@@ -164,6 +208,16 @@ def require_honest_kt3_payload(
         errors.append("jurisdiction pointer must not alias Samolet")
     if payload.get("customer_pack_hash") not in (None, "", False):
         errors.append("customer_pack_hash must stay null without customer files")
+    if payload.get("nda_corpus_in_git") is not False:
+        errors.append("nda_corpus_in_git must stay false")
+    split = payload.get("rt002_split")
+    if not isinstance(split, dict) or split.get("b_corporate") != "OPEN":
+        errors.append("rt002_split.b_corporate must stay OPEN")
+    if isinstance(split, dict) and split.get("undifferentiated_closed_forbidden") is not True:
+        errors.append("must forbid undifferentiated RT-002 CLOSED")
+    gaps = payload.get("tz_explicit_gaps")
+    if not isinstance(gaps, list) or not any("90%" in str(item) for item in gaps):
+        errors.append("tz_explicit_gaps must keep publishable >90% as a gap")
     if errors:
         raise Kt3WithoutCustomerError("; ".join(errors))
 
@@ -183,23 +237,29 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         "closes_rt002: false",
         "closes_rt003: false",
         "customer_files_expected: false",
+        "nda_corpus_in_git: false",
         f"plan_b_decision: {payload['plan_b_decision']}",
         "---",
         "",
-        "# КТ#3 без файлов Самолёта",
+        "# КТ#3 без файлов Самолёта в git",
         "",
-        "Файлов заказчика не будет. Решение владельца **re-scope** "
-        f"({OWNER_DECISION_DATE}). Календарная развилка программы "
-        f"**{PROGRAM_FORK_DATE}** не отменяется и не ждётся.",
+        "Файлов заказчика **в git нет и не ожидается**. Решение владельца "
+        f"**re-scope** ({OWNER_DECISION_DATE}). Календарная развилка программы "
+        f"**{PROGRAM_FORK_DATE}** не отменяется и не ждётся. Локальный NDA-диск "
+        "не входит в этот пакет и не закрывает RT-001.",
         "",
         f"- Checkpoint: **{payload['checkpoint']}**",
         f"- Стадия МИК: **{payload['mik_stage']}**",
         "- Валидация эффективности: **не начата**",
+        f"- nda_corpus_in_git: **{json.dumps(bool(payload.get('nda_corpus_in_git')))}**",
         f"- closes_rt001: **{json.dumps(bool(payload['closes_rt001']))}**",
-        f"- closes_rt002: **{json.dumps(bool(payload['closes_rt002']))}**",
+        f"- closes_rt002: **{json.dumps(bool(payload['closes_rt002']))}** "
+        "(не произносить CLOSED без split a/b)",
         f"- closes_rt003: **{json.dumps(bool(payload['closes_rt003']))}**",
         f"- Показ: `{payload['demo_command']}`",
         f"- Пакет без заказчика: `{payload['pack_command']}`",
+        "- Карточка речи: `docs/demo/KT3_JURY_FAQ_2026_08_25.md`",
+        "- Сценарий оператора: `docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`",
         "",
         str(payload["claim_boundary"]),
         "",

@@ -1,9 +1,12 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "catalog_id": "samolet-typical-errors-v1",
   "catalog_status": "synthetic-scaffold",
-  "description": "Engineering scaffold for Samolet TechLab intake. All 20 entries require customer confirmation; mapping to a rule or finding class is not evidence that a pattern is detected with customer-grade precision.",
+  "description": "Engineering scaffold for Samolet TechLab intake. All entries require customer confirmation; mapping to a rule or finding class is not evidence that a pattern is detected with customer-grade precision.",
   "source": "https://i.moscow/techlab/samolet",
+  "customer_share_url": "",
+  "customer_share_received_at": "2026-08-25",
+  "customer_share_ingested": false,
   "customer_confirmed_patterns": 0,
   "disciplines": ["fire-safety", "structure", "architecture", "mep", "openbim"],
   "patterns": [
@@ -231,6 +234,49 @@
       "implementation_status": "gap",
       "roadmap_ref": "MEP-CLASH-001",
       "note": "Not implemented; requires customer MEP IFC corpus and agreed system rules"
+    },
+    {
+      "error_id": "SAM-TYP-021",
+      "discipline": "structure",
+      "title_ru": "Недобор площади армирования относительно расчёта ЛИРА",
+      "pattern": "RD/BIM rebar area below the declared LIRA PDF/Excel result (cross-doc compare, not a solver)",
+      "maps_to_category": "CROSS_DOCUMENT",
+      "severity_hint": "error",
+      "implementation_status": "gap",
+      "roadmap_ref": "SAMOLET-ANSWERS-2.1.1",
+      "note": "Customer 2026-08-25: compare declared sources. calculation_correctness stays NOT_IMPLEMENTED"
+    },
+    {
+      "error_id": "SAM-TYP-022",
+      "discipline": "structure",
+      "title_ru": "Неверный класс бетона или стали относительно расчёта",
+      "pattern": "Concrete or steel class in RD/BIM disagrees with the declared calculation note",
+      "maps_to_category": "CROSS_DOCUMENT",
+      "severity_hint": "error",
+      "implementation_status": "gap",
+      "roadmap_ref": "SAMOLET-ANSWERS-2.1.2"
+    },
+    {
+      "error_id": "SAM-TYP-023",
+      "discipline": "architecture",
+      "title_ru": "Неэффективное использование пространства (МОП / продаваемая площадь)",
+      "pattern": "Sellable-area, excess technical rooms, unjustified corridor width, dead zones in common areas",
+      "maps_to_category": "SPATIAL",
+      "severity_hint": "warning",
+      "implementation_status": "gap",
+      "roadmap_ref": "SAMOLET-ANSWERS-2.1.4",
+      "note": "Definition recorded; signed numeric thresholds absent; advisory inventory is not this check"
+    },
+    {
+      "error_id": "SAM-TYP-024",
+      "discipline": "architecture",
+      "title_ru": "Состав ПД не соответствует приоритету ПП 87 на MVP",
+      "pattern": "PD composition / completeness vs PP 87 as MVP priority (not a signed Samolet IDS)",
+      "maps_to_category": "CROSS_DOCUMENT",
+      "severity_hint": "warning",
+      "implementation_status": "gap",
+      "roadmap_ref": "SAMOLET-ANSWERS-1.2.2",
+      "note": "Priority only. RT-002b stays OPEN until Samolet-signed pack_hash"
     }
   ]
 }

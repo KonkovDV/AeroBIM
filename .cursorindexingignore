@@ -1,0 +1,10 @@
+# Indexing-only.
+**/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+frontend/dist/
+var/
+artifacts/
+.local/
+files/

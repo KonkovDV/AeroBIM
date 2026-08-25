@@ -211,7 +211,7 @@ class UploadApiSecurityTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("held_bytes = max_bytes", source)
         drop_start = source.index("def _drop_quota")
-        drop_end = source.index("try:\n            safe_name")
+        drop_end = source.index("relative_path = ", drop_start)
         drop_fn = source[drop_start:drop_end]
         self.assertIn("size_bytes=held_bytes", drop_fn)
         self.assertIn("held_bytes = 0", drop_fn)

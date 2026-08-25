@@ -76,6 +76,7 @@ def main(argv: list[str] | None = None) -> int:
                 "closes_rt003": payload["closes_rt003"],
                 "customer_files_expected": payload["customer_files_expected"],
                 "waiting_for_customer": payload["waiting_for_customer"],
+                "nda_corpus_in_git": payload.get("nda_corpus_in_git"),
             },
             ensure_ascii=False,
         )

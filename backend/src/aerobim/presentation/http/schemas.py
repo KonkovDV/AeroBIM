@@ -240,6 +240,12 @@ class SystemCapabilitiesResponse(BaseModel):
     mep_intake: dict[str, object]
     auth_bff: AuthBffStatus
     customer_intake_gate: CustomerIntakeGateSnapshot
+    samolet_mvp_answers: dict[str, object] = Field(
+        description=(
+            "Samolet questionnaire answers (2026-08-25). Share URL is not a hashed pack. "
+            "closes_rt001/002/003 stay false."
+        ),
+    )
     llm_advisory: LlmAdvisoryCapability
     forbidden_ok_states: dict[str, list[str]]
     forbidden_claim_phrases: list[str]

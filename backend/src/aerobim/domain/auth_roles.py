@@ -1,4 +1,9 @@
-"""OIDC role extraction and RBAC helpers (Wave 4)."""
+"""OIDC role extraction and RBAC helpers (Wave 4).
+
+Samolet MVP (answers 2.2.1, 2026-08-25): **Expert** maps to HITL reviewer
+(``expert`` / ``aerobim:expert`` aliases); **User** maps to viewer
+(``user`` / ``aerobim:user``) and cannot append HITL under pilot/production.
+"""
 
 from __future__ import annotations
 
@@ -11,8 +16,19 @@ HITL_REVIEWER_ROLES = frozenset(
         "hitl_reviewer",
         "aerobim:reviewer",
         "aerobim:hitl_reviewer",
+        "expert",
+        "aerobim:expert",
         "admin",
         "aerobim:admin",
+    }
+)
+
+VIEWER_ROLES = frozenset(
+    {
+        "viewer",
+        "user",
+        "aerobim:viewer",
+        "aerobim:user",
     }
 )
 
@@ -24,6 +40,8 @@ NORM_PACK_EDITOR_ROLES = frozenset(
         "aerobim:admin",
         "reviewer",
         "aerobim:reviewer",
+        "expert",
+        "aerobim:expert",
     }
 )
 
@@ -81,6 +99,7 @@ def principal_has_any_role(*, principal_roles: frozenset[str], required: frozens
 __all__ = [
     "HITL_REVIEWER_ROLES",
     "NORM_PACK_EDITOR_ROLES",
+    "VIEWER_ROLES",
     "extract_oidc_roles",
     "principal_has_any_role",
 ]

@@ -5,6 +5,11 @@ are ignored by git except this README.
 
 Do **not** commit IFC, drawings, or labels from Samolet / customer pilots.
 
+Share URL received 2026-08-25 (NDA channel, not a git corpus):
+``
+
+Owner downloads locally (`.local/samolet/`). A URL does **not** flip intake gates.
+
 ## Checklist before flipping intake gates
 
 1. Dual human adjudicators (LLM does not count)

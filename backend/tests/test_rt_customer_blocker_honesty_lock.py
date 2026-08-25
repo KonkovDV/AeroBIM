@@ -499,6 +499,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("Intake-form", text)
         self.assertIn("Six desks", text)
         self.assertIn("Объект КТ#2", text)
+        self.assertIn("Объект КТ#3", text)
         self.assertIn("RED_TEAM_FINAL_VERDICT_2026_08_16.md", text)
         self.assertNotIn("Executable readiness = 5/5", text)
 
@@ -702,6 +703,11 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
         self.assertIn("", text)
         self.assertIn("_2026_08_23.md", text)
+        self.assertIn("", text)
+        self.assertIn("SAMOLET_ANSWERS_WORKPLAN_2026_08_25.md", text)
+        self.assertIn("KT3_JURY_FAQ_2026_08_25.md", text)
+        self.assertIn("KT3_OPERATOR_RUNBOOK_2026_08_25.md", text)
+        self.assertIn("-kr13-coverage-map-2026-08.md", text)
 
     def test_hostile_qa_playbook_pins_ssot_and_stays_no_go(self) -> None:
         path = self._repo() / "docs" / "demo" / ""

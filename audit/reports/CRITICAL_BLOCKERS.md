@@ -112,6 +112,8 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Still true:** there is **no** public corpus «российский комплект ПД + фактическое заключение экспертизы». Fixture F1 is not product accuracy. 656 pytest ≠ false-pass rate ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058)). MinStroy XSD **01.07 / 01.01** plus survey-assignment / geological-report **01.00** are vendored (zip folders for PZ/ZnP still `dev_`); that is intake format, not a remark corpus. Construction-stage XSDs from the 07.08.2026 news were **not** on the 14.08 catalog scrape.  
 - **Expected before any product accuracy claim:** customer or RF-expertise corpus + ≥2 adjudicators + κ/α + held-out + FN tracked  
 - **Product HOLD — RT-001 still OPEN** for that RF/customer corpus only. Open benches ≠ RT-001 closed.
+- **Addendum 25.08.2026:** customer share URL received (`[redacted-host]`). URL ≠ hashed pack in git. `customer_package_in_samples_customer` stays false. See [`docs/partners/`](../../docs/partners/).
+- **Addendum 25.08.2026 evening:** Technilab NDA pack is on the owner disk (`files/Техлаб`, gitignored): three residential objects, IFC2x3 AR/KR, PD, OEP/expertise remarks, LIRA/SCAD. That is a **coverage-map carrier**, not dual adjudication, not `pack_hash` in git, not RF-expertise κ. IFC has no MEP and no `IfcReinforcingBar`. RT-001 stays OPEN. Map: [`docs/research/TECHNILAB_ACADEMIC_OSINT_2026_08_25.md`](../../docs/research/TECHNILAB_ACADEMIC_OSINT_2026_08_25.md).
 
 ### RT-002 — Samolet-signed acceptance profile absent (public examination IDS exist)
 - **Severity:** BLOCKER (customer sign-off)  

@@ -301,6 +301,9 @@ export default function App() {
   const [hitlOnlyFilter, setHitlOnlyFilter] = useState(false);
   const [remarkDraft, setRemarkDraft] = useState("");
   const [remarkSaveState, setRemarkSaveState] = useState<"idle" | "saving" | "saved" | "failed">("idle");
+  const [hitlDecisionState, setHitlDecisionState] = useState<"idle" | "saving" | "accepted" | "rejected" | "failed">(
+    "idle",
+  );
   const [search, setSearch] = useState("");
   const [groupByProject, setGroupByProject] = useState(false);
   const [shareLinkState, setShareLinkState] = useState<ShareLinkState>("idle");
@@ -410,6 +413,7 @@ export default function App() {
         setSelectedClashIndex(null);
         setRemarkDraft(report.issues[0]?.remark?.body ?? "");
         setRemarkSaveState("idle");
+        setHitlDecisionState("idle");
       })
       .catch((error: unknown) => {
         if (cancelled || controller.signal.aborted) {
@@ -763,6 +767,23 @@ export default function App() {
     }
   }
 
+  async function decideRemark(eventType: "accepted" | "rejected"): Promise<void> {
+    if (!selectedReport || !activeIssue) {
+      return;
+    }
+    setHitlDecisionState("saving");
+    try {
+      await postReviewEvent(selectedReport.report_id, {
+        event_type: eventType,
+        issue_rule_id: activeIssue.rule_id,
+        note: remarkDraft,
+      });
+      setHitlDecisionState(eventType);
+    } catch {
+      setHitlDecisionState("failed");
+    }
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -1108,6 +1129,7 @@ export default function App() {
                           setSelectedClashIndex(null);
                           setRemarkDraft(issue.remark?.body ?? "");
                           setRemarkSaveState("idle");
+                          setHitlDecisionState("idle");
                         });
                       }}
                     >
@@ -1207,6 +1229,7 @@ export default function App() {
                         onChange={(event) => {
                           setRemarkDraft(event.target.value);
                           setRemarkSaveState("idle");
+                          setHitlDecisionState("idle");
                         }}
                         aria-label="Edit remark text"
                       />
@@ -1214,8 +1237,25 @@ export default function App() {
                         <button type="button" onClick={() => void saveRemarkEdit()} disabled={remarkSaveState === "saving"}>
                           {remarkSaveState === "saving" ? "Saving…" : "Save remark edit"}
                         </button>
+                        <button
+                          type="button"
+                          onClick={() => void decideRemark("accepted")}
+                          disabled={hitlDecisionState === "saving"}
+                        >
+                          Confirm remark
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void decideRemark("rejected")}
+                          disabled={hitlDecisionState === "saving"}
+                        >
+                          Reject remark
+                        </button>
                         {remarkSaveState === "saved" ? <span className="compact-copy">Saved to review events</span> : null}
                         {remarkSaveState === "failed" ? <span className="compact-copy">Save failed</span> : null}
+                        {hitlDecisionState === "accepted" ? <span className="compact-copy">Confirmed</span> : null}
+                        {hitlDecisionState === "rejected" ? <span className="compact-copy">Rejected</span> : null}
+                        {hitlDecisionState === "failed" ? <span className="compact-copy">Decision failed</span> : null}
                       </div>
                     </div>
                   ) : (

@@ -15,6 +15,7 @@ from aerobim.domain.capability_contract import capability_contract
 from aerobim.domain.errors import HonestyCapabilityError
 from aerobim.domain.mep_intake import assess_mep_customer_intake
 from aerobim.domain.models import CapabilityState, CapabilityStatus, ReportCapabilities
+from aerobim.domain.samolet_mvp_answers import samolet_mvp_answers_payload
 
 _MEP_ALLOWED = frozenset(
     {
@@ -264,7 +265,10 @@ def build_four_direction_contracts() -> list[dict[str, Any]]:
             status="partial",
             evidence_level="fixture",
             affects_pass=True,
-            reason="evidence_consistency_only — load/qty/cross-doc/OpenRebar сверка",
+            reason=(
+                "evidence_consistency_only — load/qty/cross-doc/OpenRebar сверка; "
+                "Samolet 2.1.1: LIRA PDF/Excel vs RD/BIM rebar, sections, loads, areas"
+            ),
             claim_boundary=("сверка переданных результатов и источников, не расчётный решатель"),
             dependencies=[
                 "LoadEvidenceVerifier",
@@ -385,6 +389,7 @@ def build_system_capabilities_payload() -> dict[str, object]:
         "mep_intake": mep_intake,
         "auth_bff": auth_bff,
         "customer_intake_gate": intake,
+        "samolet_mvp_answers": samolet_mvp_answers_payload(),
         "llm_advisory": {
             "status": "skipped",
             "advisory_only": True,

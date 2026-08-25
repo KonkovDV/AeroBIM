@@ -1,0 +1,33 @@
+{
+  "chat.useCustomizationsInParentRepositories": false,
+  "chat.useNestedAgentsMdFiles": false,
+  "search.followSymlinks": false,
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/__pycache__/**": true,
+    "**/.pytest_cache/**": true,
+    "**/.ruff_cache/**": true,
+    "**/.git/objects/**": true,
+    "**/.venv/**": true,
+    "**/var/**": true,
+    "**/artifacts/**": true,
+    "**/files/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/var": true
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/__pycache__": true
+  },
+  "python.analysis.exclude": [
+    "**/__pycache__",
+    "**/.pytest_cache",
+    "**/.venv",
+    "**/node_modules",
+    "**/var"
+  ]
+}

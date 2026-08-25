@@ -47,8 +47,9 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
         Returns a storage-relative ``path`` suitable for ``ifc_path`` / drawing paths
         on subsequent analyze calls. Validates extension + magic bytes and enforces
-        ``max_upload_bytes`` for all document types. Content is quarantined until
-        checks pass, then promoted under ``tenants/{tenant}/uploads/``.
+        per-type ingest caps (office vs model) under the ``max_upload_bytes`` envelope.
+        Content is quarantined until checks pass, then promoted under
+        ``tenants/{tenant}/uploads/``.
         """
         tenant_key = (
             principal.tenant_id or principal.subject or "anonymous"
@@ -59,7 +60,12 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
         except PathJailError as exc:
             raise HTTPException(status_code=400, detail="Invalid tenant identity") from exc
 
-        max_bytes = settings.max_upload_bytes
+        try:
+            safe_name = sanitize_upload_filename(file.filename or "upload.bin")
+        except PathJailError as exc:
+            raise HTTPException(status_code=400, detail="Invalid upload filename") from exc
+
+        max_bytes = settings.upload_limit_for_filename(safe_name)
         content_length = request.headers.get("content-length")
         if content_length:
             try:
@@ -102,11 +108,6 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             held_bytes = 0
             ctx.upload_quota_store.clear_hold(tenant_key, upload_id)
 
-        try:
-            safe_name = sanitize_upload_filename(file.filename or "upload.bin")
-        except PathJailError as exc:
-            _drop_quota()
-            raise HTTPException(status_code=400, detail="Invalid upload filename") from exc
         relative_path = f"{tenant_prefix}uploads/{upload_id}/{safe_name}"
         base = settings.storage_dir.resolve()
         quarantine = (

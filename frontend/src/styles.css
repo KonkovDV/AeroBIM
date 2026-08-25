@@ -16,6 +16,8 @@
   --warning-soft: #fff7dd;
   --pass: #166534;
   --pass-soft: #ecfdf3;
+  /* Samolet 2.2.3: laconic UI. Brand book is not in git — alias until tokens arrive. */
+  --brand-primary: var(--accent);
   --shadow: 0 24px 70px rgba(24, 33, 46, 0.12);
   --radius: 22px;
 }
@@ -638,6 +640,7 @@ input {
 
 .remark-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   margin-top: 10px;

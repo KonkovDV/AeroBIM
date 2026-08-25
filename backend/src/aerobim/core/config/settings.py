@@ -95,6 +95,32 @@ def _warn_deprecated_llm_local_alias() -> None:
     )
 
 
+def _samolet_office_default(profile_gate: bool) -> int:
+    """Pilot/production ingest default for office files when the apply-flag is on."""
+
+    from aerobim.core.security.upload_limits import (
+        DEV_DEFAULT_UPLOAD_BYTES,
+        SAMOLET_STATED_OFFICE_BYTES,
+    )
+
+    if profile_gate and _read_bool("AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS", True):
+        return SAMOLET_STATED_OFFICE_BYTES
+    return DEV_DEFAULT_UPLOAD_BYTES
+
+
+def _samolet_model_default(profile_gate: bool) -> int:
+    """Pilot/production ingest default for model files when the apply-flag is on."""
+
+    from aerobim.core.security.upload_limits import (
+        DEV_DEFAULT_UPLOAD_BYTES,
+        SAMOLET_STATED_MODEL_BYTES,
+    )
+
+    if profile_gate and _read_bool("AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS", True):
+        return SAMOLET_STATED_MODEL_BYTES
+    return DEV_DEFAULT_UPLOAD_BYTES
+
+
 _DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
 _DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # 256 MiB; comparable to bSI 256 MB, not identical
 # Baked pilot/production quotas when env unset (RTATOM-I20 / A2.3).
@@ -275,10 +301,15 @@ class Settings:
     """Maximum accepted IFC file size in bytes (default 256 MiB = 268435456).
 
     Comparable to the buildingSMART Validation Service 256 MB uncompressed
-    ``.ifc`` cap, not the same unit.
+    ``.ifc`` cap, not the same unit. Independent of Samolet-stated 1.5 GB
+    model *ingest* (answers 1.1.4): raising upload caps does not raise analyze.
     """
     max_upload_bytes: int = _DEFAULT_MAX_IFC_BYTES
-    """Maximum accepted multipart upload size in bytes (all document types)."""
+    """Envelope multipart cap (bytes). Per-file office/model caps cannot exceed this."""
+    max_office_bytes: int = _DEFAULT_MAX_IFC_BYTES
+    """Office ingest cap (PDF/Office). Samolet stated 500_000_000 under pilot when applied."""
+    max_model_bytes: int = _DEFAULT_MAX_IFC_BYTES
+    """Model ingest cap (IFC/ZIP/CAD). Samolet stated 1_500_000_000 under pilot when applied."""
     max_uploads_per_tenant_day: int | None = None
     """Optional per-tenant daily upload count quota (``AEROBIM_MAX_UPLOADS_PER_TENANT_DAY``)."""
     max_upload_bytes_per_tenant_day: int | None = None
@@ -619,6 +650,18 @@ class Settings:
 
         return self.signoff_profile in {"samolet_pilot", "production"}
 
+    def upload_limit_for_filename(self, filename: str) -> int:
+        """Per-file ingest cap: min(office or model cap, ``max_upload_bytes``)."""
+
+        from aerobim.core.security.upload_limits import upload_limit_bytes
+
+        return upload_limit_bytes(
+            filename,
+            max_office_bytes=self.max_office_bytes,
+            max_model_bytes=self.max_model_bytes,
+            envelope_bytes=self.max_upload_bytes,
+        )
+
     def require_durable_runtime(self) -> None:
         """Fail closed: non-dev must not silently use in-memory jobs / in-process limits."""
 
@@ -818,9 +861,26 @@ class Settings:
             enforce_object_acl=enforce_object_acl,
             api_tenant_id=(os.getenv("AEROBIM_API_TENANT_ID") or "").strip() or None,
             max_ifc_bytes=_read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
+            max_office_bytes=_read_int(
+                "AEROBIM_MAX_OFFICE_BYTES",
+                _samolet_office_default(profile_gate),
+            ),
+            max_model_bytes=_read_int(
+                "AEROBIM_MAX_MODEL_BYTES",
+                _samolet_model_default(profile_gate),
+            ),
             max_upload_bytes=_read_int(
                 "AEROBIM_MAX_UPLOAD_BYTES",
-                _read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
+                max(
+                    _read_int(
+                        "AEROBIM_MAX_OFFICE_BYTES",
+                        _samolet_office_default(profile_gate),
+                    ),
+                    _read_int(
+                        "AEROBIM_MAX_MODEL_BYTES",
+                        _samolet_model_default(profile_gate),
+                    ),
+                ),
             ),
             max_uploads_per_tenant_day=max_uploads_per_tenant_day,
             max_upload_bytes_per_tenant_day=max_upload_bytes_per_tenant_day,

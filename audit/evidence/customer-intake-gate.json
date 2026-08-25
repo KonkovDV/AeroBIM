@@ -25,13 +25,24 @@
     "fixture_sla_is_customer_sla": false,
     "customer_approved_without_approval_ref": false
   },
+  "share_url_received": true,
+  "share_url": "",
+  "share_received_at": "2026-08-25",
+  "share_ingested_in_git": false,
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
   "next_actions": [
-    "Do not wait for samples/customer/ before KT#3 — owner re-scope 2026-08-23",
+    "Do not wait for samples/customer/ in git before KT#3 — owner re-scope 2026-08-23",
+    "KT#3 jury show: docs/demo/KT3_JURY_FAQ_2026_08_25.md + run_demo_ifc_acceptance_gate; local NDA is not the pack",
+    "Share URL received 2026-08-25 (NDA) — download locally; URL is not a hashed pack; RT-001 OPEN",
     "Run python -m aerobim.tools.run_kt3_without_customer",
     "Keep checkpoint NO_GO until RT-001/002/003 evidenced"
   ],
   "references": [
     "samples/customer/README.md",
+    "docs/partners/",
+    "docs/roadmap/SAMOLET_ANSWERS_WORKPLAN_2026_08_25.md",
     "audit/reports/CLAIMS_LOCK_2026_07_17.md",
     "audit/reports/CRITICAL_BLOCKERS.md",
     "docs/pilot-claim-boundary-2026.md",
