@@ -7,7 +7,6 @@ reliable numeric comparisons across heterogeneous unit encodings
 References:
 - UCUM (Unified Code for Units of Measure)
 - ISO 80000 (Quantities and units)
-- ISO 12006-3 (Building construction — Organization of information)
 """
 
 from __future__ import annotations

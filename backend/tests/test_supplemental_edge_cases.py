@@ -262,7 +262,7 @@ class CompareValuesTests(unittest.TestCase):
         uc = self._make_uc()
         self.assertFalse(self._cmp(uc, None, "100", ComparisonOperator.EQUALS))
 
-    # -- Fuzzy tolerance tests (ISO 12006-3 aligned) --
+    # -- Fuzzy tolerance tests (configured ε-band) --
 
     def test_fuzzy_equals_within_length_epsilon(self) -> None:
         """200.0005 ≈ 200.0 within default length_epsilon=0.001 mm."""

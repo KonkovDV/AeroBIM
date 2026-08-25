@@ -96,7 +96,7 @@ def _warn_deprecated_llm_local_alias() -> None:
 
 
 _DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
-_DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # aligned with bSI Validation Service
+_DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # 256 MiB; comparable to bSI 256 MB, not identical
 # Baked pilot/production quotas when env unset (RTATOM-I20 / A2.3).
 _PILOT_DEFAULT_MAX_UPLOADS_PER_DAY = 100
 _PILOT_DEFAULT_MAX_BYTES_PER_DAY = 10 * 1024 * 1024 * 1024  # 10 GiB
@@ -272,7 +272,11 @@ class Settings:
     api_tenant_id: str | None = None
     """Tenant bound to the static bearer token (``AEROBIM_API_TENANT_ID``)."""
     max_ifc_bytes: int = _DEFAULT_MAX_IFC_BYTES
-    """Maximum accepted IFC file size in bytes (default 256 MiB)."""
+    """Maximum accepted IFC file size in bytes (default 256 MiB = 268435456).
+
+    Comparable to the buildingSMART Validation Service 256 MB uncompressed
+    ``.ifc`` cap, not the same unit.
+    """
     max_upload_bytes: int = _DEFAULT_MAX_IFC_BYTES
     """Maximum accepted multipart upload size in bytes (all document types)."""
     max_uploads_per_tenant_day: int | None = None

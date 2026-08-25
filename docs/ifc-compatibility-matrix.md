@@ -55,6 +55,7 @@ against all three releases and asserts:
 ## References
 
 - buildingSMART IFC releases: https://standards.buildingsmart.org/IFC/
-- ISO 16739-1:2018 (IFC4) and ISO 16739-1:2024 (IFC4x3)
+- IFC2x3 is a buildingSMART schema. It has no ISO publication. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3.
+- ISO 16739-1:2018 (IFC4 ADD2) and ISO 16739-1:2024 (IFC4x3)
 - buildingSMART Compatibility Policy: https://standards.buildingsmart.org/IFC/DEV/IFC4_3/
 - IfcOpenShell IFC2x3/IFC4/IFC4x3 schema support: https://ifcopenshell.org/

@@ -20,7 +20,8 @@ from typing import Any
 from aerobim.domain.ifc_spatial_index import IfcSpatialIndex
 
 _DEFAULT_MAX_CACHED_MODELS = 8
-# Aligned with Settings._DEFAULT_MAX_IFC_BYTES (bSI Validation Service 256 MiB).
+# Default 256 MiB (268435456). Comparable to bSI Validation Service 256 MB
+# uncompressed .ifc — not the same unit.
 _DEFAULT_MAX_BYTES_PER_CACHED_MODEL = 256 * 1024 * 1024
 _lock = threading.Lock()
 _memory: OrderedDict[tuple[str, int, int], Any] = OrderedDict()

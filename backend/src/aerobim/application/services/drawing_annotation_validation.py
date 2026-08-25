@@ -1,6 +1,6 @@
 """Drawing annotation validation against normalized rules (extracted from use case).
 
-ISO 12006-3 aligned comparison: exact float equality is replaced with
+Configured ε-band comparison: exact float equality is replaced with
 ``abs(a - b) <= ε`` where ε depends on the measurement unit.
 """
 
@@ -109,7 +109,7 @@ class DrawingAnnotationValidator:
     ) -> bool:
         """Compare observed vs expected using fuzzy ε-tolerance for numerics.
 
-        ISO 12006-3 aligned: exact float equality is replaced with
+        Configured ε-band: exact float equality is replaced with
         ``abs(a - b) <= ε`` where ε depends on the measurement unit.
         This eliminates false positives from millimetre-level rounding
         differences that are inevitable in real BIM data.

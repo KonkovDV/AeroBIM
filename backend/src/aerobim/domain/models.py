@@ -738,16 +738,16 @@ class ClashResult:
 
 @dataclass(frozen=True)
 class ToleranceConfig:
-    """ISO 12006-3 aligned dimensional tolerance for numeric comparisons.
+    """Configured ε-band for numeric comparisons.
 
-    In construction, exact float equality is meaningless due to measurement
-    precision, rounding, and coordinate system differences.  This config
-    controls the ε-band used by comparison operators.
+    Exact float equality is meaningless on construction quantities because of
+    rounding, unit encoding, and coordinate precision. This config is an
+    engineering band in code, not a clause of an ISO dictionary framework.
 
     Defaults:
-      - length_epsilon:          1 mm  = 0.001 m  (ISO 1101 general tolerance)
-      - imperial_length_epsilon: 0.003           (small feet/inch tolerance band)
-      - area_epsilon:            0.01 m²         (sub-centimetre precision)
+      - length_epsilon:          1 mm  = 0.001 m
+      - imperial_length_epsilon: 0.003           (small feet/inch band)
+      - area_epsilon:            0.01 m²
       - angle_epsilon:           0.1             (degrees/radians project-level band)
       - default_epsilon:         1e-6            (dimensionless / fallback)
     """

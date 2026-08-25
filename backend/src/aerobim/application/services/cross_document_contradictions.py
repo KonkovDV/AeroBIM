@@ -1,8 +1,8 @@
 """Cross-document contradiction detection (extracted from AnalyzeProjectPackageUseCase).
 
 Compares requirements originating from different sources for the same
-(entity, property) pair and classifies conflicts with ISO 12006-3
-ε-tolerance so that unit-encoding differences do not produce false positives.
+(entity, property) pair and classifies conflicts with a configured ε-band
+so that unit-encoding differences do not produce false positives.
 """
 
 from __future__ import annotations
@@ -71,7 +71,7 @@ class CrossDocumentContradictionDetector:
 
         When two sources specify conflicting expected values for the same
         IFC entity + property pair, emit a CROSS_DOCUMENT issue.  Numeric
-        values are compared with ISO 12006-3 ε-tolerance so that rounding
+        values are compared with a configured ε-band so that rounding
         differences (e.g. 3.0 m vs 3000 mm) do not produce false positives.
         The severity of emitted issues is controlled by the configured severity
         (``AEROBIM_CROSS_DOC_SEVERITY``).  The ``conflict_kind`` field classifies

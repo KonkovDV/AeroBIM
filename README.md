@@ -29,7 +29,7 @@ AeroBIM raises that class of finding with provenance to the sheet and the GUID, 
 | TZ ask | What the clone actually does |
 |---|---|
 | Ingest 2D + BIM + texts | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
-| Cross-check model, drawings, rules | Deterministic IFC + IDS + cross-document compare (ISO 12006-3 tolerance) |
+| Cross-check model, drawings, rules | Deterministic IFC + IDS + cross-document compare (configured ε-band) |
 | Highlight and remark | 2D overlay, 3D review shell, RU/EN remark templates, expert edit |
 | Report for coordination | HTML + JSON + structural BCF 2.1 / 3.0 ZIP |
 | Expert stays accountable | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
@@ -84,9 +84,9 @@ TechLab / MIK jury: formula above → [`submission/README.md`](submission/README
 
 A pack goes in. Deterministic checks run. One fused report comes out.
 
-1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (ISO 16739:2005), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
+1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
 2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. CI on `ubuntu-latest` runs `python -m aerobim.tools.validate_spb_cge_profile --no-write --verify-committed-evidence`, so a swapped `.ids` file or a stale evidence SHA fails the build. A requested rule set that cannot load fails closed — it cannot look like a pass.
-3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with an ISO 12006-3 tolerance band and Russian/European grouped decimals. Sources are compared; nothing is recomputed. Independent correctness of calculations is not implemented.
+3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with a configured ε-band and Russian/European grouped decimals. Sources are compared; nothing is recomputed. Independent correctness of calculations is not implemented.
 4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D and the evidence on the sheet.
 
 Two properties make the result auditable.
@@ -138,7 +138,7 @@ Register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS
 
 - IFC property and quantity validation; IDS 1.0, fail-closed if the rule set cannot load
 - Cross-document contradictions (`ConflictKind` taxonomy, configurable severity) and drawing annotation ↔ IFC (a claimed GUID becomes `ifc_guid` only after it is present in the spatial index)
-- ISO 12006-3 tolerance algebra; deterministic requirement extraction from narrative text (no model signs anything off)
+- Configured ε-band compare (SI-normalised); deterministic requirement extraction from narrative text (no model signs anything off)
 - Capability honesty on every report; tenant/object ACL on artifacts under `samolet_pilot` / `production` sign-off (off by default in development); HTML/JSON export; structural BCF 2.1 / 3.0 ZIP
 - Deterministic PDF text and crop (pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`)
 - Browser IFC viewer and 2D overlay; offline Docker bundle (`closed-contour --smoke`; bare metal without Docker is out of scope)
@@ -228,7 +228,7 @@ A local clone runs on defaults. The collapsed table is the full configuration su
 | `AEROBIM_MEP_FEDERATED_SCOPE_PATH` | *(unset)* | Federated MEP scope JSON (VERIFIED customer or ENG_FIXTURE) |
 | `AEROBIM_MEP_AABB_FILTER` | `true` | Optional AABB broadphase for MEP matrix pairs; still `geometry_verified=False` |
 | `AEROBIM_PDF_BACKEND` | `pdfium` | Core PDF: `pdfium` / `none`; optional legacy `pymupdf` only with `pdf-agpl` |
-| `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC size (256 MiB, aligned with bSI Validation Service) |
+| `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC size: 256 MiB (268 435 456 bytes). Comparable to the buildingSMART Validation Service cap of 256 MB on an uncompressed `.ifc`, not the same unit |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | Remark template language for deterministic generators (`ru` / `en`) |
 | `AEROBIM_PRIORITY_PROFILE` | `default` | Review priority weighting profile (`default`; `samolet` in fixture SLA smoke only) |
