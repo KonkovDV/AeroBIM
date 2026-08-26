@@ -1,26 +1,26 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "9ae19be423e4e97ec44ae27eff52c6771b0171bc",
-  "tree_sha": "b02b2bbcdfa34d45de778239fbb3071d27f2d261",
+  "commit_sha": "b08f8444e778996fb2b65b139325b9c5ea6e4673",
+  "tree_sha": "496910c1d507fb4fe5b172524e6205e850c10816",
   "working_tree_clean": true,
-  "generated_at": "2026-08-24T19:42:05.322476+00:00",
+  "generated_at": "2026-08-26T06:58:27.382700+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
   "backend": {
-    "tests_collected": 2558,
-    "tests_passed": 2540,
+    "tests_collected": 2592,
+    "tests_passed": 2574,
     "tests_skipped": 18,
     "tests_failed": 0,
     "tests_unaccounted": 0,
     "tests_unaccounted_note": "collected − passed − skipped − failed; remainder is typically deselected/xfail vs the CI JUnit pin (HD-DOC-02)",
-    "source_loc": 80038,
-    "test_loc": 52520,
-    "test_functions": 2558,
+    "source_loc": 80666,
+    "test_loc": 53268,
+    "test_functions": 2592,
     "uncollected": []
   },
   "frontend": {
-    "tests_passed": 56,
+    "tests_passed": 57,
     "tests_failed": 0,
     "vitest_artifact": "../frontend/var/vitest-results.json",
     "note": "Recorded from vitest JSON artifact when provided; manual --frontend-tests-passed without artifact is not publishable"
@@ -52,18 +52,18 @@
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 80038,
-    "backend_test_loc": 52520,
-    "backend_test_functions": 2558,
+    "backend_src_loc": 80666,
+    "backend_test_loc": 53268,
+    "backend_test_functions": 2592,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=2540, frontend=56; commit 9ae19be423e4; see docs/evidence/runtime-baseline-latest.json · src ~80038 LOC; tests ~52520 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=2574, frontend=57; commit b08f8444e778; see docs/evidence/runtime-baseline-latest.json · src ~80666 LOC; tests ~53268 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_API_BEARER_TOKEN",
     "AEROBIM_API_TENANT_ID",
-    "AEROBIM_APP_NAME",
     "AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS",
+    "AEROBIM_APP_NAME",
     "AEROBIM_BCF_API_BASE_URL",
     "AEROBIM_BCF_API_PROJECT_ID",
     "AEROBIM_BCF_API_TOKEN",
@@ -222,10 +222,10 @@
   },
   "attestation": {
     "attested_by": "ci",
-    "run_id": "32769067126",
+    "run_id": "32940042612",
     "run_attempt": 1,
     "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main",
-    "github_sha": "9ae19be423e4e97ec44ae27eff52c6771b0171bc",
+    "github_sha": "b08f8444e778996fb2b65b139325b9c5ea6e4673",
     "runner_os": "Linux",
     "runner_python": "3.12.14",
     "gates_attested": [
