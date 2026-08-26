@@ -15,14 +15,13 @@ _REPO = Path(__file__).resolve().parents[1]
 _BASELINE = _REPO / "docs" / "evidence" / "runtime-baseline-latest.json"
 
 _MONITORED = (
-    _REPO / "docs" / "ENGINEERING_STATUS_2026_08.md",
     _REPO / "docs" / "tz" / "TZ_COMPLIANCE_MATRIX_2026.md",
     _REPO / "docs" / "capability-claim-matrix-2026.md",
     _REPO / "docs" / "pilot-claim-boundary-2026.md",
     _REPO / "docs" / "docs.md",
     _REPO / "README.md",
     _REPO / "README.ru.md",
-    _REPO / "docs" / "demo-format-2026-08.md",
+    _REPO / "docs" / "TIER0_INDEX.md",
 )
 
 

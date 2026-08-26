@@ -15,7 +15,7 @@
 >
 > **Календарь программы (авг 2026):** КТ#2 — 04.08–20.08 (промежуточный показ, этап МИК **доработка**); КТ#3 — 03.09–21.09 (финальная). **Валидация эффективности** и **внедрение** по четырёхэтапной модели МИК **не начаты**. Финал — 29–30.09, «СберСити». Фонд внедрения — **20 млн ₽ на 10 задач**; цель по задаче Самолёта по верификации ПД/РД — **коммерческое соглашение / платный пилот**, не «грант».
 >
-> **Инженерная работа августа 2026** усилила воспроизводимость прогонов, изоляцию советующего ИИ от технического вердикта, конверт подписи, нормативные пакеты правил и протокол измерения качества — **без** закрытия RT-001/002/003 и без новых заявлений о продукте. Checkpoint по-прежнему **NO_GO** до корпуса заказчика. **25.08:** ответы Самолёта на анкету зафиксированы ([`partners/`](partners/)); ссылка на файлы ≠ измерение на комплекте. Вечером 25.08 на диске владельца — локальный корпус Техлаба (три объекта, IFC АР/КР); это носитель карты покрытия, не закрытие RT-001/002/003 ([`research/TECHNILAB_ACADEMIC_OSINT_2026_08_25.md`](research/TECHNILAB_ACADEMIC_OSINT_2026_08_25.md) · [`roadmap/TECHNILAB_DEEP_WORKPLAN_2026_08_25.md`](roadmap/TECHNILAB_DEEP_WORKPLAN_2026_08_25.md)). Подготовка КТ#3 по ТЗ: [`demo/KT3_JURY_FAQ_2026_08_25.md`](demo/KT3_JURY_FAQ_2026_08_25.md) · [`demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). **Эксперимент Б** (типовые замечания КР n=24 на открытых источниках, `coverage_map_only`): обнаруживается **16,7 %** (4/24) — это **карта покрытия**, не точность продукта на комплекте заказчика; вне области и не обнаруживается показаны отдельно в [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md).
+> **Инженерная работа августа 2026** усилила воспроизводимость прогонов, изоляцию советующего ИИ от технического вердикта, конверт подписи, нормативные пакеты правил и протокол измерения качества — **без** закрытия RT-001/002/003 и без новых заявлений о продукте. Checkpoint по-прежнему **NO_GO** до корпуса заказчика. Подготовка КТ#3 по ТЗ: [`demo/KT3_JURY_FAQ_2026_08_25.md`](demo/KT3_JURY_FAQ_2026_08_25.md) · [`demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). **Эксперимент Б** (типовые замечания КР n=24 на открытых источниках, `coverage_map_only`): обнаруживается **16,7 %** (4/24) — это **карта покрытия**, не точность продукта на комплекте заказчика; вне области и не обнаруживается показаны отдельно в [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md).
 
 ---
 
@@ -253,7 +253,7 @@ Solibri и Navisworks сильнее AeroBIM по зрелости model checkin
 
 Публичный след AIDOX и AI Project Control на 09.08.2026 **слабо верифицируем** вне карточки МИК (`[Н]`). Цифры «точность >90%» / «≈30 минут» у всех четырёх **без методики замера** — как факт AeroBIM **не заявляется** и в наши документы **не переносятся**. Это заявления конкурентов, не наши (RT-001).
 
-**Refresh 14.08.2026:** главный сосед по смыслу — **Tangl + 10D**, не Solibri. Самолёт уже клиент Tangl (BIM-данные, Power BI); 10D с сен 2025 смотрит внутрь группы. RU-строки матрицы: [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/COMPETITIVE_MATRIX_2026_08.md).
+**Refresh 14.08.2026:** главный сосед по смыслу — **Tangl + 10D**, не Solibri. Самолёт уже клиент Tangl (BIM-данные, Power BI); 10D с сен 2025 смотрит внутрь группы. RU-строки матрицы: [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/diagrams/04-competitive-matrix.md).
 
 ## 7.4 Честный проигрыш
 
@@ -264,7 +264,7 @@ Solibri и Navisworks сильнее AeroBIM по зрелости model checkin
 
 Код открыт по MIT — это не ров. Ров пилота: **норм-пак заказчика с историей экспертных подтверждений** (версия, клауза, journal). Конкурент не скопирует его, получив исходник. Пока пак не утверждён — преимущество **гипотеза**, не факт (`RT-002` OPEN; инженерная готовность ≠ готовность заказчика).
 
-Подробная помеченная матрица (не клиентский материал): [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/COMPETITIVE_MATRIX_2026_08.md).
+Подробная помеченная матрица (не клиентский материал): [`partners/COMPETITIVE_MATRIX_2026_08.md`](partners/diagrams/04-competitive-matrix.md).
 
 Метки: `[Ф]` = с карточки МИК · `[П]` = открытый источник · `[Н]` = публично не подтверждается · `[О]` = противоречие. Дата разведки: **09.08.2026**; RU-девелоперы / Tangl / 10D — **14.08.2026**.
 
@@ -328,7 +328,7 @@ Solibri и Navisworks сильнее AeroBIM по зрелости model checkin
 **Product claim** («экономия доказана / окупаемость N месяцев») без истории заказчика запрещён Claims Lock.
 
 **Помеченный прогноз для заявки** (рынок, SAM, юнит-экономика, инвестзапрос) — отдельный слой с явными допущениями A1–A8:  
-[`partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md`](partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md).  
+`partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md`.  
 Он не заменяет baseline пилота: финансовая модель *заказчика* всё равно строится после фиксации часов до/после.
 
 Рабочая гипотеза пилота: сократить трудозатраты на ручную проверку минимум на 20%. Это цель для проверки, а не заявленный текущий результат.
@@ -474,7 +474,7 @@ AeroBIM решает конкретную задачу: уменьшает об�
 - Human-in-the-Loop rule generation: https://www.mdpi.com/2075-5309/16/4/719
 - AI in BIM clash management: https://www.mdpi.com/2075-5309/16/13/2623
 
-**Уровни чисел (не смешивать):** L1 open-bench (`claim_level=open_bench_only`) — AECV live: **`macro_extended=0.4325`** (5 полей = метрика Table 1 / upstream `mean_accuracy`) / `macro_bench_protocol=0.5064` (4 класса, **справочно**, не против Table 1); см. [`research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md`](research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md) · [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json) · [`evidence/aecv-scorer-validation-2026-08-04.md`](evidence/aecv-scorer-validation-2026-08-04.md) · IFC-Bench smoke · L2 fixture · L3 RT-001. Source audit: [`research/SOURCE_VERIFICATION_REPORT_2026_08_04.md`](research/SOURCE_VERIFICATION_REPORT_2026_08_04.md).
+**Уровни чисел (не смешивать):** L1 open-bench (`claim_level=open_bench_only`) — AECV live: **`macro_extended=0.4325`** (5 полей = метрика Table 1 / upstream `mean_accuracy`) / `macro_bench_protocol=0.5064` (4 класса, **справочно**, не против Table 1); см. `research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md` · [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json) · [`evidence/aecv-scorer-validation-2026-08-04.md`](evidence/aecv-scorer-validation-2026-08-04.md) · IFC-Bench smoke · L2 fixture · L3 RT-001. Source audit: `research/SOURCE_VERIFICATION_REPORT_2026_08_04.md`.
 
 ### Конкуренты
 

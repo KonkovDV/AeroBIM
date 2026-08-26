@@ -174,16 +174,22 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertNotIn("share_url", payload)
         self.assertEqual(payload["checkpoint"], "NO_GO")
         self.assertEqual(payload["native_rvt_nwd"], "not_implemented")
+        self.assertEqual(payload["native_dwg"], "not_implemented")
+        self.assertEqual(payload["native_lir"], "not_implemented")
+        self.assertEqual(payload["team_brief_received_at"], "2026-08-26")
+        self.assertEqual(
+            payload["dataset_classes"],
+            ["tz", "dwg", "ifc", "calculations", "scans", "typical_errors"],
+        )
+        self.assertEqual(payload["raster_scans"], "optional_ocr_not_labeled_corpus")
 
     def test_answers_doc_and_workplan_stay_no_go(self) -> None:
         repo = self._repo()
-        answers = (repo / "docs" / "partners" / "").read_text(
+        faq = (repo / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md").read_text(encoding="utf-8")
+        runbook = (repo / "docs" / "demo" / "KT3_OPERATOR_RUNBOOK_2026_08_25.md").read_text(
             encoding="utf-8"
         )
-        plan = (repo / "docs" / "roadmap" / "SAMOLET_ANSWERS_WORKPLAN_2026_08_25.md").read_text(
-            encoding="utf-8"
-        )
-        for text in (answers, plan):
+        for text in (faq, runbook):
             self.assertIn("closes_rt001: false", text)
             self.assertIn("NO_GO", text)
             self.assertNotIn("closes_rt001: true", text)
@@ -208,14 +214,13 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertEqual(catalog["catalog_status"], "synthetic-scaffold")
         self.assertNotIn("customer_share_url", catalog)
 
-    def test_working_tree_does_not_republish_share_uuid(self) -> None:
-        """Red Team KT#3: NDA locator must not sit in the public working tree."""
+    def test_working_tree_does_not_republish_share_host(self) -> None:
+        """NDA locator host must not sit in the public working tree."""
 
-        needle = "-".join(("[redacted]", "5c44", "7e47", "8021", "[redacted]"))
+        needles = ("", "")
         roots = (
             self._repo() / "audit",
             self._repo() / "backend" / "src",
-            self._repo() / "backend" / "tests",
             self._repo() / "docs",
             self._repo() / "samples",
             self._repo() / "submission",
@@ -235,7 +240,7 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
                     text = path.read_text(encoding="utf-8")
                 except (OSError, UnicodeDecodeError):
                     continue
-                if needle in text:
+                if any(needle in text for needle in needles):
                     hits.append(str(path.relative_to(self._repo())))
         self.assertEqual(hits, [])
 

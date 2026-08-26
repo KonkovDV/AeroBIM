@@ -45,13 +45,10 @@
     "sprint2_baseline_report_pdf": "docs/evidence/sprint2-baseline-report.pdf",
     "sprint2_brief_md": "docs/evidence/SPRINT2_BASELINE_REPORT_2026-08-06.md",
     "sprint2_brief_pdf": "docs/evidence/SPRINT2_BASELINE_REPORT_2026-08-06.pdf",
-    "engineering_status": "docs/ENGINEERING_STATUS_2026_08.md",
-    "customer_one_pager": "docs/customer/CUSTOMER_ONE_PAGER.md",
-    "customer_outreach_template": "docs/customer/CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv",
-    "customer_demo_protocol": "docs/customer/CUSTOMER_DEMO_PROTOCOL_2026-08-06.md",
+    "engineering_status": "docs/capability-claim-matrix-2026.md",
     "claims_lock": "audit/reports/CLAIMS_LOCK_2026_07_17.md",
     "customer_intake_gate": "audit/evidence/customer-intake-gate.json",
-    "rt_hyperdeep_security": "docs/ENGINEERING_STATUS_2026_08.md"
+    "rt_hyperdeep_security": "docs/security/PILOT_THREAT_MODEL_2026_07.md"
   },
   "customer_intake_gate": {
     "status": "BLOCKED_NO_CUSTOMER_DATA",

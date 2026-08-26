@@ -237,14 +237,14 @@ class LintClaimsTests(unittest.TestCase):
         finally:
             if sys.path and sys.path[0] == str(_REPO / "scripts"):
                 sys.path.pop(0)
-        ask = _REPO / "docs" / "partners" / "_08_15.md"
-        competitive = _REPO / "docs" / "partners" / "COMPETITIVE_MATRIX_2026_08.md"
-        self.assertTrue(ask.is_file())
-        self.assertTrue(_should_scan(ask))
+        glossary = _REPO / "docs" / "partners" / "GLOSSARY_JURY_RU_2026_08.md"
+        competitive = _REPO / "docs" / "partners" / "diagrams" / "04-competitive-matrix.md"
+        self.assertTrue(glossary.is_file())
+        self.assertTrue(_should_scan(glossary))
         self.assertFalse(_should_scan(competitive))
         hits = lint_claims(
             matrix_path=_REPO / "docs" / "capability-claim-matrix-2026.md",
-            roots=[ask],
+            roots=[glossary],
         )
         self.assertEqual(hits, [])
 
@@ -269,7 +269,9 @@ class LintClaimsTests(unittest.TestCase):
             _should_scan(_REPO / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md")
         )
         self.assertTrue(
-            _should_scan(_REPO / "docs" / "gtm" / "COMMERCIAL_AND_OPEN_CORE_2026_08_14.md")
+            _should_scan(
+                _REPO / "docs" / "architecture" / "ADR-002-open-core-commercial-boundary-2026.md"
+            )
         )
         self.assertFalse(
             _should_scan(_REPO / "docs" / "quality" / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md")
@@ -371,6 +373,15 @@ class LintClaimsTests(unittest.TestCase):
             if sys.path and sys.path[0] == str(_REPO / "scripts"):
                 sys.path.pop(0)
         self.assertEqual(hits, [])
+
+    def test_kitchen_tokens_absent_from_jury_surfaces(self) -> None:
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import lint_kitchen_tokens  # type: ignore[import-not-found]
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        self.assertEqual(lint_kitchen_tokens(), [])
 
 
 if __name__ == "__main__":

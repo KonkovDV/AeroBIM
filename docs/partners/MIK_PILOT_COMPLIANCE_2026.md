@@ -13,7 +13,7 @@ tags: [aerobim, mik, techlab, samolet, pilot, grant, compliance]
 **Кто такой МИК в этом проекте:** Фонд «Московский инновационный кластер» —
 оператор программы «Техлаб Москва» и программы пилотных тестирований
 (i.moscow), администратор призового фонда платного пилота **2 000 000 ₽**
-по Задаче 07 Самолёта. До этого документа репозиторий покрывал требования
+по задаче Самолёта по верификации ПД/РД. До этого документа репозиторий покрывал требования
 Самолёта (ТЗ, ТР-1..62) и жюри Техлаба, но **не** обязательства перед
 оператором — этот файл закрывает разрыв.
 
@@ -33,7 +33,7 @@ tags: [aerobim, mik, techlab, samolet, pilot, grant, compliance]
 | M1 | Заявка с описанием решения и подходов | [`TECHLAB_SAMOLET_APPLICATION_2026.md`](TECHLAB_SAMOLET_APPLICATION_2026.md) + поле «Подходы» в [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md) | DONE | Claims-Lock-safe формулировки |
 | M2 | Соглашение о пилотном тестировании с Фондом | — | **VERIFY_WITH_OPERATOR** | Запросить шаблон у менеджера МИК; юр. реквизиты вне репо |
 | M3 | **Программа пилотного тестирования** (цели, методика, метрики) | [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md) + [`../pilot/EXPERT_LABELING_INSTRUCTION_2026.md`](../pilot/EXPERT_LABELING_INSTRUCTION_2026.md) | ENG_READY | Переупаковать в формат Фонда после получения шаблона |
-| M4 | **План-график этапов** пилота | Календарь КТ1–КТ3 в [`../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md) (20.07 / 4–20.08 / 3–21.09) | ENG_READY | Даты уже синхронизированы с Самолётом |
+| M4 | **План-график этапов** пилота | Календарь КТ1–КТ3 в `../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md` (20.07 / 4–20.08 / 3–21.09) | ENG_READY | Даты уже синхронизированы с Самолётом |
 | M5 | Измеримые критерии результата | Протокол 5 критериев пилота (BCF в СОД; TP≥0.60; экономия ≥20%; SLA ≤30 мин; каталог ≥20) + планировщик n | **PROTOCOL_READY** / measurement **BLOCKED_CUSTOMER_DATA** | Методика есть; **замеров на комплекте Самолёта нет**. Не читать как ENG_READY SLA |
 | M6 | Протоколы испытаний по этапам | Evidence-бандлы (`export_evidence_bundle`: хэши входов, отчёты, capability coverage, timings, commit) + `verify_evidence_bundle` | ENG_READY | Детерминированно воспроизводимы |
 | M7 | **Акт/заключение площадки о результатах** | Поля готовы: precision-report (publishable-гейт), SLA-отчёт (`claim_level`), agreement-артефакт (κ/α), BCF T2 evidence pack | BLOCKED_CUSTOMER_DATA | Подписывает Самолёт; наши инструменты дают приложения к акту |
@@ -76,5 +76,5 @@ intake-gates (`customer-intake-gate.json`) и Claims Lock — fail-closed
       Целевой слот «до 3 авг» **просрочен** на 15.08 — статус остаётся
       VERIFY_WITH_OPERATOR, формы Фонда **не** сочиняем.
 - [ ] После получения — переупаковать M3/M4/M5 в формы Фонда (контент готов)
-- [ ] Внести дедлайны Фонда в [`MIK_OPERATOR_ASK_2026_08_15.md`](MIK_OPERATOR_ASK_2026_08_15.md)
+- [ ] Внести дедлайны Фонда в [`MIK_OPERATOR_ASK_2026_08_15.md`](MIK_PILOT_COMPLIANCE_2026.md)
 - [ ] Единая трассируемость трёх источников: [`../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md`](../tz/TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md)

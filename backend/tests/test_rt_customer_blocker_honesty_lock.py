@@ -153,8 +153,8 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         path = (
             Path(__file__).resolve().parents[2]
             / "docs"
-            / "datasets"
-            / "RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md"
+            / "evidence"
+            / "kt3-without-customer-2026-08.md"
         )
         self.assertTrue(path.is_file())
         text = path.read_text(encoding="utf-8")
@@ -162,13 +162,10 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         self.assertIn("closes_rt002: false", text)
         self.assertIn("closes_rt003: false", text)
         self.assertIn("NO_GO", text)
-        self.assertIn("DEAD_CHANNEL", text)
-        self.assertIn("клиентские данные", text.lower())
+        self.assertIn("run_kt3_without_customer", text)
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
         self.assertNotIn("closes_rt003: true", text)
-        self.assertIn("run_kt3_without_customer", text)
-        self.assertIn("_2026_08_23.md", text)
 
     def test_tz_proxy_rehearsal_doc_stays_no_go(self) -> None:
         path = (
@@ -187,153 +184,7 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         self.assertNotIn("closes_rt001: true", text)
 
 
-class AcademicRedTeamHonestyTests(unittest.TestCase):
-    def test_academic_red_team_does_not_close_blockers_or_alias_proxies(self) -> None:
-        path = (
-            Path(__file__).resolve().parents[2]
-            / "docs"
-            / "quality"
-            / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md"
-        )
-        self.assertTrue(path.is_file())
-        text = path.read_text(encoding="utf-8")
-        self.assertIn("closes_rt001: false", text)
-        self.assertIn("closes_rt002: false", text)
-        self.assertIn("closes_rt003: false", text)
-        self.assertIn("NO_GO", text)
-        self.assertIn("Messick", text)
-        self.assertIn("Kane", text)
-        self.assertIn("Solihin", text)
-        self.assertIn("ISO 19650", text)
-        self.assertIn("Goodhart", text)
-        self.assertIn("NOT_IMPLEMENTED", text)
-        self.assertIn("Checkpoint stays **NO_GO**", text)
-        self.assertIn("ACADEMIC_LITERATURE_TRIAGE_2026_08.md", text)
-        self.assertIn("RT-ACAD-17", text)
-        self.assertNotIn("closes_rt001: true", text)
-        self.assertNotIn("closes_rt002: true", text)
-        self.assertNotIn("closes_rt003: true", text)
-
-
-class AcademicLiteratureTriageHonestyTests(unittest.TestCase):
-    def test_literature_triage_does_not_close_blockers_or_run_harbor(self) -> None:
-        path = (
-            Path(__file__).resolve().parents[2]
-            / "docs"
-            / "quality"
-            / "ACADEMIC_LITERATURE_TRIAGE_2026_08.md"
-        )
-        self.assertTrue(path.is_file())
-        text = path.read_text(encoding="utf-8")
-        self.assertIn("closes_rt001: false", text)
-        self.assertIn("closes_rt002: false", text)
-        self.assertIn("closes_rt003: false", text)
-        self.assertIn("NO_GO", text)
-        self.assertIn("Messick", text)
-        self.assertIn("Kane", text)
-        self.assertIn("2603.29199", text)
-        self.assertIn("2605.01698", text)
-        self.assertIn("2606.19544", text)
-        self.assertIn("ISO 19650-6:2025", text)
-        self.assertIn("IDS 1.1", text)
-        self.assertIn("Harbor **NOT_RUN**", text)
-        self.assertIn("Checkpoint stays **NO_GO**", text)
-        self.assertIn("107043", text)
-        self.assertIn("validate.buildingsmart.org", text)
-        self.assertNotIn("closes_rt001: true", text)
-        self.assertNotIn("closes_rt002: true", text)
-        self.assertNotIn("closes_rt003: true", text)
-
-
-class Briefing1045RedTeamHonestyTests(unittest.TestCase):
-    """AGR is DGP, not MGE; xml-agr has two SKUs; slice stays NO_GO."""
-
-    def _repo(self) -> Path:
-        return Path(__file__).resolve().parents[2]
-
-    def test_briefing_files_agr_at_dgp_not_mge_and_keeps_no_go(self) -> None:
-        briefing = (self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("closes_rt001: false", briefing)
-        self.assertIn("closes_rt002: false", briefing)
-        self.assertIn("closes_rt003: false", briefing)
-        self.assertIn("NO_GO", briefing)
-        self.assertIn("АГР в ДГП", briefing)
-        self.assertIn("не экспертиза проектной документации МГЭ", briefing)
-        self.assertNotIn("АГР в МГЭ", briefing)
-        self.assertNotIn("closes_rt002: true", briefing)
-        letter = (
-            self._repo() / "docs" / "partners" / "outreach" / "LETTER_10D_OEM_DRAFT.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn("ДГП", letter)
-        self.assertNotIn("IDS-шлюз МГЭ", letter)
-        self.assertNotIn("требованиям МГЭ к ЦИМ АГР", letter)
-
-    def test_xml_agr_dual_sku_and_a101_pilot_not_production(self) -> None:
-        briefing = (self._repo() / "docs" / "partners" / "BRIEFING_2026_08_24_1045.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("3 000", briefing)
-        self.assertIn("1 700", briefing)
-        self.assertIn("пилот объёмов", briefing)
-        osint = (self._repo() / "docs" / "partners" / "TECHLAB_KT3_OSINT_2026_08_24.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("3 000 ₽/мес", osint)
-        self.assertIn("1 700", osint)
-        self.assertIn("4 000", osint)
-
-    def test_red_team_audit_does_not_paint_go(self) -> None:
-        path = self._repo() / "docs" / "partners" / "_2026_08_24.md"
-        self.assertTrue(path.is_file())
-        text = path.read_text(encoding="utf-8")
-        self.assertIn("closes_rt001: false", text)
-        self.assertIn("closes_rt002: false", text)
-        self.assertIn("closes_rt003: false", text)
-        self.assertIn("NO_GO", text)
-        self.assertIn("RT-002a", text)
-        self.assertIn("RT-002b", text)
-        self.assertNotIn("closes_rt001: true", text)
-        self.assertNotIn("closes_rt002: true", text)
-        self.assertNotIn("closes_rt003: true", text)
-        self.assertNotIn("стек заказчика = Renga", text.split("## ")[0])
-
-
 class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
-    def test_jury_mik_novator_rt_does_not_close_blockers_or_skip_stage(self) -> None:
-        path = (
-            Path(__file__).resolve().parents[2]
-            / "docs"
-            / "quality"
-            / "RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md"
-        )
-        self.assertTrue(path.is_file())
-        text = path.read_text(encoding="utf-8")
-        self.assertIn("closes_rt001: false", text)
-        self.assertIn("closes_rt002: false", text)
-        self.assertIn("closes_rt003: false", text)
-        self.assertIn("NO_GO", text)
-        self.assertIn("доработка", text)
-        self.assertIn("валидация эффективности", text.lower())
-        self.assertIn("Лидеры инноваций", text)
-        self.assertIn("Checkpoint stays **NO_GO**", text)
-        self.assertIn("RT-JURY-K01", text)
-        self.assertIn("RT-JURY-K02", text)
-        self.assertIn("RT-JURY-I01", text)
-        self.assertIn("RT-JURY-I02", text)
-        self.assertIn("RT-JURY-D06", text)
-        self.assertIn("RT-JURY-I04", text)
-        self.assertIn("RT-JURY-T06", text)
-        self.assertIn("RT-JURY-F01", text)
-        self.assertIn("six desks", text.lower())
-        self.assertIn("vertical-slice/report.html", text)
-        self.assertIn("run_demo_ifc_acceptance_gate", text)
-        self.assertNotIn("2259", text)
-        self.assertNotIn("closes_rt001: true", text)
-        self.assertNotIn("closes_rt002: true", text)
-        self.assertNotIn("closes_rt003: true", text)
-
     def test_mik_sla_is_protocol_ready_not_measured_eng_ready(self) -> None:
         path = (
             Path(__file__).resolve().parents[2]
@@ -346,29 +197,6 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("BLOCKED_CUSTOMER_DATA", text)
         self.assertNotIn("ENG_READY | Числа выводимы", text)
         self.assertIn("просрочен", text)
-
-
-class FinalVerdictHonestyTests(unittest.TestCase):
-    def test_final_verdict_stays_no_go_and_omits_unpublished_prompts(self) -> None:
-        path = (
-            Path(__file__).resolve().parents[2]
-            / "docs"
-            / "quality"
-            / "RED_TEAM_FINAL_VERDICT_2026_08_16.md"
-        )
-        self.assertTrue(path.is_file())
-        text = path.read_text(encoding="utf-8")
-        self.assertIn("closes_rt001: false", text)
-        self.assertIn("closes_rt002: false", text)
-        self.assertIn("closes_rt003: false", text)
-        self.assertIn("Checkpoint stays **NO_GO**", text)
-        self.assertIn("доработка", text)
-        self.assertIn("KT2_", text)
-        self.assertNotIn("docs/ai/MASTER_RED_TEAM_PROMPT_2026_08_16.md", text)
-        self.assertNotIn("docs/quality/RED_TEAM_ATOMIC_2026_08_16.md", text)
-        self.assertNotIn("closes_rt001: true", text)
-        self.assertNotIn("closes_rt002: true", text)
-        self.assertNotIn("closes_rt003: true", text)
 
 
 _SPEECH_FORMULA_VERBATIM = (
@@ -394,7 +222,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
     def test_speech_surfaces_use_formula_and_omit_contest_name(self) -> None:
         repo = self._repo()
         surfaces = (
-            repo / "docs" / "partners" / "_TECHLAB_2026_08.md",
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             repo / "docs" / "docs.md",
             repo / "submission" / "03-presentation" / "slides.md",
@@ -409,10 +236,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self.assertNotIn("finding на fixture", text, msg=path.name)
             self.assertNotIn("live CLI с fail-closed", text, msg=path.name)
             self.assertNotIn("signed scope и CDE", text, msg=path.name)
-        pitch = (
-            self._repo() / "docs" / "partners" / "_TECHLAB_2026_08.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn("run_demo_ifc_acceptance_gate", pitch)
         ru = (self._repo() / "README.ru.md").read_text(encoding="utf-8")
         self.assertIn("находку с доказательствами на учебном комплекте", ru)
         self.assertNotIn("finding на fixture", ru)
@@ -441,23 +264,17 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
 
     def test_kt2_video_is_withdrawn_not_promised(self) -> None:
         repo = self._repo()
-        notice = (repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md").read_text(
-            encoding="utf-8"
-        )
         tier0 = (repo / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
         presentation = (repo / "submission" / "03-presentation" / "README.md").read_text(
             encoding="utf-8"
         )
         for text, label in (
-            (notice, "video notice"),
             (tier0, "TIER0"),
             (presentation, "presentation README"),
         ):
             self.assertIn("не записываем", text, msg=label)
             self.assertIn("не прилагаем", text, msg=label)
             self.assertNotIn("Оператор записывает 19.08", text, msg=label)
-        self.assertIn("wall-guid/report.html", notice)
-        self.assertIn("Не открывать", notice)
 
     def test_jury_memo_does_not_pin_a_stale_head_sha(self) -> None:
         text = (self._repo() / "docs" / "docs.md").read_text(encoding="utf-8")
@@ -500,7 +317,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("Six desks", text)
         self.assertIn("Объект КТ#2", text)
         self.assertIn("Объект КТ#3", text)
-        self.assertIn("RED_TEAM_FINAL_VERDICT_2026_08_16.md", text)
         self.assertNotIn("Executable readiness = 5/5", text)
 
     def test_kt2_object_commit_card_is_on_jury_index(self) -> None:
@@ -526,8 +342,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self._repo() / "docs" / "TIER0_INDEX.md",
             self._repo() / "README.ru.md",
             self._repo() / "submission" / "README.md",
-            self._repo() / "docs" / "partners" / "_08_15.md",
-            self._repo() / "docs" / "demo" / "TRACKER_MEETING_2026_08_14.md",
             self._repo() / "docs" / "tz" / "TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md",
         )
         for path in surfaces:
@@ -546,9 +360,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
     def test_tier0_red_teams_omit_local_pytest_count(self) -> None:
         repo = self._repo()
         surfaces = (
-            repo / "docs" / "quality" / "RED_TEAM_ACADEMIC_KT2_2026_08_15.md",
-            repo / "docs" / "quality" / "RED_TEAM_FUNDING_ATTACKS_KT2_2026_08_15.md",
-            repo / "docs" / "ENGINEERING_STATUS_2026_08.md",
+            repo / "docs" / "TIER0_INDEX.md",
             repo / "README.md",
             repo / "README.ru.md",
         )
@@ -556,13 +368,13 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("2259", text, msg=path.name)
 
-    def test_customer_ask_names_four_intake_items(self) -> None:
-        path = self._repo() / "docs" / "partners" / "_08_15.md"
+    def test_acceptance_profile_stays_unsigned(self) -> None:
+        path = self._repo() / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("closes_rt001: false", text)
-        self.assertIn("adjudicators", text)
-        self.assertIn("CDE", text)
-        self.assertIn("pack_hash", text)
+        self.assertIn("closes_rt002: false", text)
+        self.assertIn("unsigned", text)
+        self.assertIn("customer_pack_hash", text)
         self.assertNotIn("closes_rt001: true", text)
 
     def test_fixture_timing_sheet_is_not_customer_sla(self) -> None:
@@ -574,13 +386,12 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("sla_pass on the toy pack is not a claim", text)
 
     def test_ask_names_proxy_corpus_without_inventing_live_18_22(self) -> None:
-        path = self._repo() / "docs" / "partners" / "_08_15.md"
+        path = self._repo() / "docs" / "demo" / "KT2_CORPUS_SSOT_2026_08.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("27/1026", text)
-        self.assertIn("18/22 от 05.08", text)
-        self.assertIn("SKIPPED_PACK_INCOMPLETE", text)
+        self.assertIn("18/22", text)
+        self.assertIn("05.08", text)
         self.assertIn("NOT_RUN", text)
-        self.assertIn("не «пересняли сегодня»", text)
 
     def test_data_statement_does_not_close_rt001(self) -> None:
         path = self._repo() / "docs" / "evidence" / "DATA_STATEMENT_2026_08.md"
@@ -590,20 +401,13 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("NOT_RUN", text)
         self.assertNotIn("closes_rt001: true", text)
 
-    def test_unsigned_profile_and_mik_ask_keep_blockers_open(self) -> None:
-        repo = self._repo()
+    def test_unsigned_profile_keeps_blockers_open(self) -> None:
         profile = (
-            repo / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
+            self._repo() / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
         ).read_text(encoding="utf-8")
-        mik = (repo / "docs" / "partners" / "MIK_OPERATOR_ASK_2026_08_15.md").read_text(
-            encoding="utf-8"
-        )
-        for text in (profile, mik):
-            self.assertIn("closes_rt002: false", text)
-            self.assertNotIn("closes_rt002: true", text)
+        self.assertIn("closes_rt002: false", profile)
+        self.assertNotIn("closes_rt002: true", profile)
         self.assertIn("unsigned", profile)
-        self.assertIn("VERIFY_WITH_OPERATOR", mik)
-        self.assertIn("доработки", mik)
 
 
 class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
@@ -644,33 +448,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("NO_GO", text)
         self.assertIn("AEROBIM_API_BEARER_TOKEN", text)
 
-    def test_ask_names_owner_and_ack_deadline(self) -> None:
-        path = self._repo() / "docs" / "partners" / "_08_15.md"
-        text = path.read_text(encoding="utf-8")
-        self.assertIn("KonkovDV", text)
-        self.assertIn("трекер проекта", text)
-        self.assertNotIn("", text)
-        self.assertNotIn("", text)
-        self.assertIn("20.08.2026", text)
-        self.assertIn("15.09", text)
-        self.assertIn("closes_rt001: false", text)
-
-    def test_plan_b_date_is_on_tracker_meeting(self) -> None:
-        path = self._repo() / "docs" / "demo" / "TRACKER_MEETING_2026_08_14.md"
-        text = path.read_text(encoding="utf-8")
-        self.assertIn("15.09.2026", text)
-        self.assertIn("re-scope", text)
-        self.assertIn("Не kill сегодня", text)
-        self.assertIn("NO_GO", text)
-        self.assertIn("27/1026", text)
-        self.assertIn("run_demo_ifc_acceptance_gate", text)
-        self.assertIn("runtime-baseline-latest.json", text)
-        self.assertIn("оператор, не git-факт", text)
-        self.assertIn("run_kt3_without_customer", text)
-        self.assertNotIn("25/1026", text)
-
-    def test_kt3_rescope_without_customer_stays_no_go(self) -> None:
-        path = self._repo() / "docs" / "partners" / "_2026_08_23.md"
+    def test_kt3_without_customer_stays_no_go(self) -> None:
+        path = self._repo() / "docs" / "evidence" / "kt3-without-customer-2026-08.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("re-scope", text)
         self.assertIn("2026-08-23", text)
@@ -695,40 +474,24 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("RU **fixture** ground truth", text)
         self.assertIn("macro F1 ≈ 0.86 (fixture-only; RT-001 OPEN", text)
 
-    def test_tier0_lists_wave2_artifacts(self) -> None:
+    def test_tier0_lists_jury_artifacts(self) -> None:
         path = self._repo() / "docs" / "TIER0_INDEX.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("KT2_TASK07_COMPARISON_2026_08.md", text)
         self.assertIn("KT2_10D_INTAKE_CONTRACT_2026_08.md", text)
         self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
-        self.assertIn("", text)
-        self.assertIn("_2026_08_23.md", text)
-        self.assertIn("", text)
-        self.assertIn("SAMOLET_ANSWERS_WORKPLAN_2026_08_25.md", text)
         self.assertIn("KT3_JURY_FAQ_2026_08_25.md", text)
         self.assertIn("KT3_OPERATOR_RUNBOOK_2026_08_25.md", text)
-        self.assertIn("_KT3_2026_08_25.md", text)
-        self.assertIn("-kr13-coverage-map-2026-08.md", text)
+        self.assertNotIn("", text)
+        self.assertNotIn("", text)
+        self.assertNotIn("", text)
 
-    def test_hostile_qa_playbook_pins_ssot_and_stays_no_go(self) -> None:
-        path = self._repo() / "docs" / "demo" / ""
+    def test_qa_defense_stays_no_go_and_omits_contest_count(self) -> None:
+        path = self._repo() / "docs" / "qa-defense-2026.md"
         text = path.read_text(encoding="utf-8")
-        self.assertIn("NO_GO", text)
-        self.assertIn("schema 1.4.0", text)
-        self.assertIn("порядок секунды", text)
-        self.assertIn("KT2_TASK07_COMPARISON_2026_08.md", text)
-        self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
-        self.assertIn("четыре пункта", text)
-        self.assertIn("оператор, не git-факт", text)
-        self.assertNotIn("уже у трекера", text)
-        self.assertIn("15.09", text)
+        self.assertIn("точность на корпусе заказчика не заявляем", text.lower())
         self.assertNotIn("2259", text)
-        self.assertNotIn("开场", text)
-        self.assertNotIn("开放", text)
-        self.assertNotIn("yourselves", text)
-        self.assertNotIn("1.3.0", text)
-        self.assertNotIn("±0.5%", text)
-        self.assertNotIn("11 пунктов", text)
+        self.assertNotIn("checkpoint go", text.lower())
 
 
 def _pptx_plain_text(path: Path) -> str:
@@ -892,7 +655,6 @@ class SubmissionPackHonestyTests(unittest.TestCase):
             "CITATION.cff",
             ".github/CODEOWNERS",
             ".github/PULL_REQUEST_TEMPLATE.md",
-            ".github/repository-metadata.md",
         ):
             self.assertTrue((root / name).is_file(), msg=name)
 

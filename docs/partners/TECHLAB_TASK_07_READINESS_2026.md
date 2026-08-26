@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 
-> **Нумерация раздачи, не Положение.** Историческое «07» в имени файла может не совпадать с приложением 4 Положения. До ответа оператора МИК в публичных формулировках номер не используем. См. [`./_2026_08_25.md`](./_2026_08_25.md).
+> **Нумерация раздачи, не Положение.** Историческое «07» в имени файла может не совпадать с приложением 4 Положения. До ответа оператора МИК в публичных формулировках номер не используем.
 
 ---
 title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
@@ -18,8 +18,8 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Task page:** https://i.moscow/techlab/samolet  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
 **МИК stage:** **доработка** (КТ#3 открывается 03.09). Валидация эффективности и внедрение **не начаты**. Показ: [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md).  
-**Eng status (Aug 2026):** [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) · jury RT [`../quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md`](../quality/RED_TEAM_JURY_MIK_NOVATOR_KT2_2026_08_15.md) · IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md).  
-**Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) · [`AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md`](AEROBIM_STRATEGIC_ASSESSMENT_2026_07.md)
+**Eng status (Aug 2026):** IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md).  
+**Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
 
 Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED_BY_CUSTOMER_DATA` | `MISSING` | `NOT_VERIFIED`.
 
@@ -66,7 +66,7 @@ AeroBIM is **decision-support**, not a licensed-engineer replacement. Sign-off p
 ### Needs Samolet pilot corpus (cannot fake in git)
 
 Detailed ask (world + RU practice, July 2026):  
-[`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_WHAT_WE_NEED_2026_07-ru.md) (send to Samolet) · [`SAMOLET_WHAT_WE_NEED_2026_07.md`](SAMOLET_WHAT_WE_NEED_2026_07.md)
+[`SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md)
 
 1. Customer PD/RD/BIM pack (week-1 intake)  
 2. Customer-approved residential norms / IDS pack (synthetic AR template is not sign-off)  
@@ -124,7 +124,7 @@ Still blocked: RT-001/002/003 (customer corpus / approved norms / MEP).
 
 ## 5. Ask
 
-Primary handoff document: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_WHAT_WE_NEED_2026_07-ru.md).
+Primary handoff document: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).
 
 1. TechLab pilot budget (**2 000 000 ₽**) + named Samolet owner  
 2. One residential (or agreed) document package + IDS/rule pack + typical-error list (≥20)  

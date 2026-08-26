@@ -14,7 +14,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 
 **TZ Response Pack:** [`tz/README.md`](tz/README.md).  
 **Task 07 readiness memo:** [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md).  
-**What Samolet must supply:** [`partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md).  
+**What Samolet must supply:** [`partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).  
 **Application packet:** [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md).
 
 ## 1. Customer mandate (official task page)

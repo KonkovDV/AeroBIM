@@ -171,9 +171,9 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         _check("overlay_fixture_rendered", False, "missing overlay STATUS", rows)
 
     align = repo / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
-    ask = repo / "docs" / "partners" / "_08_15.md"
+    ask = repo / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
     _check("tri_source_alignment", align.is_file(), str(align), rows)
-    _check("samolet_kt2_ask", ask.is_file(), str(ask), rows)
+    _check("samolet_acceptance_profile", ask.is_file(), str(ask), rows)
 
     second_overlay = (
         repo / "docs" / "evidence" / "drawing-overlay-smoke-2026-08" / "overlay-sheet-header.png"
@@ -194,19 +194,13 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         _check("bcf_t1_structural", False, f"missing {bcf_t1}", rows)
 
     faq = repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md"
-    video = repo / "docs" / "demo" / "KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md"
+    tier0 = repo / "docs" / "TIER0_INDEX.md"
     _check("jury_faq", faq.is_file(), str(faq), rows)
-    _check("kt2_video_script", video.is_file(), str(video), rows)
-    video_text = video.read_text(encoding="utf-8") if video.is_file() else ""
-    _check(
-        "rehearsal_forbids_wall_guid_html",
-        "wall-guid/report.html" in video_text and "Не открывать" in video_text,
-        "video notice must forbid wall-guid/report.html as overlay demo",
-        rows,
-    )
+    _check("kt2_jury_index", tier0.is_file(), str(tier0), rows)
+    tier0_text = tier0.read_text(encoding="utf-8") if tier0.is_file() else ""
     _check(
         "kt2_video_not_recorded",
-        "не записываем" in video_text and "не прилагаем" in video_text,
+        "не записываем" in tier0_text and "не прилагаем" in tier0_text,
         "KT#2 video is withdrawn; live CLI is the demo",
         rows,
     )
@@ -223,6 +217,12 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         and "Do not open" in handoff_text
         and "wall-guid/report.html" in handoff_text,
         "handoff README must lead with live CLI and forbid snapshot HTML overlay",
+        rows,
+    )
+    _check(
+        "rehearsal_forbids_wall_guid_html",
+        "wall-guid/report.html" in handoff_text and "Do not open" in handoff_text,
+        "handoff README must forbid wall-guid/report.html as overlay demo",
         rows,
     )
 

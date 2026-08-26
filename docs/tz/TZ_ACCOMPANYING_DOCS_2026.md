@@ -17,7 +17,7 @@ Public GitHub carries the **TechLab jury pack** only. Operator runbooks and NDA 
 | Document | Path | Role |
 |----------|------|------|
 | Jury memo (RU) | [`../docs.md`](../docs.md) | Technical justification |
-| Strategy | [`../samolet.md`](../samolet.md) | Samolet wedge |
+| Strategy | `../samolet.md` | Samolet wedge |
 | Compliance matrix | [`TZ_COMPLIANCE_MATRIX_2026.md`](TZ_COMPLIANCE_MATRIX_2026.md) | TZ ↔ product |
 | Architecture requirements | [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_REQUIREMENTS_2026.md) | Architecture fill |
 | Build & quality | [`TZ_BUILD_AND_QUALITY_2026.md`](TZ_BUILD_AND_QUALITY_2026.md) | Build fill |

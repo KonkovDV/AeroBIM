@@ -19,7 +19,7 @@ claim_boundary: >
 Срез поиска 23.08 вечером сверен с пинами репозитория и с живыми URL.  
 **Вердикт:** это усиление **L1/L2** (open bench / fixture). Это **не** CLOSED по RT-001/002/003 и не замена комплекта Самолёта.
 
-Смежные описи: [`RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md`](RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md) · [`../DATASETS.md`](../DATASETS.md) · [`../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md).
+Смежные описи: [`RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md`](../evidence/kt3-without-customer-2026-08.md) · [`../DATASETS.md`](../DATASETS.md) · [`../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md).
 
 ## Исправления URL (не копировать из черновика поиска вслепую)
 

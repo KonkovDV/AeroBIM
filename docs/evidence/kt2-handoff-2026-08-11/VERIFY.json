@@ -18,7 +18,7 @@
     {
       "check": "wall_guid_dir",
       "ok": true,
-      "detail": "docs/evidence/kt2-handoff-2026-08-11/wall-guid"
+      "detail": "C:\\AeroBIM\\docs\\evidence\\kt2-handoff-2026-08-11\\wall-guid"
     },
     {
       "check": "wall_guid_verify",
@@ -33,7 +33,7 @@
     {
       "check": "vertical_slice_summary",
       "ok": true,
-      "detail": "docs/evidence/kt2-handoff-2026-08-11/vertical-slice/slice-summary.json"
+      "detail": "C:\\AeroBIM\\docs\\evidence\\kt2-handoff-2026-08-11\\vertical-slice\\slice-summary.json"
     },
     {
       "check": "clash_fixture_measured",
@@ -53,17 +53,17 @@
     {
       "check": "tri_source_alignment",
       "ok": true,
-      "detail": "docs/tz/KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
+      "detail": "C:\\AeroBIM\\docs\\tz\\KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
     },
     {
-      "check": "samolet_kt2_ask",
+      "check": "samolet_acceptance_profile",
       "ok": true,
-      "detail": "docs/partners/_08_15.md"
+      "detail": "C:\\AeroBIM\\docs\\partners\\SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
     },
     {
       "check": "overlay_second_zone",
       "ok": true,
-      "detail": "docs/evidence/drawing-overlay-smoke-2026-08/overlay-sheet-header.png"
+      "detail": "C:\\AeroBIM\\docs\\evidence\\drawing-overlay-smoke-2026-08\\overlay-sheet-header.png"
     },
     {
       "check": "bcf_t1_structural",
@@ -73,22 +73,37 @@
     {
       "check": "jury_faq",
       "ok": true,
-      "detail": "docs/demo/KT2_JURY_FAQ_2026_08_12.md"
+      "detail": "C:\\AeroBIM\\docs\\demo\\KT2_JURY_FAQ_2026_08_12.md"
     },
     {
-      "check": "kt2_video_script",
+      "check": "kt2_jury_index",
       "ok": true,
-      "detail": "docs/demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md"
+      "detail": "C:\\AeroBIM\\docs\\TIER0_INDEX.md"
     },
     {
-      "check": "rehearsal_forbids_wall_guid_html",
+      "check": "kt2_video_not_recorded",
       "ok": true,
-      "detail": "video script must forbid wall-guid/report.html as overlay demo"
+      "detail": "KT#2 video is withdrawn; live CLI is the demo"
+    },
+    {
+      "check": "kt2_presentation_pptx",
+      "ok": true,
+      "detail": "C:\\AeroBIM\\submission\\03-presentation\\aerobim_kt2.pptx"
+    },
+    {
+      "check": "kt2_presentation_pdf",
+      "ok": true,
+      "detail": "C:\\AeroBIM\\submission\\03-presentation\\aerobim_kt2.pdf"
     },
     {
       "check": "handoff_readme_live_cli",
       "ok": true,
       "detail": "handoff README must lead with live CLI and forbid snapshot HTML overlay"
+    },
+    {
+      "check": "rehearsal_forbids_wall_guid_html",
+      "ok": true,
+      "detail": "handoff README must forbid wall-guid/report.html as overlay demo"
     },
     {
       "check": "snapshot_html_not_overlay_demo",
@@ -98,7 +113,7 @@
     {
       "check": "readme_quickstart_demo_core_pdf",
       "ok": true,
-      "detail": "README Quick Start must install .[dev,raster] without requiring pdf-agpl for the live CLI"
+      "detail": "README demo section must install .[dev,raster] without requiring pdf-agpl for the live CLI"
     },
     {
       "check": "kt2_demo_mp4_not_in_docs",

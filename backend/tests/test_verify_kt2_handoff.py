@@ -27,7 +27,7 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         self.assertIn("handoff_readme_live_cli", names)
         self.assertIn("snapshot_html_not_overlay_demo", names)
         self.assertIn("readme_quickstart_demo_core_pdf", names)
-        self.assertIn("kt2_video_script", names)
+        self.assertIn("kt2_jury_index", names)
         self.assertIn("kt2_video_not_recorded", names)
         self.assertIn("kt2_presentation_pptx", names)
         self.assertIn("kt2_presentation_pdf", names)

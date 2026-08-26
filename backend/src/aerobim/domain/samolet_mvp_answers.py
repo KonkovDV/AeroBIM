@@ -13,6 +13,7 @@ from aerobim.core.security.upload_limits import (
 )
 
 SAMOLET_ANSWERS_RECEIVED_AT = "2026-08-25"
+SAMOLET_TEAM_BRIEF_RECEIVED_AT = "2026-08-26"
 
 
 def samolet_mvp_answers_payload() -> dict[str, object]:
@@ -20,19 +21,30 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
 
     return {
         "received_at": SAMOLET_ANSWERS_RECEIVED_AT,
-        "source": "docs/partners/",
+        "team_brief_received_at": SAMOLET_TEAM_BRIEF_RECEIVED_AT,
         "share_url_received": True,
         "share_ingested_in_git": False,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
         "checkpoint": "NO_GO",
+        "dataset_classes": [
+            "tz",
+            "dwg",
+            "ifc",
+            "calculations",
+            "scans",
+            "typical_errors",
+        ],
         "stated_office_bytes": SAMOLET_STATED_OFFICE_BYTES,
         "stated_model_bytes": SAMOLET_STATED_MODEL_BYTES,
         "dev_default_upload_bytes": DEV_DEFAULT_UPLOAD_BYTES,
         "analyze_ifc_default_bytes": DEV_DEFAULT_UPLOAD_BYTES,
         "wasm_viewer_cap_bytes": WASM_IFC_VIEWER_CAP_BYTES,
         "native_rvt_nwd": "not_implemented",
+        "native_dwg": "not_implemented",
+        "native_lir": "not_implemented",
+        "raster_scans": "optional_ocr_not_labeled_corpus",
         "ifc_required": "IFC 2x3 and newer as exported by the authoring tool",
         "mvp_roles": {
             "expert": "HITL reviewer alias (validate/edit remarks)",
@@ -55,5 +67,6 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
 
 __all__ = [
     "SAMOLET_ANSWERS_RECEIVED_AT",
+    "SAMOLET_TEAM_BRIEF_RECEIVED_AT",
     "samolet_mvp_answers_payload",
 ]

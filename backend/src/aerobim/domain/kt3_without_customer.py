@@ -20,10 +20,9 @@ DEMO_COMMAND: Final = "python -m aerobim.tools.run_demo_ifc_acceptance_gate"
 PACK_COMMAND: Final = "python -m aerobim.tools.run_kt3_without_customer"
 
 CLAIM_BOUNDARY: Final = (
-    "Owner re-scope 2026-08-23: customer files are not expected in git. "
+    "Customer files are not expected in git. "
     "KT#3 is the live fixture gate plus public/synthetic proxies. "
-    "Operator-local NDA under files/ is not samples/customer and does not "
-    "close RT-001. Not product accuracy. Not customer SLA. Not MEP delivered. "
+    "Not product accuracy. Not customer SLA. Not MEP delivered. "
     "Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false."
 )
 
@@ -38,16 +37,10 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
     ("tz_proxy_rehearsal", "docs/evidence/tz-proxy-rehearsal-2026-08.md"),
     ("planted_federated_clash", "docs/evidence/federated-clash-planted-2026-08.md"),
     ("intake_gate", "audit/evidence/customer-intake-gate.json"),
-    ("rt_without_samolet", "docs/datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md"),
     ("tz_v2", "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md"),
-    ("samolet_answers", "docs/partners/"),
     ("moscow_agr_ruler", "samples/norm-packs/moscow_agr_2026/pack.json"),
     ("kt3_jury_card", "docs/demo/KT3_JURY_FAQ_2026_08_25.md"),
     ("kt3_operator_runbook", "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md"),
-    (
-        "house5_kr_coverage_map",
-        "docs/evidence/-kr13-coverage-map-2026-08.md",
-    ),
 )
 
 TZ_MVP_DEMONSTRABLE: Final[tuple[str, ...]] = (
@@ -158,7 +151,7 @@ def assemble_kt3_without_customer(
         "show_tracks": {
             "jury_laptop": [DEMO_COMMAND, PACK_COMMAND],
             "regulatory_leg": "AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026",
-            "owner_optional_nda": ("files/ is gitignored; coverage_map_only; never RT-001 CLOSED"),
+            "owner_optional_nda": "local customer files are not in git; never RT-001 CLOSED",
         },
         "tz_mvp_demonstrable": list(TZ_MVP_DEMONSTRABLE),
         "tz_explicit_gaps": list(TZ_EXPLICIT_GAPS),
@@ -243,9 +236,8 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         "",
         "# КТ#3 без файлов Самолёта в git",
         "",
-        "Файлов заказчика **в git нет и не ожидается**. Решение владельца "
-        f"**re-scope** ({OWNER_DECISION_DATE}). Календарная развилка программы "
-        f"**{PROGRAM_FORK_DATE}** не отменяется и не ждётся. Локальный NDA-диск "
+        "Файлов заказчика **в git нет и не ожидается**. Календарная развилка программы "
+        f"**{PROGRAM_FORK_DATE}** не отменяется и не ждётся. Локальный диск владельца "
         "не входит в этот пакет и не закрывает RT-001.",
         "",
         f"- Checkpoint: **{payload['checkpoint']}**",

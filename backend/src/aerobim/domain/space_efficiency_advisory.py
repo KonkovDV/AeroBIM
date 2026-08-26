@@ -36,6 +36,31 @@ _CLAIM = (
     "ai_generated requires expert confirmation; never sets summary.passed"
 )
 
+_CORRIDOR_TOKENS = ("коридор", "corridor", "hall", "холл")
+_COMMON_AREA_TOKENS = (
+    "моп",
+    "лестн",
+    "stair",
+    "тамбур",
+    "лифт",
+    "lift",
+    "lobby",
+    "vestibule",
+)
+
+
+def layout_hint_for_space(row: SpaceInventoryRow) -> str:
+    """Name-only layout class. Not an efficiency verdict and not a signed threshold."""
+
+    blob = " ".join(
+        part for part in (row.name, row.long_name, row.predefined_type) if part
+    ).casefold()
+    if any(token in blob for token in _CORRIDOR_TOKENS):
+        return "corridor"
+    if any(token in blob for token in _COMMON_AREA_TOKENS):
+        return "common_area"
+    return "other"
+
 
 def build_space_efficiency_candidates(
     spaces: Sequence[SpaceInventoryRow],
@@ -60,10 +85,17 @@ def build_space_efficiency_candidates(
     total = len(spaces)
     with_area = sum(1 for row in spaces if row.net_floor_area is not None)
     area_sum = sum(row.net_floor_area or 0.0 for row in spaces if row.net_floor_area is not None)
+    hints = [layout_hint_for_space(row) for row in spaces]
+    corridor_n = sum(1 for hint in hints if hint == "corridor")
+    common_n = sum(1 for hint in hints if hint == "common_area")
     area_fragment = (
         f"Spaces with NetFloorArea: {with_area}/{total}; sum≈{area_sum:.2f}."
         if with_area
         else f"Spaces without NetFloorArea quantities: {total}."
+    )
+    hint_fragment = (
+        f" Name-class hints (not a threshold): corridor={corridor_n}, "
+        f"common_area={common_n}, other={total - corridor_n - common_n}."
     )
     note_fragment = ""
     if layout_note and layout_note.strip():
@@ -73,7 +105,7 @@ def build_space_efficiency_candidates(
     # One package-level candidate, then per-space samples (capped).
     package_body = (
         f"Candidate space-efficiency observation for expert review. "
-        f"{area_fragment}{_CLAIM}.{note_fragment}"
+        f"{area_fragment}{hint_fragment} {_CLAIM}.{note_fragment}"
     )
     issues.append(
         ValidationIssue(
@@ -104,9 +136,10 @@ def build_space_efficiency_candidates(
             else "NetFloorArea=unknown"
         )
         type_txt = row.predefined_type or "untyped"
+        hint = layout_hint_for_space(row)
         body = (
-            f"Candidate observation for space '{label}' ({type_txt}; {area_txt}). "
-            f"No automated efficiency verdict. {_CLAIM}."
+            f"Candidate observation for space '{label}' ({type_txt}; {area_txt}; "
+            f"layout_hint={hint}). No automated efficiency verdict. {_CLAIM}."
         )
         issues.append(
             ValidationIssue(
@@ -135,4 +168,8 @@ def build_space_efficiency_candidates(
     return tuple(issues)
 
 
-__all__ = ["SpaceInventoryRow", "build_space_efficiency_candidates"]
+__all__ = [
+    "SpaceInventoryRow",
+    "build_space_efficiency_candidates",
+    "layout_hint_for_space",
+]

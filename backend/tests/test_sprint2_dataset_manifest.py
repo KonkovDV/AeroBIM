@@ -136,47 +136,15 @@ class Sprint2BaselineReportTests(unittest.TestCase):
 
 
 class Sprint2CustomerDocsTests(unittest.TestCase):
-    def test_outreach_csv_header_schema(self) -> None:
-        path = REPO / "docs" / "customer" / "CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv"
+    def test_customer_pack_readme_stays_blocked(self) -> None:
+        path = REPO / "samples" / "customer" / "README.md"
+        self.assertTrue(path.is_file())
         text = path.read_text(encoding="utf-8")
-        header = text.splitlines()[0]
-        required = [
-            "organization",
-            "segment",
-            "contact_role",
-            "contact_name",
-            "channel",
-            "date_contacted",
-            "response",
-            "demo_agreed",
-            "pilot_agreed",
-            "data_available",
-            "expert_available",
-            "NDA_required",
-            "next_step",
-            "owner",
-            "notes",
-        ]
-        cols = [c.strip() for c in header.split(",")]
-        self.assertEqual(cols, required)
-        data_rows = [ln for ln in text.splitlines()[1:] if ln.strip()]
-        self.assertEqual(
-            data_rows,
-            [],
-            msg="outreach CSV template must not invent real customer data rows",
-        )
+        self.assertIn("NO_GO", text)
+        self.assertIn("Do **not** commit", text)
 
-    def test_customer_docs_exist(self) -> None:
-        for name in (
-            "DEMO_PROTOCOL_COMPLETED_PROJECT.md",
-            "CUSTOMER_DEMO_PROTOCOL_2026-08-06.md",
-            "CUSTOMER_DISCOVERY_SCRIPT.md",
-            "CUSTOMER_PILOT_ONE_PAGER.md",
-            "CUSTOMER_ONE_PAGER.md",
-            "CUSTOMER_INTERVIEW_FORM.md",
-            "CUSTOMER_OUTREACH_TRACKER_TEMPLATE.csv",
-        ):
-            self.assertTrue((REPO / "docs" / "customer" / name).is_file(), msg=name)
+    def test_customer_outreach_kitchen_is_unpublished(self) -> None:
+        self.assertFalse((REPO / "docs" / "customer").exists())
 
     def test_baseline_banner_fields_when_written(self) -> None:
         from aerobim.tools.run_sprint2_synthetic_baseline import (

@@ -22,7 +22,7 @@ tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 | **Техлаб** | Программа отбора (жюри) | Заявка, MVP-демо, честные формулировки, критерии пилота на 2 млн ₽ | [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md) + [`../partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
 | **МИК (Фонд)** | Оператор/грантодатель | Соглашение, программа испытаний, план-график, акт результатов, финотчётность | [`../partners/MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md) |
 | **Отрасль** | Нормы openBIM / приёмки | IDS 1.0, ISO 19650-2 5.7, Solihin 1–4, ПНСТ 909 | [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) IND-* |
-| **Трекер** | Операционный спринт к КТ#2 | 6 задач 14.08 ~15:26 | [`../demo/TRACKER_MEETING_2026_08_14.md`](../demo/TRACKER_MEETING_2026_08_14.md) · ledger TRK-* |
+| **Трекер** | Операционный спринт к КТ#2 | 6 задач 14.08 ~15:26 | [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md) · ledger TRK-* |
 
 ## Сводная матрица по темам
 
@@ -42,7 +42,7 @@ PARTIAL · BLOCKED_CUSTOMER_DATA · VERIFY_WITH_OPERATOR · OUT (заявлен�
 | Соглашение + финотчётность 2 млн ₽ | — | — | Обязательно | **VERIFY_WITH_OPERATOR** | Шаблоны / **МИК** |
 | Акт о результатах пилота | подпись эксперта | итог пилота | Закрывающий документ | BLOCKED_CUSTOMER_DATA (приложения готовы) | Подписанты обеих сторон |
 | Честность формулировок | Claims Lock §12 ТЗ | «Do not claim» список | Публичность гранта | DONE (enforced fail-closed) | Ревью любых публичных текстов |
-| Ограничения (DWG/MEP/calc/CV) | ТР-53 | заявлены в анкете | В программу испытаний — как out-of-scope | DONE ([gap-анализ](../pilot/FOUR_DIRECTION_GAP_ANALYSIS_2026_07_24.md)) | — |
+| Ограничения (DWG/MEP/calc/CV) | ТР-53 | заявлены в анкете | В программу испытаний — как out-of-scope | DONE (gap-анализ) | — |
 
 ## Конфликты источников (разрешение зафиксировано)
 

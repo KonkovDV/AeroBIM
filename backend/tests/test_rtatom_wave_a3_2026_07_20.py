@@ -181,7 +181,7 @@ class AuthBffHonestyTests(unittest.TestCase):
         assert isinstance(auth_bff, dict)
         self.assertEqual(auth_bff["status"], "NOT_IMPLEMENTED")
         design = str(auth_bff["design"])
-        self.assertTrue(Path(design).as_posix().endswith("_2026_07.md"))
+        self.assertTrue(Path(design).as_posix().endswith("PILOT_THREAT_MODEL_2026_07.md"))
 
 
 if __name__ == "__main__":

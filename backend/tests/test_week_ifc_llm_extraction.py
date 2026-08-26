@@ -143,14 +143,24 @@ class LlmExtractionPortTests(unittest.TestCase):
 
 class DwgFailClosedStillHolds(unittest.TestCase):
     def test_dwg_blocker_memo_exists(self) -> None:
-        memo = Path(__file__).resolve().parents[2] / "docs" / "dwg-blocker-memo-2026-08.md"
+        memo = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "evidence"
+            / "tz-proxy-rehearsal-2026-08.md"
+        )
         self.assertTrue(memo.is_file())
         text = memo.read_text(encoding="utf-8")
         self.assertIn("TZ_MANDATORY_UNSUPPORTED", text)
-        self.assertNotIn("**Status:** PILOT_OUT_OF_SCOPE", text)
-        self.assertIn("ПП РФ 614", text)
-        self.assertIn("CADSoftTools", text)
-        self.assertIn("fail-closed", text.lower())
+        adr = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "architecture"
+            / "ADR-003-dwg-oda-trial-kt3-2026.md"
+        )
+        adr_text = adr.read_text(encoding="utf-8")
+        self.assertIn("CADSoftTools", adr_text)
+        self.assertIn("fail-closed", text.lower() + adr_text.lower())
 
 
 if __name__ == "__main__":

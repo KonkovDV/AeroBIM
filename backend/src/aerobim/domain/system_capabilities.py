@@ -153,7 +153,7 @@ def build_auth_bff_capability() -> dict[str, object]:
 
     return {
         "status": "NOT_IMPLEMENTED",
-        "design": "docs/architecture/_2026_07.md",
+        "design": "docs/security/PILOT_THREAT_MODEL_2026_07.md",
         "dev_proxy": "Vite loopback Authorization inject only",
         "phase_2_stubs": "login/callback/logout with CSRF state (no production session)",
         "phase_2_5_pkce": (
@@ -219,7 +219,7 @@ def build_four_direction_contracts() -> list[dict[str, Any]]:
             reason="Hard IFC clash via optional ifcclash when configured",
             claim_boundary="Geometric hard clash ≠ full MEP system-aware clash",
             dependencies=["IfcClashDetector"],
-            evidence_refs=["docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md"],
+            evidence_refs=["docs/capability-claim-matrix-2026.md"],
         ),
         capability_contract(
             capability="mep_system_graph",
@@ -258,7 +258,7 @@ def build_four_direction_contracts() -> list[dict[str, Any]]:
             affects_pass=True,
             reason="Service / maintenance envelope checks not implemented",
             claim_boundary="Roadmap after RT-003",
-            evidence_refs=["docs/roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md"],
+            evidence_refs=["docs/capability-claim-matrix-2026.md"],
         ),
         capability_contract(
             capability="calculation_match",
@@ -482,7 +482,7 @@ def build_system_capabilities_payload() -> dict[str, object]:
             "Checkpoint remains NO_GO until RT-001/002/003 customer evidence.",
             (
                 "auth_bff remains NOT_IMPLEMENTED until POST-05 phases 2–3 ship; "
-                "see docs/architecture/_2026_07.md."
+                "see docs/security/PILOT_THREAT_MODEL_2026_07.md."
             ),
             (
                 "direction_contracts use unified status vocabulary; "

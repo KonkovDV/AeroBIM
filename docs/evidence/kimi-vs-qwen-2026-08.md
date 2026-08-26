@@ -106,4 +106,4 @@ LLM extraction output is **advisory only**:
 | [`kimi-vs-qwen-2026-08.json`](kimi-vs-qwen-2026-08.json) | Canonical machine summary (this sprint) |
 | [`llm-extraction-kimi-vs-qwen-2026-08.json`](llm-extraction-kimi-vs-qwen-2026-08.json) | Full per-fixture evaluator output |
 | [`llm-extraction-kimi-vs-qwen-2026-08.md`](llm-extraction-kimi-vs-qwen-2026-08.md) | Legacy short table (superseded by this doc for Sprint 3) |
-| [`expertise-corpus-scan-2026-08.md`](../datasets/expertise-corpus-scan-2026-08.md) | Why fixture GT ≠ RT-001 |
+| `expertise-corpus-scan-2026-08.md` | Why fixture GT ≠ RT-001 |

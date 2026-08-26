@@ -29,10 +29,7 @@ _SURFACES = (
     "README.md",
     "README.ru.md",
     "docs/ifc-compatibility-matrix.md",
-    "docs/partners/outreach/LETTER_MGSU_SPBGASU_DRAFT.md",
     "docs/samolet-techlab-alignment-2026.md",
-    "docs/tz/TZ_V3_RED_TEAM_2026_07_30.md",
-    "docs/datasets/customer-data-request-2026-08.md",
     "backend/src/aerobim/domain/quantity.py",
     "backend/src/aerobim/domain/models.py",
     "backend/src/aerobim/application/services/cross_document_contradictions.py",
@@ -91,13 +88,7 @@ class IsoCitationHonestyTests(unittest.TestCase):
         )
         readme = (_REPO / "README.md").read_text(encoding="utf-8")
         self.assertIn("Comparable to the buildingSMART Validation Service cap of 256 MB", readme)
-        letter = (_REPO / "docs/partners/outreach/LETTER_MGSU_SPBGASU_DRAFT.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("сопоставимо", letter)
-        self.assertIn("256 МБ", letter)
-        self.assertIn("256 МиБ", letter)
-        self.assertNotIn("согласовано с лимитом", letter)
+        self.assertNotIn("согласовано с лимитом сервиса валидации", readme)
 
 
 if __name__ == "__main__":

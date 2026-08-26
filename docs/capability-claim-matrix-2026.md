@@ -8,7 +8,7 @@ claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. E
 
 # Capability × Claim Matrix (TechLab / Samolet)
 
-Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md), eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md), [`PROJECT_STATUS_AUDIT_2026.md`](PROJECT_STATUS_AUDIT_2026.md), [`ENGINEERING_STATUS_2026_08.md`](ENGINEERING_STATUS_2026_08.md), and academic IUA [`quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md).
+Companion to [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md), eng freeze [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md), and IUA [`quality/INTERPRETATION_USE_LEDGER_2026_08.md`](quality/INTERPRETATION_USE_LEDGER_2026_08.md).
 
 API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_contracts`, `bcf_t2`, `mep_intake`).
 
@@ -68,9 +68,9 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | HITL remark edit | frontend + review-events API |
 | Extraction F1 on RU fixtures | `evaluate_extraction`; baseline JSON |
 | Fixture reproducibility hash | `run_manifest.json` + `test_golden_report` |
-| Hybrid AI routing + WP-02 advisory pre-gate | `domain/hybrid/*` + `HybridRouteGate` on Analyze advisory; OFF==ON; never sets `summary.passed` — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) · [`ENGINEERING_STATUS_2026_08`](ENGINEERING_STATUS_2026_08.md) |
-| Local Qwen advisory remark compose (KT#2 W1) | `private_qwen_local` + `OpenAICompatLlmProvider` + `compose_advisory_remark`; `ai_generated` + expert required; cloud Max NOT_VERIFIED — [`QWEN_LOCAL_KT2_PLAN`](roadmap/QWEN_LOCAL_KT2_PLAN_2026_08.md) |
-| Yandex AI Studio grant path (KT#2 T2) | Same adapter; `private_yandex_ai_studio`; token caps; RF cloud for open corpora; on-prem for pilot — [`YANDEX_AI_STUDIO_GRANT`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md) |
+| Hybrid AI routing + WP-02 advisory pre-gate | `domain/hybrid/*` + `HybridRouteGate` on Analyze advisory; OFF==ON; never sets `summary.passed` — [`HYBRID_AI_FINAL_REPORT`](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) |
+| Local Qwen advisory remark compose (KT#2 W1) | `private_qwen_local` + `OpenAICompatLlmProvider` + `compose_advisory_remark`; `ai_generated` + expert required; cloud Max NOT_VERIFIED — `QWEN_LOCAL_KT2_PLAN` |
+| Yandex AI Studio grant path (KT#2 T2) | Same adapter; `private_yandex_ai_studio`; token caps; RF cloud for open corpora; on-prem for pilot — `YANDEX_AI_STUDIO_GRANT` |
 | Runtime baseline complete (WP-01 / WP-R0) | `docs/evidence/runtime-baseline-latest.json` schema **1.4.0**; numeric `tests_passed` (backend+frontend); five `quality_gates=PASS`; `publishable` requires clean tree + CI attestation; CI `baseline-integrity` (`--check-publishable`) + `--check-readme` |
 | Executable Claims Lock linter (WP-R10) | `scripts/lint_claims.py` (patterns from this matrix); CI blocking; `--matrix-guard` enforces Samolet-blocked rows ≠ `done` |
 | Detached signature envelope (WP-03) | `qualified_signature` ENG_PARTIAL; trust_chain NOT_VERIFIED — never «УКЭП проверена» |
@@ -83,7 +83,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Quality measurement protocol (WP-07) | [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md); interim 0.60; never >90% |
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`; inventory + [`license-policy-2026.md`](license-policy-2026.md) |
 | Annotation claimed-GUID presence (P2-04) | spatial-index lookup; wall-guid demo pin [`evidence/checkpoint2-evidence-bundle-latest.json`](evidence/checkpoint2-evidence-bundle-latest.json) |
-| MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + `AEROBIM_MEP_AABB_FILTER`; always `geometry_verified=False` — [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) |
+| MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + `AEROBIM_MEP_AABB_FILTER`; always `geometry_verified=False` — [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](capability-claim-matrix-2026.md) |
 | Per-source check-coverage map (four presentation states) | `domain/check_coverage.py` + Hypothesis I-8; `tz_gaps`; HTML+PDF export coverage first page; frontend `CoverageMapPanel`; `GET /v1/reports/{id}/coverage` + `/export/pdf` |
 | Native MS Office ingest (WP-R1) | `python-docx`+`openpyxl` core path in `docling_office_document_ingestor`; `office_ingest` capability; legacy `.doc`/`.xls` fail-closed — `test_office_native_ingest` |
 | Advisory domain modules (drawing region quality/type/assessment, revision diff, norm applicability) | `domain/{region_quality,region_classifier,drawing_region_assessment,revision_diff,norm_applicability}.py` + tests; domain-pure, verdict-neutral (do NOT set summary.passed), fixture-only, NOT wired into ingestion/verdict; bad/unknown/ambiguous → escalate, never a silent OK/guess |

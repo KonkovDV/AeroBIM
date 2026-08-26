@@ -34,8 +34,8 @@ _SCAN_ROOTS = (
     _REPO / "frontend" / "src",
     _REPO / "docs" / "docs.md",
     _REPO / "docs" / "partners",
-    _REPO / "docs" / "demo-format-2026-08.md",
-    _REPO / "docs" / "customer",
+    _REPO / "docs" / "demo",
+    _REPO / "docs" / "TIER0_INDEX.md",
     _REPO / "submission",
 )
 
@@ -48,7 +48,7 @@ _EXCLUDE_PATH_FRAGMENTS = (
     "RED_TEAM",
     "runtime-baseline-latest.json",
     "ENGINEERING_STATUS_2026_08.md",
-    "COMPETITIVE_MATRIX",
+    "competitive-matrix",
     "REPO_DEEP_MAP",
     # HDX-LINT-01: no directory blinds. Quote-inventory files stay fragment-excluded.
     "FINDINGS_RECLASSIFICATION",
@@ -110,6 +110,67 @@ _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         re.compile(r"(?i)(open[-\s]?corpus.{0,30}точност|BSI.{0,20}product\s+accuracy)"),
     ),
 ]
+
+_KITCHEN_TOKENS = (
+    "",
+    "[redacted-site]",
+    "[redacted-site]",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "customer-discovery/",
+    "docs/partners/outreach/",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+)
+
+_KITCHEN_SCAN_ROOTS = (
+    _REPO / "README.md",
+    _REPO / "README.ru.md",
+    _REPO / "docs",
+    _REPO / "submission",
+    _REPO / "samples",
+    _REPO / "audit",
+    _REPO / "backend" / "src",
+    _REPO / "frontend" / "src",
+)
+
+
+def lint_kitchen_tokens() -> list[str]:
+    """Jury pack: no NDA locators, kitchen paths, or archived speech-docs."""
+
+    skip_parts = {".git", "node_modules", "__pycache__", ".venv", "artifacts"}
+    hits: list[str] = []
+    for root in _KITCHEN_SCAN_ROOTS:
+        paths: list[Path]
+        if root.is_file():
+            paths = [root]
+        elif root.is_dir():
+            paths = [path for path in root.rglob("*") if path.is_file()]
+        else:
+            continue
+        for path in paths:
+            if any(part in skip_parts for part in path.parts):
+                continue
+            if path.suffix.lower() not in {".md", ".py", ".json", ".txt", ".yml", ".yaml"}:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            rel = path.relative_to(_REPO).as_posix()
+            for token in _KITCHEN_TOKENS:
+                if token in text:
+                    hits.append(f"[kitchen_token] {rel}: {token}")
+    return hits
+
 
 _BOUNDARY_MARKERS = (
     "claim_level",
@@ -627,6 +688,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.full_docs:
             roots.append(_REPO / "docs")
         errors.extend(lint_claims(matrix_path=args.matrix, roots=roots))
+        errors.extend(lint_kitchen_tokens())
 
     errors.extend(lint_citation_twins())
 

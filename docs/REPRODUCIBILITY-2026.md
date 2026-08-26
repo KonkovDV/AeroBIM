@@ -101,7 +101,7 @@ Reference frameworks: [FAIR Software Checklist v0.2](https://fairsoftwarecheckli
 
 **Report reproducibility is the deterministic core.** The language-model output is not an input to the verdict; it is stored as a provenanced annotation (prompt/response hashes, model URI, schema version, expert mark) and on re-run is **presented**, not re-generated. Vendor intra-session / across-time determinism probes measure provider behaviour; they are not a publication gate for FAIR report reproducibility.
 
-See grant contour [`architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md`](architecture/YANDEX_AI_STUDIO_GRANT_KT2_2026_08_03.md) and [`ai/LLM_ADVISORY_CONTOUR.md`](ai/LLM_ADVISORY_CONTOUR.md).
+See the advisory contour [`ai/LLM_ADVISORY_CONTOUR.md`](ai/LLM_ADVISORY_CONTOUR.md).
 
 ## Explicit limits (do not overclaim)
 

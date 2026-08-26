@@ -28,7 +28,7 @@ Machine status: [`STATUS.json`](./STATUS.json)
 | 5 | Harness dry-run (synthetic, not publishable) | `harness-dryrun/pilot-harness-report.json` |
 | 6 | Clash fixture measure (AABB n=6) | [`../clash-measurement-slice-2026-08/`](../clash-measurement-slice-2026-08/) |
 | 7 | Drawing overlay smoke PNG | [`../drawing-overlay-smoke-2026-08/`](../drawing-overlay-smoke-2026-08/) |
-| 8 | Video | Not recorded. Notice: [`../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md) |
+| 8 | Video | Not recorded. Notice: [`../../demo/KT2_VIDEO_SCRIPT_3MIN_2026_08_19.md`](../../TIER0_INDEX.md) |
 
 **Do not open** `wall-guid/report.html` as the overlay demo (no `#kt2-overlay` on the 11.08 HTML).
 

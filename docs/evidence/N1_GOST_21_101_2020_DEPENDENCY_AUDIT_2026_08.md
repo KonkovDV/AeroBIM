@@ -24,9 +24,9 @@ claim_boundary: >-
 | # | Путь | Строки / место | Что написано | Риск |
 |---:|---|---|---|---|
 | A1 | `docs/evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md` | ~142, ~201 | «ГОСТ Р 21.101» **без года** + пометка сверить с 2026 | Эксперт слышит «по 21.101» без редакции |
-| A2 | `docs/research/EXTERNAL_SOURCES_P1_P4_GOST_2026_08_05.md` | frontmatter, § GOST | 2026 заменяет 2020; риск edition | Research only; даты по обзорам/ГАРАНТ, **не** по пункту стандарта |
+| A2 | `docs/regulatory-baseline-2026.md` | frontmatter, § GOST | 2026 заменяет 2020; риск edition | Research only; даты по обзорам/ГАРАНТ, **не** по пункту стандарта |
 | A3 | `docs/norm-pack-governance-2026.md` | ~19 | P0 edition risk 2026 vs 2020 | Governance flag; нет поля выбора редакции в рантайме |
-| A4 | `docs/ENGINEERING_STATUS_2026_08.md` | ~31 | «21.101-2026 risk flagged» | Статус, не runtime |
+| A4 | `docs/capability-claim-matrix-2026.md` | — | «21.101-2026 risk flagged» | Статус, не runtime |
 | A5 | `docs/evidence/weekly-eng-status-latest.json` | blockers list | «Norm-pack edition: …2026 supersedes 2020» | Сгенерированный статус |
 | A6 | `backend/src/aerobim/tools/export_weekly_eng_status.py` | ~78 | та же строка в коде экспорта | Хардкод риска в weekly export |
 
@@ -46,7 +46,7 @@ claim_boundary: >-
 | B1.2 | `backend/src/aerobim/domain/package_completeness.py` | `DEFAULT_RESIDENTIAL_MANDATORY_PD = (PZ, AR, KZH)`; cipher match для AR/KZH | Fixture-grade; claim_boundary отрицает полноту ПП-87 / статутный 21.101 |
 | B1.3 | `backend/src/aerobim/domain/package_completeness.py` | rules: `MISSING-SECTION`, `UNPAIRED-SECTION`, `MISSING-CIPHER`, `CIPHER-MISMATCH`, … | Любая устаревшая/неполная таблица марок → ложные срабатывания на свежих комплектах |
 | B1.4 | `samples/packages/*-inventory.json` | объявленные дисциплины/шифры | Фикстуры под текущий scaffold, не под 2026 |
-| B1.5 | `docs/ENGINEERING_STATUS_2026_08.md` | WP-05 cipher/specs/PD↔RD | Документирует поведение B1.2–B1.3 |
+| B1.5 | `docs/capability-claim-matrix-2026.md` | WP-05 cipher/specs/PD↔RD | Документирует поведение B1.2–B1.3 |
 | B1.6 | `docs/evidence/TASK3_COMPLETENESS_DEMONSTRATOR_2026_08_05.md` | #9/#10 `drawing_purpose` / роли листа | MISSING_ATTRIBUTE — смежно с ролями листов 21.101-класса |
 
 ### B2. Ревизионный контроль / версии документов

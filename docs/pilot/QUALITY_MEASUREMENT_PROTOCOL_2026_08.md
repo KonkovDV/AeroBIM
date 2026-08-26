@@ -146,7 +146,7 @@ Method (implemented): tie-aware expected nDCG@5/10/full (McSherry–Najork 2008)
 
 Every open-corpora artifact carries: *open sets lack expert TP/FP → regression/timing only, NOT product accuracy*.
 
-L1 public benches (IFC-Bench smoke, AECV live counting, AEC-Bench inventory) are separate: see [`../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md) and [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md).
+L1 public benches (IFC-Bench smoke, AECV live counting, AEC-Bench inventory) are separate: see [`../quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../evidence/DATA_STATEMENT_2026_08.md) and `../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`.
 
 ## 9. Acceptance checklist (protocol ready for customer negotiation)
 

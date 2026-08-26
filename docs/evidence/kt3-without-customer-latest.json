@@ -2,8 +2,8 @@
   "schema_version": "1.1.0",
   "artifact_type": "kt3_without_customer",
   "claim_level": "fixture_and_proxy_only",
-  "claim_boundary": "Owner re-scope 2026-08-23: customer files are not expected in git. KT#3 is the live fixture gate plus public/synthetic proxies. Operator-local NDA under files/ is not samples/customer and does not close RT-001. Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false.",
-  "generated_at": "2026-08-25T00:00:00+00:00",
+  "claim_boundary": "Customer files are not expected in git. KT#3 is the live fixture gate plus public/synthetic proxies. Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false.",
+  "generated_at": "2026-08-23T00:00:00+00:00",
   "checkpoint": "NO_GO",
   "mik_stage": "доработка",
   "validation_effectiveness_started": false,
@@ -30,7 +30,7 @@
       "python -m aerobim.tools.run_kt3_without_customer"
     ],
     "regulatory_leg": "AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026",
-    "owner_optional_nda": "files/ is gitignored; coverage_map_only; never RT-001 CLOSED"
+    "owner_optional_nda": "local customer files are not in git; never RT-001 CLOSED"
   },
   "tz_mvp_demonstrable": [
     "TR-3 IFC geometry/attributes",
@@ -88,18 +88,8 @@
       "present": true
     },
     {
-      "role": "rt_without_samolet",
-      "path": "docs/datasets/RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md",
-      "present": true
-    },
-    {
       "role": "tz_v2",
       "path": "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md",
-      "present": true
-    },
-    {
-      "role": "samolet_answers",
-      "path": "docs/partners/",
       "present": true
     },
     {
@@ -115,11 +105,6 @@
     {
       "role": "kt3_operator_runbook",
       "path": "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md",
-      "present": true
-    },
-    {
-      "role": "house5_kr_coverage_map",
-      "path": "docs/evidence/-kr13-coverage-map-2026-08.md",
       "present": true
     }
   ],

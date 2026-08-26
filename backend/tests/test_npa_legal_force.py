@@ -36,8 +36,8 @@ POINTERS = (
 )
 LIVING_DOCS = (
     REPO / "docs" / "regulatory-baseline-2026.md",
-    REPO / "docs" / "dwg-blocker-memo-2026-08.md",
-    REPO / "docs" / "partners" / "SAMOLET_WHAT_WE_NEED_2026_07-ru.md",
+    REPO / "docs" / "capability-claim-matrix-2026.md",
+    REPO / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md",
 )
 
 

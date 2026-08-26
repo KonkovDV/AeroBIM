@@ -11,7 +11,7 @@ claim_boundary: "Native DWG remains FAILED. This ADR does not authorize a DWG-re
 
 ## Context
 
-Tracker asks how we handle DWG. Runtime today: `EzdxfCadModelIngestor` returns `supported=False` for `.dwg`; capability `dwg_dxf` is FAILED when DWG is requested; FAILED CAD capability blocks `summary.passed` (ADR-001). Options A/B/C: [`docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md`](../tz/DWG_DECISION_OPTIONS_ABC_2026_08.md). Cost/legal: [`docs/dwg-blocker-memo-2026-08.md`](../dwg-blocker-memo-2026-08.md).
+Tracker asks how we handle DWG. Runtime today: `EzdxfCadModelIngestor` returns `supported=False` for `.dwg`; capability `dwg_dxf` is FAILED when DWG is requested; FAILED CAD capability blocks `summary.passed` (ADR-001). Options A/B/C: [`docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md`](../tz/DWG_DECISION_OPTIONS_ABC_2026_08.md). Cost/legal: `docs/dwg-blocker-memo-2026-08.md`.
 
 Russian intake for expertise is PDF/A + IFC + XML (MinStroy 783/пр, PP RF 614). DWG is a contractor working format, not the regulator's required exchange.
 

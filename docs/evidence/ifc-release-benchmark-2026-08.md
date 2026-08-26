@@ -10,11 +10,11 @@ Stability: shared DI container + suite prime; measured iterations=20, warmup=2. 
 
 | Schema | Packs | bytes | entities | p50 ms | p95 ms | max ms | spike max/p50 | issues | reqs |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| IFC2X3 | 1 | 975 | 12 | 41.658 | 42.89 | 43.642 | 1.048 | 5 | 3 |
-| IFC4 | 1 | 997 | 12 | 41.018 | 42.33 | 43.033 | 1.049 | 4 | 3 |
-| IFC4X3 | 1 | 1005 | 12 | 42.441 | 43.919 | 44.14 | 1.04 | 6 | 3 |
+| IFC2X3 | 1 | 975 | 12 | 38.735 | 42.851 | 47.767 | 1.233 | 5 | 3 |
+| IFC4 | 1 | 997 | 12 | 37.941 | 41.042 | 58.704 | 1.547 | 4 | 3 |
+| IFC4X3 | 1 | 1005 | 12 | 72.667 | 86.386 | 106.383 | 1.464 | 6 | 3 |
 
 Policy: Schema suite reuses one DI container, primes once, warms per pack, gc.collect after warmup, and defaults to n=20 so nearest-rank p95 is not identical to a single OS/MEP spike (historical IFC4 n=5 max~568ms).
 
-Generated at: `2026-08-16T19:22:37.696398+00:00`
+Generated at: `2026-08-26T13:48:04.139134+00:00`
 JSON evidence: `audit/evidence/ifc-release-benchmark-2026-08.json`

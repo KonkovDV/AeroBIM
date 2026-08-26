@@ -10,7 +10,7 @@ supersedes_partial: EXPERIMENT_B_AR rows Mordovia-only narrative
 
 # Пересчёт АР — СПб (primary) + Амур
 
-Снимки: `.local/evidence-sources/` (gitignored). План: [`EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_PLAN_2026_08.md`](EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_PLAN_2026_08.md).
+Снимки: `.local/evidence-sources/` (gitignored). План: `EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_PLAN_2026_08.md`.
 
 **Оговорка рядом с таблицей:** СПб / Амур / Мордовия — разные органы и периоды; доли отражают и методику перечней, не только «силу раздела».
 

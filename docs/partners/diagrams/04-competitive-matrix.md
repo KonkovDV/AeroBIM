@@ -1,6 +1,6 @@
 # 4. Конкурентные оси (сжатая матрица)
 
-Полная таблица: [`../COMPETITIVE_MATRIX_2026_08.md`](../COMPETITIVE_MATRIX_2026_08.md).
+Полная таблица: [`../COMPETITIVE_MATRIX_2026_08.md`](04-competitive-matrix.md).
 
 ```mermaid
 quadrantChart

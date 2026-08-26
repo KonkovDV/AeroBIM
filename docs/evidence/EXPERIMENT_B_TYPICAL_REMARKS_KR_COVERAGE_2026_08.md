@@ -198,7 +198,7 @@ status: ready_for_owner_review
 
 Киров и Мордовия **визуально разделены**: три числа — не один эксперимент. Направление **≈8 → 17 → 25 %** читается по оси «расчёт → сверка», с оговоркой методики перечней. Сдвиг КР 0→≈8,3 % — Task 3 (полнота на open/synthetic), не корпус заказчика.
 
-**Статус:** эксперимент Б **обновлён** (КР ≈16,7%). ОВ — запасной на КТ#3. АР — план пересчёта СПб+Амур ([`EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_PLAN_2026_08.md`](EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_PLAN_2026_08.md)). Exp A → Renga ([`EXPERIMENT_A_RENGA_PNST909_2026_08.md`](EXPERIMENT_A_RENGA_PNST909_2026_08.md)). ПНСТ 22-сценария — [`PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md`](PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md). **ГОСТ Р 21.101-2026** — проверить цитаты 2020.
+**Статус:** эксперимент Б **обновлён** (КР ≈16,7%). ОВ — запасной на КТ#3. АР — план пересчёта СПб+Амур (`EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_PLAN_2026_08.md`). Exp A → Renga ([`EXPERIMENT_A_RENGA_PNST909_2026_08.md`](EXPERIMENT_A_RENGA_PNST909_2026_08.md)). ПНСТ 22-сценария — [`PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md`](PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md). **ГОСТ Р 21.101-2026** — проверить цитаты 2020.
 
 ### Три блокера как смета (не список оправданий)
 

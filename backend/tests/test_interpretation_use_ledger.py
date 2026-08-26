@@ -53,8 +53,8 @@ class InterpretationUseLedgerTests(unittest.TestCase):
             "../architecture/ADR-001-verdict-ownership-2026.md",
         )
         self.assertEqual(
-            _evidence_href("docs/quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md"),
-            "ACADEMIC_LITERATURE_TRIAGE_2026_08.md",
+            _evidence_href("docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md"),
+            "INTERPRETATION_USE_LEDGER_2026_08.md",
         )
         self.assertEqual(
             _evidence_href("samples/ids-xsd/ids.xsd"),

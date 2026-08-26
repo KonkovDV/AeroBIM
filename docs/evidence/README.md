@@ -53,8 +53,6 @@ Related (not under `docs/evidence/`):
 |------|------|
 | [`../../samples/benchmarks/open-corpora/`](../../samples/benchmarks/open-corpora/) | Open-corpora profiles (regression/timing only) |
 | [`../../samples/xsd/minstroy/SOURCE.md`](../../samples/xsd/minstroy/SOURCE.md) | MinStroy XSD intake; PZ 01.07 / ZnP 01.01 + survey assignment/report; construction-stage catalog gap; not RT-001 |
-| [`../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md`](../quality/RED_TEAM_AECV_LIVE_YANDEX_2026_08_04.md) | Red Team reading of live AECV numbers |
-| [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) | RT-003: public federated inventory exists; clash NOT_VERIFIED |
 | [`../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Quality measurement protocol |
 
 ## Reproducible package evidence bundle
@@ -78,6 +76,6 @@ python -m aerobim.tools.export_evidence_bundle \
 
 Artifacts: `manifest.json`, `report.json`, `findings.json`, `capability_coverage.json`, `report.html`, `timings.json`, `logs_snippet.txt`, `README.md`.
 
-See [`../PROJECT_STATUS_AUDIT_2026.md`](../PROJECT_STATUS_AUDIT_2026.md) · [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md) · [`../benchmark-evidence-2026.md`](../benchmark-evidence-2026.md) · [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md).
+See [`../benchmark-evidence-2026.md`](../benchmark-evidence-2026.md) · [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md).
 
 Audit honesty: [`../../audit/evidence/`](../../audit/evidence/) · Claims Lock: [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md).

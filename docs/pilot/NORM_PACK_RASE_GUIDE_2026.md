@@ -103,7 +103,7 @@ Schema **2.0.0** требует на каждом правиле: `requirement_t
 
 ## Вход от заказчика (перечень)
 
-См. также [`../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md):
+См. также [`../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](../partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md):
 
 1. Выписка EIR / критерии приёмки на пилот (1–2 стр + таблица свойств).  
 2. Список СП/локальных стандартов **в scope** (не «все СП»).  

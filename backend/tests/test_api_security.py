@@ -843,13 +843,16 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertTrue(answers["share_url_received"])
         self.assertNotIn("share_url", answers)
         self.assertEqual(answers["native_rvt_nwd"], "not_implemented")
+        self.assertEqual(answers["native_dwg"], "not_implemented")
+        self.assertEqual(answers["native_lir"], "not_implemented")
+        self.assertEqual(answers["team_brief_received_at"], "2026-08-26")
 
     def test_auth_bff_discovery_is_public_501(self) -> None:
         response = self.client.get("/v1/auth/bff")
         self.assertEqual(response.status_code, 501)
         body = response.json()
         self.assertEqual(body["status"], "NOT_IMPLEMENTED")
-        self.assertIn("", body["design"])
+        self.assertIn("PILOT_THREAT_MODEL", body["design"])
 
     def test_reinforcement_digest_endpoint_rejects_path_traversal(self) -> None:
         response = self.client.post(

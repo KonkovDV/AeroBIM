@@ -276,6 +276,17 @@
       "implementation_status": "gap",
       "roadmap_ref": "SAMOLET-ANSWERS-1.2.2",
       "note": "Priority only. RT-002b stays OPEN until Samolet-signed pack_hash"
+    },
+    {
+      "error_id": "SAM-TYP-025",
+      "discipline": "structure",
+      "title_ru": "Превышение прогибов относительно расчёта ЛИРА",
+      "pattern": "Declared deflection in RD/BIM disagrees with the LIRA PDF/Excel result (cross-doc compare, not a solver)",
+      "maps_to_category": "CROSS_DOCUMENT",
+      "severity_hint": "error",
+      "implementation_status": "gap",
+      "roadmap_ref": "SAMOLET-ANSWERS-2.1.2",
+      "note": "Team brief 2026-08-26 restates 2.1.2. calculation_correctness stays NOT_IMPLEMENTED"
     }
   ]
 }

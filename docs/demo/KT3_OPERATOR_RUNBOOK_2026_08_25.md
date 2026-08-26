@@ -1,26 +1,25 @@
-<!-- claims-lint: allow-file reason="KT#3 operator runbook; TZ 90%/SLA as non-goals; NO_GO; local NDA not git" -->
+<!-- claims-lint: allow-file reason="KT#3 operator runbook; TZ 90%/SLA as non-goals; NO_GO; jury-laptop git fixtures only" -->
 ---
-title: "КТ#3 — сценарий оператора (чужой ноутбук + опция NDA)"
+title: "КТ#3 — сценарий оператора (живой CLI из git)"
 date: "2026-08-25"
-last_updated: "2026-08-25"
+last_updated: "2026-08-26"
 checkpoint: NO_GO
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Operator script. Jury-laptop track uses only git fixtures. Owner-laptop
-  NDA track is coverage_map_only. Not product accuracy. Not customer SLA.
+  Operator script. Jury-laptop track uses only git fixtures.
+  Not product accuracy. Not customer SLA. Checkpoint NO_GO.
 ---
 
 # КТ#3 — что нажимать
 
 Карточка речи: [`KT3_JURY_FAQ_2026_08_25.md`](KT3_JURY_FAQ_2026_08_25.md).  
-Re-scope: [`../partners/_2026_08_23.md`](../partners/_2026_08_23.md).  
 ТЗ v2: [`../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md).
 
-Два трека. **На защите жюри по умолчанию — трек A.** Трек B только если это машина владельца и жюри явно просит «ваш комплект».
+На защите жюри — только этот трек: живой CLI из git. Файлов заказчика в репозитории нет.
 
-## Трек A — чужой ноутбук (обязательный)
+## Чужой ноутбук (обязательный)
 
 Offline. Сеть не нужна после `pip install`. Профиль: development + учебный пакет.
 
@@ -31,7 +30,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 python -m aerobim.tools.run_kt3_without_customer
 ```
 
-Успех трека A:
+Успех:
 
 | Артефакт | Ожидание |
 |---|---|
@@ -57,40 +56,21 @@ P1, только если осталось время: `python -m aerobim.tools.
 
 Frontend (`npm ci` / `npm run dev`) — не показ КТ#3, если время жюри <12 мин.
 
-## Трек B — машина владельца с `files/Техлаб` (опционально)
-
-Gitignore. Не копировать в `samples/customer/`. Не коммитить выход.
-
-Честный объём: **один** IFC дома 5, КР секций 1–3 (~6 МиБ), claim_level **`coverage_map_only`**.
-
-Репетиция 25.08 на машине владельца (файл **не** в git): IFC2X3; колонны 676, балки 240, плиты 152, стены `IfcWallStandardCase` 588; `IfcReinforcingBar=0`; `IfcFlowSegment=0`. Обезличенная таблица в git: [`../evidence/-kr13-coverage-map-2026-08.md`](../evidence/-kr13-coverage-map-2026-08.md). Это карта того, *что в файле есть*, не точность продукта и не RT-001.
-
-Не делать на защите:
-
-- [redacted-site] АР ~267 МиБ (выше дефолтного analyze 256 MiB).
-- Native `.rvt` / `.nwd` (415).
-- Federated MEP (файлов нет).
-- «Вот точность на Самолёте».
-
-Если прогон не готов заранее — **не импровизировать**. Вернуться к треку A.
-
 ## Две ноги (не склеивать)
 
 | Нога | Что | Pass-gate |
 |---|---|---|
 | Регуляторная | `moscow_agr_2026` × городские IDS | Линейка измерения. Не self-check АГР (бесплатный городской отчёт с 29.06) |
-| Клиновая | Шов на учебном пакете / будущем injected pack | Шов чистый *до* `inject_defects`. Не filename/IDS АГР |
+| Клиновая | Шов на учебном пакете | Шов чистый *до* `inject_defects`. Не filename/IDS АГР |
 
-`python -m aerobim.tools.inject_defects` — для G2 recall **после** того, как владелец соберёт шовно-чистый мини-ПД. На защите КТ#3 **не** сажать дефекты в NDA-корпус и не в городские эталоны АГР.
+`python -m aerobim.tools.inject_defects` — для G2 recall **после** того, как собран шовно-чистый мини-ПД. На защите КТ#3 **не** сажать дефекты в городские эталоны АГР.
 
-## Перед выходом из дома (владелец, не агент)
+## Перед показом
 
-1. Клон `main` собирается: две команды трека A на чистой машине хотя бы один раз.  
-2. ИП / письма — календарь G1, не git.  
-3. USB с репо **без** `files/Техлаб`, если ноутбук жюри. NDA не тащить в зал без нужды.  
-4. Карточка речи распечатана или второй монитор.  
-5. Стоп-лист прочитан вслух один раз.
+1. Клон `main` собирается: две команды выше на чистой машине хотя бы один раз.
+2. Карточка речи распечатана или второй монитор.
+3. Стоп-лист прочитан вслух один раз.
 
 ## После показа
 
-Не обещать GO. Зафиксировать ask: два разметчика; IFC ОВ/ВК/ЭОМ и арматура или out-of-scope; не native RVT в контуре проверки.
+Не обещать GO. Не обещать native RVT, MEP delivered, точность >90% или customer SLA.

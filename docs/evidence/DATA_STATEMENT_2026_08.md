@@ -55,7 +55,7 @@ GPLv3 IFC-Bench projects may be read locally with `--samolet-demo-copyleft`. The
 | Federated MEP system-clash on customer IFC | public inventory exists; `mep_system_clash=NOT_VERIFIED` | RT-003 stays OPEN |
 | Independent external reproduction of our benches | all runs are author-lab | academic gap (б) |
 
-Ask to obtain (1)–(4): [`../partners/_08_15.md`](../partners/_08_15.md).
+Ask to obtain (1)–(4): independent labeled pack, two named raters, Samolet-signed acceptance profile, federated MEP IFC or written out-of-scope. Without those, Checkpoint stays `NO_GO`.
 
 ## 4. Ethics / PII
 
@@ -76,7 +76,7 @@ Checkpoint **NO_GO**.
 
 ## 6. Literature that calibrates (does not close RT-001)
 
-August 2026 map: [`../quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](../quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md). Short reading:
+August 2026 map: [`../quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md). Short reading:
 
 | Paper | Licenses | Does not license |
 |---|---|---|

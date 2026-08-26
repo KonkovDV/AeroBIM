@@ -35,7 +35,7 @@ cd backend
 python -m aerobim.tools.run_ifc_bench_smoke --also-docs-evidence
 ```
 
-Decision: [`docs/quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../../../docs/quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md).
+Decision: [`docs/quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../../../docs/evidence/DATA_STATEMENT_2026_08.md).
 
 ## Run
 

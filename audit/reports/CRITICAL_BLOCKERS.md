@@ -6,7 +6,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
 **Checkpoint verdict:** still **`NO_GO`**. Engineering remediations do **not** close customer sign-off. Remaining honest gaps: **RT-001** (no public «RF PD + expertise conclusion» pairs; rules exist), **RT-002a** CLOSED regulatory (public MOEXP/AGR/SPb IDS + `pack_hash`, city as publisher) / **RT-002b** OPEN (no Samolet-signed profile), **RT-003** (public duplex IfcClash RUN; `mep_system_clash` NOT_VERIFIED; not MEP delivered). Never write undifferentiated «RT-002 CLOSED». Do not write «нет утверждённого нормативного пакета».
 
-**Reclassification (v4):** N-18 CLOSED 2026-08-09 (attestation cannot be forged locally). Current engineering surface: [`docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md).
+**Reclassification (v4):** N-18 CLOSED 2026-08-09 (attestation cannot be forged locally). Current engineering surface: [`docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md).
 
 ## Open engineering/legal blockers (2026-07-31 audit)
 
@@ -52,9 +52,9 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RTATOM-I09/I10/I11/I14/I20 | **PARTIAL** | Datastore URL SSRF; quota release; BCF `inspect_zip`; baked pilot quotas; PG fail-closed |
 | RTATOM-F02/F05/F07 | **PARTIAL** | Client bearer inject removed; preview Blob MIME allowlist; WASM IFC 256 MiB |
 | RTATOM A2.5 / RT-POST-09 hashes | **CLOSED*** | `--require-hashes` + `--generate-hashes` locks; CI/Docker wire-up; pinned `pip==25.2` / `uv==0.8.22`. *Residual: unhashed pip/uv bootstrap wheels. |
-| RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: production OIDC BFF (POST-05) remains **DESIGNED / NOT_IMPLEMENTED**; Phase 3 is lab-only (`oidc_bff_phase3_ready`) — see `docs/architecture/_2026_07.md`. |
+| RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: production OIDC BFF remains **DESIGNED / NOT_IMPLEMENTED**; Phase 3 is lab-only (`oidc_bff_phase3_ready`). |
 
-Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile), RT-003 (unmeasured federated MEP). Residual: production OIDC BFF (POST-05 **DESIGNED / NOT_IMPLEMENTED**; Phase 3 lab path landed — default still 501 / `auth_bff=NOT_IMPLEMENTED`). Eng surface: [`docs/ENGINEERING_STATUS_2026_08.md`](../../docs/ENGINEERING_STATUS_2026_08.md).
+Still open for checkpoint: remaining RT-001 (RF corpus), RT-002 (Samolet profile), RT-003 (unmeasured federated MEP). Residual: production OIDC BFF (**DESIGNED / NOT_IMPLEMENTED**; Phase 3 lab path landed — default still 501 / `auth_bff=NOT_IMPLEMENTED`). Eng surface: [`docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md).
 
 ## Closed in post-remediation wave (2026-07-19)
 
@@ -112,8 +112,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Still true:** there is **no** public corpus «российский комплект ПД + фактическое заключение экспертизы». Fixture F1 is not product accuracy. 656 pytest ≠ false-pass rate ([arXiv:2607.29058](https://arxiv.org/abs/2607.29058)). MinStroy XSD **01.07 / 01.01** plus survey-assignment / geological-report **01.00** are vendored (zip folders for PZ/ZnP still `dev_`); that is intake format, not a remark corpus. Construction-stage XSDs from the 07.08.2026 news were **not** on the 14.08 catalog scrape.  
 - **Expected before any product accuracy claim:** customer or RF-expertise corpus + ≥2 adjudicators + κ/α + held-out + FN tracked  
 - **Product HOLD — RT-001 still OPEN** for that RF/customer corpus only. Open benches ≠ RT-001 closed.
-- **Addendum 25.08.2026:** customer share URL received (`[redacted-host]`). URL ≠ hashed pack in git. `customer_package_in_samples_customer` stays false. See [`docs/partners/`](../../docs/partners/).
-- **Addendum 25.08.2026 evening:** Technilab NDA pack is on the owner disk (`files/Техлаб`, gitignored): three residential objects, IFC2x3 AR/KR, PD, OEP/expertise remarks, LIRA/SCAD. That is a **coverage-map carrier**, not dual adjudication, not `pack_hash` in git, not RF-expertise κ. IFC has no MEP and no `IfcReinforcingBar`. RT-001 stays OPEN. Map: [`docs/research/TECHNILAB_ACADEMIC_OSINT_2026_08_25.md`](../../docs/research/TECHNILAB_ACADEMIC_OSINT_2026_08_25.md).
+- **Addendum 25.08.2026:** customer indicated a private data channel. That is not a hashed pack in git. `customer_package_in_samples_customer` stays false. RT-001 stays OPEN.
 
 ### RT-002 — Samolet-signed acceptance profile absent (public examination IDS exist)
 - **Severity:** BLOCKER (customer sign-off)  

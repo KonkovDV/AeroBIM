@@ -152,6 +152,6 @@ claim_boundary: >
 
 ## 8. Что закрывает разрыв
 
-Checkpoint **`NO_GO`** снимается не кодом, а четырьмя поставками заказчика: комплект ПД/РД одной ревизии с IFC, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Запрос: [`../docs/partners/_08_15.md`](../docs/partners/_08_15.md).
+Checkpoint **`NO_GO`** снимается не кодом, а четырьмя поставками заказчика: комплект ПД/РД одной ревизии с IFC, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Запрос: [`../docs/partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](../docs/partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).
 
 Допустимые интерпретации текущих цифр: [Kane IUA](../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) (заморозка `f9389bf`). Показ: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`; оверлей `run_demo_vertical_slice` — P1.

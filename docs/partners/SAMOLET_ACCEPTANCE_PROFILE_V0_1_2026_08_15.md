@@ -41,4 +41,4 @@ claim_boundary: >
 
 **Definition of Done RT-002:** `customer_pack_hash != null` AND `profile_owner != null` AND `approval_date != null` AND scope memo signed AND norm edition/clause/jurisdiction complete. До этого product acceptance profile = BLOCKED.
 
-Письмо: [`_08_15.md`](_08_15.md).
+Черновик профиля — этот файл. Подпись заказчика отсутствует.

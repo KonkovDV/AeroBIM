@@ -9,7 +9,7 @@ claim_boundary: "Protocol only. Thresholds are parameters for customer agreement
 
 # Pilot Protocol — ГК «Самолёт» × AeroBIM TechLab Task 07
 
-Параллельный план Checkpoint #2: [`pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md).  
+Параллельный план Checkpoint #2: `pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`.  
 Инструкция разметчиков: [`pilot/EXPERT_LABELING_INSTRUCTION_2026.md`](pilot/EXPERT_LABELING_INSTRUCTION_2026.md).
 
 ## Goal

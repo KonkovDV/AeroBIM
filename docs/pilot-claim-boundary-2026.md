@@ -94,7 +94,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Package completeness inventory (WP-05) | Soft opt-in inventory checks; DWG native read not implemented; fixture-grade only |
 | Open corpora profiles (WP-06) | 3 pinned profiles; honest regression n=7; regression/timing only — not product accuracy |
 | Quality measurement protocol (WP-07) | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |
-| Wedge freeze 16.08 (IFC+IDS evidence layer) | [`partners/_2026_08_16.md`](partners/_2026_08_16.md) — scope freeze; not 10D/Tangl replacement; Checkpoint **NO_GO** |
+| IFC+IDS evidence layer | This file — scope freeze; not 10D/Tangl replacement; Checkpoint **NO_GO** |
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | Production PDF path; PyMuPDF optional `pdf-agpl` only — not a court opinion |
 | Annotation claimed-GUID → `ifc_guid` (P2-04) | Presence confirm via spatial index only; wall-guid demo evidence pin |
 | MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + optional AABB; always `geometry_verified=False`; capability stays `NOT_VERIFIED` |
@@ -134,7 +134,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 8. AeroBIM does **not** claim Experiment B coverage percentages (e.g. KR **≈16.7%** of n=24 open-source remarks) as product detection rate on a customer corpus — they are **coverage-map** measurements with explicit out-of-scope classes; see [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md).
 9. AeroBIM does **not** claim IfcLLM / GraphRAG product capability. I9 is an **advisory scaffold** (port + allowlisted query + fixture QA); multi-hop GraphRAG is unshipped.
 10. AeroBIM does **not** claim Hybrid AI is in the verdict path, nor that masking guarantees anonymity — WP-02 wires `HybridRouteGate` as an **advisory pre-gate** only (verdict-neutral, OFF==ON; blocked → no advisory observation).
-11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer ([`partners/_2026_08_16.md`](partners/_2026_08_16.md)); Checkpoint **NO_GO** until RT-001/002/003.
+11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer; Checkpoint **NO_GO** until RT-001/002/003.
 12. The SPb GAU CGE profile (`samples/profiles/spb-cge/`) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. It does **not** close RT-001 or RT-002 and is not an expertise verdict.
 
 ## Reproducibility baseline
@@ -164,9 +164,9 @@ Keep aligned with:
 
 - [partners/TECHLAB_SAMOLET_APPLICATION_2026.md](partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
 - [README.md](../README.md) Scientific Reporting Standard section
-- [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
-- [roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md](roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md)
-- [ENGINEERING_STATUS_2026_08.md](ENGINEERING_STATUS_2026_08.md)
+- [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](capability-claim-matrix-2026.md)
+- roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md
+- [capability-claim-matrix-2026.md](capability-claim-matrix-2026.md)
 - [architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — architecture SSOT
 - [architecture/ADR-001-verdict-ownership-2026.md](architecture/ADR-001-verdict-ownership-2026.md) — `summary.passed` ownership
 - [../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) — Hybrid AI routing foundation (P0/P1, verdict-neutral)

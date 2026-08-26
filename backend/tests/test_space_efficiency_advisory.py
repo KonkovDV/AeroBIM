@@ -50,6 +50,22 @@ class SpaceEfficiencyAdvisoryTests(unittest.TestCase):
         issues = build_space_efficiency_candidates(spaces, layout_note="corridor dominates")
         self.assertIn("corridor dominates", issues[0].message)
 
+    def test_corridor_and_mop_names_are_hints_not_verdicts(self) -> None:
+        from aerobim.domain.space_efficiency_advisory import layout_hint_for_space
+
+        corridor = SpaceInventoryRow(guid="c1", name="Коридор 1 этаж")
+        mop = SpaceInventoryRow(guid="m1", long_name="МОП секции 2")
+        room = SpaceInventoryRow(guid="r1", name="Спальня")
+        self.assertEqual(layout_hint_for_space(corridor), "corridor")
+        self.assertEqual(layout_hint_for_space(mop), "common_area")
+        self.assertEqual(layout_hint_for_space(room), "other")
+        issues = build_space_efficiency_candidates((corridor, mop, room))
+        package = issues[0].message
+        self.assertIn("corridor=1", package)
+        self.assertIn("common_area=1", package)
+        self.assertIn("layout_hint=corridor", issues[1].message)
+        self.assertNotIn("inefficient by", package.lower())
+
 
 if __name__ == "__main__":
     unittest.main()

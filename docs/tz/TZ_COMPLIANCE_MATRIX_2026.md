@@ -13,14 +13,7 @@ SSOT mapping of the **intellectual expert-assistant TZ** / **TechLab Samolet Tas
 Companion: [`samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) (R1–R15).
 Task 07 readiness: [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md).
 Architecture TBD fill: [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_REQUIREMENTS_2026.md).
-Parallel Checkpoint #2 plan: [`../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`](../pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md).
-Claims Lock: [`../../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../../audit/reports/CLAIMS_LOCK_2026_07_31.md)
-(supplements [`CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)).
-License / LIC-001: [`../license-policy-2026.md`](../license-policy-2026.md).
-Offline: [`../offline-deployment-2026.md`](../offline-deployment-2026.md).
 Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrity-2026.md).
-Eng status (Aug 2026): [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
-P0 engineering package: [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STATUS_2026_08.md).
 
 **Status legend:** `done` | `partial` | `missing` | `blocked` (needs Samolet)  
 **Phase legend:** `MVP` (sign-off deterministic) | `P0`–`P4` (implementation waves)
@@ -82,7 +75,7 @@ P0 engineering package: [`../ENGINEERING_STATUS_2026_08.md`](../ENGINEERING_STAT
 
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
-| MEP / system intersections | missing | Generic clash only; explicit gap [`MEP-CLASH-001`](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md) | P1 customer corpus / roadmap |
+| MEP / system intersections | missing | Generic clash only; explicit gap [`MEP-CLASH-001`](../capability-claim-matrix-2026.md) | P1 customer corpus / roadmap |
 | Geometric BIM conflicts | partial | `IfcClashDetector` + `detect_between` on planted federated boxes + `detect_clearance_between` on gap pair; clash→BCF file ingest; not TZ clash >90%; RT-003 OPEN | MVP |
 | Calculation / load errors | partial | Cross-doc numeric; not full structural solver | MVP |
 | Incorrect areas | partial | Space area rules + quantity algebra | MVP |

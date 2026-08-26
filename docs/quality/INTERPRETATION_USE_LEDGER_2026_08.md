@@ -1,9 +1,9 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-08-17"
+date: "2026-08-26"
 status: active
-version: "1.0.1"
+version: "1.0.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -35,7 +35,7 @@ claim_boundary: >-
 | TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
 | TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
 | TRK-04 | tracker | Задача 4: научный консультант / ИТ-ментор | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
-| TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только локально, вне git | Назначенные демо как git-факт | `operational_hygiene` |
+| TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
@@ -95,11 +95,11 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
 - `SAM-06`: `python -m aerobim.tools.measure_package_sla`
 - `SAM-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
-- `TRK-01`: [_2026_08_16.md](../partners/_2026_08_16.md)
+- `TRK-01`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
 - `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)
-- `TRK-04`: [TRACKER_MEETING_2026_08_14.md](../demo/TRACKER_MEETING_2026_08_14.md)
-- `TRK-05`: [COMMERCIAL_AND_OPEN_CORE_2026_08_14.md](../gtm/COMMERCIAL_AND_OPEN_CORE_2026_08_14.md)
+- `TRK-04`: [KT3_JURY_FAQ_2026_08_25.md](../demo/KT3_JURY_FAQ_2026_08_25.md)
+- `TRK-05`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
 - `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
@@ -110,8 +110,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `IND-03`: [solihin-rule-classes-2026-08.md](../evidence/solihin-rule-classes-2026-08.md)
 - `IND-04`: [PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md](../evidence/PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md)
 - `IND-05`: [ifc-bench-v2-smoke-latest.json](../evidence/ifc-bench-v2-smoke-latest.json)
-- `IND-06`: [ACADEMIC_LITERATURE_TRIAGE_2026_08.md](ACADEMIC_LITERATURE_TRIAGE_2026_08.md)
-- `IND-07`: [ACADEMIC_LITERATURE_TRIAGE_2026_08.md](ACADEMIC_LITERATURE_TRIAGE_2026_08.md)
-- `IND-08`: [MEP_SYSTEM_CLASH_GAP_2026_07.md](../roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md)
+- `IND-06`: [aec-bench-false-pass-2026-08.md](../evidence/aec-bench-false-pass-2026-08.md)
+- `IND-07`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `IND-08`: [federated-clash-planted-2026-08.md](../evidence/federated-clash-planted-2026-08.md)
 - `IND-09`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
 - `IND-10`: [ids.xsd](../../samples/ids-xsd/ids.xsd)

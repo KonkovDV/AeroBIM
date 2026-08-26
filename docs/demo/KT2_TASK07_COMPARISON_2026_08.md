@@ -31,6 +31,6 @@ claim_boundary: >
 
 **Контр-ход (дословно):** слои не совпадают. Их пилоты/договоры/«90%» без corpus + TP/FP + методики не сравнимы. Предлагаем одну методику на одном пакете Самолёта — или NO_GO у всех, кто не меряет.
 
-**Базовая линия валидации IFC (не шестой конкурент Задачи 07):** [buildingSMART IFC Validation Service](https://validate.buildingsmart.org/) — schema / info-takeoff / норматив Gherkin. Карта перекрытия: [`../evidence/upstream-validate-overlap-2026-08.md`](../evidence/upstream-validate-overlap-2026-08.md). AeroBIM **не** заявляет, что гоняет официальный сервис. Коммерческий якорь data-validation: [Solibri](https://www.solibri.com/solutions/bim-quality-assurance/data-validation) — в [`../partners/COMPETITIVE_MATRIX_2026_08.md`](../partners/COMPETITIVE_MATRIX_2026_08.md), не в этой пятиколоночной таблице.
+**Базовая линия валидации IFC (не шестой конкурент Задачи 07):** [buildingSMART IFC Validation Service](https://validate.buildingsmart.org/) — schema / info-takeoff / норматив Gherkin. Карта перекрытия: [`../evidence/upstream-validate-overlap-2026-08.md`](../evidence/upstream-validate-overlap-2026-08.md). AeroBIM **не** заявляет, что гоняет официальный сервис. Коммерческий якорь data-validation: [Solibri](https://www.solibri.com/solutions/bim-quality-assurance/data-validation) — в [`../partners/COMPETITIVE_MATRIX_2026_08.md`](../partners/diagrams/04-competitive-matrix.md), не в этой пятиколоночной таблице.
 
 Checkpoint **NO_GO**. RT-001/002/003 OPEN.

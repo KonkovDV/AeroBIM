@@ -29,6 +29,6 @@
 | Per-source check-coverage map | `domain/check_coverage.py` + 16 tests | fixture | Yes | LOW | Verdict-neutral observability; 'no findings' != 'not checked'; CHECKED_OK requires scope; exposed read-only via `GET /v1/reports/{id}/coverage` (ACL-scoped); not embedded in persisted report |
 | Advisory domain modules (drawing/revision/applicability) | `domain/{region_quality,region_classifier,drawing_region_assessment,revision_diff,norm_applicability}.py` + tests | fixture | Yes | LOW | Domain-pure, verdict-neutral, fixture-only, NOT wired into ingestion/verdict; bad/unknown → escalate; heuristic confidence ≠ calibrated accuracy |
 
-Inventory JSON: [`../evidence/claims-inventory.json`](../evidence/claims-inventory.json)  
+Inventory JSON: `../evidence/claims-inventory.json`  
 Intake gate (all false): [`../evidence/customer-intake-gate.json`](../evidence/customer-intake-gate.json)  
 Open blockers / checkpoint: [`CRITICAL_BLOCKERS.md`](CRITICAL_BLOCKERS.md)

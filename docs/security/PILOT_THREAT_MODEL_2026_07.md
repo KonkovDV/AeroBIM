@@ -39,7 +39,7 @@ production-ready.
 | Item | Status |
 |---|---|
 | OIDC Authorization Code + PKCE BFF with HttpOnly session cookie | **DESIGNED / NOT_IMPLEMENTED** (Phase 3 lab-only; default 501) |
-| Design spike | `docs/architecture/_2026_07.md` |
+| Design spike | POST-05 OIDC BFF — **NOT_IMPLEMENTED** (this threat model) |
 | Public honesty | `GET /v1/auth/bff` → 501; capabilities `auth_bff.status=NOT_IMPLEMENTED` |
 | Dev-only | Vite loopback may inject `Authorization` — **not** production SSO |
 

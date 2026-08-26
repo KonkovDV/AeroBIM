@@ -32,7 +32,7 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 python -m aerobim.tools.run_kt3_without_customer
 ```
 
-Решение: [`../../docs/partners/_2026_08_23.md`](../../docs/partners/_2026_08_23.md).  
+Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Сценарий: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).  
 Речь КТ#3: [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md).  
 Команды и два трека: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).
 
