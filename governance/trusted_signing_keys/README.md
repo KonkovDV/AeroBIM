@@ -21,6 +21,6 @@ Verify GitHub web-flow (and similar) merges so they are not `E`/`unverifiable`, 
 
 After 2026-08-11 enforcement: prefer local merges signed by an author key, or accept web-merge as platform-verified without numerator credit.
 
-## N-59 (deferred)
+## N-59 (active)
 
-Changes under this tree should only land in commits already signed by an author-trusted key. Tracked in `deferred_controls_registry.json` (`activates_on` after KT#2 freeze).
+Changes under this tree may only land in a commit already signed by an author-trusted key. CI enforces this for commits after `n59_enforced_after` in `governance/commit_signing_policy.json` (filter-repo cliff: signatures cannot be recovered for rewritten history).
