@@ -65,7 +65,7 @@ def reconcile_orphans(
                     try:
                         store.delete(key)
                         deleted.append(key)
-                    except Exception as exc:  # noqa: BLE001 — best-effort cleanup
+                    except Exception as exc:
                         failed.append(f"{key}:{exc}")
                 assets = storage_dir / "drawing-assets" / report_id
                 if assets.exists():

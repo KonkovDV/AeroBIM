@@ -336,7 +336,7 @@ def collect_egrz_xml_validate_issues(
 
     try:
         _load_xmlschema11(xmlschema, xsd_path)
-    except Exception as exc:  # noqa: BLE001 — official XSD quality
+    except Exception as exc:
         issues.append(
             _issue(
                 RULE_PARSER,
@@ -361,7 +361,7 @@ def _parse_root(xml_path: Path) -> str | None:
         from defusedxml import ElementTree
 
         root = ElementTree.parse(xml_path).getroot()
-    except Exception:  # noqa: BLE001 — fixture parse path
+    except Exception:
         return None
     if root is None:
         return None
@@ -390,7 +390,7 @@ def _xsd11_errors(xsd_path: Path, xml_path: Path) -> tuple[ValidationIssue, ...]
     try:
         schema = _load_xmlschema11(xmlschema, xsd_path)
         errors = list(schema.iter_errors(str(xml_path)))
-    except Exception as exc:  # noqa: BLE001 — official XSD quality
+    except Exception as exc:
         return (
             _issue(
                 RULE_XSD,

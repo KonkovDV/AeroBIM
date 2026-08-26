@@ -11,7 +11,7 @@ _SCRIPT = _REPO / "scripts" / "check_docs_metadata_integrity.py"
 
 
 class DocsMetadataIntegrityTests(unittest.TestCase):
-    def _import_check(self):  # noqa: ANN202
+    def _import_check(self):
         sys.path.insert(0, str(_REPO / "scripts"))
         try:
             from check_docs_metadata_integrity import (  # type: ignore[import-not-found]

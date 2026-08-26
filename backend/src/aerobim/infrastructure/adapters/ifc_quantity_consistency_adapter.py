@@ -89,7 +89,7 @@ class IfcQuantityConsistencyAdapter:
         if claim.ifc_entity:
             try:
                 entities = tuple(model.by_type(claim.ifc_entity))
-            except Exception:  # noqa: BLE001
+            except Exception:
                 entities = ()
         else:
             entities = tuple(model.by_type("IfcProduct"))

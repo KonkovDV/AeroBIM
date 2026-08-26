@@ -15,7 +15,7 @@ from aerobim.domain.vlm_grounding import ground_vlm_region_observations
 from aerobim.infrastructure.adapters.openai_compat_llm_provider import OpenAICompatLlmProvider
 
 
-def _provider(budget: LlmTokenBudget, transport) -> OpenAICompatLlmProvider:  # noqa: ANN001
+def _provider(budget: LlmTokenBudget, transport) -> OpenAICompatLlmProvider:
     return OpenAICompatLlmProvider(
         base_url="http://127.0.0.1:9",
         model="test-model",

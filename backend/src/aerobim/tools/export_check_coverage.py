@@ -84,7 +84,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     text = json.dumps(synthetic_scenario(), indent=2, ensure_ascii=False, sort_keys=True) + "\n"
     if args.output is not None:
-        args.output.write_text(text, encoding="utf-8")
+        args.output.write_text(text, encoding="utf-8", newline="\n")
     else:
         print(text)
     return 0

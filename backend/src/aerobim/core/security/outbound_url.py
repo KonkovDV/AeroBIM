@@ -372,7 +372,7 @@ def _open_pinned(request: Request, *, timeout: float, allow_http: bool) -> Any:
         server_hostname = server_hostname.strip("[]")
 
         class _PinnedHTTPSConnection(http.client.HTTPSConnection):
-            def connect(self) -> None:  # noqa: ANN201 — stdlib signature
+            def connect(self) -> None:
                 sock = socket.create_connection((self.host, self.port), self.timeout)
                 tunnel_host = getattr(self, "_tunnel_host", None)
                 if tunnel_host:
@@ -456,7 +456,7 @@ def safe_datastore_urlopen(request: Request, *, timeout: float) -> Any:
             return _open_pinned(pinned_request, timeout=timeout, allow_http=parsed.scheme == "http")
         except URLError as exc:
             raise UnsafeOutboundUrlError(f"Datastore request failed: {exc}") from exc
-    return urlopen(request, timeout=timeout)  # noqa: S310 — unix / non-HTTP after jail
+    return urlopen(request, timeout=timeout)
 
 
 def safe_urlopen(request: Request, *, timeout: float, allow_http: bool = False) -> Any:

@@ -33,7 +33,7 @@ class InspectZipPathStreamTests(unittest.TestCase):
 
             original_read_bytes = Path.read_bytes
 
-            def _fail_read_bytes(self: Path) -> bytes:  # noqa: ANN001
+            def _fail_read_bytes(self: Path) -> bytes:
                 if self == archive_path or self.resolve() == archive_path.resolve():
                     raise AssertionError("inspect_zip_path must not call Path.read_bytes()")
                 return original_read_bytes(self)

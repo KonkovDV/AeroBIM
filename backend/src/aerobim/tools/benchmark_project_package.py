@@ -359,7 +359,7 @@ def _dependency_versions() -> dict[str, str | None]:
         try:
             module = __import__(name)
             versions[name] = getattr(module, "__version__", None)
-        except Exception:  # noqa: BLE001 — inventory best-effort
+        except Exception:
             versions[name] = None
     return versions
 
@@ -382,7 +382,7 @@ def _ifc_file_metrics(ifc_path: Path | None) -> dict[str, object]:
         model = ifcopenshell.open(str(ifc_path))
         metrics["schema_from_header"] = model.schema
         metrics["entity_count"] = len(list(model))
-    except Exception:  # noqa: BLE001 — metrics are best-effort for evidence
+    except Exception:
         try:
             text = ifc_path.read_text(encoding="utf-8", errors="ignore")
             for line in text.splitlines()[:40]:

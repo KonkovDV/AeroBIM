@@ -129,7 +129,7 @@ def run_bakeoff(
     for model_short in models:
         try:
             provider = _provider_for_model(settings, model_short)
-        except Exception as exc:  # noqa: BLE001 — record per-model skip
+        except Exception as exc:
             rows.append(
                 {
                     "model": model_short,
@@ -164,7 +164,7 @@ def run_bakeoff(
                 rub = _estimate_rub(resp.usage if isinstance(resp.usage, dict) else None)
                 if rub is not None:
                     costs.append(rub)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 errors += 1
                 latencies.append(time.perf_counter() - started)
                 rows.append(

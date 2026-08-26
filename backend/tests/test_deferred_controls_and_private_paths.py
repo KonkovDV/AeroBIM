@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -196,6 +197,32 @@ class LiveRegistrySmokeTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+
+    def test_n47_and_n59_stay_active(self) -> None:
+        registry = json.loads(
+            (_BACKEND.parent / "governance/deferred_controls_registry.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        by_id = {str(item.get("id")): item for item in (registry.get("waivers") or [])}
+        self.assertEqual(by_id["N47-ruf100"]["state"], "active")
+        self.assertEqual(by_id["N59-trusted-keys-already-trusted-signer"]["state"], "active")
+
+    def test_n47_ruff_select_includes_ruf100(self) -> None:
+        with (_BACKEND / "pyproject.toml").open("rb") as handle:
+            payload = tomllib.load(handle)
+        select = payload["tool"]["ruff"]["lint"]["select"]
+        self.assertIn("RUF100", select)
+
+    def test_n59_policy_flag_and_cliff_sha(self) -> None:
+        policy = json.loads(
+            (_BACKEND.parent / "governance/commit_signing_policy.json").read_text(encoding="utf-8")
+        )
+        self.assertTrue(policy.get("require_author_signature_on_trusted_keys_dir"))
+        self.assertEqual(
+            str(policy.get("n59_enforced_after") or ""),
+            "caa305898ba6a27929cbbeac0018914228e4626a",
+        )
 
     def test_private_path_gate_clean(self) -> None:
         proc = subprocess.run(

@@ -143,7 +143,7 @@ def _inventory(path: Path, *, label: str, repo: Path) -> dict[str, Any]:
         model = ifcopenshell.open(str(path))
         row["counts"] = {name: len(model.by_type(name)) for name in MEP_TYPES}
         row["ifc_product_count"] = len(model.by_type("IfcProduct"))
-    except Exception as exc:  # noqa: BLE001 — inventory must not abort
+    except Exception as exc:
         row["status"] = "ERROR"
         row["error"] = f"{type(exc).__name__}: {exc}"
     row["elapsed_ms"] = round((perf_counter() - started) * 1000.0, 3)
@@ -176,7 +176,7 @@ def _hvac_graph_aabb(repo: Path) -> dict[str, Any]:
             "aabb_pairs_after": aabb.pairs_after,
             "elapsed_ms": round((perf_counter() - started) * 1000.0, 3),
         }
-    except Exception as exc:  # noqa: BLE001 — inventory must not abort
+    except Exception as exc:
         return {
             "status": "ERROR",
             "geometry_verified": False,
@@ -230,7 +230,7 @@ def _duplex_aabb_overlaps(repo: Path) -> dict[str, Any]:
             "mep_types": ["IfcFlowTerminal", "IfcEnergyConversionDevice", "IfcFlowSegment"],
             "elapsed_ms": round((perf_counter() - started) * 1000.0, 3),
         }
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return {
             "status": "ERROR",
             "geometry_verified": False,

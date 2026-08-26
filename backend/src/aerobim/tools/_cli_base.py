@@ -72,7 +72,7 @@ def run_cli(fn: Callable[[], int | None]) -> int:
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         print(f"{type(exc).__name__}: {exc}", file=sys.stderr)
         return 1
     return 0 if result is None else int(result)

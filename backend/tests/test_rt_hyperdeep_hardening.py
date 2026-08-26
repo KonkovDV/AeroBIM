@@ -127,7 +127,7 @@ class CapabilityPolicyHyperTests(unittest.TestCase):
 
     def test_uc_require_mep_blocks_empty_graph_not_verified(self) -> None:
         class _EmptyMep:
-            def build(self, ifc_path):  # noqa: ANN001
+            def build(self, ifc_path):
                 return MepSystemGraph(nodes=(), edges=())
 
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -257,7 +257,7 @@ class AuditCommitManifestTests(unittest.TestCase):
             report = _minimal_report(report_id="d" * 32, ifc_path=ifc)
             original = store._serialize_report
 
-            def _boom(persisted):  # noqa: ANN001
+            def _boom(persisted):
                 raise OSError("disk full during report serialize")
 
             store._serialize_report = _boom  # type: ignore[method-assign]

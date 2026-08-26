@@ -169,7 +169,7 @@ def probe_clash_geometry(
         except AssertionError as exc:
             detail = str(exc).strip() or "AssertionError"
             skipped.append((guid, f"geom init AssertionError: {detail}"))
-        except Exception as exc:  # noqa: BLE001 — isolate one bad product
+        except Exception as exc:
             skipped.append((guid, f"{type(exc).__name__}: {exc}"))
     if skipped:
         _LOGGER.warning(

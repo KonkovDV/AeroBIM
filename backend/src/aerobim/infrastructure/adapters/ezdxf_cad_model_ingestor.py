@@ -61,7 +61,7 @@ class EzdxfCadModelIngestor:
 
         try:
             document = ezdxf.readfile(str(path))
-        except Exception as exc:  # noqa: BLE001 — surface parse failures honestly
+        except Exception as exc:
             return CadIngestResult(
                 annotations=(),
                 format_resolved="dxf",

@@ -208,7 +208,7 @@ def evaluate_ids_file(
             reported = reporter.Json(specset).report()
             for spec in reported.get("specifications") or []:
                 spec_rows.append(specification_row_from_reporter(spec))
-        except Exception as exc:  # noqa: BLE001 — coverage must not swallow
+        except Exception as exc:
             load_error = f"{type(exc).__name__}: {exc}"
             spec_rows.append(
                 {

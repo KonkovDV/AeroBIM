@@ -107,7 +107,7 @@ class OidcTokenValidator:
             )
         except OidcValidationError:
             raise
-        except Exception as exc:  # noqa: BLE001 — normalize library errors
+        except Exception as exc:
             raise OidcValidationError(f"OIDC token validation failed: {exc}") from exc
 
         if not isinstance(claims, dict):

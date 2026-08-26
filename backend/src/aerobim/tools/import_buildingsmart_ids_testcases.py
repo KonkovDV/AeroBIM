@@ -131,7 +131,7 @@ def download_repo_zip(*, repo: str, commit: str, dest_zip: Path) -> None:
     url = f"https://github.com/{repo}/archive/{commit}.zip"
     dest_zip.parent.mkdir(parents=True, exist_ok=True)
     try:
-        with urllib.request.urlopen(url, timeout=120) as response:  # noqa: S310
+        with urllib.request.urlopen(url, timeout=120) as response:
             dest_zip.write_bytes(response.read())
     except urllib.error.URLError as exc:
         raise RuntimeError(
@@ -498,7 +498,7 @@ def main(argv: list[str] | None = None) -> int:
             allow_floating_tip=args.allow_floating_tip,
             max_cases=args.max_cases,
         )
-    except Exception as exc:  # noqa: BLE001 — CLI fail-closed surface
+    except Exception as exc:
         print(json.dumps({"status": "FAILED", "error": str(exc)}, ensure_ascii=False, indent=2))
         return 1
     print(json.dumps(report, ensure_ascii=False, indent=2))

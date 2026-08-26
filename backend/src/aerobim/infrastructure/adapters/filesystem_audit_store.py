@@ -474,7 +474,7 @@ class FilesystemAuditStore:
                     with Image.open(source_path) as image:
                         width = float(image.width)
                         height = float(image.height)
-                except Exception:  # noqa: BLE001
+                except Exception:
                     width = width
                     height = height
             return DrawingAsset(
@@ -1055,7 +1055,7 @@ class FilesystemAuditStore:
             seen.add(key)
             try:
                 self._object_store.delete(key)
-            except Exception:  # noqa: BLE001 — best-effort TTL cleanup
+            except Exception:
                 pass
         assets_dir = self._drawing_assets_dir / report_id
         if assets_dir.exists():

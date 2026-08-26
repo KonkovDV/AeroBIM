@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.2",
-  "date": "2026-08-11",
-  "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. A4 flipped ACTIVE 2026-08-11 (both policy flags). N43 retired 2026-08-24 (max_commits_behind=50).",
+  "date": "2026-08-26",
+  "notes": "Machine-watched deferrals. CI fails when state=deferred and UTC date >= activates_on. A4 flipped ACTIVE 2026-08-11 (both policy flags). N43 retired 2026-08-24 (max_commits_behind=50). N47 and N59 flipped ACTIVE 2026-08-26 (RUF100 in ruff select; key-dir path+signature after filter-repo cliff).",
   "waivers": [
     {
       "id": "A4-signing-enforcement",
@@ -34,9 +34,9 @@
     {
       "id": "N47-ruf100",
       "control": "Поиск мёртвых noqa (RUF100)",
-      "mechanism": "ruff --extend-select RUF100",
-      "state": "deferred",
-      "reason": "~105 накопленных подавлений; чистка после заморозки",
+      "mechanism": "backend/pyproject.toml [tool.ruff.lint] select includes RUF100; CI `ruff check src tests`",
+      "state": "active",
+      "reason": "Activated 2026-08-26: RUF100 is in ruff select; unused noqa removed. Sliding activates_on would be a decorative control.",
       "activates_on": "2026-08-25",
       "owner": "KonkovDV"
     },
@@ -52,11 +52,14 @@
     {
       "id": "N59-trusted-keys-already-trusted-signer",
       "control": "Изменения governance/trusted_signing_keys только коммитом, уже подписанным author-trusted ключом",
-      "mechanism": "policy note + future CI check on path+signature",
-      "state": "deferred",
-      "reason": "Замкнутый контур доверия к доверяющему; не строить до заморозки — сегодня подписывать новым ключом только после/вместе с ASC, коммитом под B5690",
+      "mechanism": "verify_commit_signatures.py path+signature after n59_enforced_after",
+      "state": "active",
+      "reason": "Activated 2026-08-26: commits after filter-repo cliff caa3058 that touch trusted_signing_keys must be author-trusted signed. Rewritten unsigned history is out of scope of the cliff.",
       "activates_on": "2026-08-25",
-      "owner": "KonkovDV"
+      "owner": "KonkovDV",
+      "policy_flags": [
+        "require_author_signature_on_trusted_keys_dir"
+      ]
     }
   ]
 }

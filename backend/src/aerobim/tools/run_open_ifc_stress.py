@@ -109,7 +109,7 @@ def _try_ifcopenshell_open(path: Path, row: dict[str, Any], *, open_max_bytes: i
         row["ifc_product_count"] = len(model.by_type("IfcProduct"))
         row["ifc_open"] = "ok"
         row["ifc_open_ms"] = round((perf_counter() - started) * 1000.0, 3)
-    except Exception as exc:  # noqa: BLE001 — stress must not abort the pack
+    except Exception as exc:
         row["ifc_open"] = "error"
         row["ifc_open_detail"] = f"{type(exc).__name__}: {exc}"
         row["ifc_open_ms"] = round((perf_counter() - started) * 1000.0, 3)

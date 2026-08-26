@@ -112,7 +112,7 @@ def _run_ifc_bench(root: Path, *, version: str) -> dict[str, Any] | None:
         return None
     try:
         return evaluate_dataset(root, version=version)
-    except Exception as exc:  # noqa: BLE001 — battery collects per-rail status
+    except Exception as exc:
         return {"status": "error", "error": f"{type(exc).__name__}: {exc}"}
 
 

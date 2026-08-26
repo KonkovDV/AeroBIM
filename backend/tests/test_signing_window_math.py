@@ -40,6 +40,40 @@ class SigningWindowMathTests(unittest.TestCase):
         self.assertEqual(unverifiable, 1)
         self.assertEqual(named, [("a1", "author")])
 
+    def test_key_dir_path_match_is_exact_prefix(self) -> None:
+        keys = "governance/trusted_signing_keys"
+        self.assertTrue(
+            _MOD._touches_trusted_keys_dir(
+                ["governance/trusted_signing_keys/B5690EEEBB952194.asc"],
+                keys,
+            )
+        )
+        self.assertTrue(
+            _MOD._touches_trusted_keys_dir(
+                ["governance/trusted_signing_keys/platform/4AEE18F83AFDEB23.asc"],
+                keys,
+            )
+        )
+        self.assertFalse(
+            _MOD._touches_trusted_keys_dir(
+                ["governance/commit_signing_policy.json"],
+                keys,
+            )
+        )
+        self.assertFalse(
+            _MOD._touches_trusted_keys_dir(
+                ["governance/trusted_signing_keys_backup/x.asc"],
+                keys,
+            )
+        )
+
+    def test_author_trusted_sig_rejects_unsigned_and_platform(self) -> None:
+        author = {"AAAA"}
+        self.assertTrue(_MOD._is_author_trusted_sig("G", "AAAA", author))
+        self.assertTrue(_MOD._is_author_trusted_sig("U", "AAAA", author))
+        self.assertFalse(_MOD._is_author_trusted_sig("G", "BBBB", author))
+        self.assertFalse(_MOD._is_author_trusted_sig("N", "AAAA", author))
+
 
 if __name__ == "__main__":
     unittest.main()

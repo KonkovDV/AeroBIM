@@ -281,7 +281,7 @@ def run_scenarios(
                     ),
                 }
             )
-        except Exception as exc:  # noqa: BLE001 — axis must not abort remaining scenarios
+        except Exception as exc:
             rows.append(
                 {
                     "scenario": scenario,

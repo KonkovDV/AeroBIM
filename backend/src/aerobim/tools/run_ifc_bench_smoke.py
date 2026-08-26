@@ -219,7 +219,7 @@ def _entity_count(model: Any, type_name: str) -> int:
     """Count entities; missing schema types are 0, not a smoke abort."""
     try:
         return len(model.by_type(type_name))
-    except Exception:  # noqa: BLE001 — IFC2X3 vs IFC4 type names
+    except Exception:
         return 0
 
 
@@ -698,7 +698,7 @@ def evaluate_dataset(dataset_root: Path, *, version: str = "v1") -> dict[str, An
                     skip_reason=skip_reason,
                 )
             )
-        except Exception as exc:  # noqa: BLE001 — smoke must not abort pack
+        except Exception as exc:
             results.append(
                 ProbeResult(
                     question=question,

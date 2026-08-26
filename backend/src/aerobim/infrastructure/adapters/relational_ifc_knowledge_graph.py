@@ -55,7 +55,7 @@ class RelationalIfcKnowledgeGraph:
             from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 
             model = open_ifc_model(ifc_path)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return IfcKnowledgeQueryResult(
                 question=cleaned,
                 element_guids=(),
@@ -75,7 +75,7 @@ class RelationalIfcKnowledgeGraph:
         guids: list[str] = []
         try:
             elements = model.by_type(entity_type)
-        except Exception:  # noqa: BLE001
+        except Exception:
             elements = []
         for element in elements[:50]:
             guid = getattr(element, "GlobalId", None)

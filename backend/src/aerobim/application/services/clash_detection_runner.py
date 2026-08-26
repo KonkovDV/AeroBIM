@@ -110,7 +110,7 @@ class ClashDetectionRunner:
                 source_id="clash",
             )
             return (), CapabilityStatus(state, exc.reason), [issue]
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             issue = ValidationIssue(
                 rule_id="AEROBIM-CLASH-CAPABILITY",
                 severity=Severity.ERROR,

@@ -176,7 +176,7 @@ class KimiClientTests(unittest.TestCase):
             "utf-8"
         )
 
-    def _client(self, transport) -> VlmAdvisoryClient:  # noqa: ANN001
+    def _client(self, transport) -> VlmAdvisoryClient:
         return VlmAdvisoryClient(
             base_url="https://kimi.example.com/v1",
             api_key="secret-key-abc",

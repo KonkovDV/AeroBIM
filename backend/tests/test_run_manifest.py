@@ -20,7 +20,7 @@ class _Summary:
 
 
 class _CapsField:
-    def __init__(self, status) -> None:  # noqa: ANN001
+    def __init__(self, status) -> None:
         self.status = status
 
 
@@ -35,7 +35,7 @@ class _Caps:
 
 
 class _Report:
-    def __init__(self, issues) -> None:  # noqa: ANN001
+    def __init__(self, issues) -> None:
         self.summary = _Summary(passed=False, outcome=PackageOutcome.BLOCKED)
         self.issues = issues
         self.capabilities = _Caps()

@@ -66,7 +66,7 @@ def endpoint_looks_like_yandex(
     if base_url:
         try:
             host = (urlparse(base_url).hostname or "").lower()
-        except Exception:  # noqa: BLE001 — malformed URL → empty host
+        except Exception:
             host = ""
     if host and _hostname_is_yandex(host):
         return True

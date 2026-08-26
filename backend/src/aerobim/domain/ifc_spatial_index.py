@@ -36,7 +36,7 @@ class IfcSpatialIndex:
 
         try:
             ifc_systems = list(model.by_type("IfcSystem"))
-        except Exception:  # noqa: BLE001
+        except Exception:
             ifc_systems = []
 
         for system in ifc_systems:
@@ -67,7 +67,7 @@ class IfcSpatialIndex:
         # Fallback: index IfcRoot entities without system assignment.
         try:
             roots = list(model.by_type("IfcRoot"))
-        except Exception:  # noqa: BLE001
+        except Exception:
             roots = []
         for item in roots:
             guid = _global_id(item)

@@ -176,7 +176,7 @@ def collect_agr_tep_xml_issues(
         from defusedxml import ElementTree
 
         root = ElementTree.parse(xml_path).getroot()
-    except Exception as exc:  # noqa: BLE001 — fixture parse path
+    except Exception as exc:
         return (
             _issue(
                 RULE_TEP_XML,
@@ -249,7 +249,7 @@ def collect_agr_vedomost_xsd_issues(
     try:
         schema = xmlschema.XMLSchema10(str(xsd_path))
         errors = list(schema.iter_errors(str(xml_path)))
-    except Exception as exc:  # noqa: BLE001 — fixture XSD path
+    except Exception as exc:
         return (
             _issue(
                 RULE_VEDOMOST_XSD,

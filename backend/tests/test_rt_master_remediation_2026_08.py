@@ -96,7 +96,7 @@ class LlmExtractionEgressCapTests(unittest.TestCase):
             allowed_hosts=frozenset({"kimi.example.com"}),
         )
 
-        def _fake_urlopen(request, *, timeout, allow_http=False):  # noqa: ANN001
+        def _fake_urlopen(request, *, timeout, allow_http=False):
             return MagicMock(
                 __enter__=lambda s: s,
                 __exit__=lambda *a: None,

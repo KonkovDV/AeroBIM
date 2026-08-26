@@ -43,7 +43,7 @@ def probe_extraction_integrity(
     for path in pdf_paths:
         try:
             signals = producer.produce(path)
-        except Exception as exc:  # noqa: BLE001 — probe must not crash analyze
+        except Exception as exc:
             return CapabilityStatus(
                 CapabilityState.FAILED,
                 f"extraction-integrity probe failed for {path.name}: {exc}",

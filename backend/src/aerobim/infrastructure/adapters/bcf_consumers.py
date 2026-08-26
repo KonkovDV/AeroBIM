@@ -216,7 +216,7 @@ def _validate_against_xsd(
 
     try:
         schemas = {key: xmlschema.XMLSchema10(str(path)) for key, path in schema_files.items()}
-    except Exception as exc:  # noqa: BLE001 — schema load must not crash verifier
+    except Exception as exc:
         errors.append(f"XSD schema load failed: {exc}")
         return "skipped"
 
@@ -237,7 +237,7 @@ def _validate_against_xsd(
             continue
         try:
             schemas[kind].validate(io.BytesIO(read_zip_member_capped(zf, member)))
-        except Exception as exc:  # noqa: BLE001 — collect per-file findings
+        except Exception as exc:
             failures += 1
             first_line = str(exc).strip().splitlines()[0] if str(exc).strip() else repr(exc)
             errors.append(f"XSD invalid: {member}: {first_line}")

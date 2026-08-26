@@ -252,7 +252,7 @@ class AecvBenchEvalTests(unittest.TestCase):
                     }
                 ).encode()
 
-        def fake_urlopen(req, timeout=0):  # noqa: ARG001
+        def fake_urlopen(req, timeout=0):
             captured["body"] = json.loads(req.data.decode())
             return _Resp()
 
@@ -313,7 +313,7 @@ class AecvBenchEvalTests(unittest.TestCase):
                     }
                 ).encode()
 
-        def fake_urlopen(req, timeout=0):  # noqa: ARG001
+        def fake_urlopen(req, timeout=0):
             captured["body"] = json.loads(req.data.decode())
             return _Resp()
 

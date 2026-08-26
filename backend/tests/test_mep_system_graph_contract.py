@@ -251,7 +251,7 @@ class MepSystemGraphContractTests(unittest.TestCase):
 
     def test_empty_graph_from_custom_provider_stays_not_verified(self) -> None:
         class _EmptyGraph:
-            def build(self, ifc_path):  # noqa: ANN001
+            def build(self, ifc_path):
                 return MepSystemGraph(nodes=(), edges=(), source_ifc=str(ifc_path))
 
         with tempfile.TemporaryDirectory() as temporary_directory:

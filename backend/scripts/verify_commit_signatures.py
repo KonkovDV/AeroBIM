@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Commit-signature governance gate (RT-GOV-003 / N-53..N-56 / N-59 notes).
+"""Commit-signature governance gate (RT-GOV-003 / N-53..N-56 / N-59).
 
 Trust is anchored in ``governance/trusted_signing_keys/*.asc`` (author keys).
 Optional ``.../platform/*.asc`` (e.g. GitHub web-flow) verify without counting
@@ -8,6 +8,11 @@ toward the signed ratio — platform confirmation, not authorship.
 Classification of a cryptographically valid signature whose fingerprint is
 **not** in either set: **unverifiable** (same bucket as ``E``). With
 ``fail_on_unverifiable_signature`` that is exit 2 — worse than unsigned.
+
+N-59: commits *after* ``n59_enforced_after`` that touch the author/platform
+key directory must be signed by an already-listed author fingerprint. The
+cutoff exists because ``git filter-repo`` strips signatures; rewritten
+history cannot satisfy a path+signature check.
 """
 
 from __future__ import annotations
@@ -194,6 +199,94 @@ def _on_release_tag() -> bool:
     return bool(describe)
 
 
+def _normalize_repo_path(path: str) -> str:
+    return path.replace("\\", "/").strip("/")
+
+
+def _touches_trusted_keys_dir(paths: list[str], keys_rel: str) -> bool:
+    prefix = _normalize_repo_path(keys_rel)
+    if not prefix:
+        return False
+    for raw in paths:
+        candidate = _normalize_repo_path(raw)
+        if candidate == prefix or candidate.startswith(prefix + "/"):
+            return True
+    return False
+
+
+def _is_author_trusted_sig(status: str, fpr: str, author_trusted: set[str]) -> bool:
+    return status in {"G", "U"} and bool(fpr) and fpr in author_trusted
+
+
+def _rev_parse_commit(rev: str) -> str | None:
+    proc = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{rev}^{{commit}}"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return None
+    return (proc.stdout or "").strip() or None
+
+
+def _is_exclusive_descendant(cutoff: str, commit: str) -> bool | None:
+    """True if ``commit`` is a descendant of ``cutoff`` (excluding equality).
+
+    ``None`` means the cutoff revision is missing (shallow clone / rewritten
+    history). Callers then enforce N-59 on the whole inspect window.
+    """
+
+    cutoff_full = _rev_parse_commit(cutoff)
+    commit_full = _rev_parse_commit(commit)
+    if not cutoff_full:
+        return None
+    if not commit_full:
+        return False
+    if cutoff_full == commit_full:
+        return False
+    proc = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", cutoff_full, commit_full],
+        capture_output=True,
+        check=False,
+    )
+    return proc.returncode == 0
+
+
+def _commit_paths(short_sha: str) -> list[str]:
+    output = subprocess.check_output(
+        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", short_sha],
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    return [_normalize_repo_path(line) for line in output.splitlines() if line.strip()]
+
+
+def _n59_unsigned_key_dir_commits(
+    rows: list[tuple[str, str, str, str]],
+    author_trusted: set[str],
+    *,
+    keys_rel: str,
+    cutoff: str,
+) -> list[str]:
+    """Short SHAs that change the key dir after the cutoff without an author signature."""
+
+    violations: list[str] = []
+    for status, fpr, short, _subject in rows:
+        if not short:
+            continue
+        after = _is_exclusive_descendant(cutoff, short) if cutoff else None
+        if after is False:
+            continue
+        if not _touches_trusted_keys_dir(_commit_paths(short), keys_rel):
+            continue
+        if _is_author_trusted_sig(status, fpr, author_trusted):
+            continue
+        violations.append(short)
+    return violations
+
+
 def _effective_min_ratio(policy: dict[str, object]) -> float:
     base = float(policy.get("min_signed_ratio", 0.0) or 0.0)
     target = float(policy.get("ratchet_target_ratio", 0.0) or 0.0)
@@ -326,6 +419,30 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 1
+
+    n59 = bool(policy.get("require_author_signature_on_trusted_keys_dir", False))
+    if n59:
+        keys_rel = str(policy.get("trusted_keys_dir") or "governance/trusted_signing_keys")
+        cutoff = str(policy.get("n59_enforced_after") or "").strip()
+        if not cutoff:
+            print(
+                "ERROR: N-59 enabled but n59_enforced_after is empty "
+                "(set to the filter-repo cliff SHA, then keep it)",
+                file=sys.stderr,
+            )
+            return 1
+        n59_hits = _n59_unsigned_key_dir_commits(
+            rows, author_trusted, keys_rel=keys_rel, cutoff=cutoff
+        )
+        if n59_hits:
+            print(
+                "ERROR: N-59: these commits change "
+                f"{keys_rel} without an author-trusted signature: "
+                + ", ".join(n59_hits),
+                file=sys.stderr,
+            )
+            return 1
+        print(f"n59_key_dir_ok=true enforced_after={cutoff}")
 
     return 0
 

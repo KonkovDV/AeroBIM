@@ -51,7 +51,7 @@ def _minimal_uc(**kwargs: object) -> AnalyzeProjectPackageUseCase:
     return AnalyzeProjectPackageUseCase(**base)  # type: ignore[arg-type]
 
 
-def _engine_signature(report) -> tuple:  # noqa: ANN001
+def _engine_signature(report) -> tuple:
     """Deterministic findings only — exclude advisory agent / HITL INFO noise."""
 
     engine = []
@@ -115,11 +115,11 @@ class RedTeamSignoffRemediationTests(unittest.TestCase):
         )
 
         class _BoomQty:
-            def check(self, ifc_path, claims):  # noqa: ANN001
+            def check(self, ifc_path, claims):
                 raise OSError("disk I/O failed")
 
         class _Extractor:
-            def extract(self, source):  # noqa: ANN001
+            def extract(self, source):
                 return [
                     ParsedRequirement(
                         rule_id="AREA-1",
@@ -160,7 +160,7 @@ class RedTeamSignoffRemediationTests(unittest.TestCase):
 
     def test_rt_c_load_infra_failure_blocks_pass(self) -> None:
         class _BoomLoad:
-            def verify(self, request):  # noqa: ANN001
+            def verify(self, request):
                 raise RuntimeError("spreadsheet backend down")
 
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -186,7 +186,7 @@ class RedTeamSignoffRemediationTests(unittest.TestCase):
 
     def test_rt_c_mep_unexpected_failure_is_failed(self) -> None:
         class _BoomMep:
-            def build(self, ifc_path):  # noqa: ANN001
+            def build(self, ifc_path):
                 raise OSError("ifc mmap failed")
 
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -208,7 +208,7 @@ class RedTeamSignoffRemediationTests(unittest.TestCase):
 
     def test_rt_d_mixed_dwg_dxf_capability_failed(self) -> None:
         class _Cad:
-            def ingest(self, path, *, sheet_id=None):  # noqa: ANN001
+            def ingest(self, path, *, sheet_id=None):
                 if path.suffix.lower() == ".dwg":
                     return CadIngestResult(
                         annotations=(),
@@ -295,7 +295,7 @@ class RedTeamSignoffRemediationTests(unittest.TestCase):
         self.assertEqual(_engine_signature(report_on), _engine_signature(report_off))
 
         # Report-hash over deterministic fields (not report_id / created_at / advisory drafts)
-        def _hash(report) -> str:  # noqa: ANN001
+        def _hash(report) -> str:
             payload = {
                 "passed": report.summary.passed,
                 "engine": _engine_signature(report),

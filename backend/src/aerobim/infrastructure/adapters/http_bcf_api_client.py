@@ -83,7 +83,7 @@ class HttpBcfApiClient:
                         success=True,
                     )
                 )
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 results.append(
                     BcfApiTopicPushResult(
                         title=topic.title,

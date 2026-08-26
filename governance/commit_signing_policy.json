@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0.6",
-  "date": "2026-08-09",
+  "schema_version": "1.0.7",
+  "date": "2026-08-26",
   "enforce_ci": true,
   "fail_on_unverifiable_signature": true,
   "min_signed_ratio": 0.03,
@@ -10,5 +10,7 @@
   "ratio_scope": "inspect_window",
   "require_head_signed_on_release_tags": true,
   "trusted_keys_dir": "governance/trusted_signing_keys",
-  "notes": "Honesty N-45/N-56: author numerator = G/U whose fingerprint matches trusted_signing_keys/*.asc only. platform/*.asc (e.g. GitHub 4AEE18F83AFDEB23) verify without counting. Good signature with unregistered fingerprint = unverifiable (exit 2 when fail_on), worse than unsigned. Sign with B5690 or add .asc same commit signed by already-trusted key. Fail if history depth < inspect_depth. N-55 prints commits_until_ratio_break. N-59 deferred: key-dir changes require already-trusted signature. A4 flipped ACTIVE 2026-08-11: enforce_ci + fail_on_unverifiable_signature + min_signed_ratio=ratchet_target."
+  "require_author_signature_on_trusted_keys_dir": true,
+  "n59_enforced_after": "caa305898ba6a27929cbbeac0018914228e4626a",
+  "notes": "Honesty N-45/N-56: author numerator = G/U whose fingerprint matches trusted_signing_keys/*.asc only. platform/*.asc (e.g. GitHub 4AEE18F83AFDEB23) verify without counting. Good signature with unregistered fingerprint = unverifiable (exit 2 when fail_on), worse than unsigned. Sign with B5690 or 24D8BC0C, or add .asc same commit signed by already-trusted key. Fail if history depth < inspect_depth. N-55 prints commits_until_ratio_break. N-59 ACTIVE: key-dir changes after n59_enforced_after (filter-repo cliff caa3058) require an author-trusted signature. A4 flipped ACTIVE 2026-08-11: enforce_ci + fail_on_unverifiable_signature + min_signed_ratio=ratchet_target."
 }

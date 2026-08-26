@@ -24,7 +24,7 @@ _C = DataClassification
 _T = RouteTarget
 
 
-def _event(decision, **meta):  # noqa: ANN001, ANN003 — test helper
+def _event(decision, **meta):
     return build_route_audit_event(
         event_id="e1",
         timestamp="2026-07-28T00:00:00Z",

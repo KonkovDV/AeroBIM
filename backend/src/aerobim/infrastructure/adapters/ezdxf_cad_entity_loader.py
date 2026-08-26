@@ -69,7 +69,7 @@ class EzdxfCadEntityLoader:
 
         try:
             document = ezdxf.readfile(str(path))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return EntityGraph(
                 source_id=path.name,
                 format="dxf",
@@ -114,7 +114,7 @@ class EzdxfCadEntityLoader:
                 if hasattr(entity, "get_measurement"):
                     try:
                         measurement = str(entity.get_measurement())
-                    except Exception:  # noqa: BLE001
+                    except Exception:
                         measurement = ""
                 text_override = str(getattr(entity.dxf, "text", "") or "").strip()
                 entities.append(

@@ -309,7 +309,7 @@ class IdsFailClosedLiveIfcTesterTests(unittest.TestCase):
             self.skipTest("BSI case 0101 not vendored")
         try:
             issues = IfcTesterIdsValidator().validate(ids_path, ifc_path)
-        except Exception as exc:  # noqa: BLE001 — ifctester env flake
+        except Exception as exc:
             message = f"{type(exc).__name__}: {exc}".lower()
             if any(token in message for token in ("ifctester", "ifcopenshell", "urlerror")):
                 self.skipTest(str(exc))
@@ -326,7 +326,7 @@ class IdsFailClosedLiveIfcTesterTests(unittest.TestCase):
             ids_path.write_text(_IFC2X3_ONLY_IDS, encoding="utf-8")
             try:
                 issues = IfcTesterIdsValidator().validate(ids_path, WALL_IFC)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 message = f"{type(exc).__name__}: {exc}".lower()
                 if any(token in message for token in ("ifctester", "ifcopenshell", "urlerror")):
                     self.skipTest(str(exc))

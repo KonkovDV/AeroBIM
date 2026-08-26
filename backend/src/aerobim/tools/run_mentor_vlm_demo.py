@@ -425,7 +425,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         # Forced advisory VLM path for mentor — see LIMITATIONS.forced_vlm_path_reason.
         smoke = _observation_rows(pipeline, source)
-    except Exception as exc:  # noqa: BLE001 — surface live API failures honestly
+    except Exception as exc:
         fail = {
             "status": "LIVE_ERROR",
             "error_type": type(exc).__name__,

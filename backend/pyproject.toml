@@ -112,7 +112,7 @@ testpaths = ["tests"]
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "S"]
+select = ["E", "F", "I", "UP", "B", "S", "RUF100"]
 # S-band inventory: governance/ruff_s_band_inventory.json
 
 [tool.ruff.lint.per-file-ignores]

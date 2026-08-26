@@ -485,7 +485,7 @@ class PackageIngestionService:
                     sheet_id=drawing_source.sheet_id,
                 )
             )
-        except Exception as exc:  # noqa: BLE001 — empty/unreadable PDF must not crash
+        except Exception as exc:
             _logger.exception("Raster drawing analysis failed for %s", drawing_source.path)
             # Zero yield → capabilities.raster FAILED (not silent OK / PASS).
             _ = exc

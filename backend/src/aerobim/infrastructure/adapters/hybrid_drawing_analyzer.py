@@ -156,7 +156,7 @@ class HybridDrawingAnalyzer:
             return ()
         try:
             annotations = self._raster.analyze_image(sheet.path, sheet_id=sheet.sheet_id)
-        except Exception:  # noqa: BLE001
+        except Exception:
             return ()
         return tuple(
             DetectedText(

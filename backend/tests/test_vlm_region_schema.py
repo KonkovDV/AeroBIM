@@ -33,7 +33,7 @@ class NormalizerTests(unittest.TestCase):
         self.assertFalse(is_allowed_kind("counting"))
 
 
-def _obs(bbox, *, kind="designation", raw="Ст-1", conf=0.9, extra=None):  # noqa: ANN001
+def _obs(bbox, *, kind="designation", raw="Ст-1", conf=0.9, extra=None):
     o = {"kind": kind, "raw_value": raw, "bbox_rel": bbox, "confidence": conf}
     if extra:
         o.update(extra)

@@ -82,12 +82,12 @@ class ComplianceAgentTests(unittest.TestCase):
 
     def test_quantity_and_clash_tools_are_allowlisted(self) -> None:
         class _Qty:
-            def check(self, ifc_path, declared):  # noqa: ANN001
+            def check(self, ifc_path, declared):
                 del ifc_path, declared
                 return []
 
         class _Clash:
-            def detect(self, ifc_path):  # noqa: ANN001
+            def detect(self, ifc_path):
                 del ifc_path
                 return []
 

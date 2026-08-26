@@ -254,7 +254,7 @@ class NormPackImmutableHashTests(unittest.TestCase):
 
             # Simulate tampering of stored object while index keeps old hash.
             key = record.object_key
-            store._store.put_bytes(key, mutated_bytes, content_type="application/json")  # noqa: SLF001
+            store._store.put_bytes(key, mutated_bytes, content_type="application/json")
             with self.assertRaisesRegex(ValueError, "hash mismatch"):
                 store.verify_version_integrity(pack_id, "0.1.0")
 

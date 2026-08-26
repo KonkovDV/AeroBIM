@@ -55,7 +55,7 @@ class IfcAabbMepPairFilter:
         for path in paths:
             try:
                 session = open_ifc_session(Path(path))
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 _logger.info("AABB filter: cannot open %s: %s", path, exc)
                 continue
             guid_boxes.update(_element_boxes_from_model(session.model))
@@ -112,7 +112,7 @@ def _element_boxes_from_model(
     geom_settings: Any = settings_factory()
     try:
         geom_settings.set(geom_settings.USE_WORLD_COORDS, True)
-    except Exception:  # noqa: BLE001 — settings enum variance across versions
+    except Exception:
         pass
 
     boxes: dict[str, AxisAlignedBox3d] = {}
@@ -129,7 +129,7 @@ def _element_boxes_from_model(
                     products.append(product)
         else:
             products = list(model.by_type("IfcProduct"))
-    except Exception:  # noqa: BLE001
+    except Exception:
         return {}
 
     for product in products:
@@ -145,7 +145,7 @@ def _element_boxes_from_model(
 def _bbox_from_product(geom: Any, settings: Any, product: Any) -> AxisAlignedBox3d | None:
     try:
         shape = geom.create_shape(settings, product)
-    except Exception:  # noqa: BLE001 — many products lack tessellatable geometry
+    except Exception:
         return None
     geometry = getattr(shape, "geometry", None)
     verts = getattr(geometry, "verts", None) if geometry is not None else None

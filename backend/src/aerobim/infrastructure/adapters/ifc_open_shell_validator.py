@@ -59,11 +59,11 @@ class IfcOpenShellValidator:
             return None
         try:
             from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_session
-        except Exception:  # noqa: BLE001
+        except Exception:
             return None
         try:
             return open_ifc_session(ifc_path).spatial_index
-        except Exception:  # noqa: BLE001 — missing ifcopenshell / parse failure
+        except Exception:
             return None
 
     def validate(
@@ -93,7 +93,7 @@ class IfcOpenShellValidator:
 
         try:
             roots = tuple(model.by_type("IfcRoot"))
-        except Exception:  # noqa: BLE001 — schema without IfcRoot must not abort property checks
+        except Exception:
             roots = ()
         issues.extend(
             collect_global_id_integrity_issues(
@@ -285,7 +285,7 @@ class IfcOpenShellValidator:
             return None
         try:
             element = model.by_guid(guid)
-        except Exception:  # noqa: BLE001
+        except Exception:
             return None
         if element is None:
             return None
@@ -331,7 +331,7 @@ class IfcOpenShellValidator:
                 },
                 True,
             )
-        except Exception:  # noqa: BLE001
+        except Exception:
             return {"LENGTHUNIT": 1.0, "AREAUNIT": 1.0, "VOLUMEUNIT": 1.0}, False
 
     def _normalize_pair(

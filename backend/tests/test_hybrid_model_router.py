@@ -43,7 +43,7 @@ def _router() -> ModelRouter:
     return ModelRouter(ProviderRegistry.from_config(_CONFIG))
 
 
-def _decide(classification: DataClassification, target: RouteTarget):  # noqa: ANN202
+def _decide(classification: DataClassification, target: RouteTarget):
     return decide_route(classification=classification, target=target, tenant_id="tenant-a")
 
 
@@ -216,7 +216,7 @@ _FILE_CONFIG = {
 
 
 class ModelRouterProviderConfigTests(unittest.TestCase):
-    def _settings(self, path: str | None = None):  # noqa: ANN202
+    def _settings(self, path: str | None = None):
         from dataclasses import replace
 
         from aerobim.core.config.settings import Settings

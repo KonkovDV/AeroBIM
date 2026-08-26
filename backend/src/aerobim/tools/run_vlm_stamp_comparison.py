@@ -153,7 +153,7 @@ def run_stamp_comparison(*, pdf: Path, sheet_id: str) -> dict[str, Any]:
             folder_id=creds.get("folder_id") if isinstance(creds.get("folder_id"), str) else None,
         )
         smoke = _observation_rows(pipeline, source)
-    except Exception as exc:  # noqa: BLE001 — live API must surface honestly
+    except Exception as exc:
         elapsed_ms = round((perf_counter() - started) * 1000.0, 1)
         payload = build_vlm_comparison(api_key_present=True)
         payload["status"] = "LIVE_ERROR"

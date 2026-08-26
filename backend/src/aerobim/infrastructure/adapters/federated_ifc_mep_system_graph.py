@@ -217,7 +217,7 @@ def _connects_system_pairs(
     ):
         try:
             rels = list(model.by_type(rel_type))
-        except Exception:  # noqa: BLE001 — schema variance
+        except Exception:
             continue
         for rel in rels:
             relating = getattr(rel, "RelatingElement", None) or getattr(rel, "RelatingPort", None)

@@ -133,7 +133,7 @@ def xsd_validate_files(
         ) from exc
     try:
         schema = xmlschema.XMLSchema(str(xsd_path))
-    except Exception as exc:  # noqa: BLE001 — fail-closed, record the reason
+    except Exception as exc:
         raise OfficialIdsProfileError(f"IDS 1.0 XSD failed to load: {exc}") from exc
     errors: dict[str, str] = {}
     for entry in profile.files:
@@ -142,7 +142,7 @@ def xsd_validate_files(
             continue
         try:
             schema.validate(str(path))
-        except Exception as exc:  # noqa: BLE001 — record, fail-closed below
+        except Exception as exc:
             errors[entry.path] = str(exc).splitlines()[0][:300] if str(exc) else repr(exc)
     return errors
 
@@ -161,7 +161,7 @@ def parse_gate_files(profile: OfficialIdsProfile, pack_root: Path) -> dict[str, 
             continue
         try:
             document = ids.open(str(path))
-        except Exception as exc:  # noqa: BLE001 — fail-closed, record the reason
+        except Exception as exc:
             problems.append(f"{entry.path}: IfcTester failed to parse: {exc}")
             continue
         spec_count = len(getattr(document, "specifications", []) or [])

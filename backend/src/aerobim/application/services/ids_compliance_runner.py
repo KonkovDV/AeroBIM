@@ -61,7 +61,7 @@ class IdsComplianceRunner:
         try:
             request_id = self._bsi_validation_service.submit(ifc_path)
             return request_id, []
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             severity = Severity.ERROR if self._require_bsi_schema else Severity.WARNING
             return None, [
                 ValidationIssue(
@@ -120,7 +120,7 @@ class IdsComplianceRunner:
             ]
         try:
             return list(self._ids_validator.validate(request.ids_path, request.ifc_path))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             _logger.exception("IDS validation failed for %s", request.ids_path)
             return [
                 ValidationIssue(

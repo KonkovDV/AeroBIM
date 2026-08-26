@@ -141,9 +141,9 @@ class AdvisoryVlmOffEqualsOnTests(unittest.TestCase):
                 }
             ).encode("utf-8")
 
-        provider_on._transport = _transport  # noqa: SLF001 — test seam
+        provider_on._transport = _transport
         use_case_on = container_on.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
-        use_case_on._llm_advisory_provider = provider_on  # noqa: SLF001
+        use_case_on._llm_advisory_provider = provider_on
 
         def verdict(container: object, tag: str) -> object:
             use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)

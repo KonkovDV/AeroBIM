@@ -233,7 +233,7 @@ class RegionRestrictedVlmPipeline:
             return RegionRead(
                 task.region_id, (), True, f"crop/read failed: {exc}", crop_sha256=crop_sha
             )
-        except Exception as exc:  # noqa: BLE001 — transport/SSRF must fail closed
+        except Exception as exc:
             return RegionRead(
                 task.region_id,
                 (),

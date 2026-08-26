@@ -133,7 +133,7 @@ def _xsd_audit_issues(ids_path: Path, xsd_path: Path | None) -> list[ValidationI
         ]
     try:
         schema = _load_ids_schema(str(xsd_path))
-    except Exception as exc:  # noqa: BLE001 — validator absence must be visible
+    except Exception as exc:
         return [
             ValidationIssue(
                 rule_id="AEROBIM-IDS-XSD-CAPABILITY",
@@ -147,7 +147,7 @@ def _xsd_audit_issues(ids_path: Path, xsd_path: Path | None) -> list[ValidationI
     issues: list[ValidationIssue] = []
     try:
         errors = list(schema.iter_errors(str(ids_path)))
-    except Exception as exc:  # noqa: BLE001 — malformed input handled upstream too
+    except Exception as exc:
         errors = []
         issues.append(
             ValidationIssue(

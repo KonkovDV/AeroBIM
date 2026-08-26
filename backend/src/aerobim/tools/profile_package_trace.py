@@ -41,7 +41,7 @@ def profile_package_trace(
     analyze = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
 
     collector = PackageTraceCollector()
-    analyze._package_trace_collector = collector  # noqa: SLF001 — profiling hook
+    analyze._package_trace_collector = collector
     request = replace(pack.request, request_id=f"profile-{pack.pack_id}")
     started = perf_counter()
     report = analyze.execute(request)

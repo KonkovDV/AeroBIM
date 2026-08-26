@@ -218,7 +218,7 @@ class OidcBffPhase3Tests(unittest.TestCase):
         )
 
         class _RejectingValidator(OidcTokenValidator):
-            def validate(self, token: str) -> dict[str, object]:  # noqa: ARG002
+            def validate(self, token: str) -> dict[str, object]:
                 raise OidcValidationError("unsigned lab token")
 
         validator = _RejectingValidator(

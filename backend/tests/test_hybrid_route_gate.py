@@ -27,7 +27,7 @@ def _gate(*, with_guard: bool = False) -> HybridRouteGate:
 
 
 class HybridRouteGateTests(unittest.TestCase):
-    def _eval(self, gate: HybridRouteGate, **kw: object):  # noqa: ANN003
+    def _eval(self, gate: HybridRouteGate, **kw: object):
         base: dict[str, object] = {
             "tenant_id": "tenant-a",
             "task_type": "drawing_read",

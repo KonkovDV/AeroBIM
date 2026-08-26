@@ -95,7 +95,7 @@ class ClassifierPublicFixtureTests(unittest.TestCase):
                 self._hybrid_route_gate = HybridRouteGate()
                 self._remark_locale = "ru"
 
-            def _overlay_llm_remarks(self, *a, **k):  # noqa: ANN002, ANN003
+            def _overlay_llm_remarks(self, *a, **k):
                 raise AssertionError("overlay must not run for confidential IFC")
 
         assembler = EvidenceAssembler(_Host())  # type: ignore[arg-type]

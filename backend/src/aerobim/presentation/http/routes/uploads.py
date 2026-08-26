@@ -99,7 +99,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                 return
             try:
                 ctx.upload_quota_store.release(tenant_key, size_bytes=held_bytes)
-            except Exception:  # noqa: BLE001 — best-effort compensate
+            except Exception:
                 logger.warning(
                     "upload quota release failed",
                     tenant_id=tenant_key,
@@ -199,7 +199,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
         if total < held_bytes:
             try:
                 ctx.upload_quota_store.release(tenant_key, size_bytes=held_bytes - total, count=0)
-            except Exception:  # noqa: BLE001 — keep held_bytes; promote path still compensates
+            except Exception:
                 logger.warning(
                     "upload quota shrink failed",
                     tenant_id=tenant_key,

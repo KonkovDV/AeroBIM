@@ -219,7 +219,7 @@ class QuotaFailClosedTests(unittest.TestCase):
     def test_corrupt_quota_raises_when_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             store = FilesystemUploadQuotaStore(Path(tmp), fail_closed=True)
-            path = store._path("tenant-a", store._day())  # noqa: SLF001
+            path = store._path("tenant-a", store._day())
             path.write_text("{not-json", encoding="utf-8")
             with self.assertRaises(RuntimeError):
                 store.snapshot("tenant-a")
@@ -227,7 +227,7 @@ class QuotaFailClosedTests(unittest.TestCase):
     def test_corrupt_quota_resets_when_soft(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             store = FilesystemUploadQuotaStore(Path(tmp), fail_closed=False)
-            path = store._path("tenant-a", store._day())  # noqa: SLF001
+            path = store._path("tenant-a", store._day())
             path.write_text("{not-json", encoding="utf-8")
             snap = store.snapshot("tenant-a")
             self.assertEqual(snap.upload_count, 0)
@@ -318,7 +318,7 @@ class SoftSpfSchemaTests(unittest.TestCase):
             audit_report_store=InMemoryAuditStore(),
             require_bsi_schema=False,
         )
-        caps = uc._build_capabilities(  # noqa: SLF001
+        caps = uc._build_capabilities(
             requirements=(),
             ifc_issues=[],
             ids_path=None,
@@ -522,8 +522,8 @@ class HardCrossDocSeverityTests(unittest.TestCase):
             cross_doc_severity="warning",
             signoff_profile="production",
         )
-        self.assertIs(uc._cross_doc_severity, Severity.ERROR)  # noqa: SLF001
-        self.assertTrue(uc._hard_signoff_profile)  # noqa: SLF001
+        self.assertIs(uc._cross_doc_severity, Severity.ERROR)
+        self.assertTrue(uc._hard_signoff_profile)
 
 
 if __name__ == "__main__":

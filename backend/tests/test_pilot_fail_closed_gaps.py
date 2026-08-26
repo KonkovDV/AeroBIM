@@ -42,19 +42,19 @@ def _minimal_uc(**kwargs: object) -> AnalyzeProjectPackageUseCase:
 
 
 class _EmptyRasterAnalyzer:
-    def analyze_image(self, path: Path, *, sheet_id: str | None = None):  # noqa: ANN001
+    def analyze_image(self, path: Path, *, sheet_id: str | None = None):
         del path, sheet_id
         return []
 
 
 class _BoomRasterAnalyzer:
-    def analyze_image(self, path: Path, *, sheet_id: str | None = None):  # noqa: ANN001
+    def analyze_image(self, path: Path, *, sheet_id: str | None = None):
         del sheet_id
         raise OSError(f"unreadable drawing: {path}")
 
 
 class _BoomIdsValidator:
-    def validate(self, ids_path: Path, ifc_path: Path):  # noqa: ANN001
+    def validate(self, ids_path: Path, ifc_path: Path):
         del ifc_path
         raise FileNotFoundError(ids_path)
 

@@ -86,7 +86,7 @@ class SoftSignoffUnderNonDevTests(unittest.TestCase):
 class IdsDocumentAuditorWiringTests(unittest.TestCase):
     def test_ids_audit_issues_fail_closed_on_package(self) -> None:
         class _Auditor:
-            def audit(self, ids_path: Path):  # noqa: ANN001
+            def audit(self, ids_path: Path):
                 del ids_path
                 return [
                     ValidationIssue(
@@ -99,7 +99,7 @@ class IdsDocumentAuditorWiringTests(unittest.TestCase):
                 ]
 
         class _Ids:
-            def validate(self, ids_path: Path, ifc_path: Path):  # noqa: ANN001
+            def validate(self, ids_path: Path, ifc_path: Path):
                 del ids_path, ifc_path
                 return []
 

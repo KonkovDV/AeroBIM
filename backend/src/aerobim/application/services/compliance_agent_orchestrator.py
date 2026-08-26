@@ -335,7 +335,7 @@ class ComplianceAgentOrchestrator:
         query = step.arguments.get("query", "")
         try:
             hits = self._norm_retriever.retrieve(query, top_k=5)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,
@@ -397,7 +397,7 @@ class ComplianceAgentOrchestrator:
         source = request.technical_spec_source or request.requirement_source
         try:
             draft = self._ids_compiler.compile(source)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,
@@ -456,7 +456,7 @@ class ComplianceAgentOrchestrator:
         assert self._load_verifier is not None
         try:
             raw = list(self._load_verifier.verify(request))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,
@@ -533,7 +533,7 @@ class ComplianceAgentOrchestrator:
         )
         try:
             raw = list(self._logic_analyzer.analyze(manifest))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,
@@ -622,7 +622,7 @@ class ComplianceAgentOrchestrator:
             )
         try:
             raw = list(self._quantity_checker.check(request.ifc_path, claims))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,
@@ -684,7 +684,7 @@ class ComplianceAgentOrchestrator:
             )
         try:
             results = list(self._clash_detector.detect(request.ifc_path))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,
@@ -761,7 +761,7 @@ class ComplianceAgentOrchestrator:
         question = step.arguments.get("question", "") or "list elements"
         try:
             result = self._ifc_kg.query_nl(question, ifc_path=request.ifc_path)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,
@@ -830,7 +830,7 @@ class ComplianceAgentOrchestrator:
             )
         try:
             findings = list(self._system_clash.detect(request.ifc_path))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return (
                 AgentToolStep(
                     tool_name=step.tool_name,

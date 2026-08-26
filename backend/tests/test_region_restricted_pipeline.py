@@ -448,7 +448,7 @@ class RegionReadPlanTests(unittest.TestCase):
 
 
 class RegionRestrictedPipelineTests(unittest.TestCase):
-    def _pipeline(self, *, reader, cropper, detector, ready=True, max_regions=24):  # noqa: ANN001
+    def _pipeline(self, *, reader, cropper, detector, ready=True, max_regions=24):
         return RegionRestrictedVlmPipeline(
             region_detector=detector,
             reader=reader,

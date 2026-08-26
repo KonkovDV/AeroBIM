@@ -37,7 +37,7 @@ class IdsCase0017UpstreamEdgeTests(unittest.TestCase):
 
         try:
             issues = IfcTesterIdsValidator().validate(ids_path, ifc_path)
-        except Exception as exc:  # noqa: BLE001 — XSD fetch / ifctester env flake
+        except Exception as exc:
             message = f"{type(exc).__name__}: {exc}".lower()
             networkish = any(
                 token in message

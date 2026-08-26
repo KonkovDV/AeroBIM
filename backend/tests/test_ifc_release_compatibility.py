@@ -85,7 +85,7 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
             with self.subTest(release=release_label):
                 try:
                     model = ifcopenshell.open(str(ifc_path))
-                except Exception as exc:  # noqa: BLE001
+                except Exception as exc:
                     self.fail(f"ifcopenshell.open() raised on {release_label}: {exc}")
                 walls = model.by_type("IfcWall")
                 self.assertGreater(

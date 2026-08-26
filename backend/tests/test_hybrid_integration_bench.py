@@ -43,7 +43,7 @@ _ROUTER_CONFIG = {
 }
 
 
-def _run_flow(kind: str, target: RouteTarget, tenant: str, payload: dict | None):  # noqa: ANN202
+def _run_flow(kind: str, target: RouteTarget, tenant: str, payload: dict | None):
     gate = HybridRouteGate(privacy_guard=PrivacyGuard(tenant_salt="bench-salt"))
     rules = suggest_mask_rules(payload, keep_clean_scalars=True) if payload else None
     result = gate.evaluate(

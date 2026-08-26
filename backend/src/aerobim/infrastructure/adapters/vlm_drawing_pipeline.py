@@ -109,7 +109,7 @@ class VlmDrawingPipeline:
             return self._degrade(source, f"VLM read failed (fail-closed, {exc.reason_code}): {exc}")
         except OSError as exc:
             return self._degrade(source, f"VLM read failed (fail-closed, IO): {exc}")
-        except Exception as exc:  # noqa: BLE001 — SSRF/transport errors must fail closed, not OK
+        except Exception as exc:
             return self._degrade(source, f"VLM transport error (fail-closed): {exc}")
 
         grounded = ground_vlm_drawing_response(

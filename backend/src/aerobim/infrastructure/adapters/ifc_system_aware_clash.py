@@ -52,7 +52,7 @@ class IfcSystemAwareClash:
             from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 
             model = open_ifc_model(model_path)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             raise RuntimeError(f"IFC open failed for system clash: {exc}") from exc
 
         systems = list(model.by_type("IfcSystem"))

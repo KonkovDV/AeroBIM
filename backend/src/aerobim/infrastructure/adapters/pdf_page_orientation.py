@@ -26,7 +26,7 @@ def read_page_rotate_degrees(path: Path, *, page_number: int = 0) -> int | None:
         return None
     try:
         document = pdfium.PdfDocument(str(path))
-    except Exception:  # noqa: BLE001 — orientation probe must never raise into VLM
+    except Exception:
         return None
     try:
         if not 0 <= page_number < len(document):
@@ -35,7 +35,7 @@ def read_page_rotate_degrees(path: Path, *, page_number: int = 0) -> int | None:
         raw = int(page.get_rotation())
         rotate = raw % 360
         return rotate if rotate in _ALLOWED else None
-    except Exception:  # noqa: BLE001
+    except Exception:
         return None
     finally:
         document.close()

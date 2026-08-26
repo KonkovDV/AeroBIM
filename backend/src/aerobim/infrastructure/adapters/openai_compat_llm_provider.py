@@ -333,7 +333,7 @@ class OpenAICompatLlmProvider:
                     reason=f"transport_error:{type(exc).__name__}",
                     audit_extra=audit_extra,
                 )
-            except Exception as exc:  # noqa: BLE001 — advisory fail-closed
+            except Exception as exc:
                 self._budget.record_failed(estimated_tokens=estimate)
                 return self._failed(
                     request,
