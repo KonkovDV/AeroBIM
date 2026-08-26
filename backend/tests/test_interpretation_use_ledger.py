@@ -40,6 +40,7 @@ class InterpretationUseLedgerTests(unittest.TestCase):
         self.assertIn("IND-10", ids)
         self.assertIn("TL-04", ids)
         self.assertIn("TL-10", ids)
+        self.assertIn("SAM-10", ids)
         self.assertEqual(payload["schema_version"], "1.1.0")
         self.assertGreaterEqual(payload["row_count"], 22)
         self.assertEqual(len(ids), payload["row_count"])

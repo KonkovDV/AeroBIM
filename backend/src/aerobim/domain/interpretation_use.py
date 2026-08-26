@@ -188,6 +188,16 @@ LEDGER: tuple[InferenceRow, ...] = (
         "engine_regression",
     ),
     _row(
+        "SAM-10",
+        "samolet",
+        "ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ",
+        "v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score",
+        "Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF",
+        "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md",
+        "Keep paper-objects unmixed; MIK act cites interim 0.60",
+        "engine_regression",
+    ),
+    _row(
         "TRK-01",
         "tracker",
         "Задача 1: доработать продукт к КТ#2 (20.08)",

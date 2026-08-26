@@ -33,6 +33,7 @@ claim_boundary: >-
 | SAM-07 | samolet | BCF замечания в СОД | BCF 2.1 ZIP export (структурный) | CDE import VERIFIED / T2 roundtrip | `fixture_demo` |
 | SAM-08 | samolet | ТР-16/19: площади помещений / чертёж↔IFC | 6 AR IFC: 10599 IfcSpace, 0 NetFloorArea; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
 | SAM-09 | samolet | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | 62033 walls; FireRating 5.7% EI45 only; not TZ II/C0 | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
+| SAM-10 | samolet | ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ | v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score | Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF | `engine_regression` |
 | TRK-01 | tracker | Задача 1: доработать продукт к КТ#2 (20.08) | IFC Acceptance Gate + HD fail-closed; live CLI; Checkpoint NO_GO | Checkpoint GO / market GO = customer GO | `fixture_demo` |
 | TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
 | TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
@@ -80,6 +81,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | SAM-07 | Log + screenshot + hashes именованного CDE Самолёта |
 | SAM-08 | QTO area only after export with quantities or signed OOS |
 | SAM-09 | Customer IDS for fire class, not demo REI60 |
+| SAM-10 | Keep paper-objects unmixed; MIK act cites interim 0.60 |
 | TRK-01 | КТ#3 — итоговое решение; победителей определяют заказчики |
 | TRK-02 | Повтор на customer packs, не на wall-fixture |
 | TRK-03 | Корпус ПД+экспертиза по-прежнему отсутствует |
@@ -123,6 +125,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
 - `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `SAM-10`: [TZ_V1_CONTEST_BRIEF_PIN_2026_08.md](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md)
 - `TRK-01`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
 - `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)

@@ -20,9 +20,9 @@ claim_boundary: >
 
 **Вопрос.** Что делать дальше, когда семь сравнений «ТЗ для Техлаб» уже разложены по ячейкам, а критерий каждой — Uncertain.
 
-**Не склеивать три документа:** публичное ТЗ v2 (ТР-1…62, capability движка); семь задач сравнения (intra-project); проектное ТЗ объекта (проза II/C0, ТЭП, K0 — не IDS).
+**Не склеивать четыре бумаги:** публичный бриф ТЗ v1 (6 стр.); ТЗ v2 (ТР-1…62, capability движка); семь задач сравнения (intra-project); проектное ТЗ объекта (проза II/C0, ТЭП, K0 — не IDS).
 
-Карта ячеек: [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). Шов литературы: [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md). IUA: [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) строки `TL-04`…`TL-10`.
+Карта ячеек: [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). Шов литературы: [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md). IUA: [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) строки `TL-04`…`TL-10`. Публичный бриф ТЗ v1 (6 стр.): [`../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) · `SAM-10`.
 
 Checkpoint **`NO_GO`**. `detected_count: 0`.
 

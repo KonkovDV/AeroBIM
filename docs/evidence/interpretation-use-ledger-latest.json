@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.1.0",
-  "generated_at": "2026-08-26T21:13:48.359009+00:00",
+  "generated_at": "2026-08-26T21:33:31.541206+00:00",
   "audited_head": "f9389bf",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
@@ -22,7 +22,7 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "row_count": 40,
+  "row_count": 41,
   "rows": [
     {
       "row_id": "SAM-01",
@@ -144,6 +144,20 @@
       "blocked_inference": "Fire check delivered; fixture REI60 = customer finding",
       "evidence": "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
       "kt3_condition": "Customer IDS for fire class, not demo REI60",
+      "licensed_use": "engine_regression",
+      "closes_rt001": false,
+      "closes_rt002": false,
+      "closes_rt003": false,
+      "checkpoint": "NO_GO"
+    },
+    {
+      "row_id": "SAM-10",
+      "source": "samolet",
+      "requirement": "ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ",
+      "licensed_inference": "v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score",
+      "blocked_inference": "Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF",
+      "evidence": "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md",
+      "kt3_condition": "Keep paper-objects unmixed; MIK act cites interim 0.60",
       "licensed_use": "engine_regression",
       "closes_rt001": false,
       "closes_rt002": false,

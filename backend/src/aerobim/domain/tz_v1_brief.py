@@ -1,0 +1,260 @@
+"""Public TechLab TZ v1 brief (6-page contest PDF) — not a product score.
+
+This is the original sponsor brief (terms, concept, eval targets, TBD
+architecture). It is not the seven comparison tasks, not the house design TZ,
+and not TZ v2 (ТР-1…62). Accuracy «>90%» here is an evaluation target.
+MIK act speech is the TechLab interim 0.60 protocol, not that target.
+
+Does not close RT-001 / RT-002 / RT-003. Checkpoint NO_GO.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Final
+
+CLAIM_LEVEL: Final = "tz_v1_brief_coverage"
+CHECKPOINT: Final = "NO_GO"
+CLAIM_BOUNDARY: Final = (
+    "Public contest TZ v1 brief (6 pages). Not customer precision. "
+    "Not the seven TechLab comparison tasks. Not a project design TZ. "
+    "TZ v1 «>90%» is an evaluation target. MIK act uses interim 0.60. "
+    "Checkpoint NO_GO. closes_rt001/002/003=false."
+)
+
+# Local owner copy of the public brief. Binary stays out of git.
+PDF_FILENAME: Final = "7. Самолет ТЗ Техлаб 2026.docx-1.pdf"
+PDF_PAGES: Final = 6
+PDF_BYTES: Final = 252251
+PDF_SHA256: Final = "e9c922e005e82e9b1866a6f64c157155e31a93908d206e08cf3901aeacfdfc4b"
+
+# Four Samolet paper-objects. Do not glue.
+PAPER_OBJECTS: Final[tuple[str, ...]] = (
+    "tz_v1_contest_brief",
+    "tz_v2_tr_1_62",
+    "techlab_seven_comparison_tasks",
+    "project_design_tz_houses",
+)
+
+TZ_V1_CLASH_ACCURACY_TARGET: Final = ">90%"
+TZ_V1_NONCONFORMITY_ACCURACY_TARGET: Final = ">90%"
+TZ_V1_SLA_TARGET: Final = "30_min_per_package"
+MIK_ACT_ACCURACY_HORIZON: Final = "interim_tp_fp_ge_0_60"
+PILOT_INTERIM_PRECISION: Final = 0.60
+
+TBD_IN_V1: Final[tuple[str, ...]] = (
+    "architecture",
+    "code_and_build",
+    "solution_image",
+    "presentation",
+    "accompanying_docs",
+)
+
+# Filled in TZ v2 pack — not a claim that the v1 PDF itself contains them.
+TBD_FILLED_IN_V2: Final[dict[str, str]] = {
+    "architecture": "docs/tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md",
+    "code_and_build": "docs/tz/TZ_BUILD_AND_QUALITY_2026.md",
+    "solution_image": "docs/tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md",
+    "presentation": "docs/tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md",
+    "accompanying_docs": "docs/tz/TZ_ACCOMPANYING_DOCS_2026.md",
+}
+
+
+def mik_act_may_cite_tz_v1_accuracy_as_measured() -> bool:
+    """v1 clash/inconsistency «>90%» is not a measured AeroBIM score."""
+
+    return False
+
+
+def v1_brief_snapshot() -> dict[str, Any]:
+    """Coverage pin for the 6-page public brief. Not TP/FP. Not RT CLOSED."""
+
+    return {
+        "artifact_type": "tz_v1_contest_brief_pin",
+        "claim_level": CLAIM_LEVEL,
+        "checkpoint": CHECKPOINT,
+        "closes_rt001": False,
+        "closes_rt002": False,
+        "closes_rt003": False,
+        "claim_boundary": CLAIM_BOUNDARY,
+        "pdf": {
+            "filename": PDF_FILENAME,
+            "pages": PDF_PAGES,
+            "bytes": PDF_BYTES,
+            "sha256": PDF_SHA256,
+            "binary_in_git": False,
+            "page_1_text_extractable": False,
+        },
+        "not_the_same_as": [
+            "techlab_seven_comparison_tasks",
+            "project_design_tz_houses",
+            "tz_v2_tr_matrix",
+        ],
+        "paper_objects": list(PAPER_OBJECTS),
+        "evaluation": {
+            "tz_v1_clash_accuracy_target": TZ_V1_CLASH_ACCURACY_TARGET,
+            "tz_v1_nonconformity_accuracy_target": TZ_V1_NONCONFORMITY_ACCURACY_TARGET,
+            "tz_v1_sla_target": TZ_V1_SLA_TARGET,
+            "product_score_published": False,
+            "remark_quality_ru_en_measured": False,
+            "cognitive_load_measured": False,
+            "mik_act_horizon": MIK_ACT_ACCURACY_HORIZON,
+            "pilot_interim_precision": PILOT_INTERIM_PRECISION,
+            "mik_act_may_cite_v1_gt_90_as_measured": mik_act_may_cite_tz_v1_accuracy_as_measured(),
+        },
+        "tbd_in_v1": list(TBD_IN_V1),
+        "tbd_filled_in_v2": dict(TBD_FILLED_IN_V2),
+        "requirements": _v1_requirements(),
+        "techlab_mik": {
+            "techlab_stage": "dorabotka",
+            "kt3_window": "2026-09-03..2026-09-21",
+            "prize": "paid_pilot_2e6_rub",
+            "legal_entity_not_entry_gate": True,
+            "mik_m2_m8": "VERIFY_WITH_OPERATOR",
+        },
+        "detected_count": 0,
+    }
+
+
+def _v1_requirements() -> list[dict[str, Any]]:
+    return [
+        {
+            "id": "V1-01",
+            "theme": "expert_assistant",
+            "v1": "Module assists the expert; does not replace them",
+            "engine": "HITL + ADR-001 DeterminismGate",
+            "status": "done_fixture",
+            "iua": "SAM-01",
+        },
+        {
+            "id": "V1-02",
+            "theme": "2d_and_bim",
+            "v1": "Analyze 2D drawings and BIM models",
+            "engine": "PDF/OCR baseline + IFC/IDS; CV advisory",
+            "status": "partial",
+            "iua": "SAM-02",
+        },
+        {
+            "id": "V1-03",
+            "theme": "cross_check",
+            "v1": "PD/RD vs calcs, TZ, sections, norms",
+            "engine": "cross-doc + IDS + pairing; customer pack blocked",
+            "status": "partial",
+            "iua": "SAM-08",
+        },
+        {
+            "id": "V1-04",
+            "theme": "clash",
+            "v1": "Geometric clashes and MEP intersections; accuracy >90%",
+            "engine": "generic IfcClash; MEP-CLASH-001; >90% not published",
+            "status": "partial_protocol",
+            "iua": "SAM-05",
+        },
+        {
+            "id": "V1-05",
+            "theme": "calc_errors",
+            "v1": "Calculation errors including loads",
+            "engine": "сверка sources; calculation_correctness NOT_IMPLEMENTED",
+            "status": "partial",
+            "iua": "TL-10",
+        },
+        {
+            "id": "V1-06",
+            "theme": "areas_space",
+            "v1": "Incorrect areas; inefficient space use",
+            "engine": "QTO Missing is not TEP Does-not; advisory inventory",
+            "status": "partial",
+            "iua": "SAM-08",
+        },
+        {
+            "id": "V1-07",
+            "theme": "ui_remarks",
+            "v1": "Highlight on drawing; generate/edit remarks; web UI",
+            "engine": "overlay + templates RU/EN + HITL editor",
+            "status": "done_fixture",
+            "iua": "SAM-03",
+        },
+        {
+            "id": "V1-08",
+            "theme": "ingest",
+            "v1": "Upload Office, PDF, DWG, BIM",
+            "engine": "PDF/Office exchange; native DWG NOT_IMPLEMENTED",
+            "status": "partial",
+            "iua": "SAM-04",
+        },
+        {
+            "id": "V1-09",
+            "theme": "ai_stack",
+            "v1": "CV, OCR, NLP for TZ and remarks",
+            "engine": "OCR baseline; CV/LLM advisory; never write summary.passed",
+            "status": "partial",
+            "iua": "IND-07",
+        },
+        {
+            "id": "V1-10",
+            "theme": "sla",
+            "v1": "Up to 30 minutes per document package",
+            "engine": "fixture SLA rail; customer SLA not claimed",
+            "status": "protocol_ready",
+            "iua": "SAM-06",
+        },
+        {
+            "id": "V1-11",
+            "theme": "appendix",
+            "v1": "PD, RD, standards, design TZ, typical errors, calc models",
+            "engine": "scaffold catalog; NDA pack coverage_map_only",
+            "status": "partial",
+            "iua": "TL-05",
+        },
+        {
+            "id": "V1-12",
+            "theme": "logical_gaps",
+            "v1": "Section mismatch; missing elements; dimension discrepancies",
+            "engine": "completeness + pairing + IDS exists; customer pack blocked",
+            "status": "partial",
+            "iua": "SAM-08",
+        },
+        {
+            "id": "V1-13",
+            "theme": "remark_quality_ru_en",
+            "v1": "Remark generation quality (RU/EN) as an evaluation target",
+            "engine": "templates RU/EN + HITL; quality % not published",
+            "status": "protocol_ready",
+            "iua": "SAM-03",
+        },
+        {
+            "id": "V1-14",
+            "theme": "data_limits",
+            "v1": "Scan vs vector; unstructured data; limited training data",
+            "engine": "OCR baseline; CV advisory; no product CV score",
+            "status": "partial",
+            "iua": "IND-07",
+        },
+        {
+            "id": "V1-15",
+            "theme": "ux_cognitive_load",
+            "v1": "UI convenience; reduce cognitive load",
+            "engine": "fixture web UI; cognitive-load metric not measured",
+            "status": "partial",
+            "iua": "SAM-01",
+        },
+        {
+            "id": "V1-16",
+            "theme": "version_compare",
+            "v1": "Compare documentation versions and types",
+            "engine": "pairing + resubmittal map; not seven tasks closed",
+            "status": "partial",
+            "iua": "TL-09",
+        },
+    ]
+
+
+__all__ = [
+    "CLAIM_BOUNDARY",
+    "CLAIM_LEVEL",
+    "MIK_ACT_ACCURACY_HORIZON",
+    "PAPER_OBJECTS",
+    "PDF_SHA256",
+    "PILOT_INTERIM_PRECISION",
+    "mik_act_may_cite_tz_v1_accuracy_as_measured",
+    "v1_brief_snapshot",
+]

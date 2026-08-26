@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM TZ Response Pack"
 status: active
-version: "2.1.0"
-last_updated: "2026-08-16"
+version: "2.1.1"
+last_updated: "2026-08-27"
 tags: [aerobim, tz, index]
 claim_boundary: "Checkpoint NO_GO until RT-001/002/003."
 ---
@@ -14,6 +14,7 @@ claim_boundary: "Checkpoint NO_GO until RT-001/002/003."
 | Doc | Role |
 |-----|------|
 | **[`TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md)** | **ТЗ v2.0 (полный документ)** — TBD закрыты, Claims Lock, research 2025–2026 |
+| [`TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) | **ТЗ v1 бриф** (6 стр. PDF): не семь задач, не проектное ТЗ; цель точности v1 не product score |
 | [`TZ_COMPLIANCE_MATRIX_2026.md`](TZ_COMPLIANCE_MATRIX_2026.md) | Functional / target tasks / KPI mapping |
 | [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_REQUIREMENTS_2026.md) | Черновик архитектуры (влит в ТЗ §5) |
 | [`TZ_BUILD_AND_QUALITY_2026.md`](TZ_BUILD_AND_QUALITY_2026.md) | Черновик кода/сборки (влит в ТЗ §6) |
