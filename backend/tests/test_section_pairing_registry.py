@@ -34,7 +34,20 @@ class DisciplineRegistryTests(unittest.TestCase):
 
     def test_registry_covers_multiple_disciplines(self) -> None:
         codes = known_discipline_codes()
-        for expected in ("AR", "KZH", "KR", "KM", "OV", "VK", "EOM", "PS", "OS", "PB", "ODD", "MBT"):
+        for expected in (
+            "AR",
+            "KZH",
+            "KR",
+            "KM",
+            "OV",
+            "VK",
+            "EOM",
+            "PS",
+            "OS",
+            "PB",
+            "ODD",
+            "MBT",
+        ):
             self.assertIn(expected, codes)
         self.assertGreaterEqual(len(codes), 10)
 

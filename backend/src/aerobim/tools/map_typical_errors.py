@@ -152,9 +152,7 @@ def map_typical_errors(
         if not isinstance(raw_tasks, list):
             raw_tasks = []
         row["techlab_tasks"] = [
-            int(item)
-            for item in raw_tasks
-            if isinstance(item, int) and not isinstance(item, bool)
+            int(item) for item in raw_tasks if isinstance(item, int) and not isinstance(item, bool)
         ]
     return {
         "artifact_type": "samolet_typical_errors_mapping",
