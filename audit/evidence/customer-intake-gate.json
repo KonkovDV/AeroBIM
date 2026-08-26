@@ -29,6 +29,18 @@
   "share_url": null,
   "share_received_at": "2026-08-25",
   "share_ingested_in_git": false,
+  "owner_machine_engine_rehearsal": {
+    "date": "2026-08-26",
+    "claim_level": "local_rehearsal_not_detection",
+    "detected_count": 0,
+    "ifc_analyzed_under_cap": 14,
+    "ifc_over_cap_inventory_only": 1,
+    "used_customer_ids": false,
+    "ingested_in_git": false,
+    "closes_rt001": false,
+    "closes_rt002": false,
+    "closes_rt003": false
+  },
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
@@ -36,6 +48,7 @@
     "Do not wait for samples/customer/ in git before KT#3 — re-scope 2026-08-23",
     "KT#3 jury show: docs/demo/KT3_JURY_FAQ_2026_08_25.md + run_demo_ifc_acceptance_gate",
     "Customer share received 2026-08-25 — not ingested in git; not a hashed pack; RT-001 OPEN",
+    "2026-08-26 owner-disk IFC engine rehearsal used fixture IDS/rules; detected_count=0; does not close RT-001",
     "Run python -m aerobim.tools.run_kt3_without_customer",
     "Keep checkpoint NO_GO until RT-001/002/003 evidenced"
   ],

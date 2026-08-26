@@ -5,8 +5,8 @@
 ---
 title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
 status: active
-version: "1.3.0"
-last_updated: "2026-08-25"
+version: "1.3.1"
+last_updated: "2026-08-26"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
@@ -17,6 +17,7 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Prize:** paid pilot testing fund **2 000 000 ₽**  
 **Task page:** https://i.moscow/techlab/samolet  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
+**26.08.2026 owner-disk rehearsal:** IFC analyze with **fixture** IDS/rules does not change the table below. Not a customer defect list. `detected_count` stays 0. Intake remains `BLOCKED_NO_CUSTOMER_DATA`.  
 **МИК stage:** **доработка** (КТ#3 открывается 03.09). Валидация эффективности и внедрение **не начаты**. Показ: [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md).  
 **Eng status (Aug 2026):** IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md).  
 **Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
