@@ -20,7 +20,7 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
 **26.08.2026 owner-disk rehearsal:** IFC analyze with **fixture** IDS/rules does not change the table below. Not a customer defect list. `detected_count` stays 0. Intake remains `BLOCKED_NO_CUSTOMER_DATA`. Seam coverage map (spaces without QTO area; FireRating sparse / EI 45 ≠ design-TZ II/C0): [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md).  
 **МИК stage:** **доработка** (КТ#3 открывается 03.09). Валидация эффективности и внедрение **не начаты**. Показ: [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md).  
-**Eng status (Aug 2026):** IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md).  
+**Eng status (Aug 2026):** IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md). Post-cartography plan [`../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md`](../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md).  
 **Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
 
 Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED_BY_CUSTOMER_DATA` | `MISSING` | `NOT_VERIFIED`.

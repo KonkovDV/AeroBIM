@@ -284,6 +284,24 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
                 )
             )
 
+    if (
+        "KZH" in {canonicalize_discipline(code).code for code in inventory.mandatory_pd_sections}
+        and "KZH" not in pd_disciplines
+        and "KR" in pd_disciplines
+    ):
+        issues.append(
+            _issue(
+                rule_id="AEROBIM-PACKAGE-KR-NOT-KZH",
+                severity=Severity.WARNING,
+                message=(
+                    "PD inventory has KR (structures, general) but mandatory KZH "
+                    "(reinforced concrete) is still missing; KR does not fill the "
+                    f"KZH slot and is not statutory PP-87 certification; {CLAIM_BOUNDARY}"
+                ),
+                target_ref="KZH",
+            )
+        )
+
     if inventory.require_pd_rd_pairing:
         # Pair every present PD section (and every mandatory that is present).
         for code in sorted(pd_disciplines):
@@ -355,7 +373,7 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
                     )
                 )
                 continue
-            disc = artifact.discipline or artifact.section_code
+            disc = _artifact_discipline_raw(artifact)
             if disc:
                 code = canonicalize_discipline(disc).code
                 folded = cipher.casefold()
@@ -365,6 +383,8 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
                     aliases.add("ар")
                 if code == "KZH":
                     aliases.update({"кж", "кж0"})
+                if code == "KR":
+                    aliases.update({"кр"})
                 if code == "PZ":
                     aliases.add("пз")
                 if not any(alias in folded for alias in aliases if alias):
@@ -526,6 +546,20 @@ def _unjustified_pd_calculation_issues(
     return issues
 
 
+def _artifact_discipline_raw(artifact: PackageArtifact) -> str | None:
+    """Resolve inventory discipline without treating PP-87 volume numbers as codes.
+
+    Numeric ``section_code`` (e.g. ``3``) is a document-volume label, not AR/KR.
+    Prefer ``discipline`` in that case. Still not statutory PP-87 completeness.
+    """
+
+    section = (artifact.section_code or "").strip()
+    discipline = (artifact.discipline or "").strip()
+    if section.isdigit():
+        return discipline or section
+    return section or discipline or None
+
+
 def _section_disciplines(
     artifacts: Sequence[PackageArtifact],
     *,
@@ -535,7 +569,7 @@ def _section_disciplines(
     for artifact in artifacts:
         if artifact.role != role:
             continue
-        raw = artifact.section_code or artifact.discipline
+        raw = _artifact_discipline_raw(artifact)
         if not raw:
             continue
         codes.add(canonicalize_discipline(raw).code)

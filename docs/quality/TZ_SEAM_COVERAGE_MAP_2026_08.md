@@ -4,7 +4,7 @@ title: "TZ seam coverage map — local NDA rehearsal × literature 2026-08-26"
 date: "2026-08-26"
 last_updated: "2026-08-26"
 status: active
-version: "1.2.1"
+version: "1.2.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -77,7 +77,7 @@ Completeness engine, pairing off, discipline codes PZ/AR/KR: **structural pass**
 
 ## 3. Seven comparison tasks × Solihin × 2026 benches
 
-Cell-level cartography (present / absent / incomparable / blocked): [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). That map does **not** close any task.
+Карта ячеек: [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). That map does **not** close any task. Execution plan after the map: [`TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md`](TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md).
 
 | # | Task | Class | 2026 bench | Pack carrier | AeroBIM now | RT |
 |---|---|---|---|---|---|---|
@@ -142,6 +142,8 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-CART-06 | OEP tokens present ⇒ gold / remarks closed | **KILL** | One judge; κ absent |
 | RT-CART-07 | SAM-TYP matrix ⇒ `customer_confirmed_patterns>0` | **KILL** | Catalog still 0 |
 | RT-CART-08 | Pitch pset on the map ⇒ task 7 done | **KILL** | Same brake as RT-SEAM-06 |
+| RT-PLAN-01 | Post-cartography plan / TL-04…10 ⇒ tasks closed | **KILL** | Criterion Uncertain; IUA rows are speech bounds |
+| RT-PLAN-02 | KR cipher accepted ⇒ KZH/PP-87 delivered | **KILL** | KR-NOT-KZH warning; numeric volume ≠ discipline |
 
 ## 6. What this pass does not do
 

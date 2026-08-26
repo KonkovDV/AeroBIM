@@ -66,6 +66,12 @@ class SpaceEfficiencyAdvisoryTests(unittest.TestCase):
         self.assertIn("layout_hint=corridor", issues[1].message)
         self.assertNotIn("inefficient by", package.lower())
 
+    def test_missing_qto_is_not_tep_does_not(self) -> None:
+        spaces = (SpaceInventoryRow(guid="g1", name="Room"),)
+        issues = build_space_efficiency_candidates(spaces)
+        self.assertIn("not a TEP Does-not", issues[0].message)
+        self.assertIn("never sets summary.passed", issues[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()

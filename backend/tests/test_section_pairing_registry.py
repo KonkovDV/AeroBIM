@@ -19,7 +19,9 @@ class DisciplineRegistryTests(unittest.TestCase):
         self.assertEqual(canonicalize_discipline("architecture").code, "AR")
         self.assertTrue(canonicalize_discipline("АР").recognized)
 
-    def test_reinforced_concrete_ru_mark_resolves(self) -> None:
+    def test_structures_general_kr_resolves(self) -> None:
+        self.assertEqual(canonicalize_discipline("КР").code, "KR")
+        self.assertTrue(canonicalize_discipline("KR").recognized)
         info = canonicalize_discipline("КЖ")
         self.assertEqual(info.code, "KZH")
         self.assertTrue(info.recognized)
@@ -32,7 +34,7 @@ class DisciplineRegistryTests(unittest.TestCase):
 
     def test_registry_covers_multiple_disciplines(self) -> None:
         codes = known_discipline_codes()
-        for expected in ("AR", "KZH", "KM", "OV", "VK", "EOM", "PS", "OS", "PB", "ODD", "MBT"):
+        for expected in ("AR", "KZH", "KR", "KM", "OV", "VK", "EOM", "PS", "OS", "PB", "ODD", "MBT"):
             self.assertIn(expected, codes)
         self.assertGreaterEqual(len(codes), 10)
 

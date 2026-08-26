@@ -25,6 +25,8 @@ class MapTypicalErrorsTests(unittest.TestCase):
         rows = payload["rows"]
         fire_row = next(r for r in rows if r["error_id"] == "SAM-TYP-001")
         self.assertEqual(fire_row["status"], "covered")
+        self.assertEqual(fire_row["techlab_tasks"], [4, 5])
+        self.assertTrue(payload["techlab_task_map_present"])
         self.assertTrue(fire_row["matched_rule_ids"])
         mep_gap = next(r for r in rows if r["error_id"] == "SAM-TYP-020")
         self.assertEqual(mep_gap["status"], "gap")

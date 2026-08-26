@@ -3,7 +3,7 @@
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
 date: "2026-08-26"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -42,6 +42,13 @@ claim_boundary: >-
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
 | TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
+| TL-04 | techlab | Сравнение 1: ПД/РД ↔ АГО/АГР (листы, фасады, ТЭП) | Filename coindex on coverage map; overlay remains fixture-only | АГР/QTO сданы; задача 1 закрыта | `engine_regression` |
+| TL-05 | techlab | Сравнение 2: ПД ↔ каталоги / EIR LOD | Catalog and EIR workbooks as carriers; not customer_approved IDS | IDS Самолёта утверждён из Стандарта | `protocol_planning` |
+| TL-06 | techlab | Сравнение 3: планировки ОПР/ПД/РД (оси, помещения, двери) | IfcSpace/IfcDoor presence is coverage_map_only; QTO absent is Missing | Планировки сверены по стадиям; площади проверены | `engine_regression` |
+| TL-07 | techlab | Сравнение 4: планировки ↔ ИРД / проектное ТЗ | II/C0, wall EI, door EI, fixture REI60 are different constructs | Планировки соответствуют ТЗ; огнестойкость сертифицирована | `engine_regression` |
+| TL-08 | techlab | Сравнение 5: АР/КР/ПБ/ТХ/ИОС между собой | AR+KR IFC; other disciplines PDF; IfcFlowTerminal in AR ≠ IOS model | MEP delivered; federated clash delivered | `protocol_planning` |
+| TL-09 | techlab | Сравнение 6: повторная проверка ↔ выданные замечания | After-tree thicker than before is coverage_map_only; OEP is not gold | Замечания закрыты; книга ОЭП = gold | `protocol_planning` |
+| TL-10 | techlab | Сравнение 7: армирование ↔ расчётные карты (Solihin 4) | No IfcReinforcingBar; wall pitch pset ≠ class 4; .lir not parsed | Арматура сверена с расчётом; LIRA solved | `engine_regression` |
 | MIK-01 | mik | Соглашение / акт / финотчётность Фонда (M2, M7, M8) | Контур документирован; формы не сочиняем; 449-ПП ≠ вход в Техлаб | Самодельные шаблоны Фонда; акт с fixture-цифрами; ИП как вход | `not_licensed` |
 | MIK-02 | mik | Четырёхэтапная модель: доработка → валидация → внедрение | Стадия = доработка (КТ#2) | Валидация эффективности / внедрение как текущий факт | `operational_hygiene` |
 | IND-01 | industry | buildingSMART IDS 1.0 (final standard, 1 June 2024) | IDS checking (IfcTester) + IDS audit (XmlIdsDocumentAuditor / XSD 1.0) | IDS audit = checking = Samolet EIR; IDS 1.1 как approved standard | `engine_regression` |
@@ -82,6 +89,13 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | TL-01 | КТ#3 03–21.09 — итоговое решение |
 | TL-02 | Замеры только после intake-gates |
 | TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
+| TL-04 | Sheet gold + dual raters; VLM stays advisory |
+| TL-05 | Appointing-party IDS with pack_hash (RT-002b) |
+| TL-06 | QTO export or signed OOS; RD IFC if stage compare is in scope |
+| TL-07 | Customer fire IDS, not demo REI60 |
+| TL-08 | Federated MEP IFC or written MEP-OOS (RT-003) |
+| TL-09 | Dual named raters + κ on a frozen remark set (RT-001) |
+| TL-10 | Bar entities in IFC or written OOS of task 7 |
 | MIK-01 | VERIFY_WITH_OPERATOR до получения форм |
 | MIK-02 | Следующие этапы — после решения заказчиков на КТ#3 |
 | IND-01 | Customer IDS pack remains RT-002 |
@@ -107,8 +121,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
 - `SAM-06`: `python -m aerobim.tools.measure_package_sla`
 - `SAM-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
-- `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md); cell map [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
-- `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md); cell map [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `TRK-01`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
 - `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)
@@ -118,6 +132,13 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
 - `TL-03`: [TECHLAB_TASK_07_READINESS_2026.md](../partners/TECHLAB_TASK_07_READINESS_2026.md)
+- `TL-04`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-05`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-06`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-07`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-08`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-09`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-10`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
 - `MIK-01`: [MIK_PILOT_COMPLIANCE_2026.md](../partners/MIK_PILOT_COMPLIANCE_2026.md)
 - `MIK-02`: [docs.md](../docs.md)
 - `IND-01`: [ids.xsd](../../samples/ids-xsd/ids.xsd)

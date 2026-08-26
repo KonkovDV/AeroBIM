@@ -143,6 +143,19 @@ def map_typical_errors(
 
     total = len(patterns)
     mapped = rule_covered + class_mapped + explicit_gaps
+    task_map = catalog.get("techlab_task_map")
+    if not isinstance(task_map, dict):
+        task_map = {}
+    for row in rows:
+        error_id = str(row.get("error_id") or "")
+        raw_tasks = task_map.get(error_id, [])
+        if not isinstance(raw_tasks, list):
+            raw_tasks = []
+        row["techlab_tasks"] = [
+            int(item)
+            for item in raw_tasks
+            if isinstance(item, int) and not isinstance(item, bool)
+        ]
     return {
         "artifact_type": "samolet_typical_errors_mapping",
         "schema_version": "1.1.0",
@@ -150,6 +163,7 @@ def map_typical_errors(
         "catalog_status": catalog.get("catalog_status"),
         "patterns_total": total,
         "customer_confirmed_patterns": catalog.get("customer_confirmed_patterns", 0),
+        "techlab_task_map_present": bool(task_map),
         "patterns_with_rule_match": rule_covered,
         "patterns_with_class_only_mapping": class_mapped,
         "patterns_with_explicit_gap": explicit_gaps,

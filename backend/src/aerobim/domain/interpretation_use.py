@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 LEDGER_ID = "aerobim_interpretation_use_ledger"
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 AUDITED_HEAD = "f9389bf"  # IUA freeze; hygiene commits after this do not reopen validity
 CHECKPOINT = "NO_GO"
 CLAIM_BOUNDARY = (
@@ -276,6 +276,76 @@ LEDGER: tuple[InferenceRow, ...] = (
         "docs/partners/TECHLAB_TASK_07_READINESS_2026.md",
         "Оплату приза уточнять только по соглашению Партнёра и Фонда",
         "operational_hygiene",
+    ),
+    _row(
+        "TL-04",
+        "techlab",
+        "Сравнение 1: ПД/РД ↔ АГО/АГР (листы, фасады, ТЭП)",
+        "Filename coindex on coverage map; overlay remains fixture-only",
+        "АГР/QTO сданы; задача 1 закрыта",
+        "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
+        "Sheet gold + dual raters; VLM stays advisory",
+        "engine_regression",
+    ),
+    _row(
+        "TL-05",
+        "techlab",
+        "Сравнение 2: ПД ↔ каталоги / EIR LOD",
+        "Catalog and EIR workbooks as carriers; not customer_approved IDS",
+        "IDS Самолёта утверждён из Стандарта",
+        "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
+        "Appointing-party IDS with pack_hash (RT-002b)",
+        "protocol_planning",
+    ),
+    _row(
+        "TL-06",
+        "techlab",
+        "Сравнение 3: планировки ОПР/ПД/РД (оси, помещения, двери)",
+        "IfcSpace/IfcDoor presence is coverage_map_only; QTO absent is Missing",
+        "Планировки сверены по стадиям; площади проверены",
+        "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
+        "QTO export or signed OOS; RD IFC if stage compare is in scope",
+        "engine_regression",
+    ),
+    _row(
+        "TL-07",
+        "techlab",
+        "Сравнение 4: планировки ↔ ИРД / проектное ТЗ",
+        "II/C0, wall EI, door EI, fixture REI60 are different constructs",
+        "Планировки соответствуют ТЗ; огнестойкость сертифицирована",
+        "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
+        "Customer fire IDS, not demo REI60",
+        "engine_regression",
+    ),
+    _row(
+        "TL-08",
+        "techlab",
+        "Сравнение 5: АР/КР/ПБ/ТХ/ИОС между собой",
+        "AR+KR IFC; other disciplines PDF; IfcFlowTerminal in AR ≠ IOS model",
+        "MEP delivered; federated clash delivered",
+        "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
+        "Federated MEP IFC or written MEP-OOS (RT-003)",
+        "protocol_planning",
+    ),
+    _row(
+        "TL-09",
+        "techlab",
+        "Сравнение 6: повторная проверка ↔ выданные замечания",
+        "After-tree thicker than before is coverage_map_only; OEP is not gold",
+        "Замечания закрыты; книга ОЭП = gold",
+        "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
+        "Dual named raters + κ on a frozen remark set (RT-001)",
+        "protocol_planning",
+    ),
+    _row(
+        "TL-10",
+        "techlab",
+        "Сравнение 7: армирование ↔ расчётные карты (Solihin 4)",
+        "No IfcReinforcingBar; wall pitch pset ≠ class 4; .lir not parsed",
+        "Арматура сверена с расчётом; LIRA solved",
+        "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
+        "Bar entities in IFC or written OOS of task 7",
+        "engine_regression",
     ),
     _row(
         "MIK-01",

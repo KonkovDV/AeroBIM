@@ -91,7 +91,10 @@ def build_space_efficiency_candidates(
     area_fragment = (
         f"Spaces with NetFloorArea: {with_area}/{total}; sum≈{area_sum:.2f}."
         if with_area
-        else f"Spaces without NetFloorArea quantities: {total}."
+        else (
+            f"Spaces without NetFloorArea quantities: {total}. "
+            "Missing QTO is not a TEP Does-not; K0/K1/K2 are not measurable."
+        )
     )
     hint_fragment = (
         f" Name-class hints (not a threshold): corridor={corridor_n}, "

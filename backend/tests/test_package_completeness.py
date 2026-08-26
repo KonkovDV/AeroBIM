@@ -159,6 +159,94 @@ class PackageCompletenessDomainTests(unittest.TestCase):
         self.assertEqual(unknown, [])
         self.assertEqual(unsupported, [])
 
+    def test_numeric_section_code_does_not_hide_discipline(self) -> None:
+        inventory = PackageInventory.from_mapping(
+            {
+                "schema": INVENTORY_SCHEMA_V1,
+                "project_id": "pp87-volume-label",
+                "mandatory_pd_sections": ["AR"],
+                "require_pd_rd_pairing": False,
+                "require_specifications": False,
+                "require_schedules": False,
+                "require_sheet_ciphers": False,
+                "artifacts": [
+                    {
+                        "artifact_id": "pd-ar",
+                        "role": "pd_section",
+                        "discipline": "AR",
+                        "section_code": "3",
+                        "format": "pdf",
+                    }
+                ],
+            }
+        )
+        report = assess_package_completeness(inventory)
+        missing = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-MISSING-SECTION"]
+        self.assertEqual(missing, [])
+        self.assertEqual(report.missing_pd_sections, ())
+
+    def test_kr_present_does_not_satisfy_mandatory_kzh(self) -> None:
+        inventory = PackageInventory.from_mapping(
+            {
+                "schema": INVENTORY_SCHEMA_V1,
+                "project_id": "kr-not-kzh",
+                "mandatory_pd_sections": ["AR", "KZH"],
+                "require_pd_rd_pairing": False,
+                "require_specifications": False,
+                "require_schedules": False,
+                "require_sheet_ciphers": False,
+                "artifacts": [
+                    {
+                        "artifact_id": "pd-ar",
+                        "role": "pd_section",
+                        "discipline": "AR",
+                        "format": "pdf",
+                    },
+                    {
+                        "artifact_id": "pd-kr",
+                        "role": "pd_section",
+                        "discipline": "KR",
+                        "format": "pdf",
+                    },
+                ],
+            }
+        )
+        report = assess_package_completeness(inventory)
+        missing = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-MISSING-SECTION"]
+        notice = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-KR-NOT-KZH"]
+        self.assertEqual([i.target_ref for i in missing], ["KZH"])
+        self.assertEqual(len(notice), 1)
+        self.assertEqual(notice[0].severity, Severity.WARNING)
+        self.assertIn("KR does not fill", notice[0].message)
+        self.assertEqual(report.to_capability_status().status, CapabilityState.FAILED)
+
+    def test_kr_cipher_cyrillic_alias_is_accepted(self) -> None:
+        inventory = PackageInventory.from_mapping(
+            {
+                "schema": INVENTORY_SCHEMA_V1,
+                "project_id": "kr-cipher",
+                "mandatory_pd_sections": ["KR"],
+                "require_pd_rd_pairing": False,
+                "require_specifications": False,
+                "require_schedules": False,
+                "require_sheet_ciphers": True,
+                "artifacts": [
+                    {
+                        "artifact_id": "pd-kr",
+                        "role": "pd_section",
+                        "discipline": "KR",
+                        "format": "pdf",
+                        "cipher": "СИН-КР-01",
+                    }
+                ],
+            }
+        )
+        report = assess_package_completeness(inventory)
+        mismatch = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-CIPHER-MISMATCH"]
+        missing = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-MISSING-SECTION"]
+        self.assertEqual(mismatch, [])
+        self.assertEqual(missing, [])
+
 
 class PackageCompletenessUseCaseWiringTests(unittest.TestCase):
     def test_missing_section_fixture_fails_analyze(self) -> None:
