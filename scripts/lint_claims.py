@@ -113,8 +113,10 @@ _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 
 _KITCHEN_TOKENS = (
     "",
-    "[redacted-site]",
-    "[redacted-site]",
+    "",
+    "",
+    "",
+    "",
     "",
     "",
     "",
@@ -129,6 +131,20 @@ _KITCHEN_TOKENS = (
     "",
     "",
     "",
+)
+
+_KITCHEN_PATH_PREFIXES = (
+    "docs/roadmap/",
+    "docs/partners/outreach/",
+    "docs/research/",
+    "docs/gtm/",
+    "docs/customer/",
+    "docs/customer-discovery/",
+    "docs/plans/",
+    "docs/quality/RED_TEAM",
+    "docs/demo/TRACKER_MEETING",
+    "docs/demo/KT2_HOSTILE_QA",
+    "docs/demo/KT2_VIDEO_SCRIPT",
 )
 
 _KITCHEN_SCAN_ROOTS = (
@@ -170,6 +186,29 @@ def lint_kitchen_tokens() -> list[str]:
             for token in _KITCHEN_TOKENS:
                 if token in text:
                     hits.append(f"[kitchen_token] {rel}: {token}")
+    return hits
+
+
+def lint_kitchen_paths() -> list[str]:
+    """Tracked kitchen/NDA path prefixes must not re-enter git."""
+
+    proc = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=_REPO,
+        capture_output=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return [f"[kitchen_path] git ls-files failed: {proc.returncode}"]
+    hits: list[str] = []
+    for raw in proc.stdout.split(b"\0"):
+        if not raw:
+            continue
+        rel = raw.decode("utf-8", "replace").replace("\\", "/")
+        for prefix in _KITCHEN_PATH_PREFIXES:
+            if rel.startswith(prefix):
+                hits.append(f"[kitchen_path] {rel}")
+                break
     return hits
 
 
@@ -690,6 +729,7 @@ def main(argv: list[str] | None = None) -> int:
             roots.append(_REPO / "docs")
         errors.extend(lint_claims(matrix_path=args.matrix, roots=roots))
         errors.extend(lint_kitchen_tokens())
+        errors.extend(lint_kitchen_paths())
 
     errors.extend(lint_citation_twins())
 
