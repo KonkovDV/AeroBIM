@@ -56,6 +56,7 @@ claim_boundary: >-
 | IND-10 | industry | buildingSMART IDS 1.1 (feedback 2026, not final) | IDS 1.0 remains the approved standard (1 June 2024) | IDS 1.1 as current standard / certified profile | `engine_regression` |
 | IND-11 | industry | EGCC 2026 (arXiv:2607.29058) constraint checking | False-pass 41-52%; authors: not for autonomous approval | EGCC % = AeroBIM on customer PD; autonomous approve | `open_bench` |
 | IND-12 | industry | DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets | Pros 94.9% vs Gemini-2.5-pro 71.7%; QTO weak | DrawingVQA as AeroBIM product accuracy / TZ task 1 done | `open_bench` |
+| IND-13 | industry | Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR) | City-as-publisher pattern = RT-002a analog; not appointing-party EIR | Public permit IDS = Samolet-signed profile / Task 07 delivered | `open_bench` |
 
 ## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
 
@@ -95,6 +96,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | IND-10 | Stay on IDS 1.0 checking + audit split until 1.1 is final |
 | IND-11 | Four-state Meets/Missing/Uncertain; expert stays in the loop |
 | IND-12 | VLM advisory only; no sheet-level sign-off |
+| IND-13 | Keep RT-002a and RT-002b unmixed |
 
 ## Evidence pointers
 
@@ -130,3 +132,4 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `IND-10`: [ids.xsd](../../samples/ids-xsd/ids.xsd)
 - `IND-11`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `IND-12`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `IND-13`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)

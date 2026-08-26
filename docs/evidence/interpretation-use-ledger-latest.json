@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-26T19:39:29.656571+00:00",
+  "generated_at": "2026-08-26T19:53:58.811022+00:00",
   "audited_head": "f9389bf",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
@@ -22,7 +22,7 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "row_count": 32,
+  "row_count": 33,
   "rows": [
     {
       "row_id": "SAM-01",
@@ -466,6 +466,20 @@
       "blocked_inference": "DrawingVQA as AeroBIM product accuracy / TZ task 1 done",
       "evidence": "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
       "kt3_condition": "VLM advisory only; no sheet-level sign-off",
+      "licensed_use": "open_bench",
+      "closes_rt001": false,
+      "closes_rt002": false,
+      "closes_rt003": false,
+      "checkpoint": "NO_GO"
+    },
+    {
+      "row_id": "IND-13",
+      "source": "industry",
+      "requirement": "Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR)",
+      "licensed_inference": "City-as-publisher pattern = RT-002a analog; not appointing-party EIR",
+      "blocked_inference": "Public permit IDS = Samolet-signed profile / Task 07 delivered",
+      "evidence": "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
+      "kt3_condition": "Keep RT-002a and RT-002b unmixed",
       "licensed_use": "open_bench",
       "closes_rt001": false,
       "closes_rt002": false,

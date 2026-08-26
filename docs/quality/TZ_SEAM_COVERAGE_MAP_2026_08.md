@@ -4,7 +4,7 @@ title: "TZ seam coverage map — local NDA rehearsal × literature 2026-08-26"
 date: "2026-08-26"
 last_updated: "2026-08-26"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -32,13 +32,14 @@ The pack **supplies carriers** for a coverage map (IFC AR+KR, PD PDFs, EIR/LOD w
 | Priority | Finding | Licensed speech | Forbidden speech |
 |---|---|---|---|
 | **P0** | 6 AR IFC, **10 599** `IfcSpace`, **0** with `Qto_SpaceBaseQuantities.NetFloorArea`; sister whole-building AR: **1 339** spaces, **0** area | Export has rooms as objects; area checks are not runnable | «Площади сверены с ТЭП»; TZ tasks 3–4 done |
-| **P0** | **62 033** `IfcWall` on those 6 AR; FireRating filled on **3 538** (5.7 %), observed class **EI 45 only**; KR walls sampled: FireRating token **0** | Property often empty; when present it is EI 45, not design-TZ class II / C0, not fixture REI60 | «Огнестойкость проверена»; demo IDS findings = customer defects |
-| **P0** | EGCC (arXiv:2607.29058): false-pass **41–52 %**; authors: unsuitable for autonomous approval | Fail-closed + HITL is the licensed architecture | Autonomous approve; EGCC % as AeroBIM score |
+| **P0** | **62 033** `IfcWall` on those 6 AR; FireRating filled on **3 538** (5.7 %), observed class **EI 45 only** (re-counted 26.08 evening). Per-block fill **8–875** walls (one block 8/4635). KR sample: FireRating token **0** | Property often empty; when present it is EI 45, not design-TZ class II / C0, not fixture REI60 | «Огнестойкость проверена»; 8/4635 as the pack rate; demo IDS = customer defects |
+| **P0** | EGCC (arXiv:2607.29058): repeated-test false-pass **51.6 → 41.1 %**; exact-task correctness **15.9 → 20.5 %**; typed finding F1 **5.2 → 9.0 %**. Empirical block is **PDF pages**; CAD/IFC adapters are not in that trial. Authors: unsuitable for autonomous approval | Fail-closed four-state (Meets / Does-not / Missing / Uncertain) + HITL | Autonomous approve; EGCC % as IFC or AeroBIM score |
 | **P0** | LLM-as-judge (arXiv:2606.19544): agreement ≠ Cohen’s κ | Dual human raters remain the gate | «Модель подтвердила findings» |
 | **P1** | Ishigaki-IDS-Bench (arXiv:2605.22079): zero-shot Content-pass **27.7–33.1 %**. Ishigaki-IDS-8B (arXiv:2606.08545): validator-pass **0.651**, still a **draft** aid | Human-reviewed IDS draft only | `customer_approved` from an LLM |
-| **P1** | DrawingVQA (arXiv:2607.15418): professionals **94.9 %** vs Gemini-2.5-pro **71.7 %**; QTO is a known weak family | VLM advisory; no sheet sign-off | TZ comparison task 1 closed |
+| **P1** | DrawingVQA (arXiv:2607.15418; CVPR Findings 2026): professionals **94.9 %** vs Gemini-2.5-pro **71.7 %** (undergraduates **62.8 %**). R3 / QTO families remain the bottleneck; original IFC drawing images are **not** fully public | VLM advisory; no sheet sign-off | TZ comparison tasks 1/3/7 closed; those % as AeroBIM |
 | **P1** | buildingSMART IDS **1.0** final (1 June 2024). IDS **1.1** still feedback as of 26.08.2026 | Checking vs audit split | «IDS 1.1 / certified Samolet profile» |
 | **P2** | Filename inventory of PD volumes: conventional labels 1–9, 11, 13 on loose PDFs; label **10** in a primary archive; label **12 unseen**. Engine completeness keys `section_code` before `discipline` — numeric `3` is not AR | Structural completeness is a declared-inventory check, not statutory PP-87 | «Комплект по 87-ПП сертифицирован» |
+| **P2** | Jurisdiction IFC pre-check 2026: CORENET X Model Checker (schema → quality; regulatory later; BCF out) **[П]**; Finland RAVA3.5.3 national IDS (updated **30.06.2026**) **[П]**; Moscow CIM AGR self-check since **29.06.2026** **[П]** | Same *pattern* as RT-002a (city-as-publisher). Appointing-party EIR in this pack is still RVT/NWD | «Самолёту уже выдан IDS государства»; sell AGR-check as Task 07 |
 
 ## 1. Construct (what the sponsor asked)
 
@@ -94,18 +95,20 @@ Only items that change the IUA. Blogs without method are out.
 |---|---|---|---|---|
 | L-MES | Messick (1995); Kane (2013) | Validity = use of a score | Coverage map ≠ criterion validity | Green tests ⇒ GO |
 | L-SOL | Solihin & Eastman (2015) | Rule classes 1–4 | Task 7 is class 4 | Pset pitch = proof of solution |
-| L-EGCC | arXiv:2607.29058 | Four-state constraint check; FP 41–52 % | Fail-closed + Missing/Uncertain | Autonomous approval |
-| L-DVQA | arXiv:2607.15418; CVPR Findings 2026 | 33 IFC drawings, 92 QA; humans 94.9 % / model 71.7 % | Sheet literacy gap; QTO weak | Those % as AeroBIM |
+| L-EGCC | arXiv:2607.29058 | Four-state constraint check on AEC-Bench PDF tasks; FP 51.6→41.1 %; exact-task 15.9→20.5 %; CAD/IFC **not** in the empirical block | Fail-closed + Missing/Uncertain | Autonomous approval; those % as IFC accuracy |
+| L-DVQA | arXiv:2607.15418; CVPR Findings 2026 | 33 IFC drawings, 92 QA; humans 94.9 % / Gemini-2.5-pro 71.7 % / undergrad 62.8 %; images not fully public | Sheet literacy gap; QTO/R3 weak | Those % as AeroBIM; Harbor-replacement |
 | L-AEC | arXiv:2603.29199 | 196 agent tasks; Harbor | Inventory only; Harbor **NOT_RUN** | «Closed AEC-Bench» |
-| L-IDS-B | arXiv:2605.22079 | NL → IDS XML; Content-pass ≤33 % | Human draft | Approved Samolet IDS |
-| L-IDS-M | arXiv:2606.08545 | Verifier-aware 8B; audit-pass 0.651 | Faster drafts, still review | Skip expert |
+| L-IDS-B | arXiv:2605.22079 | NL → IDS XML; Facet F1 ≤65.6 % (GPT-5.5); Content-pass **27.7–33.1 %** | Human draft | Approved appointing-party IDS |
+| L-IDS-M | arXiv:2606.08545 | Verifier-aware 8B; IDSAuditPass **0.651** vs Claude Opus 4.5 **0.331**; 6-person workflow **−54.7 %** time, same validation endpoint | Faster drafts, still review | Skip expert; `customer_approved` |
+| L-ARCH | arXiv:2607.25566 | Agents synthesise Python checkers; TDD on labelled BIM; held-out | Matches ADR-001: executed checker is deterministic | Generated script = signed norm |
 | L-J1 | arXiv:2606.19544 | LLM-judge ≠ κ | Dual raters | Model as rater |
 | L-CLASH | *Buildings* 16(13):2623 (2026) | Detection mature; filter is human | AR↔KR clash rehearsal ≠ delivered | MEP delivered |
-| L-IDS-std | bSI IDS 1.0 (2024-06-01); 1.1 feedback (Tomczak 2026-05-14; GitHub milestone 1.1) | Standard vs wishlist | Checking = IfcTester 1.0 | IDS 1.1 final |
-| L-CORE | CORENET X IFC-SG Model Checker **[П]** | State pre-check on IFC | Analog: city AGR IDS = RT-002a | Appointing-party EIR is RVT/NWD |
-| L-AGR | Moscow CIM AGR self-check mandatory since 29.06.2026 **[П]** | City portal, free | Not our SKU | Sell AGR-check to Samolet |
+| L-IDS-std | bSI IDS 1.0 (2024-06-01); 1.1/2.0 **feedback** (Tomczak 2026-05-14; bSI standards page) | Standard vs wishlist | Checking = IfcTester 1.0 | IDS 1.1 final |
+| L-CORE | CORENET X IFC-SG Model Checker **[П]** | Staged: schema on upload → quality (MVP) → regulatory later; results as BCF | Analog: city AGR IDS = RT-002a | Appointing-party EIR is RVT/NWD |
+| L-RAVA | Finland RAVA3.5.3 **[П]** (IDS + IFC test models; update **30.06.2026**, kirahub.org/rava3pro) | National *permit* information requirements as IDS | Same pattern as MOGE IDS: jurisdiction publisher | Samolet-signed EIR |
+| L-AGR | Moscow CIM AGR self-check mandatory since 29.06.2026 **[П]** | City portal, free | Not our SKU | Sell AGR-check to the sponsor |
 
-OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П]** (`ratings.ru` Samolet-RA-200326). Do not say the February «неопределённый» forecast as current. Developer volume rankings (ERZ vs RBC, August 2026) disagree on the square-metre snapshot — **UNVERIFIED**, not used as a score.
+OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П]** (`ratings.ru` Samolet-RA-200326). Do not say the February «неопределённый» forecast as current. RF developer volume: still the national leader by EISHS-based league tables **[П]**; Moscow rank **3rd** as of 1.08.2026 (~1.0 million m²) after MR Group took 2nd **[П]** (RBC). Square-metre snapshots across secondary roundups **UNVERIFIED** as a score. Commercial line remains *cycle time on the appointing party's pack*, not «they shrank, therefore they buy a checker».
 
 ## 5. Adversarial triage (KILL / HOLD)
 
@@ -125,6 +128,10 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-SEAM-12 | Ishigaki-IDS-8B audit-pass 0.651 = approved EIR | **KILL** | Draft aid; no `approval` object |
 | RT-SEAM-13 | Zip «after expertise» = revision-closed | **HOLD** | Different container shape; not run as closure |
 | RT-SEAM-14 | Raise 256 MiB because one AR is over cap | **KILL** | Owner flag only; default stays |
+| RT-SEAM-15 | Jurisdiction IDS (RAVA3.5 / CORENET / city AGR) = appointing-party profile | **KILL** | RT-002a ≠ RT-002b |
+| RT-SEAM-16 | EGCC tiling +10.6 pp ⇒ VLM may approve sheets | **KILL** | Authors: not unsupervised; IFC/CAD not in that trial |
+| RT-SEAM-17 | Finland 2026 BIM permit ⇒ Task 07 delivered | **KILL** | Different statute, language, publisher |
+| RT-SEAM-18 | Ishigaki −54.7 % authoring time ⇒ skip Samolet review | **KILL** | Same human validation endpoint |
 
 ## 6. What this pass does not do
 

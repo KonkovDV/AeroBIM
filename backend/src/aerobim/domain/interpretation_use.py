@@ -418,6 +418,16 @@ LEDGER: tuple[InferenceRow, ...] = (
         "VLM advisory only; no sheet-level sign-off",
         "open_bench",
     ),
+    _row(
+        "IND-13",
+        "industry",
+        "Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR)",
+        "City-as-publisher pattern = RT-002a analog; not appointing-party EIR",
+        "Public permit IDS = Samolet-signed profile / Task 07 delivered",
+        "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
+        "Keep RT-002a and RT-002b unmixed",
+        "open_bench",
+    ),
 )
 
 
