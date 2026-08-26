@@ -107,8 +107,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
 - `SAM-06`: `python -m aerobim.tools.measure_package_sla`
 - `SAM-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
-- `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
-- `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md); cell map [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md); cell map [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
 - `TRK-01`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
 - `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)

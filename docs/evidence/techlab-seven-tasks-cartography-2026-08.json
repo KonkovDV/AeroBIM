@@ -1,0 +1,621 @@
+{
+  "claim_level": "coverage_map_only",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "detected_count": 0,
+  "checkpoint": "NO_GO",
+  "generated_at_utc": "2026-08-26T20:45:00Z",
+  "note": "Cartography of the seven TechLab comparison tasks onto a local NDA pack. Cells are filename/entity/property presence. Not TP/FP. Not remark-closure. NDA binaries, GUIDs, OEP remark bodies, OEP status literals, and design-TZ TEP square metres are not in this git twin. Exact workflow histograms live only in the gitignored local YAML.",
+  "four_state_legend": {
+    "Missing": "required carrier or property not on the pack (licensed finding about the export)",
+    "Uncertain": "cannot decide Meets/Does-not without gold / signed profile / dual raters",
+    "Meets": "FORBIDDEN for this rehearsal — no signed criterion",
+    "Does-not": "FORBIDDEN as a customer defect list — fixture IDS is a different construct"
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "name_ru": "ПД/РД ↔ АГО/АГР (планы, фасады, ТЭП)",
+      "solihin_class": "3+document",
+      "pack_is_pd_not_rd": true,
+      "four_state_for_criterion": "Uncertain",
+      "cells": [
+        {
+          "from": "AR sheet ciphers AR-01..09",
+          "to": "AR IFC sections 1-3",
+          "relation": "filename_coindex",
+          "state": "mapped_present"
+        },
+        {
+          "from": "AR-10..18",
+          "to": "AR IFC 4-8",
+          "relation": "filename_coindex",
+          "state": "mapped_present"
+        },
+        {
+          "from": "AR-19..27",
+          "to": "AR IFC 9-12",
+          "relation": "filename_coindex",
+          "state": "mapped_present"
+        },
+        {
+          "from": "AR-28..36",
+          "to": "AR IFC 13-16",
+          "relation": "filename_coindex",
+          "state": "mapped_present"
+        },
+        {
+          "from": "AR-37..44",
+          "to": "AR IFC 17 + 18-20",
+          "relation": "filename_coindex",
+          "state": "mapped_present"
+        },
+        {
+          "from": "AR-51..53 facades",
+          "to": "multiple AR IFC blocks",
+          "relation": "filename_multi_section",
+          "state": "mapped_present"
+        },
+        {
+          "from": "8 unciphered AR plans",
+          "to": "whole-building plans",
+          "relation": "filename_loose",
+          "state": "mapped_present"
+        },
+        {
+          "from": "KR PDF 79 sheets + DWG/DXF twins",
+          "to": "5 KR IFC files",
+          "relation": "same_discipline_same_house",
+          "state": "incomparable_without_protocol"
+        },
+        {
+          "from": "TEP areas in design TZ",
+          "to": "IfcSpace NetFloorArea",
+          "relation": "quantity",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "RD stage",
+          "to": "this pack",
+          "relation": "stage",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "pixel sheet vs model / AGR graphics",
+          "to": "engine",
+          "relation": "cv",
+          "state": "blocked_advisory_only"
+        }
+      ],
+      "counts": {
+        "ar_pdf": 61,
+        "ar_ciphers_unique": 53,
+        "kr_pdf": 79,
+        "dwg_per_ar_sheet": 61
+      },
+      "sam_typ": [
+        "SAM-TYP-005",
+        "SAM-TYP-012",
+        "SAM-TYP-013",
+        "SAM-TYP-014"
+      ],
+      "licensed_speech": "Sheet ciphers co-index with IFC section cuts. TEP not measurable.",
+      "forbidden_speech": "AGR/QTO signed off; task 1 closed"
+    },
+    {
+      "id": 2,
+      "name_ru": "ПД ↔ стандарты АПР/АТР и каталоги",
+      "solihin_class": "1-3",
+      "four_state_for_criterion": "Uncertain",
+      "cells": [
+        {
+          "from": "Standard 5.0 tree",
+          "to": "PD volumes",
+          "relation": "catalog_on_disk",
+          "state": "mapped_present"
+        },
+        {
+          "from": "EIR app.01 LOD workbook",
+          "to": "AR/KR/OV/VK/ITP/EOM/SS",
+          "relation": "requirement_workbook",
+          "state": "mapped_present"
+        },
+        {
+          "from": "EIR LOD",
+          "to": "compiled customer_approved IDS",
+          "relation": "ids",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "native RVT typical nodes",
+          "to": "ingest",
+          "relation": "format",
+          "state": "blocked_not_parsed"
+        }
+      ],
+      "sam_typ": [
+        "SAM-TYP-017",
+        "SAM-TYP-024"
+      ],
+      "licensed_speech": "Catalogs and EIR exist as files. Draft contour only.",
+      "forbidden_speech": "customer_approved IDS from Standard 5.0"
+    },
+    {
+      "id": 3,
+      "name_ru": "Планировки ОПР / ПД / РД между собой (оси, помещения, двери)",
+      "solihin_class": "2-3",
+      "four_state_for_criterion": "Uncertain",
+      "cells": [
+        {
+          "from": "IfcSpace on PD AR (package A, 6 files)",
+          "to": "room objects",
+          "relation": "entity",
+          "state": "mapped_present",
+          "count": 10599
+        },
+        {
+          "from": "NetFloorArea / QTO",
+          "to": "IfcSpace",
+          "relation": "quantity",
+          "state": "mapped_absent",
+          "count": 0
+        },
+        {
+          "from": "space name buckets",
+          "to": "apartment / mop / tech / code",
+          "relation": "name_heuristic",
+          "state": "mapped_present"
+        },
+        {
+          "from": "IfcGrid package A AR+KR",
+          "to": "axes",
+          "relation": "entity",
+          "state": "mapped_absent",
+          "count": 0
+        },
+        {
+          "from": "IfcGrid package B AR",
+          "to": "axes",
+          "relation": "entity",
+          "state": "mapped_present",
+          "count": 13
+        },
+        {
+          "from": "IfcDoor on PD AR package A",
+          "to": "doors",
+          "relation": "entity",
+          "state": "mapped_present",
+          "count": 9711
+        },
+        {
+          "from": "OPR model",
+          "to": "this pack",
+          "relation": "stage",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "RD IFC",
+          "to": "this pack",
+          "relation": "stage",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "KR IfcSpace",
+          "to": "rooms in structure model",
+          "relation": "entity",
+          "state": "mapped_absent",
+          "count": 0
+        }
+      ],
+      "sam_typ": [
+        "SAM-TYP-007",
+        "SAM-TYP-008",
+        "SAM-TYP-009",
+        "SAM-TYP-010",
+        "SAM-TYP-011",
+        "SAM-TYP-012"
+      ],
+      "licensed_speech": "PD AR has rooms and doors as objects; no area; no axes on package A; no RD.",
+      "forbidden_speech": "layouts verified across stages; areas checked"
+    },
+    {
+      "id": 4,
+      "name_ru": "Планировки ↔ ИРД / ТЗ / ТхЗ / МТЗ",
+      "solihin_class": "document",
+      "four_state_for_criterion": "Uncertain",
+      "cells": [
+        {
+          "from": "design TZ fire II / C0",
+          "to": "IfcWall FireRating",
+          "relation": "different_construct",
+          "state": "incomparable"
+        },
+        {
+          "from": "IfcWall FireRating when filled (package A AR)",
+          "to": "observed class",
+          "relation": "property",
+          "state": "mapped_present",
+          "observed": "EI 45 only",
+          "fill": "3538/62033"
+        },
+        {
+          "from": "IfcDoor FireRating valued sample",
+          "to": "observed classes",
+          "relation": "property",
+          "state": "mapped_present",
+          "observed": "EI30 / EI60 / EIS60"
+        },
+        {
+          "from": "IfcWindow AcousticRating",
+          "to": "property samples",
+          "relation": "property",
+          "state": "mapped_absent",
+          "count": 0
+        },
+        {
+          "from": "TEP apartment / GNS / public m2",
+          "to": "IfcSpace NetFloorArea",
+          "relation": "quantity",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "K0/K1/K2",
+          "to": "space efficiency",
+          "relation": "kpi",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "IRD-class PDFs in primary archive",
+          "to": "filename class GPZU/STU/TU/...",
+          "relation": "filename",
+          "state": "mapped_present"
+        },
+        {
+          "from": "deterministic extractor on TZ prose",
+          "to": "IDS specs",
+          "relation": "compile",
+          "state": "mapped_absent",
+          "count": 0
+        }
+      ],
+      "sam_typ": [
+        "SAM-TYP-001",
+        "SAM-TYP-002",
+        "SAM-TYP-003",
+        "SAM-TYP-004",
+        "SAM-TYP-008",
+        "SAM-TYP-023"
+      ],
+      "licensed_speech": "TZ lines vs export: which predicates have a property to read.",
+      "forbidden_speech": "layouts match TZ; fire class certified"
+    },
+    {
+      "id": 5,
+      "name_ru": "АР / КР / ПБ / ТХ / ИОС / ООС / ЭЭ между собой",
+      "solihin_class": "3+document",
+      "four_state_for_criterion": "Uncertain",
+      "cells": [
+        {
+          "from": "AR IFC",
+          "to": "architecture",
+          "relation": "carrier",
+          "state": "mapped_present"
+        },
+        {
+          "from": "KR IFC",
+          "to": "structure",
+          "relation": "carrier",
+          "state": "mapped_present"
+        },
+        {
+          "from": "PB / TX / OOS / EE",
+          "to": "IFC",
+          "relation": "carrier",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "PB / TX / IOS",
+          "to": "PDF volumes",
+          "relation": "carrier",
+          "state": "mapped_present"
+        },
+        {
+          "from": "IfcFlowTerminal inside AR IFC",
+          "to": "MEP system model",
+          "relation": "entity",
+          "state": "incomparable"
+        },
+        {
+          "from": "IfcFlowSegment / Duct / Pipe",
+          "to": "IOS IFC",
+          "relation": "entity",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "EIR LOD sheets OV/VK/ITP/EOM/SS",
+          "to": "federated MEP IFC",
+          "relation": "requirement_vs_model",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "AR↔KR generic clash",
+          "to": "delivered MEP clash",
+          "relation": "spatial",
+          "state": "blocked_rehearsal_only"
+        }
+      ],
+      "sam_typ": [
+        "SAM-TYP-006",
+        "SAM-TYP-019",
+        "SAM-TYP-020"
+      ],
+      "licensed_speech": "AR+KR IFC; other disciplines PDF; terminals ≠ IOS model.",
+      "forbidden_speech": "MEP delivered; federated clash delivered"
+    },
+    {
+      "id": 6,
+      "name_ru": "Повторная проверка ↔ выданные замечания",
+      "solihin_class": "process",
+      "four_state_for_criterion": "Uncertain",
+      "cells": [
+        {
+          "from": "package B unpacked PD before",
+          "to": "after",
+          "relation": "filename_section_counts",
+          "state": "mapped_present"
+        },
+        {
+          "from": "PD section 12",
+          "to": "before and after",
+          "relation": "filename",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "package A after-expertise",
+          "to": "loose before PDFs",
+          "relation": "stem_identity",
+          "state": "incomparable"
+        },
+        {
+          "from": "expertise letters",
+          "to": "calendar",
+          "relation": "filename_dates",
+          "state": "mapped_present"
+        },
+        {
+          "from": "OEP short status tokens",
+          "to": "workflow histogram",
+          "relation": "xlsx_cached_strings",
+          "state": "mapped_present"
+        },
+        {
+          "from": "OEP formula cells",
+          "to": "computed status",
+          "relation": "xlsx_xml",
+          "state": "mapped_absent"
+        },
+        {
+          "from": "dual raters + kappa",
+          "to": "gold",
+          "relation": "measurement",
+          "state": "mapped_absent"
+        }
+      ],
+      "sam_typ": [
+        "SAM-TYP-015"
+      ],
+      "licensed_speech": "After is thicker; letter calendar exists; OEP statuses partial; not closure.",
+      "forbidden_speech": "remarks closed; gold labels"
+    },
+    {
+      "id": 7,
+      "name_ru": "Армирование ↔ расчётные карты (плиты)",
+      "solihin_class": "4",
+      "four_state_for_criterion": "Uncertain",
+      "cells": [
+        {
+          "from": "IfcReinforcingBar",
+          "to": "all opened IFC",
+          "relation": "entity",
+          "state": "mapped_absent",
+          "count": 0
+        },
+        {
+          "from": "Pset_ReinforcementBarPitchOfWall",
+          "to": "KR walls",
+          "relation": "pset",
+          "state": "mapped_present"
+        },
+        {
+          "from": ".lir binaries",
+          "to": "ingest",
+          "relation": "format",
+          "state": "blocked_not_parsed"
+        },
+        {
+          "from": "pitch pset",
+          "to": "LIRA maps",
+          "relation": "class4_compare",
+          "state": "incomparable"
+        }
+      ],
+      "sam_typ": [
+        "SAM-TYP-021",
+        "SAM-TYP-022",
+        "SAM-TYP-025"
+      ],
+      "licensed_speech": "No bar entities to compare. Pitch ≠ proof of solution.",
+      "forbidden_speech": "rebar vs calc done; LIRA solved"
+    }
+  ],
+  "sam_typ_to_task": {
+    "SAM-TYP-001": [
+      4,
+      5
+    ],
+    "SAM-TYP-002": [
+      4
+    ],
+    "SAM-TYP-003": [
+      4
+    ],
+    "SAM-TYP-004": [
+      3,
+      4
+    ],
+    "SAM-TYP-005": [
+      1
+    ],
+    "SAM-TYP-006": [
+      5
+    ],
+    "SAM-TYP-007": [
+      3
+    ],
+    "SAM-TYP-008": [
+      3,
+      4
+    ],
+    "SAM-TYP-009": [
+      3
+    ],
+    "SAM-TYP-010": [
+      3
+    ],
+    "SAM-TYP-011": [
+      3
+    ],
+    "SAM-TYP-012": [
+      1,
+      3
+    ],
+    "SAM-TYP-013": [
+      1
+    ],
+    "SAM-TYP-014": [
+      1
+    ],
+    "SAM-TYP-015": [
+      6
+    ],
+    "SAM-TYP-016": [],
+    "SAM-TYP-017": [
+      2
+    ],
+    "SAM-TYP-018": [],
+    "SAM-TYP-019": [
+      5
+    ],
+    "SAM-TYP-020": [
+      5
+    ],
+    "SAM-TYP-021": [
+      7
+    ],
+    "SAM-TYP-022": [
+      7
+    ],
+    "SAM-TYP-023": [
+      4
+    ],
+    "SAM-TYP-024": [
+      2
+    ],
+    "SAM-TYP-025": [
+      7
+    ]
+  },
+  "artifact_type": "techlab_seven_tasks_cartography",
+  "schema_version": "1.0.1",
+  "date": "2026-08-26",
+  "redacted_for_git": true,
+  "packages": {
+    "A": "one PD house, 6 AR IFC + 5 KR IFC",
+    "B": "sister PD house, 1 AR + 1 KR IFC",
+    "C": "third house AR over 256 MiB cap, not analyzed"
+  },
+  "cell_histogram": {
+    "mapped_present": 23,
+    "incomparable_without_protocol": 1,
+    "mapped_absent": 19,
+    "blocked_advisory_only": 1,
+    "blocked_not_parsed": 2,
+    "incomparable": 4,
+    "blocked_rehearsal_only": 1
+  },
+  "cells_per_task": [
+    {
+      "id": 1,
+      "states": {
+        "mapped_present": 7,
+        "incomparable_without_protocol": 1,
+        "mapped_absent": 2,
+        "blocked_advisory_only": 1
+      },
+      "n_cells": 11
+    },
+    {
+      "id": 2,
+      "states": {
+        "mapped_present": 2,
+        "mapped_absent": 1,
+        "blocked_not_parsed": 1
+      },
+      "n_cells": 4
+    },
+    {
+      "id": 3,
+      "states": {
+        "mapped_present": 4,
+        "mapped_absent": 5
+      },
+      "n_cells": 9
+    },
+    {
+      "id": 4,
+      "states": {
+        "incomparable": 1,
+        "mapped_present": 3,
+        "mapped_absent": 4
+      },
+      "n_cells": 8
+    },
+    {
+      "id": 5,
+      "states": {
+        "mapped_present": 3,
+        "mapped_absent": 3,
+        "incomparable": 1,
+        "blocked_rehearsal_only": 1
+      },
+      "n_cells": 8
+    },
+    {
+      "id": 6,
+      "states": {
+        "mapped_present": 3,
+        "mapped_absent": 3,
+        "incomparable": 1
+      },
+      "n_cells": 7
+    },
+    {
+      "id": 7,
+      "states": {
+        "mapped_absent": 1,
+        "mapped_present": 1,
+        "blocked_not_parsed": 1,
+        "incomparable": 1
+      },
+      "n_cells": 4
+    }
+  ],
+  "n_cells": 51,
+  "four_state_histogram": {
+    "mapped_present": 23,
+    "mapped_absent": 19,
+    "incomparable": 5,
+    "blocked": 4
+  }
+}

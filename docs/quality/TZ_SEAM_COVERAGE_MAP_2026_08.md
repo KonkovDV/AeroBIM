@@ -4,7 +4,7 @@ title: "TZ seam coverage map — local NDA rehearsal × literature 2026-08-26"
 date: "2026-08-26"
 last_updated: "2026-08-26"
 status: active
-version: "1.1.0"
+version: "1.2.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -77,6 +77,8 @@ Completeness engine, pairing off, discipline codes PZ/AR/KR: **structural pass**
 
 ## 3. Seven comparison tasks × Solihin × 2026 benches
 
+Cell-level cartography (present / absent / incomparable / blocked): [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). That map does **not** close any task.
+
 | # | Task | Class | 2026 bench | Pack carrier | AeroBIM now | RT |
 |---|---|---|---|---|---|---|
 | 1 | PD/RD ↔ AGR | 3 + document | DrawingVQA; AEC-Bench intra-project; EGCC | PDF drawings present | Overlay on **fixture**; native DWG missing | 001 open |
@@ -132,6 +134,14 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-SEAM-16 | EGCC tiling +10.6 pp ⇒ VLM may approve sheets | **KILL** | Authors: not unsupervised; IFC/CAD not in that trial |
 | RT-SEAM-17 | Finland 2026 BIM permit ⇒ Task 07 delivered | **KILL** | Different statute, language, publisher |
 | RT-SEAM-18 | Ishigaki −54.7 % authoring time ⇒ skip Samolet review | **KILL** | Same human validation endpoint |
+| RT-CART-01 | Commit OEP status histogram / remark-class literals | **KILL** | Workbook strings stay in local twin; git = token class present |
+| RT-CART-02 | Commit design-TZ TEP m² | **KILL** | Fingerprints NDA TZ; git = TEP lines exist, QTO absent |
+| RT-CART-03 | 51 cells ⇒ seven tasks measured / Meets | **KILL** | Criterion Uncertain; `coverage_map_only` |
+| RT-CART-04 | AR-01…53 coindex ⇒ AGR/QTO signed off | **KILL** | Filename coindex ≠ sheet sign-off |
+| RT-CART-05 | Cartography in git ⇒ RT-001 CLOSED | **KILL** | Intake still blocked; no `pack_hash` in git |
+| RT-CART-06 | OEP tokens present ⇒ gold / remarks closed | **KILL** | One judge; κ absent |
+| RT-CART-07 | SAM-TYP matrix ⇒ `customer_confirmed_patterns>0` | **KILL** | Catalog still 0 |
+| RT-CART-08 | Pitch pset on the map ⇒ task 7 done | **KILL** | Same brake as RT-SEAM-06 |
 
 ## 6. What this pass does not do
 
