@@ -221,7 +221,7 @@ class LiveRegistrySmokeTests(unittest.TestCase):
         self.assertTrue(policy.get("require_author_signature_on_trusted_keys_dir"))
         self.assertEqual(
             str(policy.get("n59_enforced_after") or ""),
-            "caa305898ba6a27929cbbeac0018914228e4626a",
+            "a06d864f494840c2d796b68f6f4220b69bdebfac",
         )
 
     def test_private_path_gate_clean(self) -> None:

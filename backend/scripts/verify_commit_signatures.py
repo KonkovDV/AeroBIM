@@ -87,19 +87,21 @@ def _normalize_fpr(raw: str) -> str:
 def _commit_sig_rows(depth: int) -> list[tuple[str, str, str, str]]:
     """Return [(status, fingerprint, short_sha, subject), ...] newest first."""
 
+    # NUL fields: unsigned commits have empty %GF, and whitespace split would
+    # treat the short SHA as the fingerprint and the subject as the SHA.
     log = subprocess.check_output(
-        ["git", "log", f"-{depth}", "--pretty=format:%G? %GF %h %s"],
+        ["git", "log", f"-{depth}", "--pretty=format:%G?%x00%GF%x00%h%x00%s"],
         text=True,
         encoding="utf-8",
         errors="replace",
     )
     rows: list[tuple[str, str, str, str]] = []
     for line in log.splitlines():
-        text = line.strip()
+        text = line.strip("\r")
         if not text:
             continue
-        parts = text.split(None, 3)
-        status = parts[0]
+        parts = text.split("\0", 3)
+        status = parts[0] if parts else ""
         fpr = _normalize_fpr(parts[1] if len(parts) > 1 else "")
         short = parts[2] if len(parts) > 2 else ""
         subject = parts[3] if len(parts) > 3 else ""

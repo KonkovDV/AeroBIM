@@ -54,7 +54,7 @@
       "control": "Изменения governance/trusted_signing_keys только коммитом, уже подписанным author-trusted ключом",
       "mechanism": "verify_commit_signatures.py path+signature after n59_enforced_after",
       "state": "active",
-      "reason": "Activated 2026-08-26: commits after filter-repo cliff caa3058 that touch trusted_signing_keys must be author-trusted signed. Rewritten unsigned history is out of scope of the cliff.",
+      "reason": "Activated 2026-08-26: commits after filter-repo cliff a06d864 that touch trusted_signing_keys must be author-trusted signed. Rewritten unsigned history is out of scope of the cliff.",
       "activates_on": "2026-08-25",
       "owner": "KonkovDV",
       "policy_flags": [
