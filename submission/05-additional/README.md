@@ -1,8 +1,8 @@
 ---
 title: "Поле «Дополнительные материалы» — доказательства"
 status: active
-version: "1.0.7"
-last_updated: "2026-08-23"
+version: "1.0.8"
+last_updated: "2026-08-26"
 claim_boundary: >
   Supporting evidence index. Open benches and fixtures are not the customer
   корпус. Checkpoint NO_GO; RT-001/002/003 OPEN.
@@ -25,4 +25,4 @@ claim_boundary: >
 
 Открытые наборы и учебные комплекты — регрессия движка. В них нет разметки инженеров «Самолёта». Разбор шести столов (Техлаб, МИК, трекер, заказчик, жюри, оператор) — в [карточке речи](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md) и Interpretation/Use ledger.
 
-Нельзя выдавать за доказательство: снимок HTML 11.08 и `wall-guid/report.html`; локальный pytest как CI pin; письмо трекеру как факт git; ролик как «видео-демо» (в git есть `aerobim_kt2.pptx` / `aerobim_kt2.pdf`, mp4 нет и не появится); юрлицо, SAFE, оплаченный пилот.
+Нельзя выдавать за доказательство: снимок HTML 11.08 и `wall-guid/report.html`; локальный pytest как CI pin; письмо трекеру как факт git; ролик как «видео-демо» (в git есть `aerobim_kt2.pptx` / `aerobim_kt2.pdf`, mp4 нет и не появится); SAFE; уже оплаченный пилот. **ИП/юрлицо не требование входа в Техлаб** (FAQ: физлица или команда до 10) и не доказательство готовности продукта.

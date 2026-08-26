@@ -31,6 +31,8 @@ claim_boundary: >-
 | SAM-05 | samolet | Коллизии / MEP / «точность >90%» | Generic IfcClash на fixture; tiny-skip fail-closed; protocol TP/(TP+FP)≥0.60 | Customer clash precision; mep_system_clash=OK; TZ >90% | `protocol_planning` |
 | SAM-06 | samolet | SLA «до 30 минут» | measure_package_sla на согласованном fixture; StageBudget sum=30 min | Customer SLA / любой комплект Самолёта | `protocol_planning` |
 | SAM-07 | samolet | BCF замечания в СОД | BCF 2.1 ZIP export (структурный) | CDE import VERIFIED / T2 roundtrip | `fixture_demo` |
+| SAM-08 | samolet | ТР-16/19: площади помещений / чертёж↔IFC | 6 AR IFC: 10599 IfcSpace, 0 NetFloorArea; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
+| SAM-09 | samolet | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | 62033 walls; FireRating 5.7% EI45 only; not TZ II/C0 | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
 | TRK-01 | tracker | Задача 1: доработать продукт к КТ#2 (20.08) | IFC Acceptance Gate + HD fail-closed; live CLI; Checkpoint NO_GO | Checkpoint GO / market GO = customer GO | `fixture_demo` |
 | TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
 | TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
@@ -39,7 +41,8 @@ claim_boundary: >-
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
-| MIK-01 | mik | Соглашение / акт / финотчётность Фонда (M2, M7, M8) | Контур документирован; формы не сочиняем | Самодельные шаблоны Фонда; акт с fixture-цифрами | `not_licensed` |
+| TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
+| MIK-01 | mik | Соглашение / акт / финотчётность Фонда (M2, M7, M8) | Контур документирован; формы не сочиняем; 449-ПП ≠ вход в Техлаб | Самодельные шаблоны Фонда; акт с fixture-цифрами; ИП как вход | `not_licensed` |
 | MIK-02 | mik | Четырёхэтапная модель: доработка → валидация → внедрение | Стадия = доработка (КТ#2) | Валидация эффективности / внедрение как текущий факт | `operational_hygiene` |
 | IND-01 | industry | buildingSMART IDS 1.0 (final standard, 1 June 2024) | IDS checking (IfcTester) + IDS audit (XmlIdsDocumentAuditor / XSD 1.0) | IDS audit = checking = Samolet EIR; IDS 1.1 как approved standard | `engine_regression` |
 | IND-02 | industry | ISO 19650-2:2018 cl. 5.6–5.7 (review / authorize) | summary.passed = Shared-gate technical status (ADR-001) | Automated check replaces appointing-party authorization | `fixture_demo` |
@@ -51,6 +54,8 @@ claim_boundary: >-
 | IND-08 | industry | Clash management 2026 (Buildings 16(13):2623) + Mehrbod/Hu/Lin | Geometric overlap on fixture; mep_system_clash=NOT_VERIFIED | MEP delivered; AABB inventory as coordination-complete | `protocol_planning` |
 | IND-09 | industry | ISO 19650-6:2025 health and safety information | Not implemented; Shared-gate is 5.6-like control only (ADR-001) | ISO 19650 compliant / Part 6 delivered / 5.7 automated | `not_licensed` |
 | IND-10 | industry | buildingSMART IDS 1.1 (feedback 2026, not final) | IDS 1.0 remains the approved standard (1 June 2024) | IDS 1.1 as current standard / certified profile | `engine_regression` |
+| IND-11 | industry | EGCC 2026 (arXiv:2607.29058) constraint checking | False-pass 41-52%; authors: not for autonomous approval | EGCC % = AeroBIM on customer PD; autonomous approve | `open_bench` |
+| IND-12 | industry | DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets | Pros 94.9% vs Gemini-2.5-pro 71.7%; QTO weak | DrawingVQA as AeroBIM product accuracy / TZ task 1 done | `open_bench` |
 
 ## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
 
@@ -65,6 +70,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | SAM-05 | Корпус + ≥2 разметчика + κ/α; federated MEP + signed clearance (RT-003) |
 | SAM-06 | Замер на customer pack с corpus_kind=customer |
 | SAM-07 | Log + screenshot + hashes именованного CDE Самолёта |
+| SAM-08 | QTO area only after export with quantities or signed OOS |
+| SAM-09 | Customer IDS for fire class, not demo REI60 |
 | TRK-01 | КТ#3 — итоговое решение; победителей определяют заказчики |
 | TRK-02 | Повтор на customer packs, не на wall-fixture |
 | TRK-03 | Корпус ПД+экспертиза по-прежнему отсутствует |
@@ -73,6 +80,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | TRK-06 | Решение коммерции — вне кода |
 | TL-01 | КТ#3 03–21.09 — итоговое решение |
 | TL-02 | Замеры только после intake-gates |
+| TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
 | MIK-01 | VERIFY_WITH_OPERATOR до получения форм |
 | MIK-02 | Следующие этапы — после решения заказчиков на КТ#3 |
 | IND-01 | Customer IDS pack remains RT-002 |
@@ -85,6 +93,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | IND-08 | Signed clearance + federated customer IFC (RT-003) |
 | IND-09 | Do not claim Part 6; 5.7 stays human |
 | IND-10 | Stay on IDS 1.0 checking + audit split until 1.1 is final |
+| IND-11 | Four-state Meets/Missing/Uncertain; expert stays in the loop |
+| IND-12 | VLM advisory only; no sheet-level sign-off |
 
 ## Evidence pointers
 
@@ -95,6 +105,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
 - `SAM-06`: `python -m aerobim.tools.measure_package_sla`
 - `SAM-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
+- `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `TRK-01`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
 - `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)
@@ -103,6 +115,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
+- `TL-03`: [TECHLAB_TASK_07_READINESS_2026.md](../partners/TECHLAB_TASK_07_READINESS_2026.md)
 - `MIK-01`: [MIK_PILOT_COMPLIANCE_2026.md](../partners/MIK_PILOT_COMPLIANCE_2026.md)
 - `MIK-02`: [docs.md](../docs.md)
 - `IND-01`: [ids.xsd](../../samples/ids-xsd/ids.xsd)
@@ -115,3 +128,5 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `IND-08`: [federated-clash-planted-2026-08.md](../evidence/federated-clash-planted-2026-08.md)
 - `IND-09`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
 - `IND-10`: [ids.xsd](../../samples/ids-xsd/ids.xsd)
+- `IND-11`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `IND-12`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)

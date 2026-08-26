@@ -25,7 +25,7 @@ Authority: Самолёт ТЗ → контрактные критерии Те�
 | IDS machine checks | ТР IDS | openBIM | — | IfcTester fail-closed | **fixture OK** |
 | MEP system clash | ТР-15/53 | Gap | — | NOT_VERIFIED honesty | **RT-003 OPEN** |
 | Evidence protocols | Evidence bundle | — | M6 | export+verify | **L1 ready** |
-| Fund agreement / finance | — | — | M2/M8 | — | **VERIFY_WITH_OPERATOR** |
+| Fund agreement / finance | — | Paid-pilot prize; Partner↔Fund agreement | M2/M8 if operator asks | — | **VERIFY_WITH_OPERATOR** (not an entry ИП gate) |
 | Site act | — | — | M7 | Appendices ready | **BLOCKED_CUSTOMER** |
 | Drawing overlay | TZ UI | — | — | Smoke PNG + panel | **L1 ready (not CV)** |
 | Clash measure | TZ accuracy | — | — | AABB n=6 fixture | **L1 only** |

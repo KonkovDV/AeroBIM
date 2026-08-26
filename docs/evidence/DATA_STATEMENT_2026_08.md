@@ -2,8 +2,8 @@
 ---
 title: "Data availability statement — AeroBIM corpora (16.08.2026)"
 status: active
-version: "1.0.1"
-last_updated: "2026-08-18"
+version: "1.0.2"
+last_updated: "2026-08-26"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -42,6 +42,7 @@ Not in GitHub. Not a substitute for RT-001.
 | Moscow AGR city example IFCs | city ToS; `.local/` only | pin + class-1 exchange / IDS rehearsal | PD pack; RT-001; `inject_defects` |
 | Ishigaki-IDS-Bench | CC BY 4.0 | 166/166 gold XML processable; **no real IFC** | paper LLM F1 as product accuracy |
 | DrawingVQA | questions CC BY-NC-SA 4.0; drawings not public | **not downloaded** | MIT-tree vendoring |
+| Owner-disk NDA pack (gitignored) | NDA; **not in git** | coverage map: 10599 IfcSpace / 0 NetFloorArea; FireRating 5.7 % EI 45 | dual raters; κ; signed IDS; MEP IFC; rebar IFC |
 
 GPLv3 IFC-Bench projects may be read locally with `--samolet-demo-copyleft`. They are **not** redistributed.
 
@@ -49,7 +50,7 @@ GPLv3 IFC-Bench projects may be read locally with `--samolet-demo-copyleft`. The
 
 | Missing object | Status | Closes |
 |---|---|---|
-| RF PD/RD + IFC + expertise conclusion, same revision | **not found** in public hunt 15–16.08 | RT-001 stays OPEN |
+| RF PD/RD + IFC + expertise conclusion, same revision, **in git with dual labels** | public hunt empty; local NDA is coverage_map_only | RT-001 stays OPEN |
 | Samolet-signed IDS / rule pack + `approval_ref` / `pack_hash` | unsigned v0.1 only | RT-002 stays OPEN |
 | Dual-expert TP/FP labels on that pack | protocol ready (`plan_adjudication_corpus` n=111 for interim 0.60); **zero labeled points** | efficiency = not measured |
 | Federated MEP system-clash on customer IFC | public inventory exists; `mep_system_clash=NOT_VERIFIED` | RT-003 stays OPEN |
@@ -59,7 +60,7 @@ Ask to obtain (1)–(4): independent labeled pack, two named raters, Samolet-sig
 
 ## 4. Ethics / PII
 
-Stamp/title-block pixels are not sent to cloud VLM (PII clip). Customer files, if they arrive, stay under NDA outside git — not this git tree.
+Stamp/title-block pixels are not sent to cloud VLM (PII clip). Customer files, if they arrive, stay under NDA outside git — not this git tree. Local rehearsal counts: [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md).
 
 ## 5. How to reproduce what **is** public
 

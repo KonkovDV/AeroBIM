@@ -5,7 +5,7 @@
 ---
 title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
 status: active
-version: "1.3.1"
+version: "1.3.3"
 last_updated: "2026-08-26"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
@@ -14,10 +14,11 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 
 **Official task:** Система автоматизированной верификации проектной и рабочей документации — **задаче Самолёта по верификации ПД/РД**  
 **Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site.  
-**Prize:** paid pilot testing fund **2 000 000 ₽**  
+**Prize:** paid pilot testing **2 000 000 ₽** (Partner↔Fund agreement; not a 449-PP entry grant)  
 **Task page:** https://i.moscow/techlab/samolet  
+**Eligibility (official FAQ, 26.08.2026):** individuals or a team of **1–10**, age 18+. **ИП/ООО is not an entry requirement.** Captain files the application on i.moscow.  
 **Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
-**26.08.2026 owner-disk rehearsal:** IFC analyze with **fixture** IDS/rules does not change the table below. Not a customer defect list. `detected_count` stays 0. Intake remains `BLOCKED_NO_CUSTOMER_DATA`.  
+**26.08.2026 owner-disk rehearsal:** IFC analyze with **fixture** IDS/rules does not change the table below. Not a customer defect list. `detected_count` stays 0. Intake remains `BLOCKED_NO_CUSTOMER_DATA`. Seam coverage map (spaces without QTO area; FireRating sparse / EI 45 ≠ design-TZ II/C0): [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md).  
 **МИК stage:** **доработка** (КТ#3 открывается 03.09). Валидация эффективности и внедрение **не начаты**. Показ: [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md).  
 **Eng status (Aug 2026):** IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md).  
 **Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
@@ -127,7 +128,7 @@ Still blocked: RT-001/002/003 (customer corpus / approved norms / MEP).
 
 Primary handoff document: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).
 
-1. TechLab pilot budget (**2 000 000 ₽**) + named Samolet owner  
+1. Named Samolet owner for the **paid-pilot** prize (2 000 000 ₽). Payment mechanics live in a Partner↔Fund agreement — **not** «open an ИП to enter TechLab».  
 2. One residential (or agreed) document package + IDS/rule pack + typical-error list (≥20)  
 3. Week-1 CDE import path + **two** adjudicating engineers + manual baseline hours  
 4. Written scope memo: norms = **agreed rule sets**; IDS ≠ geometry; CV not MVP sign-off  
@@ -148,6 +149,7 @@ Primary handoff document: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_ACCEPTA
 - Autonomous sign-off  
 - Clash/inconsistency accuracy **>90%** without labeled adjudication  
 - “True CV” as the pilot sign-off path (OCR baseline only)
+- That TechLab participation requires a legal entity / ИП (FAQ: individuals or team ≤10)
 
 ## Drawing AI posture (retained local SSOT)
 

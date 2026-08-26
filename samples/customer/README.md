@@ -5,9 +5,11 @@ are ignored by git except this README.
 
 Do **not** commit IFC, drawings, or labels from Samolet / customer pilots.
 
-Share channel received 2026-08-25 (NDA). The locator is **not** stored in this public tree after the 25.08 Red Team pass. Owner keeps it outside git.
+Share channel received 2026-08-25 (NDA). The locator is **not** in this public tree after the 25.08 Red Team pass and the 26.08 history rewrite of `main`. Owner keeps any locator outside git.
 
-Owner downloads locally (`.local/samolet/` or gitignored `files/`). A URL does **not** flip intake gates.
+Owner downloads locally (gitignored `files/`). A URL does **not** flip intake gates.
+
+**26.08 owner:** rotating the old share locator and asking GitHub to purge rewritten SHAs are **not open checklist items**. This does not assert that an old URL returns 404, and it does not close RT-001.
 
 ## Checklist before flipping intake gates
 

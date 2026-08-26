@@ -2,8 +2,8 @@
 ---
 title: "TechLab Samolet Application 2026"
 status: active
-version: "1.1.0"
-last_updated: "2026-07-10"
+version: "1.1.1"
+last_updated: "2026-08-26"
 tags: [aerobim, techlab, samolet, application]
 ---
 
@@ -12,7 +12,8 @@ tags: [aerobim, techlab, samolet, application]
 **Partner:** Samolet (Московский инновационный кластер / TechLab)  
 **Task:** Система автоматизированной верификации проектной и рабочей документации — **задаче Самолёта по верификации ПД/РД**  
 **Task page:** https://i.moscow/techlab/samolet  
-**Prize:** платное пилотное тестирование **2 000 000 ₽**  
+**Prize:** платное пилотное тестирование **2 000 000 ₽** (условия — соглашение Партнёра и Фонда)  
+**Eligibility:** FAQ i.moscow/techlab — физлица или команда 1–10; **ИП не требуется для участия**.  
 **Readiness / claims:** [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md)  
 **Readiness memo:** [`TECHLAB_TASK_07_READINESS_2026.md`](TECHLAB_TASK_07_READINESS_2026.md)  
 **Alignment:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md)  

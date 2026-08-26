@@ -2,8 +2,8 @@
 ---
 title: "Трёхисточниковая матрица требований: Самолёт × Техлаб × МИК"
 status: active
-version: "1.1.0"
-last_updated: "2026-08-17"
+version: "1.2.0"
+last_updated: "2026-08-26"
 claim_boundary: "Матрица трассирует требования, не повышает статусы: fixture ≠ customer; Checkpoint NO_GO до RT-001/002/003."
 tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 ---
@@ -19,8 +19,8 @@ tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 | Сторона | Роль | Чего требует | Канонический документ ответа |
 |---|---|---|---|
 | **Самолёт** | Заказчик-площадка | Функциональность (ТР-1..62), KPI качества, данные/эксперты со своей стороны | [`TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) + [`TZ_COMPLIANCE_MATRIX_2026.md`](TZ_COMPLIANCE_MATRIX_2026.md) |
-| **Техлаб** | Программа отбора (жюри) | Заявка, MVP-демо, честные формулировки, критерии пилота на 2 млн ₽ | [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md) + [`../partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
-| **МИК (Фонд)** | Оператор/грантодатель | Соглашение, программа испытаний, план-график, акт результатов, финотчётность | [`../partners/MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md) |
+| **Техлаб** | Программа отбора (жюри) | Заявка, MVP-демо, честные формулировки; участие — физлица / команда ≤10 | [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md) + [`../partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
+| **МИК (Фонд)** | Оператор программы | Формы соглашения/акта **если** потребует оператор; не грантодатель входа в Техлаб | [`../partners/MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md) |
 | **Отрасль** | Нормы openBIM / приёмки | IDS 1.0, ISO 19650-2 5.7, Solihin 1–4, ПНСТ 909 | [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) IND-* |
 | **Трекер** | Операционный спринт к КТ#2 | 6 задач 14.08 ~15:26 | [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md) · ledger TRK-* |
 
@@ -39,9 +39,9 @@ PARTIAL · BLOCKED_CUSTOMER_DATA · VERIFY_WITH_OPERATOR · OUT (заявлен�
 | BCF → СОД | ТР-52-смежное | «виден в СОД» | Доказательство результата | T0/T1 DONE; T2 BLOCKED | Sandbox СОД / Самолёт (до 20.08) |
 | Каталог ≥20 ошибок | Приложение 5 | критерий пилота | Подтверждение площадки | PARTIAL (synthetic scaffold) | customer_confirmed / Самолёт |
 | Программа испытаний + план-график | — | — | **Ключевой артефакт Фонда** | PROTOCOL_READY (наш календарь КТ); формы Фонда **не получены** | Формы Фонда / **МИК — слот до 3 авг просрочен 15.08** |
-| Соглашение + финотчётность 2 млн ₽ | — | — | Обязательно | **VERIFY_WITH_OPERATOR** | Шаблоны / **МИК** |
+| Соглашение + финотчётность 2 млн ₽ | — | Приз = платный пилот (соглашение Партнёр↔Фонд) | Не вход в программу; 449-ПП отдельно | **VERIFY_WITH_OPERATOR** | Шаблоны / **МИК**; не требовать ИП для участия |
 | Акт о результатах пилота | подпись эксперта | итог пилота | Закрывающий документ | BLOCKED_CUSTOMER_DATA (приложения готовы) | Подписанты обеих сторон |
-| Честность формулировок | Claims Lock §12 ТЗ | «Do not claim» список | Публичность гранта | DONE (enforced fail-closed) | Ревью любых публичных текстов |
+| Честность формулировок | Claims Lock §12 ТЗ | «Do not claim» список; не требовать юрлицо для входа | Публичность *если* в соглашении Фонда | DONE (enforced fail-closed) | Ревью любых публичных текстов |
 | Ограничения (DWG/MEP/calc/CV) | ТР-53 | заявлены в анкете | В программу испытаний — как out-of-scope | DONE (gap-анализ) | — |
 
 ## Конфликты источников (разрешение зафиксировано)

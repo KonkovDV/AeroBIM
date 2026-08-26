@@ -2,8 +2,8 @@
 ---
 title: "Samolet TechLab Alignment 2026 (Academic)"
 status: active
-version: "1.2.2"
-last_updated: "2026-08-16"
+version: "1.2.3"
+last_updated: "2026-08-26"
 tags: [aerobim, samolet, techlab, openBIM, academic, traceability]
 claim_boundary: "Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ product accuracy."
 ---
@@ -20,7 +20,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 ## 1. Customer mandate (official task page)
 
 **Title:** Система автоматизированной верификации проектной и рабочей документации (Задача 07).  
-**Prize:** платное пилотное тестирование **2 000 000 ₽**.  
+**Prize:** платное пилотное тестирование **2 000 000 ₽** (соглашение Партнёр↔Фонд; не грант 449-ПП и не «сначала ИП»).  
 **Direction:** прикладной ИИ · Competencies: BIM/CAD, Computer Vision/OCR, AI/ML · Stack: at team discretion.
 
 **Samolet** (via Moscow Innovation Cluster **TechLab**) requests a **reviewer-assist MVP** that:
