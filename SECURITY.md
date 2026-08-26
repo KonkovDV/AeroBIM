@@ -111,7 +111,7 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 - Backend image base is digest-pinned (`python:3.12-slim@sha256:…`); CI/Docker install from hashed locks via `pip install --require-hashes` (pip/uv bootstrap pin residual only). Core PDF path is pypdfium2 + pdfminer.six; optional `pdf-agpl` PyMuPDF is **not** in the runtime lock or production image.
 - Duplicate / oversized / smuggled `Authorization` headers are rejected with HTTP 401 before token parsing.
 - PDF preview/raster of untrusted uploads remains a residual host risk (timeouts/page caps apply; sandbox not yet shipped).
-- Security regression battery is exercised in CI job `security-regression` (engineering only; not a production multi-tenant certification). See `audit/reports/SECURITY_AUDIT_2026_07_31.md`.
+- Security regression battery is exercised in CI job `security-regression` (engineering only; not a production multi-tenant certification). See `docs/security/PILOT_THREAT_MODEL_2026_07.md`.
 - Storage path resolution rejects symlinks and path escapes under `AEROBIM_STORAGE_DIR`; report JSON reads use `open_storage_file` (POSIX `O_NOFOLLOW` when available). ZIP path inspect streams via `ZipFile(path)` without `read_bytes`; members with `..` or absolute paths are rejected (including BCF consumers via `inspect_zip_bytes`).
 - IFC **analyze** inputs larger than `AEROBIM_MAX_IFC_BYTES` (default 256 MiB) are rejected with HTTP 413; frontend WASM IFC memory is capped at 256 MiB. Samolet-stated ingest (500 MB office / 1.5 GB models) is a separate upload envelope and does not raise the analyze or WASM cap.
 - Optional validation engines publish `report.capabilities` so silent empty clash/IDS results cannot look like PASS.

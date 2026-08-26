@@ -851,7 +851,7 @@ jobs:
               "production multi-tenant security certification",
               "penetration test complete",
             ],
-            "note": "Mirrors local security battery; see audit/reports/SECURITY_AUDIT_2026_07_31.md",
+            "note": "Mirrors local security battery; see docs/security/PILOT_THREAT_MODEL_2026_07.md",
           }
           (out / "run_manifest.json").write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n",

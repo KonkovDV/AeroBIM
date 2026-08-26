@@ -134,6 +134,7 @@ _KITCHEN_TOKENS = (
 _KITCHEN_SCAN_ROOTS = (
     _REPO / "README.md",
     _REPO / "README.ru.md",
+    _REPO / "SECURITY.md",
     _REPO / "docs",
     _REPO / "submission",
     _REPO / "samples",
