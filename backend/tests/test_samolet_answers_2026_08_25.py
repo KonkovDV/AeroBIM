@@ -129,6 +129,8 @@ class RemarkShapeTests(unittest.TestCase):
         self.assertIn("пункт нормы не привязан", ru.body)
         self.assertIn("Локация:", ru.body)
         self.assertIn("GUID guid-1", ru.body)
+        self.assertIn("этаж: нет в пространственном индексе", ru.body)
+        self.assertIn("ось: нет в пространственном индексе", ru.body)
         self.assertIn("не менее", ru.body)
 
         bound = ValidationIssue(
@@ -174,6 +176,8 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertNotIn("share_url", payload)
         self.assertEqual(payload["checkpoint"], "NO_GO")
         self.assertEqual(payload["native_rvt_nwd"], "not_implemented")
+        self.assertEqual(payload["peak_packs_per_day_mvp"], "5-10")
+        self.assertIn("IfcSpatialIndex", str(payload["remark_shape"]))
         self.assertEqual(payload["native_dwg"], "not_implemented")
         self.assertEqual(payload["native_lir"], "not_implemented")
         self.assertEqual(payload["team_brief_received_at"], "2026-08-26")

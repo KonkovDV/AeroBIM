@@ -2,8 +2,8 @@
 ---
 title: "КТ#2 — пакет подачи (Техлаб Москва, задаче Самолёта по верификации ПД/РД)"
 status: active
-version: "1.1.5"
-last_updated: "2026-08-25"
+version: "1.1.6"
+last_updated: "2026-08-27"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
   evaluation targets, not AeroBIM measurements. Checkpoint NO_GO;

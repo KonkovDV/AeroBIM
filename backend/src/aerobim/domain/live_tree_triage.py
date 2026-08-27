@@ -2,6 +2,7 @@
 
 Pass 1: TZ v1 / inject_defects / kitchen tokens.
 Pass 2: KT#3 jury CLI, tracker six tasks, unsigned OOS, owner inventory.
+Pass 3: OOS manifest gate, remark storey/axis from IfcSpatialIndex, packs/day not SLA.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -102,6 +103,24 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Write files/ names or hashes into docs/ or samples/",
         "brake": "require_local_only_output; public rehearsal names_in_git False",
+    },
+    {
+        "id": "RT-OOS-MANIFEST",
+        "verdict": "KILL",
+        "attack": "Leave samples/oos on disk but omit them from DATASET_MANIFEST",
+        "brake": "test_samples_manifest_gate; export_samples_manifest --merge-missing",
+    },
+    {
+        "id": "RT-REMARK-LOC",
+        "verdict": "KILL",
+        "attack": "Invent storey/axis from OCR, target_ref, or LLM text",
+        "brake": "TemplateRemarkGenerator uses ValidationIssue.storey_name/grid_axis from IfcSpatialIndex",
+    },
+    {
+        "id": "RT-PACKS-SLA",
+        "verdict": "KILL",
+        "attack": "Treat customer-stated 5-10 packs/day as a measured SLA",
+        "brake": "peak_packs_per_day_mvp is a stated string; benchmark-thresholds publishable_sla false",
     },
     {
         "id": "RT-SEAM-HOLD",

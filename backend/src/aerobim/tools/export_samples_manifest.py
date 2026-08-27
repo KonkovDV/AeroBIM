@@ -111,6 +111,24 @@ def _entry(path: Path) -> dict[str, object]:
             ),
             redistribution="redistributed as published; see samples/xsd/minstroy/SOURCE.md",
         )
+    if rel.startswith("oos/"):
+        return {
+            "path": rel,
+            "sha256": _sha256(path),
+            "bytes": path.stat().st_size,
+            "provenance": "project_authored_fixture",
+            "source": (
+                "unsigned appointing-party out-of-scope templates; empty signer; "
+                "does not close RT-001/002/003 and never writes summary.passed"
+            ),
+            "license_status": "repo_mit",
+            "attribution_required": False,
+            "redistribution": "allowed under repo MIT",
+            "production_use": (
+                "fixture only; never customer evidence; unsigned file does not license skip"
+            ),
+            "personal_data": False,
+        }
     if rel.startswith("profiles/spb-cge/"):
         return {
             "path": rel,
@@ -165,14 +183,22 @@ def _refresh_hash(entry: dict[str, object], path: Path) -> dict[str, object]:
     return out
 
 
-def merge_missing_into(existing: dict[str, object]) -> dict[str, object]:
+def merge_missing_into(
+    existing: dict[str, object],
+    *,
+    refresh_existing: bool = False,
+    refresh_paths: frozenset[str] | None = None,
+) -> dict[str, object]:
     """Add on-disk samples files that are not listed. Preserve existing rows.
 
     Full rebuild would reset vendored buildingSMART rows to review_pending and
-    break the CC BY-ND gate. Merge-only is the honest local fix. Hashes of
-    already-listed files are refreshed so the gate matches the worktree.
+    break the CC BY-ND gate. Default merge does **not** refresh hashes of
+    already-listed files: on a Windows CRLF worktree ``bytes`` would drift vs
+    Linux CI. Pass ``refresh_existing`` or ``refresh_paths`` only when the
+    listed file content actually changed.
     """
 
+    extra = refresh_paths or frozenset()
     files_raw = existing.get("files")
     if not isinstance(files_raw, list):
         raise ValueError("manifest files must be a list")
@@ -187,7 +213,7 @@ def merge_missing_into(existing: dict[str, object]) -> dict[str, object]:
         if rel in by_path:
             if rel.startswith("profiles/spb-cge/"):
                 by_path[rel] = _entry(path)
-            else:
+            elif refresh_existing or rel in extra:
                 by_path[rel] = _refresh_hash(by_path[rel], path)
             continue
         by_path[rel] = _entry(path)
@@ -231,12 +257,23 @@ def main() -> None:
         action="store_true",
         help="Keep existing rows (including CC BY-ND vendored schemas) and add missing files",
     )
+    parser.add_argument(
+        "--refresh-existing-hashes",
+        action="store_true",
+        help=(
+            "With --merge-missing, also rewrite sha256/bytes of already-listed "
+            "files. Do not use on a CRLF worktree if CI is LF."
+        ),
+    )
     args = parser.parse_args()
     if args.merge_missing and args.out.is_file():
         loaded = json.loads(args.out.read_text(encoding="utf-8"))
         if not isinstance(loaded, dict):
             raise ValueError("existing manifest must be a JSON object")
-        payload = merge_missing_into(loaded)
+        payload = merge_missing_into(
+            loaded,
+            refresh_existing=args.refresh_existing_hashes,
+        )
     else:
         payload = build_manifest()
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

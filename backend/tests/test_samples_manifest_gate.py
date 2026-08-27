@@ -51,9 +51,43 @@ def test_every_samples_file_is_listed_and_hashes_match() -> None:
     assert not stale, f"manifest entries without files: {stale[:10]}"
     drift = [rel for rel, path in on_disk.items() if entries[rel]["sha256"] != _sha256(path)]
     assert not drift, (
-        "manifest hash drift (regenerate: python -m aerobim.tools.export_samples_manifest): "
+        "manifest hash drift (regenerate: python -m aerobim.tools.export_samples_manifest "
+        "--merge-missing): "
         f"{drift[:10]}"
     )
+
+
+def test_unsigned_oos_templates_are_listed() -> None:
+    entries = _entries()
+    for rel in (
+        "oos/README.md",
+        "oos/mep_federated.unsigned.json",
+        "oos/qto_space_area.unsigned.json",
+        "oos/rebar_class4.unsigned.json",
+    ):
+        assert rel in entries, rel
+        assert "never customer evidence" in str(entries[rel]["production_use"])
+        assert "does not close RT-001/002/003" in str(entries[rel]["source"])
+
+
+def test_merge_missing_does_not_refresh_existing_by_default() -> None:
+    from aerobim.tools.export_samples_manifest import merge_missing_into
+
+    loaded = _manifest()
+    files = loaded["files"]
+    assert isinstance(files, list)
+    marker = "deadbeef" * 8
+    target = "agr/dgp/SOURCE.md"
+    found = False
+    for item in files:
+        if isinstance(item, dict) and item.get("path") == target:
+            item["sha256"] = marker
+            found = True
+            break
+    assert found, target
+    merged = merge_missing_into(loaded, refresh_existing=False)
+    by_path = {str(e["path"]): e for e in merged["files"] if isinstance(e, dict) and e.get("path")}
+    assert by_path[target]["sha256"] == marker
 
 
 def test_vendored_buildingsmart_schemas_carry_attribution() -> None:

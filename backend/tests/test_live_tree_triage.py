@@ -26,6 +26,10 @@ class LiveTreeTriageTests(unittest.TestCase):
             len(TRIAGE_ROWS),
         )
         self.assertGreaterEqual(snap["kill_count"], 6)
+        ids = {row["id"] for row in TRIAGE_ROWS}
+        self.assertIn("RT-REMARK-LOC", ids)
+        self.assertIn("RT-PACKS-SLA", ids)
+        self.assertIn("RT-OOS-MANIFEST", ids)
 
     def test_ids_unique_and_verdicts_known(self) -> None:
         ids = [row["id"] for row in TRIAGE_ROWS]

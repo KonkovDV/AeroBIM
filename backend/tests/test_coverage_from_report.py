@@ -245,6 +245,8 @@ class CoverageFromReportTests(unittest.TestCase):
         )
         mep_gap = next(g for g in payload["tz_gaps"] if g["gap_id"] == "mep_system_clash")
         self.assertEqual(mep_gap["status"], "not_checked")
+        solver_gap = next(g for g in payload["tz_gaps"] if g["gap_id"] == "calculation_solver")
+        self.assertEqual(solver_gap["status"], "not_checked")
         row = next(r for r in payload["sources"] if r["source_id"] == "model.ifc")
         spatial = row["operator_status"].get("spatial", "not_checked")
         self.assertNotEqual(spatial, "no_findings")

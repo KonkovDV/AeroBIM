@@ -93,6 +93,16 @@ TZ_GAP_ROWS: tuple[dict[str, str], ...] = (
         ),
         "tz_matrix": "§2 целевые задачи / space efficiency",
     },
+    {
+        "gap_id": "calculation_solver",
+        "label": "Решатель LIRA / расчётная корректность",
+        "status": "not_checked",
+        "reason": (
+            "Самолёт 25.08: сверка объявленных PDF/Excel с РД/BIM, не solver; "
+            "native LIR NOT_IMPLEMENTED; calculation_correctness=NOT_IMPLEMENTED"
+        ),
+        "tz_matrix": "§3.2 vs calculation results / ТР-13",
+    },
 )
 
 
@@ -154,7 +164,7 @@ def presentation_status_for(status: CoverageStatus) -> str:
 
 
 def tz_gap_rows_for_report(report: ValidationReport | None = None) -> list[dict[str, str]]:
-    """Four TZ-matrix gaps as explicit not_checked rows (WP-R4)."""
+    """TZ-matrix gaps as explicit not_checked rows (WP-R4 + 25.08 honesty)."""
     _ = report  # reserved for future per-report gap nuance; gaps stay not_checked until RT-003+
     return [dict(row) for row in TZ_GAP_ROWS]
 

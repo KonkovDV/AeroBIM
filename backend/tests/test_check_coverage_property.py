@@ -120,7 +120,7 @@ class CheckCoverageHypothesisTests(unittest.TestCase):
         from aerobim.domain.check_coverage import tz_gap_rows_for_report
 
         rows = tz_gap_rows_for_report()
-        self.assertEqual(len(rows), 5)
+        self.assertEqual(len(rows), 6)
         for row in rows:
             self.assertEqual(row["status"], "not_checked")
             self.assertTrue(str(row.get("reason") or "").strip())

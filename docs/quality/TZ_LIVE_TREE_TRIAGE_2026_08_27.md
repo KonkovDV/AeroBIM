@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-27"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс второй проход (КТ#3 / трекер / OOS / инвентарь). Не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс второй проход (КТ#3 / трекер / OOS / инвентарь) и третий (манифест OOS, локация замечания, 5–10 комплектов/день). Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -41,6 +41,9 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-TRK-GO | `agent_done_count` = шесть задач закрыты у заказчика | `owner_blocked_count≥4`; NO_GO |
 | RT-OOS-01 | Unsigned OOS = skip / signed OOS = RT CLOSED | `evaluate_oos` |
 | RT-INV-01 | Имена/хэши `files/` в `docs/` | `require_local_only_output` |
+| RT-OOS-MANIFEST | `samples/oos` на диске, но нет в `DATASET_MANIFEST` | `test_samples_manifest_gate` |
+| RT-REMARK-LOC | Этаж/ось из OCR или LLM | `IfcSpatialIndex` + шаблон «нет в индексе» |
+| RT-PACKS-SLA | «5–10 комплектов/день» как замер SLA | `publishable_sla=false` в порогах |
 
 ## HOLD (не чиним в этом коммите)
 

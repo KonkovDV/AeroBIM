@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-24T19:59:35.881765+00:00",
+  "generated_at": "2026-08-27T10:59:15.588180+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 879,
+  "file_count": 884,
   "vendored_count": 15,
   "files": [
     {
@@ -316,8 +316,8 @@
     },
     {
       "path": "benchmarks/README.md",
-      "sha256": "93291c1578a8d0a3335ef7c0edee9c2e339dd6d19f2641326d747d4629aaf070",
-      "bytes": 2487,
+      "sha256": "4e7c79583d0423246232a54c4c4198bea4eb773caba0331cb8ba6508a0d57cbf",
+      "bytes": 2668,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -364,8 +364,8 @@
     },
     {
       "path": "benchmarks/benchmark-thresholds.json",
-      "sha256": "a5718d7e7fbb4b891d6dc43618882fa09363ad3f12bb24cf419d7ef2fdbe3c68",
-      "bytes": 1109,
+      "sha256": "bf02498ceccfd603afb5564317d548e558fada4896ad9af661172d198b6a81a7",
+      "bytes": 1407,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -940,8 +940,8 @@
     },
     {
       "path": "benchmarks/samolet-typical-errors-catalog.json",
-      "sha256": "2a368ab7fdf70ea2e807f3752497d55651b25770b36b16370e15e714f9b4c378",
-      "bytes": 13529,
+      "sha256": "0c02fa4beeab50e1bcbbb3b55ecb3b79a3ba85814d99dd6e11b81092f2744414",
+      "bytes": 14167,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -1264,8 +1264,8 @@
     },
     {
       "path": "customer/README.md",
-      "sha256": "becbef3c212a8088cbf63062e52dc9f5d2399bffcebb59081df659e3fd906e40",
-      "bytes": 776,
+      "sha256": "3fd9ba42e5f43bd726367cb36ae1641ba43767069cda954d667bbe91ea6a4cf1",
+      "bytes": 1002,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -9763,6 +9763,54 @@
       "personal_data": false
     },
     {
+      "path": "oos/README.md",
+      "sha256": "3b4ab677668fe550e3c89598b99c5dcda9c6eb150b804979bfd75be0ab7f5884",
+      "bytes": 465,
+      "provenance": "project_authored_fixture",
+      "source": "unsigned appointing-party out-of-scope templates; empty signer; does not close RT-001/002/003 and never writes summary.passed",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence; unsigned file does not license skip",
+      "personal_data": false
+    },
+    {
+      "path": "oos/mep_federated.unsigned.json",
+      "sha256": "bf90eaf7a742fbb993cd1bf8160aeb0e340bc60ab3f8ee7d164e1a7af713530e",
+      "bytes": 325,
+      "provenance": "project_authored_fixture",
+      "source": "unsigned appointing-party out-of-scope templates; empty signer; does not close RT-001/002/003 and never writes summary.passed",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence; unsigned file does not license skip",
+      "personal_data": false
+    },
+    {
+      "path": "oos/qto_space_area.unsigned.json",
+      "sha256": "9e9bb9f3c419b17f2244738e12d6013205897bf12b0c6b7c07353d09d696e3df",
+      "bytes": 322,
+      "provenance": "project_authored_fixture",
+      "source": "unsigned appointing-party out-of-scope templates; empty signer; does not close RT-001/002/003 and never writes summary.passed",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence; unsigned file does not license skip",
+      "personal_data": false
+    },
+    {
+      "path": "oos/rebar_class4.unsigned.json",
+      "sha256": "32a37d0e16b250e0256bcc5a702145fcaff74e1074ff5e788e8ae482754c4278",
+      "bytes": 343,
+      "provenance": "project_authored_fixture",
+      "source": "unsigned appointing-party out-of-scope templates; empty signer; does not close RT-001/002/003 and never writes summary.passed",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence; unsigned file does not license skip",
+      "personal_data": false
+    },
+    {
       "path": "packages/identity-compare-pd-rd.json",
       "sha256": "f81f7410bcea91be30140363c6d4f43eb15a6fc486e1bc1ab60fa8ed3c09c7b7",
       "bytes": 943,
@@ -9826,6 +9874,18 @@
       "path": "packages/residential-unjustified-calc-pd-inventory.json",
       "sha256": "7c2390be554a7fc63ec37bb3af242811461fa1d5764f3e8673c0cc443d31e58e",
       "bytes": 3047,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "profiles/customer-approved/manifest.template.json",
+      "sha256": "a3385c804fe35514b60d8a244680fd789595e6e10fb2f0ac40832f6d0bf67d52",
+      "bytes": 1601,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

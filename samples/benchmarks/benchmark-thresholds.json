@@ -1,8 +1,14 @@
 {
   "schema_version": "1.0.0",
   "profile_id": "aerobim-benchmark-thresholds",
-  "profile_version": "1.0.0",
+  "profile_version": "1.0.1",
   "description": "Versioned benchmark threshold profile with explicit advisory/enforced modes for CI governance.",
+  "operator_notes": {
+    "customer_stated_peak_packs_per_day": "5-10",
+    "mode": "advisory_statement",
+    "publishable_sla": false,
+    "note": "Stated by the customer on 2026-08-25. Fixture pack rates under modes.* are not this KPI. Do not convert min_reports_per_second into packs/day."
+  },
   "modes": {
     "advisory": {
       "packs": {

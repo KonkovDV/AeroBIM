@@ -463,6 +463,10 @@ class ValidationIssue:
     """Contour ownership: deterministic engine vs advisory AI. Never drives passed."""
     match_method: str | None = None
     """Cross-document match method, e.g. ``entity+pset+prop`` or ``entity+prop``."""
+    storey_name: str | None = None
+    """IfcBuildingStorey.Name from spatial containment. Never invented from OCR."""
+    grid_axis: str | None = None
+    """IfcGridAxis.AxisTag from ReferencedInStructures. Never invented from OCR."""
 
 
 def issue_from_requirement(

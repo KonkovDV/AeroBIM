@@ -22,6 +22,10 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 - Keep diffs focused and reviewable.
 - Do not claim customer accuracy, CDE-ready BCF, MEP system clash, or calculation *correctness* without evidence cited in [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
+## Maintenance (honest)
+
+Public GitHub shows a single contributor on origin. Dual-rater labeling (RT-001) is a customer-corpus protocol, not a git headcount. Review every claim-facing doc as if the next reader is a juror: no silent upgrades of Checkpoint `NO_GO`.
+
 ## Local Setup
 
 ```bash

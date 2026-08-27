@@ -28,6 +28,7 @@ from aerobim.domain.drawing_region_hitl import (
 )
 from aerobim.domain.finding_provenance import ensure_finding_provenance
 from aerobim.domain.hybrid.trust_policy import RouteTarget
+from aerobim.domain.ifc_spatial_index import stamp_issues_with_spatial_location
 from aerobim.domain.ingestion import (
     detect_annotation_sheet_identity_drift,
     detect_missing_drawing_sheet_identity,
@@ -52,6 +53,7 @@ from aerobim.domain.models import (
 )
 from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.package_outcome import summary_passed_from_outcome
+from aerobim.domain.ports import IfcSpatialIndexProvider
 from aerobim.domain.system_capabilities import enforce_honesty_capabilities
 
 if TYPE_CHECKING:
@@ -753,6 +755,15 @@ class EvidenceAssembler:
                 revision=request.revision,
             )
             for issue in [*intake_issues, *advisory.reconciled_issues]
+        )
+        spatial_index = None
+        if request.ifc_path is not None:
+            validator = self._host._ifc_validator
+            if isinstance(validator, IfcSpatialIndexProvider):
+                spatial_index = validator.spatial_index_for(request.ifc_path)
+        prioritized_issues = stamp_issues_with_spatial_location(
+            prioritized_issues,
+            spatial_index,
         )
         issues_with_remarks = tuple(
             self._host._remark_enricher().attach_remarks(prioritized_issues)

@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.7.5"
+version: "1.7.6"
 last_updated: "2026-08-27"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -54,6 +54,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Advisory isolation (RT-E / RT-017) | Same non-empty package: advisory ON vs OFF → identical deterministic findings + identical `summary.passed`; only advisory remarks/warnings may differ |
 | HITL §12 visual distinction | Advisory candidate vs confirmed finding, low-confidence cue, `review_required` outcome — visually distinct + vitest; text XSS prevented by React (no `dangerouslySetInnerHTML`); preview MIME allowlist (`api.ts`) |
 | Fail-closed Shared-gate (2026-07-28) | Verdict single-source (`summary_passed_from_outcome`); advisory OFF==ON re-confirmed; OIDC validator build fail-closed without `assert` |
+| Remark storey / axis from IFC index | `IfcSpatialIndex` containment (`IfcBuildingStorey`) and `IfcGridAxis.AxisTag` when the GUID hits; missing is explicit in the template; **not** OCR / LLM text |
 | Non-dev auth fail-closed (RT-F) | `AEROBIM_ENV != development` + empty bearer + no OIDC → Settings/bootstrap refuse start |
 | RT-001 protocol readiness (engineering) | Customer labels template + `dual_independent` method + agreement-template + runbook `--agreement-json`; **publishable still HOLD** without customer corpus |
 | RT-002 schema↔loader parity | `customer_approved`/`approved` require full `approval` object in JSON Schema (ref-only rejected) |
@@ -114,6 +115,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 | True computer vision for drawings | Not implemented; OCR baseline ≠ CV |
 | Native DWG as product-ready CAD | Still missing / fail-closed; DXF optional `[cad]` EntityGraph never claims `dwg_dxf=OK` |
 | Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)) |
+| 5–10 packs/day | Customer-stated 25.08; not a measured SLA; `benchmark-thresholds.json` `publishable_sla=false` |
+| Analyze default 1.5 GB IFC | Ingest cap for models under stated Samolet caps ≠ analyze; `AEROBIM_MAX_IFC_BYTES` stays **256 MiB** |
 | Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
 | Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |
@@ -137,6 +140,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 10. AeroBIM does **not** claim Hybrid AI is in the verdict path, nor that masking guarantees anonymity — WP-02 wires `HybridRouteGate` as an **advisory pre-gate** only (verdict-neutral, OFF==ON; blocked → no advisory observation).
 11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer; Checkpoint **NO_GO** until RT-001/002/003.
 12. The SPb GAU CGE profile (`samples/profiles/spb-cge/`) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. It does **not** close RT-001 or RT-002 and is not an expertise verdict.
+13. AeroBIM does **not** treat a 1.5 GB ingest envelope as analyze/WASM capability, and does **not** treat «5–10 packs/day» as a published SLA.
 
 ## Reproducibility baseline
 

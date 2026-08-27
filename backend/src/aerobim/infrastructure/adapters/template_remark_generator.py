@@ -99,13 +99,26 @@ class TemplateRemarkGenerator:
 
     def _location_line(self, issue: ValidationIssue) -> str:
         bits: list[str] = []
+        ru = self._locale != "en"
         zone = issue.problem_zone
+        guid = issue.element_guid or (zone.element_guid if zone else None)
+        if issue.storey_name:
+            bits.append(f"{'этаж' if ru else 'storey'} {issue.storey_name}")
+        elif guid:
+            bits.append(
+                "этаж: нет в пространственном индексе" if ru else "storey: not in spatial index"
+            )
+        if issue.grid_axis:
+            bits.append(f"{'ось' if ru else 'axis'} {issue.grid_axis}")
+        elif guid:
+            bits.append(
+                "ось: нет в пространственном индексе" if ru else "axis: not in spatial index"
+            )
         if zone and zone.sheet_id:
             label = "sheet" if self._locale == "en" else "лист"
             bits.append(f"{label} {zone.sheet_id}")
         if issue.target_ref:
             bits.append(issue.target_ref)
-        guid = issue.element_guid or (zone.element_guid if zone else None)
         if guid:
             bits.append(f"GUID {guid}")
         if bits:
@@ -219,10 +232,4 @@ class TemplateRemarkGenerator:
         return f"{issue.observed_value}{unit_suffix}"
 
     def _build_location_text(self, issue: ValidationIssue) -> str:
-        if issue.problem_zone and issue.problem_zone.sheet_id:
-            return issue.problem_zone.sheet_id
-        if issue.target_ref:
-            return issue.target_ref
-        if issue.element_guid:
-            return issue.element_guid
-        return "no precise location" if self._locale == "en" else "без точной привязки"
+        return self._location_line(issue)

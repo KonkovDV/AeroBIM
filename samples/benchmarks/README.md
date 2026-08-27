@@ -28,7 +28,7 @@ Each pack references fixtures under `samples/` and stays license-safe.
 | `bsdd-pilot-terms.json` | Offline bSDD term map (pilot properties) |
 | `loin-rule-metadata.json` | LOIN purpose/milestone/actor per rule prefix |
 
-Threshold profile: `benchmark-thresholds.json` (advisory and enforced modes).
+Threshold profile: `benchmark-thresholds.json` (advisory and enforced **fixture** latency rails). Customer-stated «5–10 packs/day» is recorded under `operator_notes` with `publishable_sla: false` — it is **not** converted from `min_reports_per_second`.
 
 ## Open corpora (WP-06)
 

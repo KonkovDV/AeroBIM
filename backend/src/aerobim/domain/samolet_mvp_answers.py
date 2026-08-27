@@ -61,7 +61,10 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
             "customer definition recorded; signed sellable-area thresholds absent; "
             "advisory inventory only"
         ),
-        "remark_shape": "essence + norm/STO clause (never invented) + location detail",
+        "remark_shape": (
+            "essence + norm/STO clause (never invented) + location "
+            "(storey/axis from IfcSpatialIndex when present; else explicit missing)"
+        ),
     }
 
 
