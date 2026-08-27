@@ -284,7 +284,7 @@ A local clone runs on defaults. The collapsed table is the operator-facing confi
 | `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; HD2-RL-02: `0` disables in development; **must be >0** under pilot/production |
 | `AEROBIM_TRUSTED_PROXY_IPS` | *(unset)* | Comma-separated peer IPs allowed to supply `X-Forwarded-For` for rate-limit keys; empty = never trust XFF |
 | `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
-| `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Deprecated alias of `AEROBIM_VLM_API_BASE_URL`. Default unset. Under `samolet_pilot`/`production` VLM is not ready even if set. See [`docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md`](docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md) |
+| `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Deprecated alias of the primary VLM base URL (internal name). Default unset. Under `samolet_pilot`/`production` VLM is not ready even if set. See [`docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md`](docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md) |
 | `AEROBIM_KIMI_API_KEY` | *(unset)* | Optional Kimi API key (never logged) |
 | `AEROBIM_KIMI_CACHE_DIR` | *(unset)* | Optional Kimi response cache directory |
 | `AEROBIM_KIMI_CACHE_NAMESPACE` | *(unset)* | Optional Kimi cache namespace |
