@@ -97,9 +97,7 @@ def scan_owner_files(
     nested_pack_folders: list[str] = []
     if len(pack_folders) == 1:
         only = root / pack_folders[0]
-        nested_pack_folders = sorted(
-            path.name for path in only.iterdir() if path.is_dir()
-        )
+        nested_pack_folders = sorted(path.name for path in only.iterdir() if path.is_dir())
     for path in files:
         suffix = path.suffix.casefold()
         suffixes[suffix] += 1
@@ -118,9 +116,7 @@ def scan_owner_files(
         "pack_folder_count": len(nested_pack_folders) or len(pack_folders),
         "file_count": len(files),
         "ifc_count": suffixes.get(".ifc", 0),
-        "ifc_over_default_cap_count": sum(
-            1 for size in ifc_sizes if size > ifc_cap_bytes
-        ),
+        "ifc_over_default_cap_count": sum(1 for size in ifc_sizes if size > ifc_cap_bytes),
         "native_rvt_count": suffixes.get(".rvt", 0),
         "native_navis_count": suffixes.get(".nwd", 0) + suffixes.get(".nwc", 0),
         "calc_binary_count": sum(suffixes[ext] for ext in _CALC_SUFFIXES),

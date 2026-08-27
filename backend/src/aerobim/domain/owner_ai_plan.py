@@ -187,9 +187,7 @@ def _extraction_gap() -> dict[str, Any]:
             "fixture patterns expect REI60 / millimetre walls"
         ),
         "blocked": "Project TZ has no fire or area requirements",
-        "constructs_unmixed": (
-            "II/C0 ≠ wall EI 45 ≠ door EI30/EI60 ≠ fixture REI60"
-        ),
+        "constructs_unmixed": ("II/C0 ≠ wall EI 45 ≠ door EI30/EI60 ≠ fixture REI60"),
     }
 
 

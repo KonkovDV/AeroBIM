@@ -51,7 +51,7 @@ class Kt3JuryTests(unittest.TestCase):
                     "expected": None,
                     "observed": None,
                     "remark": (
-                        'Property — FireRating data shall be REI60 '
+                        "Property — FireRating data shall be REI60 "
                         '(The property value "REI30" does not match the requirements).'
                     ),
                 }
@@ -71,9 +71,7 @@ class Kt3JuryTests(unittest.TestCase):
             require_kt3_jury_gate(gate)
 
     def test_assemble_keeps_tracker_and_typical_errors(self) -> None:
-        payload = assemble_kt3_jury(
-            _REPO, gate=_gate(), generated_at="2026-08-27T00:00:00+00:00"
-        )
+        payload = assemble_kt3_jury(_REPO, gate=_gate(), generated_at="2026-08-27T00:00:00+00:00")
         self.assertEqual(payload["checkpoint"], "NO_GO")
         self.assertFalse(payload["passed"])
         self.assertEqual(payload["typical_errors"]["customer_confirmed_patterns"], 0)

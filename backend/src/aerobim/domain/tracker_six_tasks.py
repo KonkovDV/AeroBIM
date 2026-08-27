@@ -72,8 +72,7 @@ TRACKER_TASKS: Final[tuple[dict[str, str], ...]] = (
 )
 
 SPEECH_TANGLE: Final = (
-    "Tangl is the model layer; AeroBIM is the pack seam "
-    "(requirements ↔ IFC ↔ sheets ↔ revisions)."
+    "Tangl is the model layer; AeroBIM is the pack seam (requirements ↔ IFC ↔ sheets ↔ revisions)."
 )
 
 
@@ -95,12 +94,8 @@ def tracker_snapshot() -> dict[str, Any]:
         "scheduled_demos_in_git": False,
         "items": items,
         "item_count": len(items),
-        "agent_done_count": sum(
-            1 for row in items if row["agent"].startswith(("done", "adr"))
-        ),
-        "owner_blocked_count": sum(
-            1 for row in items if row["owner"].startswith("blocked")
-        ),
+        "agent_done_count": sum(1 for row in items if row["agent"].startswith(("done", "adr"))),
+        "owner_blocked_count": sum(1 for row in items if row["owner"].startswith("blocked")),
     }
 
 

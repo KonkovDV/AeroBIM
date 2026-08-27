@@ -55,7 +55,9 @@ def main(argv: list[str] | None = None) -> int:
     if tree is None:
         env = os.environ.get("AEROBIM_OWNER_FILES", "").strip()
         tree = Path(env) if env else (root / "files")
-    scan = scan_owner_files(tree, ifc_cap_bytes=DEFAULT_IFC_CAP_BYTES, include_names=args.include_names)
+    scan = scan_owner_files(
+        tree, ifc_cap_bytes=DEFAULT_IFC_CAP_BYTES, include_names=args.include_names
+    )
     payload = {
         **scan,
         "public_rehearsal": public_rehearsal_snapshot(),

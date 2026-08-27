@@ -154,10 +154,7 @@ def evaluate_oos(payload: Mapping[str, Any] | None) -> OosDecision:
             licenses_unmeasured_speech=False,
             reason="statement must match the locked OOS text for this kind",
         )
-    if any(
-        bool(payload.get(flag))
-        for flag in ("closes_rt001", "closes_rt002", "closes_rt003")
-    ):
+    if any(bool(payload.get(flag)) for flag in ("closes_rt001", "closes_rt002", "closes_rt003")):
         return OosDecision(
             kind=kind_raw,
             status="rejected",
