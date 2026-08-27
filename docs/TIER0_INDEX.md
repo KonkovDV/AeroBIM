@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.1"
+version: "4.8.2"
 last_updated: "2026-08-27"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -28,6 +28,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Матрица ТЗ](tz/TZ_COMPLIANCE_MATRIX_2026.md) | Построчное соответствие |
 | [Карта покрытия подачи](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) | Эта подача |
 | [Граница заявлений](pilot-claim-boundary-2026.md) | Проверено vs план |
+| [Отказ RVT/NWD](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) | IFC-first; тот же класс, что DWG |
+| [Сборка без внешних моделей](security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md) | IB: Kimi/LLM выключены под пилотом |
 | [Карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md) | Формула стадии |
 | [Сравнение Задачи 07](demo/KT2_TASK07_COMPARISON_2026_08.md) | Пять решений; цифры конкурентов = их claims |
 | [Строка корпуса](demo/KT2_CORPUS_SSOT_2026_08.md) | Замороженные открытые прокси |

@@ -1,5 +1,30 @@
 {
   "schema_version": "1.0.0",
-  "description": "Settings.py AEROBIM_* knobs intentionally absent from README ## Configuration. Empty by default after N-20 closure — prefer documenting operator-facing vars in the table.",
-  "vars": {}
+  "description": "Settings.py AEROBIM_* knobs intentionally absent from README ## Configuration. Aliases, lab-only, and operator-internal limits. Operator-facing knobs stay in the README table.",
+  "vars": {
+    "AEROBIM_AUDIT_FAIL_CLOSED": "Lab/dev override; forced true under samolet_pilot/production",
+    "AEROBIM_BSI_LOCAL_CERT": "Development-only local SPF certificate; forced off under pilot/production",
+    "AEROBIM_ENFORCE_OBJECT_ACL": "Lab/dev override; forced true under samolet_pilot/production",
+    "AEROBIM_HYBRID_DRAWING_ENABLED": "Internal hybrid drawing path toggle; not an operator claim surface",
+    "AEROBIM_KIMI_CACHE_TTL_DAYS": "Deprecated alias of AEROBIM_VLM_CACHE_TTL_DAYS",
+    "AEROBIM_KIMI_K3_ENABLED": "Deprecated alias of AEROBIM_VLM_ENABLED",
+    "AEROBIM_KIMI_MAX_IMAGE_BYTES": "Deprecated alias of AEROBIM_VLM_MAX_IMAGE_BYTES",
+    "AEROBIM_MAX_CONCURRENT_ANALYZE_JOBS_PER_TENANT": "Per-tenant concurrency; baked under pilot when unset",
+    "AEROBIM_MAX_UPLOAD_BYTES": "Envelope ingest cap; typed office/model caps take precedence",
+    "AEROBIM_MAX_UPLOAD_BYTES_PER_TENANT_DAY": "Per-tenant daily ingest budget; baked under pilot when unset",
+    "AEROBIM_MAX_UPLOADS_PER_TENANT_DAY": "Per-tenant daily upload count; baked under pilot when unset",
+    "AEROBIM_MEP_SYSTEM_CLASH_ENABLED": "Opt-in engine flag; does not close RT-003",
+    "AEROBIM_ODA_CAD_ENABLED": "Legal gate only; SDK not shipped (STUB-ODA-CAD-001)",
+    "AEROBIM_POSTGRES_APPLY_DDL": "Enterprise DML-only runtime after schema applied out of band",
+    "AEROBIM_REQUIRE_BSI_SCHEMA": "Lab/dev override; forced true under samolet_pilot/production",
+    "AEROBIM_VLM_API_BASE_URL": "Primary VLM URL; AEROBIM_KIMI_API_BASE_URL is the documented alias",
+    "AEROBIM_VLM_API_KEY": "Primary VLM key; AEROBIM_KIMI_API_KEY is the documented alias",
+    "AEROBIM_VLM_CACHE_DIR": "Primary VLM cache dir; AEROBIM_KIMI_CACHE_DIR is the documented alias",
+    "AEROBIM_VLM_CACHE_NAMESPACE": "Primary VLM cache namespace; KIMI alias is documented",
+    "AEROBIM_VLM_CACHE_PROJECT": "Primary VLM cache project; KIMI alias is documented",
+    "AEROBIM_VLM_CACHE_TTL_DAYS": "Primary VLM cache TTL; KIMI alias is documented",
+    "AEROBIM_VLM_MAX_IMAGE_BYTES": "Primary VLM image cap; KIMI alias is internal",
+    "AEROBIM_VLM_MODEL": "Primary VLM model id; AEROBIM_KIMI_MODEL is the documented alias",
+    "AEROBIM_VLM_REASONING_EFFORT": "Primary VLM reasoning; AEROBIM_KIMI_REASONING_EFFORT is documented"
+  }
 }

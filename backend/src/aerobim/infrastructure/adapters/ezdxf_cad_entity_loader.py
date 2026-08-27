@@ -8,6 +8,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aerobim.domain.cad_ingest import (
+    AUTODESK_NATIVE_SUFFIXES,
+    NATIVE_AUTODESK_CLOSED_REASON,
+    autodesk_format_resolved,
+)
 from aerobim.domain.models import CapabilityState, CapabilityStatus
 from aerobim.domain.tz_architecture_ports import CadEntity, EntityGraph
 
@@ -29,6 +34,17 @@ class EzdxfCadEntityLoader:
             raise FileNotFoundError(path)
 
         suffix = path.suffix.lower()
+        if suffix in AUTODESK_NATIVE_SUFFIXES:
+            return EntityGraph(
+                source_id=path.name,
+                format=autodesk_format_resolved(path),
+                entities=(),
+                capability=CapabilityStatus(
+                    status=CapabilityState.FAILED,
+                    reason=NATIVE_AUTODESK_CLOSED_REASON,
+                ),
+            )
+
         if suffix in _DWG:
             return EntityGraph(
                 source_id=path.name,
@@ -50,7 +66,10 @@ class EzdxfCadEntityLoader:
                 entities=(),
                 capability=CapabilityStatus(
                     status=CapabilityState.SKIPPED,
-                    reason=f"Unsupported CAD suffix {suffix!r}; expected .dxf or .dwg",
+                    reason=(
+                        f"Unsupported CAD suffix {suffix!r}; "
+                        "expected .dxf, .dwg, or Autodesk native"
+                    ),
                 ),
             )
 

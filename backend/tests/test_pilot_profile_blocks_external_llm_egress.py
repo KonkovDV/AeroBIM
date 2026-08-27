@@ -32,6 +32,26 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
                 "samolet_pilot must hard-disable external advisory egress",
             )
 
+    def test_pilot_profile_blocks_kimi_alias_vlm(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {
+                "AEROBIM_ENV": "development",
+                "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                "AEROBIM_KIMI_K3_ENABLED": "true",
+            },
+            clear=False,
+        ):
+            os.environ.pop("AEROBIM_VLM_ENABLED", None)
+            os.environ.pop("AEROBIM_KIMI_API_BASE_URL", None)
+            os.environ.pop("AEROBIM_VLM_API_BASE_URL", None)
+            settings = Settings.from_env()
+            self.assertTrue(settings.vlm_enabled)
+            self.assertFalse(
+                settings.vlm_advisory_ready(),
+                "samolet_pilot must hard-disable Kimi/VLM egress",
+            )
+
     def test_advisory_env_preferred_over_deprecated_local(self) -> None:
         with mock.patch.dict(
             os.environ,

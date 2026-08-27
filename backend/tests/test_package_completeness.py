@@ -103,6 +103,33 @@ class PackageCompletenessDomainTests(unittest.TestCase):
         self.assertEqual(report.to_capability_status().status, CapabilityState.OK)
         self.assertIn("native DWG", CLAIM_BOUNDARY)
 
+    def test_native_rvt_declared_is_error_not_supported_claim(self) -> None:
+        inventory = PackageInventory.from_mapping(
+            {
+                "schema": INVENTORY_SCHEMA_V1,
+                "project_id": "rvt-honesty",
+                "mandatory_pd_sections": ["AR"],
+                "require_pd_rd_pairing": False,
+                "require_specifications": False,
+                "require_schedules": False,
+                "require_sheet_ciphers": False,
+                "artifacts": [
+                    {
+                        "artifact_id": "pd-ar",
+                        "role": "pd_section",
+                        "discipline": "AR",
+                        "format": "rvt",
+                        "cipher": "AR-001",
+                    }
+                ],
+            }
+        )
+        report = assess_package_completeness(inventory)
+        issues = [i for i in report.issues if i.rule_id == "AEROBIM-PACKAGE-UNSUPPORTED-FORMAT"]
+        self.assertEqual(len(issues), 1)
+        self.assertIn("RVT", issues[0].message.upper())
+        self.assertNotIn("rvt_supported", issues[0].message)
+
     def test_native_dwg_declared_is_error_not_supported_claim(self) -> None:
         inventory = PackageInventory.from_mapping(
             {

@@ -6,6 +6,8 @@ declared extension and sniffed kind is rejected for binary formats.
 
 from __future__ import annotations
 
+import io
+import zipfile
 from dataclasses import dataclass
 
 # Enough for ZIP/PDF/PNG/JPEG/DWG and IFC header search.
@@ -101,12 +103,38 @@ _EXTENSION_KINDS: dict[str, frozenset[str]] = {
 # Default allowlist for pilot uploads.
 _ALLOWED_EXTENSIONS = frozenset(_EXTENSION_KINDS)
 
+# Closed Autodesk natives: reject with an explicit NOT_IMPLEMENTED reason
+# (same class as native DWG). Do not import domain from core.
+_AUTODESK_CLOSED_SUFFIXES = frozenset({".rvt", ".rte", ".nwd", ".nwc"})
+_AUTODESK_CLOSED_REASON = (
+    "native RVT/NWD parser is not implemented; closed Autodesk format without a free reader"
+)
+_REVIT_CONTAINER_ZIP_BASENAMES = frozenset({"basicfileinfo"})
+
 
 def extension_of(filename: str) -> str:
     name = filename.replace("\\", "/").split("/")[-1]
     if "." not in name:
         return ""
     return "." + name.rsplit(".", 1)[-1].lower()
+
+
+def _zip_member_basenames(payload: bytes) -> tuple[str, ...]:
+    from aerobim.core.security.zip_limits import inspect_zip_bytes
+
+    inspect_zip_bytes(payload)
+    with zipfile.ZipFile(io.BytesIO(payload), "r") as archive:
+        return tuple(archive.namelist())
+
+
+def _zip_names_indicate_autodesk(names: tuple[str, ...]) -> bool:
+    for raw in names:
+        base = raw.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1].lower()
+        if any(base.endswith(suffix) for suffix in _AUTODESK_CLOSED_SUFFIXES):
+            return True
+        if base in _REVIT_CONTAINER_ZIP_BASENAMES:
+            return True
+    return False
 
 
 def validate_upload_content(
@@ -128,6 +156,8 @@ def validate_upload_content(
     ext = extension_of(filename)
     if not ext:
         raise UploadContentError("Upload filename must include an allowed extension")
+    if ext in _AUTODESK_CLOSED_SUFFIXES:
+        raise UploadContentError(_AUTODESK_CLOSED_REASON)
     if ext not in _ALLOWED_EXTENSIONS:
         raise UploadContentError(f"Disallowed upload extension: {ext}")
 
@@ -157,6 +187,17 @@ def validate_upload_content(
             raise UploadContentError(
                 f"Content mismatch: extension {ext} does not match sniffed type {sniffed.kind}"
             )
+    if ext == ".zip":
+        from aerobim.core.security.zip_limits import ZipBombError
+
+        try:
+            names = _zip_member_basenames(payload)
+        except ZipBombError as exc:
+            raise UploadContentError(str(exc)) from exc
+        except zipfile.BadZipFile as exc:
+            raise UploadContentError(f"Invalid ZIP archive: {exc}") from exc
+        if _zip_names_indicate_autodesk(names):
+            raise UploadContentError(_AUTODESK_CLOSED_REASON)
     return sniffed
 
 

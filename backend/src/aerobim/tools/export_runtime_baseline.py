@@ -41,6 +41,17 @@ _CODE_ENV_RE = re.compile(
     r"os\.(?:getenv|environ\.get)\(\s*[\"'](AEROBIM_[A-Z][A-Z0-9_]*)[\"']"
     r"|os\.environ\[\s*[\"'](AEROBIM_[A-Z][A-Z0-9_]*)[\"']\s*\]"
 )
+_HELPER_ENV_RE = re.compile(
+    r"_(?:read_int|read_bool|read_float|read_optional_int|optional_bool)"
+    r"\(\s*[\"'](AEROBIM_[A-Z][A-Z0-9_]*)[\"']"
+)
+_IN_ENVIRON_RE = re.compile(r"[\"'](AEROBIM_[A-Z][A-Z0-9_]*)[\"']\s+in\s+os\.environ")
+_ENV_PREFER_CALL_RE = re.compile(
+    r"_(?:env_prefer|read_optional_int_prefer)\(([^)]*)\)",
+    re.DOTALL,
+)
+_QUOTED_AEROBIM_RE = re.compile(r"[\"'](AEROBIM_[A-Z][A-Z0-9_]*)[\"']")
+_EXTRA_ENV_SCAN_RELPATHS = ("backend/src/aerobim/tools/export_runtime_baseline.py",)
 _BASELINE_MARKER_BEGIN = "<!-- AEROBIM_RUNTIME_BASELINE:BEGIN -->"
 _ENV_DOC_MARKER_BEGIN = "<!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->"
 _ENV_DOC_MARKER_END = "<!-- AEROBIM_DOCUMENTED_ENV:END -->"
@@ -483,17 +494,44 @@ def _test_collection_inventory(backend_root: Path) -> dict[str, object]:
     }
 
 
-def _code_env_names(repo: Path) -> list[str]:
-    settings_path = repo / "backend" / "src" / "aerobim" / "core" / "config" / "settings.py"
+def _env_names_from_settings_source(text: str) -> set[str]:
+    """Settings.py reads via getenv *and* typed helpers ``_read_int`` / ``_env_prefer``.
+
+    The 2026-08 CI pin only matched ``os.getenv`` / ``os.environ.get`` / ``os.environ[]``,
+    so documented knobs such as ``AEROBIM_MAX_IFC_BYTES`` were absent from
+    ``code_env_vars`` even though ``Settings.from_env`` reads them. That was a
+    scanner defect, not a no-op flag.
+    """
+
     names: set[str] = set()
-    if not settings_path.is_file():
-        return []
-    text = settings_path.read_text(encoding="utf-8", errors="ignore")
     for match in _CODE_ENV_RE.finditer(text):
         name = match.group(1) or match.group(2)
         if name:
             names.add(name)
-    return sorted(names)
+    names.update(_HELPER_ENV_RE.findall(text))
+    names.update(_IN_ENVIRON_RE.findall(text))
+    for match in _ENV_PREFER_CALL_RE.finditer(text):
+        names.update(_QUOTED_AEROBIM_RE.findall(match.group(1)))
+    return names - _ENV_MARKER_NOISE
+
+
+def _code_env_names(repo: Path) -> list[str]:
+    names: set[str] = set()
+    settings_path = repo / "backend" / "src" / "aerobim" / "core" / "config" / "settings.py"
+    if settings_path.is_file():
+        names |= _env_names_from_settings_source(
+            settings_path.read_text(encoding="utf-8", errors="ignore")
+        )
+    for rel in _EXTRA_ENV_SCAN_RELPATHS:
+        path = repo / rel
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for match in _CODE_ENV_RE.finditer(text):
+            name = match.group(1) or match.group(2)
+            if name:
+                names.add(name)
+    return sorted(names - _ENV_MARKER_NOISE)
 
 
 def _git(repo: Path, *args: str) -> str:
@@ -1354,6 +1392,10 @@ def _check_code_env_documented(repo: Path, *, compare_artifact: bool = True) -> 
 
     N-20: marker-only parity can hide holes published as documented_env_vars vs code_env_vars.
     Require code ⊆ (Configuration table ∪ audit/internal_env_vars.json).
+    Require documented ⊆ code (docs→code). The 2026-08 pin compared only getenv
+    literals, so ~29 documented names were missing from code_env_vars; that was a
+    scanner defect. After expanding the scanner, live code_env_vars may be a
+    **superset** of the pinned artifact until CI regenerates the pin.
     """
     errors: list[str] = []
     readme = repo / "README.md"
@@ -1366,14 +1408,14 @@ def _check_code_env_documented(repo: Path, *, compare_artifact: bool = True) -> 
             "for code/settings env parity"
         ]
     code_names = set(_code_env_names(repo))
-    missing_readme = sorted(code_names - set(marker))
-    if missing_readme:
-        errors.append(
-            f"settings.py reads undocumented AEROBIM_* vars (not in README marker): "
-            f"{missing_readme}"
-        )
     config_names = set(_configuration_env_names(readme))
     internal = _internal_env_names(repo)
+    missing_readme = sorted(code_names - set(marker) - internal)
+    if missing_readme:
+        errors.append(
+            f"settings.py reads undocumented AEROBIM_* vars (not in README marker "
+            f"and not in {_INTERNAL_ENV_REGISTRY}): {missing_readme}"
+        )
     missing_config = sorted(code_names - config_names - internal)
     if missing_config:
         errors.append(
@@ -1385,6 +1427,12 @@ def _check_code_env_documented(repo: Path, *, compare_artifact: bool = True) -> 
         errors.append(
             f"{_INTERNAL_ENV_REGISTRY} lists vars not read by settings.py: {unexplained_internal}"
         )
+    missing_from_code = sorted((set(marker) | config_names) - code_names)
+    if missing_from_code:
+        errors.append(
+            "documented AEROBIM_* vars not read by settings.py/tools "
+            f"(docs→code gate): {missing_from_code}"
+        )
     artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
     if compare_artifact and artifact.exists():
         try:
@@ -1395,9 +1443,11 @@ def _check_code_env_documented(repo: Path, *, compare_artifact: bool = True) -> 
             artifact_names = stored.get("code_env_vars")
             if isinstance(artifact_names, list):
                 artifact_set = {str(x) for x in artifact_names}
-                if artifact_set != code_names:
+                lost = sorted(artifact_set - code_names)
+                if lost:
                     errors.append(
-                        _symdiff_message("code", "artifact_code_env", code_names, artifact_set)
+                        "code_env_vars lost names vs runtime-baseline pin "
+                        f"(scanner regression): {lost}"
                     )
     return errors
 

@@ -34,7 +34,7 @@ INVENTORY_SCHEMA_V1 = "aerobim_package_inventory_v1"
 CLAIM_BOUNDARY = (
     "Engineering package-completeness only (declared inventory / fixture). "
     "Not statutory PP-87 exhaustiveness, not customer intake closure, "
-    "not native DWG analysis."
+    "not native DWG/RVT/NWD analysis."
 )
 
 ArtifactRole = Literal[
@@ -78,7 +78,7 @@ _ACCEPTED_EXCHANGE_FORMATS = frozenset(
 )
 
 # Declared but explicitly unsupported for analysis (honesty gate).
-_UNSUPPORTED_NATIVE_FORMATS = frozenset({"dwg"})
+_UNSUPPORTED_NATIVE_FORMATS = frozenset({"dwg", "rvt", "rte", "nwd", "nwc"})
 
 
 @dataclass(frozen=True)
@@ -333,7 +333,7 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
                     severity=Severity.ERROR,
                     message=(
                         f"Artifact {artifact.artifact_id!r} declares format {fmt!r}; "
-                        "native DWG analysis is not implemented — use IFC/PDF/DXF "
+                        "native DWG/RVT/NWD analysis is not implemented — use IFC/PDF/DXF "
                         f"exchange formats; {CLAIM_BOUNDARY}"
                     ),
                     source_id=artifact.artifact_id,

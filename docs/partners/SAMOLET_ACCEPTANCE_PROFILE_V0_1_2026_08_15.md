@@ -31,6 +31,7 @@ claim_boundary: >
 | Severity policy | Critical / Warning / Info по правилам профиля, не по модели |
 | Missing evidence | SKIPPED/NOT_VERIFIED не маскируется как PASS |
 | DWG/DXF | Native DWG вне приёмки MVP; DXF sidecar ≠ DWG parser |
+| RVT/NWD | Native Autodesk вне приёмки MVP; IFC-first ([`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)) |
 | MEP | Generic clash ≠ system-aware; `mep_system_clash=NOT_VERIFIED` без federated scope |
 | Расчёты | Сверка величин; независимая корректность расчёта NOT_IMPLEMENTED |
 | Исходы пакета | PASS / PASS_WITH_WARNINGS / REVIEW_REQUIRED / BLOCKED |

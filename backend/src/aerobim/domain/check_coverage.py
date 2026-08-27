@@ -73,6 +73,16 @@ TZ_GAP_ROWS: tuple[dict[str, str], ...] = (
         "tz_matrix": "Upload DWG",
     },
     {
+        "gap_id": "rvt_nwd_native",
+        "label": "Нативная загрузка RVT / NWD",
+        "status": "not_checked",
+        "reason": (
+            "Закрытые форматы Autodesk без свободного ридера; тот же класс отказа, что DWG. "
+            "Приём — IFC 2x3/4/4x3 с стороны заказчика (ПП 614 / 783/пр — PDF/A + IFC)"
+        ),
+        "tz_matrix": "Upload RVT/NWD (вводные 25.08)",
+    },
+    {
         "gap_id": "space_efficiency",
         "label": "Эффективность использования пространства",
         "status": "not_checked",

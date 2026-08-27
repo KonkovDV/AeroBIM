@@ -2,12 +2,13 @@
 
 Owns document hydration, drawing/CAD/raster annotation collection, narrative
 rule synthesis and norm-pack loading. Honesty semantics preserved: unsupported
-DWG never masked by DXF success, configured-but-missing packs fail closed.
+DWG and native RVT/NWD never masked by DXF success; missing packs fail closed.
 """
 
 from __future__ import annotations
 
 import logging
+import zipfile
 from collections.abc import Sequence
 from dataclasses import replace
 from pathlib import Path
@@ -15,6 +16,13 @@ from pathlib import Path
 from aerobim.application.services.capability_matrix import (
     RASTER_DRAWING_FORMATS,
     RASTER_DRAWING_SUFFIXES,
+)
+from aerobim.domain.cad_ingest import (
+    AUTODESK_NATIVE_FORMATS,
+    AUTODESK_NATIVE_SUFFIXES,
+    NATIVE_AUTODESK_CLOSED_REASON,
+    is_autodesk_native_cad,
+    zip_names_indicate_autodesk,
 )
 from aerobim.domain.derived_cad_provenance import (
     find_derived_provenance_sidecar,
@@ -51,11 +59,26 @@ from aerobim.domain.ports import (
     RasterDrawingAnalyzer,
 )
 
-CAD_DRAWING_SUFFIXES = {".dxf", ".dwg"}
+CAD_DRAWING_SUFFIXES = {".dxf", ".dwg"} | set(AUTODESK_NATIVE_SUFFIXES)
 DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 OFFICE_SUFFIXES = {".docx", ".xlsx", ".pptx", ".doc", ".xls", ".odt", ".ods"}
 
 _logger = logging.getLogger("aerobim.analyze")
+
+
+def _zip_path_indicates_autodesk(path: Path) -> bool:
+    """Peek ZIP names for native Autodesk members (fail-closed, not a parser)."""
+
+    if path.suffix.lower() != ".zip":
+        return False
+    from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_path
+
+    try:
+        inspect_zip_path(path)
+        with zipfile.ZipFile(path, "r") as archive:
+            return zip_names_indicate_autodesk(archive.namelist())
+    except (OSError, zipfile.BadZipFile, ZipBombError):
+        return False
 
 
 class PackageIngestionService:
@@ -133,7 +156,9 @@ class PackageIngestionService:
             if source.path is not None
             and (
                 source.path.suffix.lower() in CAD_DRAWING_SUFFIXES
-                or (source.format or "").strip().lower() in {"dxf", "dwg", "cad"}
+                or (source.format or "").strip().lower()
+                in {"dxf", "dwg", "cad", *AUTODESK_NATIVE_FORMATS}
+                or _zip_path_indicates_autodesk(source.path)
             )
         ]
         if not cad_sources:
@@ -165,22 +190,42 @@ class PackageIngestionService:
         annotations: list[DrawingAnnotation] = []
         issues: list[ValidationIssue] = []
         saw_dwg = False
+        saw_autodesk = False
         saw_supported_dxf = False
         saw_verified_derived_dwg = False
         all_dwg_supported = True
         last_reason: str | None = None
         last_dwg_reason: str | None = None
+        last_autodesk_reason: str | None = None
         for source in cad_sources:
             assert source.path is not None
-            is_dwg = source.path.suffix.lower() == ".dwg" or (
-                (source.format or "").strip().lower() == "dwg"
+            is_autodesk = is_autodesk_native_cad(
+                source.path, source.format
+            ) or _zip_path_indicates_autodesk(source.path)
+            is_dwg = (not is_autodesk) and (
+                source.path.suffix.lower() == ".dwg"
+                or (source.format or "").strip().lower() == "dwg"
             )
+            if is_autodesk:
+                saw_autodesk = True
             if is_dwg:
                 saw_dwg = True
             result = self._cad_model_ingestor.ingest(source.path, sheet_id=source.sheet_id)
             last_reason = result.reason
+            autodesk_resolved = result.format_resolved in AUTODESK_NATIVE_FORMATS
             if result.supported:
-                if result.format_resolved == "dwg":
+                if is_autodesk or autodesk_resolved:
+                    last_autodesk_reason = result.reason or NATIVE_AUTODESK_CLOSED_REASON
+                    issues.append(
+                        ValidationIssue(
+                            rule_id="AEROBIM-CAD-RVT-NWD-IMPOSSIBLE-SUPPORTED",
+                            severity=Severity.WARNING,
+                            message=last_autodesk_reason,
+                            category=FindingCategory.DRAWING_VALIDATION,
+                            source_id=source.path.name if source.path is not None else "cad",
+                        )
+                    )
+                elif result.format_resolved == "dwg":
                     # Native DWG can never be supported — fail-closed even if a
                     # misconfigured ingestor returns supported=True (STUB-ODA-CAD-001).
                     all_dwg_supported = False
@@ -197,6 +242,17 @@ class PackageIngestionService:
                 else:
                     saw_supported_dxf = True
                     annotations.extend(result.annotations)
+            elif is_autodesk or autodesk_resolved:
+                last_autodesk_reason = NATIVE_AUTODESK_CLOSED_REASON
+                issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-CAD-RVT-NWD",
+                        severity=Severity.WARNING,
+                        message=last_autodesk_reason,
+                        category=FindingCategory.DRAWING_VALIDATION,
+                        source_id=source.path.name if source.path is not None else "cad",
+                    )
+                )
             elif is_dwg or result.format_resolved == "dwg":
                 # DWG conversion MVP: an explicitly declared + hash-verified derived
                 # substitute registers the pair instead of failing the package.
@@ -235,7 +291,13 @@ class PackageIngestionService:
                     )
                 )
 
-        if saw_dwg and not all_dwg_supported:
+        if saw_autodesk:
+            # Closed Autodesk natives must not be masked by a successful sibling DXF.
+            capability = CapabilityStatus(
+                CapabilityState.FAILED,
+                last_autodesk_reason or last_reason or NATIVE_AUTODESK_CLOSED_REASON,
+            )
+        elif saw_dwg and not all_dwg_supported:
             # RT-D: unparsed DWG must not be masked by a successful sibling DXF.
             capability = CapabilityStatus(
                 CapabilityState.FAILED,
@@ -498,6 +560,8 @@ class PackageIngestionService:
             return False
         suffix = drawing_source.path.suffix.lower()
         if suffix in RASTER_DRAWING_SUFFIXES or suffix in CAD_DRAWING_SUFFIXES:
+            return False
+        if _zip_path_indicates_autodesk(drawing_source.path):
             return False
         return True
 

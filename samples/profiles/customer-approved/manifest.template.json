@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "customer_approved_ids_profile_manifest",
+  "profile_id": "CUSTOMER-APPROVED-TEMPLATE",
+  "human_name": "Unsigned customer acceptance profile (fill and sign — does not close RT-002b until signed)",
+  "language": "ru",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "provenance_status": "UNSIGNED_TEMPLATE",
+  "signed_by_customer": false,
+  "approval": {
+    "profile_owner": null,
+    "organization": "ГК «Самолёт», дирекция информационного моделирования",
+    "approval_date": null,
+    "signature_ref": null,
+    "jurisdiction": null,
+    "pack_hash": null
+  },
+  "scope": {
+    "applies_to": [
+      "One completed PD/RD section, one revision, one building type agreed in the scope memo"
+    ],
+    "not_applies_to": [
+      "Native RVT/NWD/DWG analysis",
+      "Independent calculation correctness",
+      "MEP system-aware clash without a signed federated scope",
+      "Statutory PP-87 completeness as a regulatory verdict"
+    ]
+  },
+  "ids_schema": {
+    "version": "1.0",
+    "namespace": "http://standards.buildingsmart.org/IDS"
+  },
+  "rules": [
+    {
+      "rule_id": "REPLACE-ME",
+      "ids_file": null,
+      "norm_clause": null,
+      "jurisdiction": null,
+      "severity": null,
+      "notes": "One row per machine-checkable rule. Empty until the directorate fills it."
+    }
+  ],
+  "claim_boundary": "Empty template. signed_by_customer=false. Does not close RT-002b. Public MOEXP/SPb CGE IDS are OFFICIAL_PUBLISHED reference packs, not this profile."
+}

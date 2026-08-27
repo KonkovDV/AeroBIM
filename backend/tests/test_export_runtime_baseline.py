@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -12,7 +13,9 @@ from unittest.mock import patch
 
 from aerobim.tools.export_runtime_baseline import (
     _check_architecture_inventory,
+    _check_code_env_documented,
     _check_documented_env_sets,
+    _code_env_names,
     _compute_publishable,
     _live_architecture_inventory,
     completeness_errors,
@@ -21,6 +24,16 @@ from aerobim.tools.export_runtime_baseline import (
 )
 
 _REPO = Path(__file__).resolve().parents[2]
+_SRC_PYTHONPATH = str(_REPO / "backend" / "src")
+
+
+def _module_env() -> dict[str, str]:
+    """Subprocess ``python -m aerobim...`` must see src without an editable install."""
+
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = _SRC_PYTHONPATH if not existing else _SRC_PYTHONPATH + os.pathsep + existing
+    return env
 
 
 def _git(*args: str) -> str:
@@ -246,6 +259,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             capture_output=True,
             text=True,
             check=False,
+            env=_module_env(),
         )
         self.assertNotIn("--attested-by", help_result.stdout)
         baseline = export_runtime_baseline(backend_root=_REPO / "backend")
@@ -466,6 +480,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             capture_output=True,
             text=True,
             check=False,
+            env=_module_env(),
         )
         self.assertEqual(result.returncode, 2)
         self.assertIn("N-26", result.stderr)
@@ -607,6 +622,25 @@ class DocumentedEnvSetTests(unittest.TestCase):
             (repo / "README.ru.md").write_text(readme, encoding="utf-8")
             errors = _check_documented_env_sets(repo)
             self.assertEqual(errors, [])
+
+
+class CodeEnvInventoryTests(unittest.TestCase):
+    def test_helper_readers_are_inventoried(self) -> None:
+        names = set(_code_env_names(_REPO))
+        for required in (
+            "AEROBIM_MAX_IFC_BYTES",
+            "AEROBIM_MAX_MODEL_BYTES",
+            "AEROBIM_REQUIRE_CLASH",
+            "AEROBIM_ALLOW_ANONYMOUS_DEV",
+            "AEROBIM_KIMI_API_BASE_URL",
+            "AEROBIM_GATES_ATTESTED",
+            "AEROBIM_PORT",
+        ):
+            self.assertIn(required, names, required)
+
+    def test_documented_is_subset_of_code(self) -> None:
+        errors = _check_code_env_documented(_REPO, compare_artifact=True)
+        self.assertEqual(errors, [])
 
     def test_equal_counts_different_names_fail_with_symdiff(self) -> None:
         """Count equality must not pass — sets must match (symmetric difference)."""

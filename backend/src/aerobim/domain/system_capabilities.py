@@ -189,6 +189,24 @@ def build_four_direction_contracts() -> list[dict[str, Any]]:
             ],
         ),
         capability_contract(
+            capability="native_rvt_nwd",
+            status="missing",
+            evidence_level="unit",
+            affects_pass=True,
+            reason=(
+                "native RVT/NWD parser is not implemented; closed Autodesk format "
+                "without a free reader"
+            ),
+            claim_boundary=(
+                "RVT/NWD same class as native DWG. Ingest IFC 2x3/4/4x3 exported by "
+                "the authoring tool; never rvt_supported / nwd_ready"
+            ),
+            dependencies=["CadModelIngestor"],
+            evidence_refs=[
+                "docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md",
+            ],
+        ),
+        capability_contract(
             capability="dxf_ingest",
             status="partial",
             evidence_level="fixture",

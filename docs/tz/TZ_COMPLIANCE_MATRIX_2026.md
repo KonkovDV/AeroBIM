@@ -99,6 +99,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Upload MS Office | done | Native `.docx`/`.xlsx` via `python-docx`+`openpyxl` (MIT); committed `samples/office/` round-trip; Docling optional `[docling]`; legacy `.doc`/`.xls` fail-closed; `office_ingest` capability — `test_office_native_ingest` | P0 WP-R1 |
 | Upload PDF | partial | Path-based + raster + `POST /v1/uploads` | P0 |
 | Upload DWG | missing | Native DWG never OK; derived DXF sidecar `placeholder-source.dwg` is not a parser | P2 |
+| Upload RVT / NWD | missing | Closed Autodesk formats; fail-closed (`validate_native_autodesk_toolchain`); IFC-first ingest [`NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) | P0 honesty |
 | Upload BIM (IFC) | done | Path-based + multipart upload | MVP / P0 |
 | Auto analysis + report | done | `AnalyzeProjectPackageUseCase` + JSON/HTML/BCF ZIP export | MVP |
 | BCF ZIP file ingest | partial | Committed `fixture-topics.bcfzip` round-trip; CDE import NOT_VERIFIED | MVP |

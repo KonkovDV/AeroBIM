@@ -4,7 +4,7 @@
 [Русская версия](README.ru.md)
 
 [![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
-[![Checkpoint](https://img.shields.io/badge/checkpoint-NO__GO-red.svg)](audit/reports/CRITICAL_BLOCKERS.md)
+[![Customer sign-off](https://img.shields.io/badge/customer_sign--off-NO__GO-red.svg)](audit/reports/CRITICAL_BLOCKERS.md)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -42,7 +42,7 @@ Silence is never success: a skipped mandatory engine cannot hide inside a green 
 |---|---|
 | **Runs on this clone** | Fixture packs, fail-closed IDS, live CLI, CI, overlay, structural BCF |
 | **Waits on measurement** | Independent labeled pack (two raters) for RT-001a · public examination IDS as measurement profile RT-002a · Samolet-signed profile RT-002b · federated MEP RT-003 · BCF import into their CDE |
-| **Not claimed** | Product accuracy >90% · customer SLA ≤30 min · native DWG · MEP delivered · CDE-ready BCF · production-ready |
+| **Not claimed** | Product accuracy >90% · customer SLA ≤30 min · native DWG · native RVT/NWD · MEP delivered · CDE-ready BCF · production-ready |
 
 Full boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md). Blockers: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
 
@@ -119,7 +119,7 @@ This is readiness for *customer sign-off*, not “the system does not run”. Co
 | **RT-002** | No Samolet-signed acceptance profile | Official Moscow Region State Expertise and SPb GAU CGE IDS files already ship in `samples/` |
 | **RT-003** | Federated MEP clash **NOT_VERIFIED** | Public federated inventory is measured; MEP delivered is not claimed |
 
-BCF ZIP export is structural T1 ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Import into an independent CDE is **NOT_VERIFIED**. Native DWG is missing (fail-closed). Independent calculation correctness is not implemented — sources are compared, not recomputed.
+BCF ZIP export is structural T1 ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Import into an independent CDE is **NOT_VERIFIED**. Native DWG and native RVT/NWD are missing (fail-closed; IFC-first ingest). Independent calculation correctness is not implemented — sources are compared, not recomputed.
 
 GOST R 21.101-2026 §8.2.4 (from 1 April 2026) requires a stable GUID on each electronic design document. AeroBIM has addressed findings to stable identifiers from day one. That is a coincidence of mechanism, not a claim of full conformity with the standard.
 
@@ -210,7 +210,7 @@ Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible b
 
 ## Configuration
 
-A local clone runs on defaults. The collapsed table is the full configuration surface: every `AEROBIM_*` knob the code reads is listed there and checked in CI against [`backend/.env.example`](backend/.env.example). It is not a KT#2 evaluation surface.
+A local clone runs on defaults. The collapsed table is the operator-facing configuration surface. CI checks it against `settings.py` **both ways** (code → docs and docs → code). Helper-read aliases and lab-only knobs live in [`audit/internal_env_vars.json`](audit/internal_env_vars.json). It is not a KT#2 evaluation surface.
 
 <details>
 <summary>Full <code>AEROBIM_*</code> table (CI-checked against <code>backend/.env.example</code>)</summary>
@@ -284,7 +284,7 @@ A local clone runs on defaults. The collapsed table is the full configuration su
 | `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; HD2-RL-02: `0` disables in development; **must be >0** under pilot/production |
 | `AEROBIM_TRUSTED_PROXY_IPS` | *(unset)* | Comma-separated peer IPs allowed to supply `X-Forwarded-For` for rate-limit keys; empty = never trust XFF |
 | `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
-| `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Optional Kimi OpenAI-compat base URL |
+| `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Deprecated alias of `AEROBIM_VLM_API_BASE_URL`. Default unset. Under `samolet_pilot`/`production` VLM is not ready even if set. See [`docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md`](docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md) |
 | `AEROBIM_KIMI_API_KEY` | *(unset)* | Optional Kimi API key (never logged) |
 | `AEROBIM_KIMI_CACHE_DIR` | *(unset)* | Optional Kimi response cache directory |
 | `AEROBIM_KIMI_CACHE_NAMESPACE` | *(unset)* | Optional Kimi cache namespace |

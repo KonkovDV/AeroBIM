@@ -2,7 +2,7 @@
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
 version: "1.7.5"
-last_updated: "2026-08-26"
+last_updated: "2026-08-27"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -38,7 +38,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
 | BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |
-| Browser review shell (3D + 2D evidence) | Frontend vitest **29** passed; `run_live_review_smoke` |
+| Browser review shell (3D + 2D evidence) | Frontend vitest **57** passed (CI pin `docs/evidence/runtime-baseline-latest.json`, `attested_by=ci`, commit `c081cfc87619`); `run_live_review_smoke` |
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
 | Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
@@ -113,6 +113,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |
 | True computer vision for drawings | Not implemented; OCR baseline ≠ CV |
 | Native DWG as product-ready CAD | Still missing / fail-closed; DXF optional `[cad]` EntityGraph never claims `dwg_dxf=OK` |
+| Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)) |
 | Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
 | Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |

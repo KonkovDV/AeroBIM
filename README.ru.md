@@ -4,7 +4,7 @@
 [English version](README.md)
 
 [![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
-[![Checkpoint](https://img.shields.io/badge/checkpoint-NO__GO-red.svg)](audit/reports/CRITICAL_BLOCKERS.md)
+[![Customer sign-off](https://img.shields.io/badge/customer_sign--off-NO__GO-red.svg)](audit/reports/CRITICAL_BLOCKERS.md)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -42,7 +42,7 @@ AeroBIM поднимает такой класс находок с просле�
 |---|---|
 | **Работает на этом клоне** | Учебные комплекты, проверка IDS с отказом при пропуске, живой CLI, CI, оверлей, структурный BCF |
 | **Ждёт измерения** | Независимый размеченный комплект (двое разметчиков) для RT-001a · публичные IDS экспертизы как профиль измерения RT-002a · подписанный профиль Самолёта RT-002b · федеративный MEP RT-003 · импорт BCF в их СОД |
-| **Не заявляется** | Точность продукта >90% · SLA заказчика ≤30 мин · native DWG · MEP delivered · CDE-ready BCF · production-ready |
+| **Не заявляется** | Точность продукта >90% · SLA заказчика ≤30 мин · native DWG · native RVT/NWD · MEP delivered · CDE-ready BCF · production-ready |
 
 Полная граница: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md). Блокеры: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
 
@@ -68,11 +68,17 @@ python -m aerobim.tools.run_demo_vertical_slice
 # → artifacts/vertical-slice-demo/report.html: фрагмент листа, оверлей,
 #   текстовые доказательства, таблица проверок, манифест прогона, архив BCF
 
+# 3. КТ#3 одной командой: живой гейт на фикстуре + пакет + шесть задач трекера (всё ещё NO_GO)
+python -m aerobim.tools.run_kt3_jury
+# → artifacts/kt3-jury/latest.json (passed=false, GUID-находка)
+# → artifacts/kt3-without-customer/latest.json (пакет пересчёта)
+# эквивалент двух команд: run_demo_ifc_acceptance_gate + run_kt3_without_customer
+
 pytest tests -q
 python -m aerobim.main   # → http://127.0.0.1:8080/health
 ```
 
-Оба демо заканчиваются с `summary.passed=false`, и это ожидаемый результат: в учебном комплекте заложены дефекты. Это не данные заказчика, и полученные на них числа не являются точностью продукта. Локальный счётчик `pytest` — не CI pin в runtime baseline ниже.
+Оба демо и команда КТ#3 заканчиваются с `summary.passed=false`, и это ожидаемый результат: в учебном комплекте заложены дефекты. Это не данные заказчика, и полученные на них числа не являются точностью продукта. Локальный счётчик `pytest` — не CI pin в runtime baseline ниже.
 
 Дополнительные наборы: `.[clash]` — геометрические коллизии, `.[docling]` — разбор нетекстовых документов, `.[enterprise]` — адаптеры S3 и Postgres, `.[pdf-agpl]` — устаревшие инструменты на PyMuPDF (для всего выше не нужны). Оболочка ревью: `cd frontend && npm ci && npm run dev`.
 
@@ -113,7 +119,7 @@ flowchart LR
 | **RT-002** | Нет профиля приёмки, подписанного Самолётом | Официальные IDS Мособлгосэкспертизы и СПб ГАУ ЦГЭ уже лежат в `samples/` |
 | **RT-003** | Федеративные коллизии MEP **NOT_VERIFIED** | Публичный инвентарь объединённых моделей измерен; MEP delivered не заявляется |
 
-Экспорт BCF ZIP — структурный T1 ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Импорт в независимую СОД — **NOT_VERIFIED**. Чтение DWG без конвертации отсутствует: отказ, не молчание. Независимая корректность расчётов не реализована: источники сверяются, а не пересчитываются.
+Экспорт BCF ZIP — структурный T1 ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Импорт в независимую СОД — **NOT_VERIFIED**. Чтение DWG и нативных RVT/NWD отсутствует: отказ, не молчание (вход — IFC). Независимая корректность расчётов не реализована: источники сверяются, а не пересчитываются.
 
 ГОСТ Р 21.101-2026 п. 8.2.4 (с 1 апреля 2026) требует устойчивый GUID у каждого электронного документа проектной документации. AeroBIM с первого дня ведёт находки к устойчивому идентификатору. Это совпадение механизма, а не заявление о полном соответствии стандарту.
 
@@ -204,7 +210,7 @@ presentation/    HTTP-слой FastAPI, middleware корреляции
 
 Артефакты лежат за портом `ObjectStore`, поэтому локальное хранилище и совместимые с S3 бакеты — один и тот же путь в коде. При заданном `AEROBIM_DB_URL` сводки отчётов дополнительно индексируются в Postgres; для пилота это допустимо, но до промышленной эксплуатации схему следует переносить миграцией вне приложения.
 
-Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` свёрнута в [английском README](README.md), раздел Configuration: это поверхность CI, не витрина КТ#2.
+Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` свёрнута в [английском README](README.md), раздел Configuration: CI проверяет её в обе стороны (код → доки и доки → код). Это не витрина КТ#2.
 
 ## Разработка
 

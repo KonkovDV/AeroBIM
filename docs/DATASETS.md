@@ -29,6 +29,16 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 - Compliance-judgment slice: Mushkani, Bérard, Koseki, [arXiv:2607.29058](https://arxiv.org/abs/2607.29058) — 160 tasks / 29 projects (126 Does Not Meet, 26 Meets, 8 Missing Information)
 - AeroBIM: inventory smoke `docs/evidence/aec-bench-smoke-latest.json` (196 tasks, 196 `gt.json`). Harbor agent **NOT_RUN**. Drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean` floor: **134** FP / **50** TN on **184** labeled tasks (rate **0.7283**, observation unit = task). [`docs/evidence/aec-bench-false-pass-2026-08.md`](evidence/aec-bench-false-pass-2026-08.md) · sha `6133a564…57aa4e`. This is **not** RT-001 (RF PD + expertise conclusion).
 
+## AECV-Bench (different corpus — do not mix names)
+
+- Authors / org: AECFoundry
+- Paper: [arXiv:2601.04819](https://arxiv.org/abs/2601.04819)
+- Code: https://github.com/AECFoundry/AECV-Bench
+- License: see upstream repo (not the same artefact as AEC-Bench Apache 2.0)
+- Protocol: drawing-literacy counting (Door/Window/Space/Bedroom/Toilet). Publishable scorer pin: `macro_extended=0.4325` on that five-field metric (`docs/evidence/aecv-bench-eval-latest.json`). **Not** product accuracy. **Not** AEC-Bench Harbor. **Not** RT-001.
+
+Never say one number under three names. Speech: corpus + protocol + license every time.
+
 ## IFC-Bench V2
 
 - Authors / org: Sylvain Hellin et al., TUM Georg Nemetschek Institute

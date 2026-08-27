@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from aerobim.domain.models import DrawingAnnotation
 
@@ -11,6 +12,47 @@ NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON = (
     "AEROBIM_ODA_CAD_ENABLED=true but ODA/Teigha SDK is not shipped "
     "(STUB-ODA-CAD-001; legal gate open ≠ native DWG product)"
 )
+NATIVE_AUTODESK_CLOSED_REASON = (
+    "native RVT/NWD parser is not implemented; closed Autodesk format without a free reader"
+)
+AUTODESK_NATIVE_SUFFIXES = frozenset({".rvt", ".rte", ".nwd", ".nwc"})
+AUTODESK_NATIVE_FORMATS = frozenset({"rvt", "rte", "nwd", "nwc"})
+REVIT_CONTAINER_ZIP_BASENAMES = frozenset({"basicfileinfo"})
+
+
+def zip_names_indicate_autodesk(names: tuple[str, ...] | list[str]) -> bool:
+    """True when a ZIP central directory names Revit/Navisworks members.
+
+    Covers (1) ``*.rvt``/``*.nwd`` members inside an archive and (2) a Revit
+    container renamed to ``.zip`` (member ``BasicFileInfo``). Domain-pure: no
+    zipfile I/O.
+    """
+
+    for raw in names:
+        base = raw.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1].lower()
+        if Path(base).suffix in AUTODESK_NATIVE_SUFFIXES:
+            return True
+        if base in REVIT_CONTAINER_ZIP_BASENAMES:
+            return True
+    return False
+
+
+def is_autodesk_native_cad(path: Path, format_hint: str | None = None) -> bool:
+    """True when the path or declared format is native Revit/Navisworks."""
+
+    if path.suffix.lower() in AUTODESK_NATIVE_SUFFIXES:
+        return True
+    fmt = (format_hint or "").strip().lower().lstrip(".")
+    return fmt in AUTODESK_NATIVE_FORMATS
+
+
+def autodesk_format_resolved(path: Path) -> str:
+    """Collapse RTE→rvt and NWC→nwd for honesty reporting."""
+
+    suffix = path.suffix.lower()
+    if suffix in {".nwd", ".nwc"}:
+        return "nwd"
+    return "rvt"
 
 
 @dataclass(frozen=True)
@@ -54,9 +96,16 @@ def default_dwg_loss_notes() -> tuple[str, ...]:
 
 
 __all__ = [
+    "AUTODESK_NATIVE_FORMATS",
+    "AUTODESK_NATIVE_SUFFIXES",
     "CadIngestResult",
     "DerivedCadProvenance",
+    "NATIVE_AUTODESK_CLOSED_REASON",
     "NATIVE_DWG_MISSING_REASON",
     "NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON",
+    "REVIT_CONTAINER_ZIP_BASENAMES",
+    "autodesk_format_resolved",
     "default_dwg_loss_notes",
+    "is_autodesk_native_cad",
+    "zip_names_indicate_autodesk",
 ]

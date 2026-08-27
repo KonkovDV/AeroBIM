@@ -317,6 +317,7 @@ class UnifiedContractTests(unittest.TestCase):
         }
         by_name = {row["capability"]: row for row in rows}
         self.assertEqual(by_name["native_dwg"]["status"], "missing")
+        self.assertEqual(by_name["native_rvt_nwd"]["status"], "missing")
         self.assertEqual(by_name["dxf_ingest"]["status"], "partial")
         self.assertEqual(
             by_name["dwg_derived_pdf_ifc_route"]["status"],

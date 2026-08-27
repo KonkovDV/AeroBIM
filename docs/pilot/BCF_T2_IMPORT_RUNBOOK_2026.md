@@ -10,10 +10,18 @@ claim_boundary: "Runbook only — executing it requires a real customer/pilot CD
 # BCF T2 CDE-import runbook — Samolet pilot (2026)
 
 Purpose: produce an **independent, hash-bound** proof that an AeroBIM BCF ZIP
-imports into an external CDE. Consumer reality (Jul 2026): BIMcollab accepts
-BCF **3.0** import since 2026-02-20; Trimble Connect imports BCF **2.1**.
-Both exporters are XSD-validated locally against official buildingSMART
-schemas (Waves C–E), so a T2 failure isolates consumer-side behavior.
+imports into an external CDE. **OSINT target for Samolet (not verified here):**
+the customer's 10D СОД module, product page
+[samolet10d.ru/catalog/product/10d-cod](https://samolet10d.ru/catalog/product/10d-cod/),
+publicly described as covering PD + RD + IRD after the **15.07.2025** update
+([ComNews](https://www.comnews.ru/digital-economy/content/240189/2025-07-15/2025-w29/1012/samolet-obnovil-reshenie-upravleniyu-dokumentaciey-stroitelnykh-proektakh)).
+T2 stays `cde_import=NOT_VERIFIED` until a real import log exists. Do not invent
+a 10D screenshot.
+
+Consumer reality (Jul 2026): BIMcollab accepts BCF **3.0** import since
+2026-02-20; Trimble Connect imports BCF **2.1**. Both exporters are XSD-validated
+locally against official buildingSMART schemas (Waves C–E), so a T2 failure
+isolates consumer-side behavior.
 
 **Eng readiness:** `python -m aerobim.tools.verify_bcf_t2_evidence --checklist`
 prints required artifacts without flipping `claim_allowed`. Tracked

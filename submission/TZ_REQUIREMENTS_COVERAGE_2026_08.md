@@ -2,8 +2,8 @@
 ---
 title: "Покрытие требований ТЗ задаче Самолёта по верификации ПД/РД — карта подачи КТ#2"
 status: active
-version: "1.0.3"
-last_updated: "2026-08-17"
+version: "1.0.4"
+last_updated: "2026-08-27"
 claim_boundary: >
   Requirement-to-artifact map. TZ evaluation targets are the customer's
   criteria, not AeroBIM measurements. Fixture and open
@@ -90,6 +90,7 @@ claim_boundary: >
 | Загрузка форматов MS Office | Извлечение текста из офисных документов | частично |
 | Загрузка PDF | Вектор и растр | реализовано |
 | Загрузка DWG | Чтение без конвертации **не реализовано**; честный отказ инструментом `validate_dwg_toolchain` | не реализовано |
+| Загрузка RVT / NWD | Чтение нативных форматов Autodesk **не реализовано** (закрытый формат, нет свободного ридера); тот же класс отказа, что DWG. Приём — IFC 2x3/4/4x3 на стороне заказчика. Инструмент `validate_native_autodesk_toolchain`. Граница: [`../docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) | не реализовано |
 | Загрузка BIM-моделей | IFC | реализовано |
 | Автоматический анализ документов | Единый прогон комплекта | реализовано |
 | Сравнение версий и типов документации | Дельта по ревизии: закрыто / осталось / не проверялось | частично |

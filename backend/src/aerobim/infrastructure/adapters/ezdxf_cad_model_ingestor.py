@@ -6,7 +6,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from aerobim.domain.cad_ingest import CadIngestResult
+from aerobim.domain.cad_ingest import (
+    AUTODESK_NATIVE_SUFFIXES,
+    NATIVE_AUTODESK_CLOSED_REASON,
+    NATIVE_DWG_MISSING_REASON,
+    CadIngestResult,
+    autodesk_format_resolved,
+)
 from aerobim.domain.models import DrawingAnnotation, ProblemZone
 
 _DXF_SUFFIXES = {".dxf"}
@@ -27,6 +33,16 @@ class EzdxfCadModelIngestor:
         suffix = path.suffix.lower()
         resolved_sheet = sheet_id or path.stem
 
+        if suffix in AUTODESK_NATIVE_SUFFIXES:
+            return CadIngestResult(
+                annotations=(),
+                format_resolved=autodesk_format_resolved(path),
+                entity_count=0,
+                degraded=True,
+                supported=False,
+                reason=NATIVE_AUTODESK_CLOSED_REASON,
+            )
+
         if suffix in _DWG_SUFFIXES:
             return CadIngestResult(
                 annotations=(),
@@ -34,7 +50,7 @@ class EzdxfCadModelIngestor:
                 entity_count=0,
                 degraded=True,
                 supported=False,
-                reason="native DWG parser is not implemented",
+                reason=NATIVE_DWG_MISSING_REASON,
             )
 
         if suffix not in _DXF_SUFFIXES:
@@ -44,7 +60,10 @@ class EzdxfCadModelIngestor:
                 entity_count=0,
                 degraded=True,
                 supported=False,
-                reason=f"Unsupported CAD suffix {suffix!r}; expected .dxf or .dwg",
+                reason=(
+                    f"Unsupported CAD suffix {suffix!r}; expected .dxf, .dwg, "
+                    "or a fail-closed Autodesk native (.rvt/.rte/.nwd/.nwc)"
+                ),
             )
 
         try:
