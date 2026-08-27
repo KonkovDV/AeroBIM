@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-27"
 status: active
-version: "1.3.0"
+version: "1.4.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08. Не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC. Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -49,6 +49,10 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-AXIS-NEAR | Ближайшее пересечение осей | Только `IfcGridAxis.AxisTag` |
 | RT-CLOUD-OIDC | HTTPS = живой OIDC BFF | `auth_bff` 501 |
 | RT-002-SPPACK | Unsigned СП 63 = RT-002b | `closes_rt002=false` |
+| RT-LIRA-SOLVER | MATCH таблицы = solver | `compare_declared_tables` `solver=not_implemented` |
+| RT-PDF-LIRA | PDF LIRA как таблица | `pdf_fragile`; `AEROBIM-LIRA-PDF` |
+| RT-IFC-STREAM | Дизайн = живой disk R-tree / cap 1.5 ГБ | `raises_default_cap=false`; 256 МиБ |
+| RT-ZIP-SNIFF | Namelist ZIP на sniff-префиксе = 415 вместо zip-bomb 422 | sniff = magic; `inspect_zip_path` затем Autodesk |
 
 ## HOLD (не чиним в этом коммите)
 

@@ -35,6 +35,10 @@ class LiveTreeTriageTests(unittest.TestCase):
         self.assertIn("RT-AXIS-NEAR", ids)
         self.assertIn("RT-CLOUD-OIDC", ids)
         self.assertIn("RT-002-SPPACK", ids)
+        self.assertIn("RT-LIRA-SOLVER", ids)
+        self.assertIn("RT-PDF-LIRA", ids)
+        self.assertIn("RT-IFC-STREAM", ids)
+        self.assertIn("RT-ZIP-SNIFF", ids)
 
     def test_ids_unique_and_verdicts_known(self) -> None:
         ids = [row["id"] for row in TRIAGE_ROWS]

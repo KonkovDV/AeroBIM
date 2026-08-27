@@ -254,6 +254,37 @@ class UploadApiSecurityTests(unittest.TestCase):
             self.assertEqual(response.status_code, 422, response.text)
             self.assertEqual(response.json()["detail"], "Upload archive rejected")
 
+    def test_zip_with_rvt_member_is_content_rejected(self) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        import io
+        import zipfile
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as archive:
+            archive.writestr("tower.rvt", b"not-a-parser")
+        with tempfile.TemporaryDirectory() as tmp:
+            settings = Settings(
+                application_name="aerobim-test",
+                environment="test",
+                host="127.0.0.1",
+                port=8080,
+                storage_dir=Path(tmp),
+                debug=True,
+                allow_anonymous_dev=True,
+            )
+            container = bootstrap_container(settings)
+            client = TestClient(create_http_app(container))
+            response = client.post(
+                "/v1/uploads",
+                files={"file": ("pack.zip", buf.getvalue(), "application/zip")},
+            )
+        self.assertEqual(response.status_code, 415, response.text)
+        self.assertEqual(response.json()["detail"], "Upload content rejected")
+
 
 if __name__ == "__main__":
     unittest.main()

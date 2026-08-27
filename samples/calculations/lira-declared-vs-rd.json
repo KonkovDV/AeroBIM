@@ -1,0 +1,17 @@
+{
+  "artifact_type": "lira_table_compare_fixture",
+  "schema_version": "1.0.0",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "not_solver": true,
+  "claim_boundary": "Synthetic declared fields. Not a LIRA solver. Not calculation_correctness. Native .lir not parsed.",
+  "calc_rows": [
+    {"field_id": "L1", "label": "snow", "value": "10", "unit": "kN"},
+    {"field_id": "L2", "label": "wind", "value": "5", "unit": "kN"}
+  ],
+  "bim_rows": [
+    {"field_id": "L1", "label": "snow", "value": "10", "unit": "kN"},
+    {"field_id": "L2", "label": "wind", "value": "8", "unit": "kN"}
+  ]
+}

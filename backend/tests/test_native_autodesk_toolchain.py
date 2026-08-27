@@ -10,7 +10,11 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
-from aerobim.core.security.upload_content import UploadContentError, validate_upload_content
+from aerobim.core.security.upload_content import (
+    UploadContentError,
+    reject_autodesk_zip_bytes,
+    validate_upload_content,
+)
 from aerobim.domain.cad_ingest import NATIVE_AUTODESK_CLOSED_REASON, zip_names_indicate_autodesk
 from aerobim.domain.models import (
     CapabilityState,
@@ -153,18 +157,12 @@ class NativeAutodeskIngestTests(unittest.TestCase):
 
     def test_http_upload_rejects_zip_with_rvt_member(self) -> None:
         with self.assertRaises(UploadContentError) as ctx:
-            validate_upload_content(
-                filename="model.zip",
-                payload=_zip_bytes(("tower.rvt", b"not-a-parser")),
-            )
+            reject_autodesk_zip_bytes(_zip_bytes(("tower.rvt", b"not-a-parser")))
         self.assertEqual(str(ctx.exception), NATIVE_AUTODESK_CLOSED_REASON)
 
     def test_http_upload_rejects_revit_container_renamed_zip(self) -> None:
         with self.assertRaises(UploadContentError) as ctx:
-            validate_upload_content(
-                filename="model.zip",
-                payload=_zip_bytes(("BasicFileInfo", b"revit-container")),
-            )
+            reject_autodesk_zip_bytes(_zip_bytes(("BasicFileInfo", b"revit-container")))
         self.assertEqual(str(ctx.exception), NATIVE_AUTODESK_CLOSED_REASON)
 
     def test_http_upload_allows_zip_without_autodesk_members(self) -> None:
@@ -173,6 +171,7 @@ class NativeAutodeskIngestTests(unittest.TestCase):
             payload=_zip_bytes(("markup.bcf", b"<Markup/>")),
         )
         self.assertEqual(sniffed.kind, "zip")
+        reject_autodesk_zip_bytes(_zip_bytes(("markup.bcf", b"<Markup/>")))
         with self.assertRaises(UploadContentError) as ctx:
             validate_upload_content(filename="tower.rvt", payload=b"PK\x03\x04")
         self.assertEqual(str(ctx.exception), NATIVE_AUTODESK_CLOSED_REASON)

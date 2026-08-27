@@ -8,6 +8,7 @@ from pathlib import Path
 
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue, ValidationRequest
 from aerobim.domain.quantity import parse_quantity, si_compare
+from aerobim.infrastructure.adapters.office_declared_table_adapter import extract_declared_rows
 
 _LOAD_ROW = re.compile(
     r"(?P<id>[A-Za-zА-Яа-я0-9_.\-]+)\s*[|;]\s*"
@@ -17,6 +18,63 @@ _LOAD_ROW = re.compile(
     r"(?P<observed>-?\d+(?:[.,]\d+)?)",
     re.IGNORECASE,
 )
+
+
+def _fail_closed_office_or_lira(
+    path: Path | None,
+    *,
+    source_id: str,
+) -> list[ValidationIssue] | None:
+    """Native LIRA / PDF / office binaries must not be utf-8-decoded as LOAD text."""
+
+    if path is None:
+        return None
+    suffix = path.suffix.lower()
+    if suffix in {".lir", ".spr"}:
+        return [
+            ValidationIssue(
+                rule_id="AEROBIM-LIRA-NATIVE",
+                severity=Severity.WARNING,
+                message="Native LIRA .lir/.spr is not implemented (not a solver skip)",
+                category=FindingCategory.CROSS_DOCUMENT,
+                source_id=source_id,
+            )
+        ]
+    if suffix == ".pdf":
+        return [
+            ValidationIssue(
+                rule_id="AEROBIM-LIRA-PDF",
+                severity=Severity.INFO,
+                message="LIRA PDF table compare remains fragile; use xlsx/docx",
+                category=FindingCategory.CROSS_DOCUMENT,
+                source_id=source_id,
+            )
+        ]
+    if suffix not in {".xlsx", ".xlsm", ".docx"}:
+        return None
+    extracted = extract_declared_rows(path)
+    if extracted.status != "ok":
+        return [
+            ValidationIssue(
+                rule_id="AEROBIM-LIRA-OFFICE",
+                severity=Severity.INFO,
+                message=f"Office declared table: {extracted.reason}",
+                category=FindingCategory.CROSS_DOCUMENT,
+                source_id=source_id,
+            )
+        ]
+    return [
+        ValidationIssue(
+            rule_id="AEROBIM-LIRA-OFFICE",
+            severity=Severity.INFO,
+            message=(
+                f"Office declared table has {len(extracted.rows)} row(s); "
+                "two-file compare is not a solver"
+            ),
+            category=FindingCategory.CROSS_DOCUMENT,
+            source_id=source_id,
+        )
+    ]
 
 
 def _numeric_match(expected: float, observed: float, unit: str) -> bool:
@@ -38,6 +96,9 @@ class SpreadsheetLoadEvidenceAdapter:
         conflict_issues: list[ValidationIssue] = []
         text = ""
         source_id = source.source_id or "calculation"
+        closed = _fail_closed_office_or_lira(source.path, source_id=source_id)
+        if closed is not None:
+            return closed
 
         # RT-CALC-005: .json path is SSOT when present (text must not shadow).
         if source.path is not None and source.path.suffix.lower() == ".json":

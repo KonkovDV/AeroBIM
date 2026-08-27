@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-27T20:44:02.230922+00:00",
+  "generated_at": "2026-08-27T20:57:04.565650+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 884,
+  "file_count": 885,
   "vendored_count": 15,
   "files": [
     {
@@ -1156,8 +1156,8 @@
     },
     {
       "path": "calculations/README.md",
-      "sha256": "dc9617a4dcd7f9ee2ae97cb33ad8e741ddcd0514d58e0384a003d4b20cb6e195",
-      "bytes": 468,
+      "sha256": "36c3d14f3ce2fabfa0c43d0b6cc8f4294a22db8a128bd81ac045083241cdc627",
+      "bytes": 578,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
@@ -1170,6 +1170,18 @@
       "path": "calculations/area-requirement.txt",
       "sha256": "438233d874dc4b8e57fdefd4fad5befea9343de216abd1e3ed670d759e5d4324",
       "bytes": 125,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "calculations/lira-declared-vs-rd.json",
+      "sha256": "2cef095a741bd84b7238fb3a71128040573bc5da7472ade49392162c368cd1b6",
+      "bytes": 619,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

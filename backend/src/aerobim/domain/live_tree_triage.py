@@ -4,6 +4,7 @@ Pass 1: TZ v1 / inject_defects / kitchen tokens.
 Pass 2: KT#3 jury CLI, tracker six tasks, unsigned OOS, owner inventory.
 Pass 3: OOS manifest gate, remark storey/axis from IfcSpatialIndex, packs/day not SLA.
 Pass 4: 25.08 channel speech, analyze cap vs ingest, axis not nearest-grid, OIDC BFF, RT-002b.
+Pass 5: xlsx/docx table MATCH ≠ solver; PDF LIRA fragile; streaming design ≠ raised cap.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -152,6 +153,30 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "An unsigned SP 63/20 pack closes RT-002b / RT-002",
         "brake": "RT-002a city IDS; RT-002b needs Samolet signature; closes_rt002 false",
+    },
+    {
+        "id": "RT-LIRA-SOLVER",
+        "verdict": "KILL",
+        "attack": "Treat xlsx/docx table MATCH as calculation_correctness",
+        "brake": "compare_declared_tables solver not_implemented; native_lir closed",
+    },
+    {
+        "id": "RT-PDF-LIRA",
+        "verdict": "KILL",
+        "attack": "Parse LIRA PDF as a declared table compare",
+        "brake": "extract status pdf_fragile; SpreadsheetLoadEvidenceAdapter LIRA-PDF",
+    },
+    {
+        "id": "RT-IFC-STREAM",
+        "verdict": "KILL",
+        "attack": "Treat streaming design as live disk R-tree or raised analyze cap",
+        "brake": "streaming_design_snapshot raises_default_cap False; 256 MiB default",
+    },
+    {
+        "id": "RT-ZIP-SNIFF",
+        "verdict": "KILL",
+        "attack": "ZIP namelist on sniff prefix turns zip-bomb into 415",
+        "brake": "sniff is magic only; inspect_zip_path 422 then Autodesk 415",
     },
     {
         "id": "RT-SEAM-HOLD",

@@ -9,6 +9,7 @@ from __future__ import annotations
 import io
 import zipfile
 from dataclasses import dataclass
+from pathlib import Path
 
 # Enough for ZIP/PDF/PNG/JPEG/DWG and IFC header search.
 _SNIFF_WINDOW = 4096
@@ -119,14 +120,6 @@ def extension_of(filename: str) -> str:
     return "." + name.rsplit(".", 1)[-1].lower()
 
 
-def _zip_member_basenames(payload: bytes) -> tuple[str, ...]:
-    from aerobim.core.security.zip_limits import inspect_zip_bytes
-
-    inspect_zip_bytes(payload)
-    with zipfile.ZipFile(io.BytesIO(payload), "r") as archive:
-        return tuple(archive.namelist())
-
-
 def _zip_names_indicate_autodesk(names: tuple[str, ...]) -> bool:
     for raw in names:
         base = raw.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1].lower()
@@ -187,18 +180,36 @@ def validate_upload_content(
             raise UploadContentError(
                 f"Content mismatch: extension {ext} does not match sniffed type {sniffed.kind}"
             )
-    if ext == ".zip":
-        from aerobim.core.security.zip_limits import ZipBombError
-
-        try:
-            names = _zip_member_basenames(payload)
-        except ZipBombError as exc:
-            raise UploadContentError(str(exc)) from exc
-        except zipfile.BadZipFile as exc:
-            raise UploadContentError(f"Invalid ZIP archive: {exc}") from exc
-        if _zip_names_indicate_autodesk(names):
-            raise UploadContentError(_AUTODESK_CLOSED_REASON)
     return sniffed
+
+
+def reject_autodesk_zip_bytes(payload: bytes) -> None:
+    """Reject ZIP members that are native RVT/NWD or a Revit container.
+
+    Call on the **complete** archive after zip-bomb inspection. Do not run this
+    on a sniff-window prefix: the ZIP central directory is at the end of the
+    file, so a truncated prefix raises BadZipFile and would mask 422 zip-bomb.
+    """
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload), "r") as archive:
+            names = tuple(archive.namelist())
+    except zipfile.BadZipFile as exc:
+        raise UploadContentError(f"Invalid ZIP archive: {exc}") from exc
+    if _zip_names_indicate_autodesk(names):
+        raise UploadContentError(_AUTODESK_CLOSED_REASON)
+
+
+def reject_autodesk_zip_path(path: Path) -> None:
+    """Path form for the upload quarantine after ``inspect_zip_path``."""
+
+    try:
+        with zipfile.ZipFile(path, "r") as archive:
+            names = tuple(archive.namelist())
+    except zipfile.BadZipFile as exc:
+        raise UploadContentError(f"Invalid ZIP archive: {exc}") from exc
+    if _zip_names_indicate_autodesk(names):
+        raise UploadContentError(_AUTODESK_CLOSED_REASON)
 
 
 __all__ = [
@@ -206,5 +217,7 @@ __all__ = [
     "UploadContentError",
     "sniff_content",
     "validate_upload_content",
+    "reject_autodesk_zip_bytes",
+    "reject_autodesk_zip_path",
     "extension_of",
 ]
