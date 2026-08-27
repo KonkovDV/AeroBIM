@@ -114,13 +114,13 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-REMARK-LOC",
         "verdict": "KILL",
         "attack": "Invent storey/axis from OCR, target_ref, or LLM text",
-        "brake": "TemplateRemarkGenerator uses ValidationIssue.storey_name/grid_axis from IfcSpatialIndex",
+        "brake": "TemplateRemarkGenerator uses stamped storey_name/grid_axis from IfcSpatialIndex",
     },
     {
         "id": "RT-PACKS-SLA",
         "verdict": "KILL",
         "attack": "Treat customer-stated 5-10 packs/day as a measured SLA",
-        "brake": "peak_packs_per_day_mvp is a stated string; benchmark-thresholds publishable_sla false",
+        "brake": "peak_packs_per_day_mvp is stated text; thresholds publishable_sla is false",
     },
     {
         "id": "RT-SEAM-HOLD",
