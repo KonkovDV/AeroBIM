@@ -123,6 +123,7 @@ _KITCHEN_TOKENS = (
     "",
     "",
     "",
+    "",
     "customer-discovery/",
     "docs/partners/outreach/",
     "",

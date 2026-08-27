@@ -145,6 +145,8 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-PLAN-01 | Post-cartography plan / TL-04…10 ⇒ tasks closed | **KILL** | Criterion Uncertain; IUA rows are speech bounds |
 | RT-PLAN-02 | KR cipher accepted ⇒ KZH/PP-87 delivered | **KILL** | KR-NOT-KZH warning; numeric volume ≠ discipline |
 
+Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md).
+
 ## 6. What this pass does not do
 
 Does not close RT. Does not commit NDA. Does not run Harbor. Does not compute κ. Does not parse RVT/NWD/LIRA. Does not change `AEROBIM_MAX_IFC_BYTES`. Does not set `customer_approved`. Does not write `summary.passed`.

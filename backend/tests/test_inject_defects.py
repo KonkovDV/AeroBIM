@@ -82,6 +82,42 @@ class InjectDefectsTests(unittest.TestCase):
                 inject_defects(blocked, root / "out", seed=1)
             self.assertIn("not a clean PD pack", str(ctx.exception))
 
+    def test_nested_output_inside_source_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            pack = self._seed_pack(root)
+            with self.assertRaises(ValueError) as ctx:
+                inject_defects(pack, pack / "out", seed=1, classes=("CONTROL",))
+            self.assertIn("must not nest", str(ctx.exception))
+            self.assertTrue((pack / "model.ifc").is_file())
+
+    def test_same_tree_as_output_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            pack = self._seed_pack(Path(temporary_directory))
+            with self.assertRaises(ValueError) as ctx:
+                inject_defects(pack, pack, seed=1, classes=("CONTROL",))
+            self.assertIn("must not be the source tree", str(ctx.exception))
+
+    def test_customer_tree_source_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            customer = root / "samples" / "customer" / "pack"
+            customer.mkdir(parents=True)
+            (customer / "model.ifc").write_text(_MINI_IFC, encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                inject_defects(customer, root / "out", seed=1, classes=("CONTROL",))
+            self.assertIn("customer trees", str(ctx.exception))
+
+    def test_owner_files_tree_source_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            owner = root / "AeroBIM" / "files" / "pack"
+            owner.mkdir(parents=True)
+            (owner / "model.ifc").write_text(_MINI_IFC, encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                inject_defects(owner, root / "out", seed=1, classes=("CONTROL",))
+            self.assertIn("files/", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

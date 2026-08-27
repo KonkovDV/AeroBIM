@@ -43,6 +43,26 @@ _TEXT_SUFFIXES = {".txt", ".csv", ".md", ".tsv"}
 _MAX_FILE_BYTES = 80 * 1024 * 1024
 
 
+def _posix(path: Path) -> str:
+    return path.resolve().as_posix().lower()
+
+
+def _reject_unsafe_inject_trees(source: Path, output: Path) -> None:
+    """Refuse nested trees and gitignored NDA roots (RT-INJ-NEST / RT-INJ-NDA)."""
+
+    src = source.resolve()
+    out = output.resolve()
+    if src == out:
+        raise ValueError("inject_defects output must not be the source tree")
+    if src in out.parents or out in src.parents:
+        raise ValueError("inject_defects source and output must not nest")
+    posix = _posix(src)
+    if "/samples/customer" in posix:
+        raise ValueError("gitignored customer trees cannot be inject_defects sources")
+    if "/aerobim/files/" in posix or posix.endswith("/aerobim/files"):
+        raise ValueError("owner files/ trees cannot be inject_defects sources")
+
+
 def _sha256_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
@@ -224,6 +244,7 @@ def inject_defects(
 
     if not source.is_dir():
         raise FileNotFoundError(f"source pack directory not found: {source}")
+    _reject_unsafe_inject_trees(source, output)
     source_posix = source.resolve().as_posix().lower()
     if "moscow-agr-examples" in source_posix:
         raise ValueError(
