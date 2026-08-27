@@ -2,7 +2,7 @@
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
 version: "1.7.8"
-last_updated: "2026-08-27"
+last_updated: "2026-08-28"
 tags: [aerobim, pilot, claims, evidence]
 ---
 

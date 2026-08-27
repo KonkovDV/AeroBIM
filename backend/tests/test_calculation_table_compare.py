@@ -21,12 +21,10 @@ from aerobim.domain.ifc_streaming_design import (
 )
 from aerobim.domain.models import RequirementSource, SourceKind, ValidationRequest
 from aerobim.domain.samolet_mvp_answers import samolet_mvp_answers_payload
-from aerobim.infrastructure.adapters.office_declared_table_adapter import (
-    compare_office_tables,
-    extract_declared_rows,
-)
 from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
     SpreadsheetLoadEvidenceAdapter,
+    compare_office_tables,
+    extract_declared_rows,
 )
 
 

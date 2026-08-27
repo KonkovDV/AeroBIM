@@ -2,7 +2,7 @@
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
 version: "1.4.1"
-last_updated: "2026-08-27"
+last_updated: "2026-08-28"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
