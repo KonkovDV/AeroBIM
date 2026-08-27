@@ -11,6 +11,9 @@ from pathlib import Path
 from typing import Any, Final
 
 from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS
+from aerobim.domain.kt3_jury import JURY_COMMAND
+from aerobim.domain.tracker_six_tasks import tracker_snapshot
+from aerobim.domain.tz_v1_brief import PAPER_OBJECTS
 
 PLAN_B_DECISION: Final = "re-scope"
 OWNER_DECISION_DATE: Final = "2026-08-23"
@@ -18,6 +21,8 @@ PROGRAM_FORK_DATE: Final = "2026-09-15"
 CLAIM_LEVEL: Final = "fixture_and_proxy_only"
 DEMO_COMMAND: Final = "python -m aerobim.tools.run_demo_ifc_acceptance_gate"
 PACK_COMMAND: Final = "python -m aerobim.tools.run_kt3_without_customer"
+JURY_PACK_COMMAND: Final = JURY_COMMAND
+SCHEMA_VERSION: Final = "1.2.0"
 
 CLAIM_BOUNDARY: Final = (
     "Customer files are not expected in git. "
@@ -41,6 +46,15 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
     ("moscow_agr_ruler", "samples/norm-packs/moscow_agr_2026/pack.json"),
     ("kt3_jury_card", "docs/demo/KT3_JURY_FAQ_2026_08_25.md"),
     ("kt3_operator_runbook", "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md"),
+    ("kt3_tracker_card", "docs/demo/KT3_TRACKER_DMITRY_2026_08.md"),
+    ("tz_v1_brief", "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md"),
+    ("owner_ai_plan", "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md"),
+    ("iua_ledger", "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md"),
+    (
+        "typical_errors_catalog",
+        "samples/benchmarks/samolet-typical-errors-catalog.json",
+    ),
+    ("oos_qto", "samples/oos/qto_space_area.unsigned.json"),
 )
 
 TZ_MVP_DEMONSTRABLE: Final[tuple[str, ...]] = (
@@ -105,6 +119,19 @@ def _true_intake_gates(intake: Mapping[str, Any]) -> list[str]:
     return true_keys
 
 
+def _typical_errors_pin(repo: Path) -> dict[str, Any]:
+    path = repo / "samples" / "benchmarks" / "samolet-typical-errors-catalog.json"
+    catalog = _load_json(path)
+    patterns = catalog.get("patterns")
+    count = len(patterns) if isinstance(patterns, list) else 0
+    confirmed = catalog.get("customer_confirmed_patterns", 0)
+    return {
+        "pattern_count": count,
+        "customer_confirmed_patterns": confirmed if isinstance(confirmed, int) else 0,
+        "catalog_status": catalog.get("catalog_status"),
+    }
+
+
 def assemble_kt3_without_customer(
     repo: Path,
     *,
@@ -121,9 +148,11 @@ def assemble_kt3_without_customer(
         repo / "samples/benchmarks/rt001-preregistration-synthetic-freeze-2026-08-14.json"
     )
     pointer = _load_json(repo / "samples/ids/moexp/jurisdiction-profile-pointer.json")
+    typical = _typical_errors_pin(repo)
+    tracker = tracker_snapshot()
 
     payload: dict[str, Any] = {
-        "schema_version": "1.1.0",
+        "schema_version": SCHEMA_VERSION,
         "artifact_type": "kt3_without_customer",
         "claim_level": CLAIM_LEVEL,
         "claim_boundary": CLAIM_BOUNDARY,
@@ -148,13 +177,18 @@ def assemble_kt3_without_customer(
         },
         "demo_command": DEMO_COMMAND,
         "pack_command": PACK_COMMAND,
+        "jury_command": JURY_PACK_COMMAND,
         "show_tracks": {
-            "jury_laptop": [DEMO_COMMAND, PACK_COMMAND],
+            "jury_laptop": [JURY_PACK_COMMAND, DEMO_COMMAND, PACK_COMMAND],
             "regulatory_leg": "AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026",
             "owner_optional_nda": "local customer files are not in git; never RT-001 CLOSED",
         },
         "tz_mvp_demonstrable": list(TZ_MVP_DEMONSTRABLE),
         "tz_explicit_gaps": list(TZ_EXPLICIT_GAPS),
+        "paper_objects": list(PAPER_OBJECTS),
+        "typical_errors": typical,
+        "tracker": tracker,
+        "mik_m2_m8": "VERIFY_WITH_OPERATOR",
         "evidence": evidence,
         "intake_status": gate.get("status"),
         "intake_true_gates": true_gates,
@@ -211,6 +245,22 @@ def require_honest_kt3_payload(
     gaps = payload.get("tz_explicit_gaps")
     if not isinstance(gaps, list) or not any("90%" in str(item) for item in gaps):
         errors.append("tz_explicit_gaps must keep publishable >90% as a gap")
+    papers = payload.get("paper_objects")
+    if not isinstance(papers, list) or len(papers) != 4:
+        errors.append("paper_objects must stay the four unmixed Samolet papers")
+    typical = payload.get("typical_errors")
+    if not isinstance(typical, dict):
+        errors.append("typical_errors pin missing")
+    else:
+        if int(typical.get("customer_confirmed_patterns") or 0) != 0:
+            errors.append("customer_confirmed_patterns must stay 0")
+        if int(typical.get("pattern_count") or 0) < 20:
+            errors.append("synthetic typical-error catalog must stay ≥20")
+    tracker = payload.get("tracker")
+    if not isinstance(tracker, dict) or tracker.get("scheduled_demos_in_git") is not False:
+        errors.append("tracker must not publish scheduled-demo counts in git")
+    if payload.get("mik_m2_m8") != "VERIFY_WITH_OPERATOR":
+        errors.append("mik_m2_m8 must stay VERIFY_WITH_OPERATOR")
     if errors:
         raise Kt3WithoutCustomerError("; ".join(errors))
 
@@ -248,10 +298,12 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         f"- closes_rt002: **{json.dumps(bool(payload['closes_rt002']))}** "
         "(не произносить CLOSED без split a/b)",
         f"- closes_rt003: **{json.dumps(bool(payload['closes_rt003']))}**",
-        f"- Показ: `{payload['demo_command']}`",
+        f"- Показ (одна команда): `{payload.get('jury_command') or payload['demo_command']}`",
+        f"- Gate (если жюри просит отдельно): `{payload['demo_command']}`",
         f"- Пакет без заказчика: `{payload['pack_command']}`",
         "- Карточка речи: `docs/demo/KT3_JURY_FAQ_2026_08_25.md`",
         "- Сценарий оператора: `docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`",
+        "- Трекер (6 задач): `docs/demo/KT3_TRACKER_DMITRY_2026_08.md`",
         "",
         str(payload["claim_boundary"]),
         "",

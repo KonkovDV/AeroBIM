@@ -1,0 +1,108 @@
+{
+  "artifact_type": "kt3_jury_gate",
+  "claim_level": "fixture_and_proxy_only",
+  "checkpoint": "NO_GO",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "claim_boundary": "KT#3 jury gate over the git fixture. Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint NO_GO. closes_rt001/002/003=false.",
+  "passed": false,
+  "jury_finding": {
+    "finding_id": "8ba0f7e08a62ee6e1ae0eccba397a159",
+    "rule_id": "IDS-Wall Fire Rating Multi",
+    "ifc_guid": "1XYVUKGoDDbREfVxRKsHkl",
+    "expected": "REI60",
+    "observed": "REI30",
+    "remark": "Суть: [IDS] Wall Fire Rating Multi: Property — FireRating data shall be REI60 and in the dataset Pset_WallCommon (The property value \"REI30\" does not match the requirements). Норма/СТО: пункт нормы не привязан. Локация: GUID 1XYVUKGoDDbREfVxRKsHkl. Развёрнуто: Для элемента 1XYVUKGoDDbREfVxRKsHkl поле требование имеет значение не найдено, тогда как ожидалось значение None."
+  },
+  "mep_system_clash": "NOT_VERIFIED",
+  "finding_count": 9,
+  "command": "python -m aerobim.tools.run_kt3_jury",
+  "generated_at": "2026-08-27T08:31:32.588664+00:00",
+  "pack_checkpoint": "NO_GO",
+  "paper_objects": [
+    "tz_v1_contest_brief",
+    "tz_v2_tr_1_62",
+    "techlab_seven_comparison_tasks",
+    "project_design_tz_houses"
+  ],
+  "typical_errors": {
+    "pattern_count": 25,
+    "customer_confirmed_patterns": 0,
+    "catalog_status": "synthetic-scaffold"
+  },
+  "tracker": {
+    "artifact_type": "tracker_six_tasks_kt3",
+    "claim_level": "operational_hygiene",
+    "checkpoint": "NO_GO",
+    "closes_rt001": false,
+    "closes_rt002": false,
+    "closes_rt003": false,
+    "claim_boundary": "Tracker six-task status for KT#3. Live fixture CLI and open-bench pins. Not product accuracy. Not customer SLA. Not a scheduled-demo count in git. Checkpoint NO_GO. closes_rt001/002/003=false.",
+    "detected_count": 0,
+    "tracker": "Dmitry",
+    "assigned_at": "2026-08-14",
+    "kt3_window": "2026-09-03..2026-09-21",
+    "speech_tangl": "Tangl is the model layer; AeroBIM is the pack seam (requirements ↔ IFC ↔ sheets ↔ revisions).",
+    "scheduled_demos_in_git": false,
+    "items": [
+      {
+        "id": "TRK-01",
+        "title": "Product for KT#3: live fail-closed CLI on a fixture",
+        "agent": "done_fixture",
+        "owner": "n/a",
+        "kt3_show": "python -m aerobim.tools.run_kt3_jury",
+        "stop": "Checkpoint GO / market GO = customer GO"
+      },
+      {
+        "id": "TRK-02",
+        "title": "IFC2X3 / IFC4 / IFC4X3 kernel table",
+        "agent": "done_fixture",
+        "owner": "blocked_customer_packs",
+        "kt3_show": "docs/evidence/ifc-release-matrix-2026-08.md",
+        "stop": "Product accuracy by IFC release"
+      },
+      {
+        "id": "TRK-03",
+        "title": "Open datasets searched and run (honest countable subsets)",
+        "agent": "done_open_bench",
+        "owner": "blocked_pd_expertise_corpus",
+        "kt3_show": "docs/demo/KT2_CORPUS_SSOT_2026_08.md",
+        "stop": "Open bench = RT-001 CLOSED"
+      },
+      {
+        "id": "TRK-04",
+        "title": "Scientific consultant / IT mentor questions in the repo",
+        "agent": "done_speech",
+        "owner": "blocked_consultation_minutes",
+        "kt3_show": "docs/demo/KT3_JURY_FAQ_2026_08_25.md",
+        "stop": "Invented consultation minutes"
+      },
+      {
+        "id": "TRK-05",
+        "title": "KPI = scheduled demos (3–5)",
+        "agent": "local_only",
+        "owner": "blocked_funnel_in_git",
+        "kt3_show": "owner file outside git",
+        "stop": "Scheduled-demo count as a git fact"
+      },
+      {
+        "id": "TRK-06",
+        "title": "Monetization with MIT open core",
+        "agent": "adr_accepted",
+        "owner": "blocked_commercial_decision",
+        "kt3_show": "docs/architecture/ADR-002-open-core-commercial-boundary-2026.md",
+        "stop": "Tracker agreed Tangl/10D/SKU in code"
+      }
+    ],
+    "item_count": 6,
+    "agent_done_count": 5,
+    "owner_blocked_count": 5
+  },
+  "mik_m2_m8": "VERIFY_WITH_OPERATOR",
+  "demo_command": "python -m aerobim.tools.run_demo_ifc_acceptance_gate",
+  "pack_command": "python -m aerobim.tools.run_kt3_without_customer",
+  "jury_command": "python -m aerobim.tools.run_kt3_jury",
+  "customer_files_expected": false,
+  "nda_corpus_in_git": false
+}

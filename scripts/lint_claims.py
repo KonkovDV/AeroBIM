@@ -124,6 +124,7 @@ _KITCHEN_TOKENS = (
     "",
     "",
     "",
+    "",
     "customer-discovery/",
     "docs/partners/outreach/",
     "",
@@ -161,6 +162,11 @@ _KITCHEN_SCAN_ROOTS = (
 )
 
 
+def _rel_is_operator_kitchen(rel: str) -> bool:
+    posix = rel.replace("\\", "/")
+    return any(posix.startswith(prefix) for prefix in _KITCHEN_PATH_PREFIXES)
+
+
 def lint_kitchen_tokens() -> list[str]:
     """Jury pack: no NDA locators, kitchen paths, or archived speech-docs."""
 
@@ -184,6 +190,8 @@ def lint_kitchen_tokens() -> list[str]:
             except (OSError, UnicodeDecodeError):
                 continue
             rel = path.relative_to(_REPO).as_posix()
+            if _rel_is_operator_kitchen(rel):
+                continue
             for token in _KITCHEN_TOKENS:
                 if token in text:
                     hits.append(f"[kitchen_token] {rel}: {token}")

@@ -41,7 +41,12 @@ class InterpretationUseLedgerTests(unittest.TestCase):
         self.assertIn("TL-04", ids)
         self.assertIn("TL-10", ids)
         self.assertIn("SAM-10", ids)
-        self.assertEqual(payload["schema_version"], "1.1.0")
+        self.assertIn("PLAN-00", ids)
+        self.assertIn("PLAN-05", ids)
+        trk01 = next(row for row in payload["rows"] if row["row_id"] == "TRK-01")
+        self.assertIn("run_kt3_jury", trk01["licensed_inference"])
+        self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", trk01["evidence"])
+        self.assertEqual(payload["schema_version"], "1.2.0")
         self.assertGreaterEqual(payload["row_count"], 22)
         self.assertEqual(len(ids), payload["row_count"])
 

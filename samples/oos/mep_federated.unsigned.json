@@ -1,0 +1,11 @@
+{
+  "schema": "aerobim_signed_oos_v1",
+  "kind": "mep_federated",
+  "signer": "",
+  "signed_at": "",
+  "scope_memo": "",
+  "statement": "Federated MEP system-clash is out of measurement. mep_system_clash stays NOT_VERIFIED. Does not close RT-003.",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false
+}

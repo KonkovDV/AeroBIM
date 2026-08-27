@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.11"
-last_updated: "2026-08-18"
+version: "2.5.12"
+last_updated: "2026-08-27"
 ---
 
 # Evidence fixtures
@@ -22,6 +22,8 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md) | Data availability: git fixtures vs local benches vs missing customer corpus; Checkpoint NO_GO |
 | [`interpretation-use-ledger-latest.json`](interpretation-use-ledger-latest.json) · [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: licensed vs blocked inferences. Not customer precision. Checkpoint NO_GO |
 | [`tz-v1-brief-coverage-2026-08.json`](tz-v1-brief-coverage-2026-08.json) · [`../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) | Public TZ v1 6-page brief pin. Not seven tasks. Not a product accuracy score. NO_GO |
+| [`owner-ai-plan-execution-2026-08.json`](owner-ai-plan-execution-2026-08.json) · [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md) | Owner-AI plan scaffolds (unsigned OOS, local inventory). Not RT CLOSED. NO_GO |
+| [`kt3-jury-2026-08.json`](kt3-jury-2026-08.json) · [`../demo/KT3_TRACKER_DMITRY_2026_08.md`](../demo/KT3_TRACKER_DMITRY_2026_08.md) | KT#3 one-command pin + tracker six tasks. Fixture `passed=false`. Not RT CLOSED |
 | [`ifc-cache-ram-ceiling-latest.json`](ifc-cache-ram-ceiling-latest.json) | Process-local IFC LRU ceiling 8×256 MiB = 2 GiB. Not federated RSS, not VM profile, not RT-003 |
 | [`ifc-release-matrix-2026-08.md`](ifc-release-matrix-2026-08.md) · [`.json`](ifc-release-matrix-2026-08.json) | Fixture IFC2X3/IFC4/IFC4X3 kernel: findings 5/4/6, `passed=false`, `clash=skipped`. sha `559dcd91…46391`. Not customer accuracy |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `6133a564…57aa4e` |

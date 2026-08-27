@@ -4,7 +4,7 @@ title: "Post-cartography execution plan — seven TechLab tasks"
 date: "2026-08-27"
 last_updated: "2026-08-27"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -35,6 +35,8 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 3. Нулевой QTO помещений — Missing экспорта, не Does-not против ТЭП.
 4. Семь задач в исполняемом IUA-ledger (`TL-04`…`TL-10`).
 5. SAM-TYP → номер задачи сравнения (scaffold; `customer_confirmed_patterns` остаётся 0).
+
+27.08 execution (owner-AI plan): unsigned OOS templates (`samples/oos/`); inventory only under `.local/`; IUA `PLAN-00`…`PLAN-05`. Pin: [`OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](OWNER_AI_PLAN_EXECUTION_2026_08_27.md).
 
 Не делается: native RVT/NWD/LIRA, IDS `customer_approved`, закрытие RT-001/002/003, `summary.passed` от модели.
 

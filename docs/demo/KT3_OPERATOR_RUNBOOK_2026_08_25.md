@@ -2,7 +2,7 @@
 ---
 title: "КТ#3 — сценарий оператора (живой CLI из git)"
 date: "2026-08-25"
-last_updated: "2026-08-26"
+last_updated: "2026-08-27"
 checkpoint: NO_GO
 closes_rt001: false
 closes_rt002: false
@@ -19,13 +19,17 @@ claim_boundary: >
 
 На защите жюри — только этот трек: живой CLI из git. Файлов заказчика в репозитории нет.
 
-## Чужой ноутбук (обязательный)
-
-Offline. Сеть не нужна после `pip install`. Профиль: development + учебный пакет.
+Предпочтительная одна команда:
 
 ```text
 cd backend
 pip install -e ".[dev,raster]"
+python -m aerobim.tools.run_kt3_jury
+```
+
+Эквивалент двумя командами (если жюри просит «покажите gate отдельно»):
+
+```text
 python -m aerobim.tools.run_demo_ifc_acceptance_gate
 python -m aerobim.tools.run_kt3_without_customer
 ```
@@ -38,6 +42,7 @@ python -m aerobim.tools.run_kt3_without_customer
 | `report.html` / `report.json` / `findings.bcfzip` | есть |
 | `summary.passed` / `passed` | **false** на учебной фикстуре — это сценарий, не поломка |
 | `artifacts/kt3-without-customer/latest.json` | `checkpoint=NO_GO`, все `closes_rt00*=false`, `customer_files_expected=false`, `nda_corpus_in_git=false` |
+| `artifacts/kt3-jury/latest.json` | `passed=false`, GUID-находка, tracker item_count=6 |
 
 В кадре показать **IDS-находку с GUID** (в прогоне 25.08: правило `IDS-Wall Fire Rating Multi`, GUID `1XYVUKGoDDbREfVxRKsHkl`, expected REI60 / observed REI30). Не первую строку `REQ-AREA-*`: там `ifc_guid=null` — жюри не увидит объект.
 

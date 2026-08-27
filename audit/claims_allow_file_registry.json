@@ -18,6 +18,7 @@
     "docs/demo/KT2_TASK07_COMPARISON_2026_08.md",
     "docs/demo/KT3_JURY_FAQ_2026_08_25.md",
     "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md",
+    "docs/demo/KT3_TRACKER_DMITRY_2026_08.md",
     "docs/docs.md",
     "docs/evidence/DATA_STATEMENT_2026_08.md",
     "docs/evidence/N1_GOST_21_101_2020_DEPENDENCY_AUDIT_2026_08.md",
@@ -75,6 +76,7 @@
     "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
     "docs/quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md",
     "docs/quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md",
+    "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
     "docs/quality/RT001_LABELING_PROTOCOL_RT026_2026_08_03.md",
     "docs/regulatory-baseline-2026.md",
     "docs/samolet-techlab-alignment-2026.md",
@@ -88,6 +90,7 @@
     "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md",
     "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md",
     "docs/tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md",
+    "samples/oos/README.md",
     "submission/README.md",
     "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md"
   ]

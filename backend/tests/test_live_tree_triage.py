@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from aerobim.domain.live_tree_triage import TRIAGE_ROWS, triage_snapshot
 from aerobim.domain.tz_v1_brief import (
@@ -43,6 +44,41 @@ class LiveTreeTriageTests(unittest.TestCase):
         self.assertNotIn("pack_hash", snap)
         self.assertNotIn("customer_pack_hash", snap)
         self.assertEqual(snap["evaluation"]["pilot_interim_precision"], 0.60)
+
+    def test_pass2_kt3_brakes_are_wired(self) -> None:
+        from aerobim.domain.kt3_jury import Kt3JuryError, require_kt3_jury_gate
+        from aerobim.domain.owner_files_inventory import (
+            output_is_local_only,
+            public_rehearsal_snapshot,
+        )
+        from aerobim.domain.signed_oos import evaluate_oos, unsigned_template
+        from aerobim.domain.tracker_six_tasks import tracker_snapshot
+
+        with self.assertRaises(Kt3JuryError):
+            require_kt3_jury_gate(
+                {
+                    "passed": True,
+                    "checkpoint_verdict": "NO_GO",
+                    "findings": [
+                        {
+                            "rule_id": "IDS-Wall Fire Rating Multi",
+                            "ifc_guid": "1XYVUKGoDDbREfVxRKsHkl",
+                        }
+                    ],
+                }
+            )
+        snap = tracker_snapshot()
+        self.assertFalse(snap["scheduled_demos_in_git"])
+        self.assertGreaterEqual(snap["owner_blocked_count"], 4)
+        self.assertEqual(snap["checkpoint"], "NO_GO")
+        repo = Path(__file__).resolve().parents[2]
+        self.assertFalse(output_is_local_only(repo, repo / "docs" / "evidence" / "leak.json"))
+        rehearsal = public_rehearsal_snapshot()
+        self.assertFalse(rehearsal["names_in_git"])
+        self.assertFalse(rehearsal["hashes_in_git"])
+        unsigned = evaluate_oos(unsigned_template("qto_space_area"))
+        self.assertFalse(unsigned.licenses_unmeasured_speech)
+        self.assertFalse(unsigned.closes_rt001)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "artifact_type": "kt3_without_customer",
   "claim_level": "fixture_and_proxy_only",
   "claim_boundary": "Customer files are not expected in git. KT#3 is the live fixture gate plus public/synthetic proxies. Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false.",
-  "generated_at": "2026-08-23T00:00:00+00:00",
+  "generated_at": "2026-08-27T08:31:32.588664+00:00",
   "checkpoint": "NO_GO",
   "mik_stage": "доработка",
   "validation_effectiveness_started": false,
@@ -24,8 +24,10 @@
   },
   "demo_command": "python -m aerobim.tools.run_demo_ifc_acceptance_gate",
   "pack_command": "python -m aerobim.tools.run_kt3_without_customer",
+  "jury_command": "python -m aerobim.tools.run_kt3_jury",
   "show_tracks": {
     "jury_laptop": [
+      "python -m aerobim.tools.run_kt3_jury",
       "python -m aerobim.tools.run_demo_ifc_acceptance_gate",
       "python -m aerobim.tools.run_kt3_without_customer"
     ],
@@ -51,6 +53,86 @@
     "TR-48 publishable product accuracy >90%",
     "TR-49 customer SLA"
   ],
+  "paper_objects": [
+    "tz_v1_contest_brief",
+    "tz_v2_tr_1_62",
+    "techlab_seven_comparison_tasks",
+    "project_design_tz_houses"
+  ],
+  "typical_errors": {
+    "pattern_count": 25,
+    "customer_confirmed_patterns": 0,
+    "catalog_status": "synthetic-scaffold"
+  },
+  "tracker": {
+    "artifact_type": "tracker_six_tasks_kt3",
+    "claim_level": "operational_hygiene",
+    "checkpoint": "NO_GO",
+    "closes_rt001": false,
+    "closes_rt002": false,
+    "closes_rt003": false,
+    "claim_boundary": "Tracker six-task status for KT#3. Live fixture CLI and open-bench pins. Not product accuracy. Not customer SLA. Not a scheduled-demo count in git. Checkpoint NO_GO. closes_rt001/002/003=false.",
+    "detected_count": 0,
+    "tracker": "Dmitry",
+    "assigned_at": "2026-08-14",
+    "kt3_window": "2026-09-03..2026-09-21",
+    "speech_tangl": "Tangl is the model layer; AeroBIM is the pack seam (requirements ↔ IFC ↔ sheets ↔ revisions).",
+    "scheduled_demos_in_git": false,
+    "items": [
+      {
+        "id": "TRK-01",
+        "title": "Product for KT#3: live fail-closed CLI on a fixture",
+        "agent": "done_fixture",
+        "owner": "n/a",
+        "kt3_show": "python -m aerobim.tools.run_kt3_jury",
+        "stop": "Checkpoint GO / market GO = customer GO"
+      },
+      {
+        "id": "TRK-02",
+        "title": "IFC2X3 / IFC4 / IFC4X3 kernel table",
+        "agent": "done_fixture",
+        "owner": "blocked_customer_packs",
+        "kt3_show": "docs/evidence/ifc-release-matrix-2026-08.md",
+        "stop": "Product accuracy by IFC release"
+      },
+      {
+        "id": "TRK-03",
+        "title": "Open datasets searched and run (honest countable subsets)",
+        "agent": "done_open_bench",
+        "owner": "blocked_pd_expertise_corpus",
+        "kt3_show": "docs/demo/KT2_CORPUS_SSOT_2026_08.md",
+        "stop": "Open bench = RT-001 CLOSED"
+      },
+      {
+        "id": "TRK-04",
+        "title": "Scientific consultant / IT mentor questions in the repo",
+        "agent": "done_speech",
+        "owner": "blocked_consultation_minutes",
+        "kt3_show": "docs/demo/KT3_JURY_FAQ_2026_08_25.md",
+        "stop": "Invented consultation minutes"
+      },
+      {
+        "id": "TRK-05",
+        "title": "KPI = scheduled demos (3–5)",
+        "agent": "local_only",
+        "owner": "blocked_funnel_in_git",
+        "kt3_show": "owner file outside git",
+        "stop": "Scheduled-demo count as a git fact"
+      },
+      {
+        "id": "TRK-06",
+        "title": "Monetization with MIT open core",
+        "agent": "adr_accepted",
+        "owner": "blocked_commercial_decision",
+        "kt3_show": "docs/architecture/ADR-002-open-core-commercial-boundary-2026.md",
+        "stop": "Tracker agreed Tangl/10D/SKU in code"
+      }
+    ],
+    "item_count": 6,
+    "agent_done_count": 5,
+    "owner_blocked_count": 5
+  },
+  "mik_m2_m8": "VERIFY_WITH_OPERATOR",
   "evidence": [
     {
       "role": "demo_manifest",
@@ -105,6 +187,36 @@
     {
       "role": "kt3_operator_runbook",
       "path": "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md",
+      "present": true
+    },
+    {
+      "role": "kt3_tracker_card",
+      "path": "docs/demo/KT3_TRACKER_DMITRY_2026_08.md",
+      "present": true
+    },
+    {
+      "role": "tz_v1_brief",
+      "path": "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md",
+      "present": true
+    },
+    {
+      "role": "owner_ai_plan",
+      "path": "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
+      "present": true
+    },
+    {
+      "role": "iua_ledger",
+      "path": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
+      "present": true
+    },
+    {
+      "role": "typical_errors_catalog",
+      "path": "samples/benchmarks/samolet-typical-errors-catalog.json",
+      "present": true
+    },
+    {
+      "role": "oos_qto",
+      "path": "samples/oos/qto_space_area.unsigned.json",
       "present": true
     }
   ],

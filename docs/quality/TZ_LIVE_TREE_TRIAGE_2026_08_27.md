@@ -4,20 +4,20 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-27"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_level: coverage_map_only
 detected_count: 0
 claim_boundary: >
-  KILL/HOLD/ACCEPT over the live tree after TZ v1 pin. Not product accuracy.
-  Not customer SLA. Not MEP delivered. Checkpoint NO_GO.
+  KILL/HOLD/ACCEPT over the live tree after TZ v1 pin and the KT#3 pack.
+  Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint NO_GO.
 ---
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` был пустой. Этот проход — полный триаж живого дерева, не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс второй проход (КТ#3 / трекер / OOS / инвентарь). Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -33,7 +33,14 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-V1-04 | Акт МИК цитирует v1 вместо interim 0.60 | горизонт `interim_tp_fp_ge_0_60` |
 | RT-INJ-NEST | `inject_defects` output внутри source → `rmtree` пакета | деревья не равны и не вложены |
 | RT-INJ-NDA | source = `samples/customer` или `files/` | posix-маркеры |
-| RT-KIT-01 | Кухонные топонимы снова в публичном дереве | `lint_claims` kitchen tokens |
+| RT-KIT-01 | Кухонные топонимы / фамилия трекера снова в публичном дереве | `lint_claims` kitchen tokens |
+| RT-KT3-01 | `passed=false` на фикстуре = Checkpoint GO | `require_kt3_jury_gate` |
+| RT-KT3-02 | Первая строка жюри = `REQ-AREA` без GUID | `select_jury_finding` |
+| RT-KT3-03 | Fixture MEP `OK` = MEP delivered | gate rejects `OK`/`DELIVERED` |
+| RT-TRK-05 | KPI 3–5 демо как факт git | `scheduled_demos_in_git=false` |
+| RT-TRK-GO | `agent_done_count` = шесть задач закрыты у заказчика | `owner_blocked_count≥4`; NO_GO |
+| RT-OOS-01 | Unsigned OOS = skip / signed OOS = RT CLOSED | `evaluate_oos` |
+| RT-INV-01 | Имена/хэши `files/` в `docs/` | `require_local_only_output` |
 
 ## HOLD (не чиним в этом коммите)
 
@@ -42,6 +49,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-SEAM-HOLD | Карта семи задач = Meets / RT CLOSED | §5 TZ seam уже KILL; критерий Uncertain |
 | RT-FULL-D01 | `/v1/validate/ifc` зелёный в production через development | DI берёт `settings.signoff_profile`; soft `passed` не authoritative |
 | RT-AGR-002 | `moscow_agr_2026` `status=approved` = профиль Самолёта | RT-002a ≠ RT-002b; профиль не customer-hard |
+| RT-INV-HOLD | Счётчики 2383/15/1 = `pack_hash` / RT-001 CLOSED | `coverage_map_only`; имён нет; intake blocked |
 
 ## ACCEPT (тормоз уже стоит)
 
@@ -52,4 +60,4 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 
 Июльский полный аудит (`RT-FULL-*` SSRF/OIDC/locks) не переоткрываем как новые CRITICAL. Не поднимаем IFC cap. Не парсим RVT/NWD/LIRA.
 
-Связанные пины: [`TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) · [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md) §5.
+Связанные пины: [`TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) · [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md) §5 · [`OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](OWNER_AI_PLAN_EXECUTION_2026_08_27.md).

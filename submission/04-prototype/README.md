@@ -26,15 +26,14 @@ python -m aerobim.tools.run_demo_ifc_acceptance_gate
 
 Это **fixture-only**. HTML-снимок в [`../../docs/evidence/kt2-handoff-2026-08-11/`](../../docs/evidence/kt2-handoff-2026-08-11/) — архив прогона 11.08, а не живой показ.
 
-Пакет КТ#3, если файлов заказчика нет (re-scope, не GO):
+Пакет КТ#3, если файлов заказчика нет (re-scope, не GO). Одна команда:
 
 ```bash
-python -m aerobim.tools.run_kt3_without_customer
+python -m aerobim.tools.run_kt3_jury
 ```
 
-Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Сценарий: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).  
-Речь КТ#3: [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md).  
-Команды и два трека: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).
+Эквивалент двумя командами: `python -m aerobim.tools.run_demo_ifc_acceptance_gate` и `python -m aerobim.tools.run_kt3_without_customer`.  
+Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Трекер: [`../../docs/demo/KT3_TRACKER_DMITRY_2026_08.md`](../../docs/demo/KT3_TRACKER_DMITRY_2026_08.md). Сценарий: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).
 
 ## Что показывает находка
 

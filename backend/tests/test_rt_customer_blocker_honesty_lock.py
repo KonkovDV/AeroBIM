@@ -337,7 +337,11 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         )
         surfaces = (
             self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
+            self._repo() / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md",
+            self._repo() / "docs" / "demo" / "KT3_OPERATOR_RUNBOOK_2026_08_25.md",
+            self._repo() / "docs" / "demo" / "KT3_TRACKER_DMITRY_2026_08.md",
             self._repo() / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md",
+            self._repo() / "docs" / "quality" / "OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
             self._repo() / "backend" / "src" / "aerobim" / "domain" / "interpretation_use.py",
             self._repo() / "docs" / "TIER0_INDEX.md",
             self._repo() / "README.ru.md",
@@ -482,6 +486,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
         self.assertIn("KT3_JURY_FAQ_2026_08_25.md", text)
         self.assertIn("KT3_OPERATOR_RUNBOOK_2026_08_25.md", text)
+        self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", text)
         self.assertNotIn("", text)
         self.assertNotIn("", text)
         self.assertNotIn("", text)
@@ -554,7 +559,13 @@ class JuryPackHygieneTests(unittest.TestCase):
 
     def test_tracked_markdown_omits_ai_auditor_kitchen_fingerprints(self) -> None:
         listed = _git_ls_files("*.md")
-        needles = ("ZCode", "rewrite-author-konkovdv", "эта машина", "Что делать ИИ дальше")
+        needles = (
+            "ZCode",
+            "rewrite-author-konkovdv",
+            "эта машина",
+            "Что делать ИИ дальше",
+            "",
+        )
         hits: list[str] = []
         repo = self._repo()
         for rel in listed.splitlines():

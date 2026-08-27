@@ -1,7 +1,8 @@
 """Live-tree Red Team triage 2026-08-27 — attacks, not RT CLOSED.
 
-Checkpoint NO_GO. Diff vs main was empty; this is a coverage pin of
-KILL/HOLD/ACCEPT brakes. Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
+Pass 1: TZ v1 / inject_defects / kitchen tokens.
+Pass 2: KT#3 jury CLI, tracker six tasks, unsigned OOS, owner inventory.
+Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
 from __future__ import annotations
@@ -58,7 +59,49 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-KIT-01",
         "verdict": "KILL",
         "attack": "Re-introduce kitchen site tokens into the public tree",
-        "brake": "lint_claims _KITCHEN_TOKENS including the 2026-08-27 addition",
+        "brake": "lint_claims _KITCHEN_TOKENS (site toponyms + tracker surname)",
+    },
+    {
+        "id": "RT-KT3-01",
+        "verdict": "KILL",
+        "attack": "Fixture passed=false or a live CLI means Checkpoint GO",
+        "brake": "require_kt3_jury_gate rejects passed=True; checkpoint stays NO_GO",
+    },
+    {
+        "id": "RT-KT3-02",
+        "verdict": "KILL",
+        "attack": "Lead the jury with REQ-AREA and a null GUID",
+        "brake": "select_jury_finding skips REQ-AREA and empty GUIDs",
+    },
+    {
+        "id": "RT-KT3-03",
+        "verdict": "KILL",
+        "attack": "Fixture mep_system_clash=OK means MEP delivered",
+        "brake": "require_kt3_jury_gate rejects OK/DELIVERED",
+    },
+    {
+        "id": "RT-TRK-05",
+        "verdict": "KILL",
+        "attack": "Publish scheduled-demo KPI 3-5 as a git fact",
+        "brake": "scheduled_demos_in_git is False; require_honest_kt3_payload",
+    },
+    {
+        "id": "RT-TRK-GO",
+        "verdict": "KILL",
+        "attack": "Tracker agent_done_count means six customer tasks closed",
+        "brake": "owner_blocked_count >= 4; checkpoint NO_GO",
+    },
+    {
+        "id": "RT-OOS-01",
+        "verdict": "KILL",
+        "attack": "Unsigned OOS licenses skip, or signed OOS closes RT",
+        "brake": "evaluate_oos: unsigned does not license skip; accepted never closes RT",
+    },
+    {
+        "id": "RT-INV-01",
+        "verdict": "KILL",
+        "attack": "Write files/ names or hashes into docs/ or samples/",
+        "brake": "require_local_only_output; public rehearsal names_in_git False",
     },
     {
         "id": "RT-SEAM-HOLD",
@@ -77,6 +120,12 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "HOLD",
         "attack": "moscow_agr_2026 status=approved means Samolet customer_approved",
         "brake": "RT-002a city pack; RT-002b OPEN; profile not customer-hard",
+    },
+    {
+        "id": "RT-INV-HOLD",
+        "verdict": "HOLD",
+        "attack": "Public rehearsal 2383/15/1 counts are a pack_hash / RT-001 CLOSED",
+        "brake": "coverage_map_only; no names/hashes; intake still blocked",
     },
     {
         "id": "RT-ADR-001",

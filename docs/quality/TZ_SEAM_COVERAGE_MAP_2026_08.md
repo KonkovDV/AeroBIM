@@ -2,7 +2,7 @@
 ---
 title: "TZ seam coverage map — local NDA rehearsal × literature 2026-08-26"
 date: "2026-08-26"
-last_updated: "2026-08-26"
+last_updated: "2026-08-27"
 status: active
 version: "1.2.2"
 closes_rt001: false
@@ -145,7 +145,7 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-PLAN-01 | Post-cartography plan / TL-04…10 ⇒ tasks closed | **KILL** | Criterion Uncertain; IUA rows are speech bounds |
 | RT-PLAN-02 | KR cipher accepted ⇒ KZH/PP-87 delivered | **KILL** | KR-NOT-KZH warning; numeric volume ≠ discipline |
 
-Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md).
+Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Исполнение плана (unsigned OOS, inventory `.local/`): [`OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](OWNER_AI_PLAN_EXECUTION_2026_08_27.md).
 
 ## 6. What this pass does not do
 

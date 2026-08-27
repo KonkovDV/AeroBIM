@@ -68,9 +68,11 @@ python -m aerobim.tools.run_demo_vertical_slice
 # → artifacts/vertical-slice-demo/report.html: sheet fragment, overlay,
 #   text evidence, capability table, run manifest, BCF ZIP
 
-# 3. KT#3 pack without customer files in git (re-scope, still NO_GO)
-python -m aerobim.tools.run_kt3_without_customer
-# → artifacts/kt3-without-customer/latest.json
+# 3. KT#3 one-command: live fixture gate + pack + tracker six tasks (still NO_GO)
+python -m aerobim.tools.run_kt3_jury
+# → artifacts/kt3-jury/latest.json (passed=false, GUID finding)
+# → artifacts/kt3-without-customer/latest.json (re-scope pack)
+# equivalent two-command: run_demo_ifc_acceptance_gate + run_kt3_without_customer
 
 pytest tests -q
 python -m aerobim.main   # → http://127.0.0.1:8080/health

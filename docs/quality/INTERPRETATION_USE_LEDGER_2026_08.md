@@ -1,9 +1,9 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-08-26"
+date: "2026-08-27"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -34,7 +34,13 @@ claim_boundary: >-
 | SAM-08 | samolet | ТР-16/19: площади помещений / чертёж↔IFC | 6 AR IFC: 10599 IfcSpace, 0 NetFloorArea; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
 | SAM-09 | samolet | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | 62033 walls; FireRating 5.7% EI45 only; not TZ II/C0 | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
 | SAM-10 | samolet | ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ | v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score | Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF | `engine_regression` |
-| TRK-01 | tracker | Задача 1: доработать продукт к КТ#2 (20.08) | IFC Acceptance Gate + HD fail-closed; live CLI; Checkpoint NO_GO | Checkpoint GO / market GO = customer GO | `fixture_demo` |
+| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | Public rehearsal counts; live scan only under .local/ | sha256 пакета Самолёта в git; имена площадок в публичном дереве | `operational_hygiene` |
+| PLAN-01 | techlab | QTO помещений или подписанный OOS (задача 3) | Unsigned qto_space_area template; Missing QTO ≠ TEP Does-not | Площади сверены с ТЭП; unsigned OOS = skip licensed | `protocol_planning` |
+| PLAN-02 | techlab | ИОС IFC или подписанный MEP-OOS (задача 5 / RT-003) | Unsigned mep_federated template; mep_system_clash=NOT_VERIFIED | MEP delivered; unsigned OOS closes RT-003 | `protocol_planning` |
+| PLAN-03 | techlab | Стержни IFC или подписанный OOS п.7 (Solihin 4) | Unsigned rebar_class4 template; .lir not parsed | Арматура сверена с расчётом; pitch pset = class 4 | `protocol_planning` |
+| PLAN-04 | techlab | Extractor по прозе проектного ТЗ: 0 hits = extraction_gap | II/C0 and TEP prose ≠ fixture REI60 patterns; gap is mapping, not empty TZ | В проектном ТЗ нет требований к огнестойкости и площадям | `engine_regression` |
+| PLAN-05 | techlab | Два независимых разметчика + κ/α до PrecisionClaim.publishable | Protocol ready (RT-001 labeling); zero labeled customer points | Один судья / LLM-as-judge = gold; >90% без κ | `protocol_planning` |
+| TRK-01 | tracker | Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08 | IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint NO_GO | Checkpoint GO / market GO = customer GO | `fixture_demo` |
 | TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
 | TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
 | TRK-04 | tracker | Задача 4: научный консультант / ИТ-ментор | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
@@ -82,6 +88,12 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | SAM-08 | QTO area only after export with quantities or signed OOS |
 | SAM-09 | Customer IDS for fire class, not demo REI60 |
 | SAM-10 | Keep paper-objects unmixed; MIK act cites interim 0.60 |
+| PLAN-00 | Keep NDA binaries and hashes out of git |
+| PLAN-01 | QTO export or appointing-party signed OOS |
+| PLAN-02 | Federated MEP IFC or appointing-party signed OOS; RT-003 stays OPEN |
+| PLAN-03 | Bar entities in IFC or appointing-party signed OOS of task 7 |
+| PLAN-04 | Keep constructs unmixed; do not treat 0 hits as Does-not |
+| PLAN-05 | Dual named raters on a frozen remark set |
 | TRK-01 | КТ#3 — итоговое решение; победителей определяют заказчики |
 | TRK-02 | Повтор на customer packs, не на wall-fixture |
 | TRK-03 | Корпус ПД+экспертиза по-прежнему отсутствует |
@@ -126,11 +138,17 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `SAM-10`: [TZ_V1_CONTEST_BRIEF_PIN_2026_08.md](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md)
-- `TRK-01`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
+- `PLAN-00`: [OWNER_AI_PLAN_EXECUTION_2026_08_27.md](OWNER_AI_PLAN_EXECUTION_2026_08_27.md)
+- `PLAN-01`: [qto_space_area.unsigned.json](../../samples/oos/qto_space_area.unsigned.json)
+- `PLAN-02`: [mep_federated.unsigned.json](../../samples/oos/mep_federated.unsigned.json)
+- `PLAN-03`: [rebar_class4.unsigned.json](../../samples/oos/rebar_class4.unsigned.json)
+- `PLAN-04`: [OWNER_AI_PLAN_EXECUTION_2026_08_27.md](OWNER_AI_PLAN_EXECUTION_2026_08_27.md)
+- `PLAN-05`: [RT001_LABELING_PROTOCOL_RT026_2026_08_03.md](RT001_LABELING_PROTOCOL_RT026_2026_08_03.md)
+- `TRK-01`: [KT3_TRACKER_DMITRY_2026_08.md](../demo/KT3_TRACKER_DMITRY_2026_08.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
 - `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)
 - `TRK-04`: [KT3_JURY_FAQ_2026_08_25.md](../demo/KT3_JURY_FAQ_2026_08_25.md)
-- `TRK-05`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
+- `TRK-05`: [KT3_TRACKER_DMITRY_2026_08.md](../demo/KT3_TRACKER_DMITRY_2026_08.md)
 - `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)

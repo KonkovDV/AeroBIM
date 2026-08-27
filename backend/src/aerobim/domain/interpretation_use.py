@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 LEDGER_ID = "aerobim_interpretation_use_ledger"
-SCHEMA_VERSION = "1.1.0"
+SCHEMA_VERSION = "1.2.0"
 AUDITED_HEAD = "f9389bf"  # IUA freeze; hygiene commits after this do not reopen validity
 CHECKPOINT = "NO_GO"
 CLAIM_BOUNDARY = (
@@ -198,12 +198,72 @@ LEDGER: tuple[InferenceRow, ...] = (
         "engine_regression",
     ),
     _row(
+        "PLAN-00",
+        "techlab",
+        "Инвентарь files/ (локальный NDA) как покрытие, не pack_hash",
+        "Public rehearsal counts; live scan only under .local/",
+        "sha256 пакета Самолёта в git; имена площадок в публичном дереве",
+        "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
+        "Keep NDA binaries and hashes out of git",
+        "operational_hygiene",
+    ),
+    _row(
+        "PLAN-01",
+        "techlab",
+        "QTO помещений или подписанный OOS (задача 3)",
+        "Unsigned qto_space_area template; Missing QTO ≠ TEP Does-not",
+        "Площади сверены с ТЭП; unsigned OOS = skip licensed",
+        "samples/oos/qto_space_area.unsigned.json",
+        "QTO export or appointing-party signed OOS",
+        "protocol_planning",
+    ),
+    _row(
+        "PLAN-02",
+        "techlab",
+        "ИОС IFC или подписанный MEP-OOS (задача 5 / RT-003)",
+        "Unsigned mep_federated template; mep_system_clash=NOT_VERIFIED",
+        "MEP delivered; unsigned OOS closes RT-003",
+        "samples/oos/mep_federated.unsigned.json",
+        "Federated MEP IFC or appointing-party signed OOS; RT-003 stays OPEN",
+        "protocol_planning",
+    ),
+    _row(
+        "PLAN-03",
+        "techlab",
+        "Стержни IFC или подписанный OOS п.7 (Solihin 4)",
+        "Unsigned rebar_class4 template; .lir not parsed",
+        "Арматура сверена с расчётом; pitch pset = class 4",
+        "samples/oos/rebar_class4.unsigned.json",
+        "Bar entities in IFC or appointing-party signed OOS of task 7",
+        "protocol_planning",
+    ),
+    _row(
+        "PLAN-04",
+        "techlab",
+        "Extractor по прозе проектного ТЗ: 0 hits = extraction_gap",
+        "II/C0 and TEP prose ≠ fixture REI60 patterns; gap is mapping, not empty TZ",
+        "В проектном ТЗ нет требований к огнестойкости и площадям",
+        "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
+        "Keep constructs unmixed; do not treat 0 hits as Does-not",
+        "engine_regression",
+    ),
+    _row(
+        "PLAN-05",
+        "techlab",
+        "Два независимых разметчика + κ/α до PrecisionClaim.publishable",
+        "Protocol ready (RT-001 labeling); zero labeled customer points",
+        "Один судья / LLM-as-judge = gold; >90% без κ",
+        "docs/quality/RT001_LABELING_PROTOCOL_RT026_2026_08_03.md",
+        "Dual named raters on a frozen remark set",
+        "protocol_planning",
+    ),
+    _row(
         "TRK-01",
         "tracker",
-        "Задача 1: доработать продукт к КТ#2 (20.08)",
-        "IFC Acceptance Gate + HD fail-closed; live CLI; Checkpoint NO_GO",
+        "Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08",
+        "IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint NO_GO",
         "Checkpoint GO / market GO = customer GO",
-        "docs/pilot-claim-boundary-2026.md",
+        "docs/demo/KT3_TRACKER_DMITRY_2026_08.md",
         "КТ#3 — итоговое решение; победителей определяют заказчики",
         "fixture_demo",
     ),
@@ -243,7 +303,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Задача 5: KPI = назначенные демо (3–5)",
         "Живой счёт только в локальном операторском слое (не в git)",
         "Назначенные демо как git-факт",
-        "docs/architecture/ADR-002-open-core-commercial-boundary-2026.md",
+        "docs/demo/KT3_TRACKER_DMITRY_2026_08.md",
         "Owner file; git не изобретает воронку",
         "operational_hygiene",
     ),
