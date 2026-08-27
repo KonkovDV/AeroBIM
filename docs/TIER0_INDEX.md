@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.3"
+version: "4.8.4"
 last_updated: "2026-08-27"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -9,7 +9,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 # Карта для жюри Техлаба и МИК
 
-**`NO_GO`.** Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте Самолёта нет. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md).
+**`NO_GO`.** Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте Самолёта **в git** нет. Канал 25.08 получен — **не** говорить «нет данных заказчика»; хеш-пакет в репозитории отсутствует. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md). План в репо: [работа после 25.08](quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md).
 
 **Формула стадии (дословно; источник — [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) и подтверждения импорта в СОД.
 
@@ -28,6 +28,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Матрица ТЗ](tz/TZ_COMPLIANCE_MATRIX_2026.md) | Построчное соответствие |
 | [Карта покрытия подачи](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) | Эта подача |
 | [Граница заявлений](pilot-claim-boundary-2026.md) | Проверено vs план |
+| [План в репо после 25.08](quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md) | Канал ≠ хеш-пакет; CI; не поднимать IFC cap |
 | [Отказ RVT/NWD](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) | IFC-first; тот же класс, что DWG |
 | [Сборка без внешних моделей](security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md) | IB: Kimi/LLM выключены под пилотом |
 | [Карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md) | Формула стадии |

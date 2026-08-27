@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from aerobim.domain.models import DrawingAnnotation
 
@@ -46,7 +47,7 @@ def is_autodesk_native_cad(path: Path, format_hint: str | None = None) -> bool:
     return fmt in AUTODESK_NATIVE_FORMATS
 
 
-def autodesk_format_resolved(path: Path) -> str:
+def autodesk_format_resolved(path: Path) -> Literal["rvt", "nwd"]:
     """Collapse RTE→rvt and NWC→nwd for honesty reporting."""
 
     suffix = path.suffix.lower()

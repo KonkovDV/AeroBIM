@@ -52,6 +52,9 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
         },
         "cde_integration_mvp": False,
         "https_required": True,
+        "customer_stated_closed_cloud": True,
+        "speech_forbid_no_customer_data": True,
+        "axis_nearest_grid_intersection": False,
         "peak_packs_per_day_mvp": "5-10",
         "horizontal_scale_required_on_mvp": False,
         "calculation_compare": (

@@ -176,6 +176,9 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertNotIn("share_url", payload)
         self.assertEqual(payload["checkpoint"], "NO_GO")
         self.assertEqual(payload["native_rvt_nwd"], "not_implemented")
+        self.assertTrue(payload["speech_forbid_no_customer_data"])
+        self.assertTrue(payload["customer_stated_closed_cloud"])
+        self.assertFalse(payload["axis_nearest_grid_intersection"])
         self.assertEqual(payload["peak_packs_per_day_mvp"], "5-10")
         self.assertIn("IfcSpatialIndex", str(payload["remark_shape"]))
         self.assertEqual(payload["native_dwg"], "not_implemented")
@@ -193,7 +196,10 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         runbook = (repo / "docs" / "demo" / "KT3_OPERATOR_RUNBOOK_2026_08_25.md").read_text(
             encoding="utf-8"
         )
-        for text in (faq, runbook):
+        workplan = (repo / "docs" / "quality" / "KT3_IN_REPO_WORKPLAN_2026_08_27.md").read_text(
+            encoding="utf-8"
+        )
+        for text in (faq, runbook, workplan):
             self.assertIn("closes_rt001: false", text)
             self.assertIn("NO_GO", text)
             self.assertNotIn("closes_rt001: true", text)
@@ -209,6 +215,11 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertFalse(gates["nda_signed"])
         self.assertFalse(gates["customer_package_in_samples_customer"])
         self.assertEqual(payload["status"], "BLOCKED_NO_CUSTOMER_DATA")
+        speech = payload.get("speech")
+        self.assertIsInstance(speech, dict)
+        self.assertTrue(speech["forbid_no_customer_data_phrase"])
+        self.assertTrue(speech["channel_received"])
+        self.assertFalse(speech["hashed_pack_in_git"])
 
     def test_catalog_share_metadata_stays_unconfirmed(self) -> None:
         path = self._repo() / "samples" / "benchmarks" / "samolet-typical-errors-catalog.json"

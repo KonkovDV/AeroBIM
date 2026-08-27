@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-27"
 status: active
-version: "1.2.0"
+version: "1.3.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс второй проход (КТ#3 / трекер / OOS / инвентарь) и третий (манифест OOS, локация замечания, 5–10 комплектов/день). Не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08. Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -44,6 +44,11 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-OOS-MANIFEST | `samples/oos` на диске, но нет в `DATASET_MANIFEST` | `test_samples_manifest_gate` |
 | RT-REMARK-LOC | Этаж/ось из OCR или LLM | `IfcSpatialIndex` + шаблон «нет в индексе» |
 | RT-PACKS-SLA | «5–10 комплектов/день» как замер SLA | `publishable_sla=false` в порогах |
+| RT-NODATA-SPEECH | «Нет данных» после канала 25.08 | `speech_forbid_no_customer_data` |
+| RT-IFC-RAISE | Default analyze = 1.5 ГБ | 256 МиБ analyze; ingest отдельно |
+| RT-AXIS-NEAR | Ближайшее пересечение осей | Только `IfcGridAxis.AxisTag` |
+| RT-CLOUD-OIDC | HTTPS = живой OIDC BFF | `auth_bff` 501 |
+| RT-002-SPPACK | Unsigned СП 63 = RT-002b | `closes_rt002=false` |
 
 ## HOLD (не чиним в этом коммите)
 

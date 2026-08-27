@@ -11,6 +11,7 @@ from aerobim.domain.models import CapabilityStatus, DrawingRegionRef, DrawingSou
 
 SheetType = Literal["plan_ar", "plan_ov", "title_block", "spec", "unknown"]
 RaseTag = Literal["R", "A", "S", "E"]
+CadFormat = Literal["dxf", "dwg", "rvt", "nwd", "unknown"]
 
 
 @dataclass(frozen=True)
@@ -75,7 +76,7 @@ class CadEntity:
 @dataclass(frozen=True)
 class EntityGraph:
     source_id: str
-    format: Literal["dxf", "dwg", "unknown"]
+    format: CadFormat
     entities: tuple[CadEntity, ...] = ()
     capability: CapabilityStatus | None = None
 
@@ -164,6 +165,7 @@ class NormRetrieverPort(Protocol):
 __all__ = [
     "CadEntity",
     "CadEntityLoaderPort",
+    "CadFormat",
     "DetectedDimension",
     "DetectedObject",
     "DetectedText",

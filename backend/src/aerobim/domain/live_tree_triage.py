@@ -3,6 +3,7 @@
 Pass 1: TZ v1 / inject_defects / kitchen tokens.
 Pass 2: KT#3 jury CLI, tracker six tasks, unsigned OOS, owner inventory.
 Pass 3: OOS manifest gate, remark storey/axis from IfcSpatialIndex, packs/day not SLA.
+Pass 4: 25.08 channel speech, analyze cap vs ingest, axis not nearest-grid, OIDC BFF, RT-002b.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -121,6 +122,36 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Treat customer-stated 5-10 packs/day as a measured SLA",
         "brake": "peak_packs_per_day_mvp is stated text; thresholds publishable_sla is false",
+    },
+    {
+        "id": "RT-NODATA-SPEECH",
+        "verdict": "KILL",
+        "attack": "Say customer sent no data after the 25.08 channel",
+        "brake": "share_url_received; speech_forbid_no_customer_data; pack not in git",
+    },
+    {
+        "id": "RT-IFC-RAISE",
+        "verdict": "KILL",
+        "attack": "Raise default AEROBIM_MAX_IFC_BYTES to the stated 1.5 GB model cap",
+        "brake": "analyze default stays 256 MiB; ingest caps are separate",
+    },
+    {
+        "id": "RT-AXIS-NEAR",
+        "verdict": "KILL",
+        "attack": "Claim nearest IfcGrid intersection as axis in remarks",
+        "brake": "IfcGridAxis.AxisTag only; nearest intersection is not implemented",
+    },
+    {
+        "id": "RT-CLOUD-OIDC",
+        "verdict": "KILL",
+        "attack": "HTTPS closed-cloud ask means browser OIDC BFF is live",
+        "brake": "auth_bff NOT_IMPLEMENTED; production BFF still 501",
+    },
+    {
+        "id": "RT-002-SPPACK",
+        "verdict": "KILL",
+        "attack": "An unsigned SP 63/20 pack closes RT-002b / RT-002",
+        "brake": "RT-002a city IDS; RT-002b needs Samolet signature; closes_rt002 false",
     },
     {
         "id": "RT-SEAM-HOLD",

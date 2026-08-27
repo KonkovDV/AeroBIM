@@ -30,6 +30,11 @@ class LiveTreeTriageTests(unittest.TestCase):
         self.assertIn("RT-REMARK-LOC", ids)
         self.assertIn("RT-PACKS-SLA", ids)
         self.assertIn("RT-OOS-MANIFEST", ids)
+        self.assertIn("RT-NODATA-SPEECH", ids)
+        self.assertIn("RT-IFC-RAISE", ids)
+        self.assertIn("RT-AXIS-NEAR", ids)
+        self.assertIn("RT-CLOUD-OIDC", ids)
+        self.assertIn("RT-002-SPPACK", ids)
 
     def test_ids_unique_and_verdicts_known(self) -> None:
         ids = [row["id"] for row in TRIAGE_ROWS]

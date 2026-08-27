@@ -204,11 +204,25 @@
       "tz_matrix": "Upload DWG"
     },
     {
+      "gap_id": "rvt_nwd_native",
+      "label": "Нативная загрузка RVT / NWD",
+      "reason": "Закрытые форматы Autodesk без свободного ридера; тот же класс отказа, что DWG. Приём — IFC 2x3/4/4x3 с стороны заказчика (ПП 614 / 783/пр — PDF/A + IFC)",
+      "status": "not_checked",
+      "tz_matrix": "Upload RVT/NWD (вводные 25.08)"
+    },
+    {
       "gap_id": "space_efficiency",
       "label": "Эффективность использования пространства",
       "reason": "Самолёт 25.08: продаваемая площадь, избыточные техпомещения, широкие коридоры, мёртвые зоны МОП. Пороги не подписаны; advisory inventory ≠ delivered metric",
       "status": "not_checked",
       "tz_matrix": "§2 целевые задачи / space efficiency"
+    },
+    {
+      "gap_id": "calculation_solver",
+      "label": "Решатель LIRA / расчётная корректность",
+      "reason": "Самолёт 25.08: сверка объявленных PDF/Excel с РД/BIM, не solver; native LIR NOT_IMPLEMENTED; calculation_correctness=NOT_IMPLEMENTED",
+      "status": "not_checked",
+      "tz_matrix": "§3.2 vs calculation results / ТР-13"
     }
   ]
 }

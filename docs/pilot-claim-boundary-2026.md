@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.7.6"
+version: "1.7.7"
 last_updated: "2026-08-27"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -141,6 +141,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer; Checkpoint **NO_GO** until RT-001/002/003.
 12. The SPb GAU CGE profile (`samples/profiles/spb-cge/`) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. It does **not** close RT-001 or RT-002 and is not an expertise verdict.
 13. AeroBIM does **not** treat a 1.5 GB ingest envelope as analyze/WASM capability, and does **not** treat «5–10 packs/day» as a published SLA.
+14. After the 25.08 questionnaire, AeroBIM does **not** say the customer sent no data. The channel is received; a hashed pack is **not** in git; RT-001 stays OPEN. HTTPS / closed-cloud storage is a **stated** target — browser OIDC BFF remains `NOT_IMPLEMENTED`.
 
 ## Reproducibility baseline
 

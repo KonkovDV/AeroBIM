@@ -36,6 +36,16 @@ class CombatBackendTests(unittest.TestCase):
         self.assertIn(graph.capability.status.value, {"skipped", "not_verified", "failed"})
         self.assertNotEqual(graph.capability.status.value, "ok")
 
+    def test_cad_entity_loader_rvt_is_failed_not_dxf(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "model.rvt"
+            path.write_bytes(b"PK\x03\x04fake-rvt")
+            graph = EzdxfCadEntityLoader().load(path)
+        self.assertEqual(graph.format, "rvt")
+        assert graph.capability is not None
+        self.assertEqual(graph.capability.status.value, "failed")
+        self.assertNotEqual(graph.capability.status.value, "ok")
+
     def test_oda_stub_disabled_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "a.dwg"
