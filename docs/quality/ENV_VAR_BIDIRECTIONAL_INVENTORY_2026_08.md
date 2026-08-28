@@ -20,7 +20,7 @@ claim_boundary: >
 
 **Verdict.** **Scanner defect, not no-op.** Every name below is read by `Settings.from_env` via `_read_int` / `_read_bool` / `_read_float` / `_read_optional_int` / `_optional_bool` / `_env_prefer` / `_read_optional_int_prefer`, except `AEROBIM_GATES_ATTESTED` which is read by the baseline exporter itself (`os.environ.get` in `export_runtime_baseline.py`, not `settings.py`). CI previously enforced **code ⊆ docs**, not **docs ⊆ code**.
 
-Publishable numbers stay the pin: backend 2660 collected / 2641 passed / 19 skipped / 0 failed; frontend 57; src 83697 LOC; tests 54526 LOC; `extraction_macro_f1=0.86` on the **fixture** corpus; 48 ports / 72 adapters / 63 DI tokens. This report does not mint a new pin.
+Publishable numbers stay the pin: backend 2663 collected / 2644 passed / 19 skipped / 0 failed; frontend 57; src 83887 LOC; tests 54607 LOC; `extraction_macro_f1=0.86` on the **fixture** corpus; 48 ports / 72 adapters / 63 DI tokens. This report does not mint a new pin.
 
 ## Pin names in documented_env_vars and not in code_env_vars
 
