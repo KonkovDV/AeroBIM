@@ -2,9 +2,9 @@
 ---
 title: "In-repo workplan after 25.08 customer answers"
 date: "2026-08-27"
-last_updated: "2026-08-27"
+last_updated: "2026-08-28"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -31,7 +31,9 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 | Ingest caps 500 MB office / 1.5 GB model | `SAMOLET_STATED_*`; analyze/WASM stay **256 MiB** |
 | LIRA = compare, not solver | `calculation_compare`; `native_lir=not_implemented` |
 | xlsx/docx declared-field compare | `compare_declared_tables` + office adapter; PDF fragile; `.lir` closed |
+| HTTP `.lir`/`.spr` honesty 415 | `NATIVE_LIRA_CLOSED_REASON`; ZIP members after zip-bomb inspect |
 | IFC streaming / disk R-tree **design** | `streaming_design_snapshot`; parser not implemented; cap unchanged |
+| Spatial index JSON sidecar | dump of in-memory `IfcSpatialIndex`; not disk R-tree; not analyze |
 | Remark essence + clause + storey/axis | Storey from `IfcBuildingStorey`; axis = `IfcGridAxis.AxisTag` only — **not** nearest grid intersection |
 | Two role aliases | `expert` HITL; `user` viewer |
 | HTTPS required flag | `https_required` on capabilities payload |
@@ -42,7 +44,7 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 
 | Pri | Task | Done when | Forbidden |
 |---|---|---|---|
-| 0 | Keep CI green; commit **CI-attested** runtime pin only | typecheck + pytest + `attested_by=ci` artifact | Minting a runtime pin from local pytest |
+| 0 | Keep CI green; commit **CI-attested** runtime pin only | typecheck + pytest + frontend vitest + `attested_by=ci` artifact | Minting a runtime pin from local pytest |
 | 2 | Unsigned SP 63/20 **template** only if needed | `closes_rt002: false`; not `customer_approved` | Relabel as RT-002b CLOSED |
 | 4 | Implement streaming IFC / disk R-tree | Parser + RSS measurement; default cap still 256 MiB until measured | Silent raise of `AEROBIM_MAX_IFC_BYTES` |
 | 5 | Browser OIDC BFF | Explicit 501 until implemented | Demo login as production SSO |

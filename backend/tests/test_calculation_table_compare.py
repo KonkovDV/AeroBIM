@@ -172,6 +172,7 @@ class IfcStreamingDesignTests(unittest.TestCase):
         self.assertEqual(snap["streaming_parser"], "designed_not_implemented")
         self.assertEqual(snap["disk_r_tree"], "designed_not_implemented")
         self.assertFalse(snap["raises_default_cap"])
+        self.assertEqual(snap["spatial_index_json_sidecar"], "dump_only")
         self.assertEqual(snap["default_analyze_bytes"], DEFAULT_ANALYZE_IFC_BYTES)
         self.assertEqual(DEFAULT_ANALYZE_IFC_BYTES, 256 * 1024 * 1024)
         settings = Settings(

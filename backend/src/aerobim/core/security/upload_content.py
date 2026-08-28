@@ -110,6 +110,10 @@ _AUTODESK_CLOSED_SUFFIXES = frozenset({".rvt", ".rte", ".nwd", ".nwc"})
 _AUTODESK_CLOSED_REASON = (
     "native RVT/NWD parser is not implemented; closed Autodesk format without a free reader"
 )
+_LIRA_CLOSED_SUFFIXES = frozenset({".lir", ".spr"})
+NATIVE_LIRA_CLOSED_REASON = (
+    "native LIRA parser is not implemented; xlsx/docx table compare is not a solver"
+)
 _REVIT_CONTAINER_ZIP_BASENAMES = frozenset({"basicfileinfo"})
 
 
@@ -126,6 +130,14 @@ def _zip_names_indicate_autodesk(names: tuple[str, ...]) -> bool:
         if any(base.endswith(suffix) for suffix in _AUTODESK_CLOSED_SUFFIXES):
             return True
         if base in _REVIT_CONTAINER_ZIP_BASENAMES:
+            return True
+    return False
+
+
+def _zip_names_indicate_lira(names: tuple[str, ...]) -> bool:
+    for raw in names:
+        base = raw.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1].lower()
+        if any(base.endswith(suffix) for suffix in _LIRA_CLOSED_SUFFIXES):
             return True
     return False
 
@@ -151,6 +163,8 @@ def validate_upload_content(
         raise UploadContentError("Upload filename must include an allowed extension")
     if ext in _AUTODESK_CLOSED_SUFFIXES:
         raise UploadContentError(_AUTODESK_CLOSED_REASON)
+    if ext in _LIRA_CLOSED_SUFFIXES:
+        raise UploadContentError(NATIVE_LIRA_CLOSED_REASON)
     if ext not in _ALLOWED_EXTENSIONS:
         raise UploadContentError(f"Disallowed upload extension: {ext}")
 
@@ -184,7 +198,7 @@ def validate_upload_content(
 
 
 def reject_autodesk_zip_bytes(payload: bytes) -> None:
-    """Reject ZIP members that are native RVT/NWD or a Revit container.
+    """Reject ZIP members that are closed natives (Autodesk or LIRA).
 
     Call on the **complete** archive after zip-bomb inspection. Do not run this
     on a sniff-window prefix: the ZIP central directory is at the end of the
@@ -198,6 +212,8 @@ def reject_autodesk_zip_bytes(payload: bytes) -> None:
         raise UploadContentError(f"Invalid ZIP archive: {exc}") from exc
     if _zip_names_indicate_autodesk(names):
         raise UploadContentError(_AUTODESK_CLOSED_REASON)
+    if _zip_names_indicate_lira(names):
+        raise UploadContentError(NATIVE_LIRA_CLOSED_REASON)
 
 
 def reject_autodesk_zip_path(path: Path) -> None:
@@ -210,11 +226,14 @@ def reject_autodesk_zip_path(path: Path) -> None:
         raise UploadContentError(f"Invalid ZIP archive: {exc}") from exc
     if _zip_names_indicate_autodesk(names):
         raise UploadContentError(_AUTODESK_CLOSED_REASON)
+    if _zip_names_indicate_lira(names):
+        raise UploadContentError(NATIVE_LIRA_CLOSED_REASON)
 
 
 __all__ = [
     "SniffResult",
     "UploadContentError",
+    "NATIVE_LIRA_CLOSED_REASON",
     "sniff_content",
     "validate_upload_content",
     "reject_autodesk_zip_bytes",

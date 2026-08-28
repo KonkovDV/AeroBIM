@@ -2,9 +2,9 @@
 ---
 title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
-last_updated: "2026-08-27"
+last_updated: "2026-08-28"
 status: active
-version: "1.4.0"
+version: "1.5.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC. Не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC / HTTP `.lir` / JSON sidecar индекса. Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -52,7 +52,9 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-LIRA-SOLVER | MATCH таблицы = solver | `compare_declared_tables` `solver=not_implemented` |
 | RT-PDF-LIRA | PDF LIRA как таблица | `pdf_fragile`; `AEROBIM-LIRA-PDF` |
 | RT-IFC-STREAM | Дизайн = живой disk R-tree / cap 1.5 ГБ | `raises_default_cap=false`; 256 МиБ |
-| RT-ZIP-SNIFF | Namelist ZIP на sniff-префиксе = 415 вместо zip-bomb 422 | sniff = magic; `inspect_zip_path` затем Autodesk |
+| RT-ZIP-SNIFF | Namelist ZIP на sniff-префиксе = 415 вместо zip-bomb 422 | sniff = magic; `inspect_zip_path` затем Autodesk/LIRA |
+| RT-LIRA-HTTP | `.lir`/`.spr` как «disallowed extension» без честной причины | `NATIVE_LIRA_CLOSED_REASON`; ZIP-члены после inspect |
+| RT-SIDECAR-RTREE | JSON sidecar индекса = live disk R-tree | `dump_only`; `disk_r_tree=designed_not_implemented` |
 
 ## HOLD (не чиним в этом коммите)
 

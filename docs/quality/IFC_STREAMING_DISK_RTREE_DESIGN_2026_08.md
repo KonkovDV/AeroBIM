@@ -2,9 +2,9 @@
 ---
 title: "IFC streaming and disk R-tree design"
 date: "2026-08-27"
-last_updated: "2026-08-27"
+last_updated: "2026-08-28"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -22,7 +22,7 @@ Checkpoint **`NO_GO`**. `raises_default_cap: false`.
 
 ## Today (do not re-sell as streaming)
 
-Analyze opens the IFC with `ifcopenshell.open` and builds an in-memory `IfcSpatialIndex` (GUID, storey containment, `IfcGridAxis.AxisTag`). Process-local LRU cache is still full models. Default **`AEROBIM_MAX_IFC_BYTES` = 256 MiB**. Samolet-stated **1.5 GB** is the **ingest** envelope for model files, not analyze and not the WASM viewer.
+Analyze opens the IFC with `ifcopenshell.open` and builds an in-memory `IfcSpatialIndex` (GUID, storey containment, `IfcGridAxis.AxisTag`). Optional JSON sidecar is a dump of that index (`spatial_index_json_sidecar=dump_only`). It is **not** a disk R-tree, **not** a streaming parser, and is **not** wired into analyze. Process-local LRU cache is still full models. Default **`AEROBIM_MAX_IFC_BYTES` = 256 MiB**. Samolet-stated **1.5 GB** is the **ingest** envelope for model files, not analyze and not the WASM viewer.
 
 ## Intended next slice (not shipped)
 
@@ -36,7 +36,7 @@ Analyze opens the IFC with `ifcopenshell.open` and builds an in-memory `IfcSpati
 | Attack | Brake |
 |---|---|
 | Design doc = streaming shipped | `streaming_parser=designed_not_implemented` |
-| In-memory index = disk R-tree | `disk_r_tree=designed_not_implemented` |
+| In-memory index / JSON sidecar = disk R-tree | `disk_r_tree=designed_not_implemented`; sidecar `dump_only` |
 | 1.5 GB ingest = analyze default | `raises_default_cap=false` |
 
 Does not close RT-001/002b/003. Does not parse RVT/NWD/LIRA.

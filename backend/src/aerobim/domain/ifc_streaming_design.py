@@ -17,7 +17,8 @@ from aerobim.core.security.upload_limits import (
 CLAIM_BOUNDARY: Final = (
     "Streaming IFC parser and disk R-tree are designed, not implemented. "
     "Default analyze cap stays 256 MiB. Stated 1.5 GB is ingest only. "
-    "In-memory IfcSpatialIndex is not a disk R-tree. Checkpoint NO_GO."
+    "In-memory IfcSpatialIndex is not a disk R-tree. JSON sidecar is dump_only. "
+    "Checkpoint NO_GO."
 )
 
 DEFAULT_ANALYZE_IFC_BYTES: Final = DEV_DEFAULT_UPLOAD_BYTES
@@ -35,6 +36,7 @@ def streaming_design_snapshot() -> dict[str, object]:
         "streaming_parser": STREAMING_PARSER_STATUS,
         "disk_r_tree": DISK_RTREE_STATUS,
         "in_memory_spatial_index": True,
+        "spatial_index_json_sidecar": "dump_only",
         "default_analyze_bytes": DEFAULT_ANALYZE_IFC_BYTES,
         "stated_model_ingest_bytes": SAMOLET_STATED_MODEL_BYTES,
         "raises_default_cap": False,

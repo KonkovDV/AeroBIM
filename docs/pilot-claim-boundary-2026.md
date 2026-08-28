@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.7.8"
+version: "1.7.9"
 last_updated: "2026-08-28"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -117,7 +117,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)) |
 | 5–10 packs/day | Customer-stated 25.08; not a measured SLA; `benchmark-thresholds.json` `publishable_sla=false` |
 | Analyze default 1.5 GB IFC | Ingest cap for models under stated Samolet caps ≠ analyze; `AEROBIM_MAX_IFC_BYTES` stays **256 MiB** |
-| IFC streaming / disk R-tree | **Designed, not implemented**; in-memory `IfcSpatialIndex` ≠ disk R-tree |
+| IFC streaming / disk R-tree | **Designed, not implemented**; JSON sidecar of `IfcSpatialIndex` ≠ disk R-tree |
 | Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
 | Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |
@@ -145,6 +145,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 14. After the 25.08 questionnaire, AeroBIM does **not** say the customer sent no data. The channel is received; a hashed pack is **not** in git; RT-001 stays OPEN. HTTPS / closed-cloud storage is a **stated** target — browser OIDC BFF remains `NOT_IMPLEMENTED`.
 15. AeroBIM does **not** treat xlsx/docx declared-field **MATCH** as `calculation_correctness` or a LIRA solver. Native `.lir` is not parsed. PDF table compare stays **fragile**.
 16. AeroBIM does **not** treat the IFC streaming / disk R-tree **design** as shipped, and does **not** raise the default analyze cap from **256 MiB** because ingest allows 1.5 GB.
+17. AeroBIM does **not** treat HTTP upload of `.lir`/`.spr` as a silent skip or a solver path. The closed reason is explicit; ZIP members are rejected the same way as native Autodesk.
+18. AeroBIM does **not** treat a JSON dump of `IfcSpatialIndex` as a disk R-tree or a streaming parser, and does **not** wire that dump into analyze.
 
 ## Reproducibility baseline
 

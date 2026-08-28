@@ -3,15 +3,24 @@
 Built once per cached ``IfcParseSession`` — guid lookup, system membership,
 and containment storey / referenced grid axis without repeated ``model.by_type``
 scans. Not a full geometry engine. Axis is **not** inferred from drawing OCR.
+JSON sidecar dump is optional and is **not** a disk R-tree or analyze input.
 """
 
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
-from typing import Any
+from pathlib import Path
+from typing import Any, Final
 
 from aerobim.domain.models import ValidationIssue
+
+SIDECAR_CLAIM: Final = (
+    "JSON dump of in-memory IfcSpatialIndex. Not a disk R-tree. "
+    "Not a streaming parser. Not wired into analyze. Does not raise the IFC cap."
+)
+SIDECAR_ARTIFACT_TYPE: Final = "ifc_spatial_index_sidecar"
 
 
 @dataclass(frozen=True)
@@ -73,6 +82,76 @@ class IfcSpatialIndex:
             elements=elements,
             systems={key: tuple(values) for key, values in systems.items()},
         )
+
+
+def write_spatial_index_json(index: IfcSpatialIndex, path: Path) -> None:
+    """Write a JSON dump of the in-memory index. Not a disk R-tree."""
+
+    payload = {
+        "artifact_type": SIDECAR_ARTIFACT_TYPE,
+        "claim_boundary": SIDECAR_CLAIM,
+        "disk_r_tree": False,
+        "streaming_parser": False,
+        "wired_into_analyze": False,
+        "raises_default_cap": False,
+        "closes_rt001": False,
+        "elements": [
+            {
+                "global_id": element.global_id,
+                "ifc_type": element.ifc_type,
+                "name": element.name,
+                "system_ids": list(element.system_ids),
+                "storey_name": element.storey_name,
+                "grid_axis": element.grid_axis,
+            }
+            for element in index.elements.values()
+        ],
+        "systems": {key: list(values) for key, values in index.systems.items()},
+    }
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def read_spatial_index_json(path: Path) -> IfcSpatialIndex:
+    """Load a sidecar written by ``write_spatial_index_json``.
+
+    Rejects payloads that claim a disk R-tree or streaming parser.
+    """
+
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError("spatial index sidecar must be a JSON object")
+    if raw.get("artifact_type") != SIDECAR_ARTIFACT_TYPE:
+        raise ValueError("not an IfcSpatialIndex sidecar")
+    if raw.get("disk_r_tree") is True:
+        raise ValueError("sidecar must not claim disk_r_tree")
+    if raw.get("streaming_parser") is True:
+        raise ValueError("sidecar must not claim streaming_parser")
+    elements: dict[str, IfcSpatialElement] = {}
+    for item in raw.get("elements") or []:
+        if not isinstance(item, dict):
+            continue
+        guid = str(item.get("global_id") or "").strip()
+        if not guid:
+            continue
+        name_raw = item.get("name")
+        storey_raw = item.get("storey_name")
+        axis_raw = item.get("grid_axis")
+        systems = item.get("system_ids") or ()
+        elements[guid] = IfcSpatialElement(
+            global_id=guid,
+            ifc_type=str(item.get("ifc_type") or ""),
+            name=None if name_raw is None else str(name_raw),
+            system_ids=tuple(str(value) for value in systems),
+            storey_name=None if storey_raw is None else str(storey_raw),
+            grid_axis=None if axis_raw is None else str(axis_raw),
+        )
+    systems: dict[str, tuple[str, ...]] = {}
+    for key, values in (raw.get("systems") or {}).items():
+        systems[str(key)] = tuple(str(value) for value in values)
+    return IfcSpatialIndex(elements=elements, systems=systems)
 
 
 def stamp_issues_with_spatial_location(
@@ -243,5 +322,8 @@ def _related_objects(system: Any) -> list[Any]:
 __all__ = [
     "IfcSpatialElement",
     "IfcSpatialIndex",
+    "SIDECAR_CLAIM",
+    "read_spatial_index_json",
     "stamp_issues_with_spatial_location",
+    "write_spatial_index_json",
 ]

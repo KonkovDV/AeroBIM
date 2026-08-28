@@ -5,6 +5,7 @@ Pass 2: KT#3 jury CLI, tracker six tasks, unsigned OOS, owner inventory.
 Pass 3: OOS manifest gate, remark storey/axis from IfcSpatialIndex, packs/day not SLA.
 Pass 4: 25.08 channel speech, analyze cap vs ingest, axis not nearest-grid, OIDC BFF, RT-002b.
 Pass 5: xlsx/docx table MATCH ≠ solver; PDF LIRA fragile; streaming design ≠ raised cap.
+Pass 6: HTTP .lir/.spr honesty reason; JSON sidecar ≠ disk R-tree.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -176,7 +177,19 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-ZIP-SNIFF",
         "verdict": "KILL",
         "attack": "ZIP namelist on sniff prefix turns zip-bomb into 415",
-        "brake": "sniff is magic only; inspect_zip_path 422 then Autodesk 415",
+        "brake": "sniff is magic only; inspect_zip_path 422 then Autodesk/LIRA 415",
+    },
+    {
+        "id": "RT-LIRA-HTTP",
+        "verdict": "KILL",
+        "attack": "HTTP .lir/.spr as generic disallowed extension hides honesty",
+        "brake": "NATIVE_LIRA_CLOSED_REASON 415; ZIP members after inspect_zip_path",
+    },
+    {
+        "id": "RT-SIDECAR-RTREE",
+        "verdict": "KILL",
+        "attack": "JSON sidecar of IfcSpatialIndex is a live disk R-tree",
+        "brake": "disk_r_tree designed_not_implemented; sidecar dump_only; cap 256 MiB",
     },
     {
         "id": "RT-SEAM-HOLD",

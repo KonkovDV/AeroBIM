@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 from aerobim.domain.finding_provenance import compute_stable_finding_id
 from aerobim.domain.ifc_spatial_index import (
     IfcSpatialElement,
     IfcSpatialIndex,
+    read_spatial_index_json,
     stamp_issues_with_spatial_location,
+    write_spatial_index_json,
 )
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
@@ -125,6 +130,41 @@ class SpatialIndexLocationTests(unittest.TestCase):
         remark = TemplateRemarkGenerator(locale="en").generate(_issue(guid=None))
         self.assertNotIn("storey: not in spatial index", remark.body)
         self.assertNotIn("axis: not in spatial index", remark.body)
+
+    def test_json_sidecar_roundtrip_is_not_a_disk_r_tree(self) -> None:
+        index = IfcSpatialIndex(
+            elements={
+                "wall-1": IfcSpatialElement(
+                    "wall-1",
+                    "IfcWall",
+                    "Wall PQ",
+                    ("sys-1",),
+                    storey_name="3 этаж",
+                    grid_axis="А",
+                )
+            },
+            systems={"sys-1": ("wall-1",)},
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "index.json"
+            write_spatial_index_json(index, path)
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(payload["artifact_type"], "ifc_spatial_index_sidecar")
+            self.assertFalse(payload["disk_r_tree"])
+            self.assertFalse(payload["streaming_parser"])
+            self.assertFalse(payload["wired_into_analyze"])
+            self.assertFalse(payload["raises_default_cap"])
+            loaded = read_spatial_index_json(path)
+            hit = loaded.lookup("wall-1")
+            self.assertIsNotNone(hit)
+            assert hit is not None
+            self.assertEqual(hit.storey_name, "3 этаж")
+            self.assertEqual(hit.grid_axis, "А")
+            self.assertEqual(loaded.system_members("sys-1"), ("wall-1",))
+            payload["disk_r_tree"] = True
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                read_spatial_index_json(path)
 
 
 if __name__ == "__main__":

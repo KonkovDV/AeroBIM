@@ -8,7 +8,9 @@ from pathlib import Path
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.security.upload_content import (
+    NATIVE_LIRA_CLOSED_REASON,
     UploadContentError,
+    reject_autodesk_zip_bytes,
     sniff_content,
     validate_upload_content,
 )
@@ -39,6 +41,25 @@ class UploadContentSniffTests(unittest.TestCase):
         with self.assertRaises(UploadContentError):
             validate_upload_content(filename="evil.exe", payload=b"MZ\x90\x00")
 
+    def test_native_lir_explains_not_a_solver(self) -> None:
+        with self.assertRaises(UploadContentError) as ctx:
+            validate_upload_content(filename="model.lir", payload=b"not-a-solver")
+        self.assertEqual(str(ctx.exception), NATIVE_LIRA_CLOSED_REASON)
+        with self.assertRaises(UploadContentError) as ctx:
+            validate_upload_content(filename="frame.spr", payload=b"not-a-solver")
+        self.assertEqual(str(ctx.exception), NATIVE_LIRA_CLOSED_REASON)
+
+    def test_zip_lir_member_is_content_rejected(self) -> None:
+        import io
+        import zipfile
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as archive:
+            archive.writestr("nested/model.lir", b"not-a-solver")
+        with self.assertRaises(UploadContentError) as ctx:
+            reject_autodesk_zip_bytes(buf.getvalue())
+        self.assertEqual(str(ctx.exception), NATIVE_LIRA_CLOSED_REASON)
+
 
 class UploadApiSecurityTests(unittest.TestCase):
     def test_upload_rejects_content_mismatch_with_415(self) -> None:
@@ -68,6 +89,31 @@ class UploadApiSecurityTests(unittest.TestCase):
                 response.json()["detail"],
                 "Upload content rejected",
             )
+
+    def test_upload_rejects_native_lir_with_415(self) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            settings = Settings(
+                application_name="aerobim-test",
+                environment="test",
+                host="127.0.0.1",
+                port=8080,
+                storage_dir=Path(tmp),
+                debug=True,
+                allow_anonymous_dev=True,
+            )
+            container = bootstrap_container(settings)
+            client = TestClient(create_http_app(container))
+            response = client.post(
+                "/v1/uploads",
+                files={"file": ("model.lir", b"not-a-solver", "application/octet-stream")},
+            )
+            self.assertEqual(response.status_code, 415, response.text)
+            self.assertEqual(response.json()["detail"], "Upload content rejected")
 
     def test_upload_enforces_max_upload_bytes(self) -> None:
         try:
@@ -266,6 +312,37 @@ class UploadApiSecurityTests(unittest.TestCase):
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, "w") as archive:
             archive.writestr("tower.rvt", b"not-a-parser")
+        with tempfile.TemporaryDirectory() as tmp:
+            settings = Settings(
+                application_name="aerobim-test",
+                environment="test",
+                host="127.0.0.1",
+                port=8080,
+                storage_dir=Path(tmp),
+                debug=True,
+                allow_anonymous_dev=True,
+            )
+            container = bootstrap_container(settings)
+            client = TestClient(create_http_app(container))
+            response = client.post(
+                "/v1/uploads",
+                files={"file": ("pack.zip", buf.getvalue(), "application/zip")},
+            )
+        self.assertEqual(response.status_code, 415, response.text)
+        self.assertEqual(response.json()["detail"], "Upload content rejected")
+
+    def test_zip_with_lir_member_is_content_rejected(self) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        import io
+        import zipfile
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as archive:
+            archive.writestr("nested/model.lir", b"not-a-solver")
         with tempfile.TemporaryDirectory() as tmp:
             settings = Settings(
                 application_name="aerobim-test",

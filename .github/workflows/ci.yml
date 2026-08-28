@@ -400,13 +400,16 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - name: Vitest with JSON artifact (WP-A3)
-        run: npm test -- --run --reporter=json --outputFile=var/vitest-results.json
+        run: |
+          mkdir -p var
+          npm test -- --run --reporter=default --reporter=json --outputFile=var/vitest-results.json
       - name: Upload vitest JSON artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
         with:
           name: frontend-vitest-json
           path: frontend/var/vitest-results.json
-          if-no-files-found: error
+          if-no-files-found: warn
       - name: npm audit (high severity blocking)
         run: npm audit --audit-level=high
       - run: npm run build

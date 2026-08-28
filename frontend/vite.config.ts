@@ -34,6 +34,11 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       environment: "jsdom",
+      environmentOptions: {
+        jsdom: {
+          url: "http://localhost/",
+        },
+      },
       setupFiles: "./src/test/setup.ts",
       // Unit suite stays free of Playwright; browser smoke is `npm run smoke:browser`.
       include: ["src/**/*.{test,spec}.{ts,tsx}", "scripts/**/*.test.mjs"],
