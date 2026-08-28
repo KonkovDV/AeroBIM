@@ -2,7 +2,7 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.3.2"
+version: "1.3.3"
 last_updated: "2026-08-28"
 tags: [aerobim, tz, compliance, mvp]
 ---
@@ -108,6 +108,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | OCR for text | partial | Raster baseline | MVP |
 | NLP for TZ / remarks / anomalies | partial | Regex NLP; LLM advisory stub; EN/RU templates | MVP / P3 |
 | Clash / anomaly algorithms | partial | IfcClash `detect_between` on planted federated boxes (optional extra); `closes_rt003=false` | MVP |
+| Spec vs schedule vs BIM volumes | partial | `compare_spec_volumes` declared triples (TR-67, п. 2.1.3); not estimate QTO; not customer pack | P1 |
 | Web UI | done | `frontend/` review shell | MVP |
 | Drawing overlay of errors | done | `DrawingEvidencePanel` + smoke PNG [`drawing-overlay-smoke-2026-08`](../evidence/drawing-overlay-smoke-2026-08/README.md) + [KT#2 handoff](../evidence/kt2-handoff-2026-08-11/README.md) (deterministic `problem_zone` — not CV) | MVP |
 | Remarks panel: list / filter / priority / edit | done | Severity filter + remark editor → review-events | P0 |

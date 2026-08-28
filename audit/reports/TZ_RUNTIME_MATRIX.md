@@ -2,7 +2,7 @@
 
 Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` | `ADVISORY_ONLY` | `NOT_RUNTIME_CONNECTED` | `MISSING` | `BLOCKED_BY_CUSTOMER_DATA` | `FIXTURE_ONLY`
 
-**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. 2026-08-28: row 25 footnote — customer CDE identified at address level (10D contour via share-link origin); T2 closure path via public API + demo license; status unchanged. 2026-08-28 (вечер): критическое издание ответов 25.08 — fn11 (записки PDF/Excel, не бинари; +нагрузки/площади), fn13 (перечень стандартов выдан; блокер = доступ), fn15 (сводная модель в NWD), fn19 (норматив продаваемой площади), fn25 (п. 2.2.2: интеграция не требуется); новая строка 31 (ТР-67 сверка объёмов, MISSING). Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
+**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. 2026-08-28: row 25 footnote — customer CDE identified at address level (10D contour via share-link origin); T2 closure path via public API + demo license; status unchanged. 2026-08-28 (вечер): критическое издание ответов 25.08 — fn11 (записки PDF/Excel, не бинари; +нагрузки/площади), fn13 (перечень стандартов выдан; блокер = доступ), fn15 (сводная модель в NWD), fn19 (норматив продаваемой площади), fn25 (п. 2.2.2: интеграция не требуется); строка 31 (ТР-67 сверка объёмов) — **PARTIAL** на объявленных тройках, не ingest. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
 
 | # | Требование ТЗ | Код | Runtime path | Тест / команда | Реальные данные | Статус | Риск |
 |---|---|---|---|---|---|---|---|
@@ -36,7 +36,7 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | 28 | Сравнение версий и типов документации | `compare_package_document_identities` | CLI `compare_package_identities` | `test_package_identity_compare.py` | synthetic inventories | VERIFIED_FIXTURE_ONLY^[fn28] | HIGH |
 | 29 | Извлечение инженерных сетей из 2D | — | — | — | none | MISSING^[fn29] | HIGH |
 | 30 | Снижение когнитивной нагрузки | review-events journal (метрики ТР-65) | — | — | none | MISSING^[fn30] | MED |
-| 31 | Сверка объёмов спецификации ↔ графика/BIM («логические коллизии») | — | — | — | none | MISSING^[fn31] | HIGH |
+| 31 | Сверка объёмов спецификации ↔ графика/BIM («логические коллизии») | `compare_spec_volumes` | domain declared triples | `test_spec_volume_compare.py` | none | PARTIAL^[fn31] | HIGH |
 
 ## Status summary (31 rows)
 
@@ -45,8 +45,9 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | VERIFIED_FIXTURE_ONLY | 24 |
 | ADVISORY_ONLY | 1 |
 | FIXTURE_ONLY | 1 |
+| PARTIAL | 1 |
 | MISSING (never OK) | 1 |
-| MISSING | 3 |
+| MISSING | 2 |
 | BLOCKED_BY_CUSTOMER_DATA | 1 |
 
 ## VERIFIED rows — required pointers
@@ -121,7 +122,7 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn30]: Пользовательский критерий ТЗ без порога. ТР-65: метрики из журнала HITL review-events — время до первого подтверждённого замечания, доля принятых без правки, переключения лист↔модель на замечание (третья требует UI-событий). Журнал есть, метрики не посчитаны — MISSING, а не scaffold с цифрой.
 
-^[fn31]: П. 2.1.3 ответов 25.08: «логические коллизии» = несоответствие объёмов в спецификации и графике/BIM — сверка количеств, а не геометрия и не «объёмы из модели в смету». Обязательное требование заказчика; заведено как ТР-67 (28.08). Ни строки кода — честный MISSING рядом с геометрической строкой 15.
+^[fn31]: П. 2.1.3 ответов 25.08: «логические коллизии» = несоответствие объёмов в спецификации и графике/BIM — сверка количеств, а не геометрия и не «объёмы из модели в смету». ТР-67: `compare_spec_volumes` на объявленных тройках (фикстура). Не ingest комплекта, не смета, не корпус заказчика. Строка 15 остаётся геометрией.
 
 Customer-corpus `VERIFIED`: **0 / 28**. Checkpoint **NO_GO**.
 

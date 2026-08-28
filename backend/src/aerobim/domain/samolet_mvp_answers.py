@@ -13,6 +13,7 @@ from aerobim.core.security.upload_limits import (
 )
 from aerobim.domain.calculation_table_compare import table_compare_honesty_snapshot
 from aerobim.domain.ifc_streaming_design import streaming_design_snapshot
+from aerobim.domain.spec_volume_compare import spec_volume_honesty_snapshot
 
 SAMOLET_ANSWERS_RECEIVED_AT = "2026-08-25"
 SAMOLET_TEAM_BRIEF_RECEIVED_AT = "2026-08-26"
@@ -63,6 +64,7 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
             "cross-document compare of declared LIRA PDF/Excel vs RD/BIM; not a solver"
         ),
         "calculation_table_compare": table_compare_honesty_snapshot(),
+        "spec_volume_compare": spec_volume_honesty_snapshot(),
         "ifc_streaming": streaming_design_snapshot(),
         "space_efficiency": (
             "customer definition recorded; signed sellable-area thresholds absent; "

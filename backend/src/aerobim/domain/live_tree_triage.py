@@ -28,6 +28,8 @@ not replace the bSI Validation Service.
 Pass 14: token scan is fail-closed on oversized and non-UTF-8 blobs;
 document extract for PDF/Office/ZIP; guard files derived from imports;
 CI denylist is B64-only.
+Pass 15: spec vs schedule vs BIM quantities on declared triples (TR-67);
+not estimate QTO; not customer-pack ingest.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -253,7 +255,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-SPEC-VOL",
         "verdict": "KILL",
         "attack": "Treat п. 2.1.3 logical clashes as geometry or skip them",
-        "brake": "Spec-volume vs drawing/BIM compare; ТР-67 row 31 MISSING",
+        "brake": "spec_volume_compare on declared triples; not estimate QTO; not customer pack",
     },
     {
         "id": "RT-INTEGRATION-OWN",
