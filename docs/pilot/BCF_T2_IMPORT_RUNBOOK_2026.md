@@ -2,21 +2,44 @@
 ---
 title: "BCF T2 CDE-import runbook (pilot)"
 status: active
-version: "1.0.0"
-last_updated: "2026-08-03"
+version: "1.1.0"
+last_updated: "2026-08-28"
 claim_boundary: "Runbook only — executing it requires a real customer/pilot CDE session. T2 stays NOT_VERIFIED until the pack verifies (RT-008)."
 ---
 
 # BCF T2 CDE-import runbook — Samolet pilot (2026)
 
 Purpose: produce an **independent, hash-bound** proof that an AeroBIM BCF ZIP
-imports into an external CDE. **OSINT target for Samolet (not verified here):**
-the customer's 10D СОД module, product page
-[samolet10d.ru/catalog/product/10d-cod](https://samolet10d.ru/catalog/product/10d-cod/),
-publicly described as covering PD + RD + IRD after the **15.07.2025** update
-([ComNews](https://www.comnews.ru/digital-economy/content/240189/2025-07-15/2025-w29/1012/samolet-obnovil-reshenie-upravleniyu-dokumentaciey-stroitelnykh-proektakh)).
-T2 stays `cde_import=NOT_VERIFIED` until a real import log exists. Do not invent
-a 10D screenshot.
+imports into an external CDE. **Target confirmed 2026-08-28 (address level):**
+the customer's pack share link resolves to the **10D** СОД contour
+([samolet10d.ru/catalog/product/10d-cod](https://samolet10d.ru/catalog/product/10d-cod/),
+publicly described as covering PD + RD + IRD after the **15.07.2025** update,
+[ComNews](https://www.comnews.ru/digital-economy/content/240189/2025-07-15/2025-w29/1012/samolet-obnovil-reshenie-upravleniyu-dokumentaciey-stroitelnykh-proektakh)).
+The application contour serves content only to a session browser — the address
+is confirmed, the folder contents are **not** read, and no access-type claim is
+made (operator must ask the customer whether the link is authorized-only or
+public, and whether it expires). T2 stays `cde_import=NOT_VERIFIED` until a real
+import log exists. Do not invent a 10D screenshot.
+
+**Closure path without customer files (2026-08-28):** the identified CDE
+publishes a Swagger-documented API and free developer licenses. A T2-class
+engineering proof is therefore possible **without waiting for the customer data
+regime**: developer demo tenant → push synthetic BCF remarks into the registry →
+capture import-log + screenshot + hashes per the template below. That proves
+integration with the CDE the customer already runs; it is **not** a customer
+registry proof and does not flip `claim_allowed` (see RT-CDE-IDENT in
+[`../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md)).
+
+**Positioning against the vendor's own checker (2026-08-28):** the same vendor
+ships a model-checking product (TZ/EIR attribute completeness over RVT/DWG/IFC)
+and a remarks registry with filters/priorities. Differentiation: their checker
+validates **model attribute population**; AeroBIM checks **content norms on
+documentation** (including scans) and cross-checks calculation documents against
+sources. Different inputs, different error classes. Remarks should be written
+**into the customer's 10D registry**, not shipped as a competing panel.
+Corollary for the 27-model IFC ask: the vendor sells scheduled **batch IFC
+export** — the request becomes "run your already-purchased batch export on one
+building", not "do conversion work for us".
 
 Consumer reality (Jul 2026): BIMcollab accepts BCF **3.0** import since
 2026-02-20; Trimble Connect imports BCF **2.1**. Both exporters are XSD-validated

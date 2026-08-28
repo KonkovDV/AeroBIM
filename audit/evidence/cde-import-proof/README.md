@@ -2,6 +2,15 @@
 
 **Status:** `NOT_VERIFIED`
 
+**Target identified 2026-08-28 (address level):** the customer's pack share link
+resolves to the **10D** СОД contour. The application layer is session-gated, so
+the address is confirmed but the folder contents were not read; the link access
+type (authorized-only vs public, TTL) must be asked of the customer. Closure
+path **without customer files**: vendor public Swagger API + free developer
+license → synthetic BCF push into a demo-tenant registry → log + screenshot +
+hashes below. Demo-tenant push is engineering evidence, not customer registry
+proof — this file flips only on the real import.
+
 Tracked gate for independent evidence that an AeroBIM BCF ZIP (or BCF-API
 push) imported successfully into a customer CDE.
 

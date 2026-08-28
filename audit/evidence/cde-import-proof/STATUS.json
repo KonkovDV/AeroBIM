@@ -1,12 +1,19 @@
 {
   "artifact_type": "cde_bcf_import_proof",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "generated_at": "2026-07-21",
   "ladder_tier": "T2",
   "ladder_doc": "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md",
   "status": "NOT_VERIFIED",
   "bcf_structural_evidence": "audit/evidence/bcf-structural-handoff-2026-07-25.json",
   "t2_template": "audit/evidence/cde-import-proof/T2_EVIDENCE_TEMPLATE.json",
+  "target_cde": {
+    "identified_at": "2026-08-28",
+    "product": "10D (customer СОД; samolet10d.ru)",
+    "confirmation": "share-link origin only; application contour is session-gated; folder contents not read; link access type unknown — ask customer (authorized-only vs public; TTL)",
+    "closure_path_without_customer_files": "vendor public Swagger API + free developer license; synthetic BCF push into demo-tenant registry; capture import-log + screenshot + hashes per T2_EVIDENCE_TEMPLATE.json",
+    "boundary": "demo-tenant push is engineering evidence, not customer registry proof; claim_allowed stays false until real import"
+  },
   "required_files": [
     "import-log.txt",
     "screenshot.png",
@@ -17,7 +24,8 @@
   "forbidden_wording": [
     "BCF ready for CDE",
     "CDE interoperable",
-    "production BCF handoff"
+    "production BCF handoff",
+    "integrated with customer CDE"
   ],
-  "allowed_wording": "BCF ZIP structural OK / AVAILABLE; CDE import NOT_VERIFIED"
+  "allowed_wording": "BCF ZIP structural OK / AVAILABLE; CDE import NOT_VERIFIED; target CDE identified at address level"
 }

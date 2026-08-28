@@ -2,7 +2,7 @@
 
 Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` | `ADVISORY_ONLY` | `NOT_RUNTIME_CONNECTED` | `MISSING` | `BLOCKED_BY_CUSTOMER_DATA` | `FIXTURE_ONLY`
 
-**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
+**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. 2026-08-28: row 25 footnote — customer CDE identified at address level (10D contour via share-link origin); T2 closure path via public API + demo license; status unchanged. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
 
 | # | Требование ТЗ | Код | Runtime path | Тест / команда | Реальные данные | Статус | Риск |
 |---|---|---|---|---|---|---|---|
@@ -107,7 +107,7 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn15]: Planted IfcClash on `clash-federated-box-{a,b}.ifc` plus clearance-gap pair (`detect_clearance_between`, 50 mm). Optional `[clash]` extra. Clash→our BCF export→`consume_bcf_zip` is **file ingest**. Engine rehearsal only. `closes_rt003=false`. `cde_import=NOT_VERIFIED`. Not coordinator BCF gold.
 
-^[fn25]: BCF 2.1/3.0 export + file ingest (`consume_bcf_zip_path`, `samples/bcf/fixture-topics.bcfzip`). `cde_import` stays **NOT_VERIFIED**. Not RT-008 T2.
+^[fn25]: BCF 2.1/3.0 export + file ingest (`consume_bcf_zip_path`, `samples/bcf/fixture-topics.bcfzip`). `cde_import` stays **NOT_VERIFIED**. Not RT-008 T2. 2026-08-28: target CDE **identified at address level** — the customer pack share link resolves to the 10D contour (session-gated; contents not read). Closure path without customer files: vendor public Swagger API + free developer license, synthetic BCF push into a demo-tenant registry, then T2 pack (log+screenshot+hashes). Demo-tenant push ≠ customer registry proof; status unchanged until a real import lands.
 
 ^[fn27]: Native `.docx`/`.xlsx` round-trip on committed `samples/office/` fixtures; `package_completeness` accepts declared `docx` and `xlsx`. Legacy `.doc`/`.xls` still fail-closed at ingest. Not customer Office files.
 
