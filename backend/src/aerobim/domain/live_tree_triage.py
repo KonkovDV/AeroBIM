@@ -25,6 +25,9 @@ norm path; questionnaire/video are publication.
 Pass 13: remark shape is a schema, not prose; three finding gates are not
 a 90% claim; SP63 cover template is not customer_approved; AeroBIM does
 not replace the bSI Validation Service.
+Pass 14: token scan is fail-closed on oversized and non-UTF-8 blobs;
+document extract for PDF/Office/ZIP; guard files derived from imports;
+CI denylist is B64-only.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -305,6 +308,30 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Hand-list content directories so a new guard folder is a blind zone",
         "brake": "git ls-files walk; listing content roots is a class defect",
+    },
+    {
+        "id": "RT-KIT-SCAN-SIZE",
+        "verdict": "KILL",
+        "attack": "Skip blobs larger than the scan window so a mid-size locator is never read",
+        "brake": "Overlapping byte windows; skip is fail-open",
+    },
+    {
+        "id": "RT-KIT-SCAN-BIN",
+        "verdict": "KILL",
+        "attack": "Skip non-UTF-8 files and leave pack document formats unscanned",
+        "brake": "Raw-byte scan plus PDF/Office/ZIP text extract",
+    },
+    {
+        "id": "RT-KIT-GUARD-LIST",
+        "verdict": "KILL",
+        "attack": "Hand-list guard files so a new importer is outside the invariant",
+        "brake": "Guards = this module plus tracked importers",
+    },
+    {
+        "id": "RT-KIT-PLAINTEXT",
+        "verdict": "KILL",
+        "attack": "Keep a plaintext multiline denylist secret after it already dropped tokens",
+        "brake": "CI materialize accepts B64 only; pin count must match",
     },
     {
         "id": "RT-POS-VERDIFF",

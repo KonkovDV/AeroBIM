@@ -115,7 +115,7 @@ class Pass12HonestyLockTests(unittest.TestCase):
         kit = next(row for row in TRIAGE_ROWS if row["id"] == "RT-KIT-01")
         blob = "\n".join((kit["attack"], kit["brake"]))
         for row in TRIAGE_ROWS:
-            if row["id"] in {"RT-KIT-PTR", "RT-KIT-ROOTS"}:
+            if row["id"].startswith("RT-KIT-"):
                 blob += "\n" + row["attack"] + "\n" + row["brake"]
         lowered = blob.lower()
         for leak in POINTER_CATEGORY_LEAKS:
