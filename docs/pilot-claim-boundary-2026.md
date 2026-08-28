@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.12.0"
+version: "1.13.0"
 last_updated: "2026-08-28"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -153,6 +153,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 22. The depersonalization + NDA ask to organizers is **the customer's own clause** (п. 3.1.2), not extra caution from the team. AeroBIM does **not** treat the delivered channel as a depersonalized NDA pack.
 23. AeroBIM is an **engineering-compare engine** with a measurement protocol, not a documentation platform and not a replacement for the customer's CDE or BIM-data stack. Version overlay of RD packs is **not** a differentiator (the customer already ships it). TR-67 is spec-volume vs drawing/BIM, **not** model-to-estimate quantities.
 24. Benefit speech uses expert-hours per pack, share of remarks caught before production issue, and re-entry count — **not** «innovation» and **not** a multiple of EBITDA. The citation linter (`lint_citation_twins`) is shown as source discipline (fabricated DOI / same-article year twins), not as product accuracy.
+25. Catalog questionnaire answers, demo video frames, and slides are **publication** (same gate as git). AeroBIM does **not** treat machine-readable information requirements or RD version overlay as differentiators, and does **not** transfer a competitor's published figure as our metric. Self-assessment against GOST R 72514-2026 (ISO/IEC 42005:2025) is **not** a certification.
 
 ## Reproducibility baseline
 

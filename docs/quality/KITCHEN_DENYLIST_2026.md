@@ -22,8 +22,9 @@ live in `.local/` (local) or GitHub Actions secrets (CI).
 
 Fail-closed: if the list or key is missing, or the digest does not match the pin,
 `scripts/lint_claims.py` and the hygiene tests fail. The scan walks **tracked**
-files (`git ls-files`) — the published tree — with no manual content-root list.
-Service dirs and quarantine prefixes are skipped. Hits report **paths only**.
+files (`git ls-files`) — the published tree. A hand list of content directories
+is a class defect: the next guard in a new folder would be invisible. Service
+dirs and quarantine prefixes are skipped. Hits report **paths only**.
 
 Invariant: guard modules listed in `scripts/kitchen_denylist.py` (`GUARD_RELATIVE`)
 must not embed denylist literals.

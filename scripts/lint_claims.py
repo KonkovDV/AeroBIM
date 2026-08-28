@@ -112,6 +112,42 @@ _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         "forbidden_open_corpus_accuracy",
         re.compile(r"(?i)(open[-\s]?corpus.{0,30}точност|BSI.{0,20}product\s+accuracy)"),
     ),
+    (
+        "forbidden_customer_pack_checked",
+        re.compile(r"(?i)пакет\s+заказчика\s+проверен"),
+    ),
+    (
+        "forbidden_43gb_processed",
+        re.compile(r"(?i)43\s*гб\s+обработан"),
+    ),
+    (
+        "forbidden_data_regime_agreed",
+        re.compile(r"(?i)режим\s+данных\s+согласован"),
+    ),
+    (
+        "forbidden_confidentiality_signed",
+        re.compile(r"(?i)соглашение\s+о\s+конфиденциальности\s+подписано"),
+    ),
+    (
+        "forbidden_first_in_russia_versions",
+        re.compile(r"(?i)первые\s+в\s+россии\s+сравниваем\s+версии"),
+    ),
+    (
+        "forbidden_better_than_city_normcontrol",
+        re.compile(r"(?i)точнее\s+городск\w*\s+нормоконтрол"),
+    ),
+    (
+        "forbidden_replace_foreign_checkers",
+        re.compile(r"(?i)заменяем\s+зарубежн\w*\s+проверяльщик"),
+    ),
+    (
+        "forbidden_ids_better_than_market",
+        re.compile(r"(?i)машиночитаем.{0,48}лучше\s+рынка"),
+    ),
+    (
+        "forbidden_integrated_customer_platform",
+        re.compile(r"(?i)интегрированы\s+с\s+платформой\s+заказчика"),
+    ),
 ]
 
 _KITCHEN_PATH_PREFIXES = (
@@ -130,13 +166,13 @@ _KITCHEN_PATH_PREFIXES = (
 
 
 def lint_kitchen_tokens() -> list[str]:
-    """Jury pack: no pack-share host locator in the public tree."""
+    """Publication gate: no protected locators from the external list."""
 
     return scan_kitchen_tokens()
 
 
 def lint_kitchen_paths() -> list[str]:
-    """Tracked kitchen/NDA path prefixes must not re-enter git."""
+    """Tracked kitchen path prefixes must not re-enter git."""
 
     proc = subprocess.run(
         ["git", "ls-files", "-z"],

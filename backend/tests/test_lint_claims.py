@@ -303,6 +303,14 @@ class LintClaimsTests(unittest.TestCase):
         self.assertIsNotNone(by_id["forbidden_accuracy_gt_90"].search("точность более 90%"))
         self.assertIsNotNone(by_id["forbidden_native_dwg"].search("нативный DWG"))
         self.assertIsNotNone(by_id["forbidden_cde_ready"].search("готово к CDE"))
+        self.assertIsNotNone(
+            by_id["forbidden_customer_pack_checked"].search("пакет заказчика проверен")
+        )
+        self.assertIsNotNone(
+            by_id["forbidden_ids_better_than_market"].search(
+                "поддерживаем машиночитаемые требования лучше рынка"
+            )
+        )
 
     def test_scan_roots_include_submission_pack(self) -> None:
         """HDS-SUB-01: jury-facing submission/ stays in default scan roots."""

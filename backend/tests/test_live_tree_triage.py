@@ -56,6 +56,14 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-CLOUD-ISO",
             "RT-SCALE-MVP",
             "RT-NDA-STATED",
+            "RT-KIT-PTR",
+            "RT-KIT-ROOTS",
+            "RT-POS-VERDIFF",
+            "RT-POS-IDSADV",
+            "RT-POS-FOREIGN-METRIC",
+            "RT-AI-IMPACT",
+            "RT-NORM-MARKET",
+            "RT-PUB-SURFACE",
         ):
             self.assertIn(row_id, ids)
 

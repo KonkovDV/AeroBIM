@@ -1,6 +1,6 @@
 #!/bin/sh
-# Block irreversible publication of private Red Team / recheck material (N-46).
-# .gitignore is convenience, not a security boundary — this hook fails closed.
+# Block irreversible publication of private Red Team / recheck material (N-46)
+# and native authoring/solver packs. .gitignore is not a security boundary.
 
 set -e
 blocked='(^|/)\.local(/|$)|internal-docs|red-team|audit-digest|aerobim_recheck|recheck_digest|recheck2_windows'
@@ -8,6 +8,44 @@ if git diff --cached --name-only --diff-filter=ACMR | grep -Eiq "$blocked"; then
   echo "pre-commit: refusing to stage private/internal Red Team paths (N-46)." >&2
   echo "Move material outside the worktree (e.g. ../AeroBIM-private/) before committing." >&2
   git diff --cached --name-only --diff-filter=ACMR | grep -Ei "$blocked" >&2 || true
+  exit 1
+fi
+
+allow='samples/cad/placeholder-source.dwg'
+max_bytes=52428800
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+fail=0
+# shellcheck disable=SC2039
+while IFS= read -r rel; do
+  [ -z "$rel" ] && continue
+  case "$rel" in
+    files/*|.local/pack/*)
+      echo "pre-commit: refusing quarantine path: $rel" >&2
+      fail=1
+      continue
+      ;;
+  esac
+  lower=$(printf '%s' "$rel" | tr '[:upper:]' '[:lower:]')
+  case "$lower" in
+    *.rvt|*.rfa|*.rte|*.nwd|*.nwc|*.lir|*.spr|*.dwg)
+      if [ "$rel" != "$allow" ]; then
+        echo "pre-commit: refusing pack suffix: $rel" >&2
+        fail=1
+        continue
+      fi
+      ;;
+  esac
+  if git cat-file -e ":$rel" 2>/dev/null; then
+    size=$(git cat-file -s ":$rel" 2>/dev/null || echo 0)
+    if [ "$size" -gt "$max_bytes" ]; then
+      echo "pre-commit: refusing oversized blob ($size > $max_bytes): $rel" >&2
+      fail=1
+    fi
+  fi
+done <<STAGED
+$staged
+STAGED
+if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 exit 0

@@ -18,6 +18,10 @@ unconfirmed, spec-volume compare is a new mandatory gap.
 Pass 11: leftover answers clauses — typical nodes are PDF/DWG only (п. 1.2.3);
 cloud + per-project isolation (п. 3.1.1); scale is architecture-only (п. 3.2.2);
 п. 3.1.2 is the customer's own depersonalization+NDA clause, not our extra ask.
+Pass 12: denylist pointer and root-list class defect; version overlay and
+machine-readable requirements are not differentiators; foreign metrics stay
+attributed; GOST R 72514 self-assessment; licensed registry as alternate
+norm path; questionnaire/video are publication.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -74,7 +78,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-KIT-01",
         "verdict": "KILL",
-        "attack": "Re-introduce kitchen site tokens into the public tree",
+        "attack": "Re-introduce protected locators into the public tree",
         "brake": "lint_claims kitchen denylist (HMAC pin; literals outside git)",
     },
     {
@@ -286,6 +290,54 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Frame the depersonalization/NDA ask as our extra caution",
         "brake": "п. 3.1.2 is the customer's own clause; ask organizers to execute it",
+    },
+    {
+        "id": "RT-KIT-PTR",
+        "verdict": "KILL",
+        "attack": "Describe denylist composition in public files so a later search reconstructs it",
+        "brake": "Guard invariant: no composition speech; literals stay outside git",
+    },
+    {
+        "id": "RT-KIT-ROOTS",
+        "verdict": "KILL",
+        "attack": "Hand-list content directories so a new guard folder is a blind zone",
+        "brake": "git ls-files walk; listing content roots is a class defect",
+    },
+    {
+        "id": "RT-POS-VERDIFF",
+        "verdict": "KILL",
+        "attack": "Sell RD version overlay as a differentiator",
+        "brake": "Forbidden wording SSOT; claim boundary §23 — customer already ships it",
+    },
+    {
+        "id": "RT-POS-IDSADV",
+        "verdict": "KILL",
+        "attack": "Sell machine-readable information requirements as a market advantage",
+        "brake": "Forbidden wording; IDS packs are an entry ticket, not a differentiator",
+    },
+    {
+        "id": "RT-POS-FOREIGN-METRIC",
+        "verdict": "KILL",
+        "attack": "Copy a competitor or paper figure into our materials as our metric",
+        "brake": "Foreign figure only with source attribution; never transferred as ours",
+    },
+    {
+        "id": "RT-AI-IMPACT",
+        "verdict": "KILL",
+        "attack": "Leave AI risk-governance unanswered while GOST R 72514-2026 is in force",
+        "brake": "GOST R 72514 self-assessment doc; compatibility is not certification",
+    },
+    {
+        "id": "RT-NORM-MARKET",
+        "verdict": "KILL",
+        "attack": "Treat the customer internal-folder wait as the only path to a rule source",
+        "brake": "Workplan: licensed requirements registry; customer signs a profile",
+    },
+    {
+        "id": "RT-PUB-SURFACE",
+        "verdict": "KILL",
+        "attack": "Treat catalog questionnaire or demo video as outside the publication gate",
+        "brake": "docs/quality/PUBLIC_SURFACES_PROTOCOL_2026.md; six checks per frame",
     },
     {
         "id": "RT-SEAM-HOLD",

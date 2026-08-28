@@ -103,6 +103,8 @@ def test_ssot_covers_ru_markers_and_core_surfaces() -> None:
         "submission/04-prototype/README.md",
         "submission/05-additional/README.md",
         "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md",
+        "docs/quality/AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md",
+        "docs/quality/PUBLIC_SURFACES_PROTOCOL_2026.md",
     ):
         assert rel in scanned
 

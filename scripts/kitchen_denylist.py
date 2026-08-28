@@ -170,7 +170,13 @@ def _skip_dir(path: Path) -> bool:
 
 
 def iter_tracked_files() -> Iterable[Path]:
-    """Published tree: git ls-files, no manual content-root list."""
+    """Walk the published tree. A hand list of content roots is a class defect.
+
+    Denylist loaders live under tools/tests, not under docs/src. Enumerating
+    content directories therefore hides the next guard by construction.
+    ``git ls-files`` is the published surface; skip dirs and quarantine
+    prefixes are the only exclusions.
+    """
 
     proc = subprocess.run(
         ["git", "ls-files", "-z"],
