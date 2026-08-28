@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-28"
 status: active
-version: "1.5.0"
+version: "1.6.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC / HTTP `.lir` / JSON sidecar индекса. Не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC / HTTP `.lir` / JSON sidecar индекса / чек-листы типовых замечаний и счётчики страницы MVP (28.08). Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -55,6 +55,8 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-ZIP-SNIFF | Namelist ZIP на sniff-префиксе = 415 вместо zip-bomb 422 | sniff = magic; `inspect_zip_path` затем Autodesk/LIRA |
 | RT-LIRA-HTTP | `.lir`/`.spr` как «disallowed extension» без честной причины | `NATIVE_LIRA_CLOSED_REASON`; ZIP-члены после inspect |
 | RT-SIDECAR-RTREE | JSON sidecar индекса = live disk R-tree | `dump_only`; `disk_r_tree=designed_not_implemented` |
+| RT-TYP-CATALOG | «Каталог типовых ошибок принят», пока `customer_confirmed_patterns=0` и 2 чек-листа приёмки лежат неразобранными | `customer_share_ingested=false`; `acceptance_checklists_local.ingested_into_patterns=0`; detected 2 ≠ ingested |
+| RT-PAGE-DRIFT | Строки страницы MVP (11 Autodesk, 1133 скан-PDF, 51 ТЗ) перекрывают пин инвентаря | `PUBLIC_REHEARSAL`: 27 rvt + 21 navis, 1127 pdf; `rehearsal_differs` ловит дрейф |
 
 ## HOLD (не чиним в этом коммите)
 

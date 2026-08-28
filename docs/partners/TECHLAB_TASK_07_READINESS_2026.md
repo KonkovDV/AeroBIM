@@ -5,8 +5,8 @@
 ---
 title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
 status: active
-version: "1.3.3"
-last_updated: "2026-08-27"
+version: "1.3.4"
+last_updated: "2026-08-28"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
@@ -72,7 +72,7 @@ Detailed ask (world + RU practice, July 2026):
 
 1. Customer PD/RD/BIM pack (week-1 intake)  
 2. Customer-approved residential norms / IDS pack (synthetic AR template is not sign-off)  
-3. Customer confirmation of typical-errors catalog (≥20 engineering patterns already scaffolded)  
+3. Customer confirmation of typical-errors catalog (≥20 engineering patterns already scaffolded; 28.08: two acceptance checklists detected in the owner pack — counts only, not ingested, confirmed stays 0)  
 4. CDE BCF roundtrip evidence  
 5. Engineer TP/FP adjudication on customer corpus via precision harness (TZ «>90%» only after this)  
 6. Signed scope memo + ≥2 adjudicators + manual baseline hours  

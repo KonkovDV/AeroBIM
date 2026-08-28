@@ -1,12 +1,15 @@
 """Owner-disk files/ inventory — local only, never a git pack_hash.
 
-Stage 0 of the owner-AI plan. Scans extension/size presence. Does not parse
+Stage 0 of the owner-AI plan. Scans extension/size presence plus counts-only
+name patterns (remark files, typical-remarks checklists). Does not parse
 IFC, does not emit project names into a git-tracked path, does not raise
-the 256 MiB analyze cap.
+the 256 MiB analyze cap. A detected typical-remarks checklist is a source
+document, not a confirmed catalog pattern (RT-TYP-CATALOG).
 """
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
@@ -29,10 +32,13 @@ PUBLIC_REHEARSAL: Final[dict[str, Any]] = {
     "ifc_count": 15,
     "ifc_over_default_cap_count": 1,
     "native_rvt_count": 27,
+    "native_navis_count": 21,
     "calc_binary_count": 24,
     "pdf_count": 1127,
     "dwg_count": 470,
     "dxf_count": 57,
+    "remark_named_count": 70,
+    "typical_remarks_checklist_count": 2,
     "names_in_git": False,
     "hashes_in_git": False,
     "rd_ifc_present": False,
@@ -43,6 +49,13 @@ PUBLIC_REHEARSAL: Final[dict[str, Any]] = {
 
 _CALC_SUFFIXES: Final[frozenset[str]] = frozenset({".lir", ".spr"})
 _NATIVE_BIM_SUFFIXES: Final[frozenset[str]] = frozenset({".rvt", ".nwd", ".nwc"})
+
+# Name-pattern counters stay counts-only: a file named "typical remarks" is a
+# detected source document, never a confirmed catalog pattern (RT-TYP-CATALOG).
+_REMARK_NAME_RE: Final = re.compile(r"замечан", re.IGNORECASE)
+_TYPICAL_REMARKS_NAME_RE: Final = re.compile(
+    r"типов(?:ые|ых)[\s_\-]*(?:замечан|ошиб)", re.IGNORECASE
+)
 
 
 def output_is_local_only(repo: Path, output: Path) -> bool:
@@ -93,6 +106,8 @@ def scan_owner_files(
     files = _iter_files(root)
     suffixes: Counter[str] = Counter()
     ifc_sizes: list[int] = []
+    remark_named = 0
+    typical_remarks = 0
     pack_folders = sorted(path.name for path in root.iterdir() if path.is_dir())
     nested_pack_folders: list[str] = []
     if len(pack_folders) == 1:
@@ -103,6 +118,11 @@ def scan_owner_files(
         suffixes[suffix] += 1
         if suffix == ".ifc":
             ifc_sizes.append(path.stat().st_size)
+        name = path.name
+        if _REMARK_NAME_RE.search(name):
+            remark_named += 1
+        if _TYPICAL_REMARKS_NAME_RE.search(name):
+            typical_remarks += 1
     payload: dict[str, Any] = {
         "status": "SCANNED_LOCAL",
         "root_present": True,
@@ -123,6 +143,8 @@ def scan_owner_files(
         "pdf_count": suffixes.get(".pdf", 0),
         "dwg_count": suffixes.get(".dwg", 0),
         "dxf_count": suffixes.get(".dxf", 0),
+        "remark_named_count": remark_named,
+        "typical_remarks_checklist_count": typical_remarks,
         "names_in_payload": bool(include_names),
         "hashes_in_payload": False,
         "default_ifc_cap_bytes": ifc_cap_bytes,
@@ -162,10 +184,13 @@ def rehearsal_differs(scan: Mapping[str, Any]) -> bool:
         "ifc_count",
         "ifc_over_default_cap_count",
         "native_rvt_count",
+        "native_navis_count",
         "calc_binary_count",
         "pdf_count",
         "dwg_count",
         "dxf_count",
+        "remark_named_count",
+        "typical_remarks_checklist_count",
     )
     return any(scan.get(key) != PUBLIC_REHEARSAL.get(key) for key in keys)
 

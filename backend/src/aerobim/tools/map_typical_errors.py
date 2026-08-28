@@ -154,13 +154,30 @@ def map_typical_errors(
         row["techlab_tasks"] = [
             int(item) for item in raw_tasks if isinstance(item, int) and not isinstance(item, bool)
         ]
+    confirmed = catalog.get("customer_confirmed_patterns", 0)
+    confirmed_count = (
+        int(confirmed) if isinstance(confirmed, int) and not isinstance(confirmed, bool) else 0
+    )
+    checklists = catalog.get("acceptance_checklists_local")
+    checklists_detected = 0
+    checklists_ingested = 0
+    if isinstance(checklists, dict):
+        raw_detected = checklists.get("detected_count", 0)
+        raw_ingested = checklists.get("ingested_into_patterns", 0)
+        if isinstance(raw_detected, int) and not isinstance(raw_detected, bool):
+            checklists_detected = raw_detected
+        if isinstance(raw_ingested, int) and not isinstance(raw_ingested, bool):
+            checklists_ingested = raw_ingested
     return {
         "artifact_type": "samolet_typical_errors_mapping",
         "schema_version": "1.1.0",
         "catalog_id": catalog.get("catalog_id"),
         "catalog_status": catalog.get("catalog_status"),
         "patterns_total": total,
-        "customer_confirmed_patterns": catalog.get("customer_confirmed_patterns", 0),
+        "customer_confirmed_patterns": confirmed_count,
+        "catalog_accepted_claim_allowed": confirmed_count > 0,
+        "acceptance_checklists_detected": checklists_detected,
+        "acceptance_checklists_ingested": checklists_ingested,
         "techlab_task_map_present": bool(task_map),
         "patterns_with_rule_match": rule_covered,
         "patterns_with_class_only_mapping": class_mapped,
@@ -171,7 +188,9 @@ def map_typical_errors(
         "known_rule_ids_count": len(rule_ids),
         "claim_boundary": (
             "Traceability mapping only; customer-confirmed detection precision requires "
-            "an adjudicated corpus."
+            "an adjudicated corpus. A detected acceptance checklist is a source document, "
+            "not a confirmed pattern; the catalog must not be presented as customer-accepted "
+            "while customer_confirmed_patterns is 0."
         ),
         "rows": rows,
     }

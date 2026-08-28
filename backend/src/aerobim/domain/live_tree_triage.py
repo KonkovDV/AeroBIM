@@ -6,6 +6,7 @@ Pass 3: OOS manifest gate, remark storey/axis from IfcSpatialIndex, packs/day no
 Pass 4: 25.08 channel speech, analyze cap vs ingest, axis not nearest-grid, OIDC BFF, RT-002b.
 Pass 5: xlsx/docx table MATCH ≠ solver; PDF LIRA fragile; streaming design ≠ raised cap.
 Pass 6: HTTP .lir/.spr honesty reason; JSON sidecar ≠ disk R-tree.
+Pass 7: typical-remarks checklists in files/ ≠ accepted catalog; MVP page counts ≠ rehearsal pin.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -190,6 +191,18 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "JSON sidecar of IfcSpatialIndex is a live disk R-tree",
         "brake": "disk_r_tree designed_not_implemented; sidecar dump_only; cap 256 MiB",
+    },
+    {
+        "id": "RT-TYP-CATALOG",
+        "verdict": "KILL",
+        "attack": "Call typical-errors catalog accepted while confirmed=0, checklists untriaged",
+        "brake": "customer_share_ingested false; checklists ingested_into_patterns=0",
+    },
+    {
+        "id": "RT-PAGE-DRIFT",
+        "verdict": "KILL",
+        "attack": "MVP page rows (11 Autodesk, 1133 scan PDF, 51 TZ) override the inventory pin",
+        "brake": "PUBLIC_REHEARSAL 27 rvt + 21 navis + 1127 pdf; rehearsal_differs flags drift",
     },
     {
         "id": "RT-SEAM-HOLD",

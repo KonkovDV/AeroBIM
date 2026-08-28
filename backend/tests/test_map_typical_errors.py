@@ -22,6 +22,9 @@ class MapTypicalErrorsTests(unittest.TestCase):
         self.assertEqual(payload["patterns_with_explicit_gap"], 6)
         self.assertEqual(payload["mapping_ratio"], 1.0)
         self.assertEqual(payload["customer_confirmed_patterns"], 0)
+        self.assertFalse(payload["catalog_accepted_claim_allowed"])
+        self.assertEqual(payload["acceptance_checklists_detected"], 2)
+        self.assertEqual(payload["acceptance_checklists_ingested"], 0)
         rows = payload["rows"]
         fire_row = next(r for r in rows if r["error_id"] == "SAM-TYP-001")
         self.assertEqual(fire_row["status"], "covered")

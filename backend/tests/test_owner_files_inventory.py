@@ -26,6 +26,9 @@ class OwnerFilesInventoryTests(unittest.TestCase):
         self.assertFalse(snap["hashes_in_git"])
         self.assertFalse(snap["raise_cap"])
         self.assertEqual(snap["ifc_count"], PUBLIC_REHEARSAL["ifc_count"])
+        self.assertEqual(snap["native_navis_count"], 21)
+        self.assertEqual(snap["remark_named_count"], 70)
+        self.assertEqual(snap["typical_remarks_checklist_count"], 2)
         self.assertNotIn("pack_hash", snap)
         self.assertNotIn("pack_folder_labels", snap)
         self.assertNotIn("sha256", snap)
@@ -44,6 +47,26 @@ class OwnerFilesInventoryTests(unittest.TestCase):
         self.assertEqual(scan["ifc_over_default_cap_count"], 0)
         self.assertFalse(scan["names_in_payload"])
         self.assertNotIn("pack_folder_labels", scan)
+
+    def test_scan_counts_remark_names_without_leaking_them(self) -> None:
+        with self._tmp_tree() as root:
+            scan = scan_owner_files(root, include_names=False)
+        self.assertEqual(scan["remark_named_count"], 2)
+        self.assertEqual(scan["typical_remarks_checklist_count"], 1)
+        self.assertFalse(scan["names_in_payload"])
+        serialized = json.dumps(scan, ensure_ascii=False)
+        self.assertNotIn("Замечания", serialized)
+
+    def test_rehearsal_differs_flags_remark_drift(self) -> None:
+        from aerobim.domain.owner_files_inventory import rehearsal_differs
+
+        scan = {
+            "status": "SCANNED_LOCAL",
+            **{key: PUBLIC_REHEARSAL[key] for key in PUBLIC_REHEARSAL if key != "rehearsal_date"},
+        }
+        self.assertFalse(rehearsal_differs(scan))
+        scan["typical_remarks_checklist_count"] = 0
+        self.assertTrue(rehearsal_differs(scan))
 
     def test_cli_refuses_docs_output(self) -> None:
         target = _REPO / "docs" / "evidence" / "must-not-write-inventory.json"
@@ -76,6 +99,8 @@ class OwnerFilesInventoryTests(unittest.TestCase):
                 (house / "a.ifc").write_bytes(b"ISO-10303-21;" + b" " * 32)
                 (house / "b.ifc").write_bytes(b"ISO-10303-21;" + b" " * 32)
                 (house / "sheet.pdf").write_bytes(b"%PDF")
+                (house / "Замечания к разделу АР.pdf").write_bytes(b"%PDF")
+                (house / "Типовые замечания при приёмке.xlsx").write_bytes(b"PK")
                 yield root
 
         return _ctx()
