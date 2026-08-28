@@ -1,9 +1,10 @@
-# Production-like / shared LAN stack — secrets REQUIRED (fail if unset).
+# Shared / LAN stack with required secrets — not production OIDC BFF / SSO (POST-05).
 # Usage:
 #   set AEROBIM_API_BEARER_TOKEN=<long-random>
 #   docker compose -f docker-compose.production.yml up --build
 #
 # Never commit real tokens. Prefer OIDC in real deployments (AEROBIM_OIDC_*).
+# Phase 3 BFF lab flags (AEROBIM_OIDC_BFF_*) must stay unset here.
 
 services:
   backend:

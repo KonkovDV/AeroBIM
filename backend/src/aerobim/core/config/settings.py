@@ -607,9 +607,12 @@ class Settings:
     def oidc_enabled(self) -> bool:
         return bool(self.oidc_issuer and self.oidc_audience and self.oidc_jwks_url)
 
-    @property
-    def oidc_bff_phase3_ready(self) -> bool:
-        """True only when Phase 3 IdP + cookie secrets are fully configured."""
+    def oidc_bff_phase3_credentials_configured(self) -> bool:
+        """True when lab Phase 3 IdP + cookie secrets are all present.
+
+        Does not mean production BFF/SSO. Customer-hard profiles still boot-fail
+        and ``oidc_bff_phase3_ready`` stays false (POST-05).
+        """
 
         return bool(
             self.oidc_bff_client_id
@@ -619,6 +622,18 @@ class Settings:
             and self.oidc_bff_cookie_secret
             and self.oidc_bff_redirect_uri_allowlist
         )
+
+    @property
+    def oidc_bff_phase3_ready(self) -> bool:
+        """True only in lab/dev when Phase 3 IdP + cookie secrets are fully configured.
+
+        ``samolet_pilot`` / ``production`` never activate Phase 3. Public
+        ``GET /v1/auth/bff`` stays 501 / NOT_IMPLEMENTED (POST-05).
+        """
+
+        if self.signoff_profile in {"samolet_pilot", "production"}:
+            return False
+        return self.oidc_bff_phase3_credentials_configured()
 
     @property
     def enforce_hitl_reviewer_auth(self) -> bool:
@@ -1015,6 +1030,12 @@ class Settings:
                 or "json_schema",
                 llm_base_url=settings.llm_base_url or "https://llm.api.cloud.yandex.net/v1",
             )
+        if settings.signoff_profile in {"samolet_pilot", "production"}:
+            if settings.oidc_bff_phase3_credentials_configured():
+                raise RuntimeError(
+                    "OIDC BFF Phase 3 is lab-only; unset AEROBIM_OIDC_BFF_* "
+                    "under samolet_pilot/production (POST-05)"
+                )
         if settings.llm_local_enabled and not settings.llm_local_ready():
             if settings.signoff_profile in {
                 "samolet_pilot",

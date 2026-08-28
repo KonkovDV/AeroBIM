@@ -2,8 +2,10 @@
 
 Default deployments keep Phase 2 stubs (HTTP 501, auth_bff=NOT_IMPLEMENTED).
 Phase 3 activates only when token URL, client secret, cookie secret and
-redirect allowlist are all configured. Public honesty stays NOT_IMPLEMENTED
+redirect allowlist are all configured **and** the sign-off profile is not
+``samolet_pilot`` / ``production``. Public honesty stays NOT_IMPLEMENTED
 unless ``Settings.oidc_bff_phase3_ready`` is true (lab / mock IdP).
+docker-compose.production.yml is a shared LAN stack, not production SSO.
 """
 
 from __future__ import annotations
