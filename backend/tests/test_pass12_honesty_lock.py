@@ -123,8 +123,10 @@ class Pass12HonestyLockTests(unittest.TestCase):
 
     def test_workplan_names_licensed_registry_as_alternate_path(self) -> None:
         text = (
-            _REPO / "docs" / "quality" / "KT3_IN_REPO_WORKPLAN_2026_08_27.md"
-        ).read_text(encoding="utf-8").lower()
+            (_REPO / "docs" / "quality" / "KT3_IN_REPO_WORKPLAN_2026_08_27.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
         self.assertIn("licensed", text)
         self.assertIn("registry", text)
 
