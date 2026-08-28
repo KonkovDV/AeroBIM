@@ -2,7 +2,7 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.3.3"
+version: "1.3.4"
 last_updated: "2026-08-28"
 tags: [aerobim, tz, compliance, mvp]
 ---
@@ -138,7 +138,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Model accuracy / stability | pytest + capabilities fail-closed + publishable runtime baseline (`tests_passed` numeric; `claims-lint` CI) | done | MVP |
 | Scalability | Jobs + optional Redis/Postgres/S3 | partial | MVP foundation |
 | UI usability | Review shell; remarks panel P0 | partial | P0 |
-| Package ≤30 min | `measure_package_sla` on **agreed** pack | done (fixture); customer TBD | MVP |
+| Package ≤30 min | `measure_package_sla` on **agreed** pack | fixture only; 25.08 answers do not confirm the TZ time criterion | MVP |
 | Cognitive load reduction | Priority profile + HITL KPI | partial | P0 |
 
 **Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), Claims Lock, and the Kane IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) (SAM-05 / SAM-06). Fixture AABB precision on n=6 is **not** this row.
