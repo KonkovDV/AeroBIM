@@ -20,6 +20,10 @@ in git. The committed pin is `audit/evidence/kitchen-denylist.pin.json`: token
 **count** plus HMAC-SHA256 of the sorted list. The HMAC key and the list itself
 live in `.local/` (local) or GitHub Actions secrets (CI).
 
+CI must pass those secrets through **step `env:`**, not composite `with:`
+inputs. GitHub truncates multiline action inputs at the first newline, which
+makes the publication gate see a one-token list and fail the count pin.
+
 Fail-closed: if the list or key is missing, or the digest does not match the pin,
 `scripts/lint_claims.py` and the hygiene tests fail. The scan walks **tracked**
 files (`git ls-files`) — the published tree. A hand list of content directories

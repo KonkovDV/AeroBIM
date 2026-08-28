@@ -37,6 +37,35 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
         hits = lint_pack_quarantine()
         self.assertEqual(hits, [])
 
+    def test_count_mismatch_reports_counts_not_tokens(self) -> None:
+        previous = os.environ.get("AEROBIM_KITCHEN_DENYLIST_PATH")
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "short-denylist.txt"
+            path.write_text("synthetic-count-probe-only\n", encoding="utf-8")
+            os.environ["AEROBIM_KITCHEN_DENYLIST_PATH"] = str(path)
+            try:
+                with self.assertRaises(KitchenDenylistError) as ctx:
+                    verify_pin()
+                message = str(ctx.exception)
+                self.assertIn("got 1", message)
+                self.assertIn("pin 27", message)
+                self.assertNotIn("synthetic-count-probe-only", message)
+            finally:
+                if previous is None:
+                    os.environ.pop("AEROBIM_KITCHEN_DENYLIST_PATH", None)
+                else:
+                    os.environ["AEROBIM_KITCHEN_DENYLIST_PATH"] = previous
+
+    def test_ci_passes_denylist_via_env_not_composite_input(self) -> None:
+        action_path = _REPO / ".github" / "actions" / "materialize-kitchen-denylist" / "action.yml"
+        workflow = (_REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        action = action_path.read_text(encoding="utf-8")
+        self.assertNotIn("inputs:", action)
+        self.assertIn("AEROBIM_KITCHEN_DENYLIST", action)
+        self.assertNotIn("with:\n          denylist:", workflow)
+        secret_line = "AEROBIM_KITCHEN_DENYLIST: ${{ secrets.AEROBIM_KITCHEN_DENYLIST }}"
+        self.assertIn(secret_line, workflow)
+
     def test_missing_denylist_is_fail_closed(self) -> None:
         previous = os.environ.get("AEROBIM_KITCHEN_DENYLIST_PATH")
         os.environ["AEROBIM_KITCHEN_DENYLIST_PATH"] = str(

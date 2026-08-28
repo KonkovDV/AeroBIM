@@ -1,23 +1,16 @@
 name: materialize-kitchen-denylist
 description: Write the out-of-git kitchen denylist for publication gates (fail-closed).
-inputs:
-  denylist:
-    description: Newline-separated protected tokens (GitHub Actions secret).
-    required: true
-  hmac_key:
-    description: HMAC-SHA256 key matching audit/evidence/kitchen-denylist.pin.json.
-    required: true
 runs:
   using: composite
   steps:
     - name: Write kitchen denylist (fail-closed)
       shell: bash
-      env:
-        AEROBIM_KITCHEN_DENYLIST: ${{ inputs.denylist }}
-        AEROBIM_KITCHEN_HMAC_KEY: ${{ inputs.hmac_key }}
       run: |
         set -euo pipefail
-        if [ -z "${AEROBIM_KITCHEN_DENYLIST}" ] || [ -z "${AEROBIM_KITCHEN_HMAC_KEY}" ]; then
+        # Secrets must arrive via step/job env, not composite `with:` inputs.
+        # GitHub truncates multiline action inputs at the first newline, which
+        # would make token_count=1 and fail the HMAC pin.
+        if [ -z "${AEROBIM_KITCHEN_DENYLIST:-}" ] || [ -z "${AEROBIM_KITCHEN_HMAC_KEY:-}" ]; then
           echo "kitchen denylist secrets missing; publication gate fail-closed" >&2
           exit 1
         fi
@@ -27,3 +20,14 @@ runs:
         chmod 600 "${RUNNER_TEMP}/aerobim-kitchen/denylist.txt" "${RUNNER_TEMP}/aerobim-kitchen/hmac.key"
         echo "AEROBIM_KITCHEN_DENYLIST_PATH=${RUNNER_TEMP}/aerobim-kitchen/denylist.txt" >> "${GITHUB_ENV}"
         echo "AEROBIM_KITCHEN_HMAC_KEY_FILE=${RUNNER_TEMP}/aerobim-kitchen/hmac.key" >> "${GITHUB_ENV}"
+        python3 - <<'PY'
+        from pathlib import Path
+        import os
+        path = Path(os.environ["RUNNER_TEMP"]) / "aerobim-kitchen" / "denylist.txt"
+        tokens = {
+            line.strip()
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        }
+        print("kitchen_denylist_token_count", len(tokens))
+        PY

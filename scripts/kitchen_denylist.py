@@ -159,7 +159,9 @@ def verify_pin(tokens: list[str] | None = None) -> None:
     if not isinstance(count, int) or not isinstance(digest, str):
         raise KitchenDenylistError("denylist pin fields missing")
     if len(loaded) != count:
-        raise KitchenDenylistError("denylist count does not match pin")
+        raise KitchenDenylistError(
+            f"denylist count does not match pin (got {len(loaded)}, pin {count})"
+        )
     actual = hmac_digest(loaded, key)
     if not hmac.compare_digest(actual, digest.lower()):
         raise KitchenDenylistError("denylist HMAC mismatch")
