@@ -21,22 +21,71 @@ class TemplateRemarkGenerator:
 
     def generate(self, issue: ValidationIssue) -> GeneratedRemark:
         if self._locale == "en":
-            return self._generate_en(issue)
-        return self._generate_ru(issue)
+            remark = self._generate_en(issue)
+        else:
+            remark = self._generate_ru(issue)
+        from aerobim.domain.remark_shape import shape_from_remark, validate_remark_shape
+
+        violations = validate_remark_shape(shape_from_remark(remark).as_payload())
+        if violations:
+            raise ValueError("remark shape invalid: " + "; ".join(violations))
+        return remark
 
     def _generate_ru(self, issue: ValidationIssue) -> GeneratedRemark:
         essence = self._build_essence_ru(issue)
         priority_hint = f" [приоритет {issue.priority}]" if issue.priority else ""
         title = f"{self._category_marker_ru(issue)}: {essence}{priority_hint}"
-        body = self._compose_body_ru(issue, essence=essence)
-        return GeneratedRemark(title=title, body=body)
+        clause_cite, clause_bound = self._norm_line(issue)
+        location_line = self._location_line(issue)
+        detail = self._detail_ru(issue)
+        body = (
+            f"Суть: {essence}. "
+            f"Норма/СТО: {clause_cite}. "
+            f"Локация: {location_line}. "
+            f"Развёрнуто: {detail}"
+        )
+        zone = issue.problem_zone
+        return GeneratedRemark(
+            title=title,
+            body=body,
+            essence=essence,
+            clause_cite=clause_cite,
+            clause_bound=clause_bound,
+            location_line=location_line,
+            detail=detail,
+            storey_name=issue.storey_name,
+            grid_axis=issue.grid_axis,
+            sheet_id=zone.sheet_id if zone else None,
+            element_guid=issue.element_guid or (zone.element_guid if zone else None),
+        )
 
     def _generate_en(self, issue: ValidationIssue) -> GeneratedRemark:
         essence = self._build_essence_en(issue)
         priority_hint = f" [priority {issue.priority}]" if issue.priority else ""
         title = f"{self._category_marker_en(issue)}: {essence}{priority_hint}"
-        body = self._compose_body_en(issue, essence=essence)
-        return GeneratedRemark(title=title, body=body)
+        clause_cite, clause_bound = self._norm_line(issue)
+        location_line = self._location_line(issue)
+        detail = self._detail_en(issue)
+        body = (
+            f"Essence: {essence}. "
+            f"Norm/STO: {clause_cite}. "
+            f"Location: {location_line}. "
+            f"Detail: {detail}"
+        )
+        zone = issue.problem_zone
+        return GeneratedRemark(
+            title=title,
+            body=body,
+            essence=essence,
+            clause_cite=clause_cite,
+            clause_bound=clause_bound,
+            location_line=location_line,
+            detail=detail,
+            storey_name=issue.storey_name,
+            grid_axis=issue.grid_axis,
+            sheet_id=zone.sheet_id if zone else None,
+            element_guid=issue.element_guid or (zone.element_guid if zone else None),
+        )
 
     def _category_marker_ru(self, issue: ValidationIssue) -> str:
         if issue.category is FindingCategory.CROSS_DOCUMENT:
@@ -85,17 +134,22 @@ class TemplateRemarkGenerator:
             return "Spatial conflict detected"
         return f"Mismatch on {self._build_field_name(issue)}"
 
-    def _norm_line(self, issue: ValidationIssue) -> str:
+    def _norm_line(self, issue: ValidationIssue) -> tuple[str, bool]:
         parts: list[str] = []
         if issue.norm_source and issue.norm_source.strip():
             parts.append(issue.norm_source.strip())
         if issue.norm_clause and issue.norm_clause.strip():
             parts.append(issue.norm_clause.strip())
         if parts:
-            return " ".join(parts)
+            cite = " ".join(parts)
+            return cite, True
         if self._locale == "en":
-            return "no bound clause (not invented)"
-        return "пункт нормы не привязан"
+            from aerobim.domain.remark_shape import UNBOUND_CLAUSE_EN
+
+            return UNBOUND_CLAUSE_EN, False
+        from aerobim.domain.remark_shape import UNBOUND_CLAUSE_RU
+
+        return UNBOUND_CLAUSE_RU, False
 
     def _location_line(self, issue: ValidationIssue) -> str:
         bits: list[str] = []
@@ -179,17 +233,19 @@ class TemplateRemarkGenerator:
         )
 
     def _compose_body_ru(self, issue: ValidationIssue, *, essence: str) -> str:
+        clause_cite, _bound = self._norm_line(issue)
         return (
             f"Суть: {essence}. "
-            f"Норма/СТО: {self._norm_line(issue)}. "
+            f"Норма/СТО: {clause_cite}. "
             f"Локация: {self._location_line(issue)}. "
             f"Развёрнуто: {self._detail_ru(issue)}"
         )
 
     def _compose_body_en(self, issue: ValidationIssue, *, essence: str) -> str:
+        clause_cite, _bound = self._norm_line(issue)
         return (
             f"Essence: {essence}. "
-            f"Norm/STO: {self._norm_line(issue)}. "
+            f"Norm/STO: {clause_cite}. "
             f"Location: {self._location_line(issue)}. "
             f"Detail: {self._detail_en(issue)}"
         )

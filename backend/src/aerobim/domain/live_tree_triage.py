@@ -22,6 +22,9 @@ Pass 12: denylist pointer and root-list class defect; version overlay and
 machine-readable requirements are not differentiators; foreign metrics stay
 attributed; GOST R 72514 self-assessment; licensed registry as alternate
 norm path; questionnaire/video are publication.
+Pass 13: remark shape is a schema, not prose; three finding gates are not
+a 90% claim; SP63 cover template is not customer_approved; AeroBIM does
+not replace the bSI Validation Service.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -338,6 +341,30 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Treat catalog questionnaire or demo video as outside the publication gate",
         "brake": "docs/quality/PUBLIC_SURFACES_PROTOCOL_2026.md; six checks per frame",
+    },
+    {
+        "id": "RT-GATE-90",
+        "verdict": "KILL",
+        "attack": "Read schema/quality/regulatory counts as product accuracy >90%",
+        "brake": "HTML finding-gates: grouping analog, not a 90% claim",
+    },
+    {
+        "id": "RT-SP63-APPR",
+        "verdict": "KILL",
+        "attack": "Treat SP63-COVER-SLAB-001 template as customer_approved",
+        "brake": "pack approval null; clause 8.3 (template); not table 8.1",
+    },
+    {
+        "id": "RT-BSI-REPL",
+        "verdict": "KILL",
+        "attack": "Claim AeroBIM replaces the bSI Validation Service",
+        "brake": "validation-layers doc: compatibility is not replacement",
+    },
+    {
+        "id": "RT-REMARK-SHAPE",
+        "verdict": "KILL",
+        "attack": "Ship customer remarks as title+body without essence/clause/location",
+        "brake": "validate_remark_shape; TemplateRemarkGenerator rejects",
     },
     {
         "id": "RT-SEAM-HOLD",

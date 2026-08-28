@@ -264,6 +264,15 @@ class GeneratedRemark:
     model: str | None = None
     evidence_refs: tuple[str, ...] = ()
     claim_boundary: str | None = None
+    essence: str = ""
+    clause_cite: str = ""
+    clause_bound: bool = False
+    location_line: str = ""
+    detail: str = ""
+    storey_name: str | None = None
+    grid_axis: str | None = None
+    sheet_id: str | None = None
+    element_guid: str | None = None
 
 
 @dataclass(frozen=True)
@@ -467,6 +476,10 @@ class ValidationIssue:
     """IfcBuildingStorey.Name from spatial containment. Never invented from OCR."""
     grid_axis: str | None = None
     """IfcGridAxis.AxisTag from ReferencedInStructures. Never invented from OCR."""
+    gate_class: str | None = None
+    """schema | quality | regulatory — report grouping, not a 90% claim."""
+    answer_nature: str | None = None
+    """deterministic | probabilistic — advisory origin is probabilistic."""
 
 
 def issue_from_requirement(

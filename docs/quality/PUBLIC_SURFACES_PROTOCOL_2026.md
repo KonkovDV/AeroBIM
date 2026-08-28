@@ -51,6 +51,9 @@ claim_boundary: >
 - MEP delivered
 - production-ready
 - CDE-ready
+- заменяем валидатор buildingSMART
+- шаблон СП 63 утверждён заказчиком
+- AeroBIM replaces the bSI Validation Service
 
 Городской сервис проверяет оформление по национальному стандарту. Наша задача
 по ТЗ — инженерная сверка по существу. Это разные области; формулировать самим,

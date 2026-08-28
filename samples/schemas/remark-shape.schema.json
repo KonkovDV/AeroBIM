@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerobim.local/schemas/remark-shape.schema.json",
+  "title": "AeroBIM remark shape (customer answers п. 2.1.5)",
+  "description": "Essence + bound norm/STO clause or explicit unbound marker + location. Not product accuracy. Checkpoint NO_GO.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["essence", "clause_cite", "clause_bound", "location", "detail"],
+  "properties": {
+    "essence": { "type": "string", "minLength": 1, "maxLength": 400 },
+    "clause_cite": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "clause_bound": { "type": "boolean" },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line"],
+      "properties": {
+        "line": { "type": "string", "minLength": 1 },
+        "storey_name": { "type": ["string", "null"] },
+        "grid_axis": { "type": ["string", "null"] },
+        "sheet_id": { "type": ["string", "null"] },
+        "element_guid": { "type": ["string", "null"] }
+      }
+    },
+    "detail": { "type": "string", "minLength": 1 },
+    "gate_class": {
+      "type": ["string", "null"],
+      "enum": ["schema", "quality", "regulatory", null]
+    },
+    "answer_nature": {
+      "type": ["string", "null"],
+      "enum": ["deterministic", "probabilistic", null]
+    }
+  }
+}

@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-28"
 status: active
-version: "1.11.0"
+version: "1.12.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC / HTTP `.lir` / JSON sidecar индекса / чек-листы типовых замечаний и счётчики страницы MVP (28.08) / адрес СОД заказчика (28.08) / неизмеримость критерия коллизий на поставленном пакете (28.08) / критическое издание ответов 25.08 (28.08) / проход 12: указатель на денилист, ручной список корней, позиционирование, ГОСТ Р 72514, анкета как публикация (28.08). Не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC / HTTP `.lir` / JSON sidecar индекса / чек-листы типовых замечаний и счётчики страницы MVP (28.08) / адрес СОД заказчика (28.08) / неизмеримость критерия коллизий на поставленном пакете (28.08) / критическое издание ответов 25.08 (28.08) / проход 12: указатель на денилист, ручной список корней, позиционирование, ГОСТ Р 72514, анкета как публикация (28.08) / проход 13: схема замечания, три ворота находки, слои bSI/IDS/движок, RASE-демо СП 63 (28.08). Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -77,6 +77,10 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-AI-IMPACT | Нет оценки воздействия при действующем ГОСТ Р 72514-2026 | [`AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md`](AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md); совместимость ≠ сертификация |
 | RT-NORM-MARKET | Ожидание папок заказчика как единственный путь к правилам | Licensed classified-requirements registry; подпись под профилем |
 | RT-PUB-SURFACE | Анкета и съёмка вне гейта публикации | [`PUBLIC_SURFACES_PROTOCOL_2026.md`](PUBLIC_SURFACES_PROTOCOL_2026.md); шесть проверок кадра |
+| RT-GATE-90 | Счётчики schema/quality/regulatory как точность >90% | HTML `finding-gates`: группировка-аналог, не 90% |
+| RT-SP63-APPR | Шаблон `SP63-COVER-SLAB-001` = `customer_approved` | `approval` null; пункт 8.3 (template); не таблица 8.1 |
+| RT-BSI-REPL | AeroBIM заменяет bSI Validation Service | [`VALIDATION_LAYERS_BSI_IDS_ENGINE_2026.md`](VALIDATION_LAYERS_BSI_IDS_ENGINE_2026.md); совместимость ≠ замена |
+| RT-REMARK-SHAPE | Замечание заказчику = title+body без сути/пункта/локации | `validate_remark_shape`; генератор шаблона отвергает |
 
 ## HOLD (не чиним в этом коммите)
 

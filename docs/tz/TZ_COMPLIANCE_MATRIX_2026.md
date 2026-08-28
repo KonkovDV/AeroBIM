@@ -2,8 +2,8 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.3.1"
-last_updated: "2026-08-27"
+version: "1.3.2"
+last_updated: "2026-08-28"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -89,7 +89,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
 | Highlight problem zones on drawing | done | `ProblemZone` + `DrawingEvidencePanel` | MVP |
-| Generate remark text | done | RU/EN templates (`AEROBIM_REMARK_LOCALE`); storey/axis from `IfcSpatialIndex` when GUID hits, else explicit missing (not OCR) | MVP / P0 |
+| Generate remark text | done | RU/EN templates (`AEROBIM_REMARK_LOCALE`); storey/axis from `IfcSpatialIndex` when GUID hits, else explicit missing (not OCR); payload `samples/schemas/remark-shape.schema.json` (essence + bound clause or unbound marker + location) | MVP / P0 |
 | Edit comments | done | API + frontend remark editor → `edited_remark` | P0 |
 
 ## 4. Functionality

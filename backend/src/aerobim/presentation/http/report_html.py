@@ -110,6 +110,12 @@ def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
         origin = issue.get("origin")
         if origin:
             audit_bits.append(f"origin={_esc(str(origin))}")
+        gate_class = issue.get("gate_class")
+        if gate_class:
+            audit_bits.append(f"gate={_esc(str(gate_class))}")
+        answer_nature = issue.get("answer_nature")
+        if answer_nature:
+            audit_bits.append(f"nature={_esc(str(answer_nature))}")
         if not finding_id or not source_id or not refs_joined:
             audit_bits.append("provenance=INCOMPLETE")
         audit_html = (
@@ -128,6 +134,38 @@ def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
             f"<tr class='detail'><td colspan='9'>{detail_html}</td></tr>\n"
         )
     return rows
+
+
+def _finding_gates_section(issues: list[dict[str, Any]]) -> str:
+    """CORENET-like grouping. Counts are not product accuracy."""
+
+    gates = {"schema": 0, "quality": 0, "regulatory": 0}
+    natures = {"deterministic": 0, "probabilistic": 0}
+    for issue in issues:
+        gate = issue.get("gate_class")
+        if gate in gates:
+            gates[gate] += 1
+        nature = issue.get("answer_nature")
+        if nature in natures:
+            natures[nature] += 1
+    rows = "".join(
+        (
+            f"<tr><td>{_esc(name)}</td><td>{count}</td></tr>\n"
+            for name, count in (*gates.items(), *natures.items())
+        )
+    )
+    return (
+        "<section class='cat' id='finding-gates'>"
+        "<h2>Finding gates (schema / quality / regulatory)</h2>"
+        "<p class='overlay-note'>"
+        "Report grouping analog to CORENET X Model Checker stages "
+        "(schema, quality, regulatory). Not product accuracy. Not a 90% claim. "
+        "Deterministic rows are engine predicates. Probabilistic rows are "
+        "advisory origin and never write summary.passed (ADR-001)."
+        "</p>"
+        "<table><thead><tr><th>Class</th><th>Count</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table></section>\n"
+    )
 
 
 def _build_coverage_section(coverage: dict[str, Any]) -> str:
@@ -416,6 +454,7 @@ def render_report_html(
 
     overlay_html = _overlay_section(overlay_image_href)
     coverage_html = _build_coverage_section(data.get("coverage") or {})
+    gates_html = _finding_gates_section(list(data.get("issues") or ()))
     text_evidence_html = _text_evidence_section(data.get("drawing_annotations"))
     capabilities_html = _capability_rows(data.get("capabilities"))
     kt2_release = data.get("kt2_release")
@@ -475,7 +514,7 @@ summary.outcome={_esc(str(outcome_text))} &middot;
 {summary["warning_count"]} warning(s) &middot;
 {summary["requirement_count"]} requirement(s)
 </div>
-{overlay_html}{text_evidence_html}{coverage_html}{capabilities_html}{kt2_release_html}{iso_section}{category_sections}
+{overlay_html}{text_evidence_html}{coverage_html}{gates_html}{capabilities_html}{kt2_release_html}{iso_section}{category_sections}
 <p class="meta">
 Report ID: {_esc(report_id)} &middot;
 Project: {_esc(str(data.get("project_name") or "—"))} &middot;

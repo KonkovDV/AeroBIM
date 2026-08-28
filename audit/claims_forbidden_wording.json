@@ -18,7 +18,9 @@
     "submission/05-additional/README.md",
     "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md",
     "docs/quality/AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md",
-    "docs/quality/PUBLIC_SURFACES_PROTOCOL_2026.md"
+    "docs/quality/PUBLIC_SURFACES_PROTOCOL_2026.md",
+    "docs/quality/VALIDATION_LAYERS_BSI_IDS_ENGINE_2026.md",
+    "docs/quality/RASE_SP63_COVER_DEMO_2026.md"
   ],
   "forbidden_affirmative_phrases": [
     "accuracy >90%",
@@ -48,7 +50,10 @@
     "точнее городского нормоконтроля",
     "заменяем зарубежные проверяльщики моделей",
     "поддерживаем машиночитаемые требования лучше рынка",
-    "интегрированы с платформой заказчика"
+    "интегрированы с платформой заказчика",
+    "заменяем валидатор buildingsmart",
+    "шаблон сп 63 утверждён заказчиком",
+    "aerobim replaces the bsi validation service"
   ],
   "negation_markers": [
     "not claimed",

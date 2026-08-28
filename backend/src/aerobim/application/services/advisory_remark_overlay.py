@@ -87,7 +87,10 @@ def overlay_llm_remarks(
             allow_synthetic_public=allow_synthetic_public,
         )
         if result.status == "OK" and result.remark is not None:
-            return index, replace(issue, remark=result.remark), None
+            from aerobim.domain.remark_shape import merge_advisory_onto_template
+
+            merged = merge_advisory_onto_template(issue.remark, result.remark)
+            return index, replace(issue, remark=merged), None
         return index, None, result.reason or "model_unavailable"
 
     if workers <= 1 or attempted <= 1:

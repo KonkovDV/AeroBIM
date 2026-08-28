@@ -10,7 +10,7 @@ import time
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeout
-from dataclasses import asdict
+from dataclasses import asdict, fields
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -778,7 +778,7 @@ class FilesystemAuditStore:
             unit=data.get("unit"),
             element_guid=data.get("element_guid"),
             problem_zone=ProblemZone(**problem_zone_data) if problem_zone_data else None,
-            remark=GeneratedRemark(**remark_data) if remark_data else None,
+            remark=self._reconstruct_remark(remark_data),
             conflict_kind=ConflictKind(data["conflict_kind"])
             if data.get("conflict_kind")
             else None,
@@ -797,7 +797,21 @@ class FilesystemAuditStore:
             tenant_id=data.get("tenant_id"),
             project_id=data.get("project_id"),
             origin=data.get("origin"),
+            storey_name=data.get("storey_name"),
+            grid_axis=data.get("grid_axis"),
+            gate_class=data.get("gate_class"),
+            answer_nature=data.get("answer_nature"),
         )
+
+    def _reconstruct_remark(self, data: dict[str, Any] | None) -> GeneratedRemark | None:
+        if not data:
+            return None
+        allowed = {item.name for item in fields(GeneratedRemark)}
+        payload = {key: data[key] for key in allowed if key in data}
+        refs = payload.get("evidence_refs")
+        if refs is not None and not isinstance(refs, tuple):
+            payload["evidence_refs"] = tuple(refs)
+        return GeneratedRemark(**payload)
 
     def _reconstruct_summary(self, data: dict[str, Any]) -> ValidationSummary:
         from aerobim.domain.package_outcome import PackageOutcome

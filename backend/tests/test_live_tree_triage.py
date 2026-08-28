@@ -64,6 +64,10 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-AI-IMPACT",
             "RT-NORM-MARKET",
             "RT-PUB-SURFACE",
+            "RT-GATE-90",
+            "RT-SP63-APPR",
+            "RT-BSI-REPL",
+            "RT-REMARK-SHAPE",
         ):
             self.assertIn(row_id, ids)
 

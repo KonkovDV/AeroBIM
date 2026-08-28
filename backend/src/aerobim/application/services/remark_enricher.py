@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import replace
 
+from aerobim.domain.finding_gate import stamp_finding_gate
 from aerobim.domain.llm_advisory import LlmProvider
 from aerobim.domain.models import CapabilityStatus, ValidationIssue
 from aerobim.domain.ports import RemarkGenerator
@@ -29,7 +30,9 @@ class RemarkEnricher:
     def attach_remarks(self, issues: Iterable[ValidationIssue]) -> list[ValidationIssue]:
         enriched: list[ValidationIssue] = []
         for issue in issues:
-            enriched.append(replace(issue, remark=self._remark_generator.generate(issue)))
+            remark = self._remark_generator.generate(issue)
+            stamped = stamp_finding_gate(issue)
+            enriched.append(replace(stamped, remark=remark))
         return enriched
 
     def overlay_llm_remarks(

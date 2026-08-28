@@ -86,6 +86,51 @@ class ReportHtmlTriageTests(unittest.TestCase):
         html = render_report_html("r" * 32, _payload([issue]))
         self.assertNotIn("class='band", html)
 
+    def test_three_gate_summary_is_not_accuracy_claim(self) -> None:
+        issues = [
+            {
+                **_spatial_issue("critical", 1, 40),
+                "gate_class": "regulatory",
+                "answer_nature": "deterministic",
+            },
+            {
+                "rule_id": "SCHEMA-IFC-HEADER",
+                "severity": "error",
+                "message": "schema",
+                "category": "ifc-validation",
+                "priority": 10,
+                "finding_id": "s1",
+                "source_id": "schema",
+                "origin": "deterministic",
+                "evidence_refs": ["schema"],
+                "gate_class": "schema",
+                "answer_nature": "deterministic",
+            },
+            {
+                "rule_id": "IDS-001",
+                "severity": "warning",
+                "message": "facet",
+                "category": "ids-validation",
+                "priority": 5,
+                "finding_id": "i1",
+                "source_id": "ids",
+                "origin": "advisory",
+                "evidence_refs": ["ids"],
+                "gate_class": "quality",
+                "answer_nature": "probabilistic",
+            },
+        ]
+        html = render_report_html("r" * 32, _payload(issues))
+        self.assertIn("id='finding-gates'", html)
+        self.assertIn("Not a 90% claim", html)
+        self.assertIn("CORENET X", html)
+        self.assertIn("Spatial / Clash Coordination (1)", html)
+        self.assertIn("gate=regulatory", html)
+        self.assertIn("<td>schema</td><td>1</td>", html)
+        self.assertIn("<td>quality</td><td>1</td>", html)
+        self.assertIn("<td>regulatory</td><td>1</td>", html)
+        self.assertIn("<td>probabilistic</td><td>1</td>", html)
+
 
 if __name__ == "__main__":
     unittest.main()
