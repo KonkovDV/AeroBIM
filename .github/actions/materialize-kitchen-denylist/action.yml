@@ -7,18 +7,27 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        # Secrets must arrive via step/job env, not composite `with:` inputs.
-        # GitHub truncates multiline action inputs at the first newline, which
-        # would make token_count=1 and fail the HMAC pin.
-        if [ -z "${AEROBIM_KITCHEN_DENYLIST:-}" ] || [ -z "${AEROBIM_KITCHEN_HMAC_KEY:-}" ]; then
+        # Secrets must arrive via step/job env, not composite `with:` inputs
+        # (GitHub truncates multiline action inputs at the first newline).
+        # Prefer base64: a single-line secret cannot lose tokens to YAML/env
+        # line-splitting. Plaintext multiline remains a fallback.
+        mkdir -p "${RUNNER_TEMP}/aerobim-kitchen"
+        denylist="${RUNNER_TEMP}/aerobim-kitchen/denylist.txt"
+        if [ -n "${AEROBIM_KITCHEN_DENYLIST_B64:-}" ]; then
+          printf '%s' "${AEROBIM_KITCHEN_DENYLIST_B64}" | base64 -d > "${denylist}"
+        elif [ -n "${AEROBIM_KITCHEN_DENYLIST:-}" ]; then
+          printf '%s\n' "${AEROBIM_KITCHEN_DENYLIST}" > "${denylist}"
+        else
           echo "kitchen denylist secrets missing; publication gate fail-closed" >&2
           exit 1
         fi
-        mkdir -p "${RUNNER_TEMP}/aerobim-kitchen"
-        printf '%s\n' "${AEROBIM_KITCHEN_DENYLIST}" > "${RUNNER_TEMP}/aerobim-kitchen/denylist.txt"
+        if [ -z "${AEROBIM_KITCHEN_HMAC_KEY:-}" ]; then
+          echo "kitchen HMAC key missing; publication gate fail-closed" >&2
+          exit 1
+        fi
         printf '%s' "${AEROBIM_KITCHEN_HMAC_KEY}" > "${RUNNER_TEMP}/aerobim-kitchen/hmac.key"
-        chmod 600 "${RUNNER_TEMP}/aerobim-kitchen/denylist.txt" "${RUNNER_TEMP}/aerobim-kitchen/hmac.key"
-        echo "AEROBIM_KITCHEN_DENYLIST_PATH=${RUNNER_TEMP}/aerobim-kitchen/denylist.txt" >> "${GITHUB_ENV}"
+        chmod 600 "${denylist}" "${RUNNER_TEMP}/aerobim-kitchen/hmac.key"
+        echo "AEROBIM_KITCHEN_DENYLIST_PATH=${denylist}" >> "${GITHUB_ENV}"
         echo "AEROBIM_KITCHEN_HMAC_KEY_FILE=${RUNNER_TEMP}/aerobim-kitchen/hmac.key" >> "${GITHUB_ENV}"
         python3 - <<'PY'
         from pathlib import Path

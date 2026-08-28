@@ -21,8 +21,10 @@ in git. The committed pin is `audit/evidence/kitchen-denylist.pin.json`: token
 live in `.local/` (local) or GitHub Actions secrets (CI).
 
 CI must pass those secrets through **step `env:`**, not composite `with:`
-inputs. GitHub truncates multiline action inputs at the first newline, which
-makes the publication gate see a one-token list and fail the count pin.
+inputs. GitHub truncates multiline action inputs at the first newline.
+Prefer secret `AEROBIM_KITCHEN_DENYLIST_B64` (base64 of the LF-normalized
+list): a single-line secret cannot drop tokens. Plaintext
+`AEROBIM_KITCHEN_DENYLIST` remains a fallback.
 
 Fail-closed: if the list or key is missing, or the digest does not match the pin,
 `scripts/lint_claims.py` and the hygiene tests fail. The scan walks **tracked**

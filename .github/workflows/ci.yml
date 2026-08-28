@@ -29,6 +29,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/materialize-kitchen-denylist
         env:
+          AEROBIM_KITCHEN_DENYLIST_B64: ${{ secrets.AEROBIM_KITCHEN_DENYLIST_B64 }}
           AEROBIM_KITCHEN_DENYLIST: ${{ secrets.AEROBIM_KITCHEN_DENYLIST }}
           AEROBIM_KITCHEN_HMAC_KEY: ${{ secrets.AEROBIM_KITCHEN_HMAC_KEY }}
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -176,6 +177,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/materialize-kitchen-denylist
         env:
+          AEROBIM_KITCHEN_DENYLIST_B64: ${{ secrets.AEROBIM_KITCHEN_DENYLIST_B64 }}
           AEROBIM_KITCHEN_DENYLIST: ${{ secrets.AEROBIM_KITCHEN_DENYLIST }}
           AEROBIM_KITCHEN_HMAC_KEY: ${{ secrets.AEROBIM_KITCHEN_HMAC_KEY }}
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0

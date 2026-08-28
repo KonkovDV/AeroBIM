@@ -61,9 +61,10 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
         workflow = (_REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         action = action_path.read_text(encoding="utf-8")
         self.assertNotIn("inputs:", action)
-        self.assertIn("AEROBIM_KITCHEN_DENYLIST", action)
         self.assertNotIn("with:\n          denylist:", workflow)
-        secret_line = "AEROBIM_KITCHEN_DENYLIST: ${{ secrets.AEROBIM_KITCHEN_DENYLIST }}"
+        self.assertIn("AEROBIM_KITCHEN_DENYLIST_B64", action)
+        self.assertIn("base64 -d", action)
+        secret_line = "AEROBIM_KITCHEN_DENYLIST_B64: ${{ secrets.AEROBIM_KITCHEN_DENYLIST_B64 }}"
         self.assertIn(secret_line, workflow)
 
     def test_missing_denylist_is_fail_closed(self) -> None:
