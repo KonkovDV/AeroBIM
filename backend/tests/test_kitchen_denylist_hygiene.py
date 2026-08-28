@@ -73,15 +73,14 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
             "AEROBIM_KITCHEN_DENYLIST: ${{ secrets.AEROBIM_KITCHEN_DENYLIST }}",
             workflow,
         )
-        self.assertNotIn('AEROBIM_KITCHEN_DENYLIST:-', action)
+        self.assertNotIn("AEROBIM_KITCHEN_DENYLIST:-", action)
         self.assertIn("Base64 only", action)
 
     def test_guard_set_is_import_derived_not_hand_listed(self) -> None:
         source = (_REPO / "scripts" / "kitchen_denylist.py").read_text(encoding="utf-8")
         self.assertNotIn("GUARD_RELATIVE", source)
         rels = {
-            path.relative_to(_REPO).as_posix().replace("\\", "/")
-            for path in iter_guard_files()
+            path.relative_to(_REPO).as_posix().replace("\\", "/") for path in iter_guard_files()
         }
         self.assertIn("scripts/kitchen_denylist.py", rels)
         self.assertIn("scripts/lint_claims.py", rels)
