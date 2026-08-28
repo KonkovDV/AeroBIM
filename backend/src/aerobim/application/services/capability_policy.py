@@ -131,8 +131,16 @@ class SignOffCapabilityPolicy:
                 status = getattr(capabilities, name, None)
                 if status is None or status.status in _REQUIRED_NON_OK:
                     blocked.append(name)
-            ids = capabilities.ids
-            if ids is not None and ids.status is CapabilityState.SKIPPED:
+            ids = getattr(capabilities, "ids", None)
+            # RT-C3PO-001: None / NOT_VERIFIED / MISSING is silence, not a pass.
+            # SKIPPED "not requested" stays the explicit opt-out (package without IDS).
+            # Demo / AGR honest-scope profiles are not in this branch.
+            if ids is None or ids.status in {
+                CapabilityState.NOT_VERIFIED,
+                CapabilityState.MISSING,
+            }:
+                blocked.append("ids")
+            elif ids.status is CapabilityState.SKIPPED:
                 reason = (ids.reason or "").lower()
                 if "not requested" not in reason:
                     blocked.append("ids")

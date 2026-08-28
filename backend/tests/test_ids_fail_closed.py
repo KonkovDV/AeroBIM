@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from aerobim.application.services.capability_matrix import build_report_capabilities
@@ -277,6 +278,41 @@ class IdsFailClosedCapabilityPolicyTests(unittest.TestCase):
         )
         policy = build_signoff_policy(profile="development")
         self.assertTrue(policy.summary_passed(error_count=0, capabilities=caps))
+
+    def test_hard_profile_ids_none_blocks_pass(self) -> None:
+        """RT-C3PO-001: missing IDS stamp is silence, not a pass, on customer-hard profiles."""
+
+        caps = replace(_pilot_ok_caps(), ids=None)  # type: ignore[arg-type]
+        for profile in ("samolet_pilot", "production"):
+            policy = build_signoff_policy(profile=profile)
+            self.assertIn("ids", policy.required_capability_blocks_pass(caps))
+            self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
+
+    def test_hard_profile_ids_not_verified_blocks_pass(self) -> None:
+        caps = _pilot_ok_caps(
+            ids=CapabilityStatus(CapabilityState.NOT_VERIFIED, "IDS not evaluated")
+        )
+        for profile in ("samolet_pilot", "production"):
+            policy = build_signoff_policy(profile=profile)
+            self.assertIn("ids", policy.required_capability_blocks_pass(caps))
+            self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
+
+    def test_hard_profile_ids_missing_blocks_pass(self) -> None:
+        caps = _pilot_ok_caps(ids=CapabilityStatus(CapabilityState.MISSING, "IDS file absent"))
+        for profile in ("samolet_pilot", "production"):
+            policy = build_signoff_policy(profile=profile)
+            self.assertIn("ids", policy.required_capability_blocks_pass(caps))
+            self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
+
+    def test_demo_and_agr_ids_not_verified_stay_unblocked(self) -> None:
+        """Honest-scope contours keep SKIPPED/NOT_VERIFIED IDS out of the hard-profile gate."""
+
+        caps = _pilot_ok_caps(
+            ids=CapabilityStatus(CapabilityState.NOT_VERIFIED, "IDS not evaluated")
+        )
+        for profile in ("samolet_pilot_demo", "moscow_agr_2026"):
+            policy = build_signoff_policy(profile=profile)
+            self.assertNotIn("ids", policy.required_capability_blocks_pass(caps))
 
     def test_ids_capability_failed_on_version_issue(self) -> None:
         caps = build_report_capabilities(
