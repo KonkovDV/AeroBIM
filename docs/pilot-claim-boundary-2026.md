@@ -38,7 +38,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
 | BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |
-| Browser review shell (3D + 2D evidence) | Frontend vitest **57** passed (CI pin `docs/evidence/runtime-baseline-latest.json`, `attested_by=ci`, commit `c081cfc87619`); `run_live_review_smoke` |
+| Browser review shell (3D + 2D evidence) | Frontend vitest **57** passed (CI pin `docs/evidence/runtime-baseline-latest.json`, `attested_by=ci`, commit `90a809351ca4`); `run_live_review_smoke` |
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
 | Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
