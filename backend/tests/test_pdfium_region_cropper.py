@@ -75,6 +75,41 @@ class PdfiumRegionCropperTests(unittest.TestCase):
             )
             self.assertGreater(len(big), len(small))
 
+    def test_cropper_module_does_not_import_pypdfium2(self) -> None:
+        import inspect
+
+        from aerobim.infrastructure.adapters import pdfium_region_cropper as mod
+
+        source = inspect.getsource(mod)
+        self.assertNotIn("import pypdfium2", source)
+        self.assertIn("run_pdfium_crop_isolated", source)
+
+    def test_worker_crash_is_runtime_error_not_success(self) -> None:
+        from subprocess import CompletedProcess
+        from unittest.mock import patch
+
+        from aerobim.infrastructure.adapters.pdfium_process_isolate import (
+            run_pdfium_crop_isolated,
+        )
+
+        fake = CompletedProcess(args=[], returncode=1, stdout=b"", stderr=b"worker boom")
+        with patch(
+            "aerobim.infrastructure.adapters.pdfium_process_isolate.subprocess.run",
+            return_value=fake,
+        ):
+            with self.assertRaises(RuntimeError) as ctx:
+                run_pdfium_crop_isolated(
+                    {
+                        "path": "x.pdf",
+                        "page_number": 0,
+                        "bbox_xyxy": [0, 0, 1, 1],
+                        "dpi": 72,
+                        "coordinate_system": "page-point",
+                        "max_side_px": 64,
+                    }
+                )
+        self.assertIn("exit 1", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
