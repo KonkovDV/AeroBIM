@@ -22,9 +22,9 @@ live in `.local/` (local) or GitHub Actions secrets (CI).
 
 CI must pass those secrets through **step `env:`**, not composite `with:`
 inputs. GitHub truncates multiline action inputs at the first newline.
-Prefer secret `AEROBIM_KITCHEN_DENYLIST_B64` (base64 of the LF-normalized
-list): a single-line secret cannot drop tokens. Plaintext
-`AEROBIM_KITCHEN_DENYLIST` remains a fallback.
+The list arrives only as secret `AEROBIM_KITCHEN_DENYLIST_B64` (base64 of the
+LF-normalized list). A plaintext multiline secret is not accepted: that path
+already dropped tokens against the pin.
 
 Fail-closed: if the list or key is missing, or the digest does not match the pin,
 `scripts/lint_claims.py` and the hygiene tests fail. The scan walks **tracked**
@@ -32,10 +32,18 @@ files (`git ls-files`) — the published tree. A hand list of content directorie
 is a class defect: the next guard in a new folder would be invisible. Service
 dirs and quarantine prefixes are skipped. Hits report **paths only**.
 
-Invariant: guard modules listed in `scripts/kitchen_denylist.py` (`GUARD_RELATIVE`)
-must not embed denylist literals.
+The token scan reads overlapping byte windows (2 MiB) so a file between the
+window size and the 50 MiB quarantine cap is still checked. Files that are not
+UTF-8 are scanned as bytes. PDF and Office/ZIP members are also opened for a
+text layer so a compressed locator is not a silent skip.
+
+Invariant: guard modules are the denylist module plus every tracked `.py` file
+that imports it. A hand list of guard paths is the same class defect as a hand
+list of content roots. Markdown pointers stay covered by the full-tree scan.
 
 Pack quarantine: tracked native authoring/solver/coordinator suffixes and
 quarantine prefixes (`files/`, `.local/pack/`) plus a 50 MiB size cap. The
 documented fake-byte DWG fixture under `samples/cad/` is the only suffix
-allowance.
+allowance. Document formats (PDF/Office/ZIP) are extracted during the token
+scan rather than blanket-quarantined, because the public tree already holds
+documented fixtures in those formats.

@@ -12,7 +12,8 @@ import hmac
 import json
 import os
 import subprocess
-from collections.abc import Iterable
+import zipfile
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -73,18 +74,15 @@ QUARANTINE_PREFIXES = (
 )
 # GitHub warns at 50 MiB; refuse tracked blobs at this size.
 MAX_TRACKED_BYTES = 50 * 1024 * 1024
-# Skip huge blobs when scanning text for tokens.
+# Sliding-window size for raw-byte scans. Not a skip threshold: a tracked
+# file larger than this is still scanned in overlapping chunks.
 MAX_SCAN_BYTES = 2 * 1024 * 1024
-
-GUARD_RELATIVE = (
-    "scripts/lint_claims.py",
-    "scripts/kitchen_denylist.py",
-    "backend/tests/test_samolet_answers_2026_08_25.py",
-    "backend/tests/test_kitchen_denylist_hygiene.py",
-    "backend/tests/test_rt_customer_blocker_honesty_lock.py",
-    "backend/src/aerobim/domain/live_tree_triage.py",
-    "docs/quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md",
+_MAX_EXTRACT_MEMBER = 8 * 1024 * 1024
+_MAX_EXTRACT_TOTAL = 32 * 1024 * 1024
+_DOCUMENT_EXTRACT_SUFFIXES = frozenset(
+    {".docx", ".xlsx", ".xlsm", ".odt", ".ods", ".zip"}
 )
+_SELF_REL = Path(__file__).resolve().relative_to(_REPO).as_posix().replace("\\", "/")
 
 
 class KitchenDenylistError(RuntimeError):
@@ -211,6 +209,122 @@ def iter_tracked_files() -> Iterable[Path]:
         yield path
 
 
+def _encoded_tokens(tokens: Sequence[str]) -> tuple[bytes, ...]:
+    return tuple(token.encode("utf-8") for token in tokens)
+
+
+def _raw_bytes_contain_tokens(path: Path, encoded: Sequence[bytes]) -> bool:
+    if not encoded:
+        return False
+    overlap = max(len(item) for item in encoded)
+    overlap = max(overlap, 64)
+    previous = b""
+    with path.open("rb") as handle:
+        while True:
+            chunk = handle.read(MAX_SCAN_BYTES)
+            if not chunk:
+                break
+            buffer = previous + chunk
+            if any(item in buffer for item in encoded):
+                return True
+            previous = buffer[-overlap:] if len(buffer) >= overlap else buffer
+    return False
+
+
+def _pdf_extracted_text(path: Path) -> str:
+    try:
+        from pdfminer.high_level import extract_text
+    except ImportError:
+        return ""
+    try:
+        return extract_text(str(path)) or ""
+    except Exception:
+        return ""
+
+
+def _read_zip_member(archive: zipfile.ZipFile, info: zipfile.ZipInfo) -> bytes | None:
+    try:
+        return archive.read(info)
+    except (OSError, RuntimeError, KeyError):
+        return None
+
+
+def _zip_textual_members(path: Path) -> str:
+    parts: list[str] = []
+    total = 0
+    try:
+        with zipfile.ZipFile(path) as archive:
+            for info in archive.infolist():
+                if info.is_dir():
+                    continue
+                if info.file_size > _MAX_EXTRACT_MEMBER:
+                    continue
+                if total + min(info.file_size, _MAX_EXTRACT_MEMBER) > _MAX_EXTRACT_TOTAL:
+                    break
+                raw = _read_zip_member(archive, info)
+                if raw is None:
+                    continue
+                total += len(raw)
+                if raw.count(b"\x00") > max(8, len(raw) // 64):
+                    continue
+                parts.append(raw.decode("utf-8", errors="replace"))
+    except (OSError, zipfile.BadZipFile):
+        return ""
+    return "\n".join(parts)
+
+
+def _extracted_document_text(path: Path) -> str:
+    suffix = path.suffix.lower()
+    if suffix == ".pdf":
+        return _pdf_extracted_text(path)
+    if suffix in _DOCUMENT_EXTRACT_SUFFIXES:
+        return _zip_textual_members(path)
+    return ""
+
+
+def file_contains_tokens(path: Path, tokens: Sequence[str]) -> bool:
+    """Return True if any token appears in raw bytes or extracted document text.
+
+    Oversized files are scanned in overlapping windows. Files that are not
+    UTF-8 are still scanned as bytes. Skipping either class was a silent
+    fail-open between the 2 MiB window and the 50 MiB quarantine cap.
+    """
+
+    encoded = _encoded_tokens(tokens)
+    if _raw_bytes_contain_tokens(path, encoded):
+        return True
+    extra = _extracted_document_text(path)
+    return bool(extra) and any(token in extra for token in tokens)
+
+
+def iter_guard_files() -> Iterable[Path]:
+    """Tracked modules that import this file, plus this file.
+
+    A hand list of guard paths is the same class defect as a hand list of
+    content roots: the next guard in a new file is invisible by construction.
+    Markdown pointers stay covered by the full-tree token scan.
+    """
+
+    seen: set[Path] = set()
+    for path in iter_tracked_files():
+        rel = path.relative_to(_REPO).as_posix().replace("\\", "/")
+        if rel == _SELF_REL or (
+            path.suffix == ".py"
+            and _module_imports_kitchen_denylist(path)
+        ):
+            if path not in seen:
+                seen.add(path)
+                yield path
+
+
+def _module_imports_kitchen_denylist(path: Path) -> bool:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return False
+    return "from kitchen_denylist" in text or "import kitchen_denylist" in text
+
+
 def lint_kitchen_tokens() -> list[str]:
     """Scan tracked files for denylist literals. Fail-closed on load errors."""
 
@@ -222,14 +336,13 @@ def lint_kitchen_tokens() -> list[str]:
 
     hits: list[str] = []
     for path in iter_tracked_files():
+        rel = path.relative_to(_REPO).as_posix()
         try:
-            if path.stat().st_size > MAX_SCAN_BYTES:
-                continue
-            text = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+            found = file_contains_tokens(path, tokens)
+        except OSError:
+            hits.append(f"[kitchen_scan] unreadable: {rel}")
             continue
-        if any(token in text for token in tokens):
-            rel = path.relative_to(_REPO).as_posix()
+        if found:
             hits.append(f"[kitchen_token] {rel}")
     return hits
 
@@ -244,15 +357,14 @@ def lint_guard_files_have_no_literals() -> list[str]:
         return [f"[kitchen_denylist] fail-closed: {exc}"]
 
     hits: list[str] = []
-    for rel in GUARD_RELATIVE:
-        path = _REPO / rel
-        if not path.is_file():
-            continue
+    for path in iter_guard_files():
+        rel = path.relative_to(_REPO).as_posix()
         try:
-            text = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+            found = file_contains_tokens(path, tokens)
+        except OSError:
+            hits.append(f"[kitchen_scan] unreadable: {rel}")
             continue
-        if any(token in text for token in tokens):
+        if found:
             hits.append(f"[kitchen_guard] {rel}")
     return hits
 

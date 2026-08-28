@@ -12,7 +12,10 @@ _REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO / "scripts"))
 
 from kitchen_denylist import (  # noqa: E402
+    MAX_SCAN_BYTES,
     KitchenDenylistError,
+    file_contains_tokens,
+    iter_guard_files,
     lint_guard_files_have_no_literals,
     lint_kitchen_tokens,
     lint_pack_quarantine,
@@ -66,6 +69,57 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
         self.assertIn("base64 -d", action)
         secret_line = "AEROBIM_KITCHEN_DENYLIST_B64: ${{ secrets.AEROBIM_KITCHEN_DENYLIST_B64 }}"
         self.assertIn(secret_line, workflow)
+        self.assertNotIn(
+            "AEROBIM_KITCHEN_DENYLIST: ${{ secrets.AEROBIM_KITCHEN_DENYLIST }}",
+            workflow,
+        )
+        self.assertNotIn('AEROBIM_KITCHEN_DENYLIST:-', action)
+        self.assertIn("Base64 only", action)
+
+    def test_guard_set_is_import_derived_not_hand_listed(self) -> None:
+        source = (_REPO / "scripts" / "kitchen_denylist.py").read_text(encoding="utf-8")
+        self.assertNotIn("GUARD_RELATIVE", source)
+        rels = {
+            path.relative_to(_REPO).as_posix().replace("\\", "/")
+            for path in iter_guard_files()
+        }
+        self.assertIn("scripts/kitchen_denylist.py", rels)
+        self.assertIn("scripts/lint_claims.py", rels)
+        self.assertIn("backend/tests/test_kitchen_denylist_hygiene.py", rels)
+        self.assertIn("backend/tests/test_samolet_answers_2026_08_25.py", rels)
+        self.assertIn("backend/tests/test_rt_customer_blocker_honesty_lock.py", rels)
+
+    def test_scan_finds_token_past_two_mib_window(self) -> None:
+        probe = "aerobim-hygiene-scan-window-probe-7f3c9e"
+        handle, name = tempfile.mkstemp(suffix=".bin")
+        path = Path(name)
+        try:
+            with os.fdopen(handle, "wb") as writer:
+                writer.write(b"A" * (MAX_SCAN_BYTES + 64))
+                writer.write(probe.encode("utf-8"))
+            self.assertTrue(file_contains_tokens(path, [probe]))
+        finally:
+            path.unlink(missing_ok=True)
+
+    def test_scan_finds_token_in_deflated_zip_member(self) -> None:
+        import io
+        import zipfile
+
+        probe = "aerobim-hygiene-zip-member-probe-4a91d2"
+        payload = ("n" * 8192) + "\n" + probe + "\n"
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr("payload.txt", payload)
+        raw = buffer.getvalue()
+        self.assertNotIn(probe.encode("utf-8"), raw)
+        handle, name = tempfile.mkstemp(suffix=".zip")
+        path = Path(name)
+        try:
+            with os.fdopen(handle, "wb") as writer:
+                writer.write(raw)
+            self.assertTrue(file_contains_tokens(path, [probe]))
+        finally:
+            path.unlink(missing_ok=True)
 
     def test_missing_denylist_is_fail_closed(self) -> None:
         previous = os.environ.get("AEROBIM_KITCHEN_DENYLIST_PATH")
