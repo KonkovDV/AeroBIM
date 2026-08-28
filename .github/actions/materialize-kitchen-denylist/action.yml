@@ -1,0 +1,29 @@
+name: materialize-kitchen-denylist
+description: Write the out-of-git kitchen denylist for publication gates (fail-closed).
+inputs:
+  denylist:
+    description: Newline-separated protected tokens (GitHub Actions secret).
+    required: true
+  hmac_key:
+    description: HMAC-SHA256 key matching audit/evidence/kitchen-denylist.pin.json.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Write kitchen denylist (fail-closed)
+      shell: bash
+      env:
+        AEROBIM_KITCHEN_DENYLIST: ${{ inputs.denylist }}
+        AEROBIM_KITCHEN_HMAC_KEY: ${{ inputs.hmac_key }}
+      run: |
+        set -euo pipefail
+        if [ -z "${AEROBIM_KITCHEN_DENYLIST}" ] || [ -z "${AEROBIM_KITCHEN_HMAC_KEY}" ]; then
+          echo "kitchen denylist secrets missing; publication gate fail-closed" >&2
+          exit 1
+        fi
+        mkdir -p "${RUNNER_TEMP}/aerobim-kitchen"
+        printf '%s\n' "${AEROBIM_KITCHEN_DENYLIST}" > "${RUNNER_TEMP}/aerobim-kitchen/denylist.txt"
+        printf '%s' "${AEROBIM_KITCHEN_HMAC_KEY}" > "${RUNNER_TEMP}/aerobim-kitchen/hmac.key"
+        chmod 600 "${RUNNER_TEMP}/aerobim-kitchen/denylist.txt" "${RUNNER_TEMP}/aerobim-kitchen/hmac.key"
+        echo "AEROBIM_KITCHEN_DENYLIST_PATH=${RUNNER_TEMP}/aerobim-kitchen/denylist.txt" >> "${GITHUB_ENV}"
+        echo "AEROBIM_KITCHEN_HMAC_KEY_FILE=${RUNNER_TEMP}/aerobim-kitchen/hmac.key" >> "${GITHUB_ENV}"

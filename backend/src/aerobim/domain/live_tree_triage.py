@@ -75,7 +75,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-KIT-01",
         "verdict": "KILL",
         "attack": "Re-introduce kitchen site tokens into the public tree",
-        "brake": "lint_claims _KITCHEN_TOKENS (site toponyms + tracker surname)",
+        "brake": "lint_claims kitchen denylist (HMAC pin; literals outside git)",
     },
     {
         "id": "RT-KT3-01",

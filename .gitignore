@@ -47,6 +47,22 @@ APS.code-workspace
 # (sibling ../AeroBIM-private/). A tracked .local/ inside a public repo is N-46 risk.
 .local/
 
+# Kitchen denylist literals and HMAC key (pin is audit/evidence/kitchen-denylist.pin.json)
+.local/kitchen-denylist.txt
+.local/kitchen-hmac.key
+.local/pack/
+
+# Native authoring / solver / coordinator packs (IFC fixtures stay tracked)
+*.rvt
+*.rfa
+*.rte
+*.nwd
+*.nwc
+*.lir
+*.spr
+*.dwg
+!samples/cad/placeholder-source.dwg
+
 # Local operator baseline exports (WP-A11 — never commit)
 docs/evidence/local/
 docs/evidence/runtime-baseline-latest-dirty.json

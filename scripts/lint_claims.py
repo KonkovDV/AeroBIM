@@ -22,6 +22,9 @@ from collections.abc import Sequence
 from functools import lru_cache
 from pathlib import Path
 
+from kitchen_denylist import lint_kitchen_tokens as scan_kitchen_tokens
+from kitchen_denylist import lint_pack_quarantine
+
 _REPO = Path(__file__).resolve().parents[1]
 _MATRIX = _REPO / "docs" / "capability-claim-matrix-2026.md"
 _TZ_MATRIX = _REPO / "docs" / "tz" / "TZ_COMPLIANCE_MATRIX_2026.md"
@@ -111,30 +114,6 @@ _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ),
 ]
 
-_KITCHEN_TOKENS = (
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "customer-discovery/",
-    "docs/partners/outreach/",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-)
-
 _KITCHEN_PATH_PREFIXES = (
     "docs/roadmap/",
     "docs/partners/outreach/",
@@ -149,53 +128,11 @@ _KITCHEN_PATH_PREFIXES = (
     "docs/demo/KT2_VIDEO_SCRIPT",
 )
 
-_KITCHEN_SCAN_ROOTS = (
-    _REPO / "README.md",
-    _REPO / "README.ru.md",
-    _REPO / "SECURITY.md",
-    _REPO / "docs",
-    _REPO / "submission",
-    _REPO / "samples",
-    _REPO / "audit",
-    _REPO / "backend" / "src",
-    _REPO / "frontend" / "src",
-)
-
-
-def _rel_is_operator_kitchen(rel: str) -> bool:
-    posix = rel.replace("\\", "/")
-    return any(posix.startswith(prefix) for prefix in _KITCHEN_PATH_PREFIXES)
-
 
 def lint_kitchen_tokens() -> list[str]:
-    """Jury pack: no NDA locators, kitchen paths, or archived speech-docs."""
+    """Jury pack: no pack-share host locator in the public tree."""
 
-    skip_parts = {".git", "node_modules", "__pycache__", ".venv", "artifacts"}
-    hits: list[str] = []
-    for root in _KITCHEN_SCAN_ROOTS:
-        paths: list[Path]
-        if root.is_file():
-            paths = [root]
-        elif root.is_dir():
-            paths = [path for path in root.rglob("*") if path.is_file()]
-        else:
-            continue
-        for path in paths:
-            if any(part in skip_parts for part in path.parts):
-                continue
-            if path.suffix.lower() not in {".md", ".py", ".json", ".txt", ".yml", ".yaml"}:
-                continue
-            try:
-                text = path.read_text(encoding="utf-8")
-            except (OSError, UnicodeDecodeError):
-                continue
-            rel = path.relative_to(_REPO).as_posix()
-            if _rel_is_operator_kitchen(rel):
-                continue
-            for token in _KITCHEN_TOKENS:
-                if token in text:
-                    hits.append(f"[kitchen_token] {rel}: {token}")
-    return hits
+    return scan_kitchen_tokens()
 
 
 def lint_kitchen_paths() -> list[str]:
@@ -739,6 +676,7 @@ def main(argv: list[str] | None = None) -> int:
         errors.extend(lint_claims(matrix_path=args.matrix, roots=roots))
         errors.extend(lint_kitchen_tokens())
         errors.extend(lint_kitchen_paths())
+        errors.extend(lint_pack_quarantine())
 
     errors.extend(lint_citation_twins())
 

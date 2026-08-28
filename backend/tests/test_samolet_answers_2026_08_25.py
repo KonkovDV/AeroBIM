@@ -230,34 +230,22 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertNotIn("customer_share_url", catalog)
 
     def test_working_tree_does_not_republish_share_host(self) -> None:
-        """NDA locator host must not sit in the public working tree."""
+        """Pack-share host locator must not sit in the public working tree."""
 
-        needles = ("", "")
-        roots = (
-            self._repo() / "audit",
-            self._repo() / "backend" / "src",
-            self._repo() / "docs",
-            self._repo() / "samples",
-            self._repo() / "submission",
-            self._repo() / "frontend" / "src",
-        )
-        hits: list[str] = []
-        skip_parts = {".git", "node_modules", "__pycache__", ".venv", "artifacts"}
-        for root in roots:
-            if not root.is_dir():
-                continue
-            for path in root.rglob("*"):
-                if not path.is_file():
-                    continue
-                if any(part in skip_parts for part in path.parts):
-                    continue
-                try:
-                    text = path.read_text(encoding="utf-8")
-                except (OSError, UnicodeDecodeError):
-                    continue
-                if any(needle in text for needle in needles):
-                    hits.append(str(path.relative_to(self._repo())))
-        self.assertEqual(hits, [])
+        import sys
+
+        scripts = self._repo() / "scripts"
+        sys.path.insert(0, str(scripts))
+        try:
+            from kitchen_denylist import (  # type: ignore[import-not-found]
+                lint_guard_files_have_no_literals,
+                lint_kitchen_tokens,
+            )
+        finally:
+            if sys.path and sys.path[0] == str(scripts):
+                sys.path.pop(0)
+        self.assertEqual(lint_kitchen_tokens(), [])
+        self.assertEqual(lint_guard_files_have_no_literals(), [])
 
 
 class SplitUploadApiTests(unittest.TestCase):

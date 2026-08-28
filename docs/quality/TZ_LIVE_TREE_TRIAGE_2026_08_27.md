@@ -33,7 +33,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-V1-04 | Акт МИК цитирует v1 вместо interim 0.60 | горизонт `interim_tp_fp_ge_0_60` |
 | RT-INJ-NEST | `inject_defects` output внутри source → `rmtree` пакета | деревья не равны и не вложены |
 | RT-INJ-NDA | source = `samples/customer` или `files/` | posix-маркеры |
-| RT-KIT-01 | Кухонные топонимы / фамилия трекера снова в публичном дереве | `lint_claims` kitchen tokens |
+| RT-KIT-01 | Кухонные токены снова в публичном дереве | `lint_claims` kitchen denylist (HMAC-пин; литералы вне git) |
 | RT-KT3-01 | `passed=false` на фикстуре = Checkpoint GO | `require_kt3_jury_gate` |
 | RT-KT3-02 | Первая строка жюри = `REQ-AREA` без GUID | `select_jury_finding` |
 | RT-KT3-03 | Fixture MEP `OK` = MEP delivered | gate rejects `OK`/`DELIVERED` |

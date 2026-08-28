@@ -326,15 +326,18 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertIn("attested_by=ci", submission)
         self.assertIn("f9389bf", submission)
 
-    def test_jury_surfaces_omit_third_party_surnames(self) -> None:
-        needles = (
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-        )
+    def test_jury_surfaces_omit_denylist_literals(self) -> None:
+        import sys
+
+        scripts = self._repo() / "scripts"
+        sys.path.insert(0, str(scripts))
+        try:
+            from kitchen_denylist import load_tokens, verify_pin
+        finally:
+            if sys.path and sys.path[0] == str(scripts):
+                sys.path.pop(0)
+        tokens = load_tokens()
+        verify_pin(tokens)
         surfaces = (
             self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             self._repo() / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md",
@@ -348,10 +351,14 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self._repo() / "submission" / "README.md",
             self._repo() / "docs" / "tz" / "TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md",
         )
+        hits: list[str] = []
         for path in surfaces:
+            if not path.is_file():
+                continue
             text = path.read_text(encoding="utf-8")
-            for needle in needles:
-                self.assertNotIn(needle, text, msg=f"{path.name}: {needle}")
+            if any(token in text for token in tokens):
+                hits.append(path.relative_to(self._repo()).as_posix())
+        self.assertEqual(hits, [])
 
     def test_faq_separates_coverage_map_from_product_accuracy(self) -> None:
         text = (self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md").read_text(
@@ -487,9 +494,6 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT3_JURY_FAQ_2026_08_25.md", text)
         self.assertIn("KT3_OPERATOR_RUNBOOK_2026_08_25.md", text)
         self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", text)
-        self.assertNotIn("", text)
-        self.assertNotIn("", text)
-        self.assertNotIn("", text)
 
     def test_qa_defense_stays_no_go_and_omits_contest_count(self) -> None:
         path = self._repo() / "docs" / "qa-defense-2026.md"
@@ -564,7 +568,6 @@ class JuryPackHygieneTests(unittest.TestCase):
             "rewrite-author-konkovdv",
             "эта машина",
             "Что делать ИИ дальше",
-            "",
         )
         hits: list[str] = []
         repo = self._repo()
