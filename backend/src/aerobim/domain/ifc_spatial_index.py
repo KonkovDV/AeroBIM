@@ -139,19 +139,21 @@ def read_spatial_index_json(path: Path) -> IfcSpatialIndex:
         name_raw = item.get("name")
         storey_raw = item.get("storey_name")
         axis_raw = item.get("grid_axis")
-        systems = item.get("system_ids") or ()
+        member_ids = item.get("system_ids") or ()
         elements[guid] = IfcSpatialElement(
             global_id=guid,
             ifc_type=str(item.get("ifc_type") or ""),
             name=None if name_raw is None else str(name_raw),
-            system_ids=tuple(str(value) for value in systems),
+            system_ids=tuple(str(value) for value in member_ids),
             storey_name=None if storey_raw is None else str(storey_raw),
             grid_axis=None if axis_raw is None else str(axis_raw),
         )
-    systems: dict[str, tuple[str, ...]] = {}
-    for key, values in (raw.get("systems") or {}).items():
-        systems[str(key)] = tuple(str(value) for value in values)
-    return IfcSpatialIndex(elements=elements, systems=systems)
+    grouped: dict[str, tuple[str, ...]] = {}
+    raw_systems = raw.get("systems")
+    if isinstance(raw_systems, dict):
+        for key, values in raw_systems.items():
+            grouped[str(key)] = tuple(str(value) for value in values)
+    return IfcSpatialIndex(elements=elements, systems=grouped)
 
 
 def stamp_issues_with_spatial_location(
