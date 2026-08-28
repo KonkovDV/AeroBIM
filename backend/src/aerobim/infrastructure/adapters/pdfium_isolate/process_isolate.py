@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 _DEFAULT_TIMEOUT_S = 30.0
-_WORKER_MODULE = "aerobim.infrastructure.adapters.pdfium_render_worker"
+_WORKER_MODULE = "aerobim.infrastructure.adapters.pdfium_isolate.render_worker"
 
 
 def run_pdfium_crop_isolated(

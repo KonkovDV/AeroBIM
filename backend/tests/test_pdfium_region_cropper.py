@@ -88,13 +88,13 @@ class PdfiumRegionCropperTests(unittest.TestCase):
         from subprocess import CompletedProcess
         from unittest.mock import patch
 
-        from aerobim.infrastructure.adapters.pdfium_process_isolate import (
+        from aerobim.infrastructure.adapters.pdfium_isolate.process_isolate import (
             run_pdfium_crop_isolated,
         )
 
         fake = CompletedProcess(args=[], returncode=1, stdout=b"", stderr=b"worker boom")
         with patch(
-            "aerobim.infrastructure.adapters.pdfium_process_isolate.subprocess.run",
+            "aerobim.infrastructure.adapters.pdfium_isolate.process_isolate.subprocess.run",
             return_value=fake,
         ):
             with self.assertRaises(RuntimeError) as ctx:

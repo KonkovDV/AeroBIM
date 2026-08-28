@@ -11,7 +11,9 @@ pypdfium2.
 from __future__ import annotations
 
 from aerobim.domain.models import DrawingSource
-from aerobim.infrastructure.adapters.pdfium_process_isolate import run_pdfium_crop_isolated
+from aerobim.infrastructure.adapters.pdfium_isolate.process_isolate import (
+    run_pdfium_crop_isolated,
+)
 
 _DEFAULT_DPI = 200
 _DEFAULT_MAX_SIDE_PX = 4096
