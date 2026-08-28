@@ -5,7 +5,7 @@ are ignored by git except this README.
 
 Do **not** commit IFC, drawings, or labels from Samolet / customer pilots.
 
-Share channel received 2026-08-25 (NDA). The locator is **not** in this public tree after the 25.08 Red Team pass and the 26.08 history rewrite of `main`. Owner keeps any locator outside git.
+Share channel received 2026-08-25 (NDA). The locator is **not** in this public tree after the 25.08 Red Team pass, the 26.08 jury-pack rewrite, and the 28.08 kitchen-literal rewrite of `main`. Owner keeps any locator outside git. GitHub copies, Actions logs, and forks are outside git and are not claimed purged.
 
 Do **not** say the customer sent no data. The channel is received. A hashed pack is **not** in git. RT-001 stays OPEN.
 

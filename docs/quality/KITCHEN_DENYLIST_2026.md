@@ -18,7 +18,10 @@ claim_boundary: >
 Protected literals (pack-share host locator and related kitchen strings) are **not**
 in git. The committed pin is `audit/evidence/kitchen-denylist.pin.json`: token
 **count** plus HMAC-SHA256 of the sorted list. The HMAC key and the list itself
-live in `.local/` (local) or GitHub Actions secrets (CI).
+live in `.local/` (local) or GitHub Actions secrets (CI). On 28.08.2026 `main`
+was rewritten so those literals are not recoverable from git objects either.
+GitHub Actions logs, forks, and clones from before the force-push are outside
+this tree.
 
 CI must pass those secrets through **step `env:`**, not composite `with:`
 inputs. GitHub truncates multiline action inputs at the first newline.
