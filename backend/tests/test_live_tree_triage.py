@@ -44,6 +44,7 @@ class LiveTreeTriageTests(unittest.TestCase):
         self.assertIn("RT-TYP-CATALOG", ids)
         self.assertIn("RT-PAGE-DRIFT", ids)
         self.assertIn("RT-CDE-IDENT", ids)
+        self.assertIn("RT-CLASH-MEASURE", ids)
 
     def test_ids_unique_and_verdicts_known(self) -> None:
         ids = [row["id"] for row in TRIAGE_ROWS]

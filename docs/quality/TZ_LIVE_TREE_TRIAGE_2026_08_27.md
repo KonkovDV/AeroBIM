@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-28"
 status: active
-version: "1.7.0"
+version: "1.8.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,7 @@ claim_boundary: >
 
 # Live-tree triage (27.08.2026)
 
-PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC / HTTP `.lir` / JSON sidecar индекса / чек-листы типовых замечаний и счётчики страницы MVP (28.08) / адрес СОД заказчика (28.08). Не закрытие RT.
+PR-diff к `main` на первом проходе 27.08 был пустой. Этот файл — полный триаж живого дерева плюс проходы КТ#3 / OOS / локация замечания / канал 25.08 / таблица LIRA / стриминг IFC / HTTP `.lir` / JSON sidecar индекса / чек-листы типовых замечаний и счётчики страницы MVP (28.08) / адрес СОД заказчика (28.08) / неизмеримость критерия коллизий на поставленном пакете (28.08). Не закрытие RT.
 
 Машина: `python -c "from aerobim.domain.live_tree_triage import triage_snapshot"`.
 
@@ -58,6 +58,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-TYP-CATALOG | «Каталог типовых ошибок принят», пока `customer_confirmed_patterns=0` и 2 чек-листа приёмки лежат неразобранными | `customer_share_ingested=false`; `acceptance_checklists_local.ingested_into_patterns=0`; detected 2 ≠ ingested |
 | RT-PAGE-DRIFT | Строки страницы MVP (11 Autodesk, 1133 скан-PDF, 51 ТЗ) перекрывают пин инвентаря | `PUBLIC_REHEARSAL`: 27 rvt + 21 navis, 1127 pdf; `rehearsal_differs` ловит дрейф |
 | RT-CDE-IDENT | Адрес ссылки назвал СОД заказчика → «импорт/интеграция доказаны» | `cde_import=NOT_VERIFIED` до T2-пакета (log+screenshot+hashes); демо-пуш на синтетике ≠ реестр заказчика |
+| RT-CLASH-MEASURE | «Коллизии >90% измеримы/закрыты на поставленном пакете» | `PUBLIC_REHEARSAL`: `federated_mep_ifc_present=false`, `rd_ifc_present=false` — критерий неизмерим на пакете математически; речь: «проверено на синтетике, запрошен федеративный набор по одному корпусу» |
 
 ## HOLD (не чиним в этом коммите)
 

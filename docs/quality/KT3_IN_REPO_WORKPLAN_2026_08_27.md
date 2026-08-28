@@ -4,7 +4,7 @@ title: "In-repo workplan after 25.08 customer answers"
 date: "2026-08-27"
 last_updated: "2026-08-28"
 status: active
-version: "1.2.0"
+version: "1.3.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -48,6 +48,17 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 | 2 | Unsigned SP 63/20 **template** only if needed | `closes_rt002: false`; not `customer_approved` | Relabel as RT-002b CLOSED |
 | 4 | Implement streaming IFC / disk R-tree | Parser + RSS measurement; default cap still 256 MiB until measured | Silent raise of `AEROBIM_MAX_IFC_BYTES` |
 | 5 | Browser OIDC BFF | Explicit 501 until implemented | Demo login as production SSO |
+
+### Добавлено 28.08 (построчный разбор ТЗ + снимок пакета)
+
+| Pri | Task | Done when | Forbidden |
+|---|---|---|---|
+| 6 | DXF-маршрут на 57 реальных файлах пакета (локально, не в git) | Строка 4 матрицы прогнана на данных заказчика; агрегат без имён | Коммитить имена/хеши; говорить «DWG покрыт» |
+| 7 | Комплектность по ПП 87 на реальном комплекте ПД | Прогон на ПД пакета, verdict на файлах заказчика | Называть это точностью: без разметки это обход, не измерение |
+| 8 | ТР-65: три метрики когнитивной нагрузки из review-events | Две метрики из журнала посчитаны; третья помечена missing (UI-события) | Выдумать цифру без журнала |
+| 9 | Зонд пакета (`pack_probe`) оператором локально | `pack-aggregate.json` без имён получен; три недостающие цифры известны | Публиковать агрегат до ответа организаторов |
+
+Owner-запросы (не код): федеративный набор IFC по одному корпусу (иначе критерий коллизий ТЗ неизмерим — RT-CLASH-MEASURE); пакетный экспорт Revit→IFC штатным модулем СОД по одному корпусу; DXF-выгрузка остальных чертежей тем же маршрутом, что 57 вложенных; отчёты по армированию в xlsx/docx; какие документы каталога стандартов применимы к нормоконтролю и у каких есть реквизиты утверждения; письменное подтверждение двух сужений 25.08 (сверка вместо солвера; шесть нормативов вместо «всех действующих»); тип доступа ссылки и её срок жизни.
 
 ## Owner-only (not git)
 

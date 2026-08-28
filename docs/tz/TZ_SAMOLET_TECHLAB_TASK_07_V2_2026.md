@@ -5,8 +5,8 @@
 ---
 title: "ТЗ Самолет × ТехЛаб 2026 — Задача 07 (редакция v2.0)"
 status: active
-version: "2.0.0"
-last_updated: "2026-07-17"
+version: "2.1.0"
+last_updated: "2026-08-28"
 language: ru
 tags: [aerobim, tz, samolet, techlab, task-07]
 claim_boundary: >
@@ -407,6 +407,24 @@ basis:
 **ТР-61.** CoVe (перепроверка по нормам) — roadmap advisory, не sign-off.  
 **ТР-62.** Региональный VLM-конвейер (не whole-sheet) — требование к P2/P3.
 
+### Дополнения 2026-08-28 (построчная сверка с текстом ТЗ) `[НОВОЕ]`
+
+Построчное чтение ТЗ 28.08 нашло четыре требования, которые были в коде или в
+runtime-матрице, но не имели номера ТР, — плюс одно, которого не было нигде.
+
+**ТР-63.** Сравнение версий и типов документации (ТЗ «Функционал») —
+`compare_package_document_identities` (runtime-матрица, строка 28). Не продавать
+как отличие: в СОД заказчика наложение версий уже работает; ценность — вердикт,
+какая из разниц нарушает норму.  
+**ТР-64.** Загрузка форматов MS Office (ТЗ «Функционал») —
+`OfficeDocumentIngestor` + upload allowlist (runtime-матрица, строка 27).  
+**ТР-65.** Снижение когнитивной нагрузки (пользовательский критерий ТЗ) — три
+метрики из журнала HITL review-events: время до первого подтверждённого
+замечания; доля замечаний, принятых без правки; число переключений лист↔модель
+на замечание (третья требует UI-событий — не закрыто).  
+**ТР-66.** Извлечение инженерных сетей из 2D-чертежей (ТЗ «Извлечение»: сети —
+третий пункт списка) — статус **MISSING**; 470 DWG пакета — это ровно они.
+
 ---
 
 ## 16. Риски и митигации `[НОВОЕ]`
@@ -473,6 +491,10 @@ basis:
 | ТР-54 | Claims Lock | done | — | Audit report | CLAIMS_LOCK |
 | ТР-55–56 | Eval protocol | done tooling | P1 | Runbook | I6 |
 | ТР-57–62 | AI safety | partial | MVP–P3 | Gate+HITL | Research §6 |
+| ТР-63 | compare_package_document_identities | done (fixture) | MVP | identity compare CLI | Matrix §28 |
+| ТР-64 | OfficeDocumentIngestor + allowlist | done (fixture) | MVP | test_office_native_ingest | Matrix §27 |
+| ТР-65 | review-events journal metrics | scaffold | P1 | 3 метрики; UI-события missing | Разбор 28.08 |
+| ТР-66 | — | **missing** | P2+ | Сети из 2D не покрыты | ТЗ «Извлечение» |
 | — | IfcKnowledgeGraphPort | **advisory scaffold** | I9 | Not GraphRAG/IfcLLM product | Research §3 · Claims Lock |
 
 ---

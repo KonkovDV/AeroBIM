@@ -132,6 +132,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Still true:** `UnconfiguredMepSystemGraphProvider` stays `NOT_VERIFIED`. Synthetic stub is never OK.
 - **Normative hook:** «Требования к отсутствию коллизий» in digital building-model requirements ed. 4.0.
 - **Product HOLD — RT-003 still OPEN** until customer federated IFC + signed scope + verified geometry. Inventory, planted clash, and public duplex clash ≠ delivered.  
+- **Addendum 28.08.2026 (критерий ТЗ неизмерим на поставленном пакете):** TZ ставит порог «коллизии > 90%», но по пину инвентаря `PUBLIC_REHEARSAL.federated_mep_ifc_present=false` и `rd_ifc_present=false` — федеративного набора и рабочей IFC в пакете нет, значит критерий на этих данных не измеряется математически, а не «не измерялся пока». Речь: «коллизии проверены на синтетических федеративных моделях; для измерения на реальных запрошен федеративный набор по одному корпусу». Формулировка «закрыли коллизии на данных заказчика» ложна автоматически — см. RT-CLASH-MEASURE в [`docs/quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](../../docs/quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md).  
 
 ### RT-004 — Clash SKIPPED does not block pass
 - **СТАТУС: ЗАКРЫТО (remediation 2026-07-17)** — `require_clash` → SKIPPED clash ⇒ FAILED + `passed=false`  

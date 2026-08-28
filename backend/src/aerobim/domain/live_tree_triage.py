@@ -9,6 +9,8 @@ Pass 6: HTTP .lir/.spr honesty reason; JSON sidecar ≠ disk R-tree.
 Pass 7: typical-remarks checklists in files/ ≠ accepted catalog; MVP page counts ≠ rehearsal pin.
 Pass 8: share-link origin names the customer CDE ≠ import proven; demo-license
 synthetic push is an engineering path, not customer-registry evidence.
+Pass 9: TZ clash criterion >90% is unmeasurable on the delivered pack
+(no federated / no RD IFC in the inventory pin) — never claim otherwise.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -211,6 +213,12 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Share-link origin names the customer CDE, so claim CDE import/integration",
         "brake": "cde_import=NOT_VERIFIED until T2 log+shot+hashes; demo push ≠ customer registry",
+    },
+    {
+        "id": "RT-CLASH-MEASURE",
+        "verdict": "KILL",
+        "attack": "Say the TZ clash criterion (>90%) is measurable or closed on the delivered pack",
+        "brake": "PUBLIC_REHEARSAL federated_mep_ifc_present=False, rd_ifc_present=False",
     },
     {
         "id": "RT-SEAM-HOLD",

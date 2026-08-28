@@ -34,8 +34,10 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | 26 | SLA ≤30 мин | measure_package_sla (gate=**p95**) | CLI | `test_measure_package_sla.py`; evidence `samolet-sla-fixture-p95-2026-08-04.json` | fixture | FIXTURE_ONLY; customer НЕ ДОКАЗАНО | HIGH |
 | 27 | Загрузка MS Office (docx/xlsx/…) | `OfficeDocumentIngestor` + upload allowlist | hydrate in analyze; `POST /v1/uploads` | `test_office_native_ingest.py` committed `samples/office/` | synthetic Office | VERIFIED_FIXTURE_ONLY^[fn27] | MED |
 | 28 | Сравнение версий и типов документации | `compare_package_document_identities` | CLI `compare_package_identities` | `test_package_identity_compare.py` | synthetic inventories | VERIFIED_FIXTURE_ONLY^[fn28] | HIGH |
+| 29 | Извлечение инженерных сетей из 2D | — | — | — | none | MISSING^[fn29] | HIGH |
+| 30 | Снижение когнитивной нагрузки | review-events journal (метрики ТР-65) | — | — | none | MISSING^[fn30] | MED |
 
-## Status summary (28 rows)
+## Status summary (30 rows)
 
 | Status | Count |
 |---|---:|
@@ -43,6 +45,7 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | ADVISORY_ONLY | 1 |
 | FIXTURE_ONLY | 1 |
 | MISSING (never OK) | 1 |
+| MISSING | 2 |
 | BLOCKED_BY_CUSTOMER_DATA | 1 |
 
 ## VERIFIED rows — required pointers
@@ -109,9 +112,13 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn25]: BCF 2.1/3.0 export + file ingest (`consume_bcf_zip_path`, `samples/bcf/fixture-topics.bcfzip`). `cde_import` stays **NOT_VERIFIED**. Not RT-008 T2. 2026-08-28: target CDE **identified at address level** — the customer pack share link resolves to the 10D contour (session-gated; contents not read). Closure path without customer files: vendor public Swagger API + free developer license, synthetic BCF push into a demo-tenant registry, then T2 pack (log+screenshot+hashes). Demo-tenant push ≠ customer registry proof; status unchanged until a real import lands.
 
-^[fn27]: Native `.docx`/`.xlsx` round-trip on committed `samples/office/` fixtures; `package_completeness` accepts declared `docx` and `xlsx`. Legacy `.doc`/`.xls` still fail-closed at ingest. Not customer Office files.
+^[fn27]: Native `.docx`/`.xlsx` round-trip on committed `samples/office/` fixtures; `package_completeness` accepts declared `docx` and `xlsx`. Legacy `.doc`/`.xls` still fail-closed at ingest. Not customer Office files. Требование заведено как **ТР-64** (28.08) — до этого было в коде без номера ТР.
 
-^[fn28]: Package-vs-package identity compare by `source_id` emits `STAGE_MISMATCH` / `VERSION_MISMATCH` / `DOC_TYPE_MISMATCH` on synthetic inventories. Thin GUID/attribute IFC model-diff (`Tokens.IFC_MODEL_DIFF`) remains an engineering scaffold. **Not** CDE version management, **not** KT#3 II.3 CDE import, **not** customer packages.
+^[fn28]: Package-vs-package identity compare by `source_id` emits `STAGE_MISMATCH` / `VERSION_MISMATCH` / `DOC_TYPE_MISMATCH` on synthetic inventories. Thin GUID/attribute IFC model-diff (`Tokens.IFC_MODEL_DIFF`) remains an engineering scaffold. **Not** CDE version management, **not** KT#3 II.3 CDE import, **not** customer packages. Требование заведено как **ТР-63** (28.08); в СОД заказчика наложение версий уже работает — ценность не в показе разницы, а в вердикте о нарушении нормы.
+
+^[fn29]: ТЗ «Извлечение» требует инженерные сети из 2D-чертежей третьим пунктом списка; ни одна строка кода это не покрывает. 470 DWG пакета — ровно этот класс. ТР-66, статус MISSING — честный gap, не «частично покрыто».
+
+^[fn30]: Пользовательский критерий ТЗ без порога. ТР-65: метрики из журнала HITL review-events — время до первого подтверждённого замечания, доля принятых без правки, переключения лист↔модель на замечание (третья требует UI-событий). Журнал есть, метрики не посчитаны — MISSING, а не scaffold с цифрой.
 
 Customer-corpus `VERIFIED`: **0 / 28**. Checkpoint **NO_GO**.
 
