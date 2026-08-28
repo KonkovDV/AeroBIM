@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-27T20:57:04.565650+00:00",
+  "generated_at": "2026-08-28T16:57:48.946101+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 885,
+  "file_count": 886,
   "vendored_count": 15,
   "files": [
     {
@@ -10246,6 +10246,18 @@
       "path": "rule-packs/sp63-cover-template.json",
       "sha256": "129f27880d4d1b2eeff01033385226d4bb9128e001eff594958d6637cef24a49",
       "bytes": 2255,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "schemas/remark-shape.schema.json",
+      "sha256": "35606d34a4584fe75d0886d3e652a93aed47cf74a01d47dd06dcd225252f945f",
+      "bytes": 1371,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
