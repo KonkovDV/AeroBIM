@@ -201,7 +201,14 @@ class RasterDrawingAnalyzer:
                 width=width,
                 height=height,
             )
-            annotations.extend(self._extract_annotations_from_region(region, sheet_id, image_path))
+            annotations.extend(
+                self._extract_annotations_from_region(
+                    region,
+                    sheet_id,
+                    image_path,
+                    source="raster-drawing-analyzer-ocr",
+                )
+            )
 
         return self._deduplicate_annotations(annotations)
 
@@ -235,14 +242,16 @@ class RasterDrawingAnalyzer:
         region: _TextRegion,
         sheet_id: str,
         source_path: Path,
+        *,
+        source: str = "raster-drawing-analyzer",
     ) -> list[DrawingAnnotation]:
         annotations: list[DrawingAnnotation] = []
         for line in self._candidate_lines(region.text):
-            structured = self._parse_pipe_line(line, sheet_id, region, source_path)
+            structured = self._parse_pipe_line(line, sheet_id, region, source_path, source=source)
             if structured is not None:
                 annotations.append(structured)
                 continue
-            regex_match = self._parse_regex_line(line, sheet_id, region, source_path)
+            regex_match = self._parse_regex_line(line, sheet_id, region, source_path, source=source)
             if regex_match is not None:
                 annotations.append(regex_match)
         return annotations
@@ -256,6 +265,8 @@ class RasterDrawingAnalyzer:
         sheet_id: str,
         region: _TextRegion,
         source_path: Path,
+        *,
+        source: str = "raster-drawing-analyzer",
     ) -> DrawingAnnotation | None:
         if "|" not in line:
             return None
@@ -276,7 +287,7 @@ class RasterDrawingAnalyzer:
             observed_value=observed_value,
             unit=unit or None,
             problem_zone=self._make_problem_zone(sheet_id, region),
-            source="raster-drawing-analyzer",
+            source=source,
         )
 
     def _parse_regex_line(
@@ -285,6 +296,8 @@ class RasterDrawingAnalyzer:
         sheet_id: str,
         region: _TextRegion,
         source_path: Path,
+        *,
+        source: str = "raster-drawing-analyzer",
     ) -> DrawingAnnotation | None:
         for pattern in _TEXT_PATTERNS:
             match = pattern.search(line)
@@ -302,7 +315,7 @@ class RasterDrawingAnalyzer:
                 observed_value=observed_value,
                 unit=unit,
                 problem_zone=self._make_problem_zone(sheet_id, region),
-                source="raster-drawing-analyzer",
+                source=source,
             )
         return None
 

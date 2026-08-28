@@ -23,6 +23,12 @@ from aerobim.domain.models import (
 from aerobim.domain.quantity import parse_quantity, si_compare
 
 
+def annotation_is_ocr(annotation: DrawingAnnotation) -> bool:
+    """OCR coincidence is not Shared-gate evidence (RT-C3PO-010)."""
+
+    return "ocr" in (annotation.source or "").lower()
+
+
 class DrawingAnnotationValidator:
     """Validate drawing annotations against DRAWING_ANNOTATION scoped rules."""
 
@@ -46,13 +52,25 @@ class DrawingAnnotationValidator:
                 annotation
                 for annotation in drawing_annotations
                 if self.matches_annotation(requirement, annotation)
+                and not annotation_is_ocr(annotation)
             ]
             if not matching_annotations:
+                ocr_only = any(
+                    self.matches_annotation(requirement, annotation)
+                    and annotation_is_ocr(annotation)
+                    for annotation in drawing_annotations
+                )
+                message = "No drawing annotations matched the normalized rule"
+                if ocr_only:
+                    message = (
+                        "No drawing annotations matched the normalized rule; "
+                        "OCR coincidence does not clear engine ERROR"
+                    )
                 issues.append(
                     issue_from_requirement(
                         requirement,
                         severity=Severity.ERROR,
-                        message="No drawing annotations matched the normalized rule",
+                        message=message,
                         category=FindingCategory.DRAWING_VALIDATION,
                     )
                 )

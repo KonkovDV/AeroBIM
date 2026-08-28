@@ -60,6 +60,7 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
             self.assertEqual(annotation.measure_name, "thickness")
             self.assertEqual(annotation.observed_value, "220")
             self.assertEqual(annotation.unit, "mm")
+            self.assertEqual(annotation.source, "raster-drawing-analyzer-ocr")
             self.assertEqual(annotation.problem_zone.page_number, 1)
             self.assertEqual(annotation.problem_zone.x, 10)
             self.assertEqual(annotation.problem_zone.y, 20)
