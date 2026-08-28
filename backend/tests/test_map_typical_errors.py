@@ -17,9 +17,9 @@ class MapTypicalErrorsTests(unittest.TestCase):
             repo_root / "samples" / "requirements",
         )
         self.assertEqual(payload["artifact_type"], "samolet_typical_errors_mapping")
-        self.assertEqual(payload["patterns_total"], 25)
+        self.assertEqual(payload["patterns_total"], 26)
         self.assertGreaterEqual(payload["patterns_with_rule_match"], 8)
-        self.assertEqual(payload["patterns_with_explicit_gap"], 6)
+        self.assertEqual(payload["patterns_with_explicit_gap"], 7)
         self.assertEqual(payload["mapping_ratio"], 1.0)
         self.assertEqual(payload["customer_confirmed_patterns"], 0)
         self.assertFalse(payload["catalog_accepted_claim_allowed"])

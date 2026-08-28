@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.9.0"
+version: "1.10.0"
 last_updated: "2026-08-28"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -147,6 +147,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 16. AeroBIM does **not** treat the IFC streaming / disk R-tree **design** as shipped, and does **not** raise the default analyze cap from **256 MiB** because ingest allows 1.5 GB.
 17. AeroBIM does **not** treat HTTP upload of `.lir`/`.spr` as a silent skip or a solver path. The closed reason is explicit; ZIP members are rejected the same way as native Autodesk.
 18. AeroBIM does **not** treat a JSON dump of `IfcSpatialIndex` as a disk R-tree or a streaming parser, and does **not** wire that dump into analyze.
+19. The two numeric TZ criteria (clash recall >90%, pack-check time) are **not customer-confirmed**: the 25.08 answers document never mentions 90%, SLA, or time. AeroBIM neither claims them nor accepts them as agreed until a measurement protocol (golden remark set, corpus size, time endpoints) is answered in writing.
+20. The internal-standards and BIM-regulations list was **issued** on 25.08 (two links inside answer 1.2.1 to internal CDE project folders); the norm-pack blocker is **access to the issued material**, not missing data — the ask is to publish the two folders the same way as the dataset. Direct CDE API integration is **not** a customer requirement (п. 2.2.2: file import/export via web UI suffices); it stays an optional differentiator.
 
 ## Reproducibility baseline
 

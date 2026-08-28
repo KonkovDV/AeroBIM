@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.3.0",
+  "schema_version": "1.4.0",
   "catalog_id": "samolet-typical-errors-v1",
   "catalog_status": "synthetic-scaffold",
   "description": "Engineering scaffold for Samolet TechLab intake. All entries require customer confirmation; mapping to a rule or finding class is not evidence that a pattern is detected with customer-grade precision.",
@@ -16,6 +16,17 @@
     "ingested_into_patterns": 0,
     "names_in_git": false,
     "note": "Counts only; names stay out of git. A detected checklist is a source document, not a confirmed pattern. The catalog must not be presented as customer-accepted while customer_confirmed_patterns is 0."
+  },
+  "customer_stated_error_classes": {
+    "source": "Customer answers document 25.08, п. 2.1.2 (critical edition 28.08)",
+    "status": "stated_not_signed",
+    "classes": [
+      "reinforcement area below the declared calculation",
+      "wrong concrete or steel class vs the calculation note",
+      "deflection beyond the allowable value",
+      "loads nonconformity"
+    ],
+    "note": "Customer's own wording names four classes — usable as catalog axes. Still not a signed confirmation: customer_confirmed_patterns stays 0 until signature. Terminology follows СП 63: класс бетона/стали, not марка."
   },
   "techlab_task_map": {
     "SAM-TYP-001": [4, 5],
@@ -42,7 +53,8 @@
     "SAM-TYP-022": [7],
     "SAM-TYP-023": [4],
     "SAM-TYP-024": [2],
-    "SAM-TYP-025": [7]
+    "SAM-TYP-025": [7],
+    "SAM-TYP-026": [5]
   },
   "disciplines": ["fire-safety", "structure", "architecture", "mep", "openbim"],
   "patterns": [
@@ -324,6 +336,17 @@
       "implementation_status": "gap",
       "roadmap_ref": "SAMOLET-ANSWERS-2.1.2",
       "note": "Team brief 2026-08-26 restates 2.1.2. calculation_correctness stays NOT_IMPLEMENTED"
+    },
+    {
+      "error_id": "SAM-TYP-026",
+      "discipline": "structure",
+      "title_ru": "Несоответствие нагрузок относительно расчётной записки",
+      "pattern": "Declared loads in RD/BIM disagree with the calculation note (PDF/Excel); areas cross-checked the same way",
+      "maps_to_category": "CROSS_DOCUMENT",
+      "severity_hint": "error",
+      "implementation_status": "gap",
+      "roadmap_ref": "SAMOLET-ANSWERS-2.1.1",
+      "note": "Customer answers 25.08 п. 2.1.1 add loads and areas as compare objects; source is the readable note, not the solver binary"
     }
   ]
 }

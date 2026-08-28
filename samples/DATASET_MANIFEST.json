@@ -940,8 +940,8 @@
     },
     {
       "path": "benchmarks/samolet-typical-errors-catalog.json",
-      "sha256": "407c39a0681efe7f3a5f572a6e80478ca04070b31fa30c10fcd9fd14318e25af",
-      "bytes": 14759,
+      "sha256": "2c6c38e911d43deac790c43ef6a5a749cc2923a22872c53f8b4f88800be81dff",
+      "bytes": 16047,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

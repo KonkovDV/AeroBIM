@@ -11,6 +11,10 @@ Pass 8: share-link origin names the customer CDE ≠ import proven; demo-license
 synthetic push is an engineering path, not customer-registry evidence.
 Pass 9: TZ clash criterion >90% is unmeasurable on the delivered pack
 (no federated / no RD IFC in the inventory pin) — never claim otherwise.
+Pass 10: answers doc 25.08 beats the chat retelling — standards list was ISSUED
+(internal links), federation lives in NWD, calc compare targets PDF/Excel notes,
+direct CDE integration is NOT required (п. 2.2.2), numeric criteria stay
+unconfirmed, spec-volume compare is a new mandatory gap.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -219,6 +223,42 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Say the TZ clash criterion (>90%) is measurable or closed on the delivered pack",
         "brake": "PUBLIC_REHEARSAL federated_mep_ifc_present=False, rd_ifc_present=False",
+    },
+    {
+        "id": "RT-NORM-ACCESS",
+        "verdict": "KILL",
+        "attack": "Repeat norm-pack blocker is missing customer data",
+        "brake": "List issued 25.08 (two links in 1.2.1); blocker is ACCESS to internal folders",
+    },
+    {
+        "id": "RT-NWD-FED",
+        "verdict": "KILL",
+        "attack": "Frame federated IFC as a customer gap we wait for",
+        "brake": "Federation exists as NWD; ask NWD→IFC batch export on one building",
+    },
+    {
+        "id": "RT-SPEC-VOL",
+        "verdict": "KILL",
+        "attack": "Treat п. 2.1.3 logical clashes as geometry or skip them",
+        "brake": "Spec-volume vs drawing/BIM compare; ТР-67 row 31 MISSING",
+    },
+    {
+        "id": "RT-INTEGRATION-OWN",
+        "verdict": "KILL",
+        "attack": "Present direct CDE API integration as a customer requirement",
+        "brake": "Answers п. 2.2.2: file exchange suffices; API demo is optional differentiator",
+    },
+    {
+        "id": "RT-90-SILENCE",
+        "verdict": "KILL",
+        "attack": "Treat >90% clash / pack-time criteria as customer-confirmed",
+        "brake": "Zero mentions of 90%/SLA/minutes in the answers doc; protocol question pending",
+    },
+    {
+        "id": "RT-CLASS-TERM",
+        "verdict": "KILL",
+        "attack": "Write марка бетона/стали in our outputs",
+        "brake": "СП 63 wording is класс; марка stays only as an input parser alias",
     },
     {
         "id": "RT-SEAM-HOLD",

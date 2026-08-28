@@ -2,7 +2,7 @@
 
 Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` | `ADVISORY_ONLY` | `NOT_RUNTIME_CONNECTED` | `MISSING` | `BLOCKED_BY_CUSTOMER_DATA` | `FIXTURE_ONLY`
 
-**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. 2026-08-28: row 25 footnote — customer CDE identified at address level (10D contour via share-link origin); T2 closure path via public API + demo license; status unchanged. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
+**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. 2026-08-28: row 25 footnote — customer CDE identified at address level (10D contour via share-link origin); T2 closure path via public API + demo license; status unchanged. 2026-08-28 (вечер): критическое издание ответов 25.08 — fn11 (записки PDF/Excel, не бинари; +нагрузки/площади), fn13 (перечень стандартов выдан; блокер = доступ), fn15 (сводная модель в NWD), fn19 (норматив продаваемой площади), fn25 (п. 2.2.2: интеграция не требуется); новая строка 31 (ТР-67 сверка объёмов, MISSING). Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
 
 | # | Требование ТЗ | Код | Runtime path | Тест / команда | Реальные данные | Статус | Риск |
 |---|---|---|---|---|---|---|---|
@@ -36,8 +36,9 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | 28 | Сравнение версий и типов документации | `compare_package_document_identities` | CLI `compare_package_identities` | `test_package_identity_compare.py` | synthetic inventories | VERIFIED_FIXTURE_ONLY^[fn28] | HIGH |
 | 29 | Извлечение инженерных сетей из 2D | — | — | — | none | MISSING^[fn29] | HIGH |
 | 30 | Снижение когнитивной нагрузки | review-events journal (метрики ТР-65) | — | — | none | MISSING^[fn30] | MED |
+| 31 | Сверка объёмов спецификации ↔ графика/BIM («логические коллизии») | — | — | — | none | MISSING^[fn31] | HIGH |
 
-## Status summary (30 rows)
+## Status summary (31 rows)
 
 | Status | Count |
 |---|---:|
@@ -45,7 +46,7 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | ADVISORY_ONLY | 1 |
 | FIXTURE_ONLY | 1 |
 | MISSING (never OK) | 1 |
-| MISSING | 2 |
+| MISSING | 3 |
 | BLOCKED_BY_CUSTOMER_DATA | 1 |
 
 ## VERIFIED rows — required pointers
@@ -86,7 +87,7 @@ MEP system-aware clash: NOT VERIFIED (ENG_FIXTURE graph ≠ delivered capability
 summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI/OCR cannot flip
 ```
 
-^[fn19]: **ADVISORY_ONLY** — IFC `IfcSpace` inventory (+ optional PII-gated layout note) as INFO candidates with `ai_generated` / expert confirmation. **No** numeric efficiency thresholds. Does **not** close RT-001. VLM crop enrichment optional when Studio multimodal is enabled.
+^[fn19]: **ADVISORY_ONLY** — IFC `IfcSpace` inventory (+ optional PII-gated layout note) as INFO candidates with `ai_generated` / expert confirmation. **No** numeric efficiency thresholds. Does **not** close RT-001. VLM crop enrichment optional when Studio multimodal is enabled. 28.08 (п. 2.1.4): критерий — **внутренний норматив продаваемой площади** заказчика (лежит в выданных, но закрытых папках 1.2.1), а не СП. До доступа к папкам ADVISORY_ONLY — единственный честный статус, не недоработка.
 
 ^[fn1]: Structured TXT/JSON annotations plus vector PDF text via pdfminer on `samples/drawings/wall-thickness-vector.pdf`. **Not** CAD entity extraction, **not** native DWG, **not** human-level CV.
 
@@ -100,17 +101,17 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn10]: Narrative calc ingest (`area-requirement.txt`) plus LOAD-table сверка (`load-table.txt`). **Not** independent structural verification (row 11 / OpenRebar). Not customer calculation volumes.
 
-^[fn11]: OpenRebar provenance сверка on committed `samples/calculations/openrebar-slab-03.result.json`. `calculation_correctness` stays **NOT_IMPLEMENTED**. SP 63 cover pack is a synthetic template, not a solver.
+^[fn11]: OpenRebar provenance сверка on committed `samples/calculations/openrebar-slab-03.result.json`. `calculation_correctness` stays **NOT_IMPLEMENTED**. SP 63 cover pack is a synthetic template, not a solver. 28.08 (критическое издание ответов, п. 2.1.1): источник сверки — **расчётные записки PDF/Excel**, не бинарные файлы комплекса; добавлены объекты сверки **нагрузки и площади**. Обратная разработка закрытого формата исключена из плана по воле заказчика.
 
 ^[fn12]: Deterministic PD↔RD JSON pairing on `samples/sections/` (AR+KZH). **Not** customer PD/RD volumes and not a full PP RF 87 parser.
 
-^[fn13]: Loader + fail-closed approval contract. `samples/rule-packs/sp63-cover-template.json` is a 20 mm cover *template* (not SP 63 table 8.1, not exposure class). Customer-approved pack still missing. Does **not** close RT-002.
+^[fn13]: Loader + fail-closed approval contract. `samples/rule-packs/sp63-cover-template.json` is a 20 mm cover *template* (not SP 63 table 8.1, not exposure class). Customer-approved pack still missing. Does **not** close RT-002. 28.08: перечень внутренних стандартов и регламентов BIM **выдан 25.08** — две ссылки в ответе 1.2.1, но это внутренние пути контура заказчика (два разных проекта СОД), снаружи не открываются. Блокер перешёл из «нет данных» в «нет доступа к выданному»: запрос = опубликовать две папки тем же способом, что датасет.
 
 ^[fn14]: ENG_FIXTURE HVAC/sprinkler graph + clearance-matrix template. HVAC fixture has **no tessellated geometry** — live IfcClash clearance uses `clash-clearance-gap-{a,b}.ifc`, not that HVAC file. Default DI remains `UnconfiguredMepSystemGraphProvider`. Geometric MEP system clash stays **NOT_VERIFIED**. Does **not** close RT-003.
 
-^[fn15]: Planted IfcClash on `clash-federated-box-{a,b}.ifc` plus clearance-gap pair (`detect_clearance_between`, 50 mm). Optional `[clash]` extra. Clash→our BCF export→`consume_bcf_zip` is **file ingest**. Engine rehearsal only. `closes_rt003=false`. `cde_import=NOT_VERIFIED`. Not coordinator BCF gold.
+^[fn15]: Planted IfcClash on `clash-federated-box-{a,b}.ifc` plus clearance-gap pair (`detect_clearance_between`, 50 mm). Optional `[clash]` extra. Clash→our BCF export→`consume_bcf_zip` is **file ingest**. Engine rehearsal only. `closes_rt003=false`. `cde_import=NOT_VERIFIED`. Not coordinator BCF gold. 28.08 (п. 1.1.5 ответов): федеративная (сводная) модель у заказчика **существует — в NWD**. Блокер снимается выгрузкой NWD→IFC штатным пакетным экспортом СОД по одному корпусу, а не ожиданием «федеративного IFC»; до выгрузки критерий ТЗ на пакете неизмерим (RT-CLASH-MEASURE).
 
-^[fn25]: BCF 2.1/3.0 export + file ingest (`consume_bcf_zip_path`, `samples/bcf/fixture-topics.bcfzip`). `cde_import` stays **NOT_VERIFIED**. Not RT-008 T2. 2026-08-28: target CDE **identified at address level** — the customer pack share link resolves to the 10D contour (session-gated; contents not read). Closure path without customer files: vendor public Swagger API + free developer license, synthetic BCF push into a demo-tenant registry, then T2 pack (log+screenshot+hashes). Demo-tenant push ≠ customer registry proof; status unchanged until a real import lands.
+^[fn25]: BCF 2.1/3.0 export + file ingest (`consume_bcf_zip_path`, `samples/bcf/fixture-topics.bcfzip`). `cde_import` stays **NOT_VERIFIED**. Not RT-008 T2. 2026-08-28: target CDE **identified at address level** — the customer pack share link resolves to the 10D contour (session-gated; contents not read). Closure path without customer files: vendor public Swagger API + free developer license, synthetic BCF push into a demo-tenant registry, then T2 pack (log+screenshot+hashes). Demo-tenant push ≠ customer registry proof; status unchanged until a real import lands. 28.08 (п. 2.2.2 ответов): прямая интеграция с СОД на MVP **не требуется** — достаточно файлового импорта/экспорта через веб-интерфейс. API-демо остаётся опциональным дифференциатором вне критического пути КТ#3.
 
 ^[fn27]: Native `.docx`/`.xlsx` round-trip on committed `samples/office/` fixtures; `package_completeness` accepts declared `docx` and `xlsx`. Legacy `.doc`/`.xls` still fail-closed at ingest. Not customer Office files. Требование заведено как **ТР-64** (28.08) — до этого было в коде без номера ТР.
 
@@ -119,6 +120,8 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 ^[fn29]: ТЗ «Извлечение» требует инженерные сети из 2D-чертежей третьим пунктом списка; ни одна строка кода это не покрывает. 470 DWG пакета — ровно этот класс. ТР-66, статус MISSING — честный gap, не «частично покрыто».
 
 ^[fn30]: Пользовательский критерий ТЗ без порога. ТР-65: метрики из журнала HITL review-events — время до первого подтверждённого замечания, доля принятых без правки, переключения лист↔модель на замечание (третья требует UI-событий). Журнал есть, метрики не посчитаны — MISSING, а не scaffold с цифрой.
+
+^[fn31]: П. 2.1.3 ответов 25.08: «логические коллизии» = несоответствие объёмов в спецификации и графике/BIM — сверка количеств, а не геометрия. Обязательное требование заказчика; заведено как ТР-67 (28.08). Ни строки кода — честный MISSING рядом с геометрической строкой 15.
 
 Customer-corpus `VERIFIED`: **0 / 28**. Checkpoint **NO_GO**.
 

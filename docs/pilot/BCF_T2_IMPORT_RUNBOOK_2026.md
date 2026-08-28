@@ -2,7 +2,7 @@
 ---
 title: "BCF T2 CDE-import runbook (pilot)"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 last_updated: "2026-08-28"
 claim_boundary: "Runbook only — executing it requires a real customer/pilot CDE session. T2 stays NOT_VERIFIED until the pack verifies (RT-008)."
 ---
@@ -29,6 +29,13 @@ capture import-log + screenshot + hashes per the template below. That proves
 integration with the CDE the customer already runs; it is **not** a customer
 registry proof and does not flip `claim_allowed` (see RT-CDE-IDENT in
 [`../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md)).
+
+**Self-correction 2026-08-28 (evening, critical edition of the answers doc):**
+п. 2.2.2 of the customer answers states direct CDE integration is **not
+required** at MVP — file import/export via the web UI suffices. The demo-license
+API push above is therefore an **optional differentiator**, not a critical-path
+obligation; row 25 of the runtime matrix closes on a correct file exchange
+verified against a real exported file. The T2 evidence bar itself is unchanged.
 
 **Positioning against the vendor's own checker (2026-08-28):** the same vendor
 ships a model-checking product (TZ/EIR attribute completeness over RVT/DWG/IFC)
