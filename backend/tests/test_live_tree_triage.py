@@ -52,6 +52,10 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-INTEGRATION-OWN",
             "RT-90-SILENCE",
             "RT-CLASS-TERM",
+            "RT-TYP-NODES",
+            "RT-CLOUD-ISO",
+            "RT-SCALE-MVP",
+            "RT-NDA-STATED",
         ):
             self.assertIn(row_id, ids)
 

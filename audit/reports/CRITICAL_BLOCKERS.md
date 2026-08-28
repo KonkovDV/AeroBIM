@@ -113,6 +113,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Expected before any product accuracy claim:** customer or RF-expertise corpus + ≥2 adjudicators + κ/α + held-out + FN tracked  
 - **Product HOLD — RT-001 still OPEN** for that RF/customer corpus only. Open benches ≠ RT-001 closed.
 - **Addendum 25.08.2026:** customer indicated a private data channel. That is not a hashed pack in git. `customer_package_in_samples_customer` stays false. RT-001 stays OPEN.
+- **Addendum 28.08.2026 (п. 3.1.2 ответов — условие заказчика, не наша осторожность):** заказчик сам записал «обезличенные комплекты в рамках NDA». Фактическая передача этому не соответствует. Запрос к организаторам — исполнить этот пункт и сказать, что делать с файлами, которые обезличенными не являются (RT-NDA-STATED). Не закрывает RT-001.
 
 ### RT-002 — Samolet-signed acceptance profile absent (public examination IDS exist)
 - **Severity:** BLOCKER (customer sign-off)  

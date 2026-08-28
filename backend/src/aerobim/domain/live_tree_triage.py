@@ -15,6 +15,9 @@ Pass 10: answers doc 25.08 beats the chat retelling — standards list was ISSUE
 (internal links), federation lives in NWD, calc compare targets PDF/Excel notes,
 direct CDE integration is NOT required (п. 2.2.2), numeric criteria stay
 unconfirmed, spec-volume compare is a new mandatory gap.
+Pass 11: leftover answers clauses — typical nodes are PDF/DWG only (п. 1.2.3);
+cloud + per-project isolation (п. 3.1.1); scale is architecture-only (п. 3.2.2);
+п. 3.1.2 is the customer's own depersonalization+NDA clause, not our extra ask.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -259,6 +262,30 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Write марка бетона/стали in our outputs",
         "brake": "СП 63 wording is класс; марка stays only as an input parser alias",
+    },
+    {
+        "id": "RT-TYP-NODES",
+        "verdict": "KILL",
+        "attack": "Treat typical-node check as IFC-ready or as a missing customer gap",
+        "brake": "п. 1.2.3: nodes are PDF/DWG in the closed 1.2.1 folders; no IFC nodes",
+    },
+    {
+        "id": "RT-CLOUD-ISO",
+        "verdict": "KILL",
+        "attack": "Require on-prem deploy or treat HTTPS as the isolation requirement",
+        "brake": "п. 3.1.1: cloud OK; isolation is per-project access, not encryption",
+    },
+    {
+        "id": "RT-SCALE-MVP",
+        "verdict": "KILL",
+        "attack": "Promise load numbers or horizontal scale as an MVP deliverable",
+        "brake": "п. 3.2.2: architecture points only; no load figures at defense",
+    },
+    {
+        "id": "RT-NDA-STATED",
+        "verdict": "KILL",
+        "attack": "Frame the depersonalization/NDA ask as our extra caution",
+        "brake": "п. 3.1.2 is the customer's own clause; ask organizers to execute it",
     },
     {
         "id": "RT-SEAM-HOLD",

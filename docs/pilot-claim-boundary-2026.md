@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.10.0"
+version: "1.11.0"
 last_updated: "2026-08-28"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -149,6 +149,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 18. AeroBIM does **not** treat a JSON dump of `IfcSpatialIndex` as a disk R-tree or a streaming parser, and does **not** wire that dump into analyze.
 19. The two numeric TZ criteria (clash recall >90%, pack-check time) are **not customer-confirmed**: the 25.08 answers document never mentions 90%, SLA, or time. AeroBIM neither claims them nor accepts them as agreed until a measurement protocol (golden remark set, corpus size, time endpoints) is answered in writing.
 20. The internal-standards and BIM-regulations list was **issued** on 25.08 (two links inside answer 1.2.1 to internal CDE project folders); the norm-pack blocker is **access to the issued material**, not missing data — the ask is to publish the two folders the same way as the dataset. Direct CDE API integration is **not** a customer requirement (п. 2.2.2: file import/export via web UI suffices); it stays an optional differentiator.
+21. Typical-node checks are **not** IFC-ready: п. 1.2.3 places the node library as PDF/DWG in the same closed 1.2.1 folders; native DWG stays unread. Cloud is allowed (п. 3.1.1); the requirement is **per-project isolation** of stored data, not on-prem deploy and not “HTTPS equals isolation”. Horizontal scale is an architecture point for later, **not** an MVP deliverable and **not** a load figure at defense (п. 3.2.2).
+22. The depersonalization + NDA ask to organizers is **the customer's own clause** (п. 3.1.2), not extra caution from the team. AeroBIM does **not** treat the delivered channel as a depersonalized NDA pack.
 
 ## Reproducibility baseline
 
