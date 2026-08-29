@@ -5,15 +5,15 @@
 ---
 title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
 status: active
-version: "1.3.4"
-last_updated: "2026-08-28"
+version: "1.3.5"
+last_updated: "2026-08-29"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
 # Samolet PD/RD verification task readiness — automated verification of PD/RD
 
 **Official task:** Система автоматизированной верификации проектной и рабочей документации — **задаче Самолёта по верификации ПД/РД**  
-**Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site.  
+**Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site. Sponsor quote ≠ attested commission chair.  
 **Prize:** paid pilot testing **2 000 000 ₽** (Partner↔Fund agreement; not a 449-PP entry grant)  
 **Task page:** https://i.moscow/techlab/samolet  
 **Eligibility (official FAQ, 26.08.2026):** individuals or a team of **1–10**, age 18+. **ИП/ООО is not an entry requirement.** Captain files the application on i.moscow.  

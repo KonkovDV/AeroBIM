@@ -37,6 +37,16 @@ Pass 17: DrawingVQA Gemini-3 77.2 is supplementary, not the main table
 (Gemini-2.5-pro 71.7); DWG layers ≠ native DWG; OmniDocBench 0.95 ≠
 construction OCR; IfcOpenShell R-tree discussion ≠ our disk index;
 4B domain FT is not a shipped model.
+Pass 18: attributed MIK commission weights (K1=40, mean, prize floor 50);
+official GOST R 72514 card keeps order 64-st; 72515 is a taxonomy map,
+not certification; bill 166424 is not in force.
+Pass 19: System B (Appendix 3) B1=30; B2 needs partner metrics not pytest;
+fixture SLA is not representative; handout 07 is not Appendix 4 №6.
+Pass 20: evidence map is findability not a score; 42001 mapping is not
+a certified AIMS; i.moscow/pilot is not the TechLab 2M prize; K1 template
+person cells stay empty; LETI table corroborates Appendix 4 row 6.
+Pass 21: prize floor reachable at top of K1-low if rest is high; 10 people
+not required; K3 is fit not B2; TRL self-assess 4 is not TRL 5.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -449,6 +459,168 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Cite IfcOpenShell SQLite R-tree discussion as our persistent index",
         "brake": "disk_r_tree designed_not_implemented; sidecar dump_only",
+    },
+    {
+        "id": "RT-MIK-K1-GIT",
+        "verdict": "KILL",
+        "attack": "Treat git HEAD or oral advisors as K1=40 closed",
+        "brake": "K1 object is the application roster; oral advisors do not score",
+    },
+    {
+        "id": "RT-MIK-PRIZE-50",
+        "verdict": "KILL",
+        "attack": "Project a prize-clearing total from this repository",
+        "brake": "predicted_aerobim_total is None; 50 is the program floor",
+    },
+    {
+        "id": "RT-MIK-AVG",
+        "verdict": "KILL",
+        "attack": "Treat one harsh commissioner as ignorable for the total",
+        "brake": "Aggregation is arithmetic mean, not median or drop-one",
+    },
+    {
+        "id": "RT-MIK-TIE-K2",
+        "verdict": "KILL",
+        "attack": "Use novelty as the tie-break after equal totals",
+        "brake": "Tie-break is K3 then K4; K2 is not in the order",
+    },
+    {
+        "id": "RT-MIK-VITRINE",
+        "verdict": "KILL",
+        "attack": "Prepare only to the public catalog roster of partner seats",
+        "brake": "Signed order beats catalog; three partner seats are by agreement",
+    },
+    {
+        "id": "RT-GOST-ORDER-DROP",
+        "verdict": "KILL",
+        "attack": "Strip GOST R 72514 order 64-st because the catalog month is March",
+        "brake": "Official fund card lists 64-st / 30.01.2026; still not certification",
+    },
+    {
+        "id": "RT-GOST-72515-CERT",
+        "verdict": "KILL",
+        "attack": "Cite the GOST R 72515 mapping as a conformity certificate",
+        "brake": "Taxonomy map of existing honesty; compatibility is not certification",
+    },
+    {
+        "id": "RT-AI-BILL-FORCE",
+        "verdict": "KILL",
+        "attack": "Cite MinTsifry bill 166424 as in-force law or trusted-model status",
+        "brake": "Draft, not in the Duma; planned force 01.09.2027; ADR-001 is not law",
+    },
+    {
+        "id": "RT-MIK-SYS-B-METRICS",
+        "verdict": "KILL",
+        "attack": "Score System B B2 high because pytest and a protocol exist",
+        "brake": "B2 needs partner metrics; confirmed_partner_validation_metrics False",
+    },
+    {
+        "id": "RT-MIK-B2-FIXTURE-SLA",
+        "verdict": "KILL",
+        "attack": "Cite fixture SLA p95 as the Partner 30-minute pack time",
+        "brake": "Fixture pack is not representative; TZ 30 min stays a goal",
+    },
+    {
+        "id": "RT-MIK-TASK-NUM",
+        "verdict": "KILL",
+        "attack": "Speak the historical handout 07 as the Appendix 4 task number",
+        "brake": "Attributed: Appendix 4 task 6; commission 7; 07 is a filename label",
+    },
+    {
+        "id": "RT-MIK-TIE-B",
+        "verdict": "KILL",
+        "attack": "Use K3 or novelty as the System B tie-break",
+        "brake": "Finalist tie-break is B1 only",
+    },
+    {
+        "id": "RT-MIK-42001-CERT",
+        "verdict": "KILL",
+        "attack": "Cite the 42001 mapping as a certified AI management system",
+        "brake": "Official card 1549-st; gost_42001_certified stays False",
+    },
+    {
+        "id": "RT-MIK-CITY-PRIZE",
+        "verdict": "KILL",
+        "attack": "Cite i.moscow/pilot or 449-PP as the TechLab 2M prize",
+        "brake": "City pilots need a legal entity; TechLab prize is separate",
+    },
+    {
+        "id": "RT-MIK-EVIDENCE-SCORE",
+        "verdict": "KILL",
+        "attack": "Treat the criterion evidence map as a predicted total",
+        "brake": "Map is findability; predicted_aerobim_total stays None",
+    },
+    {
+        "id": "RT-MIK-K1-NAMES",
+        "verdict": "KILL",
+        "attack": "Fill the K1 git template with invented names",
+        "brake": "Person cells stay empty; roster is the i.moscow application",
+    },
+    {
+        "id": "RT-MIK-K1-TEN",
+        "verdict": "KILL",
+        "attack": "Treat ten named people as the only way K1 can clear 50",
+        "brake": "LETI min team is 1; two classes; top of K1-low + rest-high ≥50",
+    },
+    {
+        "id": "RT-MIK-K3-AS-B2",
+        "verdict": "KILL",
+        "attack": "Score System A K3 as if it were B2 partner validation metrics",
+        "brake": "K3 is partner-fit; k3_equals_validation_metrics stays False",
+    },
+    {
+        "id": "RT-MIK-TRL5",
+        "verdict": "KILL",
+        "attack": "Cite CI/fixture as TRL 5 or an independent GOST 58048 OGT",
+        "brake": "Self-assess TRL 4; trl_5_claimed False; partner env is TRL 5",
+    },
+    {
+        "id": "RT-MIK-FOREIGN-72",
+        "verdict": "KILL",
+        "attack": "Cite a published analog 72% labor cut as AeroBIM or partner hours",
+        "brake": "foreign_labor_cut_as_ours False; A1-A8 hours stay empty",
+    },
+    {
+        "id": "RT-MIK-BIM-TAM-AS-SAM",
+        "verdict": "KILL",
+        "attack": "Cite Russian BIM TAM 10.1 bn RUB as AeroBIM SAM or sales",
+        "brake": "TAM is labeled context; SAM in rubles is empty; k4_revenue_claimed False",
+    },
+    {
+        "id": "RT-MIK-500M",
+        "verdict": "KILL",
+        "attack": "Copy another MIK product's >=500M market packaging as this K4",
+        "brake": "Different program packaging; TechLab K4 is the 2M paid-pilot path",
+    },
+    {
+        "id": "RT-MIK-PNST-CERT",
+        "verdict": "KILL",
+        "attack": "Cite the PNST 841 mapping as a SQuaRE or GOST R certificate",
+        "brake": "Preliminary standard; pnst_841_certified stays False",
+    },
+    {
+        "id": "RT-MIK-IDENTITY-AS-SCORE",
+        "verdict": "KILL",
+        "attack": "Cite the 16+36.6 band identity or 'floor is reachable' as our total",
+        "brake": "Identity is program arithmetic; predicted_aerobim_total stays None",
+    },
+    {
+        "id": "RT-MIK-SPONSOR-CHAIR",
+        "verdict": "KILL",
+        "attack": "Treat the public task-page sponsor quote as commission chair or K1",
+        "brake": "sponsor_quote_is_commission_chair False; catalog is not the signed roster",
+    },
+    {
+        "id": "RT-MIK-25B-REV",
+        "verdict": "KILL",
+        "attack": "Cite SPbPU 25.1 bn RUB by 2030 as AeroBIM revenue or SAM",
+        "brake": "tam_horizon_is_our_revenue stays False; TAM horizon is not ours",
+    },
+    {
+        "id": "RT-MIK-PASTE-SCORE",
+        "verdict": "KILL",
+        "attack": "Treat the i.moscow paste file as a scored roster or predicted total",
+        "brake": "Paste is field text; person cells empty; predicted_aerobim_total None",
     },
     {
         "id": "RT-SEAM-HOLD",

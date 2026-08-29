@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.13.0"
-last_updated: "2026-08-28"
+version: "1.13.6"
+last_updated: "2026-08-29"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -153,7 +153,14 @@ This document separates **verified repository evidence** from **roadmap intent**
 22. The depersonalization + NDA ask to organizers is **the customer's own clause** (п. 3.1.2), not extra caution from the team. AeroBIM does **not** treat the delivered channel as a depersonalized NDA pack.
 23. AeroBIM is an **engineering-compare engine** with a measurement protocol, not a documentation platform and not a replacement for the customer's CDE or BIM-data stack. Version overlay of RD packs is **not** a differentiator (the customer already ships it). TR-67 is spec-volume vs drawing/BIM, **not** model-to-estimate quantities.
 24. Benefit speech uses expert-hours per pack, share of remarks caught before production issue, and re-entry count — **not** «innovation» and **not** a multiple of EBITDA. The citation linter (`lint_citation_twins`) is shown as source discipline (fabricated DOI / same-article year twins), not as product accuracy.
-25. Catalog questionnaire answers, demo video frames, and slides are **publication** (same gate as git). AeroBIM does **not** treat machine-readable information requirements or RD version overlay as differentiators, and does **not** transfer a competitor's published figure as our metric. Self-assessment against GOST R 72514-2026 (ISO/IEC 42005:2025) is **not** a certification.
+25. Catalog questionnaire answers, demo video frames, and slides are **publication** (same gate as git). AeroBIM does **not** treat machine-readable information requirements or RD version overlay as differentiators, and does **not** transfer a competitor's published figure as our metric. Self-assessment against GOST R 72514-2026 (ISO/IEC 42005:2025) is **not** a certification. Mapping onto GOST R 72515-2026 (ISO/IEC 12792:2025) is **not** a conformity declaration.
+26. Attributed TechLab commission weights (K1=40 / prize floor 50 / arithmetic mean) are **not** a predicted AeroBIM score. Application roster is the K1 object; oral advisors are not. MinTsifry bill 166424 is **not** in-force law.
+27. Appendix 3 (System B) is a **different** table (B1=30 … B5=10; tie-break B1). Pytest and the fixture SLA pin are **not** Partner validation metrics. Empty A1–A8 hours are required until a partner baseline exists. The historical handout label «07» is **not** Appendix 4 task №6 (commission №7).
+28. The criterion→git evidence map and the national AI GOST stack are **findability**, not a predicted prize-clearing total. Mapping onto GOST R ISO/IEC 42001-2024 is **not** a certified AI management system.
+29. i.moscow/pilot (city grant, legal entity, TRL-ish 6) is **not** the TechLab paid-pilot prize. The K1 role-matrix template in git has empty person cells; the scored roster is the i.moscow application.
+30. Ten named people are **not** required for K1 (LETI: 1–10; two competency classes). GOST R 58048 self-assessment is **TRL 4 (lab)**, not TRL 5 and not an independent readiness exam. System A K3 is partner-fit, **not** System B B2 metrics.
+31. Russian BIM TAM (GidMarket 10.1 bn RUB, 2022) is **not** AeroBIM SAM. A published analog −72.1% labor cut is **not** our effect. PNST 841-2023 mapping is **not** a SQuaRE certificate. Another MIK product’s «≥500M market» packaging is **not** this TechLab K4.
+32. The 16+36.6=52.6 band identity is **not** a predicted AeroBIM total. The public task-page sponsor quote is **not** the attested commission chair. SPbPU 25.1 bn RUB by 2030 is **not** our revenue. The i.moscow paste file is **not** a scored roster.
 
 ## Reproducibility baseline
 

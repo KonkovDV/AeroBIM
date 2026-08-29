@@ -86,8 +86,21 @@ class Pass12HonestyLockTests(unittest.TestCase):
         text = path.read_text(encoding="utf-8").lower()
         self.assertIn("гост р 72514-2026", text)
         self.assertIn("iso/iec 42005:2025", text)
+        self.assertIn("64-ст", text)
+        self.assertIn("30.01.2026", text)
+        self.assertIn("protect.gost.ru", text)
         for heading in IMPACT_HEADINGS:
             self.assertIn(heading, text, msg=heading)
+        self.assertNotIn("сертифицирован", text)
+
+    def test_gost_r_72515_map_exists_and_is_not_certification(self) -> None:
+        path = _REPO / "docs/quality/AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md"
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8").lower()
+        self.assertIn("гост р 72515-2026", text)
+        self.assertIn("iso/iec 12792:2025", text)
+        self.assertIn("65-ст", text)
+        self.assertIn("совместимость не сертификация", text)
         self.assertNotIn("сертифицирован", text)
 
     def test_public_surfaces_protocol_exists_with_six_checks(self) -> None:

@@ -2,8 +2,8 @@
 ---
 title: "Samolet TechLab Alignment 2026 (Academic)"
 status: active
-version: "1.2.3"
-last_updated: "2026-08-26"
+version: "1.2.4"
+last_updated: "2026-08-29"
 tags: [aerobim, samolet, techlab, openBIM, academic, traceability]
 claim_boundary: "Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ product accuracy."
 ---
@@ -33,7 +33,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 6. Targets **≤ 30 minutes** analysis time on an **agreed document package** (not arbitrary production scale).
 7. Keeps the **human expert in the loop** — automation reduces manual volume, not accountability.
 
-**Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site.
+**Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site. Sponsor quote ≠ attested commission chair.
 
 **Resources named on task page:** PD/RD, BIM models, TZ and standards, typical-error set.  
 **Final product:** MVP of a documentation analysis system with error visualization and reports.

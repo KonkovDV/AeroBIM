@@ -1,0 +1,44 @@
+<!-- claims-lint: allow-file reason="i.moscow application paste; no roster names; NO_GO" -->
+---
+title: "i.moscow application paste — fields without a git roster"
+date: "2026-08-29"
+last_updated: "2026-08-29"
+status: active
+version: "1.0.1"
+closes_rt001: false
+closes_rt002: false
+closes_rt003: false
+claim_boundary: >
+  Paste-ready application fields. Person names stay out of git. Not a
+  predicted score. Checkpoint NO_GO.
+---
+
+# Вставка в заявку i.moscow (капитан подставляет ФИО сам)
+
+Ячейки «кто» в git пустые. Ниже — тексты полей заявки. Балл ставит комиссия,
+не этот файл. Это не прогноз нашего балла. `predicted_aerobim_total() is None`.
+
+**Компетенции (два класса, не «нас десять»):**  
+Научный класс — постановка измерения: протокол TP/(TP+FP)≥0,60, dual-rater,
+самооценка ГОСТ Р 72514, карта прозрачности 72515, IUA (что цифра имеет право
+значить). Инженерный класс — openBIM (IFC/IDS/BCF), CI, fail-closed native
+RVT/NWD/DWG. ML/VLM только advisory, не `summary.passed`. Подтверждения
+(диплом, публикации, коммиты) — **в этой форме**, не в репозитории.
+
+**Новизна:**  
+Детерминированный шов комплекта + измеримость. Ablation A0–A3 на фикстуре.
+Сверстники на витрине заявляют >90% без методики — мы предлагаем одну методику
+на одном пакете партнёра. УГТ 4 (лаборатория), не УГТ 5.
+
+**Соответствие запросу:**  
+Карточка партнёра: ассистент проверки ПД/РД, эксперт в контуре, BCF, каталог
+типовых ошибок. Native CAD не читаем — это посадка на IFC-first, не дыра.
+Семь сравнений разложены по ячейкам; ни одна не Meets.
+
+**Коммерциализация:**  
+Приз = платный пилот 2 млн ₽. MIT-ядро; граница ops в ADR-002. TAM рынка BIM
+атрибутирован как контекст; SAM в рублях не выдуман. Часы экономии партнёра
+пустые до замера.
+
+Короткое EN-описание (≤500) уже в
+[`TECHLAB_SAMOLET_APPLICATION_2026.md`](TECHLAB_SAMOLET_APPLICATION_2026.md).

@@ -2,8 +2,8 @@
 ---
 title: "TechLab Samolet Application 2026"
 status: active
-version: "1.1.1"
-last_updated: "2026-08-26"
+version: "1.1.3"
+last_updated: "2026-08-29"
 tags: [aerobim, techlab, samolet, application]
 ---
 
@@ -40,7 +40,9 @@ AeroBIM — открытый мультимодальный ассистент �
 
 **Novelty:** openBIM contracts (IFC/IDS/BCF) + cross-document checks + ε-tolerance algebra; ablation A0–A3; reproducibility per [`../REPRODUCIBILITY-2026.md`](../REPRODUCIBILITY-2026.md); honest CV/LLM boundary (advisory only).
 
-**Required competencies covered:** BIM/CAD (IFC/IDS) ✅ · OCR baseline ✅ · CV/AI-ML as advisory roadmap (not sign-off) — stated honestly.
+**Required competencies covered:** BIM/CAD (IFC/IDS) ✅ · OCR baseline ✅ · CV/AI-ML as advisory roadmap (not sign-off) — stated honestly. Public LETI text (30.04.2026) asks for **both** scientific and engineering (IT/ML/data) competencies; empty role matrix: [`K1_ROLE_MATRIX_TEMPLATE_2026_08.md`](K1_ROLE_MATRIX_TEMPLATE_2026_08.md). Person cells stay empty in git.
+
+**Appendix 4 public table (LETI, 30.04.2026):** row **6** is this Partner task (paid pilot 2M ₽). Neighbouring row 7 is a different partner. Historical filename «07» is not that number. Map: [`../quality/MIK_CRITERION_EVIDENCE_MAP_2026_08.md`](../quality/MIK_CRITERION_EVIDENCE_MAP_2026_08.md).
 
 **Stack (team choice):** Python 3.12 + FastAPI + React review shell + IfcOpenShell / IfcTester / optional IfcClash.
 
@@ -62,8 +64,13 @@ AeroBIM — открытый мультимодальный ассистент �
 
 ## Experts (task page)
 
+The public task page is **not** the signed commission roster. A 29.08 owner
+briefing of Fund order П-01-ОД-52-1/26 adds a Partner information-modelling
+seat the catalog still omits. Prepare to the signed order. The sponsor quote
+below is **not** attested as commission chair.
+
 | Name | Role |
 |------|------|
-| Artsrun Gevorkyan | Head of Moscow-region development block |
+| Artsrun Gevorkyan | Head of Moscow-region development block (sponsor quote) |
 | Alexander Gorelik | Director, technological customer directorate |
 | Artur Khasanov | Head of project office |

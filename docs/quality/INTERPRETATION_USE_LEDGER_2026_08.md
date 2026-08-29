@@ -75,6 +75,27 @@ claim_boundary: >-
 | IND-15 | industry | Clash-report relevance ML (Ailem AiC 2026; Lin & Huang 2019) | Ailem: false positives up to 60% on BIM clash reports. Lin hybrid 0.96 is their corpus. AeroBIM triage is deterministic dedup/band/rank and never drops a clash | Lin 0.96 or Ailem 60% as AeroBIM clash quality or a Navisworks killer | `protocol_planning` |
 | IND-16 | industry | SOTA 29.08: DWG layer/block/ATTRIB as almost-free symbol labels | Native DWG parser is not implemented; optional ezdxf is DXF; layer labels are not a product DWG reader | Most symbols identified from DWG layers without ML / native DWG delivered | `not_licensed` |
 | IND-17 | industry | SOTA 29.08: OmniDocBench / titleblock text-extract ~0.95 as drawing OCR | RapidOCR is optional extra on raster; PubLayNet/DocLayNet are not construction sheets; GOST stamp template is not measured here | 0.95 OCR / titleblock accuracy as AeroBIM on customer sheets | `open_bench` |
+| MIK-03 | mik | Commission weights (attributed order 17.06.2026): K1=40 of 100 | Mean of sitting members; prize floor 50 is a program rule; low-K1 + high-rest totals 45-64 so 50 is not automatic | Git HEAD predicts a prize-clearing AeroBIM total / Checkpoint GO | `protocol_planning` |
+| MIK-04 | mik | Catalog roster vs signed commission order; partner seats by agreement | Two Fund seats are staff; three partner seats are not guaranteed; sponsor quote is not the chair | Catalog page is the sitting commission / partner seats are certain | `operational_hygiene` |
+| MIK-05 | mik | Appendix 3 finalist table B1=30 … B5=10; tie-break B1 only | B2 needs protocols AND confirmed partner metrics; pytest is not B2 high; NO_GO does not license a System B prize-clearing total | Pytest / fixture SLA as Partner validation / System B already ≥50 | `protocol_planning` |
+| MIK-06 | mik | Regulation 6.3: prize agreement may assign exclusive rights without extra pay | LICENSE is MIT; ADR-002 is a commercial-boundary plan, not a patent wall | IP is fenced / exclusive rights will not transfer | `operational_hygiene` |
+| TL-11 | techlab | K1 scores the filed team (up to 10), not oral advisors | FAQ already allows 1-10 with mixed scientific and engineering skill | Consultants named in chat are on the scored roster / K1 closed | `operational_hygiene` |
+| IND-18 | industry | GOST R 72514-2026 order 64-st on the official fund card | protect.gost.ru lists 64-st / 30.01.2026; introduction 01.05.2026; self-assessment remains not certification | Drop the order number / cite the self-assessment as certification | `protocol_planning` |
+| IND-19 | industry | GOST R 72515-2026 (ISO/IEC 12792:2025) transparency taxonomy | Maps onto NOT_IMPLEMENTED, advisory LLM/VLM, ADR-001; order 65-st on the fund card | GOST R 72515 certificate / trusted-model listing | `protocol_planning` |
+| IND-20 | industry | MinTsifry bill ID 166424 (planned force 01.09.2027) | Draft not in the Duma; ADR-001 matches future synthetic-content logic as a K2 argument only | In-force AI law / trusted model / AeroBIM is already compliant | `protocol_planning` |
+| MIK-07 | mik | Criterion → git evidence map as findability, not a score | Pointers for K1–K5 and B1–B5; predicted_aerobim_total stays None | Evidence map = prize-clearing total / Checkpoint GO | `protocol_planning` |
+| IND-21 | industry | GOST R 71476-2024 (ISO/IEC 22989:2022) AI concepts and terminology | Order 1550-st / 28.10.2024 / in force 01.01.2025; terms only | We standardized the industry / certified terminology | `protocol_planning` |
+| IND-22 | industry | GOST R ISO/IEC 42001-2024 AI management system | Official fund card 1549-st; HITL + ADR-001 + impact map = partial | Certified AIMS / 42001 conformity mark / trusted-model listing | `protocol_planning` |
+| IND-23 | industry | LETI public Appendix 4 table (30.04.2026): Partner task is row 6 | Paid pilot 2M; neighbouring row 7 is a different partner task | Handout 07 = Appendix 4 number / row 7 is our Partner task | `operational_hygiene` |
+| TL-12 | techlab | i.moscow/pilot city grant vs TechLab prize 2M | City pilots ask a legal entity and TRL-ish 6; 449-PP ≠ TechLab entry | City grant / 449-PP is the TechLab 2M prize or the entry ticket | `operational_hygiene` |
+| MIK-08 | mik | Prize floor 50 is reachable inside K1-low if rest is high | K1 16 + rest-high lo 36.6 = 52.6 identity; 10 people not required | Need 10 named people / K1 must leave low / git predicts ≥50 | `protocol_planning` |
+| IND-24 | industry | GOST R 58048-2017 TRL scale (order 2128-st) | Self-assess TRL 4 (lab/CI/fixture); TRL 5 needs partner environment | Independent OGT / TRL 5 / PP 2204 / city TRL 6 as this K2 score | `protocol_planning` |
+| TL-13 | techlab | K3 is partner-fit; B2 is partner validation metrics | Public mandate ticksheet; 0.60 protocol is sign-ready not signed | Empty partner metrics means K3 must be low / pytest is K3-high | `protocol_planning` |
+| MIK-09 | mik | K4 commercial path: TAM labeled, SAM empty, 2M prize is SOM | GidMarket BIM 10.1 bn RUB 2022 via TAdviser is TAM; hours A1-A8 empty | 10.1 bn is our SAM / 72% analog is our effect / other MIK 500M packaging | `protocol_planning` |
+| IND-25 | industry | PNST 841-2023 AI quality evaluation (order 61-pnst) | Maps onto 0.60 protocol + dual-rater + F1; preliminary, not GOST R | SQuaRE certificate / certified AI quality assessment | `protocol_planning` |
+| TL-14 | techlab | Seat briefs and application paste without a git roster | One paragraph per role; mean of sitting seats; 0.60 cover is sign-ready | Sitting FIO in git / predicted score from paste / protocol already signed | `operational_hygiene` |
+| MIK-10 | mik | Band identity 16+36.6=52.6 is not a predicted AeroBIM total | reachable_inside_low_k1_if_rest_high is arithmetic; prize floor stays 50 | Quote 'floor reachable' / 52.6 as the team's expected score | `protocol_planning` |
+| TL-15 | techlab | Public task-page names and sponsor quote vs signed commission | Catalog FIO are publication; sponsor quote is not attested chair | Those names sit the jury / fill K1 / chair the commission | `operational_hygiene` |
 
 ## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
 
@@ -133,6 +154,27 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | IND-15 | Keep no-ML filter; RT-003 stays OPEN |
 | IND-16 | Keep dwg_dxf MISSING on analyze |
 | IND-17 | Keep cv_human_level=MISSING; OCR does not clear drawing ERROR |
+| MIK-03 | Application roster is the K1 object; no numeric forecast from git |
+| MIK-04 | Prepare to the signed order; do not publish sitting-member lists |
+| MIK-05 | Keep confirmed_partner_validation_metrics False until RT-001 |
+| MIK-06 | Do not promise a patent fence in the application |
+| TL-11 | Owner files roles with evidence; git does not invent the roster |
+| IND-18 | Keep the card citation; do not claim a conformity mark |
+| IND-19 | Keep the taxonomy map; still not a conformity declaration |
+| IND-20 | Cite as horizon; do not speak as if the bill is in force |
+| MIK-07 | Keep the map as a pointer; do not mint a numeric forecast |
+| IND-21 | Keep terminology map; still not a conformity mark |
+| IND-22 | Keep mapping; gost_42001_certified stays False |
+| IND-23 | Speak Appendix 4 №6; do not mix with the neighbouring row |
+| TL-12 | Keep 449-PP VERIFY; do not substitute the prize instrument |
+| MIK-08 | Keep predicted_aerobim_total None; do not sit at the bottom of K1-low |
+| IND-24 | Keep trl_5_claimed False; not an independent readiness exam |
+| TL-13 | Keep k3_equals_validation_metrics False |
+| MIK-09 | Keep k4_revenue_claimed and foreign_labor_cut_as_ours False |
+| IND-25 | Keep pnst_841_certified False |
+| TL-14 | Keep partner_kpis_agreed_in_writing False; person cells stay empty |
+| MIK-10 | Keep predicted_aerobim_total None |
+| TL-15 | Keep sponsor_quote_is_commission_chair False |
 
 ## Evidence pointers
 
@@ -187,3 +229,24 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `IND-15`: [federated-clash-planted-2026-08.md](../evidence/federated-clash-planted-2026-08.md)
 - `IND-16`: [ADR-003-dwg-oda-trial-kt3-2026.md](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md)
 - `IND-17`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
+- `MIK-03`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `MIK-04`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `MIK-05`: [KT3_FIXTURE_VALIDATION_COVER_2026_08.md](KT3_FIXTURE_VALIDATION_COVER_2026_08.md)
+- `MIK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
+- `TL-11`: [TECHLAB_SAMOLET_APPLICATION_2026.md](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
+- `IND-18`: [AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md](AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md)
+- `IND-19`: [AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md](AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md)
+- `IND-20`: [AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md](AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md)
+- `MIK-07`: [MIK_CRITERION_EVIDENCE_MAP_2026_08.md](MIK_CRITERION_EVIDENCE_MAP_2026_08.md)
+- `IND-21`: [NATIONAL_AI_GOST_STACK_KT3_2026.md](NATIONAL_AI_GOST_STACK_KT3_2026.md)
+- `IND-22`: [NATIONAL_AI_GOST_STACK_KT3_2026.md](NATIONAL_AI_GOST_STACK_KT3_2026.md)
+- `IND-23`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `TL-12`: [MIK_PILOT_COMPLIANCE_2026.md](../partners/MIK_PILOT_COMPLIANCE_2026.md)
+- `MIK-08`: [MIK_A_LEVERS_PAST_50_2026_08.md](MIK_A_LEVERS_PAST_50_2026_08.md)
+- `IND-24`: [TRL_GOST_R_58048_SELF_ASSESS_2026.md](TRL_GOST_R_58048_SELF_ASSESS_2026.md)
+- `TL-13`: [K3_PARTNER_FIT_TICKSHEET_2026_08.md](K3_PARTNER_FIT_TICKSHEET_2026_08.md)
+- `MIK-09`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
+- `IND-25`: [PNST_841_AI_QUALITY_EVAL_2026.md](PNST_841_AI_QUALITY_EVAL_2026.md)
+- `TL-14`: [MIK_SEAT_BRIEFS_2026_08.md](MIK_SEAT_BRIEFS_2026_08.md)
+- `MIK-10`: [MIK_A_LEVERS_PAST_50_2026_08.md](MIK_A_LEVERS_PAST_50_2026_08.md)
+- `TL-15`: [TECHLAB_SAMOLET_APPLICATION_2026.md](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
