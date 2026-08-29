@@ -75,6 +75,11 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-SOTA-PQ-MIX",
             "RT-SOTA-CLASH-ML",
             "RT-SOTA-VLM-LIT",
+            "RT-SOTA-DWG-LAYER",
+            "RT-SOTA-SUPPL",
+            "RT-SOTA-OCR-PROXY",
+            "RT-SOTA-FT4B",
+            "RT-SOTA-RTREE-LIT",
         ):
             self.assertIn(row_id, ids)
 
@@ -85,6 +90,16 @@ class LiveTreeTriageTests(unittest.TestCase):
         for row in TRIAGE_ROWS:
             self.assertIn(row["verdict"], allowed)
             self.assertTrue(row["brake"])
+
+    def test_markdown_lists_every_triage_id(self) -> None:
+        md = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "quality"
+            / "TZ_LIVE_TREE_TRIAGE_2026_08_27.md"
+        ).read_text(encoding="utf-8")
+        for row in TRIAGE_ROWS:
+            self.assertIn(f"| {row['id']} |", md, msg=row["id"])
 
     def test_v1_kill_brakes_are_wired(self) -> None:
         self.assertFalse(mik_act_may_cite_tz_v1_accuracy_as_measured())

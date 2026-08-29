@@ -552,8 +552,9 @@ LEDGER: tuple[InferenceRow, ...] = (
         "IND-12",
         "industry",
         "DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets",
-        "Authors: professionals 94.9 vs Gemini-3-pro-preview 77.2 "
-        "(Gemini-2.5-pro 71.7); QTO/R3 weak; not AeroBIM",
+        "Authors: main table professionals 94.9 vs Gemini-2.5-pro 71.7; "
+        "supplementary Gemini-3-pro-preview 77.2 is not the main-table SOTA; "
+        "QTO/R3 weak; not AeroBIM",
         "DrawingVQA as AeroBIM product accuracy / TZ task 1 done",
         "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
         "VLM advisory only; no sheet-level sign-off",
@@ -576,7 +577,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Luo et al. arXiv:2503.22346: semantic F1 87.8 and panoptic PQ 70.6 "
         "on ArchCAD; PQ not comparable across FloorPlanCAD papers; "
         "cv_human_level=MISSING",
-        "VecFormer 88.4 / DPSS 70.6 / FloorPlanCAD as AeroBIM drawing literacy",
+        "VecFormer/DPSS in-paper PQ or FloorPlanCAD as AeroBIM drawing literacy",
         "docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md",
         "Keep cv_human_level=MISSING; no VecFormer/DPSS in runtime",
         "open_bench",
@@ -592,6 +593,28 @@ LEDGER: tuple[InferenceRow, ...] = (
         "docs/evidence/federated-clash-planted-2026-08.md",
         "Keep no-ML filter; RT-003 stays OPEN",
         "protocol_planning",
+    ),
+    _row(
+        "IND-16",
+        "industry",
+        "SOTA 29.08: DWG layer/block/ATTRIB as almost-free symbol labels",
+        "Native DWG parser is not implemented; optional ezdxf is DXF; "
+        "layer labels are not a product DWG reader",
+        "Most symbols identified from DWG layers without ML / native DWG delivered",
+        "docs/architecture/ADR-003-dwg-oda-trial-kt3-2026.md",
+        "Keep dwg_dxf MISSING on analyze",
+        "not_licensed",
+    ),
+    _row(
+        "IND-17",
+        "industry",
+        "SOTA 29.08: OmniDocBench / titleblock text-extract ~0.95 as drawing OCR",
+        "RapidOCR is optional extra on raster; PubLayNet/DocLayNet are not "
+        "construction sheets; GOST stamp template is not measured here",
+        "0.95 OCR / titleblock accuracy as AeroBIM on customer sheets",
+        "docs/pilot-claim-boundary-2026.md",
+        "Keep cv_human_level=MISSING; OCR does not clear drawing ERROR",
+        "open_bench",
     ),
 )
 

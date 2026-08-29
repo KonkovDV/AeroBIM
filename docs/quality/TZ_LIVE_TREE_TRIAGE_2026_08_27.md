@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-29"
 status: active
-version: "1.14.0"
+version: "1.15.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -88,6 +88,11 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-SOTA-PQ-MIX | Смешать PQ FloorPlanCAD между статьями / назвать VecFormer/DPSS нашими | PQ несравнимы между протоколами; Luo F1 87.8 ≠ PQ 70.6; не AeroBIM |
 | RT-SOTA-CLASH-ML | Lin 0.96 или Ailem 60% FP как наш фильтр коллизий | Детерминированный triage не выкидывает коллизии; модели релевантности нет |
 | RT-SOTA-VLM-LIT | VLM/AECV как drawing literacy или подпись листа | `cv_human_level=MISSING`; DrawingVQA/AECV = `open_bench_only` |
+| RT-SOTA-DWG-LAYER | Слои/блоки DWG из SOTA = нативное чтение DWG | `dwg_dxf` MISSING; ODA не на пути analyze |
+| RT-SOTA-SUPPL | Supplementary Gemini-3 77.2 как основная таблица DrawingVQA | Основная таблица: Gemini-2.5-pro 71.7 vs профессионалы 94.9 |
+| RT-SOTA-OCR-PROXY | OmniDocBench / штамп ~0.95 как OCR строительных листов | RapidOCR extra; layout-корпуса не AEC; не ГОСТ-штамп |
+| RT-SOTA-FT4B | MechVL-4B обгоняет frontier = модель в поставке | Domain-FT 4B нет в runtime; VLM advisory |
+| RT-SOTA-RTREE-LIT | Обсуждение SQLite R-tree в IfcOpenShell = наш disk index | `disk_r_tree=designed_not_implemented`; sidecar `dump_only` |
 
 ## HOLD (не чиним в этом коммите)
 

@@ -33,6 +33,10 @@ not estimate QTO; not customer-pack ingest.
 Pass 16: 29.08 SOTA (drawings + clash) — FloorPlanCAD PQ not comparable
 across papers; DPSS F1≠PQ; VLM is document assistant not drawing literacy;
 clash-report ML numbers are not our filter.
+Pass 17: DrawingVQA Gemini-3 77.2 is supplementary, not the main table
+(Gemini-2.5-pro 71.7); DWG layers ≠ native DWG; OmniDocBench 0.95 ≠
+construction OCR; IfcOpenShell R-tree discussion ≠ our disk index;
+4B domain FT is not a shipped model.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -415,6 +419,36 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Treat VLM/AECV scores as drawing literacy or TZ sheet sign-off",
         "brake": "cv_human_level=MISSING; DrawingVQA/AECV stay open_bench_only",
+    },
+    {
+        "id": "RT-SOTA-DWG-LAYER",
+        "verdict": "KILL",
+        "attack": "Cite SOTA layer/block/ATTRIB labels as native DWG reading",
+        "brake": "dwg_dxf MISSING on analyze; ODA not on the analyze path",
+    },
+    {
+        "id": "RT-SOTA-SUPPL",
+        "verdict": "KILL",
+        "attack": "Treat DrawingVQA supplementary Gemini-3 77.2 as the main-table SOTA",
+        "brake": "Main table Gemini-2.5-pro 71.7 vs professionals 94.9; 77.2 is appendix",
+    },
+    {
+        "id": "RT-SOTA-OCR-PROXY",
+        "verdict": "KILL",
+        "attack": "Cite OmniDocBench or titleblock ~0.95 as construction-sheet OCR",
+        "brake": "RapidOCR extra; layout corpora are not AEC sheets; not GOST stamp",
+    },
+    {
+        "id": "RT-SOTA-FT4B",
+        "verdict": "KILL",
+        "attack": "Cite MechVL-4B beating frontier as a model we ship",
+        "brake": "No domain-FT 4B in runtime; VLM stays advisory if present",
+    },
+    {
+        "id": "RT-SOTA-RTREE-LIT",
+        "verdict": "KILL",
+        "attack": "Cite IfcOpenShell SQLite R-tree discussion as our persistent index",
+        "brake": "disk_r_tree designed_not_implemented; sidecar dump_only",
     },
     {
         "id": "RT-SEAM-HOLD",
