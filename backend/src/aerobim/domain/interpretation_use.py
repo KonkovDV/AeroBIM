@@ -684,8 +684,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "IND-19",
         "industry",
         "GOST R 72515-2026 (ISO/IEC 12792:2025) transparency taxonomy",
-        "Maps onto NOT_IMPLEMENTED, advisory LLM/VLM, ADR-001; order 65-st "
-        "on the fund card",
+        "Maps onto NOT_IMPLEMENTED, advisory LLM/VLM, ADR-001; order 65-st on the fund card",
         "GOST R 72515 certificate / trusted-model listing",
         "docs/quality/AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md",
         "Keep the taxonomy map; still not a conformity declaration",

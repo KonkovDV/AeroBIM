@@ -64,13 +64,9 @@ APPENDIX_4_PUBLIC_SOURCE: Final = (
     "programma-dorabotki-i-vnedreniya-naukoemkih-ii-reshenij"
 )
 CITY_PILOT_URL: Final = "https://i.moscow/pilot"
-GOST_42001_CARD: Final = (
-    "https://protect.gost.ru/gost/details/3cb023c3-e628-45ad-b233-65e3d175eb10"
-)
+GOST_42001_CARD: Final = "https://protect.gost.ru/gost/details/3cb023c3-e628-45ad-b233-65e3d175eb10"
 EVIDENCE_MAP: Final = "docs/quality/MIK_CRITERION_EVIDENCE_MAP_2026_08.md"
-K1_ROLE_MATRIX_TEMPLATE: Final = (
-    "docs/partners/K1_ROLE_MATRIX_TEMPLATE_2026_08.md"
-)
+K1_ROLE_MATRIX_TEMPLATE: Final = "docs/partners/K1_ROLE_MATRIX_TEMPLATE_2026_08.md"
 LEVERS_PAST_50: Final = "docs/quality/MIK_A_LEVERS_PAST_50_2026_08.md"
 TRL_SELF_ASSESS_DOC: Final = "docs/quality/TRL_GOST_R_58048_SELF_ASSESS_2026.md"
 K3_FIT_TICKSHEET: Final = "docs/quality/K3_PARTNER_FIT_TICKSHEET_2026_08.md"
@@ -79,9 +75,7 @@ K2_NOVELTY_VS_PEERS: Final = "docs/quality/K2_NOVELTY_VS_PEERS_2026_08.md"
 PNST_841_MAP: Final = "docs/quality/PNST_841_AI_QUALITY_EVAL_2026.md"
 SEAT_BRIEFS: Final = "docs/quality/MIK_SEAT_BRIEFS_2026_08.md"
 APPLICATION_PASTE: Final = "docs/partners/I_MOSCOW_APPLICATION_PASTE_2026_08.md"
-SIGNREADY_COVER: Final = (
-    "docs/partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md"
-)
+SIGNREADY_COVER: Final = "docs/partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md"
 # LETI: not less than 1, not more than 10. K1 scores two competency classes.
 MIN_TEAM_SIZE: Final = 1
 MAX_TEAM_SIZE: Final = 10
@@ -258,8 +252,7 @@ def scoring_snapshot() -> dict[str, Any]:
         "order_date": ORDER_DATE,
         "fund_pdf_in_git": False,
         "criteria": [
-            {"code": code, "max_points": points, "name": name}
-            for code, points, name in CRITERIA
+            {"code": code, "max_points": points, "name": name} for code, points, name in CRITERIA
         ],
         "max_total": MAX_TOTAL,
         "prize_floor": PRIZE_FLOOR,
@@ -273,16 +266,13 @@ def scoring_snapshot() -> dict[str, Any]:
         "novelty_in_tie_break": False,
         "final_round_wider_than_nominal": FINAL_ROUND_WIDER_THAN_NOMINAL,
         "percent_bands": [
-            {"lo": lo_b, "hi": hi_b, "label": label}
-            for lo_b, hi_b, label in PERCENT_BANDS
+            {"lo": lo_b, "hi": hi_b, "label": label} for lo_b, hi_b, label in PERCENT_BANDS
         ],
         "seat_roles": list(SEAT_ROLES),
         "k1_low_band_points": list(k1_low_band_points()),
         "rest_high_band_points": list(rest_high_band_points()),
         "low_k1_high_rest_total": [lo, hi],
-        "prize_floor_automatic_in_low_k1_high_rest": (
-            prize_floor_automatic_in_low_k1_high_rest()
-        ),
+        "prize_floor_automatic_in_low_k1_high_rest": (prize_floor_automatic_in_low_k1_high_rest()),
         "predicted_aerobim_total": predicted_aerobim_total(),
         "k2_plus_k5_max": 30,
         "application_roster_is_k1_object": True,
@@ -298,9 +288,7 @@ def scoring_snapshot() -> dict[str, Any]:
         "commission_number": COMMISSION_NUMBER,
         "handout_label": HANDOUT_LABEL,
         "speak_handout_label_as_regulation": False,
-        "confirmed_partner_validation_metrics": (
-            confirmed_partner_validation_metrics()
-        ),
+        "confirmed_partner_validation_metrics": (confirmed_partner_validation_metrics()),
         "partner_kpis_agreed_in_writing": partner_kpis_agreed_in_writing(),
         "exclusive_rights_may_transfer_under_6_3": True,
         "working_prize_floor": PRIZE_FLOOR,
@@ -323,9 +311,7 @@ def scoring_snapshot() -> dict[str, Any]:
         "trl_program_floor": TRL_PROGRAM_FLOOR,
         "trl_self_assess": TRL_SELF_ASSESS,
         "trl_5_claimed": trl_5_claimed(),
-        "reachable_inside_low_k1_if_rest_high": (
-            reachable_inside_low_k1_if_rest_high()
-        ),
+        "reachable_inside_low_k1_if_rest_high": (reachable_inside_low_k1_if_rest_high()),
         "independent_ogt_performed": False,
         "k4_commercial_path": K4_COMMERCIAL_PATH,
         "k2_novelty_vs_peers": K2_NOVELTY_VS_PEERS,

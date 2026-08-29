@@ -141,9 +141,9 @@ class MikCommissionScoringTests(unittest.TestCase):
 
     def test_ssot_does_not_mint_a_score_or_certify_gost(self) -> None:
         source = Path(__file__).resolve().parents[1]
-        scoring = (
-            source / "src" / "aerobim" / "domain" / "mik_commission_scoring.py"
-        ).read_text(encoding="utf-8")
+        scoring = (source / "src" / "aerobim" / "domain" / "mik_commission_scoring.py").read_text(
+            encoding="utf-8"
+        )
         self.assertNotIn("attested_by=ci", scoring)
         self.assertNotIn("predicted_aerobim_total =", scoring)
         self.assertIn("owner_briefing", scoring)
@@ -153,12 +153,7 @@ class Kt3CommissionPackTests(unittest.TestCase):
     _repo = Path(__file__).resolve().parents[2]
 
     def test_economic_assumptions_file_has_empty_hours(self) -> None:
-        path = (
-            self._repo
-            / "docs"
-            / "partners"
-            / "ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md"
-        )
+        path = self._repo / "docs" / "partners" / "ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md"
         text = path.read_text(encoding="utf-8").lower()
         self.assertIn("нет данных", text)
         self.assertIn("a1", text)
@@ -167,9 +162,7 @@ class Kt3CommissionPackTests(unittest.TestCase):
 
     def test_bom_and_fixture_cover_exist(self) -> None:
         bom = self._repo / "docs" / "quality" / "KT3_DELIVERY_BOM_2026_08.md"
-        cover = (
-            self._repo / "docs" / "quality" / "KT3_FIXTURE_VALIDATION_COVER_2026_08.md"
-        )
+        cover = self._repo / "docs" / "quality" / "KT3_FIXTURE_VALIDATION_COVER_2026_08.md"
         bom_text = bom.read_text(encoding="utf-8").lower()
         cover_text = cover.read_text(encoding="utf-8").lower()
         self.assertIn("mit", bom_text)
@@ -188,18 +181,9 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertFalse(git_raises_k1())
         self.assertFalse(gost_42001_certified())
         self.assertFalse(city_pilot_is_techlab_prize())
-        evidence = (
-            self._repo / "docs" / "quality" / "MIK_CRITERION_EVIDENCE_MAP_2026_08.md"
-        )
-        gost = (
-            self._repo / "docs" / "quality" / "NATIONAL_AI_GOST_STACK_KT3_2026.md"
-        )
-        k1 = (
-            self._repo
-            / "docs"
-            / "partners"
-            / "K1_ROLE_MATRIX_TEMPLATE_2026_08.md"
-        )
+        evidence = self._repo / "docs" / "quality" / "MIK_CRITERION_EVIDENCE_MAP_2026_08.md"
+        gost = self._repo / "docs" / "quality" / "NATIONAL_AI_GOST_STACK_KT3_2026.md"
+        k1 = self._repo / "docs" / "partners" / "K1_ROLE_MATRIX_TEMPLATE_2026_08.md"
         evidence_text = evidence.read_text(encoding="utf-8")
         gost_text = gost.read_text(encoding="utf-8")
         k1_text = k1.read_text(encoding="utf-8")
@@ -240,15 +224,9 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertNotIn("32.7", scoring)
 
     def test_levers_trl_and_k3_fit_docs_exist(self) -> None:
-        levers = (
-            self._repo / "docs" / "quality" / "MIK_A_LEVERS_PAST_50_2026_08.md"
-        )
-        trl = (
-            self._repo / "docs" / "quality" / "TRL_GOST_R_58048_SELF_ASSESS_2026.md"
-        )
-        k3 = (
-            self._repo / "docs" / "quality" / "K3_PARTNER_FIT_TICKSHEET_2026_08.md"
-        )
+        levers = self._repo / "docs" / "quality" / "MIK_A_LEVERS_PAST_50_2026_08.md"
+        trl = self._repo / "docs" / "quality" / "TRL_GOST_R_58048_SELF_ASSESS_2026.md"
+        k3 = self._repo / "docs" / "quality" / "K3_PARTNER_FIT_TICKSHEET_2026_08.md"
         levers_text = levers.read_text(encoding="utf-8")
         trl_text = trl.read_text(encoding="utf-8").lower()
         k3_text = k3.read_text(encoding="utf-8").lower()
@@ -275,29 +253,33 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertFalse(sponsor_quote_is_commission_chair())
         self.assertFalse(tam_horizon_is_our_revenue())
         k4 = (
-            self._repo / "docs" / "quality" / "K4_COMMERCIAL_PATH_2026_08.md"
-        ).read_text(encoding="utf-8").lower()
+            (self._repo / "docs" / "quality" / "K4_COMMERCIAL_PATH_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
         k2 = (
-            self._repo / "docs" / "quality" / "K2_NOVELTY_VS_PEERS_2026_08.md"
-        ).read_text(encoding="utf-8").lower()
+            (self._repo / "docs" / "quality" / "K2_NOVELTY_VS_PEERS_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
         pnst = (
-            self._repo / "docs" / "quality" / "PNST_841_AI_QUALITY_EVAL_2026.md"
-        ).read_text(encoding="utf-8").lower()
-        seats = (
-            self._repo / "docs" / "quality" / "MIK_SEAT_BRIEFS_2026_08.md"
-        ).read_text(encoding="utf-8")
+            (self._repo / "docs" / "quality" / "PNST_841_AI_QUALITY_EVAL_2026.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
+        seats = (self._repo / "docs" / "quality" / "MIK_SEAT_BRIEFS_2026_08.md").read_text(
+            encoding="utf-8"
+        )
         paste = (
-            self._repo
-            / "docs"
-            / "partners"
-            / "I_MOSCOW_APPLICATION_PASTE_2026_08.md"
-        ).read_text(encoding="utf-8").lower()
+            (self._repo / "docs" / "partners" / "I_MOSCOW_APPLICATION_PASTE_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
         cover = (
-            self._repo
-            / "docs"
-            / "partners"
-            / "PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md"
-        ).read_text(encoding="utf-8").lower()
+            (self._repo / "docs" / "partners" / "PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
         self.assertIn("10,1 млрд", k4)
         self.assertIn("не наш sam", k4)
         self.assertIn("72,1", k4)
