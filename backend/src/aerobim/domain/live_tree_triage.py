@@ -30,6 +30,9 @@ document extract for PDF/Office/ZIP; guard files derived from imports;
 CI denylist is B64-only.
 Pass 15: spec vs schedule vs BIM quantities on declared triples (TR-67);
 not estimate QTO; not customer-pack ingest.
+Pass 16: 29.08 SOTA (drawings + clash) — FloorPlanCAD PQ not comparable
+across papers; DPSS F1≠PQ; VLM is document assistant not drawing literacy;
+clash-report ML numbers are not our filter.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -394,6 +397,24 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Ship customer remarks as title+body without essence/clause/location",
         "brake": "validate_remark_shape; TemplateRemarkGenerator rejects",
+    },
+    {
+        "id": "RT-SOTA-PQ-MIX",
+        "verdict": "KILL",
+        "attack": "Mix FloorPlanCAD PQ across papers or cite VecFormer/DPSS as ours",
+        "brake": "PQ incomparable across papers; Luo F1 87.8 ≠ PQ 70.6; not AeroBIM",
+    },
+    {
+        "id": "RT-SOTA-CLASH-ML",
+        "verdict": "KILL",
+        "attack": "Cite Lin 0.96 or Ailem 60% FP as our clash filter or differentiator",
+        "brake": "Deterministic triage never drops a clash; no ML relevance model",
+    },
+    {
+        "id": "RT-SOTA-VLM-LIT",
+        "verdict": "KILL",
+        "attack": "Treat VLM/AECV scores as drawing literacy or TZ sheet sign-off",
+        "brake": "cv_human_level=MISSING; DrawingVQA/AECV stay open_bench_only",
     },
     {
         "id": "RT-SEAM-HOLD",

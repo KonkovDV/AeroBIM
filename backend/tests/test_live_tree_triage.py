@@ -72,6 +72,9 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-SP63-APPR",
             "RT-BSI-REPL",
             "RT-REMARK-SHAPE",
+            "RT-SOTA-PQ-MIX",
+            "RT-SOTA-CLASH-ML",
+            "RT-SOTA-VLM-LIT",
         ):
             self.assertIn(row_id, ids)
 

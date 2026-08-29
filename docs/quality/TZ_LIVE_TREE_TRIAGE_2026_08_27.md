@@ -2,9 +2,9 @@
 ---
 title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
-last_updated: "2026-08-28"
+last_updated: "2026-08-29"
 status: active
-version: "1.13.0"
+version: "1.14.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -85,6 +85,9 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-SP63-APPR | Шаблон `SP63-COVER-SLAB-001` = `customer_approved` | `approval` null; пункт 8.3 (template); не таблица 8.1 |
 | RT-BSI-REPL | AeroBIM заменяет bSI Validation Service | [`VALIDATION_LAYERS_BSI_IDS_ENGINE_2026.md`](VALIDATION_LAYERS_BSI_IDS_ENGINE_2026.md); совместимость ≠ замена |
 | RT-REMARK-SHAPE | Замечание заказчику = title+body без сути/пункта/локации | `validate_remark_shape`; генератор шаблона отвергает |
+| RT-SOTA-PQ-MIX | Смешать PQ FloorPlanCAD между статьями / назвать VecFormer/DPSS нашими | PQ несравнимы между протоколами; Luo F1 87.8 ≠ PQ 70.6; не AeroBIM |
+| RT-SOTA-CLASH-ML | Lin 0.96 или Ailem 60% FP как наш фильтр коллизий | Детерминированный triage не выкидывает коллизии; модели релевантности нет |
+| RT-SOTA-VLM-LIT | VLM/AECV как drawing literacy или подпись листа | `cv_human_level=MISSING`; DrawingVQA/AECV = `open_bench_only` |
 
 ## HOLD (не чиним в этом коммите)
 

@@ -177,6 +177,11 @@ class ReviewPriorityTriageBoostTests(unittest.TestCase):
 
 
 class ClashTriageClaimBoundaryTests(unittest.TestCase):
+    def test_module_never_claims_ml_relevance_or_lin_score(self) -> None:
+        source = inspect.getsource(clash_triage_module)
+        self.assertIn("no ML relevance model is claimed", source)
+        self.assertNotIn("0.96", source)
+
     def test_module_never_touches_summary_passed(self) -> None:
         source = inspect.getsource(clash_triage_module)
         self.assertNotIn("summary.passed", source.replace("``summary.passed``", ""))

@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-08-27"
+date: "2026-08-29"
 status: active
 version: "1.2.0"
 closes_rt001: false
@@ -69,8 +69,10 @@ claim_boundary: >-
 | IND-09 | industry | ISO 19650-6:2025 health and safety information | Not implemented; Shared-gate is 5.6-like control only (ADR-001) | ISO 19650 compliant / Part 6 delivered / 5.7 automated | `not_licensed` |
 | IND-10 | industry | buildingSMART IDS 1.1 (feedback 2026, not final) | IDS 1.0 remains the approved standard (1 June 2024) | IDS 1.1 as current standard / certified profile | `engine_regression` |
 | IND-11 | industry | EGCC 2026 (arXiv:2607.29058) constraint checking | False-pass 41-52%; authors: not for autonomous approval | EGCC % = AeroBIM on customer PD; autonomous approve | `open_bench` |
-| IND-12 | industry | DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets | Pros 94.9% vs Gemini-2.5-pro 71.7%; QTO weak | DrawingVQA as AeroBIM product accuracy / TZ task 1 done | `open_bench` |
+| IND-12 | industry | DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets | Authors: professionals 94.9 vs Gemini-3-pro-preview 77.2 (Gemini-2.5-pro 71.7); QTO/R3 weak; not AeroBIM | DrawingVQA as AeroBIM product accuracy / TZ task 1 done | `open_bench` |
 | IND-13 | industry | Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR) | City-as-publisher pattern = RT-002a analog; not appointing-party EIR | Public permit IDS = Samolet-signed profile / Task 07 delivered | `open_bench` |
+| IND-14 | industry | Panoptic CAD symbol spotting (FloorPlanCAD / ArchCAD-400k / VecFormer) | Luo et al. arXiv:2503.22346: semantic F1 87.8 and panoptic PQ 70.6 on ArchCAD; PQ not comparable across FloorPlanCAD papers; cv_human_level=MISSING | VecFormer 88.4 / DPSS 70.6 / FloorPlanCAD as AeroBIM drawing literacy | `open_bench` |
+| IND-15 | industry | Clash-report relevance ML (Ailem AiC 2026; Lin & Huang 2019) | Ailem: false positives up to 60% on BIM clash reports. Lin hybrid 0.96 is their corpus. AeroBIM triage is deterministic dedup/band/rank and never drops a clash | Lin 0.96 or Ailem 60% as AeroBIM clash quality or a Navisworks killer | `protocol_planning` |
 
 ## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
 
@@ -125,6 +127,8 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | IND-11 | Four-state Meets/Missing/Uncertain; expert stays in the loop |
 | IND-12 | VLM advisory only; no sheet-level sign-off |
 | IND-13 | Keep RT-002a and RT-002b unmixed |
+| IND-14 | Keep cv_human_level=MISSING; no VecFormer/DPSS in runtime |
+| IND-15 | Keep no-ML filter; RT-003 stays OPEN |
 
 ## Evidence pointers
 
@@ -175,3 +179,5 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `IND-11`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `IND-12`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `IND-13`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `IND-14`: [TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md)
+- `IND-15`: [federated-clash-planted-2026-08.md](../evidence/federated-clash-planted-2026-08.md)

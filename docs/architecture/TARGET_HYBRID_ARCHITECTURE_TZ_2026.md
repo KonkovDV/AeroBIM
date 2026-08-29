@@ -2,8 +2,8 @@
 ---
 title: "AeroBIM Target Hybrid Architecture for Samolet TechLab TZ"
 status: active
-version: "1.1.0"
-last_updated: "2026-07-28"
+version: "1.1.1"
+last_updated: "2026-08-29"
 tags: [aerobim, architecture, openbim, tz, sota-2026, hybrid-ai]
 claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002/003 evidenced. ADR-001 owns summary.passed wording."
 ---
@@ -28,7 +28,7 @@ Complementary anchors:
 | Source | Implication for AeroBIM |
 |--------|-------------------------|
 | Buildings 2026 HITL KG rule-base | Expert confirm/edit → versioned norm pack (already: `NormRulePackVersionStore` + HITL UC) |
-| ArchCAD-400k / DPSS (~87.8% semantic F1) | Vector CAD symbol spotting is SOTA baseline; product >90% needs fine-tune **plus** deterministic post-filters |
+| ArchCAD-400k / DPSS (Luo et al., arXiv:2503.22346) | Foreign bench: **semantic F1 87.8%** and **panoptic PQ 70.6%** (instance mAP 40.7%). PQ is not comparable across FloorPlanCAD papers. Not AeroBIM. Native DWG spotting is not in the product. |
 | TUM / Iversen & Huang 2026 agentic ACC | ReAct + tool-calling over IFC/measurement tools; LLM selects tools, engines execute |
 | MCP4IFC / MCP agent pipelines | Tool registry over deterministic IFC APIs outperforms pure RAG for compliance verdicts |
 | Claims Lock 2026-07-17 | Forbidden wording until evidence: DWG-ready, MEP-done, calc correctness, >90%, CDE-ready BCF |
@@ -323,7 +323,7 @@ Atomic delivery rule: each new port ships with adapter + token + `bootstrap.py` 
 2. **Human-in-the-loop:** dual adjudication on customer corpus; Cohen κ / Krippendorff α (tooling already scaffolded) ≥ agreed threshold before pack approval.
 3. **PrecisionClaim gate:** refuse public “>90%” unless `corpus_kind=customer` and `adjudicators≥2` (`architecture.PrecisionClaim`).
 4. **Ablations in CI:** OCR-only | detector-only | detector+VLM | +rules — track per-discipline F1, not a single headline number.
-5. **Literature realism:** ArchCAD-400k DPSS ~87.8% semantic F1 on CAD symbols; closing the gap to product >90% on *mismatches/collisions* requires rules+HITL, not VLM alone (Buildings 2026 “90% barrier” discussion).
+5. **Literature realism:** Luo et al. ArchCAD-400k DPSS reports **semantic F1 87.8%** and **panoptic PQ 70.6%** (arXiv:2503.22346) — foreign bench, not AeroBIM. Closing a product >90% claim still needs customer corpus + rules+HITL, not VLM alone.
 
 ### 6.2 Package ≤30 minutes
 

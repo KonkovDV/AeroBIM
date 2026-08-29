@@ -38,6 +38,8 @@ class InterpretationUseLedgerTests(unittest.TestCase):
         self.assertIn("IND-01", ids)
         self.assertIn("IND-06", ids)
         self.assertIn("IND-10", ids)
+        self.assertIn("IND-14", ids)
+        self.assertIn("IND-15", ids)
         self.assertIn("TL-04", ids)
         self.assertIn("TL-10", ids)
         self.assertIn("SAM-10", ids)

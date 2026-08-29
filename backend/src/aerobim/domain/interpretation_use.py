@@ -552,7 +552,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "IND-12",
         "industry",
         "DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets",
-        "Pros 94.9% vs Gemini-2.5-pro 71.7%; QTO weak",
+        "Authors: professionals 94.9 vs Gemini-3-pro-preview 77.2 "
+        "(Gemini-2.5-pro 71.7); QTO/R3 weak; not AeroBIM",
         "DrawingVQA as AeroBIM product accuracy / TZ task 1 done",
         "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
         "VLM advisory only; no sheet-level sign-off",
@@ -567,6 +568,30 @@ LEDGER: tuple[InferenceRow, ...] = (
         "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
         "Keep RT-002a and RT-002b unmixed",
         "open_bench",
+    ),
+    _row(
+        "IND-14",
+        "industry",
+        "Panoptic CAD symbol spotting (FloorPlanCAD / ArchCAD-400k / VecFormer)",
+        "Luo et al. arXiv:2503.22346: semantic F1 87.8 and panoptic PQ 70.6 "
+        "on ArchCAD; PQ not comparable across FloorPlanCAD papers; "
+        "cv_human_level=MISSING",
+        "VecFormer 88.4 / DPSS 70.6 / FloorPlanCAD as AeroBIM drawing literacy",
+        "docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md",
+        "Keep cv_human_level=MISSING; no VecFormer/DPSS in runtime",
+        "open_bench",
+    ),
+    _row(
+        "IND-15",
+        "industry",
+        "Clash-report relevance ML (Ailem AiC 2026; Lin & Huang 2019)",
+        "Ailem: false positives up to 60% on BIM clash reports. Lin hybrid "
+        "0.96 is their corpus. AeroBIM triage is deterministic dedup/band/"
+        "rank and never drops a clash",
+        "Lin 0.96 or Ailem 60% as AeroBIM clash quality or a Navisworks killer",
+        "docs/evidence/federated-clash-planted-2026-08.md",
+        "Keep no-ML filter; RT-003 stays OPEN",
+        "protocol_planning",
     ),
 )
 
@@ -609,6 +634,8 @@ def ledger_payload(*, generated_at: str) -> dict[str, Any]:
             "ISO 19650-6:2025 — H&S sharing, not 5.7 authorization",
             "EGCC 2026 (arXiv:2607.29058) — false-pass too high for autonomous approval",
             "DrawingVQA 2026 (arXiv:2607.15418) — drawing QA ≠ package acceptance",
+            "ArchCAD-400k DPSS (arXiv:2503.22346) — semantic F1 87.8 ≠ panoptic PQ 70.6",
+            "Ailem 2026 clash-report FP up to 60%; Lin 2019 hybrid 0.96 is not our filter",
         ],
         "closes_rt001": False,
         "closes_rt002": False,
