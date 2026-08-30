@@ -60,6 +60,8 @@ python -m mypy src
 pytest tests -q
 ```
 
+Jury/README extras (`.[dev,raster]`): **0 failed**. Tests that need `pdf-agpl` or kitchen secrets skip. The CI pin in `docs/evidence/runtime-baseline-latest.json` is `attested_by=ci`, not a local count.
+
 If formatting fails:
 
 ```bash

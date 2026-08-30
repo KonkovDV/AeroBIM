@@ -11,7 +11,7 @@ import pytest
 from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.pymupdf_region_cropper import PyMuPDFRegionCropper
 
-pymupdf = pytest.importorskip("pymupdf")
+pymupdf = pytest.importorskip("pymupdf", reason="optional pdf-agpl extra")
 
 
 def _make_pdf(path: Path, *, width: int = 600, height: int = 400) -> None:

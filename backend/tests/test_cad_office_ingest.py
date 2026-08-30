@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
@@ -80,6 +83,28 @@ class CadOfficeIngestTests(unittest.TestCase):
         texts = " ".join(annotation.observed_value for annotation in result.annotations)
         self.assertIn("WALL-A", texts)
         self.assertEqual(result.format_resolved, "dxf")
+
+    def test_ezdxf_readfile_uses_getattr_not_stub_export(self) -> None:
+        from aerobim.infrastructure.ezdxf_readfile import ezdxf_readfile
+
+        opened: list[str] = []
+
+        def _readfile(path: str) -> object:
+            opened.append(path)
+            return object()
+
+        fake = types.SimpleNamespace(readfile=_readfile)
+        with patch.dict(sys.modules, {"ezdxf": fake}):
+            result = ezdxf_readfile("sheet.dxf")
+        self.assertIsNotNone(result)
+        self.assertEqual(opened, ["sheet.dxf"])
+
+    def test_ezdxf_readfile_raises_when_readfile_missing(self) -> None:
+        from aerobim.infrastructure.ezdxf_readfile import ezdxf_readfile
+
+        with patch.dict(sys.modules, {"ezdxf": types.SimpleNamespace()}):
+            with self.assertRaises(AttributeError):
+                ezdxf_readfile("sheet.dxf")
 
     def test_office_text_ingest(self) -> None:
         ingestor = DoclingOfficeDocumentIngestor()

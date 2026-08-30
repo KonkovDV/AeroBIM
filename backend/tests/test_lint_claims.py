@@ -385,10 +385,16 @@ class LintClaimsTests(unittest.TestCase):
     def test_kitchen_tokens_absent_from_jury_surfaces(self) -> None:
         sys.path.insert(0, str(_REPO / "scripts"))
         try:
+            from kitchen_denylist import denylist_materialized  # type: ignore[import-not-found]
             from lint_claims import lint_kitchen_tokens  # type: ignore[import-not-found]
         finally:
             if sys.path and sys.path[0] == str(_REPO / "scripts"):
                 sys.path.pop(0)
+        if not denylist_materialized():
+            self.skipTest(
+                "kitchen denylist not materialized (GitHub secrets or .local); "
+                "fail-closed production path is unchanged"
+            )
         self.assertEqual(lint_kitchen_tokens(), [])
 
     def test_kitchen_path_prefixes_are_untracked(self) -> None:

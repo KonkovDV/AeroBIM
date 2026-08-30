@@ -19,7 +19,7 @@ from aerobim.domain.models import (
 )
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
-pymupdf = pytest.importorskip("pymupdf")
+pymupdf = pytest.importorskip("pymupdf", reason="optional pdf-agpl extra")
 
 
 class _NoOpRequirementExtractor:

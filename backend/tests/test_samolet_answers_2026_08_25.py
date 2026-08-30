@@ -238,12 +238,18 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         sys.path.insert(0, str(scripts))
         try:
             from kitchen_denylist import (  # type: ignore[import-not-found]
+                denylist_materialized,
                 lint_guard_files_have_no_literals,
                 lint_kitchen_tokens,
             )
         finally:
             if sys.path and sys.path[0] == str(scripts):
                 sys.path.pop(0)
+        if not denylist_materialized():
+            self.skipTest(
+                "kitchen denylist not materialized (GitHub secrets or .local); "
+                "fail-closed production path is unchanged"
+            )
         self.assertEqual(lint_kitchen_tokens(), [])
         self.assertEqual(lint_guard_files_have_no_literals(), [])
 

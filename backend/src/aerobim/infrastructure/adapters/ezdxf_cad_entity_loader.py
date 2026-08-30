@@ -74,7 +74,9 @@ class EzdxfCadEntityLoader:
             )
 
         try:
-            import ezdxf
+            from aerobim.infrastructure.ezdxf_readfile import ezdxf_readfile
+
+            document = ezdxf_readfile(path)
         except ModuleNotFoundError:
             return EntityGraph(
                 source_id=path.name,
@@ -85,9 +87,6 @@ class EzdxfCadEntityLoader:
                     reason="ezdxf optional extra not installed (pip install aerobim-backend[cad])",
                 ),
             )
-
-        try:
-            document = ezdxf.readfile(str(path))
         except Exception as exc:
             return EntityGraph(
                 source_id=path.name,

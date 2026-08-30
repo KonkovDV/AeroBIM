@@ -230,6 +230,17 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         errors = publishability_errors(baseline)
         self.assertTrue(any("working_tree_dirty" in e for e in errors))
 
+    def test_ast_vs_pytest_count_mismatch_is_not_uncollected_error(self) -> None:
+        from aerobim.tools.export_runtime_baseline import _publishability_core_errors
+
+        payload = CompletenessErrorsTests()._complete()
+        payload["backend"]["test_functions"] = 100
+        payload["backend"]["tests_collected"] = 120
+        payload["backend"]["uncollected"] = []
+        payload["working_tree_clean"] = True
+        errors = _publishability_core_errors(payload)
+        self.assertFalse(any("uncollected_test_definitions" in item for item in errors))
+
     def test_local_attestation_is_not_publishable(self) -> None:
         from aerobim.tools.export_runtime_baseline import publishability_errors
 
@@ -785,6 +796,10 @@ class BaselineDriftAndReadmeAttackTests(unittest.TestCase):
                     "aerobim.tools.export_runtime_baseline._check_readme_numeric_claims",
                     return_value=[],
                 ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_jury_surfaces_pin_echo",
+                    return_value=[],
+                ),
             ):
                 errors = _check_readme_markers(repo)
             self.assertTrue(any("readme_snippet" in e for e in errors))
@@ -829,9 +844,50 @@ class BaselineDriftAndReadmeAttackTests(unittest.TestCase):
                     "aerobim.tools.export_runtime_baseline._check_readme_numeric_claims",
                     return_value=[],
                 ),
+                patch(
+                    "aerobim.tools.export_runtime_baseline._check_jury_surfaces_pin_echo",
+                    return_value=[],
+                ),
             ):
                 errors = _check_readme_markers(repo, compare_artifact=False)
             self.assertEqual(errors, [])
+
+
+class JuryPinEchoTests(unittest.TestCase):
+    def test_readme_is_not_a_jury_pin_surface(self) -> None:
+        from aerobim.tools.export_runtime_baseline import _JURY_PIN_SURFACES
+
+        self.assertNotIn("README.md", _JURY_PIN_SURFACES)
+        self.assertNotIn("README.ru.md", _JURY_PIN_SURFACES)
+
+    def test_real_repo_jury_surfaces_do_not_echo_pin_integers(self) -> None:
+        from aerobim.tools.export_runtime_baseline import _check_jury_surfaces_pin_echo
+
+        self.assertEqual(_check_jury_surfaces_pin_echo(_REPO), [])
+
+    def test_embedded_pin_count_is_killed(self) -> None:
+        from aerobim.tools.export_runtime_baseline import (
+            _JURY_PIN_SURFACES,
+            _check_jury_surfaces_pin_echo,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            evidence = repo / "docs" / "evidence"
+            evidence.mkdir(parents=True)
+            (evidence / "runtime-baseline-latest.json").write_text(
+                json.dumps({"backend": {"tests_passed": 99, "tests_collected": 100}}),
+                encoding="utf-8",
+            )
+            for rel in _JURY_PIN_SURFACES:
+                path = repo / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                body = "see runtime-baseline-latest.json\n"
+                if rel.endswith("CRITICAL_BLOCKERS.md"):
+                    body += "backend **99** passed on this clone\n"
+                path.write_text(body, encoding="utf-8")
+            errors = _check_jury_surfaces_pin_echo(repo)
+            self.assertTrue(any("embeds pin count" in item for item in errors))
 
 
 if __name__ == "__main__":

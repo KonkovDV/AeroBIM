@@ -67,7 +67,9 @@ class EzdxfCadModelIngestor:
             )
 
         try:
-            import ezdxf
+            from aerobim.infrastructure.ezdxf_readfile import ezdxf_readfile
+
+            document = ezdxf_readfile(path)
         except ModuleNotFoundError:
             return CadIngestResult(
                 annotations=(),
@@ -77,9 +79,6 @@ class EzdxfCadModelIngestor:
                 supported=False,
                 reason="ezdxf optional extra not installed (pip install aerobim-backend[cad])",
             )
-
-        try:
-            document = ezdxf.readfile(str(path))
         except Exception as exc:
             return CadIngestResult(
                 annotations=(),

@@ -8,6 +8,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from pdf_fixtures import write_text_pdf
+
 from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
     HeuristicLayoutRegionDetector,
@@ -21,13 +23,7 @@ from aerobim.tools.run_mentor_vlm_demo import (
 
 
 def _make_pdf(path: Path) -> None:
-    import pymupdf
-
-    doc = pymupdf.open()
-    page = doc.new_page(width=600, height=400)
-    page.insert_text((60, 60), "WALL-01 thickness 150 mm")
-    doc.save(str(path))
-    doc.close()
+    write_text_pdf(path, "WALL-01 thickness 150 mm")
 
 
 class MentorVlmDemoTests(unittest.TestCase):

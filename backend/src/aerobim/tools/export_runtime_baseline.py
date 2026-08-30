@@ -457,7 +457,24 @@ def _iter_test_definition_ids(tests_root: Path) -> set[str]:
 
 
 def _count_tests(tests_root: Path) -> int:
+    """AST count of ``test_*`` functions / methods. Not pytest's collected item count.
+
+    Parametrize expands one definition into many items. Optional extras
+    (``pdf-agpl``, kitchen secrets) skip collection. Equality with
+    ``tests_collected`` is not an invariant.
+    """
+
     return len(_iter_test_definition_ids(tests_root))
+
+
+def _collected_definition_id(nodeid: str) -> str:
+    """Map a pytest node id to the AST definition id (drop parametrize suffix)."""
+
+    token = nodeid.strip().replace("\\", "/")
+    bracket = token.find("[")
+    if bracket != -1:
+        token = token[:bracket]
+    return token
 
 
 def _pytest_collected_ids(backend_root: Path) -> set[str]:
@@ -483,10 +500,18 @@ def _pytest_collected_ids(backend_root: Path) -> set[str]:
 
 
 def _test_collection_inventory(backend_root: Path) -> dict[str, object]:
+    """Compare AST definitions to ``pytest --collect-only`` node ids.
+
+    ``test_functions`` (AST) and ``tests_collected`` (pytest) are different
+    metrics. SSOT for the published pin is pytest JUnit ``tests_collected`` /
+    ``tests_passed`` in ``runtime-baseline-latest.json``.
+    """
+
     tests_root = backend_root / "tests"
     definitions = _iter_test_definition_ids(tests_root)
     collected = _pytest_collected_ids(backend_root)
-    uncollected = sorted(definitions - collected)
+    collected_defs = {_collected_definition_id(item) for item in collected}
+    uncollected = sorted(definitions - collected_defs)
     return {
         "test_definitions": len(definitions),
         "tests_collected_live": len(collected),
@@ -1035,16 +1060,16 @@ def _publishability_core_errors(
 
     backend = baseline.get("backend")
     if isinstance(backend, dict):
-        collected = backend.get("tests_collected")
-        definitions = backend.get("test_functions")
-        if isinstance(collected, int) and isinstance(definitions, int) and definitions != collected:
-            uncollected = backend.get("uncollected")
-            detail = (
-                f" ({uncollected[:5]}...)" if isinstance(uncollected, list) and uncollected else ""
-            )
+        # AST ``test_functions`` and pytest ``tests_collected`` are different
+        # metrics (parametrize expands items; optional extras skip collection).
+        # Publishability fails only when AST defs are missing from collection
+        # after stripping parametrize suffixes — not when the two counts differ.
+        uncollected = backend.get("uncollected")
+        if isinstance(uncollected, list) and uncollected:
+            detail = f" ({uncollected[:5]}...)" if uncollected else ""
             errors.append(
-                f"uncollected_test_definitions: test_functions={definitions} "
-                f"tests_collected={collected}{detail}"
+                f"uncollected_test_definitions: {len(uncollected)} AST "
+                f"test_functions not in pytest collection{detail}"
             )
 
     frontend = baseline.get("frontend")
@@ -1173,6 +1198,8 @@ def export_runtime_baseline(
             "source_loc": src_loc,
             "test_loc": test_loc,
             "test_functions": test_count,
+            "test_functions_source": "ast_test_defs",
+            "tests_collected_source": "pytest_collect_only",
             "uncollected": uncollected,
         },
         "frontend": {
@@ -1476,6 +1503,59 @@ def _check_readme_numeric_claims(repo: Path, live: dict[str, object]) -> list[st
     return errors
 
 
+_JURY_PIN_SURFACES = (
+    "audit/reports/CRITICAL_BLOCKERS.md",
+    "docs/TIER0_INDEX.md",
+    "docs/pilot-claim-boundary-2026.md",
+    "docs/quality/KT3_FIXTURE_VALIDATION_COVER_2026_08.md",
+    "docs/capability-claim-matrix-2026.md",
+    "submission/README.md",
+    "submission/01-repository/README.md",
+)
+
+
+def _check_jury_surfaces_pin_echo(repo: Path) -> list[str]:
+    """Jury markdown must point at the JSON pin, not duplicate its integers."""
+
+    artifact = repo / "docs" / "evidence" / "runtime-baseline-latest.json"
+    if not artifact.is_file():
+        return ["Missing docs/evidence/runtime-baseline-latest.json"]
+    try:
+        stored = json.loads(artifact.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return ["Invalid runtime-baseline-latest.json"]
+    backend = stored.get("backend") if isinstance(stored, dict) else None
+    if not isinstance(backend, dict):
+        return ["runtime-baseline-latest.json missing backend"]
+    needles: list[str] = []
+    passed = backend.get("tests_passed")
+    collected = backend.get("tests_collected")
+    if isinstance(passed, int):
+        needles.extend(
+            (
+                f"**{passed}**",
+                f"{passed} passed",
+                f"backend={passed}",
+                f"backend **{passed}**",
+            )
+        )
+    if isinstance(collected, int):
+        needles.extend((f"**{collected}**", f"{collected} collected"))
+    errors: list[str] = []
+    for rel in _JURY_PIN_SURFACES:
+        path = repo / rel
+        if not path.is_file():
+            errors.append(f"missing jury surface {rel}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "runtime-baseline-latest.json" not in text:
+            errors.append(f"{rel} must cite runtime-baseline-latest.json as the test-count SSOT")
+        for needle in needles:
+            if needle in text:
+                errors.append(f"{rel} embeds pin count {needle!r}; cite the JSON instead")
+    return errors
+
+
 def _check_architecture_inventory(repo: Path, *, compare_artifact: bool = True) -> list[str]:
     """README must publish the live protocol/adapter/token counts from source."""
     live = _live_architecture_inventory(repo)
@@ -1574,6 +1654,7 @@ def _check_readme_markers(repo: Path, *, compare_artifact: bool = True) -> list[
     errors.extend(_check_architecture_inventory(repo, compare_artifact=compare_artifact))
     live = export_runtime_baseline(backend_root=repo / "backend")
     errors.extend(_check_readme_numeric_claims(repo, live))
+    errors.extend(_check_jury_surfaces_pin_echo(repo))
     return errors
 
 
@@ -1678,6 +1759,7 @@ def main(argv: list[str] | None = None) -> int:
             "Fail if README.md / README.ru.md lack AEROBIM_RUNTIME_BASELINE markers, "
             "documented-env name *sets* disagree (symmetric difference, not counts), "
             "live architecture_inventory (ports/adapters/tokens) missing from README/artifact, "
+            "jury markdown embeds the JSON pin integers, "
             "or committed artifact drifts beyond ±50 on loc/test_functions"
         ),
     )

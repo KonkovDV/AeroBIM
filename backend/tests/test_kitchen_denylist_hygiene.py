@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 _REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO / "scripts"))
@@ -14,6 +15,7 @@ sys.path.insert(0, str(_REPO / "scripts"))
 from kitchen_denylist import (  # noqa: E402
     MAX_SCAN_BYTES,
     KitchenDenylistError,
+    denylist_materialized,
     file_contains_tokens,
     iter_guard_files,
     lint_guard_files_have_no_literals,
@@ -23,17 +25,41 @@ from kitchen_denylist import (  # noqa: E402
     verify_pin,
 )
 
+_SKIP_UNMATERIALIZED = (
+    "kitchen denylist not materialized (GitHub secrets or .local); "
+    "fail-closed production path is unchanged"
+)
+
 
 class KitchenDenylistHygieneTests(unittest.TestCase):
+    def _require_materialized(self) -> None:
+        if not denylist_materialized():
+            self.skipTest(_SKIP_UNMATERIALIZED)
+
+    def test_require_materialized_skips_when_unmaterialized(self) -> None:
+        with patch(f"{__name__}.denylist_materialized", return_value=False):
+            with self.assertRaises(unittest.SkipTest) as ctx:
+                self._require_materialized()
+        self.assertIn("kitchen denylist not materialized", str(ctx.exception))
+
+    def test_require_materialized_does_not_skip_when_pin_verifies(self) -> None:
+        """When the denylist pin verifies, hygiene tests must run, not skip."""
+
+        with patch(f"{__name__}.denylist_materialized", return_value=True):
+            self._require_materialized()
+
     def test_pin_verifies_against_local_or_ci_list(self) -> None:
+        self._require_materialized()
         tokens = load_tokens()
         verify_pin(tokens)
         self.assertGreaterEqual(len(tokens), 1)
 
     def test_guard_files_contain_no_denylist_literals(self) -> None:
+        self._require_materialized()
         self.assertEqual(lint_guard_files_have_no_literals(), [])
 
     def test_working_tree_scan_is_clean(self) -> None:
+        self._require_materialized()
         self.assertEqual(lint_kitchen_tokens(), [])
 
     def test_pack_quarantine_allows_documented_dwg_fixture_only(self) -> None:
@@ -41,11 +67,13 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
         self.assertEqual(hits, [])
 
     def test_count_mismatch_reports_counts_not_tokens(self) -> None:
-        previous = os.environ.get("AEROBIM_KITCHEN_DENYLIST_PATH")
+        previous_path = os.environ.get("AEROBIM_KITCHEN_DENYLIST_PATH")
+        previous_key = os.environ.get("AEROBIM_KITCHEN_HMAC_KEY")
         with tempfile.TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "short-denylist.txt"
             path.write_text("synthetic-count-probe-only\n", encoding="utf-8")
             os.environ["AEROBIM_KITCHEN_DENYLIST_PATH"] = str(path)
+            os.environ["AEROBIM_KITCHEN_HMAC_KEY"] = "unit-test-hmac-not-the-pin"
             try:
                 with self.assertRaises(KitchenDenylistError) as ctx:
                     verify_pin()
@@ -54,10 +82,14 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
                 self.assertIn("pin 27", message)
                 self.assertNotIn("synthetic-count-probe-only", message)
             finally:
-                if previous is None:
+                if previous_path is None:
                     os.environ.pop("AEROBIM_KITCHEN_DENYLIST_PATH", None)
                 else:
-                    os.environ["AEROBIM_KITCHEN_DENYLIST_PATH"] = previous
+                    os.environ["AEROBIM_KITCHEN_DENYLIST_PATH"] = previous_path
+                if previous_key is None:
+                    os.environ.pop("AEROBIM_KITCHEN_HMAC_KEY", None)
+                else:
+                    os.environ["AEROBIM_KITCHEN_HMAC_KEY"] = previous_key
 
     def test_ci_passes_denylist_via_env_not_composite_input(self) -> None:
         action_path = _REPO / ".github" / "actions" / "materialize-kitchen-denylist" / "action.yml"
@@ -75,6 +107,18 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
         )
         self.assertNotIn("AEROBIM_KITCHEN_DENYLIST:-", action)
         self.assertIn("Base64 only", action)
+
+    def test_ci_readme_extras_job_matches_jury_clone_install(self) -> None:
+        workflow = (_REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        start = workflow.find("pytest-readme-extras:")
+        end = workflow.find("\n  test:", start)
+        self.assertGreater(start, 0)
+        self.assertGreater(end, start)
+        job = workflow[start:end]
+        self.assertIn('pip install -e ".[dev,raster]"', job)
+        self.assertNotIn("materialize-kitchen-denylist", job)
+        self.assertNotIn("requirements-dev-lock.txt", job)
+        self.assertNotIn("--extra=pdf-agpl", job)
 
     def test_guard_set_is_import_derived_not_hand_listed(self) -> None:
         source = (_REPO / "scripts" / "kitchen_denylist.py").read_text(encoding="utf-8")
@@ -131,6 +175,7 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
             self.assertTrue(hits[0].startswith("[kitchen_denylist] fail-closed"))
             with self.assertRaises(KitchenDenylistError):
                 load_tokens()
+            self.assertFalse(denylist_materialized())
         finally:
             if previous is None:
                 os.environ.pop("AEROBIM_KITCHEN_DENYLIST_PATH", None)

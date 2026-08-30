@@ -22,7 +22,7 @@ from aerobim.tools.generate_degraded_scans import generate_degraded_scans
 from aerobim.tools.generate_vlm_fixture_corpus import generate_vlm_fixture_corpus
 from aerobim.tools.run_pilot_harness import run_pilot_harness
 
-pymupdf = pytest.importorskip("pymupdf")
+pymupdf = pytest.importorskip("pymupdf", reason="optional pdf-agpl extra")
 
 _REPO = Path(__file__).resolve().parents[2]
 

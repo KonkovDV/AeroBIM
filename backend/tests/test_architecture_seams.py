@@ -162,7 +162,12 @@ class ExportRuntimeBaselineTests(unittest.TestCase):
         backend_block = baseline["backend"]
         assert isinstance(backend_block, dict)
         self.assertGreater(int(backend_block["test_functions"]), 0)
-        self.assertEqual(backend_block["test_functions"], backend_block["tests_collected"])
+        self.assertGreater(int(backend_block["tests_collected"]), 0)
+        self.assertEqual(backend_block["test_functions_source"], "ast_test_defs")
+        self.assertEqual(backend_block["tests_collected_source"], "pytest_collect_only")
+        # AST defs vs pytest items: parametrize expands; optional extras
+        # (pdf-agpl, kitchen secrets) skip collection. Equality is not an invariant.
+        self.assertIsInstance(backend_block.get("uncollected"), list)
         self.assertIsNone(backend_block["tests_passed"])
         metrics = baseline["metrics"]
         assert isinstance(metrics, dict)

@@ -19,6 +19,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 # ---------------------------------------------------------------------------
@@ -520,7 +521,7 @@ class RasterDrawingAnalyzerContractTests(unittest.TestCase):
     def test_blank_pdf_returns_empty_list(self) -> None:
         import tempfile
 
-        import pymupdf
+        from pdf_fixtures import _wrap_single_page
 
         from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
@@ -528,10 +529,7 @@ class RasterDrawingAnalyzerContractTests(unittest.TestCase):
             tmp_path = Path(tmp.name)
 
         try:
-            document = pymupdf.open()
-            document.new_page()
-            document.save(tmp_path)
-            document.close()
+            tmp_path.write_bytes(_wrap_single_page(b"", page_w=612, page_h=792))
 
             analyzer = RasterDrawingAnalyzer()
             result = analyzer.analyze_image(tmp_path, sheet_id="A-101")

@@ -272,7 +272,7 @@ def prize_floor_denominator_known() -> bool:
     return False
 
 
-def predicted_aerobim_total() -> None:
+def predicted_aerobim_total() -> int | None:
     """No licensed numeric forecast. Git does not score the application."""
 
     return None

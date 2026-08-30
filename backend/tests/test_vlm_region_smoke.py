@@ -12,6 +12,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+from pdf_fixtures import write_text_pdf
+
 from aerobim.domain.models import DrawingRegionRef, DrawingSource
 from aerobim.infrastructure.adapters.caching_vlm_reader import (
     CachingVlmReader,
@@ -38,13 +41,7 @@ _OBS = {
 
 
 def _make_pdf(path: Path) -> None:
-    import pymupdf
-
-    doc = pymupdf.open()
-    page = doc.new_page(width=600, height=400)
-    page.insert_text((60, 60), "AR-01 Ст-1")
-    doc.save(str(path))
-    doc.close()
+    write_text_pdf(path, "AR-01 St-1")
 
 
 def _source(tmp: str) -> DrawingSource:
@@ -94,7 +91,7 @@ def _pipeline(reader: object, cropper: object) -> RegionRestrictedVlmPipeline:
 
 class RegionSmokeReportTests(unittest.TestCase):
     def test_report_ok_with_real_crop(self) -> None:
-        # Real PyMuPDF crop of a generated PDF; only the model is faked.
+        pytest.importorskip("pymupdf", reason="optional pdf-agpl extra")
         reader = _CountingReader()
         with tempfile.TemporaryDirectory() as tmp:
             report = build_region_smoke_report(

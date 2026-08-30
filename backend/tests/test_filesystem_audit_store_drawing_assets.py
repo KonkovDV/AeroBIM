@@ -10,7 +10,7 @@ import pytest
 from aerobim.domain.models import DrawingAsset, ValidationReport, ValidationSummary
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
-pymupdf = pytest.importorskip("pymupdf")
+pymupdf = pytest.importorskip("pymupdf", reason="optional pdf-agpl extra")
 
 
 class FilesystemAuditStoreDrawingAssetTests(unittest.TestCase):

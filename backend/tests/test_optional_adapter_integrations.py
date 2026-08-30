@@ -18,7 +18,7 @@ from aerobim.infrastructure.adapters.docling_requirement_extractor import (
 )
 from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
 
-pymupdf = pytest.importorskip("pymupdf")
+pymupdf = pytest.importorskip("pymupdf", reason="optional pdf-agpl extra")
 
 
 def _has_optional_module(module_name: str) -> bool:

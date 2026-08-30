@@ -79,9 +79,7 @@ MAX_TRACKED_BYTES = 50 * 1024 * 1024
 MAX_SCAN_BYTES = 2 * 1024 * 1024
 _MAX_EXTRACT_MEMBER = 8 * 1024 * 1024
 _MAX_EXTRACT_TOTAL = 32 * 1024 * 1024
-_DOCUMENT_EXTRACT_SUFFIXES = frozenset(
-    {".docx", ".xlsx", ".xlsm", ".odt", ".ods", ".zip"}
-)
+_DOCUMENT_EXTRACT_SUFFIXES = frozenset({".docx", ".xlsx", ".xlsm", ".odt", ".ods", ".zip"})
 _SELF_REL = Path(__file__).resolve().relative_to(_REPO).as_posix().replace("\\", "/")
 
 
@@ -116,6 +114,20 @@ def _hmac_key() -> str:
     if _DEFAULT_KEY.is_file():
         return _DEFAULT_KEY.read_text(encoding="utf-8").strip()
     raise KitchenDenylistError("HMAC key missing")
+
+
+def denylist_materialized() -> bool:
+    """True when the out-of-git list and HMAC key pin-verify.
+
+    Jury clones following README do not have GitHub secrets or ``.local``.
+    Production and CI stay fail-closed via ``load_tokens`` / lint hits.
+    """
+
+    try:
+        verify_pin(load_tokens())
+    except KitchenDenylistError:
+        return False
+    return True
 
 
 def load_tokens() -> list[str]:
@@ -308,10 +320,7 @@ def iter_guard_files() -> Iterable[Path]:
     seen: set[Path] = set()
     for path in iter_tracked_files():
         rel = path.relative_to(_REPO).as_posix().replace("\\", "/")
-        if rel == _SELF_REL or (
-            path.suffix == ".py"
-            and _module_imports_kitchen_denylist(path)
-        ):
+        if rel == _SELF_REL or (path.suffix == ".py" and _module_imports_kitchen_denylist(path)):
             if path not in seen:
                 seen.add(path)
                 yield path

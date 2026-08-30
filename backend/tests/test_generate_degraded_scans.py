@@ -16,7 +16,7 @@ import pytest
 
 from aerobim.tools.generate_degraded_scans import generate_degraded_scans
 
-pymupdf = pytest.importorskip("pymupdf")
+pymupdf = pytest.importorskip("pymupdf", reason="optional pdf-agpl extra")
 
 
 def _make_sheet(path: Path) -> None:

@@ -332,10 +332,15 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         scripts = self._repo() / "scripts"
         sys.path.insert(0, str(scripts))
         try:
-            from kitchen_denylist import load_tokens, verify_pin
+            from kitchen_denylist import denylist_materialized, load_tokens, verify_pin
         finally:
             if sys.path and sys.path[0] == str(scripts):
                 sys.path.pop(0)
+        if not denylist_materialized():
+            self.skipTest(
+                "kitchen denylist not materialized (GitHub secrets or .local); "
+                "fail-closed production path is unchanged"
+            )
         tokens = load_tokens()
         verify_pin(tokens)
         surfaces = (
