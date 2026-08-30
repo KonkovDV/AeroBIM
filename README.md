@@ -75,12 +75,14 @@ python -m aerobim.tools.run_kt3_jury
 # equivalent two-command: run_demo_ifc_acceptance_gate + run_kt3_without_customer
 
 pytest tests -q
+# Jury clone contract: 0 failed. Tests that need extra pdf-agpl (PyMuPDF) or
+# kitchen GitHub secrets skip. A local count is not the CI pin below.
 python -m aerobim.main   # → http://127.0.0.1:8080/health
 ```
 
-Both demos end with `summary.passed=false`, which is the expected result: the fixture pack contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy. A local `pytest` count is not the CI pin in the runtime baseline below.
+Both demos end with `summary.passed=false`, which is the expected result: the fixture pack contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy. A local `pytest` count is not the CI pin in the runtime baseline below. `NO_GO` on the badge is customer sign-off, not “the kernel does not run”.
 
-Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for anything above). The review shell: `cd frontend && npm ci && npm run dev`.
+Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for the three demo commands above; without it those tests skip). The review shell: `cd frontend && npm ci && npm run dev`.
 
 ## Who this page is for
 
@@ -234,10 +236,10 @@ A local clone runs on defaults. The collapsed table is the operator-facing confi
 | `AEROBIM_MEP_FEDERATED_SCOPE_PATH` | *(unset)* | Federated MEP scope JSON (VERIFIED customer or ENG_FIXTURE) |
 | `AEROBIM_MEP_AABB_FILTER` | `true` | Optional AABB broadphase for MEP matrix pairs; still `geometry_verified=False` |
 | `AEROBIM_PDF_BACKEND` | `pdfium` | Core PDF: `pdfium` / `none`; optional legacy `pymupdf` only with `pdf-agpl` |
-| `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max IFC **analyze** size: 256 MiB (268 435 456 bytes). Comparable to the buildingSMART Validation Service cap of 256 MB on an uncompressed `.ifc`, not the same unit. Independent of Samolet-stated 1.5 GB **ingest** |
+| `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max **SPF in-memory** IFC open: 256 MiB. Comparable to the buildingSMART Validation Service cap of 256 MB on an uncompressed `.ifc`, not the same unit. Files above this and up to the model ingest cap open via IfcOpenShell RocksDB |
 | `AEROBIM_MAX_OFFICE_BYTES` | `268435456` (dev); `500000000` on `samolet_pilot`/`production` unless `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS=0` | Office ingest cap (PDF/Office). Customer stated 500 MB decimal (2026-08-25) |
-| `AEROBIM_MAX_MODEL_BYTES` | `268435456` (dev); `1500000000` on `samolet_pilot`/`production` unless `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS=0` | Model ingest cap (IFC/ZIP/CAD). Customer stated 1.5 GB decimal. Does **not** raise analyze or the WASM viewer (still 256 MiB) |
-| `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS` | `true` under `samolet_pilot`/`production`; ignored in development | Apply the stated 500 MB / 1.5 GB ingest caps. Analyze IFC default stays 256 MiB |
+| `AEROBIM_MAX_MODEL_BYTES` | `268435456` (dev); `1500000000` on `samolet_pilot`/`production` unless `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS=0` | Model ingest **and disk-analyze** cap (IFC/ZIP/CAD). Customer stated 1.5 GB decimal. WASM viewer stays 256 MiB |
+| `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS` | `true` under `samolet_pilot`/`production`; ignored in development | Apply the stated 500 MB / 1.5 GB caps. SPF open stays 256 MiB; 1.5 GB IFC uses RocksDB |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | Remark template language for deterministic generators (`ru` / `en`) |
 | `AEROBIM_PRIORITY_PROFILE` | `default` | Review priority weighting profile (`default`; `samolet` in fixture SLA smoke only) |

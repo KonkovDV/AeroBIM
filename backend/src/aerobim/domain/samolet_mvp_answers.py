@@ -43,6 +43,7 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
         "stated_model_bytes": SAMOLET_STATED_MODEL_BYTES,
         "dev_default_upload_bytes": DEV_DEFAULT_UPLOAD_BYTES,
         "analyze_ifc_default_bytes": DEV_DEFAULT_UPLOAD_BYTES,
+        "analyze_ifc_disk_bytes": SAMOLET_STATED_MODEL_BYTES,
         "wasm_viewer_cap_bytes": WASM_IFC_VIEWER_CAP_BYTES,
         "native_rvt_nwd": "not_implemented",
         "native_dwg": "not_implemented",

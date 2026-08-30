@@ -386,12 +386,43 @@ class IfcSizeLimitBoundaryTests(unittest.TestCase):
             target.write_bytes(b"x" * 8)
             ctx.enforce_ifc_size(target)  # must not raise
 
+    def test_one_byte_over_spf_under_model_cap_is_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(Path(tmp), max_ifc_bytes=8, max_model_bytes=100)
+            target = Path(tmp) / "over-spf.ifc"
+            target.write_bytes(b"x" * 9)
+            ctx.enforce_ifc_size(target)  # disk band; RocksDB convert happens at open
+
     def test_one_byte_over_limit_is_413(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            ctx = _make_ctx(Path(tmp), max_ifc_bytes=8)
+            ctx = _make_ctx(Path(tmp), max_ifc_bytes=8, max_model_bytes=8)
             target = Path(tmp) / "over.ifc"
             target.write_bytes(b"x" * 9)
             self.assertEqual(_status(ctx.enforce_ifc_size, target).status_code, 413)
+            exc = _status(ctx.enforce_ifc_size, target)
+            self.assertIsInstance(exc.detail, dict)
+            self.assertEqual(exc.detail["message"], "IFC exceeds analyze size limit")
+            self.assertEqual(exc.detail["reason_code"], "ifc_over_ingest_cap")
+            self.assertEqual(exc.detail["required_profile"], "samolet_pilot")
+            self.assertEqual(
+                exc.detail["see"],
+                "docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md",
+            )
+            self.assertTrue(exc.detail["spf_cap_unraised"])
+            self.assertFalse(exc.detail["rss_measured"])
+
+    def test_disk_band_without_rocksdb_is_503(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(Path(tmp), max_ifc_bytes=8, max_model_bytes=100)
+            target = Path(tmp) / "over-spf.ifc"
+            target.write_bytes(b"x" * 9)
+            with patch(
+                "aerobim.infrastructure.adapters.ifc_file_open.rocksdb_backend_available",
+                return_value=False,
+            ):
+                exc = _status(ctx.enforce_ifc_size, target)
+            self.assertEqual(exc.status_code, 503)
+            self.assertEqual(exc.detail, "IFC disk backend unavailable")
 
 
 class ResolveBoundTenantTests(unittest.TestCase):

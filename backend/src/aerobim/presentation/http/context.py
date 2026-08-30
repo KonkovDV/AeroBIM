@@ -30,6 +30,7 @@ from aerobim.core.security.path_jail import (
     tenant_storage_prefix,
 )
 from aerobim.core.security.upload_quota import FilesystemUploadQuotaStore
+from aerobim.domain.ifc_size_policy import BAND_ANALYZE_DISK, classify_ifc_bytes
 from aerobim.domain.models import (
     AnalyzeProjectPackageJob,
     DrawingAsset,
@@ -48,6 +49,8 @@ from aerobim.domain.object_acl import (
 from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
 from aerobim.presentation.http.errors import (
     public_bad_request_detail,
+    public_ifc_analyze_cap_body,
+    public_ifc_disk_backend_detail,
     public_not_found_detail,
     public_storage_boundary_detail,
 )
@@ -277,14 +280,26 @@ class ApiContext:
         if not ifc_path.is_file():
             return
         size = ifc_path.stat().st_size
-        if size > self.settings.max_ifc_bytes:
+        decision = classify_ifc_bytes(
+            size,
+            analyze_cap_bytes=self.settings.max_ifc_bytes,
+            ingest_cap_bytes=self.settings.max_model_bytes,
+        )
+        if not decision.analyze_allowed:
             raise HTTPException(
                 status_code=413,
-                detail=(
-                    f"IFC file exceeds size limit ({size} bytes > "
-                    f"{self.settings.max_ifc_bytes} bytes)"
-                ),
+                detail=public_ifc_analyze_cap_body(),
             )
+        if decision.band == BAND_ANALYZE_DISK:
+            from aerobim.infrastructure.adapters.ifc_file_open import (
+                rocksdb_backend_available,
+            )
+
+            if not rocksdb_backend_available():
+                raise HTTPException(
+                    status_code=503,
+                    detail=public_ifc_disk_backend_detail(),
+                )
 
     # -- Object ACL assertions ---------------------------------------------
 

@@ -92,6 +92,38 @@ class SpatialIndexLocationTests(unittest.TestCase):
         self.assertIsNone(miss_axis.grid_axis)
         self.assertIsNone(miss_axis.storey_name)
 
+    def test_from_model_uses_unique_storey_grid_u_axis(self) -> None:
+        storey = _Entity(
+            "IfcBuildingStorey",
+            GlobalId="st-1",
+            Name="1 этаж",
+            ContainsElements=[],
+        )
+        axis = _Entity("IfcGridAxis", GlobalId="ax-1", AxisTag="А", Name=None)
+        grid = _Entity("IfcGrid", GlobalId="grid-1", Name="Demo grid", UAxes=[axis])
+        contain = _Entity(
+            "IfcRelContainedInSpatialStructure",
+            RelatingStructure=storey,
+            RelatedElements=[grid],
+        )
+        storey.ContainsElements = [contain]
+        wall_rel = _Entity("IfcRelContainedInSpatialStructure", RelatingStructure=storey)
+        wall = _Entity(
+            "IfcWall",
+            GlobalId="wall-1",
+            Name="W",
+            ContainedInStructure=[wall_rel],
+            ReferencedInStructures=[],
+            Decomposes=[],
+        )
+        model = _Model({"IfcSystem": [], "IfcRoot": [wall, storey, grid, axis]})
+        index = IfcSpatialIndex.from_model(model)
+        hit = index.lookup("wall-1")
+        self.assertIsNotNone(hit)
+        assert hit is not None
+        self.assertEqual(hit.storey_name, "1 этаж")
+        self.assertEqual(hit.grid_axis, "А")
+
     def test_stamp_copies_index_and_keeps_finding_id_stable(self) -> None:
         index = IfcSpatialIndex(
             elements={

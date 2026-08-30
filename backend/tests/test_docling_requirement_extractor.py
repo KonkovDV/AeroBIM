@@ -51,6 +51,21 @@ class StructuredRequirementExtractorTests(unittest.TestCase):
         self.assertEqual(requirements[0].operator, ComparisonOperator.GREATER_OR_EQUAL)
         self.assertEqual(requirements[0].unit, "m2")
 
+    def test_extract_parses_norm_source_and_clause_columns(self) -> None:
+        extractor = StructuredRequirementExtractor()
+        requirements = extractor.extract(
+            RequirementSource(
+                text=(
+                    "REQ-AREA-001|ifc-quantity|IFCSPACE|ROOM-101|"
+                    "Qto_SpaceBaseQuantities|NetFloorArea|gte|42|m2|"
+                    "Area from TZ||ТЗ (демо-пакет)|п. 4.2\n"
+                )
+            )
+        )
+        self.assertEqual(len(requirements), 1)
+        self.assertEqual(requirements[0].norm_source, "ТЗ (демо-пакет)")
+        self.assertEqual(requirements[0].norm_clause, "п. 4.2")
+
 
 if __name__ == "__main__":
     unittest.main()

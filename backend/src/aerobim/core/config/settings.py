@@ -298,11 +298,12 @@ class Settings:
     api_tenant_id: str | None = None
     """Tenant bound to the static bearer token (``AEROBIM_API_TENANT_ID``)."""
     max_ifc_bytes: int = _DEFAULT_MAX_IFC_BYTES
-    """Maximum accepted IFC file size in bytes (default 256 MiB = 268435456).
+    """SPF in-memory IFC open cap (default 256 MiB = 268435456).
 
     Comparable to the buildingSMART Validation Service 256 MB uncompressed
-    ``.ifc`` cap, not the same unit. Independent of Samolet-stated 1.5 GB
-    model *ingest* (answers 1.1.4): raising upload caps does not raise analyze.
+    ``.ifc`` cap, not the same unit. Files above this and up to
+    ``max_model_bytes`` (1.5 GB under Samolet ingest) open via RocksDB.
+    Does not raise the WASM viewer cap.
     """
     max_upload_bytes: int = _DEFAULT_MAX_IFC_BYTES
     """Envelope multipart cap (bytes). Per-file office/model caps cannot exceed this."""

@@ -31,7 +31,7 @@ claim_boundary: >
 |---|---:|---|---|---|---|---|
 | Б1 | 30 | Посадка на карточку: ассистент ПД/РД, HITL, fail-closed native CAD, cap 256 МиБ | Подписанные KPI партнёра | Соответствуем запросу openBIM; native RVT/NWD/DWG закрыты явно | [`K3_PARTNER_FIT_TICKSHEET_2026_08.md`](K3_PARTNER_FIT_TICKSHEET_2026_08.md) · TIER0 | Письмо с KPI; «коллизии >90% сданы» |
 | Б2 | 20 | Обложка фикстуры; протокол 0,60; CI pin; план инъекций | Dual-rater и метрики на комплекте партнёра | Pytest — регрессия движка, не валидация партнёра | [`KT3_FIXTURE_VALIDATION_COVER_2026_08.md`](KT3_FIXTURE_VALIDATION_COVER_2026_08.md) · [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](../evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | `confirmed_partner_validation_metrics` |
-| Б3 | 20 | Загрузка + BCF ZIP; п. 2.2.2 файловый обмен | SSO; 1,5 ГБ analyze; импорт в СОД | MVP без интеграции в контур | TIER0 · BCF ladder | CDE-ready; OIDC 501 |
+| Б3 | 20 | Загрузка + BCF ZIP; п. 2.2.2 файловый обмен; RocksDB analyze до 1,5 ГБ | SSO; импорт в СОД | MVP без интеграции в контур | TIER0 · BCF ladder · [`IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md) | CDE-ready; OIDC 501; SPF/WASM остаются 256 МиБ |
 | Б4 | 20 | Пустые A1–A8; методика лабораторного замера | Часы партнёра; подписанный до/после | Лабораторный замер ≠ часы Самолёта; −72,1% не наш | [`BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md`](../partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) · [`ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md`](../partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md) | Эффект для партнёра |
 | Б5 | 10 | BOM; LICENSE MIT; карта прозрачности | Соглашение о правах по п. 6.3 | MIT сейчас; развилка прав — вопрос организаторам, не обещание | [`KT3_DELIVERY_BOM_2026_08.md`](KT3_DELIVERY_BOM_2026_08.md) · [`ADR-004-prize-ip-mit-fork-2026.md`](../architecture/ADR-004-prize-ip-mit-fork-2026.md) | Передача исключительных прав |
 
@@ -49,7 +49,7 @@ claim_boundary: >
 |---|---|---|
 | Б1 | средняя (41–60 % от 30) | Нет подписанных KPI; честность ограничений зачитывается как посадка, не как high |
 | Б2 | очень низкая–низкая (0–40 % от 20) | Нет confirmed partner metrics; pytest не поднимает high |
-| Б3 | средняя (41–60 % от 20) | Файловый обмен на MVP есть; SSO и 1,5 ГБ analyze нет |
+| Б3 | средняя (41–60 % от 20) | Файловый обмен и RocksDB до 1,5 ГБ есть; SSO и T2 СОД нет |
 | Б4 | очень низкая (0–20 % от 20) | A1–A8 пустые; нет часов партнёра |
 | Б5 | средняя (41–60 % от 10) | BOM и MIT на руках; п. 6.3 не закрыт |
 
@@ -68,7 +68,7 @@ claim_boundary: >
 |---|---|---|
 | Б1 | к высокой, если KPI письмом | Подпись не ставит git |
 | Б2 | протоколы + синтетика = полка, не high партнёра | Метрики на комплекте Самолёта |
-| Б3 | без сдвига от этих трёх | SSO / 1,5 ГБ / T2 |
+| Б3 | без сдвига от этих трёх | SSO / T2 СОД |
 | Б4 | лабораторный low возможен; партнёрский остаётся пустым | A1–A8 партнёра |
 | Б5 | без сдвига, пока нет ответа по п. 6.3 | Исключительные права |
 

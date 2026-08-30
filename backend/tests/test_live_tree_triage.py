@@ -114,6 +114,18 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-MIK-RAS-IFRS",
             "RT-MIK-CATALOG-ALL",
             "RT-MIK-PEER-PILOTS",
+            "RT-ODA-BIMRV",
+            "RT-CADSOFT-STALE",
+            "RT-WILSON-N6",
+            "RT-SPACE-SCOPE",
+            "RT-002-NORMS",
+            "RT-TBD-FILL",
+            "RT-OIDC-FREEZE",
+            "RT-PACK-DERIV",
+            "RT-CLONE-PYTEST",
+            "RT-PIN-DRIFT",
+            "RT-INGEST-ANALYZE",
+            "RT-SPF-10X",
         ):
             self.assertIn(row_id, ids)
 

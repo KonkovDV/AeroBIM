@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 LEDGER_ID = "aerobim_interpretation_use_ledger"
-SCHEMA_VERSION = "1.2.0"
+SCHEMA_VERSION = "1.2.1"
 AUDITED_HEAD = "f9389bf"  # IUA freeze; hygiene commits after this do not reopen validity
 CHECKPOINT = "NO_GO"
 CLAIM_BOUNDARY = (
@@ -874,6 +874,80 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Keep ras_ifrs_signs_are_the_same False",
         "protocol_planning",
     ),
+    _row(
+        "SAM-11",
+        "samolet",
+        "ТР-17: неэффективное использование пространства (продаваемая площадь / МОП / коридоры)",
+        "IfcSpace inventory remains ADVISORY_ONLY until appointing-party "
+        "thresholds are signed; scope is OA-14",
+        "Space efficiency delivered / customer does not need the row / "
+        "numeric KPI without signature",
+        "docs/quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md",
+        "Owner records in-scope advisory vs out-of-MVP before the 22.09 rehearsal",
+        "protocol_planning",
+    ),
+    _row(
+        "IND-27",
+        "industry",
+        "ODA Sustaining vs BimRv/BimNv extensions (public 2026 list)",
+        "Sustaining 7500/4500 USD is the SaaS DWG floor; RVT/NWD need 6250 USD extensions each",
+        "7500 USD = native RVT/NWD / CADSoftTools 1660 USD as 2026 floor / LibreDWG in MIT core",
+        "docs/quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md",
+        "Keep native Autodesk fail-closed; IFC exchange, not SDK purchase, for MVP",
+        "protocol_planning",
+    ),
+    _row(
+        "IND-28",
+        "industry",
+        "Wilson 1927 / Brown–Cai–DasGupta 2001: 6/6 is not unity for a jury",
+        "wilson_interval(6,6) 95% lower ~0.61; fixture AABB P/R stays unpublished to the jury",
+        "Show 1.0 at n=6 even with a caveat / treat as TZ clash >90%",
+        "docs/evidence/clash-measurement-slice-2026-08/README.md",
+        "Protocol n~100 + two raters before any publishable rate",
+        "not_licensed",
+    ),
+    _row(
+        "SAM-12",
+        "samolet",
+        "п. 1.1.4: офис 500 МБ / модели 1,5 ГБ — ingest + RocksDB; SPF/WASM 256 МиБ",
+        "AEROBIM_MAX_IFC_BYTES stays 256 MiB SPF; files up to 1.5 GB open via "
+        "IfcOpenShell RocksDB; WASM stays 256 MiB; HTTP 413 over 1.5 GB",
+        "We already SPF-open 1.5 GB / raise default SPF cap because it is config / "
+        "bSI 256 MB = our 256 MiB / WASM shows 1.5 GB",
+        "docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md",
+        "OA-16 RSS on a local over-SPF file via RocksDB; do not raise SPF default",
+        "protocol_planning",
+    ),
+    _row(
+        "IND-29",
+        "industry",
+        "IfcOpenShell SPF RAM ~8–10× disk (#7116, ~275–300 MB Riverside)",
+        "Planning multiplier 10: 256 MiB analyze → ~2.5 GiB RSS; 1.5 GB ingest → ~15 GiB",
+        "Raising the analyze cap is a one-line settings change / RSS equals file size",
+        "docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md",
+        "RocksDB is wired for over-SPF files; stream2/R-tree are not the analyze path",
+        "not_licensed",
+    ),
+    _row(
+        "PLAN-06",
+        "techlab",
+        "LIRA/RD compare is four declared-value checks, not a solver",
+        "CC-2/CC-4 comparable when a readable note exists; CC-1/CC-3 sample; .lir closed",
+        "Independent recalculation / As from IFC without IfcReinforcingBar / LIRA accuracy %",
+        "docs/quality/CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md",
+        "Say the solver boundary aloud; partial method GO is not product accuracy",
+        "protocol_planning",
+    ),
+    _row(
+        "TL-17",
+        "techlab",
+        "Five former TBD TZ sections are a confirmation request, not a blank form",
+        "TZ v2 fills architecture, code/build, solution image, presentation, accompanying docs",
+        "Ask organizers to draft empty TBD from 09.07 / compare teams on unfilled bars",
+        "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md",
+        "Send our edition for confirmation (OA-8)",
+        "operational_hygiene",
+    ),
 )
 
 
@@ -931,6 +1005,13 @@ def ledger_payload(*, generated_at: str) -> dict[str, Any]:
             "Regulation Appendix 3 (final criteria) is not in git",
             "Partner 1H2026 IFRS loss is not an AeroBIM saving",
             "Stand-alone RAS +31% is not group IFRS -31%",
+            "ODA Sustaining 2026 list is not BimRv/BimNv; CADSoftTools floor is quote-page 765 USD",
+            "Wilson 6/6 95% lower ~0.61 is not a jury exhibit of unity",
+            (
+                "IfcOpenShell #7116 SPF RAM ~8–10× disk (Riverside ~275–300 MB); "
+                "1.5 GB ingest is not that RSS"
+            ),
+            "MOEXP IDS 06.03.2026 is RT-002a (city-as-publisher), not Samolet RT-002b",
         ],
         "closes_rt001": False,
         "closes_rt002": False,

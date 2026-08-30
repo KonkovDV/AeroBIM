@@ -3,7 +3,7 @@
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
 date: "2026-08-30"
 status: active
-version: "1.2.0"
+version: "1.2.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -100,6 +100,13 @@ claim_boundary: >-
 | MIK-12 | mik | K4 after partner 1H2026 IFRS: zero entry, not a CAPEX ask | Pay-on-result speech is not a signed SKU; IFRS loss is not our saving; 200M AI program is theirs, not AeroBIM | Invest in us / we offset the IFRS loss / RAS +31% is group IFRS | `protocol_planning` |
 | TL-16 | techlab | Four catalog cards are filtered survivors, not all applicants | Neighbor-task 46 teams is a different Partner in the same first stream; peer card claims are not audited public fact | Four cards = everyone who applied / 15 pilots and 600+ norms are verified | `operational_hygiene` |
 | IND-26 | industry | Stand-alone RAS 1H2026 revenue +31% is not group IFRS -31% | Opposite signs on the same window; mixing them drops tech-customer trust | Cite RAS growth as the group IFRS picture / one figure two signs | `protocol_planning` |
+| SAM-11 | samolet | ТР-17: неэффективное использование пространства (продаваемая площадь / МОП / коридоры) | IfcSpace inventory remains ADVISORY_ONLY until appointing-party thresholds are signed; scope is OA-14 | Space efficiency delivered / customer does not need the row / numeric KPI without signature | `protocol_planning` |
+| IND-27 | industry | ODA Sustaining vs BimRv/BimNv extensions (public 2026 list) | Sustaining 7500/4500 USD is the SaaS DWG floor; RVT/NWD need 6250 USD extensions each | 7500 USD = native RVT/NWD / CADSoftTools 1660 USD as 2026 floor / LibreDWG in MIT core | `protocol_planning` |
+| IND-28 | industry | Wilson 1927 / Brown–Cai–DasGupta 2001: 6/6 is not unity for a jury | wilson_interval(6,6) 95% lower ~0.61; fixture AABB P/R stays unpublished to the jury | Show 1.0 at n=6 even with a caveat / treat as TZ clash >90% | `not_licensed` |
+| SAM-12 | samolet | п. 1.1.4: офис 500 МБ / модели 1,5 ГБ — ingest + RocksDB; SPF/WASM 256 МиБ | AEROBIM_MAX_IFC_BYTES stays 256 MiB SPF; files up to 1.5 GB open via IfcOpenShell RocksDB; WASM stays 256 MiB; HTTP 413 over 1.5 GB | We already SPF-open 1.5 GB / raise default SPF cap because it is config / bSI 256 MB = our 256 MiB / WASM shows 1.5 GB | `protocol_planning` |
+| IND-29 | industry | IfcOpenShell SPF RAM ~8–10× disk (#7116, ~275–300 MB Riverside) | Planning multiplier 10: 256 MiB analyze → ~2.5 GiB RSS; 1.5 GB ingest → ~15 GiB | Raising the analyze cap is a one-line settings change / RSS equals file size | `not_licensed` |
+| PLAN-06 | techlab | LIRA/RD compare is four declared-value checks, not a solver | CC-2/CC-4 comparable when a readable note exists; CC-1/CC-3 sample; .lir closed | Independent recalculation / As from IFC without IfcReinforcingBar / LIRA accuracy % | `protocol_planning` |
+| TL-17 | techlab | Five former TBD TZ sections are a confirmation request, not a blank form | TZ v2 fills architecture, code/build, solution image, presentation, accompanying docs | Ask organizers to draft empty TBD from 09.07 / compare teams on unfilled bars | `operational_hygiene` |
 
 ## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
 
@@ -183,6 +190,13 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | MIK-12 | Keep k4_asks_customer_capex and k4_offsets_partner_ifrs_loss False |
 | TL-16 | Keep catalog_four_are_all_applicants False |
 | IND-26 | Keep ras_ifrs_signs_are_the_same False |
+| SAM-11 | Owner records in-scope advisory vs out-of-MVP before the 22.09 rehearsal |
+| IND-27 | Keep native Autodesk fail-closed; IFC exchange, not SDK purchase, for MVP |
+| IND-28 | Protocol n~100 + two raters before any publishable rate |
+| SAM-12 | OA-16 RSS on a local over-SPF file via RocksDB; do not raise SPF default |
+| IND-29 | RocksDB is wired for over-SPF files; stream2/R-tree are not the analyze path |
+| PLAN-06 | Say the solver boundary aloud; partial method GO is not product accuracy |
+| TL-17 | Send our edition for confirmation (OA-8) |
 
 ## Evidence pointers
 
@@ -262,3 +276,10 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `MIK-12`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
 - `TL-16`: [K2_NOVELTY_VS_PEERS_2026_08.md](K2_NOVELTY_VS_PEERS_2026_08.md)
 - `IND-26`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
+- `SAM-11`: [KT3_WINDOW_CRITICAL_PATH_2026_09.md](KT3_WINDOW_CRITICAL_PATH_2026_09.md)
+- `IND-27`: [NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md)
+- `IND-28`: [README.md](../evidence/clash-measurement-slice-2026-08/README.md)
+- `SAM-12`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)
+- `IND-29`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)
+- `PLAN-06`: [CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md)
+- `TL-17`: [TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md](../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md)

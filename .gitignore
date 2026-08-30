@@ -52,6 +52,9 @@ APS.code-workspace
 .local/kitchen-hmac.key
 .local/pack/
 
+# IfcOpenShell RocksDB cache for files over the SPF cap (never commit)
+**/.aerobim-ifc-rdb/
+
 # Native authoring / solver / coordinator packs (IFC fixtures stay tracked)
 *.rvt
 *.rfa

@@ -45,7 +45,7 @@ class IfcSpatialIndex:
         return self.systems.get(system_id, ())
 
     @classmethod
-    def from_model(cls, model: Any) -> IfcSpatialIndex:
+    def from_model(cls, model: Any, *, dense: bool = True) -> IfcSpatialIndex:
         elements: dict[str, IfcSpatialElement] = {}
         systems: dict[str, list[str]] = {}
 
@@ -66,17 +66,20 @@ class IfcSpatialIndex:
             if member_guids:
                 systems[system_id] = member_guids
 
-        # Fallback: index IfcRoot entities without system assignment; also fill
-        # storey/axis on system members that were seen before containment walk.
-        try:
-            roots = list(model.by_type("IfcRoot"))
-        except Exception:
-            roots = []
-        for item in roots:
-            guid = _global_id(item)
-            if not guid:
-                continue
-            elements[guid] = _merge_element(elements.get(guid), item, extra_system=None)
+        # SPF: index IfcRoot. RocksDB/large files: products + storey/grid only.
+        scan_types = (
+            ("IfcRoot",) if dense else ("IfcProduct", "IfcBuildingStorey", "IfcGrid", "IfcGridAxis")
+        )
+        for ifc_type in scan_types:
+            try:
+                items = list(model.by_type(ifc_type))
+            except Exception:
+                items = []
+            for item in items:
+                guid = _global_id(item)
+                if not guid:
+                    continue
+                elements[guid] = _merge_element(elements.get(guid), item, extra_system=None)
 
         return cls(
             elements=elements,
@@ -260,21 +263,89 @@ def _containing_storey_name(entity: Any, *, _seen: set[int] | None = None) -> st
 
 
 def _referenced_grid_axis(entity: Any) -> str | None:
-    """IfcGridAxis.AxisTag only. IfcGrid.Name is not an axis tag — leave empty."""
+    """IfcGridAxis.AxisTag only. IfcGrid.Name is not an axis tag.
+
+    IFC4 ``IfcRelReferencedInSpatialStructure.RelatingStructure`` is a spatial
+    structure element, so a product may reference an ``IfcGrid`` rather than an
+    axis. When that happens, use the first UAxes tag. If the containing storey
+    has exactly one grid, the same tag is used — not OCR, not a guessed axis.
+    """
 
     for rel in getattr(entity, "ReferencedInStructures", None) or []:
         relating = getattr(rel, "RelatingStructure", None)
         if relating is None:
             continue
-        if _ifc_type(relating) != "IfcGridAxis":
-            continue
-        tag = getattr(relating, "AxisTag", None)
-        if tag is not None and str(tag).strip():
-            return str(tag).strip()
-        named = _optional_name(relating)
-        if named:
-            return named
+        kind = _ifc_type(relating)
+        if kind == "IfcGridAxis":
+            tagged = _axis_tag(relating)
+            if tagged:
+                return tagged
+        if kind == "IfcGrid":
+            tagged = _first_u_axis_tag(relating)
+            if tagged:
+                return tagged
+    storey_name = _containing_storey_name(entity)
+    if not storey_name:
+        return None
+    storey = _containing_storey_entity(entity)
+    if storey is None:
+        return None
+    grids = _grids_contained_in(storey)
+    if len(grids) != 1:
+        return None
+    return _first_u_axis_tag(grids[0])
+
+
+def _axis_tag(axis: Any) -> str | None:
+    tag = getattr(axis, "AxisTag", None)
+    if tag is not None and str(tag).strip():
+        return str(tag).strip()
+    named = _optional_name(axis)
+    return named
+
+
+def _first_u_axis_tag(grid: Any) -> str | None:
+    for axis in getattr(grid, "UAxes", None) or []:
+        tagged = _axis_tag(axis)
+        if tagged:
+            return tagged
     return None
+
+
+def _containing_storey_entity(entity: Any, *, _seen: set[int] | None = None) -> Any | None:
+    if entity is None:
+        return None
+    marker = id(entity)
+    seen = _seen if _seen is not None else set()
+    if marker in seen:
+        return None
+    seen.add(marker)
+    if _ifc_type(entity) == "IfcBuildingStorey":
+        return entity
+    for rel in getattr(entity, "ContainedInStructure", None) or []:
+        found = _containing_storey_entity(
+            getattr(rel, "RelatingStructure", None),
+            _seen=seen,
+        )
+        if found is not None:
+            return found
+    for rel in getattr(entity, "Decomposes", None) or []:
+        found = _containing_storey_entity(
+            getattr(rel, "RelatingObject", None),
+            _seen=seen,
+        )
+        if found is not None:
+            return found
+    return None
+
+
+def _grids_contained_in(storey: Any) -> list[Any]:
+    grids: list[Any] = []
+    for rel in getattr(storey, "ContainsElements", None) or []:
+        for item in getattr(rel, "RelatedElements", None) or []:
+            if _ifc_type(item) == "IfcGrid":
+                grids.append(item)
+    return grids
 
 
 def _ifc_type(entity: Any) -> str:

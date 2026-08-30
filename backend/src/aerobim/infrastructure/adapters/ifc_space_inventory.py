@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from aerobim.domain.space_efficiency_advisory import SpaceInventoryRow
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 
 
 def extract_space_inventory(ifc_path: Path | str | None) -> tuple[SpaceInventoryRow, ...]:
@@ -16,13 +17,12 @@ def extract_space_inventory(ifc_path: Path | str | None) -> tuple[SpaceInventory
     if not path.is_file():
         return ()
     try:
-        import ifcopenshell
         import ifcopenshell.util.element as element_util
     except ImportError:
         return ()
 
     try:
-        model = ifcopenshell.open(str(path))
+        model = open_ifc_model(path)
     except Exception:
         return ()
 

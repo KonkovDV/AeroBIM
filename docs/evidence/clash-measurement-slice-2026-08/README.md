@@ -2,7 +2,7 @@
 ---
 title: "Clash measurement slice — fixture measured (2026-08-11)"
 status: active
-version: "0.2.0"
+version: "0.2.1"
 date: "2026-08-11"
 claim_boundary: "Fixture AABB P/R only. Allowed: geometric intersection of extents, measured P/R at n=6 — never «коллизия по ТЗ >90%», never customer corpus, never IfcClash mesh product claim."
 ---
@@ -56,7 +56,7 @@ aerobim-evaluate-detection-precision --labels <labels.json> --detections <detect
 
 ## Corpus blocker (honest)
 
-Customer / pilot IFC with real solids for n≈50 dual-blind labels is still required for publishable product metrics. Fixture P/R does **not** close TZ clash accuracy >90%.
+Customer / pilot IFC with real solids for n≈50 dual-blind labels is still required for publishable product metrics. Fixture P/R does **not** close TZ clash accuracy >90%. Do **not** present n=6 unity to the jury: `wilson_interval(6, 6)` 95% lower bound ≈ 0.61 (Wilson 1927; Brown, Cai & DasGupta 2001).
 
 ## Matrix wording
 

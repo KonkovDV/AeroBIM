@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from aerobim.domain.errors import ClashCapabilityError
+from aerobim.domain.ifc_size_policy import IfcAnalyzeCapError, IfcDiskBackendError
 from aerobim.domain.models import ClashResult
 
 _LOGGER = logging.getLogger(__name__)
@@ -137,10 +138,11 @@ def probe_clash_geometry(
     Per-element isolation: one ``AssertionError`` does not abort the probe.
     """
 
-    import ifcopenshell
     import ifcopenshell.geom
 
-    model = ifcopenshell.open(str(ifc_path))
+    from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+
+    model = open_ifc_model(ifc_path)
     settings = cast(Any, ifcopenshell.geom.settings)()
     settings.set(settings.USE_WORLD_COORDS, True)
     included: list[str] = []
@@ -281,6 +283,8 @@ class IfcClashDetector:
             ) from exc
         except ClashCapabilityError:
             raise
+        except (IfcAnalyzeCapError, IfcDiskBackendError):
+            raise
         except Exception as exc:
             detail = str(exc).strip() or type(exc).__name__
             if isinstance(exc, AssertionError):
@@ -309,15 +313,20 @@ class IfcClashDetector:
 
     def _run_clash_detection(self, ifc_path: Path) -> list[ClashResult]:
         """Attempt IfcClash-based detection; raise ImportError if deps missing."""
+        from aerobim.infrastructure.adapters.ifc_file_open import ifc_engine_path
+
         selector = self._selector_for(ifc_path)
-        return self._run_clash_sets([self_clash_set(ifc_path, selector=selector)])
+        engine = ifc_engine_path(ifc_path)
+        return self._run_clash_sets([self_clash_set(engine, selector=selector)])
 
     def _run_federated_clash(self, path_a: Path, path_b: Path) -> list[ClashResult]:
+        from aerobim.infrastructure.adapters.ifc_file_open import ifc_engine_path
+
         return self._run_clash_sets(
             [
                 federated_clash_set(
-                    path_a,
-                    path_b,
+                    ifc_engine_path(path_a),
+                    ifc_engine_path(path_b),
                     selector_a=self._selector_for(path_a),
                     selector_b=self._selector_for(path_b),
                 )
@@ -330,11 +339,13 @@ class IfcClashDetector:
         path_b: Path,
         clearance_m: float,
     ) -> list[ClashResult]:
+        from aerobim.infrastructure.adapters.ifc_file_open import ifc_engine_path
+
         return self._run_clash_sets(
             [
                 federated_clearance_clash_set(
-                    path_a,
-                    path_b,
+                    ifc_engine_path(path_a),
+                    ifc_engine_path(path_b),
                     clearance_m=clearance_m,
                     selector_a=self._selector_for(path_a),
                     selector_b=self._selector_for(path_b),
@@ -390,6 +401,9 @@ class IfcClashDetector:
         if not raw_file:
             return dict(source)
         src_path = Path(str(raw_file))
+        if src_path.is_dir():
+            # RocksDB store: do not copy or SPF-rewrite a key-value directory.
+            return dict(source)
         dest = temp_dir / f"filtered-{src_path.name}"
         shutil.copy2(src_path, dest)
         _null_skipped_representations(dest, self._min_aabb_volume_m3)
@@ -400,15 +414,19 @@ class IfcClashDetector:
 
 
 def _null_skipped_representations(ifc_path: Path, min_aabb_volume_m3: float) -> None:
-    """Clear Representation on products the probe would skip (in-place)."""
+    """Clear Representation on products the probe would skip (in-place SPF only)."""
 
+    if ifc_path.is_dir():
+        return
     probe = probe_clash_geometry(ifc_path, min_aabb_volume_m3=min_aabb_volume_m3)
     skip = set(probe.skipped_guids)
     if not skip:
         return
-    import ifcopenshell
+    from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
 
-    model = ifcopenshell.open(str(ifc_path))
+    model = open_ifc_model(ifc_path)
+    if getattr(model, "storage", None) is not None:
+        return
     for product in model.by_type("IfcProduct"):
         guid = str(getattr(product, "GlobalId", "") or "")
         if guid in skip and getattr(product, "Representation", None) is not None:

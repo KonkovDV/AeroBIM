@@ -2,6 +2,7 @@
 ---
 title: "Native RVT/NWD ingest boundary — IFC-first"
 date: "2026-08-27"
+last_updated: "2026-08-30"
 status: active
 closes_rt001: false
 closes_rt002: false
@@ -38,3 +39,5 @@ claim_boundary: >
 This is **their** exchange contour, not a concession: public Renga + Tangl cases already talk IFC/RVT on the customer side; AeroBIM's gate is IFC + IDS + sheets.
 
 **What this does not do.** It does not close RT-001/002b/003. It does not raise `AEROBIM_MAX_IFC_BYTES` (analyze stays 256 MiB on the CI pin). It does not claim native Autodesk support.
+
+**License fork (OSINT 2026-08-30).** ODA Sustaining (7 500 / 4 500 USD) is the SaaS *Drawings* floor, not Revit/Navisworks. BimRv and BimNv are listed at 6 250 USD each. LibreDWG is GPL-3+ and cannot join this MIT core. Public CADSoftTools CAD .NET starts at 765 USD (DWG/DXF, not RVT). Sources and Red Team: [`NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](../quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md).

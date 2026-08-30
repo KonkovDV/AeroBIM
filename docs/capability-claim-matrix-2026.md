@@ -27,7 +27,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Calculation match | load/qty/cross-doc/OpenRebar + xlsx/docx declared-field SHA | fixture | — | сверка only; ≠ solver; PDF fragile |
 | Cross-document consistency | Shared-gate / section-diff | fixture | NOT_MEASURED customer | Labeled separately from within-sheet OCR; open-bench L1 ≠ RT-001 |
 | Calculation correctness | NOT_IMPLEMENTED | — | — | no solver; native `.lir` closed |
-| IFC streaming / disk R-tree | DESIGNED_NOT_IMPLEMENTED | unit snapshot + JSON sidecar dump | — | sidecar ≠ R-tree; does not raise 256 MiB analyze cap |
+| IFC streaming / disk R-tree | DESIGNED_NOT_IMPLEMENTED | unit snapshot + JSON sidecar dump | — | sidecar ≠ R-tree; SPF cap stays 256 MiB; RocksDB is a separate backend |
 | BCF 2.1 / T1 | AVAILABLE | integration | — | structural ZIP |
 | BCF T2 CDE import | NOT_VERIFIED | empty proof dir | needs sandbox | no CDE_READY |
 | Offline | Docker image-track | eng smoke | — | bare-metal DEFERRED |

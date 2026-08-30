@@ -8,7 +8,7 @@
   "stage": "demo",
   "corpus_kind": "fixture",
   "request": {
-    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "ifc_path": "samples/ifc/walls-multi-entity-spatial.ifc",
     "requirement_path": "samples/requirements/techlab-demo-rules.txt",
     "ids_path": "samples/ids/walls-multi-entity.ids",
     "technical_spec_path": "samples/specifications/techlab-tz.txt",

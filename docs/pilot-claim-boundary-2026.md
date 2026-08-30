@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.13.7"
+version: "1.13.8"
 last_updated: "2026-08-30"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -114,9 +114,11 @@ This document separates **verified repository evidence** from **roadmap intent**
 | LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |
 | True computer vision for drawings | Not implemented; OCR baseline ≠ CV |
 | Native DWG as product-ready CAD | Still missing / fail-closed; DXF optional `[cad]` EntityGraph never claims `dwg_dxf=OK` |
-| Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)) |
+| Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)). ODA Sustaining ≠ BimRv ([`quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md)) |
+| Fixture AABB P/R = 1.0 at n=6 as a jury exhibit | Wilson 95% lower ≈ 0.61 (`wilson_interval(6, 6)`); stop-list KT#3 item 28 |
+| Space-efficiency numeric KPI | Coverage map: not implemented; owner scope OA-14 OPEN |
 | 5–10 packs/day | Customer-stated 25.08; not a measured SLA; `benchmark-thresholds.json` `publishable_sla=false` |
-| Analyze default 1.5 GB IFC | Ingest cap for models under stated Samolet caps ≠ analyze; `AEROBIM_MAX_IFC_BYTES` stays **256 MiB** |
+| Analyze default 1.5 GB SPF `open(.ifc)` | Ingest + RocksDB under stated Samolet caps; `AEROBIM_MAX_IFC_BYTES` stays **256 MiB**; WASM **256 MiB** |
 | IFC streaming / disk R-tree | **Designed, not implemented**; JSON sidecar of `IfcSpatialIndex` ≠ disk R-tree |
 | Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
@@ -141,10 +143,10 @@ This document separates **verified repository evidence** from **roadmap intent**
 10. AeroBIM does **not** claim Hybrid AI is in the verdict path, nor that masking guarantees anonymity — WP-02 wires `HybridRouteGate` as an **advisory pre-gate** only (verdict-neutral, OFF==ON; blocked → no advisory observation).
 11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer; Checkpoint **NO_GO** until RT-001/002/003.
 12. The SPb GAU CGE profile (`samples/profiles/spb-cge/`) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. It does **not** close RT-001 or RT-002 and is not an expertise verdict.
-13. AeroBIM does **not** treat a 1.5 GB ingest envelope as analyze/WASM capability, and does **not** treat «5–10 packs/day» as a published SLA.
+13. AeroBIM does **not** SPF-open a 1.5 GB IFC and does **not** treat 1.5 GB as WASM capability, and does **not** treat «5–10 packs/day» as a published SLA.
 14. After the 25.08 questionnaire, AeroBIM does **not** say the customer sent no data. The channel is received; a hashed pack is **not** in git; RT-001 stays OPEN. HTTPS / closed-cloud storage is a **stated** target — browser OIDC BFF remains `NOT_IMPLEMENTED`.
 15. AeroBIM does **not** treat xlsx/docx declared-field **MATCH** as `calculation_correctness` or a LIRA solver. Native `.lir` is not parsed. PDF table compare stays **fragile**.
-16. AeroBIM does **not** treat the IFC streaming / disk R-tree **design** as shipped, and does **not** raise the default analyze cap from **256 MiB** because ingest allows 1.5 GB.
+16. AeroBIM does **not** treat the IFC streaming / disk R-tree **design** as shipped, and does **not** raise the default **SPF** analyze cap from **256 MiB** because ingest allows 1.5 GB (that path is RocksDB).
 17. AeroBIM does **not** treat HTTP upload of `.lir`/`.spr` as a silent skip or a solver path. The closed reason is explicit; ZIP members are rejected the same way as native Autodesk.
 18. AeroBIM does **not** treat a JSON dump of `IfcSpatialIndex` as a disk R-tree or a streaming parser, and does **not** wire that dump into analyze.
 19. The two numeric TZ criteria (clash recall >90%, pack-check time) are **not customer-confirmed**: the 25.08 answers document never mentions 90%, SLA, or time. AeroBIM neither claims them nor accepts them as agreed until a measurement protocol (golden remark set, corpus size, time endpoints) is answered in writing.
@@ -163,8 +165,8 @@ This document separates **verified repository evidence** from **roadmap intent**
 32. The 16+36.6=52.6 band identity is **not** a predicted AeroBIM total. The public task-page sponsor quote is **not** the attested commission chair. SPbPU 25.1 bn RUB by 2030 is **not** our revenue. The i.moscow paste file is **not** a scored roster.
 33. Partner 1H2026 IFRS (revenue −31 %, loss 22.3 bn RUB) is **context**, not an AeroBIM saving. Stand-alone RAS +31 % revenue is **not** group IFRS. K4 does **not** ask CAPEX.
 34. Four catalog cards are **not** all applicants. Neighbor-task «46 teams» is a different Partner. Peer catalog claims (15 pilots, 600+ norms, live customer prototype) are **not** audited public fact.
-35. Publishable CI counts come only from `docs/evidence/runtime-baseline-latest.json`. Historical blocker-file figures (2694 / `019962`) are a prior pin.
-36. Native DWG/RVT/NWD are **not implemented**. Default IFC analyze cap stays **256 MiB**. 1.5 GB is the ingest envelope, not analyze. Experiment B KR headline is **≈16.7 %** (4/24); **≈8.3 %** is the Task-3 waypoint, not the current detected share.
+35. Publishable CI counts come only from `docs/evidence/runtime-baseline-latest.json`. Historical blocker-file figures (SHA `019962141606`) are a prior pin, not the current SSOT.
+36. Native DWG/RVT/NWD are **not implemented**. Default IFC **SPF** cap stays **256 MiB**. 1.5 GB is ingest + RocksDB analyze, not SPF RAM and not WASM. Experiment B KR headline is **≈16.7 %** (4/24); **≈8.3 %** is the Task-3 waypoint, not the current detected share.
 
 ## Reproducibility baseline
 

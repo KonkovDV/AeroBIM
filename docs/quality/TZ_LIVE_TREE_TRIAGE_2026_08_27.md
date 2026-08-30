@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-08-30"
 status: active
-version: "1.22.0"
+version: "1.25.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -32,6 +32,12 @@ PR-diff к `main` на первом проходе 27.08 был пустой. Э
 Проход 23: identity 52,6 ≠ прогноз балла; цитата спонсора ≠ председатель; 25,1 млрд к 2030 ≠ наша выручка; paste ≠ выставленный балл.
 
 Проход 24: Приложение 3 Положения не в git; финал — сумма, не среднее; К4 не CAPEX; МСФО убыток не наш эффект; РСБУ ≠ МСФО; четыре карточки ≠ все заявители; пилоты соседей не аудированы.
+
+Проход 25: окно КТ#3 — OIDC 501 единственный code-path риск к 21.09; скоуп space-efficiency OPEN; RT-002a ≠ «нет норм»; Wilson n=6 не показывать; ODA Sustaining ≠ BimRv; CADSoftTools 1660 устарело; TBD — подтвердить редакцию v2; производные пакета не в git до письменного режима.
+
+Проход 26: extra README ≠ extra CI; kitchen HMAC-тесты skip на чистом клоне; AST `test_functions` ≠ pytest `tests_collected`; ingest 1,5 ГБ ≠ analyze 256 МиБ. Кап analyze не поднимаем.
+
+Проход 27: SPF RAM ~8–10× диска (IfcOpenShell #7116); 1,5 ГБ ingest ≈ лимит toolkit экспорта Revit. RocksDB wired over SPF cap. WASM 256 МиБ.
 
 Checkpoint **`NO_GO`**. `detected_count: 0`.
 
@@ -139,6 +145,18 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-MIK-RAS-IFRS | РСБУ +31% как картина группы МСФО | `ras_ifrs_signs_are_the_same=False` |
 | RT-MIK-CATALOG-ALL | Четыре карточки = все, кто подал | `catalog_four_are_all_applicants=False` |
 | RT-MIK-PEER-PILOTS | «15 пилотов» / «600+ норм» карточки как факт | `peer_card_claims_externally_verified=False` |
+| RT-ODA-BIMRV | Sustaining 7 500 $ = native RVT/NWD | BimRv/BimNv — расширения 6 250 $; Drawings = DWG |
+| RT-CADSOFT-STALE | CADSoftTools «от 1 660 $» как пол 2026 | Публичная страница 30.08: от 765 USD; не RVT/NWD |
+| RT-WILSON-N6 | Показать fixture P/R=1,0 при n=6 жюри | `wilson_interval(6,6)` lower ≈ 0,61; стоп-лист п. 28 |
+| RT-SPACE-SCOPE | Space efficiency сдано / заказчику не нужно | Карта: не реализовано; 25.08 назвал критерий; OA-14 OPEN |
+| RT-002-NORMS | RT-002 OPEN = нет машиночитаемых норм | 002a CLOSED (MOEXP 06.03.2026); открыт только 002b |
+| RT-TBD-FILL | Просить организаторов заполнить пустые TBD с 09.07 | ТЗ v2 уже заполняет пять разделов; подтвердить редакцию |
+| RT-OIDC-FREEZE | Фриз 18.09 формальность; lab cookie = production SSO | `auth_bff=NOT_IMPLEMENTED`; default 501 |
+| RT-PACK-DERIV | Коммитить производные канала до письменного режима | OA-9; MIT необратим; инвентарь в `.local` |
+| RT-CLONE-PYTEST | 13 failed на README-extra клоне = CI pin | skip без pymupdf/секретов; пин = `attested_by=ci` |
+| RT-PIN-DRIFT | Исторические счётчики CRITICAL_BLOCKERS или HEAD pytest как живой пин | SSOT: `runtime-baseline-latest.json`; HEAD может быть впереди |
+| RT-INGEST-ANALYZE | 1,5 ГБ ingest заказчика = кап WASM / SPF RAM | SPF 256 МиБ; RocksDB до 1,5 ГБ; WASM 256 МиБ |
+| RT-SPF-10X | Поднять default SPF cap до 1,5 ГБ — это строка в settings | SPF ~8–10× диск; 1,5 ГБ путь = RocksDB, не `open(.ifc)` |
 
 ## HOLD (не чиним в этом коммите)
 

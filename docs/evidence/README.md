@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.12"
-last_updated: "2026-08-27"
+version: "2.5.13"
+last_updated: "2026-08-30"
 ---
 
 # Evidence fixtures
@@ -25,7 +25,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`owner-ai-plan-execution-2026-08.json`](owner-ai-plan-execution-2026-08.json) · [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md) | Owner-AI plan scaffolds (unsigned OOS, local inventory). Not RT CLOSED. NO_GO |
 | [`kt3-jury-2026-08.json`](kt3-jury-2026-08.json) · [`../demo/KT3_TRACKER_DMITRY_2026_08.md`](../demo/KT3_TRACKER_DMITRY_2026_08.md) | KT#3 one-command pin + tracker six tasks. Fixture `passed=false`. Not RT CLOSED |
 | [`../quality/ENV_VAR_BIDIRECTIONAL_INVENTORY_2026_08.md`](../quality/ENV_VAR_BIDIRECTIONAL_INVENTORY_2026_08.md) | P0: documented vs code env scan. Scanner defect, not no-op. Not a new CI pin |
-| [`ifc-cache-ram-ceiling-latest.json`](ifc-cache-ram-ceiling-latest.json) | Process-local IFC LRU ceiling 8×256 MiB = 2 GiB. Not federated RSS, not VM profile, not RT-003 |
+| [`ifc-open-rss-probe-latest.json`](ifc-open-rss-probe-latest.json) | Fixture-only IFC-open RSS delta. `representative_scale=false`. Not Samolet RSS. Not a reason to raise the 256 MiB SPF default |
 | [`ifc-release-matrix-2026-08.md`](ifc-release-matrix-2026-08.md) · [`.json`](ifc-release-matrix-2026-08.json) | Fixture IFC2X3/IFC4/IFC4X3 kernel: findings 5/4/6, `passed=false`, `clash=skipped`. sha `559dcd91…46391`. Not customer accuracy |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `6133a564…57aa4e` |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |

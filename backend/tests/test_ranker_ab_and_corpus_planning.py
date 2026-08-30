@@ -182,6 +182,13 @@ class WilsonIntervalTests(unittest.TestCase):
         self.assertLessEqual(half_width, 0.09)
         self.assertAlmostEqual(half_width, 0.0895, places=4)
 
+    def test_six_of_six_wilson_lower_bound_is_not_unity(self) -> None:
+        """Fixture AABB n=6 all-success is unshowable as 1.0 (IUA IND-28)."""
+        interval = wilson_interval(6, 6)
+        self.assertAlmostEqual(interval.lower, 0.6094, places=3)
+        self.assertLess(interval.lower, 0.90)
+        self.assertEqual(interval.upper, 1.0)
+
 
 class ExactBinomialPowerTests(unittest.TestCase):
     def test_hand_computed_critical_value_n20(self) -> None:

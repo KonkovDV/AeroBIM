@@ -3,7 +3,7 @@
 title: "ADR-003 — Native DWG stays FAILED; ODA 60-day trial is KT#3 fact-finding"
 status: accepted
 date: 2026-08-13
-last_updated: "2026-08-13"
+last_updated: "2026-08-30"
 claim_boundary: "Native DWG remains FAILED. This ADR does not authorize a DWG-ready claim. ODA trial ≠ commercial license ≠ SaaS."
 ---
 
@@ -28,7 +28,8 @@ ODA [pricing](https://www.opendesign.com/pricing): Commercial membership is **no
    - ≥30% of customer packages in the pilot corpus are DWG-only (no IFC/PDF equivalent for the same sheet/model);
    - DWG is written into the **signed Samolet acceptance profile**.
 4. Commercial license ≠ SaaS. Hosted Shared-gate cannot use ODA Commercial (≤100 copies, no web). If we ever host, Sustaining (or equivalent server license) is the floor — still a later owner decision.
-5. DXF via optional `ezdxf` remains **not** native DWG.
+5. Native **RVT/NWD** is a *different* SKU: ODA BimRv / BimNv extensions (public 2026 list 6 250 USD each on top of Sustaining). Do not quote Sustaining 7 500 USD as the RVT price. OSINT: [`../quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](../quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md).
+6. DXF via optional `ezdxf` remains **not** native DWG.
 
 ## Consequences
 

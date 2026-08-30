@@ -4,14 +4,15 @@ title: "Customer thresholds vs actual — honesty table, not a fail sheet"
 date: "2026-08-30"
 last_updated: "2026-08-30"
 status: active
-version: "1.0.1"
+version: "1.0.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Target vs actual on the Partner TZ numeric and format bars. Right column is
   honesty for defense, not a product fail. Not >90%. Not customer SLA.
-  Checkpoint NO_GO.
+  Default SPF IFC cap stays 256 MiB. RocksDB covers up to 1.5 GB under
+  Samolet ingest. Checkpoint NO_GO.
 ---
 
 # Целевое против фактического (вторая система)
@@ -21,7 +22,7 @@ claim_boundary: >
 Правая колонка на защите — честность, не провал.
 
 `customer_confirmed_patterns` остаётся **0**. На корпусе партнёра точность
-**не измерена**. Default analyze IFC **не поднимаем** с 256 МиБ.
+**не измерена**. Default SPF analyze IFC **не поднимаем** с 256 МиБ.
 
 | Требование | Целевое | Фактическое в git |
 |---|---|---|
@@ -30,10 +31,12 @@ claim_boundary: >
 | Качество извлечения | не задано явно | **0,86** macro-F1 на **фикстурах** — единственное число, которое мы вправе назвать вслух |
 | Время на комплект | до 30 минут | На полном комплекте партнёра не измерено. «1,5 ГБ за 30 мин → 0,85 МБ/с» — арифметика, не замер SLA. `publishable_sla=false` |
 | Форматы | RVT, NWD, IFC 2x3 и новее | IFC закрыт. Нативное чтение DWG/RVT/NWD **не реализовано** (fail-closed). Optional DXF extra **не** ставит `dwg_dxf=OK` и не закрывает чертёжный движок |
-| Предельные размеры | 500 МБ документы, 1,5 ГБ модели | Потолок analyze IFC — **256 МиБ**. Пропасть к 1,5 ГБ — ingest vs analyze. **Не поднимаем** cap |
+| Предельные размеры | 500 МБ документы, 1,5 ГБ модели | SPF / WASM — **256 МиБ**. До 1,5 ГБ — RocksDB под `samolet_pilot`. RSS на 1,5 ГБ не замерен. **Не поднимаем** SPF default |
 | Нагрузка | 5–10 комплектов в день | Нагрузочно не проверялось |
 | Структура замечания | суть + пункт нормы + привязка к оси/этажу | Реализовано: индекс + шаблон; ось/этаж только из `IfcSpatialIndex`, иначе «нет в индексе» |
 | Достоверность оценки | не задано | Протокол: два оценщика и пороги согласия. На пакете партнёра **не прогонён**. Этого нет в публичном следе соседей по каталогу |
+| Неэффективное использование пространства | названо 25.08 (продаваемая площадь, МОП, коридоры) | В карте покрытия **не реализовано**. Скоуп окна — OA-14 (advisory vs вне MVP). Ни «сдано», ни «не нужно» |
+| Native RVT/NWD | п. 1.1.5 ТЗ | Fail-closed. ODA Sustaining 7 500 $ — DWG/SaaS пол, не Revit. BimRv/BimNv — 6 250 $ каждое (OSINT 30.08) |
 
 ## Что просить (два пункта, не восемь)
 

@@ -141,7 +141,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Package ≤30 min | `measure_package_sla` on **agreed** pack | fixture only; 25.08 answers do not confirm the TZ time criterion | MVP |
 | Cognitive load reduction | Priority profile + HITL KPI | partial | P0 |
 
-**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), Claims Lock, and the Kane IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) (SAM-05 / SAM-06). Fixture AABB precision on n=6 is **not** this row.
+**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), Claims Lock, and the Kane IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) (SAM-05 / SAM-06 / IND-28). Fixture AABB precision on n=6 is **not** this row and is **not** a jury exhibit (`wilson_interval(6, 6)` 95% lower ≈ 0.61).
 
 ## 7. Appendices (data)
 

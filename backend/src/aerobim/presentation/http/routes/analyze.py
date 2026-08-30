@@ -6,6 +6,7 @@ from uuid import uuid4
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, Header, HTTPException
 
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.ifc_size_policy import IfcAnalyzeCapError, IfcDiskBackendError
 from aerobim.domain.models import SourceKind, ValidationRequest
 from aerobim.domain.object_acl import AuthPrincipal
 from aerobim.domain.stage_timeout import StageTimeoutExceeded
@@ -16,6 +17,8 @@ from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.errors import (
     public_analyze_concurrency_limit_detail,
     public_bad_request_detail,
+    public_ifc_analyze_cap_body,
+    public_ifc_disk_backend_detail,
     public_not_found_detail,
     public_service_unavailable_detail,
     public_sync_analyze_disabled_detail,
@@ -76,6 +79,12 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except FileNotFoundError as exc:
             logger.warning("validate_ifc file not found", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=404, detail="file not found") from exc
+        except IfcAnalyzeCapError as exc:
+            logger.warning("validate_ifc analyze cap", request_id=request_id)
+            raise HTTPException(status_code=413, detail=public_ifc_analyze_cap_body()) from exc
+        except IfcDiskBackendError as exc:
+            logger.error("validate_ifc disk backend", request_id=request_id)
+            raise HTTPException(status_code=503, detail=public_ifc_disk_backend_detail()) from exc
         except ValueError as exc:
             logger.warning("validate_ifc bad request", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
@@ -116,6 +125,10 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             report = ctx.analyze_use_case.execute(request)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail="file not found") from exc
+        except IfcAnalyzeCapError as exc:
+            raise HTTPException(status_code=413, detail=public_ifc_analyze_cap_body()) from exc
+        except IfcDiskBackendError as exc:
+            raise HTTPException(status_code=503, detail=public_ifc_disk_backend_detail()) from exc
         except ValueError as exc:
             logger.warning("analyze_project_package bad request", detail=str(exc))
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc

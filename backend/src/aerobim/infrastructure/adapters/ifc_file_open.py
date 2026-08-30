@@ -8,6 +8,7 @@ customer ≤30 min.
 
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
 import threading
@@ -17,6 +18,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.ifc_size_policy import (
+    BAND_ANALYZE_DISK,
+    SPF_RAM_MULTIPLIER_LITERATURE,
+    SPF_RAM_MULTIPLIER_SOURCE,
+    IfcDiskBackendError,
+    analyze_cap_from_env,
+    ingest_cap_from_env,
+    literature_spf_rss_bytes,
+    raise_if_over_analyze_cap,
+)
 from aerobim.domain.ifc_spatial_index import IfcSpatialIndex
 
 _DEFAULT_MAX_CACHED_MODELS = 8
@@ -28,7 +39,14 @@ _memory: OrderedDict[tuple[str, int, int], Any] = OrderedDict()
 _index_memory: dict[tuple[str, int, int], IfcSpatialIndex] = {}
 _cache_dir: Path | None = None
 _max_cached_models = _DEFAULT_MAX_CACHED_MODELS
-_stats: dict[str, int] = {"opens": 0, "hits": 0, "misses": 0, "indexes_built": 0, "evictions": 0}
+_stats: dict[str, int] = {
+    "opens": 0,
+    "hits": 0,
+    "misses": 0,
+    "indexes_built": 0,
+    "evictions": 0,
+    "rocksdb_converts": 0,
+}
 
 
 @dataclass(frozen=True)
@@ -65,12 +83,15 @@ def reset_ifc_parse_cache_for_tests() -> None:
 
     global _cache_dir, _max_cached_models
     with _lock:
+        for cached in list(_memory.values()):
+            close_ifc_model(cached)
         _memory.clear()
         _index_memory.clear()
         _cache_dir = None
         _max_cached_models = _DEFAULT_MAX_CACHED_MODELS
         for key in _stats:
             _stats[key] = 0
+    gc.collect()
 
 
 def ifc_parse_cache_stats() -> dict[str, int]:
@@ -129,15 +150,35 @@ def ifc_cache_ram_ceiling_payload(
         "ceiling_gib": ceiling / (1024**3),
         "measured_rss_delta_bytes": None,
         "representative_scale": False,
+        "spf_ram_multiplier_literature": SPF_RAM_MULTIPLIER_LITERATURE,
+        "spf_ram_multiplier_source": SPF_RAM_MULTIPLIER_SOURCE,
+        "literature_rss_ceiling_bytes": literature_spf_rss_bytes(ceiling),
+        "literature_rss_not_measured": True,
         "closes_rt003": False,
         "checkpoint": "NO_GO",
     }
 
 
+def close_ifc_model(model: Any) -> None:
+    """Release RocksDB/SPF handles so Windows can delete the store directory."""
+
+    storage = getattr(model, "storage", None)
+    for obj in (storage, model):
+        if obj is None:
+            continue
+        closer = getattr(obj, "close", None)
+        if callable(closer):
+            try:
+                closer()
+            except Exception:  # noqa: S110 — best-effort handle release
+                pass
+
+
 def _evict_overflow_locked() -> None:
     while len(_memory) > _max_cached_models:
-        old_key, _ = _memory.popitem(last=False)
+        old_key, old_model = _memory.popitem(last=False)
         _index_memory.pop(old_key, None)
+        close_ifc_model(old_model)
         _stats["evictions"] += 1
 
 
@@ -152,7 +193,8 @@ def open_ifc_session(ifc_path: Path) -> IfcParseSession:
         cached_index = _index_memory.get(key)
     model = open_ifc_model(ifc_path)
     if cached_index is None:
-        cached_index = IfcSpatialIndex.from_model(model)
+        dense = getattr(model, "storage", None) is None
+        cached_index = IfcSpatialIndex.from_model(model, dense=dense)
         with _lock:
             _index_memory[key] = cached_index
             _stats["indexes_built"] += 1
@@ -164,8 +206,75 @@ def open_ifc_session(ifc_path: Path) -> IfcParseSession:
     )
 
 
+def ifc_engine_path(ifc_path: Path) -> Path:
+    """Path IfcOpenShell/IfcClash should open: SPF file or RocksDB directory.
+
+    Opens (and caches) the model first so convert has already run.
+    """
+
+    resolved = ifc_path.resolve()
+    model = open_ifc_model(resolved)
+    if getattr(model, "storage", None) is None:
+        return resolved
+    stat = resolved.stat()
+    return _rdb_cache_dir(resolved, int(stat.st_mtime_ns), int(stat.st_size))
+
+
+def rocksdb_backend_available() -> bool:
+    """True when this IfcOpenShell build can convert SPF to RocksDB."""
+
+    try:
+        import ifcopenshell
+    except ModuleNotFoundError:
+        return False
+    convert = getattr(ifcopenshell, "convert_path_to_rocksdb", None)
+    return callable(convert)
+
+
+def _rdb_cache_dir(ifc_path: Path, mtime_ns: int, size: int) -> Path:
+    digest = hashlib.sha256(f"{ifc_path.resolve()}|{mtime_ns}|{size}".encode()).hexdigest()[:16]
+    root = _cache_dir if _cache_dir is not None else (ifc_path.parent / ".aerobim-ifc-rdb")
+    return Path(root) / digest
+
+
+def _rdb_ready(path: Path) -> bool:
+    return path.is_dir() and (path / "CURRENT").is_file()
+
+
+def _open_rocksdb(ifc_path: Path, ifcopenshell: Any, mtime_ns: int, size: int) -> Any:
+    if not rocksdb_backend_available():
+        raise IfcDiskBackendError()
+    rdb = _rdb_cache_dir(ifc_path, mtime_ns, size)
+    if not _rdb_ready(rdb):
+        if rdb.exists():
+            import shutil
+
+            shutil.rmtree(rdb, ignore_errors=True)
+        rdb.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            ifcopenshell.convert_path_to_rocksdb(str(ifc_path), str(rdb))
+        except Exception as exc:
+            import shutil
+
+            shutil.rmtree(rdb, ignore_errors=True)
+            raise IfcDiskBackendError() from exc
+        with _lock:
+            _stats["rocksdb_converts"] += 1
+        if not _rdb_ready(rdb):
+            raise IfcDiskBackendError()
+    try:
+        return ifcopenshell.open(str(rdb))
+    except Exception as exc:
+        raise IfcDiskBackendError() from exc
+
+
 def open_ifc_model(ifc_path: Path) -> Any:
-    """Open IFC via ifcopenshell with process-local memoization."""
+    """Open IFC via ifcopenshell with process-local memoization.
+
+    SPF in-memory open stays at ``AEROBIM_MAX_IFC_BYTES`` (default 256 MiB).
+    Larger files up to the model ingest envelope use RocksDB. Never SPF-opens
+    a file over the in-memory cap.
+    """
 
     try:
         import ifcopenshell
@@ -176,6 +285,11 @@ def open_ifc_model(ifc_path: Path) -> Any:
     if not resolved.exists():
         raise FileNotFoundError(resolved)
     stat = resolved.stat()
+    decision = raise_if_over_analyze_cap(
+        int(stat.st_size),
+        analyze_cap_bytes=analyze_cap_from_env(),
+        ingest_cap_bytes=ingest_cap_from_env(),
+    )
     key = (str(resolved), int(stat.st_mtime_ns), int(stat.st_size))
     with _lock:
         cached = _memory.get(key)
@@ -187,7 +301,10 @@ def open_ifc_model(ifc_path: Path) -> Any:
             return cached
         _stats["opens"] += 1
         _stats["misses"] += 1
-    model = ifcopenshell.open(str(resolved))
+    if decision.band == BAND_ANALYZE_DISK:
+        model = _open_rocksdb(resolved, ifcopenshell, int(stat.st_mtime_ns), int(stat.st_size))
+    else:
+        model = ifcopenshell.open(str(resolved))
     with _lock:
         _memory[key] = model
         _memory.move_to_end(key)

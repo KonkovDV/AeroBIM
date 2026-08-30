@@ -27,6 +27,7 @@ from aerobim.domain.drawing_region_hitl import (
     review_events_for_hitl_regions,
 )
 from aerobim.domain.finding_provenance import ensure_finding_provenance
+from aerobim.domain.fixture_norm_bind import stamp_issues_with_fixture_norm
 from aerobim.domain.hybrid.trust_policy import RouteTarget
 from aerobim.domain.ifc_spatial_index import stamp_issues_with_spatial_location
 from aerobim.domain.ingestion import (
@@ -765,6 +766,7 @@ class EvidenceAssembler:
             prioritized_issues,
             spatial_index,
         )
+        prioritized_issues = stamp_issues_with_fixture_norm(prioritized_issues)
         issues_with_remarks = tuple(
             self._host._remark_enricher().attach_remarks(prioritized_issues)
         )

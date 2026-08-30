@@ -1,8 +1,9 @@
 """IFC streaming / disk R-tree — designed, not implemented.
 
-Full-file ``ifcopenshell.open`` + in-memory ``IfcSpatialIndex`` remain the
-analyze path. This module is the honesty brake against treating a design
-note as a raised ``AEROBIM_MAX_IFC_BYTES`` default or a live on-disk R-tree.
+SPF ``ifcopenshell.open`` stays 256 MiB. Files up to 1.5 GB convert to
+IfcOpenShell RocksDB. In-memory ``IfcSpatialIndex`` is not a disk R-tree.
+This module is the honesty brake against treating a design note as a
+raised ``AEROBIM_MAX_IFC_BYTES`` default.
 """
 
 from __future__ import annotations
@@ -13,12 +14,18 @@ from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
     SAMOLET_STATED_MODEL_BYTES,
 )
+from aerobim.domain.ifc_size_policy import (
+    ROCKSDB_BACKEND_STATUS,
+    SPF_RAM_MULTIPLIER_LITERATURE,
+    SPF_RAM_MULTIPLIER_SOURCE,
+    size_policy_snapshot,
+)
 
 CLAIM_BOUNDARY: Final = (
     "Streaming IFC parser and disk R-tree are designed, not implemented. "
-    "Default analyze cap stays 256 MiB. Stated 1.5 GB is ingest only. "
+    "SPF in-memory open stays 256 MiB. Files up to 1.5 GB use RocksDB. "
     "In-memory IfcSpatialIndex is not a disk R-tree. JSON sidecar is dump_only. "
-    "Checkpoint NO_GO."
+    "WASM stays 256 MiB. Checkpoint NO_GO."
 )
 
 DEFAULT_ANALYZE_IFC_BYTES: Final = DEV_DEFAULT_UPLOAD_BYTES
@@ -40,13 +47,17 @@ def streaming_design_snapshot() -> dict[str, object]:
         "default_analyze_bytes": DEFAULT_ANALYZE_IFC_BYTES,
         "stated_model_ingest_bytes": SAMOLET_STATED_MODEL_BYTES,
         "raises_default_cap": False,
+        "spf_ram_multiplier_literature": SPF_RAM_MULTIPLIER_LITERATURE,
+        "spf_ram_multiplier_source": SPF_RAM_MULTIPLIER_SOURCE,
+        "rocksdb_backend": ROCKSDB_BACKEND_STATUS,
+        "size_policy": size_policy_snapshot(),
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
         "claim_boundary": CLAIM_BOUNDARY,
         "next_slice": (
-            "Stream STEP entities; persist AABB R-tree keyed by GUID on disk; "
-            "measure RSS before any default-cap change"
+            "Persist AABB R-tree on disk; keep WASM at 256 MiB; "
+            "OA-16 RSS on a local over-SPF file is still owner-local"
         ),
     }
 

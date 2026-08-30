@@ -27,7 +27,10 @@
     "docs/quality/PNST_841_AI_QUALITY_EVAL_2026.md",
     "docs/quality/PUBLIC_SURFACES_PROTOCOL_2026.md",
     "docs/quality/VALIDATION_LAYERS_BSI_IDS_ENGINE_2026.md",
-    "docs/quality/RASE_SP63_COVER_DEMO_2026.md"
+    "docs/quality/RASE_SP63_COVER_DEMO_2026.md",
+    "docs/quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md",
+    "docs/quality/CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md",
+    "docs/quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md"
   ],
   "forbidden_affirmative_phrases": [
     "accuracy >90%",

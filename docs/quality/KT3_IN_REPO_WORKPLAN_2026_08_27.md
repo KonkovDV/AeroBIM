@@ -2,9 +2,9 @@
 ---
 title: "In-repo workplan after 25.08 customer answers"
 date: "2026-08-27"
-last_updated: "2026-08-28"
+last_updated: "2026-08-30"
 status: active
-version: "1.7.0"
+version: "1.8.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -28,7 +28,7 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 | Item | Where |
 |---|---|
 | Native RVT/NWD/DWG fail-closed | `validate_native_autodesk_toolchain`; upload/analyze/ZIP members |
-| Ingest caps 500 MB office / 1.5 GB model | `SAMOLET_STATED_*`; analyze/WASM stay **256 MiB** |
+| Ingest caps 500 MB office / 1.5 GB model | `SAMOLET_STATED_*`; SPF/WASM **256 MiB**; RocksDB to 1.5 GB under `samolet_pilot` |
 | LIRA = compare, not solver | `calculation_compare`; `native_lir=not_implemented` |
 | xlsx/docx declared-field compare | `compare_declared_tables` + office adapter; PDF fragile; `.lir` closed |
 | HTTP `.lir`/`.spr` honesty 415 | `NATIVE_LIRA_CLOSED_REASON`; ZIP members after zip-bomb inspect |
@@ -46,7 +46,7 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 |---|---|---|---|
 | 0 | Keep CI green; commit **CI-attested** runtime pin only | typecheck + pytest + frontend vitest + `attested_by=ci` artifact | Minting a runtime pin from local pytest |
 | 2 | Unsigned SP 63/20 **template** only if needed | `closes_rt002: false`; not `customer_approved` | Relabel as RT-002b CLOSED |
-| 4 | Implement streaming IFC / disk R-tree | Parser + RSS measurement; default cap still 256 MiB until measured | Silent raise of `AEROBIM_MAX_IFC_BYTES` |
+| 4 | Persist disk AABB R-tree / stream2 (not SPF raise) | Parser + RSS measurement; SPF default still 256 MiB | Silent raise of `AEROBIM_MAX_IFC_BYTES` |
 | 5 | Browser OIDC BFF | Explicit 501 until implemented | Demo login as production SSO |
 
 ### Добавлено 28.08 (построчный разбор ТЗ + снимок пакета)
@@ -74,6 +74,16 @@ Owner-запросы (не код), редакция 28.08 после крити
 Публичные поверхности: анкета каталога и кадры съёмки — та же публикация, что git ([`PUBLIC_SURFACES_PROTOCOL_2026.md`](PUBLIC_SURFACES_PROTOCOL_2026.md)). Оценка воздействия ИИ: [`AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md`](AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md) — совместимость не сертификация.
 
 Снято с плана по воле заказчика: разбор бинарных файлов расчётного комплекса (п. 2.1.1 — сверка с читаемыми записками) и прямая интеграция с СОД как требование (п. 2.2.2 — достаточно файлового обмена; API-демо остаётся опциональным дифференциатором).
+
+### Добавлено 30.08 (план окна КТ#3 03–21.09, три правки владельца)
+
+| Pri | Task | Done when | Forbidden |
+|---|---|---|---|
+| 1 | Внешний контур: production OIDC BFF вместо 501 | Две роли (Эксперт/Пользователь) работают через аутентификацию, негативные RBAC-тесты зелёные; фича-фриз **18.09** обязательный | Выдавать lab cookie-путь за production SSO; фриз как формальность. Единственная из 8 задач трекера с реальным риском не успеть к 21.09 — блокер в auth, не в UI |
+| 3 | «Неэффективное использование пространства»: решение владельца | Позиция «в скоупе КТ#3» (advisory по внутреннему нормативу продаваемой площади/МОП/коридоров) или явное «вне MVP» зафиксирована до репетиции защиты (OA-14) | Оставить единственное «не реализовано» в карте покрытия без позиции — жюри поднимет само |
+| — | Речь про RT-002 | Всегда split: 002a CLOSED (публичные IDS Мособлгосэкспертизы/АГР/СПб ЦГЭ + `pack_hash`), 002b OPEN (нет подписи Самолёта) | «RT-002 открыт целиком» = «нет норм»; «RT-002 CLOSED» без split |
+
+Уточнения 30.08 (факты, не план): подъём `AEROBIM_MAX_IFC_BYTES` 256 МиБ → заявленные 1,5 ГБ ingest — нагрузочные тесты и RSS-замер, не переписывание (конфиг analyze; публичный кап bSI Validation Service — 256 MB несжатого `.ifc`, не та же единица). Имена, хеши и размеры файлов канала в git **не** пишем. Fixture P/R=1,0 при n=6 жюри не показывается (Wilson 6/6 lower ≈ 0,61; стоп-лист КТ#3, п. 28). Пять TBD-разделов ТЗ заполнены в `docs/tz/` (v2) — организаторам подаётся наша редакция на подтверждение, не просьба «заполнить». OSINT 30.08: Sustaining ODA 7 500 $ **не** включает BimRv/BimNv (по 6 250 $); см. [`NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md). Критический путь окна: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md).
 
 ## Owner-only (not git)
 

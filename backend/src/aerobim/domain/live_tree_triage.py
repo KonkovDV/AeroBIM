@@ -54,7 +54,16 @@ Pass 23: 52.6 identity is not a score; sponsor quote is not the chair;
 Pass 24: Regulation Appendix 3 unseen; final is a sum not a mean; K4 is
 zero-entry not CAPEX; IFRS loss is not our saving; RAS is not IFRS;
 four catalog cards are not all applicants; peer pilots unverified.
-Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
+Pass 25: KT#3 window — OIDC 501 is the only code-path miss risk by 21.09;
+space-efficiency scope OPEN; RT-002a≠002b (city IDS ≠ no norms);
+Wilson n=6 unshowable; ODA Sustaining ≠ BimRv; CADSoftTools 1660 stale;
+TBD confirm not fill; no pack derivatives in git before written regime.
+Pass 26: README extra is not CI extra; kitchen HMAC tests skip on a
+clean clone; AST test_functions ≠ pytest tests_collected; ingest 1.5 GB
+is RocksDB analyze, not SPF RAM and not WASM.
+Pass 27: SPF RAM ~8–10× disk (IfcOpenShell #7116); 1.5 GB ingest matches
+the Revit exporter toolkit order. RocksDB is wired over the SPF cap.
+Does not raise SPF default. Does not parse RVT/NWD/LIRA.
 """
 
 from __future__ import annotations
@@ -706,6 +715,78 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "ACCEPT",
         "attack": "Raise AEROBIM_MAX_IFC_BYTES because one AR file is over cap",
         "brake": "default stays 256 MiB; owner flag only",
+    },
+    {
+        "id": "RT-ODA-BIMRV",
+        "verdict": "KILL",
+        "attack": "ODA Sustaining 7500 USD buys native RVT/NWD in MVP",
+        "brake": "BimRv/BimNv are 6250 USD extensions; Drawings SDK is DWG; OSINT 2026-08-30",
+    },
+    {
+        "id": "RT-CADSOFT-STALE",
+        "verdict": "KILL",
+        "attack": "Cite CADSoftTools from 1660 USD as the 2026 public floor",
+        "brake": "Buy page retrieved 2026-08-30 starts at 765 USD; DWG/DXF not RVT/NWD",
+    },
+    {
+        "id": "RT-WILSON-N6",
+        "verdict": "KILL",
+        "attack": "Show fixture AABB P/R=1.0 at n=6 to the jury, even with a caveat",
+        "brake": "wilson_interval(6,6) 95% lower ~0.61; FAQ stop-list 28; not TZ >90%",
+    },
+    {
+        "id": "RT-SPACE-SCOPE",
+        "verdict": "KILL",
+        "attack": "Space efficiency is implemented, or the customer does not need it",
+        "brake": "coverage map not implemented; 25.08 named sellable/MOP/corridor; OA-14 OPEN",
+    },
+    {
+        "id": "RT-002-NORMS",
+        "verdict": "KILL",
+        "attack": "RT-002 OPEN means there are no machine-readable norms",
+        "brake": "RT-002a city IDS (MOEXP 06.03.2026) CLOSED; only 002b (Samolet signature) OPEN",
+    },
+    {
+        "id": "RT-TBD-FILL",
+        "verdict": "KILL",
+        "attack": "Ask organizers to fill five empty TBD TZ sections from 09.07",
+        "brake": "TZ v2 already fills architecture/code/image/presentation/docs; confirm edition",
+    },
+    {
+        "id": "RT-OIDC-FREEZE",
+        "verdict": "KILL",
+        "attack": "Treat 18.09 feature freeze as ceremony; lab cookie as production SSO",
+        "brake": "auth_bff NOT_IMPLEMENTED; default 501; freeze is the code-path miss risk",
+    },
+    {
+        "id": "RT-PACK-DERIV",
+        "verdict": "KILL",
+        "attack": "Commit customer-pack derivatives (names, hashes, sizes) before written regime",
+        "brake": "OA-9; MIT publication is irreversible; inventory stays .local until counsel",
+    },
+    {
+        "id": "RT-CLONE-PYTEST",
+        "verdict": "KILL",
+        "attack": "README-extra clone pytest with 13 failed equals the CI pin",
+        "brake": "pdf-agpl and kitchen HMAC tests skip without extras/secrets; pin is CI",
+    },
+    {
+        "id": "RT-PIN-DRIFT",
+        "verdict": "KILL",
+        "attack": "Quote CRITICAL_BLOCKERS history or HEAD pytest as the live pin",
+        "brake": "SSOT is runtime-baseline-latest.json attested_by=ci; HEAD may lag",
+    },
+    {
+        "id": "RT-INGEST-ANALYZE",
+        "verdict": "KILL",
+        "attack": "Samolet 1.5 GB model ingest is already the analyze/WASM cap",
+        "brake": "SPF 256 MiB; RocksDB up to 1.5 GB; WASM 256 MiB",
+    },
+    {
+        "id": "RT-SPF-10X",
+        "verdict": "KILL",
+        "attack": "Raise default analyze cap to 1.5 GB; it is only a settings line",
+        "brake": "SPF RAM ~8–10x disk (#7116); RocksDB is the 1.5 GB path, not SPF open",
     },
 )
 

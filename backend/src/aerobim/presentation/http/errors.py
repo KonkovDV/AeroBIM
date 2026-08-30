@@ -2,9 +2,17 @@
 
 from __future__ import annotations
 
+from aerobim.domain.ifc_size_policy import (
+    PUBLIC_ANALYZE_CAP_DETAIL,
+    PUBLIC_IFC_DISK_BACKEND_DETAIL,
+    public_analyze_cap_body,
+)
+
 _PUBLIC_BAD_REQUEST = "Invalid request"
 _PUBLIC_SERVICE_UNAVAILABLE = "Service unavailable"
 _PUBLIC_UPLOAD_TOO_LARGE = "Upload exceeds size limit"
+_PUBLIC_IFC_ANALYZE_CAP = PUBLIC_ANALYZE_CAP_DETAIL
+_PUBLIC_IFC_DISK_BACKEND = PUBLIC_IFC_DISK_BACKEND_DETAIL
 _PUBLIC_UPLOAD_WRITE_FAILED = "Upload write failed"
 _PUBLIC_UPLOAD_CONTENT_REJECTED = "Upload content rejected"
 _PUBLIC_UPLOAD_ZIP_REJECTED = "Upload archive rejected"
@@ -34,6 +42,24 @@ def public_service_unavailable_detail() -> str:
 
 def public_upload_too_large_detail() -> str:
     return _PUBLIC_UPLOAD_TOO_LARGE
+
+
+def public_ifc_analyze_cap_detail() -> str:
+    """Stable 413 message. Does not echo byte counts (RT-ERR-001)."""
+
+    return _PUBLIC_IFC_ANALYZE_CAP
+
+
+def public_ifc_analyze_cap_body() -> dict[str, object]:
+    """Machine-readable 413: reason + required profile. No byte oracle."""
+
+    return public_analyze_cap_body()
+
+
+def public_ifc_disk_backend_detail() -> str:
+    """Stable 503 when RocksDB convert/open cannot run. No path oracle."""
+
+    return _PUBLIC_IFC_DISK_BACKEND
 
 
 def public_upload_write_failed_detail() -> str:
@@ -94,6 +120,9 @@ __all__ = [
     "public_analyze_concurrency_limit_detail",
     "public_bad_request_detail",
     "public_export_unavailable_detail",
+    "public_ifc_analyze_cap_body",
+    "public_ifc_analyze_cap_detail",
+    "public_ifc_disk_backend_detail",
     "public_hitl_forbidden_detail",
     "public_hitl_state_conflict_detail",
     "public_not_found_detail",

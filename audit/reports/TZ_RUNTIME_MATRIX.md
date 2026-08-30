@@ -2,7 +2,7 @@
 
 Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` | `ADVISORY_ONLY` | `NOT_RUNTIME_CONNECTED` | `MISSING` | `BLOCKED_BY_CUSTOMER_DATA` | `FIXTURE_ONLY`
 
-**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. 2026-08-28: row 25 footnote — customer CDE identified at address level (10D contour via share-link origin); T2 closure path via public API + demo license; status unchanged. 2026-08-28 (вечер): критическое издание ответов 25.08 — fn11 (записки PDF/Excel, не бинари; +нагрузки/площади), fn13 (перечень стандартов выдан; блокер = доступ), fn15 (сводная модель в NWD), fn19 (норматив продаваемой площади), fn25 (п. 2.2.2: интеграция не требуется); строка 31 (ТР-67 сверка объёмов) — **PARTIAL** на объявленных тройках, не ingest. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
+**Refresh:** 2026-08-14 evening — survey XSD intake, IfcClash clearance gap pair, clash→BCF file ingest, SP 63 cover *template*, jurisdiction IDS document audit. 2026-08-28: row 25 footnote — customer CDE identified at address level (10D contour via share-link origin); T2 closure path via public API + demo license; status unchanged. 2026-08-28 (вечер): критическое издание ответов 25.08 — fn11 (записки PDF/Excel, не бинари; +нагрузки/площади), fn13 (перечень стандартов выдан; блокер = доступ), fn15 (сводная модель в NWD), fn19 (норматив продаваемой площади), fn25 (п. 2.2.2: интеграция не требуется); строка 31 (ТР-67 сверка объёмов) — **PARTIAL** на объявленных тройках, не ingest. 2026-08-30: строка 32 — ingest 500 МБ / 1,5 ГБ; SPF 256 МиБ; RocksDB до 1,5 ГБ под `samolet_pilot`; WASM 256 МиБ. Checkpoint **NO_GO** (RT-001/002/003 unchanged). Native DWG still **MISSING**.
 
 | # | Требование ТЗ | Код | Runtime path | Тест / команда | Реальные данные | Статус | Риск |
 |---|---|---|---|---|---|---|---|
@@ -37,15 +37,16 @@ Statuses allowed: `VERIFIED` | `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `SCAFFOLD` 
 | 29 | Извлечение инженерных сетей из 2D | — | — | — | none | MISSING^[fn29] | HIGH |
 | 30 | Снижение когнитивной нагрузки | review-events journal (метрики ТР-65) | — | — | none | MISSING^[fn30] | MED |
 | 31 | Сверка объёмов спецификации ↔ графика/BIM («логические коллизии») | `compare_spec_volumes` | domain declared triples | `test_spec_volume_compare.py` | none | PARTIAL^[fn31] | HIGH |
+| 32 | Приём файлов: офис ≤500 МБ, модели ≤1,5 ГБ (п. 1.1.4) | `upload_limits` + RocksDB over SPF | ingest + disk analyze | `test_samolet_answers_2026_08_25.py` `test_ifc_size_policy.py` | none | PARTIAL^[fn32] | CRITICAL |
 
-## Status summary (31 rows)
+## Status summary (32 rows)
 
 | Status | Count |
 |---|---:|
 | VERIFIED_FIXTURE_ONLY | 24 |
 | ADVISORY_ONLY | 1 |
 | FIXTURE_ONLY | 1 |
-| PARTIAL | 1 |
+| PARTIAL | 2 |
 | MISSING (never OK) | 1 |
 | MISSING | 2 |
 | BLOCKED_BY_CUSTOMER_DATA | 1 |
@@ -124,7 +125,9 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn31]: П. 2.1.3 ответов 25.08: «логические коллизии» = несоответствие объёмов в спецификации и графике/BIM — сверка количеств, а не геометрия и не «объёмы из модели в смету». ТР-67: `compare_spec_volumes` на объявленных тройках (фикстура). Не ingest комплекта, не смета, не корпус заказчика. Строка 15 остаётся геометрией.
 
-Customer-corpus `VERIFIED`: **0 / 28**. Checkpoint **NO_GO**.
+^[fn32]: Ответы 1.1.4: офис до 500 МБ (десятичные), модели до 1,5 ГБ. Под `samolet_pilot`/`production` это **ingest и disk-analyze**. SPF `ifcopenshell.open(.ifc)` и WASM остаются **256 МиБ**. Файлы больше SPF-капа и до 1,5 ГБ идут в IfcOpenShell RocksDB (`wired_over_spf_cap`), не в SPF RAM. HTTP 413 (`IFC exceeds analyze size limit`) — **свыше 1,5 ГБ**. Convert/open failure — 503 `IFC disk backend unavailable`. bSI Validation Service — **256 MB** несжатого `.ifc` (не MiB). SPF в ifcopenshell — порядка 8–10× диск в RAM ([#7116](https://github.com/IfcOpenShell/IfcOpenShell/issues/7116)); 1,5 ГБ SPF ≈ ~15 ГиБ RSS литература, поэтому SPF default не поднят. 1,5 ГБ ≈ практический потолок toolkit экспорта Revit, не обещание SPF-`open()`. RSS на файле заказчика не замерен (OA-16). Development HTTP без Samolet caps держит `max_model_bytes=256 МиБ`. SSOT: [`IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](../../docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md).
+
+Customer-corpus `VERIFIED`: **0 / 32**. Checkpoint **NO_GO**.
 
 RT-001 / RT-002 / RT-003 remain **OPEN**. Native DWG remains **MISSING**. MEP system clash remains **NOT_VERIFIED**. CDE import remains **NOT_VERIFIED**. Independent calculation correctness remains **NOT_IMPLEMENTED**.
 

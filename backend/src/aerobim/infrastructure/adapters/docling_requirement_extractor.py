@@ -100,6 +100,8 @@ class StructuredRequirementExtractor:
         unit = rest[0] if rest else None
         evidence_text = rest[1] if len(rest) > 1 else None
         instructions = rest[2] if len(rest) > 2 else None
+        norm_source = rest[3] if len(rest) > 3 else None
+        norm_clause = rest[4] if len(rest) > 4 else None
 
         return ParsedRequirement(
             rule_id=rule_id,
@@ -115,6 +117,8 @@ class StructuredRequirementExtractor:
             source_kind=source.source_kind,
             evidence_text=evidence_text or None,
             instructions=instructions or None,
+            norm_source=norm_source or None,
+            norm_clause=norm_clause or None,
         )
 
     def _normalize_operator(self, token: str) -> ComparisonOperator:
