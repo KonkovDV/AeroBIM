@@ -2,9 +2,9 @@
 ---
 title: "Economic model — labeled assumptions A1–A8"
 date: "2026-08-29"
-last_updated: "2026-08-29"
+last_updated: "2026-08-30"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -47,3 +47,6 @@ OSINT по рынку / SAM / штату заказчика — вторичка
 Что нужно, чтобы строка перестала быть пустой: freeze комплекта; замер часов
 **до** первого прогона; тот же протокол после; подпись эксперта партнёра.
 Пока RT-001 OPEN — публикуемая экономия **запрещена**.
+
+Лабораторный замер на **нашем** комплекте (не часы партнёра, не заполнение
+A1–A8): [`BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md`](BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md).
