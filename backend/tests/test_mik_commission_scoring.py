@@ -364,6 +364,81 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertEqual(snap["b_final_ticksheet"], B_FINAL_TICKSHEET)
         self.assertIsNone(snap["predicted_aerobim_total"])
 
+    def test_system_b_pack_docs_stay_honest(self) -> None:
+        from aerobim.domain.mik_commission_scoring import (
+            ADR_004_PRIZE_IP,
+            DEFECT_INJECTION_PLAN,
+            LAB_BEFORE_AFTER,
+            ORDER_WEIGHTS_VERIFICATION,
+            OWNER_ACTIONS,
+        )
+
+        snap = scoring_snapshot()
+        self.assertIsNone(snap["predicted_aerobim_total"])
+        lab = (self._repo / LAB_BEFORE_AFTER).read_text(encoding="utf-8").lower()
+        inj = (self._repo / DEFECT_INJECTION_PLAN).read_text(encoding="utf-8").lower()
+        adr = (self._repo / ADR_004_PRIZE_IP).read_text(encoding="utf-8").lower()
+        weights = (self._repo / ORDER_WEIGHTS_VERIFICATION).read_text(encoding="utf-8").lower()
+        owner = (self._repo / OWNER_ACTIONS).read_text(encoding="utf-8").lower()
+        faq = (
+            (self._repo / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
+        tier0 = (self._repo / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
+        exp_b = (
+            (
+                self._repo
+                / "docs"
+                / "evidence"
+                / "EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md"
+            )
+            .read_text(encoding="utf-8")
+            .lower()
+        )
+        env_var = (
+            self._repo / "docs" / "quality" / "ENV_VAR_BIDIRECTIONAL_INVENTORY_2026_08.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("не б4 партнёра", lab)
+        self.assertIn("не корпус заказчика", lab)
+        self.assertIn("synthetic_only", inj)
+        self.assertIn("20260824", inj)
+        self.assertIn("переносится на комплект", inj)
+        self.assertIn("evaluate_injection_recall", inj)
+        self.assertIn("**proposed.**", adr)
+        self.assertIn("license", adr)
+        self.assertIn("unverified", weights)
+        self.assertIn("| **unverified** |", weights)
+        self.assertIn("attested_by=owner_briefing", weights)
+        self.assertIn("не утверждает, что действие уже сделано", owner)
+        self.assertIn("oa-1", owner)
+        self.assertIn("угт 4", faq)
+        self.assertIn("не заявляем", faq)
+        self.assertIn("02.04.2026", faq)
+        self.assertIn("сто самолёта", faq)
+        self.assertIn("не измерялось", faq)
+        self.assertIn("B_FINAL_SCORING_TICKSHEET_2026_09.md", tier0)
+        self.assertIn("BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md", tier0)
+        self.assertIn("DEFECT_INJECTION_RECALL_PLAN_2026_09.md", tier0)
+        self.assertIn("ADR-004-prize-ip-mit-fork-2026.md", tier0)
+        self.assertIn("ORDER_WEIGHTS_VERIFICATION_2026_09.md", tier0)
+        self.assertIn("OWNER_ACTIONS_2026_09.md", tier0)
+        self.assertIn("#2/#4 уже входят", exp_b)
+        self.assertNotIn("2694", env_var)
+        for rel in (
+            LAB_BEFORE_AFTER,
+            DEFECT_INJECTION_PLAN,
+            ADR_004_PRIZE_IP,
+            ORDER_WEIGHTS_VERIFICATION,
+            OWNER_ACTIONS,
+            "docs/quality/B_FINAL_SCORING_TICKSHEET_2026_09.md",
+        ):
+            text = (self._repo / rel).read_text(encoding="utf-8").lower()
+            self.assertIn("closes_rt001: false", text)
+            self.assertNotIn("closes_rt001: true", text)
+            self.assertNotIn("closes_rt002: true", text)
+            self.assertNotIn("closes_rt003: true", text)
+
 
 if __name__ == "__main__":
     unittest.main()
