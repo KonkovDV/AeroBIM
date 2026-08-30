@@ -2,9 +2,9 @@
 ---
 title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
-last_updated: "2026-08-29"
+last_updated: "2026-08-30"
 status: active
-version: "1.21.0"
+version: "1.22.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -30,6 +30,8 @@ PR-diff к `main` на первом проходе 27.08 был пустой. Э
 Проход 22: TAM BIM ≠ SAM; −72% аналога не наш; рынок ≥500 млн другого продукта МИК не К4; ПНСТ 841 не сертификат.
 
 Проход 23: identity 52,6 ≠ прогноз балла; цитата спонсора ≠ председатель; 25,1 млрд к 2030 ≠ наша выручка; paste ≠ выставленный балл.
+
+Проход 24: Приложение 3 Положения не в git; финал — сумма, не среднее; К4 не CAPEX; МСФО убыток не наш эффект; РСБУ ≠ МСФО; четыре карточки ≠ все заявители; пилоты соседей не аудированы.
 
 Checkpoint **`NO_GO`**. `detected_count: 0`.
 
@@ -130,6 +132,13 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 | RT-MIK-SPONSOR-CHAIR | Цитата спонсора с витрины = председатель / состав К1 | `sponsor_quote_is_commission_chair=False` |
 | RT-MIK-25B-REV | 25,1 млрд ₽ к 2030 как выручка / SAM AeroBIM | `tam_horizon_is_our_revenue=False` |
 | RT-MIK-PASTE-SCORE | Вставка в заявку = уже выставленный балл / состав | Тексты полей; ячейки «кто» пустые |
+| RT-MIK-APP3-UNSEEN | Б1–Б5 в git = Приложение 3 к Положению | `regulation_appendix_3_in_git=False` |
+| RT-MIK-FINAL-MEAN | Финал считается средним, как отбор | `FINALIST_AGGREGATION=sum`; знаменатель 50 неизвестен |
+| RT-MIK-INVEST-K4 | «Инвестируйте» / CAPEX / лицензионная стена | `k4_asks_customer_capex=False`; нулевой вход |
+| RT-MIK-SAVE-PNL | Убыток МСФО 22,3 млрд как наш эффект | `k4_offsets_partner_ifrs_loss=False` |
+| RT-MIK-RAS-IFRS | РСБУ +31% как картина группы МСФО | `ras_ifrs_signs_are_the_same=False` |
+| RT-MIK-CATALOG-ALL | Четыре карточки = все, кто подал | `catalog_four_are_all_applicants=False` |
+| RT-MIK-PEER-PILOTS | «15 пилотов» / «600+ норм» карточки как факт | `peer_card_claims_externally_verified=False` |
 
 ## HOLD (не чиним в этом коммите)
 

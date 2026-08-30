@@ -47,6 +47,13 @@ a certified AIMS; i.moscow/pilot is not the TechLab 2M prize; K1 template
 person cells stay empty; LETI table corroborates Appendix 4 row 6.
 Pass 21: prize floor reachable at top of K1-low if rest is high; 10 people
 not required; K3 is fit not B2; TRL self-assess 4 is not TRL 5.
+Pass 22: TAM BIM is not SAM; 72% analog is not ours; other MIK 500M is not K4;
+PNST 841 is not a SQuaRE certificate.
+Pass 23: 52.6 identity is not a score; sponsor quote is not the chair;
+25.1 bn by 2030 is not our revenue; paste is not a scored roster.
+Pass 24: Regulation Appendix 3 unseen; final is a sum not a mean; K4 is
+zero-entry not CAPEX; IFRS loss is not our saving; RAS is not IFRS;
+four catalog cards are not all applicants; peer pilots unverified.
 Does not raise IFC cap. Does not parse RVT/NWD/LIRA.
 """
 
@@ -621,6 +628,48 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Treat the i.moscow paste file as a scored roster or predicted total",
         "brake": "Paste is field text; person cells empty; predicted_aerobim_total None",
+    },
+    {
+        "id": "RT-MIK-APP3-UNSEEN",
+        "verdict": "KILL",
+        "attack": "Treat B1-B5 in git as Regulation Appendix 3 or a seen final table",
+        "brake": "regulation_appendix_3_in_git False; weights are not App 3",
+    },
+    {
+        "id": "RT-MIK-FINAL-MEAN",
+        "verdict": "KILL",
+        "attack": "Score the final round as an arithmetic mean like selection",
+        "brake": "Order p.2.2 is a sum; prize_floor_denominator_known False",
+    },
+    {
+        "id": "RT-MIK-INVEST-K4",
+        "verdict": "KILL",
+        "attack": "Ask the Partner for CAPEX or 'invest in innovation'",
+        "brake": "k4_asks_customer_capex False; K4 speech is zero-entry / pay-on-result",
+    },
+    {
+        "id": "RT-MIK-SAVE-PNL",
+        "verdict": "KILL",
+        "attack": "Cite the Partner 1H2026 IFRS loss as an AeroBIM saving or P&L rescue",
+        "brake": "k4_offsets_partner_ifrs_loss False; 200M AI program is theirs",
+    },
+    {
+        "id": "RT-MIK-RAS-IFRS",
+        "verdict": "KILL",
+        "attack": "Cite stand-alone RAS +31% revenue as the group IFRS picture",
+        "brake": "ras_ifrs_signs_are_the_same False; opposite signs on the same window",
+    },
+    {
+        "id": "RT-MIK-CATALOG-ALL",
+        "verdict": "KILL",
+        "attack": "Treat four catalog cards as everyone who applied to this task",
+        "brake": "catalog_four_are_all_applicants False; neighbor 46 is another task",
+    },
+    {
+        "id": "RT-MIK-PEER-PILOTS",
+        "verdict": "KILL",
+        "attack": "Treat neighbor catalog pilots/norms/prototype claims as audited fact",
+        "brake": "peer_card_claims_externally_verified False; card is not a public-trail audit",
     },
     {
         "id": "RT-SEAM-HOLD",

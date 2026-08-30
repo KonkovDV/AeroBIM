@@ -2,9 +2,9 @@
 ---
 title: "System A — levers past prize floor 50 (not a 10-person roster)"
 date: "2026-08-29"
-last_updated: "2026-08-29"
+last_updated: "2026-08-30"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -47,7 +47,7 @@ claim_boundary: >
 | К1 | Два **класса** (наука + инженерия), не голова 10 | В заявке: капитан закрывает оба класса доказательствами; консультанты молчат | Шаблон + артефакты науки |
 | К2 | УГТ 4 (лаборатория), не УГТ 5 | Самооценка ГОСТ Р 58048; CI + фикстура = lab | [`TRL_GOST_R_58048_SELF_ASSESS_2026.md`](TRL_GOST_R_58048_SELF_ASSESS_2026.md) |
 | К3 | **Соответствие запросу**, не метрики Б2 | Лист посадки на карточку партнёра; протокол 0,60 на подпись | [`K3_PARTNER_FIT_TICKSHEET_2026_08.md`](K3_PARTNER_FIT_TICKSHEET_2026_08.md) |
-| К4 | Open-core + платный пилот как путь; TAM ≠ SAM | ADR-002; часы A1–A8 пустые; [`K4_COMMERCIAL_PATH_2026_08.md`](K4_COMMERCIAL_PATH_2026_08.md) | Не выручка; не −72% аналога |
+| К4 | Нулевой вход + платный пилот; TAM ≠ SAM; не CAPEX | ADR-002; часы A1–A8 пустые; [`K4_COMMERCIAL_PATH_2026_08.md`](K4_COMMERCIAL_PATH_2026_08.md) | Не выручка; не −72% аналога; не «спасём МСФО» |
 | К5 | План с третьим путём | Workplan; канал ≠ хеш-пакет | Уже есть |
 
 Тай-брейк системы A — **К3, затем К4**. Новизна равенство не ломает.

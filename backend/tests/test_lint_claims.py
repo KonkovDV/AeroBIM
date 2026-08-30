@@ -391,6 +391,15 @@ class LintClaimsTests(unittest.TestCase):
                 sys.path.pop(0)
         self.assertEqual(lint_kitchen_tokens(), [])
 
+    def test_kitchen_path_prefixes_are_untracked(self) -> None:
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import lint_kitchen_paths  # type: ignore[import-not-found]
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        self.assertEqual(lint_kitchen_paths(), [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -555,6 +555,8 @@ class JuryPackHygieneTests(unittest.TestCase):
             "docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md",
             "docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md",
             "docs/quality/RED_TEAM_REAUDIT2_2026_08_16.md",
+            "docs/quality/RED_TEAM_ATOMIC4_2026_08_16.md",
+            "docs/quality/RED_TEAM_ATOMIC5_2026_08_16.md",
             "docs/evidence/DATASET_HUNT_LOG_2026_08.md",
             "scripts/bootstrap_claims_allow_file.py",
         )

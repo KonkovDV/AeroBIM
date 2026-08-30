@@ -2,8 +2,8 @@
 ---
 title: "МИК (Фонд «Московский инновационный кластер») — контур соответствия пилота"
 status: active
-version: "1.5.1"
-last_updated: "2026-08-29"
+version: "1.6.0"
+last_updated: "2026-08-30"
 claim_boundary: "Пункты регламента МИК, не подтверждённые документами Фонда на руках, помечены VERIFY_WITH_OPERATOR — не выдумываем формулировки нормативки. Checkpoint NO_GO."
 tags: [aerobim, mik, techlab, samolet, pilot, grant, compliance]
 ---
@@ -47,12 +47,13 @@ tags: [aerobim, mik, techlab, samolet, pilot, grant, compliance]
 | M7 | **Акт/заключение площадки о результатах** | Поля готовы: precision-report (publishable-гейт), SLA-отчёт (`claim_level`), agreement-артефакт (κ/α), BCF T2 evidence pack | BLOCKED_CUSTOMER_DATA | Подписывает Самолёт; наши инструменты дают приложения к акту |
 | M8 | Финансовая отчётность **если** оператор применит отдельный грантовый контур | — | **VERIFY_WITH_OPERATOR** | 449-ПП ≠ условие участия в Техлабе; формы не сочиняем. Приз задачи — платный пилот, не «грант юрлицу» |
 | M9 | Публичность/СМИ-упоминания (если требуются условиями) | README/маркетинг под Claims Lock | VERIFY_WITH_OPERATOR | Любой публичный текст сверять с [`CLAIMS_LOCK`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md) |
-| M10 | Арифметика комиссии (К1=40, среднее, порог приза 50) | [`../quality/MIK_COMMISSION_SCORING_2026_08.md`](../quality/MIK_COMMISSION_SCORING_2026_08.md) | **ATTRIBUTED** / not a score | PDF приказа в git нет; не прогноз балла AeroBIM |
+| M10 | Арифметика комиссии (отбор — среднее; финал — сумма; порог приза 50) | [`../quality/MIK_COMMISSION_SCORING_2026_08.md`](../quality/MIK_COMMISSION_SCORING_2026_08.md) | **ATTRIBUTED** / not a score | PDF приказа в git нет; Приложение 3 Положения не видели; не прогноз балла AeroBIM |
 | M11 | Система B (Б1–Б5) и одностраничники Б2/Б4/Б5 | обложка фикстуры + BOM + A1–A8 | **PROTOCOL_READY** / measurement **BLOCKED** | Pytest ≠ метрики партнёра; часы пустые |
 | M12 | Карта критерий→git + стек ГОСТ + шаблон К1 | [`../quality/MIK_CRITERION_EVIDENCE_MAP_2026_08.md`](../quality/MIK_CRITERION_EVIDENCE_MAP_2026_08.md) | **ATTRIBUTED** / not a score | Не прогноз ≥50; 42001 не сертификат; i.moscow/pilot ≠ приз 2 млн |
 | M13 | Рычаги A за 50 без десяти ФИО | [`../quality/MIK_A_LEVERS_PAST_50_2026_08.md`](../quality/MIK_A_LEVERS_PAST_50_2026_08.md) | **ATTRIBUTED** / identity | Верх К1-low + rest-high ≥50; К3 ≠ Б2; УГТ 4 ≠ 5 |
 | M14 | К4 TAM≠SAM, новизна vs витрина, ПНСТ 841, брифы кресел | [`../quality/K4_COMMERCIAL_PATH_2026_08.md`](../quality/K4_COMMERCIAL_PATH_2026_08.md) | **ATTRIBUTED** / not a score | 10,1 млрд ≠ SAM; −72% не наш; ПНСТ не сертификат |
 | M15 | Identity 52,6 ≠ прогноз; спонсор ≠ председатель | [`../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md) | **ATTRIBUTED** / KILL | `sponsor_quote_is_commission_chair=False`; `tam_horizon_is_our_revenue=False` |
+| M16 | Две арифметики; К4 нулевой вход; пороги ТЗ | [`../quality/MIK_COMMISSION_SCORING_2026_08.md`](../quality/MIK_COMMISSION_SCORING_2026_08.md) · [`../quality/K4_COMMERCIAL_PATH_2026_08.md`](../quality/K4_COMMERCIAL_PATH_2026_08.md) · [`../quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md`](../quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | **ATTRIBUTED** / not a score | Приложение 3 Положения не в git; финал — сумма; МСФО ≠ РСБУ |
 
 ## 2. Сверка критериев приёмки между тремя источниками
 

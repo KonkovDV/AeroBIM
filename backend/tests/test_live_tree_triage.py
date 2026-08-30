@@ -107,6 +107,13 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-MIK-SPONSOR-CHAIR",
             "RT-MIK-25B-REV",
             "RT-MIK-PASTE-SCORE",
+            "RT-MIK-APP3-UNSEEN",
+            "RT-MIK-FINAL-MEAN",
+            "RT-MIK-INVEST-K4",
+            "RT-MIK-SAVE-PNL",
+            "RT-MIK-RAS-IFRS",
+            "RT-MIK-CATALOG-ALL",
+            "RT-MIK-PEER-PILOTS",
         ):
             self.assertIn(row_id, ids)
 

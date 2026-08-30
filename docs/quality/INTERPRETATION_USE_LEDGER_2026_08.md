@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-08-29"
+date: "2026-08-30"
 status: active
 version: "1.2.0"
 closes_rt001: false
@@ -77,7 +77,7 @@ claim_boundary: >-
 | IND-17 | industry | SOTA 29.08: OmniDocBench / titleblock text-extract ~0.95 as drawing OCR | RapidOCR is optional extra on raster; PubLayNet/DocLayNet are not construction sheets; GOST stamp template is not measured here | 0.95 OCR / titleblock accuracy as AeroBIM on customer sheets | `open_bench` |
 | MIK-03 | mik | Commission weights (attributed order 17.06.2026): K1=40 of 100 | Mean of sitting members; prize floor 50 is a program rule; low-K1 + high-rest totals 45-64 so 50 is not automatic | Git HEAD predicts a prize-clearing AeroBIM total / Checkpoint GO | `protocol_planning` |
 | MIK-04 | mik | Catalog roster vs signed commission order; partner seats by agreement | Two Fund seats are staff; three partner seats are not guaranteed; sponsor quote is not the chair | Catalog page is the sitting commission / partner seats are certain | `operational_hygiene` |
-| MIK-05 | mik | Appendix 3 finalist table B1=30 … B5=10; tie-break B1 only | B2 needs protocols AND confirmed partner metrics; pytest is not B2 high; NO_GO does not license a System B prize-clearing total | Pytest / fixture SLA as Partner validation / System B already ≥50 | `protocol_planning` |
+| MIK-05 | mik | Owner-briefing B1-B5 (Regulation Appendix 3 unseen); tie-break B1 only | B2 needs protocols AND confirmed partner metrics; pytest is not B2 high; NO_GO does not license a System B prize-clearing total | Pytest / fixture SLA as Partner validation / System B already ≥50 | `protocol_planning` |
 | MIK-06 | mik | Regulation 6.3: prize agreement may assign exclusive rights without extra pay | LICENSE is MIT; ADR-002 is a commercial-boundary plan, not a patent wall | IP is fenced / exclusive rights will not transfer | `operational_hygiene` |
 | TL-11 | techlab | K1 scores the filed team (up to 10), not oral advisors | FAQ already allows 1-10 with mixed scientific and engineering skill | Consultants named in chat are on the scored roster / K1 closed | `operational_hygiene` |
 | IND-18 | industry | GOST R 72514-2026 order 64-st on the official fund card | protect.gost.ru lists 64-st / 30.01.2026; introduction 01.05.2026; self-assessment remains not certification | Drop the order number / cite the self-assessment as certification | `protocol_planning` |
@@ -96,6 +96,10 @@ claim_boundary: >-
 | TL-14 | techlab | Seat briefs and application paste without a git roster | One paragraph per role; mean of sitting seats; 0.60 cover is sign-ready | Sitting FIO in git / predicted score from paste / protocol already signed | `operational_hygiene` |
 | MIK-10 | mik | Band identity 16+36.6=52.6 is not a predicted AeroBIM total | reachable_inside_low_k1_if_rest_high is arithmetic; prize floor stays 50 | Quote 'floor reachable' / 52.6 as the team's expected score | `protocol_planning` |
 | TL-15 | techlab | Public task-page names and sponsor quote vs signed commission | Catalog FIO are publication; sponsor quote is not attested chair | Those names sit the jury / fill K1 / chair the commission | `operational_hygiene` |
+| MIK-11 | mik | Order p.2.1 selection is a mean; p.2.2 final is a sum; App 3 unseen | K1-K5 recovered from the order protocol form; Regulation Appendix 3 not in git; prize floor 50 has unknown max if the sum table is unseen | B1-B5 are Regulation Appendix 3 / final scored as a mean / 50 of 100 known | `protocol_planning` |
+| MIK-12 | mik | K4 after partner 1H2026 IFRS: zero entry, not a CAPEX ask | Pay-on-result speech is not a signed SKU; IFRS loss is not our saving; 200M AI program is theirs, not AeroBIM | Invest in us / we offset the IFRS loss / RAS +31% is group IFRS | `protocol_planning` |
+| TL-16 | techlab | Four catalog cards are filtered survivors, not all applicants | Neighbor-task 46 teams is a different Partner in the same first stream; peer card claims are not audited public fact | Four cards = everyone who applied / 15 pilots and 600+ norms are verified | `operational_hygiene` |
+| IND-26 | industry | Stand-alone RAS 1H2026 revenue +31% is not group IFRS -31% | Opposite signs on the same window; mixing them drops tech-customer trust | Cite RAS growth as the group IFRS picture / one figure two signs | `protocol_planning` |
 
 ## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
 
@@ -175,6 +179,10 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | TL-14 | Keep partner_kpis_agreed_in_writing False; person cells stay empty |
 | MIK-10 | Keep predicted_aerobim_total None |
 | TL-15 | Keep sponsor_quote_is_commission_chair False |
+| MIK-11 | Keep regulation_appendix_3_in_git False; ask organizers for the Regulation |
+| MIK-12 | Keep k4_asks_customer_capex and k4_offsets_partner_ifrs_loss False |
+| TL-16 | Keep catalog_four_are_all_applicants False |
+| IND-26 | Keep ras_ifrs_signs_are_the_same False |
 
 ## Evidence pointers
 
@@ -250,3 +258,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `TL-14`: [MIK_SEAT_BRIEFS_2026_08.md](MIK_SEAT_BRIEFS_2026_08.md)
 - `MIK-10`: [MIK_A_LEVERS_PAST_50_2026_08.md](MIK_A_LEVERS_PAST_50_2026_08.md)
 - `TL-15`: [TECHLAB_SAMOLET_APPLICATION_2026.md](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
+- `MIK-11`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `MIK-12`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
+- `TL-16`: [K2_NOVELTY_VS_PEERS_2026_08.md](K2_NOVELTY_VS_PEERS_2026_08.md)
+- `IND-26`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)

@@ -641,7 +641,7 @@ LEDGER: tuple[InferenceRow, ...] = (
     _row(
         "MIK-05",
         "mik",
-        "Appendix 3 finalist table B1=30 … B5=10; tie-break B1 only",
+        "Owner-briefing B1-B5 (Regulation Appendix 3 unseen); tie-break B1 only",
         "B2 needs protocols AND confirmed partner metrics; pytest is not B2 high; "
         "NO_GO does not license a System B prize-clearing total",
         "Pytest / fixture SLA as Partner validation / System B already ≥50",
@@ -831,6 +831,49 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Keep sponsor_quote_is_commission_chair False",
         "operational_hygiene",
     ),
+    _row(
+        "MIK-11",
+        "mik",
+        "Order p.2.1 selection is a mean; p.2.2 final is a sum; App 3 unseen",
+        "K1-K5 recovered from the order protocol form; Regulation Appendix 3 "
+        "not in git; prize floor 50 has unknown max if the sum table is unseen",
+        "B1-B5 are Regulation Appendix 3 / final scored as a mean / 50 of 100 known",
+        "docs/quality/MIK_COMMISSION_SCORING_2026_08.md",
+        "Keep regulation_appendix_3_in_git False; ask organizers for the Regulation",
+        "protocol_planning",
+    ),
+    _row(
+        "MIK-12",
+        "mik",
+        "K4 after partner 1H2026 IFRS: zero entry, not a CAPEX ask",
+        "Pay-on-result speech is not a signed SKU; IFRS loss is not our saving; "
+        "200M AI program is theirs, not AeroBIM",
+        "Invest in us / we offset the IFRS loss / RAS +31% is group IFRS",
+        "docs/quality/K4_COMMERCIAL_PATH_2026_08.md",
+        "Keep k4_asks_customer_capex and k4_offsets_partner_ifrs_loss False",
+        "protocol_planning",
+    ),
+    _row(
+        "TL-16",
+        "techlab",
+        "Four catalog cards are filtered survivors, not all applicants",
+        "Neighbor-task 46 teams is a different Partner in the same first stream; "
+        "peer card claims are not audited public fact",
+        "Four cards = everyone who applied / 15 pilots and 600+ norms are verified",
+        "docs/quality/K2_NOVELTY_VS_PEERS_2026_08.md",
+        "Keep catalog_four_are_all_applicants False",
+        "operational_hygiene",
+    ),
+    _row(
+        "IND-26",
+        "industry",
+        "Stand-alone RAS 1H2026 revenue +31% is not group IFRS -31%",
+        "Opposite signs on the same window; mixing them drops tech-customer trust",
+        "Cite RAS growth as the group IFRS picture / one figure two signs",
+        "docs/quality/K4_COMMERCIAL_PATH_2026_08.md",
+        "Keep ras_ifrs_signs_are_the_same False",
+        "protocol_planning",
+    ),
 )
 
 
@@ -885,6 +928,9 @@ def ledger_payload(*, generated_at: str) -> dict[str, Any]:
             "GidMarket BIM TAM 10.1 bn RUB 2022 is not AeroBIM SAM",
             "SPbPU 25.1 bn RUB by 2030 is not AeroBIM revenue",
             "Task-page sponsor quote is not the attested commission chair",
+            "Regulation Appendix 3 (final criteria) is not in git",
+            "Partner 1H2026 IFRS loss is not an AeroBIM saving",
+            "Stand-alone RAS +31% is not group IFRS -31%",
         ],
         "closes_rt001": False,
         "closes_rt002": False,
