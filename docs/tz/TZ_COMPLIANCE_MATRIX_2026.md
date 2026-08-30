@@ -3,7 +3,7 @@
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
 version: "1.3.4"
-last_updated: "2026-08-28"
+last_updated: "2026-08-30"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
