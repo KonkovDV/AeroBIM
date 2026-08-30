@@ -7,6 +7,11 @@ claim recall until a clean pack exists and a protocol is run.
 Claim boundary: injected defects are a mutation test, not Samolet accuracy,
 not product accuracy >90%, not RT-001 closed. Checkpoint NO_GO.
 
+Recall CLI is not implemented. Spec:
+``docs/evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md``.
+Planned module ``aerobim.tools.evaluate_injection_recall`` remains
+NOT_IMPLEMENTED until a clean PD pack exists outside NDA roots.
+
 Example::
 
     python -m aerobim.tools.inject_defects \\
