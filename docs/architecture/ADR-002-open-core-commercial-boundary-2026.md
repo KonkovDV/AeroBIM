@@ -3,7 +3,7 @@
 title: "ADR-002 — Open-core commercial boundary"
 status: accepted
 date: 2026-07-21
-last_updated: "2026-08-05"
+last_updated: "2026-08-30"
 accepted_on: "2026-08-05"
 ---
 
@@ -62,3 +62,5 @@ customer SLA, or CDE-ready claims.
 - Contributors continue under MIT until a dedicated license ADR lands.
 - Product packaging may reference this ADR for scope splits; it is **not** a
   contract and **not** a claim of delivered commercial features.
+- Prize exclusive-rights fork (Regulation 6.3 vs MIT) is **ADR-004**, not this
+  file. LICENSE stays MIT until a dedicated license ADR is accepted.

@@ -2,9 +2,9 @@
 ---
 title: "KT#3 delivery bill of materials"
 date: "2026-08-29"
-last_updated: "2026-08-29"
+last_updated: "2026-08-30"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -17,7 +17,9 @@ claim_boundary: >
 
 П. 6.3 Положения может предусматривать передачу исключительных прав без доплаты
 к призу. Этот файл **не** оформляет такую передачу и **не** обещает патентный
-контур. LICENSE сейчас **MIT**.
+контур. LICENSE сейчас **MIT**. Развилка п. 6.3:
+[`ADR-004-prize-ip-mit-fork-2026.md`](../architecture/ADR-004-prize-ip-mit-fork-2026.md)
+(proposed; LICENSE не меняем).
 
 ## Входит
 
