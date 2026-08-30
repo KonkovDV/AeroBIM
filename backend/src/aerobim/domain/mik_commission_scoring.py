@@ -14,9 +14,9 @@ from typing import Any, Final
 CLAIM_LEVEL: Final = "attributed_program_arithmetic"
 CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
-    "Attributed TechLab commission weights. Not a predicted AeroBIM total. "
-    "Not a Fund PDF in git. Application roster is the K1 object, not git HEAD. "
-    "Checkpoint stays NO_GO."
+    "Attributed TechLab commission weights. Selection uses the order "
+    "protocol form (K1-K5). Regulation Appendix 3 (final table) is not in "
+    "git. Not a predicted AeroBIM total. Checkpoint stays NO_GO."
 )
 
 ORDER_ID: Final = "П-01-ОД-52-1/26"
@@ -32,7 +32,9 @@ CRITERIA: Final[tuple[tuple[str, int, str], ...]] = (
     ("K5", 10, "work_plan_feasibility"),
 )
 
-# System B (Appendix 3 — winners among finalists). Sum is 100.
+# System A = Regulation Appendix 2, recovered from the order protocol form.
+# System B weights below are an owner briefing of the order, NOT Regulation
+# Appendix 3 (final criteria). That appendix has not been seen.
 FINALIST_CRITERIA: Final[tuple[tuple[str, int, str], ...]] = (
     ("B1", 30, "fit_to_partner_task_and_requirements"),
     ("B2", 20, "prototype_quality_and_confirmed_metrics"),
@@ -43,7 +45,9 @@ FINALIST_CRITERIA: Final[tuple[tuple[str, int, str], ...]] = (
 
 PRIZE_FLOOR: Final = 50
 MAX_TOTAL: Final = 100
+# Order p.2.1 selection = mean; p.2.2 final = sum of scores. Different maths.
 AGGREGATION: Final = "arithmetic_mean"
+FINALIST_AGGREGATION: Final = "sum"
 QUORUM_MIN_MEMBERS: Final = 3
 NOMINAL_SEATS: Final = 5
 MIK_STAFF_SEATS: Final = 2
@@ -76,6 +80,13 @@ PNST_841_MAP: Final = "docs/quality/PNST_841_AI_QUALITY_EVAL_2026.md"
 SEAT_BRIEFS: Final = "docs/quality/MIK_SEAT_BRIEFS_2026_08.md"
 APPLICATION_PASTE: Final = "docs/partners/I_MOSCOW_APPLICATION_PASTE_2026_08.md"
 SIGNREADY_COVER: Final = "docs/partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md"
+CUSTOMER_THRESHOLDS: Final = "docs/quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md"
+B_FINAL_TICKSHEET: Final = "docs/quality/B_FINAL_SCORING_TICKSHEET_2026_09.md"
+LAB_BEFORE_AFTER: Final = "docs/partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md"
+DEFECT_INJECTION_PLAN: Final = "docs/evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md"
+ADR_004_PRIZE_IP: Final = "docs/architecture/ADR-004-prize-ip-mit-fork-2026.md"
+ORDER_WEIGHTS_VERIFICATION: Final = "docs/quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md"
+OWNER_ACTIONS: Final = "docs/OWNER_ACTIONS_2026_09.md"
 # LETI: not less than 1, not more than 10. K1 scores two competency classes.
 MIN_TEAM_SIZE: Final = 1
 MAX_TEAM_SIZE: Final = 10
@@ -213,6 +224,54 @@ def tam_horizon_is_our_revenue() -> bool:
     return False
 
 
+def regulation_appendix_3_in_git() -> bool:
+    """Regulation Appendix 3 (final criteria table) has not been seen."""
+
+    return False
+
+
+def finalist_weights_are_regulation_appendix_3() -> bool:
+    """B1-B5 in this module are an order briefing, not the unseen table."""
+
+    return False
+
+
+def k4_asks_customer_capex() -> bool:
+    """K4 speech is zero-entry / pay-on-result, not a CAPEX ask."""
+
+    return False
+
+
+def k4_offsets_partner_ifrs_loss() -> bool:
+    """Partner 1H2026 IFRS loss is context, not an AeroBIM saving claim."""
+
+    return False
+
+
+def ras_ifrs_signs_are_the_same() -> bool:
+    """Stand-alone RAS +31% revenue is not group IFRS -31%."""
+
+    return False
+
+
+def catalog_four_are_all_applicants() -> bool:
+    """Four catalog cards are not the full applicant set for this task."""
+
+    return False
+
+
+def peer_card_claims_externally_verified() -> bool:
+    """Neighbor catalog claims are not treated as audited public fact."""
+
+    return False
+
+
+def prize_floor_denominator_known() -> bool:
+    """Final prize floor 50: max of the unseen Regulation App 3 is unknown."""
+
+    return False
+
+
 def predicted_aerobim_total() -> None:
     """No licensed numeric forecast. Git does not score the application."""
 
@@ -257,6 +316,7 @@ def scoring_snapshot() -> dict[str, Any]:
         "max_total": MAX_TOTAL,
         "prize_floor": PRIZE_FLOOR,
         "aggregation": AGGREGATION,
+        "finalist_aggregation": FINALIST_AGGREGATION,
         "quorum_min_members": QUORUM_MIN_MEMBERS,
         "nominal_seats": NOMINAL_SEATS,
         "mik_staff_seats": MIK_STAFF_SEATS,
@@ -273,12 +333,12 @@ def scoring_snapshot() -> dict[str, Any]:
         "rest_high_band_points": list(rest_high_band_points()),
         "low_k1_high_rest_total": [lo, hi],
         "prize_floor_automatic_in_low_k1_high_rest": (prize_floor_automatic_in_low_k1_high_rest()),
-        "predicted_aerobim_total": predicted_aerobim_total(),
+        "predicted_aerobim_total": None,
         "k2_plus_k5_max": 30,
         "application_roster_is_k1_object": True,
         "oral_advisors_score_k1": False,
-        "system_a": "appendix_2_selection",
-        "system_b": "appendix_3_finalists",
+        "system_a": "regulation_appendix_2_via_order_protocol_form",
+        "system_b": "regulation_appendix_3_unseen",
         "finalist_criteria": [
             {"code": code, "max_points": points, "name": name}
             for code, points, name in FINALIST_CRITERIA
@@ -324,6 +384,23 @@ def scoring_snapshot() -> dict[str, Any]:
         "foreign_labor_cut_as_ours": foreign_labor_cut_as_ours(),
         "sponsor_quote_is_commission_chair": sponsor_quote_is_commission_chair(),
         "tam_horizon_is_our_revenue": tam_horizon_is_our_revenue(),
+        "regulation_appendix_3_in_git": regulation_appendix_3_in_git(),
+        "finalist_weights_are_regulation_appendix_3": (
+            finalist_weights_are_regulation_appendix_3()
+        ),
+        "k4_asks_customer_capex": k4_asks_customer_capex(),
+        "k4_offsets_partner_ifrs_loss": k4_offsets_partner_ifrs_loss(),
+        "ras_ifrs_signs_are_the_same": ras_ifrs_signs_are_the_same(),
+        "catalog_four_are_all_applicants": catalog_four_are_all_applicants(),
+        "peer_card_claims_externally_verified": (peer_card_claims_externally_verified()),
+        "prize_floor_denominator_known": prize_floor_denominator_known(),
+        "customer_thresholds": CUSTOMER_THRESHOLDS,
+        "b_final_ticksheet": B_FINAL_TICKSHEET,
+        "lab_before_after": LAB_BEFORE_AFTER,
+        "defect_injection_plan": DEFECT_INJECTION_PLAN,
+        "adr_004_prize_ip": ADR_004_PRIZE_IP,
+        "order_weights_verification": ORDER_WEIGHTS_VERIFICATION,
+        "owner_actions": OWNER_ACTIONS,
     }
 
 
@@ -333,6 +410,14 @@ __all__ = [
     "CHECKPOINT",
     "CLAIM_BOUNDARY",
     "CRITERIA",
+    "B_FINAL_TICKSHEET",
+    "CUSTOMER_THRESHOLDS",
+    "LAB_BEFORE_AFTER",
+    "DEFECT_INJECTION_PLAN",
+    "ADR_004_PRIZE_IP",
+    "ORDER_WEIGHTS_VERIFICATION",
+    "OWNER_ACTIONS",
+    "FINALIST_AGGREGATION",
     "FINALIST_CRITERIA",
     "FINALIST_TIE_BREAK_ORDER",
     "PRIZE_FLOOR",
@@ -343,7 +428,6 @@ __all__ = [
     "k1_low_band_points",
     "low_k1_high_rest_total",
     "partner_kpis_agreed_in_writing",
-    "low_k1_high_rest_total",
     "points_at_percent",
     "predicted_aerobim_total",
     "prize_floor_automatic_in_low_k1_high_rest",
@@ -360,5 +444,13 @@ __all__ = [
     "foreign_labor_cut_as_ours",
     "sponsor_quote_is_commission_chair",
     "tam_horizon_is_our_revenue",
+    "regulation_appendix_3_in_git",
+    "finalist_weights_are_regulation_appendix_3",
+    "k4_asks_customer_capex",
+    "k4_offsets_partner_ifrs_loss",
+    "ras_ifrs_signs_are_the_same",
+    "catalog_four_are_all_applicants",
+    "peer_card_claims_externally_verified",
+    "prize_floor_denominator_known",
     "trl_5_claimed",
 ]

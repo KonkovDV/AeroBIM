@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.12"
-last_updated: "2026-08-29"
+version: "4.8.15"
+last_updated: "2026-08-30"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -42,7 +42,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed` |
 | [Заявление о данных](evidence/DATA_STATEMENT_2026_08.md) | Что есть; открытые бенчи ≠ RT-001 |
 | [Глоссарий жюри](partners/GLOSSARY_JURY_RU_2026_08.md) | Термины для нетехнического члена жюри |
-| [Арифметика комиссии МИК](quality/MIK_COMMISSION_SCORING_2026_08.md) | К1=40; система B Б1=30; порог 50 — не прогноз нашего балла |
+| [Арифметика комиссии МИК](quality/MIK_COMMISSION_SCORING_2026_08.md) | Отбор — среднее; финал — сумма; Приложение 3 Положения не в git |
 | [Обложка валидации фикстуры](quality/KT3_FIXTURE_VALIDATION_COVER_2026_08.md) | Pytest/CLI ≠ метрики партнёра; fixture SLA не representative |
 | [Перечень поставки КТ#3](quality/KT3_DELIVERY_BOM_2026_08.md) | Что входит / не входит; MIT; п. 6.3 не закрыт |
 | [Допущения эффекта A1–A8](partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md) | Часы пустые; ≥20% — гипотеза |
@@ -52,10 +52,17 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Рычаги системы A за 50](quality/MIK_A_LEVERS_PAST_50_2026_08.md) | 16+36,6=52,6 identity; не прогноз балла |
 | [УГТ ГОСТ Р 58048](quality/TRL_GOST_R_58048_SELF_ASSESS_2026.md) | Самооценка 4; не 5; не независимая ОГТ |
 | [Лист К3](quality/K3_PARTNER_FIT_TICKSHEET_2026_08.md) | Посадка на карточку партнёра; не метрики Б2 |
-| [Путь К4](quality/K4_COMMERCIAL_PATH_2026_08.md) | TAM BIM атрибутирован; не SAM; −72% не наш |
-| [Новизна К2 vs витрина](quality/K2_NOVELTY_VS_PEERS_2026_08.md) | Методика vs «90% без протокола»; ablation фикстуры |
+| [Лист системы B Б1–Б5](quality/B_FINAL_SCORING_TICKSHEET_2026_09.md) | Полосы, не прогноз; Приложение 3 Положения не в git |
+| [Лабораторный до/после](partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) | Не часы партнёра; A1–A8 пустые |
+| [План recall на инъекциях](evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | Синтетика; seed 20260824; не корпус Самолёта |
+| [ADR-004 MIT vs п. 6.3](architecture/ADR-004-prize-ip-mit-fork-2026.md) | Развилка; LICENSE не меняем |
+| [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Колонка PDF пустая; UNVERIFIED; attributed |
+| [Действия владельца](OWNER_ACTIONS_2026_09.md) | Git не закрывает письмо, ФИО, PDF, разметчиков |
+| [Путь К4](quality/K4_COMMERCIAL_PATH_2026_08.md) | Нулевой вход; МСФО ≠ РСБУ; TAM ≠ SAM; −72% не наш |
+| [Новизна К2 vs витрина](quality/K2_NOVELTY_VS_PEERS_2026_08.md) | Четыре пункта методики; карточка ≠ публичный след |
 | [ПНСТ 841](quality/PNST_841_AI_QUALITY_EVAL_2026.md) | Карта на протокол 0,60; не SQuaRE-сертификат |
-| [Брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) | Роли, не ФИО; среднее сидящих |
+| [Брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) | Роли, не ФИО; отбор — среднее; финал — сумма |
+| [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Вставка в заявку](partners/I_MOSCOW_APPLICATION_PASTE_2026_08.md) | Поля без ФИО в git |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |
 

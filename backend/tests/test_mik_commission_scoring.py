@@ -42,7 +42,10 @@ class MikCommissionScoringTests(unittest.TestCase):
         self.assertEqual(criteria_max("K2") + criteria_max("K5"), 30)
 
     def test_aggregation_is_mean_and_novelty_is_not_tie_break(self) -> None:
+        from aerobim.domain.mik_commission_scoring import FINALIST_AGGREGATION
+
         self.assertEqual(AGGREGATION, "arithmetic_mean")
+        self.assertEqual(FINALIST_AGGREGATION, "sum")
         self.assertEqual(TIE_BREAK_ORDER, ("K3", "K4"))
         self.assertNotIn("K2", TIE_BREAK_ORDER)
         self.assertNotIn("K1", TIE_BREAK_ORDER)
@@ -109,6 +112,13 @@ class MikCommissionScoringTests(unittest.TestCase):
         self.assertFalse(snap["city_pilot_is_techlab_prize"])
         self.assertIn("etu.ru", snap["appendix_4_public_source"])
         self.assertEqual(snap["task_appendix_4_number"], 6)
+        self.assertEqual(snap["aggregation"], "arithmetic_mean")
+        self.assertEqual(snap["finalist_aggregation"], "sum")
+        self.assertEqual(snap["system_a"], "regulation_appendix_2_via_order_protocol_form")
+        self.assertEqual(snap["system_b"], "regulation_appendix_3_unseen")
+        self.assertFalse(snap["regulation_appendix_3_in_git"])
+        self.assertFalse(snap["finalist_weights_are_regulation_appendix_3"])
+        self.assertFalse(snap["prize_floor_denominator_known"])
 
     def test_low_k1_top_plus_rest_high_lo_clears_floor_identity(self) -> None:
         from aerobim.domain.mik_commission_scoring import (
@@ -137,6 +147,11 @@ class MikCommissionScoringTests(unittest.TestCase):
         self.assertFalse(snap["foreign_labor_cut_as_ours"])
         self.assertFalse(snap["sponsor_quote_is_commission_chair"])
         self.assertFalse(snap["tam_horizon_is_our_revenue"])
+        self.assertFalse(snap["k4_asks_customer_capex"])
+        self.assertFalse(snap["k4_offsets_partner_ifrs_loss"])
+        self.assertFalse(snap["ras_ifrs_signs_are_the_same"])
+        self.assertFalse(snap["catalog_four_are_all_applicants"])
+        self.assertFalse(snap["peer_card_claims_externally_verified"])
         self.assertLess(k1_lo + rest_lo, PRIZE_FLOOR)
 
     def test_ssot_does_not_mint_a_score_or_certify_gost(self) -> None:
@@ -240,9 +255,15 @@ class Kt3CommissionPackTests(unittest.TestCase):
 
     def test_k4_k2_pnst_seats_and_paste_exist(self) -> None:
         from aerobim.domain.mik_commission_scoring import (
+            catalog_four_are_all_applicants,
             foreign_labor_cut_as_ours,
+            k4_asks_customer_capex,
+            k4_offsets_partner_ifrs_loss,
             k4_revenue_claimed,
+            peer_card_claims_externally_verified,
             pnst_841_certified,
+            ras_ifrs_signs_are_the_same,
+            regulation_appendix_3_in_git,
             sponsor_quote_is_commission_chair,
             tam_horizon_is_our_revenue,
         )
@@ -252,6 +273,12 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertFalse(foreign_labor_cut_as_ours())
         self.assertFalse(sponsor_quote_is_commission_chair())
         self.assertFalse(tam_horizon_is_our_revenue())
+        self.assertFalse(k4_asks_customer_capex())
+        self.assertFalse(k4_offsets_partner_ifrs_loss())
+        self.assertFalse(ras_ifrs_signs_are_the_same())
+        self.assertFalse(catalog_four_are_all_applicants())
+        self.assertFalse(peer_card_claims_externally_verified())
+        self.assertFalse(regulation_appendix_3_in_git())
         k4 = (
             (self._repo / "docs" / "quality" / "K4_COMMERCIAL_PATH_2026_08.md")
             .read_text(encoding="utf-8")
@@ -296,6 +323,46 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertIn("не цифра тз", cover)
         self.assertIn("не прогноз нашего балла", paste)
         self.assertIn("tam_horizon_is_our_revenue() == false", k4)
+        self.assertIn("нулевой вход", k4)
+        self.assertIn("не capex", k4)
+        self.assertIn("мсфо", k4)
+        self.assertIn("рсбу", k4)
+        self.assertIn("k4_asks_customer_capex() == false", k4)
+        self.assertIn("четыре пункта", k2)
+        self.assertIn("не проверены извне", k2)
+        thresholds = (
+            (self._repo / "docs" / "quality" / "CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
+        self.assertIn("256", thresholds)
+        self.assertIn("0,86", thresholds)
+        self.assertIn("не поднимаем", thresholds)
+        scoring = (
+            (self._repo / "docs" / "quality" / "MIK_COMMISSION_SCORING_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
+        self.assertIn("итоговая сумма", scoring)
+        self.assertIn("приложение 3 к положению", scoring)
+        self.assertIn("не видели", scoring)
+
+    def test_system_b_ticksheet_exists_and_does_not_forecast(self) -> None:
+        from aerobim.domain.mik_commission_scoring import B_FINAL_TICKSHEET
+
+        path = self._repo / B_FINAL_TICKSHEET
+        text = path.read_text(encoding="utf-8")
+        lower = text.lower()
+        self.assertIn("predicted_aerobim_total() is none", lower)
+        self.assertIn("| б1 | 30 |", lower)
+        self.assertIn("| б2 | 20 |", lower)
+        self.assertIn("| б5 | 10 |", lower)
+        self.assertIn("только **б1**", lower)
+        self.assertIn("не прогноз", lower)
+        self.assertNotIn("closes_rt001: true", lower)
+        snap = scoring_snapshot()
+        self.assertEqual(snap["b_final_ticksheet"], B_FINAL_TICKSHEET)
+        self.assertIsNone(snap["predicted_aerobim_total"])
 
 
 if __name__ == "__main__":
