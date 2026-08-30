@@ -2,6 +2,7 @@
 ---
 title: "P0 — bidirectional AEROBIM_* inventory (scanner vs no-op)"
 date: "2026-08-27"
+last_updated: "2026-08-30"
 status: active
 closes_rt001: false
 closes_rt002: false
@@ -20,7 +21,10 @@ claim_boundary: >
 
 **Verdict.** **Scanner defect, not no-op.** Every name below is read by `Settings.from_env` via `_read_int` / `_read_bool` / `_read_float` / `_read_optional_int` / `_optional_bool` / `_env_prefer` / `_read_optional_int_prefer`, except `AEROBIM_GATES_ATTESTED` which is read by the baseline exporter itself (`os.environ.get` in `export_runtime_baseline.py`, not `settings.py`). CI previously enforced **code ⊆ docs**, not **docs ⊆ code**.
 
-Publishable numbers stay the pin: backend 2713 collected / 2694 passed / 19 skipped / 0 failed; frontend 57; src 84647 LOC; tests 55553 LOC; `extraction_macro_f1=0.86` on the **fixture** corpus; 48 ports / 72 adapters / 63 DI tokens. This report does not mint a new pin.
+Publishable test counts stay the **current** pin
+`docs/evidence/runtime-baseline-latest.json` (`attested_by=ci` only; do not
+quote this scanner note as the pin). Architecture inventory in this report:
+48 ports / 72 adapters / 63 DI tokens. This report does not mint a new pin.
 
 ## Pin names in documented_env_vars and not in code_env_vars
 

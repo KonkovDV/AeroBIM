@@ -3,8 +3,8 @@
 ## Техническое обоснование проекта для жюри программы «Техлаб Москва»
 ### задаче Самолёта по верификации ПД/РД, ГК «Самолёт»
 
-**Версия:** 1.2.7  
-**Дата:** 29 августа 2026 года  
+**Версия:** 1.2.8  
+**Дата:** 30 августа 2026 года  
 **Команда разработчиков AeroBIM**  
 **Репозиторий:** https://github.com/KonkovDV/AeroBIM  
 **Измерения (авг):** [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · [`evidence/baseline-2026-08.pdf`](evidence/baseline-2026-08.pdf)
@@ -467,7 +467,7 @@ AeroBIM решает конкретную задачу: уменьшает об�
 - BRAVO Bench: https://mediatum.ub.tum.de/doc/1854636/document.pdf
 - IFC-Bench-v1 (Hellin et al.): https://github.com/sylvainHellin/ifc-bench · HF V2: https://huggingface.co/datasets/sylvainhellin/ifc-bench
 - Arch-Eval (Wu et al., Sci Rep 2025): https://www.nature.com/articles/s41598-025-98236-0
-- Perov et al., From Regulations to IDS: https://doi.org/10.1109/icdmw69685.2025.00203
+- Perov et al., From Regulations to IDS (ICDMW DOI): https://doi.org/10.1109/icdmw69685.2025.00203 — внешние индексы также показывают *Buildings* 15 (2025) art. 2927 с тем же названием; **не склеивать** с ICDMW DOI как одну работу до ручной сверки (`lint_citation_twins`)
 - IFC-QA: https://openreview.net/pdf?id=H6vTDjJMZ9
 - Zentgraf et al., Advanced Engineering Informatics, 2026: https://doi.org/10.1016/j.aei.2026.104735
 - Madireddy et al., Electronics, 2025: https://doi.org/10.3390/electronics14112146
