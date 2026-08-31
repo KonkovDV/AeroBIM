@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
-version: "1.4.2"
-last_updated: "2026-08-30"
+version: "1.4.3"
+last_updated: "2026-08-31"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
@@ -24,7 +24,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Geometric hard clash | when ifcclash configured | fixture | — | ≠ full MEP |
 | MEP system graph | `edge_kinds` + optional AABB | ENG_FIXTURE | BLOCKED | RT-003 OPEN; always `geometry_verified=False` |
 | MEP system-aware rules | matrix schema + intake | template | BLOCKED_CUSTOMER_DATA | MEP-CLASH-001 |
-| Calculation match | load/qty/cross-doc/OpenRebar + xlsx/docx declared-field SHA | fixture | — | сверка only; ≠ solver; PDF fragile |
+| Calculation match | load/qty/cross-doc/OpenRebar + xlsx/docx declared-field SHA | fixture | local LIRA binaries counted 30.08, not parsed | сверка only; ≠ solver; PDF fragile |
 | Cross-document consistency | Shared-gate / section-diff | fixture | NOT_MEASURED customer | Labeled separately from within-sheet OCR; open-bench L1 ≠ RT-001 |
 | Calculation correctness | NOT_IMPLEMENTED | — | — | no solver; native `.lir` closed |
 | IFC streaming / disk R-tree | DESIGNED_NOT_IMPLEMENTED | unit snapshot + JSON sidecar dump | — | sidecar ≠ R-tree; SPF cap stays 256 MiB; RocksDB is a separate backend |

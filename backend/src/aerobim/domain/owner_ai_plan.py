@@ -37,6 +37,22 @@ PLAN_ITEMS: Final[tuple[dict[str, str], ...]] = (
         "stop": "sha256 of the NDA pack in git",
     },
     {
+        "id": "P0-03",
+        "stage": "0",
+        "title": "Unpack suffix/magic census under .local/; not processed",
+        "agent": "done",
+        "owner": "keep_nda_out_of_git",
+        "stop": "43 GB processed or pack_hash in git",
+    },
+    {
+        "id": "P0-04",
+        "stage": "0",
+        "title": "Pack family facts: calc binaries majority of unpack bytes; no byte totals in git",
+        "agent": "done",
+        "owner": "keep_nda_out_of_git",
+        "stop": "uncompressed byte totals in git; LIRA parsed; pack processed",
+    },
+    {
         "id": "P0-02",
         "stage": "0",
         "title": "Pack is PD; RD absent; expertise-after is zip not a loose tree",

@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-08-30"
+date: "2026-08-31"
 status: active
 version: "1.2.1"
 closes_rt001: false
@@ -47,6 +47,7 @@ claim_boundary: >-
 | TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
 | SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is SAM-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
+| SIG-02 | tracker | Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal) | pack_probe + census 6408; calc binaries are the majority of unpack bytes; 6 docx class-phrase / 46 xlsx load-token files are a shortlist, not MATCH. Uncompressed byte totals stay out of git. | 43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; byte totals of the NDA tree in git | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
 | TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
@@ -138,6 +139,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | TRK-05 | Owner file; git не изобретает воронку |
 | TRK-06 | Решение коммерции — вне кода |
 | SIG-01 | Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count |
+| SIG-02 | Owner pastes name-free aggregate after OA-9; hashed TSV stays .local |
 | TL-01 | КТ#3 03–21.09 — итоговое решение |
 | TL-02 | Замеры только после intake-gates |
 | TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
@@ -225,6 +227,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `TRK-05`: [KT3_TRACKER_DMITRY_2026_08.md](../demo/KT3_TRACKER_DMITRY_2026_08.md)
 - `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
 - `SIG-01`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
+- `SIG-02`: [CHANNEL_PACK_TRIAGE_2026_08.md](CHANNEL_PACK_TRIAGE_2026_08.md)
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
 - `TL-03`: [TECHLAB_TASK_07_READINESS_2026.md](../partners/TECHLAB_TASK_07_READINESS_2026.md)

@@ -501,6 +501,9 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", text)
         self.assertIn("TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md", text)
         self.assertIn("SIG01_CHANNEL_TRIAGE_2026_08.md", text)
+        self.assertIn("CHANNEL_SAMOLET_MAX_PASS_2026_08.md", text)
+        self.assertIn("CHANNEL_PACK_TRIAGE_2026_08.md", text)
+        self.assertIn("pack-family-facts-2026-08.md", text)
         self.assertIn("SAMOLET_QUESTION_PACK_KT3_2026_08.md", text)
         self.assertIn("KT3_RVT_NWD_CV_ONEPAGER_2026_08.md", text)
 

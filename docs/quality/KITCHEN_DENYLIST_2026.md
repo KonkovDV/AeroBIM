@@ -4,7 +4,7 @@ title: "Kitchen denylist pin (publication gate)"
 date: "2026-08-28"
 last_updated: "2026-08-30"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -47,7 +47,7 @@ that imports it. A hand list of guard paths is the same class defect as a hand
 list of content roots. Markdown pointers stay covered by the full-tree scan.
 
 Pack quarantine: tracked native authoring/solver/coordinator suffixes and
-quarantine prefixes (`files/`, `.local/pack/`) plus a 50 MiB size cap. The
+quarantine prefixes (`files/`, `.local/pack/`, `.local/pack-out/`) plus a 50 MiB size cap. The
 documented fake-byte DWG fixture under `samples/cad/` is the only suffix
 allowance. Document formats (PDF/Office/ZIP) are extracted during the token
 scan rather than blanket-quarantined, because the public tree already holds

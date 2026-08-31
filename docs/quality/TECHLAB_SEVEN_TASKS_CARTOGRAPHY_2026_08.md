@@ -2,9 +2,9 @@
 ---
 title: "Seven TechLab comparison tasks — cartography on local NDA rehearsal"
 date: "2026-08-26"
-last_updated: "2026-08-26"
+last_updated: "2026-08-30"
 status: active
-version: "1.0.1"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -170,3 +170,16 @@ SAM-TYP: 021, 022, 025. **Запрет:** «арматура сверена с �
 ## Red team (этот проход)
 
 Триаж атак на саму карту: [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md) §5, `RT-CART-01`…`08`. v1.0.1: литералы статусов ОЭП и числа ТЭП м² убраны из git после KILL. Не закрывает RT.
+
+## Дополнение 30.08 evening (coverage_map_only)
+
+Не пересчёт 51 ячейки и не закрытие задач. Новые факты носителя, без имён:
+
+- Два экспортёра IFC: Revit 23.1 / IFC 23.3.1.0 (пакеты B, C) и EDM + «alternative interface» 20.2.90.12 (пакет A). У пакета A `IfcGrid` = 0 — это состав выгрузки плагина, не «осей нет в проекте».
+- PDF: 1440 уникальных, 44200 страниц, 91 % с текстовым слоем; **1** файл ИРД/СТУ-класса с 0 страниц.
+- RVT unique 87: 2020 = 81, 2023 = 6; 20 workshared `RSN://`. Три NWD-федерации.
+- ЛИРА: 16 блоков на пакете A; один блок неполон (нет #68/#69, CRC на #67). На пакете B `.lir` нет.
+- КР `IfcMaterial.Name` несёт B25/B35 (CC-2 сторона BIM). Читаемой записки с \(A_s\)/прогибами по-прежнему нет.
+- EIR v4.0 + BIM-стандарт v4.0 present как текст; `customer_approved` absent.
+
+Пин: [`../evidence/deep-study-carrier-facts-2026-08.md`](../evidence/deep-study-carrier-facts-2026-08.md). Checkpoint **`NO_GO`**.

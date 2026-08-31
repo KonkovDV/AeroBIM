@@ -4,7 +4,7 @@ title: "Eight tracker tasks (Siginevich 29.08) — git SSOT for KT#3"
 date: "2026-08-30"
 last_updated: "2026-08-31"
 status: active
-version: "1.1.4"
+version: "1.1.6"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -25,18 +25,20 @@ Checkpoint **`NO_GO`**. Пакет канала **не** в git. Локатор 
 
 **SIG-01 — граница заявления.** Формулировка для отчёта: «объём находок на канале получен». Сырой счётчик записей машины — не точность, не «пакет обработан», не дефекты заказчика. Разложение классов, `unrestricted_eq_sample`, overlap unsigned-пакетов и два фикса движка (`target_ref=ALL`, GUID≠Name): [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md). Триаж канала: [`SIG01_CHANNEL_TRIAGE_2026_08.md`](SIG01_CHANNEL_TRIAGE_2026_08.md).
 
+Локально 31.08 (не закрывает задачи у владельца): максимум на unpack-дереве — [`CHANNEL_SAMOLET_MAX_PASS_2026_08.md`](CHANNEL_SAMOLET_MAX_PASS_2026_08.md) · триаж семейств [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md) · пин [`../evidence/pack-family-facts-2026-08.md`](../evidence/pack-family-facts-2026-08.md). Хэшированный TSV — только `.local/`. `publishable_finding_count=0`. Несжатые байт-итоги в git нет.
+
 Локально 30.08 вечер (не закрывает SIG-02 у владельца): recensus wrapper **2552** + unpack **6408** (утро 2618/6467 включало оболочки архивов; исходники удалены после member-coverage). Глубина носителей: [`../evidence/deep-study-carrier-facts-2026-08.md`](../evidence/deep-study-carrier-facts-2026-08.md). Это не обработка пакета.
 
 ## Что git уже умеет vs что должен сделать владелец
 
 | ID | Задача трекера | В git | Владелец | Не говорить |
 |---|---|---|---|---|
-| SIG-01 | Прогон IFC/PDF, число находок + типы | Форма таблицы: `run_finding_volume --run-demo`; классы [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md); триаж [`SIG01_CHANNEL_TRIAGE_2026_08`](SIG01_CHANNEL_TRIAGE_2026_08.md) | Прогон на канале после OA-9; тоталы в `.local/` | Находки = точность продукта; «пакет обработан»; список дефектов заказчика |
-| SIG-02 | Инвентаризация 43 ГБ | `pack_probe` + пины [`unpack-census`](../evidence/unpack-census-2026-08.md) и [`deep-study-carrier-facts`](../evidence/deep-study-carrier-facts-2026-08.md) (колонки; имена только `.local/`) | Реестр в чат до 02.09; не коммитить имена | **нельзя** говорить, что пакет обработан. «43 ГБ» — формулировка задачи, не замер |
+| SIG-01 | Прогон IFC/PDF, число находок + типы | Форма таблицы: `run_finding_volume --findings-lite-dir`; классы [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md); триаж [`SIG01_CHANNEL_TRIAGE_2026_08`](SIG01_CHANNEL_TRIAGE_2026_08.md); максимум на копии [`CHANNEL_SAMOLET_MAX_PASS_2026_08`](CHANNEL_SAMOLET_MAX_PASS_2026_08.md) | Прогон на канале после OA-9; тоталы в `.local/` | Находки = точность продукта; «пакет обработан»; список дефектов заказчика |
+| SIG-02 | Инвентаризация 43 ГБ | `pack_probe` + `pack_archive_overlap` + пины census / deep-study / [`pack-family-facts`](../evidence/pack-family-facts-2026-08.md); hashed TSV в `.local/` | Реестр в чат до 02.09 (после OA-9); не коммитить имена | **нельзя** говорить, что пакет обработан. «43 ГБ» — формулировка задачи, не замер |
 | SIG-03 | Внешний контур, две роли | `expert`/`user` в API; `GET /v1/auth/bff` **501** | Production IdP; фриз 18.09 | Lab cookie = SSO |
-| SIG-04 | Два критерия точности + классификатор | Каталог ≥20 классов; `customer_confirmed_patterns=0` | Два разметчика; сверка с их набором | Смешать F1 фикстур с объёмом канала |
+| SIG-04 | Два критерия точности + классификатор | Каталог ≥20 классов; `customer_confirmed_patterns=0`; наблюдения носителей в каталоге (не confirmation) | Два разметчика; сверка с их набором | Смешать F1 фикстур с объёмом канала |
 | SIG-05 | Пакет вопросов | Черновик [`../partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md`](../partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md) | Отправить 31.08 через организаторов | «заполните TBD с нуля» |
-| SIG-06 | ЛИРА к КТ#3 | Четыре проверки, не решатель | Пример записки | «конструкции пересчитаны» |
+| SIG-06 | ЛИРА к КТ#3 | Четыре проверки; shortlist 6 docx / 46 xlsx (не MATCH) | Каноничная записка | «конструкции пересчитаны»; токен = MATCH |
 | SIG-07 | RVT/NWD + CV | [одностраничник](../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md) | Юрлицо / закупка SDK | Sustaining = BimRv; CADSoftTools 1660 $ |
 | SIG-08 | РУТ (МИИТ) | OA-10 | Письмо до 01.09 | Учебный комплект закрывает RT-001 |
 

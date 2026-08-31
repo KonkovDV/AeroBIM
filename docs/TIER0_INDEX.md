@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.22"
+version: "4.8.24"
 last_updated: "2026-08-31"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -63,6 +63,9 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Критический путь окна КТ#3](quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md) | OIDC 501; Wilson n=6; RT-002 split; TBD confirm |
 | [Восемь задач трекера 29.08](quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md) | SIG-01…08; volume≠accuracy; BFF 501 |
 | [Триаж канала SIG-01](quality/SIG01_CHANNEL_TRIAGE_2026_08.md) | ALL≠accuracy; EI45≠REI60; overlap unsigned; NO_GO |
+| [Максимум на копии Самолёта 31.08](quality/CHANNEL_SAMOLET_MAX_PASS_2026_08.md) | SIG-01…08 на NDA-копии; Uncertain; volume≠accuracy |
+| [Триаж семейств пакета 31.08](quality/CHANNEL_PACK_TRIAGE_2026_08.md) | LIRA majority≠solver; token≠MATCH; ГиБ не в git |
+| [Pack family facts 31.08](evidence/pack-family-facts-2026-08.md) | 6408; named calc ext 235; 6 docx / 46 xlsx shortlist |
 | [Unpack census 30.08](evidence/unpack-census-2026-08.md) | SIG-02 carriers; evening 2552 / 6408 (утро 2618/6467 — оболочки); not processed |
 | [Deep-study carrier facts 30.08](evidence/deep-study-carrier-facts-2026-08.md) | SIG-02 depth; IFC2X3; QTO 0; FireRating walls EI 45; not processed |
 | [Пакет вопросов Самолёту](partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md) | SIG-05 черновик; RT-002b; TBD confirm v2 |

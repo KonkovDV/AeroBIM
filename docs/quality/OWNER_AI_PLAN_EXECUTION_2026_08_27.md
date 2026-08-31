@@ -2,9 +2,9 @@
 ---
 title: "Owner-AI plan execution — 2026-08-27"
 date: "2026-08-27"
-last_updated: "2026-08-28"
+last_updated: "2026-08-31"
 status: active
-version: "1.1.0"
+version: "1.2.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -30,6 +30,8 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. Семь задач сравнен�
 | ID | Что сделано | Что это не значит |
 |---|---|---|
 | P0-01 | Инвентарь `files/` пишется только в `.local/`; в git — обезличенные счётчики | sha256 NDA-пакета; имена площадок |
+| P0-03 | Unpack suffix/magic census 30.08 (пин в git) | «пакет обработан»; «43 ГБ обработаны» |
+| P0-04 | Пин семейств unpack 31.08: расчётные бинарники = большинство байт; байт-итоги не в git | Несжатые байты NDA-дерева в git; «пересчитали»; пакет обработан |
 | P0-02 | Пакет = ПД; РД нет; «после экспертизы» — zip | PD↔RD pairing как будто есть IFC РД |
 | P1-* | Unsigned OOS: QTO / MEP / стержни (`samples/oos/`) | skip лицензирован; RT CLOSED |
 | P1-EXTRACT | 0 hits extractor = `extraction_gap` | «в ТЗ нет огнестойкости/площадей» |
@@ -46,6 +48,8 @@ python -m aerobim.tools.export_owner_ai_plan --write-docs-evidence
 ```
 
 Публичный rehearsal (без имён, без хэшей): 4 папки, 2383 файла, 15 IFC (1 над cap), 27 RVT, 24 расчётных бинаря, 1127 PDF, 470 DWG. Не парсим RVT/NWD/LIRA. Не поднимаем cap.
+
+Дополнение 31.08: живой обход unpack **совпал** с evening pin 6408. Именованные расширения расчётного комплекса — 235 файлов; бинарные расчёты — большинство байт (несжатые итоги **не** в git). Читаемый слой CC-2/CC-4: 6 docx / 46 xlsx — shortlist, не MATCH. Триаж: [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md). **Не** обработка пакета.
 
 Дополнение 28.08: в пин добавлены 21 NWD/NWC, 70 файлов со «замечания» в имени, из них 2 чек-листа типовых замечаний (соцобъекты, ~760/~837 пунктов). Чек-листы **не внесены** в каталог типовых ошибок: `customer_confirmed_patterns` остаётся 0, «каталог принят» запрещено (RT-TYP-CATALOG).
 

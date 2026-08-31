@@ -71,6 +71,7 @@ PACK_SUFFIX_ALLOW = frozenset(
 QUARANTINE_PREFIXES = (
     "files/",
     ".local/pack/",
+    ".local/pack-out/",
 )
 # GitHub warns at 50 MiB; refuse tracked blobs at this size.
 MAX_TRACKED_BYTES = 50 * 1024 * 1024

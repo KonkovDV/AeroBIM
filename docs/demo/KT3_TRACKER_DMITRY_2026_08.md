@@ -2,7 +2,7 @@
 ---
 title: "КТ#3 — карточка для трекера (6 задач 14.08)"
 date: "2026-08-27"
-last_updated: "2026-08-27"
+last_updated: "2026-08-30"
 checkpoint: NO_GO
 closes_rt001: false
 closes_rt002: false
@@ -19,6 +19,8 @@ claim_boundary: >
 Показ одной командой: `python -m aerobim.tools.run_kt3_jury`.
 
 **Речь (дословно):** Tangl — слой модели. AeroBIM — шов комплекта (требования ↔ IFC ↔ листы ↔ ревизии). Не «заменим Tangl».
+
+**После 29.08:** восемь задач трекера (назначены 29.08) — отдельный SSOT [`../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md) (`tracker_eight_snapshot`). Не смешивать с таблицей ниже.
 
 Checkpoint **`NO_GO`**. Письмо Самолёту отправляет человек, не репозиторий.
 

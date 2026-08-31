@@ -334,6 +334,19 @@ LEDGER: tuple[InferenceRow, ...] = (
         "operational_hygiene",
     ),
     _row(
+        "SIG-02",
+        "tracker",
+        "Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal)",
+        "pack_probe + census 6408; calc binaries are the majority of unpack bytes; "
+        "6 docx class-phrase / 46 xlsx load-token files are a shortlist, not MATCH. "
+        "Uncompressed byte totals stay out of git.",
+        "43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; "
+        "byte totals of the NDA tree in git",
+        "docs/quality/CHANNEL_PACK_TRIAGE_2026_08.md",
+        "Owner pastes name-free aggregate after OA-9; hashed TSV stays .local",
+        "operational_hygiene",
+    ),
+    _row(
         "TL-01",
         "techlab",
         "КТ#2 (до 20.08): этап МИК «доработка»",

@@ -20,6 +20,8 @@ claim_boundary: >
 
 **What the clone does now.**
 
+Local unpack census 30.08 (gitignored trees, counts only): wrapper **27** `.rvt` / **21** NWD+NWC; unpack tree **75** `.rvt` / **8** Navis. Presence is not a reader. [`../evidence/unpack-census-2026-08.md`](../evidence/unpack-census-2026-08.md).
+
 | Path | Behaviour |
 |---|---|
 | HTTP upload `.rvt`/`.rte`/`.nwd`/`.nwc` | `UploadContentError` with `native RVT/NWD parser is not implemented; closed Autodesk format without a free reader` |

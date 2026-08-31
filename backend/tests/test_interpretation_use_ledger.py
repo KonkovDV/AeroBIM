@@ -80,6 +80,7 @@ class InterpretationUseLedgerTests(unittest.TestCase):
         self.assertIn("PLAN-00", ids)
         self.assertIn("PLAN-05", ids)
         self.assertIn("SIG-01", ids)
+        self.assertIn("SIG-02", ids)
         trk01 = next(row for row in payload["rows"] if row["row_id"] == "TRK-01")
         self.assertIn("run_kt3_jury", trk01["licensed_inference"])
         self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", trk01["evidence"])

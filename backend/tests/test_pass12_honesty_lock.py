@@ -114,7 +114,16 @@ class Pass12HonestyLockTests(unittest.TestCase):
 
     def test_pre_commit_quarantines_pack_suffixes_and_size(self) -> None:
         hook = (_REPO / ".githooks" / "pre-commit").read_text(encoding="utf-8").lower()
-        for needle in (".rvt", ".nwd", ".lir", ".dwg", "files/", ".local/pack/", "52428800"):
+        for needle in (
+            ".rvt",
+            ".nwd",
+            ".lir",
+            ".dwg",
+            "files/",
+            ".local/pack/",
+            ".local/pack-out/",
+            "52428800",
+        ):
             self.assertIn(needle, hook, msg=needle)
 
     def test_kitchen_scan_uses_git_ls_files_not_content_roots(self) -> None:

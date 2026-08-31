@@ -2,9 +2,9 @@
 ---
 title: "Local unpack census — suffix and magic (30.08.2026)"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-08-31"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -26,7 +26,7 @@ Checkpoint **`NO_GO`**. `processed: false`. This is SIG-02 **inventory**, not SI
 
 **Evening recensus.** Morning counts **2618 / 6467** included packed zip/7z shells. After member-level coverage the source archives were deleted locally; live trees are **2552 / 6408** with **0** zip/7z remaining. Deletion is a disk-hygiene step, not «processed».
 
-Depth on carriers (exporters, FireRating scope, RVT years, LIRA fragment gaps): [`deep-study-carrier-facts-2026-08.md`](deep-study-carrier-facts-2026-08.md).
+Depth on carriers (exporters, FireRating scope, RVT years, LIRA fragment gaps): [`deep-study-carrier-facts-2026-08.md`](deep-study-carrier-facts-2026-08.md). Family facts 31.08 (named calc ext, CC-2 shortlist, no byte totals): [`pack-family-facts-2026-08.md`](pack-family-facts-2026-08.md). Live walk 31.08 matched **6408**.
 
 ## Two trees (no folder labels)
 

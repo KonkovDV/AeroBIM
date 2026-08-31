@@ -77,6 +77,8 @@ class Kt3JuryTests(unittest.TestCase):
         self.assertEqual(payload["typical_errors"]["customer_confirmed_patterns"], 0)
         self.assertGreaterEqual(payload["typical_errors"]["pattern_count"], 20)
         self.assertEqual(payload["tracker"]["item_count"], 6)
+        self.assertEqual(payload["tracker_eight"]["item_count"], 8)
+        self.assertEqual(payload["tracker_eight"]["auth_bff_status"], "NOT_IMPLEMENTED")
         self.assertEqual(len(payload["paper_objects"]), 4)
         self.assertFalse(payload["nda_corpus_in_git"])
 

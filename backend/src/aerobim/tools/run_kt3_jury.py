@@ -40,6 +40,7 @@ def assemble_kt3_jury(
         "paper_objects": pack["paper_objects"],
         "typical_errors": pack["typical_errors"],
         "tracker": pack["tracker"],
+        "tracker_eight": pack["tracker_eight"],
         "mik_m2_m8": pack["mik_m2_m8"],
         "demo_command": pack["demo_command"],
         "pack_command": pack["pack_command"],

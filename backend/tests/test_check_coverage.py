@@ -184,6 +184,9 @@ class CheckCoverageTests(unittest.TestCase):
         self.assertIn("no_findings", record["operator_legend"])
         self.assertIn("tz_gaps", record)
         self.assertEqual(len(record["tz_gaps"]), 6)
+        space = next(row for row in record["tz_gaps"] if row["gap_id"] == "space_efficiency")
+        self.assertEqual(space["kt3_scope"], "advisory_unsigned")
+        self.assertIn("not delivered", space["jury_speech"])
         row = record["sources"][0]
         self.assertIn("operator_status", row)
         self.assertEqual(row["operator_status"]["ifc-validation"], "no_findings")

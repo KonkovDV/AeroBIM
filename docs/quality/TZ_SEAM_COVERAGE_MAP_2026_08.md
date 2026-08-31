@@ -2,9 +2,9 @@
 ---
 title: "TZ seam coverage map — local NDA rehearsal × literature 2026-08-26"
 date: "2026-08-26"
-last_updated: "2026-08-29"
+last_updated: "2026-08-31"
 status: active
-version: "1.2.2"
+version: "1.2.5"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -32,7 +32,7 @@ The pack **supplies carriers** for a coverage map (IFC AR+KR, PD PDFs, EIR/LOD w
 | Priority | Finding | Licensed speech | Forbidden speech |
 |---|---|---|---|
 | **P0** | 6 AR IFC, **10 599** `IfcSpace`, **0** with `Qto_SpaceBaseQuantities.NetFloorArea`; sister whole-building AR: **1 339** spaces, **0** area | Export has rooms as objects; area checks are not runnable | «Площади сверены с ТЭП»; TZ tasks 3–4 done |
-| **P0** | **62 033** `IfcWall` on those 6 AR; FireRating filled on **3 538** (5.7 %), observed class **EI 45 only** (re-counted 26.08 evening). Per-block fill **8–875** walls (one block 8/4635). KR sample: FireRating token **0** | Property often empty; when present it is EI 45, not design-TZ class II / C0, not fixture REI60 | «Огнестойкость проверена»; 8/4635 as the pack rate; demo IDS = customer defects |
+| **P0** | **62 033** `IfcWall` on those 6 AR; FireRating filled on **3 538** (5.7 %), observed **wall** class **EI 45 only** (re-counted 26.08 evening; confirmed 30.08). Doors on the same files also carry EI30 / EI60 / EIS60 — that is a different construct. Per-block wall fill **8–875** (one block 8/4635). KR sample: FireRating token **0** | Property often empty on walls; when present it is EI 45, not design-TZ class II / C0, not fixture REI60 | «Огнестойкость проверена»; 8/4635 as the pack rate; door classes as wall rate; demo IDS = customer defects |
 | **P0** | EGCC (arXiv:2607.29058): repeated-test false-pass **51.6 → 41.1 %**; exact-task correctness **15.9 → 20.5 %**; typed finding F1 **5.2 → 9.0 %**. Empirical block is **PDF pages**; CAD/IFC adapters are not in that trial. Authors: unsuitable for autonomous approval | Fail-closed four-state (Meets / Does-not / Missing / Uncertain) + HITL | Autonomous approve; EGCC % as IFC or AeroBIM score |
 | **P0** | LLM-as-judge (arXiv:2606.19544): agreement ≠ Cohen’s κ | Dual human raters remain the gate | «Модель подтвердила findings» |
 | **P1** | Ishigaki-IDS-Bench (arXiv:2605.22079): zero-shot Content-pass **27.7–33.1 %**. Ishigaki-IDS-8B (arXiv:2606.08545): validator-pass **0.651**, still a **draft** aid | Human-reviewed IDS draft only | `customer_approved` from an LLM |
@@ -62,9 +62,10 @@ Local owner-disk NDA tree, gitignored. Analyze cap **256 MiB** unchanged. 14 IFC
 | Carrier | Count (this rehearsal) | Engine consequence |
 |---|---|---|
 | IFC | 15 (IFC2x3); 1 over analyze cap | Ingest ≠ native RVT/NWD |
+| Unpack tree (30.08 evening, gitignored) | **6408** files (morning 6467 included shells); IFC copies 4; PDF 2046; DWG 1877; RVT 75; LIRA family present | Coverage map of carriers; **not** processed; natives still fail-closed — [`../evidence/unpack-census-2026-08.md`](../evidence/unpack-census-2026-08.md) · depth [`../evidence/deep-study-carrier-facts-2026-08.md`](../evidence/deep-study-carrier-facts-2026-08.md) |
 | IfcSpace on 6 AR of one PD package | 10 599; **0** NetFloorArea; sampled pset = `Pset_SpaceCommon.Reference` only | SAM-TYP-008 has nothing to read; K0/K1/K2 not measurable |
 | IfcSpace on one sister AR | 1 339; **0** NetFloorArea | Same gap |
-| IfcWall FireRating (6 AR) | 3 538 / 62 033 nonempty, class EI 45 | Not II/C0; not REI60 |
+| IfcWall FireRating (6 AR) | 3 538 / 62 033 nonempty **on walls**, class EI 45; doors on the same files: EI30 / EI60 / EIS60 | Not II/C0; not REI60; do not quote door classes as the wall rate |
 | IfcReinforcingBar (15 IFC) | **0** | Class 4 / TZ task 7 blocked; wall pset *pitch* ≠ bars |
 | MEP IFC (duct/pipe/cable) | **0** | RT-003 OPEN; EIR LOD sheets for OV/VK/EOM exist as **text** |
 | `.lir` calculation binaries | present (not parsed) | `calculation_correctness=NOT_IMPLEMENTED` |
@@ -144,6 +145,9 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-CART-08 | Pitch pset on the map ⇒ task 7 done | **KILL** | Same brake as RT-SEAM-06 |
 | RT-PLAN-01 | Post-cartography plan / TL-04…10 ⇒ tasks closed | **KILL** | Criterion Uncertain; IUA rows are speech bounds |
 | RT-PLAN-02 | KR cipher accepted ⇒ KZH/PP-87 delivered | **KILL** | KR-NOT-KZH warning; numeric volume ≠ discipline |
+| RT-PACK-GIB | Uncompressed NDA byte totals in git | **KILL** | OA-9; `uncompressed_gib_in_git=false`; majority boolean only |
+| RT-PACK-LIRA | Named `.lir`/f74 count ⇒ solver / «пересчитали» | **KILL** | `parse_lira=false`; shortlist is Office, not binaries |
+| RT-PACK-TOKEN | 6 docx / 46 xlsx ⇒ CC-2/CC-4 MATCH | **KILL** | `is_cc2_match=false`; owner-canonical note |
 
 Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Исполнение плана (unsigned OOS, inventory `.local/`): [`OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](OWNER_AI_PLAN_EXECUTION_2026_08_27.md).
 

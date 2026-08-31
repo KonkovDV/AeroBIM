@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.2.1",
-  "generated_at": "2026-08-30T13:48:08.063681+00:00",
+  "generated_at": "2026-08-31T20:58:39.960095+00:00",
   "audited_head": "f9389bf",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
@@ -42,7 +42,7 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "row_count": 84,
+  "row_count": 85,
   "rows": [
     {
       "row_id": "SAM-01",
@@ -360,6 +360,20 @@
       "blocked_inference": "Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export",
       "evidence": "docs/quality/FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md",
       "kt3_condition": "Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count",
+      "licensed_use": "operational_hygiene",
+      "closes_rt001": false,
+      "closes_rt002": false,
+      "closes_rt003": false,
+      "checkpoint": "NO_GO"
+    },
+    {
+      "row_id": "SIG-02",
+      "source": "tracker",
+      "requirement": "Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal)",
+      "licensed_inference": "pack_probe + census 6408; calc binaries are the majority of unpack bytes; 6 docx class-phrase / 46 xlsx load-token files are a shortlist, not MATCH. Uncompressed byte totals stay out of git.",
+      "blocked_inference": "43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; byte totals of the NDA tree in git",
+      "evidence": "docs/quality/CHANNEL_PACK_TRIAGE_2026_08.md",
+      "kt3_condition": "Owner pastes name-free aggregate after OA-9; hashed TSV stays .local",
       "licensed_use": "operational_hygiene",
       "closes_rt001": false,
       "closes_rt002": false,

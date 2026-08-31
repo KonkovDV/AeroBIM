@@ -19,7 +19,7 @@ fail=0
 while IFS= read -r rel; do
   [ -z "$rel" ] && continue
   case "$rel" in
-    files/*|.local/pack/*)
+    files/*|.local/pack/*|.local/pack-out/*)
       echo "pre-commit: refusing quarantine path: $rel" >&2
       fail=1
       continue

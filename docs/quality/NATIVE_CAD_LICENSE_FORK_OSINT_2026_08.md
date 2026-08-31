@@ -56,7 +56,7 @@ Autodesk News, 4 марта 2022: приостановка бизнеса в Р�
 
 IFC 2x3 / IFC4 / IFC4x3 — штатный экспорт authoring tools (в том числе Revit). Native RVT/NWD в MVP закрывается **регламентом передачи IFC**, не SDK. Это не «мы читаем RVT». Сводная NWD → IFC — на стороне назначающей стороны (вопрос заказчику; T2 BCF в их СОД отдельно, NOT_VERIFIED).
 
-buildingSMART Validation Service принимает несжатый `.ifc` **не более 256 MB** ([user guide](https://buildingsmart.github.io/validate/user/index.html); UI: «256mb max»). Default `AEROBIM_MAX_IFC_BYTES` = 256 **MiB** SPF in-memory — сопоставимый порядок, **не** та же единица. До 1,5 ГБ analyze идёт через IfcOpenShell RocksDB, не через SPF RAM. WASM остаётся 256 MiB. Это не native DWG/RVT.
+buildingSMART Validation Service принимает несжатый `.ifc` **не более 256 MB** ([user guide](https://buildingsmart.github.io/validate/user/index.html); UI: «256mb max»). Default `AEROBIM_MAX_IFC_BYTES` = 256 **MiB** SPF in-memory — сопоставимый порядок, **не** та же единица. До 1,5 ГБ analyze идёт через IfcOpenShell RocksDB, не через SPF RAM. WASM остаётся 256 MiB. Native DWG/RVT — not claimed.
 
 ## 6. Что говорить / не говорить
 

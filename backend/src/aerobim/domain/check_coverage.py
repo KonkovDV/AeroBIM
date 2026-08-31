@@ -92,6 +92,8 @@ TZ_GAP_ROWS: tuple[dict[str, str], ...] = (
             "advisory inventory ≠ delivered metric"
         ),
         "tz_matrix": "§2 целевые задачи / space efficiency",
+        "kt3_scope": "advisory_unsigned",
+        "jury_speech": ("IfcSpace inventory as INFO; no signed sellable-area KPI; not delivered"),
     },
     {
         "gap_id": "calculation_solver",

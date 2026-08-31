@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.13"
-last_updated: "2026-08-30"
+version: "2.5.16"
+last_updated: "2026-08-31"
 ---
 
 # Evidence fixtures
@@ -20,6 +20,9 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Qwen LIVE on fixture; Kimi GATED; `comparison_not_run`. Not a bake-off; not product accuracy |
 | [`vertical-slice-demo-live-2026-08-14.md`](vertical-slice-demo-live-2026-08-14.md) | Live `run_demo_vertical_slice` pin: exit 0, `summary.passed=false`, NO_GO; PNG/manifest hashes stable; report/BCF drift via `created_at` |
 | [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md) | Data availability: git fixtures vs local benches vs missing customer corpus; Checkpoint NO_GO |
+| [`unpack-census-2026-08.md`](unpack-census-2026-08.md) · [`.json`](unpack-census-latest.json) | SIG-02 suffix/magic census 30.08 evening: wrapper 2552 / unpack 6408 (morning shells 2618/6467). Not processed. No names/hashes |
+| [`pack-family-facts-2026-08.md`](pack-family-facts-2026-08.md) · [`.json`](pack-family-facts-latest.json) | SIG-02 family facts 31.08: unpack 6408; named calc ext 235; 6 docx / 46 xlsx shortlist. Byte totals not in git. Not processed |
+| [`deep-study-carrier-facts-2026-08.md`](deep-study-carrier-facts-2026-08.md) · [`.json`](deep-study-carrier-facts-latest.json) | SIG-02 depth: 15 IFC2X3, QTO 0, wall FireRating EI 45, RVT 2020/2023. Not processed. No names/hashes |
 | [`interpretation-use-ledger-latest.json`](interpretation-use-ledger-latest.json) · [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: licensed vs blocked inferences. Not customer precision. Checkpoint NO_GO |
 | [`tz-v1-brief-coverage-2026-08.json`](tz-v1-brief-coverage-2026-08.json) · [`../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) | Public TZ v1 6-page brief pin. Not seven tasks. Not a product accuracy score. NO_GO |
 | [`owner-ai-plan-execution-2026-08.json`](owner-ai-plan-execution-2026-08.json) · [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md) | Owner-AI plan scaffolds (unsigned OOS, local inventory). Not RT CLOSED. NO_GO |

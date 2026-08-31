@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.4.0",
+  "schema_version": "1.4.1",
   "catalog_id": "samolet-typical-errors-v1",
   "catalog_status": "synthetic-scaffold",
   "description": "Engineering scaffold for Samolet TechLab intake. All entries require customer confirmation; mapping to a rule or finding class is not evidence that a pattern is detected with customer-grade precision.",
@@ -7,6 +7,42 @@
   "customer_share_received_at": "2026-08-25",
   "customer_share_ingested": false,
   "customer_confirmed_patterns": 0,
+  "channel_carrier_observations": {
+    "as_of": "2026-08-31",
+    "claim_level": "coverage_map_only",
+    "customer_confirmed_patterns": 0,
+    "not_customer_defects": true,
+    "notes": [
+      {
+        "error_id": "SAM-TYP-001",
+        "observed": "Wall FireRating when filled is EI 45, not demo REI60, not TZ II/C0"
+      },
+      {
+        "error_id": "SAM-TYP-008",
+        "observed": "NetFloorArea count 0; TEP from IFC is not runnable"
+      },
+      {
+        "error_id": "SAM-TYP-020",
+        "observed": "No MEP duct/pipe/cable IFC on the 15-file carrier set"
+      },
+      {
+        "error_id": "SAM-TYP-021",
+        "observed": "IfcReinforcingBar count 0; CC-1 from IFC is blocked"
+      },
+      {
+        "error_id": "SAM-TYP-022",
+        "observed": "KR IFC material tokens B25/B35 present; MATCH needs a readable note"
+      },
+      {
+        "error_id": "SAM-TYP-023",
+        "observed": "IfcSpace objects present; space-efficiency stays advisory_unsigned"
+      },
+      {
+        "error_id": "SAM-TYP-024",
+        "observed": "customer_approved IDS absent; EIR workbook is not RT-002b"
+      }
+    ]
+  },
   "acceptance_checklists_local": {
     "detected_count": 2,
     "detected_at": "2026-08-28",

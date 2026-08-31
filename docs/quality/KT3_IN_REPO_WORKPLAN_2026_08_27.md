@@ -2,9 +2,9 @@
 ---
 title: "In-repo workplan after 25.08 customer answers"
 date: "2026-08-27"
-last_updated: "2026-08-30"
+last_updated: "2026-08-31"
 status: active
-version: "1.8.1"
+version: "1.8.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -83,7 +83,15 @@ Owner-запросы (не код), редакция 28.08 после крити
 | 3 | «Неэффективное использование пространства»: решение владельца | Позиция «в скоупе КТ#3» (advisory по внутреннему нормативу продаваемой площади/МОП/коридоров) или явное «вне MVP» зафиксирована до репетиции защиты (OA-14) | Оставить единственное «не реализовано» в карте покрытия без позиции — жюри поднимет само |
 | — | Речь про RT-002 | Всегда split: 002a CLOSED (публичные IDS Мособлгосэкспертизы/АГР/СПб ЦГЭ + `pack_hash`), 002b OPEN (нет подписи Самолёта) | «RT-002 открыт целиком» = «нет норм»; «RT-002 CLOSED» без split |
 
-Уточнения 30.08 (факты, не план): подъём `AEROBIM_MAX_IFC_BYTES` 256 МиБ → заявленные 1,5 ГБ ingest — нагрузочные тесты и RSS-замер, не переписывание (конфиг analyze; публичный кап bSI Validation Service — 256 MB несжатого `.ifc`, не та же единица). Имена, хеши и размеры файлов канала в git **не** пишем. Fixture P/R=1,0 при n=6 жюри не показывается (Wilson 6/6 lower ≈ 0,61; стоп-лист КТ#3, п. 28). Пять TBD-разделов ТЗ заполнены в `docs/tz/` (v2) — организаторам подаётся наша редакция на подтверждение, не просьба «заполнить». OSINT 30.08: Sustaining ODA 7 500 $ **не** включает BimRv/BimNv (по 6 250 $); см. [`NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md). Критический путь окна: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md).
+Критерии приёмки: [`TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md`](TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md). Подъём SPF 256 МиБ → 1,5 ГБ ingest — RocksDB и RSS, не rewrite in-memory. Имена и хеши канала в git **не** пишем. Fixture P/R=1,0 при n=6 жюри не показывается (Wilson 6/6 lower ≈ 0,61). TBD в ТЗ — подтвердить редакцию v2. OSINT: Sustaining ≠ BimRv. Критический путь: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md).
+
+### Добавлено 31.08 (максимум на unpack-дереве + Red Team семейств)
+
+| Pri | Task | Done when | Forbidden |
+|---|---|---|---|
+| 9b | `pack_probe` + hashed TSV **локально**; пин семейств в git (счётчики, без байт-итогов) | `pack_family_snapshot()`; live walk = 6408; `lira_named_ext=235` | Несжатые байт-итоги в git; «43 ГБ обработаны»; txt-stub `.local/pack` как комплект |
+| 6b | CC-2/CC-4 shortlist: 6 docx «класс бетона», 46 xlsx нагрузок | Кандидаты в `.local/`; `is_cc2_match=false` | Токен = MATCH; разбор `.lir` |
+| — | Триаж семейств | [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md) 18 KILL / 3 HOLD / 4 ACCEPT | Meets/Does-not семи задач; OCR сдан |
 
 ## Owner-only (not git)
 

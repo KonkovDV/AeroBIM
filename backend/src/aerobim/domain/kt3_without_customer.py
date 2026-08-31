@@ -12,6 +12,7 @@ from typing import Any, Final
 
 from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS
 from aerobim.domain.kt3_jury import JURY_COMMAND
+from aerobim.domain.tracker_eight_tasks import tracker_eight_snapshot
 from aerobim.domain.tracker_six_tasks import tracker_snapshot
 from aerobim.domain.tz_v1_brief import PAPER_OBJECTS
 
@@ -47,6 +48,10 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
     ("kt3_jury_card", "docs/demo/KT3_JURY_FAQ_2026_08_25.md"),
     ("kt3_operator_runbook", "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md"),
     ("kt3_tracker_card", "docs/demo/KT3_TRACKER_DMITRY_2026_08.md"),
+    (
+        "kt3_tracker_eight",
+        "docs/quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md",
+    ),
     ("tz_v1_brief", "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md"),
     ("owner_ai_plan", "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md"),
     ("iua_ledger", "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md"),
@@ -188,6 +193,7 @@ def assemble_kt3_without_customer(
         "paper_objects": list(PAPER_OBJECTS),
         "typical_errors": typical,
         "tracker": tracker,
+        "tracker_eight": tracker_eight_snapshot(),
         "mik_m2_m8": "VERIFY_WITH_OPERATOR",
         "evidence": evidence,
         "intake_status": gate.get("status"),
@@ -259,6 +265,13 @@ def require_honest_kt3_payload(
     tracker = payload.get("tracker")
     if not isinstance(tracker, dict) or tracker.get("scheduled_demos_in_git") is not False:
         errors.append("tracker must not publish scheduled-demo counts in git")
+    eight = payload.get("tracker_eight")
+    if not isinstance(eight, dict) or eight.get("item_count") != 8:
+        errors.append("tracker_eight must have 8 items")
+    if isinstance(eight, dict) and eight.get("auth_bff_status") != "NOT_IMPLEMENTED":
+        errors.append("tracker_eight auth_bff must stay NOT_IMPLEMENTED")
+    if isinstance(eight, dict) and eight.get("finding_volume_is_accuracy") is not False:
+        errors.append("finding volume must not be labeled accuracy")
     if payload.get("mik_m2_m8") != "VERIFY_WITH_OPERATOR":
         errors.append("mik_m2_m8 must stay VERIFY_WITH_OPERATOR")
     if errors:

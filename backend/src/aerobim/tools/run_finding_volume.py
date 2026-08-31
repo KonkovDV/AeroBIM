@@ -26,9 +26,21 @@ def _load_findings(path: Path) -> list[dict[str, Any]]:
     return [item for item in raw if isinstance(item, dict)]
 
 
+def _load_lite_dir(path: Path) -> list[dict[str, Any]]:
+    """Load findings-lite.json trees written by a local SIG-01 rerun."""
+
+    rows: list[dict[str, Any]] = []
+    for lite in sorted(path.rglob("findings-lite.json")):
+        payload = json.loads(lite.read_text(encoding="utf-8"))
+        if isinstance(payload, list):
+            rows.extend(item for item in payload if isinstance(item, dict))
+    return rows
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gate-json", type=Path, default=None)
+    parser.add_argument("--findings-lite-dir", type=Path, default=None)
     parser.add_argument("--run-demo", action="store_true")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -44,11 +56,14 @@ def main(argv: list[str] | None = None) -> int:
         gate = run_demo_ifc_acceptance_gate()
         findings = [item for item in (gate.get("findings") or []) if isinstance(item, dict)]
         claim_level = "fixture_only"
+    elif args.findings_lite_dir is not None:
+        findings = _load_lite_dir(args.findings_lite_dir)
+        claim_level = "pack_volume_not_accuracy"
     elif args.gate_json is not None:
         findings = _load_findings(args.gate_json)
         claim_level = "pack_volume_not_accuracy"
     else:
-        print("pass --run-demo or --gate-json", file=sys.stderr)
+        print("pass --run-demo, --gate-json, or --findings-lite-dir", file=sys.stderr)
         return 2
     payload = volume_from_findings(findings)
     payload["claim_level"] = claim_level

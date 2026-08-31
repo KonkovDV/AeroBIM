@@ -122,6 +122,6 @@ Never say one number under three names. Speech: corpus + protocol + license ever
 
 ## What is still missing
 
-Public «российский комплект ПД + фактическое заключение экспертизы» does not exist. Samolet project models under NDA are not here. Those two sentences are the remaining RT-001 / customer-corpus deficit. Everything else in this file was available under a free license and is now cited.
+Public «российский комплект ПД + фактическое заключение экспертизы» does not exist **in git**. A local NDA wrapper+unpack tree was counted 30.08 ([`evidence/unpack-census-2026-08.md`](evidence/unpack-census-2026-08.md)) and family-counted 31.08 ([`evidence/pack-family-facts-2026-08.md`](evidence/pack-family-facts-2026-08.md)) — coverage map, not RT-001, not pack processed. Samolet project models under NDA are not in this repository. Those two sentences are the remaining RT-001 / customer-corpus deficit. Everything else in this file was available under a free license and is now cited.
 
 Link-check of a later open-proxy list (Schependomlaan zip, ПНСТ/Renga, ifcfast#141, clash-experiments): [`datasets/OPEN_PROXY_VERIFICATION_2026_08_23.md`](datasets/OPEN_PROXY_VERIFICATION_2026_08_23.md). Still `closes_rt001/002/003: false`.
