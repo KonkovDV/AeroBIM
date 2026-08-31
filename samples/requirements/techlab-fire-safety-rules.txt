@@ -1,3 +1,5 @@
+# target_ref ALL = every instance of ifc_entity (not an element named "ALL").
+# Unsigned demo pack — not SP 2.13130.
 # rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text
 REQ-FIRE-001|ifc-property|IFCWALL|ALL|Pset_WallCommon|FireRating|eq|REI60||Противопожарные стены — REI60 по СП 2.13130.2020
 REQ-FIRE-002|ifc-property|IFCDOOR|ALL|Pset_DoorCommon|FireRating|eq|EI30||Двери эвакуационных выходов — EI30

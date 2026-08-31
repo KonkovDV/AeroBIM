@@ -21,6 +21,7 @@ from aerobim.domain.models import (
     issue_from_requirement,
 )
 from aerobim.domain.quantity import parse_quantity, si_compare
+from aerobim.domain.target_ref import target_ref_matches
 
 
 def annotation_is_ocr(annotation: DrawingAnnotation) -> bool:
@@ -102,10 +103,7 @@ class DrawingAnnotationValidator:
     def matches_annotation(
         self, requirement: ParsedRequirement, annotation: DrawingAnnotation
     ) -> bool:
-        if (
-            requirement.target_ref
-            and requirement.target_ref.lower() != annotation.target_ref.lower()
-        ):
+        if not target_ref_matches(requirement.target_ref, annotation.target_ref):
             return False
         if (
             requirement.property_name

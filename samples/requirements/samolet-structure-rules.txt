@@ -1,4 +1,5 @@
-# Samolet pilot norm pack (structure) — customize after intake
+# Samolet unsigned pilot pack (structure) — not a signed IDS / not SP 63 as law.
+# target_ref ALL = every instance of ifc_entity (not an element named "ALL").
 # rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text
 REQ-STR-001|ifc-property|IFCWALL|ALL|Pset_WallCommon|LoadBearing|eq|TRUE||Несущие стены — несущая способность
 REQ-STR-002|ifc-quantity|IFCWALL|ALL|Qto_WallBaseQuantities|Width|gte|200|mm|Толщина несущих стен — не менее 200 мм

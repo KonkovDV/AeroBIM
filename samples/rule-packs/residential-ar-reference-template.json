@@ -197,7 +197,7 @@
       "operator": "gte",
       "expected_value": 1.2,
       "unit": "m",
-      "evidence_text": "Synthetic demo threshold only; it is not an SP/GOST claim.",
+      "evidence_text": "Synthetic demo threshold only; it is not an SP/GOST claim. Per-element hits on this rule are unsigned detections, not customer defects.",
       "instructions": "Replace with the customer-approved project criterion before pilot sign-off."
     }
   ]

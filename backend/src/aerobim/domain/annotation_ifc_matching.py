@@ -8,6 +8,7 @@ from typing import Literal, Protocol
 
 from aerobim.domain.drawing_region_hitl import annotation_bbox_xyxy, intersection_over_union
 from aerobim.domain.models import DrawingAnnotation, DrawingRegionRef, ParsedRequirement
+from aerobim.domain.target_ref import target_ref_matches
 
 MatchBasis = Literal["target_ref", "sheet+measure", "region_overlap"]
 
@@ -42,7 +43,7 @@ def _requirement_matches_annotation(
     requirement: ParsedRequirement,
     annotation: DrawingAnnotation,
 ) -> bool:
-    if requirement.target_ref and requirement.target_ref.lower() != annotation.target_ref.lower():
+    if not target_ref_matches(requirement.target_ref, annotation.target_ref):
         return False
     if (
         requirement.property_name

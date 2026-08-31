@@ -1,5 +1,6 @@
 # rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text|instructions|norm_source|norm_clause
 # Clauses cite samples/specifications/techlab-tz.txt (demo TZ). Not SP 2.13130 / customer II/C0.
+# target_ref ALL = every instance of ifc_entity (engine must not look up an element named ALL).
 REQ-AREA-001|ifc-quantity|IFCSPACE|ROOM-101|Qto_SpaceBaseQuantities|NetFloorArea|gte|42|m2|Площадь по ТЗ п.4.2||ТЗ (демо-пакет)|п. 4.2
 REQ-AREA-002|ifc-quantity|IFCSPACE|ROOM-102|Qto_SpaceBaseQuantities|NetFloorArea|gte|18.5|m2|Жилая комната минимум 18.5 м2||ТЗ (демо-пакет)|п. 4.1
 REQ-FIRE-001|ifc-property|IFCWALL|ALL|Pset_WallCommon|FireRating|eq|REI60||Противопожарная стена REI60||ТЗ (демо-пакет)|п. 4.4

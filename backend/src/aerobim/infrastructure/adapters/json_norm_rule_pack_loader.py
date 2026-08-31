@@ -528,7 +528,10 @@ class JsonNormRulePackLoader:
         if scope in {RuleScope.IFC_PROPERTY, RuleScope.IFC_QUANTITY} and not ifc_entity:
             raise ValueError(f"{prefix}ifc_entity/object_type is required for {scope.value}")
         if scope is RuleScope.DRAWING_ANNOTATION and not target_ref:
-            raise ValueError(f"{prefix}target_ref is required for drawing-annotation")
+            raise ValueError(
+                f"{prefix}target_ref is required for drawing-annotation "
+                "(use ALL to match any annotation of the measure)"
+            )
         if not property_name:
             raise ValueError(f"{prefix}property_name is required")
 

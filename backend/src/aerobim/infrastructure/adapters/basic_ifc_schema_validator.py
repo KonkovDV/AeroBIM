@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 from aerobim.domain.ids_schema_gate import parse_ifc_file_schema
+from aerobim.domain.ifc_globalid import iter_spf_entity_heads, spf_line_rooted_global_id
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
 # Supported public IFC schema tokens for pilot honesty (SPF FILE_SCHEMA).
@@ -20,8 +20,6 @@ _SUPPORTED_SCHEMAS = frozenset(
     }
 )
 
-# Rooted-entity line: first attribute is the 22-char IfcGloballyUniqueId.
-_ENTITY_GUID_RE = re.compile(r"^#\d+\s*=\s*IFC[A-Z0-9_]+\s*\(\s*'([^']{22})'")
 _MAX_DUPLICATE_REPORTS = 10
 
 
@@ -118,10 +116,9 @@ class BasicIfcSchemaValidator:
         seen: dict[str, int] = {}
         try:
             with ifc_path.open("r", encoding="utf-8", errors="replace") as handle:
-                for line in handle:
-                    match = _ENTITY_GUID_RE.match(line)
-                    if match is not None:
-                        guid = match.group(1)
+                for head in iter_spf_entity_heads(handle):
+                    guid = spf_line_rooted_global_id(head)
+                    if guid is not None:
                         seen[guid] = seen.get(guid, 0) + 1
         except OSError:
             # Unreadable file already produced an ERROR in the envelope checks.

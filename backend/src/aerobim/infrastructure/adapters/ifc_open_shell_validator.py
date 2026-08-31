@@ -17,6 +17,10 @@ from aerobim.domain.models import (
     issue_from_requirement,
 )
 from aerobim.domain.quantity import normalize_unit_token, parse_localized_number
+from aerobim.domain.target_ref import (
+    UNRESTRICTED_ELEMENT_MISMATCH_CAP,
+    is_unrestricted_target_ref,
+)
 
 # Maps requirement unit string → (IFC unit type, factor to convert that unit to SI).
 _UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
@@ -183,19 +187,25 @@ class IfcOpenShellValidator:
                 )
                 continue
 
-            property_found = False
+            is_unrestricted = is_unrestricted_target_ref(requirement.target_ref)
+            missing_count = 0
+            mismatch_count = 0
             for element in matching_elements:
                 properties = self._get_element_psets(element, get_psets, pset_cache)
                 property_group = properties.get(requirement.property_set)
-                if not isinstance(property_group, dict):
-                    continue
-
-                observed_value = property_group.get(requirement.property_name)
+                observed_value = None
+                if isinstance(property_group, dict):
+                    observed_value = property_group.get(requirement.property_name)
                 if observed_value is None:
+                    missing_count += 1
                     continue
 
-                property_found = True
-                if not self._matches_requirement(observed_value, requirement, unit_scales):
+                if requirement.operator is ComparisonOperator.EXISTS:
+                    continue
+                if self._matches_requirement(observed_value, requirement, unit_scales):
+                    continue
+                mismatch_count += 1
+                if mismatch_count <= UNRESTRICTED_ELEMENT_MISMATCH_CAP or not is_unrestricted:
                     reported_observed = self._normalize_observed_for_report(
                         observed_value, requirement.unit, unit_scales
                     )
@@ -213,7 +223,9 @@ class IfcOpenShellValidator:
                         )
                     )
 
-            if not property_found:
+            total_elements = len(matching_elements)
+            present_count = total_elements - missing_count
+            if present_count == 0:
                 issues.append(
                     issue_from_requirement(
                         requirement,
@@ -223,6 +235,34 @@ class IfcOpenShellValidator:
                             f"was not found on any {requirement.ifc_entity} elements"
                         ),
                         category=FindingCategory.IFC_VALIDATION,
+                    )
+                )
+            elif missing_count > 0:
+                issues.append(
+                    issue_from_requirement(
+                        requirement,
+                        severity=Severity.ERROR,
+                        message=(
+                            f"Property {requirement.property_set}.{requirement.property_name} "
+                            f"is missing on {missing_count} of {total_elements} "
+                            f"{requirement.ifc_entity} elements"
+                        ),
+                        category=FindingCategory.IFC_VALIDATION,
+                    )
+                )
+            if is_unrestricted and mismatch_count > UNRESTRICTED_ELEMENT_MISMATCH_CAP:
+                suppressed = mismatch_count - UNRESTRICTED_ELEMENT_MISMATCH_CAP
+                issues.append(
+                    issue_from_requirement(
+                        requirement,
+                        severity=Severity.ERROR,
+                        message=(
+                            f"{suppressed} further {requirement.ifc_entity} property mismatches "
+                            f"suppressed (unrestricted target_ref cap "
+                            f"{UNRESTRICTED_ELEMENT_MISMATCH_CAP}; not a customer defect list)"
+                        ),
+                        category=FindingCategory.IFC_VALIDATION,
+                        observed_value=str(mismatch_count),
                     )
                 )
 
@@ -244,9 +284,10 @@ class IfcOpenShellValidator:
             elements = tuple(model.by_type(ifc_entity))
             entity_cache[entity_key] = elements
 
-        if not target_ref:
+        if is_unrestricted_target_ref(target_ref):
             return list(elements)
 
+        assert target_ref is not None
         target_key = (entity_key, target_ref.strip().lower())
         filtered_elements = target_cache.get(target_key)
         if filtered_elements is None:

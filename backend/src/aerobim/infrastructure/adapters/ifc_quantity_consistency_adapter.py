@@ -11,6 +11,7 @@ from typing import Any
 from aerobim.domain.consistency import QuantityClaim
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
+from aerobim.domain.target_ref import is_unrestricted_target_ref
 
 
 class IfcQuantityConsistencyAdapter:
@@ -96,7 +97,7 @@ class IfcQuantityConsistencyAdapter:
 
         want = claim.quantity_name.strip().casefold()
         for element in entities:
-            if claim.target_ref:
+            if claim.target_ref and not is_unrestricted_target_ref(claim.target_ref):
                 name = str(getattr(element, "Name", "") or "")
                 tag = str(getattr(element, "Tag", "") or "")
                 guid = str(getattr(element, "GlobalId", "") or "")
