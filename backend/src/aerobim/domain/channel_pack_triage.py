@@ -188,9 +188,7 @@ def pack_triage_snapshot() -> dict[str, object]:
         "is_accuracy": False,
         "is_pack_processed": False,
         "uncompressed_gib_in_git": family["uncompressed_gib_in_git"],
-        "calc_binaries_majority_of_unpack_bytes": family[
-            "calc_binaries_majority_of_unpack_bytes"
-        ],
+        "calc_binaries_majority_of_unpack_bytes": family["calc_binaries_majority_of_unpack_bytes"],
         "is_cc2_match": family["is_cc2_match"],
         "seven_task_criterion": "Uncertain",
         "rows": [dict(row) for row in TRIAGE_ROWS],
