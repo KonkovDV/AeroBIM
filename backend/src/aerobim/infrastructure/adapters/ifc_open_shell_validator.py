@@ -211,13 +211,21 @@ class IfcOpenShellValidator:
                     reported_observed = self._normalize_observed_for_report(
                         observed_value, requirement.unit, unit_scales
                     )
+                    extra = ""
+                    if is_unrestricted:
+                        extra = (
+                            " (unsigned pack; "
+                            f"observed {reported_observed}, "
+                            f"expected {requirement.expected_value}; "
+                            "not a statutory claim)"
+                        )
                     issues.append(
                         issue_from_requirement(
                             requirement,
                             severity=Severity.ERROR,
                             message=(
                                 f"Property {requirement.property_set}.{requirement.property_name} "
-                                f"does not match the expected value"
+                                f"does not match the expected value{extra}"
                             ),
                             category=FindingCategory.IFC_VALIDATION,
                             observed_value=reported_observed,

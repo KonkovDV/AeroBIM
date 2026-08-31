@@ -42,7 +42,7 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "row_count": 83,
+  "row_count": 84,
   "rows": [
     {
       "row_id": "SAM-01",
@@ -188,7 +188,7 @@
       "row_id": "PLAN-00",
       "source": "techlab",
       "requirement": "Инвентарь files/ (локальный NDA) как покрытие, не pack_hash",
-      "licensed_inference": "Public rehearsal counts; live scan only under .local/",
+      "licensed_inference": "27.08 wrapper pin 2383; 30.08 morning 2618/6467 (packed shells); 30.08 evening recensus wrapper 2552 + unpack 6408 after deleting covered source archives (0 zip/7z left). Deep-study facts are coverage_map_only. Live scan only under .local/. Not processed.",
       "blocked_inference": "sha256 пакета Самолёта в git; имена площадок в публичном дереве",
       "evidence": "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
       "kt3_condition": "Keep NDA binaries and hashes out of git",
@@ -346,6 +346,20 @@
       "blocked_inference": "Трекер согласовал Tangl/10D/SKU",
       "evidence": "docs/architecture/ADR-002-open-core-commercial-boundary-2026.md",
       "kt3_condition": "Решение коммерции — вне кода",
+      "licensed_use": "operational_hygiene",
+      "closes_rt001": false,
+      "closes_rt002": false,
+      "closes_rt003": false,
+      "checkpoint": "NO_GO"
+    },
+    {
+      "row_id": "SIG-01",
+      "source": "tracker",
+      "requirement": "Восемь задач 29.08: объём находок на канале IFC/PDF",
+      "licensed_inference": "Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is SAM-09, not SP 2.13130.",
+      "blocked_inference": "Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export",
+      "evidence": "docs/quality/FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md",
+      "kt3_condition": "Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count",
       "licensed_use": "operational_hygiene",
       "closes_rt001": false,
       "closes_rt002": false,

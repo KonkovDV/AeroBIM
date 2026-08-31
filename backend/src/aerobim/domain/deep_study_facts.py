@@ -1,0 +1,101 @@
+"""Git-safe carrier facts from the 30.08 evening deep study.
+
+Live trees and names stay under ``.local/``. This pin is coverage_map_only:
+entity/property presence, not TP/FP, not «processed». Checkpoint NO_GO.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Final
+
+CHECKPOINT: Final = "NO_GO"
+CLAIM_LEVEL: Final = "coverage_map_only"
+CLAIM_BOUNDARY: Final = (
+    "Carrier facts after unpack (packs A/B/C + standard tree). "
+    "Not pack processed. Not product accuracy. Not native RVT/NWD/LIRA. "
+    "FireRating wall fill is not a fire-delivered claim. "
+    "SPF cap stays 256 MiB. Checkpoint NO_GO."
+)
+
+# Pack letters match docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md.
+PUBLIC_DEEP_STUDY: Final[dict[str, Any]] = {
+    "study_date": "2026-08-30",
+    "study_pass": "evening",
+    "unique_ifc_count": 15,
+    "ifc_schema": "IFC2X3",
+    "ifc_over_spf_cap_count": 1,
+    "ifc_exporters": [
+        "revit_23_1_30_97_ifc_23_3_1_0",
+        "edm_alternative_interface_20_2_90_12",
+    ],
+    "pack_a_ar_ifc": 6,
+    "pack_a_kr_ifc": 5,
+    "pack_b_ar_ifc": 1,
+    "pack_b_kr_ifc": 1,
+    "pack_c_ar_ifc": 1,
+    "pack_c_kr_ifc": 1,
+    "ifcspace_pack_a": 10599,
+    "ifcspace_pack_b": 1339,
+    "ifcspace_pack_c": 4214,
+    "netfloorarea_count": 0,
+    "qto_space_base_count": 0,
+    "ifcwall_pack_a": 62033,
+    "firerating_wall_filled_pack_a": 3538,
+    "firerating_wall_class_observed": "EI 45",
+    "firerating_door_classes_observed": ["EI30", "EI60", "EIS60"],
+    "ifcgrid_pack_a": 0,
+    "ifcgrid_pack_b_ar": 13,
+    "ifcgrid_pack_c_ar": 53,
+    "ifcreinforcingbar_count": 0,
+    "acoustic_rating_count": 0,
+    "mep_duct_pipe_cable_count": 0,
+    "flow_terminal_present_on_ar": True,
+    "reinforcement_pitch_pset_present": True,
+    "kr_material_concrete_class_tokens": ["B25", "B35"],
+    "unique_pdf_count": 1440,
+    "unique_pdf_pages": 44200,
+    "pdf_scan_like_count": 130,
+    "pdf_zero_page_count": 1,
+    "unique_dwg_count": 1227,
+    "dwg_ac1032_2018_count": 693,
+    "unique_rvt_count": 87,
+    "rvt_2020_count": 81,
+    "rvt_2023_count": 6,
+    "rvt_workshared_rsn_count": 20,
+    "nwd_federation_count": 3,
+    "lira_calc_blocks_pack_a": 16,
+    "lira_incomplete_block_count": 1,
+    "lira_crc_defect_member_count": 1,
+    "lira_present_pack_b": False,
+    "eir_v4_present": True,
+    "customer_approved_ids": False,
+    "names_in_git": False,
+    "hashes_in_git": False,
+    "processed": False,
+    "raise_cap": False,
+    "parse_rvt_nwd_lira": False,
+    "customer_confirmed_patterns": 0,
+    "default_ifc_cap_mib": 256,
+}
+
+
+def deep_study_snapshot() -> dict[str, Any]:
+    return {
+        "artifact_type": "deep_study_carrier_facts",
+        "claim_level": CLAIM_LEVEL,
+        "checkpoint": CHECKPOINT,
+        "closes_rt001": False,
+        "closes_rt002": False,
+        "closes_rt003": False,
+        "claim_boundary": CLAIM_BOUNDARY,
+        "detected_count": 0,
+        **PUBLIC_DEEP_STUDY,
+    }
+
+
+__all__ = [
+    "CLAIM_BOUNDARY",
+    "CHECKPOINT",
+    "PUBLIC_DEEP_STUDY",
+    "deep_study_snapshot",
+]

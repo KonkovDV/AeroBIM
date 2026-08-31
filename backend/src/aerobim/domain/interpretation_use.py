@@ -201,7 +201,10 @@ LEDGER: tuple[InferenceRow, ...] = (
         "PLAN-00",
         "techlab",
         "Инвентарь files/ (локальный NDA) как покрытие, не pack_hash",
-        "Public rehearsal counts; live scan only under .local/",
+        "27.08 wrapper pin 2383; 30.08 morning 2618/6467 (packed shells); "
+        "30.08 evening recensus wrapper 2552 + unpack 6408 after deleting "
+        "covered source archives (0 zip/7z left). Deep-study facts are "
+        "coverage_map_only. Live scan only under .local/. Not processed.",
         "sha256 пакета Самолёта в git; имена площадок в публичном дереве",
         "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
         "Keep NDA binaries and hashes out of git",
@@ -315,6 +318,19 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Трекер согласовал Tangl/10D/SKU",
         "docs/architecture/ADR-002-open-core-commercial-boundary-2026.md",
         "Решение коммерции — вне кода",
+        "operational_hygiene",
+    ),
+    _row(
+        "SIG-01",
+        "tracker",
+        "Восемь задач 29.08: объём находок на канале IFC/PDF",
+        "Report phrase: объём находок на канале получен. "
+        "unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. "
+        "EI 45 vs demo REI60 is SAM-09, not SP 2.13130.",
+        "Product accuracy; pack processed; customer defect list; "
+        "unsigned ALL+eq as SP; raising the mismatch cap as a defect export",
+        "docs/quality/FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md",
+        "Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count",
         "operational_hygiene",
     ),
     _row(

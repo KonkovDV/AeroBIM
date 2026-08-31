@@ -34,7 +34,7 @@ claim_boundary: >-
 | SAM-08 | samolet | ТР-16/19: площади помещений / чертёж↔IFC | 6 AR IFC: 10599 IfcSpace, 0 NetFloorArea; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
 | SAM-09 | samolet | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | 62033 walls; FireRating 5.7% EI45 only; not TZ II/C0 | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
 | SAM-10 | samolet | ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ | v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score | Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF | `engine_regression` |
-| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | Public rehearsal counts; live scan only under .local/ | sha256 пакета Самолёта в git; имена площадок в публичном дереве | `operational_hygiene` |
+| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | 27.08 wrapper pin 2383; 30.08 morning 2618/6467 (packed shells); 30.08 evening recensus wrapper 2552 + unpack 6408 after deleting covered source archives (0 zip/7z left). Deep-study facts are coverage_map_only. Live scan only under .local/. Not processed. | sha256 пакета Самолёта в git; имена площадок в публичном дереве | `operational_hygiene` |
 | PLAN-01 | techlab | QTO помещений или подписанный OOS (задача 3) | Unsigned qto_space_area template; Missing QTO ≠ TEP Does-not | Площади сверены с ТЭП; unsigned OOS = skip licensed | `protocol_planning` |
 | PLAN-02 | techlab | ИОС IFC или подписанный MEP-OOS (задача 5 / RT-003) | Unsigned mep_federated template; mep_system_clash=NOT_VERIFIED | MEP delivered; unsigned OOS closes RT-003 | `protocol_planning` |
 | PLAN-03 | techlab | Стержни IFC или подписанный OOS п.7 (Solihin 4) | Unsigned rebar_class4 template; .lir not parsed | Арматура сверена с расчётом; pitch pset = class 4 | `protocol_planning` |
@@ -46,6 +46,7 @@ claim_boundary: >-
 | TRK-04 | tracker | Задача 4: научный консультант / ИТ-ментор | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
 | TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
+| SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is SAM-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
 | TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
@@ -136,6 +137,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | TRK-04 | Минуты только после заметок владельца |
 | TRK-05 | Owner file; git не изобретает воронку |
 | TRK-06 | Решение коммерции — вне кода |
+| SIG-01 | Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count |
 | TL-01 | КТ#3 03–21.09 — итоговое решение |
 | TL-02 | Замеры только после intake-gates |
 | TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
@@ -222,6 +224,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `TRK-04`: [KT3_JURY_FAQ_2026_08_25.md](../demo/KT3_JURY_FAQ_2026_08_25.md)
 - `TRK-05`: [KT3_TRACKER_DMITRY_2026_08.md](../demo/KT3_TRACKER_DMITRY_2026_08.md)
 - `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
+- `SIG-01`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
 - `TL-03`: [TECHLAB_TASK_07_READINESS_2026.md](../partners/TECHLAB_TASK_07_READINESS_2026.md)

@@ -499,6 +499,10 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT3_JURY_FAQ_2026_08_25.md", text)
         self.assertIn("KT3_OPERATOR_RUNBOOK_2026_08_25.md", text)
         self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", text)
+        self.assertIn("TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md", text)
+        self.assertIn("SIG01_CHANNEL_TRIAGE_2026_08.md", text)
+        self.assertIn("SAMOLET_QUESTION_PACK_KT3_2026_08.md", text)
+        self.assertIn("KT3_RVT_NWD_CV_ONEPAGER_2026_08.md", text)
 
     def test_qa_defense_stays_no_go_and_omits_contest_count(self) -> None:
         path = self._repo() / "docs" / "qa-defense-2026.md"

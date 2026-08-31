@@ -15,7 +15,10 @@ from aerobim.application.services.drawing_annotation_validation import (
 from aerobim.domain.consistency import QuantityClaim
 from aerobim.domain.finding_volume import (
     REPORT_PHRASE,
+    VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE,
+    classify_message_shape,
     classify_volume_record,
+    suppressed_remainder,
     volume_from_findings,
     volume_from_issues,
 )
@@ -283,6 +286,19 @@ class AllTargetRefValidatorTests(unittest.TestCase):
         self.assertEqual(len(mismatch), 2)
         self.assertEqual(len(suppressed), 1)
         self.assertIn("not a customer defect list", suppressed[0].message)
+        self.assertTrue(all("unsigned pack" in item.message for item in mismatch))
+        self.assertTrue(all("not a statutory claim" in item.message for item in mismatch))
+        self.assertEqual(
+            classify_volume_record(
+                {
+                    "rule_id": "REQ-FIRE-001",
+                    "target_ref": "ALL",
+                    "element_guid": "wall-guid-1",
+                    "message": mismatch[0].message,
+                }
+            ),
+            VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE,
+        )
 
 
 class DrawingAllTargetRefTests(unittest.TestCase):
@@ -482,6 +498,43 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
             "element_detection_unsigned",
         )
         self.assertEqual(
+            classify_volume_record(
+                {
+                    "rule_id": "REQ-FIRE-001",
+                    "element_guid": "wall-guid-1",
+                    "message": (
+                        "Property Pset_WallCommon.FireRating does not match the expected value"
+                    ),
+                }
+            ),
+            VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE,
+        )
+        self.assertEqual(
+            classify_volume_record(
+                {
+                    "rule_id": "SAM-AR-020",
+                    "element_guid": "rail-1",
+                    "message": (
+                        "Property Pset_RailingCommon.Height does not match the expected value"
+                    ),
+                }
+            ),
+            VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE,
+        )
+        self.assertEqual(
+            classify_volume_record(
+                {
+                    "rule_id": "REQ-FIRE-001",
+                    "target_ref": "Wall-01",
+                    "element_guid": "wall-guid-1",
+                    "message": (
+                        "Property Pset_WallCommon.FireRating does not match the expected value"
+                    ),
+                }
+            ),
+            "element_detection_unsigned",
+        )
+        self.assertEqual(
             classify_volume_record({"rule_id": "REQ-FIRE-001"}),
             "unsigned_universal_rule",
         )
@@ -538,8 +591,24 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
         self.assertEqual(table["by_volume_class"]["service_hitl"], 1)
         self.assertEqual(table["by_volume_class"]["service_capability"], 1)
         self.assertEqual(table["by_volume_class"]["element_detection_unsigned"], 1)
+        self.assertEqual(table["publishable_finding_count"], 0)
+        self.assertFalse(table["suppressed_remainder_is_finding_count"])
         self.assertIn("Not product accuracy", table["claim_boundary"])
         self.assertIn(REPORT_PHRASE, table["claim_boundary"])
+        self.assertEqual(
+            classify_message_shape(
+                "Property Pset_WallCommon.FireRating does not match the expected value"
+            ),
+            "property_mismatch",
+        )
+        self.assertEqual(
+            suppressed_remainder(
+                "12 further IFCWALL property mismatches "
+                f"{UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER} 50; "
+                "not a customer defect list)"
+            ),
+            12,
+        )
 
     def test_volume_from_issues_reads_validation_issue(self) -> None:
         table = volume_from_issues(
@@ -554,6 +623,49 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
         self.assertEqual(table["total"], 1)
         self.assertEqual(table["by_volume_class"]["service_hitl"], 1)
         self.assertFalse(table["is_accuracy"])
+
+    def test_all_eq_cap_samples_are_not_element_detections(self) -> None:
+        table = volume_from_findings(
+            [
+                {
+                    "rule_id": "REQ-FIRE-001",
+                    "element_guid": "g1",
+                    "message": (
+                        "Property Pset_WallCommon.FireRating does not match the expected value"
+                    ),
+                    "severity": "error",
+                    "category": "ifc-validation",
+                },
+                {
+                    "rule_id": "SAM-AR-011",
+                    "message": (
+                        "Property Pset_WallCommon.FireRating "
+                        "is missing on 10 of 12 IFCWALL elements"
+                    ),
+                    "severity": "error",
+                    "category": "ifc-validation",
+                },
+                {
+                    "rule_id": "REQ-FIRE-001",
+                    "message": (
+                        f"12 further IFCWALL property mismatches "
+                        f"{UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER} 50; "
+                        "not a customer defect list)"
+                    ),
+                    "severity": "error",
+                },
+            ]
+        )
+        self.assertEqual(table["by_volume_class"][VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE], 1)
+        self.assertEqual(table["by_volume_class"]["coverage_unsigned"], 2)
+        self.assertNotIn("element_detection_unsigned", table["by_volume_class"])
+        self.assertEqual(table["capped_eq_sample_count"], 1)
+        self.assertEqual(table["suppressed_remainder_sum"], 12)
+        self.assertFalse(table["suppressed_remainder_is_finding_count"])
+        self.assertGreaterEqual(table["overlap_unsigned_group_count"], 1)
+        self.assertEqual(table["publishable_finding_count"], 0)
+        self.assertEqual(table["by_message_shape"]["property_mismatch"], 1)
+        self.assertEqual(table["by_message_shape"]["mismatch_suppressed"], 1)
 
 
 class QuantityAllTargetRefTests(unittest.TestCase):

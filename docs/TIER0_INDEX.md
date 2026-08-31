@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.17"
-last_updated: "2026-08-30"
+version: "4.8.22"
+last_updated: "2026-08-31"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -61,6 +61,12 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Действия владельца](OWNER_ACTIONS_2026_09.md) | Git не закрывает письмо, ФИО, PDF, разметчиков |
 | [Лицензионная вилка CAD (OSINT 30.08)](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) | Sustaining ≠ BimRv; не DWG-ready |
 | [Критический путь окна КТ#3](quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md) | OIDC 501; Wilson n=6; RT-002 split; TBD confirm |
+| [Восемь задач трекера 29.08](quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md) | SIG-01…08; volume≠accuracy; BFF 501 |
+| [Триаж канала SIG-01](quality/SIG01_CHANNEL_TRIAGE_2026_08.md) | ALL≠accuracy; EI45≠REI60; overlap unsigned; NO_GO |
+| [Unpack census 30.08](evidence/unpack-census-2026-08.md) | SIG-02 carriers; evening 2552 / 6408 (утро 2618/6467 — оболочки); not processed |
+| [Deep-study carrier facts 30.08](evidence/deep-study-carrier-facts-2026-08.md) | SIG-02 depth; IFC2X3; QTO 0; FireRating walls EI 45; not processed |
+| [Пакет вопросов Самолёту](partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md) | SIG-05 черновик; RT-002b; TBD confirm v2 |
+| [Одностраничник RVT/NWD/CV](demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md) | SIG-07; CADSoftTools от 765 USD; Sustaining ≠ BimRv |
 | [Четыре проверки vs записка](quality/CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md) | Сопоставление, не решатель |
 | [Путь К4](quality/K4_COMMERCIAL_PATH_2026_08.md) | Нулевой вход; МСФО ≠ РСБУ; TAM ≠ SAM; −72% не наш |
 | [Новизна К2 vs витрина](quality/K2_NOVELTY_VS_PEERS_2026_08.md) | Четыре пункта методики; карточка ≠ публичный след |
