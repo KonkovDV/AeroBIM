@@ -287,21 +287,21 @@ class IfcOpenShellValidator:
         if is_unrestricted_target_ref(target_ref):
             return list(elements)
 
-        assert target_ref is not None
-        target_key = (entity_key, target_ref.strip().lower())
+        named_ref = (target_ref or "").strip()
+        target_key = (entity_key, named_ref.lower())
         filtered_elements = target_cache.get(target_key)
         if filtered_elements is None:
             fast = self._fast_guid_lookup(
                 model,
                 entity_key=entity_key,
-                target_ref=target_ref,
+                target_ref=named_ref,
                 spatial_index=spatial_index,
             )
             if fast is not None:
                 filtered_elements = fast
             else:
                 filtered_elements = tuple(
-                    element for element in elements if self._matches_target_ref(element, target_ref)
+                    element for element in elements if self._matches_target_ref(element, named_ref)
                 )
             target_cache[target_key] = filtered_elements
         return list(filtered_elements)

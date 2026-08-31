@@ -380,8 +380,7 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
                 {
                     "rule_id": "REQ-FIRE-001",
                     "message": (
-                        "Property Pset_WallCommon.FireRating was not found "
-                        "on any IFCWALL elements"
+                        "Property Pset_WallCommon.FireRating was not found on any IFCWALL elements"
                     ),
                 }
             ),

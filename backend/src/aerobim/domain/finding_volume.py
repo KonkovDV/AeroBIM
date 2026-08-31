@@ -40,9 +40,7 @@ _RULE_VOLUME_CLASS: Final[dict[str, str]] = {
 }
 
 # HITL + capability flags are machine records, not findings.
-_NON_FINDING_CLASSES: Final[frozenset[str]] = frozenset(
-    {"service_hitl", "service_capability"}
-)
+_NON_FINDING_CLASSES: Final[frozenset[str]] = frozenset({"service_hitl", "service_capability"})
 
 
 def classify_volume_record(item: Mapping[str, Any]) -> str:

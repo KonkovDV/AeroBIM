@@ -14,12 +14,7 @@ from typing import Final
 # Tokens that mean "do not filter by Name/Tag/GlobalId/Description".
 # An element whose Name is literally "ALL" cannot be selected via target_ref;
 # address it by GlobalId. Empty / None is the same as ALL (column omitted).
-# Tokens that mean "do not filter by Name/Tag/GlobalId/Description".
-# An element whose Name is literally "ALL" cannot be selected via target_ref;
-# address it by GlobalId. Empty / None is the same as ALL (column omitted).
-UNRESTRICTED_TARGET_REF_TOKENS: Final[frozenset[str]] = frozenset(
-    {"", "all", "*", "any"}
-)
+UNRESTRICTED_TARGET_REF_TOKENS: Final[frozenset[str]] = frozenset({"", "all", "*", "any"})
 
 # Per-element value mismatches on unrestricted rules. Full-set EXISTS/EQ
 # gaps are one coverage row, not N issues. Cap prevents a 20k-row flood from
@@ -40,7 +35,8 @@ def target_ref_matches(requirement_ref: str | None, observed_ref: str) -> bool:
 
     if is_unrestricted_target_ref(requirement_ref):
         return True
-    assert requirement_ref is not None
+    if requirement_ref is None:
+        return True
     return requirement_ref.strip().lower() == observed_ref.strip().lower()
 
 
