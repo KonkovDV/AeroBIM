@@ -21,7 +21,12 @@ from aerobim.domain.models import (
     issue_from_requirement,
 )
 from aerobim.domain.quantity import parse_quantity, si_compare
-from aerobim.domain.target_ref import target_ref_matches
+from aerobim.domain.target_ref import (
+    UNRESTRICTED_ELEMENT_MISMATCH_CAP,
+    is_unrestricted_target_ref,
+    target_ref_matches,
+    unrestricted_mismatch_suppressor_message,
+)
 
 
 def annotation_is_ocr(annotation: DrawingAnnotation) -> bool:
@@ -77,6 +82,8 @@ class DrawingAnnotationValidator:
                 )
                 continue
 
+            is_unrestricted = is_unrestricted_target_ref(requirement.target_ref)
+            mismatch_count = 0
             for annotation in matching_annotations:
                 if self.compare_values(
                     annotation.observed_value,
@@ -85,16 +92,32 @@ class DrawingAnnotationValidator:
                     unit=requirement.unit or annotation.unit,
                 ):
                     continue
+                mismatch_count += 1
+                if mismatch_count <= UNRESTRICTED_ELEMENT_MISMATCH_CAP or not is_unrestricted:
+                    issues.append(
+                        issue_from_requirement(
+                            requirement,
+                            severity=Severity.ERROR,
+                            message="Drawing annotation does not match the normalized rule",
+                            category=FindingCategory.DRAWING_VALIDATION,
+                            target_ref=annotation.target_ref,
+                            observed_value=annotation.observed_value,
+                            problem_zone=annotation.problem_zone,
+                            unit=requirement.unit or annotation.unit,
+                        )
+                    )
+            if is_unrestricted and mismatch_count > UNRESTRICTED_ELEMENT_MISMATCH_CAP:
+                suppressed = mismatch_count - UNRESTRICTED_ELEMENT_MISMATCH_CAP
                 issues.append(
                     issue_from_requirement(
                         requirement,
                         severity=Severity.ERROR,
-                        message="Drawing annotation does not match the normalized rule",
+                        message=unrestricted_mismatch_suppressor_message(
+                            ifc_entity=requirement.ifc_entity or "drawing-annotation",
+                            suppressed=suppressed,
+                        ),
                         category=FindingCategory.DRAWING_VALIDATION,
-                        target_ref=annotation.target_ref,
-                        observed_value=annotation.observed_value,
-                        problem_zone=annotation.problem_zone,
-                        unit=requirement.unit or annotation.unit,
+                        observed_value=str(mismatch_count),
                     )
                 )
 

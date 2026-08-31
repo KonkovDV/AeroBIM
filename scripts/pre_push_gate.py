@@ -21,6 +21,7 @@ still block the push.
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import time
@@ -99,7 +100,19 @@ sync README markers, push again. Do NOT mint a pin from local pytest
 
 def _run(name: str, cmd: list[str], cwd: Path) -> tuple[bool, str]:
     start = time.monotonic()
-    proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False)
+    env = os.environ.copy()
+    env["PYTHONUTF8"] = "1"
+    env["PYTHONIOENCODING"] = "utf-8"
+    proc = subprocess.run(
+        cmd,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
+        env=env,
+    )
     elapsed = time.monotonic() - start
     output = ((proc.stdout or "") + (proc.stderr or "")).rstrip()
     if proc.returncode == 0:
@@ -107,9 +120,7 @@ def _run(name: str, cmd: list[str], cwd: Path) -> tuple[bool, str]:
         return True, ""
     if name == "runtime baseline drift":
         lines = [line for line in output.splitlines() if line.strip()]
-        hard = [
-            line for line in lines if not line.startswith(_BASELINE_SOFT_PREFIXES)
-        ]
+        hard = [line for line in lines if not line.startswith(_BASELINE_SOFT_PREFIXES)]
         if not hard:
             print(f"warn {name} ({elapsed:.1f}s) — pin lags the tree (CI will refresh)", flush=True)
             print(output, flush=True)

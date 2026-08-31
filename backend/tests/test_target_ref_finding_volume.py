@@ -12,6 +12,7 @@ from unittest.mock import patch
 from aerobim.application.services.drawing_annotation_validation import (
     DrawingAnnotationValidator,
 )
+from aerobim.domain.consistency import QuantityClaim
 from aerobim.domain.finding_volume import (
     REPORT_PHRASE,
     classify_volume_record,
@@ -33,12 +34,21 @@ from aerobim.domain.models import (
     ToleranceConfig,
     ValidationIssue,
 )
-from aerobim.domain.target_ref import is_unrestricted_target_ref, target_ref_matches
+from aerobim.domain.quantity import parse_quantity
+from aerobim.domain.target_ref import (
+    UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER,
+    element_matches_named_target_ref,
+    is_unrestricted_target_ref,
+    target_ref_matches,
+)
 from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
 from aerobim.infrastructure.adapters.docling_requirement_extractor import (
     StructuredRequirementExtractor,
 )
 from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
+from aerobim.infrastructure.adapters.ifc_quantity_consistency_adapter import (
+    IfcQuantityConsistencyAdapter,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 IFC_REI60 = REPO_ROOT / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
@@ -58,10 +68,20 @@ END-ISO-10303-21;
 
 
 class _FakeElement:
-    def __init__(self, element_id: int, guid: str, name: str) -> None:
+    def __init__(
+        self,
+        element_id: int,
+        guid: str,
+        name: str,
+        *,
+        tag: str = "",
+        long_name: str = "",
+    ) -> None:
         self._element_id = element_id
         self.GlobalId = guid
         self.Name = name
+        self.Tag = tag
+        self.LongName = long_name
 
     def id(self) -> int:
         return self._element_id
@@ -86,6 +106,11 @@ class TargetRefWildcardTests(unittest.TestCase):
         self.assertFalse(is_unrestricted_target_ref("Wall-01"))
         self.assertTrue(target_ref_matches("ALL", "Wall-01"))
         self.assertFalse(target_ref_matches("Wall-01", "Wall-02"))
+        wall = _FakeElement(1, "guid-1", "Fixture", tag="W-01", long_name="Outer wall")
+        self.assertTrue(element_matches_named_target_ref(wall, "w-01"))
+        self.assertTrue(element_matches_named_target_ref(wall, "OUTER WALL"))
+        self.assertTrue(element_matches_named_target_ref(wall, "ALL"))
+        self.assertFalse(element_matches_named_target_ref(wall, "Wall-99"))
 
     def test_samolet_fire_pack_parses_all_as_unrestricted(self) -> None:
         requirements = StructuredRequirementExtractor().extract(
@@ -162,6 +187,29 @@ class AllTargetRefValidatorTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertIn("was not found on any", issues[0].message)
         self.assertNotIn("No elements found for entity", issues[0].message)
+
+    def test_named_target_ref_matches_tag_case_insensitively(self) -> None:
+        wall_1 = _FakeElement(1, "wall-guid-1", "Fixture A", tag="W-01")
+        wall_2 = _FakeElement(2, "wall-guid-2", "Fixture B", tag="W-02")
+        model = _FakeModel({"IFCWALL": [wall_1, wall_2]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {
+                1: {"Pset_WallCommon": {"FireRating": "REI60"}},
+                2: {"Pset_WallCommon": {"FireRating": "REI30"}},
+            },
+        )
+        requirement = ParsedRequirement(
+            rule_id="R-TAG",
+            ifc_entity="IFCWALL",
+            target_ref="w-01",
+            property_set="Pset_WallCommon",
+            property_name="FireRating",
+            expected_value="REI60",
+        )
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as tmp_file, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(tmp_file.name), [requirement])
+        self.assertEqual(issues, [])
 
     def test_named_target_ref_still_filters(self) -> None:
         wall_1 = _FakeElement(1, "wall-guid-1", "Wall-01")
@@ -262,6 +310,40 @@ class DrawingAllTargetRefTests(unittest.TestCase):
         )
         self.assertEqual(issues, [])
 
+    def test_unrestricted_drawing_mismatches_are_capped(self) -> None:
+        requirement = ParsedRequirement(
+            rule_id="REQ-DRW-ALL",
+            rule_scope=RuleScope.DRAWING_ANNOTATION,
+            target_ref="ALL",
+            property_name="thickness",
+            operator=ComparisonOperator.GREATER_OR_EQUAL,
+            expected_value="200",
+            unit="mm",
+        )
+        annotations = tuple(
+            DrawingAnnotation(
+                annotation_id=f"ANN-{index}",
+                sheet_id="A-101",
+                target_ref=f"WALL-{index:02d}",
+                measure_name="thickness",
+                observed_value="100",
+                unit="mm",
+                source="raster-drawing-analyzer",
+            )
+            for index in range(1, 4)
+        )
+        from aerobim.application.services import drawing_annotation_validation as drawing_mod
+
+        with patch.object(drawing_mod, "UNRESTRICTED_ELEMENT_MISMATCH_CAP", 2):
+            issues = DrawingAnnotationValidator(ToleranceConfig()).validate(
+                (requirement,), annotations
+            )
+        mismatch = [i for i in issues if "does not match" in i.message]
+        suppressed = [i for i in issues if "suppressed" in i.message]
+        self.assertEqual(len(mismatch), 2)
+        self.assertEqual(len(suppressed), 1)
+        self.assertIn("not a customer defect list", suppressed[0].message)
+
 
 class SpfGuidNameCollisionTests(unittest.TestCase):
     def test_property_and_material_22_char_names_are_not_guids(self) -> None:
@@ -273,6 +355,11 @@ class SpfGuidNameCollisionTests(unittest.TestCase):
         self.assertTrue(spf_entity_first_attr_is_global_id("IFCWALLSTANDARDCASE"))
         self.assertFalse(spf_entity_first_attr_is_global_id("IFCFOOBAR"))
         self.assertFalse(spf_entity_first_attr_is_global_id("IFCCOSTVALUE"))
+        self.assertTrue(spf_entity_first_attr_is_global_id("IFCREINFORCINGBAR"))
+        self.assertTrue(spf_entity_first_attr_is_global_id("IFCTENDON"))
+        self.assertTrue(spf_entity_first_attr_is_global_id("IFCVOIDINGFEATURE"))
+        self.assertTrue(spf_entity_first_attr_is_global_id("IFCMECHANICALFASTENER"))
+        self.assertFalse(spf_entity_first_attr_is_global_id("IFCREINFORCEMENTDEFINITIONPROPERTIES"))
         self.assertIsNone(
             spf_line_rooted_global_id(
                 "#8=IFCPROPERTYSINGLEVALUE('TreadLengthAtInnerSide',$,IFCLENGTHMEASURE(0.25),$);"
@@ -414,6 +501,19 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
             ),
             "coverage_unsigned",
         )
+        self.assertEqual(
+            classify_volume_record(
+                {
+                    "rule_id": "REQ-FIRE-001",
+                    "message": (
+                        f"12 further IFCWALL property mismatches "
+                        f"{UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER} 50; "
+                        "not a customer defect list)"
+                    ),
+                }
+            ),
+            "coverage_unsigned",
+        )
 
     def test_volume_table_keeps_raw_total_and_mandated_phrase(self) -> None:
         table = volume_from_findings(
@@ -454,6 +554,61 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
         self.assertEqual(table["total"], 1)
         self.assertEqual(table["by_volume_class"]["service_hitl"], 1)
         self.assertFalse(table["is_accuracy"])
+
+
+class QuantityAllTargetRefTests(unittest.TestCase):
+    def test_all_does_not_pass_on_the_first_matching_space(self) -> None:
+        spaces = [_FakeElement(1, "s-1", "A101"), _FakeElement(2, "s-2", "A102")]
+        model = _FakeModel({"IFCSPACE": spaces})
+
+        def get_psets(element: _FakeElement) -> dict[str, dict[str, object]]:
+            areas = {1: 100.0, 2: 50.0}
+            return {"Qto_SpaceBaseQuantities": {"NetFloorArea": areas[element.id()]}}
+
+        claim = QuantityClaim(
+            claim_id="Q-1",
+            target_ref="ALL",
+            ifc_entity="IFCSPACE",
+            quantity_name="NetFloorArea",
+            declared=parse_quantity(100.0, "m2"),
+        )
+        with (
+            tempfile.NamedTemporaryFile(suffix=".ifc") as tmp_file,
+            patch("ifcopenshell.util.element.get_psets", get_psets),
+            patch(
+                "aerobim.infrastructure.adapters.ifc_file_open.open_ifc_session",
+                return_value=types.SimpleNamespace(model=model),
+            ),
+        ):
+            issues = IfcQuantityConsistencyAdapter().check(Path(tmp_file.name), [claim])
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule_id, "AEROBIM-QTY-MISMATCH")
+        self.assertIn("1 of 2", issues[0].message)
+
+    def test_named_quantity_matches_tag_case_insensitively(self) -> None:
+        space = _FakeElement(1, "s-1", "Room", tag="A101")
+        model = _FakeModel({"IFCSPACE": [space]})
+
+        def get_psets(element: _FakeElement) -> dict[str, dict[str, object]]:
+            return {"Qto_SpaceBaseQuantities": {"NetFloorArea": 12.5}}
+
+        claim = QuantityClaim(
+            claim_id="Q-2",
+            target_ref="a101",
+            ifc_entity="IFCSPACE",
+            quantity_name="NetFloorArea",
+            declared=parse_quantity(12.5, "m2"),
+        )
+        with (
+            tempfile.NamedTemporaryFile(suffix=".ifc") as tmp_file,
+            patch("ifcopenshell.util.element.get_psets", get_psets),
+            patch(
+                "aerobim.infrastructure.adapters.ifc_file_open.open_ifc_session",
+                return_value=types.SimpleNamespace(model=model),
+            ),
+        ):
+            issues = IfcQuantityConsistencyAdapter().check(Path(tmp_file.name), [claim])
+        self.assertEqual(issues, [])
 
 
 class ReI60FireAllIntegrationTests(unittest.TestCase):

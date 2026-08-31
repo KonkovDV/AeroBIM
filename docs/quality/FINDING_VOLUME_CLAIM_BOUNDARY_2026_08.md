@@ -4,13 +4,14 @@ title: "Finding volume claim boundary — SIG-01 taxonomy and engine fixes"
 date: "2026-08-31"
 last_updated: "2026-08-31"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  SIG-01 machine-record taxonomy and engine fixes (target_ref ALL,
-  EXISTS coverage, mismatch cap, SPF GUID allowlist). Report phrase:
+  SIG-01 machine-record taxonomy and engine fixes (target_ref ALL on
+  IFC/drawings/Qto, EXISTS coverage, mismatch cap, shared named-ref
+  attributes, SPF GUID allowlist). Report phrase:
   объём находок на канале получен. Not product accuracy. Not pack
   processed. Not a customer defect list. Checkpoint NO_GO.
 ---
@@ -49,9 +50,9 @@ claim_boundary: >
 
 До исправления валидатор искал элемент с именем `all` (`_matches_target_ref`) и на живой модели со стенами выдавал `No elements found for entity IFCWALL`. Это артефакт шаблона×движка, не «стен нет».
 
-После исправления: `aerobim.domain.target_ref.is_unrestricted_target_ref`. Те же семантики на чертежных правилах и Qto-сверке. Элемент, у которого Name буквально `ALL`, адресуется через GlobalId.
+После исправления: `aerobim.domain.target_ref.is_unrestricted_target_ref`. Именованный `target_ref` сверяется без учёта регистра по GlobalId / Name / LongName / Tag / ObjectType / Description (`element_matches_named_target_ref`) — и в IFC-валидаторе, и в Qto-сверке. Элемент, у которого Name буквально `ALL`, адресуется через GlobalId.
 
-`eq REI60` на **всех** стенах в unsigned-пакете остаётся заведомо слишком широким правилом. После фикса ALL оно проверяет свойства. Если свойства нет ни на одном — одна запись покрытия. Если нет на части — одна запись `is missing on N of M`, не N ошибок. Несовпадения значения режутся потолком `UNRESTRICTED_ELEMENT_MISMATCH_CAP` (50) плюс одна строка «suppressed». Подписанный IDS должен сузить applicability.
+`eq REI60` на **всех** стенах в unsigned-пакете остаётся заведомо слишком широким правилом. После фикса ALL оно проверяет свойства. Если свойства нет ни на одном — одна запись покрытия. Если нет на части — одна запись `is missing on N of M`, не N ошибок. Несовпадения значения режутся потолком `UNRESTRICTED_ELEMENT_MISMATCH_CAP` (50) плюс одна строка «suppressed» (класс `coverage_unsigned`). Тот же потолок — на чертежных правилах с `target_ref=ALL`. Qto на ALL не берёт первое совпадение: одна строка `mismatch on N of M`. Подписанный IDS должен сузить applicability.
 
 `exists` на ALL — это покрытие «у скольких экземпляров есть свойство», а не «хотя бы у одного». Иначе один заполненный `IfcSpace` из 16 000 закрывал бы правило.
 
@@ -59,7 +60,7 @@ claim_boundary: >
 
 Пре-гейт схемы сканировал первую кавычечную строку длины 22 как GUID. `IfcPropertySingleValue.Name` = `TreadLengthAtInnerSide` (22 символа) и `IfcMaterial.Name` = `Stainless Steel_Weland` повторяются у не-IfcRoot сущностей — это не дубликат GlobalId.
 
-Скан default-deny: только IfcRoot-семейства (`REL*`, стены/плиты/…, `PROPERTYSET`) с алфавитом IfcGloballyUniqueId (`spf_line_rooted_global_id`). Перенос GUID на следующую строку SPF склеивается. Настоящий дубликат на `IfcWall` по-прежнему WARNING (`AEROBIM-GUID-DUPLICATE`, verdict-neutral). Полный разбор IfcRoot — `collect_global_id_integrity_issues`.
+Скан default-deny: только IfcRoot-семейства (`REL*`, стены/плиты/арматура `REINFORCING*` / `TENDON*`, `PROPERTYSET`) с алфавитом IfcGloballyUniqueId (`spf_line_rooted_global_id`). `IfcReinforcementDefinitionProperties` не сканируется (это не IfcRoot). Перенос GUID на следующую строку SPF склеивается. Настоящий дубликат на `IfcWall` по-прежнему WARNING (`AEROBIM-GUID-DUPLICATE`, verdict-neutral). Полный разбор IfcRoot — `collect_global_id_integrity_issues`.
 
 ## Что не утверждать
 

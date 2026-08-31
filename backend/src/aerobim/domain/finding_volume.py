@@ -12,6 +12,8 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 
+from aerobim.domain.target_ref import UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER
+
 CLAIM_LEVEL: Final = "pack_volume_not_accuracy"
 CHECKPOINT: Final = "NO_GO"
 REPORT_PHRASE: Final = "объём находок на канале получен"
@@ -56,7 +58,11 @@ def classify_volume_record(item: Mapping[str, Any]) -> str:
     message = str(item.get("message") or "")
     if "No elements found for entity" in message:
         return "entity_presence"
+    if UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER in message:
+        return "coverage_unsigned"
     if "was not found on any" in message or "is missing on" in message:
+        return "coverage_unsigned"
+    if "Quantity mismatch" in message and " of " in message:
         return "coverage_unsigned"
     if item.get("element_guid"):
         return "element_detection_unsigned"

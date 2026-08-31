@@ -135,6 +135,10 @@ _IFC_ROOT_ALLOW_PREFIXES = (
     "ENGINE",
     "SOLAR",
     "BATTERY",
+    "REINFORCING",
+    "TENDON",
+    "VOIDING",
+    "FASTENER",
 )
 
 _IFC_ROOT_ALLOW_EXACT = frozenset(
@@ -142,9 +146,14 @@ _IFC_ROOT_ALLOW_EXACT = frozenset(
         "ACTOR",
         "COSTITEM",
         "COSTSCHEDULE",
+        "CIVILELEMENT",
+        "DISCRETEACCESSORY",
         "ELEMENTASSEMBLY",
         "ELEMENTQUANTITY",
+        "GEOGRAPHICELEMENT",
         "GRID",
+        "MECHANICALFASTENER",
+        "SURFACEFEATURE",
         "VIRTUALELEMENT",
         "BUILDINGELEMENTPART",
     }

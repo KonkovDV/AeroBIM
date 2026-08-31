@@ -19,7 +19,9 @@ from aerobim.domain.models import (
 from aerobim.domain.quantity import normalize_unit_token, parse_localized_number
 from aerobim.domain.target_ref import (
     UNRESTRICTED_ELEMENT_MISMATCH_CAP,
+    element_matches_named_target_ref,
     is_unrestricted_target_ref,
+    unrestricted_mismatch_suppressor_message,
 )
 
 # Maps requirement unit string → (IFC unit type, factor to convert that unit to SI).
@@ -256,10 +258,9 @@ class IfcOpenShellValidator:
                     issue_from_requirement(
                         requirement,
                         severity=Severity.ERROR,
-                        message=(
-                            f"{suppressed} further {requirement.ifc_entity} property mismatches "
-                            f"suppressed (unrestricted target_ref cap "
-                            f"{UNRESTRICTED_ELEMENT_MISMATCH_CAP}; not a customer defect list)"
+                        message=unrestricted_mismatch_suppressor_message(
+                            ifc_entity=requirement.ifc_entity,
+                            suppressed=suppressed,
                         ),
                         category=FindingCategory.IFC_VALIDATION,
                         observed_value=str(mismatch_count),
@@ -416,12 +417,7 @@ class IfcOpenShellValidator:
         return str(global_id) if global_id else None
 
     def _matches_target_ref(self, element: Any, target_ref: str) -> bool:
-        normalized_target = target_ref.strip().lower()
-        for attribute_name in ("GlobalId", "Name", "LongName", "Tag", "ObjectType", "Description"):
-            value = getattr(element, attribute_name, None)
-            if value is not None and str(value).strip().lower() == normalized_target:
-                return True
-        return False
+        return element_matches_named_target_ref(element, target_ref)
 
     def _matches_requirement(
         self,

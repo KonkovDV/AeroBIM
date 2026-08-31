@@ -11,7 +11,7 @@ from typing import Any
 from aerobim.domain.consistency import QuantityClaim
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 from aerobim.domain.quantity import QuantityValue, parse_quantity, si_compare
-from aerobim.domain.target_ref import is_unrestricted_target_ref
+from aerobim.domain.target_ref import element_matches_named_target_ref, is_unrestricted_target_ref
 
 
 class IfcQuantityConsistencyAdapter:
@@ -38,8 +38,8 @@ class IfcQuantityConsistencyAdapter:
         model = session.model
         issues: list[ValidationIssue] = []
         for claim in declared:
-            observed = self._find_observed(model, get_psets, claim)
-            if observed is None:
+            observed_list = self._find_all_observed(model, get_psets, claim)
+            if not observed_list:
                 issues.append(
                     ValidationIssue(
                         rule_id="AEROBIM-QTY-MISSING",
@@ -59,34 +59,65 @@ class IfcQuantityConsistencyAdapter:
                     )
                 )
                 continue
-            if not si_compare(claim.declared, observed, epsilon=1e-3):
+            mismatch_count = sum(
+                1
+                for observed in observed_list
+                if not si_compare(claim.declared, observed, epsilon=1e-3)
+            )
+            if mismatch_count == 0:
+                continue
+            total = len(observed_list)
+            # ALL (or duplicate names) collapse to one coverage row. A single
+            # named hit keeps the declared-vs-ifc detail.
+            if is_unrestricted_target_ref(claim.target_ref) or total > 1:
                 issues.append(
                     ValidationIssue(
                         rule_id="AEROBIM-QTY-MISMATCH",
                         severity=Severity.WARNING,
                         message=(
-                            f"Quantity mismatch for {claim.quantity_name}: "
-                            f"declared={claim.declared.value} {claim.declared.unit}, "
-                            f"ifc={observed.value} {observed.unit}"
+                            f"Quantity mismatch for {claim.quantity_name} on "
+                            f"{mismatch_count} of {total} "
+                            f"{claim.ifc_entity or 'element'} instances"
                         ),
                         category=FindingCategory.CROSS_DOCUMENT,
                         ifc_entity=claim.ifc_entity,
                         target_ref=claim.target_ref,
                         property_name=claim.quantity_name,
                         expected_value=str(claim.declared.value),
-                        observed_value=str(observed.value),
+                        observed_value=str(mismatch_count),
                         unit=claim.declared.unit,
                         source_id=claim.source_id or "quantity-consistency",
                     )
                 )
+                continue
+            observed = observed_list[0]
+            issues.append(
+                ValidationIssue(
+                    rule_id="AEROBIM-QTY-MISMATCH",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"Quantity mismatch for {claim.quantity_name}: "
+                        f"declared={claim.declared.value} {claim.declared.unit}, "
+                        f"ifc={observed.value} {observed.unit}"
+                    ),
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    ifc_entity=claim.ifc_entity,
+                    target_ref=claim.target_ref,
+                    property_name=claim.quantity_name,
+                    expected_value=str(claim.declared.value),
+                    observed_value=str(observed.value),
+                    unit=claim.declared.unit,
+                    source_id=claim.source_id or "quantity-consistency",
+                )
+            )
         return issues
 
-    def _find_observed(
+    def _find_all_observed(
         self,
         model: Any,
         get_psets: Any,
         claim: QuantityClaim,
-    ) -> QuantityValue | None:
+    ) -> list[QuantityValue]:
         if claim.ifc_entity:
             try:
                 entities = tuple(model.by_type(claim.ifc_entity))
@@ -96,24 +127,33 @@ class IfcQuantityConsistencyAdapter:
             entities = tuple(model.by_type("IfcProduct"))
 
         want = claim.quantity_name.strip().casefold()
+        found: list[QuantityValue] = []
         for element in entities:
-            if claim.target_ref and not is_unrestricted_target_ref(claim.target_ref):
-                name = str(getattr(element, "Name", "") or "")
-                tag = str(getattr(element, "Tag", "") or "")
-                guid = str(getattr(element, "GlobalId", "") or "")
-                if claim.target_ref not in {name, tag, guid}:
+            if not element_matches_named_target_ref(element, claim.target_ref):
+                continue
+            parsed = self._quantity_on_element(get_psets, element, want, claim.declared.unit)
+            if parsed is not None:
+                found.append(parsed)
+        return found
+
+    def _quantity_on_element(
+        self,
+        get_psets: Any,
+        element: Any,
+        want: str,
+        fallback_unit: str,
+    ) -> QuantityValue | None:
+        psets = get_psets(element)
+        for _pset_name, props in psets.items():
+            if not isinstance(props, dict):
+                continue
+            for prop_name, prop_value in props.items():
+                prop_cf = prop_name.strip().casefold()
+                if prop_cf != want and want not in prop_cf and prop_cf not in want:
                     continue
-            psets = get_psets(element)
-            for _pset_name, props in psets.items():
-                if not isinstance(props, dict):
-                    continue
-                for prop_name, prop_value in props.items():
-                    prop_cf = prop_name.strip().casefold()
-                    if prop_cf != want and want not in prop_cf and prop_cf not in want:
-                        continue
-                    parsed = self._coerce_quantity(prop_value, claim.declared.unit)
-                    if parsed is not None:
-                        return parsed
+                parsed = self._coerce_quantity(prop_value, fallback_unit)
+                if parsed is not None:
+                    return parsed
         return None
 
     def _coerce_quantity(self, raw: object, fallback_unit: str) -> QuantityValue | None:

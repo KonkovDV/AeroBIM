@@ -21,6 +21,19 @@ UNRESTRICTED_TARGET_REF_TOKENS: Final[frozenset[str]] = frozenset({"", "all", "*
 # an unsigned ALL+eq pack; suppressed rows are not a customer defect list.
 UNRESTRICTED_ELEMENT_MISMATCH_CAP: Final = 50
 
+# Stable fragment for finding-volume taxonomy (coverage_unsigned, not defects).
+UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER: Final = "suppressed (unrestricted target_ref cap"
+
+# IfcRoot identity attributes used for *named* target_ref (case-insensitive).
+ELEMENT_TARGET_REF_ATTRIBUTES: Final[tuple[str, ...]] = (
+    "GlobalId",
+    "Name",
+    "LongName",
+    "Tag",
+    "ObjectType",
+    "Description",
+)
+
 
 def is_unrestricted_target_ref(target_ref: str | None) -> bool:
     """True when the requirement applies to every instance of its ifc_entity."""
@@ -35,14 +48,51 @@ def target_ref_matches(requirement_ref: str | None, observed_ref: str) -> bool:
 
     if is_unrestricted_target_ref(requirement_ref):
         return True
-    if requirement_ref is None:
+    return (requirement_ref or "").strip().lower() == observed_ref.strip().lower()
+
+
+def element_matches_named_target_ref(element: object, target_ref: str | None) -> bool:
+    """True when *element* is in scope for *target_ref*.
+
+    Unrestricted tokens match every instance. Named refs compare case-insensitively
+    against IfcRoot identity attributes — exact token, not a substring.
+    """
+
+    if is_unrestricted_target_ref(target_ref):
         return True
-    return requirement_ref.strip().lower() == observed_ref.strip().lower()
+    needle = (target_ref or "").strip().lower()
+    if not needle:
+        return True
+    for attribute_name in ELEMENT_TARGET_REF_ATTRIBUTES:
+        value = getattr(element, attribute_name, None)
+        if value is not None and str(value).strip().lower() == needle:
+            return True
+    return False
+
+
+def unrestricted_mismatch_suppressor_message(
+    *,
+    ifc_entity: str | None,
+    suppressed: int,
+    cap: int = UNRESTRICTED_ELEMENT_MISMATCH_CAP,
+) -> str:
+    """One coverage row after the per-element mismatch cap (not a defect list)."""
+
+    entity = ifc_entity or "element"
+    return (
+        f"{suppressed} further {entity} property mismatches "
+        f"{UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER} {cap}; "
+        "not a customer defect list)"
+    )
 
 
 __all__ = [
+    "ELEMENT_TARGET_REF_ATTRIBUTES",
     "UNRESTRICTED_ELEMENT_MISMATCH_CAP",
+    "UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER",
     "UNRESTRICTED_TARGET_REF_TOKENS",
+    "element_matches_named_target_ref",
     "is_unrestricted_target_ref",
     "target_ref_matches",
+    "unrestricted_mismatch_suppressor_message",
 ]
