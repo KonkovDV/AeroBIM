@@ -39,7 +39,7 @@ export function packKindVerdict(kind: PackKind): PackKindVerdict {
 export function packKindHonesty(kind: PackKind): string {
   switch (kind) {
     case "dwg":
-      return "Native DWG is not supported on MVP. Same mark as vector PDF or DXF. Fail-closed — not a silent skip.";
+      return "Closed .dwg ingest is fail-closed on MVP. Same mark as vector PDF or DXF. Not a silent skip.";
     case "rvt":
       return "Native RVT is not an ingest product. Export IFC from the authoring tool. Fail-closed.";
     case "nwd":
@@ -55,7 +55,7 @@ export function packKindHonesty(kind: PackKind): string {
     case "office":
       return "Office files compare declared fields; MATCH is not calculation correctness.";
     case "dxf":
-      return "DXF is optional ingest, not native DWG.";
+      return "DXF is optional ingest, not a closed .dwg reader.";
     default:
       return "Unknown type. The server validates magic bytes. Do not assume success from a 200 on another file.";
   }

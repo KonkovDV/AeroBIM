@@ -127,7 +127,7 @@ export default function AnalyzeRunPanel({
         </div>
       </div>
       <p className="compact-copy">
-        Цель ТЗ «до 30 минут на комплект» — не измеренный SLA. Поллинг{" "}
+        Цель ТЗ 30:00 на комплект — не измеренный SLA. Поллинг{" "}
         <code>jobs/{"{job_id}"}</code>, не SSE. Тишина движка ≠ успех.
       </p>
       <p className="compact-copy">IFC path: {ifcPath ?? "—"}</p>
