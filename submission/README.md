@@ -18,7 +18,7 @@ claim_boundary: >
 
 **Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После правок документации pin может отставать на несколько коммитов до следующего прогона CI; локальные прогоны pytest не публикуем.
 
-**Объект КТ#3 (без файлов заказчика в git).** Пакет показа не ждёт `samples/customer/`. Показ — живой CLI: `python -m aerobim.tools.run_kt3_jury`. Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Трекер: [`../docs/demo/KT3_TRACKER_DMITRY_2026_08.md`](../docs/demo/KT3_TRACKER_DMITRY_2026_08.md). Сценарий: [`../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). RT-001/002/003 **OPEN**.
+**Объект КТ#3 (без файлов заказчика в git).** Пакет показа не ждёт `samples/customer/`. Показ — живой CLI: `python -m aerobim.tools.run_kt3_jury`. Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Трекер: [`../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Сценарий: [`../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). RT-001/002/003 **OPEN**.
 
 ## Пять полей формы → пять папок
 

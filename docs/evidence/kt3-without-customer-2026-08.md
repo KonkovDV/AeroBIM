@@ -29,7 +29,7 @@ plan_b_decision: re-scope
 - Пакет без заказчика: `python -m aerobim.tools.run_kt3_without_customer`
 - Карточка речи: `docs/demo/KT3_JURY_FAQ_2026_08_25.md`
 - Сценарий оператора: `docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`
-- Трекер (6 задач): `docs/demo/KT3_TRACKER_DMITRY_2026_08.md`
+- Трекер (6 задач): `docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md`
 
 Customer files are not expected in git. KT#3 is the live fixture gate plus public/synthetic proxies. Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false.
 
@@ -46,7 +46,7 @@ Customer files are not expected in git. KT#3 is the live fixture gate plus publi
 | moscow_agr_ruler | `samples/norm-packs/moscow_agr_2026/pack.json` | yes |
 | kt3_jury_card | `docs/demo/KT3_JURY_FAQ_2026_08_25.md` | yes |
 | kt3_operator_runbook | `docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md` | yes |
-| kt3_tracker_card | `docs/demo/KT3_TRACKER_DMITRY_2026_08.md` | yes |
+| kt3_tracker_card | `docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md` | yes |
 | tz_v1_brief | `docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md` | yes |
 | owner_ai_plan | `docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md` | yes |
 | iua_ledger | `docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md` | yes |

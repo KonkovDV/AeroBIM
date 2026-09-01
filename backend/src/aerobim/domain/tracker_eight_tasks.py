@@ -1,8 +1,8 @@
-"""Tracker Dmitry Siginevich — eight KT#3 tasks assigned 29.08.2026.
+"""Eight KT#3 tracker tasks assigned 29.08.2026.
 
 Distinct from the six 14.08 tasks in ``tracker_six_tasks``. Git closes
-engineering hygiene; it does not send mail, inventory a 43 GB channel, or
-mint product accuracy. Checkpoint NO_GO.
+engineering hygiene; it does not send mail, inventory a customer channel, or
+mint product accuracy. Personal names stay out of this snapshot. Checkpoint NO_GO.
 """
 
 from __future__ import annotations
@@ -25,7 +25,6 @@ CLAIM_BOUNDARY: Final = (
     "auth_bff default remains NOT_IMPLEMENTED. Checkpoint NO_GO."
 )
 SIG01_REPORT_PHRASE: Final = "объём находок на канале получен"
-TRACKER_NAME: Final = "Dmitry Siginevich"
 ASSIGNED_AT: Final = "2026-08-29"
 KT3_WINDOW: Final = "2026-09-03..2026-09-21"
 FEATURE_FREEZE: Final = "2026-09-18"
@@ -113,7 +112,6 @@ def tracker_eight_snapshot() -> dict[str, Any]:
         "closes_rt003": False,
         "claim_boundary": CLAIM_BOUNDARY,
         "detected_count": 0,
-        "tracker": TRACKER_NAME,
         "assigned_at": ASSIGNED_AT,
         "kt3_window": KT3_WINDOW,
         "feature_freeze": FEATURE_FREEZE,
@@ -130,7 +128,7 @@ def tracker_eight_snapshot() -> dict[str, Any]:
         "finding_volume_is_accuracy": False,
         "sig01_report_phrase": SIG01_REPORT_PHRASE,
         "sig01_publishable_finding_count": 0,
-        "channel_max_pass": "channel_samolet_max_pass_snapshot",
+        "channel_max_pass": "channel_local_max_pass_snapshot",
         "pack_family_facts": "pack_family_snapshot",
         "customer_pack_in_git": False,
         "space_efficiency_kt3": "advisory_unsigned",

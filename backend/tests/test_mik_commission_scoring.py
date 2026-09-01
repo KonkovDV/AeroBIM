@@ -422,7 +422,7 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertIn("DEFECT_INJECTION_RECALL_PLAN_2026_09.md", tier0)
         self.assertIn("ADR-004-prize-ip-mit-fork-2026.md", tier0)
         self.assertIn("ORDER_WEIGHTS_VERIFICATION_2026_09.md", tier0)
-        self.assertIn("OWNER_ACTIONS_2026_09.md", tier0)
+        self.assertNotIn("OWNER_ACTIONS_2026_09.md", tier0)
         self.assertIn("#2/#4 уже входят", exp_b)
         self.assertNotIn("2694", env_var)
         for rel in (

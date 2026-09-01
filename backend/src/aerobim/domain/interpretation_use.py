@@ -171,7 +171,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "SAM-08",
         "samolet",
         "ТР-16/19: площади помещений / чертёж↔IFC",
-        "6 AR IFC: 10599 IfcSpace, 0 NetFloorArea; coverage_map_only",
+        "AR IFC: rooms exist as objects; area QTO not runnable; coverage_map_only",
         "Площади квартир сверены с ТЭП; RT-001 CLOSED",
         "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
         "QTO area only after export with quantities or signed OOS",
@@ -181,7 +181,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "SAM-09",
         "samolet",
         "ТР-8: огнестойкость стены vs ТЗ (класс II / C0)",
-        "62033 walls; FireRating 5.7% EI45 only; not TZ II/C0",
+        "Wall FireRating sparse and ≠ TZ II/C0; coverage_map_only",
         "Fire check delivered; fixture REI60 = customer finding",
         "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
         "Customer IDS for fire class, not demo REI60",
@@ -201,10 +201,9 @@ LEDGER: tuple[InferenceRow, ...] = (
         "PLAN-00",
         "techlab",
         "Инвентарь files/ (локальный NDA) как покрытие, не pack_hash",
-        "27.08 wrapper pin 2383; 30.08 morning 2618/6467 (packed shells); "
-        "30.08 evening recensus wrapper 2552 + unpack 6408 after deleting "
-        "covered source archives (0 zip/7z left). Deep-study facts are "
-        "coverage_map_only. Live scan only under .local/. Not processed.",
+        "27.08 public rehearsal pin plus 30.08 evening recensus after "
+        "deleting covered source archives. Counts live in engineering pins, "
+        "not the jury map. Live scan only under .local/. Not processed.",
         "sha256 пакета Самолёта в git; имена площадок в публичном дереве",
         "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
         "Keep NDA binaries and hashes out of git",
@@ -266,7 +265,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08",
         "IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint NO_GO",
         "Checkpoint GO / market GO = customer GO",
-        "docs/demo/KT3_TRACKER_DMITRY_2026_08.md",
+        "docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md",
         "КТ#3 — итоговое решение; победителей определяют заказчики",
         "fixture_demo",
     ),
@@ -306,7 +305,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Задача 5: KPI = назначенные демо (3–5)",
         "Живой счёт только в локальном операторском слое (не в git)",
         "Назначенные демо как git-факт",
-        "docs/demo/KT3_TRACKER_DMITRY_2026_08.md",
+        "docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md",
         "Owner file; git не изобретает воронку",
         "operational_hygiene",
     ),
@@ -337,13 +336,25 @@ LEDGER: tuple[InferenceRow, ...] = (
         "SIG-02",
         "tracker",
         "Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal)",
-        "pack_probe + census 6408; calc binaries are the majority of unpack bytes; "
-        "6 docx class-phrase / 46 xlsx load-token files are a shortlist, not MATCH. "
+        "pack_probe + census pin; calc binaries are the majority of unpack bytes; "
+        "Office token shortlist is not CC-2 MATCH. "
         "Uncompressed byte totals stay out of git.",
         "43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; "
         "byte totals of the NDA tree in git",
         "docs/quality/CHANNEL_PACK_TRIAGE_2026_08.md",
         "Owner pastes name-free aggregate after OA-9; hashed TSV stays .local",
+        "operational_hygiene",
+    ),
+    _row(
+        "JURY-01",
+        "mik",
+        "Отборочная комиссия №7: роли на карте жюри, не ФИО и не census NDA",
+        "Seat briefs are roles; three partner seats by agreement; "
+        "unpack counts stay off TIER0; tracker paths have no personal names.",
+        "Sitting-member list in git; OSINT bios as confirmed; unpack fingerprint "
+        "counts on the jury map; pack processed",
+        "docs/quality/JURY_PACK_TRIAGE_2026_09.md",
+        "Keep FIO and NDA fingerprint counts off jury surfaces",
         "operational_hygiene",
     ),
     _row(

@@ -13,7 +13,7 @@ detected_count: 0
 claim_boundary: >
   File counts and booleans from the 31.08 live unpack walk. Uncompressed
   byte totals stay out of git. Not pack processed. Not a LIRA solver.
-  Not CC-2 MATCH. Checkpoint NO_GO.
+  Not CC-2 MATCH. Not a jury exhibit. Checkpoint NO_GO.
 ---
 
 # Unpack-tree family facts (31.08.2026)

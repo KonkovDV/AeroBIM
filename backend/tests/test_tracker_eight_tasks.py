@@ -31,7 +31,7 @@ class TrackerEightTasksTests(unittest.TestCase):
         self.assertFalse(snap["finding_volume_is_accuracy"])
         self.assertEqual(snap["sig01_report_phrase"], "объём находок на канале получен")
         self.assertEqual(snap["sig01_publishable_finding_count"], 0)
-        self.assertEqual(snap["channel_max_pass"], "channel_samolet_max_pass_snapshot")
+        self.assertEqual(snap["channel_max_pass"], "channel_local_max_pass_snapshot")
         self.assertEqual(snap["pack_family_facts"], "pack_family_snapshot")
         self.assertFalse(snap["customer_pack_in_git"])
         self.assertEqual(snap["samolet_appendix4_task"], 6)
@@ -42,6 +42,8 @@ class TrackerEightTasksTests(unittest.TestCase):
         blob = json.dumps(snap)
         self.assertNotIn("1660", blob)
         self.assertNotIn("sgnl", blob.lower())
+        self.assertNotIn("Siginevich", blob)
+        self.assertNotIn("Dmitry", blob)
 
     def test_catalog_has_at_least_twenty_unconfirmed_classes(self) -> None:
         path = (

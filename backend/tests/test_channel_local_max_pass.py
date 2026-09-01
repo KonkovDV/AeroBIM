@@ -7,16 +7,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aerobim.domain.channel_samolet_max_pass import channel_samolet_max_pass_snapshot
+from aerobim.domain.channel_local_max_pass import channel_local_max_pass_snapshot
 from aerobim.tools.pack_probe import probe_pack
 from aerobim.tools.run_channel_max_pass import main as max_pass_main
 from aerobim.tools.run_finding_volume import main as finding_volume_main
 from aerobim.tools.scan_declared_calc_tokens import scan_declared_calc_tokens
 
 
-class ChannelSamoletMaxPassTests(unittest.TestCase):
+class ChannelLocalMaxPassTests(unittest.TestCase):
     def test_snapshot_stays_no_go_and_uncertain(self) -> None:
-        snap = channel_samolet_max_pass_snapshot()
+        snap = channel_local_max_pass_snapshot()
         self.assertEqual(snap["checkpoint"], "NO_GO")
         self.assertEqual(snap["claim_level"], "coverage_map_only")
         self.assertEqual(snap["publishable_finding_count"], 0)

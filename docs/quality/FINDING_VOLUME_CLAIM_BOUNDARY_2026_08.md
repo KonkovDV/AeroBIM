@@ -77,4 +77,4 @@ claim_boundary: >
 - Не складывать `REQ-*` и `SAM-AR-*` на одном свойстве как независимые дефекты.
 - Не читать «N further suppressed» как N дефектов.
 
-Связанные: [`TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md`](TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md) · [`SIG01_CHANNEL_TRIAGE_2026_08.md`](SIG01_CHANNEL_TRIAGE_2026_08.md) · ADR-001 (`summary.passed` не пишет LLM).
+Связанные: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`SIG01_CHANNEL_TRIAGE_2026_08.md`](SIG01_CHANNEL_TRIAGE_2026_08.md) · ADR-001 (`summary.passed` не пишет LLM).

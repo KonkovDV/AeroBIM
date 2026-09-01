@@ -1,8 +1,8 @@
-"""Maximum licensed pass on a local Samolet copy (31.08.2026).
+"""Maximum licensed pass on a local NDA copy (31.08.2026).
 
-What git + a gitignored quarantine copy can do vs TZ v2, TechLab seven
+What git plus a gitignored quarantine copy can do vs TZ v2, TechLab seven
 comparison tasks, MIK speech, and tracker SIG-01…08. Not a customer
-verdict. Checkpoint NO_GO.
+verdict. Not a jury exhibit. Checkpoint NO_GO.
 """
 
 from __future__ import annotations
@@ -123,12 +123,12 @@ TZ_CARRIER_STOPS: Final[tuple[str, ...]] = (
 )
 
 
-def channel_samolet_max_pass_snapshot() -> dict[str, Any]:
+def channel_local_max_pass_snapshot() -> dict[str, Any]:
     tracker = tracker_eight_snapshot()
     family = pack_family_snapshot()
     triage = pack_triage_snapshot()
     return {
-        "artifact_type": "channel_samolet_max_pass",
+        "artifact_type": "channel_local_max_pass",
         "as_of": "2026-08-31",
         "claim_level": CLAIM_LEVEL,
         "checkpoint": CHECKPOINT,
@@ -173,5 +173,5 @@ __all__ = [
     "CLAIM_BOUNDARY",
     "CHECKPOINT",
     "TECHLAB_SEVEN",
-    "channel_samolet_max_pass_snapshot",
+    "channel_local_max_pass_snapshot",
 ]

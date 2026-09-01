@@ -14,7 +14,7 @@ claim_boundary: >
   KILL/HOLD/ACCEPT over the local unpack inventory and CC-2/CC-4 shortlist.
   Calc binaries are the majority of unpack bytes — inventory, not a solver.
   Token shortlists are not MATCH. Uncompressed GiB stays .local. Not pack
-  processed. Checkpoint NO_GO.
+  processed. Not a jury exhibit. Checkpoint NO_GO.
 ---
 
 # Триаж пакета канала (31.08.2026)
@@ -27,7 +27,7 @@ claim_boundary: >
 
 Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь задач Техлаба — **Uncertain**.
 
-Связанные: [`CHANNEL_SAMOLET_MAX_PASS_2026_08.md`](CHANNEL_SAMOLET_MAX_PASS_2026_08.md) · [`SIG01_CHANNEL_TRIAGE_2026_08.md`](SIG01_CHANNEL_TRIAGE_2026_08.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md).
+Связанные: [`CHANNEL_LOCAL_MAX_PASS_2026_08.md`](CHANNEL_LOCAL_MAX_PASS_2026_08.md) · [`SIG01_CHANNEL_TRIAGE_2026_08.md`](SIG01_CHANNEL_TRIAGE_2026_08.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md).
 
 ## Этот проход (KILL / HOLD / ACCEPT)
 

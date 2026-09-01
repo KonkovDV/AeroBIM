@@ -2,8 +2,8 @@
 ---
 title: "Data availability statement — AeroBIM corpora (16.08.2026)"
 status: active
-version: "1.0.5"
-last_updated: "2026-08-31"
+version: "1.0.6"
+last_updated: "2026-09-01"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -42,8 +42,8 @@ Not in GitHub. Not a substitute for RT-001.
 | Moscow AGR city example IFCs | city ToS; `.local/` only | pin + class-1 exchange / IDS rehearsal | PD pack; RT-001; `inject_defects` |
 | Ishigaki-IDS-Bench | CC BY 4.0 | 166/166 gold XML processable; **no real IFC** | paper LLM F1 as product accuracy |
 | DrawingVQA | questions CC BY-NC-SA 4.0; drawings not public | **not downloaded** | MIT-tree vendoring |
-| Owner-disk NDA pack (gitignored) | NDA; **not in git** | coverage map: 10599 IfcSpace / 0 NetFloorArea; wall FireRating 5.7 % EI 45 (doors on same files: EI30/EI60/EIS60) | dual raters; κ; signed IDS; MEP IFC; rebar IFC |
-| Owner-disk wrapper + unpack tree | NDA; **not in git** | suffix/magic census 30.08 evening: wrapper 2552 / unpack 6408; live walk 31.08 matched 6408; named calc ext 235; calc binaries = majority of unpack bytes (byte totals not in git) — [`unpack-census-2026-08.md`](unpack-census-2026-08.md) · [`pack-family-facts-2026-08.md`](pack-family-facts-2026-08.md) · [`deep-study-carrier-facts-2026-08.md`](deep-study-carrier-facts-2026-08.md) | pack processed; native RVT/DWG/LIRA; raising the 256 MiB cap; uncompressed NDA byte totals in git |
+| Owner-disk NDA pack (gitignored) | NDA; **not in git** | coverage map only: rooms exist as objects; area QTO not runnable; wall FireRating sparse and ≠ TZ II/C0 | dual raters; κ; signed IDS; MEP IFC; rebar IFC |
+| Owner-disk wrapper + unpack tree | NDA; **not in git** | suffix/magic census and family facts exist as engineering pins, not a jury exhibit; calc binaries = majority of unpack bytes (byte totals not in git); not processed — [`unpack-census-2026-08.md`](unpack-census-2026-08.md) · [`pack-family-facts-2026-08.md`](pack-family-facts-2026-08.md) | pack processed; native RVT/DWG/LIRA; raising the 256 MiB cap; uncompressed NDA byte totals in git |
 
 GPLv3 IFC-Bench projects may be read locally with `--samolet-demo-copyleft`. They are **not** redistributed.
 
@@ -61,7 +61,7 @@ Ask to obtain (1)–(4): independent labeled pack, two named raters, Samolet-sig
 
 ## 4. Ethics / PII
 
-Stamp/title-block pixels are not sent to cloud VLM (PII clip). Customer files, if they arrive, stay under NDA outside git — not this git tree. Local rehearsal counts: [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md).
+Stamp/title-block pixels are not sent to cloud VLM (PII clip). Customer files, if they arrive, stay under NDA outside git — not this git tree. Local rehearsal coverage maps live in engineering pins, not this jury statement.
 
 ## 5. How to reproduce what **is** public
 

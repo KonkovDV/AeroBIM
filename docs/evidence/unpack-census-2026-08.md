@@ -66,4 +66,4 @@ OLE `.db` on both trees is **not** SQLite. Empty members: **30** in the unpack t
 - Raising the 256 MiB SPF default because one IFC is over cap (OA-16 / RocksDB path).
 - `customer_confirmed_patterns` or RT-001/002b/003 CLOSED.
 
-Related: [`../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md) · [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md) · [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md).
+Related: [`../quality/TRACKER_EIGHT_TASKS_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_2026_08.md) · [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md) · [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md).

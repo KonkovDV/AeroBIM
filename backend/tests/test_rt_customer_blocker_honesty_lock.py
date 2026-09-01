@@ -347,7 +347,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self._repo() / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             self._repo() / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md",
             self._repo() / "docs" / "demo" / "KT3_OPERATOR_RUNBOOK_2026_08_25.md",
-            self._repo() / "docs" / "demo" / "KT3_TRACKER_DMITRY_2026_08.md",
+            self._repo() / "docs" / "demo" / "KT3_TRACKER_SIX_TASKS_2026_08.md",
             self._repo() / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md",
             self._repo() / "docs" / "quality" / "OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
             self._repo() / "backend" / "src" / "aerobim" / "domain" / "interpretation_use.py",
@@ -498,14 +498,26 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("KT2_CORPUS_SSOT_2026_08.md", text)
         self.assertIn("KT3_JURY_FAQ_2026_08_25.md", text)
         self.assertIn("KT3_OPERATOR_RUNBOOK_2026_08_25.md", text)
-        self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", text)
-        self.assertIn("TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md", text)
-        self.assertIn("SIG01_CHANNEL_TRIAGE_2026_08.md", text)
-        self.assertIn("CHANNEL_SAMOLET_MAX_PASS_2026_08.md", text)
-        self.assertIn("CHANNEL_PACK_TRIAGE_2026_08.md", text)
-        self.assertIn("pack-family-facts-2026-08.md", text)
-        self.assertIn("SAMOLET_QUESTION_PACK_KT3_2026_08.md", text)
+        self.assertIn("KT3_TRACKER_SIX_TASKS_2026_08.md", text)
+        self.assertIn("TRACKER_EIGHT_TASKS_2026_08.md", text)
+        self.assertIn("JURY_PACK_TRIAGE_2026_09.md", text)
+        self.assertIn("MIK_SEAT_BRIEFS_2026_08.md", text)
+        self.assertIn("CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md", text)
+        self.assertIn("NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md", text)
         self.assertIn("KT3_RVT_NWD_CV_ONEPAGER_2026_08.md", text)
+        self.assertNotIn("SIGINEVICH", text)
+        self.assertNotIn("TRACKER_DMITRY", text)
+        self.assertNotIn("CHANNEL_LOCAL_MAX_PASS", text)
+        self.assertNotIn("CHANNEL_PACK_TRIAGE", text)
+        self.assertNotIn("pack-family-facts-2026-08.md", text)
+        self.assertNotIn("SAMOLET_QUESTION_PACK", text)
+        self.assertNotIn("OWNER_ACTIONS_2026_09.md", text)
+
+    def test_tracked_paths_omit_tracker_surname(self) -> None:
+        listed = _git_ls_files()
+        self.assertNotIn("SIGINEVICH", listed)
+        self.assertNotIn("TRACKER_DMITRY", listed)
+        self.assertNotIn("CHANNEL_SAMOLET_MAX_PASS", listed)
 
     def test_qa_defense_stays_no_go_and_omits_contest_count(self) -> None:
         path = self._repo() / "docs" / "qa-defense-2026.md"

@@ -23,7 +23,7 @@ tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 | **Техлаб** | Программа отбора (жюри) | Заявка, MVP-демо, честные формулировки; участие — физлица / команда ≤10 | [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md) + [`../partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
 | **МИК (Фонд)** | Оператор программы | Формы соглашения/акта **если** потребует оператор; не грантодатель входа в Техлаб | [`../partners/MIK_PILOT_COMPLIANCE_2026.md`](../partners/MIK_PILOT_COMPLIANCE_2026.md) |
 | **Отрасль** | Нормы openBIM / приёмки | IDS 1.0, ISO 19650-2 5.7, Solihin 1–4, ПНСТ 909 | [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) IND-* |
-| **Трекер** | Операционный спринт к КТ#3 | 6 задач 14.08; live CLI; не число демо в git | [`../demo/KT3_TRACKER_DMITRY_2026_08.md`](../demo/KT3_TRACKER_DMITRY_2026_08.md) · ledger TRK-* |
+| **Трекер** | Операционный спринт к КТ#3 | 6 задач 14.08; live CLI; не число демо в git | [`../demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md) · ledger TRK-* |
 
 **Четыре бумаги Самолёта (не склеивать):** v1 бриф 6 стр. [`TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) · v2 ТР-1…62 · семь задач сравнения · проектное ТЗ объекта. IUA `SAM-10`.
 
@@ -66,6 +66,6 @@ PARTIAL · BLOCKED_CUSTOMER_DATA · VERIFY_WITH_OPERATOR · OUT (заявлен�
 - [x] IUA ledger (16.08): лицензированные выводы Kane по пяти источникам
 - [x] ТЗ v1 бриф (6 стр.) запинен отдельно от v2 / семи задач / проектного ТЗ (`SAM-10`)
 - [x] Owner-AI plan 27.08: unsigned OOS + local inventory (`PLAN-00`…`PLAN-05`); не закрывает RT
-- [x] Трекер (6 задач 14.08): [`KT3_TRACKER_DMITRY_2026_08.md`](../demo/KT3_TRACKER_DMITRY_2026_08.md) + `run_kt3_jury`; KPI демо не в git
+- [x] Трекер (6 задач 14.08): [`KT3_TRACKER_SIX_TASKS_2026_08.md`](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md) + `run_kt3_jury`; KPI демо не в git
 - [ ] Формы Фонда получены и M2/M8 закрыты (запрос «до 3 авг» **просрочен**; статус VERIFY_WITH_OPERATOR)
 - [ ] Акт МИК подписан по результатам КТ3 (сентябрь)

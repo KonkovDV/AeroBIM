@@ -20,7 +20,7 @@ claim_boundary: >
 
 **Речь (дословно):** Tangl — слой модели. AeroBIM — шов комплекта (требования ↔ IFC ↔ листы ↔ ревизии). Не «заменим Tangl».
 
-**После 29.08:** восемь задач трекера (назначены 29.08) — отдельный SSOT [`../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md) (`tracker_eight_snapshot`). Не смешивать с таблицей ниже.
+**После 29.08:** восемь задач трекера (назначены 29.08) — отдельный SSOT [`../quality/TRACKER_EIGHT_TASKS_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_2026_08.md) (`tracker_eight_snapshot`). Не смешивать с таблицей ниже.
 
 Checkpoint **`NO_GO`**. Письмо Самолёту отправляет человек, не репозиторий.
 

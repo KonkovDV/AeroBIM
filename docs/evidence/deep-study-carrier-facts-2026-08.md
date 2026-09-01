@@ -74,4 +74,4 @@ EIR v4.0 workbook + BIM-standard v4.0 are present as **text**. That is not `cust
 | SIG-06 | `.lir` present on A and C; CC-2 tokens in KR IFC; CC-1/CC-3 still need a readable note | «конструкции пересчитаны»; native `.lir` parsed |
 | SIG-07 | Counted RVT years and NWD federations | Native reader; DWG-ready |
 
-Related: [`unpack-census-2026-08.md`](unpack-census-2026-08.md) · [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md) · [`../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md).
+Related: [`unpack-census-2026-08.md`](unpack-census-2026-08.md) · [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md) · [`../quality/TRACKER_EIGHT_TASKS_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_2026_08.md).

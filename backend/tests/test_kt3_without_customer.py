@@ -115,7 +115,7 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertIn("customer_files_expected: false", md)
         self.assertIn("nda_corpus_in_git: false", md)
         self.assertIn("KT3_JURY_FAQ_2026_08_25.md", md)
-        self.assertIn("KT3_TRACKER_DMITRY_2026_08.md", md)
+        self.assertIn("KT3_TRACKER_SIX_TASKS_2026_08.md", md)
 
     def test_jury_card_and_runbook_keep_honesty_pins(self) -> None:
         faq = (REPO_ROOT / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md").read_text(

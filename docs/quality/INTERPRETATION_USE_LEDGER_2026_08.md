@@ -1,7 +1,7 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-08-31"
+date: "2026-09-01"
 status: active
 version: "1.2.1"
 closes_rt001: false
@@ -31,10 +31,10 @@ claim_boundary: >-
 | SAM-05 | samolet | Коллизии / MEP / «точность >90%» | Generic IfcClash на fixture; tiny-skip fail-closed; protocol TP/(TP+FP)≥0.60 | Customer clash precision; mep_system_clash=OK; TZ >90% | `protocol_planning` |
 | SAM-06 | samolet | SLA «до 30 минут» | measure_package_sla на согласованном fixture; StageBudget sum=30 min | Customer SLA / любой комплект Самолёта | `protocol_planning` |
 | SAM-07 | samolet | BCF замечания в СОД | BCF 2.1 ZIP export (структурный) | CDE import VERIFIED / T2 roundtrip | `fixture_demo` |
-| SAM-08 | samolet | ТР-16/19: площади помещений / чертёж↔IFC | 6 AR IFC: 10599 IfcSpace, 0 NetFloorArea; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
-| SAM-09 | samolet | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | 62033 walls; FireRating 5.7% EI45 only; not TZ II/C0 | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
+| SAM-08 | samolet | ТР-16/19: площади помещений / чертёж↔IFC | AR IFC: rooms exist as objects; area QTO not runnable; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
+| SAM-09 | samolet | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | Wall FireRating sparse and ≠ TZ II/C0; coverage_map_only | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
 | SAM-10 | samolet | ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ | v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score | Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF | `engine_regression` |
-| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | 27.08 wrapper pin 2383; 30.08 morning 2618/6467 (packed shells); 30.08 evening recensus wrapper 2552 + unpack 6408 after deleting covered source archives (0 zip/7z left). Deep-study facts are coverage_map_only. Live scan only under .local/. Not processed. | sha256 пакета Самолёта в git; имена площадок в публичном дереве | `operational_hygiene` |
+| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | 27.08 public rehearsal pin plus 30.08 evening recensus after deleting covered source archives. Counts live in engineering pins, not the jury map. Live scan only under .local/. Not processed. | sha256 пакета Самолёта в git; имена площадок в публичном дереве | `operational_hygiene` |
 | PLAN-01 | techlab | QTO помещений или подписанный OOS (задача 3) | Unsigned qto_space_area template; Missing QTO ≠ TEP Does-not | Площади сверены с ТЭП; unsigned OOS = skip licensed | `protocol_planning` |
 | PLAN-02 | techlab | ИОС IFC или подписанный MEP-OOS (задача 5 / RT-003) | Unsigned mep_federated template; mep_system_clash=NOT_VERIFIED | MEP delivered; unsigned OOS closes RT-003 | `protocol_planning` |
 | PLAN-03 | techlab | Стержни IFC или подписанный OOS п.7 (Solihin 4) | Unsigned rebar_class4 template; .lir not parsed | Арматура сверена с расчётом; pitch pset = class 4 | `protocol_planning` |
@@ -47,7 +47,8 @@ claim_boundary: >-
 | TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
 | SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is SAM-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
-| SIG-02 | tracker | Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal) | pack_probe + census 6408; calc binaries are the majority of unpack bytes; 6 docx class-phrase / 46 xlsx load-token files are a shortlist, not MATCH. Uncompressed byte totals stay out of git. | 43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; byte totals of the NDA tree in git | `operational_hygiene` |
+| SIG-02 | tracker | Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal) | pack_probe + census pin; calc binaries are the majority of unpack bytes; Office token shortlist is not CC-2 MATCH. Uncompressed byte totals stay out of git. | 43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; byte totals of the NDA tree in git | `operational_hygiene` |
+| JURY-01 | mik | Отборочная комиссия №7: роли на карте жюри, не ФИО и не census NDA | Seat briefs are roles; three partner seats by agreement; unpack counts stay off TIER0; tracker paths have no personal names. | Sitting-member list in git; OSINT bios as confirmed; unpack fingerprint counts on the jury map; pack processed | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
 | TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
@@ -140,6 +141,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | TRK-06 | Решение коммерции — вне кода |
 | SIG-01 | Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count |
 | SIG-02 | Owner pastes name-free aggregate after OA-9; hashed TSV stays .local |
+| JURY-01 | Keep FIO and NDA fingerprint counts off jury surfaces |
 | TL-01 | КТ#3 03–21.09 — итоговое решение |
 | TL-02 | Замеры только после intake-gates |
 | TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
@@ -220,14 +222,15 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `PLAN-03`: [rebar_class4.unsigned.json](../../samples/oos/rebar_class4.unsigned.json)
 - `PLAN-04`: [OWNER_AI_PLAN_EXECUTION_2026_08_27.md](OWNER_AI_PLAN_EXECUTION_2026_08_27.md)
 - `PLAN-05`: [RT001_LABELING_PROTOCOL_RT026_2026_08_03.md](RT001_LABELING_PROTOCOL_RT026_2026_08_03.md)
-- `TRK-01`: [KT3_TRACKER_DMITRY_2026_08.md](../demo/KT3_TRACKER_DMITRY_2026_08.md)
+- `TRK-01`: [KT3_TRACKER_SIX_TASKS_2026_08.md](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
 - `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)
 - `TRK-04`: [KT3_JURY_FAQ_2026_08_25.md](../demo/KT3_JURY_FAQ_2026_08_25.md)
-- `TRK-05`: [KT3_TRACKER_DMITRY_2026_08.md](../demo/KT3_TRACKER_DMITRY_2026_08.md)
+- `TRK-05`: [KT3_TRACKER_SIX_TASKS_2026_08.md](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)
 - `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
 - `SIG-01`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
 - `SIG-02`: [CHANNEL_PACK_TRIAGE_2026_08.md](CHANNEL_PACK_TRIAGE_2026_08.md)
+- `JURY-01`: [JURY_PACK_TRIAGE_2026_09.md](JURY_PACK_TRIAGE_2026_09.md)
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
 - `TL-03`: [TECHLAB_TASK_07_READINESS_2026.md](../partners/TECHLAB_TASK_07_READINESS_2026.md)

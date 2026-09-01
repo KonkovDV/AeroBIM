@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from aerobim.domain.channel_samolet_max_pass import channel_samolet_max_pass_snapshot
+from aerobim.domain.channel_local_max_pass import channel_local_max_pass_snapshot
 from aerobim.domain.finding_volume import REPORT_PHRASE, volume_from_findings
 from aerobim.domain.owner_files_inventory import require_local_only_output
 from aerobim.tools.benchmark_project_package import repo_root
@@ -51,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"pack directory missing: {args.pack}", file=sys.stderr)
         return 2
     args.out.mkdir(parents=True, exist_ok=True)
-    snapshot = channel_samolet_max_pass_snapshot()
+    snapshot = channel_local_max_pass_snapshot()
     _write_json(args.out / "git-safe-snapshot.json", snapshot)
 
     volume: dict[str, Any] | None = None
@@ -82,7 +82,7 @@ def main(argv: list[str] | None = None) -> int:
     write_chat_summary(args.out / "pack-chat-summary.md", aggregate)
 
     combined = {
-        "artifact_type": "channel_samolet_max_pass_local",
+        "artifact_type": "channel_local_max_pass_local",
         "claim_level": "coverage_map_only",
         "checkpoint": "NO_GO",
         "closes_rt001": False,

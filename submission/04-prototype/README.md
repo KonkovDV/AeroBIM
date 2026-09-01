@@ -33,7 +33,7 @@ python -m aerobim.tools.run_kt3_jury
 ```
 
 Эквивалент двумя командами: `python -m aerobim.tools.run_demo_ifc_acceptance_gate` и `python -m aerobim.tools.run_kt3_without_customer`.  
-Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Трекер: [`../../docs/demo/KT3_TRACKER_DMITRY_2026_08.md`](../../docs/demo/KT3_TRACKER_DMITRY_2026_08.md). Сценарий: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).
+Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Трекер: [`../../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Сценарий: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).
 
 `pytest tests -q` after `pip install -e ".[dev,raster]"` is the jury clone contract: **0 failed**. Optional `pdf-agpl` and kitchen GitHub secrets are CI-only; those tests skip without them. Do not treat a local count as [`runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json).
 

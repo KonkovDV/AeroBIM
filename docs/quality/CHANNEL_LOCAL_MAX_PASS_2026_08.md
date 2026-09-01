@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Local Samolet max pass; coverage_map_only; SIG-01 volume≠accuracy; seven tasks Uncertain; NO_GO" -->
 ---
-title: "Maximum licensed pass on the local Samolet copy — 31.08.2026"
+title: "Maximum licensed pass on a local NDA copy — 31.08.2026"
 date: "2026-08-31"
 last_updated: "2026-08-31"
 status: active
@@ -14,12 +14,12 @@ claim_boundary: >
   What git plus a gitignored quarantine copy can do for TZ v2, TechLab
   seven comparison tasks, MIK speech, and tracker SIG-01…08. Inventory and
   unsigned volume shape only. Not product accuracy. Not pack processed.
-  Not Meets/Does-not. Checkpoint NO_GO.
+  Not Meets/Does-not. Not a jury exhibit. Checkpoint NO_GO.
 ---
 
 # Максимум на локальной копии Самолёта (31.08)
 
-Машина: `python -c "from aerobim.domain.channel_samolet_max_pass import channel_samolet_max_pass_snapshot"`.
+Машина: `python -c "from aerobim.domain.channel_local_max_pass import channel_local_max_pass_snapshot"`.
 
 Локальный прогон (имена и хэши не в git): `python -m aerobim.tools.run_channel_max_pass --pack <unpack-tree> --out .local/pack-out/channel-max-pass-unpacked-2026-08-31 --findings-lite-dir <rerun>`.
 
@@ -86,4 +86,4 @@ Unsigned-пакеты `REQ-*` eq + `SAM-AR-*` exists на одном pset.prop �
 
 OA-9 (тоталы канала вне git до режима данных) · SIG-05 через организаторов · SIG-08 письмо · production IdP к 18.09 · два разметчика · читаемая записка для CC-2/CC-4 MATCH · **не** поднимать `AEROBIM_MAX_IFC_BYTES`.
 
-Связанные: [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md) · [`TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md`](TRACKER_EIGHT_TASKS_SIGINEVICH_2026_08.md) · [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md) · [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md) · [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md) · [`../evidence/pack-family-facts-2026-08.md`](../evidence/pack-family-facts-2026-08.md).
+Связанные: [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md) · [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md) · [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md) · [`../evidence/pack-family-facts-2026-08.md`](../evidence/pack-family-facts-2026-08.md).
